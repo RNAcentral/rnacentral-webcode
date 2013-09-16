@@ -2,7 +2,7 @@ from django.db import models
 
 # Create your models here.
 class Rna(models.Model):
-    upi = models.CharField(max_length=200)
+    upi = models.CharField(max_length=200, primary_key=True)
     timestamp = models.CharField(max_length=10)
     userstamp = models.CharField(max_length=100)
     crc64 = models.CharField(max_length=16)
@@ -14,11 +14,19 @@ class Rna(models.Model):
     class Meta:
         db_table = 'rna'
 
+    def get_sequence(self):
+    	if self.seq_short:
+    		return self.seq_short
+    	else:
+    		return self.seq_long
+
+
 class Xref(models.Model):
+	id = models.IntegerField(primary_key=True)
 	dbid = models.IntegerField()
 	created = models.IntegerField()
 	last = models.IntegerField()
-	upi = models.ForeignKey(Rna)
+	upi = models.ForeignKey(Rna, db_column='UPI')
 	version_i = models.IntegerField()
 	deleted = models.CharField(max_length=1)
 	timestamp = models.DateTimeField()
