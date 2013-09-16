@@ -1,4 +1,7 @@
+################################################
+# standard gitignore
 # adapted from https://gist.github.com/2427167
+################################################
 
 # Numerous always-ignore extensions
 *.diff
@@ -44,5 +47,57 @@ publish
 build/buildinfo.properties
 build/config/buildinfo.properties
 
-# project specific
+#####################
+# python .gitignore #
+#####################
+*.py[cod]
+
+# C extensions
+*.so
+
+# Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+__pycache__
+
+# Installer logs
+pip-log.txt
+
+# Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
+
+# Translations
+*.mo
+
+# Mr Developer
+.mr.developer.cfg
+.project
+.pydevproject
+
+####################
+# django gitignore #
+####################
+*.log
+*.pot
+*.pyc
+local_settings.py
+
+####################
+# project specific #
+####################
 ._*
+
+
