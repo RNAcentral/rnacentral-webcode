@@ -56,3 +56,18 @@ class Xref(models.Model):
 
     class Meta:
         db_table = 'xref_myisam'
+
+
+class Release(models.Model):
+    id = models.IntegerField(primary_key=True)
+    dbid = models.IntegerField()
+    release_date = models.DateField()
+    release_type = models.CharField(max_length=1)
+    status = models.CharField(max_length=1)
+    timestamp = models.DateField()
+    userstamp = models.CharField(max_length=30)
+    descr = models.DateField(max_length=32)
+    force_load = models.CharField(max_length=1)
+
+
+

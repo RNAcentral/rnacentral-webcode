@@ -7,7 +7,7 @@ class RnaViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API endpoint that allows Rna sequences to be viewed or edited.
     """
-    queryset = Rna.objects.defer('seq_long').all()
+    queryset = Rna.objects.defer('seq_long').select_related().all()
     serializer_class = RnaSerializer
     paginate_by = 10
 
