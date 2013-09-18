@@ -66,8 +66,9 @@ class Release(models.Model):
     status = models.CharField(max_length=1)
     timestamp = models.DateField()
     userstamp = models.CharField(max_length=30)
-    descr = models.DateField(max_length=32)
+    descr = models.TextField()
     force_load = models.CharField(max_length=1)
 
-
+    class Meta:
+        db_table = 'rnc_release'
 

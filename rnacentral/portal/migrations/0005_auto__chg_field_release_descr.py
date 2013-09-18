@@ -8,25 +8,14 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding model 'Release'
-        db.create_table(u'rnc_release', (
-            ('id', self.gf('django.db.models.fields.IntegerField')(primary_key=True)),
-            ('dbid', self.gf('django.db.models.fields.IntegerField')()),
-            ('release_date', self.gf('django.db.models.fields.DateField')()),
-            ('release_type', self.gf('django.db.models.fields.CharField')(max_length=1)),
-            ('status', self.gf('django.db.models.fields.CharField')(max_length=1)),
-            ('timestamp', self.gf('django.db.models.fields.DateField')()),
-            ('userstamp', self.gf('django.db.models.fields.CharField')(max_length=30)),
-            ('descr', self.gf('django.db.models.fields.DateField')(max_length=32)),
-            ('force_load', self.gf('django.db.models.fields.CharField')(max_length=1)),
-        ))
-        db.send_create_signal(u'portal', ['Release'])
 
+        # Changing field 'Release.descr'
+        db.alter_column('rnc_release', 'descr', self.gf('django.db.models.fields.TextField')())
 
     def backwards(self, orm):
-        # Deleting model 'Release'
-        db.delete_table(u'rnc_release')
 
+        # Changing field 'Release.descr'
+        db.alter_column('rnc_release', 'descr', self.gf('django.db.models.fields.DateField')(max_length=32))
 
     models = {
         u'portal.ac': {
@@ -47,9 +36,9 @@ class Migration(SchemaMigration):
             'species': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
         u'portal.release': {
-            'Meta': {'object_name': 'Release'},
+            'Meta': {'object_name': 'Release', 'db_table': "'rnc_release'"},
             'dbid': ('django.db.models.fields.IntegerField', [], {}),
-            'descr': ('django.db.models.fields.DateField', [], {'max_length': '32'}),
+            'descr': ('django.db.models.fields.TextField', [], {}),
             'force_load': ('django.db.models.fields.CharField', [], {'max_length': '1'}),
             'id': ('django.db.models.fields.IntegerField', [], {'primary_key': 'True'}),
             'release_date': ('django.db.models.fields.DateField', [], {}),
