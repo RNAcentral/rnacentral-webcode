@@ -16,6 +16,6 @@ class XrefViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API endpoint that allows Xrefs to be viewed or edited.
     """
-    queryset = Xref.objects.prefetch_related().all()
+    queryset = Xref.objects.only('upi', 'ac', 'taxid').all()
     serializer_class = XrefSerializer
     paginate_by = 10

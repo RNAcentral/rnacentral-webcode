@@ -1,10 +1,9 @@
 from django.db import models
 
-# Create your models here.
 class Rna(models.Model):
-    upi = models.CharField(max_length=200, primary_key=True)
-    timestamp = models.CharField(max_length=10)
-    userstamp = models.CharField(max_length=100)
+    upi = models.CharField(primary_key=True, max_length=13)
+    timestamp = models.DateField()
+    userstamp = models.CharField(max_length=30)
     crc64 = models.CharField(max_length=16)
     len = models.IntegerField()
     seq_short = models.CharField(max_length=4000)
@@ -12,7 +11,7 @@ class Rna(models.Model):
     md5 = models.CharField(max_length=32)
 
     class Meta:
-        db_table = 'rna'
+        db_table = 'rna_myisam'
 
     def get_sequence(self):
     	if self.seq_short:
@@ -21,19 +20,39 @@ class Rna(models.Model):
     		return self.seq_long
 
 
-class Xref(models.Model):
-	id = models.IntegerField(primary_key=True)
-	dbid = models.IntegerField()
-	created = models.IntegerField()
-	last = models.IntegerField()
-	upi = models.ForeignKey(Rna, db_column='UPI')
-	version_i = models.IntegerField()
-	deleted = models.CharField(max_length=1)
-	timestamp = models.DateTimeField()
-	userstamp = models.CharField(max_length=100)
-	ac = models.CharField(max_length=150)
-	version = models.IntegerField()
-	taxid = models.IntegerField()
+class Ac(models.Model):
+    ac = models.CharField(max_length=100, primary_key=True)
+    parent_ac = models.CharField(max_length=100)
+    seq_version = models.IntegerField()
+    feature_start = models.IntegerField()
+    feature_end = models.IntegerField()
+    feature_name = models.CharField(max_length=40)
+    ordinal = models.CharField(max_length=40)
+    division = models.CharField(max_length=3)
+    keywords = models.CharField(max_length=100)
+    description = models.CharField(max_length=200)
+    species = models.CharField(max_length=100)
+    organelle = models.CharField(max_length=100)
+    classification = models.CharField(max_length=500)
+    project = models.CharField(max_length=50)
 
-	class Meta:
-		db_table = 'xref'
+    class Meta:
+        db_table = 'rnc_ac_info'
+
+
+class Xref(models.Model):
+    id = models.IntegerField(primary_key=True)
+    dbid = models.IntegerField()
+    created = models.IntegerField()
+    last = models.IntegerField()
+    upi = models.ForeignKey(Rna, db_column='UPI', related_name='xrefs')
+    version_i = models.IntegerField()
+    deleted = models.CharField(max_length=1)
+    timestamp = models.DateTimeField()
+    userstamp = models.CharField(max_length=100)
+    ac = models.ForeignKey(Ac, db_column='ac')
+    version = models.IntegerField()
+    taxid = models.IntegerField()
+
+    class Meta:
+        db_table = 'xref_myisam'
