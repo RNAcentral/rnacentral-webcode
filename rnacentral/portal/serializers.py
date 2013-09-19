@@ -1,11 +1,12 @@
-from portal.models import Rna, Xref
+from portal.models import Rna, Xref, Ac, Database
 from rest_framework import serializers
 
 
 class XrefSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Xref
-        fields = ('upi', 'ac', 'taxid')
+		model = Xref
+		fields = ('db', 'accession', 'deleted', 'version', 'taxid', 'created', 'last')
+		depth = 1
 
 
 class RnaSerializer(serializers.HyperlinkedModelSerializer):
@@ -13,4 +14,4 @@ class RnaSerializer(serializers.HyperlinkedModelSerializer):
     xrefs = XrefSerializer(many=True)
     class Meta:
         model = Rna
-        fields = ('upi', 'crc64', 'md5', 'sequence', 'xrefs')
+        fields = ('upi', 'md5', 'sequence', 'xrefs')

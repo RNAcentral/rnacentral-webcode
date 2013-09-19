@@ -20,8 +20,38 @@ class Rna(models.Model):
     		return self.seq_long
 
 
+class Database(models.Model):
+    id = models.IntegerField(primary_key=True)
+    timestamp = models.DateField()
+    userstamp = models.CharField(max_length=30)
+    descr = models.TextField()
+    current_release = models.IntegerField()
+    full_descr = models.CharField(max_length=255)
+    alive = models.CharField(max_length=1)
+    for_release = models.CharField(max_length=1)
+    display_name = models.CharField(max_length=40)
+
+    class Meta:
+        db_table = 'rnc_database'
+
+
+class Release(models.Model):
+    id = models.IntegerField(primary_key=True)
+    db = models.ForeignKey(Database, db_column='db_id', related_name='db')
+    release_date = models.DateField()
+    release_type = models.CharField(max_length=1)
+    status = models.CharField(max_length=1)
+    timestamp = models.DateField()
+    userstamp = models.CharField(max_length=30)
+    descr = models.TextField()
+    force_load = models.CharField(max_length=1)
+
+    class Meta:
+        db_table = 'rnc_release'
+
+
 class Ac(models.Model):
-    ac = models.CharField(max_length=100, primary_key=True)
+    id = models.CharField(db_column='ac', max_length=100, primary_key=True)
     parent_ac = models.CharField(max_length=100)
     seq_version = models.IntegerField()
     feature_start = models.IntegerField()
@@ -42,15 +72,15 @@ class Ac(models.Model):
 
 class Xref(models.Model):
     id = models.IntegerField(primary_key=True)
-    dbid = models.IntegerField()
-    created = models.IntegerField()
-    last = models.IntegerField()
+    db = models.ForeignKey(Database, db_column='db_id')
+    created = models.ForeignKey(Release, db_column='created', related_name='release_created')
+    last = models.ForeignKey(Release, db_column='last', related_name='last_release')
     upi = models.ForeignKey(Rna, db_column='UPI', related_name='xrefs')
     version_i = models.IntegerField()
     deleted = models.CharField(max_length=1)
     timestamp = models.DateTimeField()
     userstamp = models.CharField(max_length=100)
-    ac = models.ForeignKey(Ac, db_column='ac')
+    accession = models.ForeignKey(Ac, db_column='ac', blank=True, null=True)
     version = models.IntegerField()
     taxid = models.IntegerField()
 
@@ -58,17 +88,12 @@ class Xref(models.Model):
         db_table = 'xref_myisam'
 
 
-class Release(models.Model):
-    id = models.IntegerField(primary_key=True)
-    dbid = models.IntegerField()
-    release_date = models.DateField()
-    release_type = models.CharField(max_length=1)
-    status = models.CharField(max_length=1)
-    timestamp = models.DateField()
-    userstamp = models.CharField(max_length=30)
-    descr = models.TextField()
-    force_load = models.CharField(max_length=1)
+class CompositeId(models.Model):
+    composite_id = models.CharField(max_length=100, primary_key=True)
+    ac = models.ForeignKey(Ac, to_field='id')
+    database = models.CharField(max_length=20)
+    optional_id = models.CharField(max_length=100)
+    external_id = models.CharField(max_length=100)
 
     class Meta:
-        db_table = 'rnc_release'
-
+        db_table = 'rnc_composite_ids'
