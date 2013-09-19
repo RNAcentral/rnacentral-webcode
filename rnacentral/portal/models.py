@@ -11,7 +11,7 @@ class Rna(models.Model):
     md5 = models.CharField(max_length=32)
 
     class Meta:
-        db_table = 'rna_myisam'
+        db_table = 'rnc_rna'
 
     def get_sequence(self):
     	if self.seq_short:
@@ -67,7 +67,7 @@ class Ac(models.Model):
     project = models.CharField(max_length=50)
 
     class Meta:
-        db_table = 'rnc_ac_info'
+        db_table = 'rnc_accession_info'
 
 
 class Xref(models.Model):
@@ -80,12 +80,12 @@ class Xref(models.Model):
     deleted = models.CharField(max_length=1)
     timestamp = models.DateTimeField()
     userstamp = models.CharField(max_length=100)
-    accession = models.ForeignKey(Ac, db_column='ac', blank=True, null=True)
+    accession = models.ForeignKey(Ac, db_column='accession', blank=True, null=True)
     version = models.IntegerField()
     taxid = models.IntegerField()
 
     class Meta:
-        db_table = 'xref_myisam'
+        db_table = 'rnc_xref'
 
 
 class CompositeId(models.Model):
