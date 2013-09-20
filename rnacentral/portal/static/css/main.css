@@ -1,0 +1,27 @@
+body {
+  background: #fff url({% static "img/pale_grey_slight_texture.jpg" %}) top left repeat;
+}
+.content {
+  background: #fff;
+}
+.label {
+  margin-left: 5px;
+}
+pre {
+  background : white;
+}
+.ebi-img {
+  height: 40px;
+  width: 140px;
+}
+.bbsrc-img {
+  height: 50px;
+  width: 140px;
+}
+a, a:hover, a:visited, a:link {
+  text-decoration: none;
+  border-bottom: none;
+}
+th {
+  color: black;
+}

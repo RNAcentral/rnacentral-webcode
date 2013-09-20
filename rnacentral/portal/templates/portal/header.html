@@ -1,0 +1,67 @@
+{% load staticfiles %}
+
+<div id="local-masthead" class="masthead row-fluid">
+
+  <!-- local-title -->
+  <!-- NB: for additional title style patterns, see http://frontier.ebi.ac.uk/web/style/patterns -->
+
+  <div class="span6" id="local-title">
+
+    <h1><a href="#"><img src="{% static "img/logo/RNAcentral_logo.png" %}" alt="RNAcentral logo" class="img-responsive"></a></h1>
+
+    <!-- <h1><a href="[service-url]" title="Back to RNAcentral homepage">RNAcentral</a></h1> -->
+  </div>
+
+  <!-- /local-title -->
+
+  <!-- local-search -->
+  <!-- NB: if you do not have a local-search, delete the following div, and drop the class="grid_12 alpha" class from local-title above -->
+
+  <div class="span6">
+    <form id="local-search" name="local-search" action="[search-action]" method="post">
+
+      <fieldset>
+
+      <div class="left">
+        <label>
+        <input type="text" name="first" id="local-searchbox">
+        </label>
+        <!-- Include some example searchterms - keep them short and few! -->
+        <span class="examples">Examples: <a href="[search-url-1]">[search-text-1]</a>, <a href="[search-url-1]">[search-text-2]</a>, <a href="[search-url-1]">[search-text-3]</a></span>
+      </div>
+
+      <div class="right">
+        <input type="submit" name="submit" value="Search" class="submit">
+        <!-- If your search is more complex than just a keyword search, you can link to an Advanced Search,
+             with whatever features you want available -->
+        <span class="adv"><a href="../search" id="adv-search" title="Advanced">Advanced</a></span>
+      </div>
+
+      </fieldset>
+
+    </form>
+  </div>
+
+  <!-- /local-search -->
+
+  <!-- local-nav -->
+
+  <nav>
+    <ul class="span12" id="local-nav">
+      <li class="first"><a href="#">Home</a></li>
+      <li><a href="#">Documentation</a></li>
+      <li><a href="#">Help</a></li>
+      <li class="last"><a href="#">About RNAcentral</a></li>
+      <!-- If you need to include functional (as opposed to purely navigational) links in your local menu,
+           add them here, and give them a class of "functional". Remember: you'll need a class of "last" for
+           whichever one will show up last...
+           For example: -->
+      <li class="functional last"><a href="#">Login</a></li>
+      <li class="functional"><a href="#">Feedback</a></li>
+      <li class="functional"><a href="#">Share</a></li>
+    </ul>
+  </nav>
+
+  <!-- /local-nav -->
+
+</div>

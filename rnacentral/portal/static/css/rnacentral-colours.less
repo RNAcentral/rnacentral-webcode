@@ -1,0 +1,121 @@
+
+
+   
+   @P1: #819FA3;
+   @P2: #67787A;
+   @P3: #2A626A;
+   @P4: #B0CDD1;
+   @P5: #B9CED1;
+
+
+   @A1: #9995B6;
+   @A2: #787689;
+   @A3: #393077;
+   @A4: #C0BCDB;
+   @A5: #C7C4DB;
+
+
+   @B1: #CCE6B5;
+   @B2: #9EAC91;
+   @B3: #66953B;
+   @B4: #DEF2CC;
+   @B5: #E3F2D6;
+
+
+   @C1: #FFE3C9;
+   @C2: #BFAFA1;
+   @C3: #A67141;
+   @C4: #FFEAD6;
+   @C5: #FFEFE1;
+
+
+
+
+
+/* Color
+===================================================*/
+
+/* These style rules will over-ride the core EBI styles and apply 
+    your custom colour palette in a consistent manner */
+
+/* Links */
+a:link,
+a:visited { border-bottom-color: @P1; }
+
+a:hover,
+a:focus,
+a:active {
+  color: @P1;
+  border-bottom: 1px solid @P1;
+}
+
+a.special:hover,
+a.special:focus,
+a.special:active {
+  color:@P1;
+  border-bottom: 3px double @P1;
+  }
+
+
+a:link, a:visited { color: #08c; }
+
+a:hover,
+a:focus,
+a:active { color: @B3; }
+
+a.special { background-color: @B5; }
+
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 { color: #222222; }
+
+h1 { color: @P1; }
+
+h2 { color: @C2; }
+
+h1 a:link,
+h2 a:link,
+h3 a:link,
+h4 a:link,
+h5 a:link,
+h6 a:link,
+h1 a:visited,
+h2 a:visited,
+h3 a:visited,
+h4 a:visited,
+h5 a:visited,
+h6 a:visited {
+  border-bottom-color: @P1;
+}
+
+
+/* Table heading cells */
+th { background-color: @B1; }
+
+
+/* Form submission button */
+input.submit {
+  /* colours */ 
+  color: #fff;
+    text-shadow: @P3 1px 1px;
+    border-top: 1px solid @P5;    
+    border-left: 1px solid @P5;
+    border-right: 1px solid @P3;
+    border-bottom: 1px solid @P3;
+  
+  background-image: -moz-linear-gradient(top, @P1, @P2); 
+    
+    background-image: -webkit-linear-gradient(@P1, @P2); 
+    background-image: linear-gradient(top, @P1, @P2);
+    
+}
+
+/* Define the basic colour your local masthead */
+div#local-masthead { background-color: @P5; }
+
+/* Colour the faux-underline for local menu items */
+div#local-masthead ul li a:hover,
+div#local-masthead ul li a:focus,
+div#local-masthead ul li a:active {
+border-bottom: 3px solid @P1;
+}
