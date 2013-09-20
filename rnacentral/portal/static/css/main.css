@@ -1,7 +1,7 @@
 body {
   background: #fff url({% static "img/pale_grey_slight_texture.jpg" %}) top left repeat;
 }
-.content {
+.container {
   background: #fff;
 }
 .label {

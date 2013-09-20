@@ -2,20 +2,22 @@
 
 
 {% block content %}
-    <div class="container-fluid" id="content">
-      <div class="row-fluid">
 
-        <div class="span12 content">
-          <h2>
-            <a href="">{% block page-title %}{% endblock %}</a>
-            <small>
-              <span class="label label-success">current release 1.2</span>
-              <span class="label label-info">MODOMICS</span>
-              <span class="label label-info">SRPDB</span>
-            </small>
-          </h2>
+<div class="page-header">
+  <h2><a href="">{{ rna.upi }}</a>
+  <small>
+    <span class="label label-success">current release 1.2</span>
+    <span class="label label-info">MODOMICS</span>
+    <span class="label label-info">SRPDB</span>
+  </small>
+  </h2>
+</div>
 
-                <hr>
+
+
+      <div class="row">
+
+        <div class="col-md-12">
 
           <div class="tabbable">
 
@@ -56,7 +58,7 @@
                 </ul>
               </li>
             </ul>
-            <span class="label"></span>
+
             <div class="tab-content">
               <div class="tab-pane active" id="overview">
                 <div class="well">
@@ -67,7 +69,10 @@
                     SRP RNA, 86 nts.&nbsp;
                     <div>
                       First seen Jan 1, 2005, last seen July 20, 2013.
-                      <a href="#" data-toggle="tooltip" class="help" title="" data-original-title="Help text here"><i class="icon-info-sign"></i></a>
+                      <a href="#" data-toggle="tooltip" class="help" title="" data-original-title="Help text here">
+                      <span class="glyphicon glyphicon-info-sign"></span>
+                      </a>
+
                     </div>
                   </div>
                   <div>
@@ -138,20 +143,20 @@ AAUUUCGUUAGCCCGCAACUGUUGACUAUGUCAGGACCGGAAGGUAGCAGCAAAAAACAGAUGCGGGUGACUUUUUUAGA
                 <h3>
                   Database cross-references
                 </h3>
-                <i class="muted">RNAcentral Expert Databases are higlighted in <span class="text-success">green</span></i>
+                <i class="muted">RNAcentral Expert Databases are higlighted in <col-md- class="text-success">green</col-md-></i>
                 <table class="table table-striped table-condensed" id="results">
-                  <tbody><tr><th><span title="Original resource" id="databaseHeader"><span>Database</span></th><th><span title="" id="idHeader"><span>Entry</span></span></th><th><span title="Sequence version provided by the source database" id="versionHeader"><span>Version</span></th><th><span title="Scientific name of the source organism and its synonyms " id="organismHeader"><span>Organism</span></span></th><th><span title="Date when an entry was first associated with this sequence" id="first-seenHeader"><span>First seen</span></span></th><th><span title="Date when an entry was associated with this sequence for the last time" id="last-seenHeader"><span>Last seen</span></span></th><th><span title="Indicates that the entry is active in the source database" id="activeHeader"><span>Active</span></span></th></tr><tr><td>EMBL CDS</td><td>AAF63732</td><td>1</td><td>Vaccinia virus</td><td>2003-03-12</td><td>2013-03-05</td><td>Yes</td></tr><tr><td>EMBL CDS</td><td>CAD90637</td><td>1</td><td>Cowpox virus (CPV)</td><td>2003-06-16</td><td>2013-03-05</td><td>Yes</td></tr><tr><td>EMBL CDS</td><td>CAD90637</td><td>1</td><td>Cowpox virus (CPV)</td><td>2003-06-16</td><td>2013-03-05</td><td>Yes</td></tr><tr class="success"><td><a href="http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/Cyan.mero._AB002583.fasta" target="_blank">SRPDB</a></td><td>Cyan.mero._AB002583</td><td>1</td><td>Cyanidioschyzon merolae SRP RNA for signal recognition particle RNA</td><td>2010-07-10</td><td>2010-07-10</td><td>Yes</td></tr><tr><td>EMBL CDS</td><td>ABH08195</td><td>1</td><td>Horsepox virus (HSPV)</td><td>2006-09-02</td><td>2013-03-05</td><td>Yes</td></tr><tr class="success"><td><a href="#">MODOMICS</a></td><td></td><td>1</td><td></td><td>2010-07-10</td><td>2010-07-10</td><td>Yes</td></tr><tr><td>EMBL CDS</td><td>AAS49790</td><td>1</td><td>Rabbitpox virus</td><td>2004-03-31</td><td>2013-03-05</td><td>Yes</td></tr><tr><td>EMBL CDS</td><td>AAO89367</td><td>1</td><td>Vaccinia virus (strain Western Reserve) (VACV) (Vaccinia virus (strainWR))</td><td>2003-06-16</td><td>2013-03-05</td><td>Yes</td></tr><tr><td>EMBL CDS</td><td>CAA26010</td><td>1</td><td>Vaccinia virus</td><td>2003-03-12</td><td>2013-03-05</td><td>Yes</td></tr><tr><td>EMBL CDS</td><td>AGJ91256</td><td>1</td><td>Vaccinia virus</td><td>2013-04-24</td><td>2013-05-30</td><td>Yes</td></tr><tr><td>EMBL CDS</td><td>AGJ92346</td><td>1</td><td>Vaccinia virus</td><td>2013-04-24</td><td>2013-05-30</td><td>Yes</td></tr><tr><td>EMBL CDS</td><td>ADZ29210</td><td>1</td><td>Cowpox virus (CPV)</td><td>2011-08-10</td><td>2013-03-05</td><td>Yes</td></tr><tr><td>EPO</td><td>HI554959</td><td>1</td><td>Synthetic construct</td><td>2010-12-13</td><td>2013-04-13</td><td>Yes</td></tr><tr><td>USPTO</td><td>ACW20787</td><td>1</td><td></td><td>2009-10-22</td><td>2013-01-07</td><td>Yes</td></tr><tr><td>USPTO</td><td>ADS58161</td><td>1</td><td></td><td>2011-03-07</td><td>2013-01-07</td><td>Yes</td></tr><tr><td>USPTO</td><td>AFD38096</td><td>1</td><td></td><td>2012-06-13</td><td>2013-01-07</td><td>Yes</td></tr><tr><td>REFSEQ</td><td>YP_232970</td><td>1</td><td>Vaccinia virus</td><td>2005-10-06</td><td>2013-04-29</td><td>Yes</td></tr><tr class="muted"><td>REFSEQ</td><td>YP_006721</td><td>1</td><td></td><td>2004-07-08</td><td>2005-07-09</td><td>No</td></tr><tr><td>PRF</td><td>3121328CL</td><td></td><td>Rabbitpox virus</td><td>2006-02-13</td><td>2009-09-01</td><td>Yes</td></tr><tr><td>PRF</td><td>3217312DW</td><td></td><td>Horsepox virus (HSPV)</td><td>2007-01-01</td><td>2009-09-01</td><td>Yes</td></tr><tr><td>PRF</td><td>1103327F</td><td></td><td>Vaccinia virus</td><td>2005-11-28</td><td>2009-09-01</td><td>Yes</td></tr></tbody>
+                  <tbody><tr><th><col-md- title="Original resource" id="databaseHeader"><col-md->Database</col-md-></th><th><col-md- title="" id="idHeader"><col-md->Entry</col-md-></col-md-></th><th><col-md- title="Sequence version provided by the source database" id="versionHeader"><col-md->Version</col-md-></th><th><col-md- title="Scientific name of the source organism and its synonyms " id="organismHeader"><col-md->Organism</col-md-></col-md-></th><th><col-md- title="Date when an entry was first associated with this sequence" id="first-seenHeader"><col-md->First seen</col-md-></col-md-></th><th><col-md- title="Date when an entry was associated with this sequence for the last time" id="last-seenHeader"><col-md->Last seen</col-md-></col-md-></th><th><col-md- title="Indicates that the entry is active in the source database" id="activeHeader"><col-md->Active</col-md-></col-md-></th></tr><tr><td>EMBL CDS</td><td>AAF63732</td><td>1</td><td>Vaccinia virus</td><td>2003-03-12</td><td>2013-03-05</td><td>Yes</td></tr><tr><td>EMBL CDS</td><td>CAD90637</td><td>1</td><td>Cowpox virus (CPV)</td><td>2003-06-16</td><td>2013-03-05</td><td>Yes</td></tr><tr><td>EMBL CDS</td><td>CAD90637</td><td>1</td><td>Cowpox virus (CPV)</td><td>2003-06-16</td><td>2013-03-05</td><td>Yes</td></tr><tr class="success"><td><a href="http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/Cyan.mero._AB002583.fasta" target="_blank">SRPDB</a></td><td>Cyan.mero._AB002583</td><td>1</td><td>Cyanidioschyzon merolae SRP RNA for signal recognition particle RNA</td><td>2010-07-10</td><td>2010-07-10</td><td>Yes</td></tr><tr><td>EMBL CDS</td><td>ABH08195</td><td>1</td><td>Horsepox virus (HSPV)</td><td>2006-09-02</td><td>2013-03-05</td><td>Yes</td></tr><tr class="success"><td><a href="#">MODOMICS</a></td><td></td><td>1</td><td></td><td>2010-07-10</td><td>2010-07-10</td><td>Yes</td></tr><tr><td>EMBL CDS</td><td>AAS49790</td><td>1</td><td>Rabbitpox virus</td><td>2004-03-31</td><td>2013-03-05</td><td>Yes</td></tr><tr><td>EMBL CDS</td><td>AAO89367</td><td>1</td><td>Vaccinia virus (strain Western Reserve) (VACV) (Vaccinia virus (strainWR))</td><td>2003-06-16</td><td>2013-03-05</td><td>Yes</td></tr><tr><td>EMBL CDS</td><td>CAA26010</td><td>1</td><td>Vaccinia virus</td><td>2003-03-12</td><td>2013-03-05</td><td>Yes</td></tr><tr><td>EMBL CDS</td><td>AGJ91256</td><td>1</td><td>Vaccinia virus</td><td>2013-04-24</td><td>2013-05-30</td><td>Yes</td></tr><tr><td>EMBL CDS</td><td>AGJ92346</td><td>1</td><td>Vaccinia virus</td><td>2013-04-24</td><td>2013-05-30</td><td>Yes</td></tr><tr><td>EMBL CDS</td><td>ADZ29210</td><td>1</td><td>Cowpox virus (CPV)</td><td>2011-08-10</td><td>2013-03-05</td><td>Yes</td></tr><tr><td>EPO</td><td>HI554959</td><td>1</td><td>Synthetic construct</td><td>2010-12-13</td><td>2013-04-13</td><td>Yes</td></tr><tr><td>USPTO</td><td>ACW20787</td><td>1</td><td></td><td>2009-10-22</td><td>2013-01-07</td><td>Yes</td></tr><tr><td>USPTO</td><td>ADS58161</td><td>1</td><td></td><td>2011-03-07</td><td>2013-01-07</td><td>Yes</td></tr><tr><td>USPTO</td><td>AFD38096</td><td>1</td><td></td><td>2012-06-13</td><td>2013-01-07</td><td>Yes</td></tr><tr><td>REFSEQ</td><td>YP_232970</td><td>1</td><td>Vaccinia virus</td><td>2005-10-06</td><td>2013-04-29</td><td>Yes</td></tr><tr class="muted"><td>REFSEQ</td><td>YP_006721</td><td>1</td><td></td><td>2004-07-08</td><td>2005-07-09</td><td>No</td></tr><tr><td>PRF</td><td>3121328CL</td><td></td><td>Rabbitpox virus</td><td>2006-02-13</td><td>2009-09-01</td><td>Yes</td></tr><tr><td>PRF</td><td>3217312DW</td><td></td><td>Horsepox virus (HSPV)</td><td>2007-01-01</td><td>2009-09-01</td><td>Yes</td></tr><tr><td>PRF</td><td>1103327F</td><td></td><td>Vaccinia virus</td><td>2005-11-28</td><td>2009-09-01</td><td>Yes</td></tr></tbody>
                 </table>
               </div>
 
               <div class="tab-pane" id="2d">
 
-                <div class="row span10">
-                    <div class="span4">
+                <div class="row col-md-10">
+                    <div class="col-md-4">
                         <img src="https://dl.dropboxusercontent.com/u/6569180/jetstrap/rna2d.png" class="img-polaroid">
                     </div>
 
-                    <div class="span4">
+                    <div class="col-md-4">
                         <img src="https://dl.dropboxusercontent.com/u/6569180/jetstrap/rchie.png" class="img-polaroid">
                     </div>
                 </div>
@@ -193,17 +198,6 @@ AAUUUCGUUAGCCCGCAACUGUUGACUAUGUCAGGACCGGAAGGUAGCAGCAAAAAACAGAUGCGGGUGACUUUUUUAGA
         </div>
       </div>
 
-
-
-
-
-
-
-
-
-
-
-        </div> <!-- /container -->
 
 {% endblock %}
 

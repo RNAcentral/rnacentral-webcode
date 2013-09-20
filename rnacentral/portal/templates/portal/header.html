@@ -1,11 +1,11 @@
 {% load staticfiles %}
 
-<div id="local-masthead" class="masthead row-fluid">
+<div id="local-masthead" class="masthead row">
 
   <!-- local-title -->
   <!-- NB: for additional title style patterns, see http://frontier.ebi.ac.uk/web/style/patterns -->
 
-  <div class="span6" id="local-title">
+  <div class="col-md-6" id="local-title">
 
     <h1><a href="#"><img src="{% static "img/logo/RNAcentral_logo.png" %}" alt="RNAcentral logo" class="img-responsive"></a></h1>
 
@@ -17,7 +17,7 @@
   <!-- local-search -->
   <!-- NB: if you do not have a local-search, delete the following div, and drop the class="grid_12 alpha" class from local-title above -->
 
-  <div class="span6">
+  <div class="col-md-6">
     <form id="local-search" name="local-search" action="[search-action]" method="post">
 
       <fieldset>
@@ -47,7 +47,7 @@
   <!-- local-nav -->
 
   <nav>
-    <ul class="span12" id="local-nav">
+    <ul class="col-md-12" id="local-nav">
       <li class="first"><a href="#">Home</a></li>
       <li><a href="#">Documentation</a></li>
       <li><a href="#">Help</a></li>
