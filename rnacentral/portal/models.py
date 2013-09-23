@@ -99,7 +99,7 @@ class CompositeId(models.Model):
         db_table = 'rnc_composite_ids'
 
 
-class References(models.Model):
+class Reference(models.Model):
     id = models.AutoField(primary_key=True)
     md5 = models.ForeignKey(Rna, to_field='md5', db_column='md5', related_name='refs')
     authors_md5 = models.CharField(max_length=32)

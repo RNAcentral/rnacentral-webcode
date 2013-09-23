@@ -53,3 +53,18 @@ border-bottom-color: white;
 #local-footer {
 	display: none;
 }
+.rnacentral-header-logo {
+	margin-top: 15px;
+	width: 300px;
+}
+div#local-search form fieldset, form#local-search fieldset {
+	max-width: 1000px;
+}
+
+#global-nav-expanded img {
+	margin-top: 5px;
+}
+
+form input {
+	margin: 0px;
+}

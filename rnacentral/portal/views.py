@@ -16,7 +16,7 @@ class RnaViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 def index(request):
-    return HttpResponse('Hello')
+    return render(request, 'portal/homepage.html')
 
 
 def rna_view(request, upi):
