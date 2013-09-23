@@ -1,6 +1,6 @@
 
 
-   
+
    @P1: #819FA3;
    @P2: #67787A;
    @P3: #2A626A;
@@ -35,7 +35,7 @@
 /* Color
 ===================================================*/
 
-/* These style rules will over-ride the core EBI styles and apply 
+/* These style rules will over-ride the core EBI styles and apply
     your custom colour palette in a consistent manner */
 
 /* Links */
@@ -88,34 +88,12 @@ h6 a:visited {
   border-bottom-color: @P1;
 }
 
+/* Define the basic colour your rnacentral masthead */
+.rnacentral-masthead { background-color: @P5; }
 
-/* Table heading cells */
-th { background-color: @B1; }
-
-
-/* Form submission button */
-input.submit {
-  /* colours */ 
-  color: #fff;
-    text-shadow: @P3 1px 1px;
-    border-top: 1px solid @P5;    
-    border-left: 1px solid @P5;
-    border-right: 1px solid @P3;
-    border-bottom: 1px solid @P3;
-  
-  background-image: -moz-linear-gradient(top, @P1, @P2); 
-    
-    background-image: -webkit-linear-gradient(@P1, @P2); 
-    background-image: linear-gradient(top, @P1, @P2);
-    
-}
-
-/* Define the basic colour your local masthead */
-div#local-masthead { background-color: @P5; }
-
-/* Colour the faux-underline for local menu items */
-div#local-masthead ul li a:hover,
-div#local-masthead ul li a:focus,
-div#local-masthead ul li a:active {
+/* Colour the faux-underline for rnacentral menu items */
+.rnacentral-masthead ul li a:hover,
+.rnacentral-masthead ul li a:focus,
+.rnacentral-masthead ul li a:active {
 border-bottom: 3px solid @P1;
 }

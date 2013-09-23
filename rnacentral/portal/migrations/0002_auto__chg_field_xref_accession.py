@@ -9,13 +9,16 @@ class Migration(SchemaMigration):
 
     def forwards(self, orm):
 
+        db.rename_table('xref', 'rnc_xref')
         # Renaming column for 'Xref.accession' to match new field type.
-        db.rename_column('xref', 'ac', 'accession')
+        db.rename_column('rnc_xref', 'ac', 'accession')
         # Changing field 'Xref.accession'
-        db.alter_column('xref', 'accession', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['portal.Ac'], null=True, db_column='accession'))
+        db.alter_column('rnc_xref', 'accession', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['portal.Ac'], null=True, db_column='accession'))
+
 
     def backwards(self, orm):
 
+        db.rename_table('rnc_xref', 'xref')
         # Renaming column for 'Xref.accession' to match new field type.
         db.rename_column('xref', 'accession', 'ac')
         # Changing field 'Xref.accession'

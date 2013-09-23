@@ -8,16 +8,16 @@ class Rna(models.Model):
     len = models.IntegerField()
     seq_short = models.CharField(max_length=4000)
     seq_long = models.TextField()
-    md5 = models.CharField(max_length=32)
+    md5 = models.CharField(max_length=32, unique=True)
 
     class Meta:
         db_table = 'rnc_rna'
 
     def get_sequence(self):
     	if self.seq_short:
-    		return self.seq_short
+    		return self.seq_short.replace('T', 'U')
     	else:
-    		return self.seq_long
+    		return self.seq_long.replace('T', 'U')
 
 
 class Database(models.Model):
@@ -97,3 +97,20 @@ class CompositeId(models.Model):
 
     class Meta:
         db_table = 'rnc_composite_ids'
+
+
+class References(models.Model):
+    id = models.AutoField(primary_key=True)
+    md5 = models.ForeignKey(Rna, to_field='md5', db_column='md5', related_name='refs')
+    authors_md5 = models.CharField(max_length=32)
+    authors = models.TextField()
+    location = models.CharField(max_length=4000)
+    title = models.CharField(max_length=4000)
+    pubmed = models.CharField(max_length=10)
+    doi = models.CharField(max_length=80)
+    publisher = models.CharField(max_length=128)
+    editors = models.CharField(max_length=250)
+
+    class Meta:
+        db_table = 'rnc_references'
+

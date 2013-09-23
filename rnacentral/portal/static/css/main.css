@@ -25,3 +25,31 @@ a, a:hover, a:visited, a:link {
 th {
   color: black;
 }
+/* Define the basic colour your rnacentral masthead */
+.rnacentral-masthead { background-color: #B9CED1; }
+
+/* Colour the faux-underline for rnacentral menu items */
+.rnacentral-masthead2 {
+	background-color: rgba(17, 17, 17, 0.4);
+}
+/*.rnacentral-masthead2 ul li a:hover,
+.rnacentral-masthead2 ul li a:focus,
+.rnacentral-masthead2 ul li a:active {
+border-bottom: 3px solid #819FA3;
+}*/
+.navbar-default .navbar-nav>li>a, .navbar-default .navbar-nav>li>a>b {
+	color: white;
+}
+.navbar-default .navbar-nav>.dropdown>a .caret {
+border-top-color: white;
+border-bottom-color: white;
+}
+.navbar-default {
+	background-color: transparent;
+}
+.navbar {
+	margin-bottom: 0px;
+}
+#local-footer {
+	display: none;
+}
