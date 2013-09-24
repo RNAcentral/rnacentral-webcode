@@ -1,4 +1,5 @@
 {% extends "portal/base.html" %}
+{% load staticfiles %}
 
 {% block title %}
 {{ rna.upi }}
@@ -38,6 +39,9 @@
                       <b class="caret"></b>
                   </a>
           <ul class="dropdown-menu">
+            <li>
+              <a href="#">json</a>
+            </li>
             <li>
               <a href="#">fasta</a>
             </li>
@@ -86,39 +90,43 @@
               Database cross-references
             </h3>
 
-            <table class="table table-striped table-condensed" id="results">
-              <thead>
-                <tr>
-                  <th>Database</th>
-                  <th>Accession</th>
-                  <th>Version</th>
-                  <th>Organism</th>
-                  <th>First seen</th>
-                  <th>Last seen</th>
-                  <th>Active</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {% for xref in rna.xrefs.all %}
+            <div class="table-responsive">
+              <table class="table table-striped table-condensed" id="results">
+                <thead>
                   <tr>
-                    <td>{{ xref.db.display_name }}</td>
-                    <td>{{ xref.accession.id }}</td>
-                    <td>{{ xref.version }}</td>
-                    <td><a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank">{{ xref.taxid }}</a></td>
-                    <td>{{ xref.created.release_date }}</td>
-                    <td>{{ xref.last.release_date }}</td>
-                    <td>
-                      {% if xref.deleted == 'N' %}
-                          Yes
-                      {% else %}
-                          No
-                      {% endif %}
-                    </td>
+                    <th>Database</th>
+                    <th>Identifier</th>
+                    <th>Version</th>
+                    <th>Organism</th>
+                    <th>First seen</th>
+                    <th>Last seen</th>
+                    <th>Active</th>
                   </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+                </thead>
+
+                <tbody>
+                  {% for xref in rna.xrefs.all %}
+                    {% ifchanged xref.get_accession.id %}
+                    <tr>
+                      <td>{{ xref.db.display_name }}</td>
+                      <td>{{ xref.get_accession.id }} {% if xref.get_accession.optional_id %} ({{ xref.get_accession.optional_id }}) {% endif %} </td>
+                      <td>{{ xref.version }}</td>
+                      <td><a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank">{{ xref.get_accession.species }}</a></td>
+                      <td>{{ xref.created.release_date }}</td>
+                      <td>{{ xref.last.release_date }}</td>
+                      <td>
+                        {% if xref.deleted == 'N' %}
+                            Yes
+                        {% else %}
+                            No
+                        {% endif %}
+                      </td>
+                    </tr>
+                    {% endifchanged %}
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div> <!-- .table-responsive -->
           </div>
 
           <div class="well">
@@ -129,7 +137,13 @@
               {% for ref in rna.refs.all %}
                 <li>
                   <blockquote>
-                    <strong>{{ ref.title|default:"No title available" }}</strong>
+                    <strong>
+                      {% if ref.location|slice:":9" == 'Submitted' %}
+                        ISNDC submission
+                      {% else %}
+                        {{ ref.title|default:"No title available" }}
+                      {% endif %}
+                    </strong>
                     <br>
                     {{ ref.authors }}
                     <small>{{ ref.location }}</small>
@@ -143,13 +157,34 @@
             <h3>
               Sequence
               <small>
-                <i><a href="#">Copy to clipboard</a></i>
+                <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
+                        width="110"
+                        height="14"
+                        id="clippy" >
+                <param name="movie" value="{% static "flash/clippy.swf" %}"/>
+                <param name="allowScriptAccess" value="always" />
+                <param name="quality" value="high" />
+                <param name="scale" value="noscale" />
+                <param NAME="FlashVars" value="text={{ rna.get_sequence }}">
+                <param name="bgcolor" value="#F5F5F5">
+                <embed src="{% static "flash/clippy.swf" %}"
+                       width="110"
+                       height="14"
+                       name="clippy"
+                       quality="high"
+                       allowScriptAccess="always"
+                       type="application/x-shockwave-flash"
+                       pluginspage="http://www.macromedia.com/go/getflashplayer"
+                       FlashVars="text={{ rna.get_sequence }}"
+                       bgcolor="#F5F5F5"
+                />
+                </object>
               </small>
             </h3>
             <p>
-              {{ rna.len }} nucleotides (27 As, 15 Cs, 23 Gs, 21 Us), no unknown characters.
+              {{ rna.len }} nucleotides ({{ counts.A }} As, {{ counts.C }} Cs, {{ counts.G }} Gs, {{ counts.U }} Us), {{ counts.N|default:"no " }} unknown characters.
             </p>
-            <pre class="pre-scrollable">&gt;{{ rna.upi }}
+            <pre class="pre-scrollable">
 {{ rna.get_sequence }}</pre>
           </div>
 

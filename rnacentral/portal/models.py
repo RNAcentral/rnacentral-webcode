@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Rna(models.Model):
     upi = models.CharField(primary_key=True, max_length=13)
     timestamp = models.DateField()
@@ -15,9 +16,23 @@ class Rna(models.Model):
 
     def get_sequence(self):
     	if self.seq_short:
-    		return self.seq_short.replace('T', 'U')
+    		return self.seq_short.replace('T', 'U').upper()
     	else:
-    		return self.seq_long.replace('T', 'U')
+    		return self.seq_long.replace('T', 'U').upper()
+
+    def count_symbols(self):
+        seq = self.get_sequence()
+        count_A = seq.count('A')
+        count_C = seq.count('C')
+        count_G = seq.count('G')
+        count_U = seq.count('U')
+        return {
+            'A': count_A,
+            'U': count_U,
+            'C': count_C,
+            'G': count_G,
+            'N': len(seq) - (count_A + count_C + count_G + count_U)
+        }
 
 
 class Database(models.Model):
@@ -80,17 +95,30 @@ class Xref(models.Model):
     deleted = models.CharField(max_length=1)
     timestamp = models.DateTimeField()
     userstamp = models.CharField(max_length=100)
-    accession = models.ForeignKey(Ac, db_column='accession', blank=True, null=True)
+    accession = models.CharField(max_length=100)
     version = models.IntegerField()
     taxid = models.IntegerField()
 
     class Meta:
         db_table = 'rnc_xref'
 
+    def get_accession(self):
+        try:
+            ac = Ac.objects.get(id=self.accession)
+        except:
+            try:
+                comp_id = CompositeId.objects.get(composite_id=self.accession)
+                ac = comp_id.ac
+                ac.id = comp_id.external_id
+                ac.optional_id = comp_id.optional_id
+            except:
+                return None
+        return ac
+
 
 class CompositeId(models.Model):
     composite_id = models.CharField(max_length=100, primary_key=True)
-    ac = models.ForeignKey(Ac, to_field='id')
+    ac = models.ForeignKey(Ac, to_field='id', related_name='composite')
     database = models.CharField(max_length=20)
     optional_id = models.CharField(max_length=100)
     external_id = models.CharField(max_length=100)

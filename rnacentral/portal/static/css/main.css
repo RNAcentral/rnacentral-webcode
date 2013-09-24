@@ -30,7 +30,7 @@ th {
 
 /* Colour the faux-underline for rnacentral menu items */
 .rnacentral-masthead2 {
-	background-color: rgba(17, 17, 17, 0.4);
+	background-color: #8F9B9D;
 }
 /*.rnacentral-masthead2 ul li a:hover,
 .rnacentral-masthead2 ul li a:focus,
@@ -41,8 +41,8 @@ border-bottom: 3px solid #819FA3;
 	color: white;
 }
 .navbar-default .navbar-nav>.dropdown>a .caret {
-border-top-color: white;
-border-bottom-color: white;
+	border-top-color: white;
+	border-bottom-color: white;
 }
 .navbar-default {
 	background-color: transparent;
@@ -67,4 +67,7 @@ div#local-search form fieldset, form#local-search fieldset {
 
 form input {
 	margin: 0px;
+}
+pre {
+	font-family: monospace;
 }
