@@ -40,7 +40,7 @@
                   </a>
           <ul class="dropdown-menu">
             <li>
-              <a href="#">json</a>
+              <a download="{{ rna.upi }}.json" href="/api/v1/rna/{{ rna.upi }}?format=json">json</a>
             </li>
             <li>
               <a href="#">fasta</a>
@@ -78,10 +78,7 @@
 
             </p>
             <p>
-              Found in {{ rna.num_db }} database{{ rna.num_db|pluralize }}: A, B, and C
-            </p>
-            <p>
-              Found in {{ rna.num_org }} organism{{ rna.num_org|pluralize }}, including A, B, and C.
+              Found in {{ rna.num_db }} database{{ rna.num_db|pluralize }}. Present in {{ rna.num_org }} organism{{ rna.num_org|pluralize }}.
             </p>
           </div>
 

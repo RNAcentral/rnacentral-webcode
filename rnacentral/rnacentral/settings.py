@@ -117,21 +117,30 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = (
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.comments',
+
     # 'south',
+    'haystack',
     'portal',
     'rest_framework',
     'debug_toolbar',
-    # Uncomment the next line to enable the admin:
-    # 'django.contrib.admin',
+
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
+    },
+}
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
 

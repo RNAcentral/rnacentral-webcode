@@ -1,4 +1,4 @@
-from portal.models import Rna
+from portal.models import Rna, Database
 from rest_framework import viewsets
 from portal.serializers import RnaSerializer, XrefSerializer
 
@@ -16,7 +16,11 @@ class RnaViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 def index(request):
-    return render(request, 'portal/homepage.html')
+    data = dict()
+    data['seq_count'] = Rna.objects.count()
+    data['db_count']  = Database.objects.count()
+
+    return render(request, 'portal/homepage.html', {'data': data})
 
 
 def rna_view(request, upi):
