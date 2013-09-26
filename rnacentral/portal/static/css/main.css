@@ -1,5 +1,5 @@
 body {
-  background: #fff url({% static "img/pale_grey_slight_texture.jpg" %}) top left repeat;
+  background: #fff url("../img/pale_grey_slight_texture.jpg") top left repeat;
 }
 .container {
   background: #fff;
@@ -26,7 +26,9 @@ th {
   color: black;
 }
 /* Define the basic colour your rnacentral masthead */
-.rnacentral-masthead { background-color: #B9CED1; }
+.rnacentral-masthead {
+	background-color: #B9CED1;
+}
 
 /* Colour the faux-underline for rnacentral menu items */
 .rnacentral-masthead2 {

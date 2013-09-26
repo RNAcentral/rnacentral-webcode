@@ -74,14 +74,3 @@
 
 
 {% endblock content %}
-
-
-{% block extra_js %}
-  {{ block.super }}
-  <script>
-  $('form').on('submit', function(){
-      window.location.href = '/search?q=' + $('#search').val();
-      return false;
-  });
-  </script>
-{% endblock extra_js %}
