@@ -71,7 +71,7 @@ class Ac(models.Model):
     seq_version = models.IntegerField()
     feature_start = models.IntegerField()
     feature_end = models.IntegerField()
-    feature_name = models.CharField(max_length=40, db_index=True)
+    feature_name = models.CharField(max_length=20, db_index=True)
     ordinal = models.CharField(max_length=40)
     division = models.CharField(max_length=3, db_index=True)
     keywords = models.CharField(max_length=100)

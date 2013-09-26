@@ -90,3 +90,7 @@ div.alert {
 .navbar-right {
 	padding-right: 0px;
 }
+.max-height-500 {
+	max-height: 500px;
+	overflow: auto;
+}

@@ -87,13 +87,14 @@
               Database cross-references
             </h3>
 
-            <div class="table-responsive">
+            <div class="table-responsive max-height-500">
               <table class="table table-striped table-condensed" id="results">
                 <thead>
                   <tr>
                     <th>Database</th>
                     <th>Identifier</th>
-                    <th>Version</th>
+                    <th>ncRNA type</th>
+                    <th>Division</th>
                     <th>Organism</th>
                     <th>First seen</th>
                     <th>Last seen</th>
@@ -106,7 +107,8 @@
                     <tr>
                       <td>{{ xref.db.display_name }}</td>
                       <td>{{ xref.accession.id }}</td>
-                      <td>{{ xref.version }}</td>
+                      <td>{{ xref.accession.feature_name }} </td>
+                      <td>{{ xref.accession.division }} </td>
                       <td><a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank"><em>{{ xref.accession.species }}</em></a></td>
                       <td>{{ xref.created.release_date }}</td>
                       <td>{{ xref.last.release_date }}</td>
@@ -128,24 +130,26 @@
             <h3>
               References
             </h3>
-            <ul>
-              {% for ref in rna.refs.all %}
-                <li>
-                  <blockquote>
-                    <strong>
-                      {% if ref.location|slice:":9" == 'Submitted' %}
-                        ISNDC submission
-                      {% else %}
-                        {{ ref.title|default:"No title available" }}
-                      {% endif %}
-                    </strong>
-                    <br>
-                    {{ ref.authors }}
-                    <small>{{ ref.location }}</small>
-                  </blockquote>
-                </li>
-              {% endfor %}
-            </ul>
+            <div class="max-height-500">
+              <ul>
+                {% for ref in rna.refs.all %}
+                  <li>
+                    <blockquote>
+                      <strong>
+                        {% if ref.location|slice:":9" == 'Submitted' %}
+                          ISNDC submission
+                        {% else %}
+                          {{ ref.title|default:"No title available" }}
+                        {% endif %}
+                      </strong>
+                      <br>
+                      {{ ref.authors }}
+                      <small>{{ ref.location }}</small>
+                    </blockquote>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
           </div>
 
           <div class="well">
