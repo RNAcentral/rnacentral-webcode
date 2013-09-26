@@ -2,13 +2,13 @@
 {% load staticfiles %}
 
 {% block title %}
-{{ rna.upi }}
+{{ context.upi }}
 {% endblock %}
 
 {% block content %}
 
 <div class="page-header">
-  <h2><a href="">{{ rna.upi }}</a></h2>
+  <h2><a href="">{{ context.upi }}</a></h2>
 </div>
 
 <div class="row">
@@ -108,7 +108,7 @@
                       <td>{{ xref.db.display_name }}</td>
                       <td>{{ xref.get_accession.id }} {% if xref.get_accession.optional_id %} ({{ xref.get_accession.optional_id }}) {% endif %} </td>
                       <td>{{ xref.version }}</td>
-                      <td><a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank">{{ xref.get_accession.species }}</a></td>
+                      <td><a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank"><em>{{ xref.get_accession.species }}</em></a></td>
                       <td>{{ xref.created.release_date }}</td>
                       <td>{{ xref.last.release_date }}</td>
                       <td>

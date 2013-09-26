@@ -1,4 +1,4 @@
-from portal.models import Rna, Database
+from portal.models import Rna, Database, Release
 from rest_framework import viewsets
 from portal.serializers import RnaSerializer, XrefSerializer
 
@@ -16,20 +16,26 @@ class RnaViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 def index(request):
-    data = dict()
-    data['seq_count'] = Rna.objects.count()
-    data['db_count']  = Database.objects.count()
-
-    return render(request, 'portal/homepage.html', {'data': data})
+    context = dict()
+    context['seq_count'] = Rna.objects.count()
+    context['db_count']  = Database.objects.count()
+    context['last_full_update'] =  Release.objects.filter(release_type='I').order_by('-release_date').all()[0]
+    context['last_daily_update'] = Release.objects.filter(release_type='F').order_by('-release_date').all()[0]
+    return render(request, 'portal/homepage.html', {'context': context})
 
 
 def rna_view(request, upi):
     try:
-        rna = Rna.objects.filter(upi=upi).order_by('xrefs__accession').annotate(num_org=Count('xrefs__taxid', distinct=True),
+        context = dict()
+        rna = Rna.objects.filter(upi=upi).order_by('xrefs__accession'). \
+                                          annotate(num_org=Count('xrefs__taxid', distinct=True),
                                                    num_db=Count('xrefs__db__id', distinct=True),
                                                    first_seen=Min('xrefs__created__release_date'),
                                                    last_seen=Max('xrefs__last__release_date'))
+        context['upi'] = rna[0].upi.replace('UPI', 'RSI')
     except Rna.DoesNotExist:
         raise Http404
     return render(request, 'portal/rna_view.html', {'rna':    rna[0],
-                                                    'counts': rna[0].count_symbols()})
+                                                    'counts': rna[0].count_symbols(),
+                                                    'context': context
+                                                    })

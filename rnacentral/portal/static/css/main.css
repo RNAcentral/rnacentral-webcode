@@ -71,3 +71,20 @@ form input {
 pre {
 	font-family: monospace;
 }
+.glyphicon {
+	margin-right: 5px;
+}
+div.alert {
+	border: inherit;
+}
+.nav>li>a {
+	padding-right: 5px;
+	padding-left: 5px;
+	border-right: 1px dotted white;
+}
+.rnacentral-masthead2 {
+	padding: 0px;
+}
+.navbar-right {
+	padding-right: 0px;
+}
