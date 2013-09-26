@@ -1,4 +1,4 @@
-from portal.models import Rna, Database, Release
+from portal.models import Rna, Database, Release, Xref
 from rest_framework import viewsets
 from portal.serializers import RnaSerializer, XrefSerializer
 
@@ -26,16 +26,18 @@ def index(request):
 
 def rna_view(request, upi):
     try:
+        rna = Rna.objects.get(upi=upi)
+
         context = dict()
-        rna = Rna.objects.filter(upi=upi).order_by('xrefs__accession'). \
-                                          annotate(num_org=Count('xrefs__taxid', distinct=True),
-                                                   num_db=Count('xrefs__db__id', distinct=True),
-                                                   first_seen=Min('xrefs__created__release_date'),
-                                                   last_seen=Max('xrefs__last__release_date'))
-        context['upi'] = rna[0].upi.replace('UPI', 'RSI')
+        context['xrefs'] = rna.xrefs.select_related().all()
+        context['counts'] = rna.count_symbols()
+        context['num_org'] = Xref.objects.filter(upi=upi).values('taxid').distinct().count()
+        context['num_db'] = Xref.objects.filter(upi=upi).values('db_id').distinct().count()
+        context.update(Xref.objects.filter(upi=upi).\
+                                    aggregate(first_seen=Min('created__release_date'),
+                                              last_seen=Max('last__release_date')))
+
+
     except Rna.DoesNotExist:
         raise Http404
-    return render(request, 'portal/rna_view.html', {'rna':    rna[0],
-                                                    'counts': rna[0].count_symbols(),
-                                                    'context': context
-                                                    })
+    return render(request, 'portal/rna_view.html', {'rna': rna, 'context': context})

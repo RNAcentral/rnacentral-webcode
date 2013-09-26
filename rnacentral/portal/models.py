@@ -71,9 +71,9 @@ class Ac(models.Model):
     seq_version = models.IntegerField()
     feature_start = models.IntegerField()
     feature_end = models.IntegerField()
-    feature_name = models.CharField(max_length=40)
+    feature_name = models.CharField(max_length=40, db_index=True)
     ordinal = models.CharField(max_length=40)
-    division = models.CharField(max_length=3)
+    division = models.CharField(max_length=3, db_index=True)
     keywords = models.CharField(max_length=100)
     description = models.CharField(max_length=200)
     species = models.CharField(max_length=100)
@@ -95,12 +95,13 @@ class Xref(models.Model):
     deleted = models.CharField(max_length=1)
     timestamp = models.DateTimeField()
     userstamp = models.CharField(max_length=100)
-    accession = models.CharField(max_length=100)
+    accession = models.ForeignKey(Ac, db_column='accession', to_field='id')
     version = models.IntegerField()
     taxid = models.IntegerField()
 
     class Meta:
         db_table = 'rnc_xref'
+        ordering = ['accession__species']
 
     def get_accession(self):
         try:

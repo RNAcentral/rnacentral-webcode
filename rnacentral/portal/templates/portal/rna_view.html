@@ -2,13 +2,13 @@
 {% load staticfiles %}
 
 {% block title %}
-{{ context.upi }}
+{{ rna.upi }}
 {% endblock %}
 
 {% block content %}
 
 <div class="page-header">
-  <h2><a href="">{{ context.upi }}</a></h2>
+  <h2><a href="">{{ rna.upi }}</a></h2>
 </div>
 
 <div class="row">
@@ -70,7 +70,7 @@
             </p>
 
             <p>
-                First seen {{ rna.first_seen }}, last seen {{ rna.last_seen }}.
+                First seen {{ context.first_seen }}, last seen {{ context.last_seen }}.
                 <a href="#" data-toggle="tooltip" class="help" title="" data-original-title="Help text here">
                   <span class="glyphicon glyphicon-info-sign"></span>
                 </a>
@@ -78,7 +78,7 @@
 
             </p>
             <p>
-              Found in {{ rna.num_db }} database{{ rna.num_db|pluralize }}. Present in {{ rna.num_org }} organism{{ rna.num_org|pluralize }}.
+              Found in {{ context.num_db }} database{{ context.num_db|pluralize }}. Present in {{ context.num_org }} organism{{ context.num_org|pluralize }}.
             </p>
           </div>
 
@@ -102,13 +102,12 @@
                 </thead>
 
                 <tbody>
-                  {% for xref in rna.xrefs.all %}
-                    {% ifchanged xref.get_accession.id %}
+                  {% for xref in context.xrefs %}
                     <tr>
                       <td>{{ xref.db.display_name }}</td>
-                      <td>{{ xref.get_accession.id }} {% if xref.get_accession.optional_id %} ({{ xref.get_accession.optional_id }}) {% endif %} </td>
+                      <td>{{ xref.accession.id }}</td>
                       <td>{{ xref.version }}</td>
-                      <td><a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank"><em>{{ xref.get_accession.species }}</em></a></td>
+                      <td><a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank"><em>{{ xref.accession.species }}</em></a></td>
                       <td>{{ xref.created.release_date }}</td>
                       <td>{{ xref.last.release_date }}</td>
                       <td>
@@ -119,7 +118,6 @@
                         {% endif %}
                       </td>
                     </tr>
-                    {% endifchanged %}
                   {% endfor %}
                 </tbody>
               </table>
@@ -179,7 +177,8 @@
               </small>
             </h3>
             <p>
-              {{ rna.len }} nucleotides ({{ counts.A }} As, {{ counts.C }} Cs, {{ counts.G }} Gs, {{ counts.U }} Us), {{ counts.N|default:"no " }} unknown characters.
+              {{ rna.len }} nucleotides ({{ context.counts.A }} As, {{ context.counts.C }} Cs,
+              {{ context.counts.G }} Gs, {{ context.counts.U }} Us), {{ context.counts.N|default:"no " }} unknown characters.
             </p>
             <pre class="pre-scrollable">
 {{ rna.get_sequence }}</pre>
