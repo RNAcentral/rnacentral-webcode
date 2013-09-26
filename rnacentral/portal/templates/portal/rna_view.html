@@ -66,19 +66,9 @@
               Overview
             </h3>
             <p>
-              {{ rna.len }} nucleotides
-            </p>
-
-            <p>
-                First seen {{ context.first_seen }}, last seen {{ context.last_seen }}.
-                <a href="#" data-toggle="tooltip" class="help" title="" data-original-title="Help text here">
-                  <span class="glyphicon glyphicon-info-sign"></span>
-                </a>
-            </p>
-
-            </p>
-            <p>
-              Found in {{ context.num_db }} database{{ context.num_db|pluralize }}. Present in {{ context.num_org }} organism{{ context.num_org|pluralize }}.
+              {{ rna.len }} nucleotides |
+              {{ context.num_db }} database{{ context.num_db|pluralize }} | {{ context.num_org }} organism{{ context.num_org|pluralize }} |
+              first seen {{ context.first_seen }} | last seen {{ context.last_seen }}
             </p>
           </div>
 
