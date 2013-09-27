@@ -99,5 +99,5 @@ local_settings.py
 # project specific #
 ####################
 ._*
-
+CACHE
 
