@@ -12,6 +12,8 @@ TEMPLATE_DIRS = (
 	'',
 )
 
+STATIC_ROOT = ''
+
 EMAIL_HOST = ''
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
@@ -24,3 +26,10 @@ SECRET_KEY = ''
 ADMINS = (
     ('', ''),
 )
+
+COMPRESS_ENABLED =
+DEBUG =
+ALLOWED_HOSTS = []
+
+# django-debug-toolbar
+INTERNAL_IPS = ('127.0.0.1',)

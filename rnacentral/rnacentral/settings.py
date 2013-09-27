@@ -188,9 +188,6 @@ REST_FRAMEWORK = {
     ]
 }
 
-# django-debug-toolbar
-INTERNAL_IPS = ('127.0.0.1',)
-
 DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.version.VersionDebugPanel',
     'debug_toolbar.panels.timer.TimerDebugPanel',
