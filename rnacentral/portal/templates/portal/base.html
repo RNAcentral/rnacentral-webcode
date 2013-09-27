@@ -54,7 +54,9 @@
 
         <div class="container">
 
-          {% block content %}{% endblock %}
+          <div class="container-main">
+            {% block content %}{% endblock %}
+          </div>
 
           <footer>
             <div id="local-footer">
@@ -63,7 +65,7 @@
             {% include "portal/footer.html" %}
           </footer>
 
-        </div> <!-- container-fluid -->
+        </div> <!-- container -->
 
         {% block extra_js %}
             <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>

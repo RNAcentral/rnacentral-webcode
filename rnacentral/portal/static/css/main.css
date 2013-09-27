@@ -94,3 +94,6 @@ div.alert {
 	max-height: 500px;
 	overflow: auto;
 }
+.container-main {
+	min-height: 500px;
+}

@@ -5,6 +5,9 @@ from portal.serializers import RnaSerializer, XrefSerializer
 from django.http import HttpResponse, Http404
 from django.shortcuts import render
 from django.db.models import Count, Min, Max
+from django.views.generic.base import TemplateView
+from django.template import TemplateDoesNotExist
+
 
 class RnaViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -41,3 +44,13 @@ def rna_view(request, upi):
     except Rna.DoesNotExist:
         raise Http404
     return render(request, 'portal/rna_view.html', {'rna': rna, 'context': context})
+
+
+class StaticView(TemplateView):
+    def get(self, request, page, *args, **kwargs):
+        self.template_name = 'portal/flat/' + page + '.html'
+        response = super(StaticView, self).get(request, *args, **kwargs)
+        try:
+            return response.render()
+        except TemplateDoesNotExist:
+            raise Http404()

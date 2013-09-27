@@ -16,10 +16,13 @@ urlpatterns = patterns('',
     # haystack search
     url(r'^search/', include('haystack.urls')),
 
+    # admin
     url(r'^admin/', include(admin.site.urls)),
 
-	# Wire up our API using automatic URL routing.
-	# Additionally, we include login URLs for the browseable API.
+    # flat pages
+    url(r'^(?P<page>about|help)/$', views.StaticView.as_view()),
+
+	# API
     url(r'^api/v1/', include(router.urls)),
     url(r'^api-auth/v1/', include('rest_framework.urls', namespace='rest_framework'))
 )
