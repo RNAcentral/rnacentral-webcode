@@ -10,18 +10,15 @@ router.register(r'rna', views.RnaViewSet)
 
 urlpatterns = patterns('',
     url(r'^$', 'portal.views.index'),
-
     url(r'^rna/(?P<upi>\w+)$', 'portal.views.rna_view'),
-
     # haystack search
     url(r'^search/', include('haystack.urls')),
-
     # admin
     url(r'^admin/', include(admin.site.urls)),
-
     # flat pages
-    url(r'^(?P<page>about|help)/$', views.StaticView.as_view()),
-
+    url(r'^(?P<page>about|help|thanks)/$', views.StaticView.as_view()),
+	# contact us
+    url(r'^contact/$', views.ContactView.as_view()),
 	# API
     url(r'^api/v1/', include(router.urls)),
     url(r'^api-auth/v1/', include('rest_framework.urls', namespace='rest_framework'))
