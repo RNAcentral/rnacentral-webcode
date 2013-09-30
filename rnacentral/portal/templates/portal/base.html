@@ -80,9 +80,12 @@
               <script src="{% static "js/main.js" %}"></script>
             {% endcompress %}
             <script>
-              $('form.global-search').on('submit', function(){
-                  window.location.href = '/search?q=' + $('#search').val();
-                  return false;
+              // $('form.global-search').on('submit', function(){
+              //     window.location.href = '/search?q=' + $('#search').val();
+              //     return false;
+              // });
+              $("form.global-search").submit(function (e) {
+                    e.preventDefault();
               });
             </script>
         {% endblock extra_js %}
