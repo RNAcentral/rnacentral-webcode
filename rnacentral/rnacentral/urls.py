@@ -1,3 +1,4 @@
+from django.views.generic import TemplateView
 from django.conf.urls import patterns, url, include
 from django.contrib import admin
 from rest_framework import routers
@@ -21,5 +22,7 @@ urlpatterns = patterns('',
     url(r'^contact/$', views.ContactView.as_view()),
 	# API
     url(r'^api/v1/', include(router.urls)),
-    url(r'^api-auth/v1/', include('rest_framework.urls', namespace='rest_framework'))
+    url(r'^api-auth/v1/', include('rest_framework.urls', namespace='rest_framework')),
+    # robots.txt
+	url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
 )
