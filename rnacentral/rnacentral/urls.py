@@ -18,11 +18,12 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     # flat pages
     url(r'^(?P<page>about|help|thanks)/$', views.StaticView.as_view()),
-	# contact us
+    # contact us
     url(r'^contact/$', views.ContactView.as_view()),
-	# API
+    # API
     url(r'^api/v1/', include(router.urls)),
     url(r'^api-auth/v1/', include('rest_framework.urls', namespace='rest_framework')),
     # robots.txt
-	url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
+    url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
+    url(r'^search2/', 'portal.views.search'),
 )

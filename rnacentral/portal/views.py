@@ -1,14 +1,15 @@
 from portal.models import Rna, Database, Release, Xref
 from rest_framework import viewsets
-from portal.serializers import RnaSerializer, XrefSerializer
+from portal.serializers import RnaSerializer
 from portal.forms import ContactForm
 
-from django.http import HttpResponse, Http404, HttpResponseRedirect
-from django.shortcuts import render
-from django.db.models import Count, Min, Max
+from django.http import Http404, HttpResponseRedirect
+from django.shortcuts import render, render_to_response
+from django.db.models import Min, Max
 from django.views.generic.base import TemplateView
 from django.template import TemplateDoesNotExist
 from django.views.generic.edit import FormView
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 
 class RnaViewSet(viewsets.ReadOnlyModelViewSet):
@@ -23,8 +24,8 @@ class RnaViewSet(viewsets.ReadOnlyModelViewSet):
 def index(request):
     context = dict()
     context['seq_count'] = Rna.objects.count()
-    context['db_count']  = Database.objects.count()
-    context['last_full_update'] =  Release.objects.filter(release_type='I').order_by('-release_date').all()[0]
+    context['db_count'] = Database.objects.count()
+    context['last_full_update'] = Release.objects.filter(release_type='I').order_by('-release_date').all()[0]
     context['last_daily_update'] = Release.objects.filter(release_type='F').order_by('-release_date').all()[0]
     return render(request, 'portal/homepage.html', {'context': context})
 
@@ -38,14 +39,33 @@ def rna_view(request, upi):
         context['counts'] = rna.count_symbols()
         context['num_org'] = Xref.objects.filter(upi=upi).values('taxid').distinct().count()
         context['num_db'] = Xref.objects.filter(upi=upi).values('db_id').distinct().count()
-        context.update(Xref.objects.filter(upi=upi).\
+        context.update(Xref.objects.filter(upi=upi).
                                     aggregate(first_seen=Min('created__release_date'),
                                               last_seen=Max('last__release_date')))
-
-
     except Rna.DoesNotExist:
         raise Http404
     return render(request, 'portal/rna_view.html', {'rna': rna, 'context': context})
+
+
+def search(request):
+    if request.REQUEST["rna_type"]:  # todo allowed
+        r = Rna.objects.filter(xrefs__accession__feature_name='tRNA').all()
+        paginator = Paginator(r, 10)
+
+        page = request.GET.get('page')
+        try:
+            rnas = paginator.page(page)
+        except PageNotAnInteger:
+            # If page is not an integer, deliver first page.
+            rnas = paginator.page(1)
+        except EmptyPage:
+            # If page is out of range (e.g. 9999), deliver last page of results.
+            rnas = paginator.page(paginator.num_pages)
+
+        return render_to_response('portal/search_results.html', {"rnas": rnas})
+
+    else:
+        raise Http404()
 
 
 class StaticView(TemplateView):

@@ -15,10 +15,10 @@ class Rna(models.Model):
         db_table = 'rnc_rna'
 
     def get_sequence(self):
-    	if self.seq_short:
-    		return self.seq_short.replace('T', 'U').upper()
-    	else:
-    		return self.seq_long.replace('T', 'U').upper()
+        if self.seq_short:
+            return self.seq_short.replace('T', 'U').upper()
+        else:
+            return self.seq_long.replace('T', 'U').upper()
 
     def count_symbols(self):
         seq = self.get_sequence()
@@ -95,7 +95,7 @@ class Xref(models.Model):
     deleted = models.CharField(max_length=1)
     timestamp = models.DateTimeField()
     userstamp = models.CharField(max_length=100)
-    accession = models.ForeignKey(Ac, db_column='accession', to_field='id')
+    accession = models.ForeignKey(Ac, db_column='accession', to_field='id', related_name='xrefs')
     version = models.IntegerField()
     taxid = models.IntegerField()
 
@@ -142,4 +142,3 @@ class Reference(models.Model):
 
     class Meta:
         db_table = 'rnc_references'
-

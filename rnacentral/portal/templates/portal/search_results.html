@@ -1,0 +1,31 @@
+{% extends "portal/base.html" %}
+
+{% block title %}
+Search results
+{% endblock %}
+
+{% block content %}
+
+
+{% for rna in rnas %}
+    {{ rna.upi|upper }}<br />
+    ...
+{% endfor %}
+
+<div class="pagination">
+    <span class="step-links">
+        {% if rnas.has_previous %}
+            <a href="?page={{ rnas.previous_page_number }}">previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ rnas.number }} of {{ rnas.paginator.num_pages }}.
+        </span>
+
+        {% if rnas.has_next %}
+            <a href="?page={{ rnas.next_page_number }}">next</a>
+        {% endif %}
+    </span>
+</div>
+
+{% endblock content %}
