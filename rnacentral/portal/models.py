@@ -1,18 +1,21 @@
 from django.db import models
 
+# to make text fields searchable, add character set functional indexes in Oracle
+# create index index_name on table_name(SYS_OP_C2C(column_name));
+
 
 class Rna(models.Model):
-    upi = models.CharField(primary_key=True, max_length=13)
+    upi = models.CharField(max_length=13, unique=True, db_index=True)
     timestamp = models.DateField()
     userstamp = models.CharField(max_length=30)
     crc64 = models.CharField(max_length=16)
     len = models.IntegerField()
     seq_short = models.CharField(max_length=4000)
     seq_long = models.TextField()
-    md5 = models.CharField(max_length=32, unique=True)
+    md5 = models.CharField(max_length=32, unique=True, db_index=True)
 
     class Meta:
-        db_table = 'rnc_rna'
+        db_table = 'rna'
 
     def get_sequence(self):
         if self.seq_short:
@@ -36,7 +39,6 @@ class Rna(models.Model):
 
 
 class Database(models.Model):
-    id = models.IntegerField(primary_key=True)
     timestamp = models.DateField()
     userstamp = models.CharField(max_length=30)
     descr = models.TextField()
@@ -51,8 +53,7 @@ class Database(models.Model):
 
 
 class Release(models.Model):
-    id = models.IntegerField(primary_key=True)
-    db = models.ForeignKey(Database, db_column='db_id', related_name='db')
+    db = models.ForeignKey(Database, db_column='dbid', related_name='db')
     release_date = models.DateField()
     release_type = models.CharField(max_length=1)
     status = models.CharField(max_length=1)
@@ -65,80 +66,60 @@ class Release(models.Model):
         db_table = 'rnc_release'
 
 
-class Ac(models.Model):
-    id = models.CharField(db_column='ac', max_length=100, primary_key=True)
+class Accessions(models.Model):
+    accession = models.CharField(max_length=100)
     parent_ac = models.CharField(max_length=100)
     seq_version = models.IntegerField()
     feature_start = models.IntegerField()
     feature_end = models.IntegerField()
-    feature_name = models.CharField(max_length=20, db_index=True)
-    ordinal = models.CharField(max_length=40)
-    division = models.CharField(max_length=3, db_index=True)
+    feature_name = models.CharField(max_length=20)
+    ordinal = models.IntegerField()
+    division = models.CharField(max_length=3)
     keywords = models.CharField(max_length=100)
     description = models.CharField(max_length=200)
     species = models.CharField(max_length=100)
     organelle = models.CharField(max_length=100)
     classification = models.CharField(max_length=500)
     project = models.CharField(max_length=50)
+    is_composite = models.CharField(max_length=1)
+    non_coding_id = models.CharField(max_length=100)
+    database = models.CharField(max_length=20)
+    external_id = models.CharField(max_length=100)
+    optional_id = models.CharField(max_length=100)
 
     class Meta:
-        db_table = 'rnc_accession_info'
+        db_table = 'rnc_accessions'
 
 
 class Xref(models.Model):
-    id = models.IntegerField(primary_key=True)
-    db = models.ForeignKey(Database, db_column='db_id')
+    db = models.ForeignKey(Database, db_column='dbid')
+    rna_fk = models.ForeignKey(Rna, db_column='rna_fk', related_name='xrefs', unique=True)
+    accession = models.OneToOneField(Accessions, db_column='rnc_accessions_fk')
     created = models.ForeignKey(Release, db_column='created', related_name='release_created')
     last = models.ForeignKey(Release, db_column='last', related_name='last_release')
-    upi = models.ForeignKey(Rna, db_column='UPI', related_name='xrefs')
+    upi = models.CharField(max_length=13, db_index=True)
     version_i = models.IntegerField()
     deleted = models.CharField(max_length=1)
     timestamp = models.DateTimeField()
     userstamp = models.CharField(max_length=100)
-    accession = models.ForeignKey(Ac, db_column='accession', to_field='id', related_name='xrefs')
     version = models.IntegerField()
     taxid = models.IntegerField()
 
     class Meta:
-        db_table = 'rnc_xref'
-        ordering = ['accession__species']
-
-    def get_accession(self):
-        try:
-            ac = Ac.objects.get(id=self.accession)
-        except:
-            try:
-                comp_id = CompositeId.objects.get(composite_id=self.accession)
-                ac = comp_id.ac
-                ac.id = comp_id.external_id
-                ac.optional_id = comp_id.optional_id
-            except:
-                return None
-        return ac
+        db_table = 'xref'
 
 
-class CompositeId(models.Model):
-    composite_id = models.CharField(max_length=100, primary_key=True)
-    ac = models.ForeignKey(Ac, to_field='id', related_name='composite')
-    database = models.CharField(max_length=20)
-    optional_id = models.CharField(max_length=100)
-    external_id = models.CharField(max_length=100)
+# class Reference(models.Model):
+#     md5 = models.CharField(max_length=32)
+#     rna_fk = models.ForeignKey(Rna, db_column='rna_fk', related_name='refs')
+#     authors_md5 = models.CharField(max_length=32)
+#     authors = models.TextField()
+#     location = models.CharField(max_length=4000)
+#     title = models.CharField(max_length=4000)
+#     pubmed = models.CharField(max_length=10)
+#     doi = models.CharField(max_length=80)
+#     publisher = models.CharField(max_length=128)
+#     editors = models.CharField(max_length=250)
 
-    class Meta:
-        db_table = 'rnc_composite_ids'
-
-
-class Reference(models.Model):
-    id = models.AutoField(primary_key=True)
-    md5 = models.ForeignKey(Rna, to_field='md5', db_column='md5', related_name='refs')
-    authors_md5 = models.CharField(max_length=32)
-    authors = models.TextField()
-    location = models.CharField(max_length=4000)
-    title = models.CharField(max_length=4000)
-    pubmed = models.CharField(max_length=10)
-    doi = models.CharField(max_length=80)
-    publisher = models.CharField(max_length=128)
-    editors = models.CharField(max_length=250)
-
-    class Meta:
-        db_table = 'rnc_references'
+#     class Meta:
+#         db_table = 'rnc_references'
