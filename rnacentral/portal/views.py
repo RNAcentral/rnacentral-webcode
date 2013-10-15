@@ -33,15 +33,13 @@ def index(request):
 def rna_view(request, upi):
     try:
         rna = Rna.objects.get(upi=upi)
-
         context = dict()
         context['xrefs'] = rna.xrefs.select_related().all()
         context['counts'] = rna.count_symbols()
-        context['num_org'] = Xref.objects.filter(upi=upi).values('taxid').distinct().count()
-        context['num_db'] = Xref.objects.filter(upi=upi).values('db_id').distinct().count()
-        context.update(Xref.objects.filter(upi=upi).
-                                    aggregate(first_seen=Min('created__release_date'),
-                                              last_seen=Max('last__release_date')))
+        context['num_org'] = context['xrefs'].values('taxid').distinct().count()
+        context['num_db'] = context['xrefs'].values('db_id').distinct().count()
+        context.update(context['xrefs'].aggregate(first_seen=Min('created__release_date'),
+                                                  last_seen=Max('last__release_date')))
     except Rna.DoesNotExist:
         raise Http404
     return render(request, 'portal/rna_view.html', {'rna': rna, 'context': context})
