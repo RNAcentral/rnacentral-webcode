@@ -1,7 +1,7 @@
 from django.db import models
 
 # to make text fields searchable, add character set functional indexes in Oracle
-# create index index_name on table_name(SYS_OP_C2C(column_name));
+# CREATE INDEX index_name ON table_name(SYS_OP_C2C(column_name));
 
 
 class Rna(models.Model):
@@ -67,7 +67,7 @@ class Release(models.Model):
 
 
 class Accessions(models.Model):
-    accession = models.CharField(max_length=100)
+    accession = models.CharField(max_length=100, unique=True)
     parent_ac = models.CharField(max_length=100)
     seq_version = models.IntegerField()
     feature_start = models.IntegerField()
@@ -93,11 +93,10 @@ class Accessions(models.Model):
 
 class Xref(models.Model):
     db = models.ForeignKey(Database, db_column='dbid')
-    rna_fk = models.ForeignKey(Rna, db_column='rna_fk', related_name='xrefs', unique=True)
-    accession = models.OneToOneField(Accessions, db_column='rnc_accessions_fk')
+    accession = models.ForeignKey(Accessions, db_column='ac', to_field='accession')
     created = models.ForeignKey(Release, db_column='created', related_name='release_created')
     last = models.ForeignKey(Release, db_column='last', related_name='last_release')
-    upi = models.CharField(max_length=13, db_index=True)
+    upi = models.ForeignKey(Rna, db_column='upi', to_field='upi', related_name='xrefs')
     version_i = models.IntegerField()
     deleted = models.CharField(max_length=1)
     timestamp = models.DateTimeField()
@@ -109,17 +108,16 @@ class Xref(models.Model):
         db_table = 'xref'
 
 
-# class Reference(models.Model):
-#     md5 = models.CharField(max_length=32)
-#     rna_fk = models.ForeignKey(Rna, db_column='rna_fk', related_name='refs')
-#     authors_md5 = models.CharField(max_length=32)
-#     authors = models.TextField()
-#     location = models.CharField(max_length=4000)
-#     title = models.CharField(max_length=4000)
-#     pubmed = models.CharField(max_length=10)
-#     doi = models.CharField(max_length=80)
-#     publisher = models.CharField(max_length=128)
-#     editors = models.CharField(max_length=250)
+class Reference(models.Model):
+    rna = models.ForeignKey(Rna, db_column='md5', to_field = 'md5', related_name='refs')
+    authors_md5 = models.CharField(max_length=32)
+    authors = models.TextField()
+    location = models.CharField(max_length=4000)
+    title = models.CharField(max_length=4000)
+    pubmed = models.CharField(max_length=10)
+    doi = models.CharField(max_length=80)
+    publisher = models.CharField(max_length=128)
+    editors = models.CharField(max_length=250)
 
-#     class Meta:
-#         db_table = 'rnc_references'
+    class Meta:
+        db_table = 'rnc_references'
