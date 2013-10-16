@@ -118,6 +118,32 @@
 
           <div class="well">
             <h3>
+               References
+             </h3>
+             <div class="max-height-500">
+               <ul>
+                 {% for ref in rna.refs.all %}
+                   <li>
+                     <blockquote>
+                       <strong>
+                         {% if ref.location|slice:":9" == 'Submitted' %}
+                           ISNDC submission
+                         {% else %}
+                           {{ ref.title|default:"No title available" }}
+                         {% endif %}
+                       </strong>
+                       <br>
+                       {{ ref.authors }}
+                       <small>{{ ref.location }}</small>
+                     </blockquote>
+                   </li>
+                 {% endfor %}
+               </ul>
+             </div>
+           </div>
+
+           <div class="well">
+             <h3>
               Sequence
               <small>
                 <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
