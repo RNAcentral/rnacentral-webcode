@@ -102,6 +102,7 @@ MIDDLEWARE_CLASSES = (
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware', # django-debug-toolbar
+    'maintenancemode.middleware.MaintenanceModeMiddleware', # django-maintenance
 )
 
 ROOT_URLCONF = 'rnacentral.urls'
@@ -188,6 +189,7 @@ REST_FRAMEWORK = {
     ]
 }
 
+# django-debug-toolbar
 DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.version.VersionDebugPanel',
     'debug_toolbar.panels.timer.TimerDebugPanel',
@@ -199,6 +201,9 @@ DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.signals.SignalDebugPanel',
     'debug_toolbar.panels.logger.LoggingPanel',
 )
+
+# django-maintenance
+MAINTENANCE_MODE = False
 
 try:
    from local_settings import *
