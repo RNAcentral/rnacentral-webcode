@@ -75,6 +75,7 @@
           <div class="well">
             <h3>
               Database cross-references
+              <small>{{ context.xrefs.count }}</small>
             </h3>
 
             <div class="table-responsive max-height-500">
@@ -96,7 +97,17 @@
                   {% for xref in context.xrefs %}
                     <tr>
                       <td>{{ xref.db.display_name }}</td>
-                      <td>{{ xref.accession.accession }}</td>
+                      <!-- accession -->
+                      {% if xref.db.display_name == 'ENA' %}
+                        <td><a href="http://www.ebi.ac.uk/ena/data/view/{{ xref.accession.parent_ac }}" target="_blank" title="{{ xref.accession.accession }}">{{ xref.accession.parent_ac }}</a></td>
+                      {% elif xref.db.display_name == 'RFAM' %}
+                        <td><a href="http://rfam.sanger.ac.uk/family/{{ xref.accession.external_id }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }} family)</td>
+                      {% elif xref.db.display_name == 'SRPDB' %}
+                        <td><a href="http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/{{ xref.accession.external_id }}.fasta" target="_blank">{{ xref.accession.external_id }}</a></td>
+                      {% elif xref.db.display_name == 'MIRBASE' %}
+                        <td>MIRBASE cross-references not available yet</td>
+                      {% endif %}
+                      <!-- accession -->
                       <td>{{ xref.accession.feature_name }} </td>
                       <td>{{ xref.accession.division }} </td>
                       <td><a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank"><em>{{ xref.accession.species }}</em></a></td>
