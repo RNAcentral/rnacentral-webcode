@@ -25,8 +25,11 @@ def index(request):
     context = dict()
     context['seq_count'] = Rna.objects.count()
     context['db_count'] = Database.objects.count()
-    context['last_full_update'] = Release.objects.filter(release_type='I').order_by('-release_date').all()[0]
-    context['last_daily_update'] = Release.objects.filter(release_type='F').order_by('-release_date').all()[0]
+    context['last_full_update'] = Release.objects.filter(release_type='F').order_by('-release_date').all()[0]
+    try:
+        context['last_daily_update'] = Release.objects.filter(release_type='I').order_by('-release_date').all()[0]
+    except Exception, e:
+        context['last_daily_update'] = context['last_full_update']
     return render(request, 'portal/homepage.html', {'context': context})
 
 
