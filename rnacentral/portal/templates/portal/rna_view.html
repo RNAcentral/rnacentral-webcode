@@ -1,5 +1,6 @@
 {% extends "portal/base.html" %}
 {% load staticfiles %}
+{% load humanize %}
 
 {% block title %}
 {{ rna.upi }}
@@ -66,8 +67,8 @@
               Overview
             </h3>
             <p>
-              {{ rna.len }} nucleotides |
-              {{ context.num_db }} database{{ context.num_db|pluralize }} | {{ context.num_org }} organism{{ context.num_org|pluralize }} |
+              {{ rna.len|intcomma }} nucleotides |
+              {{ context.num_db }} database{{ context.num_db|pluralize }} | {{ context.num_org }} organism{{ context.num_org|pluralize|intcomma }} |
               first seen {{ context.first_seen }} | last seen {{ context.last_seen }}
             </p>
           </div>
@@ -225,8 +226,8 @@
               </small>
             </h3>
             <p>
-              {{ rna.len }} nucleotides ({{ context.counts.A }} As, {{ context.counts.C }} Cs,
-              {{ context.counts.G }} Gs, {{ context.counts.U }} Us), {{ context.counts.N|default:"no " }} unknown characters.
+              {{ rna.len|intcomma }} nucleotides ({{ context.counts.A|intcomma }} As; {{ context.counts.C|intcomma }} Cs;
+              {{ context.counts.G|intcomma }} Gs; {{ context.counts.U|intcomma }} Us), {{ context.counts.N|intcomma|default:"no " }} unknown characters.
             </p>
             <pre class="pre-scrollable">
 {{ rna.get_sequence }}</pre>
