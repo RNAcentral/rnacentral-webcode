@@ -61,9 +61,12 @@ RNAcentral
         <div class="panel-body">
           <p>
             <em>{{ context.seq_count|intcomma }}</em> sequences from <em>{{ context.db_count }}</em> Expert Databases.
-          </p>
-          <p>
-            <strong>Last daily update</strong>: {{ context.last_daily_update.release_date }}. <strong>Last full update:</strong> {{ context.last_full_update.release_date }} <a href="#">Learn more</a>
+            <br>
+            <strong>Last daily update</strong>: {{ context.last_daily_update.release_date }}.
+            <br>
+            <strong>Last full update:</strong> {{ context.last_full_update.release_date }}
+            <br>
+            <a href="#">Learn more</a>
           </p>
         </div>
       </div>
