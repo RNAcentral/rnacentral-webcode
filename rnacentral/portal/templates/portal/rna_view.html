@@ -75,7 +75,11 @@
           <div class="well">
             <h3>
               Database cross-references
-              <small>{{ context.xrefs.count }}</small>
+              {% if context.xref_paginator.paginator.num_pages > 1 %}
+                <small>page {{ context.xref_paginator.number }} out of {{ context.xref_paginator.paginator.num_pages }}</small>
+              {% else %}
+                <small>{{ context.xrefs.count }}</small>
+              {% endif %}
             </h3>
 
             <div class="table-responsive max-height-500">
@@ -94,7 +98,7 @@
                 </thead>
 
                 <tbody>
-                  {% for xref in context.xrefs %}
+                  {% for xref in context.xref_paginator %}
                     <tr>
                       <td>{{ xref.db.display_name }}</td>
                       <!-- accession -->
@@ -125,16 +129,37 @@
                 </tbody>
               </table>
             </div> <!-- .table-responsive -->
+            <!-- pagination -->
+            {% if context.xref_paginator.paginator.num_pages > 1 %}
+            <ul class="pager">
+              {% if context.xref_paginator.has_previous %}
+                <li>
+                  <a href="?xref-page={{ context.xref_paginator.previous_page_number }}">previous</a>
+                </li>
+              {% endif %}
+
+              {% if context.xref_paginator.has_next %}
+                <li>
+                  <a href="?xref-page={{ context.xref_paginator.next_page_number }}">next</a>
+                </li>
+              {% endif %}
+            </ul>
+            {% endif %}
+            <!-- pagination -->
           </div>
 
           <div class="well">
             <h3>
                References
-               <small>{{ rna.refs.count }}</small>
+              {% if context.ref_paginator.paginator.num_pages > 1 %}
+                <small>page {{ context.ref_paginator.number }} out of {{ context.ref_paginator.paginator.num_pages }}</small>
+              {% else %}
+                <small>{{ rna.refs.count }}</small>
+              {% endif %}
              </h3>
-             <div class="max-height-500">
+             <div>
                <ul>
-                 {% for ref in rna.refs.all %}
+                 {% for ref in context.ref_paginator %}
                    <li>
                      <blockquote>
                        <strong>
@@ -151,6 +176,23 @@
                    </li>
                  {% endfor %}
                </ul>
+               <!-- pagination -->
+               {% if context.ref_paginator.paginator.num_pages > 1 %}
+               <ul class="pager">
+                 {% if context.ref_paginator.has_previous %}
+                   <li>
+                     <a href="?ref-page={{ context.ref_paginator.previous_page_number }}">previous</a>
+                   </li>
+                 {% endif %}
+
+                 {% if context.ref_paginator.has_next %}
+                   <li>
+                     <a href="?ref-page={{ context.ref_paginator.next_page_number }}">next</a>
+                   </li>
+                 {% endif %}
+               </ul>
+               {% endif %}
+               <!-- pagination -->
              </div>
            </div>
 
