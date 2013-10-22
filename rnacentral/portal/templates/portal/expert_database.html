@@ -121,7 +121,15 @@
     {{ block.super }}
     <script src="{% static "js/vendor/Chart.min.js" %}"></script>
     <script type="text/javascript">
-        var ctx = $("#myChart").get(0).getContext("2d");
+
+        setupcanvas = function(id, data, options){
+            var canvas = $('#'+id);
+            var newWidth = canvas.parent().width()
+            canvas.prop('width', newWidth);
+            canvas.prop('height', 300);
+            var ctx = canvas.get(0).getContext("2d");
+            var myNewChart = new Chart(ctx).Line(data, options);
+        };
 
         var data = {
             labels : [
@@ -147,12 +155,18 @@
                 }
             ]
         }
+
         var options = {
             //Boolean - Whether to show a dot for each point
             pointDot : false,
             //Boolean - Whether to animate the chart
             animation : false,
         }
-        var myNewChart = new Chart(ctx).Line(data, options);
+
+        setupcanvas("myChart", data, options);
+
+        $( window ).resize(function() {
+            setupcanvas("myChart", data, options);
+        });
 </script>
 {% endblock extra_js %}
