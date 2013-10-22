@@ -1,0 +1,158 @@
+{% extends "portal/base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+
+{% block title %}
+{{ context.expert_db_name }}
+{% endblock %}
+
+{% block content %}
+
+<h2>
+    {% if context.expert_db_name == 'MIRBASE' %}
+        miRBase
+    {% elif context.expert_db_name == 'SRPDB' %}
+        {{ context.expert_db_name }}
+    {% endif %}
+</h2>
+
+<p>
+    {% if context.expert_db_name == 'MIRBASE' %}
+        <a href="http://www.mirbase.org/" target="_blank">miRBase</a> is a searchable database of published miRNA sequences and annotation. Each entry in the miRBase Sequence database represents a predicted hairpin portion of a miRNA transcript (termed mir in the database), with information on the location and sequence of the mature miRNA sequence (termed miR). Both hairpin and mature sequences are available for searching and browsing, and entries can also be retrieved by name, keyword, references and annotation.
+    {% elif context.expert_db_name == 'SRPDB' %}
+        <a href="http://bio.lundberg.gu.se/dbs/SRPDB/SRPDB.html" target="_blank">SRPDB</a> (Signal Recognition Particle Database)
+        provides aligned, annotated and phylogenetically ordered sequences related to structure and function of SRP.
+    {% endif %}
+</p>
+
+
+<div class="row">
+
+<div class="col-md-6">
+
+    <h3>Statistics</h3>
+    <ul>
+        <li>
+            <strong>{{ context.total_sequences }}</strong> sequences
+            from <strong>{{ context.total_organisms }}</strong> different organisms.
+        </li>
+        <li>
+            The shortest sequence has <strong>{{ context.min_length }}</strong> nucleotides, the longest <strong>{{ context.max_length }}</strong>.
+        </li>
+        <li>
+            The average length is <strong>{{ context.avg_length|floatformat:"0" }}</strong> nucleotide{{ context.avg_length|pluralize }}.
+        </li>
+        <li>
+            First imported: {{ context.first_imported|date:"d M, Y" }}.
+        </li>
+    </ul>
+
+    <h3>Example entries</h3>
+    <p>
+    {% for example in context.examples %}
+        <a href="{% url 'portal.views.rna_view' upi=example.upi %}">{{ example.upi }}</a>{% if not forloop.last %},{% else %}.{% endif %}
+    {% endfor %}
+    </p>
+
+    <h3>Links</h3>
+    <ul>
+        {% if context.expert_db_name == 'MIRBASE' %}
+            <li><a href="http://mirbase.org" target="_blank">miRBase homepage</a></li>
+            <li><a href="http://www.ebi.ac.uk/ena/data/view/PRJEB4451" target="_blank">ENA project</a></li>
+        {% elif context.expert_db_name == 'SRPDB' %}
+            <li><a href="http://bio.lundberg.gu.se/dbs/SRPDB/SRPDB.html" target="_blank">SRPDB homepage</a></li>
+            <li><a href="http://www.ebi.ac.uk/ena/data/view/PRJEB4384" target="_blank">ENA project</a></li>
+        {% endif %}
+    </ul>
+
+</div>
+
+<div class="col-md-6">
+    <h4>Sequence length distribution</h4>
+    <canvas id="myChart" width="500" height="300"></canvas>
+</div>
+
+</div>
+
+
+<h3>References</h3>
+
+{% if context.expert_db_name == 'MIRBASE' %}
+    <blockquote>
+    <strong>
+        miRBase: integrating microRNA annotation and deep-sequencing data.
+    </strong>
+    <br>
+    Kozomara A., Griffiths-Jones S.
+    <small>Faculty of Life Sciences, University of Manchester, Michael Smith Building, Oxford Road, Manchester M13 9PT, UK.</small>
+    <small>Nucleic Acids Res. 39(Database issue): D152-7 (2011 Jan)</small>
+    </blockquote>
+{% elif context.expert_db_name == 'SRPDB' %}
+    <blockquote>
+    <strong>
+        Kinship in the SRP RNA family.
+    </strong>
+    <br>
+    Rosenblad MA., Larsen N., Samuelsson T., Zwieb C.
+    <small>
+        Department of Cell and Molecular Biology, University of Gothenburg, Göteborg, Sweden.
+    </small>
+    <small>
+        RNA Biol 6(5): 508-516 (2009 Nov-Dec)
+    </small>
+    </blockquote>
+
+    <blockquote>
+    <strong>
+        The tmRDB and SRPDB resources.
+    </strong>
+    <br>
+    Andersen ES., Rosenblad MA., Larsen N., Westergaard JC., Burks J., Wower IK., Wower J., Gorodkin J., Samuelsson T., Zwieb C.
+    <small>Department of Molecular Biology, University of Aarhus, C.F. Moellers Allé, Building 139, 8000 Aarhus, Denmark.</small>
+    <small>Nucleic Acids Res. 34(Database issue): D163-8 (2006 Jan)</small>
+    </blockquote>
+{% endif %}
+
+
+{% endblock content %}
+
+
+{% block extra_js %}
+    {{ block.super }}
+    <script src="{% static "js/vendor/Chart.min.js" %}"></script>
+    <script type="text/javascript">
+        var ctx = $("#myChart").get(0).getContext("2d");
+
+        var data = {
+            labels : [
+            {% for point in context.len_counts %}
+                {% if context.len_counts|length > 30 %}
+                    ""{% if not forloop.last %},{% else %}{% endif %}
+                {% else %}
+                    {{ point.len }}{% if not forloop.last %},{% else %}{% endif %}
+                {% endif %}
+            {% endfor %}
+            ],
+            datasets : [
+                {
+                    fillColor : "rgba(220,220,220,0.5)",
+                    strokeColor : "rgba(220,220,220,1)",
+                    pointColor : "rgba(220,220,220,1)",
+                    pointStrokeColor : "#fff",
+                    data : [
+                        {% for point in context.len_counts %}
+                            {{ point.counts }}{% if not forloop.last %},{% else %}{% endif %}
+                        {% endfor %}
+                    ]
+                }
+            ]
+        }
+        var options = {
+            //Boolean - Whether to show a dot for each point
+            pointDot : false,
+            //Boolean - Whether to animate the chart
+            animation : false,
+        }
+        var myNewChart = new Chart(ctx).Line(data, options);
+</script>
+{% endblock extra_js %}

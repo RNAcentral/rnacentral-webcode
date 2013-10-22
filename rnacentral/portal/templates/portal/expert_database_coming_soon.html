@@ -1,0 +1,18 @@
+{% extends "portal/base.html" %}
+
+{% block title %}
+{{ context.expert_db_name }}
+{% endblock %}
+
+{% block content %}
+
+<br>
+
+<div class="alert alert-warning">
+    The landing page for {{ context.expert_db_name }} is under development.
+    In the meantime, have a look at the pages for
+    <a href="{% url 'portal.views.expert_database_view' expert_db_name='mirbase' %}">miRBase</a> and
+    <a href="{% url 'portal.views.expert_database_view' expert_db_name='srpdb' %}">SRPDB</a>.
+</div>
+
+{% endblock content %}

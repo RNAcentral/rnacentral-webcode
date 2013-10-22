@@ -57,6 +57,13 @@
             <li><a href="#">LSU rRNA</a></li>
           </ul>
         </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Expert databases<b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='mirbase'  %}">miRBase</a></li>
+            <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='srpdb'  %}">SRPDB</a></li>
+          </ul>
+        </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li><a href="/help">Help</a></li>

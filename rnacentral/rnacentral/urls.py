@@ -12,8 +12,6 @@ router.register(r'rna', views.RnaViewSet)
 urlpatterns = patterns('',
     url(r'^$', 'portal.views.index'),
     url(r'^rna/(?P<upi>\w+)$', 'portal.views.rna_view'),
-    # haystack search
-    url(r'^search/', include('haystack.urls')),
     # admin
     url(r'^admin/', include(admin.site.urls)),
     # flat pages
@@ -25,5 +23,10 @@ urlpatterns = patterns('',
     url(r'^api-auth/v1/', include('rest_framework.urls', namespace='rest_framework')),
     # robots.txt
     url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
+    # expert databases
+    url(r'^expert-database/(?P<expert_db_name>\w+)$', 'portal.views.expert_database_view'),
+    # haystack search
+    url(r'^search/', include('haystack.urls')),
+    # search test
     url(r'^search2/', 'portal.views.search'),
 )

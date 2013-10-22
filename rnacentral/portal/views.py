@@ -5,7 +5,7 @@ from portal.forms import ContactForm
 
 from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render, render_to_response
-from django.db.models import Min, Max
+from django.db.models import Min, Max, Count, Avg
 from django.views.generic.base import TemplateView
 from django.template import TemplateDoesNotExist
 from django.views.generic.edit import FormView
@@ -93,6 +93,25 @@ def search(request):
 
         return render_to_response('portal/search_results.html', {"rnas": rnas})
 
+    else:
+        raise Http404()
+
+
+def expert_database_view(request, expert_db_name):
+    expert_db_name = expert_db_name.upper()
+    context = dict()
+    context['expert_db_name'] = expert_db_name
+    if expert_db_name in ('SRPDB', 'MIRBASE'):
+        data = Rna.objects.filter(xrefs__deleted='N', xrefs__db__display_name=expert_db_name)
+        context['total_sequences'] = data.count()
+        context['total_organisms'] = len(data.values('xrefs__taxid').annotate(n=Count("pk")))
+        context['examples'] = data.all()[:6]
+        context['first_imported'] = data.order_by('timestamp')[0].timestamp
+        context['len_counts'] = data.values('len').annotate(counts=Count('len')).order_by('len')
+        context.update(data.aggregate(min_length=Min('len'), max_length=Max('len'), avg_length=Avg('len')))
+        return render_to_response('portal/expert_database.html', {'context': context})
+    elif expert_db_name in ('ENA', 'RFAM'):
+        return render_to_response('portal/expert_database_coming_soon.html', {'context': context})
     else:
         raise Http404()
 

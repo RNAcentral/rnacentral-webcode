@@ -101,7 +101,9 @@
                 <tbody>
                   {% for xref in context.xref_paginator %}
                     <tr>
-                      <td>{{ xref.db.display_name }}</td>
+                      <td>
+                        <a href="{% url 'portal.views.expert_database_view' expert_db_name=xref.db.display_name %}">{{ xref.db.display_name }}</a>
+                      </td>
                       <!-- accession -->
                       {% if xref.db.display_name == 'ENA' %}
                         <td><a href="http://www.ebi.ac.uk/ena/data/view/{{ xref.accession.parent_ac }}" target="_blank" title="{{ xref.accession.accession }}">{{ xref.accession.parent_ac }}</a></td>
