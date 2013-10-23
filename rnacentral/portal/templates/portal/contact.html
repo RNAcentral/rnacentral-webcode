@@ -20,7 +20,7 @@ Contact Us
         {% else %}
             <label for="emailSubject">Email subject</label>
         {% endif %}
-        <input type="text" autofocus class="form-control" name="subject" id="emailSubject" placeholder="Enter subject" tabindex="1"
+        <input type="text" autofocus class="form-control" name="subject" id="emailSubject" placeholder="" tabindex="1"
                {% if form.subject.errors %}value="{{ form.subject.value }}"{% endif %}>
       </div>
 
@@ -50,7 +50,8 @@ Contact Us
         </label>
       </div>
 
-      <button type="submit" class="btn btn-primary" tabindex="5">Submit</button>
+      <button type="submit" class="btn btn-primary" tabindex="5" disabled="disabled">Submit</button>
+      <span class="help-block">The form has been temporarily disabled.</span>
     </form>
   </div>
 
