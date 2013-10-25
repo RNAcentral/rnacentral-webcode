@@ -13,6 +13,8 @@
         miRBase
     {% elif context.expert_db_name == 'SRPDB' %}
         {{ context.expert_db_name }}
+    {% elif context.expert_db_name == 'VEGA' %}
+        {{ context.expert_db_name }}
     {% endif %}
 </h2>
 
@@ -22,6 +24,8 @@
     {% elif context.expert_db_name == 'SRPDB' %}
         <a href="http://bio.lundberg.gu.se/dbs/SRPDB/SRPDB.html" target="_blank">SRPDB</a> (Signal Recognition Particle Database)
         provides aligned, annotated and phylogenetically ordered sequences related to structure and function of SRP.
+    {% elif context.expert_db_name == 'VEGA' %}
+      <a href="http://vega.sanger.ac.uk" target="_blank">VEGA</a> database provides high quality manual annotation of vertebrate finished genome sequences.
     {% endif %}
 </p>
 
@@ -62,6 +66,9 @@
         {% elif context.expert_db_name == 'SRPDB' %}
             <li><a href="http://bio.lundberg.gu.se/dbs/SRPDB/SRPDB.html" target="_blank">SRPDB homepage</a></li>
             <li><a href="http://www.ebi.ac.uk/ena/data/view/PRJEB4384" target="_blank">ENA project</a></li>
+        {% elif context.expert_db_name == 'VEGA' %}
+            <li><a href="http://vega.sanger.ac.uk" target="_blank">VEGA homepage</a></li>
+            <li><a href="http://www.ebi.ac.uk/ena/data/view/PRJEB4568" target="_blank">ENA project</a></li>
         {% endif %}
     </ul>
 
@@ -110,6 +117,30 @@
     Andersen ES., Rosenblad MA., Larsen N., Westergaard JC., Burks J., Wower IK., Wower J., Gorodkin J., Samuelsson T., Zwieb C.
     <small>Department of Molecular Biology, University of Aarhus, C.F. Moellers Allé, Building 139, 8000 Aarhus, Denmark.</small>
     <small>Nucleic Acids Res. 34(Database issue): D163-8 (2006 Jan)</small>
+    </blockquote>
+{% elif context.expert_db_name == 'VEGA' %}
+    <blockquote>
+    <strong>
+        The GENCODE v7 catalog of human long noncoding RNAs: analysis of their gene structure, evolution, and expression.
+    </strong>
+    <br>
+    Derrien T., Johnson R., Bussotti G., Tanzer A., Djebali S., Tilgner H., Guernec G., Martin D., Merkel A., Knowles DG., Lagarde J., Veeravalli L., Ruan X., Ruan Y., Lassmann T., Carninci P., Brown JB., Lipovich L., Gonzalez JM., Thomas M., Davis CA., Shiekhattar R., Gingeras TR., Hubbard TJ., Notredame C., Harrow J., Guigó R.
+    <small>
+        Bioinformatics and Genomics, Centre for Genomic Regulation and UPF, 08003 Barcelona, Catalonia, Spain.
+    </small>
+    <small>
+        Genome Res. 22(9): 1775-1789 (2012 Sep)
+    </small>
+    </blockquote>
+
+    <blockquote>
+    <strong>
+        GENCODE: the reference human genome annotation for The ENCODE Project.
+    </strong>
+    <br>
+    Harrow J., Frankish A., Gonzalez JM., Tapanari E., Diekhans M., Kokocinski F., Aken BL., Barrell D., Zadissa A., Searle S., Barnes I., Bignell A., Boychenko V., Hunt T., Kay M., Mukherjee G., Rajan J., Despacio-Reyes G., Saunders G., Steward C., Harte R., Lin M., Howald C., Tanzer A., Derrien T., Chrast J., Walters N., Balasubramanian S., Pei B., Tress M., Rodriguez JM., Ezkurdia I., van Baren J., Brent M., Haussler D., Kellis M., Valencia A., Reymond A., Gerstein M., Guigó R., Hubbard TJ.
+    <small>Wellcome Trust Sanger Institute, Wellcome Trust Campus, Hinxton, Cambridge CB10 1SA, United Kingdom.</small>
+    <small>Genome Res. 22(9): 1760-1774 (2012 Sep)</small>
     </blockquote>
 {% endif %}
 
