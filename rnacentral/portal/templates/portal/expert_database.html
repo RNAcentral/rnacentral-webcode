@@ -37,11 +37,11 @@
   <h3>Statistics</h3>
   <ul>
     <li>
-      <strong>{{ context.total_sequences }}</strong> sequences
-      from <strong>{{ context.total_organisms }}</strong> different organisms.
+      <strong>{{ context.total_sequences|intcomma }}</strong> sequences
+      from <strong>{{ context.total_organisms|intcomma }}</strong> organism{{ context.total_organisms|pluralize}}.
     </li>
     <li>
-      The shortest sequence has <strong>{{ context.min_length }}</strong> nucleotides, the longest <strong>{{ context.max_length }}</strong>.
+      The shortest sequence has <strong>{{ context.min_length|intcomma }}</strong> nucleotides, the longest <strong>{{ context.max_length|intcomma }}</strong>.
     </li>
     <li>
       The average length is <strong>{{ context.avg_length|floatformat:"0" }}</strong> nucleotide{{ context.avg_length|pluralize }}.
