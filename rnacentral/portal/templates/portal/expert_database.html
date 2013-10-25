@@ -3,23 +3,18 @@
 {% load humanize %}
 
 {% block title %}
-{{ context.expert_db_name }}
+  {{ context.expert_db_name }} Expert Database
 {% endblock %}
 
 {% block content %}
 
 <h2>
-  {% if context.expert_db_name == 'MIRBASE' %}
-    miRBase
-  {% elif context.expert_db_name == 'SRPDB' %}
-    {{ context.expert_db_name }}
-  {% elif context.expert_db_name == 'VEGA' %}
-    {{ context.expert_db_name }}
-  {% endif %}
+  <img src="{% static 'img/expert-db-logos/'|add:context.expert_db_logo|add:'' %}" alt="{{context.expert_db_name}} logo" class="img-rounded expert-db-logo">
+  {{ context.expert_db_name }} Expert Database
 </h2>
 
 <p>
-  {% if context.expert_db_name == 'MIRBASE' %}
+  {% if context.expert_db_name == 'miRBase' %}
     <a href="http://www.mirbase.org/" target="_blank">miRBase</a> is a searchable database of published miRNA sequences and annotation. Each entry in the miRBase Sequence database represents a predicted hairpin portion of a miRNA transcript (termed mir in the database), with information on the location and sequence of the mature miRNA sequence (termed miR). Both hairpin and mature sequences are available for searching and browsing, and entries can also be retrieved by name, keyword, references and annotation.
   {% elif context.expert_db_name == 'SRPDB' %}
     <a href="http://bio.lundberg.gu.se/dbs/SRPDB/SRPDB.html" target="_blank">SRPDB</a> (Signal Recognition Particle Database)
@@ -28,7 +23,6 @@
     <a href="http://vega.sanger.ac.uk" target="_blank">VEGA</a> database provides high quality manual annotation of vertebrate finished genome sequences.
   {% endif %}
 </p>
-
 
 <div class="row">
 
@@ -60,7 +54,7 @@
 
     <h3>Links</h3>
     <ul>
-      {% if context.expert_db_name == 'MIRBASE' %}
+      {% if context.expert_db_name == 'miRBase' %}
         <li><a href="http://mirbase.org" target="_blank">miRBase homepage</a></li>
         <li><a href="http://www.ebi.ac.uk/ena/data/view/PRJEB4451" target="_blank">ENA project</a></li>
       {% elif context.expert_db_name == 'SRPDB' %}
@@ -75,7 +69,7 @@
 </div>
 
 <div class="col-md-6">
-  {% if context.expert_db_name == 'MIRBASE' %}
+  {% if context.expert_db_name == 'miRBase' %}
     <h4>Sequence length distribution</h4>
     <canvas id="myChart" width="500" height="300"></canvas>
   {% endif %}
@@ -86,7 +80,7 @@
 
 <h3>References</h3>
 
-{% if context.expert_db_name == 'MIRBASE' %}
+{% if context.expert_db_name == 'miRBase' %}
   <blockquote>
     <strong>
       miRBase: integrating microRNA annotation and deep-sequencing data.
@@ -165,7 +159,7 @@
 {% block extra_js %}
     {{ block.super }}
 
-    {% if context.expert_db_name == 'MIRBASE' %}
+    {% if context.expert_db_name == 'miRBase' %}
     <script src="{% static "js/vendor/Chart.min.js" %}"></script>
     <script type="text/javascript">
 

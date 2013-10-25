@@ -36,7 +36,6 @@ def index(request):
 def rna_view(request, upi):
     try:
         rna = Rna.objects.get(upi=upi.replace('RNA', 'UPI'))
-        rna.upi = rna.upi.replace("UPI", "RNA")  # replace "UPI" with "RNA"
         context = dict()
         context['xrefs'] = rna.xrefs.select_related().all()
         context['counts'] = rna.count_symbols()
@@ -72,6 +71,7 @@ def rna_view(request, upi):
             # If page is out of range (e.g. 9999), deliver last page of results.
             context['ref_paginator'] = ref_paginator.page(ref_paginator.num_pages)
 
+        rna.upi = rna.upi.replace("UPI", "RNA")  # replace "UPI" with "RNA"
     except Rna.DoesNotExist:
         raise Http404
     return render(request, 'portal/rna_view.html', {'rna': rna, 'context': context})
@@ -101,9 +101,10 @@ def search(request):
 def expert_database_view(request, expert_db_name):
     expert_db_name = expert_db_name.upper()
     context = dict()
-    context['expert_db_name'] = expert_db_name
     if expert_db_name in ('SRPDB', 'MIRBASE', 'VEGA'):
-        data = Rna.objects.filter(xrefs__deleted='N', xrefs__db__display_name=expert_db_name)
+        data = Rna.objects.filter(xrefs__deleted='N', xrefs__db__descr=expert_db_name)
+        context['expert_db_name'] = Database.objects.get(descr=expert_db_name).display_name
+        context['expert_db_logo'] = Database.objects.get(descr=expert_db_name).logo
         context['total_sequences'] = data.count()
         context['total_organisms'] = len(data.values('xrefs__taxid').annotate(n=Count("pk")))
         context['examples'] = data.all()[:6]
