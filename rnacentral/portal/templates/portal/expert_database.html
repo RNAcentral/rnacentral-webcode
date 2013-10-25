@@ -75,8 +75,10 @@
 </div>
 
 <div class="col-md-6">
-  <h4>Sequence length distribution</h4>
-  <canvas id="myChart" width="500" height="300"></canvas>
+  {% if context.expert_db_name == 'MIRBASE' %}
+    <h4>Sequence length distribution</h4>
+    <canvas id="myChart" width="500" height="300"></canvas>
+  {% endif %}
 </div>
 
 </div>
@@ -162,6 +164,8 @@
 
 {% block extra_js %}
     {{ block.super }}
+
+    {% if context.expert_db_name == 'MIRBASE' %}
     <script src="{% static "js/vendor/Chart.min.js" %}"></script>
     <script type="text/javascript">
 
@@ -211,5 +215,6 @@
         $( window ).resize(function() {
             setupcanvas("myChart", data, options);
         });
+    {% endif %}
 </script>
 {% endblock extra_js %}
