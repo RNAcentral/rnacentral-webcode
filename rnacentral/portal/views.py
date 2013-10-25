@@ -35,7 +35,8 @@ def index(request):
 
 def rna_view(request, upi):
     try:
-        rna = Rna.objects.get(upi=upi)
+        rna = Rna.objects.get(upi=upi.replace('RNA', 'UPI'))
+        rna.upi = rna.upi.replace("UPI", "RNA")  # replace "UPI" with "RNA"
         context = dict()
         context['xrefs'] = rna.xrefs.select_related().all()
         context['counts'] = rna.count_symbols()
@@ -106,6 +107,8 @@ def expert_database_view(request, expert_db_name):
         context['total_sequences'] = data.count()
         context['total_organisms'] = len(data.values('xrefs__taxid').annotate(n=Count("pk")))
         context['examples'] = data.all()[:6]
+        for i, example in enumerate(context['examples']):
+            context['examples'][i].upi = context['examples'][i].upi.replace("UPI", "RNA")
         context['first_imported'] = data.order_by('xrefs__timestamp')[0].xrefs.all()[0].timestamp
         context['len_counts'] = data.values('len').annotate(counts=Count('len')).order_by('len')
         context.update(data.aggregate(min_length=Min('len'), max_length=Max('len'), avg_length=Avg('len')))
