@@ -101,7 +101,7 @@ def expert_database_view(request, expert_db_name):
     expert_db_name = expert_db_name.upper()
     context = dict()
     context['expert_db_name'] = expert_db_name
-    if expert_db_name in ('SRPDB', 'MIRBASE'):
+    if expert_db_name in ('SRPDB', 'MIRBASE', 'VEGA'):
         data = Rna.objects.filter(xrefs__deleted='N', xrefs__db__display_name=expert_db_name)
         context['total_sequences'] = data.count()
         context['total_organisms'] = len(data.values('xrefs__taxid').annotate(n=Count("pk")))
