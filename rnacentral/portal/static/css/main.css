@@ -1,64 +1,98 @@
+/*------------------------------------------------------------------
+Master Stylesheet for the RNAcentral Portal
+
+[Table of contents]
+
+1. Body and main layout
+2. Masthead
+3. Footer
+4. General styles
+
+-------------------------------------------------------------------*/
+
+/*------------------------------------------------------------------
+[1. Body and main layout]
+*/
 body {
   background: #fff url("../img/pale_grey_slight_texture.jpg") top left repeat;
 }
+
 .container {
   background: #fff;
 }
-.label {
-  margin-left: 5px;
-}
-pre {
-  background : white;
-}
-.ebi-img {
-  height: 40px;
-  width: 140px;
-}
-.bbsrc-img {
-  height: 50px;
-  width: 140px;
-}
-a, a:hover, a:visited, a:link {
-  text-decoration: none;
-  border-bottom: none;
-}
-th {
-  color: black;
-}
-/* Define the basic colour your rnacentral masthead */
-.rnacentral-masthead {
-	background-color: #B9CED1;
+
+.container-main {
+  min-height: 500px;
+  padding-top: 10px;
 }
 
-/* Colour the faux-underline for rnacentral menu items */
-.rnacentral-masthead2 {
-	background-color: #8F9B9D;
+/*------------------------------------------------------------------
+[2. Masthead]
+*/
+.rnacentral-masthead {
+  background: rgb(193,221,233); /* Old browsers */
+  background: -moz-linear-gradient(left, rgba(193,221,233,1) 30%, rgba(161,200,217,1) 49%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, right top, color-stop(30%,rgba(193,221,233,1)), color-stop(49%,rgba(161,200,217,1))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(left, rgba(193,221,233,1) 30%,rgba(161,200,217,1) 49%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(left, rgba(193,221,233,1) 30%,rgba(161,200,217,1) 49%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(left, rgba(193,221,233,1) 30%,rgba(161,200,217,1) 49%); /* IE10+ */
+  background: linear-gradient(to right, rgba(193,221,233,1) 30%,rgba(161,200,217,1) 49%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c1dde9', endColorstr='#a1c8d9',GradientType=1 ); /* IE6-9 */
 }
-/*.rnacentral-masthead2 ul li a:hover,
-.rnacentral-masthead2 ul li a:focus,
-.rnacentral-masthead2 ul li a:active {
-border-bottom: 3px solid #819FA3;
-}*/
-.navbar-default .navbar-nav>li>a, .navbar-default .navbar-nav>li>a>b {
-	color: white;
+
+.rnacentral-masthead-menu {
+	background-color: #3F7D97;
+  padding: 0px;
 }
-.navbar-default .navbar-nav>.dropdown>a .caret {
-	border-top-color: white;
-	border-bottom-color: white;
+
+.rnacentral-masthead-menu .nav>li>a {
+  border-right: 1px dotted white;
+  padding-right: 5px;
+  padding-left: 5px;
 }
-.navbar-default {
-	background-color: transparent;
+
+.rnacentral-masthead-menu .nav>li a:hover,
+.rnacentral-masthead-menu .nav>li a:focus,
+.rnacentral-masthead-menu .nav>li a:active
+{
+  color: white;
 }
+
 .navbar {
-	margin-bottom: 0px;
+  margin-bottom: 0px;
 }
-#local-footer {
-	display: none;
+
+.navbar-default {
+  background-color: transparent;
 }
+
+.navbar-right {
+  padding-right: 0px;
+}
+
+.navbar-default .navbar-nav>li>a,
+.navbar-default .navbar-nav>li>a>b {
+	color: #C9C9C9;
+}
+
+.navbar-default .navbar-nav>.dropdown>a .caret
+{
+	border-top-color: #C9C9C9;
+	border-bottom-color: #C9C9C9;
+}
+
+.navbar-default .navbar-nav>.dropdown>a:hover .caret,
+.navbar-default .navbar-nav>.dropdown>a:focus .caret
+{
+  border-top-color: white;
+  border-bottom-color: white;
+}
+
 .rnacentral-header-logo {
 	margin-top: 15px;
 	width: 300px;
 }
+
 div#local-search form fieldset, form#local-search fieldset {
 	max-width: 1000px;
 }
@@ -67,36 +101,61 @@ div#local-search form fieldset, form#local-search fieldset {
 	margin-top: 5px;
 }
 
-form input {
-	margin: 0px;
+/*------------------------------------------------------------------
+[3. Footer]
+*/
+#local-footer {
+  display: none;
 }
+
+.ebi-img {
+  height: 40px;
+  width: 140px;
+}
+
+.bbsrc-img {
+  height: 50px;
+  width: 140px;
+}
+
+/*------------------------------------------------------------------
+[4. General styles]
+*/
+.label {
+  margin-left: 5px;
+}
+
 pre {
-	font-family: monospace;
+  background : white;
+  font-family: monospace;
 }
+
+a, a:hover, a:visited, a:link {
+  border-bottom: none;
+  text-decoration: none;
+}
+
+th {
+  color: black;
+}
+
 .glyphicon {
-	margin-right: 5px;
+  margin-right: 5px;
 }
+
 div.alert {
-	border: inherit;
+  border: inherit;
 }
-.rnacentral-masthead2 .nav>li>a {
-	padding-right: 5px;
-	padding-left: 5px;
-	border-right: 1px dotted white;
+
+form input {
+  margin: 0px;
 }
-.rnacentral-masthead2 {
-	padding: 0px;
-}
-.navbar-right {
-	padding-right: 0px;
-}
+
 .max-height-500 {
-	max-height: 500px;
-	overflow: auto;
+  max-height: 500px;
+  overflow: auto;
 }
-.container-main {
-	min-height: 500px;
-}
+
 ul.breadcrumb.rnacentral-api {
-	margin-top: 10px;
+  margin-top: 10px;
 }
