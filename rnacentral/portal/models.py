@@ -41,12 +41,13 @@ class Rna(models.Model):
 class Database(models.Model):
     timestamp = models.DateField()
     userstamp = models.CharField(max_length=30)
-    descr = models.TextField()
+    descr = models.CharField(max_length=30)
     current_release = models.IntegerField()
     full_descr = models.CharField(max_length=255)
     alive = models.CharField(max_length=1)
     for_release = models.CharField(max_length=1)
     display_name = models.CharField(max_length=40)
+    logo = models.CharField(max_length=50)
 
     class Meta:
         db_table = 'rnc_database'
