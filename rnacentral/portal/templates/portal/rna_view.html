@@ -111,8 +111,8 @@
                         <td><a href="http://rfam.sanger.ac.uk/family/{{ xref.accession.external_id }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }} family)</td>
                       {% elif xref.db.display_name == 'SRPDB' %}
                         <td><a href="http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/{{ xref.accession.external_id }}.fasta" target="_blank">{{ xref.accession.external_id }}</a></td>
-                      {% elif xref.db.display_name == 'MIRBASE' %}
-                        <td>MIRBASE cross-references not available yet</td>
+                      {% elif xref.db.display_name == 'miRBase' %}
+                        <td>miRBase cross-references not available yet</td>
                       {% endif %}
                       <!-- accession -->
                       <td>{{ xref.accession.division }} </td>
