@@ -8,10 +8,10 @@
 
 {% block content %}
 
-<h2>
+<h1>
   <img src="{% static 'img/expert-db-logos/'|add:context.expert_db_logo|add:'' %}" alt="{{context.expert_db_name}} logo" class="img-rounded expert-db-logo">
   {{ context.expert_db_name }} Expert Database
-</h2>
+</h1>
 
 <p>
   {% if context.expert_db_name == 'miRBase' %}
