@@ -8,7 +8,9 @@
 
 {% block content %}
 
-<h2><a href="">{{ rna.upi }}</a></h2>
+<h1>
+  <a href="">{{ rna.upi }}</a>
+</h1>
 
 <div class="row">
 
@@ -58,183 +60,201 @@
 
         <div class="tab-pane active" id="overview">
 
-          <br>
+          <h2>
+            Overview
+          </h2>
 
-          <div class="well">
-            <h3>
-              Overview
-            </h3>
-            <p>
-              {{ rna.len|intcomma }} nucleotides |
-              {{ context.num_db }} database{{ context.num_db|pluralize }} | {{ context.num_org }} organism{{ context.num_org|pluralize|intcomma }} |
-              first seen {{ context.first_seen }} | last seen {{ context.last_seen }}
-            </p>
-          </div>
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <ul class="list-inline">
+                <li><strong>{{ rna.len|intcomma }}</strong> nucleotides</li>
+                <li><strong>{{ context.num_db }}</strong> database{{ context.num_db|pluralize }}</li>
+                <li><strong>{{ context.num_org }}</strong> organism{{ context.num_org|pluralize|intcomma }}</li>
+                <li>first seen {{ context.first_seen }}</li>
+                <li>last updated {{ context.last_seen }}</li>
+              </ul>
+            </div>
+          </div> <!-- .panel .panel-default -->
 
-          <div class="well">
-            <h3>
-              Database cross-references
-              {% if context.xref_paginator.paginator.num_pages > 1 %}
-                <small>page {{ context.xref_paginator.number }} out of {{ context.xref_paginator.paginator.num_pages }}</small>
-              {% else %}
-                <small>{{ context.xrefs.count }}</small>
-              {% endif %}
-            </h3>
-
-            <div class="table-responsive max-height-500">
-              <table class="table table-striped table-condensed" id="results">
-                <thead>
-                  <tr>
-                    <th>Database</th>
-                    <th>Identifier</th>
-                    <th>Division</th>
-                    <th>Organism</th>
-                    <th>First seen</th>
-                    <th>Last seen</th>
-                    <th>Active</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {% for xref in context.xref_paginator %}
-                    <tr>
-                      <td>
-                        <a href="{% url 'portal.views.expert_database_view' expert_db_name=xref.db.display_name %}">{{ xref.db.display_name }}</a>
-                      </td>
-                      <!-- accession -->
-                      {% if xref.db.display_name == 'ENA' %}
-                        <td>
-                          <a href="http://www.ebi.ac.uk/ena/data/view/{{ xref.accession.parent_ac }}" target="_blank" title="{{ xref.accession.accession }}">{{ xref.accession.parent_ac }}</a>
-                          {{ xref.accession.description }}
-                        </td>
-                      {% elif xref.db.display_name == 'RFAM' %}
-                        <td><a href="http://rfam.sanger.ac.uk/family/{{ xref.accession.external_id }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }} family)</td>
-                      {% elif xref.db.display_name == 'SRPDB' %}
-                        <td><a href="http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/{{ xref.accession.external_id }}.fasta" target="_blank">{{ xref.accession.external_id }}</a></td>
-                      {% elif xref.db.display_name == 'miRBase' %}
-                        <td>miRBase cross-references not available yet</td>
-                      {% endif %}
-                      <!-- accession -->
-                      <td>{{ xref.accession.division }} </td>
-                      <td><a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank"><em>{{ xref.accession.species }}</em></a></td>
-                      <td>{{ xref.created.release_date }}</td>
-                      <td>{{ xref.last.release_date }}</td>
-                      <td>
-                        {% if xref.deleted == 'N' %}
-                            Yes
-                        {% else %}
-                            No
-                        {% endif %}
-                      </td>
-                    </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div> <!-- .table-responsive -->
-            <!-- pagination -->
+          <h2>
+            Database cross-references
             {% if context.xref_paginator.paginator.num_pages > 1 %}
-            <ul class="pager">
-              {% if context.xref_paginator.has_previous %}
-                <li>
-                  <a href="?xref-page={{ context.xref_paginator.previous_page_number }}">previous</a>
-                </li>
-              {% endif %}
-
-              {% if context.xref_paginator.has_next %}
-                <li>
-                  <a href="?xref-page={{ context.xref_paginator.next_page_number }}">next</a>
-                </li>
-              {% endif %}
-            </ul>
+              <small>page {{ context.xref_paginator.number }} out of {{ context.xref_paginator.paginator.num_pages }}</small>
+            {% else %}
+              <small>{{ context.xrefs.count }}</small>
             {% endif %}
-            <!-- pagination -->
-          </div>
+          </h2>
 
-          <div class="well">
-            <h3>
-               References
+          <div class="table-responsive max-height-500">
+            <table class="table table-striped table-condensed" id="results">
+              <thead>
+                <tr>
+                  <th>Database</th>
+                  <th>Description</th>
+                  <th>Division</th>
+                  <th>Organism</th>
+                  <th>First seen</th>
+                  <th>Last seen</th>
+                  <th>Active</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for xref in context.xref_paginator %}
+                  <tr>
+                    <td>
+                      <a href="{% url 'portal.views.expert_database_view' expert_db_name=xref.db.display_name %}">{{ xref.db.display_name }}</a>
+                    </td>
+                    <!-- accession -->
+                    <td>
+                    {% if xref.db.display_name == 'ENA' %}
+                        <a href="http://www.ebi.ac.uk/ena/data/view/{{ xref.accession.parent_ac }}" target="_blank" title="{{ xref.accession.accession }}">{{ xref.accession.parent_ac }}</a>
+                        <br>
+                        {{ xref.accession.description }}
+                    {% elif xref.db.display_name == 'RFAM' %}
+                      <a href="http://rfam.sanger.ac.uk/family/{{ xref.accession.external_id }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }} family)
+                    {% elif xref.db.display_name == 'SRPDB' %}
+                      <a href="http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/{{ xref.accession.external_id }}.fasta" target="_blank">{{ xref.accession.external_id }}</a>
+                    {% elif xref.db.display_name == 'miRBase' %}
+                      miRBase cross-references not available yet
+                    {% elif xref.db.display_name == 'VEGA' %}
+                      Transcript <a href=" http://vega.sanger.ac.uk/Homo_sapiens/Transcript/Summary?db=core;t={{ xref.accession.optional_id }}" target="_blank">{{ xref.accession.optional_id }}</a>
+                      from gene <a href="http://vega.sanger.ac.uk/Homo_sapiens/Gene/Summary?db=core;g={{ xref.accession.external_id }}" target="_blank">{{ xref.accession.external_id }}</a>
+                      <br>
+                      {% if xref.splice_variants %}
+                        Alternative transcript{{ xref.splice_variants|pluralize }} from the same gene:
+                        {% for splice_variant in xref.splice_variants %}
+                          <a href="{% url  'portal.views.rna_view' upi=splice_variant.upi %}">{{ splice_variant.upi }}</a>
+                          ({{ splice_variant.len|intcomma }} nts){% if not forloop.last %},{% else %}.{% endif %}
+                        {% endfor %}
+                      {% else %}
+                        No known alternative transcripts.
+                      {% endif %}
+                    {% endif %}
+                    </td>
+                    <!-- accession -->
+                    <td>{{ xref.accession.division }} </td>
+                    <td><a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank"><em>{{ xref.accession.species }}</em></a></td>
+                    <td>{{ xref.created.release_date }}</td>
+                    <td>{{ xref.last.release_date }}</td>
+                    <td>
+                      {% if xref.deleted == 'N' %}
+                          Yes
+                      {% else %}
+                          No
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div> <!-- .table-responsive -->
+
+          <!-- pagination -->
+          {% if context.xref_paginator.paginator.num_pages > 1 %}
+          <ul class="pager">
+            {% if context.xref_paginator.has_previous %}
+              <li>
+                <a href="?xref-page={{ context.xref_paginator.previous_page_number }}">previous</a>
+              </li>
+            {% endif %}
+
+            {% if context.xref_paginator.has_next %}
+              <li>
+                <a href="?xref-page={{ context.xref_paginator.next_page_number }}">next</a>
+              </li>
+            {% endif %}
+          </ul>
+          {% endif %}
+          <!-- pagination -->
+
+          <h2>
+            References
+            <small>
               {% if context.ref_paginator.paginator.num_pages > 1 %}
                 <small>page {{ context.ref_paginator.number }} out of {{ context.ref_paginator.paginator.num_pages }}</small>
-              {% else %}
-                <small>{{ rna.refs.count }}</small>
               {% endif %}
-             </h3>
-             <div>
-               <ul>
-                 {% for ref in context.ref_paginator %}
-                   <li>
-                     <blockquote>
-                       <strong>
-                         {% if ref.location|slice:":9" == 'Submitted' %}
-                           ISNDC submission
-                         {% else %}
-                           {{ ref.title|default:"No title available" }}
-                         {% endif %}
-                       </strong>
-                       <br>
-                       {{ ref.authors }}
-                       <small>{{ ref.location }}</small>
-                     </blockquote>
-                   </li>
-                 {% endfor %}
-               </ul>
-               <!-- pagination -->
-               {% if context.ref_paginator.paginator.num_pages > 1 %}
-               <ul class="pager">
-                 {% if context.ref_paginator.has_previous %}
-                   <li>
-                     <a href="?ref-page={{ context.ref_paginator.previous_page_number }}">previous</a>
-                   </li>
-                 {% endif %}
+            </small>
+          </h2>
 
-                 {% if context.ref_paginator.has_next %}
-                   <li>
-                     <a href="?ref-page={{ context.ref_paginator.next_page_number }}">next</a>
-                   </li>
-                 {% endif %}
-               </ul>
+          <div class="panel panel-default">
+            <div class="panel-body">
+             <ol>
+               {% for ref in context.ref_paginator %}
+                 <li>
+                   <blockquote>
+                     <strong>
+                       {% if ref.location|slice:":9" == 'Submitted' %}
+                         ISNDC submission
+                       {% else %}
+                         {{ ref.title|default:"No title available" }}
+                       {% endif %}
+                     </strong>
+                     <br>
+                     {{ ref.authors }}
+                     <small>{{ ref.location }}</small>
+                   </blockquote>
+                 </li>
+               {% endfor %}
+             </ol>
+             <!-- pagination -->
+             {% if context.ref_paginator.paginator.num_pages > 1 %}
+             <ul class="pager">
+               {% if context.ref_paginator.has_previous %}
+                 <li>
+                   <a href="?ref-page={{ context.ref_paginator.previous_page_number }}">previous</a>
+                 </li>
                {% endif %}
-               <!-- pagination -->
-             </div>
-           </div>
 
-           <div class="well">
-             <h3>
-              Sequence
-              <small>
-                <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
-                        width="110"
-                        height="14"
-                        id="clippy" >
-                <param name="movie" value="{% static "flash/clippy.swf" %}"/>
-                <param name="allowScriptAccess" value="always" />
-                <param name="quality" value="high" />
-                <param name="scale" value="noscale" />
-                <param NAME="FlashVars" value="text={{ rna.get_sequence }}">
-                <param name="bgcolor" value="#F5F5F5">
-                <embed src="{% static "flash/clippy.swf" %}"
-                       width="110"
-                       height="14"
-                       name="clippy"
-                       quality="high"
-                       allowScriptAccess="always"
-                       type="application/x-shockwave-flash"
-                       pluginspage="http://www.macromedia.com/go/getflashplayer"
-                       FlashVars="text={{ rna.get_sequence }}"
-                       bgcolor="#F5F5F5"
-                />
-                </object>
-              </small>
-            </h3>
-            <p>
-              {{ rna.len|intcomma }} nucleotides ({{ context.counts.A|intcomma }} As; {{ context.counts.C|intcomma }} Cs;
-              {{ context.counts.G|intcomma }} Gs; {{ context.counts.U|intcomma }} Us), {{ context.counts.N|intcomma|default:"no " }} unknown characters.
-            </p>
-            <pre class="pre-scrollable">
+               {% if context.ref_paginator.has_next %}
+                 <li>
+                   <a href="?ref-page={{ context.ref_paginator.next_page_number }}">next</a>
+                 </li>
+               {% endif %}
+             </ul>
+             {% endif %}
+             <!-- pagination -->
+            </div>
+          </div> <!-- .panel .panel-default -->
+
+
+           <h2>
+            Sequence
+            <small>
+              <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
+                      width="110"
+                      height="14"
+                      id="clippy" >
+              <param name="movie" value="{% static "flash/clippy.swf" %}"/>
+              <param name="allowScriptAccess" value="always" />
+              <param name="quality" value="high" />
+              <param name="scale" value="noscale" />
+              <param NAME="FlashVars" value="text={{ rna.get_sequence }}">
+              <param name="bgcolor" value="#FFFFFF">
+              <embed src="{% static "flash/clippy.swf" %}"
+                     width="110"
+                     height="14"
+                     name="clippy"
+                     quality="high"
+                     allowScriptAccess="always"
+                     type="application/x-shockwave-flash"
+                     pluginspage="http://www.macromedia.com/go/getflashplayer"
+                     FlashVars="text={{ rna.get_sequence }}"
+                     bgcolor="#FFFFFF"
+              />
+              </object>
+            </small>
+          </h2>
+
+          <p>
+            {{ rna.len|intcomma }} nucleotides ({{ context.counts.A|intcomma }} As; {{ context.counts.C|intcomma }} Cs;
+            {{ context.counts.G|intcomma }} Gs; {{ context.counts.U|intcomma }} Us), {{ context.counts.N|intcomma|default:"no " }} unknown characters.
+          </p>
+          <pre class="pre-scrollable">
 {{ rna.get_sequence }}</pre>
-          </div>
 
-        </div>
+
+        </div> <!-- .tab-pane .active -->
 
         <div class="tab-pane" id="2d">
         </div>
@@ -245,10 +265,10 @@
         <div class="tab-pane" id="genomes">
         </div>
 
-      </div>
-    </div>
-  </div>
-</div>
+      </div> <!--  tab-content -->
+    </div> <!--  tabbable -->
+  </div> <!--  col-md-12 -->
+</div> <!--  row -->
 
 
 {% endblock content %}

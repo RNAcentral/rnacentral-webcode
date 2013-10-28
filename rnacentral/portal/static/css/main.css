@@ -163,3 +163,15 @@ ul.breadcrumb.rnacentral-api {
 .expert-db-logo {
   width: 100px;
 }
+
+.list-inline {
+  margin-bottom: 0px;
+}
+
+.nav-tabs {
+  margin-bottom: 20px;
+}
+
+.tabbable {
+  margin-bottom: 20px;
+}
