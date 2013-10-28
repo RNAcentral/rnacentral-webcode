@@ -94,7 +94,7 @@ class Accessions(models.Model):
 
 class Xref(models.Model):
     db = models.ForeignKey(Database, db_column='dbid')
-    accession = models.ForeignKey(Accessions, db_column='ac', to_field='accession')
+    accession = models.ForeignKey(Accessions, db_column='ac', to_field='accession', related_name='xrefs')
     created = models.ForeignKey(Release, db_column='created', related_name='release_created')
     last = models.ForeignKey(Release, db_column='last', related_name='last_release')
     upi = models.ForeignKey(Rna, db_column='upi', to_field='upi', related_name='xrefs')

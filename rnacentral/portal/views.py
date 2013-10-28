@@ -1,4 +1,4 @@
-from portal.models import Rna, Database, Release, Xref
+from portal.models import Rna, Database, Release, Xref, Accessions
 from rest_framework import viewsets
 from portal.serializers import RnaSerializer
 from portal.forms import ContactForm
@@ -43,6 +43,18 @@ def rna_view(request, upi):
         context['num_db'] = context['xrefs'].values('db_id').distinct().count()
         context.update(context['xrefs'].aggregate(first_seen=Min('created__release_date'),
                                                   last_seen=Max('last__release_date')))
+        # VEGA alternative splice variants
+        for i, xref in enumerate(context['xrefs']):
+            if xref.db.display_name == 'VEGA':
+                context['xrefs'][i].splice_variants = []
+                for splice_variant in Accessions.objects.filter(external_id=xref.accession.external_id,
+                                                                xrefs__db__display_name='VEGA').\
+                                                         exclude(optional_id=xref.accession.optional_id).\
+                                                         all():
+                    for splice_xref in splice_variant.xrefs.all():
+                        rnac = splice_xref.upi
+                        rnac.upi = rnac.upi.replace('UPI', 'RNA')
+                        context['xrefs'][i].splice_variants.append(rnac)
         # xref pagination
         xref_paginator = Paginator(context['xrefs'], 10)
         if request.GET.get('xref-page'):
