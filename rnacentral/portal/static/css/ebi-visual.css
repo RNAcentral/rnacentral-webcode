@@ -37,14 +37,14 @@ body {
   font-family: Verdana,sans-serif;
 }
 
-@font-face {
+/*@font-face {
   font-family:'HelveticaNeueLT Pro';src:url('http://www.ebi.ac.uk/web_guidelines/fonts/helveticaneueltprolt.eot');src:url('http://www.ebi.ac.uk/web_guidelines/fonts/helveticaneueltprolt.eot?#iefix') format('embedded-opentype'),
 url('http://www.ebi.ac.uk/web_guidelines/fonts/helveticaneueltprolt.otf') format('opentype'),
 local('☺'),
 url('http://www.ebi.ac.uk/web_guidelines/fonts/helveticaneueltprolt.woff') format('woff'),
 url('http://www.ebi.ac.uk/web_guidelines/fonts/helveticaneueltprolt.ttf') format('truetype'),
 url('http://www.ebi.ac.uk/web_guidelines/fonts/helveticaneueltprolt.svg#HelveticaNeueLTPro-Lt') format('svg');font-weight:normal;font-style:normal;
-}
+}*/
 
 h1,h2,h3,h4,h5,h6 {
   font-family: 'HelveticaNeueLT Pro','Helvetica Neue',Helvetica,Arial,sans-serif;

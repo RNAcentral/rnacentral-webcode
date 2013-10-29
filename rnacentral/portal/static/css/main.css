@@ -26,6 +26,19 @@ body {
   padding-top: 10px;
 }
 
+@font-face {
+  font-family:'HelveticaNeueLT Pro';
+  src:url('../fonts/helveticaneueltprolt.eot');
+  src:url('../fonts/helveticaneueltprolt.eot?#iefix') format('embedded-opentype'),
+      url('../fonts/helveticaneueltprolt.otf') format('opentype'),
+      local('☺'),
+      url('../fonts/helveticaneueltprolt.woff') format('woff'),
+      url('../fonts/helveticaneueltprolt.ttf') format('truetype'),
+      url('../fonts/helveticaneueltprolt.svg#HelveticaNeueLTPro-Lt') format('svg');
+  font-weight:normal;
+  font-style:normal;
+}
+
 /*------------------------------------------------------------------
 [2. Masthead]
 */
