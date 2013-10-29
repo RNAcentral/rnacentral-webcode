@@ -94,7 +94,13 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    # caching
+    'django.middleware.cache.UpdateCacheMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
+    # gzip
     'django.middleware.gzip.GZipMiddleware',
+    # default
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -105,6 +111,10 @@ MIDDLEWARE_CLASSES = (
     'debug_toolbar.middleware.DebugToolbarMiddleware', # django-debug-toolbar
     'maintenancemode.middleware.MaintenanceModeMiddleware', # django-maintenance
 )
+
+CACHE_MIDDLEWARE_ALIAS = 'default'
+CACHE_MIDDLEWARE_SECONDS = 600
+CACHE_MIDDLEWARE_KEY_PREFIX = ''
 
 ROOT_URLCONF = 'rnacentral.urls'
 
@@ -205,6 +215,13 @@ DEBUG_TOOLBAR_PANELS = (
 
 # django-maintenance
 MAINTENANCE_MODE = False
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'rnacentral-main-cache'
+    }
+}
 
 try:
    from local_settings import *
