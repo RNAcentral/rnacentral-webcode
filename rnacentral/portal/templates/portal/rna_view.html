@@ -86,7 +86,7 @@
           </h2>
 
           <div class="table-responsive max-height-500">
-            <table class="table table-striped table-condensed table-bordered" id="results">
+            <table class="table {% if context.xrefs.count > 2 %}table-striped{% endif %} table-condensed table-bordered" id="results">
               <thead>
                 <tr>
                   <th>Database</th>
@@ -108,7 +108,7 @@
                     <!-- accession -->
                     <td>
                     {% if xref.db.display_name == 'ENA' %}
-                        <a href="http://www.ebi.ac.uk/ena/data/view/{{ xref.accession.parent_ac }}" target="_blank" title="{{ xref.accession.accession }}">{{ xref.accession.parent_ac }}</a>
+                        <a href="http://www.ebi.ac.uk/ena/data/view/{{ xref.accession.parent_ac }}" target="_blank" title="{{ xref.accession.accession }} at ENA">{{ xref.accession.parent_ac }}</a>
                         <br>
                         {{ xref.accession.description }}
                     {% elif xref.db.display_name == 'RFAM' %}
@@ -118,8 +118,8 @@
                     {% elif xref.db.display_name == 'miRBase' %}
                       miRBase cross-references not available yet
                     {% elif xref.db.display_name == 'VEGA' %}
-                      Transcript <a href=" http://vega.sanger.ac.uk/Homo_sapiens/Transcript/Summary?db=core;t={{ xref.accession.optional_id }}" target="_blank">{{ xref.accession.optional_id }}</a>
-                      from gene <a href="http://vega.sanger.ac.uk/Homo_sapiens/Gene/Summary?db=core;g={{ xref.accession.external_id }}" target="_blank">{{ xref.accession.external_id }}</a>
+                      Transcript <a href="http://vega.sanger.ac.uk/Homo_sapiens/Transcript/Summary?db=core;t={{ xref.accession.optional_id }}" target="_blank" title="View the transcript at VEGA">{{ xref.accession.optional_id }}</a>
+                      from gene <a href="http://vega.sanger.ac.uk/Homo_sapiens/Gene/Summary?db=core;g={{ xref.accession.external_id }}" target="_blank" title="View the gene at VEGA">{{ xref.accession.external_id }}</a>
                       <br>
                       {% if xref.splice_variants %}
                         Alternative transcript{{ xref.splice_variants|pluralize }} from the same gene:
@@ -134,7 +134,7 @@
                     </td>
                     <!-- accession -->
                     <td>{{ xref.accession.division }} </td>
-                    <td><a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank"><em>{{ xref.accession.species }}</em></a></td>
+                    <td><a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank" title="View the species in ENA"><em>{{ xref.accession.species }}</em></a></td>
                     <td>{{ xref.created.release_date }}</td>
                     <td>{{ xref.last.release_date }}</td>
                     <td>
