@@ -54,50 +54,6 @@ h1,h2,h3,h4,h5,h6 {
   line-height: 1.2;
 }
 
-h1 {
-  font-size: 370%;
-  margin: 20px
-0;
-}
-
-h1.strapline {
-  font-size: 277%;
-}
-
-h2 {
-  font-size: 277%;
-  line-height: 1.11;
-}
-
-h2.strapline {
-  font-size: 182%;
-}
-
-td
-h2 {
-  font-size: 257%;
-}
-
-h3 {
-  font-size: 182%;
-}
-
-h4 {
-  font-size: 161.6%;
-  color: #000;
-}
-
-h5 {
-  font-size: 138.5%;
-  color: #000;
-}
-
-h6 {
-  font-size: 123%;
-  font-variant: small-caps;
-  color: #000;
-}
-
 p,ul,ol {
   font-size: 100%;
   margin: 0
