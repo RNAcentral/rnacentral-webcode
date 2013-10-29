@@ -105,6 +105,16 @@ div#local-search form fieldset, form#local-search fieldset {
   margin: 0px;
 }
 
+@media (max-width: 767px) {
+  .navbar-default .navbar-nav .open .dropdown-menu>li>a,
+  .navbar-default .navbar-nav>li>a>b {
+    color: #C9C9C9;
+  }
+  .navbar-default .navbar-nav .open .dropdown-menu>li>a:hover {
+    color: white;
+  }
+}
+
 /*------------------------------------------------------------------
 [3. Footer]
 */
