@@ -30,14 +30,14 @@ body {
 [2. Masthead]
 */
 .rnacentral-masthead {
-  background: rgb(193,221,233); /* Old browsers */
-  background: -moz-linear-gradient(left, rgba(193,221,233,1) 30%, rgba(161,200,217,1) 49%); /* FF3.6+ */
-  background: -webkit-gradient(linear, left top, right top, color-stop(30%,rgba(193,221,233,1)), color-stop(49%,rgba(161,200,217,1))); /* Chrome,Safari4+ */
-  background: -webkit-linear-gradient(left, rgba(193,221,233,1) 30%,rgba(161,200,217,1) 49%); /* Chrome10+,Safari5.1+ */
-  background: -o-linear-gradient(left, rgba(193,221,233,1) 30%,rgba(161,200,217,1) 49%); /* Opera 11.10+ */
-  background: -ms-linear-gradient(left, rgba(193,221,233,1) 30%,rgba(161,200,217,1) 49%); /* IE10+ */
-  background: linear-gradient(to right, rgba(193,221,233,1) 30%,rgba(161,200,217,1) 49%); /* W3C */
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c1dde9', endColorstr='#a1c8d9',GradientType=1 ); /* IE6-9 */
+  background: rgb(188,216,224); /* Old browsers */
+  background: -moz-linear-gradient(left,  rgba(188,216,224,1) 41%, rgba(154,195,206,1) 68%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, right top, color-stop(41%,rgba(188,216,224,1)), color-stop(68%,rgba(154,195,206,1))); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(left,  rgba(188,216,224,1) 41%,rgba(154,195,206,1) 68%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(left,  rgba(188,216,224,1) 41%,rgba(154,195,206,1) 68%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(left,  rgba(188,216,224,1) 41%,rgba(154,195,206,1) 68%); /* IE10+ */
+  background: linear-gradient(to right,  rgba(188,216,224,1) 41%,rgba(154,195,206,1) 68%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bcd8e0', endColorstr='#9ac3ce',GradientType=1 ); /* IE6-9 */
 }
 
 .rnacentral-masthead-menu {
@@ -101,6 +101,10 @@ div#local-search form fieldset, form#local-search fieldset {
 	margin-top: 5px;
 }
 
+.navbar-nav {
+  margin: 0px;
+}
+
 /*------------------------------------------------------------------
 [3. Footer]
 */
@@ -118,6 +122,10 @@ div#local-search form fieldset, form#local-search fieldset {
   width: 140px;
 }
 
+footer a:hover {
+  text-decoration: none;
+}
+
 /*------------------------------------------------------------------
 [4. General styles]
 */
@@ -126,17 +134,7 @@ div#local-search form fieldset, form#local-search fieldset {
 }
 
 pre {
-  background : white;
   font-family: monospace;
-}
-
-a, a:hover, a:visited, a:link {
-  border-bottom: none;
-  text-decoration: none;
-}
-
-th {
-  color: black;
 }
 
 .glyphicon {
@@ -174,4 +172,17 @@ ul.breadcrumb.rnacentral-api {
 
 .tabbable {
   margin-bottom: 20px;
+}
+
+h1, h2, h3 {
+  color: #BF8E3E;
+}
+
+/*highlight external links on hover*/
+a[href^="http://"]:not([href*="rnacentral.org"]):hover {
+  color: #DD8621;
+}
+
+h3.panel-title {
+  color: black;
 }

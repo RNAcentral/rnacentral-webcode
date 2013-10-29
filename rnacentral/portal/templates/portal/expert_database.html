@@ -28,7 +28,7 @@
 
 <div class="col-md-6">
 
-  <h3>Statistics</h3>
+  <h2>Statistics</h2>
   <ul>
     <li>
       <strong>{{ context.total_sequences|intcomma }}</strong> sequences
@@ -45,14 +45,14 @@
     </li>
   </ul>
 
-    <h3>Example entries</h3>
+    <h2>Example entries</h2>
     <p>
     {% for example in context.examples %}
       <a href="{% url 'portal.views.rna_view' upi=example.upi %}">{{ example.upi }}</a>{% if not forloop.last %},{% else %}.{% endif %}
     {% endfor %}
     </p>
 
-    <h3>Links</h3>
+    <h2>Links</h2>
     <ul>
       {% if context.expert_db_name == 'miRBase' %}
         <li><a href="http://mirbase.org" target="_blank">miRBase homepage</a></li>
@@ -78,7 +78,7 @@
 </div>
 
 
-<h3>References</h3>
+<h2>References</h2>
 
 {% if context.expert_db_name == 'miRBase' %}
   <blockquote>
