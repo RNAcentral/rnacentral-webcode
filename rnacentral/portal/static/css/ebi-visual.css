@@ -2,61 +2,365 @@
  * Copyright (c) EMBL-EBI 2013
  * Authors: Francis Rowland, Peter Walter, Glen van Ginkel, Nicola Buso
  */
-*{font-weight:normal;font-style:normal;text-decoration:none;text-align:left;text-indent:0}body{margin:0
-auto;width:96%;max-width:1350px}body.narrow{max-width:984px}body.wide{max-width:1600px}body.full-width{max-width:none}body.level1{max-width:1200px}body{font-family:Verdana,sans-serif}@font-face{font-family:'HelveticaNeueLT Pro';src:url('http://www.ebi.ac.uk/web_guidelines/fonts/helveticaneueltprolt.eot');src:url('http://www.ebi.ac.uk/web_guidelines/fonts/helveticaneueltprolt.eot?#iefix') format('embedded-opentype'),
+* {
+  font-weight: normal;
+  font-style: normal;
+  text-decoration: none;
+  text-align: left;
+  text-indent: 0;
+}
+
+body {
+  margin: 0
+auto;
+  width: 96%;
+  max-width: 1350px;
+}
+
+body.narrow {
+  max-width: 984px;
+}
+
+body.wide {
+  max-width: 1600px;
+}
+
+body.full-width {
+  max-width: none;
+}
+
+body.level1 {
+  max-width: 1200px;
+}
+
+body {
+  font-family: Verdana,sans-serif;
+}
+
+@font-face {
+  font-family:'HelveticaNeueLT Pro';src:url('http://www.ebi.ac.uk/web_guidelines/fonts/helveticaneueltprolt.eot');src:url('http://www.ebi.ac.uk/web_guidelines/fonts/helveticaneueltprolt.eot?#iefix') format('embedded-opentype'),
 url('http://www.ebi.ac.uk/web_guidelines/fonts/helveticaneueltprolt.otf') format('opentype'),
 local('☺'),
 url('http://www.ebi.ac.uk/web_guidelines/fonts/helveticaneueltprolt.woff') format('woff'),
 url('http://www.ebi.ac.uk/web_guidelines/fonts/helveticaneueltprolt.ttf') format('truetype'),
-url('http://www.ebi.ac.uk/web_guidelines/fonts/helveticaneueltprolt.svg#HelveticaNeueLTPro-Lt') format('svg');font-weight:normal;font-style:normal}h1,h2,h3,h4,h5,h6{font-family:'HelveticaNeueLT Pro','Helvetica Neue',Helvetica,Arial,sans-serif;margin:9px
-0;clear:both;line-height:1.2}h1{font-size:370%;margin:20px
-0}h1.strapline{font-size:277%}h2{font-size:277%;line-height:1.11}h2.strapline{font-size:182%}td
-h2{font-size:257%}h3{font-size:182%}h4{font-size:161.6%;color:#000}h5{font-size:138.5%;color:#000}h6{font-size:123%;font-variant:small-caps;color:#000}p,ul,ol{font-size:100%;margin:0
-0 20px 0}nav
-ul{font-size:108%}dt{font-family:'HelveticaNeueLT Pro','Helvetica Neue',Helvetica,Arial,sans-serif;margin:9px
-0;padding:0
-9px;clear:both;line-height:1.2;font-size:138.5%}ul ul,
+url('http://www.ebi.ac.uk/web_guidelines/fonts/helveticaneueltprolt.svg#HelveticaNeueLTPro-Lt') format('svg');font-weight:normal;font-style:normal;
+}
+
+h1,h2,h3,h4,h5,h6 {
+  font-family: 'HelveticaNeueLT Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
+  margin: 9px
+0;
+  clear: both;
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 370%;
+  margin: 20px
+0;
+}
+
+h1.strapline {
+  font-size: 277%;
+}
+
+h2 {
+  font-size: 277%;
+  line-height: 1.11;
+}
+
+h2.strapline {
+  font-size: 182%;
+}
+
+td
+h2 {
+  font-size: 257%;
+}
+
+h3 {
+  font-size: 182%;
+}
+
+h4 {
+  font-size: 161.6%;
+  color: #000;
+}
+
+h5 {
+  font-size: 138.5%;
+  color: #000;
+}
+
+h6 {
+  font-size: 123%;
+  font-variant: small-caps;
+  color: #000;
+}
+
+p,ul,ol {
+  font-size: 100%;
+  margin: 0
+0 20px 0;
+}
+
+nav
+ul {
+  font-size: 108%;
+}
+
+dt {
+  font-family: 'HelveticaNeueLT Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
+  margin: 9px
+0;
+  padding: 0
+9px;
+  clear: both;
+  line-height: 1.2;
+  font-size: 138.5%;
+}
+
+ul ul,
 ul ul ul,
 ol ol,
 ol ol
-ol{margin-bottom:0}p.meta{font-size:85%;color:#444}div#global-masthead
-p{font-size:123.1%;font-family:'HelveticaNeueLT Pro',Helvetica,Arial,sans-serif}blockquote{font-size:100%;margin:19px
-9px;padding:10px
-9px;border-left:3px solid #eee}#intro,#outro{background-color:#ededed;display:block;padding-bottom:9px;-moz-border-radius:5px;-khtml-border-radius:5px;-webkit-border-radius:5px;border-radius:5px}#intro
-h2{margin:0;margin-bottom:5px;padding-top:13px;border-bottom:1px solid #ccc}#intro h2>p,#outro>p,.highlight>p{padding-top:1em}.shortcuts
-h3{border-bottom:0 none;font-size:138.5%;line-height:inherit;background-color:#DDD;margin-top:0;margin-bottom:0;padding-top:7px;padding-bottom:1px;-moz-border-radius-topleft:5px;-moz-border-radius-topright:5px;-khtml-border-radius-topleft:5px;-khtml-border-radius-topright:5px;-webkit-border-top-left-radius:5px;-webkit-border-top-right-radius:5px;border-top-left-radius:5px;border-top-right-radius:5px}.shortcuts.submenu
-h3{background-color:#222;color:#eee}.shortcuts #ebi_search_results
-h3{font-size:123.1%}.shortcuts
-ul{padding:0.69em 1.4em}.shortcuts
-div.half{float:left;width:50%;padding:0.69em 0em}.shortcuts>div,div.highlight{width:auto;background:#ededed;padding-bottom:10px;margin:0
-9px 9px 9px;overflow:visible;-moz-box-shadow:none;-webkit-box-shadow:none;box-shadow:none}.shortcuts.transparent>div{background:transparent}.shortcuts.image>div
-p{padding:0}.shortcuts.image>div
-a{display:block;border-bottom:3px solid white}.shortcuts.image>div a:hover,
+ol {
+  margin-bottom: 0;
+}
+
+p.meta {
+  font-size: 85%;
+  color: #444;
+}
+
+div#global-masthead
+p {
+  font-size: 123.1%;
+  font-family: 'HelveticaNeueLT Pro',Helvetica,Arial,sans-serif;
+}
+
+blockquote {
+  font-size: 100%;
+  margin: 19px
+9px;
+  padding: 10px
+9px;
+  border-left: 3px solid #eee;
+}
+
+#intro,#outro {
+  background-color: #ededed;
+  display: block;
+  padding-bottom: 9px;
+  -moz-border-radius: 5px;
+  -khtml-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+
+#intro
+h2 {
+  margin: 0;
+  margin-bottom: 5px;
+  padding-top: 13px;
+  border-bottom: 1px solid #ccc;
+}
+
+#intro h2>p,#outro>p,.highlight>p {
+  padding-top: 1em;
+}
+
+.shortcuts
+h3 {
+  border-bottom: 0 none;
+  font-size: 138.5%;
+  line-height: inherit;
+  background-color: #DDD;
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 7px;
+  padding-bottom: 1px;
+  -moz-border-radius-topleft: 5px;
+  -moz-border-radius-topright: 5px;
+  -khtml-border-radius-topleft: 5px;
+  -khtml-border-radius-topright: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.shortcuts.submenu
+h3 {
+  background-color: #222;
+  color: #eee;
+}
+
+.shortcuts #ebi_search_results
+h3 {
+  font-size: 123.1%;
+}
+
+.shortcuts
+ul {
+  padding: 0.69em 1.4em;
+}
+
+.shortcuts
+div.half {
+  float: left;
+  width: 50%;
+  padding: 0.69em 0em;
+}
+
+.shortcuts>div,div.highlight {
+  width: auto;
+  background: #ededed;
+  padding-bottom: 10px;
+  margin: 0
+9px 9px 9px;
+  overflow: visible;
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+.shortcuts.transparent>div {
+  background: transparent;
+}
+
+.shortcuts.image>div
+p {
+  padding: 0;
+}
+
+.shortcuts.image>div
+a {
+  display: block;
+  border-bottom: 3px solid white;
+}
+
+.shortcuts.image>div a:hover,
 .shortcuts.image>div a:focus,
-.shortcuts.image>div a:active{border-bottom-color:#207a7a}div.highlight{border:4px
-solid #ddd;-moz-border-radius:5px;-khtml-border-radius:5px;-webkit-border-radius:5px;border-radius:5px}body.level1 .shortcuts>div{max-width:400px}body.level1 .shortcuts>div{padding-bottom:0}body.level1 .shortcuts
-img{margin:0;padding:0}.shortcuts>div
-ul.split{float:left;width:42%;margin:0
-1%;list-style:none;padding:9px
-0 9px 9px}.shortcuts>div ul li
-a{display:block;border-bottom-color:#ccc}div.highlight{overflow:visible;margin:0}div.highlight
-h3{border-bottom:0 none;line-height:inherit;background-color:#DDD;margin-top:0;margin-bottom:0}body.page-services
-div.highlight{margin-bottom:9px}body.page-services div.highlight
-h3{background-color:transparent;margin-top:5px;margin-bottom:4px;font-size:161.6%}body.page-services div.highlight .icon:before{float:left;height:100px}body.page-services div.highlight
-p{text-align:left;padding:0
-0 0 9px;margin:0}#intro h2,
+.shortcuts.image>div a:active {
+  border-bottom-color: #207a7a;
+}
+
+div.highlight {
+  border: 4px
+solid #ddd;
+  -moz-border-radius: 5px;
+  -khtml-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
+
+body.level1 .shortcuts>div {
+  max-width: 400px;
+}
+
+body.level1 .shortcuts>div {
+  padding-bottom: 0;
+}
+
+body.level1 .shortcuts
+img {
+  margin: 0;
+  padding: 0;
+}
+
+.shortcuts>div
+ul.split {
+  float: left;
+  width: 42%;
+  margin: 0
+1%;
+  list-style: none;
+  padding: 9px
+0 9px 9px;
+}
+
+.shortcuts>div ul li
+a {
+  display: block;
+  border-bottom-color: #ccc;
+}
+
+div.highlight {
+  overflow: visible;
+  margin: 0;
+}
+
+div.highlight
+h3 {
+  border-bottom: 0 none;
+  line-height: inherit;
+  background-color: #DDD;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+body.page-services
+div.highlight {
+  margin-bottom: 9px;
+}
+
+body.page-services div.highlight
+h3 {
+  background-color: transparent;
+  margin-top: 5px;
+  margin-bottom: 4px;
+  font-size: 161.6%;
+}
+
+body.page-services div.highlight .icon:before {
+  float: left;
+  height: 100px;
+}
+
+body.page-services div.highlight
+p {
+  text-align: left;
+  padding: 0
+0 0 9px;
+  margin: 0;
+}
+
+#intro h2,
 .shortcuts h3,
 #outro h3,
 div.highlight
-h3{color:#333}#intro,#outro,.shortcuts,.highlight{margin-left:0;margin-right:0}.shortcuts>div{margin-left:0;margin-right:0}.alpha #intro,
+h3 {
+  color: #333;
+}
+
+#intro,#outro,.shortcuts,.highlight {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.shortcuts>div {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.alpha #intro,
 .alpha #outro,
 .alpha .shortcuts,
 .alpha
-.highlight{margin-left:9px}.omega #intro,
+.highlight {
+  margin-left: 9px;
+}
+
+.omega #intro,
 .omega #outro,
 .omega .shortcuts,
 .omega
-.highlight{margin-right:9px}form table th,
+.highlight {
+  margin-right: 9px;
+}
+
+form table th,
 form table td,
 td p,
 th p,
@@ -66,7 +370,23 @@ ol ul,
 ul ol,
 ul ul ul,
 ol ol
-ol{font-size:100%}ul{list-style-type:circle}li{word-wrap:break-word}code,pre{font-size:100%}p code,
+ol {
+  font-size: 100%;
+}
+
+ul {
+  list-style-type: circle;
+}
+
+li {
+  word-wrap: break-word;
+}
+
+code,pre {
+  font-size: 100%;
+}
+
+p code,
 li code,
 h1 code,
 h2 code,
@@ -76,21 +396,130 @@ h5 code,
 h6 code,
 td code,
 pre
-code{font-size:100%}pre{padding:3%;border-width:1px;border-style:dotted;overflow:auto;margin:0
-0.69em}i,em{font-style:italic}b,strong{font-weight:bold}abbr,acronym{border-bottom:1px dashed #ccc;cursor:help}dfn{padding:2px
-3px;background-color:#ddd;cursor:help}img{border:0;margin:0;width:auto;max-width:100%}img:not(.imagecache-screenshot-carousel-img){height:auto}section
-img{margin:7px
-0}img.logo{margin-bottom:2px}img.photo{border:1px
-solid #777;margin:0
-0 20px 9px}p.logo-img
-img{margin:0}img.float-l{float:left;margin:0
-9px 20px 0}img.float-r{float:right;margin:0
-0 20px 9px}.center{margin:0
-auto}.text-highlight{color:#222;background-color:#f3f3f3;padding:0
-0.2em}h1,h2,h3,h4,h5,h6,p,form,table{padding:0
-9px}a,a:link,a:visited{border-bottom-width:1px;border-bottom-style:dotted;border-bottom-color:inherit}a:hover,a:focus,a:active{border-bottom-style:solid}a.special{font-style:italic;border-bottom-style:double;border-bottom-width:3px;padding:0.1em 0.3em}td a, td a:link, td a:visited, td a:hover, td a:focus, td a:active{border-bottom-color:#222}div#local-title-logo
-a{border:0
-none;text-decoration:none}h1 a, h1 a:link,
+code {
+  font-size: 100%;
+}
+
+pre {
+  padding: 3%;
+  border-width: 1px;
+  border-style: dotted;
+  overflow: auto;
+  margin: 0
+0.69em;
+}
+
+i,em {
+  font-style: italic;
+}
+
+b,strong {
+  font-weight: bold;
+}
+
+abbr,acronym {
+  border-bottom: 1px dashed #ccc;
+  cursor: help;
+}
+
+dfn {
+  padding: 2px
+3px;
+  background-color: #ddd;
+  cursor: help;
+}
+
+img {
+  border: 0;
+  margin: 0;
+  width: auto;
+  max-width: 100%;
+}
+
+img:not(.imagecache-screenshot-carousel-img) {
+  height: auto;
+}
+
+section
+img {
+  margin: 7px
+0;
+}
+
+img.logo {
+  margin-bottom: 2px;
+}
+
+img.photo {
+  border: 1px
+solid #777;
+  margin: 0
+0 20px 9px;
+}
+
+p.logo-img
+img {
+  margin: 0;
+}
+
+img.float-l {
+  float: left;
+  margin: 0
+9px 20px 0;
+}
+
+img.float-r {
+  float: right;
+  margin: 0
+0 20px 9px;
+}
+
+.center {
+  margin: 0
+auto;
+}
+
+.text-highlight {
+  color: #222;
+  background-color: #f3f3f3;
+  padding: 0
+0.2em;
+}
+
+h1,h2,h3,h4,h5,h6,p,form,table {
+  padding: 0
+9px;
+}
+
+a,a:link,a:visited {
+  border-bottom-width: 1px;
+  border-bottom-style: dotted;
+  border-bottom-color: inherit;
+}
+
+a:hover,a:focus,a:active {
+  border-bottom-style: solid;
+}
+
+a.special {
+  font-style: italic;
+  border-bottom-style: double;
+  border-bottom-width: 3px;
+  padding: 0.1em 0.3em;
+}
+
+td a, td a:link, td a:visited, td a:hover, td a:focus, td a:active {
+  border-bottom-color: #222;
+}
+
+div#local-title-logo
+a {
+  border: 0
+none;
+  text-decoration: none;
+}
+
+h1 a, h1 a:link,
 h1 a:visited,
 h2 a, h2 a:link,
 h2 a:visited,
@@ -99,7 +528,12 @@ h3 a:visited,
 h4 a, h4 a:link,
 h4 a:visited,
 h5a, h5 a:link,
-h5 a:visited{border-bottom:0 none;color:inherit}h2 a:hover,
+h5 a:visited {
+  border-bottom: 0 none;
+  color: inherit;
+}
+
+h2 a:hover,
 h2 a:focus,
 h2 a:active,
 h3 a:hover,
@@ -110,89 +544,565 @@ h4 a:focus,
 h4 a:active,
 h5 a:hover,
 h5 a:focus,
-h5 a:active{color:#444}a.image,a.image:link,a.image:visited{border-bottom:0 none}form{font-size:100%;font-family:Helvetica,sans-serif;color:#444}form p,
+h5 a:active {
+  color: #444;
+}
+
+a.image,a.image:link,a.image:visited {
+  border-bottom: 0 none;
+}
+
+form {
+  font-size: 100%;
+  font-family: Helvetica,sans-serif;
+  color: #444;
+}
+
+form p,
 form ul,
 form
-ol{font-size:1em}form
-fieldset{background-color:#f7f7f7;border:2px
-solid #eee;padding:0.5em 0.5em 0.5em 1em;margin-top:1em;margin-bottom:1em;color:inherit}form
-legend{font-size:100%;background-color:#e5e5e5;color:#222;padding:0.1em 0.5em;border:2px
-solid #d8d8d8}form legend
-span{color:#000;font-size:138.5%;font-weight:bold;margin:0
-4px}form
-legend.hide{visibility:hidden}form
-label{display:inline;margin-right:0.3em}form
-input{margin:0.2em 0.1em 0.2em 0.2em;font-family:'Helvetica Neue',Helvetica,sans-serif;vertical-align:middle}form
-input.submit{display:block;margin:0.5em 0;padding:3px
-9px;-moz-border-radius:5px;-khtml-border-radius:5px;-webkit-border-radius:5px;border-radius:5px;font-size:108%;border-width:1px;border-color:#618658;background-color:#71b360;background-image:-moz-linear-gradient(top, #9DD98E, #71b360);background-image:-webkit-gradient(linear,left top,left bottom,color-stop(0, #9DD98E),color-stop(1, #71b360));background-image:-webkit-linear-gradient(#9DD98E, #71b360);background-image:linear-gradient(top, #9DD98E, #71b360);filter:progid:DXImageTransform.Microsoft.gradient(startColorStr='#9DD98E', EndColorStr='#71b360');box-shadow:0px 2px 2px #adadad;-moz-box-shadow:0px 2px 2px #adadad;-khtml-box-shadow:0px 2px 2px #adadad;-webkit-box-shadow:0px 2px 2px #adadad;color:#111;text-shadow:#f7f7f7 0 1px 1px;width:auto;*padding-top:0px;*padding-bottom:0px}form input.submit:hover,
+ol {
+  font-size: 1em;
+}
+
+form
+fieldset {
+  background-color: #f7f7f7;
+  border: 2px
+solid #eee;
+  padding: 0.5em 0.5em 0.5em 1em;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  color: inherit;
+}
+
+form
+legend {
+  font-size: 100%;
+  background-color: #e5e5e5;
+  color: #222;
+  padding: 0.1em 0.5em;
+  border: 2px
+solid #d8d8d8;
+}
+
+form legend
+span {
+  color: #000;
+  font-size: 138.5%;
+  font-weight: bold;
+  margin: 0
+4px;
+}
+
+form
+legend.hide {
+  visibility: hidden;
+}
+
+form
+label {
+  display: inline;
+  margin-right: 0.3em;
+}
+
+form
+input {
+  margin: 0.2em 0.1em 0.2em 0.2em;
+  font-family: 'Helvetica Neue',Helvetica,sans-serif;
+  vertical-align: middle;
+}
+
+form
+input.submit {
+  display: block;
+  margin: 0.5em 0;
+  padding: 3px
+9px;
+  -moz-border-radius: 5px;
+  -khtml-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  font-size: 108%;
+  border-width: 1px;
+  border-color: #618658;
+  background-color: #71b360;
+  background-image: -moz-linear-gradient(top, #9DD98E, #71b360);
+  background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #9DD98E),color-stop(1, #71b360));
+  background-image: -webkit-linear-gradient(#9DD98E, #71b360);
+  background-image: linear-gradient(top, #9DD98E, #71b360);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#9DD98E', EndColorStr='#71b360');
+  box-shadow: 0px 2px 2px #adadad;
+  -moz-box-shadow: 0px 2px 2px #adadad;
+  -khtml-box-shadow: 0px 2px 2px #adadad;
+  -webkit-box-shadow: 0px 2px 2px #adadad;
+  color: #111;
+  text-shadow: #f7f7f7 0 1px 1px;
+  width: auto;
+  *padding-top: 0px;
+  *padding-bottom: 0px;
+}
+
+form input.submit:hover,
 form input.submit:focus,
-form input.submit:active{background:#71b360}form input.submit:active{box-shadow:0 0 0 transparent;-moz-box-shadow:0 0 0 transparent;-khtml-box-shadow:0 0 0 transparent;-webkit-box-shadow:0 0 0 transparent}input.submit{}table{border-collapse:collapse;width:99%;background-color:white;margin:9px
-auto;border:5px
-solid #f1f1f1}th,td{padding:8px
-5px 5px 5px;border:1px
-solid #f1f1f1;border-collapse:collapse;vertical-align:top}th,td{font-size:93%}th{font-weight:bold;background-color:#F2F2EC;border-bottom:3px solid #f7f7f7;color:black}table.predoc-details
-th{width:20%;background-color:#aad095}ul,ol{padding:0
-9px 0 27px}ul li>p{padding-left:0}@font-face{font-family:'EBI-Conceptual';src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Conceptual/fonts/EBI-Conceptual.eot');src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Conceptual/fonts/EBI-Conceptual.eot?#iefix') format('embedded-opentype'),
+form input.submit:active {
+  background: #71b360;
+}
+
+form input.submit:active {
+  box-shadow: 0 0 0 transparent;
+  -moz-box-shadow: 0 0 0 transparent;
+  -khtml-box-shadow: 0 0 0 transparent;
+  -webkit-box-shadow: 0 0 0 transparent;
+}
+
+input.submit {
+}
+
+table {
+  border-collapse: collapse;
+  width: 99%;
+  background-color: white;
+  margin: 9px
+auto;
+  border: 5px
+solid #f1f1f1;
+}
+
+th,td {
+  padding: 8px
+5px 5px 5px;
+  border: 1px
+solid #f1f1f1;
+  border-collapse: collapse;
+  vertical-align: top;
+}
+
+th,td {
+  font-size: 93%;
+}
+
+th {
+  font-weight: bold;
+  background-color: #F2F2EC;
+  border-bottom: 3px solid #f7f7f7;
+  color: black;
+}
+
+table.predoc-details
+th {
+  width: 20%;
+  background-color: #aad095;
+}
+
+ul,ol {
+  padding: 0
+9px 0 27px;
+}
+
+ul li>p {
+  padding-left: 0;
+}
+
+@font-face {
+  font-family:'EBI-Conceptual';src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Conceptual/fonts/EBI-Conceptual.eot');src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Conceptual/fonts/EBI-Conceptual.eot?#iefix') format('embedded-opentype'),
 url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Conceptual/fonts/EBI-Conceptual.woff') format('woff'),
 local('☺'),
 url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Conceptual/fonts/EBI-Conceptual.svg#EBI-Conceptual') format('svg'),
-url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Conceptual/fonts/EBI-Conceptual.ttf') format('truetype');font-weight:normal;font-style:normal}@font-face{font-family:'EBI-Functional';src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Functional/fonts/EBI-Functional.eot');src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Functional/fonts/EBI-Functional.eot?#iefix') format('embedded-opentype'),
+url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Conceptual/fonts/EBI-Conceptual.ttf') format('truetype');font-weight:normal;font-style:normal;
+}
+
+@font-face {
+  font-family:'EBI-Functional';src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Functional/fonts/EBI-Functional.eot');src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Functional/fonts/EBI-Functional.eot?#iefix') format('embedded-opentype'),
 url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Functional/fonts/EBI-Functional.woff') format('woff'),
 local('☺'),
 url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Functional/fonts/EBI-Functional.svg#EBI-Functional') format('svg'),
-url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Functional/fonts/EBI-Functional.ttf') format('truetype');font-weight:normal;font-style:normal}@font-face{font-family:'EBI-Generic';src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Generic/fonts/EBI-Generic.eot');src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Generic/fonts/EBI-Generic.eot?#iefix') format('embedded-opentype'),
+url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Functional/fonts/EBI-Functional.ttf') format('truetype');font-weight:normal;font-style:normal;
+}
+
+@font-face {
+  font-family:'EBI-Generic';src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Generic/fonts/EBI-Generic.eot');src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Generic/fonts/EBI-Generic.eot?#iefix') format('embedded-opentype'),
 url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Generic/fonts/EBI-Generic.woff') format('woff'),
 local('☺'),
 url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Generic/fonts/EBI-Generic.svg#EBI-Generic') format('svg'),
-url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Generic/fonts/EBI-Generic.ttf') format('truetype');font-weight:normal;font-style:normal}@font-face{font-family:'EBI-Species';src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Species/fonts/EBI-Species.eot');src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Species/fonts/EBI-Species.eot?#iefix') format('embedded-opentype'),
+url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Generic/fonts/EBI-Generic.ttf') format('truetype');font-weight:normal;font-style:normal;
+}
+
+@font-face {
+  font-family:'EBI-Species';src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Species/fonts/EBI-Species.eot');src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Species/fonts/EBI-Species.eot?#iefix') format('embedded-opentype'),
 url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Species/fonts/EBI-Species.woff') format('woff'),
 local('☺'),
 url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Species/fonts/EBI-Species.svg#EBI-Species') format('svg'),
-url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Species/fonts/EBI-Species.ttf') format('truetype');font-weight:normal;font-style:normal}@font-face{font-family:'EBI-SocialMedia';src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-SocialMedia/fonts/EBI-SocialMedia.eot');src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-SocialMedia/fonts/EBI-SocialMedia.eot?#iefix') format('embedded-opentype'),
+url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Species/fonts/EBI-Species.ttf') format('truetype');font-weight:normal;font-style:normal;
+}
+
+@font-face {
+  font-family:'EBI-SocialMedia';src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-SocialMedia/fonts/EBI-SocialMedia.eot');src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-SocialMedia/fonts/EBI-SocialMedia.eot?#iefix') format('embedded-opentype'),
 url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-SocialMedia/fonts/EBI-SocialMedia.woff') format('woff'),
 local('☺'),
 url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-SocialMedia/fonts/EBI-SocialMedia.svg#EBI-SocialMedia') format('svg'),
-url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-SocialMedia/fonts/EBI-SocialMedia.ttf') format('truetype');font-weight:normal;font-style:normal}@font-face{font-family:'EBI-FileFormats';src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-FileFormats/fonts/EBI-FileFormats.eot');src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-FileFormats/fonts/EBI-FileFormats.eot?#iefix') format('embedded-opentype'),
+url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-SocialMedia/fonts/EBI-SocialMedia.ttf') format('truetype');font-weight:normal;font-style:normal;
+}
+
+@font-face {
+  font-family:'EBI-FileFormats';src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-FileFormats/fonts/EBI-FileFormats.eot');src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-FileFormats/fonts/EBI-FileFormats.eot?#iefix') format('embedded-opentype'),
 url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-FileFormats/fonts/EBI-FileFormats.woff') format('woff'),
 local('☺'),
 url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-FileFormats/fonts/EBI-FileFormats.svg#EBI-Functional') format('svg'),
-url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-FileFormats/fonts/EBI-FileFormats.ttf') format('truetype');font-weight:normal;font-style:normal}@font-face{font-family:'EBI-Chemistry';src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Chemistry/fonts/EBI-Chemistry.eot');src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Chemistry/fonts/EBI-Chemistry.eot?#iefix') format('embedded-opentype'),
+url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-FileFormats/fonts/EBI-FileFormats.ttf') format('truetype');font-weight:normal;font-style:normal;
+}
+
+@font-face {
+  font-family:'EBI-Chemistry';src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Chemistry/fonts/EBI-Chemistry.eot');src:url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Chemistry/fonts/EBI-Chemistry.eot?#iefix') format('embedded-opentype'),
 url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Chemistry/fonts/EBI-Chemistry.woff') format('woff'),
 local('☺'),
 url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Chemistry/fonts/EBI-Chemistry.svg#EBI-Chemistry') format('svg'),
-url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Chemistry/fonts/EBI-Chemistry.ttf') format('truetype');font-weight:normal;font-style:normal}.icon{text-decoration:none;font-style:normal}.icon-conceptual:before{font-family:'EBI-Conceptual';font-size:138.5%;color:#bbb;content:attr(data-icon);margin:0
-0.3em 0 0}.icon-functional:before{font-family:'EBI-Functional';font-size:100%;color:#bbb;content:attr(data-icon);margin:0
-0.3em 0 0}.icon-static:before,.icon-generic:before{font-family:'EBI-Generic';font-size:100%;color:#bbb;content:attr(data-icon);margin:0
-0.3em 0 0}.icon-species:before{font-family:'EBI-Species';font-size:100%;color:#bbb;content:attr(data-icon);margin:0
-0.3em 0 0}.icon-socialmedia:before{font-family:'EBI-SocialMedia';font-size:100%;color:#bbb;content:attr(data-icon);margin:0
-0.3em 0 0}.icon-fileformats:before{font-family:'EBI-FileFormats';font-size:123.1%;color:#bbb;content:attr(data-icon);margin:0
-0.3em 0 0}.icon-chemistry:before{font-family:'EBI-Chemistry';font-size:100%;color:#bbb;content:attr(data-icon);margin:0
-0.3em 0 0}body{background:#fff url(http://www.ebi.ac.uk/web_guidelines/images/global/pale_grey_slight_texture.jpg) top left repeat}div#content{background-color:#fff}div#global-masthead{background-color:#333;color:white}div#local-masthead{}h1,h2,h3,h4,h5,h6{color:#222}h4{color:#666}a,a:link{color:#3e3e3e}a:visited{color:#666}a:hover,a:focus,a:active{color:#000}a.special{background-color:#fff}pre{background-color:#F2F2EC;border-color:#999}code{background-color:#F2F2EC;border-color:#999}kbd{-moz-border-radius:5px;-khtml-border-radius:5px;-webkit-border-radius:5px;border-radius:5px;border:1px
-solid #777;color:#222;background-color:#ccc;background-image:-moz-linear-gradient(top, #ccc, #666);background-image:-webkit-gradient(linear,left top,left bottom,color-stop(0, #ccc),color-stop(1, #666));background-image:-webkit-linear-gradient(#ccc, #666);background-image:linear-gradient(top, #ccc, #666);filter:progid:DXImageTransform.Microsoft.gradient(startColorStr='#ccc', EndColorStr='#666');padding:0.2em 0.3em}.mute{color:#666}div.alert{border-left:3px solid #FFB3CA}h2.alert,h3.alert,h4.alert{color:#FFB3CA}h2.alert:before,h3.alert:before,h4.alert:before{font-family:'EBI-Generic';font-size:100%;content:"l";margin:0
-0.3em 0 0}html.ie8 h2.alert:before,
+url('http://www.ebi.ac.uk/web_guidelines/fonts/EBI-Chemistry/fonts/EBI-Chemistry.ttf') format('truetype');font-weight:normal;font-style:normal;
+}
+
+.icon {
+  text-decoration: none;
+  font-style: normal;
+}
+
+.icon-conceptual:before {
+  font-family: 'EBI-Conceptual';
+  font-size: 138.5%;
+  color: #bbb;
+  content: attr(data-icon);
+  margin: 0
+0.3em 0 0;
+}
+
+.icon-functional:before {
+  font-family: 'EBI-Functional';
+  font-size: 100%;
+  color: #bbb;
+  content: attr(data-icon);
+  margin: 0
+0.3em 0 0;
+}
+
+.icon-static:before,.icon-generic:before {
+  font-family: 'EBI-Generic';
+  font-size: 100%;
+  color: #bbb;
+  content: attr(data-icon);
+  margin: 0
+0.3em 0 0;
+}
+
+.icon-species:before {
+  font-family: 'EBI-Species';
+  font-size: 100%;
+  color: #bbb;
+  content: attr(data-icon);
+  margin: 0
+0.3em 0 0;
+}
+
+.icon-socialmedia:before {
+  font-family: 'EBI-SocialMedia';
+  font-size: 100%;
+  color: #bbb;
+  content: attr(data-icon);
+  margin: 0
+0.3em 0 0;
+}
+
+.icon-fileformats:before {
+  font-family: 'EBI-FileFormats';
+  font-size: 123.1%;
+  color: #bbb;
+  content: attr(data-icon);
+  margin: 0
+0.3em 0 0;
+}
+
+.icon-chemistry:before {
+  font-family: 'EBI-Chemistry';
+  font-size: 100%;
+  color: #bbb;
+  content: attr(data-icon);
+  margin: 0
+0.3em 0 0;
+}
+
+body {
+  background: #fff url(http://www.ebi.ac.uk/web_guidelines/images/global/pale_grey_slight_texture.jpg) top left repeat;
+}
+
+div#content {
+  background-color: #fff;
+}
+
+div#global-masthead {
+  background-color: #333;
+  color: white;
+}
+
+div#local-masthead {
+}
+
+h1,h2,h3,h4,h5,h6 {
+  color: #222;
+}
+
+h4 {
+  color: #666;
+}
+
+a,a:link {
+  color: #3e3e3e;
+}
+
+a:visited {
+  color: #666;
+}
+
+a:hover,a:focus,a:active {
+  color: #000;
+}
+
+a.special {
+  background-color: #fff;
+}
+
+pre {
+  background-color: #F2F2EC;
+  border-color: #999;
+}
+
+code {
+  background-color: #F2F2EC;
+  border-color: #999;
+}
+
+kbd {
+  -moz-border-radius: 5px;
+  -khtml-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+  border: 1px
+solid #777;
+  color: #222;
+  background-color: #ccc;
+  background-image: -moz-linear-gradient(top, #ccc, #666);
+  background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #ccc),color-stop(1, #666));
+  background-image: -webkit-linear-gradient(#ccc, #666);
+  background-image: linear-gradient(top, #ccc, #666);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#ccc', EndColorStr='#666');
+  padding: 0.2em 0.3em;
+}
+
+.mute {
+  color: #666;
+}
+
+div.alert {
+  border-left: 3px solid #FFB3CA;
+}
+
+h2.alert,h3.alert,h4.alert {
+  color: #FFB3CA;
+}
+
+h2.alert:before,h3.alert:before,h4.alert:before {
+  font-family: 'EBI-Generic';
+  font-size: 100%;
+  content: "l";
+  margin: 0
+0.3em 0 0;
+}
+
+html.ie8 h2.alert:before,
 html.ie8 h3.alert:before,
-html.ie8 h4.alert:before{font-size:inherit}p.alert{margin:0
-9px 20px 9px;background-color:#FFB3CA}span.alert{background-color:#FFB3CA;padding:0.1em 0.2em}input.alert,
+html.ie8 h4.alert:before {
+  font-size: inherit;
+}
+
+p.alert {
+  margin: 0
+9px 20px 9px;
+  background-color: #FFB3CA;
+}
+
+span.alert {
+  background-color: #FFB3CA;
+  padding: 0.1em 0.2em;
+}
+
+input.alert,
 select.alert
 label.alert
-textarea.alert{background-color:white;color:inherit;border:5px
-solid #FFB3CA}div.warning{border-left:3px solid #e5a066}h2.warning,h3.warning,h4.warning{color:#e5a066}p.warning{margin:0
-9px 20px 9px;background-color:#e5a066}h2.warning:before,h3.warning:before,h4.warning:before{font-family:'EBI-Generic';font-size:100%;content:"l";margin:0
-0.3em 0 0}html.ie8 h2.warning:before,
+textarea.alert {
+  background-color: white;
+  color: inherit;
+  border: 5px
+solid #FFB3CA;
+}
+
+div.warning {
+  border-left: 3px solid #e5a066;
+}
+
+h2.warning,h3.warning,h4.warning {
+  color: #e5a066;
+}
+
+p.warning {
+  margin: 0
+9px 20px 9px;
+  background-color: #e5a066;
+}
+
+h2.warning:before,h3.warning:before,h4.warning:before {
+  font-family: 'EBI-Generic';
+  font-size: 100%;
+  content: "l";
+  margin: 0
+0.3em 0 0;
+}
+
+html.ie8 h2.warning:before,
 html.ie8 h3.warning:before,
-html.ie8 h4.warning:before{font-size:inherit}input.valid,select.valid,textarea.valid{border:5px
-solid #be7}.icon-c1:before{color:#dac79d}.icon-c2:before{color:#dab7e2}.icon-c3:before{color:#62d0df}.icon-c4:before{color:#afc9b8}.icon-c5:before{color:#ffb4aa}.icon-c6:before{color:#ffc999}.icon-c7:before{color:#bec3d9}.icon-c8:before{color:#c5d4a3}.icon-c9:before{color:#a4c7e2}body.level1
-div.caption{margin:0
-9px 9px}body.level1 div.caption-inner{border:none;background:transparent;font-size:85%;font-family:Verdana,sans-serif;color:#777;text-align:left;padding:0}body.level1 div.caption img,
+html.ie8 h4.warning:before {
+  font-size: inherit;
+}
+
+input.valid,select.valid,textarea.valid {
+  border: 5px
+solid #be7;
+}
+
+.icon-c1:before {
+  color: #dac79d;
+}
+
+.icon-c2:before {
+  color: #dab7e2;
+}
+
+.icon-c3:before {
+  color: #62d0df;
+}
+
+.icon-c4:before {
+  color: #afc9b8;
+}
+
+.icon-c5:before {
+  color: #ffb4aa;
+}
+
+.icon-c6:before {
+  color: #ffc999;
+}
+
+.icon-c7:before {
+  color: #bec3d9;
+}
+
+.icon-c8:before {
+  color: #c5d4a3;
+}
+
+.icon-c9:before {
+  color: #a4c7e2;
+}
+
+body.level1
+div.caption {
+  margin: 0
+9px 9px;
+}
+
+body.level1 div.caption-inner {
+  border: none;
+  background: transparent;
+  font-size: 85%;
+  font-family: Verdana,sans-serif;
+  color: #777;
+  text-align: left;
+  padding: 0;
+}
+
+body.level1 div.caption img,
 body.level1 div.caption
-object{margin:0
-0 4px 0}div.views-field-citation{display:block;padding:0
-9px 18px 9px}div.views-field-citation a:link,
-div.views-field-citation a:visited{border-bottom:0 none}div.views-field-citation .biblio-title
-a{font-size:123.1%;font-weight:bold}#search-extras.expander
-#ebi_search_results{position:absolute;z-index:500;right:4px;-moz-box-shadow:5px 5px 8px #666;-webkit-box-shadow:5px 5px 8px #666;box-shadow:5px 5px 8px #666;min-width:275px}#search-extras #ebi_search_results
-h3{cursor:pointer}#search-extras #ebi_search_results h3.slideToggle:hover{background-color:#333;color:white}.loading{background:url(http://www.ebi.ac.uk/web_guidelines/images/global/ajax-loader.gif) no-repeat 99%}#search-extras #ebi_search_results
-p{margin-top:9px}#search-extras #ebi_search_results
-ul{list-style:none;padding-left:9px}#search-extras #ebi_search_results ul
-span{color:#555}#search-extras #ebi_search_results ul a:link,
-#search-extras #ebi_search_results ul a:visited{margin-bottom:3px}span.searchterm{font-style:italic;padding:0.1em 0.3em 0.1em 0.2em;background-color:#EEE;-moz-border-radius:5px;-khtml-border-radius:5px;-webkit-border-radius:5px;border-radius:5px}
+object {
+  margin: 0
+0 4px 0;
+}
+
+div.views-field-citation {
+  display: block;
+  padding: 0
+9px 18px 9px;
+}
+
+div.views-field-citation a:link,
+div.views-field-citation a:visited {
+  border-bottom: 0 none;
+}
+
+div.views-field-citation .biblio-title
+a {
+  font-size: 123.1%;
+  font-weight: bold;
+}
+
+#search-extras.expander
+#ebi_search_results {
+  position: absolute;
+  z-index: 500;
+  right: 4px;
+  -moz-box-shadow: 5px 5px 8px #666;
+  -webkit-box-shadow: 5px 5px 8px #666;
+  box-shadow: 5px 5px 8px #666;
+  min-width: 275px;
+}
+
+#search-extras #ebi_search_results
+h3 {
+  cursor: pointer;
+}
+
+#search-extras #ebi_search_results h3.slideToggle:hover {
+  background-color: #333;
+  color: white;
+}
+
+.loading {
+  background: url(http://www.ebi.ac.uk/web_guidelines/images/global/ajax-loader.gif) no-repeat 99%;
+}
+
+#search-extras #ebi_search_results
+p {
+  margin-top: 9px;
+}
+
+#search-extras #ebi_search_results
+ul {
+  list-style: none;
+  padding-left: 9px;
+}
+
+#search-extras #ebi_search_results ul
+span {
+  color: #555;
+}
+
+#search-extras #ebi_search_results ul a:link,
+#search-extras #ebi_search_results ul a:visited {
+  margin-bottom: 3px;
+}
+
+span.searchterm {
+  font-style: italic;
+  padding: 0.1em 0.3em 0.1em 0.2em;
+  background-color: #EEE;
+  -moz-border-radius: 5px;
+  -khtml-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
+}
