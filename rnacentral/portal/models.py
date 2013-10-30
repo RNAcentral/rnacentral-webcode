@@ -1,4 +1,5 @@
 from django.db import models
+import re
 
 # to make text fields searchable, add character set functional indexes in Oracle
 # CREATE INDEX index_name ON table_name(SYS_OP_C2C(column_name));
@@ -90,6 +91,9 @@ class Accessions(models.Model):
 
     class Meta:
         db_table = 'rnc_accessions'
+
+    def get_srpdb_id(self):
+        return re.sub('\.\d+$', '', self.external_id)
 
 
 class Xref(models.Model):

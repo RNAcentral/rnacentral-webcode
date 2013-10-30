@@ -115,7 +115,7 @@
                     {% elif xref.db.display_name == 'RFAM' %}
                       <a href="http://rfam.sanger.ac.uk/family/{{ xref.accession.external_id }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }} family)
                     {% elif xref.db.display_name == 'SRPDB' %}
-                      <a href="http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/{{ xref.accession.external_id }}.fasta" target="_blank">{{ xref.accession.external_id }}</a>
+                      <a href="http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/{{ xref.accession.get_srpdb_id }}.fasta" target="_blank">{{ xref.accession.get_srpdb_id }}</a>
                     {% elif xref.db.display_name == 'miRBase' %}
                       miRBase cross-references not available yet
                     {% elif xref.db.display_name == 'VEGA' %}
