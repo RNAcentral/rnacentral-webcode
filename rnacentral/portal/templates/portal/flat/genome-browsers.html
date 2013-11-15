@@ -1,0 +1,57 @@
+{% extends "portal/base.html" %}
+
+{% block content %}
+
+<div class="row">
+
+  <div class="col-md-12">
+    <h1>Integration with Genome Browsers</h1>
+
+    <div class="row">
+
+      <p>
+        VEGA 21,388 transcripts with 62,224 elements
+        View in <a href="http://genome-euro.ucsc.edu/cgi-bin/hgTracks?org=human&position=chr1:29554-31097&hgt.customText=https://dl.dropboxusercontent.com/s/7f2oypttqwzt263/vega_ucsc_sorted.bed" target="_blank">UCSC</a>
+        | <a href="http://www.ensembl.org/Homo_sapiens/Location/View?r=7:62750878-62850878;share_ref=5ba922e4238218a3ca492be30f88fc61_114461227" target="_blank">Ensembl</a>
+      </p>
+
+      <ul>
+        <li>
+          <h4>BED</h4>
+          <strong>Example:</strong>
+          <pre>chr1 29554 31097 RNA000063C361 0 + 29554 31097 63,125,151  3 485,103,121 0,1010,1422
+chr1  30267 31109 RNA000063B0A6 0 + 30267 31109 63,125,151  2 400,133 0,709
+chr1  34554 36081 RNA000063929F 0 - 34554 36081 63,125,151  3 620,204,360 0,723,1167
+chr1  35245 36073 RNA000063C6FB 0 - 35245 36073 63,125,151  2 236,352 0,476
+chr1  89295 120932  RNA0000638C29 0 - 89295 120932  63,125,151  4 2334,149,104,157  0,2796,23405,31480</pre>
+          <a href="https://dl.dropboxusercontent.com/s/7f2oypttqwzt263/vega_ucsc_sorted.bed">Download</a> (2.6 Mb)
+        </li>
+
+        <li>
+          <h4>GFF v2</h4>
+          <strong>Example:</strong>
+          <pre>chr1 RNAcentral  exon  29554 30039 . + . RNA000063C361
+chr1  RNAcentral  exon  30564 30667 . + . RNA000063C361
+chr1  RNAcentral  exon  30976 31097 . + . RNA000063C361
+chr1  RNAcentral  exon  30267 30667 . + . RNA000063B0A6
+chr1  RNAcentral  exon  30976 31109 . + . RNA000063B0A6</pre>
+          <a href="https://dl.dropboxusercontent.com/s/r8ic2xkx3e68l99/vega_sorted.gff">Download</a> (3.7 Mb)
+        </li>
+
+        <li>
+          <h4>BigBed</h4>
+          <a href="https://dl.dropboxusercontent.com/s/32k4d3l7ouy0olr/vega_ucsc.bb">Download</a> (1.4 Mb)
+        </li>
+
+      </ul>
+
+
+    </div>
+
+
+  </div>
+
+</div>
+
+
+{% endblock %}
