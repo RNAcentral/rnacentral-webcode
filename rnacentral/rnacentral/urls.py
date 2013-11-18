@@ -15,7 +15,8 @@ urlpatterns = patterns('',
     # admin
     url(r'^admin/', include(admin.site.urls)),
     # flat pages
-    url(r'^(?P<page>about|help|thanks|coming-soon|genome-browsers)/$', views.StaticView.as_view()),
+    url(r'^(?P<page>about|help|thanks|coming-soon)/$', views.StaticView.as_view()),
+    url(r'^docs/(?P<page>genome-browsers)/$', views.StaticView.as_view()),
     # contact us
     url(r'^contact/$', views.ContactView.as_view()),
     # API

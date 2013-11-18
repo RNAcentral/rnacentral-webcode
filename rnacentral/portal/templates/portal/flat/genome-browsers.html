@@ -1,4 +1,14 @@
 {% extends "portal/base.html" %}
+{% load staticfiles %}
+
+{% block stylesheets %}
+  {{ block.super }}
+  <style type="text/css">
+    pre {
+      padding: 1%;
+    }
+  </style>
+{% endblock %}
 
 {% block content %}
 
@@ -7,51 +17,152 @@
   <div class="col-md-12">
     <h1>Integration with Genome Browsers</h1>
 
-    <div class="row">
-
       <p>
-        VEGA 21,388 transcripts with 62,224 elements
-        View in <a href="http://genome-euro.ucsc.edu/cgi-bin/hgTracks?org=human&position=chr1:29554-31097&hgt.customText=https://dl.dropboxusercontent.com/s/7f2oypttqwzt263/vega_ucsc_sorted.bed" target="_blank">UCSC</a>
-        | <a href="http://www.ensembl.org/Homo_sapiens/Location/View?r=7:62750878-62850878;share_ref=5ba922e4238218a3ca492be30f88fc61_114461227" target="_blank">Ensembl</a>
+        This webpage shows several ways of integrating the RNAcentral data with genome browsers
+        using the VEGA dataset as an example.
       </p>
 
-      <ul>
+      <h2>1. Links to external genome browsers</h2>
+      <p>
+        The RNAcentral custom tracks have been added to the
+        <a class="btn btn-primary btn-sm" href="http://genome-euro.ucsc.edu/cgi-bin/hgTracks?org=human&position=chr1:29554-31097&hgt.customText=https://dl.dropboxusercontent.com/s/7f2oypttqwzt263/vega_ucsc_sorted.bed" target="_blank">UCSC</a>
+        and <a class="btn btn-primary btn-sm" href="http://www.ensembl.org/Homo_sapiens/Location/View?r=1:29554-31097;contigviewbottom=url:https://dl.dropboxusercontent.com/s/7f2oypttqwzt263/vega_ucsc_sorted.bed" target="_blank">Ensembl</a> browsers.
+        When an entry is clicked, the user can access the link to the RNAcentral website.
+      </p>
+
+      <h2>2. Downloadable files</h2>
+
+      <ol>
         <li>
-          <h4>BED</h4>
-          <strong>Example:</strong>
-          <pre>chr1 29554 31097 RNA000063C361 0 + 29554 31097 63,125,151  3 485,103,121 0,1010,1422
-chr1  30267 31109 RNA000063B0A6 0 + 30267 31109 63,125,151  2 400,133 0,709
-chr1  34554 36081 RNA000063929F 0 - 34554 36081 63,125,151  3 620,204,360 0,723,1167
-chr1  35245 36073 RNA000063C6FB 0 - 35245 36073 63,125,151  2 236,352 0,476
-chr1  89295 120932  RNA0000638C29 0 - 89295 120932  63,125,151  4 2334,149,104,157  0,2796,23405,31480</pre>
-          <a href="https://dl.dropboxusercontent.com/s/7f2oypttqwzt263/vega_ucsc_sorted.bed">Download</a> (2.6 Mb)
+          <p>
+            <strong>Bed format</strong>
+            <pre>chr1	29554	31097	RNA000063C361	0	+	29554	31097	63,125,151	3	485,103,121	0,1010,1422
+chr1	30267	31109	RNA000063B0A6	0	+	30267	31109	63,125,151	2	400,133 0,709</pre>
+            <br>
+            <a href="https://dl.dropboxusercontent.com/s/7f2oypttqwzt263/vega_ucsc_sorted.bed">Download</a> (2.6 Mb)
+          </p>
         </li>
 
         <li>
-          <h4>GFF v2</h4>
-          <strong>Example:</strong>
-          <pre>chr1 RNAcentral  exon  29554 30039 . + . RNA000063C361
-chr1  RNAcentral  exon  30564 30667 . + . RNA000063C361
-chr1  RNAcentral  exon  30976 31097 . + . RNA000063C361
-chr1  RNAcentral  exon  30267 30667 . + . RNA000063B0A6
-chr1  RNAcentral  exon  30976 31109 . + . RNA000063B0A6</pre>
-          <a href="https://dl.dropboxusercontent.com/s/r8ic2xkx3e68l99/vega_sorted.gff">Download</a> (3.7 Mb)
+          <p>
+            <strong>GFF version 2</strong>
+            <pre>chr1	RNAcentral	exon	29554	30039	.	+	.	RNA000063C361
+chr1	RNAcentral	exon	30564	30667	.	+	.	RNA000063C361
+chr1	RNAcentral	exon	30976	31097	.	+	.	RNA000063C361</pre>
+            <br>
+            <a href="https://dl.dropboxusercontent.com/s/r8ic2xkx3e68l99/vega_sorted.gff">Download</a> (3.7 Mb)
+          </p>
         </li>
 
         <li>
-          <h4>BigBed</h4>
+          <strong>BigBed binary format</strong>
+          <br><br>
           <a href="https://dl.dropboxusercontent.com/s/32k4d3l7ouy0olr/vega_ucsc.bb">Download</a> (1.4 Mb)
         </li>
+      </ol>
 
-      </ul>
+      <h2>3. Visualising genome tracks</h2>
 
+      <ol>
 
-    </div>
+        <li>
+            <strong>Loading static images from Ensembl</strong>
+            <br>
+            The genome region(s) can be visualised as static images by dynamically retrieving the images from Ensembl.
+            This technique is used in <a href="http://www.pombase.org/spombe/result/SPBC11B10.09" target="_blank">Pombase</a> and the EBI search.
+            <img src="http://www.ensembl.org/Homo_sapiens/Component/Location/Web/MultiBottom?export=png;r=1:29554-31097;db=core;" class="img-thumbnail">
+            However, displaying the RNAcentral track on the static images will require loading the data into the Ensembl database.
+        </li>
 
+        <br>
+
+        <li>
+          <strong>Embedded HTML5 genome browser</strong>
+          <br>
+
+        </li>
+
+      </ol>
+
+      <div class="wrap">
+        <div id="genoverse"></div>
+      </div>
 
   </div>
 
 </div>
 
+{% endblock %}
+
+
+{% block extra_js %}
+  {{ block.super }}
+
+  <script type="text/javascript" src="{% static 'js/vendor/Genoverse/js/genoverse.combined.js' %}">
+    {
+      container : '#genoverse', // Where to inject Genoverse (css/jQuery selector)
+      // If no genome supplied, it must have at least chromosomeSize, e.g.:
+      // chromosomeSize : 249250621, // chromosome 1, human
+      genome    : 'grch37', // see js/genomes/
+      plugins   : [ 'controlPanel', 'karyotype', 'trackControls', 'resizer', 'fileDrop' ],
+      tracks    : [
+        Genoverse.Track.Scalebar,
+        Genoverse.Track.extend({
+          name      : 'Sequence',
+          model     : Genoverse.Track.Model.Sequence.Ensembl,
+          view      : Genoverse.Track.View.Sequence,
+          resizable : 'auto',
+          100000    : false
+        }),
+        Genoverse.Track.extend({
+          name   : 'Genes',
+          height : 100,
+          info   : 'Ensembl API genes & transcripts, see <a href="http://beta.rest.ensembl.org/" target="_blank">beta.rest.ensembl.org</a> for more details',
+
+          // Different settings for different zoom level
+          2000000: { // This one applies when > 2M base-pairs per screen
+            labels : false
+          },
+          100000: { // more than 100K but less then 2M
+            labels : true,
+            model  : Genoverse.Track.Model.Gene.Ensembl,
+            view   : Genoverse.Track.View.Gene.Ensembl
+          },
+          1: { // > 1 base-pair, but less then 100K
+            labels : true,
+            model  : Genoverse.Track.Model.Transcript.Ensembl,
+            view   : Genoverse.Track.View.Transcript.Ensembl
+          }
+        })
+      ]
+    }
+  </script>
+
+  <script type="text/javascript">
+    Genoverse.on('afterInit', function () {
+        var browser = this;
+
+        $.ajax({
+            url : "https://dl.dropboxusercontent.com/s/7f2oypttqwzt263/vega_ucsc_sorted.bed",
+            dataType: "text",
+            success : function (data) {
+              var track = Genoverse.Track.File['BED'].extend({
+                name    : "RNAcentral",
+                info    : "RNAcentral test",
+                height  : 70,
+                allData : true,
+                data    : data,
+                getData : function () {
+                  return $.Deferred().done(function () {
+                    this.receiveData(this.data, 1, this.browser.chromosomeSize);
+                  }).resolveWith(this);
+                }
+              });
+              browser.addTrack(track, browser.tracks.length - 1);
+            }
+        });
+
+    });
+  </script>
 
 {% endblock %}
