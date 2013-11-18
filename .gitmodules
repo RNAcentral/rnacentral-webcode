@@ -1,0 +1,3 @@
+[submodule "rnacentral/portal/static/js/vendor/Genoverse"]
+	path = rnacentral/portal/static/js/vendor/Genoverse
+	url = https://github.com/EugeneBragin/Genoverse.git
