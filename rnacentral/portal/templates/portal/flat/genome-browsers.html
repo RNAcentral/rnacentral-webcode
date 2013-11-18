@@ -7,6 +7,9 @@
     pre {
       padding: 1%;
     }
+    img {
+      margin-bottom: 15px;
+    }
   </style>
 {% endblock %}
 
@@ -26,7 +29,7 @@
       <p>
         The RNAcentral custom tracks have been added to the
         <a class="btn btn-primary btn-sm" href="http://genome-euro.ucsc.edu/cgi-bin/hgTracks?org=human&position=chr1:29554-31097&hgt.customText=https://dl.dropboxusercontent.com/s/7f2oypttqwzt263/vega_ucsc_sorted.bed" target="_blank">UCSC</a>
-        and <a class="btn btn-primary btn-sm" href="http://www.ensembl.org/Homo_sapiens/Location/View?r=1:29554-31097;contigviewbottom=url:https://dl.dropboxusercontent.com/s/7f2oypttqwzt263/vega_ucsc_sorted.bed" target="_blank">Ensembl</a> browsers.
+        and <a class="btn btn-primary btn-sm" href="http://www.ensembl.org/Homo_sapiens/Location/View?r=1:29554-31097;contigviewbottom=url:https://dl.dropboxusercontent.com/s/3l9qrhb462u630y/RNAcentral%20VEGA.bed" target="_blank">Ensembl</a> browsers.
         When an entry is clicked, the user can access the link to the RNAcentral website.
       </p>
 
@@ -67,14 +70,15 @@ chr1	RNAcentral	exon	30976	31097	.	+	.	RNA000063C361</pre>
 
         <li>
             <strong>Loading static images from Ensembl</strong>
-            <br>
-            The genome region(s) can be visualised as static images by dynamically retrieving the images from Ensembl.
-            This technique is used in <a href="http://www.pombase.org/spombe/result/SPBC11B10.09" target="_blank">Pombase</a> and the EBI search.
+            <p>
+              The genome region(s) can be visualised as static images by dynamically retrieving the images from Ensembl.
+              This technique is used in <a href="http://www.pombase.org/spombe/result/SPBC11B10.09" target="_blank">Pombase</a> and the EBI search.
+            </p>
             <img src="http://www.ensembl.org/Homo_sapiens/Component/Location/Web/MultiBottom?export=png;r=1:29554-31097;db=core;" class="img-thumbnail">
-            However, displaying the RNAcentral track on the static images will require loading the data into the Ensembl database.
+            <p>
+              However, displaying the RNAcentral track on the static images will require loading the data into the Ensembl database.
+            </p>
         </li>
-
-        <br>
 
         <li>
           <strong>Embedded HTML5 genome browser</strong>
