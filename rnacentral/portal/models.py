@@ -79,7 +79,7 @@ class Accessions(models.Model):
     division = models.CharField(max_length=3)
     keywords = models.CharField(max_length=100)
     description = models.CharField(max_length=200)
-    species = models.CharField(max_length=100)
+    species = models.CharField(max_length=150)
     organelle = models.CharField(max_length=100)
     classification = models.CharField(max_length=500)
     project = models.CharField(max_length=50)
