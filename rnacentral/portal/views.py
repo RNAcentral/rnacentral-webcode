@@ -37,7 +37,7 @@ def rna_view(request, upi):
     try:
         rna = Rna.objects.get(upi=upi.replace('RNA', 'UPI'))
         context = dict()
-        context['xrefs'] = rna.xrefs.select_related().all()
+        context['xrefs'] = rna.xrefs.all()
         context['counts'] = rna.count_symbols()
         context['num_org'] = context['xrefs'].values('taxid').distinct().count()
         context['num_db'] = context['xrefs'].values('db_id').distinct().count()
