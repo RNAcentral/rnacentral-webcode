@@ -139,7 +139,6 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
 
     # 'south',
-    'haystack',
     'portal',
     'rest_framework',
     'debug_toolbar',
@@ -148,12 +147,6 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
-
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
-    },
-}
 
 SESSION_SERIALIZER = 'django.contrib.sessions.serializers.JSONSerializer'
 
