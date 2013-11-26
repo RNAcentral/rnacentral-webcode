@@ -50,6 +50,7 @@ class Database(models.Model):
     display_name = models.CharField(max_length=40)
     logo = models.CharField(max_length=50)
     url = models.CharField(max_length=100)
+    project_id = models.CharField(max_length=10)
 
     class Meta:
         db_table = 'rnc_database'
