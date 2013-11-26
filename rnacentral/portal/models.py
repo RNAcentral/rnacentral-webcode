@@ -49,6 +49,7 @@ class Database(models.Model):
     for_release = models.CharField(max_length=1)
     display_name = models.CharField(max_length=40)
     logo = models.CharField(max_length=50)
+    url = models.CharField(max_length=100)
 
     class Meta:
         db_table = 'rnc_database'
