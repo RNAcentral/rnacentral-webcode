@@ -104,7 +104,7 @@
                 {% for xref in context.xref_paginator %}
                   <tr>
                     <td>
-                      <a href="{% url 'portal.views.expert_database_view' expert_db_name=xref.db.display_name %}">{{ xref.db.display_name }}</a>
+                      <a href="{% url 'portal.views.expert_database_view' expert_db_name=xref.db.descr %}">{{ xref.db.display_name }}</a>
                     </td>
                     <!-- accession -->
                     <td>

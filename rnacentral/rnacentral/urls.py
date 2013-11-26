@@ -25,7 +25,7 @@ urlpatterns = patterns('',
     # robots.txt
     url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
     # expert databases
-    url(r'^expert-database/(?P<expert_db_name>\w+)$', 'portal.views.expert_database_view'),
+    url(r'^expert-database/(?P<expert_db_name>[-\w]+)$', 'portal.views.expert_database_view'),
     # search test
     url(r'^search2/', 'portal.views.search'),
 )

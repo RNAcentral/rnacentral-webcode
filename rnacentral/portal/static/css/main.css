@@ -181,8 +181,13 @@ ul.breadcrumb.rnacentral-api {
   margin-top: 10px;
 }
 
-.expert-db-logo {
+.expert-db-logo img {
   width: 100px;
+}
+
+a.expert-db-logo:focus,
+a.expert-db-logo:hover {
+  text-decoration: none;
 }
 
 .list-inline {

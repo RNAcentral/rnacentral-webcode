@@ -3,24 +3,28 @@
 {% load humanize %}
 
 {% block title %}
-  {{ context.expert_db_name }} Expert Database
+  {{ context.expert_db.display_name }} Expert Database
 {% endblock %}
 
 {% block content %}
 
 <h1>
-  <img src="{% static 'img/expert-db-logos/'|add:context.expert_db_logo|add:'' %}" alt="{{context.expert_db_name}} logo" class="img-rounded expert-db-logo">
-  {{ context.expert_db_name }} Expert Database
+  <a href="{{ context.expert_db.url }}" target="_blank" class="expert-db-logo">
+    <img src="{% static 'img/expert-db-logos/'|add:context.expert_db.logo|add:'' %}" alt="{{context.expert_db.display_name}} logo" class="img-rounded">
+  </a>
+  {{ context.expert_db.display_name }} Expert Database
 </h1>
 
 <p>
-  {% if context.expert_db_name == 'miRBase' %}
-    <a href="http://www.mirbase.org/" target="_blank">miRBase</a> is a searchable database of published miRNA sequences and annotation. Each entry in the miRBase Sequence database represents a predicted hairpin portion of a miRNA transcript (termed mir in the database), with information on the location and sequence of the mature miRNA sequence (termed miR). Both hairpin and mature sequences are available for searching and browsing, and entries can also be retrieved by name, keyword, references and annotation.
-  {% elif context.expert_db_name == 'SRPDB' %}
-    <a href="http://bio.lundberg.gu.se/dbs/SRPDB/SRPDB.html" target="_blank">SRPDB</a> (Signal Recognition Particle Database)
+  {% if context.expert_db.display_name == 'miRBase' %}
+    <a href="{{ context.expert_db.url }}" target="_blank">miRBase</a> is a searchable database of published miRNA sequences and annotation. Each entry in the miRBase Sequence database represents a predicted hairpin portion of a miRNA transcript (termed mir in the database), with information on the location and sequence of the mature miRNA sequence (termed miR). Both hairpin and mature sequences are available for searching and browsing, and entries can also be retrieved by name, keyword, references and annotation.
+  {% elif context.expert_db.display_name == 'SRPDB' %}
+    <a href="{{ context.expert_db.url }}" target="_blank">SRPDB</a> (Signal Recognition Particle Database)
     provides aligned, annotated and phylogenetically ordered sequences related to structure and function of SRP.
-  {% elif context.expert_db_name == 'VEGA' %}
-    <a href="http://vega.sanger.ac.uk" target="_blank">VEGA</a> database provides high quality manual annotation of vertebrate finished genome sequences.
+  {% elif context.expert_db.display_name == 'VEGA' %}
+    <a href="{{ context.expert_db.url }}" target="_blank">VEGA</a> database provides high quality manual annotation of vertebrate finished genome sequences.
+  {% elif context.expert_db.display_name == 'tmRNA Website' %}
+    <a href="{{ context.expert_db.url }}" target="_blank">The tmRNA Website</a> contains predicted tmRNA sequences from RefSeq prokaryotic genomes, plasmids and bacteriophages.
   {% endif %}
 </p>
 
@@ -54,22 +58,16 @@
 
     <h2>Links</h2>
     <ul>
-      {% if context.expert_db_name == 'miRBase' %}
-        <li><a href="http://mirbase.org" target="_blank">miRBase homepage</a></li>
-        <li><a href="http://www.ebi.ac.uk/ena/data/view/PRJEB4451" target="_blank">ENA project</a></li>
-      {% elif context.expert_db_name == 'SRPDB' %}
-        <li><a href="http://bio.lundberg.gu.se/dbs/SRPDB/SRPDB.html" target="_blank">SRPDB homepage</a></li>
-        <li><a href="http://www.ebi.ac.uk/ena/data/view/PRJEB4384" target="_blank">ENA project</a></li>
-      {% elif context.expert_db_name == 'VEGA' %}
-        <li><a href="http://vega.sanger.ac.uk" target="_blank">VEGA homepage</a></li>
-        <li><a href="http://www.ebi.ac.uk/ena/data/view/PRJEB4568" target="_blank">ENA project</a></li>
+      <li><a href="{{ context.expert_db.url }}" target="_blank">{{ context.expert_db.display_name }} homepage</a></li>
+      {% if context.expert_db.project_id %}
+        <li><a href="http://www.ebi.ac.uk/ena/data/view/{{ context.expert_db.project_id }}" target="_blank">ENA project</a></li>
       {% endif %}
     </ul>
 
 </div>
 
 <div class="col-md-6">
-  {% if context.expert_db_name == 'miRBase' %}
+  {% if context.expert_db.display_name == 'miRBase' %}
     <h4>Sequence length distribution</h4>
     <canvas id="myChart" width="500" height="300"></canvas>
   {% endif %}
@@ -80,7 +78,7 @@
 
 <h2>References</h2>
 
-{% if context.expert_db_name == 'miRBase' %}
+{% if context.expert_db.display_name == 'miRBase' %}
   <blockquote>
     <strong>
       miRBase: integrating microRNA annotation and deep-sequencing data.
@@ -94,7 +92,7 @@
       Nucleic Acids Res. 39(Database issue): D152-7 (2011 Jan)
     </small>
   </blockquote>
-{% elif context.expert_db_name == 'SRPDB' %}
+{% elif context.expert_db.display_name == 'SRPDB' %}
     <blockquote>
       <strong>
         Kinship in the SRP RNA family.
@@ -122,7 +120,7 @@
         Nucleic Acids Res. 34(Database issue): D163-8 (2006 Jan)
       </small>
     </blockquote>
-{% elif context.expert_db_name == 'VEGA' %}
+{% elif context.expert_db.display_name == 'VEGA' %}
     <blockquote>
       <strong>
         The GENCODE v7 catalog of human long noncoding RNAs: analysis of their gene structure, evolution, and expression.
@@ -150,6 +148,17 @@
         Genome Res. 22(9): 1760-1774 (2012 Sep)
       </small>
     </blockquote>
+{% elif context.expert_db.display_name == 'tmRNA Website' %}
+    <blockquote>
+      <strong>
+        The tmRNA website: reductive evolution of tmRNA in plastids and other endosymbionts.
+      </strong>
+      <br>
+        Gueneau de Novoa P., Williams KP.
+      <small>
+        Nucleic Acids Res. 32(Database issue): D104-8 (2004 Jan).
+      </small>
+    </blockquote>
 {% endif %}
 
 
@@ -159,7 +168,7 @@
 {% block extra_js %}
     {{ block.super }}
 
-    {% if context.expert_db_name == 'miRBase' %}
+    {% if context.expert_db.display_name == 'miRBase' %}
     <script src="{% static "js/vendor/Chart.min.js" %}"></script>
     <script type="text/javascript">
 

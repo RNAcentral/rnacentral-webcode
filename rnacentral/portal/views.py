@@ -10,6 +10,7 @@ from django.views.generic.base import TemplateView
 from django.template import TemplateDoesNotExist
 from django.views.generic.edit import FormView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+import re
 
 
 class RnaViewSet(viewsets.ReadOnlyModelViewSet):
@@ -111,12 +112,13 @@ def search(request):
 
 
 def expert_database_view(request, expert_db_name):
-    expert_db_name = expert_db_name.upper()
     context = dict()
-    if expert_db_name in ('SRPDB', 'MIRBASE', 'VEGA'):
+    dbs = ('SRPDB', 'MIRBASE', 'VEGA', 'tmRNA_Web')
+    if expert_db_name not in dbs:
+        expert_db_name = _normalize_expert_db_name(expert_db_name)
+    if expert_db_name in dbs:
         data = Rna.objects.filter(xrefs__deleted='N', xrefs__db__descr=expert_db_name)
-        context['expert_db_name'] = Database.objects.get(descr=expert_db_name).display_name
-        context['expert_db_logo'] = Database.objects.get(descr=expert_db_name).logo
+        context['expert_db'] = Database.objects.get(descr=expert_db_name)
         context['total_sequences'] = data.count()
         context['total_organisms'] = len(data.values('xrefs__taxid').annotate(n=Count("pk")))
         context['examples'] = data.all()[:6]
@@ -130,6 +132,14 @@ def expert_database_view(request, expert_db_name):
         return render_to_response('portal/expert_database_coming_soon.html', {'context': context})
     else:
         raise Http404()
+
+
+# expert_db_name should match RNACEN.RNC_DATABASE.DESCR
+def _normalize_expert_db_name(expert_db_name):
+    if re.match('tmrna-website', expert_db_name, flags=re.IGNORECASE):
+        return 'tmRNA_Web'
+    else:
+        return expert_db_name.upper()
 
 
 class StaticView(TemplateView):
