@@ -122,15 +122,17 @@
                       Transcript <a href="http://vega.sanger.ac.uk/Homo_sapiens/Transcript/Summary?db=core;t={{ xref.accession.optional_id }}" target="_blank" title="View the transcript at VEGA">{{ xref.accession.optional_id }}</a>
                       from gene <a href="http://vega.sanger.ac.uk/Homo_sapiens/Gene/Summary?db=core;g={{ xref.accession.external_id }}" target="_blank" title="View the gene at VEGA">{{ xref.accession.external_id }}</a>
                       <br>
-                      {% if xref.splice_variants %}
-                        Alternative transcript{{ xref.splice_variants|pluralize }} from the same gene:
-                        {% for splice_variant in xref.splice_variants %}
-                          <a href="{% url  'portal.views.rna_view' upi=splice_variant.upi %}">{{ splice_variant.upi }}</a>
-                          ({{ splice_variant.len|intcomma }} nts){% if not forloop.last %},{% else %}.{% endif %}
-                        {% endfor %}
-                      {% else %}
-                        No known alternative transcripts.
-                      {% endif %}
+                      {% with splice_variants=xref.get_vega_splice_variants %}
+                        {% if splice_variants %}
+                          Alternative transcript{{splice_variants|length|pluralize}}:
+                          {% for splice_variant in splice_variants %}
+                            <a href="{% url  'portal.views.rna_view' upi=splice_variant.upi %}">{{ splice_variant.upi }}</a>
+                            ({{ splice_variant.len|intcomma }} nts){% if not forloop.last %},{% else %}.{% endif %}
+                          {% endfor %}
+                        {% else %}
+                          No alternative transcripts.
+                        {% endif %}
+                      {% endwith %}
                     {% endif %}
                     </td>
                     <!-- accession -->

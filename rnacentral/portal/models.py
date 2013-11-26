@@ -114,6 +114,19 @@ class Xref(models.Model):
     class Meta:
         db_table = 'xref'
 
+    def get_vega_splice_variants(self):
+        splice_variants = []
+        if self.db.display_name != 'VEGA':
+            return splice_variants
+        for splice_variant in Accessions.objects.filter(external_id=self.accession.external_id).\
+                                                 exclude(accession=self.accession.accession).\
+                                                 all():
+            for splice_xref in splice_variant.xrefs.all():
+                rnac = splice_xref.upi
+                rnac.upi = rnac.upi.replace('UPI', 'RNA')
+                splice_variants.append(rnac)
+        return splice_variants
+
 
 class Reference(models.Model):
     rna = models.ForeignKey(Rna, db_column='md5', to_field = 'md5', related_name='refs')

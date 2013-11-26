@@ -38,29 +38,19 @@ def rna_view(request, upi):
     try:
         rna = Rna.objects.get(upi=upi.replace('RNA', 'UPI'))
         context = dict()
-        context['xrefs'] = rna.xrefs.all()
+        context['xrefs'] = rna.xrefs.prefetch_related().all()
         context['counts'] = rna.count_symbols()
         context['num_org'] = context['xrefs'].values('taxid').distinct().count()
         context['num_db'] = context['xrefs'].values('db_id').distinct().count()
         context.update(context['xrefs'].aggregate(first_seen=Min('created__release_date'),
                                                   last_seen=Max('last__release_date')))
-        # VEGA alternative splice variants
-        for i, xref in enumerate(context['xrefs']):
-            if xref.db.display_name == 'VEGA':
-                context['xrefs'][i].splice_variants = []
-                for splice_variant in Accessions.objects.filter(external_id=xref.accession.external_id,
-                                                                xrefs__db__display_name='VEGA').\
-                                                         exclude(optional_id=xref.accession.optional_id).\
-                                                         all():
-                    for splice_xref in splice_variant.xrefs.all():
-                        rnac = splice_xref.upi
-                        rnac.upi = rnac.upi.replace('UPI', 'RNA')
-                        context['xrefs'][i].splice_variants.append(rnac)
         # xref pagination
-        xref_paginator = Paginator(context['xrefs'], 10)
+        xref_paginator = Paginator(context['xrefs'], 5)
         if request.GET.get('xref-page'):
             request.session['xref_page'] = request.GET.get('xref-page')
-        xref_page = int(request.session.get('xref_page', 1))
+            xref_page = int(request.session.get('xref_page'))
+        else:
+            xref_page = 1
         try:
             context['xref_paginator'] = xref_paginator.page(xref_page)
         except PageNotAnInteger:
@@ -74,7 +64,9 @@ def rna_view(request, upi):
         ref_paginator = Paginator(rna.refs.all(), 5)
         if request.GET.get('ref-page'):
             request.session['ref_page'] = request.GET.get('ref-page')
-        ref_page = int(request.session.get('ref_page', 1))
+            ref_page = int(request.session.get('ref_page'))
+        else:
+            ref_page = 1
         try:
             context['ref_paginator'] = ref_paginator.page(ref_page)
         except PageNotAnInteger:
