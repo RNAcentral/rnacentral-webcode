@@ -61,7 +61,7 @@ def rna_view(request, upi):
             context['xref_paginator'] = xref_paginator.page(xref_paginator.num_pages)
 
         # ref pagination
-        ref_paginator = Paginator(rna.refs.all(), 5)
+        ref_paginator = Paginator(rna.refs.order_by('title').all(), 5)
         if request.GET.get('ref-page'):
             request.session['ref_page'] = request.GET.get('ref-page')
             ref_page = int(request.session.get('ref_page'))
