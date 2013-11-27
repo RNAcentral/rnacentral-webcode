@@ -210,7 +210,12 @@
                      </strong>
                      <br>
                      {{ ref.authors }}
-                     <small>{{ ref.location }}</small>
+                     <small>
+                      {{ ref.location }}
+                       {% if ref.pubmed %}
+                         [<a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ ref.pubmed }}" target="_blank">PubMed</a>]
+                       {% endif %}
+                     </small>
                    </blockquote>
                  </li>
                {% endfor %}
