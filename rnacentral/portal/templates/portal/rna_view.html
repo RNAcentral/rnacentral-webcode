@@ -79,15 +79,30 @@
 
           <h2>
             Database cross-references
+            <small>{{ context.xrefs.count }}</small>
             {% if context.xref_paginator.paginator.num_pages > 1 %}
-              <small>page {{ context.xref_paginator.number }} out of {{ context.xref_paginator.paginator.num_pages }}</small>
-            {% else %}
-              <small>{{ context.xrefs.count }}</small>
+              <small>
+                <ul class="pager xrefs-inline-block pull-right">
+                  {% if context.xref_paginator.has_previous %}
+                    <li>
+                      <a href="?xref-page={{ context.xref_paginator.previous_page_number }}">&larr;</a>
+                    </li>
+                  {% endif %}
+
+                  {{ context.xref_paginator.number }} out of {{ context.xref_paginator.paginator.num_pages }}
+
+                  {% if context.xref_paginator.has_next %}
+                    <li>
+                      <a href="?xref-page={{ context.xref_paginator.next_page_number }}">&rarr;</a>
+                    </li>
+                  {% endif %}
+                </ul>
+              </small>
             {% endif %}
           </h2>
 
           <div class="table-responsive max-height-500">
-            <table class="table {% if context.xrefs.count > 2 %}table-striped{% endif %} table-condensed table-bordered" id="results">
+            <table class="table table-hover table-condensed table-bordered" id="results">
               <thead>
                 <tr>
                   <th>Database</th>
@@ -118,6 +133,7 @@
                       <a href="http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/{{ xref.accession.get_srpdb_id }}.fasta" target="_blank">{{ xref.accession.get_srpdb_id }}</a>
                     {% elif xref.db.display_name == 'miRBase' %}
                       miRBase cross-references not available yet
+                    {# VEGA #}
                     {% elif xref.db.display_name == 'VEGA' %}
                       Transcript <a href="http://vega.sanger.ac.uk/Homo_sapiens/Transcript/Summary?db=core;t={{ xref.accession.optional_id }}" target="_blank" title="View the transcript at VEGA">{{ xref.accession.optional_id }}</a>
                       from gene <a href="http://vega.sanger.ac.uk/Homo_sapiens/Gene/Summary?db=core;g={{ xref.accession.external_id }}" target="_blank" title="View the gene at VEGA">{{ xref.accession.external_id }}</a>
@@ -133,11 +149,28 @@
                           No alternative transcripts.
                         {% endif %}
                       {% endwith %}
+                    {# tmRNA Website #}
+                    {% elif xref.db.display_name == 'tmRNA Website' %}
+                      <a href="http://bioinformatics.sandia.gov/tmrna/seqs/{{ xref.accession.external_id }}.html" target="_blank">{{ xref.accession.external_id }}</a>
+                      {% with tmrna_type=xref.get_tmrna_type %}
+                        <br>
+                        {% if tmrna_type == 1 %}
+                          One-piece tmRNA or tmRNA precursor
+                        {% elif tmrna_type == 2 %}
+                          {% with tmrna_mate=xref.get_tmrna_mate_upi %}
+                            Two-piece tmRNA partner: <a href="{% url 'portal.views.rna_view' upi=tmrna_mate %}">{{ tmrna_mate }}</a>
+                          {% endwith %}
+                        {% endif %}
+                      {% endwith %}
+                      <br>
+                      {% if xref.accession.organelle %}
+                      found in {{ xref.accession.organelle|lower }}
+                      {% endif %}
                     {% endif %}
                     </td>
                     <!-- accession -->
                     <td>{{ xref.accession.division }} </td>
-                    <td><a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank" title="View the species in ENA"><em>{{ xref.accession.species }}</em></a></td>
+                    <td><a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank" title="{{ xref.accession.classification }}"><em>{{ xref.accession.species }}</em></a></td>
                     <td>{{ xref.created.release_date }}</td>
                     <td>{{ xref.last.release_date }}</td>
                     <td>
@@ -152,24 +185,6 @@
               </tbody>
             </table>
           </div> <!-- .table-responsive -->
-
-          <!-- pagination -->
-          {% if context.xref_paginator.paginator.num_pages > 1 %}
-          <ul class="pager">
-            {% if context.xref_paginator.has_previous %}
-              <li>
-                <a href="?xref-page={{ context.xref_paginator.previous_page_number }}">previous</a>
-              </li>
-            {% endif %}
-
-            {% if context.xref_paginator.has_next %}
-              <li>
-                <a href="?xref-page={{ context.xref_paginator.next_page_number }}">next</a>
-              </li>
-            {% endif %}
-          </ul>
-          {% endif %}
-          <!-- pagination -->
 
           <h2>
             References

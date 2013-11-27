@@ -127,6 +127,34 @@ class Xref(models.Model):
                 splice_variants.append(rnac)
         return splice_variants
 
+    def get_tmrna_mate_upi(self):
+        """
+            Get the mate of the 2-piece tmRNA
+        """
+        if self.db.display_name != 'tmRNA Website':
+            tmrna_mate_upi = False
+        if not self.accession.optional_id:  # no mate info
+            tmrna_mate_upi = False
+        mate = Accessions.objects.filter(parent_ac=self.accession.optional_id, is_composite='Y').get()
+        tmrna_mate_upi = mate.xrefs.get().upi.upi.replace('UPI', 'RNA')
+        return tmrna_mate_upi
+
+    def get_tmrna_type(self):
+        """
+            Possible tmRNA types:
+                * acceptor (tRNA-like domain)
+                * coding (mRNA-like domain),
+                * precursor (contains the acceptor and coding sequences and other intervening sequences)
+        """
+        tmrna_type = 0
+        if self.db.display_name != 'tmRNA Website':
+            tmrna_type = 0 # not tmRNA
+        if not self.accession.optional_id:
+            tmrna_type = 1 # one-piece or precursor
+        else:
+            tmrna_type = 2 # two-piece tmRNA
+        return tmrna_type
+
 
 class Reference(models.Model):
     rna = models.ForeignKey(Rna, db_column='md5', to_field = 'md5', related_name='refs')

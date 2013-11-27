@@ -214,3 +214,8 @@ a[href^="http://"]:not([href*="rnacentral.org"]):hover {
 h3.panel-title {
   color: black;
 }
+
+.xrefs-inline-block {
+  display: inline-block;
+  margin: 0px;
+}
