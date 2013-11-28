@@ -119,6 +119,9 @@
                 {% for xref in context.xref_paginator %}
                   <tr>
                     <td>
+                      {% if xref.db.display_name != 'ENA' and xref.db.display_name != 'RFAM' %}
+                        <span class="badge badge-success help" data-toggle="tooltip" title="Expert Database"><span class="glyphicon glyphicon-star"></span></span>
+                      {% endif %}
                       <a href="{% url 'portal.views.expert_database_view' expert_db_name=xref.db.descr %}">{{ xref.db.display_name }}</a>
                     </td>
                     <!-- accession -->

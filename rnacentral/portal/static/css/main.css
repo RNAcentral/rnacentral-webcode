@@ -164,6 +164,14 @@ pre {
   margin-right: 5px;
 }
 
+.badge .glyphicon {
+  margin: 0px;
+}
+
+.badge-success {
+  background-color: #468847;
+}
+
 div.alert {
   border: inherit;
 }
