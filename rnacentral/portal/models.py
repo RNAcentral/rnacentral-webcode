@@ -38,6 +38,26 @@ class Rna(models.Model):
             'N': len(seq) - (count_A + count_C + count_G + count_U)
         }
 
+    def get_expert_database_xrefs(self):
+        """
+            Get xrefs only from the expert database.
+        """
+        return self.xrefs.prefetch_related().exclude(accession__is_composite='N').all()
+
+    def get_ena_xrefs(self):
+        """
+            Get ENA xrefs that don't have corresponding expert database entries.
+        """
+        expert_db_projects = [db.project_id for db in Database.objects.exclude(project_id=None).all()]
+        return self.xrefs.filter(db__descr='ENA').exclude(accession__project__in=expert_db_projects).prefetch_related().all()
+
+    def get_xrefs(self):
+        """
+            Concatenate querysets putting the expert database xrefs
+            at the beginning of the resulting queryset.
+        """
+        return self.get_ena_xrefs() | self.get_expert_database_xrefs()
+
 
 class Database(models.Model):
     timestamp = models.DateField()

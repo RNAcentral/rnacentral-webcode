@@ -167,6 +167,14 @@
                       found in {{ xref.accession.organelle|lower }}
                       {% endif %}
                     {% endif %}
+
+                    {% if xref.accession.is_composite == 'Y' %}
+                      <br>
+                      <small>
+                      based on ENA entry <a href="http://www.ebi.ac.uk/ena/data/view/Non-coding:{{ xref.accession.non_coding_id }}" target="_blank" title="{{ xref.accession.non_coding_id }} at ENA">{{ xref.accession.non_coding_id }}</a>
+                      </small>
+                    {% endif %}
+
                     </td>
                     <!-- accession -->
                     <td>{{ xref.accession.division }} </td>
