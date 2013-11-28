@@ -126,10 +126,10 @@
                     </td>
                     <!-- accession -->
                     <td>
+                    {{ xref.accession.description }}
+                    <br>
                     {% if xref.db.display_name == 'ENA' %}
                         <a href="http://www.ebi.ac.uk/ena/data/view/Non-coding:{{ xref.accession.accession }}" target="_blank" title="{{ xref.accession.accession }} at ENA">{{ xref.accession.accession }}</a>
-                        <br>
-                        {{ xref.accession.description }}
                     {% elif xref.db.display_name == 'RFAM' %}
                       <a href="http://rfam.sanger.ac.uk/family/{{ xref.accession.external_id }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }} family)
                     {% elif xref.db.display_name == 'SRPDB' %}
