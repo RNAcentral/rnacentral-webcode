@@ -224,7 +224,11 @@
                      <small>
                       {{ ref.location }}
                        {% if ref.pubmed %}
-                         [<a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ ref.pubmed }}" target="_blank">PubMed</a>]
+                          <div class="abstract-preview">
+                            <button class="btn btn-xs btn-primary abstract-btn abstract-control" data-pubmed-id="{{ ref.pubmed }}">Preview abstract</button>
+                            <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ ref.pubmed }}" target="_blank" class="abstract-control">PubMed</a>
+                            <div class="abstract-text"></div>
+                          </div>
                        {% endif %}
                      </small>
                    </blockquote>
@@ -310,7 +314,13 @@
 
 {% block extra_js %}
   {{ block.super }}
+  <script type="text/javascript" src="{% static "js/jquery.EuropePMCAbstracts.js" %}"></script>
+
   <script type="text/javascript">
     $('.help').tooltip();
+    $('.abstract-btn').EuropePMCAbstracts({
+      'target_class': '.abstract-text',
+      'pubmed_id_data_attribute': 'pubmed-id',
+    });
   </script>
 {% endblock extra_js %}

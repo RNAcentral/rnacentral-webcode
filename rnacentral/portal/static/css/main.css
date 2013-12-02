@@ -227,3 +227,11 @@ h3.panel-title {
   display: inline-block;
   margin: 0px;
 }
+
+.abstract-preview {
+  display: inline;
+}
+
+.abstract-control {
+  margin: 0 0.5em;
+}
