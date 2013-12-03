@@ -331,7 +331,11 @@
         "sPaginationType": "bootstrap", // requires dataTables.bootstrap.js
         "oLanguage": {
             "sSearch": "", // don't display the "Search:" bit
-            "sInfo": "_START_-_END_ of _TOTAL_" // change the informational text
+            "sInfo": "_START_-_END_ of _TOTAL_", // change the informational text
+            "oPaginate": {
+              "sNext": "",
+              "sPrevious": "",
+            },
         },
         "aLengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
         "fnInitComplete": function(oSettings, json) {
