@@ -7,6 +7,9 @@ Master Stylesheet for the RNAcentral Portal
 2. Masthead
 3. Footer
 4. General styles
+5. Misc
+5.1 Datatables integration
+5.2 Display vertical scrollbar on Macs
 
 -------------------------------------------------------------------*/
 
@@ -185,6 +188,11 @@ form input {
   overflow: auto;
 }
 
+.max-height-600 {
+  max-height: 600px;
+  overflow: auto;
+}
+
 ul.breadcrumb.rnacentral-api {
   margin-top: 10px;
 }
@@ -234,4 +242,91 @@ h3.panel-title {
 
 .abstract-control {
   margin: 0 0.5em;
+}
+
+.small {
+  font-size: 85%;
+}
+
+.table {
+  margin-bottom: 5px;
+}
+
+.pagination {
+  margin: 5px 0;
+}
+
+-------------------------------------------------------------------*/
+
+/*------------------------------------------------------------------
+[5. Misc]
+*/
+
+/*------------------------------------------------------------------
+[5.1 Datatables integration]
+*/
+table.table thead .sorting,
+table.table thead .sorting_asc,
+table.table thead .sorting_desc,
+table.table thead .sorting_asc_disabled,
+table.table thead .sorting_desc_disabled {
+    cursor: pointer;
+    *cursor: hand;
+}
+
+table.table thead .sorting {
+  background: url('../js/vendor/DataTables-1.9.4/media/images/sort_both.png') no-repeat center right;
+}
+
+table.table thead .sorting_asc {
+  background: url('../js/vendor/DataTables-1.9.4/media/images/sort_asc.png') no-repeat center right;
+}
+
+table.table thead .sorting_desc {
+  background: url('../js/vendor/DataTables-1.9.4/media/images/sort_desc.png') no-repeat center right;
+}
+
+table.table thead .sorting_asc_disabled {
+  background: url('../js/vendor/DataTables-1.9.4/media/images/sort_asc_disabled.png') no-repeat center right;
+}
+
+table.table thead .sorting_desc_disabled {
+  background: url('../js/vendor/DataTables-1.9.4/media/images/sort_desc_disabled.png') no-repeat center right;
+}
+
+.dataTables_info {
+  display: inline;
+}
+
+.dataTables_length label {
+  font-weight: normal;
+}
+
+.dataTables_paginate {
+  margin-bottom: 10px;
+}
+
+.xref-datatables-controls {
+  margin-top: 5px;
+}
+
+/*------------------------------------------------------------------
+[5.2 Display vertical scrollbar on Macs]
+*/
+.vertical-scrollbar::-webkit-scrollbar {
+    -webkit-appearance: none;
+}
+
+.vertical-scrollbar::-webkit-scrollbar:vertical {
+    width: 11px;
+}
+
+.vertical-scrollbar::-webkit-scrollbar:horizontal {
+    height: 11px;
+}
+
+.vertical-scrollbar::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    border: 2px solid white; /* should match background, can't be transparent */
+    background-color: rgba(0, 0, 0, .5);
 }

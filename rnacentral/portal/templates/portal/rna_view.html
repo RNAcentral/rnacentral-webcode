@@ -79,7 +79,8 @@
 
           <h2>
             Database cross-references
-            <small>{{ context.xrefs.count }}</small>
+            <small id="xrefs-datatables-counter"></small>
+            <span id="xrefs-datatables-filter"></span>
             {% if context.xref_paginator.paginator.num_pages > 1 %}
               <small>
                 <ul class="pager xrefs-inline-block pull-right">
@@ -101,26 +102,28 @@
             {% endif %}
           </h2>
 
-          <div class="table-responsive max-height-500">
-            <table class="table table-hover table-condensed table-bordered" id="results">
+          <div class="table-responsive max-height-600 vertical-scrollbar">
+            <table class="table table-hover table-condensed table-bordered" id="xrefs-table">
               <thead>
                 <tr>
+                  <th>#</th>
                   <th>Database</th>
                   <th>Description</th>
                   <th>Division</th>
                   <th>Organism</th>
-                  <th>First seen</th>
-                  <th>Last seen</th>
+                  <th>First&nbsp;seen</th>
+                  <th>Last&nbsp;seen</th>
                   <th>Active</th>
                 </tr>
               </thead>
 
               <tbody>
-                {% for xref in context.xref_paginator %}
+                {% for xref in context.xrefs %}
                   <tr>
+                    <td class="text-muted">{{ forloop.counter }}</td>
                     <td>
                       {% if xref.db.display_name != 'ENA' and xref.db.display_name != 'RFAM' %}
-                        <span class="badge badge-success help" data-toggle="tooltip" title="Expert Database"><span class="glyphicon glyphicon-star"></span></span>
+                        <span class="badge badge-success help" data-toggle="tooltip" title="RNAcentral Expert Database"><span class="glyphicon glyphicon-star"></span></span>
                       {% endif %}
                       <a href="{% url 'portal.views.expert_database_view' expert_db_name=xref.db.descr %}">{{ xref.db.display_name }}</a>
                     </td>
@@ -196,6 +199,8 @@
               </tbody>
             </table>
           </div> <!-- .table-responsive -->
+
+          <div class="xref-datatables-controls"></div>
 
           <h2>
             References
@@ -315,12 +320,36 @@
 {% block extra_js %}
   {{ block.super }}
   <script type="text/javascript" src="{% static "js/jquery.EuropePMCAbstracts.js" %}"></script>
-
+  <script type="text/javascript" src="{% static "js/vendor/DataTables-1.9.4/media/js/jquery.dataTables.min.js" %}"></script>
+  <script type="text/javascript" src="{% static "js/vendor/DataTables-plugins/integration/bootstrap/3/dataTables.bootstrap.js" %}"></script>
   <script type="text/javascript">
-    $('.help').tooltip();
-    $('.abstract-btn').EuropePMCAbstracts({
-      'target_class': '.abstract-text',
-      'pubmed_id_data_attribute': 'pubmed-id',
+    $(function() {
+      $('#xrefs-table').dataTable({
+        "bAutoWidth": false, // don't recalculate column widths
+        "sDom": "ftpil", // filter, table, pagination, information, length
+        "iDisplayLength": 5, // show 5 entries by default
+        "sPaginationType": "bootstrap", // requires dataTables.bootstrap.js
+        "oLanguage": {
+            "sSearch": "", // don't display the "Search:" bit
+            "sInfo": "_START_-_END_ of _TOTAL_" // change the informational text
+        },
+        "aLengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+        "fnInitComplete": function(oSettings, json) {
+          $('.dataTables_filter input').attr('placeholder', 'Filter table').attr("tabindex", 1).addClass('form-control input-sm').attr('type', 'search');
+          $('#xrefs-table_filter').appendTo('#xrefs-datatables-filter').addClass('pull-right');
+          $('#xrefs-table_info').appendTo('#xrefs-datatables-counter');
+          $('.dataTables_paginate').addClass('pull-left').appendTo('.xref-datatables-controls');
+          $('#xrefs-table_length').addClass('pull-right text-muted small').appendTo('.xref-datatables-controls');
+          $('.table th').css('padding-right','1.5em');
+        },
+      });
+
+      $('.help').tooltip();
+
+      $('.abstract-btn').EuropePMCAbstracts({
+        'target_class': '.abstract-text',
+        'pubmed_id_data_attribute': 'pubmed-id',
+      });
     });
   </script>
 {% endblock extra_js %}

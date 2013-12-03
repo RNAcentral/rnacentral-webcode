@@ -44,22 +44,6 @@ def rna_view(request, upi):
         context['num_db'] = context['xrefs'].values('db_id').distinct().count()
         context.update(context['xrefs'].aggregate(first_seen=Min('created__release_date'),
                                                   last_seen=Max('last__release_date')))
-        # xref pagination
-        xref_paginator = Paginator(context['xrefs'], 5)
-        if request.GET.get('xref-page'):
-            request.session['xref_page'] = request.GET.get('xref-page')
-            xref_page = int(request.session.get('xref_page'))
-        else:
-            xref_page = 1
-        try:
-            context['xref_paginator'] = xref_paginator.page(xref_page)
-        except PageNotAnInteger:
-            # If page is not an integer, deliver first page.
-            context['xref_paginator'] = xref_paginator.page(1)
-        except EmptyPage:
-            # If page is out of range (e.g. 9999), deliver last page of results.
-            context['xref_paginator'] = xref_paginator.page(xref_paginator.num_pages)
-
         # ref pagination
         ref_paginator = Paginator(rna.refs.order_by('title').all(), 5)
         if request.GET.get('ref-page'):
