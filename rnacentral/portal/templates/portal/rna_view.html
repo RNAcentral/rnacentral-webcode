@@ -325,8 +325,14 @@
           $('.dataTables_filter input').attr('placeholder', 'Filter table').attr("tabindex", 1).addClass('form-control input-sm').attr('type', 'search');
           $('#xrefs-table_filter').appendTo('#xrefs-datatables-filter').addClass('pull-right');
           $('#xrefs-table_info').appendTo('#xrefs-datatables-counter');
-          $('.dataTables_paginate').addClass('pull-left').appendTo('.xref-datatables-controls');
-          $('#xrefs-table_length').addClass('pull-right text-muted small').appendTo('.xref-datatables-controls');
+          // hide pagination controls for one page
+          if ( $('.dataTables_paginate').find('li').length == 3 ) { // 3 elements: <-, 1, ->
+            $('.dataTables_paginate').hide();
+            $('#xrefs-table_length').hide();
+          } else {
+            $('.dataTables_paginate').addClass('pull-left').appendTo('.xref-datatables-controls');
+            $('#xrefs-table_length').addClass('pull-right text-muted small').appendTo('.xref-datatables-controls');
+          }
           $('.table th').css('padding-right','1.5em');
         },
       });
