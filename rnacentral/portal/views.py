@@ -42,6 +42,8 @@ def rna_view(request, upi):
         context['counts'] = rna.count_symbols()
         context['num_org'] = context['xrefs'].values('taxid').distinct().count()
         context['num_db'] = context['xrefs'].values('db_id').distinct().count()
+        context['distinct_divisions'] = context['xrefs'].values('accession__division').distinct()
+        context['num_division'] = len(context['distinct_divisions'])
         context.update(context['xrefs'].aggregate(first_seen=Min('created__release_date'),
                                                   last_seen=Max('last__release_date')))
         # ref pagination

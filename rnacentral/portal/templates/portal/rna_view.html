@@ -70,7 +70,11 @@
               <ul class="list-inline">
                 <li><strong>{{ rna.len|intcomma }}</strong> nucleotides</li>
                 <li><strong>{{ context.num_db }}</strong> database{{ context.num_db|pluralize }}</li>
-                <li><strong>{{ context.num_org }}</strong> organism{{ context.num_org|pluralize|intcomma }}</li>
+                <li>
+                  <strong>{{ context.num_org }}</strong> organism{{ context.num_org|pluralize|intcomma }} from the
+                  {% for division in context.distinct_divisions %}{{division.accession__division}}{% endfor %}
+                  division{{ context.num_division|pluralize|intcomma }}
+                </li>
                 <li>first seen {{ context.first_seen }}</li>
                 <li>last updated {{ context.last_seen }}</li>
               </ul>
@@ -81,25 +85,6 @@
             Database cross-references
             <small id="xrefs-datatables-counter"></small>
             <span id="xrefs-datatables-filter"></span>
-            {% if context.xref_paginator.paginator.num_pages > 1 %}
-              <small>
-                <ul class="pager xrefs-inline-block pull-right">
-                  {% if context.xref_paginator.has_previous %}
-                    <li>
-                      <a href="?xref-page={{ context.xref_paginator.previous_page_number }}">&larr;</a>
-                    </li>
-                  {% endif %}
-
-                  {{ context.xref_paginator.number }} out of {{ context.xref_paginator.paginator.num_pages }}
-
-                  {% if context.xref_paginator.has_next %}
-                    <li>
-                      <a href="?xref-page={{ context.xref_paginator.next_page_number }}">&rarr;</a>
-                    </li>
-                  {% endif %}
-                </ul>
-              </small>
-            {% endif %}
           </h2>
 
           <div class="table-responsive max-height-600 vertical-scrollbar">
@@ -109,7 +94,6 @@
                   <th>#</th>
                   <th>Database</th>
                   <th>Description</th>
-                  <th>Division</th>
                   <th>Organism</th>
                   <th>First&nbsp;seen</th>
                   <th>Last&nbsp;seen</th>
@@ -183,7 +167,6 @@
 
                     </td>
                     <!-- accession -->
-                    <td>{{ xref.accession.division }} </td>
                     <td><a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank" title="{{ xref.accession.classification }}"><em>{{ xref.accession.species }}</em></a></td>
                     <td>{{ xref.created.release_date }}</td>
                     <td>{{ xref.last.release_date }}</td>
