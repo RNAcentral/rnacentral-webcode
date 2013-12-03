@@ -37,13 +37,14 @@ def index(request):
 def rna_view(request, upi):
     try:
         rna = Rna.objects.get(upi=upi.replace('RNA', 'UPI'))
-        context = dict()
-        context['xrefs'] = rna.get_xrefs()
-        context['counts'] = rna.count_symbols()
-        context['num_org'] = context['xrefs'].values('taxid').distinct().count()
-        context['num_db'] = context['xrefs'].values('db_id').distinct().count()
-        context['distinct_divisions'] = context['xrefs'].values('accession__division').distinct()
-        context['num_division'] = len(context['distinct_divisions'])
+        xrefs = rna.get_xrefs()
+        context = {
+            'xrefs': xrefs,
+            'counts': rna.count_symbols(),
+            'num_org': xrefs.values('taxid').distinct().count(),
+            'num_db': xrefs.values('db_id').distinct().count(),
+            'distinct_divisions': xrefs.values('accession__division').distinct(),
+        }
         context.update(context['xrefs'].aggregate(first_seen=Min('created__release_date'),
                                                   last_seen=Max('last__release_date')))
         # ref pagination
