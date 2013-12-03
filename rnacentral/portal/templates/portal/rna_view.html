@@ -72,8 +72,8 @@
                 <li><strong>{{ context.num_db }}</strong> database{{ context.num_db|pluralize }}</li>
                 <li>
                   <strong>{{ context.num_org }}</strong> organism{{ context.num_org|pluralize|intcomma }} from the
-                  {% for division in context.distinct_divisions %}{{division.accession__division}}{% endfor %}
-                  division{{ context.num_division|pluralize|intcomma }}
+                  {% for division in context.distinct_divisions %}{{division.accession__division}}{% if not forloop.last %}, {% endif %}{% endfor %}
+                  division{{ context.distinct_divisions|pluralize|intcomma }}
                 </li>
                 <li>first seen <time datetime="{{ context.first_seen|date:'Y-m-d' }}">{{ context.first_seen|date:'d M Y' }}</time></li>
                 <li>last updated <time datetime="{{ context.last_seen|date:'Y-m-d' }}">{{ context.last_seen|date:'d M Y' }}</time></li>
@@ -87,6 +87,8 @@
             <span id="xrefs-datatables-filter"></span>
           </h2>
 
+
+          {{ context.newick}}
           <div class="table-responsive max-height-600 vertical-scrollbar">
             <table class="table table-hover table-condensed table-bordered" id="xrefs-table">
               <thead>
