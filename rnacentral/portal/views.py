@@ -11,6 +11,7 @@ from django.template import TemplateDoesNotExist
 from django.views.generic.edit import FormView
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import re
+import json
 
 
 class RnaViewSet(viewsets.ReadOnlyModelViewSet):
@@ -43,7 +44,7 @@ def rna_view(request, upi):
             'counts': rna.count_symbols(),
             'num_org': xrefs.values('taxid').distinct().count(),
             'num_db': xrefs.values('db_id').distinct().count(),
-            'distinct_divisions': xrefs.values('accession__division').distinct(),
+            'json_lineage_tree': _get_json_lineage_tree(xrefs),
         }
         context.update(context['xrefs'].aggregate(first_seen=Min('created__release_date'),
                                                   last_seen=Max('last__release_date')))
@@ -67,6 +68,89 @@ def rna_view(request, upi):
     except Rna.DoesNotExist:
         raise Http404
     return render(request, 'portal/rna_view.html', {'rna': rna, 'context': context})
+
+
+def _get_json_lineage_tree(xrefs):
+    """
+        Combine lineages from multiple xrefs to produce a single species tree.
+        The data are used by the d3 library.
+    """
+
+    def get_lineages(xrefs):
+        """
+            Combine the lineages from all xrefs in a single list.
+        """
+        taxons = []
+        for xref in xrefs:
+            taxons.append(xref.accession.classification)
+        return taxons
+
+    def build_nested_dict_helper(path, text, container):
+        """
+            Recursive function that builds the nested dictionary.
+        """
+        segs = path.split('; ')
+        head = segs[0]
+        tail = segs[1:]
+        if not tail:
+            # store how many time the species is seen
+            if head in container:
+                container[head] += 1
+            else:
+                container[head] = 1
+        else:
+            if head not in container:
+                container[head] = {}
+            build_nested_dict_helper('; '.join(tail), text, container[head])
+
+    def get_nested_dict(lineages):
+        """
+            Transform a list like this:
+                items = [
+                    'A; C; X; human',
+                    'A; C; X; human',
+                    'B; D; Y; mouse',
+                    'B; D; Z; rat',
+                    'B; D; Z; rat',
+                ]
+            into a nested dictionary like this:
+                {'root': {'A': {'C': {'X': {'human': 2}}}, 'B': {'D': {'Y': {'mouse': 1}, 'Z': {'rat': 2}}}}}
+        """
+        container = {}
+        for lineage in lineages:
+            build_nested_dict_helper(lineage, lineage, container)
+        return container
+
+    def get_nested_tree(data, container):
+        """
+            Transform a nested dictionary like this:
+                {'root': {'A': {'C': {'X': {'human': 2}}}, 'B': {'D': {'Y': {'mouse': 1}, 'Z': {'rat': 2}}}}}
+            into a json file like this (fragment shown):
+                {"name":"A","children":[{"name":"C","children":[{"name":"X","children":[{"name":"human","count":2}]}]}]}
+        """
+        if not container:
+            container = {
+                "name": 'All',
+                "children": []
+            }
+        for name, children in data.iteritems():
+            if isinstance(children, int):
+                container['children'].append({
+                    "name": name,
+                    "count": children
+                })
+            else:
+                container['children'].append({
+                    "name": name,
+                    "children": []
+                })
+                get_nested_tree(children, container['children'][-1])
+        return container
+
+    lineages = get_lineages(xrefs)
+    nodes = get_nested_dict(lineages)
+    json_lineage_tree = get_nested_tree(nodes, {})
+    return json.dumps(json_lineage_tree)
 
 
 def search(request):

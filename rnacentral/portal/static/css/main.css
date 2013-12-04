@@ -9,7 +9,8 @@ Master Stylesheet for the RNAcentral Portal
 4. General styles
 5. Misc
 5.1 Datatables integration
-5.2 Display vertical scrollbar on Macs
+5.2 Force scrollbars on Macs
+5.3 D3 species tree
 
 -------------------------------------------------------------------*/
 
@@ -256,8 +257,6 @@ h3.panel-title {
   margin: 5px 0;
 }
 
--------------------------------------------------------------------*/
-
 /*------------------------------------------------------------------
 [5. Misc]
 */
@@ -311,22 +310,46 @@ table.table thead .sorting_desc_disabled {
 }
 
 /*------------------------------------------------------------------
-[5.2 Display vertical scrollbar on Macs]
+[5.2 Force scrollbars on Macs]
 */
-.vertical-scrollbar::-webkit-scrollbar {
+.force-scrollbars::-webkit-scrollbar {
     -webkit-appearance: none;
 }
 
-.vertical-scrollbar::-webkit-scrollbar:vertical {
+.force-scrollbars::-webkit-scrollbar:vertical {
     width: 11px;
 }
 
-.vertical-scrollbar::-webkit-scrollbar:horizontal {
+.force-scrollbars::-webkit-scrollbar:horizontal {
     height: 11px;
 }
 
-.vertical-scrollbar::-webkit-scrollbar-thumb {
+.force-scrollbars::-webkit-scrollbar-thumb {
     border-radius: 8px;
     border: 2px solid white; /* should match background, can't be transparent */
     background-color: rgba(0, 0, 0, .5);
+}
+
+/*------------------------------------------------------------------
+[5.3 D3 species tree]
+*/
+.d3-species {
+  overflow: auto;
+}
+
+.d3-species .node circle {
+  cursor: pointer;
+  fill: #fff;
+  stroke: #4682B4;
+  stroke-width: 1.5px;
+}
+
+.d3-species .node text {
+  font-size: 11px;
+}
+
+.d3-species path.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1.5px;
 }

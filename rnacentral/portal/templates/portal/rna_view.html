@@ -18,9 +18,12 @@
 
     <div class="tabbable">
 
-      <ul class="nav nav-tabs">
+      <ul class="nav nav-tabs" id="tabs">
         <li class="active">
           <a href="#overview" data-toggle="tab">Overview</a>
+        </li>
+        <li>
+          <a href="#species" data-toggle="tab">Species</a>
         </li>
         <li class="disabled" data-toggle="tab">
           <a href="#2d">2D</a>
@@ -71,9 +74,8 @@
                 <li><strong>{{ rna.len|intcomma }}</strong> nucleotides</li>
                 <li><strong>{{ context.num_db }}</strong> database{{ context.num_db|pluralize }}</li>
                 <li>
-                  <strong>{{ context.num_org }}</strong> organism{{ context.num_org|pluralize|intcomma }} from the
-                  {% for division in context.distinct_divisions %}{{division.accession__division}}{% if not forloop.last %}, {% endif %}{% endfor %}
-                  division{{ context.distinct_divisions|pluralize|intcomma }}
+                  <strong>{{ context.num_org }}</strong> species
+                  (<a href="#" id="show-species-tab">view tree</a>)
                 </li>
                 <li>first seen <time datetime="{{ context.first_seen|date:'Y-m-d' }}">{{ context.first_seen|date:'d M Y' }}</time></li>
                 <li>last updated <time datetime="{{ context.last_seen|date:'Y-m-d' }}">{{ context.last_seen|date:'d M Y' }}</time></li>
@@ -87,16 +89,14 @@
             <span id="xrefs-datatables-filter"></span>
           </h2>
 
-
-          {{ context.newick}}
-          <div class="table-responsive max-height-600 vertical-scrollbar">
+          <div class="table-responsive max-height-600 force-scrollbars">
             <table class="table table-hover table-condensed table-bordered" id="xrefs-table">
               <thead>
                 <tr>
                   <th>#</th>
                   <th>Database</th>
                   <th>Description</th>
-                  <th>Organism</th>
+                  <th>Species</th>
                   <th>First&nbsp;seen</th>
                   <th>Last&nbsp;seen</th>
                   <th>Active</th>
@@ -284,6 +284,21 @@
 
         </div> <!-- .tab-pane .active -->
 
+        <div class="tab-pane" id="species">
+
+          <h2>Species</h2>
+
+          <p class="text-muted">
+            <span class="glyphicon glyphicon-info-sign"></span>
+            The species tree is generated automatically by combining the lineages from all database cross-references.
+            <br>
+            <small>The nodes can be clicked to collapse or expand them. Long taxon names are truncated and can be displayed by hovering over the name.</small>
+          </p>
+
+          <div id="d3-species-tree" class="d3-species force-scrollbars"></div>
+
+        </div>
+
         <div class="tab-pane" id="2d">
         </div>
 
@@ -304,11 +319,14 @@
 
 {% block extra_js %}
   {{ block.super }}
-  <script type="text/javascript" src="{% static "js/jquery.EuropePMCAbstracts.js" %}"></script>
   <script type="text/javascript" src="{% static "js/vendor/DataTables-1.9.4/media/js/jquery.dataTables.min.js" %}"></script>
   <script type="text/javascript" src="{% static "js/vendor/DataTables-plugins/integration/bootstrap/3/dataTables.bootstrap.js" %}"></script>
+  <script type="text/javascript" src="{% static "js/vendor/d3/d3.min.js" %}"></script>
+  <script type="text/javascript" src="{% static "js/d3.speciesTree.js" %}"></script>
+  <script type="text/javascript" src="{% static "js/jquery.EuropePMCAbstracts.js" %}"></script>
   <script type="text/javascript">
     $(function() {
+      // initialize the xref dataTable
       $('#xrefs-table').dataTable({
         "bAutoWidth": false, // don't recalculate column widths
         "sDom": "ftpil", // filter, table, pagination, information, length
@@ -339,12 +357,25 @@
         },
       });
 
+      // bootstrap tooltips
       $('.help').tooltip();
 
+      // EuropePMC abstracts
       $('.abstract-btn').EuropePMCAbstracts({
         'target_class': '.abstract-text',
         'pubmed_id_data_attribute': 'pubmed-id',
       });
+
+      // D3 species tree
+      if(!document.createElement('svg').getAttributeNS){
+        $('#d3-species-tree').html('Your browser does not support SVG');
+      } else {
+        var json_lineage_tree = '{{ context.json_lineage_tree|safe}}';
+        d3SpeciesTree(json_lineage_tree, '#d3-species-tree');
+        $("#show-species-tab").click(function(){
+          $('#tabs a[href="#species"]').tab('show');
+        });
+      }
     });
   </script>
 {% endblock extra_js %}
