@@ -10,4 +10,5 @@ djangorestframework==2.3.8
 python-dateutil==2.1
 six==1.4.1
 sqlparse==0.1.10
+versiontools==1.9.1
 wsgiref==0.1.2
