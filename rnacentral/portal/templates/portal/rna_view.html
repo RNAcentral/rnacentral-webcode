@@ -313,6 +313,9 @@
   </div> <!--  col-md-12 -->
 </div> <!--  row -->
 
+<script type="text/javascript">
+  var json_lineage_tree = '{{ context.json_lineage_tree|safe}}';
+</script>
 
 {% endblock content %}
 
@@ -370,7 +373,6 @@
       if(!document.createElement('svg').getAttributeNS){
         $('#d3-species-tree').html('Your browser does not support SVG');
       } else {
-        var json_lineage_tree = '{{ context.json_lineage_tree|safe}}';
         d3SpeciesTree(json_lineage_tree, '#d3-species-tree');
         $("#show-species-tab").click(function(){
           $('#tabs a[href="#species"]').tab('show');
