@@ -293,9 +293,12 @@
             The species tree is generated automatically by combining the lineages from all database cross-references.
             <br>
             <small>The nodes can be clicked to collapse or expand them. Long taxon names are truncated and can be displayed by hovering over the name.</small>
+            <button id="d3-species-scroll-tree" class="btn btn-default btn-sm">Focus on species</button>
           </p>
 
-          <div id="d3-species-tree" class="d3-species force-scrollbars"></div>
+          <div class="panel panel-default">
+            <div class="panel-body d3-species force-scrollbars" id="d3-species-tree"></div>
+          </div>
 
         </div>
 
@@ -376,6 +379,9 @@
         d3SpeciesTree(json_lineage_tree, '#d3-species-tree');
         $("#show-species-tab").click(function(){
           $('#tabs a[href="#species"]').tab('show');
+        });
+        $("#d3-species-scroll-tree").click(function(){
+          $('#d3-species-tree').scrollLeft($('#d3-species-tree svg').attr('width'));
         });
       }
     });

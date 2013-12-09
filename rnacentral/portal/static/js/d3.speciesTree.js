@@ -7,6 +7,7 @@ d3SpeciesTree = function(data, selector){
       jsonTree = JSON.parse(data),
       w = 2200 - m[1] - m[3], // width
       h = 400 - m[0] - m[2], // height
+      edgeLength = 100,
       i = 0,
       root;
 
@@ -68,7 +69,7 @@ d3SpeciesTree = function(data, selector){
     var nodes = tree.nodes(root).reverse();
 
     // Normalize for fixed-depth.
-    nodes.forEach(function(d) { d.y = d.depth * 100; }); // edge length
+    nodes.forEach(function(d) { d.y = d.depth * edgeLength; });
 
     // Update the nodes…
     var node = vis.selectAll("g.node")
@@ -153,7 +154,10 @@ d3SpeciesTree = function(data, selector){
       d.y0 = d.y;
     });
 
+    // Set height and width
+    var speciesLabels = 350;
     $('#d3-species-tree svg').attr('height', newHeight + 20);
+    $('#d3-species-tree svg').attr('width', levelWidth.length * edgeLength + speciesLabels);
   }
 
   // Toggle children.
