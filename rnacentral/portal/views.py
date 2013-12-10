@@ -205,6 +205,32 @@ def _normalize_expert_db_name(expert_db_name):
         return expert_db_name.upper()
 
 
+def website_status_view(request):
+    """
+        This view will be monitored by Nagios for the presence
+        of string "All systems operational".
+    """
+    def _is_database_up():
+        try:
+            rna = Rna.objects.all()[0]
+            return True
+        except:
+            return False
+
+    def _is_api_up():
+        return True
+
+    def _is_search_up():
+        return True
+
+    context = dict()
+    context['is_database_up'] = _is_database_up()
+    context['is_api_up'] = _is_api_up()
+    context['is_search_up'] = _is_search_up()
+    context['overall_status'] = context['is_database_up'] and context['is_api_up'] and context['is_search_up']
+    return render_to_response('portal/website_status_view.html', {'context': context})
+
+
 class StaticView(TemplateView):
     def get(self, request, page, *args, **kwargs):
         self.template_name = 'portal/flat/' + page + '.html'

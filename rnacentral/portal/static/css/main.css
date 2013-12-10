@@ -176,6 +176,10 @@ pre {
   background-color: #468847;
 }
 
+.badge-error {
+  background-color: #b94a48;
+}
+
 div.alert {
   border: inherit;
 }

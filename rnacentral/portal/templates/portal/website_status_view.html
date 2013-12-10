@@ -1,0 +1,67 @@
+{% extends "portal/base.html" %}
+
+
+{% block title %}
+RNAcentral Website Status
+{% endblock %}
+
+
+{% block content %}
+
+<h1>
+  RNAcentral Website Status
+</h1>
+
+<div class="row">
+  <p>
+    This page shows the current status of the RNAcentral online services.
+  </p>
+
+  <div class="col-md-6">
+    <table class="table table-hover">
+      <tr>
+        <td><strong>Databases</strong></td>
+        <td>
+          {% if context.is_database_up %}
+            <span class="badge badge-success"><span class="glyphicon glyphicon-ok"></span></span>
+          {% else %}
+            <span class="badge badge-error"><span class="glyphicon glyphicon-warning-sign"></span></span>
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td><strong>API</strong></td>
+        <td>
+          {% if context.is_api_up %}
+            <span class="badge badge-success"><span class="glyphicon glyphicon-ok"></span></span>
+          {% else %}
+            <span class="badge badge-error"><span class="glyphicon glyphicon-warning-sign"></span></span>
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Search</strong></td>
+        <td>
+          {% if context.is_search_up %}
+            <span class="badge badge-success"><span class="glyphicon glyphicon-ok"></span></span>
+          {% else %}
+            <span class="badge badge-error"><span class="glyphicon glyphicon-warning-sign"></span></span>
+          {% endif %}
+        </td>
+      </tr>
+    </table>
+
+    <br>
+
+    {% if context.overall_status %}
+      <div class="alert alert-success">All systems operational</div>
+    {% else %}
+      <div class="alert alert-danger"><span class="glyphicon glyphicon-warning-sign"></span> Some services are down</div>
+    {% endif %}
+
+  </div>
+
+</div>
+
+{% endblock content %}
+

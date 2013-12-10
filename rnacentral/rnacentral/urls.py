@@ -28,4 +28,6 @@ urlpatterns = patterns('',
     url(r'^expert-database/(?P<expert_db_name>[-\w]+)$', 'portal.views.expert_database_view'),
     # search test
     url(r'^search2/', 'portal.views.search'),
+    # status page
+    url(r'^status/', 'portal.views.website_status_view'),
 )
