@@ -357,3 +357,8 @@ table.table thead .sorting_desc_disabled {
   stroke: #ccc;
   stroke-width: 1.5px;
 }
+
+path {
+  stroke: #fff;
+  fill-rule: evenodd;
+}

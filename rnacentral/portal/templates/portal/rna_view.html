@@ -297,7 +297,15 @@
           </p>
 
           <div class="panel panel-default">
-            <div class="panel-body d3-species force-scrollbars" id="d3-species-tree"></div>
+            <ul class="nav nav-pills" id="species-tabs">
+              <li><a href="#d3-species-tree" data-toggle="tab">Tree</a></li>
+              <li><a href="#d3-species-sunburst" data-toggle="tab">Sunburst</a></li>
+            </ul>
+
+            <div class="tab-content">
+              <div class="tab-pane active panel-body d3-species force-scrollbars" id="d3-species-tree"></div>
+              <div class="tab-pane panel-body d3-species force-scrollbars" id="d3-species-sunburst"></div>
+            </div>
           </div>
 
         </div>
@@ -329,6 +337,7 @@
   <script type="text/javascript" src="{% static "js/vendor/DataTables-plugins/integration/bootstrap/3/dataTables.bootstrap.js" %}"></script>
   <script type="text/javascript" src="{% static "js/vendor/d3/d3.min.js" %}"></script>
   <script type="text/javascript" src="{% static "js/d3.speciesTree.js" %}"></script>
+  <script type="text/javascript" src="{% static "js/d3.speciesSunburst.js" %}"></script>
   <script type="text/javascript" src="{% static "js/jquery.EuropePMCAbstracts.js" %}"></script>
   <script type="text/javascript">
     $(function() {
@@ -377,6 +386,7 @@
         $('#d3-species-tree').html('Your browser does not support SVG');
       } else {
         d3SpeciesTree(json_lineage_tree, '#d3-species-tree');
+        d3SpeciesSunburst(json_lineage_tree, '#d3-species-sunburst');
         $("#show-species-tab").click(function(){
           $('#tabs a[href="#species"]').tab('show');
         });

@@ -137,7 +137,7 @@ def _get_json_lineage_tree(xrefs):
             if isinstance(children, int):
                 container['children'].append({
                     "name": name,
-                    "count": children
+                    "size": children
                 })
             else:
                 container['children'].append({
