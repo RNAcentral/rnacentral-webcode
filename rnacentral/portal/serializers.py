@@ -5,14 +5,14 @@ from rest_framework import serializers
 class XrefSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Xref
-        fields = ('db', 'accession', 'deleted', 'version', 'taxid', 'created', 'last')
+        fields = ('db', 'accession', 'deleted', 'version', 'taxid', 'created', 'last', 'refs')
         depth = 1
 
 
 class RefSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Reference
-        fields = ('authors', 'title', 'location', 'pubmed', 'doi', 'publisher', 'editors')
+        fields = ('authors', 'title', 'location', 'pubmed', 'doi')
 
 
 class RnaSerializer(serializers.HyperlinkedModelSerializer):
@@ -22,4 +22,4 @@ class RnaSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Rna
-        fields = ('upi', 'md5', 'sequence', 'xrefs', 'refs')
+        fields = ('upi', 'md5', 'sequence', 'xrefs')

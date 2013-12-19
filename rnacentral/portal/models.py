@@ -120,7 +120,7 @@ class Accessions(models.Model):
 
 class Xref(models.Model):
     db = models.ForeignKey(Database, db_column='dbid')
-    accession = models.ForeignKey(Accessions, db_column='ac', to_field='accession', related_name='xrefs')
+    accession = models.ForeignKey(Accessions, db_column='ac', to_field='accession', related_name='xrefs', unique=True)
     created = models.ForeignKey(Release, db_column='created', related_name='release_created')
     last = models.ForeignKey(Release, db_column='last', related_name='last_release')
     upi = models.ForeignKey(Rna, db_column='upi', to_field='upi', related_name='xrefs')
@@ -177,15 +177,19 @@ class Xref(models.Model):
 
 
 class Reference(models.Model):
-    rna = models.ForeignKey(Rna, db_column='md5', to_field = 'md5', related_name='refs')
-    authors_md5 = models.CharField(max_length=32)
     authors = models.TextField()
     location = models.CharField(max_length=4000)
     title = models.CharField(max_length=4000)
-    pubmed = models.CharField(max_length=10)
+    pubmed = models.CharField(max_length=10, db_column='pmid')
     doi = models.CharField(max_length=80)
-    publisher = models.CharField(max_length=128)
-    editors = models.CharField(max_length=250)
 
     class Meta:
         db_table = 'rnc_references'
+
+
+class Reference_map(models.Model):
+    accession = models.ForeignKey(Xref, db_column='accession', to_field='accession', related_name='refs')
+    data = models.ForeignKey(Reference, db_column='reference_id')
+
+    class Meta:
+        db_table = 'rnc_reference_map'

@@ -49,20 +49,21 @@ def rna_view(request, upi):
         context.update(context['xrefs'].aggregate(first_seen=Min('created__release_date'),
                                                   last_seen=Max('last__release_date')))
         # ref pagination
-        ref_paginator = Paginator(rna.refs.order_by('title').all(), 5)
-        if request.GET.get('ref-page'):
-            request.session['ref_page'] = request.GET.get('ref-page')
-            ref_page = int(request.session.get('ref_page'))
-        else:
-            ref_page = 1
-        try:
-            context['ref_paginator'] = ref_paginator.page(ref_page)
-        except PageNotAnInteger:
-            # If page is not an integer, deliver first page.
-            context['ref_paginator'] = ref_paginator.page(1)
-        except EmptyPage:
-            # If page is out of range (e.g. 9999), deliver last page of results.
-            context['ref_paginator'] = ref_paginator.page(ref_paginator.num_pages)
+
+        # ref_paginator = Paginator(rna.refs.order_by('title').all(), 5)
+        # if request.GET.get('ref-page'):
+        #     request.session['ref_page'] = request.GET.get('ref-page')
+        #     ref_page = int(request.session.get('ref_page'))
+        # else:
+        #     ref_page = 1
+        # try:
+        #     context['ref_paginator'] = ref_paginator.page(ref_page)
+        # except PageNotAnInteger:
+        #     # If page is not an integer, deliver first page.
+        #     context['ref_paginator'] = ref_paginator.page(1)
+        # except EmptyPage:
+        #     # If page is out of range (e.g. 9999), deliver last page of results.
+        #     context['ref_paginator'] = ref_paginator.page(ref_paginator.num_pages)
 
         rna.upi = rna.upi.replace("UPI", "RNA")  # replace "UPI" with "RNA"
     except Rna.DoesNotExist:
