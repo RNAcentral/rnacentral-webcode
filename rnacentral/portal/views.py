@@ -1,9 +1,9 @@
-from portal.models import Rna, Database, Release, Xref, Accessions
+from portal.models import Rna, Database, Release, Xref, Accessions, Reference_map
 from rest_framework import viewsets
 from portal.serializers import RnaSerializer
 from portal.forms import ContactForm
 
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, render_to_response
 from django.db.models import Min, Max, Count, Avg
 from django.views.generic.base import TemplateView
@@ -21,6 +21,25 @@ class RnaViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Rna.objects.defer('seq_long', 'seq_short').select_related().all()
     serializer_class = RnaSerializer
     paginate_by = 10
+
+
+def get_literature_references(request, accession):
+    refs = Reference_map.objects.filter(accession=accession).select_related().order_by('data__title').all()
+    data = []
+    for ref in refs:
+        title = ref.data.title
+        if ref.data.location[:9] == 'Submitted':
+            title = 'INSDC submission'
+        else:
+            title = title if title else 'No title available'
+        data.append({
+            'pubmed': ref.data.pubmed,
+            'doi': ref.data.doi,
+            'title': title,
+            'authors': ref.data.authors,
+            'location': ref.data.location,
+        })
+    return HttpResponse(json.dumps(data), content_type="application/json")
 
 
 def index(request):

@@ -169,7 +169,7 @@
 
                     <br>
                     {# literature references #}
-                    references: {{ xref.refs.all|length }}
+                    <button class="retrieve-literature-refs btn btn-default btn-sm" data-accession="{{ xref.accession.accession }}">{{ xref.refs.all|length }} references</button>
 
                     </td>
                     <!-- accession -->
@@ -190,6 +190,9 @@
           </div> <!-- .table-responsive -->
 
           <div class="xref-datatables-controls"></div>
+
+          <div id="literature-references"></div>
+
 {% comment %}
           <h2>
             References
@@ -340,9 +343,43 @@
   <script type="text/javascript" src="{% static "js/vendor/DataTables-1.9.4/media/js/jquery.dataTables.min.js" %}"></script>
   <script type="text/javascript" src="{% static "js/vendor/DataTables-plugins/integration/bootstrap/3/dataTables.bootstrap.js" %}"></script>
   <script type="text/javascript" src="{% static "js/vendor/d3/d3.min.js" %}"></script>
+  <script type="text/javascript" src="{% static "js/vendor/handlebars-v1.1.2.js" %}"></script>
   <script type="text/javascript" src="{% static "js/d3.speciesTree.js" %}"></script>
   <script type="text/javascript" src="{% static "js/d3.speciesSunburst.js" %}"></script>
   <script type="text/javascript" src="{% static "js/jquery.EuropePMCAbstracts.js" %}"></script>
+
+  {# Handlebars #}
+  {% verbatim %}
+  <script id="hbars-reference" type="text/x-handlebars-template">
+    <h2>References</h2>
+      <div class="panel panel-default">
+        <div class="panel-body">
+          {{#with refs}}
+            {{#each .}}
+              <blockquote>
+               <strong>
+                 {{title}}
+               </strong>
+               <br>
+               {{authors}}
+               <small>
+                {{location}}
+                {{#if pubmed}}
+                  <div class="abstract-preview">
+                    <button class="btn btn-xs btn-primary abstract-btn abstract-control" data-pubmed-id="{{pubmed}}">Preview abstract</button>
+                    <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{pubmed}}" target="_blank" class="abstract-control">PubMed</a>
+                    <div class="abstract-text"></div>
+                  </div>
+                {{/if}}
+               </small>
+              </blockquote>
+            {{/each}}
+          {{/with}}
+      </div>
+    </div>
+  </script>
+  {% endverbatim %}
+
   <script type="text/javascript">
     $(function() {
       // initialize the xref dataTable
@@ -379,10 +416,26 @@
       // bootstrap tooltips
       $('.help').tooltip();
 
-      // EuropePMC abstracts
-      $('.abstract-btn').EuropePMCAbstracts({
-        'target_class': '.abstract-text',
-        'pubmed_id_data_attribute': 'pubmed-id',
+      // literature references
+      $('.retrieve-literature-refs').click(function(){
+          var $this = $(this);
+          // if ( $this.data('literature-references-loaded') == 1 ) {
+          //   return;
+          // }
+          var accession = $this.data('accession');
+          $.get('/xref/' + accession + '/refs', function(data){
+              // $this.data("literature-references-loaded", 1); // use html5 local storage?
+              var source   = $("#hbars-reference").html();
+              var template = Handlebars.compile(source);
+              var wrapper  = {refs: data};
+              $("#literature-references").html(template(wrapper));
+
+              // EuropePMC abstracts
+              $('.abstract-btn').EuropePMCAbstracts({
+                'target_class': '.abstract-text',
+                'pubmed_id_data_attribute': 'pubmed-id',
+              });
+          });
       });
 
       // D3 species tree

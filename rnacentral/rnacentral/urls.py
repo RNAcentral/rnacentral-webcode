@@ -22,12 +22,12 @@ urlpatterns = patterns('',
     # API
     url(r'^api/v1/', include(router.urls)),
     url(r'^api-auth/v1/', include('rest_framework.urls', namespace='rest_framework')),
+    # temporary API
+    url(r'^xref/(?P<accession>.+)/refs$', 'portal.views.get_literature_references'),
     # robots.txt
     url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
     # expert databases
     url(r'^expert-database/(?P<expert_db_name>[-\w]+)$', 'portal.views.expert_database_view'),
-    # search test
-    url(r'^search2/', 'portal.views.search'),
     # status page
     url(r'^status/', 'portal.views.website_status_view'),
 )
