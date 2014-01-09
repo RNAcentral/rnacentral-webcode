@@ -350,7 +350,7 @@
 
   {# Handlebars #}
   {% verbatim %}
-  <script id="hbars-reference" type="text/x-handlebars-template">
+  <script id="handlebars-literature-reference-tmpl" type="text/x-handlebars-template">
     <h2>References</h2>
       <div class="panel panel-default">
         <div class="panel-body">
@@ -366,7 +366,7 @@
                 {{location}}
                 {{#if pubmed}}
                   <div class="abstract-preview">
-                    <button class="btn btn-xs btn-primary abstract-btn abstract-control" data-pubmed-id="{{pubmed}}">Preview abstract</button>
+                    <button class="btn btn-xs btn-primary abstract-btn abstract-control" data-pubmed-id="{{pubmed}}">Show abstract</button>
                     <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{pubmed}}" target="_blank" class="abstract-control">PubMed</a>
                     <div class="abstract-text"></div>
                   </div>
@@ -419,21 +419,20 @@
       // literature references
       $('.retrieve-literature-refs').click(function(){
           var $this = $(this);
-          // if ( $this.data('literature-references-loaded') == 1 ) {
-          //   return;
-          // }
           var accession = $this.data('accession');
           $.get('/xref/' + accession + '/refs', function(data){
-              // $this.data("literature-references-loaded", 1); // use html5 local storage?
-              var source   = $("#hbars-reference").html();
+              var source   = $("#handlebars-literature-reference-tmpl").html();
               var template = Handlebars.compile(source);
               var wrapper  = {refs: data};
               $("#literature-references").html(template(wrapper));
-
               // EuropePMC abstracts
               $('.abstract-btn').EuropePMCAbstracts({
                 'target_class': '.abstract-text',
                 'pubmed_id_data_attribute': 'pubmed-id',
+                'msg': {
+                  'show_abstract': 'Show abstract',
+                  'hide_abstract': 'Hide abstract',
+                }
               });
           });
       });
