@@ -275,6 +275,33 @@
   var json_lineage_tree = '{{ context.json_lineage_tree|safe}}';
 </script>
 
+{# Handlebars #}
+{% verbatim %}
+<script id="handlebars-literature-reference-tmpl" type="text/x-handlebars-template">
+  {{#with refs}}
+    {{#each .}}
+      <blockquote>
+       <strong>
+         {{title}}
+       </strong>
+       <br>
+       {{authors}}
+       <small>
+        {{location}}
+        {{#if pubmed}}
+          <div class="abstract-preview">
+            <button class="btn btn-xs btn-primary abstract-btn abstract-control" data-pubmed-id="{{pubmed}}">Show abstract</button>
+            <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{pubmed}}" target="_blank" class="abstract-control">PubMed</a>
+            <div class="abstract-text"></div>
+          </div>
+        {{/if}}
+       </small>
+      </blockquote>
+    {{/each}}
+  {{/with}}
+</script>
+{% endverbatim %}
+
 {% endblock content %}
 
 
@@ -288,32 +315,6 @@
   <script type="text/javascript" src="{% static "js/d3.speciesSunburst.js" %}"></script>
   <script type="text/javascript" src="{% static "js/jquery.EuropePMCAbstracts.js" %}"></script>
 
-  {# Handlebars #}
-  {% verbatim %}
-  <script id="handlebars-literature-reference-tmpl" type="text/x-handlebars-template">
-    {{#with refs}}
-      {{#each .}}
-        <blockquote>
-         <strong>
-           {{title}}
-         </strong>
-         <br>
-         {{authors}}
-         <small>
-          {{location}}
-          {{#if pubmed}}
-            <div class="abstract-preview">
-              <button class="btn btn-xs btn-primary abstract-btn abstract-control" data-pubmed-id="{{pubmed}}">Show abstract</button>
-              <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{pubmed}}" target="_blank" class="abstract-control">PubMed</a>
-              <div class="abstract-text"></div>
-            </div>
-          {{/if}}
-         </small>
-        </blockquote>
-      {{/each}}
-    {{/with}}
-  </script>
-  {% endverbatim %}
 
   <script type="text/javascript">
     $(function() {
