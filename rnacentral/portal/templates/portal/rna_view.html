@@ -89,7 +89,7 @@
             <span id="xrefs-datatables-filter"></span>
           </h2>
 
-          <div class="table-responsive max-height-600 force-scrollbars">
+          <div class="table-responsive force-scrollbars">
             <table class="table table-hover table-condensed table-bordered" id="xrefs-table">
               <thead>
                 <tr>
@@ -111,7 +111,7 @@
                       {% if xref.db.display_name != 'ENA' and xref.db.display_name != 'RFAM' %}
                         <span class="badge badge-success help" data-toggle="tooltip" title="RNAcentral Expert Database"><span class="glyphicon glyphicon-star"></span></span>
                       {% endif %}
-                      <a href="{% url 'portal.views.expert_database_view' expert_db_name=xref.db.descr %}">{{ xref.db.display_name }}</a>
+                      <a href="{% url 'portal.views.expert_database_view' expert_db_name=xref.db.descr %}">{{ xref.db.display_name.split|join:"&nbsp;" }}</a>
                     </td>
                     <!-- accession -->
                     <td>
@@ -167,9 +167,11 @@
                       </small>
                     {% endif %}
 
-                    <br>
-                    {# literature references #}
-                    <button class="retrieve-literature-refs btn btn-default btn-sm" data-accession="{{ xref.accession.accession }}">{{ xref.refs.all|length }} references</button>
+                      {# literature references #}
+                      <div class="literature-refs">
+                        <button class="literature-refs-retrieve btn btn-default btn-sm" data-accession="{{ xref.accession.accession }}">{{ xref.refs.all|length }} references</button>
+                        <div class="literature-refs-content"></div>
+                      </div>
 
                     </td>
                     <!-- accession -->
@@ -191,69 +193,7 @@
 
           <div class="xref-datatables-controls"></div>
 
-          <div id="literature-references"></div>
-
-{% comment %}
           <h2>
-            References
-            <small>
-              {% if context.ref_paginator.paginator.num_pages > 1 %}
-                <small>page {{ context.ref_paginator.number }} out of {{ context.ref_paginator.paginator.num_pages }}</small>
-              {% endif %}
-            </small>
-          </h2>
-
-          <div class="panel panel-default">
-            <div class="panel-body">
-             <ol>
-               {% for ref in context.xrefs %}
-                 <li>
-                   <blockquote>
-                     <strong>
-                       {% if ref.location|slice:":9" == 'Submitted' %}
-                         INSDC submission
-                       {% else %}
-                         {{ ref.title|default:"No title available" }}
-                       {% endif %}
-                     </strong>
-                     <br>
-                     {{ ref.authors }}
-                     <small>
-                      {{ ref.location }}
-                       {% if ref.pubmed %}
-                          <div class="abstract-preview">
-                            <button class="btn btn-xs btn-primary abstract-btn abstract-control" data-pubmed-id="{{ ref.pubmed }}">Preview abstract</button>
-                            <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ ref.pubmed }}" target="_blank" class="abstract-control">PubMed</a>
-                            <div class="abstract-text"></div>
-                          </div>
-                       {% endif %}
-                     </small>
-                   </blockquote>
-                 </li>
-               {% endfor %}
-             </ol>
-             <!-- pagination -->
-             {% if context.ref_paginator.paginator.num_pages > 1 %}
-             <ul class="pager">
-               {% if context.ref_paginator.has_previous %}
-                 <li>
-                   <a href="?ref-page={{ context.ref_paginator.previous_page_number }}">previous</a>
-                 </li>
-               {% endif %}
-
-               {% if context.ref_paginator.has_next %}
-                 <li>
-                   <a href="?ref-page={{ context.ref_paginator.next_page_number }}">next</a>
-                 </li>
-               {% endif %}
-             </ul>
-             {% endif %}
-             <!-- pagination -->
-            </div>
-          </div> <!-- .panel .panel-default -->
-{% endcomment %}
-
-           <h2>
             Sequence
             <small>
               <object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000"
@@ -351,32 +291,27 @@
   {# Handlebars #}
   {% verbatim %}
   <script id="handlebars-literature-reference-tmpl" type="text/x-handlebars-template">
-    <h2>References</h2>
-      <div class="panel panel-default">
-        <div class="panel-body">
-          {{#with refs}}
-            {{#each .}}
-              <blockquote>
-               <strong>
-                 {{title}}
-               </strong>
-               <br>
-               {{authors}}
-               <small>
-                {{location}}
-                {{#if pubmed}}
-                  <div class="abstract-preview">
-                    <button class="btn btn-xs btn-primary abstract-btn abstract-control" data-pubmed-id="{{pubmed}}">Show abstract</button>
-                    <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{pubmed}}" target="_blank" class="abstract-control">PubMed</a>
-                    <div class="abstract-text"></div>
-                  </div>
-                {{/if}}
-               </small>
-              </blockquote>
-            {{/each}}
-          {{/with}}
-      </div>
-    </div>
+    {{#with refs}}
+      {{#each .}}
+        <blockquote>
+         <strong>
+           {{title}}
+         </strong>
+         <br>
+         {{authors}}
+         <small>
+          {{location}}
+          {{#if pubmed}}
+            <div class="abstract-preview">
+              <button class="btn btn-xs btn-primary abstract-btn abstract-control" data-pubmed-id="{{pubmed}}">Show abstract</button>
+              <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{pubmed}}" target="_blank" class="abstract-control">PubMed</a>
+              <div class="abstract-text"></div>
+            </div>
+          {{/if}}
+         </small>
+        </blockquote>
+      {{/each}}
+    {{/with}}
   </script>
   {% endverbatim %}
 
@@ -417,16 +352,20 @@
       $('.help').tooltip();
 
       // literature references
-      $('.retrieve-literature-refs').click(function(){
+      $(document).on('click', '.literature-refs-retrieve', function(){
           var $this = $(this);
           var accession = $this.data('accession');
-          $.get('/xref/' + accession + '/refs', function(data){
-              var source   = $("#handlebars-literature-reference-tmpl").html();
+          var target = $this.siblings('.literature-refs-content');
+
+          insert_content = function(data) {
+              var source = $("#handlebars-literature-reference-tmpl").html();
               var template = Handlebars.compile(source);
               var wrapper  = {refs: data};
-              $("#literature-references").html(template(wrapper));
-              // EuropePMC abstracts
-              $('.abstract-btn').EuropePMCAbstracts({
+              target.html(template(wrapper));
+          };
+
+          activate_abstract_buttons = function() {
+              $this.siblings().find('.abstract-btn').EuropePMCAbstracts({
                 'target_class': '.abstract-text',
                 'pubmed_id_data_attribute': 'pubmed-id',
                 'msg': {
@@ -434,7 +373,17 @@
                   'hide_abstract': 'Hide abstract',
                 }
               });
-          });
+          };
+
+          if ( target.html().length > 0 ) {
+              target.slideToggle();
+          } else {
+            $.get('/xref/' + accession + '/refs', function(data){
+                insert_content(data);
+                activate_abstract_buttons();
+                target.slideDown();
+            });
+          }
       });
 
       // D3 species tree
