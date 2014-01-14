@@ -179,7 +179,7 @@ def search(request):
 
 def expert_database_view(request, expert_db_name):
     context = dict()
-    dbs = ('SRPDB', 'MIRBASE', 'VEGA', 'tmRNA_Web')
+    dbs = ('SRPDB', 'MIRBASE', 'VEGA', 'TMRNA_WEB')
     if expert_db_name not in dbs:
         expert_db_name = _normalize_expert_db_name(expert_db_name)
     if expert_db_name in dbs:
@@ -203,7 +203,7 @@ def expert_database_view(request, expert_db_name):
 # expert_db_name should match RNACEN.RNC_DATABASE.DESCR
 def _normalize_expert_db_name(expert_db_name):
     if re.match('tmrna-website', expert_db_name, flags=re.IGNORECASE):
-        return 'tmRNA_Web'
+        return 'TMRNA_WEB'
     else:
         return expert_db_name.upper()
 
