@@ -105,7 +105,7 @@
 
               <tbody>
                 {% for xref in context.xrefs %}
-                  <tr>
+                  <tr {% if xref.deleted == 'Y' %}class="warning"{% endif %}>
                     <td class="text-muted">{{ forloop.counter }}</td>
                     <td>
                       {% if xref.db.display_name != 'ENA' and xref.db.display_name != 'RFAM' %}
@@ -184,7 +184,7 @@
                       {% if xref.deleted == 'N' %}
                           Yes
                       {% else %}
-                          No
+                          <span class="label label-danger">No</span>
                       {% endif %}
                     </td>
                   </tr>
