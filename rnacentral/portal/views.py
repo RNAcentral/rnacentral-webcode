@@ -24,7 +24,7 @@ class RnaViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 def get_literature_references(request, accession):
-    refs = Reference_map.objects.filter(accession=accession).select_related().order_by('data__title').all()
+    refs = Reference_map.objects.filter(accession=accession).select_related('Reference').order_by('data__title').all()
     data = []
     for ref in refs:
         title = ref.data.title
