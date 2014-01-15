@@ -167,11 +167,13 @@
                       </small>
                     {% endif %}
 
-                      {# literature references #}
+                    {# literature references #}
+                    {% if xref.refs.all|length > 0 %}
                       <div class="literature-refs">
                         <button class="literature-refs-retrieve btn btn-default btn-sm" data-accession="{{ xref.accession.accession }}">{{ xref.refs.all|length }} references</button>
                         <div class="literature-refs-content"></div>
                       </div>
+                    {% endif %}
 
                     </td>
                     <!-- accession -->
