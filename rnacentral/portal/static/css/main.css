@@ -261,6 +261,10 @@ h3.panel-title {
   margin: 5px 0;
 }
 
+.literature-refs-content {
+  display: none;
+}
+
 /*------------------------------------------------------------------
 [5. Misc]
 */
