@@ -366,6 +366,10 @@ table.table thead .sorting_desc_disabled {
   overflow: auto;
 }
 
+.panel.d3-species {
+  padding: 10px;
+}
+
 .d3-species .node circle {
   cursor: pointer;
   fill: #fff;

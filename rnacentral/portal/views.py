@@ -129,7 +129,7 @@ def _get_json_lineage_tree(xrefs):
             Transform a nested dictionary like this:
                 {'root': {'A': {'C': {'X': {'human': 2}}}, 'B': {'D': {'Y': {'mouse': 1}, 'Z': {'rat': 2}}}}}
             into a json file like this (fragment shown):
-                {"name":"A","children":[{"name":"C","children":[{"name":"X","children":[{"name":"human","count":2}]}]}]}
+                {"name":"A","children":[{"name":"C","children":[{"name":"X","children":[{"name":"human","size":2}]}]}]}
         """
         if not container:
             container = {

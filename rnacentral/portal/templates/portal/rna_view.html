@@ -74,8 +74,7 @@
                 <li><strong>{{ rna.len|intcomma }}</strong> nucleotides</li>
                 <li><strong>{{ context.num_db }}</strong> database{{ context.num_db|pluralize }}</li>
                 <li>
-                  <strong>{{ context.num_org }}</strong> species
-                  (<a href="#" id="show-species-tab">view tree</a>)
+                  <strong>{{ context.num_org }}</strong> <a href="#" id="show-species-tab">species</a>
                 </li>
                 <li>first seen <time datetime="{{ context.first_seen|date:'Y-m-d' }}">{{ context.first_seen|date:'d M Y' }}</time></li>
                 <li>last updated <time datetime="{{ context.last_seen|date:'Y-m-d' }}">{{ context.last_seen|date:'d M Y' }}</time></li>
@@ -240,21 +239,28 @@
           <p class="text-muted">
             <span class="glyphicon glyphicon-info-sign"></span>
             The species tree is generated automatically by combining the lineages from all database cross-references.
-            <br>
-            <small>The nodes can be clicked to collapse or expand them. Long taxon names are truncated and can be displayed by hovering over the name.</small>
-            <button id="d3-species-scroll-tree" class="btn btn-default btn-sm">Focus on species</button>
           </p>
 
-          <div class="panel panel-default">
+          <div class="panel panel-default d3-species">
+
             <ul class="nav nav-pills" id="species-tabs">
-              <li><a href="#d3-species-tree" data-toggle="tab">Tree</a></li>
-              <li><a href="#d3-species-sunburst" data-toggle="tab">Sunburst</a></li>
+              <li class="active"><a href="#d3-species-sunburst-tab" data-toggle="tab">Sunburst</a></li>
+              <li><a href="#d3-species-tree-tab" data-toggle="tab">Tree</a></li>
             </ul>
 
             <div class="tab-content">
-              <div class="tab-pane active panel-body d3-species force-scrollbars" id="d3-species-tree"></div>
-              <div class="tab-pane panel-body d3-species force-scrollbars" id="d3-species-sunburst"></div>
+              <div class="tab-pane panel-body d3-species active" id="d3-species-sunburst-tab">
+                <small>Hover your mouse over the diagram to view taxon names.</small>
+                <div id="d3-species-sunburst"></div>
+              </div>
+
+              <div class="tab-pane panel-body d3-species force-scrollbars" id="d3-species-tree-tab">
+                <small>The nodes can be clicked to collapse or expand them. Long taxon names are truncated and can be displayed by hovering over the name.</small>
+                <button id="d3-species-scroll-tree" class="btn btn-default btn-sm">Scroll to species</button>
+                <div id="d3-species-tree"></div>
+              </div>
             </div>
+
           </div>
 
         </div>
@@ -399,7 +405,7 @@
           $('#tabs a[href="#species"]').tab('show');
         });
         $("#d3-species-scroll-tree").click(function(){
-          $('#d3-species-tree').scrollLeft($('#d3-species-tree svg').attr('width'));
+          $('#d3-species-tree-tab').scrollLeft($('#d3-species-tree-tab svg').attr('width'));
         });
       }
     });

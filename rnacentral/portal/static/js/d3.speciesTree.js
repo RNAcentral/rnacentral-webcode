@@ -173,9 +173,9 @@ d3SpeciesTree = function(data, selector){
 
   function getNodeName(node) {
     var nodeName = '';
-    if (node.count) {
+    if (node.size) {
       // terminal node, display cross-reference counts
-      nodeName = [node.name, ' (', node.count, ' cross-references)'].join('')
+      nodeName = [node.name, ' (', node.size, ' cross-references)'].join('')
     } else {
       // truncate long taxon names
       if (node.name.length > 10) {
