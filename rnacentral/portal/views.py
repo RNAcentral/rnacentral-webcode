@@ -42,10 +42,10 @@ def get_literature_references(request, accession):
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 
-def index(request):
+def homepage(request):
     context = dict()
     context['seq_count'] = Rna.objects.count()
-    context['db_count'] = Database.objects.count()
+    context['databases'] = Database.objects.all()
     context['last_full_update'] = Release.objects.filter(release_type='F').order_by('-release_date').all()[0]
     try:
         context['last_daily_update'] = Release.objects.filter(release_type='I').order_by('-release_date').all()[0]

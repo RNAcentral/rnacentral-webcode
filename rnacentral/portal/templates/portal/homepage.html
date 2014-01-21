@@ -1,4 +1,5 @@
 {% extends "portal/base.html" %}
+{% load staticfiles %}
 {% load humanize %}
 
 {% block title %}
@@ -15,32 +16,130 @@ RNAcentral
     </div>
   </div>
 
-	<div class="row">
-		<div class="col-md-7">
+  <div class="row">
+    <div class="col-md-7">
+
       <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title"><span class="glyphicon glyphicon-star"></span> Expert Databases</h3>
+        </div>
         <div class="panel-body">
-          <p>
-            RNAcentral offers integrated access to a comprehensive and up-to-date set of RNA sequences. These sequences will be provided by a collaborating group of expert databases and supplemented by sequences from the International Nucleotide Sequence Database archives (<a href="http://www.insdc.org/">INSDC</a>). The vision for RNAcentral is presented in the paper by <a href="http://rnajournal.cshlp.org/content/17/11/1941.full">Bateman et al, 2011</a>.
 
-            The RNAcentral portal provides access to the data via sequence and meta-data search, links together the expert resources, and provides a defined identifier space for individual molecules. In a second phase of development, this reference data will be used to provide annotation for genome sequences from across the taxonomic space.
-          </p>
+          <ul class="media-list">
 
-          <p>
-            The development of RNAcentral is being coordinated by the <a href="http://www.ebi.ac.uk" target="_blank">European Bioinformatics Institute</a>, and is funded by the United Kingdom Biotechnology and Biological Sciences Research Council <a href="http://www.bbsrc.ac.uk/pa/grants/AwardDetails.aspx?FundingReference=BB/J019321/1">grant BB/J019321/1</a>.
-          </p>
+            <li class="media">
+              <p class="small">
+                The RNAcentral sequences are provided by a group of <a href="/expert-databases">expert databases</a> and supplemented by sequences from the <a href="http://www.insdc.org/" target="_blank" title="International Nucleotide Sequence Database">INSDC</a>.
+              </p>
+            </li>
+
+            <li class="media">
+              <a class="pull-left expert-db-logo" href="{% url 'expert_database' 'tmrna-website' %}">
+                <img class="media-object img-rounded" src="{% static 'img/expert-db-logos/tmlogo.png' %}" alt="tmRNA Website logo">
+              </a>
+              <div class="media-body">
+                <h4 class="media-heading">tmRNA Website</h4>
+                <p class="small">
+                  <a href="{% url 'expert_database' 'tmrna-website' %}">The tmRNA Website</a> contains predicted tmRNA sequences from RefSeq prokaryotic genomes, plasmids and bacteriophages.
+                  <br>
+                  <strong>21,318</strong> sequences
+                  <br>
+                  <strong>Examples</strong>: <a href="/rna/RNS0000646B13">RNS0000646B13</a>, <a href="/rna/RNS000064AECD">RNS000064AECD</a>, <a href="/rna/RNS000064B0CC">RNS000064B0CC</a>.
+                </p>
+              </div>
+            </li>
+
+            <li class="media">
+              <a class="pull-left expert-db-logo" href="{% url 'expert_database' 'VEGA' %}">
+                <img class="media-object img-rounded" src="{% static 'img/expert-db-logos/vega.gif' %}" alt="VEGA logo">
+              </a>
+              <div class="media-body">
+                <h4 class="media-heading">VEGA</h4>
+                <p class="small">
+                  <a href="{% url 'expert_database' 'vega' %}">VEGA</a> (Vertebrate Genome Annotation) is a repository for high-quality gene models produced by the manual annotation of vertebrate genomes.
+                  <br>
+                  <strong>21,388</strong> human lncRNA sequences
+                  <br>
+                  <strong>Examples</strong>: <a href="/rna/RNS00006398DB">RNS00006398DB</a>, <a href="/rna/RNS000063A296">RNS000063A296</a>, <a href="/rna/RNS0000638AD4">RNS0000638AD4</a>.
+                </p>
+              </div>
+            </li>
+
+            <li class="media">
+              <a class="pull-left expert-db-logo" href="{% url 'expert_database' 'mirbase' %}">
+                <img class="media-object img-rounded" src="{% static 'img/expert-db-logos/mirbase-logo-blue-web.png' %}" alt="miRBase logo">
+              </a>
+              <div class="media-body">
+                <h4 class="media-heading">miRBase</h4>
+                <p class="small">
+                  <a href="{% url 'expert_database' 'mirbase' %}">miRBase</a> is a database of published miRNA sequences and annotations.
+                  <br>
+                  <strong>3,661</strong> sequences
+                  <br>
+                  <strong>Examples</strong>: <a href="/rna/RNS0000026D73">RNS0000026D73</a>, <a href="/rna/RNS000052CD0D">RNS000052CD0D</a>, <a href="/rna/RNS00005BE7F9">RNS00005BE7F9</a>.
+                </p>
+              </div>
+            </li>
+
+            <li class="media">
+              <a class="pull-left expert-db-logo" href="{% url 'expert_database' 'srpdb' %}">
+                <img class="media-object img-rounded" src="{% static 'img/expert-db-logos/SRPLogo-small.gif' %}" alt="SRPDB logo">
+              </a>
+              <div class="media-body">
+                <h4 class="media-heading">SRPDB</h4>
+                <p class="small">
+                  <a href="{% url 'expert_database' 'srpdb' %}">SRPDB</a> (Signal Recognition Particle Database) provides aligned, annotated and phylogenetically ordered sequences related to structure and function of SRP.
+                  <br>
+                  <strong>855</strong> sequences
+                  <br>
+                  <strong>Examples</strong>: <a href="/rna/RNS000030A37C">RNS000030A37C</a>, <a href="/rna/RNS0000227674">RNS0000227674</a>, <a href="/rna/RNS000005F2FD">RNS000005F2FD</a>.
+                </p>
+              </div>
+            </li>
+
+          </ul>
         </div>
       </div>
 
       <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title"><span class="glyphicon glyphicon-book"></span> Citing RNAcentral</h3>
+        </div>
         <div class="panel-body">
-          <strong>Examples:</strong> <a href="/rna/RNS0000000001">RNS0000000001</a>, <a href="/rna/RNS0000227674">RNS0000227674</a>, <a href="/rna/RNS00005AF4D0">RNS00005AF4D0</a>,
-          <a href="/rna/RNS00003ECB7D">RNS00003ECB7D</a>.
+          <p>
+            If you use RNAcentral, please cite the following paper:
+            <blockquote class="small">
+              <p>
+                Bateman, A., Agrawal, S., Birney, E., Bruford, E. A., Bujnicki, J. M., Cochrane, G., Cole, J. R., et al. (2011).
+                RNAcentral: A vision for an international database of RNA sequences.
+                <a href="http://rnajournal.cshlp.org/content/17/11/1941.full" target="_blank">RNA</a>.
+              </p>
+            </blockquote>
+          </p>
         </div>
       </div>
 
-		</div>
+    </div>
 
-		<div class="col-md-5">
+    <div class="col-md-5">
+
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title"><span class="glyphicon glyphicon-info-sign"></span> About RNAcentral
+            <small><a href="/about">Learn more</a></small>
+          </h3>
+        </div>
+        <div class="panel-body">
+          <p>
+              The RNAcentral portal:
+              <ul class="no-margin-bottom">
+                <li>provides data access via sequence and meta-data search</li>
+                <li>links together the <a href="/expert-databases">expert databases</a></li>
+                <li>provides unique identifiers for individual molecules</li>
+              </ul>
+          </p>
+        </div>
+      </div>
 
       <div class="panel panel-default">
         <div class="panel-heading">
@@ -65,7 +164,7 @@ RNAcentral
         </div>
         <div class="panel-body">
           <p>
-            <em>{{ context.seq_count|intcomma }}</em> sequences from <em>{{ context.db_count }}</em> Expert Databases.
+            <em>{{ context.seq_count|intcomma }}</em> sequences from <em>{{ context.databases|length }}</em> Expert Databases.
             <br>
             <strong>Last daily update</strong>: {{ context.last_daily_update.release_date }}
             <br>
@@ -76,9 +175,9 @@ RNAcentral
         </div>
       </div>
 
-		</div>
+    </div>
 
-	</div>
+  </div>
 
 
 {% endblock content %}

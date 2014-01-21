@@ -206,6 +206,27 @@ ul.breadcrumb.rnacentral-api {
   width: 100px;
 }
 
+.media {
+  margin-top: 5px;
+}
+
+p {
+  margin-bottom: 5px;
+}
+
+blockquote.small {
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+blockquote.small p {
+  font-size: 13px;
+}
+
+ul.no-margin-bottom {
+  margin-bottom: 0px;
+}
+
 a.expert-db-logo:focus,
 a.expert-db-logo:hover {
   text-decoration: none;
