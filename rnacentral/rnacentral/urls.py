@@ -10,14 +10,14 @@ router = routers.DefaultRouter()
 router.register(r'rna', views.RnaViewSet)
 
 urlpatterns = patterns('',
-    url(r'^$', 'portal.views.index'),
+    url(r'^$', 'portal.views.homepage', name='homepage'),
     url(r'^rna/(?P<upi>\w+)$', 'portal.views.rna_view'),
     # admin
     url(r'^admin/', include(admin.site.urls)),
     # flat pages
     url(r'^(?P<page>about|help|thanks|coming-soon)/$', views.StaticView.as_view()),
     url(r'^docs/(?P<page>genome-browsers)/$', views.StaticView.as_view()),
-    url(r'^(?P<page>expert-databases)/$', views.StaticView.as_view()),
+    url(r'^(?P<page>expert-databases)/$', views.StaticView.as_view(), name='expert_databases'),
     # contact us
     url(r'^contact/$', views.ContactView.as_view()),
     # API
@@ -28,7 +28,7 @@ urlpatterns = patterns('',
     # robots.txt
     url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
     # expert databases
-    url(r'^expert-database/(?P<expert_db_name>[-\w]+)$', 'portal.views.expert_database_view'),
+    url(r'^expert-database/(?P<expert_db_name>[-\w]+)$', 'portal.views.expert_database_view', name='expert_database'),
     # status page
     url(r'^status/', 'portal.views.website_status_view'),
 )
