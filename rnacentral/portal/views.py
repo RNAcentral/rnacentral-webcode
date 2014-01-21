@@ -56,7 +56,7 @@ def index(request):
 
 def rna_view(request, upi):
     try:
-        rna = Rna.objects.get(upi=upi.replace('RNA', 'UPI'))
+        rna = Rna.objects.get(upi=upi.replace('RNS', 'UPI'))
         xrefs = rna.get_xrefs()
         context = {
             'xrefs': xrefs,
@@ -67,7 +67,7 @@ def rna_view(request, upi):
         }
         context.update(context['xrefs'].aggregate(first_seen=Min('created__release_date'),
                                                   last_seen=Max('last__release_date')))
-        rna.upi = rna.upi.replace("UPI", "RNA")  # replace "UPI" with "RNA"
+        rna.upi = rna.upi.replace("UPI", "RNS")  # replace "UPI" with "RNS"
     except Rna.DoesNotExist:
         raise Http404
     return render(request, 'portal/rna_view.html', {'rna': rna, 'context': context})
@@ -189,7 +189,7 @@ def expert_database_view(request, expert_db_name):
         context['total_organisms'] = len(data.values('xrefs__taxid').annotate(n=Count("pk")))
         context['examples'] = data.all()[:6]
         for i, example in enumerate(context['examples']):
-            context['examples'][i].upi = context['examples'][i].upi.replace("UPI", "RNA")
+            context['examples'][i].upi = context['examples'][i].upi.replace("UPI", "RNS")
         context['first_imported'] = data.order_by('xrefs__timestamp')[0].xrefs.all()[0].timestamp
         context['len_counts'] = data.values('len').annotate(counts=Count('len')).order_by('len')
         context.update(data.aggregate(min_length=Min('len'), max_length=Max('len'), avg_length=Avg('len')))
