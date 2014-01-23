@@ -333,7 +333,7 @@
     $(function() {
       // initialize the xref dataTable
       $('#xrefs-table').dataTable({
-        "bAutoWidth": false, // don't recalculate column widths
+        "bAutoWidth": true, // pre-recalculate column widths
         "sDom": "ftpil", // filter, table, pagination, information, length
         "iDisplayLength": 5, // show 5 entries by default
         "sPaginationType": "bootstrap", // requires dataTables.bootstrap.js
