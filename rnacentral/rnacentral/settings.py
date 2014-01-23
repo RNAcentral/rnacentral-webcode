@@ -137,13 +137,10 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.comments',
     'django.contrib.humanize',
-
-    # 'south',
     'portal',
     'rest_framework',
     'debug_toolbar',
     'compressor',
-
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
