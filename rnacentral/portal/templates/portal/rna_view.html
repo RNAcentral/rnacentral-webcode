@@ -116,19 +116,23 @@
                     <td>
                     {{ xref.accession.description }}
                     <br>
+                    <i class="fa fa-angle-right"></i>
                     {% if xref.db.display_name == 'ENA' %}
-                        <a href="http://www.ebi.ac.uk/ena/data/view/Non-coding:{{ xref.accession.accession }}" target="_blank" title="{{ xref.accession.accession }} at ENA">{{ xref.accession.accession }}</a>
+                      ENA: <a href="http://www.ebi.ac.uk/ena/data/view/Non-coding:{{ xref.accession.accession }}" target="_blank" title="{{ xref.accession.accession }} at ENA">{{ xref.accession.accession }}</a>
                     {% elif xref.db.display_name == 'RFAM' %}
-                      <a href="http://rfam.sanger.ac.uk/family/{{ xref.accession.external_id }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }} family)
+                      RFAM: <a href="http://rfam.sanger.ac.uk/family/{{ xref.accession.external_id }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }} family)
                     {% elif xref.db.display_name == 'SRPDB' %}
+                      SRPDB:
                       <a href="http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/{{ xref.accession.get_srpdb_id }}.fasta" target="_blank">{{ xref.accession.get_srpdb_id }}</a>
                     {% elif xref.db.display_name == 'miRBase' %}
+                      miRBase:
                       <a href="http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc={{ xref.accession.external_id }}" target="_blank">{{ xref.accession.external_id }}</a>
                     {# VEGA #}
                     {% elif xref.db.display_name == 'VEGA' %}
-                      Transcript <a href="http://vega.sanger.ac.uk/Homo_sapiens/Transcript/Summary?db=core;t={{ xref.accession.optional_id }}" target="_blank" title="View the transcript at VEGA">{{ xref.accession.optional_id }}</a>
+                      VEGA transcript <a href="http://vega.sanger.ac.uk/Homo_sapiens/Transcript/Summary?db=core;t={{ xref.accession.optional_id }}" target="_blank" title="View the transcript at VEGA">{{ xref.accession.optional_id }}</a>
                       from gene <a href="http://vega.sanger.ac.uk/Homo_sapiens/Gene/Summary?db=core;g={{ xref.accession.external_id }}" target="_blank" title="View the gene at VEGA">{{ xref.accession.external_id }}</a>
                       <br>
+                      <i class="fa fa-angle-right"></i>
                       {% with splice_variants=xref.get_vega_splice_variants %}
                         {% if splice_variants %}
                           Alternative transcript{{splice_variants|length|pluralize}}:
@@ -142,9 +146,10 @@
                       {% endwith %}
                     {# tmRNA Website #}
                     {% elif xref.db.display_name == 'tmRNA Website' %}
-                      <a href="http://bioinformatics.sandia.gov/tmrna/seqs/{{ xref.accession.external_id }}.html" target="_blank">{{ xref.accession.external_id }}</a>
+                      tmRNA Website: <a href="http://bioinformatics.sandia.gov/tmrna/seqs/{{ xref.accession.external_id }}.html" target="_blank">{{ xref.accession.external_id }}</a>
                       {% with tmrna_type=xref.get_tmrna_type %}
                         <br>
+                        <i class="fa fa-angle-right"></i>
                         {% if tmrna_type == 1 %}
                           One-piece tmRNA or tmRNA precursor
                         {% elif tmrna_type == 2 %}
@@ -154,16 +159,16 @@
                         {% endif %}
                       {% endwith %}
                       {% if xref.accession.organelle %}
-                      <br>
-                      found in {{ xref.accession.organelle|lower }}
+                        <br>
+                        <i class="fa fa-angle-right"></i>
+                        found in {{ xref.accession.organelle|lower }}
                       {% endif %}
                     {% endif %}
 
                     {% if xref.accession.is_composite == 'Y' %}
                       <br>
-                      <small>
-                      based on ENA entry <a href="http://www.ebi.ac.uk/ena/data/view/Non-coding:{{ xref.accession.non_coding_id }}" target="_blank" title="{{ xref.accession.non_coding_id }} at ENA">{{ xref.accession.non_coding_id }}</a>
-                      </small>
+                      <i class="fa fa-angle-right"></i>
+                      Corresponding ENA entry: <a href="http://www.ebi.ac.uk/ena/data/view/Non-coding:{{ xref.accession.non_coding_id }}" target="_blank" title="{{ xref.accession.non_coding_id }} at ENA">{{ xref.accession.non_coding_id }}</a>
                     {% endif %}
 
                     {# literature references #}
