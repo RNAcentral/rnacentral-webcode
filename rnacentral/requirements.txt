@@ -1,6 +1,5 @@
 BeautifulSoup==3.2.1
 Django==1.6
-South==0.8.2
 cx-Oracle==5.1.2
 django-appconf==0.6
 django-compressor==1.3
