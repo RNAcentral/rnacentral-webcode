@@ -173,10 +173,10 @@
 
                     {# literature references #}
                     {% if xref.refs.all|length > 0 %}
-                      <div class="literature-refs">
-                        <button class="literature-refs-retrieve btn btn-default btn-sm" data-accession="{{ xref.accession.accession }}">{{ xref.refs.all|length }} references</button>
+                      <span class="literature-refs">
+                        <button class="literature-refs-retrieve btn btn-default btn-xs pull-right" data-accession="{{ xref.accession.accession }}"><i class="fa fa-book"></i> {{ xref.refs.all|length }}</button>
                         <div class="literature-refs-content"></div>
-                      </div>
+                      </span>
                     {% endif %}
 
                     </td>
@@ -303,7 +303,7 @@
         {{location}}
         {{#if pubmed}}
           <div class="abstract-preview">
-            <button class="btn btn-xs btn-primary abstract-btn abstract-control" data-pubmed-id="{{pubmed}}">Show abstract</button>
+            <button class="btn btn-xs btn-default abstract-btn abstract-control" data-pubmed-id="{{pubmed}}">Show abstract</button>
             <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{pubmed}}" target="_blank" class="abstract-control">PubMed</a>
             <div class="abstract-text"></div>
           </div>
