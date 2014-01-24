@@ -123,10 +123,10 @@
                       RFAM: <a href="http://rfam.sanger.ac.uk/family/{{ xref.accession.external_id }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }} family)
                     {% elif xref.db.display_name == 'SRPDB' %}
                       SRPDB:
-                      <a href="http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/{{ xref.accession.get_srpdb_id }}.fasta" target="_blank">{{ xref.accession.get_srpdb_id }}</a>
+                      <a class="srpdb-external-url" href="http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/{{ xref.accession.get_srpdb_id }}.fasta" target="_blank">{{ xref.accession.get_srpdb_id }}</a>
                     {% elif xref.db.display_name == 'miRBase' %}
                       miRBase:
-                      <a href="http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc={{ xref.accession.external_id }}" target="_blank">{{ xref.accession.external_id }}</a>
+                      <a class="mirbase-external-url" href="http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc={{ xref.accession.external_id }}" target="_blank">{{ xref.accession.external_id }}</a>
                     {# VEGA #}
                     {% elif xref.db.display_name == 'VEGA' %}
                       VEGA transcript <a href="http://vega.sanger.ac.uk/Homo_sapiens/Transcript/Summary?db=core;t={{ xref.accession.optional_id }}" target="_blank" title="View the transcript at VEGA">{{ xref.accession.optional_id }}</a>

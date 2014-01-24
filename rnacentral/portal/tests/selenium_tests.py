@@ -8,9 +8,6 @@
 
     Each new view should have corresponding tests.
 
-    Each expert database has a number of example entries, which are retrieved
-    from the homepage by looking for an element with id = <expert-database>-examples.
-
     Usage:
 
     # test localhost
@@ -27,7 +24,7 @@ from selenium import webdriver
 
 
 class BasePage(object):
-    """Prototip object for all pages."""
+    """Prototipe object for all pages."""
     base_url = None
     rnacentral_id_regex = r"(RNS[0-9A-F]{10})"
 
@@ -50,10 +47,18 @@ class Homepage(BasePage):
         self.url = self.base_url
 
     def _get_example_ids(self, text):
+        """Retrieve RNAcentral ids from some text"""
         rnacentral_ids = set(re.findall(self.rnacentral_id_regex, text))
         return rnacentral_ids
 
     def get_expert_db_example_ids(self, element_id):
+        """
+            Each expert database has a number of example entries, which are retrieved
+            from the homepage by looking for an element with id in the following format:
+                <expert-database>-examples
+            E.g.
+                mirbase-examples
+        """
         example_div = self.browser.find_element_by_id(element_id)
         return self._get_example_ids(example_div.get_attribute("innerHTML"))
 
@@ -62,7 +67,7 @@ class Homepage(BasePage):
 
 
 class SequencePage(BasePage):
-    """Prototip object for all types of sequence pages"""
+    """Prototipe object for all types of sequence pages"""
     url = "rna/"
 
     def __init__(self, browser, unique_id):
@@ -70,14 +75,30 @@ class SequencePage(BasePage):
         self.url = self.base_url + self.url + unique_id
 
     def get_xrefs_table_html(self):
+        """Retriev text of the database cross-reference table"""
         return self.browser.find_element_by_id("xrefs-table").text
 
     def get_own_rnacentral_id(self):
+        """Get the RNAcentral id of the same page"""
         match = re.search(self.rnacentral_id_regex, self.get_title())
         if match:
             return match.group(1)
         else:
             raise Exception("Rnacentral id not found in the page title")
+
+    def external_urls_exist(self, expert_db_name):
+        """
+            External urls may have class names in the following format:
+                <expert_db_name>-external-url
+            Example:
+                mirbase-external-url
+        """
+        external_urls = self.browser.find_elements_by_class_name(expert_db_name + "-external-url")
+        if len(external_urls) > 0:
+            return True
+        else:
+            return False
+
 
     # to do: test citation lookup
     # to do: test abstract lookup
@@ -89,15 +110,16 @@ class VegaSequencePage(SequencePage):
     """Sequence page with VEGA xrefs"""
 
     def gene_and_transcript_is_ok(self):
-        """Find transcipt and gene info, e.g.:
-        Transcript OTTHUMT00000047033 from gene OTTHUMG00000017746
+        """
+            Find transcipt and gene info, e.g.:
+            Transcript OTTHUMT00000047033 from gene OTTHUMG00000017746
         """
         xrefs_table = self.get_xrefs_table_html()
         match = re.search(r'transcript OTTHUMT\d+ from gene OTTHUMG\d+', xrefs_table)
         return True if match else False
 
     def alternative_transcripts_is_ok(self):
-        """to do"""
+        # to do
         return True
 
 
@@ -105,7 +127,7 @@ class TmRNASequencePage(SequencePage):
     """Sequence page with tmRNA Website xrefs"""
 
     def test_one_piece_tmrna(self):
-        """to do"""
+        # to do
         return True
 
     def test_two_piece_tmrna(self):
@@ -125,22 +147,18 @@ class TmRNASequencePage(SequencePage):
             return True
 
     def test_precursor_tmrna(self):
-        """to do"""
+        # to do
         return True
 
 
 class MirbaseSequencePage(SequencePage):
     """Sequence page with miRBase xrefs"""
-
-    def test_mirbase_links(self):
-        return True
+    pass
 
 
 class SrpdbsequencePage(SequencePage):
     """Sequence page with SRPdb xrefs"""
-
-    def test_srpdb_links(self):
-        return True
+    pass
 
 
 class ExpertDbPage(BasePage):
@@ -179,7 +197,7 @@ class RNAcentralTest(unittest.TestCase):
         self.assertEqual(expert_dbs_page.get_svg_diagram_expert_db_count(), 19)
 
     def test_tmrna_website_example_pages(self):
-        for example_id in self.get_expert_db_example_ids('tmrna-website-examples'):
+        for example_id in self._get_expert_db_example_ids('tmrna-website-examples'):
             tmrna_page = TmRNASequencePage(self.browser, example_id)
             tmrna_page.navigate()
             self.assertTrue(tmrna_page.test_one_piece_tmrna())
@@ -187,17 +205,23 @@ class RNAcentralTest(unittest.TestCase):
             self.assertTrue(tmrna_page.test_precursor_tmrna())
 
     def test_vega_example_pages(self):
-        for example_id in self.get_expert_db_example_ids('vega-examples'):
+        for example_id in self._get_expert_db_example_ids('vega-examples'):
             vegapage = VegaSequencePage(self.browser, example_id)
             vegapage.navigate()
             self.assertTrue(vegapage.gene_and_transcript_is_ok())
             self.assertTrue(vegapage.alternative_transcripts_is_ok())
 
-    # def test_mirbase_example_pages(self):
-    #     pass
+    def test_mirbase_example_pages(self):
+        for example_id in self._get_expert_db_example_ids('mirbase-examples'):
+            mirbase_page = MirbaseSequencePage(self.browser, example_id)
+            mirbase_page.navigate()
+            self.assertTrue(mirbase_page.external_urls_exist('mirbase'))
 
-    # def test_srpdb_example_pages(self):
-    #     pass
+    def test_srpdb_example_pages(self):
+        for example_id in self._get_expert_db_example_ids('srpdb-examples'):
+            mirbase_page = MirbaseSequencePage(self.browser, example_id)
+            mirbase_page.navigate()
+            self.assertTrue(mirbase_page.external_urls_exist('srpdb'))
 
     # def test_expert_database_landing_pages(self):
     #     pass
@@ -205,10 +229,9 @@ class RNAcentralTest(unittest.TestCase):
     # def test_genome_browsers_page(self):
     #     pass
 
-
-    """Private methods"""
-    def get_expert_db_example_ids(self, element_id):
-        return self.homepage.get_expert_db_example_ids(element_id)
+    def _get_expert_db_example_ids(self, expert_db_id):
+        """Retrieve example RNAcentral ids from the homepage"""
+        return self.homepage.get_expert_db_example_ids(expert_db_id)
 
 
 if __name__ == '__main__':
