@@ -2,6 +2,39 @@
 {% load staticfiles %}
 {% load humanize %}
 
+{% block extra_head %}
+<style type="text/css">
+  .axis path,
+  .axis line {
+    fill: none;
+    stroke: #000;
+    stroke-width: 1px;
+    shape-rendering: crispEdges;
+  }
+
+  .area {
+    fill: #4682b4;
+    opacity: 0.6;
+    stroke-width: 0px;
+  }
+
+  .axis text {
+    font-family: sans-serif;
+    font-size: 12px;
+  }
+
+  .overlay {
+    fill: none;
+    pointer-events: all;
+  }
+
+  .focus circle {
+    fill: none;
+    stroke: #4682b4;
+  }
+</style>
+{% endblock extra_head %}}
+
 {% block title %}
   {{ context.expert_db.display_name }} Expert Database
 {% endblock %}
@@ -67,10 +100,8 @@
 </div>
 
 <div class="col-md-6">
-  {% if context.expert_db.display_name == 'miRBase' %}
     <h4>Sequence length distribution</h4>
-    <canvas id="myChart" width="500" height="300"></canvas>
-  {% endif %}
+    <div id="seqLengthDistribution"></div>
 </div>
 
 </div>
@@ -164,60 +195,21 @@
 
 {% endblock content %}
 
-
 {% block extra_js %}
     {{ block.super }}
-
-    {% if context.expert_db.display_name == 'miRBase' %}
-    <script src="{% static "js/vendor/Chart.min.js" %}"></script>
-    <script type="text/javascript">
-
-        setupcanvas = function(id, data, options){
-            var canvas = $('#'+id);
-            var newWidth = canvas.parent().width()
-            canvas.prop('width', newWidth);
-            canvas.prop('height', 300);
-            var ctx = canvas.get(0).getContext("2d");
-            var myNewChart = new Chart(ctx).Line(data, options);
-        };
-
-        var data = {
-            labels : [
-            {% for point in context.len_counts %}
-                {% if context.len_counts|length > 30 %}
-                    ""{% if not forloop.last %},{% else %}{% endif %}
-                {% else %}
-                    {{ point.len }}{% if not forloop.last %},{% else %}{% endif %}
-                {% endif %}
-            {% endfor %}
-            ],
-            datasets : [
-                {
-                    fillColor : "rgba(220,220,220,0.5)",
-                    strokeColor : "rgba(220,220,220,1)",
-                    pointColor : "rgba(220,220,220,1)",
-                    pointStrokeColor : "#fff",
-                    data : [
-                        {% for point in context.len_counts %}
-                            {{ point.counts }}{% if not forloop.last %},{% else %}{% endif %}
-                        {% endfor %}
-                    ]
-                }
-            ]
-        }
-
-        var options = {
-            //Boolean - Whether to show a dot for each point
-            pointDot : false,
-            //Boolean - Whether to animate the chart
-            animation : false,
-        }
-
-        setupcanvas("myChart", data, options);
-
-        $( window ).resize(function() {
-            setupcanvas("myChart", data, options);
-        });
-    {% endif %}
-</script>
+    <script src="{% static "js/vendor/d3/d3.min.js" %}"></script>
+    <script src="{% static "js/d3.ExpertDatabaseSequenceDistribution.js" %}"></script>
 {% endblock extra_js %}
+
+{% block extra_js_uncompressed %}
+    {{ block.super }}
+
+    <script type="text/javascript">
+        var data = [
+            {% for point in context.len_counts %}
+                {"length": {{ point.len }}, "count": {{ point.counts }} }{% if not forloop.last %},{% else %}{% endif %}
+            {% endfor %}
+        ];
+        ExpertDatabaseSequenceDistribution("#seqLengthDistribution", data);
+    </script>
+{% endblock extra_js_uncompressed %}
