@@ -13,13 +13,13 @@ ExpertDatabaseSequenceDistribution = function(selector, data){
     var x = d3.scale.log()
         .range([0, width]);
 
-    var y = d3.scale.linear()
+    var y = d3.scale.log()
         .range([height, 0]);
 
     var numberFormat = d3.format("s");
     function logFormat(d) {
         var x = Math.log(d) / Math.log(10) + 1e-6;
-        return Math.abs(x - Math.floor(x)) < .7 ? numberFormat(d) : "";
+        return Math.abs(x - Math.floor(x)) < .6 ? numberFormat(d) : "";
     }
 
     var xAxis = d3.svg.axis()
@@ -29,6 +29,7 @@ ExpertDatabaseSequenceDistribution = function(selector, data){
 
     var yAxis = d3.svg.axis()
         .scale(y)
+        .tickFormat(logFormat)
         .orient("left");
 
     var area = d3.svg.area()
