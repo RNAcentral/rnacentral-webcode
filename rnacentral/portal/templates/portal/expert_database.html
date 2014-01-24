@@ -13,7 +13,7 @@
   }
 
   .area {
-    fill: #4682b4;
+    fill: #6baed6;
     opacity: 0.6;
     stroke-width: 0px;
   }
@@ -30,7 +30,7 @@
 
   .focus circle {
     fill: none;
-    stroke: #4682b4;
+    stroke: #6baed6;
   }
 </style>
 {% endblock extra_head %}}
@@ -100,12 +100,38 @@
 </div>
 
 <div class="col-md-6">
-    <h4>Sequence length distribution</h4>
-    <div id="seqLengthDistribution"></div>
-</div>
+
+    <div id="expert-db-stats" class="carousel slide" data-ride="carousel">
+
+      <!-- Wrapper for slides -->
+      <div class="carousel-inner">
+
+        <div class="item active">
+          <h2>Sequence length distribution</h2>
+          <div id="seq-length-distribution"></div>
+          <div class="carousel-caption"></div>
+        </div>
+
+        <div class="item">
+          <h2>Species sunburst diagram</h2>
+          <div id="d3-species-sunburst"></div>
+          <div class="carousel-caption"></div>
+        </div>
+
+      </div>
+
+      <!-- Controls -->
+      <a class="left carousel-control" href="#expert-db-stats" data-slide="prev">
+        <span class="glyphicon glyphicon-chevron-left"></span>
+      </a>
+      <a class="right carousel-control" href="#expert-db-stats" data-slide="next">
+        <span class="glyphicon glyphicon-chevron-right"></span>
+      </a>
+    </div>
 
 </div>
 
+</div> {# row #}
 
 <h2>References</h2>
 
@@ -199,17 +225,33 @@
     {{ block.super }}
     <script src="{% static "js/vendor/d3/d3.min.js" %}"></script>
     <script src="{% static "js/d3.ExpertDatabaseSequenceDistribution.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/d3.speciesSunburst.js" %}"></script>
 {% endblock extra_js %}
 
 {% block extra_js_uncompressed %}
     {{ block.super }}
 
     <script type="text/javascript">
+        $(function(){
         var data = [
             {% for point in context.len_counts %}
                 {"length": {{ point.len }}, "count": {{ point.counts }} }{% if not forloop.last %},{% else %}{% endif %}
             {% endfor %}
         ];
-        ExpertDatabaseSequenceDistribution("#seqLengthDistribution", data);
+        ExpertDatabaseSequenceDistribution("#seq-length-distribution", data, 500, 300);
+
+        var json_lineage_tree = '{{ context.json_lineage_tree|escapejs }}';
+        d3SpeciesSunburst(json_lineage_tree, '#d3-species-sunburst', 500, 300);
+
+
+          // You used .myCarousel here.
+          // That's the class selector not the id selector,
+          // which is #myCarousel
+          $('#expert-db-stats').carousel({
+            interval: 20000
+          });
+        });
+
     </script>
+
 {% endblock extra_js_uncompressed %}
