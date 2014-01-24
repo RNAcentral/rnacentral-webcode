@@ -143,6 +143,20 @@ class SrpdbsequencePage(SequencePage):
         return True
 
 
+class ExpertDbPage(BasePage):
+    """Summary page for all expert databases"""
+    url = 'expert-databases/'
+
+    def __init__(self, browser):
+        BasePage.__init__(self, browser)
+        self.url = self.base_url + self.url
+
+    def get_svg_diagram_expert_db_count(self):
+        """get the number of rectangles representing expert databases"""
+        expert_dbs = self.browser.find_elements_by_tag_name("rect")
+        return len(expert_dbs)
+
+
 class RNAcentralTest(unittest.TestCase):
     """Unit tests entry point"""
 
@@ -159,11 +173,10 @@ class RNAcentralTest(unittest.TestCase):
         homepage.navigate()
         self.assertIn("RNAcentral", homepage.get_title())
 
-    def test_expert_database_landing_pages(self):
-        pass
-
     def test_all_expert_database_page(self):
-        pass
+        expert_dbs_page = ExpertDbPage(self.browser)
+        expert_dbs_page.navigate()
+        self.assertEqual(expert_dbs_page.get_svg_diagram_expert_db_count(), 19)
 
     def test_tmrna_website_example_pages(self):
         for example_id in self.get_expert_db_example_ids('tmrna-website-examples'):
@@ -180,14 +193,17 @@ class RNAcentralTest(unittest.TestCase):
             self.assertTrue(vegapage.gene_and_transcript_is_ok())
             self.assertTrue(vegapage.alternative_transcripts_is_ok())
 
-    def test_mirbase_example_pages(self):
-        pass
+    # def test_mirbase_example_pages(self):
+    #     pass
 
-    def test_srpdb_example_pages(self):
-        pass
+    # def test_srpdb_example_pages(self):
+    #     pass
 
-    def test_genome_browsers_page(self):
-        pass
+    # def test_expert_database_landing_pages(self):
+    #     pass
+
+    # def test_genome_browsers_page(self):
+    #     pass
 
 
     """Private methods"""
@@ -196,6 +212,9 @@ class RNAcentralTest(unittest.TestCase):
 
 
 if __name__ == '__main__':
+    import logging
+    logging.basicConfig(filename = 'selenium_log.txt', level = logging.DEBUG)
+
     import argparse
     import sys
     parser = argparse.ArgumentParser()
