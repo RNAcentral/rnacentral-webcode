@@ -58,12 +58,13 @@ def rna_view(request, upi):
     try:
         rna = Rna.objects.get(upi=upi.replace('RNS', 'UPI'))
         xrefs = rna.get_xrefs()
+        accessions = [xref.accession for xref in xrefs]
         context = {
             'xrefs': xrefs,
             'counts': rna.count_symbols(),
             'num_org': xrefs.values('taxid').distinct().count(),
             'num_db': xrefs.values('db_id').distinct().count(),
-            'json_lineage_tree': _get_json_lineage_tree(xrefs),
+            'json_lineage_tree': _get_json_lineage_tree(accessions),
         }
         context.update(context['xrefs'].aggregate(first_seen=Min('created__release_date'),
                                                   last_seen=Max('last__release_date')))
@@ -73,19 +74,19 @@ def rna_view(request, upi):
     return render(request, 'portal/rna_view.html', {'rna': rna, 'context': context})
 
 
-def _get_json_lineage_tree(xrefs):
+def _get_json_lineage_tree(accessions):
     """
         Combine lineages from multiple xrefs to produce a single species tree.
         The data are used by the d3 library.
     """
 
-    def get_lineages(xrefs):
+    def get_lineages(accessions):
         """
-            Combine the lineages from all xrefs in a single list.
+            Combine the lineages from all accessions in a single list.
         """
         taxons = []
-        for xref in xrefs:
-            taxons.append(xref.accession.classification)
+        for accession in accessions:
+            taxons.append(accession.classification)
         return taxons
 
     def build_nested_dict_helper(path, text, container):
@@ -97,9 +98,13 @@ def _get_json_lineage_tree(xrefs):
         tail = segs[1:]
         if not tail:
             # store how many time the species is seen
-            if head in container:
-                container[head] += 1
-            else:
+            try:
+                if head in container:
+                    container[head] += 1
+                else:
+                    container[head] = 1
+            except:
+                container = {}
                 container[head] = 1
         else:
             if head not in container:
@@ -150,7 +155,7 @@ def _get_json_lineage_tree(xrefs):
                 get_nested_tree(children, container['children'][-1])
         return container
 
-    lineages = get_lineages(xrefs)
+    lineages = get_lineages(accessions)
     nodes = get_nested_dict(lineages)
     json_lineage_tree = get_nested_tree(nodes, {})
     return json.dumps(json_lineage_tree)
@@ -193,6 +198,9 @@ def expert_database_view(request, expert_db_name):
         context['first_imported'] = data.order_by('xrefs__timestamp')[0].xrefs.all()[0].timestamp
         context['len_counts'] = data.values('len').annotate(counts=Count('len')).order_by('len')
         context.update(data.aggregate(min_length=Min('len'), max_length=Max('len'), avg_length=Avg('len')))
+        # get lineages for the sunburst diagram
+        accessions = Accessions.objects.only("classification").filter(database=expert_db_name).all()
+        context['json_lineage_tree'] = _get_json_lineage_tree(accessions)
         return render_to_response('portal/expert_database.html', {'context': context})
     elif expert_db_name in ('ENA', 'RFAM'):
         return render_to_response('portal/expert_database_coming_soon.html', {'context': context})
