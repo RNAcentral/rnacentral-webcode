@@ -21,6 +21,7 @@
 import unittest
 import re
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 
 
 class BasePage(object):
@@ -36,6 +37,13 @@ class BasePage(object):
 
     def get_title(self):
     	return self.browser.title
+
+    def js_errors_found(self):
+        try:
+            js_errors = self.browser.find_element_by_xpath('//body[@JSError]')
+            return True
+        except NoSuchElementException:
+            return False
 
 
 class Homepage(BasePage):
@@ -61,9 +69,6 @@ class Homepage(BasePage):
         """
         example_div = self.browser.find_element_by_id(element_id)
         return self._get_example_ids(example_div.get_attribute("innerHTML"))
-
-    # def get_expert_database_urls(self):
-    #     return []
 
 
 class SequencePage(BasePage):
@@ -161,8 +166,8 @@ class SrpdbsequencePage(SequencePage):
     pass
 
 
-class ExpertDbPage(BasePage):
-    """Summary page for all expert databases"""
+class ExpertDatabasesOverviewPage(BasePage):
+    """An overview page for all expert databases"""
     url = 'expert-databases/'
 
     def __init__(self, browser):
@@ -173,6 +178,20 @@ class ExpertDbPage(BasePage):
         """get the number of rectangles representing expert databases"""
         expert_dbs = self.browser.find_elements_by_tag_name("rect")
         return len(expert_dbs)
+
+
+class ExpertDatabaseLandingPage(BasePage):
+    """An expert database landing page"""
+    url = 'expert-database/'
+
+    def __init__(self, browser, expert_db_id):
+        BasePage.__init__(self, browser)
+        self.url = self.base_url + self.url + expert_db_id
+
+    def get_svg_diagrams(self):
+        """Check whether all svg diagrams have been generated"""
+        svg = self.browser.find_elements_by_tag_name("svg")
+        return len(svg)
 
 
 class RNAcentralTest(unittest.TestCase):
@@ -189,42 +208,53 @@ class RNAcentralTest(unittest.TestCase):
     def test_homepage(self):
         homepage = Homepage(self.browser)
         homepage.navigate()
+        self.assertFalse(homepage.js_errors_found())
         self.assertIn("RNAcentral", homepage.get_title())
 
     def test_all_expert_database_page(self):
-        expert_dbs_page = ExpertDbPage(self.browser)
+        expert_dbs_page = ExpertDatabasesOverviewPage(self.browser)
         expert_dbs_page.navigate()
+        self.assertFalse(expert_dbs_page.js_errors_found())
         self.assertEqual(expert_dbs_page.get_svg_diagram_expert_db_count(), 19)
 
     def test_tmrna_website_example_pages(self):
         for example_id in self._get_expert_db_example_ids('tmrna-website-examples'):
             tmrna_page = TmRNASequencePage(self.browser, example_id)
             tmrna_page.navigate()
+            self.assertFalse(tmrna_page.js_errors_found())
             self.assertTrue(tmrna_page.test_one_piece_tmrna())
             self.assertTrue(tmrna_page.test_two_piece_tmrna())
             self.assertTrue(tmrna_page.test_precursor_tmrna())
 
     def test_vega_example_pages(self):
         for example_id in self._get_expert_db_example_ids('vega-examples'):
-            vegapage = VegaSequencePage(self.browser, example_id)
-            vegapage.navigate()
-            self.assertTrue(vegapage.gene_and_transcript_is_ok())
-            self.assertTrue(vegapage.alternative_transcripts_is_ok())
+            vega_page = VegaSequencePage(self.browser, example_id)
+            vega_page.navigate()
+            self.assertFalse(vega_page.js_errors_found())
+            self.assertTrue(vega_page.gene_and_transcript_is_ok())
+            self.assertTrue(vega_page.alternative_transcripts_is_ok())
 
     def test_mirbase_example_pages(self):
         for example_id in self._get_expert_db_example_ids('mirbase-examples'):
             mirbase_page = MirbaseSequencePage(self.browser, example_id)
             mirbase_page.navigate()
+            self.assertFalse(mirbase_page.js_errors_found())
             self.assertTrue(mirbase_page.external_urls_exist('mirbase'))
 
     def test_srpdb_example_pages(self):
         for example_id in self._get_expert_db_example_ids('srpdb-examples'):
-            mirbase_page = MirbaseSequencePage(self.browser, example_id)
-            mirbase_page.navigate()
-            self.assertTrue(mirbase_page.external_urls_exist('srpdb'))
+            srpdb_page = MirbaseSequencePage(self.browser, example_id)
+            srpdb_page.navigate()
+            self.assertFalse(srpdb_page.js_errors_found())
+            self.assertTrue(srpdb_page.external_urls_exist('srpdb'))
 
-    # def test_expert_database_landing_pages(self):
-    #     pass
+    def test_expert_database_landing_pages(self):
+        expert_dbs = ['tmrna-website', 'srpdb', 'mirbase', 'vega']
+        for expert_db in expert_dbs:
+            expert_db_page = ExpertDatabaseLandingPage(self.browser, expert_db)
+            expert_db_page.navigate()
+            self.assertFalse(expert_db_page.js_errors_found())
+            self.assertEqual(expert_db_page.get_svg_diagrams(), 2)
 
     # def test_genome_browsers_page(self):
     #     pass
