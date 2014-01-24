@@ -2,11 +2,11 @@
 // http://bl.ocks.org/mbostock/3883195
 // http://bl.ocks.org/mbostock/3902569
 
-ExpertDatabaseSequenceDistribution = function(selector, data){
+ExpertDatabaseSequenceDistribution = function(selector, data, max_width, max_height){
 
     var margin = {top: 20, right: 60, bottom: 40, left: 50},
-        width = 500 - margin.left - margin.right,
-        height = 300 - margin.top - margin.bottom;
+        width = max_width - margin.left - margin.right,
+        height = max_height - margin.top - margin.bottom;
 
     var bisect = d3.bisector(function(d) { return d.length; }).left;
 

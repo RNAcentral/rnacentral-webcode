@@ -2,11 +2,9 @@
 // Based on http://bl.ocks.org/mbostock/4348373
 // Text labels: http://blog.luzid.com/2013/extending-the-d3-zoomable-sunburst-with-labels/
 
-d3SpeciesSunburst = function(data, selector){
+d3SpeciesSunburst = function(data, selector, width, height){
 
-	var width = 960,
-	    height = 700,
-	    jsonTree = JSON.parse(data),
+	var jsonTree = JSON.parse(data),
 	    radius = Math.min(width, height) / 2;
 
 	var x = d3.scale.linear()
