@@ -174,7 +174,7 @@
                     {# literature references #}
                     {% if xref.refs.all|length > 0 %}
                       <span class="literature-refs">
-                        <button class="literature-refs-retrieve btn btn-default btn-xs pull-right" data-accession="{{ xref.accession.accession }}"><i class="fa fa-book"></i> {{ xref.refs.all|length }}</button>
+                        <button class="literature-refs-retrieve btn btn-default btn-xs pull-right help" data-accession="{{ xref.accession.accession }}" title="Literature citation{{ xref.refs.all|pluralize }}"><i class="fa fa-book"></i> {{ xref.refs.all|length }}</button>
                         <div class="literature-refs-content"></div>
                       </span>
                     {% endif %}
@@ -363,7 +363,10 @@
       });
 
       // bootstrap tooltips
-      $('.help').tooltip();
+      $('body').tooltip({
+          selector: '.help',
+          delay: { show: 500, hide: 100 }
+      });
 
       // literature references
       $(document).on('click', '.literature-refs-retrieve', function(){
