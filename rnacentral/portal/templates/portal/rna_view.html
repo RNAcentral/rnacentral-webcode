@@ -285,7 +285,7 @@
 </div> <!--  row -->
 
 <script type="text/javascript">
-  var json_lineage_tree = '{{ context.json_lineage_tree|safe}}';
+  var json_lineage_tree = '{{ context.json_lineage_tree|escapejs}}';
 </script>
 
 {# Handlebars #}
