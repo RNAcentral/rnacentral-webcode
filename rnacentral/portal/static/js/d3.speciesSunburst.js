@@ -42,11 +42,11 @@ d3SpeciesSunburst = function(data, selector, width, height){
 	    .attr("title", function(d) { return d.name; })
 		.on("mouseover", function() {
 		  d3.select(this)
-		    .attr('fill', 'red')
+		    .attr('fill', '#f0ad4e')
 		})
 		.on("mouseout",  function() {
 		  d3.select(this)
-		    .attr('fill', 'blue' )
+		    .attr('fill', '#3F7D97' )
 	  	});
 
 	    ;
