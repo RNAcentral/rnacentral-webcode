@@ -275,6 +275,8 @@ if __name__ == '__main__':
     parser.add_argument('unittest_args', nargs='*')
 
     args = parser.parse_args()
+    if args.base_url[-1] != '/':
+        args.base_url += '/'
     BasePage.base_url = args.base_url
 
     sys.argv[1:] = args.unittest_args
