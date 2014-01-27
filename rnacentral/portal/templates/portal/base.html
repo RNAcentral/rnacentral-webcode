@@ -82,7 +82,6 @@
             <script src="{% static "js/vendor/jquery-1.10.1.min.js" %}"></script>
             <script src="{% static "js/vendor/bootstrap.min.js" %}"></script>
             <script src="{% static "js/main.js" %}"></script>
-            <script src"{% static "js/vendor/TogetherJS.js" %}"></script>
             <script>
               // $('form.global-search').on('submit', function(){
               //     window.location.href = '/search?q=' + $('#search').val();
@@ -100,7 +99,9 @@
           {% endblock extra_js %}
         {% endcompress %}
 
-        {% block extra_js_uncompressed %}{% endblock %}
+        {% block extra_js_uncompressed %}
+          <script src"{% static "js/vendor/TogetherJS.js" %}"></script>
+        {% endblock %}
 
     </body>
 </html>
