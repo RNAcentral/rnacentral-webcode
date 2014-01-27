@@ -6,7 +6,10 @@
     However, the program is included in the Django project
     to facilitate project-wide searching and renaming of html elements used for testing.
 
-    Each new view should have corresponding tests.
+    The tests are designed according to a Page Object pattern,
+    where each page has a class responsible for retrieving its elements.
+    Each page class has an attribute "url", which should be properly
+    initialized in the constructor.
 
     Usage:
 
@@ -39,6 +42,10 @@ class BasePage(object):
     	return self.browser.title
 
     def js_errors_found(self):
+        """
+            All javascript errors are logged in the JSError attribute
+            of the body tag.
+        """
         try:
             js_errors = self.browser.find_element_by_xpath('//body[@JSError]')
             return True
