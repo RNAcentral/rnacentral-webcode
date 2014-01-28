@@ -18,13 +18,14 @@
 
     # test an RNAcentral instance
     python selenium_tests.py --base-url http://test.rnacentral.org/
-
 """
 
 import unittest
 import re
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
 
 
 class BasePage(object):
@@ -32,14 +33,15 @@ class BasePage(object):
     base_url = None
     rnacentral_id_regex = r"(RNS[0-9A-F]{10})"
 
-    def __init__(self, browser):
+    def __init__(self, browser, url=''):
         self.browser = browser
+        self.url = self.base_url + url
 
     def navigate(self):
         self.browser.get(self.url)
 
     def get_title(self):
-    	return self.browser.title
+        return self.browser.title
 
     def js_errors_found(self):
         """
@@ -52,14 +54,14 @@ class BasePage(object):
         except NoSuchElementException:
             return False
 
+    def get_svg_diagrams(self):
+        """Check whether all svg diagrams have been generated"""
+        svg = self.browser.find_elements_by_tag_name("svg")
+        return len(svg)
+
 
 class Homepage(BasePage):
     """RNAcentral home page"""
-    url = ""
-
-    def __init__(self, browser):
-        BasePage.__init__(self, browser)
-        self.url = self.base_url
 
     def _get_example_ids(self, text):
         """Retrieve RNAcentral ids from some text"""
@@ -83,8 +85,8 @@ class SequencePage(BasePage):
     url = "rna/"
 
     def __init__(self, browser, unique_id):
-        BasePage.__init__(self, browser)
-        self.url = self.base_url + self.url + unique_id
+        BasePage.__init__(self, browser, self.url)
+        self.url += unique_id
 
     def get_xrefs_table_html(self):
         """Retriev text of the database cross-reference table"""
@@ -111,15 +113,26 @@ class SequencePage(BasePage):
         else:
             return False
 
-
-    # to do: test citation lookup
-    # to do: test abstract lookup
-    # to do: test svg tree
-    # to do: test sunburst
+    def citations_retrieved(self):
+        """
+            Click the first citation button on the page and then click on the abstract button.
+        """
+        timeout = 5
+        self.browser.find_element_by_class_name("literature-refs-retrieve").click()
+        try:
+            result = WebDriverWait(self.browser, timeout).until(lambda s: s.find_element(By.CLASS_NAME, "literature-refs-content").is_displayed())
+            if not result:
+                raise NoSuchElementException
+            self.browser.find_element_by_class_name("abstract-control").click()
+            WebDriverWait(self.browser, timeout).until(lambda s: s.find_element(By.CLASS_NAME, "abstract-text").is_displayed())
+        except:
+            logging.warning('Citations not loaded ' + self.browser.current_url)
+            return False
+        return True
 
 
 class VegaSequencePage(SequencePage):
-    """Sequence page with VEGA xrefs"""
+    """Sequence page with VEGA xrefs."""
 
     def gene_and_transcript_is_ok(self):
         """
@@ -164,12 +177,12 @@ class TmRNASequencePage(SequencePage):
 
 
 class MirbaseSequencePage(SequencePage):
-    """Sequence page with miRBase xrefs"""
+    """Sequence page with miRBase xrefs. Add miRBase-specific tests as necessary."""
     pass
 
 
 class SrpdbsequencePage(SequencePage):
-    """Sequence page with SRPdb xrefs"""
+    """Sequence page with SRPdb xrefs. Add SRPdb-specific tests as necessary."""
     pass
 
 
@@ -178,10 +191,9 @@ class ExpertDatabasesOverviewPage(BasePage):
     url = 'expert-databases/'
 
     def __init__(self, browser):
-        BasePage.__init__(self, browser)
-        self.url = self.base_url + self.url
+        BasePage.__init__(self, browser, self.url)
 
-    def get_svg_diagram_expert_db_count(self):
+    def get_expert_db_svg_rect_count(self):
         """get the number of rectangles representing expert databases"""
         expert_dbs = self.browser.find_elements_by_tag_name("rect")
         return len(expert_dbs)
@@ -192,13 +204,24 @@ class ExpertDatabaseLandingPage(BasePage):
     url = 'expert-database/'
 
     def __init__(self, browser, expert_db_id):
-        BasePage.__init__(self, browser)
-        self.url = self.base_url + self.url + expert_db_id
+        BasePage.__init__(self, browser, self.url)
+        self.url += expert_db_id
 
-    def get_svg_diagrams(self):
-        """Check whether all svg diagrams have been generated"""
-        svg = self.browser.find_elements_by_tag_name("svg")
-        return len(svg)
+
+class GenoverseTestPage(BasePage):
+    """A page with an embedded genome browser"""
+    url = 'docs/genome-browsers/'
+
+    def __init__(self, browser):
+        BasePage.__init__(self, browser, self.url)
+
+    def genoverse_ok(self):
+        self.browser.find_element_by_id('genoverse')
+        try:
+            WebDriverWait(self.browser, 5).until(lambda s: s.find_element(By.CSS_SELECTOR, "table.genoverse").is_displayed())
+        except:
+            return False
+        return True
 
 
 class RNAcentralTest(unittest.TestCase):
@@ -213,67 +236,76 @@ class RNAcentralTest(unittest.TestCase):
         self.browser.close()
 
     def test_homepage(self):
-        homepage = Homepage(self.browser)
-        homepage.navigate()
-        self.assertFalse(homepage.js_errors_found())
+        page = Homepage(self.browser)
+        page.navigate()
+        self.assertFalse(page.js_errors_found())
         self.assertIn("RNAcentral", homepage.get_title())
 
     def test_all_expert_database_page(self):
-        expert_dbs_page = ExpertDatabasesOverviewPage(self.browser)
-        expert_dbs_page.navigate()
-        self.assertFalse(expert_dbs_page.js_errors_found())
-        self.assertEqual(expert_dbs_page.get_svg_diagram_expert_db_count(), 19)
+        page = ExpertDatabasesOverviewPage(self.browser)
+        page.navigate()
+        self.assertFalse(page.js_errors_found())
+        self.assertEqual(page.get_expert_db_svg_rect_count(), 19)
 
     def test_tmrna_website_example_pages(self):
         for example_id in self._get_expert_db_example_ids('tmrna-website-examples'):
-            tmrna_page = TmRNASequencePage(self.browser, example_id)
-            tmrna_page.navigate()
-            self.assertFalse(tmrna_page.js_errors_found())
-            self.assertTrue(tmrna_page.test_one_piece_tmrna())
-            self.assertTrue(tmrna_page.test_two_piece_tmrna())
-            self.assertTrue(tmrna_page.test_precursor_tmrna())
+            page = TmRNASequencePage(self.browser, example_id)
+            page.navigate()
+            self._sequence_view_checks(page)
+            self.assertTrue(page.test_one_piece_tmrna())
+            self.assertTrue(page.test_two_piece_tmrna())
+            self.assertTrue(page.test_precursor_tmrna())
 
     def test_vega_example_pages(self):
         for example_id in self._get_expert_db_example_ids('vega-examples'):
-            vega_page = VegaSequencePage(self.browser, example_id)
-            vega_page.navigate()
-            self.assertFalse(vega_page.js_errors_found())
-            self.assertTrue(vega_page.gene_and_transcript_is_ok())
-            self.assertTrue(vega_page.alternative_transcripts_is_ok())
+            page = VegaSequencePage(self.browser, example_id)
+            page.navigate()
+            self._sequence_view_checks(page)
+            self.assertTrue(page.gene_and_transcript_is_ok())
+            self.assertTrue(page.alternative_transcripts_is_ok())
 
     def test_mirbase_example_pages(self):
         for example_id in self._get_expert_db_example_ids('mirbase-examples'):
-            mirbase_page = MirbaseSequencePage(self.browser, example_id)
-            mirbase_page.navigate()
-            self.assertFalse(mirbase_page.js_errors_found())
-            self.assertTrue(mirbase_page.external_urls_exist('mirbase'))
+            page = MirbaseSequencePage(self.browser, example_id)
+            page.navigate()
+            self._sequence_view_checks(page)
+            self.assertTrue(page.external_urls_exist('mirbase'))
 
     def test_srpdb_example_pages(self):
         for example_id in self._get_expert_db_example_ids('srpdb-examples'):
-            srpdb_page = MirbaseSequencePage(self.browser, example_id)
-            srpdb_page.navigate()
-            self.assertFalse(srpdb_page.js_errors_found())
-            self.assertTrue(srpdb_page.external_urls_exist('srpdb'))
+            page = MirbaseSequencePage(self.browser, example_id)
+            page.navigate()
+            self._sequence_view_checks(page)
+            self.assertTrue(page.external_urls_exist('srpdb'))
 
     def test_expert_database_landing_pages(self):
         expert_dbs = ['tmrna-website', 'srpdb', 'mirbase', 'vega']
         for expert_db in expert_dbs:
-            expert_db_page = ExpertDatabaseLandingPage(self.browser, expert_db)
-            expert_db_page.navigate()
-            self.assertFalse(expert_db_page.js_errors_found())
-            self.assertEqual(expert_db_page.get_svg_diagrams(), 2)
+            page = ExpertDatabaseLandingPage(self.browser, expert_db)
+            page.navigate()
+            self.assertFalse(page.js_errors_found())
+            self.assertEqual(page.get_svg_diagrams(), 2)
 
-    # def test_genome_browsers_page(self):
-    #     pass
+    def test_genoverse_page(self):
+        page = GenoverseTestPage(self.browser)
+        page.navigate()
+        self.assertTrue(page.genoverse_ok())
 
     def _get_expert_db_example_ids(self, expert_db_id):
         """Retrieve example RNAcentral ids from the homepage"""
         return self.homepage.get_expert_db_example_ids(expert_db_id)
 
+    def _sequence_view_checks(self, page):
+        self.assertTrue(page.citations_retrieved())
+        self.assertFalse(page.js_errors_found())
+        self.assertEqual(page.get_svg_diagrams(), 2)
+
 
 if __name__ == '__main__':
     import logging
-    logging.basicConfig(filename = 'selenium_log.txt', level = logging.DEBUG)
+    logging.basicConfig(filename='selenium_log.txt',
+                        level=logging.WARNING,
+                        filemode='w')
 
     import argparse
     import sys

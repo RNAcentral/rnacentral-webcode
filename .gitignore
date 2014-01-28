@@ -100,4 +100,5 @@ local_settings.py
 ####################
 ._*
 CACHE
+selenium_log.txt
 
