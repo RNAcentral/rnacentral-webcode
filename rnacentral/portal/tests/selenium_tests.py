@@ -207,6 +207,22 @@ class ExpertDatabaseLandingPage(BasePage):
         BasePage.__init__(self, browser, self.url)
         self.url += expert_db_id
 
+    def get_svg_diagrams(self):
+        """
+            Make sure all svg are generated.
+            Override the default behavior because of the ajax requests.
+        """
+        try:
+            sunburst = WebDriverWait(self.browser, 5).until(lambda s: s.find_element(By.CSS_SELECTOR, "#d3-species-sunburst svg"))
+            seq_dist = WebDriverWait(self.browser, 5).until(lambda s: s.find_element(By.CSS_SELECTOR, "#d3-seq-length-distribution svg"))
+        except:
+            if not sunburst:
+                print 'No sunburst'
+            if not seq_dist:
+                print 'No seq dist'
+            return False
+        return True
+
 
 class GenoverseTestPage(BasePage):
     """A page with an embedded genome browser"""
@@ -284,7 +300,7 @@ class RNAcentralTest(unittest.TestCase):
             page = ExpertDatabaseLandingPage(self.browser, expert_db)
             page.navigate()
             self.assertFalse(page.js_errors_found())
-            self.assertEqual(page.get_svg_diagrams(), 2)
+            self.assertTrue(page.get_svg_diagrams())
 
     def test_genoverse_page(self):
         page = GenoverseTestPage(self.browser)

@@ -181,7 +181,7 @@
 
   <div class="tab-content">
     <div class="tab-pane active" id="seq-length">
-      <div id="seq-length-distribution"></div>
+      <div id="d3-seq-length-distribution"></div>
     </div>
 
     <div class="tab-pane" id="species">
@@ -212,7 +212,7 @@
                     {"length": {{ point.len }}, "count": {{ point.counts }} }{% if not forloop.last %},{% else %}{% endif %}
                 {% endfor %}
             ];
-            ExpertDatabaseSequenceDistribution("#seq-length-distribution", data, 500, 300);
+            ExpertDatabaseSequenceDistribution("#d3-seq-length-distribution", data, 500, 300);
 
             $.ajax({
               url: "/expert-database/{{ context.expert_db.descr  }}/lineage",
