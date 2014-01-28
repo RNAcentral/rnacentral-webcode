@@ -83,18 +83,12 @@
             <script src="{% static "js/vendor/bootstrap.min.js" %}"></script>
             <script src="{% static "js/main.js" %}"></script>
             <script>
-              // $('form.global-search').on('submit', function(){
-              //     window.location.href = '/search?q=' + $('#search').val();
-              //     return false;
-              // });
-              $("form.global-search").submit(function (e) {
-                    e.preventDefault();
-              });
-
-              // record javascript errors for selenium
-              window.onerror=function(msg){
-                  $("body").attr("JSError",msg);
-              };
+                $(function() {
+                  // record javascript errors for selenium
+                  window.onerror=function(msg){
+                      $("body").attr("JSError",msg);
+                  };
+                });
             </script>
           {% endblock extra_js %}
         {% endcompress %}
