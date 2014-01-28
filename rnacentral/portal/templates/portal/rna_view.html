@@ -408,7 +408,7 @@
         $('#d3-species-tree').html('Your browser does not support SVG');
       } else {
         d3SpeciesTree(json_lineage_tree, '#d3-species-tree');
-        d3SpeciesSunburst(json_lineage_tree, '#d3-species-sunburst', 760, 500);
+        d3SpeciesSunburst(JSON.parse(json_lineage_tree), '#d3-species-sunburst', 760, 500);
         $("#show-species-tab").click(function(){
           $('#tabs a[href="#species"]').tab('show');
         });

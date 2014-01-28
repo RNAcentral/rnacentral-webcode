@@ -25,6 +25,7 @@ urlpatterns = patterns('',
     url(r'^api-auth/v1/', include('rest_framework.urls', namespace='rest_framework')),
     # temporary API
     url(r'^xref/(?P<accession>.+)/refs$', 'portal.views.get_literature_references'),
+    url(r'^expert-database/(?P<expert_db_name>.+)/lineage$', 'portal.views.get_expert_database_organism_sunburst'),
     # robots.txt
     url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
     # expert databases

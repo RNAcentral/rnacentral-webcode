@@ -4,7 +4,7 @@
 
 d3SpeciesSunburst = function(data, selector, width, height){
 
-	var jsonTree = JSON.parse(data),
+	var jsonTree = data,
 	    radius = Math.min(width, height) / 2;
 
 	var x = d3.scale.linear()

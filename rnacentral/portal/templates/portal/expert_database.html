@@ -198,7 +198,7 @@
 
   <div class="col-md-6">
     <h2>Species sunburst diagram</h2>
-    <div id="d3-species-sunburst"></div>
+    <div id="d3-species-sunburst"><i class="fa fa-spinner fa-spin fa-2x"></i></div>
   </div>
 
 </div>
@@ -217,18 +217,22 @@
 
     <script type="text/javascript">
         $(function(){
-        var data = [
-            {% for point in context.len_counts %}
-                {"length": {{ point.len }}, "count": {{ point.counts }} }{% if not forloop.last %},{% else %}{% endif %}
-            {% endfor %}
-        ];
-        ExpertDatabaseSequenceDistribution("#seq-length-distribution", data, 500, 300);
+            var data = [
+                {% for point in context.len_counts %}
+                    {"length": {{ point.len }}, "count": {{ point.counts }} }{% if not forloop.last %},{% else %}{% endif %}
+                {% endfor %}
+            ];
+            ExpertDatabaseSequenceDistribution("#seq-length-distribution", data, 500, 300);
 
-        var json_lineage_tree = '{{ context.json_lineage_tree|escapejs }}';
-        d3SpeciesSunburst(json_lineage_tree, '#d3-species-sunburst', 600, 400);
-
+            $.ajax({
+              url: "/expert-database/{{ context.expert_db.descr  }}/lineage",
+              dataType: "json",
+              success: function(data) {
+                $('#d3-species-sunburst').html('');
+                d3SpeciesSunburst(data, '#d3-species-sunburst', 600, 400);
+              }
+            });
         });
-
-    </script>
+  </script>
 
 {% endblock extra_js_uncompressed %}

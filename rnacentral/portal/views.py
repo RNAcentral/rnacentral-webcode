@@ -42,6 +42,15 @@ def get_literature_references(request, accession):
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 
+def get_expert_database_organism_sunburst(request, expert_db_name):
+    # get lineages for the sunburst diagram
+    expert_db_name = _normalize_expert_db_name(expert_db_name)
+    accessions = Accessions.objects.only("classification").filter(database=expert_db_name).all()
+    json_lineage_tree = _get_json_lineage_tree(accessions)
+    print expert_db_name
+    return HttpResponse(json_lineage_tree, content_type="application/json")
+
+
 def homepage(request):
     context = dict()
     context['seq_count'] = Rna.objects.count()
@@ -184,10 +193,8 @@ def search(request):
 
 def expert_database_view(request, expert_db_name):
     context = dict()
-    dbs = ('SRPDB', 'MIRBASE', 'VEGA', 'TMRNA_WEB')
-    if expert_db_name not in dbs:
-        expert_db_name = _normalize_expert_db_name(expert_db_name)
-    if expert_db_name in dbs:
+    expert_db_name = _normalize_expert_db_name(expert_db_name)
+    if expert_db_name:
         data = Rna.objects.filter(xrefs__deleted='N', xrefs__db__descr=expert_db_name)
         context['expert_db'] = Database.objects.get(descr=expert_db_name)
         context['total_sequences'] = data.count()
@@ -198,11 +205,8 @@ def expert_database_view(request, expert_db_name):
         context['first_imported'] = data.order_by('xrefs__timestamp')[0].xrefs.all()[0].timestamp
         context['len_counts'] = data.values('len').annotate(counts=Count('len')).order_by('len')
         context.update(data.aggregate(min_length=Min('len'), max_length=Max('len'), avg_length=Avg('len')))
-        # get lineages for the sunburst diagram
-        accessions = Accessions.objects.only("classification").filter(database=expert_db_name).all()
-        context['json_lineage_tree'] = _get_json_lineage_tree(accessions)
         return render_to_response('portal/expert_database.html', {'context': context})
-    elif expert_db_name in ('ENA', 'RFAM'):
+    elif expert_db_name == 'coming_soon':
         return render_to_response('portal/expert_database_coming_soon.html', {'context': context})
     else:
         raise Http404()
@@ -210,10 +214,18 @@ def expert_database_view(request, expert_db_name):
 
 # expert_db_name should match RNACEN.RNC_DATABASE.DESCR
 def _normalize_expert_db_name(expert_db_name):
+    dbs = ('SRPDB', 'MIRBASE', 'VEGA', 'TMRNA_WEB')
+    dbs_coming_soon = ('ENA', 'RFAM')
     if re.match('tmrna-website', expert_db_name, flags=re.IGNORECASE):
-        return 'TMRNA_WEB'
+        expert_db_name = 'TMRNA_WEB'
     else:
-        return expert_db_name.upper()
+        expert_db_name = expert_db_name.upper()
+    if expert_db_name in dbs:
+        return expert_db_name
+    elif expert_db_name in dbs_coming_soon:
+        expert_db_name = 'coming_soon'
+    else:
+        return False
 
 
 def website_status_view(request):
