@@ -255,7 +255,7 @@ class RNAcentralTest(unittest.TestCase):
         page = Homepage(self.browser)
         page.navigate()
         self.assertFalse(page.js_errors_found())
-        self.assertIn("RNAcentral", homepage.get_title())
+        self.assertIn("RNAcentral", page.get_title())
 
     def test_all_expert_database_page(self):
         page = ExpertDatabasesOverviewPage(self.browser)
