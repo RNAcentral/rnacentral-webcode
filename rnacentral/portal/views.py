@@ -199,7 +199,7 @@ def expert_database_view(request, expert_db_name):
         context['expert_db'] = Database.objects.get(descr=expert_db_name)
         context['total_sequences'] = data.count()
         context['total_organisms'] = len(data.values('xrefs__taxid').annotate(n=Count("pk")))
-        context['examples'] = data.all()[:6]
+        context['examples'] = data.all()[:8]
         for i, example in enumerate(context['examples']):
             context['examples'][i].upi = context['examples'][i].upi.replace("UPI", "RNS")
         context['first_imported'] = data.order_by('xrefs__timestamp')[0].xrefs.all()[0].timestamp

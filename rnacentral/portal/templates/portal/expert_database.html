@@ -97,18 +97,7 @@
       {% endif %}
     </ul>
 
-</div>
-
-<div class="col-md-6">
-  <h2>Sequence length distribution</h2>
-  <div id="seq-length-distribution"></div>
-</div>
-
-</div> {# row #}
-
-<div class="row">
-
-  <div class="col-md-6">
+  <div class="references">
 
     <h2>References</h2>
 
@@ -119,9 +108,6 @@
         </strong>
         <br>
           Kozomara A., Griffiths-Jones S.
-        <small>
-          Faculty of Life Sciences, University of Manchester, Michael Smith Building, Oxford Road, Manchester M13 9PT, UK.
-        </small>
         <small>
           Nucleic Acids Res. 39(Database issue): D152-7 (2011 Jan)
         </small>
@@ -134,9 +120,6 @@
           <br>
             Rosenblad MA., Larsen N., Samuelsson T., Zwieb C.
           <small>
-            Department of Cell and Molecular Biology, University of Gothenburg, Göteborg, Sweden.
-          </small>
-          <small>
             RNA Biol 6(5): 508-516 (2009 Nov-Dec)
           </small>
         </blockquote>
@@ -148,9 +131,6 @@
           <br>
             Andersen ES., Rosenblad MA., Larsen N., Westergaard JC., Burks J., Wower IK., Wower J., Gorodkin J., Samuelsson T., Zwieb C.
           <small>
-            Department of Molecular Biology, University of Aarhus, C.F. Moellers Allé, Building 139, 8000 Aarhus, Denmark.
-          </small>
-          <small>
             Nucleic Acids Res. 34(Database issue): D163-8 (2006 Jan)
           </small>
         </blockquote>
@@ -160,10 +140,7 @@
             The GENCODE v7 catalog of human long noncoding RNAs: analysis of their gene structure, evolution, and expression.
           </strong>
           <br>
-            Derrien T., Johnson R., Bussotti G., Tanzer A., Djebali S., Tilgner H., Guernec G., Martin D., Merkel A., Knowles DG., Lagarde J., Veeravalli L., Ruan X., Ruan Y., Lassmann T., Carninci P., Brown JB., Lipovich L., Gonzalez JM., Thomas M., Davis CA., Shiekhattar R., Gingeras TR., Hubbard TJ., Notredame C., Harrow J., Guigó R.
-          <small>
-            Bioinformatics and Genomics, Centre for Genomic Regulation and UPF, 08003 Barcelona, Catalonia, Spain.
-          </small>
+            Derrien T., Johnson R., Bussotti G., Tanzer A., Djebali S., Tilgner H., Guernec G., Martin D., Merkel A., Knowles DG. et al.
           <small>
               Genome Res. 22(9): 1775-1789 (2012 Sep)
           </small>
@@ -174,10 +151,7 @@
               GENCODE: the reference human genome annotation for The ENCODE Project.
           </strong>
           <br>
-            Harrow J., Frankish A., Gonzalez JM., Tapanari E., Diekhans M., Kokocinski F., Aken BL., Barrell D., Zadissa A., Searle S., Barnes I., Bignell A., Boychenko V., Hunt T., Kay M., Mukherjee G., Rajan J., Despacio-Reyes G., Saunders G., Steward C., Harte R., Lin M., Howald C., Tanzer A., Derrien T., Chrast J., Walters N., Balasubramanian S., Pei B., Tress M., Rodriguez JM., Ezkurdia I., van Baren J., Brent M., Haussler D., Kellis M., Valencia A., Reymond A., Gerstein M., Guigó R., Hubbard TJ.
-          <small>
-            Wellcome Trust Sanger Institute, Wellcome Trust Campus, Hinxton, Cambridge CB10 1SA, United Kingdom.
-          </small>
+            Harrow J., Frankish A., Gonzalez JM., Tapanari E., Diekhans M., Kokocinski F., Aken BL., Barrell D., Zadissa A., Searle S. et al.
           <small>
             Genome Res. 22(9): 1760-1774 (2012 Sep)
           </small>
@@ -196,12 +170,28 @@
     {% endif %}
   </div>
 
-  <div class="col-md-6">
-    <h2>Species sunburst diagram</h2>
-    <div id="d3-species-sunburst"><i class="fa fa-spinner fa-spin fa-2x"></i></div>
+</div>
+
+<div class="col-md-6">
+
+  <ul class="nav nav-tabs">
+    <li class="active"><a href="#seq-length" data-toggle="tab">Sequence length</a></li>
+    <li><a href="#species" data-toggle="tab">Species sunburst</a></li>
+  </ul>
+
+  <div class="tab-content">
+    <div class="tab-pane active" id="seq-length">
+      <div id="seq-length-distribution"></div>
+    </div>
+
+    <div class="tab-pane" id="species">
+      <div id="d3-species-sunburst"><i class="fa fa-spinner fa-spin fa-2x"></i></div>
+    </div>
   </div>
 
 </div>
+
+</div> {# row #}
 
 {% endblock content %}
 
@@ -228,8 +218,10 @@
               url: "/expert-database/{{ context.expert_db.descr  }}/lineage",
               dataType: "json",
               success: function(data) {
-                $('#d3-species-sunburst').html('');
+                var sunburst = $('#d3-species-sunburst');
+                sunburst.hide().html('');
                 d3SpeciesSunburst(data, '#d3-species-sunburst', 600, 400);
+                sunburst.fadeIn();
               }
             });
         });
