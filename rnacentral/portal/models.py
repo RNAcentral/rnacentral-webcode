@@ -42,14 +42,14 @@ class Rna(models.Model):
         """
             Get xrefs only from the expert database.
         """
-        return self.xrefs.select_related().prefetch_related('refs').exclude(accession__is_composite='N').all()
+        return self.xrefs.select_related().exclude(accession__is_composite='N').all()
 
     def get_ena_xrefs(self):
         """
             Get ENA xrefs that don't have corresponding expert database entries.
         """
         expert_db_projects = [db.project_id for db in Database.objects.exclude(project_id=None).all()]
-        return self.xrefs.filter(db__descr='ENA').prefetch_related('refs').exclude(accession__project__in=expert_db_projects).select_related().all()
+        return self.xrefs.filter(db__descr='ENA').exclude(accession__project__in=expert_db_projects).select_related().all()
 
     def get_xrefs(self):
         """

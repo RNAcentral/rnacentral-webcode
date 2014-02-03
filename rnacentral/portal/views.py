@@ -110,16 +110,13 @@ def homepage(request):
 def rna_view(request, upi):
     try:
         rna = Rna.objects.get(upi=upi.replace('URS', 'UPI'))
-        # xrefs = rna.get_xrefs()
-        # accessions = [xref.accession for xref in xrefs]
+        xrefs = rna.get_xrefs()
         context = {
-            # 'xrefs': xrefs,
             'counts': rna.count_symbols(),
-            # 'num_org': xrefs.values('taxid').distinct().count(),
-            # 'num_db': xrefs.values('db_id').distinct().count(),
-            # 'json_lineage_tree': _get_json_lineage_tree(accessions),
+            'num_org': xrefs.values('taxid').distinct().count(),
+            'num_db': xrefs.values('db_id').distinct().count(),
         }
-        # context.update(context['xrefs'].aggregate(first_seen=Min('created__release_date'),last_seen=Max('last__release_date')))
+        context.update(xrefs.aggregate(first_seen=Min('created__release_date'),last_seen=Max('last__release_date')))
         rna.upi = rna.upi.replace("UPI", "URS")  # replace "UPI" with "URS"
     except Rna.DoesNotExist:
         raise Http404
