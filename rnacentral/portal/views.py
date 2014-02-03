@@ -70,7 +70,7 @@ def get_xrefs_data(request, upi):
         with thousands of cross-references.
     """
     try:
-        rna = Rna.objects.get(upi=upi.replace('RNS', 'UPI'))
+        rna = Rna.objects.get(upi=upi.replace('URS', 'UPI'))
         xrefs = rna.get_xrefs()
         context = {
             'xrefs': xrefs,
@@ -87,7 +87,7 @@ def get_sequence_lineage(request, upi):
         classifications from all database cross-references.
     """
     try:
-        xrefs = Xref.objects.filter(upi=upi.replace('RNS','UPI')).all()
+        xrefs = Xref.objects.filter(upi=upi.replace('URS','UPI')).all()
         accessions = [xref.accession for xref in xrefs]
         json_lineage_tree = _get_json_lineage_tree(accessions)
     except Rna.DoesNotExist:
@@ -109,7 +109,7 @@ def homepage(request):
 
 def rna_view(request, upi):
     try:
-        rna = Rna.objects.get(upi=upi.replace('RNS', 'UPI'))
+        rna = Rna.objects.get(upi=upi.replace('URS', 'UPI'))
         # xrefs = rna.get_xrefs()
         # accessions = [xref.accession for xref in xrefs]
         context = {
@@ -120,7 +120,7 @@ def rna_view(request, upi):
             # 'json_lineage_tree': _get_json_lineage_tree(accessions),
         }
         # context.update(context['xrefs'].aggregate(first_seen=Min('created__release_date'),last_seen=Max('last__release_date')))
-        rna.upi = rna.upi.replace("UPI", "RNS")  # replace "UPI" with "RNS"
+        rna.upi = rna.upi.replace("UPI", "URS")  # replace "UPI" with "URS"
     except Rna.DoesNotExist:
         raise Http404
     return render(request, 'portal/rna_view.html', {'rna': rna, 'context': context})
@@ -244,7 +244,7 @@ def expert_database_view(request, expert_db_name):
         context['total_organisms'] = len(data.values('xrefs__taxid').annotate(n=Count("pk")))
         context['examples'] = data.all()[:8]
         for i, example in enumerate(context['examples']):
-            context['examples'][i].upi = context['examples'][i].upi.replace("UPI", "RNS")
+            context['examples'][i].upi = context['examples'][i].upi.replace("UPI", "URS")
         context['first_imported'] = data.order_by('xrefs__timestamp')[0].xrefs.all()[0].timestamp
         context['len_counts'] = data.values('len').annotate(counts=Count('len')).order_by('len')
         context.update(data.aggregate(min_length=Min('len'), max_length=Max('len'), avg_length=Avg('len')))

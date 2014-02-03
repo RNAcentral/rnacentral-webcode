@@ -31,7 +31,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 class BasePage(object):
     """Prototipe object for all pages."""
     base_url = None
-    rnacentral_id_regex = r"(RNS[0-9A-F]{10})"
+    rnacentral_id_regex = r"(URS[0-9A-F]{10})"
 
     def __init__(self, browser, url=''):
         self.browser = browser
@@ -88,8 +88,13 @@ class SequencePage(BasePage):
         BasePage.__init__(self, browser, self.url)
         self.url += unique_id
 
+    def navigate(self):
+        super(SequencePage, self).navigate()
+        WebDriverWait(self.browser, 120).until(lambda s: s.find_element_by_css_selector("#xrefs-table"))
+        WebDriverWait(self.browser, 120).until(lambda s: s.find_element_by_css_selector("#d3-species-tree svg"))
+
     def get_xrefs_table_html(self):
-        """Retriev text of the database cross-reference table"""
+        """Retrieve text of the database cross-reference table"""
         return self.browser.find_element_by_id("xrefs-table").text
 
     def get_own_rnacentral_id(self):
@@ -314,7 +319,7 @@ class RNAcentralTest(unittest.TestCase):
     def _sequence_view_checks(self, page):
         self.assertTrue(page.citations_retrieved())
         self.assertFalse(page.js_errors_found())
-        self.assertEqual(page.get_svg_diagrams(), 2)
+        self.assertEqual(page.get_svg_diagrams(), 1)
 
 
 if __name__ == '__main__':
