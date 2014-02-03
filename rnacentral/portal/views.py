@@ -24,30 +24,74 @@ class RnaViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 def get_literature_references(request, accession):
-    refs = Reference_map.objects.filter(accession=accession).select_related('Reference').order_by('data__title').all()
-    data = []
-    for ref in refs:
-        title = ref.data.title
-        if ref.data.location[:9] == 'Submitted':
-            title = 'INSDC submission'
-        else:
-            title = title if title else 'No title available'
-        data.append({
-            'pubmed': ref.data.pubmed,
-            'doi': ref.data.doi,
-            'title': title,
-            'authors': ref.data.authors,
-            'location': ref.data.location,
-        })
+    """
+        Internal API.
+        Retrieve literature references for a specific accession.
+    """
+    try:
+        refs = Reference_map.objects.filter(accession=accession).select_related('Reference').order_by('data__title').all()
+        data = []
+        for ref in refs:
+            title = ref.data.title
+            if ref.data.location[:9] == 'Submitted':
+                title = 'INSDC submission'
+            else:
+                title = title if title else 'No title available'
+            data.append({
+                'pubmed': ref.data.pubmed,
+                'doi': ref.data.doi,
+                'title': title,
+                'authors': ref.data.authors,
+                'location': ref.data.location,
+            })
+    except Exception, e:
+        raise Http404
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 
 def get_expert_database_organism_sunburst(request, expert_db_name):
-    # get lineages for the sunburst diagram
-    expert_db_name = _normalize_expert_db_name(expert_db_name)
-    accessions = Accessions.objects.only("classification").filter(database=expert_db_name).all()
-    json_lineage_tree = _get_json_lineage_tree(accessions)
-    print expert_db_name
+    """
+        Internal API.
+        Get lineages from all sequences for the sunburst diagram.
+    """
+    try:
+        expert_db_name = _normalize_expert_db_name(expert_db_name)
+        accessions = Accessions.objects.only("classification").filter(database=expert_db_name).all()
+        json_lineage_tree = _get_json_lineage_tree(accessions)
+    except Exception, e:
+        raise Http404
+    return HttpResponse(json_lineage_tree, content_type="application/json")
+
+
+def get_xrefs_data(request, upi):
+    """
+        Internal API.
+        Get the data for the xrefs table. Improves DataTables performance for entries
+        with thousands of cross-references.
+    """
+    try:
+        rna = Rna.objects.get(upi=upi.replace('RNS', 'UPI'))
+        xrefs = rna.get_xrefs()
+        context = {
+            'xrefs': xrefs,
+        }
+    except Rna.DoesNotExist:
+        raise Http404
+    return render(request, 'portal/xref_table.html', {'context': context})
+
+
+def get_sequence_lineage(request, upi):
+    """
+        Internal API.
+        Get the lineage for an RNA sequence based on the
+        classifications from all database cross-references.
+    """
+    try:
+        xrefs = Xref.objects.filter(upi=upi.replace('RNS','UPI')).all()
+        accessions = [xref.accession for xref in xrefs]
+        json_lineage_tree = _get_json_lineage_tree(accessions)
+    except Rna.DoesNotExist:
+        raise Http404
     return HttpResponse(json_lineage_tree, content_type="application/json")
 
 
@@ -66,17 +110,16 @@ def homepage(request):
 def rna_view(request, upi):
     try:
         rna = Rna.objects.get(upi=upi.replace('RNS', 'UPI'))
-        xrefs = rna.get_xrefs()
-        accessions = [xref.accession for xref in xrefs]
+        # xrefs = rna.get_xrefs()
+        # accessions = [xref.accession for xref in xrefs]
         context = {
-            'xrefs': xrefs,
+            # 'xrefs': xrefs,
             'counts': rna.count_symbols(),
-            'num_org': xrefs.values('taxid').distinct().count(),
-            'num_db': xrefs.values('db_id').distinct().count(),
-            'json_lineage_tree': _get_json_lineage_tree(accessions),
+            # 'num_org': xrefs.values('taxid').distinct().count(),
+            # 'num_db': xrefs.values('db_id').distinct().count(),
+            # 'json_lineage_tree': _get_json_lineage_tree(accessions),
         }
-        context.update(context['xrefs'].aggregate(first_seen=Min('created__release_date'),
-                                                  last_seen=Max('last__release_date')))
+        # context.update(context['xrefs'].aggregate(first_seen=Min('created__release_date'),last_seen=Max('last__release_date')))
         rna.upi = rna.upi.replace("UPI", "RNS")  # replace "UPI" with "RNS"
     except Rna.DoesNotExist:
         raise Http404

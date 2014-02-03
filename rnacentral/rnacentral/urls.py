@@ -26,6 +26,8 @@ urlpatterns = patterns('',
     # temporary API
     url(r'^xref/(?P<accession>.+)/refs$', 'portal.views.get_literature_references'),
     url(r'^expert-database/(?P<expert_db_name>.+)/lineage$', 'portal.views.get_expert_database_organism_sunburst'),
+    url(r'^rna/(?P<upi>\w+)/xrefs$', 'portal.views.get_xrefs_data'),
+    url(r'^rna/(?P<upi>\w+)/lineage$', 'portal.views.get_sequence_lineage'),
     # robots.txt
     url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
     # expert databases

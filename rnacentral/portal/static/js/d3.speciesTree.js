@@ -4,7 +4,7 @@
 d3SpeciesTree = function(data, selector){
 
   var m = [20, 120, 20, 120],
-      jsonTree = JSON.parse(data),
+      jsonTree = data,
       w = 2200 - m[1] - m[3], // width
       h = 400 - m[0] - m[2], // height
       edgeLength = 100,

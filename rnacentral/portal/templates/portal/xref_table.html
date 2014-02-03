@@ -1,0 +1,112 @@
+{% load humanize %}
+
+<table class="table table-hover table-condensed table-bordered" id="xrefs-table">
+
+<thead>
+  <tr>
+    <th>#</th>
+    <th>Database</th>
+    <th>Description</th>
+    <th>Species</th>
+    <th>First&nbsp;seen</th>
+    <th>Last&nbsp;seen</th>
+    <th>Active</th>
+  </tr>
+</thead>
+
+<tbody>
+
+{% for xref in context.xrefs %}
+  <tr {% if xref.deleted == 'Y' %}class="warning"{% endif %}>
+    <td class="text-muted">{{ forloop.counter }}</td>
+    <td>
+      {% if xref.db.display_name != 'ENA' and xref.db.display_name != 'RFAM' %}
+        <span class="badge badge-success help" data-toggle="tooltip" title="RNAcentral Expert Database"><span class="glyphicon glyphicon-star"></span></span>
+      {% endif %}
+      <a href="{% url 'portal.views.expert_database_view' expert_db_name=xref.db.descr %}">{{ xref.db.display_name.split|join:"&nbsp;" }}</a>
+    </td>
+    <!-- accession -->
+    <td>
+    {{ xref.accession.description }}
+    <br>
+    <i class="fa fa-angle-right"></i>
+    {% if xref.db.display_name == 'ENA' %}
+      ENA: <a href="http://www.ebi.ac.uk/ena/data/view/Non-coding:{{ xref.accession.accession }}" target="_blank" title="{{ xref.accession.accession }} at ENA">{{ xref.accession.accession }}</a>
+    {% elif xref.db.display_name == 'RFAM' %}
+      RFAM: <a href="http://rfam.sanger.ac.uk/family/{{ xref.accession.external_id }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }} family)
+    {% elif xref.db.display_name == 'SRPDB' %}
+      SRPDB:
+      <a class="srpdb-external-url" href="http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/{{ xref.accession.get_srpdb_id }}.fasta" target="_blank">{{ xref.accession.get_srpdb_id }}</a>
+    {% elif xref.db.display_name == 'miRBase' %}
+      miRBase:
+      <a class="mirbase-external-url" href="http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc={{ xref.accession.external_id }}" target="_blank">{{ xref.accession.external_id }}</a>
+    {# VEGA #}
+    {% elif xref.db.display_name == 'VEGA' %}
+      VEGA transcript <a href="http://vega.sanger.ac.uk/Homo_sapiens/Transcript/Summary?db=core;t={{ xref.accession.optional_id }}" target="_blank" title="View the transcript at VEGA">{{ xref.accession.optional_id }}</a>
+      from gene <a href="http://vega.sanger.ac.uk/Homo_sapiens/Gene/Summary?db=core;g={{ xref.accession.external_id }}" target="_blank" title="View the gene at VEGA">{{ xref.accession.external_id }}</a>
+      <br>
+      <i class="fa fa-angle-right"></i>
+      {% with splice_variants=xref.get_vega_splice_variants %}
+        {% if splice_variants %}
+          Alternative transcript{{splice_variants|length|pluralize}}:
+          {% for splice_variant in splice_variants %}
+            <a href="{% url  'portal.views.rna_view' upi=splice_variant.upi %}">{{ splice_variant.upi }}</a>
+            ({{ splice_variant.len|intcomma }} nts){% if not forloop.last %},{% else %}.{% endif %}
+          {% endfor %}
+        {% else %}
+          No alternative transcripts.
+        {% endif %}
+      {% endwith %}
+    {# tmRNA Website #}
+    {% elif xref.db.display_name == 'tmRNA Website' %}
+      tmRNA Website: <a href="http://bioinformatics.sandia.gov/tmrna/seqs/{{ xref.accession.external_id }}.html" target="_blank">{{ xref.accession.external_id }}</a>
+      {% with tmrna_type=xref.get_tmrna_type %}
+        <br>
+        <i class="fa fa-angle-right"></i>
+        {% if tmrna_type == 1 %}
+          One-piece tmRNA or tmRNA precursor
+        {% elif tmrna_type == 2 %}
+          {% with tmrna_mate=xref.get_tmrna_mate_upi %}
+            Two-piece tmRNA partner: <a href="{% url 'portal.views.rna_view' upi=tmrna_mate %}">{{ tmrna_mate }}</a>
+          {% endwith %}
+        {% endif %}
+      {% endwith %}
+      {% if xref.accession.organelle %}
+        <br>
+        <i class="fa fa-angle-right"></i>
+        found in {{ xref.accession.organelle|lower }}
+      {% endif %}
+    {% endif %}
+
+    {% if xref.accession.is_composite == 'Y' %}
+      <br>
+      <i class="fa fa-angle-right"></i>
+      Corresponding ENA entry: <a href="http://www.ebi.ac.uk/ena/data/view/Non-coding:{{ xref.accession.non_coding_id }}" target="_blank" title="{{ xref.accession.non_coding_id }} at ENA">{{ xref.accession.non_coding_id }}</a>
+    {% endif %}
+
+    {# literature references #}
+    {% if xref.refs.all|length > 0 %}
+      <span class="literature-refs">
+        <button class="literature-refs-retrieve btn btn-default btn-xs pull-right help" data-accession="{{ xref.accession.accession }}" title="Literature citation{{ xref.refs.all|pluralize }}"><i class="fa fa-book"></i> {{ xref.refs.all|length }}</button>
+        <div class="literature-refs-content"></div>
+      </span>
+    {% endif %}
+
+    </td>
+    <!-- accession -->
+    <td><a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank" title="{{ xref.accession.classification }}"><em>{{ xref.accession.species }}</em></a></td>
+    <td><time datetime="{{ xref.created.release_date|date:'Y-m-d' }}">{{ xref.created.release_date|date:'d M Y' }}</time></td>
+    <td><time datetime="{{ xref.last.release_date|date:'Y-m-d' }}">{{ xref.last.release_date|date:'d M Y' }}</time></td>
+    <td>
+      {% if xref.deleted == 'N' %}
+          Yes
+      {% else %}
+          <span class="label label-danger">No</span>
+      {% endif %}
+    </td>
+  </tr>
+{% endfor %}
+
+</tbody>
+
+</table>

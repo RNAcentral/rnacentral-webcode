@@ -287,6 +287,10 @@ h3.panel-title {
   width: 98%;
 }
 
+#xrefs-table {
+  display: none;
+}
+
 /*------------------------------------------------------------------
 [5. Misc]
 */
@@ -391,4 +395,8 @@ table.table thead .sorting_desc_disabled {
 path {
   stroke: #fff;
   fill-rule: evenodd;
+}
+
+#d3-species-tree {
+  max-height: 800px;
 }

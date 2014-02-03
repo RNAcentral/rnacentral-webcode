@@ -9,7 +9,7 @@
 {% block content %}
 
 <h1>
-  Sequence {{ rna.upi }}
+  Unique RNA Sequence {{ rna.upi }}
 </h1>
 
 <div class="row">
@@ -82,122 +82,28 @@
             </div>
           </div> <!-- .panel .panel-default -->
 
-          <h2>
-            Database cross-references
-            <small id="xrefs-datatables-counter"></small>
-            <span id="xrefs-datatables-filter"></span>
-          </h2>
+          <div>
+            <h2>
+              Database cross-references
+              <small id="xrefs-datatables-counter"></small>
+              <span id="xrefs-datatables-filter"></span>
+            </h2>
 
-          <div class="table-responsive force-scrollbars">
-            <table class="table table-hover table-condensed table-bordered" id="xrefs-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Database</th>
-                  <th>Description</th>
-                  <th>Species</th>
-                  <th>First&nbsp;seen</th>
-                  <th>Last&nbsp;seen</th>
-                  <th>Active</th>
-                </tr>
-              </thead>
+            <div class="table-responsive force-scrollbars">
 
-              <tbody>
-                {% for xref in context.xrefs %}
-                  <tr {% if xref.deleted == 'Y' %}class="warning"{% endif %}>
-                    <td class="text-muted">{{ forloop.counter }}</td>
-                    <td>
-                      {% if xref.db.display_name != 'ENA' and xref.db.display_name != 'RFAM' %}
-                        <span class="badge badge-success help" data-toggle="tooltip" title="RNAcentral Expert Database"><span class="glyphicon glyphicon-star"></span></span>
-                      {% endif %}
-                      <a href="{% url 'portal.views.expert_database_view' expert_db_name=xref.db.descr %}">{{ xref.db.display_name.split|join:"&nbsp;" }}</a>
-                    </td>
-                    <!-- accession -->
-                    <td>
-                    {{ xref.accession.description }}
-                    <br>
-                    <i class="fa fa-angle-right"></i>
-                    {% if xref.db.display_name == 'ENA' %}
-                      ENA: <a href="http://www.ebi.ac.uk/ena/data/view/Non-coding:{{ xref.accession.accession }}" target="_blank" title="{{ xref.accession.accession }} at ENA">{{ xref.accession.accession }}</a>
-                    {% elif xref.db.display_name == 'RFAM' %}
-                      RFAM: <a href="http://rfam.sanger.ac.uk/family/{{ xref.accession.external_id }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }} family)
-                    {% elif xref.db.display_name == 'SRPDB' %}
-                      SRPDB:
-                      <a class="srpdb-external-url" href="http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/{{ xref.accession.get_srpdb_id }}.fasta" target="_blank">{{ xref.accession.get_srpdb_id }}</a>
-                    {% elif xref.db.display_name == 'miRBase' %}
-                      miRBase:
-                      <a class="mirbase-external-url" href="http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc={{ xref.accession.external_id }}" target="_blank">{{ xref.accession.external_id }}</a>
-                    {# VEGA #}
-                    {% elif xref.db.display_name == 'VEGA' %}
-                      VEGA transcript <a href="http://vega.sanger.ac.uk/Homo_sapiens/Transcript/Summary?db=core;t={{ xref.accession.optional_id }}" target="_blank" title="View the transcript at VEGA">{{ xref.accession.optional_id }}</a>
-                      from gene <a href="http://vega.sanger.ac.uk/Homo_sapiens/Gene/Summary?db=core;g={{ xref.accession.external_id }}" target="_blank" title="View the gene at VEGA">{{ xref.accession.external_id }}</a>
-                      <br>
-                      <i class="fa fa-angle-right"></i>
-                      {% with splice_variants=xref.get_vega_splice_variants %}
-                        {% if splice_variants %}
-                          Alternative transcript{{splice_variants|length|pluralize}}:
-                          {% for splice_variant in splice_variants %}
-                            <a href="{% url  'portal.views.rna_view' upi=splice_variant.upi %}">{{ splice_variant.upi }}</a>
-                            ({{ splice_variant.len|intcomma }} nts){% if not forloop.last %},{% else %}.{% endif %}
-                          {% endfor %}
-                        {% else %}
-                          No alternative transcripts.
-                        {% endif %}
-                      {% endwith %}
-                    {# tmRNA Website #}
-                    {% elif xref.db.display_name == 'tmRNA Website' %}
-                      tmRNA Website: <a href="http://bioinformatics.sandia.gov/tmrna/seqs/{{ xref.accession.external_id }}.html" target="_blank">{{ xref.accession.external_id }}</a>
-                      {% with tmrna_type=xref.get_tmrna_type %}
-                        <br>
-                        <i class="fa fa-angle-right"></i>
-                        {% if tmrna_type == 1 %}
-                          One-piece tmRNA or tmRNA precursor
-                        {% elif tmrna_type == 2 %}
-                          {% with tmrna_mate=xref.get_tmrna_mate_upi %}
-                            Two-piece tmRNA partner: <a href="{% url 'portal.views.rna_view' upi=tmrna_mate %}">{{ tmrna_mate }}</a>
-                          {% endwith %}
-                        {% endif %}
-                      {% endwith %}
-                      {% if xref.accession.organelle %}
-                        <br>
-                        <i class="fa fa-angle-right"></i>
-                        found in {{ xref.accession.organelle|lower }}
-                      {% endif %}
-                    {% endif %}
+              <div class="panel panel-default" id="xrefs-loading">
+                <div class="panel-body" id="xrefs-loading-msg">
+                  <i class="fa fa-spinner fa-spin fa-2x"></i>
+                  Loading database cross-references... This may take a couple of minutes for sequences with thousands of cross-references.
+                </div>
+              </div>
 
-                    {% if xref.accession.is_composite == 'Y' %}
-                      <br>
-                      <i class="fa fa-angle-right"></i>
-                      Corresponding ENA entry: <a href="http://www.ebi.ac.uk/ena/data/view/Non-coding:{{ xref.accession.non_coding_id }}" target="_blank" title="{{ xref.accession.non_coding_id }} at ENA">{{ xref.accession.non_coding_id }}</a>
-                    {% endif %}
+              <div id="xrefs-table-div"></div>
 
-                    {# literature references #}
-                    {% if xref.refs.all|length > 0 %}
-                      <span class="literature-refs">
-                        <button class="literature-refs-retrieve btn btn-default btn-xs pull-right help" data-accession="{{ xref.accession.accession }}" title="Literature citation{{ xref.refs.all|pluralize }}"><i class="fa fa-book"></i> {{ xref.refs.all|length }}</button>
-                        <div class="literature-refs-content"></div>
-                      </span>
-                    {% endif %}
+            </div> <!-- .table-responsive -->
 
-                    </td>
-                    <!-- accession -->
-                    <td><a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank" title="{{ xref.accession.classification }}"><em>{{ xref.accession.species }}</em></a></td>
-                    <td><time datetime="{{ xref.created.release_date|date:'Y-m-d' }}">{{ xref.created.release_date|date:'d M Y' }}</time></td>
-                    <td><time datetime="{{ xref.last.release_date|date:'Y-m-d' }}">{{ xref.last.release_date|date:'d M Y' }}</time></td>
-                    <td>
-                      {% if xref.deleted == 'N' %}
-                          Yes
-                      {% else %}
-                          <span class="label label-danger">No</span>
-                      {% endif %}
-                    </td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div> <!-- .table-responsive -->
-
-          <div class="xref-datatables-controls"></div>
+            <div class="xref-datatables-controls"></div>
+          </div>
 
           <h2>
             Sequence
@@ -239,7 +145,7 @@
 
         <div class="tab-pane" id="species">
 
-          <h2>Species</h2>
+          <h2>Species Tree</h2>
 
           <p class="text-muted">
             <span class="glyphicon glyphicon-info-sign"></span>
@@ -248,21 +154,12 @@
 
           <div class="panel panel-default d3-species">
 
-            <ul class="nav nav-pills" id="species-tabs">
-              <li class="active"><a href="#d3-species-sunburst-tab" data-toggle="tab">Sunburst</a></li>
-              <li><a href="#d3-species-tree-tab" data-toggle="tab">Tree</a></li>
-            </ul>
-
-            <div class="tab-content">
-              <div class="tab-pane panel-body d3-species active" id="d3-species-sunburst-tab">
-                <small>Hover your mouse over the diagram to view taxon names.</small>
-                <div id="d3-species-sunburst"></div>
-              </div>
-
-              <div class="tab-pane panel-body d3-species force-scrollbars" id="d3-species-tree-tab">
-                <small>The nodes can be clicked to collapse or expand them. Long taxon names are truncated and can be displayed by hovering over the name.</small>
-                <button id="d3-species-scroll-tree" class="btn btn-default btn-sm">Scroll to species</button>
-                <div id="d3-species-tree"></div>
+            <div class="tab-pane panel-body d3-species force-scrollbars" id="d3-species-tree-tab">
+              <small>The nodes can be clicked to collapse or expand them. Long taxon names are truncated and can be displayed by hovering over the name.</small>
+              <button id="d3-species-scroll-tree" class="btn btn-default btn-sm">Scroll to species</button>
+              <div id="d3-species-tree">
+                <i class="fa fa-spinner fa-spin fa-2x"></i>
+                Loading the species tree...
               </div>
             </div>
 
@@ -313,7 +210,16 @@
     {{/each}}
   {{/with}}
 </script>
+
+<script id="handlebars-loading-error-tmpl" type="text/x-handlebars-template">
+  <div class='alert alert-danger'>
+    <i class="fa fa-exclamation-triangle"></i>
+    Sorry, there was a problem loading the data. Please try again and contact us if the problem persists.
+  </div>
+</script>
+
 {% endverbatim %}
+
 
 {% endblock content %}
 
@@ -325,41 +231,53 @@
   <script type="text/javascript" src="{% static "js/vendor/d3/d3.min.js" %}"></script>
   <script type="text/javascript" src="{% static "js/vendor/handlebars-v1.1.2.js" %}"></script>
   <script type="text/javascript" src="{% static "js/d3.speciesTree.js" %}"></script>
-  <script type="text/javascript" src="{% static "js/d3.speciesSunburst.js" %}"></script>
   <script type="text/javascript" src="{% static "js/jquery.EuropePMCAbstracts.js" %}"></script>
 
 
   <script type="text/javascript">
     $(function() {
-      // initialize the xref dataTable
-      $('#xrefs-table').dataTable({
-        "bAutoWidth": true, // pre-recalculate column widths
-        "sDom": "ftpil", // filter, table, pagination, information, length
-        "iDisplayLength": 5, // show 5 entries by default
-        "sPaginationType": "bootstrap", // requires dataTables.bootstrap.js
-        "oLanguage": {
-            "sSearch": "", // don't display the "Search:" bit
-            "sInfo": "_START_-_END_ of _TOTAL_", // change the informational text
-            "oPaginate": {
-              "sNext": "",
-              "sPrevious": "",
+
+      // load the cross-references via ajax
+      $.get('/rna/{{rna.upi}}/xrefs', function(data){
+        $('#xrefs-table-div').html(data);
+      }).fail(function() {
+        var source = $("#handlebars-loading-error-tmpl").html();
+        var msg = Handlebars.compile(source);
+        $('#xrefs-loading-msg').hide().html(msg).fadeIn();
+      }).done(function(){
+          // initialize the xref dataTable
+          $('#xrefs-table').dataTable({
+            "bAutoWidth": true, // pre-recalculate column widths
+            "sDom": "ftpil", // filter, table, pagination, information, length
+            "iDisplayLength": 5, // show 5 entries by default
+            "sPaginationType": "bootstrap", // requires dataTables.bootstrap.js
+            "bDeferRender": true, // defer rendering until necessary
+            "oLanguage": {
+                "sSearch": "", // don't display the "Search:" bit
+                "sInfo": "_START_-_END_ of _TOTAL_", // change the informational text
+                "oPaginate": {
+                  "sNext": "",
+                  "sPrevious": "",
+                },
             },
-        },
-        "aLengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
-        "fnInitComplete": function(oSettings, json) {
-          $('.dataTables_filter input').attr('placeholder', 'Filter table').attr("tabindex", 1).addClass('form-control input-sm').attr('type', 'search');
-          $('#xrefs-table_filter').appendTo('#xrefs-datatables-filter').addClass('pull-right');
-          $('#xrefs-table_info').appendTo('#xrefs-datatables-counter');
-          // hide pagination controls for one page
-          if ( $('.dataTables_paginate').find('li').length == 3 ) { // 3 elements: <-, 1, ->
-            $('.dataTables_paginate').hide();
-            $('#xrefs-table_length').hide();
-          } else {
-            $('.dataTables_paginate').addClass('pull-left').appendTo('.xref-datatables-controls');
-            $('#xrefs-table_length').addClass('pull-right text-muted small').appendTo('.xref-datatables-controls');
-          }
-          $('.table th').css('padding-right','1.5em');
-        },
+            "aLengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+            "fnInitComplete": function(oSettings, json) {
+              $('.dataTables_filter input').attr('placeholder', 'Filter table').attr("tabindex", 1).addClass('form-control input-sm').attr('type', 'search');
+              $('#xrefs-table_filter').appendTo('#xrefs-datatables-filter').addClass('pull-right');
+              $('#xrefs-table_info').appendTo('#xrefs-datatables-counter');
+              // hide pagination controls for one page
+              if ( $('.dataTables_paginate').find('li').length == 3 ) { // 3 elements: <-, 1, ->
+                $('.dataTables_paginate').hide();
+                $('#xrefs-table_length').hide();
+              } else {
+                $('.dataTables_paginate').addClass('pull-left').appendTo('.xref-datatables-controls');
+                $('#xrefs-table_length').addClass('pull-right text-muted small').appendTo('.xref-datatables-controls');
+              }
+              $('.table th').css('padding-right','1.5em');
+            },
+          });
+          $("#xrefs-loading").slideUp();
+          $('#xrefs-table').fadeIn();
       });
 
       // bootstrap tooltips
@@ -404,18 +322,36 @@
       });
 
       // D3 species tree
+      var d3_species_tree = $('#d3-species-tree');
       if(!document.createElement('svg').getAttributeNS){
-        $('#d3-species-tree').html('Your browser does not support SVG');
+        d3_species_tree.html('Your browser does not support SVG');
       } else {
-        d3SpeciesTree(json_lineage_tree, '#d3-species-tree');
-        d3SpeciesSunburst(JSON.parse(json_lineage_tree), '#d3-species-sunburst', 760, 500);
-        $("#show-species-tab").click(function(){
-          $('#tabs a[href="#species"]').tab('show');
-        });
-        $("#d3-species-scroll-tree").click(function(){
-          $('#d3-species-tree-tab').scrollLeft($('#d3-species-tree-tab svg').attr('width'));
+        $.ajax({
+          url: "/rna/{{ rna.upi  }}/lineage",
+          dataType: "json",
+          success: function(data) {
+            var tree = $('#d3-species-tree');
+            tree.hide().html('');
+            d3SpeciesTree(data, '#d3-species-tree');
+            tree.fadeIn();
+          },
+          error: function() {
+            var source = $("#handlebars-loading-error-tmpl").html();
+            var msg = Handlebars.compile(source);
+            d3_species_tree.hide().html(msg).fadeIn();
+          }
         });
       }
+
+      // click events
+      $("#show-species-tab").click(function(){
+        $('#tabs a[href="#species"]').tab('show');
+      });
+
+      $("#d3-species-scroll-tree").click(function(){
+        $('#d3-species-tree-tab').scrollLeft($('#d3-species-tree-tab svg').attr('width'));
+      });
+
     });
   </script>
 {% endblock extra_js %}
