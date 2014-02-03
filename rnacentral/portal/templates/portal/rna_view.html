@@ -94,7 +94,7 @@
               <div class="panel panel-default" id="xrefs-loading">
                 <div class="panel-body" id="xrefs-loading-msg">
                   <i class="fa fa-spinner fa-spin fa-2x"></i>
-                  Loading database cross-references... This may take a couple of minutes for sequences with thousands of cross-references.
+                  Loading database cross-references...
                 </div>
               </div>
 
@@ -218,6 +218,13 @@
   </div>
 </script>
 
+<script id="handlebars-loading-info-tmpl" type="text/x-handlebars-template">
+  <div class='alert alert-info'>
+    <i class="fa fa-spinner fa-spin fa-2x"></i>
+    Loading database cross-references... This may take a couple of minutes for sequences with thousands of cross-references.
+  </div>
+</script>
+
 {% endverbatim %}
 
 
@@ -236,6 +243,13 @@
 
   <script type="text/javascript">
     $(function() {
+
+      // show an info message if xrefs are taking too long to load
+      timer = setTimeout(function() {
+        var source = $("#handlebars-loading-info-tmpl").html();
+        var msg = Handlebars.compile(source);
+        $('#xrefs-loading-msg').hide().html(msg).slideDown();
+      }, 3000);
 
       // load the cross-references via ajax
       $.get('/rna/{{rna.upi}}/xrefs', function(data){
