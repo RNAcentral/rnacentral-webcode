@@ -151,16 +151,18 @@
 
           <h2>Species Tree</h2>
 
-          <p class="text-muted">
-            <span class="glyphicon glyphicon-info-sign"></span>
-            The species tree is generated automatically by combining the lineages from all database cross-references.
-          </p>
-
           <div class="panel panel-default d3-species">
 
             <div class="tab-pane panel-body d3-species force-scrollbars" id="d3-species-tree-tab">
-              <small>The nodes can be clicked to collapse or expand them. Long taxon names are truncated and can be displayed by hovering over the name.</small>
-              <button id="d3-species-scroll-tree" class="btn btn-default btn-sm">Scroll to species</button>
+              <div class="text-muted">
+                <small>
+                  <i class="fa fa-info-circle"></i>
+                  The species tree is generated automatically by combining the lineages from all database cross-references.
+                  The nodes can be clicked to collapse or expand them. Long taxon names appear truncated but can be displayed by hovering over the name.
+                </small>
+                <button id="d3-species-scroll-tree" class="btn btn-default btn-sm">Scroll to species</button>
+              </div>
+
               <div id="d3-species-tree">
                 <i class="fa fa-spinner fa-spin fa-2x"></i>
                 Loading the species tree...
