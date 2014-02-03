@@ -128,8 +128,11 @@ class SequencePage(BasePage):
             result = WebDriverWait(self.browser, timeout).until(lambda s: s.find_element(By.CLASS_NAME, "literature-refs-content").is_displayed())
             if not result:
                 raise NoSuchElementException
-            self.browser.find_element_by_class_name("abstract-control").click()
-            WebDriverWait(self.browser, timeout).until(lambda s: s.find_element(By.CLASS_NAME, "abstract-text").is_displayed())
+            try:
+                self.browser.find_element_by_class_name("abstract-control").click()
+                WebDriverWait(self.browser, timeout).until(lambda s: s.find_element(By.CLASS_NAME, "abstract-text").is_displayed())
+            except NoSuchElementException:
+                pass  # some citations don't have pubmed ids and don't have abstract buttons
         except:
             logging.warning('Citations not loaded ' + self.browser.current_url)
             return False
@@ -306,6 +309,11 @@ class RNAcentralTest(unittest.TestCase):
             page.navigate()
             self.assertFalse(page.js_errors_found())
             self.assertTrue(page.get_svg_diagrams())
+
+    def test_long_loading_page(self):
+        page = SequencePage(self.browser, 'URS00002FA515')
+        page.navigate()
+        self._sequence_view_checks(page)
 
     def test_genoverse_page(self):
         page = GenoverseTestPage(self.browser)
