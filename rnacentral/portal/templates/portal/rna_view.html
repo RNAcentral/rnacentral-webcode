@@ -376,11 +376,24 @@ limitations under the License.
         });
       }
 
-      // click events
+      // clicking the species link to view the Species tab
       $("#show-species-tab").click(function(){
         $('#tabs a[href="#species"]').tab('show');
+        window.location.hash = "#species";
+        return false;
       });
 
+      // update the url hashtag when tabs are clicked
+      var hash = window.location.hash;
+      hash && $('#tabs a[href="' + hash + '"]').tab('show');
+      $('.nav-tabs a').click(function (e) {
+        $(this).tab('show');
+        var scrollmem = $('body').scrollTop();
+        window.location.hash = this.hash;
+        $('html,body').scrollTop(scrollmem);
+      });
+
+      // scoll the species tree to the species level
       $("#d3-species-scroll-tree").click(function(){
         $('#d3-species-tree-tab').scrollLeft($('#d3-species-tree-tab svg').attr('width'));
       });
