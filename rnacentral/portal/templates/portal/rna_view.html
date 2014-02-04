@@ -89,9 +89,9 @@ limitations under the License.
             <div class="panel-body">
               <ul class="list-inline">
                 <li><strong>{{ rna.len|intcomma }}</strong> nucleotides</li>
-                <li><strong>{{ context.num_db }}</strong> database{{ context.num_db|pluralize }}</li>
+                <li><strong>{{ context.num_db|intcomma }}</strong> database{{ context.num_db|pluralize }}</li>
                 <li>
-                  <strong>{{ context.num_org }}</strong> <a href="#" id="show-species-tab">species</a>
+                  <strong>{{ context.num_org|intcomma }}</strong> <a href="#" id="show-species-tab">species</a>
                 </li>
                 <li>first seen <time datetime="{{ context.first_seen|date:'Y-m-d' }}">{{ context.first_seen|date:'d M Y' }}</time></li>
                 <li>last updated <time datetime="{{ context.last_seen|date:'Y-m-d' }}">{{ context.last_seen|date:'d M Y' }}</time></li>
