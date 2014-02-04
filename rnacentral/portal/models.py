@@ -156,7 +156,7 @@ class Xref(models.Model):
                                                  all():
             for splice_xref in splice_variant.xrefs.all():
                 rnac = splice_xref.upi
-                rnac.upi = rnac.upi.replace('UPI', 'RNS')
+                rnac.upi = rnac.upi.replace('UPI', 'URS')
                 splice_variants.append(rnac)
         return splice_variants
 
@@ -169,7 +169,7 @@ class Xref(models.Model):
         if not self.accession.optional_id:  # no mate info
             tmrna_mate_upi = False
         mate = Accessions.objects.filter(parent_ac=self.accession.optional_id, is_composite='Y').get()
-        tmrna_mate_upi = mate.xrefs.get().upi.upi.replace('UPI', 'RNS')
+        tmrna_mate_upi = mate.xrefs.get().upi.upi.replace('UPI', 'URS')
         return tmrna_mate_upi
 
     def get_tmrna_type(self):
