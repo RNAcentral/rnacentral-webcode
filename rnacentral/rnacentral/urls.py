@@ -33,9 +33,9 @@ urlpatterns = patterns('',
     url(r'^(?P<page>expert-databases)/?$', views.StaticView.as_view(), name='expert_databases'),
     # contact us
     url(r'^contact/?$', views.ContactView.as_view()),
-    # API
-    url(r'^api/v1/?', include(router.urls)),
-    url(r'^api-auth/v1/?', include('rest_framework.urls', namespace='rest_framework')),
+    # django-rest-framework API, use trailing slashes
+    url(r'^api/v1/', include(router.urls)),
+    url(r'^api-auth/v1/', include('rest_framework.urls', namespace='rest_framework')),
     # temporary API
     url(r'^xref/(?P<accession>.+)/refs/?$', 'portal.views.get_literature_references'),
     url(r'^expert-database/(?P<expert_db_name>.+)/lineage/?$', 'portal.views.get_expert_database_organism_sunburst'),
