@@ -10,6 +10,7 @@ djangorestframework==2.3.12
 logilab-common==0.60.1
 pylint==1.1.0
 python-dateutil==2.1
+selenium==2.39.0
 six==1.4.1
 sqlparse==0.1.10
 versiontools==1.9.1
