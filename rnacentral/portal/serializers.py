@@ -11,21 +11,61 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from portal.models import Rna, Xref, Reference
+from portal.models import Rna, Xref, Reference, Database, Accession, Release, Reference, Reference_map
 from rest_framework import serializers
 
 
-class XrefSerializer(serializers.HyperlinkedModelSerializer):
+class AccessionSerializer(serializers.HyperlinkedModelSerializer):
+    id = serializers.CharField(source='accession')
+    is_expert_db = serializers.SerializerMethodField('is_expert_xref')
+
+    def is_expert_xref(self, obj):
+        return True if obj.non_coding_id else False
+
     class Meta:
-        model = Xref
-        fields = ('db', 'accession', 'deleted', 'version', 'taxid', 'created', 'last', 'refs')
-        depth = 1
+        model = Accession
+        fields = ('url', 'id', 'is_expert_db', 'external_id', 'optional_id', 'feature_name',
+                  'division', 'keywords', 'description', 'species', 'organelle',
+                  'classification')
+
+
+class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
+    release_type = serializers.SerializerMethodField('get_release_type')
+
+    def get_release_type(self, obj):
+        return 'full' if obj.release_type == 'F' else 'incremental'
+
+    class Meta:
+        model = Release
+        fields = ('release_date', 'release_type')
 
 
 class RefSerializer(serializers.HyperlinkedModelSerializer):
+    authors = serializers.CharField(source='data.authors')
+    publication = serializers.CharField(source='data.location')
+    pubmed_id = serializers.CharField(source='data.pubmed')
+    doi = serializers.CharField(source='data.doi')
+    title = serializers.CharField(source='data.title')
+
     class Meta:
-        model = Reference
-        fields = ('authors', 'title', 'location', 'pubmed', 'doi')
+        model = Reference_map
+        fields = ('title', 'authors', 'publication', 'pubmed_id', 'doi')
+
+
+class XrefSerializer(serializers.HyperlinkedModelSerializer):
+    database = serializers.CharField(source='db.display_name')
+    is_active = serializers.SerializerMethodField('is_xref_active')
+    first_seen = serializers.CharField(source='created.release_date')
+    last_seen = serializers.CharField(source='last.release_date')
+    accession = AccessionSerializer()
+    citations = RefSerializer(source='refs')
+
+    def is_xref_active(self, obj):
+        return True if obj.deleted == 'N' else False
+
+    class Meta:
+        model = Xref
+        fields = ('database', 'is_active', 'taxid', 'first_seen', 'last_seen', 'accession', 'citations')
 
 
 class RnaSerializer(serializers.HyperlinkedModelSerializer):
@@ -35,4 +75,4 @@ class RnaSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Rna
-        fields = ('upi', 'md5', 'sequence', 'xrefs')
+        fields = ('url', 'upi', 'md5', 'sequence', 'xrefs')

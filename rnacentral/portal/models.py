@@ -19,7 +19,7 @@ import re
 
 
 class Rna(models.Model):
-    upi = models.CharField(max_length=13, unique=True, db_index=True)
+    upi = models.CharField(max_length=13, db_index=True, primary_key=True)
     timestamp = models.DateField()
     userstamp = models.CharField(max_length=30)
     crc64 = models.CharField(max_length=16)
@@ -103,8 +103,8 @@ class Release(models.Model):
         db_table = 'rnc_release'
 
 
-class Accessions(models.Model):
-    accession = models.CharField(max_length=100, unique=True)
+class Accession(models.Model):
+    accession = models.CharField(max_length=100, primary_key=True)
     parent_ac = models.CharField(max_length=100)
     seq_version = models.IntegerField()
     feature_start = models.IntegerField()
@@ -133,7 +133,7 @@ class Accessions(models.Model):
 
 class Xref(models.Model):
     db = models.ForeignKey(Database, db_column='dbid')
-    accession = models.ForeignKey(Accessions, db_column='ac', to_field='accession', related_name='xrefs', unique=True)
+    accession = models.ForeignKey(Accession, db_column='ac', to_field='accession', related_name='xrefs', unique=True)
     created = models.ForeignKey(Release, db_column='created', related_name='release_created')
     last = models.ForeignKey(Release, db_column='last', related_name='last_release')
     upi = models.ForeignKey(Rna, db_column='upi', to_field='upi', related_name='xrefs')
@@ -151,7 +151,7 @@ class Xref(models.Model):
         splice_variants = []
         if self.db.display_name != 'VEGA':
             return splice_variants
-        for splice_variant in Accessions.objects.filter(external_id=self.accession.external_id).\
+        for splice_variant in Accession.objects.filter(external_id=self.accession.external_id).\
                                                  exclude(accession=self.accession.accession).\
                                                  all():
             for splice_xref in splice_variant.xrefs.all():
@@ -168,7 +168,7 @@ class Xref(models.Model):
             tmrna_mate_upi = False
         if not self.accession.optional_id:  # no mate info
             tmrna_mate_upi = False
-        mate = Accessions.objects.filter(parent_ac=self.accession.optional_id, is_composite='Y').get()
+        mate = Accession.objects.filter(parent_ac=self.accession.optional_id, is_composite='Y').get()
         tmrna_mate_upi = mate.xrefs.get().upi.upi.replace('UPI', 'URS')
         return tmrna_mate_upi
 

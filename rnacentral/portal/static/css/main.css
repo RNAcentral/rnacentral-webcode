@@ -215,6 +215,11 @@ ul.breadcrumb.rnacentral-api {
   margin-top: 10px;
 }
 
+.prettyprint a {
+  text-decoration: underline;
+  color: #DD8621;
+}
+
 .expert-db-logo img {
   width: 100px;
 }

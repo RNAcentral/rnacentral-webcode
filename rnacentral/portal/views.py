@@ -11,9 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from portal.models import Rna, Database, Release, Xref, Accessions, Reference_map
+from portal.models import Rna, Database, Release, Xref, Accession, Reference_map
 from rest_framework import viewsets
-from portal.serializers import RnaSerializer
+from portal.serializers import RnaSerializer, AccessionSerializer
 from portal.forms import ContactForm
 
 from django.http import Http404, HttpResponseRedirect, HttpResponse
@@ -29,10 +29,19 @@ import json
 
 class RnaViewSet(viewsets.ReadOnlyModelViewSet):
     """
-    API endpoint that allows Rna sequences to be viewed or edited.
+    API endpoint that allows Rna sequences to be viewed.
     """
     queryset = Rna.objects.defer('seq_long', 'seq_short').select_related().all()
     serializer_class = RnaSerializer
+    paginate_by = 10
+
+
+class AccessionViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    API endpoint that allows cross-reference metadata to be viewed.
+    """
+    queryset = Accession.objects.select_related().all()
+    serializer_class = AccessionSerializer
     paginate_by = 10
 
 
@@ -69,7 +78,7 @@ def get_expert_database_organism_sunburst(request, expert_db_name):
     """
     try:
         expert_db_name = _normalize_expert_db_name(expert_db_name)
-        accessions = Accessions.objects.only("classification").filter(database=expert_db_name).all()
+        accessions = Accession.objects.only("classification").filter(database=expert_db_name).all()
         json_lineage_tree = _get_json_lineage_tree(accessions)
     except Exception, e:
         raise Http404

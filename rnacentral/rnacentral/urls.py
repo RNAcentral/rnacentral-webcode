@@ -21,6 +21,7 @@ admin.autodiscover()
 
 router = routers.DefaultRouter()
 router.register(r'rna', views.RnaViewSet)
+router.register(r'accession', views.AccessionViewSet)
 
 urlpatterns = patterns('',
     url(r'^$', 'portal.views.homepage', name='homepage'),
