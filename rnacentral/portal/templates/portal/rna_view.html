@@ -279,7 +279,7 @@ limitations under the License.
         $('#xrefs-loading-msg').hide().html(msg).fadeIn();
       }).done(function(){
           // initialize the xref dataTable
-          $('#xrefs-table').dataTable({
+          var oTable = $('#xrefs-table').dataTable({
             "bAutoWidth": true, // pre-recalculate column widths
             "sDom": "ftpil", // filter, table, pagination, information, length
             "iDisplayLength": 5, // show 5 entries by default
@@ -311,6 +311,18 @@ limitations under the License.
           });
           $("#xrefs-loading").slideUp();
           $('#xrefs-table').fadeIn();
+          // monitor the xref datatables search field to update the hashtag
+          var dataTables_search = $('#xrefs-table_filter input');
+          dataTables_search.on('input', function(e) {
+            window.location.hash = $(this).val();
+            return false;
+          });
+          // if the url hash does not refer to any of the tabs, update the search field
+          var hash = window.location.hash.substring(1);
+          if (hash != 'species' && hash != 'overview') {
+            dataTables_search.val(hash).focus();
+            oTable.fnFilter(hash);
+          }
       });
 
       // bootstrap tooltips
