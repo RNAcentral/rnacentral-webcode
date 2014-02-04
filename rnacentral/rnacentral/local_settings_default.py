@@ -13,11 +13,13 @@ limitations under the License.
 
 DATABASES = {
     'default': {
-    	'ENGINE': 'django.db.backends.',
-        'NAME': '',
+        'ENGINE': 'django.db.backends.oracle',
+        'NAME': '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=)(PORT=))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=)))',
         'USER': '',
         'PASSWORD': '',
-        'OPTIONS'  : { 'init_command' : 'SET storage_engine=MyISAM', },
+        'OPTIONS': {
+          'threaded': True,
+        },
     }
 }
 
@@ -40,9 +42,12 @@ ADMINS = (
     ('', ''),
 )
 
-COMPRESS_ENABLED =
-DEBUG =
+COMPRESS_ENABLED = False
+DEBUG = False
 ALLOWED_HOSTS = []
 
 # django-debug-toolbar
 INTERNAL_IPS = ('127.0.0.1',)
+
+# django-maintenance
+MAINTENANCE_MODE = False
