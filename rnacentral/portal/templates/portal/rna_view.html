@@ -239,8 +239,7 @@ limitations under the License.
 
 <script id="handlebars-loading-info-tmpl" type="text/x-handlebars-template">
   <div class='alert alert-info'>
-    <i class="fa fa-spinner fa-spin fa-2x"></i>
-    Loading database cross-references... This may take a couple of minutes for sequences with thousands of cross-references.
+    This may take a couple of minutes for sequences with a large number of cross-references.
   </div>
 </script>
 
@@ -265,10 +264,15 @@ limitations under the License.
 
       // show an info message if xrefs are taking too long to load
       timer = setTimeout(function() {
+        var target = $('#xrefs-loading-msg');
+        // do not update the message if there was an error
+        if (target.html().indexOf("alert-danger") != -1) {
+          return;
+        }
         var source = $("#handlebars-loading-info-tmpl").html();
         var msg = Handlebars.compile(source);
-        $('#xrefs-loading-msg').hide().html(msg).slideDown();
-      }, 3000);
+        target.append(msg).slideDown();
+      }, 5000);
 
       // load the cross-references via ajax
       $.get('/rna/{{rna.upi}}/xrefs', function(data){
