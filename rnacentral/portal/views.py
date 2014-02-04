@@ -137,6 +137,7 @@ def rna_view(request, upi):
             'counts': rna.count_symbols(),
             'num_org': xrefs.values('taxid').distinct().count(),
             'num_db': xrefs.values('db_id').distinct().count(),
+            'original_upi': upi.replace('URS', 'UPI'),
         }
         context.update(xrefs.aggregate(first_seen=Min('created__release_date'),last_seen=Max('last__release_date')))
         rna.upi = rna.upi.replace("UPI", "URS")  # replace "UPI" with "URS"
