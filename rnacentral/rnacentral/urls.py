@@ -38,7 +38,6 @@ urlpatterns = patterns('',
     url(r'^api/v1/', include(router.urls)),
     url(r'^api-auth/v1/', include('rest_framework.urls', namespace='rest_framework')),
     # temporary API
-    url(r'^xref/(?P<accession>.+)/refs/?$', 'portal.views.get_literature_references'),
     url(r'^expert-database/(?P<expert_db_name>.+)/lineage/?$', 'portal.views.get_expert_database_organism_sunburst'),
     url(r'^rna/(?P<upi>\w+)/xrefs/?$', 'portal.views.get_xrefs_data'),
     url(r'^rna/(?P<upi>\w+)/lineage/?$', 'portal.views.get_sequence_lineage'),

@@ -13,7 +13,9 @@ limitations under the License.
 
 from portal.models import Rna, Database, Release, Xref, Accession, Reference_map
 from rest_framework import viewsets
-from portal.serializers import RnaSerializer, AccessionSerializer
+from rest_framework.decorators import link
+from rest_framework.response import Response
+from portal.serializers import RnaSerializer, AccessionSerializer, RefSerializer
 from portal.forms import ContactForm
 
 from django.http import Http404, HttpResponseRedirect, HttpResponse
@@ -44,26 +46,12 @@ class AccessionViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = AccessionSerializer
     paginate_by = 10
 
-
-def get_literature_references(request, accession):
-    """
-        Internal API.
-        Retrieve literature references for a specific accession.
-    """
-    try:
-        refs = Reference_map.objects.filter(accession=accession).select_related('Reference').order_by('data__title').all()
-        data = []
-        for ref in refs:
-            data.append({
-                'pubmed': ref.data.pubmed,
-                'doi': ref.data.doi,
-                'title': ref.data.get_title(),
-                'authors': ref.data.authors,
-                'location': ref.data.location,
-            })
-    except Exception, e:
-        raise Http404
-    return HttpResponse(json.dumps(data), content_type="application/json")
+    @link()
+    def citations(self, request, pk=None):
+        accession = self.get_object()
+        citations = accession.refs.all()
+        serializer = RefSerializer(citations)
+        return Response(serializer.data)
 
 
 def get_expert_database_organism_sunburst(request, expert_db_name):

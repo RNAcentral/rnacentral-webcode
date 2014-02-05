@@ -210,11 +210,11 @@ limitations under the License.
        <br>
        {{authors}}
        <small>
-        {{location}}
-        {{#if pubmed}}
+        {{publication}}
+        {{#if pubmed_id}}
           <div class="abstract-preview">
-            <button class="btn btn-xs btn-default abstract-btn abstract-control" data-pubmed-id="{{pubmed}}">Show abstract</button>
-            <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{pubmed}}" target="_blank" class="abstract-control">PubMed</a>
+            <button class="btn btn-xs btn-default abstract-btn abstract-control" data-pubmed-id="{{pubmed_id}}">Show abstract</button>
+            <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{pubmed_id}}" target="_blank" class="abstract-control">PubMed</a>
             <div class="abstract-text"></div>
           </div>
         {{/if}}
@@ -356,7 +356,7 @@ limitations under the License.
           if ( target.html().length > 0 ) {
               target.slideToggle();
           } else {
-            $.get('/xref/' + accession + '/refs', function(data){
+            $.get('/api/v1/accession/' + accession + '/citations', function(data){
                 insert_content(data);
                 activate_abstract_buttons();
                 target.slideDown();
