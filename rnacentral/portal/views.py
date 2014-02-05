@@ -54,15 +54,10 @@ def get_literature_references(request, accession):
         refs = Reference_map.objects.filter(accession=accession).select_related('Reference').order_by('data__title').all()
         data = []
         for ref in refs:
-            title = ref.data.title
-            if ref.data.location[:9] == 'Submitted':
-                title = 'INSDC submission'
-            else:
-                title = title if title else 'No title available'
             data.append({
                 'pubmed': ref.data.pubmed,
                 'doi': ref.data.doi,
-                'title': title,
+                'title': ref.data.get_title(),
                 'authors': ref.data.authors,
                 'location': ref.data.location,
             })

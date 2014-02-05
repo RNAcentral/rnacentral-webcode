@@ -99,6 +99,9 @@ class Release(models.Model):
     descr = models.TextField()
     force_load = models.CharField(max_length=1)
 
+    def get_release_type(self):
+        return 'full' if self.release_type == 'F' else 'incremental'
+
     class Meta:
         db_table = 'rnc_release'
 
@@ -196,12 +199,20 @@ class Reference(models.Model):
     pubmed = models.CharField(max_length=10, db_column='pmid')
     doi = models.CharField(max_length=80)
 
+    def get_title(self):
+        title = self.title
+        if self.location[:9] == 'Submitted':
+            title = 'INSDC submission'
+        else:
+            title = title if title else 'No title available'
+        return title
+
     class Meta:
         db_table = 'rnc_references'
 
 
 class Reference_map(models.Model):
-    accession = models.ForeignKey(Xref, db_column='accession', to_field='accession', related_name='refs')
+    accession = models.ForeignKey(Accession, db_column='accession', to_field='accession', related_name='refs')
     data = models.ForeignKey(Reference, db_column='reference_id')
 
     class Meta:

@@ -15,9 +15,22 @@ from portal.models import Rna, Xref, Reference, Database, Accession, Release, Re
 from rest_framework import serializers
 
 
+class RefSerializer(serializers.HyperlinkedModelSerializer):
+    authors = serializers.CharField(source='data.authors')
+    publication = serializers.CharField(source='data.location')
+    pubmed_id = serializers.CharField(source='data.pubmed')
+    doi = serializers.CharField(source='data.doi')
+    title = serializers.Field(source='data.get_title')
+
+    class Meta:
+        model = Reference_map
+        fields = ('title', 'authors', 'publication', 'pubmed_id', 'doi')
+
+
 class AccessionSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.CharField(source='accession')
     is_expert_db = serializers.SerializerMethodField('is_expert_xref')
+    citations = RefSerializer(source='refs', many=True)
 
     def is_expert_xref(self, obj):
         return True if obj.non_coding_id else False
@@ -26,30 +39,7 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
         model = Accession
         fields = ('url', 'id', 'is_expert_db', 'external_id', 'optional_id', 'feature_name',
                   'division', 'keywords', 'description', 'species', 'organelle',
-                  'classification')
-
-
-class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
-    release_type = serializers.SerializerMethodField('get_release_type')
-
-    def get_release_type(self, obj):
-        return 'full' if obj.release_type == 'F' else 'incremental'
-
-    class Meta:
-        model = Release
-        fields = ('release_date', 'release_type')
-
-
-class RefSerializer(serializers.HyperlinkedModelSerializer):
-    authors = serializers.CharField(source='data.authors')
-    publication = serializers.CharField(source='data.location')
-    pubmed_id = serializers.CharField(source='data.pubmed')
-    doi = serializers.CharField(source='data.doi')
-    title = serializers.CharField(source='data.title')
-
-    class Meta:
-        model = Reference_map
-        fields = ('title', 'authors', 'publication', 'pubmed_id', 'doi')
+                  'classification', 'citations')
 
 
 class XrefSerializer(serializers.HyperlinkedModelSerializer):
@@ -58,20 +48,18 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
     first_seen = serializers.CharField(source='created.release_date')
     last_seen = serializers.CharField(source='last.release_date')
     accession = AccessionSerializer()
-    citations = RefSerializer(source='refs')
 
     def is_xref_active(self, obj):
         return True if obj.deleted == 'N' else False
 
     class Meta:
         model = Xref
-        fields = ('database', 'is_active', 'taxid', 'first_seen', 'last_seen', 'accession', 'citations')
+        fields = ('database', 'is_active', 'taxid', 'first_seen', 'last_seen', 'accession')
 
 
 class RnaSerializer(serializers.HyperlinkedModelSerializer):
     sequence = serializers.Field(source='get_sequence')
     xrefs = XrefSerializer(many=True)
-    refs = RefSerializer(many=True)
 
     class Meta:
         model = Rna
