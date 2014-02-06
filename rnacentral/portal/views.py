@@ -15,7 +15,7 @@ from portal.models import Rna, Database, Release, Xref, Accession, Reference_map
 from rest_framework import viewsets
 from rest_framework.decorators import link
 from rest_framework.response import Response
-from portal.serializers import RnaSerializer, AccessionSerializer, RefSerializer
+from portal.serializers import RnaSerializer, AccessionSerializer, RefSerializer, XrefSerializer
 from portal.forms import ContactForm
 
 from django.http import Http404, HttpResponseRedirect, HttpResponse
@@ -36,6 +36,16 @@ class RnaViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Rna.objects.defer('seq_long', 'seq_short').select_related().all()
     serializer_class = RnaSerializer
     paginate_by = 10
+
+    @link()
+    def xrefs(self, request, pk=None):
+        """
+        Retrieve cross-references for a particular RNA sequence.
+        """
+        rna = self.get_object()
+        xrefs = rna.xrefs.all()
+        serializer = XrefSerializer(xrefs, context={'request': request})
+        return Response(serializer.data)
 
 
 class AccessionViewSet(viewsets.ReadOnlyModelViewSet):
