@@ -48,6 +48,10 @@ class AccessionViewSet(viewsets.ReadOnlyModelViewSet):
 
     @link()
     def citations(self, request, pk=None):
+        """
+        Retrieve citations associated with a particular entry.
+        This method is used to retrieve citations for the unique sequence view.
+        """
         accession = self.get_object()
         citations = accession.refs.all()
         serializer = RefSerializer(citations)

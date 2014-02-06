@@ -30,7 +30,7 @@ class RefSerializer(serializers.HyperlinkedModelSerializer):
 class AccessionSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.CharField(source='accession')
     is_expert_db = serializers.SerializerMethodField('is_expert_xref')
-    citations = RefSerializer(source='refs', many=True)
+    citations = serializers.HyperlinkedIdentityField(view_name='accession-citations')
 
     def is_expert_xref(self, obj):
         return True if obj.non_coding_id else False
