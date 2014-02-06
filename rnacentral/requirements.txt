@@ -1,5 +1,6 @@
 BeautifulSoup==3.2.1
 Django==1.6
+Markdown==2.3.1
 astroid==1.0.1
 cx-Oracle==5.1.2
 django-appconf==0.6
