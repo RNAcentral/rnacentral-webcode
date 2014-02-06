@@ -203,6 +203,9 @@ REST_FRAMEWORK = {
         'anon': '10/second',
         'user': '20/second'
     },
+
+    # Filtering
+    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',),
 }
 
 # django-debug-toolbar
