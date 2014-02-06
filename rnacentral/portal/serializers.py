@@ -31,6 +31,8 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.CharField(source='accession')
     is_expert_db = serializers.SerializerMethodField('is_expert_xref')
     citations = serializers.HyperlinkedIdentityField(view_name='accession-citations')
+    ena_url = serializers.Field(source='get_ena_url')
+    expert_db_url = serializers.Field(source='get_expert_db_external_url')
 
     def is_expert_xref(self, obj):
         return True if obj.non_coding_id else False
@@ -39,7 +41,7 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
         model = Accession
         fields = ('url', 'id', 'is_expert_db', 'external_id', 'optional_id', 'feature_name',
                   'division', 'keywords', 'description', 'species', 'organelle',
-                  'classification', 'citations')
+                  'classification', 'citations', 'ena_url', 'expert_db_url')
 
 
 class XrefSerializer(serializers.HyperlinkedModelSerializer):

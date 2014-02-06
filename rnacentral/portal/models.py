@@ -133,6 +133,35 @@ class Accession(models.Model):
     def get_srpdb_id(self):
         return re.sub('\.\d+$', '', self.external_id)
 
+    def get_ena_url(self):
+        """
+            Get the ENA entry url that refers to the entry from
+            the Non-coding product containing the cross-reference.
+        """
+        ena_base_url = "http://www.ebi.ac.uk/ena/data/view/Non-coding:"
+        if self.is_composite == 'Y':
+            return ena_base_url + self.non_coding_id
+        else:
+            return ena_base_url + self.accession
+
+    def get_expert_db_external_url(self):
+        """
+            Get the external url to the expert database.
+        """
+        if self.database == 'RFAM':
+            base_url = "http://rfam.sanger.ac.uk/family/"
+        elif self.database == 'SRPDB':
+            base_url = "http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/"
+        elif self.database == 'VEGA':
+            base_url = "http://vega.sanger.ac.uk/Homo_sapiens/Gene/Summary?db=core;g="
+        elif self.database == 'MIRBASE':
+            base_url = "http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc="
+        elif self.database == 'TMRNA_WEB':
+            base_url = "http://bioinformatics.sandia.gov/tmrna/seqs/"
+        else:
+            return ""
+        return base_url + self.external_id
+
 
 class Xref(models.Model):
     db = models.ForeignKey(Database, db_column='dbid')
@@ -190,16 +219,6 @@ class Xref(models.Model):
         else:
             tmrna_type = 2 # two-piece tmRNA
         return tmrna_type
-
-    def get_ena_url(self):
-        """
-            Get the ENA entry url.
-        """
-        ena_base_url = "http://www.ebi.ac.uk/ena/data/view/Non-coding:"
-        if self.accession.is_composite == 'Y':
-            return ena_base_url + self.accession.non_coding_id
-        else:
-            return ena_base_url + self.accession.accession
 
 
 class Reference(models.Model):
