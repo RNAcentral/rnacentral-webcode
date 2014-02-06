@@ -191,6 +191,16 @@ class Xref(models.Model):
             tmrna_type = 2 # two-piece tmRNA
         return tmrna_type
 
+    def get_ena_url(self):
+        """
+            Get the ENA entry url.
+        """
+        ena_base_url = "http://www.ebi.ac.uk/ena/data/view/Non-coding:"
+        if self.accession.is_composite == 'Y':
+            return ena_base_url + self.accession.non_coding_id
+        else:
+            return ena_base_url + self.accession.accession
+
 
 class Reference(models.Model):
     authors = models.TextField()

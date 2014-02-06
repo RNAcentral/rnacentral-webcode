@@ -44,7 +44,7 @@ limitations under the License.
     <br>
     <i class="fa fa-angle-right"></i>
     {% if xref.db.display_name == 'ENA' %}
-      ENA: <a href="http://www.ebi.ac.uk/ena/data/view/Non-coding:{{ xref.accession.accession }}" target="_blank" title="{{ xref.accession.accession }} at ENA">{{ xref.accession.accession }}</a>
+      ENA: <a href="{{ xref.get_ena_url }}" target="_blank" title="{{ xref.accession.accession }} at ENA">{{ xref.accession.accession }}</a>
     {% elif xref.db.display_name == 'RFAM' %}
       RFAM: <a href="http://rfam.sanger.ac.uk/family/{{ xref.accession.external_id }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }} family)
     {% elif xref.db.display_name == 'SRPDB' %}
@@ -94,7 +94,7 @@ limitations under the License.
     {% if xref.accession.is_composite == 'Y' %}
       <br>
       <i class="fa fa-angle-right"></i>
-      Corresponding ENA entry: <a href="http://www.ebi.ac.uk/ena/data/view/Non-coding:{{ xref.accession.non_coding_id }}" target="_blank" title="{{ xref.accession.non_coding_id }} at ENA">{{ xref.accession.non_coding_id }}</a>
+      Corresponding ENA entry: <a href="{{ xref.get_ena_url }}" target="_blank" title="{{ xref.accession.non_coding_id }} at ENA">{{ xref.accession.non_coding_id }}</a>
     {% endif %}
 
     {# literature references #}
