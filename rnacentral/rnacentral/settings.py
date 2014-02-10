@@ -142,6 +142,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'debug_toolbar',
     'compressor',
+    'markdown_deux',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
@@ -230,6 +231,16 @@ CACHES = {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
         'LOCATION': 'rnacentral-main-cache'
     }
+}
+
+# django-markdown-deux
+MARKDOWN_DEUX_STYLES = {
+    "default": {
+        "extras": {
+            "code-friendly": None,
+        },
+        "safe_mode": False,
+    },
 }
 
 try:
