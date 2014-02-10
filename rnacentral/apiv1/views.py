@@ -25,7 +25,7 @@ class RnaViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Rna.objects.defer('seq_long', 'seq_short').select_related().all()
     serializer_class = RnaSerializer
     paginate_by = 10
-    filter_fields = ('upi', 'md5')
+    filter_fields = ('upi', 'md5', 'length')
 
     @link()
     def xrefs(self, request, pk=None):
