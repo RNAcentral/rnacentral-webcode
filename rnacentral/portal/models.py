@@ -23,7 +23,7 @@ class Rna(models.Model):
     timestamp = models.DateField()
     userstamp = models.CharField(max_length=30)
     crc64 = models.CharField(max_length=16)
-    len = models.IntegerField()
+    length = models.IntegerField(db_column='len')
     seq_short = models.CharField(max_length=4000)
     seq_long = models.TextField()
     md5 = models.CharField(max_length=32, unique=True, db_index=True)

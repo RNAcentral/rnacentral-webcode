@@ -222,7 +222,7 @@ limitations under the License.
         $(function(){
             var data = [
                 {% for point in context.len_counts %}
-                    {"length": {{ point.len }}, "count": {{ point.counts }} }{% if not forloop.last %},{% else %}{% endif %}
+                    {"length": {{ point.length }}, "count": {{ point.counts }} }{% if not forloop.last %},{% else %}{% endif %}
                 {% endfor %}
             ];
             ExpertDatabaseSequenceDistribution("#d3-seq-length-distribution", data, 500, 300);

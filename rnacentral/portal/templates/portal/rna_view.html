@@ -82,7 +82,7 @@ limitations under the License.
           <div class="panel panel-default">
             <div class="panel-body">
               <ul class="list-inline">
-                <li><strong>{{ rna.len|intcomma }}</strong> nucleotides</li>
+                <li><strong>{{ rna.length|intcomma }}</strong> nucleotides</li>
                 <li><strong>{{ context.num_db|intcomma }}</strong> database{{ context.num_db|pluralize }}</li>
                 <li>
                   <strong>{{ context.num_org|intcomma }}</strong> <a href="#" id="show-species-tab">species</a>
@@ -145,7 +145,7 @@ limitations under the License.
           </h2>
 
           <p>
-            {{ rna.len|intcomma }} nucleotides ({{ context.counts.A|intcomma }} As; {{ context.counts.C|intcomma }} Cs;
+            {{ rna.length|intcomma }} nucleotides ({{ context.counts.A|intcomma }} As; {{ context.counts.C|intcomma }} Cs;
             {{ context.counts.G|intcomma }} Gs; {{ context.counts.U|intcomma }} Us), {{ context.counts.N|intcomma|default:"no " }} unknown characters.
           </p>
           <pre class="pre-scrollable">

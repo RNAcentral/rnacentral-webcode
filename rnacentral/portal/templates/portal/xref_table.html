@@ -64,7 +64,7 @@ limitations under the License.
           Alternative transcript{{splice_variants|length|pluralize}}:
           {% for splice_variant in splice_variants %}
             <a href="{% url  'portal.views.rna_view' upi=splice_variant.upi %}">{{ splice_variant.upi }}</a>
-            ({{ splice_variant.len|intcomma }} nts){% if not forloop.last %},{% else %}.{% endif %}
+            ({{ splice_variant.length|intcomma }} nts){% if not forloop.last %},{% else %}.{% endif %}
           {% endfor %}
         {% else %}
           No alternative transcripts.
