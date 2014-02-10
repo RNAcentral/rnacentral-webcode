@@ -23,4 +23,6 @@ router.register(r'accession', views.AccessionViewSet)
 urlpatterns = patterns('',
     url(r'^v1/', include(router.urls)),
     url(r'^v1/', include('rest_framework.urls', namespace='rest_framework_v1')),
+    url(r'^current/', include(router.urls)),
+    url(r'^current/', include('rest_framework.urls', namespace='rest_framework_v1')),
 )
