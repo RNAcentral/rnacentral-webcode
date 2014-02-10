@@ -30,7 +30,7 @@ limitations under the License.
     python selenium_tests.py
 
     # test an RNAcentral instance
-    python selenium_tests.py --base-url http://test.rnacentral.org/
+    python selenium_tests.py --base_url http://test.rnacentral.org/
 """
 
 import unittest
