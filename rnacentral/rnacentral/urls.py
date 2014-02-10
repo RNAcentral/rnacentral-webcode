@@ -27,6 +27,7 @@ urlpatterns = patterns('',
     url(r'^(?P<page>about|help|thanks|coming-soon)/?$', views.StaticView.as_view()),
     url(r'^docs/(?P<page>genome-browsers)/?$', views.StaticView.as_view()),
     url(r'^(?P<page>expert-databases)/?$', views.StaticView.as_view(), name='expert_databases'),
+    url(r'^api/?$', views.StaticView.as_view(), {'page': 'api-docs'}),
     # contact us
     url(r'^contact/?$', views.ContactView.as_view()),
     # temporary API
