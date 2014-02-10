@@ -14,14 +14,9 @@ limitations under the License.
 from django.views.generic import TemplateView
 from django.conf.urls import patterns, url, include
 from django.contrib import admin
-from rest_framework import routers
 from portal import views
 
 admin.autodiscover()
-
-router = routers.DefaultRouter()
-router.register(r'rna', views.RnaViewSet)
-router.register(r'accession', views.AccessionViewSet)
 
 urlpatterns = patterns('',
     url(r'^$', 'portal.views.homepage', name='homepage'),
@@ -34,9 +29,6 @@ urlpatterns = patterns('',
     url(r'^(?P<page>expert-databases)/?$', views.StaticView.as_view(), name='expert_databases'),
     # contact us
     url(r'^contact/?$', views.ContactView.as_view()),
-    # django-rest-framework API, use trailing slashes
-    url(r'^api/v1/', include(router.urls)),
-    url(r'^api-auth/v1/', include('rest_framework.urls', namespace='rest_framework')),
     # temporary API
     url(r'^expert-database/(?P<expert_db_name>.+)/lineage/?$', 'portal.views.get_expert_database_organism_sunburst'),
     url(r'^rna/(?P<upi>\w+)/xrefs/?$', 'portal.views.get_xrefs_data'),
@@ -47,4 +39,6 @@ urlpatterns = patterns('',
     url(r'^expert-database/(?P<expert_db_name>[-\w]+)/?$', 'portal.views.expert_database_view', name='expert_database'),
     # status page
     url(r'^status/?', 'portal.views.website_status_view'),
+    # django-rest-framework API, use trailing slashes
+    url(r'^api/', include('apiv1.urls')),
 )

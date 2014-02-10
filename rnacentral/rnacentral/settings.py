@@ -138,6 +138,7 @@ INSTALLED_APPS = (
     'django.contrib.comments',
     'django.contrib.humanize',
     'portal',
+    'apiv1',
     'rest_framework',
     'debug_toolbar',
     'compressor',
