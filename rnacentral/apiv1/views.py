@@ -16,6 +16,15 @@ from rest_framework import viewsets
 from rest_framework.decorators import link
 from rest_framework.response import Response
 from apiv1.serializers import RnaSerializer, AccessionSerializer, RefSerializer, XrefSerializer
+import django_filters
+
+
+class RnaFilter(django_filters.FilterSet):
+    database = django_filters.CharFilter(name="xrefs__db")
+
+    class Meta:
+        model = Rna
+        fields = ['upi', 'md5', 'length', 'database']
 
 
 class RnaViewSet(viewsets.ReadOnlyModelViewSet):
@@ -25,7 +34,7 @@ class RnaViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Rna.objects.defer('seq_long', 'seq_short').select_related().all()
     serializer_class = RnaSerializer
     paginate_by = 10
-    filter_fields = ('upi', 'md5', 'length')
+    filter_class = RnaFilter
 
     @link()
     def xrefs(self, request, pk=None):
