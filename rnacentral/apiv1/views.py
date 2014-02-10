@@ -30,6 +30,9 @@ class RnaFilter(django_filters.FilterSet):
 class RnaViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API endpoint that allows Rna sequences to be viewed.
+
+    [API documentation][ref]
+    [ref]: /api
     """
     queryset = Rna.objects.defer('seq_long', 'seq_short').select_related().all()
     serializer_class = RnaSerializer
@@ -50,6 +53,9 @@ class RnaViewSet(viewsets.ReadOnlyModelViewSet):
 class AccessionViewSet(viewsets.ReadOnlyModelViewSet):
     """
     API endpoint that allows cross-reference metadata to be viewed.
+
+    [API documentation][ref]
+    [ref]: /api
     """
     queryset = Accession.objects.select_related().all()
     serializer_class = AccessionSerializer
