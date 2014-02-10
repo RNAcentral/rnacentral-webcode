@@ -39,7 +39,8 @@ class ApiV1Test(unittest.TestCase):
     api_url = 'api/v1/'
 
     def setUp(self):
-        pass
+        self.upi = 'UPI0000000001'
+        self.md5 = '06808191a979cc0b933265d9a9c213fd'
 
     def tearDown(self):
         pass
@@ -58,20 +59,21 @@ class ApiV1Test(unittest.TestCase):
         self.assertEqual(r.status_code, 200)
 
     def test_rna_pagination(self):
-        url = self._get_api_url('rna/?page=10&page_size=5')
+        page_size = 5
+        url = self._get_api_url('rna/?page=10&page_size=%i' % page_size)
         r = requests.get(url)
         data = r.json()
-        self.assertEqual(len(data['results']), 5)
+        self.assertEqual(len(data['results']), page_size)
 
     def test_rna_sequence(self):
-        url = self._get_api_url('rna/UPI0000000001/')
+        url = self._get_api_url('rna/%s/' % self.upi)
         r = requests.get(url)
         data = r.json()
-        self.assertEqual(data['md5'], '06808191a979cc0b933265d9a9c213fd')
+        self.assertEqual(data['md5'], self.md5)
         self.assertEqual(data['length'], 66)
 
     def test_rna_xrefs(self):
-        url = self._get_api_url('rna/UPI0000000001/xrefs')
+        url = self._get_api_url('rna/%s/xrefs' % self.upi)
         r = requests.get(url)
         self.assertEqual(r.status_code, 200)
 
@@ -85,11 +87,18 @@ class ApiV1Test(unittest.TestCase):
         r = requests.get(url)
         self.assertEqual(r.status_code, 200)
 
-    def test_md5_lookup(self):
-        url = self._get_api_url('rna/?md5=06808191a979cc0b933265d9a9c213fd')
+    def test_rna_md5_filter(self):
+        url = self._get_api_url('rna/?md5=%s' % self.md5)
         r = requests.get(url)
         data = r.json()
-        self.assertEqual(data['results'][0]['upi'], 'UPI0000000001')
+        self.assertEqual(data['results'][0]['upi'], self.upi)
+
+    def test_rna_upi_filter(self):
+        url = self._get_api_url('rna/?upi=%s' % self.upi)
+        r = requests.get(url)
+        data = r.json()
+        self.assertEqual(data['results'][0]['md5'], self.md5)
+
 
 
 if __name__ == '__main__':
