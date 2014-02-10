@@ -24,20 +24,23 @@ RNAcentral API Documentation
 
 {% markdown %}
 
-## RNAcentral API Documentation
+# RNAcentral API Documentation
+
+## Features
 
 Most data in RNAcentral can be accessed programmatically using RESTful API
-allowing for integration with other websites
+allowing for integration with other websites.
 
-## Browsable API
+### Web browsable API
 
-The data is hyperlinked so that one can navigate the API without leaving the browser.
-This brings the API very close to being self-documented.
 Depending on whether the URL is viewed in the browser or is retrieved by a command line client,
-the response is either rendered as HTML or Json.
-RNAcentral provides versioned API browsable.
+the response is either rendered as HTML or JSON.
 
-## Versioning
+This brings the API very close to being self-documented.
+The data is hyperlinked so that one can navigate the API without leaving the browser.
+
+
+### Versioning
 
 To ensure that changes in the RNAcentral APIs don't break the third-party applications
 relying on it, the API is versioned, and the version is included in the API URL.
@@ -54,22 +57,33 @@ The current API can also be accessed at <a href="/api/current">/api/current</a>,
 but it's not recommended to use this endpoint for long-term
 development as the underlying data model may change.
 
-## Pagination options
+### Throttling
+
+The maximum number of requests from the same IP address is limited to <strong>10</strong> per second.
+
+### Credits
+
+The RNAcentral API is based on the <a href="http://www.django-rest-framework.org/" target="_blank">Django Rest Framework</a>.
+
+<hr>
+
+## API v1 documentation
+
+### Pagination
 
 The response is paginated to prevent accidental downloads of large amounts of data and to speed up the API.
+
 The default pagination size is <strong>10</strong> entries, but it can be adjusted by specifying the <code>page_size</code> parameter.
 The maximum value of <code>page_size</code> is <strong>100</strong>.
-
-## Example
 
 * <a href="http://127.0.0.1:8000/api/v1/rna/?page_size=5">http://127.0.0.1:8000/api/v1/rna/?page_size=5</a>
 * <a href="http://127.0.0.1:8000/api/v1/rna/?page=2&page_size=5">http://127.0.0.1:8000/api/v1/rna/?page=2&page_size=5</a></p>
 
-## Throttling
+### Changing output format
 
-To ensure that the resource is highly available and used 10 per second
+* HTML version: <a href="http://127.0.0.1:8000/api/v1/rna/UPI0000000001/">http://127.0.0.1:8000/api/v1/rna/UPI0000000001/</a>
+* JSON version: <a href="http://127.0.0.1:8000/api/v1/rna/UPI0000000001/?format=json">http://127.0.0.1:8000/api/v1/rna/UPI0000000001/?format=json</a>
 
-It is based on the Django Rest Framework
 
 {% endmarkdown %}
 
