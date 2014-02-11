@@ -24,6 +24,7 @@ Master Stylesheet for the RNAcentral Portal
 5.1 Datatables integration
 5.2 Force scrollbars on Macs
 5.3 D3 species tree
+5.4 API docs affix
 
 -------------------------------------------------------------------*/
 
@@ -417,4 +418,63 @@ path {
 
 #d3-species-tree {
   max-height: 800px;
+}
+
+/*------------------------------------------------------------------
+[5.4 API docs affix]
+*/
+
+ul.affix {
+  position: fixed;
+  top: 80px;
+  width: 260px;
+}
+
+ul.affix-top {
+  position: static;
+}
+
+ul.affix-bottom {
+  position: absolute;
+}
+
+/* First level of nav */
+.sidenav {
+  margin-top: 30px;
+  margin-bottom: 30px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  background-color: #f7f5fa;
+  border-radius: 5px;
+}
+
+/* All levels of nav */
+.sidebar .nav > li > a {
+  display: block;
+  padding: 5px 20px;
+}
+
+.sidebar .nav > li > a:hover,
+.sidebar .nav > li > a:focus {
+  text-decoration: none;
+  background-color: #e5e3e9;
+}
+
+.sidebar .nav > .active > a,
+.sidebar .nav > .active:hover > a,
+.sidebar .nav > .active:focus > a {
+  font-weight: bold;
+  background-color: transparent;
+}
+
+/* Nav: second level */
+.sidebar .nav .nav {
+  margin-bottom: 8px;
+}
+
+.sidebar .nav .nav > li > a {
+  padding-top: 3px;
+  padding-bottom: 3px;
+  padding-left: 30px;
+  font-size: 90%;
 }
