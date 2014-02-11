@@ -26,31 +26,33 @@ RNAcentral API Documentation
 
 {% markdown %}
 
-<h1 id="api-docs">RNAcentral API Documentation</h1>
-
-<h2 id="overview">Overview</h2>
+<h1 id="overview">API overview</h1>
 
 Most data in RNAcentral can be accessed programmatically using a RESTful API
 allowing for integration with other resources.
+The API implementation is based on the <a href="http://www.django-rest-framework.org/" target="_blank">Django Rest Framework</a>.
 
-<h3 id="web-browsable-api">Web browsable API</h3>
+<h2 id="web-browsable-api">Web browsable API</h2>
 
-Depending on whether a URL is viewed in a browser or is retrieved programmatically,
+The RNAcentral API is web browsable, which means that depending on whether
+a URL is viewed in a browser or is retrieved programmatically,
 the response is rendered either in human- or computer-friendly formats.
 
 Moreover, many resources are hyperlinked so that it's possible to navigate the API without leaving the browser.
 
 As a result, developers can familiarise themselves with the API and get a better sense of the data.
 
-<h3 id="versioning">Versioning</h3>
+<a href="/api/v1" class="btn btn-primary" role="button" target="_blank">Browse the API</a>
+
+<h2 id="versioning">Versioning</h2>
 
 To ensure that changes in the RNAcentral API don't break any applications
-relying on it, the API is versioned, and the version is included in the API URL.
+relying on it, the API is versioned, and the version is included in the API's URL.
 
-For example, the current API is at Version 1 and is available at <a href="/api/v1">{{ BASE_URL }}/api/v1</a>,
-and the next version will be available at <a href="/api/v2">{{ BASE_URL }}/api/v2</a>.
+For example, the current API is at Version 1 and is available at <a href="/api/v1" target="_blank">{{ BASE_URL }}/api/v1</a>,
+and the next version will be available at <a href="/api/v2" target="_blank">{{ BASE_URL }}/api/v2</a>.
 
-The **latest version** of the API can be accessed at <a href="/api/current">{{ BASE_URL }}/api/current</a>,
+The **latest version** of the API can be accessed at <a href="/api/current" target="_blank">{{ BASE_URL }}/api/current</a>,
 but it's not recommended to use this endpoint for long-term
 development as the underlying data model may change.
 
@@ -70,48 +72,125 @@ The following **non-disruptive changes** may be implemented to a public API:
 An advance notice will be given before obsoleting an API version. To stay up to date,
 please consider signing up for <a href="#">RNAcentral updates</a>.
 
-<h3 id="throttling">Throttling</h3>
+<h2 id="throttling">Throttling</h2>
 
 The maximum number of requests from the same IP address is limited to <strong>10</strong> per second.
+Currently there is no limit to the total number of requests from the same IP.
 
-### Credits
-
-The RNAcentral API is based on the <a href="http://www.django-rest-framework.org/" target="_blank">Django Rest Framework</a>.
+It is possible to lift the limit for registered users, so please get in touch if you require
+a higher throttling limit.
 
 <hr>
 
-<h2 id="api-v1">API v1 documentation</h2>
+<h2 id="v1">API v1 documentation <small><span class="label label-success">current version</span></small></h2>
 
-<h3 id="pagination">Pagination</h3>
+<h3 id="v1-example-response">Example response</h3>
 
-The response is paginated to prevent accidental downloads of large amounts of data and to speed up the API.
+This is an example response containing a single entry:
+
+    {{ BASE_URL }}/api/v1/rna/?md5=06808191a979cc0b933265d9a9c213fd
+    {
+        "count": 1, // number of entries
+        "next": null, // url for the next results page, default=null
+        "previous": null, // url for the previous results page, default=null
+        "results": [ // an array with result objects
+            {
+                "url": "{{ BASE_URL }}/api/v1/rna/UPI0000000001/",
+                "upi": "UPI0000000001",
+                "md5": "06808191a979cc0b933265d9a9c213fd",
+                "sequence": "CUGAAUAAAUAAGGUAUCUUAUAUCUUUUAAUUAACAGUUAAACGCUUCCAUAAAGCUUUUAUCCA",
+                "length": 66,
+                "xrefs": "{{ BASE_URL }}/api/v1/rna/UPI0000000001/xrefs/"
+            }
+        ]
+    }
+
+<h3 id="v1-pagination">Pagination</h3>
+
+All responses are paginated to prevent accidental downloads of large amounts of data and to speed up the API.
+
+The urls for the *next* and *previous* pages are present in every response object.
+To navigate between pages, specify the <code>page</code> parameter.
 
 The default page size is <strong>10</strong> entries, but it can be adjusted by specifying the <code>page_size</code> parameter.
 The maximum value of <code>page_size</code> is <strong>100</strong>.
 
 <h4>Examples</h4>
 
-* <a href="/api/v1/rna/?page_size=5">{{ BASE_URL }}/api/v1/rna/?page_size=5</a>
-* <a href="/api/v1/rna/?page=2&page_size=5">{{ BASE_URL }}/api/v1/rna/?page=2&page_size=5</a></p>
+* <a href="/api/v1/rna/?page_size=5" target="_blank">{{ BASE_URL }}/api/v1/rna/?page_size=5</a>
+* <a href="/api/v1/rna/?page=2&page_size=5" target="_blank">{{ BASE_URL }}/api/v1/rna/?page_size=5&page=2</a></p>
 
-<h3 id="output-format">Output format</h3>
+<h3 id="v1-output-formats">Output formats</h3>
 
-When viewed in the browser, the urls are rendered as HTML, for example:
-<a href="/api/v1/rna/UPI0000000001/">{{ BASE_URL }}/api/v1/rna/UPI0000000001/</a>.
+The same url can be viewed in the browser in a human-readable form
+and accessed programmatically in a computer-readable form using a process
+called content negotiation.
 
-* JSON: <a href="/api/v1/rna/UPI0000000001/?format=json">{{ BASE_URL }}/api/v1/rna/UPI0000000001/?format=json</a>
-* YAML: <a href="/api/v1/rna/UPI0000000001/?format=yaml">{{ BASE_URL }}/api/v1/rna/UPI0000000001/?format=yaml</a>
-* HTML: <a href="/api/v1/rna/UPI0000000001/?format=api">{{ BASE_URL }}/api/v1/rna/UPI0000000001/?format=api</a>
+The following output formats are currently supported, with more options coming soon:
+
+* <strong>JSON</strong>
+* <strong>YAML</strong>
+* <strong>HTML</strong>
+
+The output format can be specified using the <code>format</code> url parameter.
+
+#### Examples
+
+* <a href="/api/v1/rna/UPI0000000001/?format=json" target="_blank">{{ BASE_URL }}/api/v1/rna/UPI0000000001/?format=json</a>
+* <a href="/api/v1/rna/UPI0000000001/?format=yaml" target="_blank">{{ BASE_URL }}/api/v1/rna/UPI0000000001/?format=yaml</a>
+* <a href="/api/v1/rna/UPI0000000001/?format=api"  target="_blank">{{ BASE_URL }}/api/v1/rna/UPI0000000001/?format=api</a>
+
+Alternatively, one can set the format using the Accept headers:
+
+    curl -H "Accept: application/json" {{ BASE_URL }}/api/v1/rna/UPI0000000001
+    curl -H "Accept: application/yaml" {{ BASE_URL }}/api/v1/rna/UPI0000000001
+    curl -H "Accept: text/html" {{ BASE_URL }}/api/v1/rna/UPI0000000001
+
+In case the Accept headers contradict the url parameter, an error message is returned:
+
+    curl -H "Accept: application/json" {{ BASE_URL }}/api/v1/?format=yaml
+    {
+      "detail": "Could not satisfy the request's Accept header"
+    }
+
+<h3 id="v1-filtering">Filtering</h3>
+
+The API provides several basic filtering operations and complements the main search functionality.
+
+<h4>Examples</h4>
+
+* filter by sequence length
+<a href="/api/v1/rna/?length=2014" target="_blank">{{ BASE_URL }}/api/v1/rna/?length=2014</a>
+* filter by Expert Database
+
+<div class="col-md-8">
+  <table class="table table-condensed">
+    <tr><th>Database</th><th>Request</th></tr>
+    <tr><td>ENA</td><td><a href="/api/v1/rna/?database=1" target="_blank">{{ BASE_URL }}/api/v1/rna/?database=1</a></td></tr>
+    <tr><td>RFAM</td><td><a href="/api/v1/rna/?database=2" target="_blank">{{ BASE_URL }}/api/v1/rna/?database=2</a></td></tr>
+    <tr><td>SRPDB</td><td><a href="/api/v1/rna/?database=3" target="_blank">{{ BASE_URL }}/api/v1/rna/?database=3</a></td></tr>
+    <tr><td>miRBase</td><td><a href="/api/v1/rna/?database=4" target="_blank">{{ BASE_URL }}/api/v1/rna/?database=4</a></td></tr>
+    <tr><td>VEGA</td><td><a href="/api/v1/rna/?database=5" target="_blank">{{ BASE_URL }}/api/v1/rna/?database=5</a></td></tr>
+    <tr><td>tmRNA Website</td><td><a href="/api/v1/rna/?database=6" target="_blank">{{ BASE_URL }}/api/v1/rna/?database=6</a></td></tr>
+  </table>
+</div>
+
+<h3 id="v1-example-scripts">Example scripts</h3>
+
+Two example scripts for looking up RNAcentral unique sequence ids (URS) are provided.
+
+<script src="https://gist.github.com/AntonPetrov/177cef0a3b4799f01536.js"></script>
 
 {% endmarkdown %}
+
+  <hr>
 
   </div>
 
   <nav id="affix-nav" class="sidebar col-md-3 hidden-print visible-lg" role="complementary">
     <ul class="nav sidenav affix" data-spy="affix" id="affix-ul">
-        <li class="active"><a href="#api-docs">API documentation</a>
         <li>
-          <a href="#overview">Overview</a>
+          <a href="#overview">API Overview</a>
           <ul class="nav">
             <li><a href="#web-browsable-api">Web browsable API</a></li>
             <li><a href="#versioning">Versioning</a></li>
@@ -119,10 +198,18 @@ When viewed in the browser, the urls are rendered as HTML, for example:
           </ul>
         </li>
         <li>
-          <a href="#api-v1">API v1 documentation</a>
+          <a href="#v1">API v1 documentation</a>
           <ul class="nav">
-            <li><a href="#pagination">Pagination</a></li>
-            <li><a href="#output-format">Output format</a></li>
+            <li><a href="#v1-example-response">Example response</a></li>
+            <li><a href="#v1-pagination">Pagination</a></li>
+            <li><a href="#v1-output-formats">Output formats</a></li>
+            <li>
+              <a href="#v1-filtering">Fitlering</a>
+              <ul class="nav">
+                <li><a href="#v1-filtering-by-length">Filtering by length</a></li>
+              </ul>
+            </li>
+            <li><a href="#v1-example-scripts">Example scripts</a></li>
           </ul>
         </li>
     </ul>
@@ -135,13 +222,14 @@ When viewed in the browser, the urls are rendered as HTML, for example:
 
 {% block extra_js %}
   {{ block.super }}
+
   <script type="text/javascript">
     $(function() {
       $('body').scrollspy({ target: '#affix-nav' });
       var $affix = $("#affix-ul");
       $affix.affix({
         offset: {
-            top: 80
+            top: 50
         }
       }).width($affix.parent().width());
       $(window).resize(function () {
