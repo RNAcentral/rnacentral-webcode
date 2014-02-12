@@ -41,6 +41,7 @@ class ApiV1Test(unittest.TestCase):
     def setUp(self):
         self.upi = 'UPI0000000001'
         self.md5 = '06808191a979cc0b933265d9a9c213fd'
+        self.accession = 'Y09527.1:2562..2627:tRNA'
 
     def tearDown(self):
         pass
@@ -50,55 +51,62 @@ class ApiV1Test(unittest.TestCase):
 
     def test_api_v1_endpoint(self):
         url = self._get_api_url()
-        r = requests.get(url)
-        self.assertEqual(r.status_code, 200)
+        self._check_urls(url)
 
     def test_rna_endpoint(self):
-        url = self._get_api_url('rna/')
-        r = requests.get(url)
-        self.assertEqual(r.status_code, 200)
+        url = self._get_api_url('rna')
+        self._check_urls(url)
 
     def test_rna_pagination(self):
         page_size = 5
         url = self._get_api_url('rna/?page=10&page_size=%i' % page_size)
-        r = requests.get(url)
-        data = r.json()
+        data = self._check_urls(url)
         self.assertEqual(len(data['results']), page_size)
 
     def test_rna_sequence(self):
         url = self._get_api_url('rna/%s/' % self.upi)
-        r = requests.get(url)
-        data = r.json()
+        data = self._check_urls(url)
         self.assertEqual(data['md5'], self.md5)
         self.assertEqual(data['length'], 66)
 
     def test_rna_xrefs(self):
         url = self._get_api_url('rna/%s/xrefs' % self.upi)
-        r = requests.get(url)
-        self.assertEqual(r.status_code, 200)
+        self._check_urls(url)
 
-    def test_accession_endpoint(self):
-        url = self._get_api_url('accession/')
-        r = requests.get(url)
-        self.assertEqual(r.status_code, 200)
+    def test_accession_entry(self):
+        url = self._get_api_url('accession/%s' % self.accession)
+        self._check_urls(url)
 
     def test_accession_citations(self):
-        url = self._get_api_url('accession/Y09527.1:2562..2627:tRNA/citations/')
-        r = requests.get(url)
-        self.assertEqual(r.status_code, 200)
+        url = self._get_api_url('accession/%s/citations' % self.accession)
+        self._check_urls(url)
 
     def test_rna_md5_filter(self):
         url = self._get_api_url('rna/?md5=%s' % self.md5)
-        r = requests.get(url)
-        data = r.json()
-        self.assertEqual(data['results'][0]['upi'], self.upi)
+        data = self._check_urls(url)
+        self.assertEqual(data['results'][0]['rnacentral_id'], self.upi)
 
     def test_rna_upi_filter(self):
         url = self._get_api_url('rna/?upi=%s' % self.upi)
-        r = requests.get(url)
-        data = r.json()
+        data = self._check_urls(url)
         self.assertEqual(data['results'][0]['md5'], self.md5)
 
+    def _check_urls(self, url):
+        """
+        Auxiliary function for testing the API with and without trailing slash.
+        """
+        # remove the trailing slash if present
+        if url[-1] == '/':
+            url = url[:-1]
+        # test without the slash
+        r = requests.get(url)
+        self.assertEqual(r.status_code, 200)
+        # add the slash back if there are no url parameters
+        if '?' not in url:
+            url += '/'
+            r = requests.get(url)
+            self.assertEqual(r.status_code, 200)
+        return r.json()
 
 
 if __name__ == '__main__':
