@@ -62,7 +62,8 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
 class RnaSerializer(serializers.HyperlinkedModelSerializer):
     sequence = serializers.Field(source='get_sequence')
     xrefs = serializers.HyperlinkedIdentityField(view_name='rna-xrefs')
+    rnacentral_id = serializers.CharField(source='upi')
 
     class Meta:
         model = Rna
-        fields = ('url', 'upi', 'md5', 'sequence', 'length', 'xrefs')
+        fields = ('url', 'rnacentral_id', 'md5', 'sequence', 'length', 'xrefs')
