@@ -231,6 +231,18 @@ for each sequence. Using md5 saves traffic and decreases the response time.
 {# embedded GitHub gists #}
 <script src="https://gist.github.com/AntonPetrov/177cef0a3b4799f01536.js"></script>
 
+<h2 id="v1-trailing-slash">Trailing slash</h2>
+
+Trailing slash in all urls used in the API is **optional**.
+
+#### Examples
+
+Both requests should return the same results, both in the browser and when retrieved programmatically:
+
+* [{{ BASE_URL }}/api/v1](/api/v1)
+* [{{ BASE_URL }}/api/v1/](/api/v1/)
+
+
 {% endmarkdown %}
 
   <hr>
@@ -264,6 +276,7 @@ for each sequence. Using md5 saves traffic and decreases the response time.
               </ul>
             </li>
             <li><a href="#v1-example-scripts">Example scripts</a></li>
+            <li><a href="#v1-trailing-slash">Trailing slash</a></li>
           </ul>
         </li>
     </ul>
@@ -296,7 +309,7 @@ for each sequence. Using md5 saves traffic and decreases the response time.
       });
 
       // open all content links in new windows
-      $('.container-main a').not('.sidebar a').each(function() {
+      $('.container-main a').not('.sidebar a').not('a.btn').each(function() {
         var $this = $(this);
         $this.html($this.html() + '&nbsp;<i class="fa fa-external-link"></i>').attr('target', '_blank');
       });

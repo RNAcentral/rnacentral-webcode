@@ -13,10 +13,25 @@ limitations under the License.
 
 from django.views.generic import TemplateView
 from django.conf.urls import patterns, url, include
-from rest_framework import routers
+from rest_framework.routers import Route, DefaultRouter
 from apiv1 import views
 
-router = routers.DefaultRouter()
+class ReadOnlyRouter(DefaultRouter):
+    """
+    A router for read-only APIs, which accepts optional trailing slashes.
+    """
+    routes = [
+        Route(url=r'^{prefix}/?$',
+              mapping={'get': 'list'},
+              name='{basename}-list',
+              initkwargs={'suffix': 'Sequences'}),
+        Route(url=r'^{prefix}/{lookup}/?$',
+              mapping={'get': 'retrieve'},
+              name='{basename}-detail',
+              initkwargs={'suffix': 'Sequence'})
+    ]
+
+router = ReadOnlyRouter()
 router.register(r'rna', views.RnaViewSet)
 
 urlpatterns = patterns('',
@@ -26,4 +41,5 @@ urlpatterns = patterns('',
     url(r'^v1/', include('rest_framework.urls', namespace='api_v1', app_name='api_v1')),
     url(r'^v1/accession/(?P<pk>.*?)/citations/?$', views.CitationView.as_view(), name='accession-citations'),
     url(r'^v1/accession/(?P<pk>.*?)/?$', views.AccessionView.as_view(), name='accession-detail'),
+	url(r'^v1/rna/(?P<pk>UPI[0-9A-Fa-f]{10})/xrefs/?$', views.RnaViewSet.as_view({'get': 'xrefs'}), name='rna-xrefs'),
 )
