@@ -21,10 +21,13 @@ import django_filters
 
 class RnaFilter(django_filters.FilterSet):
     database = django_filters.CharFilter(name="xrefs__db")
+    min_length = django_filters.NumberFilter(name="length", lookup_type='gte')
+    max_length = django_filters.NumberFilter(name="length", lookup_type='lte')
+    external_id = django_filters.CharFilter(name="xrefs__accession__external_id", distinct=True)
 
     class Meta:
         model = Rna
-        fields = ['upi', 'md5', 'length', 'database']
+        fields = ['upi', 'md5', 'length', 'database', 'min_length', 'max_length', 'external_id']
 
 
 class RnaViewSet(viewsets.ReadOnlyModelViewSet):
