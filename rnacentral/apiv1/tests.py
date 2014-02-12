@@ -91,6 +91,35 @@ class ApiV1Test(unittest.TestCase):
         data = self._check_urls(url)
         self.assertEqual(data['results'][0]['md5'], self.md5)
 
+    def test_rna_length_filter(self):
+        filter_tests = ['rna/?min_length=200000', 'rna/?length=2014',
+                        'rna/?max_length=10', 'rna/?min_length=1&max_length=4']
+        for filter_test in filter_tests:
+            url = self._get_api_url(filter_test)
+            data = self._check_urls(url)
+            self.assertNotEqual(data['count'], 0)
+
+    def test_rna_database_filter(self):
+        for database in [3, 4, 5, 6]:
+            url = self._get_api_url('rna/?database=%i' % database)
+            data = self._check_urls(url)
+            self.assertNotEqual(data['count'], 0)
+
+    def test_rna_external_id_filter(self):
+        filter_tests = ['rna/?external_id=Stap.epid._AF269831', 'rna/?external_id=MIMAT0000091',
+                        'rna/?external_id=OTTHUMG00000172092', 'rna/?external_id=Lepto_inter_Lai566']
+        for filter_test in filter_tests:
+            url = self._get_api_url(filter_test)
+            data = self._check_urls(url)
+            self.assertNotEqual(data['count'], 0)
+
+    def test_rna_output_formats(self):
+        output_formats = ['json', 'yaml', 'api']
+        for output_format in output_formats:
+            url = self._get_api_url('rna/%s/?format=%s' % (self.upi, output_format))
+            r = requests.get(url)
+            self.assertEqual(r.status_code, 200)
+
     def _check_urls(self, url):
         """
         Auxiliary function for testing the API with and without trailing slash.
