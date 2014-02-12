@@ -18,11 +18,12 @@ from apiv1 import views
 
 router = routers.DefaultRouter()
 router.register(r'rna', views.RnaViewSet)
-router.register(r'accession', views.AccessionViewSet)
 
 urlpatterns = patterns('',
     url(r'^current/', include(router.urls)),
     url(r'^current/', include('rest_framework.urls', namespace='current_api', app_name='current_api')),
     url(r'^v1/', include(router.urls)),
     url(r'^v1/', include('rest_framework.urls', namespace='api_v1', app_name='api_v1')),
+    url(r'^v1/accession/(?P<pk>.*?)/citations/?$', views.CitationView.as_view(), name='accession-citations'),
+    url(r'^v1/accession/(?P<pk>.*?)/?$', views.AccessionView.as_view(), name='accession-detail'),
 )

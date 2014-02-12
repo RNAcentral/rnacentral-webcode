@@ -13,6 +13,7 @@ limitations under the License.
 
 from portal.models import Rna, Accession
 from rest_framework import viewsets
+from rest_framework import generics
 from rest_framework.decorators import link
 from rest_framework.response import Response
 from apiv1.serializers import RnaSerializer, AccessionSerializer, RefSerializer, XrefSerializer
@@ -53,19 +54,28 @@ class RnaViewSet(viewsets.ReadOnlyModelViewSet):
         return Response(serializer.data)
 
 
-class AccessionViewSet(viewsets.ReadOnlyModelViewSet):
+class AccessionView(generics.RetrieveAPIView):
     """
-    API endpoint that allows cross-reference metadata to be viewed.
+    API endpoint that allows single accessions to be viewed.
 
     [API documentation][ref]
     [ref]: /api
     """
     queryset = Accession.objects.select_related().all()
     serializer_class = AccessionSerializer
-    paginate_by = 10
 
-    @link()
-    def citations(self, request, pk=None):
+
+class CitationView(generics.GenericAPIView):
+    """
+    API endpoint that allows the citations associated with
+    each cross-reference to be viewed.
+
+    [API documentation][ref]
+    [ref]: /api
+    """
+    queryset = Accession.objects.select_related().all()
+
+    def get(self, request, *args, **kwargs):
         """
         Retrieve citations associated with a particular entry.
         This method is used to retrieve citations for the unique sequence view.
