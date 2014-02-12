@@ -216,24 +216,30 @@ which acts as the logical `AND` operator. More logical operators will be support
 * [{{ BASE_URL }}/api/v1/rna/?database=3&min_length=200](/api/v1/rna/?database=3&min_length=200)
 * [{{ BASE_URL }}/api/v1/rna/?min_length=1&max_length=4](/api/v1/rna/?min_length=1&max_length=4)
 
-<h3 id="v1-example-scripts">Example scripts</h3>
+<h3 id="v1-example-script">Example script</h3>
 
 A common task is finding whether some sequence of interest has an RNAcentral id.
 
-Two example scripts for **looking up RNAcentral unique sequence ids** (URS) are provided
-in **Python and Perl** and can be used in more complicated programs.
+Two example script for **looking up RNAcentral unique sequence ids** (URS) is provided
+in **Python** and can be used in more complicated programs.
 
 Instead of sending the entire sequence over the network to the RNAcentral servers,
-the scripts only submit the [md5](http://en.wikipedia.org/wiki/MD5) value
-calculated based on the sequence. The md5 value is only 32 characters long and is unique
+the script only submits the [md5](http://en.wikipedia.org/wiki/MD5) value
+calculated based on the sequence. The md5 value is 32 characters long and is unique
 for each sequence. Using md5 saves traffic and decreases the response time.
 
-{# embedded GitHub gists #}
+Internally RNAcentral uses the [Digest::MD5](http://search.cpan.org/dist/Digest-MD5/MD5.pm)
+Perl module for computing the md5 values. Additional notes:
+
+* all sequences are uppercase
+* md5 is computed for DNA sequences (so all U's should be replaced with T's).
+
+{# embedded GitHub gist #}
 <script src="https://gist.github.com/AntonPetrov/177cef0a3b4799f01536.js"></script>
 
 <h2 id="v1-trailing-slash">Trailing slash</h2>
 
-Trailing slash in all urls used in the API is **optional**.
+The trailing slash in all urls used in the API is **optional**.
 
 #### Examples
 
@@ -275,7 +281,7 @@ Both requests should return the same results, both in the browser and when retri
                 <li><a href="#v1-combined-filters">Combined filters</a></li>
               </ul>
             </li>
-            <li><a href="#v1-example-scripts">Example scripts</a></li>
+            <li><a href="#v1-example-script">Example script</a></li>
             <li><a href="#v1-trailing-slash">Trailing slash</a></li>
           </ul>
         </li>
