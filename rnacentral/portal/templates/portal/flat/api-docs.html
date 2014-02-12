@@ -30,29 +30,30 @@ RNAcentral API Documentation
 
 Most data in RNAcentral can be accessed programmatically using a RESTful API
 allowing for integration with other resources.
-The API implementation is based on the <a href="http://www.django-rest-framework.org/" target="_blank">Django Rest Framework</a>.
+The API implementation is based on the [Django Rest Framework](http://www.django-rest-framework.org/).
 
 <h2 id="web-browsable-api">Web browsable API</h2>
 
-The RNAcentral API is web browsable, which means that depending on whether
-a URL is viewed in a browser or is retrieved programmatically,
-the response is rendered either in human- or computer-friendly formats.
+The RNAcentral API is **web browsable**, which means that:
 
-Moreover, many resources are hyperlinked so that it's possible to navigate the API without leaving the browser.
+* the data is served in either **human- or computer-friendly formats** depending on whether
+a URL is viewed in a browser or is retrieved programmatically
 
-As a result, developers can familiarise themselves with the API and get a better sense of the data.
+* many resources are **hyperlinked** so that it's possible to navigate the API in the browser.
+
+As a result, developers can familiarise themselves with the API and get a better sense of the RNAcentral data.
 
 <a href="/api/v1" class="btn btn-primary" role="button" target="_blank">Browse the API</a>
 
 <h2 id="versioning">Versioning</h2>
 
 To ensure that changes in the RNAcentral API don't break any applications
-relying on it, the API is versioned, and the version is included in the API's URL.
+relying on it, the API is versioned, and **the version is included in the API's URL**.
 
-For example, the current API is at Version 1 and is available at <a href="/api/v1" target="_blank">{{ BASE_URL }}/api/v1</a>,
-and the next version will be available at <a href="/api/v2" target="_blank">{{ BASE_URL }}/api/v2</a>.
+For example, the **current API is at Version 1** and is available at [{{ BASE_URL }}/api/v1](/api/v1),
+and the next version will be available at [{{ BASE_URL }}/api/v2](/api/v2).
 
-The **latest version** of the API can be accessed at <a href="/api/current" target="_blank">{{ BASE_URL }}/api/current</a>,
+The **latest version** of the API can be accessed at [{{ BASE_URL }}/api/current](/api/current),
 but it's not recommended to use this endpoint for long-term
 development as the underlying data model may change.
 
@@ -70,115 +71,164 @@ The following **non-disruptive changes** may be implemented to a public API:
 * adding new filtering methods
 
 An advance notice will be given before obsoleting an API version. To stay up to date,
-please consider signing up for <a href="#">RNAcentral updates</a>.
+please consider signing up for the [RNAcentral updates](#).
 
 <h2 id="throttling">Throttling</h2>
 
-The maximum number of requests from the same IP address is limited to <strong>10</strong> per second.
-Currently there is no limit to the total number of requests from the same IP.
+The maximum number of requests from the same IP address is limited to **10 requests per second**.
+Currently there is no limit on the total number of requests from the same IP.
 
-It is possible to lift the limit for registered users, so please get in touch if you require
-a higher throttling limit.
+The limit can be lifted for registered users, so please get in touch if you require a higher request rate.
 
 <hr>
 
-<h2 id="v1">API v1 documentation <small><span class="label label-success">current version</span></small></h2>
+<h1 id="v1">API v1 documentation <small><span class="label label-success">current version</span></small></h1>
 
-<h3 id="v1-example-response">Example response</h3>
+<h2 id="v1-example-response">Example response</h2>
 
 This is an example response containing a single entry:
 
-    {{ BASE_URL }}/api/v1/rna/?md5=06808191a979cc0b933265d9a9c213fd
-    {
-        "count": 1, // number of entries
-        "next": null, // url for the next results page, default=null
-        "previous": null, // url for the previous results page, default=null
-        "results": [ // an array with result objects
-            {
-                "url": "{{ BASE_URL }}/api/v1/rna/UPI0000000001/",
-                "upi": "UPI0000000001",
-                "md5": "06808191a979cc0b933265d9a9c213fd",
-                "sequence": "CUGAAUAAAUAAGGUAUCUUAUAUCUUUUAAUUAACAGUUAAACGCUUCCAUAAAGCUUUUAUCCA",
-                "length": 66,
-                "xrefs": "{{ BASE_URL }}/api/v1/rna/UPI0000000001/xrefs/"
-            }
-        ]
-    }
+```
+{{ BASE_URL }}/api/v1/rna/?md5=06808191a979cc0b933265d9a9c213fd
 
-<h3 id="v1-pagination">Pagination</h3>
+{
+    "count": 1, // number of entries
+    "next": null, // url for the next results page, default=null
+    "previous": null, // url for the previous results page, default=null
+    "results": [ // an array with result objects
+        {
+            "url": "{{ BASE_URL }}/api/v1/rna/UPI0000000001/",
+            "upi": "UPI0000000001",
+            "md5": "06808191a979cc0b933265d9a9c213fd",
+            "sequence": "CUGAAUAAAUAAGGUAUCUUAUAUCUUUUAAUUAACAGUUAAACGCUUCCAUAAAGCUUUUAUCCA",
+            "length": 66,
+            "xrefs": "{{ BASE_URL }}/api/v1/rna/UPI0000000001/xrefs/"
+        }
+    ]
+}
+```
+
+<h2 id="v1-pagination">Pagination</h2>
 
 All responses are paginated to prevent accidental downloads of large amounts of data and to speed up the API.
 
 The urls for the *next* and *previous* pages are present in every response object.
-To navigate between pages, specify the <code>page</code> parameter.
 
-The default page size is <strong>10</strong> entries, but it can be adjusted by specifying the <code>page_size</code> parameter.
-The maximum value of <code>page_size</code> is <strong>100</strong>.
+To navigate between pages, specify the `page` parameter.
 
-<h4>Examples</h4>
-
-* <a href="/api/v1/rna/?page_size=5" target="_blank">{{ BASE_URL }}/api/v1/rna/?page_size=5</a>
-* <a href="/api/v1/rna/?page=2&page_size=5" target="_blank">{{ BASE_URL }}/api/v1/rna/?page_size=5&page=2</a></p>
-
-<h3 id="v1-output-formats">Output formats</h3>
-
-The same url can be viewed in the browser in a human-readable form
-and accessed programmatically in a computer-readable form using a process
-called content negotiation.
-
-The following output formats are currently supported, with more options coming soon:
-
-* <strong>JSON</strong>
-* <strong>YAML</strong>
-* <strong>HTML</strong>
-
-The output format can be specified using the <code>format</code> url parameter.
+The page size is controlled by the `page_size` parameter. Its default value is
+**10 entries per page**, and the maximum number of entries per page is **100**.
 
 #### Examples
 
-* <a href="/api/v1/rna/UPI0000000001/?format=json" target="_blank">{{ BASE_URL }}/api/v1/rna/UPI0000000001/?format=json</a>
-* <a href="/api/v1/rna/UPI0000000001/?format=yaml" target="_blank">{{ BASE_URL }}/api/v1/rna/UPI0000000001/?format=yaml</a>
-* <a href="/api/v1/rna/UPI0000000001/?format=api"  target="_blank">{{ BASE_URL }}/api/v1/rna/UPI0000000001/?format=api</a>
+* [{{ BASE_URL }}/api/v1/rna/?page_size=5](/api/v1/rna/?page_size=5)
+* [{{ BASE_URL }}/api/v1/rna/?page=2&page_size=5](/api/v1/rna/?page_size=5&page=2)
 
-Alternatively, one can set the format using the Accept headers:
+<h2 id="v1-output-formats">Output formats</h2>
 
-    curl -H "Accept: application/json" {{ BASE_URL }}/api/v1/rna/UPI0000000001
-    curl -H "Accept: application/yaml" {{ BASE_URL }}/api/v1/rna/UPI0000000001
-    curl -H "Accept: text/html" {{ BASE_URL }}/api/v1/rna/UPI0000000001
+The same url can be viewed in the browser in a human-readable form
+and accessed programmatically in a computer-readable form using a process
+called [content negotiation](http://en.wikipedia.org/wiki/Content_negotiation).
 
-In case the Accept headers contradict the url parameter, an error message is returned:
+The following output formats are currently supported, with more options coming soon:
 
-    curl -H "Accept: application/json" {{ BASE_URL }}/api/v1/?format=yaml
-    {
-      "detail": "Could not satisfy the request's Accept header"
-    }
+* **JSON**
+* **YAML**
+* **HTML**
 
-<h3 id="v1-filtering">Filtering</h3>
+The output format can be specified using the `format` url parameter.
 
-The API provides several basic filtering operations and complements the main search functionality.
+#### Examples
 
-<h4>Examples</h4>
+* [{{ BASE_URL }}/api/v1/rna/UPI0000000001/?format=json](/api/v1/rna/UPI0000000001/?format=json)
+* [{{ BASE_URL }}/api/v1/rna/UPI0000000001/?format=yaml](/api/v1/rna/UPI0000000001/?format=yaml)
+* [{{ BASE_URL }}/api/v1/rna/UPI0000000001/?format=api](/api/v1/rna/UPI0000000001/?format=api)
 
-* filter by sequence length
-<a href="/api/v1/rna/?length=2014" target="_blank">{{ BASE_URL }}/api/v1/rna/?length=2014</a>
-* filter by Expert Database
+Alternatively, one can specify the format using the
+http request [Accept headers](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html):
 
-<div class="col-md-8">
-  <table class="table table-condensed">
-    <tr><th>Database</th><th>Request</th></tr>
-    <tr><td>ENA</td><td><a href="/api/v1/rna/?database=1" target="_blank">{{ BASE_URL }}/api/v1/rna/?database=1</a></td></tr>
-    <tr><td>RFAM</td><td><a href="/api/v1/rna/?database=2" target="_blank">{{ BASE_URL }}/api/v1/rna/?database=2</a></td></tr>
-    <tr><td>SRPDB</td><td><a href="/api/v1/rna/?database=3" target="_blank">{{ BASE_URL }}/api/v1/rna/?database=3</a></td></tr>
-    <tr><td>miRBase</td><td><a href="/api/v1/rna/?database=4" target="_blank">{{ BASE_URL }}/api/v1/rna/?database=4</a></td></tr>
-    <tr><td>VEGA</td><td><a href="/api/v1/rna/?database=5" target="_blank">{{ BASE_URL }}/api/v1/rna/?database=5</a></td></tr>
-    <tr><td>tmRNA Website</td><td><a href="/api/v1/rna/?database=6" target="_blank">{{ BASE_URL }}/api/v1/rna/?database=6</a></td></tr>
-  </table>
-</div>
+```
+curl -H "Accept: application/json" {{ BASE_URL }}/api/v1/rna/UPI0000000001
+curl -H "Accept: application/yaml" {{ BASE_URL }}/api/v1/rna/UPI0000000001
+curl -H "Accept: text/html" {{ BASE_URL }}/api/v1/rna/UPI0000000001
+```
+
+In case the Accept headers conflict with the `format` parameter, an error message is returned:
+
+```
+curl -H "Accept: application/json" {{ BASE_URL }}/api/v1/?format=yaml
+or
+curl -H "Accept: application/yaml" http://127.0.0.1:8000/api/v1/?format=json
+{
+  "detail": "Could not satisfy the request's Accept header"
+}
+```
+
+<h2 id="v1-filtering">Filtering</h2>
+
+The API supports several filtering operations that complement the main RNAcentral search functionality.
+
+<h3 id="v1-filtering-by-sequence-length">Filtering by sequence length</h3>
+
+There are 3 url parameters: `length`, `min_length`, and `max_length`.
+
+#### Examples
+
+* [{{ BASE_URL }}/api/v1/rna/?length=2014](/api/v1/rna/?length=2014)
+* [{{ BASE_URL }}/api/v1/rna/?min_length=200000](/api/v1/rna/?min_length=200000)
+* [{{ BASE_URL }}/api/v1/rna/?max_length=10](/api/v1/rna/?max_length=10)
+* [{{ BASE_URL }}/api/v1/rna/?min_length=1&max_length=4](/api/v1/rna/?min_length=1&max_length=4)
+
+<h3 id="v1-filtering-by-database">Filtering by database</h3>
+
+The expert database can be specified by setting the `database` url parameter.
+
+#### Examples
+
+* [{{ BASE_URL }}/api/v1/rna/?database=1](/api/v1/rna/?database=1) (ENA)
+* [{{ BASE_URL }}/api/v1/rna/?database=2](/api/v1/rna/?database=2) (RFAM)
+* [{{ BASE_URL }}/api/v1/rna/?database=3](/api/v1/rna/?database=3) (SRPDB)
+* [{{ BASE_URL }}/api/v1/rna/?database=4](/api/v1/rna/?database=4) (miRBase)
+* [{{ BASE_URL }}/api/v1/rna/?database=5](/api/v1/rna/?database=5) (VEGA)
+* [{{ BASE_URL }}/api/v1/rna/?database=6](/api/v1/rna/?database=6) (tmRNA Website)
+
+<h3 id="v1-filtering-by-external-ids">Filtering by external ids</h3>
+
+The external id is an id assigned to a sequence in one of the Expert Databases,
+which is imported into RNAcentral as a cross-reference.
+
+The external id can be specified by setting the `external_id` url parameter.
+
+#### Examples
+
+* <a href="/api/v1/rna/?external_id=Stap.epid._AF269831" target="_blank">{{ BASE_URL }}/api/v1/rna/?external_id=Stap.epid._AF269831</a> (SRPDB)
+* <a href="/api/v1/rna/?external_id=MIMAT0000091" target="_blank">{{ BASE_URL }}/api/v1/rna/?external_id=MIMAT0000091</a> (miRBase)
+* <a href="/api/v1/rna/?external_id=OTTHUMG00000172092" target="_blank">{{ BASE_URL }}/api/v1/rna/?external_id=OTTHUMG00000172092</a> (VEGA)
+* <a href="/api/v1/rna/?external_id=Lepto_inter_Lai566" target="_blank">{{ BASE_URL }}/api/v1/rna/?external_id=Lepto_inter_Lai566</a> (tmRNA Website)
+
+<h3 id="v1-combined-filters">Combined filters</h3>
+
+Any filters can be combined to narrow down the query using the `&` symbol as a separator,
+which acts as the logical `AND` operator. More logical operators will be supported in the future.
+
+#### Examples
+
+* [{{ BASE_URL }}/api/v1/rna/?database=3&min_length=200](/api/v1/rna/?database=3&min_length=200)
+* [{{ BASE_URL }}/api/v1/rna/?min_length=1&max_length=4](/api/v1/rna/?min_length=1&max_length=4)
 
 <h3 id="v1-example-scripts">Example scripts</h3>
 
-Two example scripts for looking up RNAcentral unique sequence ids (URS) are provided.
+A common task is finding whether some sequence of interest has an RNAcentral id.
 
+Two example scripts for **looking up RNAcentral unique sequence ids** (URS) are provided
+in **Python and Perl** and can be used in more complicated programs.
+
+Instead of sending the entire sequence over the network to the RNAcentral servers,
+the scripts only submit the [md5](http://en.wikipedia.org/wiki/MD5) value
+calculated based on the sequence. The md5 value is only 32 characters long and is unique
+for each sequence. Using md5 saves traffic and decreases the response time.
+
+{# embedded GitHub gists #}
 <script src="https://gist.github.com/AntonPetrov/177cef0a3b4799f01536.js"></script>
 
 {% endmarkdown %}
@@ -187,6 +237,7 @@ Two example scripts for looking up RNAcentral unique sequence ids (URS) are prov
 
   </div>
 
+  {# affixed navigation menu #}
   <nav id="affix-nav" class="sidebar col-md-3 hidden-print visible-lg" role="complementary">
     <ul class="nav sidenav affix" data-spy="affix" id="affix-ul">
         <li>
@@ -204,9 +255,12 @@ Two example scripts for looking up RNAcentral unique sequence ids (URS) are prov
             <li><a href="#v1-pagination">Pagination</a></li>
             <li><a href="#v1-output-formats">Output formats</a></li>
             <li>
-              <a href="#v1-filtering">Fitlering</a>
+              <a href="#v1-filtering">Filtering</a>
               <ul class="nav">
-                <li><a href="#v1-filtering-by-length">Filtering by length</a></li>
+                <li><a href="#v1-filtering-by-sequence-length">Filtering by length</a></li>
+                <li><a href="#v1-filtering-by-database">Filtering by database</a></li>
+                <li><a href="#v1-filtering-by-external-ids">Filtering by external ids</a></li>
+                <li><a href="#v1-combined-filters">Combined filters</a></li>
               </ul>
             </li>
             <li><a href="#v1-example-scripts">Example scripts</a></li>
@@ -225,15 +279,26 @@ Two example scripts for looking up RNAcentral unique sequence ids (URS) are prov
 
   <script type="text/javascript">
     $(function() {
+      // enable scrollspy, required for the affix
       $('body').scrollspy({ target: '#affix-nav' });
+
+      // activate the affix and set its width
       var $affix = $("#affix-ul");
       $affix.affix({
         offset: {
             top: 50
         }
       }).width($affix.parent().width());
+
+      // control the width of the affix element after window resize
       $(window).resize(function () {
         $affix.width($affix.parent().width());
+      });
+
+      // open all content links in new windows
+      $('.container-main a').not('.sidebar a').each(function() {
+        var $this = $(this);
+        $this.html($this.html() + '&nbsp;<i class="fa fa-external-link"></i>').attr('target', '_blank');
       });
     });
   </script>
