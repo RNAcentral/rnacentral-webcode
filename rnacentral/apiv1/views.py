@@ -35,8 +35,11 @@ class RnaFilter(django_filters.FilterSet):
 
 class APIRoot(APIView):
     """
-    My API documentation
+    This is the root of the RNAcentral API Version 1.
+
+    [API documentation](/api)
     """
+    # the above docstring appears on the API root web page
     permission_classes = (AllowAny,)
 
     def get(self, request, format=format):
@@ -52,6 +55,7 @@ class RnaList(generics.ListAPIView):
     [API documentation][ref]
     [ref]: /api
     """
+    # the above docstring appears on the API root web page
     queryset = Rna.objects.defer('seq_short', 'seq_long').select_related().all()
     serializer_class = RnaSerializer
     filter_class = RnaFilter
@@ -61,6 +65,7 @@ class RnaDetail(generics.RetrieveAPIView):
     """
     Unique RNAcentral Sequence
     """
+    # the above docstring appears on the API root web page
     queryset = Rna.objects.select_related().all()
     serializer_class = RnaSerializer
 
@@ -120,6 +125,7 @@ class AccessionView(generics.RetrieveAPIView):
     [API documentation][ref]
     [ref]: /api
     """
+    # the above docstring appears on the API root web page
     queryset = Accession.objects.select_related().all()
     serializer_class = AccessionSerializer
 
