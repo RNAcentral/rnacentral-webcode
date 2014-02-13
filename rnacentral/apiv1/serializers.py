@@ -54,7 +54,7 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
         model = Accession
         fields = ('url', 'id', 'is_expert_db', 'external_id', 'optional_id', 'feature_name',
                   'division', 'keywords', 'description', 'species', 'organelle',
-                  'classification', 'citations', 'ena_url', 'expert_db_url')
+                  'classification', 'citations', 'source_url', 'expert_db_url')
 
 
 class XrefSerializer(serializers.HyperlinkedModelSerializer):
