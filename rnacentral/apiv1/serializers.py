@@ -44,7 +44,7 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.CharField(source='accession')
     is_expert_db = serializers.SerializerMethodField('is_expert_xref')
     citations = serializers.HyperlinkedIdentityField(view_name='accession-citations')
-    ena_url = serializers.Field(source='get_ena_url')
+    source_url = serializers.Field(source='get_ena_url')
     expert_db_url = serializers.Field(source='get_expert_db_external_url')
 
     def is_expert_xref(self, obj):
