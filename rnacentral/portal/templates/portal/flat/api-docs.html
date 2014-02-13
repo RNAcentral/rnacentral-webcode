@@ -237,6 +237,25 @@ Perl module for computing the md5 values. Additional notes:
 {# embedded GitHub gist #}
 <script src="https://gist.github.com/AntonPetrov/177cef0a3b4799f01536.js"></script>
 
+<h2 id='v1-cross-domain-requests'>Cross domain requests</h2>
+
+To use the API in a javascript application, please use jsonp requests.
+
+#### Example using jQuery
+
+```
+$.ajax({
+    url: '{{ BASE_URL }}/api/v1/rna/URS0000000001?format=jsonp',
+    dataType: 'jsonp',
+    jsonp: false,
+    jsonpCallback: 'callback',
+    success: function(data){
+        // do something with the data
+        console.log(data.rnacentral_id + ', ' + data.sequence);
+    },
+});
+```
+
 <h2 id="v1-trailing-slash">Trailing slash</h2>
 
 The trailing slash in all urls used in the API is **optional**.
@@ -282,6 +301,7 @@ Both requests should return the same results, both in the browser and when retri
               </ul>
             </li>
             <li><a href="#v1-example-script">Example script</a></li>
+            <li><a href="#v1-cross-domain-requests">Cross-domain requests</a></li>
             <li><a href="#v1-trailing-slash">Trailing slash</a></li>
           </ul>
         </li>
