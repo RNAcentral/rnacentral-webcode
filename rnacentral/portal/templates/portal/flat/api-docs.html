@@ -97,12 +97,12 @@ This is an example response containing a single entry:
     "previous": null, // url for the previous results page, default=null
     "results": [ // an array with result objects
         {
-            "url": "{{ BASE_URL }}/api/v1/rna/UPI0000000001/",
-            "upi": "UPI0000000001",
+            "url": "{{ BASE_URL }}/api/v1/rna/URS0000000001/",
+            "rnacentral_id": "URS0000000001",
             "md5": "06808191a979cc0b933265d9a9c213fd",
             "sequence": "CUGAAUAAAUAAGGUAUCUUAUAUCUUUUAAUUAACAGUUAAACGCUUCCAUAAAGCUUUUAUCCA",
             "length": 66,
-            "xrefs": "{{ BASE_URL }}/api/v1/rna/UPI0000000001/xrefs/"
+            "xrefs": "{{ BASE_URL }}/api/v1/rna/URS0000000001/xrefs/"
         }
     ]
 }
@@ -140,17 +140,17 @@ The output format can be specified using the `format` url parameter.
 
 #### Examples
 
-* [{{ BASE_URL }}/api/v1/rna/UPI0000000001/?format=json](/api/v1/rna/UPI0000000001/?format=json)
-* [{{ BASE_URL }}/api/v1/rna/UPI0000000001/?format=yaml](/api/v1/rna/UPI0000000001/?format=yaml)
-* [{{ BASE_URL }}/api/v1/rna/UPI0000000001/?format=api](/api/v1/rna/UPI0000000001/?format=api)
+* [{{ BASE_URL }}/api/v1/rna/URS0000000001/?format=json](/api/v1/rna/URS0000000001/?format=json)
+* [{{ BASE_URL }}/api/v1/rna/URS0000000001/?format=yaml](/api/v1/rna/URS0000000001/?format=yaml)
+* [{{ BASE_URL }}/api/v1/rna/URS0000000001/?format=api](/api/v1/rna/URS0000000001/?format=api)
 
 Alternatively, one can specify the format using the
 http request [Accept headers](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html):
 
 ```
-curl -H "Accept: application/json" {{ BASE_URL }}/api/v1/rna/UPI0000000001
-curl -H "Accept: application/yaml" {{ BASE_URL }}/api/v1/rna/UPI0000000001
-curl -H "Accept: text/html" {{ BASE_URL }}/api/v1/rna/UPI0000000001
+curl -H "Accept: application/json" {{ BASE_URL }}/api/v1/rna/URS0000000001
+curl -H "Accept: application/yaml" {{ BASE_URL }}/api/v1/rna/URS0000000001
+curl -H "Accept: text/html" {{ BASE_URL }}/api/v1/rna/URS0000000001
 ```
 
 In case the Accept headers conflict with the `format` parameter, an error message is returned:
