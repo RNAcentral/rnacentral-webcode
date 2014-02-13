@@ -12,11 +12,12 @@ limitations under the License.
 """
 
 from portal.models import Rna, Accession
-from rest_framework import viewsets
 from rest_framework import generics
 from rest_framework import renderers
-from rest_framework.decorators import link
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
+from rest_framework.reverse import reverse
 from apiv1.serializers import RnaSerializer, AccessionSerializer, CitationSerializer, XrefSerializer
 import django_filters
 
@@ -32,20 +33,43 @@ class RnaFilter(django_filters.FilterSet):
         fields = ['upi', 'md5', 'length', 'database', 'min_length', 'max_length', 'external_id']
 
 
-class RnaViewSet(viewsets.ReadOnlyModelViewSet):
+class APIRoot(APIView):
     """
-    API endpoint that allows Rna sequences to be viewed.
+    My API documentation
+    """
+    permission_classes = (AllowAny,)
+
+    def get(self, request, format=format):
+        return Response({
+            'rna': reverse('rna-list', request=request),
+        })
+
+
+class RnaList(generics.ListAPIView):
+    """
+    RNA Sequences
 
     [API documentation][ref]
     [ref]: /api
     """
-    queryset = Rna.objects.defer('seq_long', 'seq_short').select_related().all()
+    queryset = Rna.objects.defer('seq_short', 'seq_long').select_related().all()
     serializer_class = RnaSerializer
-    paginate_by = 10
     filter_class = RnaFilter
 
-    @link()
-    def xrefs(self, request, pk=None):
+
+class RnaDetail(generics.RetrieveAPIView):
+    """
+    Unique RNAcentral Sequence
+    """
+    queryset = Rna.objects.select_related().all()
+    serializer_class = RnaSerializer
+
+
+class XrefList(generics.ListAPIView):
+    queryset = Rna.objects.select_related().all()
+    serializer_class = RnaSerializer
+
+    def get(self, request, pk=None, format=format):
         """
         Retrieve cross-references for a particular RNA sequence.
         """
@@ -104,11 +128,11 @@ class AccessionView(generics.RetrieveAPIView):
         Retrive individual accessions.
         """
         accession = self.get_object()
-        serializer = AccessionSerializer(accession)
+        serializer = AccessionSerializer(accession, context={'request': request})
         return Response(serializer.data)
 
 
-class CitationView(generics.GenericAPIView):
+class CitationView(generics.RetrieveAPIView):
     """
     API endpoint that allows the citations associated with
     each cross-reference to be viewed.
