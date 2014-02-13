@@ -9,13 +9,23 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
+Quick reference:
+CharField - regular model field
+Field - model method call
+SerializerMethodField - serializer method call
+HyperlinkedIdentityField - link to a view
+
 """
 
 from portal.models import Rna, Xref, Reference, Database, Accession, Release, Reference, Reference_map
 from rest_framework import serializers
 
 
-class RefSerializer(serializers.HyperlinkedModelSerializer):
+class CitationSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Serializer class for literature citations.
+    """
     authors = serializers.CharField(source='data.authors')
     publication = serializers.CharField(source='data.location')
     pubmed_id = serializers.CharField(source='data.pubmed')
@@ -28,6 +38,9 @@ class RefSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class AccessionSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Serializer class for individual cross-references.
+    """
     id = serializers.CharField(source='accession')
     is_expert_db = serializers.SerializerMethodField('is_expert_xref')
     citations = serializers.HyperlinkedIdentityField(view_name='accession-citations')
@@ -45,13 +58,19 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class XrefSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Serializer class for all cross-references associated with an RNAcentral id.
+    """
     database = serializers.CharField(source='db.display_name')
     is_active = serializers.SerializerMethodField('is_xref_active')
     first_seen = serializers.CharField(source='created.release_date')
     last_seen = serializers.CharField(source='last.release_date')
-    accession = AccessionSerializer()
+    accession = AccessionSerializer() # nested serializer
 
     def is_xref_active(self, obj):
+        """
+        Return boolean instead of string.
+        """
         return True if obj.deleted == 'N' else False
 
     class Meta:
@@ -60,6 +79,9 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class RnaSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Serializer class for a unique RNAcentral sequence.
+    """
     sequence = serializers.Field(source='get_sequence')
     xrefs = serializers.HyperlinkedIdentityField(view_name='rna-xrefs')
     rnacentral_id = serializers.CharField(source='upi')

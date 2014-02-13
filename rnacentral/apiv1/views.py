@@ -17,7 +17,7 @@ from rest_framework import generics
 from rest_framework import renderers
 from rest_framework.decorators import link
 from rest_framework.response import Response
-from apiv1.serializers import RnaSerializer, AccessionSerializer, RefSerializer, XrefSerializer
+from apiv1.serializers import RnaSerializer, AccessionSerializer, CitationSerializer, XrefSerializer
 import django_filters
 
 
@@ -125,6 +125,6 @@ class CitationView(generics.GenericAPIView):
         """
         accession = self.get_object()
         citations = accession.refs.all()
-        serializer = RefSerializer(citations)
+        serializer = CitationSerializer(citations)
         return Response(serializer.data)
 
