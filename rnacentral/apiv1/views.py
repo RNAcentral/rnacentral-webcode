@@ -64,6 +64,14 @@ class AccessionView(generics.RetrieveAPIView):
     queryset = Accession.objects.select_related().all()
     serializer_class = AccessionSerializer
 
+    def get(self, request, pk, format=None):
+        """
+        Retrive individual accessions.
+        """
+        accession = self.get_object()
+        serializer = AccessionSerializer(accession)
+        return Response(serializer.data)
+
 
 class CitationView(generics.GenericAPIView):
     """
