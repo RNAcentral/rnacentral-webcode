@@ -39,7 +39,7 @@ class ApiV1Test(unittest.TestCase):
     api_url = 'api/v1/'
 
     def setUp(self):
-        self.upi = 'UPI0000000001'
+        self.upi = 'URS0000000001'
         self.md5 = '06808191a979cc0b933265d9a9c213fd'
         self.accession = 'Y09527.1:2562..2627:tRNA'
 
