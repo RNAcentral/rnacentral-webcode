@@ -42,4 +42,5 @@ urlpatterns = patterns('',
     url(r'^v1/accession/(?P<pk>.*?)/citations/?$', views.CitationView.as_view(), name='accession-citations'),
     url(r'^v1/accession/(?P<pk>.*?)/?$', views.AccessionView.as_view(), name='accession-detail'),
 	url(r'^v1/rna/(?P<pk>URS[0-9A-Fa-f]{10})/xrefs/?$', views.RnaViewSet.as_view({'get': 'xrefs'}), name='rna-xrefs'),
+	url(r'^v1/rna/(?P<pk>URS[0-9A-Fa-f]{10})/fasta/?$', views.RnaFastaView.as_view(), name='rna-fasta'),
 )

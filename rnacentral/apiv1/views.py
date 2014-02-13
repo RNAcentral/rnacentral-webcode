@@ -14,6 +14,7 @@ limitations under the License.
 from portal.models import Rna, Accession
 from rest_framework import viewsets
 from rest_framework import generics
+from rest_framework import renderers
 from rest_framework.decorators import link
 from rest_framework.response import Response
 from apiv1.serializers import RnaSerializer, AccessionSerializer, RefSerializer, XrefSerializer
@@ -52,6 +53,40 @@ class RnaViewSet(viewsets.ReadOnlyModelViewSet):
         xrefs = rna.xrefs.all()
         serializer = XrefSerializer(xrefs, context={'request': request})
         return Response(serializer.data)
+
+
+class FastaRenderer(renderers.BaseRenderer):
+    media_type = 'text/fasta'
+    format = 'fasta'
+
+    def render(self, rna, media_type=None, renderer_context=None):
+        """
+        Split long sequences by a fixed number of characters per line.
+        """
+        max_column = 80
+        seq = rna.get_sequence()
+        split_seq = ''
+        i = 0
+        while i < len(seq):
+            split_seq += seq[i:i+max_column] + "\n"
+            i += max_column
+        fasta = "> %s\n%s" % (rna.upi, split_seq)
+        return fasta
+
+
+class RnaFastaView(generics.RetrieveAPIView):
+    """
+    Render RNA sequence in fasta format.
+    """
+    queryset = Rna.objects.all()
+    renderer_classes = [FastaRenderer]
+
+    def get(self, request, pk, format=None):
+        """
+        Retrive the Rna object and pass it on to the renderer.
+        """
+        rna = self.get_object()
+        return Response(rna)
 
 
 class AccessionView(generics.RetrieveAPIView):
