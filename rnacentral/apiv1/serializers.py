@@ -42,19 +42,15 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
     Serializer class for individual cross-references.
     """
     id = serializers.CharField(source='accession')
-    is_expert_db = serializers.SerializerMethodField('is_expert_xref')
     citations = serializers.HyperlinkedIdentityField(view_name='accession-citations')
     source_url = serializers.Field(source='get_ena_url')
     expert_db_url = serializers.Field(source='get_expert_db_external_url')
 
-    def is_expert_xref(self, obj):
-        return True if obj.non_coding_id else False
-
     class Meta:
         model = Accession
-        fields = ('url', 'id', 'is_expert_db', 'external_id', 'optional_id', 'feature_name',
-                  'division', 'keywords', 'description', 'species', 'organelle',
-                  'classification', 'citations', 'source_url', 'expert_db_url')
+        fields = ('url', 'id', 'description', 'external_id', 'optional_id', 'feature_name',
+                  'keywords', 'species', 'organelle',
+                  'citations', 'source_url', 'expert_db_url')
 
 
 class XrefSerializer(serializers.HyperlinkedModelSerializer):
@@ -62,10 +58,14 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
     Serializer class for all cross-references associated with an RNAcentral id.
     """
     database = serializers.CharField(source='db.display_name')
+    is_expert_db = serializers.SerializerMethodField('is_expert_xref')
     is_active = serializers.SerializerMethodField('is_xref_active')
     first_seen = serializers.CharField(source='created.release_date')
     last_seen = serializers.CharField(source='last.release_date')
     accession = AccessionSerializer()
+
+    def is_expert_xref(self, obj):
+        return True if obj.accession.non_coding_id else False
 
     def is_xref_active(self, obj):
         """
@@ -75,7 +75,7 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Xref
-        fields = ('database', 'is_active', 'taxid', 'first_seen', 'last_seen', 'accession')
+        fields = ('database', 'is_expert_db', 'is_active', 'first_seen', 'last_seen', 'taxid', 'accession')
 
 
 class RnaNestedSerializer(serializers.HyperlinkedModelSerializer):
