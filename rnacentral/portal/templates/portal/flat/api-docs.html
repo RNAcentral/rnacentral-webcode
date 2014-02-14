@@ -82,31 +82,50 @@ The limit can be lifted for registered users, so please get in touch if you requ
 
 <hr>
 
-<h1 id="v1">API v1 documentation <small><span class="label label-success">current version</span></small></h1>
+<h1 id="v1">API v1 documentation</h1>
 
 <h2 id="v1-example-responses">Example responses</h2>
 
-This is an example response containing a single entry:
+Responses containing **multiple entries** have the following fields:
 
-TODO: a list and a single entry
+* *count* is the number of entries in the matching set
+* *next* and *previous* are urls to the corresponding results page
+* *results* is an array of entries.
+
+#### Example
 
 ```
-{{ BASE_URL }}/api/v1/rna/?md5=06808191a979cc0b933265d9a9c213fd
-
+{{ BASE_URL }}/api/v1/rna/
 {
-    "count": 1, // number of entries
-    "next": null, // url for the next results page, default=null
-    "previous": null, // url for the previous results page, default=null
-    "results": [ // an array with result objects
+    "count": 6493837,
+    "next": "{{ BASE_URL }}/api/v1/rna/?page=2",
+    "previous": null,
+    "results": [
         {
-            "url": "{{ BASE_URL }}/api/v1/rna/URS0000000001/",
+            "url": "{{ BASE_URL }}/api/v1/rna/URS0000000001",
             "rnacentral_id": "URS0000000001",
             "md5": "06808191a979cc0b933265d9a9c213fd",
             "sequence": "CUGAAUAAAUAAGGUAUCUUAUAUCUUUUAAUUAACAGUUAAACGCUUCCAUAAAGCUUUUAUCCA",
             "length": 66,
-            "xrefs": "{{ BASE_URL }}/api/v1/rna/URS0000000001/xrefs/"
-        }
+            "xrefs": "{{ BASE_URL }}/api/v1/rna/URS0000000001/xrefs"
+        },
+
+        // 9 more entries
     ]
+}
+```
+
+Responses containing just a **single entry** don't have the extra navigation fields:
+
+```
+{{ BASE_URL }}api/v1/rna/URS0000000001
+{
+    "url": "{{ BASE_URL }}/api/v1/rna/URS0000000001",
+    "rnacentral_id": "URS0000000001",
+    "md5": "06808191a979cc0b933265d9a9c213fd",
+    "sequence": "CUGAAUAAAUAAGGUAUCUUAUAUCUUUUAAUUAACAGUUAAACGCUUCCAUAAAGCUUUUAUCCA",
+    "length": 66,
+    "xrefs": "{{ BASE_URL }}/api/v1/rna/URS0000000001/xrefs"
 }
 ```
 
@@ -131,9 +150,7 @@ Note that such requests may take longer.
 
 <h2 id="v1-pagination">Pagination</h2>
 
-All responses are paginated to prevent accidental downloads of large amounts of data and to speed up the API.
-
-The urls for the *next* and *previous* pages are present in every response object.
+Responses containing multuple entries are paginated to prevent accidental downloads of large amounts of data and to speed up the API.
 
 To navigate between pages, specify the `page` parameter.
 
