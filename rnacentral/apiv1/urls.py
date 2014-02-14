@@ -30,9 +30,8 @@ urlpatterns = patterns('',
     # literature citations associated with ENA records
     url(r'^v1/accession/(?P<pk>.*?)/citations/?$', views.CitationView.as_view(), name='accession-citations'),
     # view for individual cross-references
-    url(r'^v1/accession/(?P<pk>.*?)/?$', views.AccessionView.as_view(), name='accession-detail'),
-    # fasta view
-	url(r'^v1/rna/(?P<pk>URS[0-9A-Fa-f]{10})/fasta/?$', views.RnaFastaView.as_view(), name='rna-fasta'),
+    # all ENA accessions end with RNA feature name + ordinal
+    url(r'^v1/accession/(?P<pk>.*?(RNA|feature)(:\d+)?)/?$', views.AccessionView.as_view(), name='accession-detail'),
 )
 
-urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'yaml'])
+urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'yaml', 'fasta', 'api'])

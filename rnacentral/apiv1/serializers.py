@@ -97,3 +97,14 @@ class RnaFlatSerializer(RnaNestedSerializer):
     to provide a flat representation.
     """
     xrefs = XrefSerializer()
+
+
+class RnaFastaSerializer(serializers.ModelSerializer):
+    """
+    Serializer for presenting RNA sequences in FASTA format
+    """
+    fasta = serializers.Field(source='get_sequence_fasta')
+
+    class Meta:
+        model = Rna
+        fields = ('fasta',)

@@ -130,6 +130,33 @@ class ApiV1Test(unittest.TestCase):
         data = self._check_urls(url)
         self.assertNotEqual(len(data['xrefs']), 0)
 
+    def test_non_fasta_output_formats(self):
+        formats = {'json': 'application/json',
+                   'yaml': 'application/yaml',
+                   'api': 'text/html'}
+        targets = ('rna', 'rna/%s' % self.upi, 'rna/%s/xrefs' % self.upi,
+                   'accession/%s' % self.accession, 'accession/%s/citations' % self.accession)
+        self._output_format_tester(formats, targets)
+
+    def test_fasta_output(self):
+        formats = {'fasta': 'text/fasta'}
+        targets = ('rna', 'rna/%s' % self.upi)
+        self._output_format_tester(formats, targets)
+
+    def _output_format_tester(self, formats, targets):
+        """
+        Auxiliary function for testing output formats.
+        """
+        urls = [self._get_api_url(x) for x in targets]
+        for url in urls:
+            for suffix, headers in formats.iteritems():
+                r = requests.get(url + '.%s' % suffix) # format suffix
+                self.assertEqual(r.status_code, 200, url)
+                r = requests.get(url + '?format=%s' % suffix) # url notation
+                self.assertEqual(r.status_code, 200, url)
+                r = requests.get(url, headers={"Accept": headers}) # accept headers
+                self.assertEqual(r.status_code, 200, url)
+
     def _check_urls(self, url):
         """
         Auxiliary function for testing the API with and without trailing slash.

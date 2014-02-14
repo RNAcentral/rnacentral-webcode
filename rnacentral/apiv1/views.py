@@ -11,6 +11,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+"""
+Docstrings of the classes exposed in urlpatters support markdown.
+"""
+
 from portal.models import Rna, Accession
 from rest_framework import generics
 from rest_framework import renderers
@@ -18,12 +22,30 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.reverse import reverse
-from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, XrefSerializer, RnaFlatSerializer
+from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, XrefSerializer, RnaFlatSerializer, RnaFastaSerializer
 import django_filters
 import re
 
 
+class APIRoot(APIView):
+    """
+    This is the root of the RNAcentral API Version 1.
+
+    [API documentation](/api)
+    """
+    # the above docstring appears on the API website
+    permission_classes = (AllowAny,)
+
+    def get(self, request, format=format):
+        return Response({
+            'rna': reverse('rna-list', request=request),
+        })
+
+
 class RnaFilter(django_filters.FilterSet):
+    """
+    Declare what fields can be filtered using django-filters
+    """
     min_length = django_filters.NumberFilter(name="length", lookup_type='gte')
     max_length = django_filters.NumberFilter(name="length", lookup_type='lte')
     external_id = django_filters.CharFilter(name="xrefs__accession__external_id", distinct=True)
@@ -33,43 +55,54 @@ class RnaFilter(django_filters.FilterSet):
         fields = ['upi', 'md5', 'length', 'min_length', 'max_length', 'external_id']
 
 
-class APIRoot(APIView):
+class RnaFastaRenderer(renderers.BaseRenderer):
     """
-    This is the root of the RNAcentral API Version 1.
-
-    [API documentation](/api)
+    Render the fasta data received from RnaFastaSerializer.
     """
-    # the above docstring appears on the API root web page
-    permission_classes = (AllowAny,)
+    media_type = 'text/fasta'
+    format = 'fasta'
 
-    def get(self, request, format=format):
-        return Response({
-            'rna': reverse('rna-list', request=request),
-        })
+    def render(self, data, media_type=None, renderer_context=None):
+        """
+        RnaFastaSerializer can return either a single entry or a list of entries.
+        """
+        if 'results' in data: # list of entries
+            text = '# %i total entries, next page: %s, previous page: %s\n' % (data['count'], data['next'], data['previous'])
+            for entry in data['results']:
+                text += entry['fasta']
+            return text
+        else: # single entry
+            return data['fasta']
 
 
-def _flat_or_nested_rna_serializer(obj):
+class RnaMixin(object):
     """
+    Mixin for additional functionality specific to Rna views.
     """
-    flat = obj.request.QUERY_PARAMS.get('flat', 'false')
-    if re.match('true', flat, re.IGNORECASE):
-        return RnaFlatSerializer
-    return RnaNestedSerializer
+    def get_serializer_class(self):
+        """
+        Determine a serializer for RnaList and RnaDetail views.
+        """
+        if self.request.accepted_renderer.format == 'fasta':
+            return RnaFastaSerializer
+
+        flat = self.request.QUERY_PARAMS.get('flat', 'false')
+        if re.match('true', flat, re.IGNORECASE):
+            return RnaFlatSerializer
+        return RnaNestedSerializer
 
 
-class RnaList(generics.ListAPIView):
+class RnaList(RnaMixin, generics.ListAPIView):
     """
     RNA Sequences
 
-    [API documentation][ref]
-    [ref]: /api
+    [API documentation](/api)
     """
-    # the above docstring appears on the API root web page
+    # the above docstring appears on the API website
     permission_classes = (AllowAny,)
     filter_class = RnaFilter
-
-    def get_serializer_class(self):
-        return _flat_or_nested_rna_serializer(self)
+    renderer_classes = (renderers.JSONRenderer, renderers.BrowsableAPIRenderer,
+                        renderers.YAMLRenderer, RnaFastaRenderer)
 
     def _get_database_id(self):
         """
@@ -104,22 +137,23 @@ class RnaList(generics.ListAPIView):
         return queryset
 
 
-class RnaDetail(generics.RetrieveAPIView):
+class RnaDetail(RnaMixin, generics.RetrieveAPIView):
     """
     Unique RNAcentral Sequence
     """
-    # the above docstring appears on the API root web page
+    # the above docstring appears on the API website
     queryset = Rna.objects.select_related().all()
-
-    def get_serializer_class(self):
-        return _flat_or_nested_rna_serializer(self)
+    renderer_classes = (renderers.JSONRenderer, renderers.BrowsableAPIRenderer,
+                        renderers.YAMLRenderer, RnaFastaRenderer)
 
 
 class XrefList(generics.ListAPIView):
+    """
+    """
     queryset = Rna.objects.select_related().all()
     serializer_class = RnaNestedSerializer
 
-    def get(self, request, pk=None, format=format):
+    def get(self, request, pk=None, format=None):
         """
         Retrieve cross-references for a particular RNA sequence.
         """
@@ -129,50 +163,14 @@ class XrefList(generics.ListAPIView):
         return Response(serializer.data)
 
 
-class FastaRenderer(renderers.BaseRenderer):
-    media_type = 'text/fasta'
-    format = 'fasta'
-
-    def render(self, rna, media_type=None, renderer_context=None):
-        """
-        Split long sequences by a fixed number of characters per line.
-        """
-        max_column = 80
-        seq = rna.get_sequence()
-        split_seq = ''
-        i = 0
-        while i < len(seq):
-            split_seq += seq[i:i+max_column] + "\n"
-            i += max_column
-        fasta = "> %s\n%s" % (rna.upi, split_seq)
-        return fasta
-
-
-class RnaFastaView(generics.RetrieveAPIView):
-    """
-    Render RNA sequence in fasta format.
-    """
-    queryset = Rna.objects.all()
-    renderer_classes = [FastaRenderer]
-
-    def get(self, request, pk, format=None):
-        """
-        Retrive the Rna object and pass it on to the renderer.
-        """
-        rna = self.get_object()
-        return Response(rna)
-
-
 class AccessionView(generics.RetrieveAPIView):
     """
     API endpoint that allows single accessions to be viewed.
 
-    [API documentation][ref]
-    [ref]: /api
+    [API documentation](/api)
     """
-    # the above docstring appears on the API root web page
+    # the above docstring appears on the API website
     queryset = Accession.objects.select_related().all()
-    serializer_class = AccessionSerializer
 
     def get(self, request, pk, format=None):
         """
@@ -188,18 +186,18 @@ class CitationView(generics.RetrieveAPIView):
     API endpoint that allows the citations associated with
     each cross-reference to be viewed.
 
-    [API documentation][ref]
-    [ref]: /api
+    [API documentation](/api)
     """
+    # the above docstring appears on the API website
     queryset = Accession.objects.select_related().all()
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, pk, format=None):
         """
         Retrieve citations associated with a particular entry.
         This method is used to retrieve citations for the unique sequence view.
         """
         accession = self.get_object()
         citations = accession.refs.all()
-        serializer = CitationSerializer(citations)
+        serializer = CitationSerializer(citations, context={'request': request})
         return Response(serializer.data)
 
