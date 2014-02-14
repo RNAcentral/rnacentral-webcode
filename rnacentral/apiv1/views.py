@@ -24,14 +24,13 @@ import re
 
 
 class RnaFilter(django_filters.FilterSet):
-    database = django_filters.CharFilter(name="xrefs__db")
     min_length = django_filters.NumberFilter(name="length", lookup_type='gte')
     max_length = django_filters.NumberFilter(name="length", lookup_type='lte')
     external_id = django_filters.CharFilter(name="xrefs__accession__external_id", distinct=True)
 
     class Meta:
         model = Rna
-        fields = ['upi', 'md5', 'length', 'database', 'min_length', 'max_length', 'external_id']
+        fields = ['upi', 'md5', 'length', 'min_length', 'max_length', 'external_id']
 
 
 class APIRoot(APIView):
@@ -66,11 +65,44 @@ class RnaList(generics.ListAPIView):
     [ref]: /api
     """
     # the above docstring appears on the API root web page
-    queryset = Rna.objects.defer('seq_short', 'seq_long').select_related().all()
+    permission_classes = (AllowAny,)
     filter_class = RnaFilter
 
     def get_serializer_class(self):
         return _flat_or_nested_rna_serializer(self)
+
+    def _get_database_id(self):
+        """
+        Map the `database` parameter from the url to internal database ids
+        """
+        database = self.request.QUERY_PARAMS.get('database', None)
+        if not database:
+            pass
+        elif re.match('ena', database, re.IGNORECASE):
+            database = 1
+        elif re.match('rfam', database, re.IGNORECASE):
+            database = 2
+        elif re.match('srpdb', database, re.IGNORECASE):
+            database = 3
+        elif re.match('mirbase', database, re.IGNORECASE):
+            database = 4
+        elif re.match('vega', database, re.IGNORECASE):
+            database = 5
+        elif re.match('tmrna_website', database, re.IGNORECASE):
+            database = 6
+        return database
+
+    def get_queryset(self):
+        """
+        Manually filter against the `database` query parameter,
+        use RnaFilter for other filtering operations.
+        """
+        queryset = Rna.objects.defer('seq_short', 'seq_long').select_related().all()
+        database = self._get_database_id()
+        if database:
+            queryset = queryset.filter(xrefs__db=database)
+        return queryset
+
 
 class RnaDetail(generics.RetrieveAPIView):
     """

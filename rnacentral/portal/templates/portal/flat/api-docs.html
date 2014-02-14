@@ -200,16 +200,17 @@ There are 3 url parameters: `length`, `min_length`, and `max_length`.
 
 <h3 id="v1-filtering-by-database">Filtering by database</h3>
 
-The expert database can be specified by setting the `database` url parameter.
+The expert database can be specified by setting the `database` url parameter
+(possible values: *srpdb*, *mirbase*, *vega*, *tmrna_website*, *ena*, *rfam*).
 
 #### Examples
 
-* [{{ BASE_URL }}/api/v1/rna/?database=1](/api/v1/rna/?database=1) (ENA)
-* [{{ BASE_URL }}/api/v1/rna/?database=2](/api/v1/rna/?database=2) (RFAM)
-* [{{ BASE_URL }}/api/v1/rna/?database=3](/api/v1/rna/?database=3) (SRPDB)
-* [{{ BASE_URL }}/api/v1/rna/?database=4](/api/v1/rna/?database=4) (miRBase)
-* [{{ BASE_URL }}/api/v1/rna/?database=5](/api/v1/rna/?database=5) (VEGA)
-* [{{ BASE_URL }}/api/v1/rna/?database=6](/api/v1/rna/?database=6) (tmRNA Website)
+* [{{ BASE_URL }}/api/v1/rna/?database=srpdb](/api/v1/rna/?database=srpdb)
+* [{{ BASE_URL }}/api/v1/rna/?database=mirbase](/api/v1/rna/?database=mirbase)
+* [{{ BASE_URL }}/api/v1/rna/?database=vega](/api/v1/rna/?database=vega)
+* [{{ BASE_URL }}/api/v1/rna/?database=tmrna_website](/api/v1/rna/?database=tmrna_website)
+* [{{ BASE_URL }}/api/v1/rna/?database=ena](/api/v1/rna/?database=ena)
+* [{{ BASE_URL }}/api/v1/rna/?database=rfam](/api/v1/rna/?database=rfam)
 
 <h3 id="v1-filtering-by-external-ids">Filtering by external ids</h3>
 
@@ -232,7 +233,7 @@ which acts as the logical `AND` operator. More logical operators will be support
 
 #### Examples
 
-* [{{ BASE_URL }}/api/v1/rna/?database=3&min_length=200](/api/v1/rna/?database=3&min_length=200)
+* [{{ BASE_URL }}/api/v1/rna/?database=3&min_length=200](/api/v1/rna/?database=srpdb&min_length=200)
 * [{{ BASE_URL }}/api/v1/rna/?min_length=1&max_length=4](/api/v1/rna/?min_length=1&max_length=4)
 
 <h3 id="v1-example-script">Example script</h3>
