@@ -108,6 +108,25 @@ This is an example response containing a single entry:
 }
 ```
 
+<h3 id="v1-hyperlinked-vs-flat-responses">Hyperlinked vs flat responses</h3>
+
+By default cross-references are represented by a hyperlink in the default RNA object, for example:
+
+```
+"xrefs": "{{ BASE_URL }}/api/v1/rna/URS0000000001/xrefs/"
+```
+
+Sometimes it is desirable to retrieve all nested objects in a single request,
+which can be done using the `flat=true` url parameter.
+Note that such requests may take longer.
+
+#### Examples
+
+* [{{ BASE_URL }}/api/v1/rna/](/api/v1/rna/) (hyperlinked)
+* [{{ BASE_URL }}/api/v1/rna/?flat=true](/api/v1/rna/?flat=true) (flat)
+* [{{ BASE_URL }}/api/v1/rna/URS0000000001](/api/v1/rna/URS0000000001) (hyperlinked)
+* [{{ BASE_URL }}/api/v1/rna/URS0000000001/?flat=true](/api/v1/rna/URS0000000001/?flat=true) (flat)
+
 <h2 id="v1-pagination">Pagination</h2>
 
 All responses are paginated to prevent accidental downloads of large amounts of data and to speed up the API.
@@ -288,7 +307,12 @@ Both requests should return the same results, both in the browser and when retri
         <li>
           <a href="#v1">API v1 documentation</a>
           <ul class="nav">
-            <li><a href="#v1-example-response">Example response</a></li>
+            <li>
+              <a href="#v1-example-response">Example response</a>
+              <ul class="nav">
+                <li><a href="#v1-hyperlinked-vs-flat-responses">Hyperlinked vs flat responses</a></li>
+              </ul>
+            </li>
             <li><a href="#v1-pagination">Pagination</a></li>
             <li><a href="#v1-output-formats">Output formats</a></li>
             <li>
