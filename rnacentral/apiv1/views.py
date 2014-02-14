@@ -18,8 +18,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.reverse import reverse
-from apiv1.serializers import RnaSerializer, AccessionSerializer, CitationSerializer, XrefSerializer
+from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, XrefSerializer, RnaFlatSerializer
 import django_filters
+import re
 
 
 class RnaFilter(django_filters.FilterSet):
@@ -48,6 +49,15 @@ class APIRoot(APIView):
         })
 
 
+def _flat_or_nested_rna_serializer(obj):
+    """
+    """
+    flat = obj.request.QUERY_PARAMS.get('flat', 'false')
+    if re.match('true', flat, re.IGNORECASE):
+        return RnaFlatSerializer
+    return RnaNestedSerializer
+
+
 class RnaList(generics.ListAPIView):
     """
     RNA Sequences
@@ -57,9 +67,10 @@ class RnaList(generics.ListAPIView):
     """
     # the above docstring appears on the API root web page
     queryset = Rna.objects.defer('seq_short', 'seq_long').select_related().all()
-    serializer_class = RnaSerializer
     filter_class = RnaFilter
 
+    def get_serializer_class(self):
+        return _flat_or_nested_rna_serializer(self)
 
 class RnaDetail(generics.RetrieveAPIView):
     """
@@ -67,12 +78,14 @@ class RnaDetail(generics.RetrieveAPIView):
     """
     # the above docstring appears on the API root web page
     queryset = Rna.objects.select_related().all()
-    serializer_class = RnaSerializer
+
+    def get_serializer_class(self):
+        return _flat_or_nested_rna_serializer(self)
 
 
 class XrefList(generics.ListAPIView):
     queryset = Rna.objects.select_related().all()
-    serializer_class = RnaSerializer
+    serializer_class = RnaNestedSerializer
 
     def get(self, request, pk=None, format=format):
         """

@@ -65,7 +65,7 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
     is_active = serializers.SerializerMethodField('is_xref_active')
     first_seen = serializers.CharField(source='created.release_date')
     last_seen = serializers.CharField(source='last.release_date')
-    accession = AccessionSerializer() # nested serializer
+    accession = AccessionSerializer()
 
     def is_xref_active(self, obj):
         """
@@ -78,7 +78,7 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('database', 'is_active', 'taxid', 'first_seen', 'last_seen', 'accession')
 
 
-class RnaSerializer(serializers.HyperlinkedModelSerializer):
+class RnaNestedSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer class for a unique RNAcentral sequence.
     """
@@ -89,3 +89,11 @@ class RnaSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Rna
         fields = ('url', 'rnacentral_id', 'md5', 'sequence', 'length', 'xrefs')
+
+
+class RnaFlatSerializer(RnaNestedSerializer):
+    """
+    Override the xrefs field in the default nested serializer
+    to provide a flat representation.
+    """
+    xrefs = XrefSerializer()
