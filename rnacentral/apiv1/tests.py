@@ -120,6 +120,16 @@ class ApiV1Test(unittest.TestCase):
             r = requests.get(url)
             self.assertEqual(r.status_code, 200)
 
+    def test_hyperlinked_vs_nested_responses(self):
+        # hyperlinked
+        url = self._get_api_url('rna/')
+        data = self._check_urls(url)
+        self.assertIn('http', data['results'][0]['xrefs'])
+        # flat
+        url = self._get_api_url('rna/%s%s' % (self.upi, '?flat=true'))
+        data = self._check_urls(url)
+        self.assertNotEqual(len(data['xrefs']), 0)
+
     def _check_urls(self, url):
         """
         Auxiliary function for testing the API with and without trailing slash.
