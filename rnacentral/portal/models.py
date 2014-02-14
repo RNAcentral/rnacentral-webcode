@@ -71,6 +71,20 @@ class Rna(models.Model):
         """
         return self.get_ena_xrefs() | self.get_expert_database_xrefs()
 
+    def get_sequence_fasta(self):
+        """
+        Split long sequences by a fixed number of characters per line.
+        """
+        max_column = 80
+        seq = self.get_sequence()
+        split_seq = ''
+        i = 0
+        while i < len(seq):
+            split_seq += seq[i:i+max_column] + "\n"
+            i += max_column
+        fasta = "> %s\n%s" % (self.upi, split_seq)
+        return fasta
+
 
 class Database(models.Model):
     timestamp = models.DateField()
