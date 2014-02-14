@@ -27,6 +27,19 @@ import django_filters
 import re
 
 
+class BrowsableAPIRenderer(renderers.BrowsableAPIRenderer):
+    """
+    Use this renderer instead of the original one to customize context variables.
+    """
+
+    def get_context(self, data, accepted_media_type, renderer_context):
+        """
+        """
+        context = super(BrowsableAPIRenderer, self).get_context(data, accepted_media_type, renderer_context)
+        context['new_variable'] = ['new variable']
+        return context
+
+
 class APIRoot(APIView):
     """
     This is the root of the RNAcentral API Version 1.
@@ -94,14 +107,15 @@ class RnaMixin(object):
 
 class RnaList(RnaMixin, generics.ListAPIView):
     """
-    RNA Sequences
+    Unique RNAcentral Sequences
 
     [API documentation](/api)
     """
     # the above docstring appears on the API website
     permission_classes = (AllowAny,)
     filter_class = RnaFilter
-    renderer_classes = (renderers.JSONRenderer, renderers.BrowsableAPIRenderer,
+    renderer_classes = (renderers.JSONRenderer, renderers.JSONPRenderer,
+                        renderers.BrowsableAPIRenderer,
                         renderers.YAMLRenderer, RnaFastaRenderer)
 
     def _get_database_id(self):
@@ -140,22 +154,27 @@ class RnaList(RnaMixin, generics.ListAPIView):
 class RnaDetail(RnaMixin, generics.RetrieveAPIView):
     """
     Unique RNAcentral Sequence
+
+    [API documentation](/api)
     """
     # the above docstring appears on the API website
     queryset = Rna.objects.select_related().all()
-    renderer_classes = (renderers.JSONRenderer, renderers.BrowsableAPIRenderer,
+    renderer_classes = (renderers.JSONRenderer, renderers.JSONPRenderer,
+                        renderers.BrowsableAPIRenderer,
                         renderers.YAMLRenderer, RnaFastaRenderer)
 
 
 class XrefList(generics.ListAPIView):
     """
+    List of cross-references for a particular RNA sequence.
+
+    [API documentation](/api)
     """
     queryset = Rna.objects.select_related().all()
     serializer_class = RnaNestedSerializer
 
     def get(self, request, pk=None, format=None):
         """
-        Retrieve cross-references for a particular RNA sequence.
         """
         rna = self.get_object()
         xrefs = rna.xrefs.all()
