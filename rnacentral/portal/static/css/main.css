@@ -187,6 +187,7 @@ h1, h2, h3, h4, h5, h6,
 pre {
   font-family: monospace;
   padding: 1%;
+  margin: 5px 0 10px 0;
 }
 
 ul {
