@@ -70,6 +70,11 @@ limitations under the License.
           No alternative transcripts.
         {% endif %}
       {% endwith %}
+      <br>
+      <i class="fa fa-angle-right"></i>
+      {% if xref.has_genomic_coordinates  %}
+        <a class="genoverse-xref" href="#" data-genomic-start="{{ xref.get_assembly_start }}" data-genomic-end="{{ xref.get_assembly_end }}" data-chromosome="{{ xref.get_assembly_chromosome }}">View genomic location</a>
+      {% endif %}
     {# tmRNA Website #}
     {% elif xref.db.display_name == 'tmRNA Website' %}
       tmRNA Website: <a href="{{ xref.accession.get_expert_db_external_url }}.html" target="_blank">{{ xref.accession.external_id }}</a>

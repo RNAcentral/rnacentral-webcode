@@ -249,6 +249,55 @@ class Xref(models.Model):
             tmrna_type = 2 # two-piece tmRNA
         return tmrna_type
 
+    def has_genomic_coordinates(self):
+        """
+        True for sequences with genomic coordinates.
+        """
+        return True if len(self.accession.assembly.all()) > 0 else False
+
+    def get_assembly_start(self):
+        """
+        Select the minimum starting coordinates to account for complementary strands.
+        """
+        column = 'primary_start' if self.get_assembly_strand() == 1 else 'primary_end'
+        data = self.accession.assembly.aggregate(assembly_start = Min(column))
+        return data['assembly_start']
+
+    def get_assembly_end(self):
+        """
+        Select the maximum ending coordinates to account for complementary strands.
+        """
+        column = 'primary_end' if self.get_assembly_strand() == 1 else 'primary_start'
+        data = self.accession.assembly.aggregate(assembly_end = Max(column))
+        return data['assembly_end']
+
+    def get_assembly_chromosome(self):
+        """
+        Get the chromosome for the genomic coordinates.
+        """
+        return self.accession.assembly.all()[0].chromosome.upper()
+
+    def get_assembly_strand(self):
+        """
+        Get the strand for the genomic coordinates.
+        """
+        return self.accession.assembly.all()[0].strand
+
+
+class Assembly(models.Model):
+    accession = models.ForeignKey(Accession, db_column='accession', to_field='accession', related_name='assembly')
+    primary_identifier = models.CharField(max_length=20)
+    chromosome = models.CharField(max_length=3)
+    local_start = models.IntegerField()
+    local_end = models.IntegerField()
+    primary_start = models.IntegerField()
+    primary_end = models.IntegerField()
+    strand = models.IntegerField()
+    seq_order = models.IntegerField()
+
+    class Meta:
+        db_table = 'rnc_assembly'
+
 
 class Reference(models.Model):
     authors = models.TextField()
