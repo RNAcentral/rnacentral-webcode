@@ -12,6 +12,7 @@ limitations under the License.
 """
 
 from django.db import models
+from django.db.models import Min, Max
 import re
 
 # to make text fields searchable, add character set functional indexes in Oracle
@@ -70,6 +71,20 @@ class Rna(models.Model):
             at the beginning of the resulting queryset.
         """
         return self.get_ena_xrefs() | self.get_expert_database_xrefs()
+
+    def count_distinct_organisms(self):
+        return self.xrefs.values('taxid').distinct().count()
+
+    def count_distinct_databases(self):
+        return self.xrefs.values('db_id').distinct().count()
+
+    def first_seen(self):
+        data = self.xrefs.aggregate(first_seen=Min('created__release_date'))
+        return data['first_seen']
+
+    def last_seen(self):
+        data = self.xrefs.aggregate(last_seen=Max('last__release_date'))
+        return data['last_seen']
 
     def get_sequence_fasta(self):
         """

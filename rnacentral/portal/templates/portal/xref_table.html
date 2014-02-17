@@ -29,7 +29,7 @@ limitations under the License.
 
 <tbody>
 
-{% for xref in context.xrefs %}
+{% for xref in context.rna.get_xrefs %}
   <tr {% if xref.deleted == 'Y' %}class="warning"{% endif %}>
     <td class="text-muted">{{ forloop.counter }}</td>
     <td>

@@ -47,13 +47,9 @@ def get_xrefs_data(request, upi):
     """
     try:
         rna = Rna.objects.get(upi=upi)
-        xrefs = rna.get_xrefs()
-        context = {
-            'xrefs': xrefs,
-        }
     except Rna.DoesNotExist:
         raise Http404
-    return render(request, 'portal/xref_table.html', {'context': context})
+    return render(request, 'portal/xref_table.html', {'context': {'rna': rna}})
 
 
 def get_sequence_lineage(request, upi):
@@ -84,15 +80,14 @@ def homepage(request):
 
 
 def rna_view(request, upi):
+    """
+    Unique RNAcentral Sequence view.
+    """
     try:
         rna = Rna.objects.get(upi=upi)
-        xrefs = rna.get_xrefs()
         context = {
             'counts': rna.count_symbols(),
-            'num_org': xrefs.values('taxid').distinct().count(),
-            'num_db': xrefs.values('db_id').distinct().count(),
         }
-        context.update(xrefs.aggregate(first_seen=Min('created__release_date'),last_seen=Max('last__release_date')))
     except Rna.DoesNotExist:
         raise Http404
     return render(request, 'portal/rna_view.html', {'rna': rna, 'context': context})

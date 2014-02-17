@@ -79,12 +79,12 @@ limitations under the License.
             <div class="panel-body">
               <ul class="list-inline">
                 <li><strong>{{ rna.length|intcomma }}</strong> nucleotides</li>
-                <li><strong>{{ context.num_db|intcomma }}</strong> database{{ context.num_db|pluralize }}</li>
+                <li><strong>{{ rna.count_distinct_databases|intcomma }}</strong> database{{ rna.count_distinct_databases|pluralize }}</li> {{context.num_db}}
                 <li>
-                  <strong>{{ context.num_org|intcomma }}</strong> <a href="#" id="show-species-tab">species</a>
+                  <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="#" id="show-species-tab">species</a>
                 </li>
-                <li>first seen <time datetime="{{ context.first_seen|date:'Y-m-d' }}">{{ context.first_seen|date:'d M Y' }}</time></li>
-                <li>last updated <time datetime="{{ context.last_seen|date:'Y-m-d' }}">{{ context.last_seen|date:'d M Y' }}</time></li>
+                <li>first seen <time datetime="{{ rna.first_seen|date:'Y-m-d' }}">{{ rna.first_seen|date:'d M Y' }}</time></li>
+                <li>last updated <time datetime="{{ rna.last_seen|date:'Y-m-d' }}">{{ rna.last_seen|date:'d M Y' }}</time></li>
               </ul>
             </div>
           </div> <!-- .panel .panel-default -->
