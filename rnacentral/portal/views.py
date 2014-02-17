@@ -27,8 +27,8 @@ import json
 
 def get_expert_database_organism_sunburst(request, expert_db_name):
     """
-        Internal API.
-        Get lineages from all sequences for the sunburst diagram.
+    Internal API.
+    Get lineages from all sequences for the sunburst diagram.
     """
     try:
         expert_db_name = _normalize_expert_db_name(expert_db_name)
@@ -41,9 +41,9 @@ def get_expert_database_organism_sunburst(request, expert_db_name):
 
 def get_xrefs_data(request, upi):
     """
-        Internal API.
-        Get the data for the xrefs table. Improves DataTables performance for entries
-        with thousands of cross-references.
+    Internal API.
+    Get the data for the xrefs table. Improves DataTables performance for entries
+    with thousands of cross-references.
     """
     try:
         rna = Rna.objects.get(upi=upi)
@@ -54,9 +54,9 @@ def get_xrefs_data(request, upi):
 
 def get_sequence_lineage(request, upi):
     """
-        Internal API.
-        Get the lineage for an RNA sequence based on the
-        classifications from all database cross-references.
+    Internal API.
+    Get the lineage for an RNA sequence based on the
+    classifications from all database cross-references.
     """
     try:
         xrefs = Xref.objects.filter(upi=upi).all()
@@ -68,6 +68,9 @@ def get_sequence_lineage(request, upi):
 
 
 def homepage(request):
+    """
+    RNAcentral homepage.
+    """
     context = dict()
     context['seq_count'] = Rna.objects.count()
     context['databases'] = Database.objects.all()
@@ -95,13 +98,13 @@ def rna_view(request, upi):
 
 def _get_json_lineage_tree(accessions):
     """
-        Combine lineages from multiple xrefs to produce a single species tree.
-        The data are used by the d3 library.
+    Combine lineages from multiple xrefs to produce a single species tree.
+    The data are used by the d3 library.
     """
 
     def get_lineages(accessions):
         """
-            Combine the lineages from all accessions in a single list.
+        Combine the lineages from all accessions in a single list.
         """
         taxons = []
         for accession in accessions:
@@ -132,16 +135,16 @@ def _get_json_lineage_tree(accessions):
 
     def get_nested_dict(lineages):
         """
-            Transform a list like this:
-                items = [
-                    'A; C; X; human',
-                    'A; C; X; human',
-                    'B; D; Y; mouse',
-                    'B; D; Z; rat',
-                    'B; D; Z; rat',
-                ]
-            into a nested dictionary like this:
-                {'root': {'A': {'C': {'X': {'human': 2}}}, 'B': {'D': {'Y': {'mouse': 1}, 'Z': {'rat': 2}}}}}
+        Transform a list like this:
+            items = [
+                'A; C; X; human',
+                'A; C; X; human',
+                'B; D; Y; mouse',
+                'B; D; Z; rat',
+                'B; D; Z; rat',
+            ]
+        into a nested dictionary like this:
+            {'root': {'A': {'C': {'X': {'human': 2}}}, 'B': {'D': {'Y': {'mouse': 1}, 'Z': {'rat': 2}}}}}
         """
         container = {}
         for lineage in lineages:
@@ -150,10 +153,10 @@ def _get_json_lineage_tree(accessions):
 
     def get_nested_tree(data, container):
         """
-            Transform a nested dictionary like this:
-                {'root': {'A': {'C': {'X': {'human': 2}}}, 'B': {'D': {'Y': {'mouse': 1}, 'Z': {'rat': 2}}}}}
-            into a json file like this (fragment shown):
-                {"name":"A","children":[{"name":"C","children":[{"name":"X","children":[{"name":"human","size":2}]}]}]}
+        Transform a nested dictionary like this:
+            {'root': {'A': {'C': {'X': {'human': 2}}}, 'B': {'D': {'Y': {'mouse': 1}, 'Z': {'rat': 2}}}}}
+        into a json file like this (fragment shown):
+            {"name":"A","children":[{"name":"C","children":[{"name":"X","children":[{"name":"human","size":2}]}]}]}
         """
         if not container:
             container = {
@@ -180,28 +183,10 @@ def _get_json_lineage_tree(accessions):
     return json.dumps(json_lineage_tree)
 
 
-def search(request):
-    if request.REQUEST["rna_type"]:  # todo allowed
-        r = Rna.objects.filter(xrefs__accession__feature_name='tRNA').all()
-        paginator = Paginator(r, 10)
-
-        page = request.GET.get('page')
-        try:
-            rnas = paginator.page(page)
-        except PageNotAnInteger:
-            # If page is not an integer, deliver first page.
-            rnas = paginator.page(1)
-        except EmptyPage:
-            # If page is out of range (e.g. 9999), deliver last page of results.
-            rnas = paginator.page(paginator.num_pages)
-
-        return render_to_response('portal/search_results.html', {"rnas": rnas})
-
-    else:
-        raise Http404()
-
-
 def expert_database_view(request, expert_db_name):
+    """
+    Expert database view.
+    """
     context = dict()
     expert_db_name = _normalize_expert_db_name(expert_db_name)
     if expert_db_name:
@@ -222,8 +207,10 @@ def expert_database_view(request, expert_db_name):
         raise Http404()
 
 
-# expert_db_name should match RNACEN.RNC_DATABASE.DESCR
 def _normalize_expert_db_name(expert_db_name):
+    """
+    Expert_db_name should match RNACEN.RNC_DATABASE.DESCR
+    """
     dbs = ('SRPDB', 'MIRBASE', 'VEGA', 'TMRNA_WEB')
     dbs_coming_soon = ('ENA', 'RFAM')
     if re.match('tmrna-website', expert_db_name, flags=re.IGNORECASE):
@@ -240,8 +227,8 @@ def _normalize_expert_db_name(expert_db_name):
 
 def website_status_view(request):
     """
-        This view will be monitored by Nagios for the presence
-        of string "All systems operational".
+    This view will be monitored by Nagios for the presence
+    of string "All systems operational".
     """
     def _is_database_up():
         try:
@@ -265,6 +252,9 @@ def website_status_view(request):
 
 
 class StaticView(TemplateView):
+    """
+    Render flat pages.
+    """
     def get(self, request, page, *args, **kwargs):
         self.template_name = 'portal/flat/' + page + '.html'
         response = super(StaticView, self).get(request, *args, **kwargs)
@@ -275,6 +265,9 @@ class StaticView(TemplateView):
 
 
 class ContactView(FormView):
+    """
+    Contact form view.
+    """
     template_name = 'portal/contact.html'
     form_class = ContactForm
     success_url = '/thanks/'

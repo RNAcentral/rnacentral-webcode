@@ -54,21 +54,21 @@ class Rna(models.Model):
 
     def get_expert_database_xrefs(self):
         """
-            Get xrefs only from the expert database.
+        Get xrefs only from the expert database.
         """
         return self.xrefs.select_related().exclude(accession__is_composite='N').all()
 
     def get_ena_xrefs(self):
         """
-            Get ENA xrefs that don't have corresponding expert database entries.
+        Get ENA xrefs that don't have corresponding expert database entries.
         """
         expert_db_projects = [db.project_id for db in Database.objects.exclude(project_id=None).all()]
         return self.xrefs.filter(db__descr='ENA').exclude(accession__project__in=expert_db_projects).select_related().all()
 
     def get_xrefs(self):
         """
-            Concatenate querysets putting the expert database xrefs
-            at the beginning of the resulting queryset.
+        Concatenate querysets putting the expert database xrefs
+        at the beginning of the resulting queryset.
         """
         return self.get_ena_xrefs() | self.get_expert_database_xrefs()
 
@@ -164,8 +164,8 @@ class Accession(models.Model):
 
     def get_ena_url(self):
         """
-            Get the ENA entry url that refers to the entry from
-            the Non-coding product containing the cross-reference.
+        Get the ENA entry url that refers to the entry from
+        the Non-coding product containing the cross-reference.
         """
         ena_base_url = "http://www.ebi.ac.uk/ena/data/view/Non-coding:"
         if self.is_composite == 'Y':
@@ -175,7 +175,7 @@ class Accession(models.Model):
 
     def get_expert_db_external_url(self):
         """
-            Get the external url to the expert database.
+        Get the external url to the expert database.
         """
         if self.database == 'RFAM':
             base_url = "http://rfam.sanger.ac.uk/family/"
@@ -223,7 +223,7 @@ class Xref(models.Model):
 
     def get_tmrna_mate_upi(self):
         """
-            Get the mate of the 2-piece tmRNA
+        Get the mate of the 2-piece tmRNA
         """
         if self.db.display_name != 'tmRNA Website':
             tmrna_mate_upi = False
@@ -235,10 +235,10 @@ class Xref(models.Model):
 
     def get_tmrna_type(self):
         """
-            Possible tmRNA types:
-                * acceptor (tRNA-like domain)
-                * coding (mRNA-like domain),
-                * precursor (contains the acceptor and coding sequences and other intervening sequences)
+        Possible tmRNA types:
+            * acceptor (tRNA-like domain)
+            * coding (mRNA-like domain),
+            * precursor (contains the acceptor and coding sequences and other intervening sequences)
         """
         tmrna_type = 0
         if self.db.display_name != 'tmRNA Website':
