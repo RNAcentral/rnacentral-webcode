@@ -12,7 +12,6 @@ limitations under the License.
 -->
 
 {% extends "portal/base.html" %}
-{% load markdown_deux_tags %}
 
 {% block title %}
 RNAcentral API Documentation
@@ -24,6 +23,7 @@ RNAcentral API Documentation
 
   <div class="col-md-9" role="main">
 
+{% load markdown_deux_tags %}
 {% markdown %}
 
 <h1 id="overview">API overview</h1>
@@ -47,7 +47,7 @@ As a result, developers can familiarise themselves with the API and get a better
 
 <h2 id="versioning">Versioning</h2>
 
-To ensure that changes in the RNAcentral API don't break any applications
+To ensure that changes in the RNAcentral API don't break the applications
 relying on it, the API is versioned, and **the version is included in the API's URL**.
 
 For example, the **current API is at Version 1** and is available at [{{ BASE_URL }}/api/v1](/api/v1),
@@ -131,7 +131,7 @@ Responses containing just a **single entry** don't have the extra navigation fie
 
 <h3 id="v1-hyperlinked-vs-flat-responses">Hyperlinked vs flat responses</h3>
 
-By default cross-references are represented by a hyperlink in the default RNA object, for example:
+Some objects are represented by hyperlinks, for example in the default RNA object cross-references are represented by a hyperlink:
 
 ```
 "xrefs": "{{ BASE_URL }}/api/v1/rna/URS0000000001/xrefs/"
@@ -259,8 +259,8 @@ which acts as the logical `AND` operator. More logical operators will be support
 
 A common task is finding whether some sequence of interest has an RNAcentral id.
 
-Two example script for **looking up RNAcentral unique sequence ids** (URS) is provided
-in **Python** and can be used in more complicated programs.
+An example **Python** script for **looking up RNAcentral unique sequence ids** (URS) is provided
+and can be used in more complicated programs.
 
 Instead of sending the entire sequence over the network to the RNAcentral servers,
 the script only submits the [md5](http://en.wikipedia.org/wiki/MD5) value
@@ -301,7 +301,7 @@ The trailing slash in all urls used in the API is **optional**.
 
 #### Examples
 
-Both requests should return the same results, both in the browser and when retrieved programmatically:
+These requests should return the same results, both in the browser and when retrieved programmatically:
 
 * [{{ BASE_URL }}/api/v1](/api/v1)
 * [{{ BASE_URL }}/api/v1/](/api/v1/)
