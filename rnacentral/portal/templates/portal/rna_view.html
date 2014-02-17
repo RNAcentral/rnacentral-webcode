@@ -393,7 +393,11 @@ limitations under the License.
       var hash = window.location.hash;
       hash && $('#tabs a[href="' + hash + '"]').tab('show');
       $('.nav-tabs a').click(function (e) {
-        $(this).tab('show');
+        var $this = $(this);
+        // only show the active tabs
+        if ( $this.attr('id') == 'overview' || $this.attr('id') == 'species' ) {
+           $this.tab('show');
+        }
         var scrollmem = $('body').scrollTop();
         window.location.hash = this.hash;
         $('html,body').scrollTop(scrollmem);
