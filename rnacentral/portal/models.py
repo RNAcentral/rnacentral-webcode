@@ -253,35 +253,33 @@ class Xref(models.Model):
         """
         True for sequences with genomic coordinates.
         """
-        return True if len(self.accession.assembly.all()) > 0 else False
+        return True if self.accession.assembly.count() > 0 else False
 
     def get_assembly_start(self):
         """
         Select the minimum starting coordinates to account for complementary strands.
         """
-        column = 'primary_start' if self.get_assembly_strand() == 1 else 'primary_end'
-        data = self.accession.assembly.aggregate(assembly_start = Min(column))
+        data = self.accession.assembly.aggregate(assembly_start = Min('primary_start'))
         return data['assembly_start']
 
     def get_assembly_end(self):
         """
         Select the maximum ending coordinates to account for complementary strands.
         """
-        column = 'primary_end' if self.get_assembly_strand() == 1 else 'primary_start'
-        data = self.accession.assembly.aggregate(assembly_end = Max(column))
+        data = self.accession.assembly.aggregate(assembly_end = Max('primary_end'))
         return data['assembly_end']
 
     def get_assembly_chromosome(self):
         """
         Get the chromosome for the genomic coordinates.
         """
-        return self.accession.assembly.all()[0].chromosome.upper()
+        return self.accession.assembly.first().chromosome.upper()
 
     def get_assembly_strand(self):
         """
         Get the strand for the genomic coordinates.
         """
-        return self.accession.assembly.all()[0].strand
+        return self.accession.assembly.first().strand
 
 
 class Assembly(models.Model):
