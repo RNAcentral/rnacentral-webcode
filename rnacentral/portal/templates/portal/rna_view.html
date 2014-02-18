@@ -114,9 +114,7 @@ limitations under the License.
 
           {# genoverse #}
           <div>
-            <h2>Genome browser</h2>
-
-            <div class="wrap">
+            <div class="wrap genoverse-wrap">
               <div id="genoverse"></div>
             </div>
           </div>
@@ -427,10 +425,9 @@ limitations under the License.
 
   <script type="text/javascript" src="{% static 'js/vendor/Genoverse/js/genoverse.combined.js' %}">
     {
-      container : '#genoverse', // Where to inject Genoverse (css/jQuery selector)
-      // If no genome supplied, it must have at least chromosomeSize, e.g.:
-      // chromosomeSize : 249250621, // chromosome 1, human
+      container : '#genoverse',
       genome    : 'grch37', // see js/genomes/
+      chr       : "Y",
       plugins   : [ 'controlPanel', 'karyotype', 'trackControls', 'resizer', 'fileDrop' ],
       tracks    : [
         Genoverse.Track.Scalebar,
@@ -442,8 +439,8 @@ limitations under the License.
           100000    : false
         }),
         Genoverse.Track.extend({
-          name   : 'Genes',
-          height : 100,
+          name   : 'Ensembl Genes',
+          height : 80,
           info   : 'Ensembl API genes & transcripts, see <a href="http://beta.rest.ensembl.org/" target="_blank">beta.rest.ensembl.org</a> for more details',
 
           // Different settings for different zoom level
@@ -466,7 +463,7 @@ limitations under the License.
   </script>
 
   <script type="text/javascript">
-    Genoverse.on('afterInit', function () {
+    Genoverse.on('beforeInit', function () {
         var browser = this;
 
         $.ajax({
@@ -476,7 +473,7 @@ limitations under the License.
               var track = Genoverse.Track.File['BED'].extend({
                 name    : "RNAcentral",
                 info    : "RNAcentral test",
-                height  : 70,
+                height  : 60,
                 allData : true,
                 data    : data,
                 getData : function () {
@@ -486,15 +483,16 @@ limitations under the License.
                 }
               });
               browser.addTrack(track, browser.tracks.length - 1);
-              window.browser = browser;
-    $('.genoverse-xref').click(function(e){
-        e.preventDefault();
-        var $this = $(this);
-        console.log($this.data('genomic-start'));
-        browser.moveTo($this.data('genomic-start'), $this.data('genomic-end'), true);
-        return false;
-    });
 
+              // make the browser object available
+              window.browser = browser;
+              // attach events
+              $('.genoverse-xref').click(function(e){
+                  e.preventDefault();
+                  var $this = $(this);
+                  browser.chr = $this.data('chromosome');
+                  browser.moveTo($this.data('genomic-start'), $this.data('genomic-end'), true);
+              });
             }
         });
 
