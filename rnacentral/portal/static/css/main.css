@@ -374,6 +374,10 @@ table.table thead .sorting_desc_disabled {
   margin-top: 5px;
 }
 
+.wrap.genoverse-wrap {
+  margin-left: 5px;
+}
+
 /*------------------------------------------------------------------
 [5.2 Force scrollbars on Macs]
 */
