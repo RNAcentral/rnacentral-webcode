@@ -102,6 +102,8 @@ limitations under the License.
                       $("body").attr("JSError",msg);
                   };
                 });
+                if(!window.console){ window.console = {log: function(){} }; }
+                console.log('Welcome to the RNAcentral javascipt console!')
             </script>
           {% endblock extra_js %}
         {% endcompress %}
