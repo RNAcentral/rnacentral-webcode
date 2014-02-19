@@ -431,6 +431,7 @@ limitations under the License.
       container : '#genoverse',
       genome    : 'grch37', // see js/genomes/
       chr       : '',
+      showUrlCoords : false, // do not show genomic coordinates in the url
       plugins   : [ 'controlPanel', 'karyotype', 'trackControls', 'resizer', 'fileDrop' ],
       tracks    : [
         Genoverse.Track.Scalebar,
@@ -442,10 +443,9 @@ limitations under the License.
           100000    : false
         }),
         Genoverse.Track.extend({
-          name   : 'Ensembl Genes',
-          height : 80,
-          info   : 'Ensembl API genes & transcripts, see <a href="http://beta.rest.ensembl.org/" target="_blank">beta.rest.ensembl.org</a> for more details',
-          resizable: 'auto',
+          name      : 'Ensembl Genes',
+          info      : 'Ensembl API genes & transcripts, see <a href="http://beta.rest.ensembl.org/" target="_blank">beta.rest.ensembl.org</a> for more details',
+          resizable : 'auto',
 
           // Different settings for different zoom level
           2000000: { // This one applies when > 2M base-pairs per screen
@@ -479,14 +479,13 @@ limitations under the License.
                 dataType: "text",
                 success : function (data) {
                   var track = Genoverse.Track.File['BED'].extend({
-                    id      : "RNAcentral",
-                    name    : "RNAcentral",
-                    info    : "RNAcentral test",
-                    height  : 60,
-                    resizable: 'auto',
-                    allData : true,
-                    data    : data,
-                    getData : function () {
+                    id        : "RNAcentral",
+                    name      : "RNAcentral",
+                    info      : "RNAcentral test",
+                    resizable : 'auto',
+                    allData   : true,
+                    data      : data,
+                    getData   : function () {
                       return $.Deferred().done(function () {
                         console.log('receiveData');
                         this.receiveData(this.data, 1, this.browser.chromosomeSize);
