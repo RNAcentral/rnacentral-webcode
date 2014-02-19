@@ -423,11 +423,14 @@ limitations under the License.
 {% block extra_js_uncompressed %}
   {{ block.super }}
 
-  <script type="text/javascript" src="{% static 'js/vendor/Genoverse/js/genoverse.combined.js' %}">
-    {
+  <script type="text/javascript" src="{% static 'js/vendor/Genoverse/js/genoverse.combined.js' %}"></script>
+
+    <script type="text/javascript">
+
+    var genoverseConfig = {
       container : '#genoverse',
       genome    : 'grch37', // see js/genomes/
-      chr       : "Y",
+      chr       : '',
       plugins   : [ 'controlPanel', 'karyotype', 'trackControls', 'resizer', 'fileDrop' ],
       tracks    : [
         Genoverse.Track.Scalebar,
@@ -442,6 +445,7 @@ limitations under the License.
           name   : 'Ensembl Genes',
           height : 80,
           info   : 'Ensembl API genes & transcripts, see <a href="http://beta.rest.ensembl.org/" target="_blank">beta.rest.ensembl.org</a> for more details',
+          resizable: 'auto',
 
           // Different settings for different zoom level
           2000000: { // This one applies when > 2M base-pairs per screen
@@ -459,42 +463,58 @@ limitations under the License.
           }
         })
       ]
-    }
-  </script>
+    };
 
-  <script type="text/javascript">
-    Genoverse.on('beforeInit', function () {
-        var browser = this;
+    $('body').on("click", '.genoverse-xref', function(e){
 
-        $.ajax({
-            url : "https://dl.dropboxusercontent.com/s/7f2oypttqwzt263/vega_ucsc_sorted.bed",
-            dataType: "text",
-            success : function (data) {
-              var track = Genoverse.Track.File['BED'].extend({
-                name    : "RNAcentral",
-                info    : "RNAcentral test",
-                height  : 60,
-                allData : true,
-                data    : data,
-                getData : function () {
-                  return $.Deferred().done(function () {
-                    this.receiveData(this.data, 1, this.browser.chromosomeSize);
-                  }).resolveWith(this);
+        e.preventDefault();
+        var $this = $(this);
+
+        if (typeof window.browser === 'undefined') {
+            console.log('Loading for the first time');
+            genoverseConfig['chr'] = $this.data('chromosome');
+            window.browser = new Genoverse(genoverseConfig);
+            $.ajax({
+                url : "https://dl.dropboxusercontent.com/s/7f2oypttqwzt263/vega_ucsc_sorted.bed",
+                dataType: "text",
+                success : function (data) {
+                  var track = Genoverse.Track.File['BED'].extend({
+                    id      : "RNAcentral",
+                    name    : "RNAcentral",
+                    info    : "RNAcentral test",
+                    height  : 60,
+                    resizable: 'auto',
+                    allData : true,
+                    data    : data,
+                    getData : function () {
+                      return $.Deferred().done(function () {
+                        console.log('receiveData');
+                        this.receiveData(this.data, 1, this.browser.chromosomeSize);
+                        console.log('moving to');
+                        browser.moveTo($this.data('genomic-start'), $this.data('genomic-end'), false);
+                        browser.zoomOut();
+                      }).resolveWith(this);
+                    }
+                  });
+                  console.log('adding tracks');
+                  browser.addTrack(track, browser.tracks.length - 1);
                 }
-              });
-              browser.addTrack(track, browser.tracks.length - 1);
+            });
 
-              // make the browser object available
-              window.browser = browser;
-              // attach events
-              $('.genoverse-xref').click(function(e){
-                  e.preventDefault();
-                  var $this = $(this);
-                  browser.chr = $this.data('chromosome');
-                  browser.moveTo($this.data('genomic-start'), $this.data('genomic-end'), true);
-              });
+        } else {
+            if ( browser.chr != $this.data('chromosome') ) {
+              console.log('Need to reload genoverse');
+              browser.chr = $this.data('chromosome');
+              browser.chromosomeSize = browser.genome[browser.chr].size;
+              browser.tracksById['RNAcentral'].model.receiveData(browser.tracksById['RNAcentral'].model.data, 1, browser.chromosomeSize);
+              browser.moveTo($this.data('genomic-start'), $this.data('genomic-end'), false);
+              browser.zoomOut();
+            } else {
+              console.log('Genoverse loaded, navigating');
+              browser.moveTo($this.data('genomic-start'), $this.data('genomic-end'), false);
+              browser.zoomOut();
             }
-        });
+        }
 
     });
 
