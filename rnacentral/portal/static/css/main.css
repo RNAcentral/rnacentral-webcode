@@ -375,6 +375,14 @@ table.table thead .sorting_desc_disabled {
 }
 
 .wrap.genoverse-wrap {
+  margin: 0;
+}
+
+.genoverse-wrap h2 {
+  display: none;
+}
+
+.btn-group {
   margin-left: 5px;
 }
 
