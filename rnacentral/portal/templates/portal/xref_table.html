@@ -57,22 +57,20 @@ limitations under the License.
     {% elif xref.db.display_name == 'VEGA' %}
       VEGA transcript <a href="http://vega.sanger.ac.uk/Homo_sapiens/Transcript/Summary?db=core;t={{ xref.accession.optional_id }}" target="_blank" title="View the transcript at VEGA">{{ xref.accession.optional_id }}</a>
       from gene <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank" title="View the gene at VEGA">{{ xref.accession.external_id }}</a>
-      <br>
-      <i class="fa fa-angle-right"></i>
       {% with splice_variants=xref.get_vega_splice_variants %}
         {% if splice_variants %}
+          <br>
+          <i class="fa fa-angle-right"></i>
           Alternative transcript{{splice_variants|length|pluralize}}:
           {% for splice_variant in splice_variants %}
             <a href="{% url  'portal.views.rna_view' upi=splice_variant.upi %}">{{ splice_variant.upi }}</a>
             ({{ splice_variant.length|intcomma }} nts){% if not forloop.last %},{% else %}.{% endif %}
           {% endfor %}
-        {% else %}
-          No alternative transcripts.
         {% endif %}
       {% endwith %}
-      <br>
-      <i class="fa fa-angle-right"></i>
       {% if xref.has_genomic_coordinates  %}
+        <br>
+        <i class="fa fa-angle-right"></i>
         {% with genomic_coordinates=xref.get_genomic_coordinates %}
           <span class="label label-primary">Genomic location</span>
           chr{{ genomic_coordinates.chromosome }}:{{ genomic_coordinates.start|intcomma }}-{{ genomic_coordinates.end|intcomma }}
@@ -113,7 +111,7 @@ limitations under the License.
     {% if xref.accession.is_composite == 'Y' %}
       <br>
       <i class="fa fa-angle-right"></i>
-      Corresponding ENA entry: <a href="{{ xref.accession.get_ena_url }}" target="_blank" title="{{ xref.accession.non_coding_id }} at ENA">{{ xref.accession.non_coding_id }}</a>
+      Source ENA entry: <a href="{{ xref.accession.get_ena_url }}" target="_blank" title="{{ xref.accession.non_coding_id }} at ENA">{{ xref.accession.non_coding_id }}</a>
     {% endif %}
 
     {# literature references #}
