@@ -255,6 +255,17 @@ class Xref(models.Model):
         """
         return True if self.accession.assembly.count() > 0 else False
 
+    def get_genomic_coordinates(self):
+        """
+        """
+        data = {
+            'chromosome': self.get_assembly_chromosome(),
+            'strand': self.get_assembly_strand(),
+            'start': self.get_assembly_start(),
+            'end': self.get_assembly_end()
+        }
+        return data
+
     def get_assembly_start(self):
         """
         Select the minimum starting coordinates to account for complementary strands.
