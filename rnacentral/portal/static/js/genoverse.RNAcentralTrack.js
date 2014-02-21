@@ -15,6 +15,44 @@ limitations under the License.
 Manage the Genoverse embedded browser.
 */
 
+if (!window.location.origin)
+     window.location.origin = window.location.protocol + "//" + window.location.host + '/';
+
+// RNAcentral REST API
+Genoverse.Track.Model.Gene.RNAcentral = Genoverse.Track.Model.Gene.Ensembl.extend({
+  url: window.location.origin + '/api/v1/feature/region/human/__CHR__:__START__-__END__',
+  dataRequestLimit : 5000000,
+});
+
+// RNAcentral REST API
+Genoverse.Track.Model.Transcript.RNAcentral = Genoverse.Track.Model.Transcript.extend({
+  url: window.location.origin + '/api/v1/feature/region/human/__CHR__:__START__-__END__',
+  dataRequestLimit : 5000000,
+
+  parseData: function (data) {
+    for (var i = 0; i < data.length; i++) {
+      var feature = data[i];
+
+      if (feature.feature_type === 'transcript' && !this.featuresById[feature.ID]) {
+        feature.id    = feature.ID;
+        feature.label = feature.external_name;
+        feature.exons = [];
+        feature.cds   = [];
+
+        this.insertFeature(feature);
+      } else if (feature.feature_type === 'exon' && this.featuresById[feature.Parent]) {
+        feature.id = feature.ID;
+
+        if (!this.featuresById[feature.Parent].exons[feature.id]) {
+          this.featuresById[feature.Parent].exons.push(feature);
+          this.featuresById[feature.Parent].exons[feature.id] = feature;
+        }
+      }
+    }
+  }
+
+});
+
 // default Genoverse config object
 var genoverseConfig = {
   container     : '#genoverse',
@@ -48,6 +86,26 @@ var genoverseConfig = {
       1: { // > 1 base-pair, but less then 100K
         labels : true,
         model  : Genoverse.Track.Model.Transcript.Ensembl,
+        view   : Genoverse.Track.View.Transcript.Ensembl
+      }
+    }),
+    Genoverse.Track.extend({
+      name      : 'RNAcentral API',
+      id        : 'RNAcentral',
+      info      : 'Unique RNAcentral Sequences',
+      resizable : 'auto',
+      // Different settings for different zoom level
+      2000000: { // This one applies when > 2M base-pairs per screen
+        labels : false
+      },
+      100000: { // more than 100K but less then 2M
+        labels : true,
+        model  : Genoverse.Track.Model.Gene.RNAcentral,
+        view   : Genoverse.Track.View.Gene.Ensembl
+      },
+      1: { // > 1 base-pair, but less then 100K
+        labels : true,
+        model  : Genoverse.Track.Model.Transcript.RNAcentral,
         view   : Genoverse.Track.View.Transcript.Ensembl
       }
     })
@@ -87,31 +145,10 @@ var genoverseConfig = {
         // create Genoverse object
         genoverseConfig['chr'] = params['chromosome'];
         window.browser = new Genoverse(genoverseConfig);
-        // load the RNAcentral track
-        $.ajax({
-            url : "https://dl.dropboxusercontent.com/s/7f2oypttqwzt263/vega_ucsc_sorted.bed",
-            dataType: "text",
-            success : function (data) {
-              var track = Genoverse.Track.File['BEDexons'].extend({
-                id        : track_id,
-                name      : "RNAcentral Sequences",
-                info      : "Unique RNAcentral Sequences",
-                resizable : 'auto',
-                allData   : true,
-                labels    : true,
-                data      : data,
-                view      : Genoverse.Track.View.Transcript.Ensembl,
-                model     : Genoverse.Track.Model.File.BEDexons,
-                getData   : function () {
-                  return $.Deferred().done(function () {
-                    this.receiveData(this.data, 1, this.browser.chromosomeSize);
-                    browser.moveTo(params['start'], params['end'], false);
-                    browser.zoomOut();
-                  }).resolveWith(this);
-                }
-              });
-              browser.addTrack(track, browser.tracks.length - 1);
-            }
+        // set track position
+        Genoverse.on('afterInit', function () {
+          browser.moveTo(params['start'], params['end'], false);
+          browser.zoomOut();
         });
     } else {
         if ( browser.chr != this.params['chromosome'] ) {
