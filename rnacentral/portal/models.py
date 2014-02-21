@@ -302,7 +302,6 @@ class Assembly(models.Model):
     primary_start = models.IntegerField()
     primary_end = models.IntegerField()
     strand = models.IntegerField()
-    seq_order = models.IntegerField()
 
     class Meta:
         db_table = 'rnc_assembly'
