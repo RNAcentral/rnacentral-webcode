@@ -15,9 +15,10 @@ limitations under the License.
 Docstrings of the classes exposed in urlpatters support markdown.
 """
 
-from portal.models import Rna, Accession
+from portal.models import Rna, Accession, Xref
 from rest_framework import generics
 from rest_framework import renderers
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
@@ -25,6 +26,79 @@ from rest_framework.reverse import reverse
 from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, XrefSerializer, RnaFlatSerializer, RnaFastaSerializer
 import django_filters
 import re
+import uuid
+
+
+class GenomeCoordinates(APIView):
+    """
+    Ensembl-like genome coordinates endpoint.
+
+    [API documentation](/api)
+    """
+    # the above docstring appears on the API website
+
+    permission_classes = (AllowAny,)
+
+    def get(self, request, chromosome, start, end, format=None):
+        """
+        """
+        # human chromosome to assembly id mapping
+        chr2assembly = {
+            '1' : 'CM000663.1', '2' : 'CM000664.1', '3' : 'CM000665.1', '4' : 'CM000666.1',
+            '5' : 'CM000667.1', '6' : 'CM000668.1', '7' : 'CM000669.1', '8' : 'CM000670.1',
+            '9' : 'CM000671.1', '10': 'CM000672.1', '11': 'CM000673.1', '12': 'CM000674.1',
+            '13': 'CM000675.1', '14': 'CM000676.1', '15': 'CM000677.1', '16': 'CM000678.1',
+            '17': 'CM000679.1', '18': 'CM000680.1', '19': 'CM000681.1', '20': 'CM000682.1',
+            '21': 'CM000683.1', '22': 'CM000684.1', 'X' : 'CM000685.1', 'Y' : 'CM000686.1',
+        }
+
+        try:
+            xrefs = Xref.objects.filter(accession__assembly__primary_identifier=chr2assembly[chromosome],
+                                        accession__assembly__primary_start__gte=start,
+                                        accession__assembly__primary_end__lte=end,
+                                        db__id=1,
+                                        deleted='N').\
+                                 select_related('accession', 'accession__assembly').\
+                                 all()
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        rnacentral_ids = []
+        data = []
+        for i, xref in enumerate(xrefs):
+            rnacentral_id = xref.upi.upi
+            # transcript object
+            if rnacentral_id not in rnacentral_ids:
+                rnacentral_ids.append(rnacentral_id)
+            else:
+                continue
+            coordinates = xref.get_genomic_coordinates()
+            transcript_id = str(uuid.uuid4())
+            data.append({
+                'ID': transcript_id,
+                'external_name': rnacentral_id,
+                'feature_type': 'transcript',
+                'logic_name': 'RNAcentral',
+                'biotype': 'lincRNA',
+                'strand': coordinates['strand'],
+                'start': coordinates['start'],
+                'end': coordinates['end'],
+            })
+            # exons
+            for i, exon in enumerate(xref.accession.assembly.all()):
+                exon_id = str(uuid.uuid4())
+                data.append({
+                    'external_name': '_'.join([xref.accession.accession, 'exon_' + str(i)]),
+                    'ID': exon_id,
+                    'feature_type': 'exon',
+                    'logic_name': 'RNAcentral',
+                    'biotype': 'lincRNA',
+                    'Parent': transcript_id,
+                    'strand': exon.strand,
+                    'start': exon.primary_start,
+                    'end': exon.primary_end,
+                })
+        return Response(data)
 
 
 class BrowsableAPIRenderer(renderers.BrowsableAPIRenderer):

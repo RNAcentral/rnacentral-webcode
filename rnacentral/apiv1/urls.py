@@ -32,6 +32,8 @@ urlpatterns = patterns('',
     # view for individual cross-references
     # all ENA accessions end with RNA feature name + ordinal
     url(r'^v1/accession/(?P<pk>.*?(RNA|feature)(:\d+)?)/?$', views.AccessionView.as_view(), name='accession-detail'),
+    # Ensembl-like genome coordinates endpoint
+    url(r'^v1/feature/region/human/(?P<chromosome>(\d+|Y|X))\:(?P<start>\d+)-(?P<end>\d+)/?$', views.GenomeCoordinates.as_view(), name='human-genome-coordinates'),
 )
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'yaml', 'fasta', 'api'])
