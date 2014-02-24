@@ -42,18 +42,10 @@ class GenomeCoordinates(APIView):
     def get(self, request, chromosome, start, end, format=None):
         """
         """
-        # human chromosome to assembly id mapping
-        chr2assembly = {
-            '1' : 'CM000663.1', '2' : 'CM000664.1', '3' : 'CM000665.1', '4' : 'CM000666.1',
-            '5' : 'CM000667.1', '6' : 'CM000668.1', '7' : 'CM000669.1', '8' : 'CM000670.1',
-            '9' : 'CM000671.1', '10': 'CM000672.1', '11': 'CM000673.1', '12': 'CM000674.1',
-            '13': 'CM000675.1', '14': 'CM000676.1', '15': 'CM000677.1', '16': 'CM000678.1',
-            '17': 'CM000679.1', '18': 'CM000680.1', '19': 'CM000681.1', '20': 'CM000682.1',
-            '21': 'CM000683.1', '22': 'CM000684.1', 'X' : 'CM000685.1', 'Y' : 'CM000686.1',
-        }
-
+        start = start.replace(',','')
+        end = end.replace(',','')
         try:
-            xrefs = Xref.objects.filter(accession__assembly__primary_identifier=chr2assembly[chromosome],
+            xrefs = Xref.objects.filter(accession__assembly__chromosome__chromosome=chromosome,
                                         accession__assembly__primary_start__gte=start,
                                         accession__assembly__primary_end__lte=end,
                                         db__id=1,
