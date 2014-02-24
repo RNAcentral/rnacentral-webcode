@@ -143,7 +143,9 @@ var genoverseConfig = {
   };
 
   set_genoverse_width = function() {
-    $('#genoverse').width($('.container').width());
+    var w = $('.container').width();
+    $('.wrap').width(w);
+    $('#genoverse').width(w);
   };
 
   resize_genoverse_on_window_resize = function() {
