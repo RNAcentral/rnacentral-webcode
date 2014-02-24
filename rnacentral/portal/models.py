@@ -284,7 +284,7 @@ class Xref(models.Model):
         """
         Get the chromosome for the genomic coordinates.
         """
-        return self.accession.assembly.first().chromosome.upper()
+        return self.accession.assembly.first().chromosome.chromosome
 
     def get_assembly_strand(self):
         """
@@ -293,10 +293,17 @@ class Xref(models.Model):
         return self.accession.assembly.first().strand
 
 
+class Chromosome(models.Model):
+    ena_accession = models.CharField(max_length=20, db_column='assembly', primary_key=True)
+    chromosome = models.CharField(max_length=2)
+
+    class Meta:
+        db_table = 'rnc_chromosome'
+
+
 class Assembly(models.Model):
     accession = models.ForeignKey(Accession, db_column='accession', to_field='accession', related_name='assembly')
-    primary_identifier = models.CharField(max_length=20)
-    chromosome = models.CharField(max_length=3)
+    chromosome = models.ForeignKey(Chromosome, db_column='primary_identifier', to_field='ena_accession', related_name='genome')
     local_start = models.IntegerField()
     local_end = models.IntegerField()
     primary_start = models.IntegerField()
