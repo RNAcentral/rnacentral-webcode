@@ -213,12 +213,11 @@ class Xref(models.Model):
         if self.db.display_name != 'VEGA':
             return splice_variants
         for splice_variant in Accession.objects.filter(external_id=self.accession.external_id).\
-                                                 exclude(accession=self.accession.accession).\
-                                                 all():
+                                                exclude(accession=self.accession.accession).\
+                                                all():
             for splice_xref in splice_variant.xrefs.all():
-                rnac = splice_xref.upi
-                rnac.upi = rnac.upi
-                splice_variants.append(rnac)
+                splice_variants.append(splice_xref.upi)
+            splice_variants.sort(key=lambda x: x.length)
         return splice_variants
 
     def get_tmrna_mate_upi(self):
