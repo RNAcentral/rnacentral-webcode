@@ -73,41 +73,18 @@ var genoverseConfig = {
       name      : 'Ensembl',
       info      : 'Ensembl API genes & transcripts, see <a href="http://beta.rest.ensembl.org/" target="_blank">beta.rest.ensembl.org</a> for more details',
       resizable : 'auto',
-
-      // Different settings for different zoom level
-      2000000: { // This one applies when > 2M base-pairs per screen
-        labels : false
-      },
-      100000: { // more than 100K but less then 2M
-        labels : true,
-        model  : Genoverse.Track.Model.Gene.Ensembl,
-        view   : Genoverse.Track.View.Gene.Ensembl
-      },
-      1: { // > 1 base-pair, but less then 100K
-        labels : true,
-        model  : Genoverse.Track.Model.Transcript.Ensembl,
-        view   : Genoverse.Track.View.Transcript.Ensembl
-      }
+      labels : true,
+      model  : Genoverse.Track.Model.Transcript.Ensembl,
+      view   : Genoverse.Track.View.Transcript.Ensembl
     }),
     Genoverse.Track.extend({
-      name      : 'RNAcentral API',
+      name      : 'RNAcentral',
       id        : 'RNAcentral',
       info      : 'Unique RNAcentral Sequences',
       resizable : 'auto',
-      // Different settings for different zoom level
-      2000000: { // This one applies when > 2M base-pairs per screen
-        labels : false
-      },
-      100000: { // more than 100K but less then 2M
-        labels : true,
-        model  : Genoverse.Track.Model.Gene.RNAcentral,
-        view   : Genoverse.Track.View.Gene.Ensembl
-      },
-      1: { // > 1 base-pair, but less then 100K
-        labels : true,
-        model  : Genoverse.Track.Model.Transcript.RNAcentral,
-        view   : Genoverse.Track.View.Transcript.Ensembl
-      }
+      labels : true,
+      model  : Genoverse.Track.Model.Transcript.RNAcentral,
+      view   : Genoverse.Track.View.Transcript.Ensembl
     })
   ]
 };
