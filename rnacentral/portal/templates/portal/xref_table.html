@@ -72,11 +72,9 @@ limitations under the License.
         <br>
         <i class="fa fa-angle-right"></i>
         {% with genomic_coordinates=xref.get_genomic_coordinates %}
-          <span class="label label-primary">Genomic location</span>
-          chr{{ genomic_coordinates.chromosome }}:{{ genomic_coordinates.start|intcomma }}-{{ genomic_coordinates.end|intcomma }}
           <div class="btn-group help" title="View on this page or in an external browser">
-            <button type="button" class="btn btn-default btn-xs genoverse-xref" data-genomic-start="{{ genomic_coordinates.start }}" data-genomic-end="{{ genomic_coordinates.end }}" data-chromosome="{{ genomic_coordinates.chromosome }}"><i class="fa fa-map-marker"></i> View</button>
-            <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+            <button type="button" class="btn btn-primary btn-xs genoverse-xref" data-genomic-start="{{ genomic_coordinates.start }}" data-genomic-end="{{ genomic_coordinates.end }}" data-chromosome="{{ genomic_coordinates.chromosome }}"><i class="fa fa-map-marker"></i> View genomic location</button>
+            <button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown">
               <span class="caret"></span>
               <span class="sr-only">Toggle</span>
             </button>
@@ -85,6 +83,7 @@ limitations under the License.
               <li><a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ genomic_coordinates.chromosome }}%3A{{ genomic_coordinates.start }}-{{ genomic_coordinates.end }}" target="_blank">UCSC <i class="fa fa-external-link"></i></a></li>
             </ul>
           </div>
+          chr{{ genomic_coordinates.chromosome }}:{{ genomic_coordinates.start|intcomma }}-{{ genomic_coordinates.end|intcomma }}
         {% endwith %}
       {% endif %}
     {# tmRNA Website #}
