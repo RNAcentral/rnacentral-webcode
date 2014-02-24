@@ -87,6 +87,17 @@ limitations under the License.
             <h2>
               Database cross-references
               <small id="xrefs-datatables-counter"></small>
+
+              <div class="btn-group btn-group-xs margin-left-5px btn-group-xref-sort">
+                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                  Sort by<span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                  <li><a id="sort-by-first-seen">first seen</a></li>
+                  <li><a id="sort-by-last-seen">last seen</a></li>
+                </ul>
+              </div>
+
               <span id="xrefs-datatables-filter"></span>
             </h2>
 
@@ -274,6 +285,7 @@ limitations under the License.
       }).done(function(){
           // initialize the xref dataTable
           var oTable = $('#xrefs-table').dataTable({
+            "aoColumns": [null, null, null, {"bVisible": false}, {"bVisible": false}], // hide columns, but keep them sortable
             "bAutoWidth": true, // pre-recalculate column widths
             "sDom": "ftpil", // filter, table, pagination, information, length
             "iDisplayLength": 5, // show 5 entries by default
@@ -303,6 +315,8 @@ limitations under the License.
               $('.table th').css('padding-right','1.5em');
             },
           });
+          oTable.fnSortListener( document.getElementById('sort-by-first-seen'), 3);
+          oTable.fnSortListener( document.getElementById('sort-by-last-seen'), 4);
           $("#xrefs-loading").slideUp();
           $('#xrefs-table').fadeIn();
           // monitor the xref datatables search field to update the hashtag

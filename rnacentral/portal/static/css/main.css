@@ -374,6 +374,10 @@ table.table thead .sorting_desc_disabled {
   margin-top: 5px;
 }
 
+.btn-group-xref-sort {
+  margin-top: 4px;
+}
+
 .wrap.genoverse-wrap {
   width: 0;
   margin: 0;
@@ -389,6 +393,10 @@ table.table thead .sorting_desc_disabled {
 
 .margin-right-5px {
   margin-right: 5px;
+}
+
+.margin-left-5px {
+  margin-left: 5px;
 }
 
 /*------------------------------------------------------------------
