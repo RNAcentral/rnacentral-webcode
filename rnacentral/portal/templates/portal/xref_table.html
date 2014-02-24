@@ -17,7 +17,6 @@ limitations under the License.
 
 <thead>
   <tr>
-    <th>#</th>
     <th>Database</th>
     <th>Description</th>
     <th>Species</th>
@@ -31,7 +30,6 @@ limitations under the License.
 
 {% for xref in context.rna.get_xrefs %}
   <tr {% if xref.deleted == 'Y' %}class="warning"{% endif %}>
-    <td class="text-muted">{{ forloop.counter }}</td>
     <td>
       {% if xref.db.display_name != 'ENA' and xref.db.display_name != 'RFAM' %}
         <span class="badge badge-success help" data-toggle="tooltip" title="RNAcentral Expert Database"><span class="glyphicon glyphicon-star"></span></span>
@@ -72,18 +70,12 @@ limitations under the License.
         <br>
         <i class="fa fa-angle-right"></i>
         {% with genomic_coordinates=xref.get_genomic_coordinates %}
-          <div class="btn-group help" title="View on this page or in an external browser">
-            <button type="button" class="btn btn-primary btn-xs genoverse-xref" data-genomic-start="{{ genomic_coordinates.start }}" data-genomic-end="{{ genomic_coordinates.end }}" data-chromosome="{{ genomic_coordinates.chromosome }}"><i class="fa fa-map-marker"></i> View genomic location</button>
-            <button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown">
-              <span class="caret"></span>
-              <span class="sr-only">Toggle</span>
-            </button>
-            <ul class="dropdown-menu" role="menu">
-              <li><a href="http://www.ensembl.org/Homo_sapiens/Location/View?r={{ genomic_coordinates.chromosome }}%3A{{ genomic_coordinates.start }}-{{ genomic_coordinates.end }}" target="_blank">Ensembl <i class="fa fa-external-link"></i></a></li>
-              <li><a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ genomic_coordinates.chromosome }}%3A{{ genomic_coordinates.start }}-{{ genomic_coordinates.end }}" target="_blank">UCSC <i class="fa fa-external-link"></i></a></li>
-            </ul>
-          </div>
-          chr{{ genomic_coordinates.chromosome }}:{{ genomic_coordinates.start|intcomma }}-{{ genomic_coordinates.end|intcomma }}
+          <button type="button" class="btn btn-primary btn-xs genoverse-xref help margin-right-5px" data-genomic-start="{{ genomic_coordinates.start }}" data-genomic-end="{{ genomic_coordinates.end }}" data-chromosome="{{ genomic_coordinates.chromosome }}" title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> View genomic location</button>
+          <small>
+            <span class="margin-right-5px">chr{{ genomic_coordinates.chromosome }}:{{ genomic_coordinates.start|intcomma }}-{{ genomic_coordinates.end|intcomma }}</span>
+            <span class="margin-right-5px"><a href="http://www.ensembl.org/Homo_sapiens/Location/View?r={{ genomic_coordinates.chromosome }}%3A{{ genomic_coordinates.start }}-{{ genomic_coordinates.end }}" target="_blank">Ensembl <i class="fa fa-external-link"></i></a></span>
+            <span class="margin-right-5px"><a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ genomic_coordinates.chromosome }}%3A{{ genomic_coordinates.start }}-{{ genomic_coordinates.end }}" target="_blank">UCSC <i class="fa fa-external-link"></i></a></span>
+          </small>
         {% endwith %}
       {% endif %}
     {# tmRNA Website #}

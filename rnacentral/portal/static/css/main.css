@@ -386,6 +386,10 @@ table.table thead .sorting_desc_disabled {
   margin-right: 5px;
 }
 
+.margin-right-5px {
+  margin-right: 5px;
+}
+
 /*------------------------------------------------------------------
 [5.2 Force scrollbars on Macs]
 */
