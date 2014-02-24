@@ -26,7 +26,6 @@ from rest_framework.reverse import reverse
 from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, XrefSerializer, RnaFlatSerializer, RnaFastaSerializer
 import django_filters
 import re
-import uuid
 
 
 class GenomeCoordinates(APIView):
@@ -65,7 +64,7 @@ class GenomeCoordinates(APIView):
             else:
                 continue
             coordinates = xref.get_genomic_coordinates()
-            transcript_id = str(uuid.uuid4())
+            transcript_id = rnacentral_id + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
             data.append({
                 'ID': transcript_id,
                 'external_name': rnacentral_id,
@@ -78,9 +77,9 @@ class GenomeCoordinates(APIView):
             })
             # exons
             for i, exon in enumerate(xref.accession.assembly.all()):
-                exon_id = str(uuid.uuid4())
+                exon_id = '_'.join([xref.accession.accession, 'exon_' + str(i)])
                 data.append({
-                    'external_name': '_'.join([xref.accession.accession, 'exon_' + str(i)]),
+                    'external_name': exon_id,
                     'ID': exon_id,
                     'feature_type': 'exon',
                     'logic_name': 'RNAcentral',
