@@ -163,14 +163,9 @@ class RnaGffRenderer(renderers.BaseRenderer):
 
     def render(self, data, media_type=None, renderer_context=None):
         """
-        RnaGffSerializer can return either a single entry or a list of entries.
+        RnaGffSerializer returns a single entry.
         """
-        text = ''
-        if 'results' in data: # list of entries
-            for entry in data['results']:
-                text += entry['gff']
-        else: # single entry
-            text = data['gff']
+        text = data['gff']
         if not text:
             text = '# Genomic coordinates not available'
         return text
