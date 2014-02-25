@@ -42,6 +42,7 @@ class ApiV1Test(unittest.TestCase):
         self.upi = 'URS0000000001'
         self.md5 = '06808191a979cc0b933265d9a9c213fd'
         self.accession = 'Y09527.1:2562..2627:tRNA'
+        self.upi_with_genomic_coordinates = 'URS000063A371'
 
     def tearDown(self):
         pass
@@ -144,9 +145,8 @@ class ApiV1Test(unittest.TestCase):
         self._output_format_tester(formats, targets)
 
     def test_gff_output(self):
-        upi_with_genomic_coordinates = 'URS000063A371'
         formats = {'gff': 'text/gff'}
-        targets = ('rna/%s' % upi_with_genomic_coordinates,)
+        targets = ('rna/%s' % self.upi_with_genomic_coordinates,)
         # test response status codes
         self._output_format_tester(formats, targets)
         # further check the gff text output
@@ -154,6 +154,18 @@ class ApiV1Test(unittest.TestCase):
         self.assertIn('exon', r.text)
         # test a sequence without genomic coordinates
         r = requests.get(self._get_api_url('rna/%s.gff' % self.upi))
+        self.assertIn('# Genomic coordinates not available', r.text)
+
+    def test_bed_output(self):
+        formats = {'bed': 'text/bed'}
+        targets = ('rna/%s' % self.upi_with_genomic_coordinates,)
+        # test response status codes
+        self._output_format_tester(formats, targets)
+        # further check the gff text output
+        r = requests.get(self._get_api_url(targets[0]+'.bed'))
+        self.assertIn(self.upi_with_genomic_coordinates, r.text)
+        # test a sequence without genomic coordinates
+        r = requests.get(self._get_api_url('rna/%s.bed' % self.upi))
         self.assertIn('# Genomic coordinates not available', r.text)
 
     def test_genome_annotations(self):

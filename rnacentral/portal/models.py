@@ -104,7 +104,7 @@ class Rna(models.Model):
         """
         Format genomic coordinates from all xrefs into a single file in GFF2 format.
         """
-        xrefs = self.xrefs.all()
+        xrefs = self.xrefs.filter(db_id=1).all()
         gff = ''
         for xref in xrefs:
             assemblies = xref.accession.assembly.select_related('chromosome').all()
@@ -115,6 +115,52 @@ class Rna(models.Model):
                                                                             '+' if assembly.strand > 0 else '-',
                                                                             self.upi)
         return gff
+
+    def get_ucsc_bed(self):
+        """
+        Format genomic coordinates from all xrefs into a single file in UCSC BED format.
+        Example:
+        chr1    29554    31097    RNA000063C361    0    +   29554    31097    255,0,0    3    486,104,122    0,1009,1421
+        """
+        xrefs = self.xrefs.filter(db_id=1).all()
+        bed = ''
+        for xref in xrefs:
+            assemblies = xref.accession.assembly.select_related('chromosome').order_by('primary_start').all()
+            if assemblies.count() == 0:
+                continue
+            # prepare fields
+            chromosome = assemblies[0].chromosome.chromosome
+            chrom_start = xref.get_assembly_start()
+            chrom_end = xref.get_assembly_end()
+            upi = xref.upi.upi
+            score = 0
+            strand = '+' if assemblies[0].strand > 0 else '-'
+            thick_start = chrom_start
+            thick_end = chrom_end
+            item_rgb = "63,125,151"
+            block_count = assemblies.count()
+            block_sizes = []
+            block_starts = []
+            for i, exon in enumerate(assemblies):
+                block_sizes.append(exon.primary_end - exon.primary_start)
+                if i == 0:
+                    block_starts.append(0)
+                else:
+                    block_starts.append(exon.primary_start - assemblies[0].primary_start)
+            bed += "chr%s\t%i\t%i\t%s\t%i\t%s\t%i\t%i\t%s\t%i\t%s\t%s\n" % (chromosome,
+                                                                            chrom_start,
+                                                                            chrom_end,
+                                                                            upi,
+                                                                            score,
+                                                                            strand,
+                                                                            thick_start,
+                                                                            thick_end,
+                                                                            item_rgb,
+                                                                            block_count,
+                                                                            ','.join(map(str,block_sizes)),
+                                                                            ','.join(map(str,block_starts))
+                                                                            )
+        return bed
 
 
 class Database(models.Model):

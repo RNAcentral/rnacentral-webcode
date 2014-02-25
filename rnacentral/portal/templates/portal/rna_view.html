@@ -333,6 +333,7 @@ limitations under the License.
           }
           // append GFF download link if genomic coordinates have been found
           if ($('.genoverse-xref').length > 0 ) {
+            $('#download-formats').append('<li><a href="/api/v1/rna/{{ rna.upi }}.bed" download={{ rna.upi }}.bed>bed</a></li>');
             $('#download-formats').append('<li><a href="/api/v1/rna/{{ rna.upi }}.gff" download={{ rna.upi }}.gff>gff</a></li>');
           }
       });

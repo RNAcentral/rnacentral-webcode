@@ -36,4 +36,4 @@ urlpatterns = patterns('',
     url(r'^v1/feature/region/human/(?P<chromosome>(\d+|Y|X))\:(?P<start>(\d|,)+)-(?P<end>(\d|,)+)/?$', views.GenomeAnnotations.as_view(), name='human-genome-coordinates'),
 )
 
-urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'yaml', 'fasta', 'api', 'gff'])
+urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'yaml', 'fasta', 'api', 'gff', 'bed'])

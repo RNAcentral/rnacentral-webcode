@@ -24,7 +24,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.reverse import reverse
 from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, XrefSerializer, \
-                              RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer
+                              RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaBedSerializer
 import django_filters
 import re
 
@@ -176,6 +176,23 @@ class RnaGffRenderer(renderers.BaseRenderer):
         return text
 
 
+class RnaBedRenderer(renderers.BaseRenderer):
+    """
+    Render the genomic coordinates in UCSC BED format received from RnaBedSerializer.
+    """
+    media_type = 'text/bed'
+    format = 'bed'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        """
+        RnaBedSerializer returns a single entry.
+        """
+        text = data['bed']
+        if not text:
+            text = '# Genomic coordinates not available'
+        return text
+
+
 class RnaMixin(object):
     """
     Mixin for additional functionality specific to Rna views.
@@ -188,6 +205,8 @@ class RnaMixin(object):
             return RnaFastaSerializer
         elif self.request.accepted_renderer.format == 'gff':
             return RnaGffSerializer
+        elif self.request.accepted_renderer.format == 'bed':
+            return RnaBedSerializer
 
         flat = self.request.QUERY_PARAMS.get('flat', 'false')
         if re.match('true', flat, re.IGNORECASE):
@@ -250,8 +269,8 @@ class RnaDetail(RnaMixin, generics.RetrieveAPIView):
     # the above docstring appears on the API website
     queryset = Rna.objects.select_related().all()
     renderer_classes = (renderers.JSONRenderer, renderers.JSONPRenderer,
-                        renderers.BrowsableAPIRenderer,
-                        renderers.YAMLRenderer, RnaFastaRenderer, RnaGffRenderer)
+                        renderers.BrowsableAPIRenderer, renderers.YAMLRenderer,
+                        RnaFastaRenderer, RnaGffRenderer, RnaBedRenderer)
 
 
 class XrefList(generics.ListAPIView):
