@@ -143,6 +143,20 @@ class ApiV1Test(unittest.TestCase):
         targets = ('rna', 'rna/%s' % self.upi)
         self._output_format_tester(formats, targets)
 
+    def test_genome_annotations(self):
+        targets = ['feature/region/human/Y:26,631,479-26,632,610', 'feature/region/human/2:39,745,816-39,826,679']
+        for target in targets:
+            url = self._get_api_url(target)
+            data = self._check_urls(url)
+            self.assertNotEqual(len(data), 0)
+            for annotation in data:
+                if annotation['feature_type'] == 'transcript':
+                    self.assertIn('URS', annotation['external_name'])
+                elif annotation['feature_type'] == 'exon':
+                    self.assertIn('URS', annotation['Parent'])
+                else:
+                    self.assertEqual(0, 1, "Unknown genomic annotation type")
+
     def _output_format_tester(self, formats, targets):
         """
         Auxiliary function for testing output formats.
