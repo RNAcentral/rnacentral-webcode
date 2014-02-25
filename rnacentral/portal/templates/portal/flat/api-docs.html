@@ -255,7 +255,24 @@ which acts as the logical `AND` operator. More logical operators will be support
 * [{{ BASE_URL }}/api/v1/rna/?database=3&min_length=200](/api/v1/rna/?database=srpdb&min_length=200)
 * [{{ BASE_URL }}/api/v1/rna/?min_length=1&max_length=4](/api/v1/rna/?min_length=1&max_length=4)
 
-<h3 id="v1-example-script">Example script</h3>
+<h2 id="v1-genome-annotations">Genome annotations</h2>
+
+The API provides an endpoint for retrieving annotations based on genomic coordinates.
+Genome annotations are available for all sequences from [VEGA](/expert-database/vega).
+Only **human genome** is currently supported, but more data from more genomes will become available in future.
+
+The response content is similar to that provided by the
+[Ensembl REST API](http://beta.rest.ensembl.org/documentation/info/feature_region)
+and can be directly used to visualise the data using the [Genoverse](http://genoverse.org) HTML5 genome browser.
+
+The genome location should be in the `chromosome:start-end` format and may contain optional commas.
+
+#### Examples
+
+* [{{ BASE_URL }}/api/v1/feature/region/human/Y:26,631,479-26,632,610](/api/v1/feature/region/human/Y:26,631,479-26,632,610)
+* [{{ BASE_URL }}/api/v1/feature/region/human/2:39,745,816-39,826,679](/api/v1/feature/region/human/2:39,745,816-39,826,679)
+
+<h2 id="v1-example-script">Example script</h2>
 
 A common task is finding whether some sequence of interest has an RNAcentral id.
 
@@ -344,6 +361,7 @@ These requests should return the same results, both in the browser and when retr
                 <li><a href="#v1-combined-filters">Combined filters</a></li>
               </ul>
             </li>
+            <li><a href="#v1-genome-annotations">Genome annotations</a></li>
             <li><a href="#v1-example-script">Example script</a></li>
             <li><a href="#v1-cross-domain-requests">Cross-domain requests</a></li>
             <li><a href="#v1-trailing-slash">Trailing slash</a></li>
