@@ -143,6 +143,19 @@ class ApiV1Test(unittest.TestCase):
         targets = ('rna', 'rna/%s' % self.upi)
         self._output_format_tester(formats, targets)
 
+    def test_gff_output(self):
+        upi_with_genomic_coordinates = 'URS000063A371'
+        formats = {'gff': 'text/gff'}
+        targets = ('rna/%s' % upi_with_genomic_coordinates,)
+        # test response status codes
+        self._output_format_tester(formats, targets)
+        # further check the gff text output
+        r = requests.get(self._get_api_url(targets[0]+'.gff'))
+        self.assertIn('exon', r.text)
+        # test a sequence without genomic coordinates
+        r = requests.get(self._get_api_url('rna/%s.gff' % self.upi))
+        self.assertIn('# Genomic coordinates not available', r.text)
+
     def test_genome_annotations(self):
         targets = ['feature/region/human/Y:26,631,479-26,632,610', 'feature/region/human/2:39,745,816-39,826,679']
         for target in targets:

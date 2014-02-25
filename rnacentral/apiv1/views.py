@@ -23,7 +23,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.reverse import reverse
-from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, XrefSerializer, RnaFlatSerializer, RnaFastaSerializer
+from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, XrefSerializer, \
+                              RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer
 import django_filters
 import re
 
@@ -153,6 +154,28 @@ class RnaFastaRenderer(renderers.BaseRenderer):
             return data['fasta']
 
 
+class RnaGffRenderer(renderers.BaseRenderer):
+    """
+    Render the genomic coordinates in GFF format received from RnaGffSerializer.
+    """
+    media_type = 'text/gff'
+    format = 'gff'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        """
+        RnaGffSerializer can return either a single entry or a list of entries.
+        """
+        text = ''
+        if 'results' in data: # list of entries
+            for entry in data['results']:
+                text += entry['gff']
+        else: # single entry
+            text = data['gff']
+        if not text:
+            text = '# Genomic coordinates not available'
+        return text
+
+
 class RnaMixin(object):
     """
     Mixin for additional functionality specific to Rna views.
@@ -163,6 +186,8 @@ class RnaMixin(object):
         """
         if self.request.accepted_renderer.format == 'fasta':
             return RnaFastaSerializer
+        elif self.request.accepted_renderer.format == 'gff':
+            return RnaGffSerializer
 
         flat = self.request.QUERY_PARAMS.get('flat', 'false')
         if re.match('true', flat, re.IGNORECASE):
@@ -226,7 +251,7 @@ class RnaDetail(RnaMixin, generics.RetrieveAPIView):
     queryset = Rna.objects.select_related().all()
     renderer_classes = (renderers.JSONRenderer, renderers.JSONPRenderer,
                         renderers.BrowsableAPIRenderer,
-                        renderers.YAMLRenderer, RnaFastaRenderer)
+                        renderers.YAMLRenderer, RnaFastaRenderer, RnaGffRenderer)
 
 
 class XrefList(generics.ListAPIView):

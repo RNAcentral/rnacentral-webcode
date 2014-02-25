@@ -100,6 +100,22 @@ class Rna(models.Model):
         fasta = "> %s\n%s" % (self.upi, split_seq)
         return fasta
 
+    def get_gff(self):
+        """
+        Format genomic coordinates from all xrefs into a single file in GFF2 format.
+        """
+        xrefs = self.xrefs.all()
+        gff = ''
+        for xref in xrefs:
+            assemblies = xref.accession.assembly.select_related('chromosome').all()
+            for assembly in assemblies:
+                gff += "chr%s\tRNAcentral\texon\t%s\t%s\t.\t%s\t.\t%s\n" % (assembly.chromosome.chromosome,
+                                                                            assembly.primary_start,
+                                                                            assembly.primary_end,
+                                                                            '+' if assembly.strand > 0 else '-',
+                                                                            self.upi)
+        return gff
+
 
 class Database(models.Model):
     timestamp = models.DateField()

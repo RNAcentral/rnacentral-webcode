@@ -53,7 +53,7 @@ limitations under the License.
                       Download
                       <b class="caret"></b>
                   </a>
-          <ul class="dropdown-menu">
+          <ul class="dropdown-menu" id="download-formats">
             <li><a href="/api/v1/rna/{{ rna.upi }}.json" download={{ rna.upi }}.json>json</a></li>
             <li><a href="/api/v1/rna/{{ rna.upi }}.fasta" download={{ rna.upi }}.fasta>fasta</a></li>
             <li><a href="/api/v1/rna/{{ rna.upi }}.yaml" download={{ rna.upi }}.yaml>yaml</a></li>
@@ -330,6 +330,10 @@ limitations under the License.
           if (hash != 'species' && hash != 'overview') {
             dataTables_search.val(hash).focus();
             oTable.fnFilter(hash);
+          }
+          // append GFF download link if genomic coordinates have been found
+          if ($('.genoverse-xref').length > 0 ) {
+            $('#download-formats').append('<li><a href="/api/v1/rna/{{ rna.upi }}.gff" download={{ rna.upi }}.gff>gff</a></li>');
           }
       });
 

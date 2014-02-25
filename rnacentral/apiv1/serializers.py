@@ -108,3 +108,14 @@ class RnaFastaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rna
         fields = ('fasta',)
+
+
+class RnaGffSerializer(serializers.ModelSerializer):
+    """
+    Serializer for presenting genomic coordinates in GFF format
+    """
+    gff = serializers.Field(source='get_gff')
+
+    class Meta:
+        model = Rna
+        fields = ('gff',)
