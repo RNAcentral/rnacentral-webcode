@@ -28,7 +28,7 @@ import django_filters
 import re
 
 
-class GenomeCoordinates(APIView):
+class GenomeAnnotations(APIView):
     """
     Ensembl-like genome coordinates endpoint.
 
