@@ -156,6 +156,18 @@ class ApiV1Test(unittest.TestCase):
         r = requests.get(self._get_api_url('rna/%s.gff' % self.upi))
         self.assertIn('# Genomic coordinates not available', r.text)
 
+    def test_gff3_output(self):
+        formats = {'gff3': 'text/gff3'}
+        targets = ('rna/%s' % self.upi_with_genomic_coordinates,)
+        # test response status codes
+        self._output_format_tester(formats, targets)
+        # further check the gff text output
+        r = requests.get(self._get_api_url(targets[0]+'.gff3'))
+        self.assertIn('SO:0000198', r.text)
+        # test a sequence without genomic coordinates
+        r = requests.get(self._get_api_url('rna/%s.gff3' % self.upi))
+        self.assertIn('# Genomic coordinates not available', r.text)
+
     def test_bed_output(self):
         formats = {'bed': 'text/bed'}
         targets = ('rna/%s' % self.upi_with_genomic_coordinates,)

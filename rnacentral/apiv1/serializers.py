@@ -121,6 +121,17 @@ class RnaGffSerializer(serializers.ModelSerializer):
         fields = ('gff',)
 
 
+class RnaGff3Serializer(serializers.ModelSerializer):
+    """
+    Serializer for presenting genomic coordinates in GFF format
+    """
+    gff3 = serializers.Field(source='get_gff3')
+
+    class Meta:
+        model = Rna
+        fields = ('gff3',)
+
+
 class RnaBedSerializer(serializers.ModelSerializer):
     """
     Serializer for presenting genomic coordinates in UCSC BED format

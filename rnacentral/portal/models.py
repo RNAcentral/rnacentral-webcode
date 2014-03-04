@@ -110,6 +110,16 @@ class Rna(models.Model):
             gff += _xref_to_gff_format(xref)
         return gff
 
+    def get_gff3(self):
+        """
+        Format genomic coordinates from all xrefs into a single file in GFF3 format.
+        """
+        xrefs = self.xrefs.filter(db_id=1).all()
+        gff = '##gff-version 3\n'
+        for xref in xrefs:
+            gff += _xref_to_gff3_format(xref)
+        return gff
+
     def get_ucsc_bed(self):
         """
         Format genomic coordinates from all xrefs into a single file in UCSC BED format.
@@ -241,6 +251,12 @@ class Xref(models.Model):
         Format genomic coordinates in GFF format.
         """
         return _xref_to_gff_format(self)
+
+    def get_gff3(self):
+        """
+        Format genomic coordinates in GFF3 format.
+        """
+        return _xref_to_gff3_format(self)
 
     def get_vega_splice_variants(self):
         splice_variants = []
@@ -390,6 +406,40 @@ def _xref_to_gff_format(xref):
                                                                     assembly.primary_end,
                                                                     '+' if assembly.strand > 0 else '-',
                                                                     xref.upi.upi)
+    return gff
+
+def _xref_to_gff3_format(xref):
+    """
+    Return genome coordinates of an xref in GFF3 format. Available in Rna and Xref models.
+    """
+    gff = ''
+    assemblies = xref.accession.assembly.select_related('chromosome').all()
+    if assemblies.count() == 0:
+        return gff
+    for i, assembly in enumerate(assemblies):
+        seqid = assembly.chromosome.ena_accession
+        source = 'RNAcentral'
+        seq_type = 'SO:0000198' # non-coding exon
+        start = assembly.primary_start
+        end = assembly.primary_end
+        score = '.'
+        strand = '+' if assembly.strand > 0 else '-'
+        phase = '.'
+        attributes = {
+            'ID': '_'.join([xref.accession.accession, str(i)]),
+            'Name': xref.upi.upi,
+        }
+        attributes_joined = ';'.join("%s=%s" % t for t in attributes.iteritems())
+        gff += "%s\t%s\t%s\t%i\t%i\t%s\t%s\t%s\t%s\n" % (seqid,
+                                                           source,
+                                                           seq_type,
+                                                           start,
+                                                           end,
+                                                           score,
+                                                           strand,
+                                                           phase,
+                                                           attributes_joined
+                                                           )
     return gff
 
 def _xref_to_bed_format(xref):

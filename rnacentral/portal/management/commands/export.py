@@ -82,6 +82,8 @@ class Command(BaseCommand):
             self.export_bed(self.genomes['human'])
         elif options['format'] == 'gff':
             self.export_gff(self.genomes['human'])
+        elif options['format'] == 'gff3':
+            self.export_gff3(self.genomes['human'])
         elif options['format'] == 'bed':
             self.export_bed(self.genomes['human'])
         else:
@@ -168,6 +170,20 @@ class Command(BaseCommand):
         f = open(gff_file, 'w')
         for xref in self.get_vega_xrefs():
             text = xref.get_gff()
+            if text:
+                f.write(text)
+        f.close()
+        self.stdout.write('Exported to file "%s"' % gff_file)
+
+    def export_gff3(self, genome):
+        """
+        Create GFF3 output files.
+        """
+        gff_file = '%s.gff3' % genome
+        f = open(gff_file, 'w')
+        f.write('##gff-version 3\n')
+        for xref in self.get_vega_xrefs():
+            text = xref.get_gff3()
             if text:
                 f.write(text)
         f.close()
