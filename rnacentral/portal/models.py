@@ -107,13 +107,7 @@ class Rna(models.Model):
         xrefs = self.xrefs.filter(db_id=1).all()
         gff = ''
         for xref in xrefs:
-            assemblies = xref.accession.assembly.select_related('chromosome').all()
-            for assembly in assemblies:
-                gff += "chr%s\tRNAcentral\texon\t%s\t%s\t.\t%s\t.\t%s\n" % (assembly.chromosome.chromosome,
-                                                                            assembly.primary_start,
-                                                                            assembly.primary_end,
-                                                                            '+' if assembly.strand > 0 else '-',
-                                                                            self.upi)
+            gff += _xref_to_gff_format(xref)
         return gff
 
     def get_ucsc_bed(self):
@@ -125,41 +119,7 @@ class Rna(models.Model):
         xrefs = self.xrefs.filter(db_id=1).all()
         bed = ''
         for xref in xrefs:
-            assemblies = xref.accession.assembly.select_related('chromosome').order_by('primary_start').all()
-            if assemblies.count() == 0:
-                continue
-            # prepare fields
-            chromosome = assemblies[0].chromosome.chromosome
-            chrom_start = xref.get_assembly_start()
-            chrom_end = xref.get_assembly_end()
-            upi = xref.upi.upi
-            score = 0
-            strand = '+' if assemblies[0].strand > 0 else '-'
-            thick_start = chrom_start
-            thick_end = chrom_end
-            item_rgb = "63,125,151"
-            block_count = assemblies.count()
-            block_sizes = []
-            block_starts = []
-            for i, exon in enumerate(assemblies):
-                block_sizes.append(exon.primary_end - exon.primary_start)
-                if i == 0:
-                    block_starts.append(0)
-                else:
-                    block_starts.append(exon.primary_start - assemblies[0].primary_start)
-            bed += "chr%s\t%i\t%i\t%s\t%i\t%s\t%i\t%i\t%s\t%i\t%s\t%s\n" % (chromosome,
-                                                                            chrom_start,
-                                                                            chrom_end,
-                                                                            upi,
-                                                                            score,
-                                                                            strand,
-                                                                            thick_start,
-                                                                            thick_end,
-                                                                            item_rgb,
-                                                                            block_count,
-                                                                            ','.join(map(str,block_sizes)),
-                                                                            ','.join(map(str,block_starts))
-                                                                            )
+            bed += _xref_to_bed_format(xref)
         return bed
 
 
@@ -269,6 +229,18 @@ class Xref(models.Model):
 
     class Meta:
         db_table = 'xref'
+
+    def get_ucsc_bed(self):
+        """
+        Format genomic coordinates in BED format.
+        """
+        return _xref_to_bed_format(self)
+
+    def get_gff(self):
+        """
+        Format genomic coordinates in GFF format.
+        """
+        return _xref_to_gff_format(self)
 
     def get_vega_splice_variants(self):
         splice_variants = []
@@ -400,3 +372,64 @@ class Reference_map(models.Model):
 
     class Meta:
         db_table = 'rnc_reference_map'
+
+"""
+Common auxiliary functions.
+"""
+def _xref_to_gff_format(xref):
+    """
+    Return genome coordinates of an xref in GFF format. Available in Rna and Xref models.
+    """
+    gff = ''
+    assemblies = xref.accession.assembly.select_related('chromosome').all()
+    if assemblies.count() == 0:
+        return gff
+    for assembly in assemblies:
+        gff += "chr%s\tRNAcentral\texon\t%s\t%s\t.\t%s\t.\t%s\n" % (assembly.chromosome.chromosome,
+                                                                    assembly.primary_start,
+                                                                    assembly.primary_end,
+                                                                    '+' if assembly.strand > 0 else '-',
+                                                                    xref.upi.upi)
+    return gff
+
+def _xref_to_bed_format(xref):
+    """
+    Return genome coordinates of an xref in BED format. Available in Rna and Xref models.
+    """
+    bed = ''
+    assemblies = xref.accession.assembly.select_related('chromosome').order_by('primary_start').all()
+    if assemblies.count() == 0:
+        return bed
+    # prepare fields
+    chromosome = assemblies[0].chromosome.chromosome
+    chrom_start = xref.get_assembly_start()
+    chrom_end = xref.get_assembly_end()
+    upi = xref.upi.upi
+    score = 0
+    strand = '+' if assemblies[0].strand > 0 else '-'
+    thick_start = chrom_start
+    thick_end = chrom_end
+    item_rgb = "63,125,151"
+    block_count = assemblies.count()
+    block_sizes = []
+    block_starts = []
+    for i, exon in enumerate(assemblies):
+        block_sizes.append(exon.primary_end - exon.primary_start)
+        if i == 0:
+            block_starts.append(0)
+        else:
+            block_starts.append(exon.primary_start - assemblies[0].primary_start)
+    bed = "chr%s\t%i\t%i\t%s\t%i\t%s\t%i\t%i\t%s\t%i\t%s\t%s\n" % (chromosome,
+                                                                   chrom_start,
+                                                                   chrom_end,
+                                                                   upi,
+                                                                   score,
+                                                                   strand,
+                                                                   thick_start,
+                                                                   thick_end,
+                                                                   item_rgb,
+                                                                   block_count,
+                                                                   ','.join(map(str,block_sizes)),
+                                                                   ','.join(map(str,block_starts))
+                                                                   )
+    return bed
