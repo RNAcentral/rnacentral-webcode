@@ -31,6 +31,7 @@ python apiv1/tests.py --base_url http://test.rnacentral.org/
 import unittest
 import requests
 import re
+import xml.dom.minidom
 
 
 class ApiV1Test(unittest.TestCase):
@@ -194,6 +195,39 @@ class ApiV1Test(unittest.TestCase):
                 else:
                     self.assertEqual(0, 1, "Unknown genomic annotation type")
 
+    def test_valid_das_annotation_request(self):
+        """
+        Test DAS `feature` method response.
+        """
+        target = 'das/Homo_sapiens.GRCh37.gene/features?segment=Y:26631479,26632610'
+        url = self._get_api_url(target)
+        r = requests.get(url)
+        self.assertEqual(r.status_code, 200)
+        self.assertIn(self.upi_with_genomic_coordinates, r.text)
+        self._validate_xml(r.text)
+
+    def test_das_request_no_annotation(self):
+        """
+        Test DAS `feature` method response with no annotations.
+        """
+        target = 'das/Homo_sapiens.GRCh37.gene/features?segment=Y:100,120'
+        url = self._get_api_url(target)
+        r = requests.get(url)
+        self.assertEqual(r.status_code, 200)
+        self.assertNotIn('FEATURE', r.text)
+        self._validate_xml(r.text)
+
+    def test_das_source(self):
+        """
+        Test DAS `sources` method.
+        """
+        target = 'das/sources'
+        url = self._get_api_url(target)
+        r = requests.get(url)
+        self.assertEqual(r.status_code, 200)
+        self.assertIn('Homo_sapiens.GRCh37.gene', r.text)
+        self._validate_xml(r.text)
+
     def _output_format_tester(self, formats, targets):
         """
         Auxiliary function for testing output formats.
@@ -225,6 +259,13 @@ class ApiV1Test(unittest.TestCase):
             self.assertEqual(r.status_code, 200)
         return r.json()
 
+    def _validate_xml(self, text):
+        """
+        """
+        try:
+            xml.dom.minidom.parseString(text)
+        except xml.parsers.expat.ExpatError:
+            self.assertEqual(0,1,"Invalid XML")
 
 if __name__ == '__main__':
     import argparse

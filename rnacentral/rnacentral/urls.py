@@ -20,7 +20,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$', 'portal.views.homepage', name='homepage'),
-    url(r'^rna/(?P<upi>URS[0-9A-Fa-f]{10})/?$', 'portal.views.rna_view'),
+    url(r'^rna/(?P<upi>URS[0-9A-Fa-f]{10})/?$', 'portal.views.rna_view', name='rna_view'),
     # admin
     url(r'^admin/?', include(admin.site.urls)),
     # flat pages

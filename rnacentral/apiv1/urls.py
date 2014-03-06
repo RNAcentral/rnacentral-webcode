@@ -34,6 +34,9 @@ urlpatterns = patterns('',
     url(r'^v1/accession/(?P<pk>.*?(RNA|feature)(:\d+)?)/?$', views.AccessionView.as_view(), name='accession-detail'),
     # Ensembl-like genome coordinates endpoint
     url(r'^v1/feature/region/human/(?P<chromosome>(\d+|Y|X))\:(?P<start>(\d|,)+)-(?P<end>(\d|,)+)/?$', views.GenomeAnnotations.as_view(), name='human-genome-coordinates'),
+    # DAS-like endpoints
+    url(r'^v1/das/sources/?$', views.DasSources.as_view(), name='das-sources'),
+    url(r'^v1/das/Homo_sapiens\.GRCh37\.gene/features/?$', views.DasFeatures.as_view(), name='das-features'),
 )
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'yaml', 'fasta', 'api', 'gff', 'gff3', 'bed'])

@@ -15,6 +15,7 @@ limitations under the License.
 Docstrings of the classes exposed in urlpatters support markdown.
 """
 
+from django.core.urlresolvers import reverse
 from portal.models import Rna, Accession, Xref
 from rest_framework import generics
 from rest_framework import renderers
@@ -27,6 +28,153 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer
 import django_filters
 import re
+
+
+def _get_xrefs_from_genomic_coordinates(chromosome, start, end):
+    """
+    Common function for retrieving xrefs based on genomic coordinates.
+    """
+    try:
+        xrefs = Xref.objects.filter(accession__assembly__chromosome__chromosome=chromosome,
+                                            accession__assembly__primary_start__gte=start,
+                                            accession__assembly__primary_end__lte=end,
+                                            db__id=1,
+                                            deleted='N').\
+                                     select_related('accession', 'accession__assembly').\
+                                     all()
+        return xrefs
+    except:
+        return []
+
+
+class DasSources(APIView):
+    """
+    DAS `sources` method for determining supported capabilities.
+    RNAcentral emulates the Homo_sapiens.GRCh37.gene Ensembl DAS source.
+    """
+
+    permission_classes = (AllowAny,)
+    renderer_classes = (renderers.StaticHTMLRenderer, ) # return the string unchanged
+
+    def get(self, request):
+        """
+        Return the description of supported DAS sources.
+        Example:
+            http://www.ensembl.org/das/sources
+        """
+        sources = """
+        <SOURCES>
+            <SOURCE uri="Homo_sapiens.GRCh37.gene" title="Homo_sapiens.GRCh37.gene" description="Unique RNAcentral sequences">
+                <PROP name="label" value="RNAcentral" />
+                <MAINTAINER email="helpdesk@rnacentral.org" />
+                <VERSION uri="Homo_sapiens.GRCh37.gene" created="2014-03-06">
+                    <COORDINATES uri="http://www.dasregistry.org/dasregistry/coordsys/CS_DS311" taxid="9606" source="Chromosome" authority="GRCh" test_range="" version="37">
+                        GRCh_37,Chromosome,Homo sapiens
+                    </COORDINATES>
+                    <CAPABILITY type="das1:sources" query_uri="http://localhost:8000/api/v1/das/Homo_sapiens.GRCh37.gene" />
+                    <CAPABILITY type="das1:features" query_uri="http://localhost:8000/api/v1/das/Homo_sapiens.GRCh37.gene/features" />
+                </VERSION>
+            </SOURCE>
+        </SOURCES>"""
+        return Response(sources)
+
+
+class DasFeatures(APIView):
+    """
+    DAS `features` method for retrieving genome annotations.
+    """
+
+    permission_classes = (AllowAny,)
+    renderer_classes = (renderers.StaticHTMLRenderer, ) # return as an unmodified string
+
+    def get(self, request):
+        """
+        Return genome annotation in DASGFF format.
+        Does not use serializers and renderers because the XML has self-closing tags.
+        Example:
+        # get annotations
+        http://www.ensembl.org/das/Homo_sapiens.GRCh37.transcript/features?segment=Y:26631479,26632610
+        # no annotations, empty response
+        http://www.ensembl.org/das/Homo_sapiens.GRCh37.transcript/features?segment=Y:100,120
+        """
+
+        def _parse_query_parameters():
+            """
+            Parse query parameters with genomic coordinates.
+            Example: .../features?segment=chrY:1,200
+            """
+            regex = r'(?P<chromosome>(\d+|Y|X))\:(?P<start>\d+),(?P<end>\d+)'
+            query_param = 'segment'
+            m = re.search(regex, request.QUERY_PARAMS[query_param])
+            if m:
+                chromosome = m.group(1)
+                start = m.group(3)
+                end = m.group(4)
+            else:
+                chromosome = start = end = ''
+            return (chromosome, start, end)
+
+        def _format_segment():
+            """
+            Return a segment object containing exon features.
+            """
+            rnacentral_ids = []
+            features = ''
+            for i, xref in enumerate(xrefs):
+                rnacentral_id = xref.upi.upi
+                if rnacentral_id not in rnacentral_ids:
+                    rnacentral_ids.append(rnacentral_id)
+                else:
+                    continue
+                coordinates = xref.get_genomic_coordinates()
+                transcript_id = rnacentral_id + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
+                rnacentral_url = request.build_absolute_uri(reverse('rna_view', kwargs={'upi': rnacentral_id}))
+                # exons
+                for i, exon in enumerate(xref.accession.assembly.all()):
+                    exon_id = '_'.join([xref.accession.accession, 'exon_' + str(i)])
+                    features += """
+  <FEATURE id="{0}">
+    <START>{1}</START>
+    <END>{2}</END>
+    <TYPE id="exon" />
+    <METHOD id="RNAcentral" />
+    <SCORE>-</SCORE>
+    <ORIENTATION>{3}</ORIENTATION>
+    <PHASE>.</PHASE>
+    <TARGET id="{4}"/>
+    <GROUP id="{5}" type="transcript" label="{5}">
+      <LINK href="{6}"></LINK>
+    </GROUP>
+  </FEATURE>""".format(exon_id,
+                       exon.primary_start,
+                       exon.primary_end,
+                       '+' if exon.strand > 0 else '-',
+                       transcript_id,
+                       rnacentral_id,
+                       rnacentral_url)
+
+            segment = """
+<SEGMENT id="{0}" start="{1}" stop="{2}">""".format(chromosome, start, end) + features + """
+</SEGMENT>"""
+            return segment
+
+        def _format_das_response():
+            """
+            Add the header
+            """
+            return """<!DOCTYPE DASGFF SYSTEM "http://www.biodas.org/dtd/dasgff.dtd">
+<DASGFF>
+<GFF>""" + \
+            segments + \
+            """
+</GFF>
+</DASGFF>"""
+
+        (chromosome, start, end) = _parse_query_parameters()
+        xrefs = _get_xrefs_from_genomic_coordinates(chromosome, start, end)
+        segments = _format_segment()
+        das = _format_das_response()
+        return Response(das)
 
 
 class GenomeAnnotations(APIView):
@@ -44,15 +192,9 @@ class GenomeAnnotations(APIView):
         """
         start = start.replace(',','')
         end = end.replace(',','')
-        try:
-            xrefs = Xref.objects.filter(accession__assembly__chromosome__chromosome=chromosome,
-                                        accession__assembly__primary_start__gte=start,
-                                        accession__assembly__primary_end__lte=end,
-                                        db__id=1,
-                                        deleted='N').\
-                                 select_related('accession', 'accession__assembly').\
-                                 all()
-        except:
+
+        xrefs = _get_xrefs_from_genomic_coordinates(chromosome, start, end)
+        if not xrefs:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         rnacentral_ids = []
