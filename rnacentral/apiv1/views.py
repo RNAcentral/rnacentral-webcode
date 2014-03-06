@@ -182,7 +182,7 @@ class DasFeatures(APIView):
                 rnacentral_url = request.build_absolute_uri(reverse('rna_view', kwargs={'upi': rnacentral_id}))
                 # exons
                 for i, exon in enumerate(xref.accession.assembly.all()):
-                    exon_id = '_'.join([xref.accession.accession, 'exon_' + str(i)])
+                    exon_id = '_'.join([transcript_id, 'exon_' + str(i+1)])
                     features += """
   <FEATURE id="{exon_id}">
     <START>{start}</START>
@@ -193,7 +193,7 @@ class DasFeatures(APIView):
     <ORIENTATION>{strand}</ORIENTATION>
     <PHASE>.</PHASE>
     <GROUP id="{transcript_id}" type="{transcript_type}" label="{rnacentral_id}">
-      <LINK href="{rnacentral_url}"></LINK>
+      <LINK href="{rnacentral_url}">{rnacentral_id}</LINK>
     </GROUP>
   </FEATURE>""".format(exon_id=exon_id,
                        start=exon.primary_start,
