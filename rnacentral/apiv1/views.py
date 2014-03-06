@@ -104,7 +104,7 @@ class DasStylesheet(APIView):
       <GLYPH>
         <LINE>
           <HEIGHT>6</HEIGHT>
-          <FGCOLOR>#3f7d97</FGCOLOR>
+          <FGCOLOR>#cd9b1d</FGCOLOR>
           <STYLE>hat</STYLE>
         </LINE>
       </GLYPH>
@@ -116,7 +116,7 @@ class DasStylesheet(APIView):
         <BOX>
           <HEIGHT>6</HEIGHT>
           <BGCOLOR>#ffffff</BGCOLOR>
-          <FGCOLOR>#3f7d97</FGCOLOR>
+          <FGCOLOR>#cd9b1d</FGCOLOR>
         </BOX>
       </GLYPH>
     </TYPE>
@@ -214,9 +214,10 @@ class DasFeatures(APIView):
             """
             Add the header
             """
-            return """<!DOCTYPE DASGFF SYSTEM "http://www.biodas.org/dtd/dasgff.dtd">
+            return """<?xml version="1.0" standalone="no"?>
+<!DOCTYPE DASGFF SYSTEM "http://www.biodas.org/dtd/dasgff.dtd">
 <DASGFF>
-<GFF>""" + \
+<GFF version="1.0">""" + \
             segments + \
             """
 </GFF>
