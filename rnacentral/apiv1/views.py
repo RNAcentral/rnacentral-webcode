@@ -104,7 +104,7 @@ class DasStylesheet(APIView):
       <GLYPH>
         <LINE>
           <HEIGHT>6</HEIGHT>
-          <FGCOLOR>#cd9b1d</FGCOLOR>
+          <FGCOLOR>#104e8b</FGCOLOR>
           <STYLE>hat</STYLE>
         </LINE>
       </GLYPH>
@@ -116,7 +116,7 @@ class DasStylesheet(APIView):
         <BOX>
           <HEIGHT>6</HEIGHT>
           <BGCOLOR>#ffffff</BGCOLOR>
-          <FGCOLOR>#cd9b1d</FGCOLOR>
+          <FGCOLOR>#104e8b</FGCOLOR>
         </BOX>
       </GLYPH>
     </TYPE>
@@ -168,7 +168,7 @@ class DasFeatures(APIView):
             rnacentral_ids = []
             features = ''
             feature_types = { # defined in DasStylesheet
-                'exon': 'exon:non-coding:rnacentral',
+                'exon': 'exon:non_coding:rnacentral',
                 'transcript': 'transcript:rnacentral',
             }
             for i, xref in enumerate(xrefs):
