@@ -103,8 +103,8 @@ class DasStylesheet(APIView):
     <TYPE id="transcript:rnacentral">
       <GLYPH>
         <LINE>
-          <HEIGHT>10</HEIGHT>
-          <FGCOLOR>#3F7D97</FGCOLOR>
+          <HEIGHT>6</HEIGHT>
+          <FGCOLOR>#3f7d97</FGCOLOR>
           <STYLE>hat</STYLE>
         </LINE>
       </GLYPH>
@@ -114,9 +114,9 @@ class DasStylesheet(APIView):
     <TYPE id="exon:non_coding:rnacentral">
       <GLYPH>
         <BOX>
-          <HEIGHT>10</HEIGHT>
+          <HEIGHT>6</HEIGHT>
           <BGCOLOR>#ffffff</BGCOLOR>
-          <FGCOLOR>#3F7D97</FGCOLOR>
+          <FGCOLOR>#3f7d97</FGCOLOR>
         </BOX>
       </GLYPH>
     </TYPE>
