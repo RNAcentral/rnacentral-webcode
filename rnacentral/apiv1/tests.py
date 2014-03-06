@@ -199,7 +199,7 @@ class ApiV1Test(unittest.TestCase):
         """
         Test DAS `feature` method response.
         """
-        target = 'das/Homo_sapiens.GRCh37.gene/features?segment=Y:26631479,26632610'
+        target = 'das/Homo_sapiens.GRCh37.transcript/features?segment=Y:26631479,26632610'
         url = self._get_api_url(target)
         r = requests.get(url)
         self.assertEqual(r.status_code, 200)
@@ -210,7 +210,7 @@ class ApiV1Test(unittest.TestCase):
         """
         Test DAS `feature` method response with no annotations.
         """
-        target = 'das/Homo_sapiens.GRCh37.gene/features?segment=Y:100,120'
+        target = 'das/Homo_sapiens.GRCh37.transcript/features?segment=Y:100,120'
         url = self._get_api_url(target)
         r = requests.get(url)
         self.assertEqual(r.status_code, 200)
@@ -225,7 +225,7 @@ class ApiV1Test(unittest.TestCase):
         url = self._get_api_url(target)
         r = requests.get(url)
         self.assertEqual(r.status_code, 200)
-        self.assertIn('Homo_sapiens.GRCh37.gene', r.text)
+        self.assertIn('Homo_sapiens.GRCh37.transcript', r.text)
         self._validate_xml(r.text)
 
     def _output_format_tester(self, formats, targets):

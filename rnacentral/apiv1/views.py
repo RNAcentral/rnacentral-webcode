@@ -15,7 +15,6 @@ limitations under the License.
 Docstrings of the classes exposed in urlpatters support markdown.
 """
 
-from django.core.urlresolvers import reverse
 from portal.models import Rna, Accession, Xref
 from rest_framework import generics
 from rest_framework import renderers
@@ -62,20 +61,22 @@ class DasSources(APIView):
         Example:
             http://www.ensembl.org/das/sources
         """
+        sources_url = request.build_absolute_uri(reverse('das-sources'))
+        features_url = request.build_absolute_uri(reverse('das-features'))
         sources = """
         <SOURCES>
-            <SOURCE uri="Homo_sapiens.GRCh37.gene" title="Homo_sapiens.GRCh37.gene" description="Unique RNAcentral sequences">
+            <SOURCE uri="Homo_sapiens.GRCh37.transcript" title="Homo_sapiens.GRCh37.transcript" description="Unique RNAcentral sequences">
                 <PROP name="label" value="RNAcentral" />
                 <MAINTAINER email="helpdesk@rnacentral.org" />
-                <VERSION uri="Homo_sapiens.GRCh37.gene" created="2014-03-06">
+                <VERSION uri="Homo_sapiens.GRCh37.transcript" created="2014-03-06">
                     <COORDINATES uri="http://www.dasregistry.org/dasregistry/coordsys/CS_DS311" taxid="9606" source="Chromosome" authority="GRCh" test_range="" version="37">
                         GRCh_37,Chromosome,Homo sapiens
                     </COORDINATES>
-                    <CAPABILITY type="das1:sources" query_uri="http://localhost:8000/api/v1/das/Homo_sapiens.GRCh37.gene" />
-                    <CAPABILITY type="das1:features" query_uri="http://localhost:8000/api/v1/das/Homo_sapiens.GRCh37.gene/features" />
+                    <CAPABILITY type="das1:sources" query_uri="{0}" />
+                    <CAPABILITY type="das1:features" query_uri="{1}" />
                 </VERSION>
             </SOURCE>
-        </SOURCES>"""
+        </SOURCES>""".format(sources_url, features_url)
         return Response(sources)
 
 
