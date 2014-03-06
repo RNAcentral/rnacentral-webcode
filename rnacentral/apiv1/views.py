@@ -53,7 +53,7 @@ class DasSources(APIView):
     """
 
     permission_classes = (AllowAny,)
-    renderer_classes = (renderers.StaticHTMLRenderer, ) # return the string unchanged
+    renderer_classes = (renderers.StaticHTMLRenderer,) # return the string unchanged
 
     def get(self, request):
         """
@@ -61,19 +61,69 @@ class DasSources(APIView):
         Example:
             http://www.ensembl.org/das/sources
         """
-        features_url = request.build_absolute_uri(reverse('das-features'))
+        urls = {
+            'features': request.build_absolute_uri(reverse('das-features')),
+            'stylesheet': request.build_absolute_uri(reverse('das-stylesheet')),
+        }
+
         sources = """<?xml version="1.0" encoding="UTF-8" ?>
 <SOURCES>
-    <SOURCE uri="RNACentral_GRCh37" title="Homo_sapiens.GRCh37.transcript" description="Unique RNAcentral Sequences">
+    <SOURCE uri="RNAcentral_GRCh37" title="RNAcentral" description="Unique RNAcentral Sequences">
         <MAINTAINER email="helpdesk@rnacentral.org" />
         <VERSION uri="RNAcentral_GRCh37" created="2014-03-06">
             <PROP name="label" value="RNAcentral" />
             <COORDINATES uri="http://www.dasregistry.org/dasregistry/coordsys/CS_DS311" taxid="9606" source="Chromosome" authority="GRCh" test_range="Y:26631479,26632610" version="37">GRCh_37,Chromosome,Homo sapiens</COORDINATES>
             <CAPABILITY type="das1:features" query_uri="{0}" />
+            <CAPABILITY type="das1:stylesheet" query_uri="{1}" />
         </VERSION>
     </SOURCE>
-</SOURCES>""".format(features_url)
+</SOURCES>""".format(urls['features'], urls['stylesheet'])
         return Response(sources)
+
+
+class DasStylesheet(APIView):
+    """
+    Das stylesheet for controlling the appearance of the RNAcentral Ensembl track.
+    """
+
+    permission_classes = (AllowAny,)
+    renderer_classes = (renderers.StaticHTMLRenderer,) # return the string unchanged
+
+    def get(self, request):
+        """
+        Style features created in DasFeatures.
+        Example:
+            http://www.ensembl.org/das/Homo_sapiens.GRCh37.transcript/stylesheet
+        """
+        stylesheet = """<?xml version="1.0" standalone="no"?>
+<!DOCTYPE DASSTYLE SYSTEM "http://www.biodas.org/dtd/dasstyle.dtd">
+<DASSTYLE>
+<STYLESHEET version="1.0">
+  <CATEGORY id="group">
+    <TYPE id="transcript:rnacentral">
+      <GLYPH>
+        <LINE>
+          <HEIGHT>10</HEIGHT>
+          <FGCOLOR>#3F7D97</FGCOLOR>
+          <STYLE>hat</STYLE>
+        </LINE>
+      </GLYPH>
+    </TYPE>
+  </CATEGORY>
+  <CATEGORY id="transcription">
+    <TYPE id="exon:non_coding:rnacentral">
+      <GLYPH>
+        <BOX>
+          <HEIGHT>10</HEIGHT>
+          <BGCOLOR>#ffffff</BGCOLOR>
+          <FGCOLOR>#3F7D97</FGCOLOR>
+        </BOX>
+      </GLYPH>
+    </TYPE>
+  </CATEGORY>
+</STYLESHEET>
+</DASSTYLE>"""
+        return Response(stylesheet)
 
 
 class DasFeatures(APIView):
@@ -117,6 +167,10 @@ class DasFeatures(APIView):
             """
             rnacentral_ids = []
             features = ''
+            feature_types = { # defined in DasStylesheet
+                'exon': 'exon:non-coding:rnacentral',
+                'transcript': 'transcript:rnacentral',
+            }
             for i, xref in enumerate(xrefs):
                 rnacentral_id = xref.upi.upi
                 if rnacentral_id not in rnacentral_ids:
@@ -130,25 +184,26 @@ class DasFeatures(APIView):
                 for i, exon in enumerate(xref.accession.assembly.all()):
                     exon_id = '_'.join([xref.accession.accession, 'exon_' + str(i)])
                     features += """
-  <FEATURE id="{0}">
-    <START>{1}</START>
-    <END>{2}</END>
-    <TYPE id="exon" />
+  <FEATURE id="{exon_id}">
+    <START>{start}</START>
+    <END>{end}</END>
+    <TYPE id="{feature_type}" />
     <METHOD id="RNAcentral" />
     <SCORE>-</SCORE>
-    <ORIENTATION>{3}</ORIENTATION>
+    <ORIENTATION>{strand}</ORIENTATION>
     <PHASE>.</PHASE>
-    <TARGET id="{4}"/>
-    <GROUP id="{5}" type="transcript" label="{5}">
-      <LINK href="{6}"></LINK>
+    <GROUP id="{transcript_id}" type="{transcript_type}" label="{rnacentral_id}">
+      <LINK href="{rnacentral_url}"></LINK>
     </GROUP>
-  </FEATURE>""".format(exon_id,
-                       exon.primary_start,
-                       exon.primary_end,
-                       '+' if exon.strand > 0 else '-',
-                       transcript_id,
-                       rnacentral_id,
-                       rnacentral_url)
+  </FEATURE>""".format(exon_id=exon_id,
+                       start=exon.primary_start,
+                       end=exon.primary_end,
+                       feature_type=feature_types['exon'],
+                       strand='+' if exon.strand > 0 else '-',
+                       transcript_id=transcript_id,
+                       rnacentral_id=rnacentral_id,
+                       transcript_type=feature_types['transcript'],
+                       rnacentral_url=rnacentral_url)
 
             segment = """
 <SEGMENT id="{0}" start="{1}" stop="{2}">""".format(chromosome, start, end) + features + """
