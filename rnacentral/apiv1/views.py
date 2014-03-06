@@ -64,13 +64,11 @@ class DasSources(APIView):
         features_url = request.build_absolute_uri(reverse('das-features'))
         sources = """<?xml version="1.0" encoding="UTF-8" ?>
 <SOURCES>
-    <SOURCE uri="RNACentral_GRCh37" title="Homo_sapiens.GRCh37.transcript" description="Annotation source for Homo_sapiens transcript">
+    <SOURCE uri="RNACentral_GRCh37" title="Homo_sapiens.GRCh37.transcript" description="Unique RNAcentral Sequences">
         <MAINTAINER email="helpdesk@rnacentral.org" />
         <VERSION uri="RNAcentral_GRCh37" created="2014-03-06">
             <PROP name="label" value="RNAcentral" />
-            <COORDINATES uri="http://www.dasregistry.org/dasregistry/coordsys/CS_DS311" taxid="9606" source="Chromosome" authority="GRCh" test_range="Y:26631479,26632610" version="37">
-                GRCh_37,Chromosome,Homo sapiens
-            </COORDINATES>
+            <COORDINATES uri="http://www.dasregistry.org/dasregistry/coordsys/CS_DS311" taxid="9606" source="Chromosome" authority="GRCh" test_range="Y:26631479,26632610" version="37">GRCh_37,Chromosome,Homo sapiens</COORDINATES>
             <CAPABILITY type="das1:features" query_uri="{0}" />
         </VERSION>
     </SOURCE>
