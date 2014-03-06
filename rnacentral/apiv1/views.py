@@ -187,7 +187,7 @@ class DasFeatures(APIView):
   <FEATURE id="{exon_id}">
     <START>{start}</START>
     <END>{end}</END>
-    <TYPE id="{feature_type}" />
+    <TYPE id="{feature_type}" category="transcription">{feature_type}</TYPE>
     <METHOD id="RNAcentral" />
     <SCORE>-</SCORE>
     <ORIENTATION>{strand}</ORIENTATION>
