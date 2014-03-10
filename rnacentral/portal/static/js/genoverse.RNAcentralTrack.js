@@ -104,7 +104,7 @@ var genoverseConfig = {
       'chromosome': $this.data('chromosome'),
       'start': $this.data('genomic-start'),
       'end': $this.data('genomic-end'),
-    }
+    };
   };
 
   show_genoverse_header = function() {
@@ -120,25 +120,25 @@ var genoverseConfig = {
     if (typeof window.browser === 'undefined') {
         show_genoverse_header();
         // create Genoverse object
-        genoverseConfig['chr'] = params['chromosome'];
+        genoverseConfig.chr = params.chromosome;
         window.browser = new Genoverse(genoverseConfig);
         // set track position
         browser.on({
           afterInit: function () {
-            browser.moveTo(params['start'], params['end'], false);
+            browser.moveTo(params.start, params.end, false);
             browser.zoomOut();
           }
         });
     } else {
-        if ( browser.chr != this.params['chromosome'] ) {
+        if ( browser.chr != this.params.chromosome ) {
           // update chromosome and chromosomeSize
-          browser.chr = params['chromosome'];
+          browser.chr = params.chromosome;
           browser.chromosomeSize = browser.genome[browser.chr].size;
           // reload the data for the current chromosome
           browser.tracksById[track_id].model.receiveData(browser.tracksById[track_id].model.data, 1, browser.chromosomeSize);
         }
         // navigate to the region of interest
-        browser.moveTo(params['start'], params['end'], false);
+        browser.moveTo(params.start, params.end, false);
         browser.zoomOut();
     }
 
@@ -153,7 +153,7 @@ var genoverseConfig = {
   resize_genoverse_on_window_resize = function() {
     window.onresize = function() {
       set_genoverse_width();
-    }
+    };
   };
 
   genoverse_trigger = function() {
