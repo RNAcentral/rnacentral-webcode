@@ -22,29 +22,30 @@ import os
 class Command(BaseCommand):
     """
     Provide manage.py custom action for exporting genomic coordinates
-    in GFF and BED formats.
+    in several formats.
 
-    Implemented in Django in order to reuse gff and bed output routines used in REST API.
+    Implemented in Django in order to reuse formatting routines from the REST API.
     Can be run on a cluster using eHive for parallelization.
 
     Usage:
-    python manage.py export --bedToBigBed=/path/to/bedToBigBed # both bed and gff
-    python manage.py export --bedToBigBed=/path/to/bedToBigBed --format bed
-    python manage.py export --bedToBigBed=/path/to/bedToBigBed --format gff
+    python manage.py export --format gff
+    python manage.py export --format gff3
+    python manage.py export --format bed --bedToBigBed=/path/to/bedToBigBed # also outputs BigBed
+    python manage.py export --bedToBigBed=/path/to/bedToBigBed # all formats
     """
 
-    help = 'Export RNA sequences with known genomic coordinates in GFF or BED formats' # shown with --help command line option
+    help = 'Export RNA sequences with known genomic coordinates in various formats' # show with --help command line option
     option_list = BaseCommand.option_list + ( # add command line options
         make_option('--bedToBigBed',
             action='store',
             dest='bedToBigBed',
             default='',
-            help='[required] Path to bedToBigBed binary and fetchChromSizes.sh'),
+            help='Path to bedToBigBed binary and fetchChromSizes.sh'),
         make_option('--format',
             action='store',
             dest='format',
             default=False,
-            help='Output format (gff or bed). Omit to create both files.'),
+            help='Output format (gff|gff3|bed). Omit for output in all formats.'),
         make_option('--profile',
             default=False,
             help='Show cProfile information'),
@@ -71,21 +72,28 @@ class Command(BaseCommand):
         """
         Main function called by django.
         """
-        if not options['bedToBigBed']:
-            self.stderr.write('Specify path to bedToBigBed binary and fetchChromSizes.sh using --bedToBigBed')
-            return
-        else:
-            self.bedToBigBed = options['bedToBigBed']
+        def _bedToBigBed_option_is_ok():
+            """
+            """
+            if not options['bedToBigBed']:
+                self.stderr.write('Specify path to bedToBigBed binary and fetchChromSizes.sh using --bedToBigBed')
+                return False
+            else:
+                self.bedToBigBed = options['bedToBigBed']
+                return True
 
         if not options['format']:
             self.export_gff(self.genomes['human'])
-            self.export_bed(self.genomes['human'])
+            self.export_gff3(self.genomes['human'])
+            if _bedToBigBed_option_is_ok():
+                self.export_bed(self.genomes['human'])
         elif options['format'] == 'gff':
             self.export_gff(self.genomes['human'])
         elif options['format'] == 'gff3':
             self.export_gff3(self.genomes['human'])
         elif options['format'] == 'bed':
-            self.export_bed(self.genomes['human'])
+            if _bedToBigBed_option_is_ok():
+                self.export_bed(self.genomes['human'])
         else:
             self.stderr.write('Incorrect output format')
             return
@@ -107,7 +115,7 @@ class Command(BaseCommand):
             return {
                 'bed_unsorted': '%s_unsorted.bed' % genome,
                 'bed_sorted': '%s.bed' % genome,
-                'big_bed': '%s.bb' % genome,
+                'big_bed': '%s.bigBed' % genome,
                 'chrom_sizes': _fetch_chromosome_sizes(),
             }
 
