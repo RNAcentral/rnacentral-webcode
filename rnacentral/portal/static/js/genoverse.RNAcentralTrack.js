@@ -59,7 +59,7 @@ var genoverseConfig = {
   genome        : 'grch37', // see js/genomes/
   chr           : '',
   showUrlCoords : false, // do not show genomic coordinates in the url
-  plugins       : [ 'controlPanel', 'karyotype', 'trackControls', 'resizer', 'fileDrop' ],
+  plugins       : [ 'controlPanel', 'karyotype', 'resizer', 'fileDrop' ],
   tracks        : [
     Genoverse.Track.Scalebar,
     Genoverse.Track.extend({
