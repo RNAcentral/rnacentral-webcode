@@ -263,8 +263,9 @@ class GenomeAnnotations(APIView):
                 'ID': transcript_id,
                 'external_name': rnacentral_id,
                 'feature_type': 'transcript',
-                'logic_name': 'RNAcentral',
-                'biotype': 'lincRNA',
+                'logic_name': 'RNAcentral', # required by Genoverse
+                'biotype': 'lincRNA', # required by Genoverse
+                'seq_region_name': chromosome,
                 'strand': coordinates['strand'],
                 'start': coordinates['start'],
                 'end': coordinates['end'],
@@ -276,9 +277,10 @@ class GenomeAnnotations(APIView):
                     'external_name': exon_id,
                     'ID': exon_id,
                     'feature_type': 'exon',
-                    'logic_name': 'RNAcentral',
-                    'biotype': 'lincRNA',
                     'Parent': transcript_id,
+                    'logic_name': 'RNAcentral',  # required by Genoverse
+                    'biotype': 'lincRNA', # required by Genoverse
+                    'seq_region_name': chromosome,
                     'strand': exon.strand,
                     'start': exon.primary_start,
                     'end': exon.primary_end,
