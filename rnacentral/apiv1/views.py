@@ -247,8 +247,6 @@ class GenomeAnnotations(APIView):
         end = end.replace(',','')
 
         xrefs = _get_xrefs_from_genomic_coordinates(chromosome, start, end)
-        if not xrefs:
-            return Response(status=status.HTTP_404_NOT_FOUND)
 
         rnacentral_ids = []
         data = []
