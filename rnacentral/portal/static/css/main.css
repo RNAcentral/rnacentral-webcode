@@ -280,7 +280,7 @@ h1, h2, h3 {
 }
 
 /*highlight external links on hover*/
-a[href^="http://"]:not([href*="rnacentral.org"]):hover {
+a[href^="http://"]:not([href*="rnacentral.org"]):hover, .gv_menu a:hover {
   color: #DD8621;
 }
 
