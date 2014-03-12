@@ -260,6 +260,8 @@ limitations under the License.
   <script type="text/javascript" src="{% static "js/xrefLoader.js" %}"></script>
   <script type="text/javascript" src="{% static "js/rnaView.js" %}"></script>
   <script type="text/javascript" src="{% static "js/jquery.EuropePMCAbstracts.js" %}"></script>
+  <script type="text/javascript" src="{% static "js/vendor/Genoverse/js/genoverse.combined.js" %}"></script>
+  <script type="text/javascript" src="{% static "js/genoverse.RNAcentralTrack.js" %}"></script>
 
   <script type="text/javascript">
     $(function() {
@@ -271,8 +273,4 @@ limitations under the License.
 
 {% block extra_js_uncompressed %}
   {{ block.super }}
-
-  <script type="text/javascript" src="{% static 'js/vendor/Genoverse/js/genoverse.combined.js' %}"></script>
-  <script type="text/javascript" src="{% static 'js/genoverse.RNAcentralTrack.js' %}"></script>
-
 {% endblock %}

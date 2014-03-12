@@ -123,12 +123,8 @@ var genoverseConfig = {
         genoverseConfig.chr = params.chromosome;
         window.browser = new Genoverse(genoverseConfig);
         // set track position
-        browser.on({
-          afterInit: function () {
-            browser.moveTo(params.start, params.end, false);
-            browser.zoomOut();
-          }
-        });
+        browser.moveTo(params.start, params.end, false);
+        browser.zoomOut();
     } else {
         if ( browser.chr != this.params.chromosome ) {
           // update chromosome and chromosomeSize
