@@ -258,104 +258,13 @@ limitations under the License.
   <script type="text/javascript" src="{% static "js/vendor/handlebars-v1.1.2.js" %}"></script>
   <script type="text/javascript" src="{% static "js/d3.speciesTree.js" %}"></script>
   <script type="text/javascript" src="{% static "js/xrefLoader.js" %}"></script>
+  <script type="text/javascript" src="{% static "js/rnaView.js" %}"></script>
   <script type="text/javascript" src="{% static "js/jquery.EuropePMCAbstracts.js" %}"></script>
-
 
   <script type="text/javascript">
     $(function() {
-
-      xref_loader = new xrefLoader('{{rna.upi}}');
-      xref_loader.load_xrefs();
-
-      // bootstrap tooltips
-      $('body').tooltip({
-          selector: '.help',
-          delay: { show: 200, hide: 100 }
-      });
-
-      // literature references
-      $(document).on('click', '.literature-refs-retrieve', function(){
-          var $this = $(this);
-          var accession = $this.data('accession');
-          var target = $this.siblings('.literature-refs-content');
-
-          insert_content = function(data) {
-              var source = $("#handlebars-literature-reference-tmpl").html();
-              var template = Handlebars.compile(source);
-              var wrapper  = {refs: data};
-              target.html(template(wrapper));
-          };
-
-          activate_abstract_buttons = function() {
-              $this.siblings().find('.abstract-btn').EuropePMCAbstracts({
-                'target_class': '.abstract-text',
-                'pubmed_id_data_attribute': 'pubmed-id',
-                'msg': {
-                  'show_abstract': 'Show abstract',
-                  'hide_abstract': 'Hide abstract',
-                }
-              });
-          };
-
-          if ( target.html().length > 0 ) {
-              target.slideToggle();
-          } else {
-            $.get('/api/v1/accession/' + accession + '/citations', function(data){
-                insert_content(data);
-                activate_abstract_buttons();
-                target.slideDown();
-            });
-          }
-      });
-
-      // D3 species tree
-      var d3_species_tree = $('#d3-species-tree');
-      if(!document.createElement('svg').getAttributeNS){
-        d3_species_tree.html('Your browser does not support SVG');
-      } else {
-        $.ajax({
-          url: "/rna/{{ rna.upi  }}/lineage",
-          dataType: "json",
-          success: function(data) {
-            var tree = $('#d3-species-tree');
-            tree.hide().html('');
-            d3SpeciesTree(data, '#d3-species-tree');
-            tree.fadeIn();
-          },
-          error: function() {
-            var source = $("#handlebars-loading-error-tmpl").html();
-            var msg = Handlebars.compile(source);
-            d3_species_tree.hide().html(msg).fadeIn();
-          }
-        });
-      }
-
-      // clicking the species link to view the Species tab
-      $("#show-species-tab").click(function(){
-        $('#tabs a[href="#species"]').tab('show');
-        window.location.hash = "#species";
-        return false;
-      });
-
-      // update the url hashtag when tabs are clicked
-      var hash = window.location.hash;
-      hash && $('#tabs a[href="' + hash + '"]').tab('show');
-      $('.nav-tabs a').click(function (e) {
-        var $this = $(this);
-        // only show the active tabs
-        if ( $this.attr('id') == 'overview' || $this.attr('id') == 'species' ) {
-           $this.tab('show');
-        }
-        var scrollmem = $('body').scrollTop();
-        window.location.hash = this.hash;
-        $('html,body').scrollTop(scrollmem);
-      });
-
-      // scoll the species tree to the species level
-      $("#d3-species-scroll-tree").click(function(){
-        $('#d3-species-tree-tab').scrollLeft($('#d3-species-tree-tab svg').attr('width'));
-      });
-
+      rna_sequence_view = new rnaSequenceView('{{rna.upi}}');
+      rna_sequence_view.initialize();
     });
   </script>
 {% endblock extra_js %}
