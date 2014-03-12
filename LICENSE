@@ -374,3 +374,10 @@ COMPONENT: rnacentral/portal/static/css/ebi-global.css and
 
 Copyright (c) EMBL-EBI 2013
 Authors: Francis Rowland, Peter Walter, Glen van Ginkel, Nicola Buso
+
+COMPONENT: rnacentral/portal/static/js/vendor/hopscotch/*
+
+Hopscotch is a framework to make it easy for developers to add product tours to their pages.
+
+Licensed under the Apache License v2.0
+https://github.com/linkedin/hopscotch

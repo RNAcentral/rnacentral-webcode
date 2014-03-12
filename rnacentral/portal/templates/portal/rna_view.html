@@ -336,6 +336,50 @@ limitations under the License.
             $('#download-formats').append('<li><a href="/api/v1/rna/{{ rna.upi }}.bed" download={{ rna.upi }}.bed>bed</a></li>');
             $('#download-formats').append('<li><a href="/api/v1/rna/{{ rna.upi }}.gff" download={{ rna.upi }}.gff>gff</a></li>');
             $('#download-formats').append('<li><a href="/api/v1/rna/{{ rna.upi }}.gff3" download={{ rna.upi }}.gff3>gff3</a></li>');
+
+            // create the tour button
+            $('h1').append('<small><button type="button" class="btn btn-info pull-right tour help animated pulse" title="Take an interactive tour to see genome integration features in action">Tour genome-related features</button></small>');
+
+            // Define hopscotch genome location tour
+            var tour = {
+              id: "tour-hopscotch",
+              showPrevButton: true,
+              steps: [
+                {
+                  title: "Genome integration",
+                  content: "Some annotations are linked to the <strong>human genome</strong> and have additional functionality.",
+                  target: "xrefs-table-div",
+                  placement: "top"
+                },
+                {
+                  title: "Links to genome browsers",
+                  content: "View this genomic location in <strong>Ensembl</strong> or <strong>UCSC</strong> with the pre-loaded RNAcentral track.",
+                  target: document.querySelector(".ensembl-link"),
+                  placement: "top"
+                },
+                {
+                  title: "Embedded genome browser",
+                  content: "This genomic location can also be visualised right on this page.",
+                  target: document.querySelector(".genoverse-xref"),
+                  placement: "top",
+                  onNext: function(){
+                    $(".genoverse-xref").first().click(); // launch genoverse
+                  }
+                },
+                {
+                  title: "Using the embedded browser",
+                  content: "You can <strong>scroll</strong> the browser or click on the entries to view the <strong>popup menus</strong> with links to Ensembl and other RNAcentral entries.",
+                  target: 'genoverse',
+                  placement: "top",
+                }
+              ]
+            };
+
+            // initialize the tour
+            $('.tour').click(function(){
+              var firstStep = 0; // always start at the first step
+              hopscotch.startTour(tour, firstStep);
+            });
           }
       });
 
