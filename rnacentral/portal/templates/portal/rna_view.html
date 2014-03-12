@@ -257,131 +257,15 @@ limitations under the License.
   <script type="text/javascript" src="{% static "js/vendor/d3/d3.min.js" %}"></script>
   <script type="text/javascript" src="{% static "js/vendor/handlebars-v1.1.2.js" %}"></script>
   <script type="text/javascript" src="{% static "js/d3.speciesTree.js" %}"></script>
+  <script type="text/javascript" src="{% static "js/xrefLoader.js" %}"></script>
   <script type="text/javascript" src="{% static "js/jquery.EuropePMCAbstracts.js" %}"></script>
 
 
   <script type="text/javascript">
     $(function() {
 
-      // show an info message if xrefs are taking too long to load
-      timer = setTimeout(function() {
-        var target = $('#xrefs-loading-msg');
-        // do not update the message if there was an error
-        if (target.html().indexOf("alert-danger") != -1) {
-          return;
-        }
-        var source = $("#handlebars-loading-info-tmpl").html();
-        var msg = Handlebars.compile(source);
-        target.append(msg).slideDown();
-      }, 5000);
-
-      // load the cross-references via ajax
-      $.get('/rna/{{rna.upi}}/xrefs', function(data){
-        $('#xrefs-table-div').html(data);
-      }).fail(function() {
-        var source = $("#handlebars-loading-error-tmpl").html();
-        var msg = Handlebars.compile(source);
-        $('#xrefs-loading-msg').hide().html(msg).fadeIn();
-      }).done(function(){
-          // initialize the xref dataTable
-          var oTable = $('#xrefs-table').dataTable({
-            "aoColumns": [null, null, null, {"bVisible": false}, {"bVisible": false}], // hide columns, but keep them sortable
-            "bAutoWidth": true, // pre-recalculate column widths
-            "sDom": "ftpil", // filter, table, pagination, information, length
-            "iDisplayLength": 5, // show 5 entries by default
-            "sPaginationType": "bootstrap", // requires dataTables.bootstrap.js
-            "bDeferRender": true, // defer rendering until necessary
-            "oLanguage": {
-                "sSearch": "", // don't display the "Search:" bit
-                "sInfo": "_START_-_END_ of _TOTAL_", // change the informational text
-                "oPaginate": {
-                  "sNext": "",
-                  "sPrevious": "",
-                },
-            },
-            "aLengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
-            "fnInitComplete": function(oSettings, json) {
-              $('.dataTables_filter input').attr('placeholder', 'Filter table').attr("tabindex", 1).addClass('form-control input-sm').attr('type', 'search');
-              $('#xrefs-table_filter').appendTo('#xrefs-datatables-filter').addClass('pull-right');
-              $('#xrefs-table_info').appendTo('#xrefs-datatables-counter');
-              // hide pagination controls for one page
-              if ( $('.dataTables_paginate').find('li').length == 3 ) { // 3 elements: <-, 1, ->
-                $('.dataTables_paginate').hide();
-                $('#xrefs-table_length').hide();
-              } else {
-                $('.dataTables_paginate').addClass('pull-left').appendTo('.xref-datatables-controls');
-                $('#xrefs-table_length').addClass('pull-right text-muted small').appendTo('.xref-datatables-controls');
-              }
-              $('.table th').css('padding-right','1.5em');
-            },
-          });
-          oTable.fnSortListener( document.getElementById('sort-by-first-seen'), 3);
-          oTable.fnSortListener( document.getElementById('sort-by-last-seen'), 4);
-          $("#xrefs-loading").slideUp();
-          $('#xrefs-table').fadeIn();
-          // monitor the xref datatables search field to update the hashtag
-          var dataTables_search = $('#xrefs-table_filter input');
-          dataTables_search.on('input', function(e) {
-            window.location.hash = $(this).val();
-            return false;
-          });
-          // if the url hash does not refer to any of the tabs, update the search field
-          var hash = window.location.hash.substring(1);
-          if (hash != 'species' && hash != 'overview') {
-            dataTables_search.val(hash).focus();
-            oTable.fnFilter(hash);
-          }
-          // append GFF download link if genomic coordinates have been found
-          if ($('.genoverse-xref').length > 0 ) {
-            $('#download-formats').append('<li><a href="/api/v1/rna/{{ rna.upi }}.bed" download={{ rna.upi }}.bed>bed</a></li>');
-            $('#download-formats').append('<li><a href="/api/v1/rna/{{ rna.upi }}.gff" download={{ rna.upi }}.gff>gff</a></li>');
-            $('#download-formats').append('<li><a href="/api/v1/rna/{{ rna.upi }}.gff3" download={{ rna.upi }}.gff3>gff3</a></li>');
-
-            // create the tour button
-            $('h1').append('<small><button type="button" class="btn btn-info pull-right tour help animated pulse" title="Take an interactive tour to see genome integration features in action">Tour genome-related features</button></small>');
-
-            // Define hopscotch genome location tour
-            var tour = {
-              id: "tour-hopscotch",
-              showPrevButton: true,
-              steps: [
-                {
-                  title: "Genome integration",
-                  content: "Some annotations are linked to the <strong>human genome</strong> and have additional functionality.",
-                  target: "xrefs-table-div",
-                  placement: "top"
-                },
-                {
-                  title: "Links to genome browsers",
-                  content: "View this genomic location in <strong>Ensembl</strong> or <strong>UCSC</strong> with the pre-loaded RNAcentral track.",
-                  target: document.querySelector(".ensembl-link"),
-                  placement: "top"
-                },
-                {
-                  title: "Embedded genome browser",
-                  content: "This genomic location can also be visualised right on this page.",
-                  target: document.querySelector(".genoverse-xref"),
-                  placement: "top",
-                  onNext: function(){
-                    $(".genoverse-xref").first().click(); // launch genoverse
-                  }
-                },
-                {
-                  title: "Using the embedded browser",
-                  content: "You can <strong>scroll</strong> the browser or click on the entries to view the <strong>popup menus</strong> with links to Ensembl and other RNAcentral entries.",
-                  target: 'genoverse',
-                  placement: "top",
-                }
-              ]
-            };
-
-            // initialize the tour
-            $('.tour').click(function(){
-              var firstStep = 0; // always start at the first step
-              hopscotch.startTour(tour, firstStep);
-            });
-          }
-      });
+      xref_loader = new xrefLoader('{{rna.upi}}');
+      xref_loader.load_xrefs();
 
       // bootstrap tooltips
       $('body').tooltip({
