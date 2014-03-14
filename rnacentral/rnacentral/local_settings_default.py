@@ -20,7 +20,6 @@ DATABASES = {
         'OPTIONS': {
           'threaded': True,
         },
-        'CONN_MAX_AGE': 600,
     }
 }
 
@@ -33,7 +32,7 @@ STATIC_ROOT = ''
 EMAIL_HOST = ''
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
-EMAIL_PORT =
+EMAIL_PORT = 0
 EMAIL_USE_TLS = True
 EMAIL_RNACENTRAL_HELPDESK = ''
 
