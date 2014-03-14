@@ -29,34 +29,39 @@ class Command(BaseCommand):
     Different export modes can be run in parallel.
 
     Usage:
+    python manage.py export <options>
+
+    Examples:
     # fasta
-    python manage.py export --output /full/path/to/output/location --format fasta
+    python manage.py export --destination /full/path/to/output/location --format fasta
     # gff
-    python manage.py export --output /full/path/to/output/location --format gff
+    python manage.py export --destination /full/path/to/output/location --format gff
     # gff3
-    python manage.py export --output /full/path/to/output/location --format gff3
+    python manage.py export --destination /full/path/to/output/location --format gff3
     # bed and BigBed
-    python manage.py export --output /full/path/to/output/location --format bed --bedToBigBed /path/to/bedToBigBed
+    python manage.py export --destination /full/path/to/output/location --format bed --bedToBigBed /path/to/bedToBigBed
      # all formats
-    python manage.py export --output /full/path/to/output/location --format all --bedToBigBed /path/to/bedToBigBed
+    python manage.py export --destination /full/path/to/output/location --format all --bedToBigBed /path/to/bedToBigBed
 
     Help:
-    python manage.py -h
+    python manage.py export -h
     """
 
-    help = 'Export RNAcentral data in different formats.' # shown with --help command line option
-    """Command line options"""
+    ########################
+    # Command line options #
+    ########################
+
     option_list = BaseCommand.option_list + (
-        make_option('--output',
+        make_option('-d', '--destination',
             default='',
-            dest='output',
+            dest='destination',
             help='[Required] Full path to the output directory'),
-        make_option('--format',
+        make_option('-f', '--format',
             action='store',
             dest='format',
             default=False,
             help='[Required] Output format (bed|gff|gff3|fasta|all).'),
-        make_option('--bedToBigBed',
+        make_option('-b', '--bedToBigBed',
             action='store',
             dest='bedToBigBed',
             default='',
@@ -65,16 +70,21 @@ class Command(BaseCommand):
             default=False,
             help='[Optional] Show cProfile information for profiling purposes.'),
     )
+    help = 'Export RNAcentral data in different formats. Run `python manage.py export -h` for more information.' # -h, --help
+
+    ###########################
+    # Django main entry point #
+    ###########################
 
     def __init__(self, *args, **kwargs):
         """
         Set common variables.
         """
         super(Command, self).__init__(*args, **kwargs)
-        self.modes       = ['gff', 'gff3', 'bed', 'fasta', 'all'] # available export modes
-        self.mode        = '' # current export mode
+        self.formats     = ['gff', 'gff3', 'bed', 'fasta', 'all'] # available export formats
+        self.format      = '' # selected export format
         self.bedToBigBed = '' # path to bedToBigBed
-        self.output_dir  = '' # path to output files
+        self.destination = '' # path to output files
         self.genomes = {
             'human_hg19': 'hg19', # GRCh37
             'human_hg38': 'hg38', # GRCh38
@@ -93,41 +103,37 @@ class Command(BaseCommand):
                 """
                 Store the command line options in the corresponding `self` variables.
                 """
-                if options['bedToBigBed']:
-                    self.bedToBigBed = options['bedToBigBed']
-
-                if options['output']:
-                    self.output_dir = options['output']
-
-                if options['format']:
-                    self.mode = options['format']
+                cmd_options = ['bedToBigBed', 'destination', 'format']
+                for cmd_option in cmd_options:
+                    if options[cmd_option]:
+                        setattr(self, cmd_option, options[cmd_option])
 
             def validate_command_line_options():
                 """
                 Validate the command line options.
                 """
-                if not self.output_dir:
+                if not self.destination:
                     raise CommandError('Please specify the --output option')
                 if not self.bedToBigBed and (options['format'] == 'bed' or options['format'] == 'all'):
                     raise CommandError('Please specify the --bedToBigBed option')
-                if not self.mode:
+                if not self.format:
                     raise CommandError('Please specify the --format option')
 
             set_command_line_options()
             validate_command_line_options()
-            self.export_factory(mode=self.mode)
+            self.export_factory(mode=self.format)
 
         if options['profile']:
             profiler = Profile()
-            profiler.runcall(_handle, *args, **options)
+            profiler.runcall(_handle, self, *args, **options)
             profiler.print_stats()
         else:
             _handle(self, *args, **options)
 
 
-    """
-    Helper functions.
-    """
+    ####################
+    # Helper functions #
+    ####################
 
     def gzip_file(self, filename):
         """
@@ -148,7 +154,7 @@ class Command(BaseCommand):
         """
         Generate ouput filename.
         """
-        return os.path.join(self.output_dir, filename)
+        return os.path.join(self.destination, filename)
 
     def get_xrefs_with_genomic_coordinates(self):
         """
@@ -159,25 +165,26 @@ class Command(BaseCommand):
                                            'accession__assembly__chromosome').\
                             all()[:100]
 
-    """
-    Main export functions.
-    """
+    ####################
+    # Export functions #
+    ####################
 
     def export_factory(self, mode):
         """
         Dynamically call the appropriate export method depending on the argument.
         """
         genome_release = self.genomes['human_hg19']
-        getattr(self, 'export_%s' % mode )(genome=genome_release) # call methods like export_gff etc
+        getattr(self, 'export_%s' % mode)(genome=genome_release) # call methods like export_gff etc
 
     def export_all(self, **kwargs):
         """
         Export the data in all formats.
         """
         self.stdout.write('Exporting the data in all formats')
-        for mode in self.modes:
-            if mode == 'all': continue
-            self.export_factory(mode=mode)
+        for mode in self.formats:
+            if mode == 'all':
+                continue # avoid recursive calls to export_all
+            self.export_factory(mode)
         self.stdout.write('Export complete')
 
     def export_fasta(self, **kwargs):
@@ -230,43 +237,19 @@ class Command(BaseCommand):
         self.gzip_file(gff_file)
         self.stdout.write('Gff3 export complete')
 
-    def export_bed(self, **kwargs):
+    def _export_big_bed(self, **kwargs):
         """
-        Create BED and BIG BED output files.
+        Create BigBed output file. Called internally by export_bed().
         """
         def _set_filenames():
             """
             Set all filenames required for BED export.
             """
             return {
-                'bed_unsorted': self.get_output_filename('%s_unsorted.bed' % genome),
                 'bed_sorted':   self.get_output_filename('%s.bed' % genome),
                 'big_bed':      self.get_output_filename('%s.bigBed' % genome),
-                'chrom_sizes':  fetch_chromosome_sizes() if self.bedToBigBed else '',
+                'chrom_sizes':  fetch_chromosome_sizes(),
             }
-
-        def export_unsorted_bed_data():
-            """
-            Export unsorted genomic coordinates in BED format.
-            """
-            f = open(files['bed_unsorted'], 'w')
-            for xref in self.get_xrefs_with_genomic_coordinates():
-                text = xref.get_ucsc_bed()
-                if text:
-                    f.write(text)
-            f.close()
-            self.stdout.write('Exported to file "%s"' % files['bed_unsorted'])
-
-        def bed_sort():
-            """
-            Sort bed file by chromosome then chromStart, as required by bedToBigBed.
-            """
-            cmd = "sort -k1,1 -k2,2n {0} > {1}".format(files['bed_unsorted'], files['bed_sorted'])
-            status = subprocess.call(cmd, shell=True)
-            if status == 0:
-                self.stdout.write('\tBed file sorted')
-            else:
-                raise CommandError('Bed file could not be sorted')
 
         def make_big_bed():
             """
@@ -296,8 +279,54 @@ class Command(BaseCommand):
             """
             Remove temporary files.
             """
-            os.remove(files['bed_unsorted'])
             os.remove(files['chrom_sizes'])
+
+        genome = kwargs['genome']
+        files = _set_filenames()
+        make_big_bed()
+        clean_up()
+
+    def export_bed(self, **kwargs):
+        """
+        Create bed and BigBed output files.
+        """
+        def _set_filenames():
+            """
+            Set all filenames required for BED export.
+            """
+            return {
+                'bed_unsorted': self.get_output_filename('%s_unsorted.bed' % genome),
+                'bed_sorted':   self.get_output_filename('%s.bed' % genome),
+            }
+
+        def export_unsorted_bed_data():
+            """
+            Export unsorted genomic coordinates in BED format.
+            """
+            f = open(files['bed_unsorted'], 'w')
+            for xref in self.get_xrefs_with_genomic_coordinates():
+                text = xref.get_ucsc_bed()
+                if text:
+                    f.write(text)
+            f.close()
+            self.stdout.write('Exported to file "%s"' % files['bed_unsorted'])
+
+        def bed_sort():
+            """
+            Sort bed file by chromosome then chromStart, as required by bedToBigBed.
+            """
+            cmd = "sort -k1,1 -k2,2n {0} > {1}".format(files['bed_unsorted'], files['bed_sorted'])
+            status = subprocess.call(cmd, shell=True)
+            if status == 0:
+                self.stdout.write('\tBed file sorted')
+            else:
+                raise CommandError('Bed file could not be sorted')
+
+        def clean_up():
+            """
+            Remove temporary files.
+            """
+            os.remove(files['bed_unsorted'])
 
         def export_bed_data():
             """
@@ -305,10 +334,9 @@ class Command(BaseCommand):
             self.stdout.write('Exporting bed and BigBed')
             export_unsorted_bed_data()
             bed_sort()
+            clean_up()
             if self.bedToBigBed:
-                make_big_bed()
-                clean_up()
-
+                self._export_big_bed(**kwargs)
             self.gzip_file(files['bed_sorted'])
             self.stdout.write('Bed and BigBed export complete')
 
