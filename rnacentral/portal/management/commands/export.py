@@ -65,7 +65,7 @@ class Command(BaseCommand):
             action='store',
             dest='bedToBigBed',
             default='',
-            help='[Required for bed output] Path to bedToBigBed binary and fetchChromSizes.sh (available from UCSC)'),
+            help='[Required for bed output] Path to bedToBigBed binary and fetchChromSizes (available from UCSC)'),
         make_option('--profile',
             default=False,
             help='[Optional] Show cProfile information for profiling purposes.'),
@@ -267,7 +267,7 @@ class Command(BaseCommand):
             Fetch chromosome sizes for a specific genome.
             """
             chrom_sizes_file = '%s.chrom.sizes' % genome
-            cmd = '. %s/fetchChromSizes.sh %s > %s' % (self.bedToBigBed, genome, chrom_sizes_file)
+            cmd = '. %s/fetchChromSizes %s > %s' % (self.bedToBigBed, genome, chrom_sizes_file)
             status = subprocess.call(cmd, shell=True)
             if status == 0:
                 self.stdout.write('\tChromosome sizes fetched')
