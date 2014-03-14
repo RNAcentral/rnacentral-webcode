@@ -15,6 +15,7 @@ from django.core.management.base import BaseCommand, CommandError
 from portal.models import Xref, Rna
 from optparse import make_option
 from cProfile import Profile
+from trackhub import Hub, Genomes, TrackDb
 import os
 import sys
 import subprocess
@@ -40,6 +41,8 @@ class Command(BaseCommand):
     python manage.py export --destination /full/path/to/output/location --format gff3
     # bed and BigBed
     python manage.py export --destination /full/path/to/output/location --format bed --bedToBigBed /path/to/bedToBigBed
+    # UCSC track hub
+    python manage.py export --destination /full/path/to/output/location --format track_hub --bedToBigBed /path/to/bedToBigBed
      # all formats
     python manage.py export --destination /full/path/to/output/location --format all --bedToBigBed /path/to/bedToBigBed
 
@@ -60,7 +63,7 @@ class Command(BaseCommand):
             action='store',
             dest='format',
             default=False,
-            help='[Required] Output format (bed|gff|gff3|fasta|all).'),
+            help='[Required] Output format (bed|gff|gff3|fasta|track_hub|all).'),
         make_option('-b', '--bedToBigBed',
             action='store',
             dest='bedToBigBed',
@@ -81,7 +84,7 @@ class Command(BaseCommand):
         Set common variables.
         """
         super(Command, self).__init__(*args, **kwargs)
-        self.formats     = ['gff', 'gff3', 'bed', 'fasta', 'all'] # available export formats
+        self.formats     = ['gff', 'gff3', 'bed', 'fasta', 'track_hub', 'all'] # available export formats
         self.format      = '' # selected export format
         self.bedToBigBed = '' # path to bedToBigBed
         self.destination = '' # path to output files
@@ -349,10 +352,25 @@ class Command(BaseCommand):
             self.stderr.write('Error: aborting Bed and BigBed export')
             return
 
-    def export_track_hub(self):
+    def export_track_hub(self, **kwargs):
         """
+        Create UCSC track hub.
         """
-        pass
+        self.stdout.write('Exporting track hub')
+
+        hub = Hub(destination=self.destination)
+        hub.render()
+
+        genomes = Genomes(destination=self.destination, genomes=self.genomes)
+        genomes.render()
+
+        # TODO: customize html message
+        for genome in self.genomes:
+            bigBed = self.get_output_filename('%s.bigBed' % self.genomes[genome])
+            trackDb = TrackDb(destination=self.destination, genome=self.genomes[genome], html="", bigBed=bigBed)
+            trackDb.render()
+
+        self.stdout.write('Track hub export complete')
 
     def export_xrefs(self):
         """
