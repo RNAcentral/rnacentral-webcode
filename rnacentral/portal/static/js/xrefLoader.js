@@ -173,6 +173,9 @@ xrefLoader.prototype.load_xrefs = function() {
 	            var tour = {
 	              id: "tour-hopscotch",
 	              showPrevButton: true,
+	              onStart: function(){
+                    $('#tabs a[href="#overview"]').tab('show');
+	              },
 	              steps: [
 	                {
 	                  title: "Genome integration",
