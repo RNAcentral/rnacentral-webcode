@@ -537,7 +537,7 @@
      */
     _createButton: function(id, text) {
       var btnEl = document.createElement('button'),
-          className = 'hopscotch-nav-button';
+          className = 'btn btn-primary btn-sm';
 
       btnEl.id = id;
       if (text) {
