@@ -12,6 +12,7 @@ limitations under the License.
 """
 
 from django.core.management.base import BaseCommand, CommandError
+from django.conf import settings
 from portal.models import Xref, Rna
 from optparse import make_option
 from cProfile import Profile
@@ -20,6 +21,7 @@ import os
 import sys
 import subprocess
 import traceback
+import cx_Oracle
 
 
 class Command(BaseCommand):
@@ -63,7 +65,7 @@ class Command(BaseCommand):
             action='store',
             dest='format',
             default=False,
-            help='[Required] Output format (bed|gff|gff3|fasta|track_hub|all).'),
+            help='[Required] Output format (bed|gff|gff3|fasta|track_hub|xrefs|all).'),
         make_option('-b', '--bedToBigBed',
             action='store',
             dest='bedToBigBed',
@@ -84,7 +86,7 @@ class Command(BaseCommand):
         Set common variables.
         """
         super(Command, self).__init__(*args, **kwargs)
-        self.formats     = ['gff', 'gff3', 'bed', 'fasta', 'track_hub', 'all'] # available export formats
+        self.formats     = ['gff', 'gff3', 'bed', 'fasta', 'track_hub', 'xrefs', 'all'] # available export formats
         self.format      = '' # selected export format
         self.bedToBigBed = '' # path to bedToBigBed
         self.destination = '' # path to output files
@@ -386,7 +388,89 @@ class Command(BaseCommand):
 
         self.stdout.write('Track hub export complete')
 
-    def export_xrefs(self):
+    def export_xrefs(self, **kwargs):
         """
+        Inspired by UniProt id mapping files.
+
+        Output format:
+        RNAcentral_id\tDatabase_name\tExternal_id
+
+        Example:
+        URS0000000161\tMIRBASE\tMIMAT0020957
+
+        Uses the database cursor directly to improve performance.
         """
-        pass
+        def get_connection():
+            """
+            Get Oracle cursor using connection details from Django settings.
+            """
+            db_url = '{username}/{password}@{db_name}'.format(username=settings.DATABASES['default']['USER'],
+                                                              password=settings.DATABASES['default']['PASSWORD'],
+                                                              db_name=settings.DATABASES['default']['NAME'])
+            connection = cx_Oracle.Connection(db_url)
+            return connection
+
+        def row_to_dict():
+            """
+            Convert Oracle results from tuples to dicts to improve code readability.
+            """
+            descrition = [d[0].lower() for d in cursor.description]
+            return dict(zip(descrition,row))
+
+        def get_accession_source():
+            """
+            Get a dictionary telling where to look for external database ids.
+            """
+            # skip 'RFAM' for now
+            return {
+                'xref': ['ENA'], # output xref.ac
+                'external_id': ['TMRNA_WEB', 'SRPDB', 'MIRBASE', 'VEGA'], # output accession.external_id
+                'optional_id': ['VEGA'], # output accession.optional_id
+            }
+
+        def process_row():
+            """
+            Write output for each xref.
+            """
+            accession_source = get_accession_source()
+            result = row_to_dict()
+            upi = result['upi']
+            database = result['descr']
+            if database in accession_source['xref']:
+                line = '{upi}\t{database}\t{accession}\n'.format(upi=upi, database=database, accession=result['accession'])
+                f.write(line)
+            elif database in accession_source['external_id']:
+                line = '{upi}\t{database}\t{accession}\n'.format(upi=upi, database=database, accession=result['external_id'])
+                f.write(line)
+            if database in accession_source['optional_id']:
+                line = '{upi}\t{database}\t{accession}\n'.format(upi=upi, database=database, accession=result['optional_id'])
+                f.write(line)
+
+        self.stdout.write('Exporting xrefs')
+
+        filename = self.get_output_filename('id_mapping.tsv')
+        f = open(filename, 'w')
+
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        sql_cmd = """
+        SELECT t1.upi, t2.ac AS accession, t3.external_id, t3.optional_id, t4.descr
+        FROM rna t1, xref t2, rnc_accessions t3, rnc_database t4
+        WHERE t1.upi=t2.upi AND t2.ac=t3.accession AND t2.dbid=t4.id AND t2.deleted='N' and t2.dbid = 5
+        ORDER BY t1.upi
+        """
+
+        try:
+            cursor.execute(sql_cmd)
+            for row in cursor:
+                process_row()
+        except cx_Oracle.DatabaseError, exc:
+            error, = exc.args
+            raise CommandError("Oracle error code: %s\nOracle message: %s" % (error.code, error.message))
+
+        connection.close()
+        f.close()
+        self.stdout.write('\tCreated file %s' % filename)
+        self.gzip_file(filename)
+        self.stdout.write('Xref export complete')
