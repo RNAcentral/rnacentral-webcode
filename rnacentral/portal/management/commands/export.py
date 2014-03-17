@@ -168,6 +168,16 @@ class Command(BaseCommand):
                                            'accession__assembly__chromosome').\
                             all()[:100]
 
+    def get_active_rna_sequences(self):
+        """
+        Get sequences with active cross-references.
+        """
+        return Rna.objects.only('upi', 'seq_short', 'seq_long').\
+                           filter(xrefs__deleted='N').\
+                           filter(xrefs__db_id=1).\
+                           order_by('upi').\
+                           all()[:100]
+
     ####################
     # Export functions #
     ####################
@@ -197,11 +207,15 @@ class Command(BaseCommand):
         """
         self.stdout.write('Exporting fasta')
         filename = self.get_output_filename('rnacentral.fasta')
-        rnas = Rna.objects.only('upi', 'seq_short', 'seq_long').\
-                           order_by('upi').\
-                           all()[:1000]
+        rnas = self.get_active_rna_sequences()
         f = open(filename, 'w')
+        upi = ''
         for rna in rnas:
+            # make sure each upi is written out only once
+            if rna.upi == upi:
+                continue
+            else:
+                upi = rna.upi
             f.write(rna.get_sequence_fasta())
         f.close()
         self.gzip_file(filename)
