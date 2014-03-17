@@ -54,7 +54,7 @@ class Rna(models.Model):
 
     def get_expert_database_xrefs(self):
         """
-        Get xrefs only from the expert database.
+        Get xrefs from expert databases.
         """
         return self.xrefs.select_related().exclude(accession__is_composite='N').all()
 
