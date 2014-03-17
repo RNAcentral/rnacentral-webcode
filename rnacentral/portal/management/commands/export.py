@@ -116,7 +116,7 @@ class Command(BaseCommand):
                 Validate the command line options.
                 """
                 if not self.destination:
-                    raise CommandError('Please specify the --output option')
+                    raise CommandError('Please specify the --destination option')
                 if not self.bedToBigBed and (options['format'] == 'bed' or options['format'] == 'all'):
                     raise CommandError('Please specify the --bedToBigBed option')
                 if not self.format:
