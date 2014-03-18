@@ -223,7 +223,8 @@ class Command(BaseCommand):
     def export_fasta(self, **kwargs):
         """
         Export all RNAcentral sequences in FASTA format.
-        Total runtime for 6M records: ~34m
+        Total runtime for 6M records: ~34 min
+        The bottleneck is dealing with LOBs and compressing the file.
         """
         self.stdout.write('Exporting fasta')
         filename = self.get_output_filename('rnacentral.fasta')
@@ -244,6 +245,7 @@ class Command(BaseCommand):
     def export_gff(self, **kwargs):
         """
         Create GFF output files.
+        Total runtime for 21K records: ~2 min
         """
         self.stdout.write('Exporting gff')
         gff_file = self.get_output_filename('%s.gff' % kwargs['genome'])
@@ -260,6 +262,7 @@ class Command(BaseCommand):
     def export_gff3(self, **kwargs):
         """
         Create GFF3 output files.
+        Total runtime for 21K records: ~2 min
         """
         self.stdout.write('Exporting gff3')
         gff_file = self.get_output_filename('%s.gff3' % kwargs['genome'])
@@ -326,6 +329,7 @@ class Command(BaseCommand):
     def export_bed(self, **kwargs):
         """
         Create bed and BigBed output files.
+        Total runtime for 21K records: ~14 min
         """
         def _set_filenames():
             """
