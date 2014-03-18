@@ -150,7 +150,7 @@ class TrackDb(HubBase):
         """
         self.render_html()
         self.render_track_db_file()
-        # self.copy_bigBed_file()
+        self.copy_bigBed_file()
 
     def copy_bigBed_file(self):
         """
