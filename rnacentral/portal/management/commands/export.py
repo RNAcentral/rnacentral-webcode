@@ -35,6 +35,8 @@ class Command(BaseCommand):
     python manage.py export <options>
 
     Examples:
+    # id mappings
+    python manage.py export --destination /full/path/to/output/location --format xrefs
     # fasta
     python manage.py export --destination /full/path/to/output/location --format fasta
     # gff
@@ -65,7 +67,7 @@ class Command(BaseCommand):
             action='store',
             dest='format',
             default=False,
-            help='[Required] Output format (bed|gff|gff3|fasta|track_hub|xrefs|all).'),
+            help='[Required] Output format (xrefs|fasta|gff|gff3|bed|track_hub|all).'),
         make_option('-b', '--bedToBigBed',
             action='store',
             dest='bedToBigBed',
@@ -86,7 +88,7 @@ class Command(BaseCommand):
         Set common variables.
         """
         super(Command, self).__init__(*args, **kwargs)
-        self.formats     = ['gff', 'gff3', 'bed', 'fasta', 'track_hub', 'xrefs', 'all'] # available export formats
+        self.formats     = ['xrefs', 'fasta', 'gff', 'gff3', 'bed', 'track_hub', 'all'] # available export formats
         self.format      = '' # selected export format
         self.bedToBigBed = '' # path to bedToBigBed
         self.destination = '' # path to output files
@@ -139,6 +141,22 @@ class Command(BaseCommand):
     ####################
     # Helper functions #
     ####################
+    def get_connection(self):
+        """
+        Get Oracle cursor using connection details from Django settings.
+        """
+        db_url = '{username}/{password}@{db_name}'.format(username=settings.DATABASES['default']['USER'],
+                                                          password=settings.DATABASES['default']['PASSWORD'],
+                                                          db_name=settings.DATABASES['default']['NAME'])
+        connection = cx_Oracle.Connection(db_url)
+        return connection
+
+    def row_to_dict(self, row):
+        """
+        Convert Oracle results from tuples to dicts to improve code readability.
+        """
+        description = [d[0].lower() for d in self.cursor.description]
+        return dict(zip(description,row))
 
     def gzip_file(self, filename):
         """
@@ -399,24 +417,10 @@ class Command(BaseCommand):
         URS0000000161\tMIRBASE\tMIMAT0020957
 
         Uses the database cursor directly to improve performance.
+        Django cursor seems to be ~10% slower than cx_Oracle cursor.
+
+        Total runtime ~10 min for ~10M id mappings.
         """
-        def get_connection():
-            """
-            Get Oracle cursor using connection details from Django settings.
-            """
-            db_url = '{username}/{password}@{db_name}'.format(username=settings.DATABASES['default']['USER'],
-                                                              password=settings.DATABASES['default']['PASSWORD'],
-                                                              db_name=settings.DATABASES['default']['NAME'])
-            connection = cx_Oracle.Connection(db_url)
-            return connection
-
-        def row_to_dict():
-            """
-            Convert Oracle results from tuples to dicts to improve code readability.
-            """
-            descrition = [d[0].lower() for d in cursor.description]
-            return dict(zip(descrition,row))
-
         def get_accession_source():
             """
             Get a dictionary telling where to look for external database ids.
@@ -433,7 +437,7 @@ class Command(BaseCommand):
             Write output for each xref.
             """
             accession_source = get_accession_source()
-            result = row_to_dict()
+            result = self.row_to_dict(row)
             upi = result['upi']
             database = result['descr']
             if database in accession_source['xref']:
@@ -451,19 +455,19 @@ class Command(BaseCommand):
         filename = self.get_output_filename('id_mapping.tsv')
         f = open(filename, 'w')
 
-        connection = get_connection()
-        cursor = connection.cursor()
+        connection = self.get_connection()
+        self.cursor = connection.cursor()
 
         sql_cmd = """
         SELECT t1.upi, t2.ac AS accession, t3.external_id, t3.optional_id, t4.descr
         FROM rna t1, xref t2, rnc_accessions t3, rnc_database t4
-        WHERE t1.upi=t2.upi AND t2.ac=t3.accession AND t2.dbid=t4.id AND t2.deleted='N' and t2.dbid = 5
+        WHERE t1.upi=t2.upi AND t2.ac=t3.accession AND t2.dbid=t4.id AND t2.deleted='N'
         ORDER BY t1.upi
         """
 
         try:
-            cursor.execute(sql_cmd)
-            for row in cursor:
+            self.cursor.execute(sql_cmd)
+            for row in self.cursor:
                 process_row()
         except cx_Oracle.DatabaseError, exc:
             error, = exc.args
