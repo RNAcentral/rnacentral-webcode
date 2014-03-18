@@ -186,7 +186,7 @@ class Command(BaseCommand):
         return Xref.objects.filter(db_id=5).\
                             select_related('accession', 'accession__assembly',
                                            'accession__assembly__chromosome').\
-                            all()[:100]
+                            all()
 
     def get_active_rna_sequences(self):
         """
@@ -196,7 +196,7 @@ class Command(BaseCommand):
                            filter(xrefs__deleted='N').\
                            filter(xrefs__db_id=1).\
                            order_by('upi').\
-                           all()[:100]
+                           all()
 
     ####################
     # Export functions #
