@@ -392,16 +392,21 @@ class Command(BaseCommand):
         """
         self.stdout.write('Exporting track hub')
 
-        hub = Hub(destination=self.destination)
+        track_hub_destination = os.path.join(self.destination, 'track_hub')
+        if not os.path.exists(track_hub_destination):
+            os.mkdir(track_hub_destination)
+        self.stdout.write('Destination: %s' % track_hub_destination)
+
+        hub = Hub(destination=track_hub_destination)
         hub.render()
 
-        genomes = Genomes(destination=self.destination, genomes=self.genomes)
+        genomes = Genomes(destination=track_hub_destination, genomes=self.genomes)
         genomes.render()
 
         # TODO: customize html message
         for genome in self.genomes:
             bigBed = self.get_output_filename('%s.bigBed' % self.genomes[genome])
-            trackDb = TrackDb(destination=self.destination, genome=self.genomes[genome], html="", bigBed=bigBed)
+            trackDb = TrackDb(destination=track_hub_destination, genome=self.genomes[genome], html="", bigBed=bigBed)
             trackDb.render()
 
         self.stdout.write('Track hub export complete')
