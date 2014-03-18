@@ -76,6 +76,11 @@ class Command(BaseCommand):
         make_option('--profile',
             default=False,
             help='[Optional] Show cProfile information for profiling purposes.'),
+        make_option('--test',
+            action='store',
+            dest='test',
+            default=False,
+            help='[Optional] Run in test mode, which retrieves only a small subset of all data.'),
     )
     help = 'Export RNAcentral data in different formats. Run `python manage.py export -h` for more information.' # -h, --help
 
@@ -92,6 +97,7 @@ class Command(BaseCommand):
         self.format      = '' # selected export format
         self.bedToBigBed = '' # path to bedToBigBed
         self.destination = '' # path to output files
+        self.test        = False # when true, run on a small subset of data
         self.genomes = {
             'human_hg19': 'hg19', # GRCh37
             # 'human_hg38': 'hg38', # GRCh38
@@ -110,7 +116,7 @@ class Command(BaseCommand):
                 """
                 Store the command line options in the corresponding `self` variables.
                 """
-                cmd_options = ['bedToBigBed', 'destination', 'format']
+                cmd_options = ['bedToBigBed', 'destination', 'format', 'test']
                 for cmd_option in cmd_options:
                     if options[cmd_option]:
                         setattr(self, cmd_option, options[cmd_option])
@@ -183,20 +189,26 @@ class Command(BaseCommand):
         """
         Get RNA sequences with genomic coordinates.
         """
-        return Xref.objects.filter(db_id=5).\
-                            select_related('accession', 'accession__assembly',
-                                           'accession__assembly__chromosome').\
-                            all()
+        xrefs = Xref.objects.filter(db_id=5).\
+                             select_related('accession', 'accession__assembly',
+                                            'accession__assembly__chromosome').\
+                             all()
+        if self.test:
+            return xrefs[:100]
+        return xrefs
 
     def get_active_rna_sequences(self):
         """
         Get sequences with active cross-references.
         """
-        return Rna.objects.only('upi', 'seq_short', 'seq_long').\
+        rnas = Rna.objects.only('upi', 'seq_short', 'seq_long').\
                            filter(xrefs__deleted='N').\
                            filter(xrefs__db_id=1).\
                            order_by('upi').\
                            all()
+        if self.test:
+            return rnas[:100]
+        return rnas
 
     ####################
     # Export functions #
@@ -460,6 +472,22 @@ class Command(BaseCommand):
                 line = '{upi}\t{database}\t{accession}\t{taxid}\n'.format(upi=upi, database=database, accession=result['optional_id'], taxid=taxid)
                 f.write(line)
 
+        def get_sql_command():
+            """
+            Get SQL command for id mappings.
+            """
+            sql_cmd = """
+            SELECT t1.upi, t2.ac AS accession, t3.external_id, t3.optional_id, t4.descr, t2.taxid
+            FROM rna t1, xref t2, rnc_accessions t3, rnc_database t4
+            WHERE t1.upi=t2.upi AND t2.ac=t3.accession AND t2.dbid=t4.id AND t2.deleted='N' {extra_where_clause}
+            ORDER BY t1.upi
+            """
+            if self.test:
+                sql_cmd = sql_cmd.format(extra_where_clause='AND t2.dbid=5')
+            else:
+                sql_cmd = sql_cmd.format(extra_where_clause='')
+            return sql_cmd
+
         self.stdout.write('Exporting xrefs')
 
         filename = self.get_output_filename('id_mapping.tsv')
@@ -468,12 +496,7 @@ class Command(BaseCommand):
         connection = self.get_connection()
         self.cursor = connection.cursor()
 
-        sql_cmd = """
-        SELECT t1.upi, t2.ac AS accession, t3.external_id, t3.optional_id, t4.descr, t2.taxid
-        FROM rna t1, xref t2, rnc_accessions t3, rnc_database t4
-        WHERE t1.upi=t2.upi AND t2.ac=t3.accession AND t2.dbid=t4.id AND t2.deleted='N'
-        ORDER BY t1.upi
-        """
+        sql_cmd = get_sql_command()
 
         try:
             self.cursor.execute(sql_cmd)
