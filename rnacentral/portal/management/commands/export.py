@@ -94,8 +94,8 @@ class Command(BaseCommand):
         self.destination = '' # path to output files
         self.genomes = {
             'human_hg19': 'hg19', # GRCh37
-            'human_hg38': 'hg38', # GRCh38
-            'mouse'     : 'mm10',
+            # 'human_hg38': 'hg38', # GRCh38
+            # 'mouse'     : 'mm10',
         }
 
     def handle(self, *args, **options):
