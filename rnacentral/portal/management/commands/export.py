@@ -420,10 +420,10 @@ class Command(BaseCommand):
         Inspired by UniProt id mapping files.
 
         Output format:
-        RNAcentral_id\tDatabase_name\tExternal_id
+        RNAcentral_id\tDatabase_name\tExternal_id\tTax_id
 
         Example:
-        URS0000000161\tMIRBASE\tMIMAT0020957
+        URS0000000161\tMIRBASE\tMIMAT0020957\t9606
 
         Uses the database cursor directly to improve performance.
         Django cursor seems to be ~10% slower than cx_Oracle cursor.
@@ -449,14 +449,15 @@ class Command(BaseCommand):
             result = self.row_to_dict(row)
             upi = result['upi']
             database = result['descr']
+            taxid = result['taxid']
             if database in accession_source['xref']:
-                line = '{upi}\t{database}\t{accession}\n'.format(upi=upi, database=database, accession=result['accession'])
+                line = '{upi}\t{database}\t{accession}\t{taxid}\n'.format(upi=upi, database=database, accession=result['accession'], taxid=taxid)
                 f.write(line)
             elif database in accession_source['external_id']:
-                line = '{upi}\t{database}\t{accession}\n'.format(upi=upi, database=database, accession=result['external_id'])
+                line = '{upi}\t{database}\t{accession}\t{taxid}\n'.format(upi=upi, database=database, accession=result['external_id'], taxid=taxid)
                 f.write(line)
             if database in accession_source['optional_id']:
-                line = '{upi}\t{database}\t{accession}\n'.format(upi=upi, database=database, accession=result['optional_id'])
+                line = '{upi}\t{database}\t{accession}\t{taxid}\n'.format(upi=upi, database=database, accession=result['optional_id'], taxid=taxid)
                 f.write(line)
 
         self.stdout.write('Exporting xrefs')
@@ -468,7 +469,7 @@ class Command(BaseCommand):
         self.cursor = connection.cursor()
 
         sql_cmd = """
-        SELECT t1.upi, t2.ac AS accession, t3.external_id, t3.optional_id, t4.descr
+        SELECT t1.upi, t2.ac AS accession, t3.external_id, t3.optional_id, t4.descr, t2.taxid
         FROM rna t1, xref t2, rnc_accessions t3, rnc_database t4
         WHERE t1.upi=t2.upi AND t2.ac=t3.accession AND t2.dbid=t4.id AND t2.deleted='N'
         ORDER BY t1.upi
