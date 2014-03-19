@@ -367,15 +367,31 @@ class Command(BaseCommand):
             Create fasta-specific readme.txt
             """
             text = """
-This folder contains sequences with RNAcentral ids in FASTA format.
-The files are compressed using gzip.
+===================================================================
+RNAcentral Sequence Data
+===================================================================
 
-* rnacentral_active.fasta.gz: RNAcentral sequences which are present in one or more expert database.
-* rnacentral_inactive.fasta.gz: RNAcentral sequences that used to be present in one or more expert database but have been removed.
-* fasta_example.fasta: a small file demonstrating the format of rnacentral_active.fasta.gz and rnacentral_inactive.fasta.gz
-* md5.tsv.gz: Tab-separated file with RNAcentral ids and md5 hashes of their corresponding sequences.
+This directory contains sequences with RNAcentral ids in FASTA format
+and md5 hashes that uniquely correspond to RNAcentral ids.
+
+The files are compressed using gzip, and small uncompressed files
+are provided for demonstration purposes.
+
+* rnacentral_active.fasta.gz
+current set of sequences with RNAcentral ids that appear in at least one expert database.
+
+* rnacentral_inactive.fasta.gz
+all RNAcentral sequences that used to be present in one or more expert database but have been removed.
+
+* fasta_example.fasta
+a small file demonstrating the format of rnacentral_active.fasta.gz and rnacentral_inactive.fasta.gz
+
+* md5.tsv.gz
+Tab-separated file with RNAcentral ids and md5 hashes of their corresponding sequences.
 This file can be used to look up RNAcentral ids for a set of sequences given their md5.
-* md5.example.tsv: small file showing first few entries
+
+* md5.example.tsv
+small file showing the first few md5 entries
             """
             filehandles['readme'].write(text)
 
