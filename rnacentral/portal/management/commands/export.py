@@ -18,6 +18,7 @@ from optparse import make_option
 from cProfile import Profile
 from trackhub import Hub, Genomes, TrackDb
 import os
+import re
 import sys
 import subprocess
 import traceback
@@ -147,6 +148,15 @@ class Command(BaseCommand):
     ####################
     # Helper functions #
     ####################
+    def make_subdirectory(self, parent_dir, child_dir):
+        """
+        Create a subdirectory child_dir in directory parent_dir.
+        """
+        new_folder = os.path.join(parent_dir, child_dir)
+        if not os.path.exists(new_folder):
+            os.mkdir(new_folder)
+        return new_folder
+
     def get_connection(self):
         """
         Get Oracle cursor using connection details from Django settings.
@@ -179,11 +189,14 @@ class Command(BaseCommand):
             self.stdout.write('\tCompressing failed, no file created')
             return ''
 
-    def get_output_filename(self, filename):
+    def get_output_filename(self, filename, parent_dir=''):
         """
         Generate ouput filename.
         """
-        return os.path.join(self.destination, filename)
+        if parent_dir:
+            return os.path.join(parent_dir, filename)
+        else:
+            return os.path.join(self.destination, filename)
 
     def get_xrefs_with_genomic_coordinates(self):
         """
@@ -233,49 +246,192 @@ class Command(BaseCommand):
             """
             return lob.read() if lob else lob
 
-        def process_results():
+        def process_active_sequences():
             """
             Manually create Django model instances from raw cx_Oracle results
             in order to reuse the fasta formatting routine defined on the Rna model.
             """
-            upi = ''
-            i = 0
+            counter = 0
+            examples = 5
+            previous_upi = ''
+            test_entries = 100
+
             for row in self.cursor:
+                if self.test and counter > test_entries:
+                    return
                 result = self.row_to_dict(row)
-                # the results contain all active xrefs associated with each upi
-                if result['upi'] == upi:
+                if result['upi'] == previous_upi:
                     continue
                 else:
-                    upi = result['upi']
-                rna = Rna(upi=result['upi'], seq_short=result['seq_short'], seq_long=get_seq_long(result['seq_long']))
-                f.write(rna.get_sequence_fasta())
-                i += 1
-                if self.test and i > 100:
+                    previous_upi = result['upi']
+                rna = Rna(upi=result['upi'],
+                          seq_short=result['seq_short'],
+                          seq_long=get_seq_long(result['seq_long']))
+                fasta = rna.get_sequence_fasta()
+                filehandles['seq_active'].write(fasta)
+                if counter < examples:
+                    filehandles['seq_example'].write(fasta)
+                counter += 1
+
+        def process_inactive_sequences():
+            """
+            """
+            counter = 0
+            examples = 5
+            previous_upi = ''
+
+            for row in self.cursor:
+                if self.test and counter > test_entries:
                     return
+                result = self.row_to_dict(row)
+                if result['upi'] == previous_upi:
+                    continue
+                else:
+                    previous_upi = result['upi']
+                rna = Rna(upi=result['upi'],
+                          seq_short=result['seq_short'],
+                          seq_long=get_seq_long(result['seq_long']))
+                fasta = rna.get_sequence_fasta()
+                filehandles['seq_inactive'].write(fasta)
+                counter += 1
 
-        self.stdout.write('Exporting fasta')
-        filename = self.get_output_filename('rnacentral_active.fasta')
-        f = open(filename, 'w')
+        def process_md5_entries():
+            """
+            """
+            counter = 0
+            examples = 5
+            test_entries = 100
 
+            for row in self.cursor:
+                if self.test and counter > test_entries:
+                    return
+                result = self.row_to_dict(row)
+                md5 = '{upi}\t{md5}\n'.format(upi=result['upi'], md5=result['md5'])
+                filehandles['md5'].write(md5)
+                if counter < examples:
+                    filehandles['md5_example'].write(md5)
+                counter += 1
+
+        def export_md5():
+            """
+            """
+            sql = get_distinct_md5_sql()
+            try:
+                self.cursor.execute(sql)
+                process_md5_entries()
+            except cx_Oracle.DatabaseError, exc:
+                error, = exc.args
+                raise CommandError("Oracle error code: %s\nOracle message: %s" % (error.code, error.message))
+
+        def export_sequences():
+            """
+            """
+            sql = get_active_sequences_sql()
+            try:
+                self.cursor.execute(sql)
+                process_active_sequences()
+            except cx_Oracle.DatabaseError, exc:
+                error, = exc.args
+                raise CommandError("Oracle error code: %s\nOracle message: %s" % (error.code, error.message))
+
+            sql = get_inactive_sequences_sql()
+            try:
+                self.cursor.execute(sql)
+
+            except cx_Oracle.DatabaseError, exc:
+                error, = exc.args
+                raise CommandError("Oracle error code: %s\nOracle message: %s" % (error.code, error.message))
+
+        def get_filenames_and_filehandles():
+            """
+            Get all filenames and filehandles required for Fasta export.
+            """
+            names = {
+                'readme': 'readme.txt',
+                'seq_active': 'rnacentral_active.fasta',
+                'seq_inactive': 'rnacentral_inactive.fasta',
+                'seq_example': 'fasta_example.txt',
+                'md5': 'md5.tsv',
+                'md5_example': 'md5_example.txt'
+            }
+            filehandles = {}
+            filenames = {}
+            for key, value in names.iteritems():
+                value = self.get_output_filename(value, parent_dir=destination)
+                filenames[key] = value;
+                filehandles[key] = open(value, 'w')
+            return (filenames, filehandles)
+
+        def create_readme():
+            """
+            Create fasta-specific readme.txt
+            """
+            text = """
+This folder contains sequences with RNAcentral ids in FASTA format.
+The files are compressed using gzip.
+
+* rnacentral_active.fasta.gz: RNAcentral sequences which are present in one or more expert database.
+* rnacentral_inactive.fasta.gz: RNAcentral sequences that used to be present in one or more expert database but have been removed.
+* fasta_example.fasta: a small file demonstrating the format of rnacentral_active.fasta.gz and rnacentral_inactive.fasta.gz
+* md5.tsv.gz: Tab-separated file with RNAcentral ids and md5 hashes of their corresponding sequences.
+This file can be used to look up RNAcentral ids for a set of sequences given their md5.
+* md5.example.tsv: small file showing first few entries
+            """
+            filehandles['readme'].write(text)
+
+        def get_active_sequences_sql():
+            """
+            Get sequences with at least one active cross-reference.
+            """
+            return """
+            SELECT t1.upi, t1.seq_short, t1.seq_long, t1.md5
+            FROM rna t1, xref t2
+            WHERE t1.upi=t2.upi AND t2.dbid=1 AND t2.deleted='N' AND t1.len = 900
+            ORDER BY t1.upi
+            """
+
+        def get_inactive_sequences_sql():
+            """
+            Get sequences with no active cross-references.
+            """
+            return """
+            SELECT t1.upi, t1.seq_short, t1.seq_long, t1.md5
+            FROM rna t1, xref t2
+            WHERE t1.upi = t2.upi AND t2.deleted = 'Y' AND t2.upi NOT IN
+                (SELECT upi FROM xref WHERE deleted='N')
+            ORDER BY t1.upi
+            """
+
+        def get_distinct_md5_sql():
+            """
+            Get RNAcentral ids and md5's of their corresponding sequences.
+            """
+            return """
+            SELECT DISTINCT upi, md5
+            FROM rna
+            ORDER BY upi
+            """
+
+        def clean_up():
+            """
+            Close all filehandles, gzip and delete the fasta files.
+            """
+            for filename, filepath in filenames.iteritems():
+                filehandles[filename].close()
+                if 'example' not in filename and 'readme' not in filename:
+                    self.gzip_file(filepath)
+                    os.remove(filepath)
+
+        destination = self.make_subdirectory(self.destination, 'sequences')
+        self.stdout.write('Exporting fasta to %s' % destination)
+        (filenames, filehandles) = get_filenames_and_filehandles()
         connection = self.get_connection()
         self.cursor = connection.cursor()
-
-        sql_cmd = """
-        SELECT t1.upi, t1.seq_short, t1.seq_long
-        FROM rna t1, xref t2
-        WHERE t1.upi=t2.upi AND t2.deleted='N' AND t2.dbid=1
-        ORDER BY t1.upi
-        """
-        try:
-            self.cursor.execute(sql_cmd)
-            process_results()
-        except cx_Oracle.DatabaseError, exc:
-            error, = exc.args
-            raise CommandError("Oracle error code: %s\nOracle message: %s" % (error.code, error.message))
-
+        create_readme()
+        export_sequences()
+        export_md5()
+        clean_up()
         connection.close()
-        f.close()
-        self.gzip_file(filename)
         self.stdout.write('Fasta export complete')
 
     def export_gff(self, **kwargs):
@@ -432,9 +588,7 @@ class Command(BaseCommand):
         """
         self.stdout.write('Exporting track hub')
 
-        track_hub_destination = os.path.join(self.destination, 'track_hub')
-        if not os.path.exists(track_hub_destination):
-            os.mkdir(track_hub_destination)
+        track_hub_destination = self.make_subdirectory(self.destination, 'track_hub')
         self.stdout.write('Destination: %s' % track_hub_destination)
 
         hub = Hub(destination=track_hub_destination)
