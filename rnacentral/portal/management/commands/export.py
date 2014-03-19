@@ -197,19 +197,6 @@ class Command(BaseCommand):
             return xrefs[:100]
         return xrefs
 
-    def get_active_rna_sequences(self):
-        """
-        Get sequences with active cross-references.
-        """
-        rnas = Rna.objects.only('upi', 'seq_short', 'seq_long').\
-                           filter(xrefs__deleted='N').\
-                           filter(xrefs__db_id=1).\
-                           order_by('upi').\
-                           all()
-        if self.test:
-            return rnas[:100]
-        return rnas
-
     ####################
     # Export functions #
     ####################
@@ -235,21 +222,58 @@ class Command(BaseCommand):
     def export_fasta(self, **kwargs):
         """
         Export all RNAcentral sequences in FASTA format.
-        Total runtime for 6M records: ~34 min
-        The bottleneck is dealing with LOBs and compressing the file.
+
+        Total runtime for 6M records: ~35m
+
+        This step is slow because of LOBs and gzipping the output file.
         """
+        def get_seq_long(lob):
+            """
+            Return lob as a string or None if not a lob.
+            """
+            return lob.read() if lob else lob
+
+        def process_results():
+            """
+            Manually create Django model instances from raw cx_Oracle results
+            in order to reuse the fasta formatting routine defined on the Rna model.
+            """
+            upi = ''
+            i = 0
+            for row in self.cursor:
+                result = self.row_to_dict(row)
+                # the results contain all active xrefs associated with each upi
+                if result['upi'] == upi:
+                    continue
+                else:
+                    upi = result['upi']
+                rna = Rna(upi=result['upi'], seq_short=result['seq_short'], seq_long=get_seq_long(result['seq_long']))
+                f.write(rna.get_sequence_fasta())
+                i += 1
+                if self.test and i > 100:
+                    return
+
         self.stdout.write('Exporting fasta')
-        filename = self.get_output_filename('rnacentral.fasta')
-        rnas = self.get_active_rna_sequences()
+        filename = self.get_output_filename('rnacentral_active.fasta')
         f = open(filename, 'w')
-        upi = ''
-        for rna in rnas:
-            # make sure each upi is written out only once
-            if rna.upi == upi:
-                continue
-            else:
-                upi = rna.upi
-            f.write(rna.get_sequence_fasta())
+
+        connection = self.get_connection()
+        self.cursor = connection.cursor()
+
+        sql_cmd = """
+        SELECT t1.upi, t1.seq_short, t1.seq_long
+        FROM rna t1, xref t2
+        WHERE t1.upi=t2.upi AND t2.deleted='N' AND t2.dbid=1
+        ORDER BY t1.upi
+        """
+        try:
+            self.cursor.execute(sql_cmd)
+            process_results()
+        except cx_Oracle.DatabaseError, exc:
+            error, = exc.args
+            raise CommandError("Oracle error code: %s\nOracle message: %s" % (error.code, error.message))
+
+        connection.close()
         f.close()
         self.gzip_file(filename)
         self.stdout.write('Fasta export complete')

@@ -495,7 +495,7 @@ class XrefList(generics.ListAPIView):
         """
         """
         rna = self.get_object()
-        xrefs = rna.xrefs.all()
+        xrefs = rna.get_xrefs()
         serializer = XrefSerializer(xrefs, context={'request': request})
         return Response(serializer.data)
 
