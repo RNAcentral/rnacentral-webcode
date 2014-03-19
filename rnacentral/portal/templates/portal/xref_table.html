@@ -107,12 +107,10 @@ limitations under the License.
     {% endif %}
 
     {# literature references #}
-    {% if xref.accession.refs.all|length > 0 %}
-      <span class="literature-refs">
-        <button class="literature-refs-retrieve btn btn-default btn-xs pull-right help" data-accession="{{ xref.accession.accession }}" title="Literature citation{{ xref.accession.refs.all|pluralize }}"><i class="fa fa-book"></i> {{ xref.accession.refs.all|length }}</button>
-        <div class="literature-refs-content"></div>
-      </span>
-    {% endif %}
+    <span class="literature-refs">
+      <button class="literature-refs-retrieve btn btn-default btn-xs pull-right help" data-accession="{{ xref.accession.accession }}" title="Literature citations"><i class="fa fa-book"></i></button>
+      <div class="literature-refs-content"></div>
+    </span>
 
     <br>
     <small>
