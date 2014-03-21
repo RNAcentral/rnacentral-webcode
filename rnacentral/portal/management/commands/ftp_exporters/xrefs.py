@@ -12,7 +12,6 @@ limitations under the License.
 """
 
 from portal.management.commands.ftp_exporters.ftp_base import FtpBase
-from portal.models import Xref
 import cx_Oracle
 import logging
 import sys
@@ -46,7 +45,7 @@ class XrefsExporter(FtpBase):
             'xrefs': 'id_mapping.tsv',
             'example': 'example.txt',
         }
-        self.log = 'id_mapping_log.txt'
+        self.logger = logging.getLogger(__name__)
 
     def export(self):
         """
@@ -56,13 +55,13 @@ class XrefsExporter(FtpBase):
         self.create_readme()
         self.export_xrefs()
         self.clean_up()
-        logging.info('Xref export complete')
+        self.logger.info('Xref export complete')
 
     def setup(self):
         """
         Initialize database connection and filehandles.
         """
-        logging.info('Exporting xref data to %s' % self.subdirectory)
+        self.logger.info('Exporting xref data to %s' % self.subdirectory)
         self.get_filenames_and_filehandles(self.names, self.subdirectory)
         self.get_connection()
         self.get_cursor()
@@ -142,7 +141,7 @@ class XrefsExporter(FtpBase):
             self.log_oracle_error(exc)
             sys.exit(1)
 
-        logging.info('Xref export complete')
+        self.logger.info('Xref export complete')
 
     def create_readme(self):
         """

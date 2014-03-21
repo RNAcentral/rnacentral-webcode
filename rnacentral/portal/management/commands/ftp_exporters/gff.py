@@ -12,10 +12,8 @@ limitations under the License.
 """
 
 from portal.management.commands.ftp_exporters.ftp_base import FtpBase
-from portal.models import Xref
-import cx_Oracle
 import logging
-import sys
+import os
 
 
 class GffExporter(FtpBase):
@@ -30,25 +28,56 @@ class GffExporter(FtpBase):
         super(GffExporter, self).__init__(*args, **kwargs)
 
         self.subdirectory = self.make_subdirectory(self.destination, 'genome_coordinates')
-        self.names = {
-            'readme': 'readme.txt',
-            'gff': 'md5.tsv', #genome
-            'example': 'example.txt',
-        }
-        self.log = 'gff_log.txt'
+        self.logger = logging.getLogger(__name__)
 
-    def export(self):
+    def export(self, genome):
         """
         Main export function.
         """
-        self.stdout.write('Exporting gff')
-        gff_file = self.get_output_filename('%s.gff' % kwargs['genome'])
+        self.logger.info('Exporting gff')
+        gff_file = self.get_output_filename('%s.gff' % genome,
+                                            parent_dir=self.subdirectory)
         f = open(gff_file, 'w')
         for xref in self.get_xrefs_with_genomic_coordinates():
             text = xref.get_gff()
             if text:
                 f.write(text)
         f.close()
-        self.stdout.write('\tCreated file %s' % gff_file)
+        self.logger.info('Created file %s' % gff_file)
         self.gzip_file(gff_file)
-        logging.info('Gff export complete')
+        os.remove(gff_file)
+        self.logger.info('Gff export complete')
+
+
+class Gff3Exporter(FtpBase):
+    """
+    Create GFF3 output files.
+    Total runtime for 21K records: ~2 min
+    """
+
+    def __init__(self, *args, **kwargs):
+        """
+        """
+        super(Gff3Exporter, self).__init__(*args, **kwargs)
+
+        self.subdirectory = self.make_subdirectory(self.destination, 'genome_coordinates')
+        self.log = 'gff3_log.txt'
+
+    def export(self, genome):
+        """
+        Main export function.
+        """
+        self.logger.info('Exporting gff3')
+        gff_file = self.get_output_filename('%s.gff3' % genome,
+                                            parent_dir=self.subdirectory)
+        f = open(gff_file, 'w')
+        f.write('##gff-version 3\n')
+        for xref in self.get_xrefs_with_genomic_coordinates():
+            text = xref.get_gff3()
+            if text:
+                f.write(text)
+        f.close()
+        self.logger.info('Created file %s' % gff_file)
+        self.gzip_file(gff_file)
+        os.remove(gff_file)
+        self.logger.info('Gff3 export complete')

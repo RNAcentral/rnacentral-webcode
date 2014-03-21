@@ -12,7 +12,6 @@ limitations under the License.
 """
 
 from portal.management.commands.ftp_exporters.ftp_base import FtpBase
-from portal.models import Rna
 import cx_Oracle
 import logging
 import sys
@@ -34,7 +33,7 @@ class Md5Exporter(FtpBase):
             'md5': 'md5.tsv',
             'md5_example': 'example.txt',
         }
-        self.log = 'md5_log.txt'
+        self.logger = logging.getLogger(__name__)
 
     def export(self):
         """
@@ -44,19 +43,20 @@ class Md5Exporter(FtpBase):
         self.create_readme()
         self.export_md5()
         self.clean_up()
-        logging.info('Md5 export complete')
+        self.logger.info('Md5 export complete')
 
     def setup(self):
         """
         Initialize database connection and filehandles.
         """
-        logging.info('Exporting md5 data to %s' % self.subdirectory)
+        self.logger.info('Exporting md5 data to %s' % self.subdirectory)
         self.get_filenames_and_filehandles(self.names, self.subdirectory)
         self.get_connection()
         self.get_cursor()
 
     def export_md5(self):
         """
+        Write out the data.
         """
         def get_distinct_md5_sql():
             """

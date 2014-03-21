@@ -11,12 +11,48 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from portal.management.commands.ftp_exporters.ftp_base import FtpBase
+import logging
 import os
 import shutil
 import time
 
 
-class HubBase:
+class TrackhubExporter(FtpBase):
+    """
+    Create UCSC track hub output files.
+    """
+
+    def __init__(self, *args, **kwargs):
+        """
+        """
+        super(TrackhubExporter, self).__init__(*args, **kwargs)
+
+        self.subdirectory = self.make_subdirectory(self.destination, 'genome_coordinates/track_hub')
+        self.logger = logging.getLogger(__name__)
+
+    def export(self, all_genomes={}):
+        """
+        Main export function.
+        """
+        self.logger.info('Exporting track hub to %s' % self.subdirectory)
+
+        hub = Hub(subdirectory=self.subdirectory)
+        hub.render()
+
+        genomes = Genomes(subdirectory=self.subdirectory, genomes=all_genomes)
+        genomes.render()
+
+        for genome in all_genomes.values():
+            parent_dir = os.path.join(self.destination, 'genome_coordinates')
+            bigBed = self.get_output_filename('%s.bigBed' % genome, parent_dir=parent_dir)
+            trackDb = TrackDb(subdirectory=self.subdirectory, genome=genome, html="", bigBed=bigBed) # can customize html if necessary
+            trackDb.render()
+
+        self.logger.info('Track hub export complete')
+
+
+class HubBase(object):
     """
     Base class for all other track hub classes.
 
@@ -35,19 +71,23 @@ class HubBase:
             trackDb.txt
     """
 
+    def __init__(self, subdirectory=''):
+        """
+        """
+        self.subdirectory = subdirectory
+        self.logger = logging.getLogger(__name__)
+
     def get_hub_path(self, filename):
         """
         Get full path to the corresponding file on disk.
         """
-        if not os.path.exists(self.destination):
-            os.mkdir(self.destination)
-        return os.path.join(self.destination, filename)
+        return os.path.join(self.subdirectory, filename)
 
     def _render(self, data):
         """
         Render an array of dictionaries as a file on disk.
         """
-        print 'Writing file %s' % self.filename
+        self.logger.info('Writing file %s' % self.filename)
         filename = self.get_hub_path(self.filename)
         f = open(filename, 'w')
         for entry in data:
@@ -56,7 +96,7 @@ class HubBase:
                 f.write(line)
             f.write('\n')
         f.close()
-        print 'File created'
+        self.logger.info('File created')
 
 
 class Genomes(HubBase):
@@ -71,10 +111,10 @@ class Genomes(HubBase):
     trackDb hg19/trackDb.txt
     """
 
-    def __init__(self, destination='', genomes=[]):
+    def __init__(self, subdirectory='', genomes=[]):
         """
         """
-        self.destination = destination
+        super(Genomes, self).__init__(subdirectory=subdirectory)
         self.filename = 'genomes.txt'
         self.genomes = genomes
 
@@ -82,7 +122,7 @@ class Genomes(HubBase):
         """
         """
         data = []
-        for genome in self.genomes:
+        for genome in self.genomes.values():
             data.append({
             'genome' : genome,
             'trackDb': os.path.join(genome, 'trackDb.txt'),
@@ -95,10 +135,10 @@ class Hub(HubBase):
     Create file hub.txt
     """
 
-    def __init__(self, destination=''):
+    def __init__(self, subdirectory=''):
         """
         """
-        self.destination = destination
+        super(Hub, self).__init__(subdirectory=subdirectory)
         self.filename = 'hub.txt'
 
     def render(self):
@@ -120,11 +160,11 @@ class TrackDb(HubBase):
     Genome-specific trackDb files.
     """
 
-    def __init__(self, destination='', genome='', html='', bigBed=''):
+    def __init__(self, subdirectory='', genome='', html='', bigBed=''):
         """
         Set internal variables.
         """
-        self.destination = destination
+        super(TrackDb, self).__init__(subdirectory=subdirectory)
         self.genome = genome
         self.html = html
         self.bigBed = bigBed
@@ -150,16 +190,19 @@ class TrackDb(HubBase):
         """
         self.render_html()
         self.render_track_db_file()
-        self.copy_bigBed_file()
+        self.move_bigBed_file()
 
-    def copy_bigBed_file(self):
+    def move_bigBed_file(self):
         """
+        Move the bigBed file from the `genome_coordinates` subdirectory
+        to the `track_hub` subdirectory.
         """
         trackhub_bigBed = self.get_track_db_path('rnacentral.bigBed')
         if os.path.exists(self.bigBed):
-            shutil.copyfile(self.bigBed, trackhub_bigBed)
+            shutil.move(self.bigBed, trackhub_bigBed)
+            self.logger.info('File %s moved to %s' % (self.bigBed, trackhub_bigBed))
         else:
-            print 'Error: bigBed %s not found' % self.bigBed
+            self.logger.error('bigBed %s not found' % self.bigBed)
 
     def render_html(self):
         """

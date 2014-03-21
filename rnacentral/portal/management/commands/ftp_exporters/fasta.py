@@ -46,9 +46,9 @@ class FastaExporter(FtpBase):
             'readme': 'readme.txt',
             'seq_active': 'rnacentral_active.fasta',
             'seq_inactive': 'rnacentral_inactive.fasta',
-            'seq_example': 'fasta_example.txt',
+            'seq_example': 'example.txt',
         }
-        self.log = 'fasta_log.txt'
+        self.logger = logging.getLogger(__name__)
 
     def export(self):
         """
@@ -59,13 +59,13 @@ class FastaExporter(FtpBase):
         self.export_active_sequences()
         self.export_inactive_sequences()
         self.clean_up()
-        logging.info('Fasta export complete')
+        self.logger.info('Fasta export complete')
 
     def setup(self):
         """
         Initialize database connection and filehandles.
         """
-        logging.info('Exporting fasta to %s' % self.subdirectory)
+        self.logger.info('Exporting fasta to %s' % self.subdirectory)
         self.get_filenames_and_filehandles(self.names, self.subdirectory)
         self.get_connection()
         self.get_cursor()

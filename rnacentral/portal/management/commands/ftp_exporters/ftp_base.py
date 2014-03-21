@@ -12,12 +12,12 @@ limitations under the License.
 """
 
 from django.conf import settings
+from portal.models import Xref
 import cx_Oracle
 import logging
 import os
 import re
 import subprocess
-import sys
 
 
 class FtpBase(object):
@@ -26,9 +26,9 @@ class FtpBase(object):
     """
 
     def __init__(self, destination='', test=False):
-    	"""
+        """
         Set common variables.
-    	"""
+        """
         self.destination = destination
         self.test = test # boolean indicating whether to export all data or the first `self.entries`.
         self.test_entries = 100 # number of entries to process when --test=True
@@ -37,7 +37,7 @@ class FtpBase(object):
         self.cursor = None # Oracle cursor
         self.filehandles = {}
         self.filenames = {}
-        self.log = 'logfile.txt'
+        self.logger = logging.getLogger(__name__)
 
     #########################
     # Files and directories #
@@ -103,13 +103,13 @@ class FtpBase(object):
         """
         gzipped_filename = '%s.gz' % filename
         cmd = 'gzip < %s > %s' % (filename, gzipped_filename)
-        logging.info('Compressing file %s' % filename)
+        self.logger.info('Compressing file %s' % filename)
         status = subprocess.call(cmd, shell=True)
         if status == 0:
-            logging.info('\File compressed, new file %s' % gzipped_filename)
+            self.logger.info('File compressed, new file %s' % gzipped_filename)
             return gzipped_filename
         else:
-            logging.info('Compressing failed, no file created')
+            self.logger.info('Compressing failed, no file created')
             return ''
 
     ##################
@@ -141,7 +141,7 @@ class FtpBase(object):
         try:
             self.connection.close()
         except:
-            logging.critical('Could not close Oracle connection.')
+            self.logger.critical('Could not close Oracle connection.')
 
     def row_to_dict(self, row):
         """
@@ -154,8 +154,8 @@ class FtpBase(object):
         """
         """
         error, = oracle_exception.args
-        logging.critical('Oracle error code: %s' % error.code)
-        logging.critical('Oracle message: %s' % error.message)
+        self.logger.critical('Oracle error code: %s' % error.code)
+        self.logger.critical('Oracle message: %s' % error.message)
 
     ##################
     # Data retrieval #
@@ -170,7 +170,7 @@ class FtpBase(object):
                                             'accession__assembly__chromosome').\
                              all()
         if self.test:
-            return xrefs[:100]
+            return xrefs[:1000]
         return xrefs
 
     ########
@@ -184,14 +184,3 @@ class FtpBase(object):
         text = re.sub(r'^\s+', '', text)
         text = re.sub(r'\n +', '\n', text)
         return text
-
-    def start_logging(self):
-        """
-        Overwrites the old log file.
-        """
-        filename = os.path.join(os.getcwd(), self.log)
-        logging.basicConfig(filename=filename,
-                            level=logging.DEBUG,
-                            format='%(levelname)s:%(message)s',
-                            filemode='w')
-        print 'Log file %s' % filename
