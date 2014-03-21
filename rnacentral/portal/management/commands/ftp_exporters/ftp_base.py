@@ -35,8 +35,15 @@ class FtpBase(object):
         self.examples = 5 # number of entries to write to the example files
         self.connection = None # Oracle connection
         self.cursor = None # Oracle cursor
-        self.filehandles = {}
-        self.filenames = {}
+        self.filenames = {} # defined in each class
+        self.filehandles = {} # holds all open filehandles
+        self.subfolders = { # names of subfolders
+            'coordinates': 'genome_coordinates',
+            'md5': 'md5',
+            'sequences': 'sequences',
+            'trackhub': os.path.join('genome_coordinates', 'track_hub'),
+            'xrefs': 'id_mapping',
+        }
         self.logger = logging.getLogger(__name__)
 
     #########################

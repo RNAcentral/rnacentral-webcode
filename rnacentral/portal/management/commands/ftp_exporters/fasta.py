@@ -41,7 +41,7 @@ class FastaExporter(FtpBase):
         """
         super(FastaExporter, self).__init__(*args, **kwargs)
 
-        self.subdirectory = self.make_subdirectory(self.destination, 'sequences')
+        self.subdirectory = self.make_subdirectory(self.destination, self.subfolders['sequences'])
         self.names = {
             'readme': 'readme.txt',
             'seq_active': 'rnacentral_active.fasta',

@@ -28,13 +28,20 @@ class TrackhubExporter(FtpBase):
         """
         super(TrackhubExporter, self).__init__(*args, **kwargs)
 
-        self.subdirectory = self.make_subdirectory(self.destination, 'genome_coordinates/track_hub')
+        self.subdirectory = self.make_subdirectory(self.destination, self.subfolders['trackhub'])
         self.logger = logging.getLogger(__name__)
 
     def export(self, all_genomes={}):
         """
         Main export function.
         """
+        def get_bigbed_name():
+            """
+            Get the name of the bigBed file for a genome.
+            """
+            parent_dir = os.path.join(self.destination, self.subfolders['coordinates'])
+            return self.get_output_filename('%s.bigBed' % genome, parent_dir=parent_dir)
+
         self.logger.info('Exporting track hub to %s' % self.subdirectory)
 
         hub = Hub(subdirectory=self.subdirectory)
@@ -44,8 +51,7 @@ class TrackhubExporter(FtpBase):
         genomes.render()
 
         for genome in all_genomes.values():
-            parent_dir = os.path.join(self.destination, 'genome_coordinates')
-            bigBed = self.get_output_filename('%s.bigBed' % genome, parent_dir=parent_dir)
+            bigBed = get_bigbed_name()
             trackDb = TrackDb(subdirectory=self.subdirectory, genome=genome, html="", bigBed=bigBed) # can customize html if necessary
             trackDb.render()
 
@@ -197,12 +203,13 @@ class TrackDb(HubBase):
         Move the bigBed file from the `genome_coordinates` subdirectory
         to the `track_hub` subdirectory.
         """
-        trackhub_bigBed = self.get_track_db_path('rnacentral.bigBed')
-        if os.path.exists(self.bigBed):
-            shutil.move(self.bigBed, trackhub_bigBed)
-            self.logger.info('File %s moved to %s' % (self.bigBed, trackhub_bigBed))
+        src = self.bigBed
+        dst = self.get_track_db_path('rnacentral.bigBed')
+        if os.path.exists(src):
+            shutil.move(src, dst)
+            self.logger.info('File %s moved to %s' % (src, dst))
         else:
-            self.logger.error('bigBed %s not found' % self.bigBed)
+            self.logger.error('bigBed %s not found' % src)
 
     def render_html(self):
         """

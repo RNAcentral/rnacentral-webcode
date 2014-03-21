@@ -27,7 +27,7 @@ class Md5Exporter(FtpBase):
         """
         super(Md5Exporter, self).__init__(*args, **kwargs)
 
-        self.subdirectory = self.make_subdirectory(self.destination, 'md5')
+        self.subdirectory = self.make_subdirectory(self.destination, self.subfolders['md5'])
         self.names = {
             'readme': 'readme.txt',
             'md5': 'md5.tsv',

@@ -39,7 +39,7 @@ class XrefsExporter(FtpBase):
         """
         super(XrefsExporter, self).__init__(*args, **kwargs)
 
-        self.subdirectory = self.make_subdirectory(self.destination, 'id_mapping')
+        self.subdirectory = self.make_subdirectory(self.destination, self.subfolders['xrefs'])
         self.names = {
             'readme': 'readme.txt',
             'xrefs': 'id_mapping.tsv',

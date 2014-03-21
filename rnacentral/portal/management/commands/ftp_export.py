@@ -150,6 +150,8 @@ class Command(BaseCommand):
                     raise CommandError('Please specify the --bedToBigBed option')
                 if not self.options['format']:
                     raise CommandError('Please specify the --format option')
+                if self.options['format'] not in self.formats:
+                    raise CommandError('Please specify correct output format. See --help for details.')
 
             set_command_line_options()
             validate_command_line_options()

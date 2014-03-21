@@ -27,7 +27,7 @@ class GffExporter(FtpBase):
         """
         super(GffExporter, self).__init__(*args, **kwargs)
 
-        self.subdirectory = self.make_subdirectory(self.destination, 'genome_coordinates')
+        self.subdirectory = self.make_subdirectory(self.destination, self.subfolders['coordinates'])
         self.logger = logging.getLogger(__name__)
 
     def export(self, genome):
@@ -60,7 +60,7 @@ class Gff3Exporter(FtpBase):
         """
         super(Gff3Exporter, self).__init__(*args, **kwargs)
 
-        self.subdirectory = self.make_subdirectory(self.destination, 'genome_coordinates')
+        self.subdirectory = self.make_subdirectory(self.destination, self.subfolders['coordinates'])
         self.log = 'gff3_log.txt'
 
     def export(self, genome):

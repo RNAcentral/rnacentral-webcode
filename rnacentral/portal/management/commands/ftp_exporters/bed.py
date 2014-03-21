@@ -30,7 +30,7 @@ class BedExporter(FtpBase):
         """
         super(BedExporter, self).__init__(*args, **kwargs)
 
-        self.subdirectory = self.make_subdirectory(self.destination, 'genome_coordinates')
+        self.subdirectory = self.make_subdirectory(self.destination, self.subfolders['coordinates'])
         self.name_templates = {
             'bed_sorted': self.get_output_filename('{genome}.bed', parent_dir=self.subdirectory),
             'bed_unsorted': self.get_output_filename('{genome}_unsorted.bed', parent_dir=self.subdirectory),
