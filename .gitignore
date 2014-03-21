@@ -101,4 +101,5 @@ local_settings.py
 ._*
 CACHE
 selenium_log.txt
-
+rnacentral/rnacentral/django.log
+rnacentral/rnacentral/django.log.1
