@@ -184,3 +184,53 @@ class FtpBase(object):
         text = re.sub(r'^\s+', '', text)
         text = re.sub(r'\n +', '\n', text)
         return text
+
+    def create_genomic_readme(self):
+        """
+        ===================================================================
+        RNAcentral Genomic Coordinates Data
+        ===================================================================
+
+        This directory contains genomic coordinates for a subset of RNAcentral ids
+        where such mapping is available.
+
+        * hg19.bed.gz
+        Bed format description:
+        http://www.ensembl.org/info/website/upload/bed.html
+        http://genome.ucsc.edu/FAQ/FAQformat.html
+
+        * hg19.gff.gz
+        Gff2 format description:
+        http://www.sanger.ac.uk/resources/software/gff/spec.html
+
+        * hg19.gff3.gz
+        Gff3 format description:
+        http://www.sequenceontology.org/gff3.shtml
+
+        * track_hub/
+        UCSC-style track hub description:
+        https://genome.ucsc.edu/goldenPath/help/hgTrackHubHelp.html
+
+        Folder structure:
+            genomes.txt [list of annotated genomes]
+            hub.txt [track hub description]
+            hg19 [human GRCh37 assembly]
+                rnacentral.BigBed [bigBed binary data file]
+                rnacentral.html []
+                trackDb.txt [track description]
+        """
+        text = self.create_genomic_readme.__doc__
+        text = self.format_docstring(text)
+        f = open(self.get_output_filename('readme.txt', parent_dir=self.subdirectory), 'w')
+        f.write(text)
+        f.close()
+
+    def create_release_notes_file(self):
+        """
+        Create an empty placeholder release_notes.txt file.
+        """
+        filename = self.get_output_filename('release_notes.txt')
+        if os.path.exists(filename):
+            return
+        f = open(filename, 'w')
+        f.close()

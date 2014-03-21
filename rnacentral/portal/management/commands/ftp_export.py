@@ -190,6 +190,10 @@ class Command(BaseCommand):
         else: # fasta, md5, xrefs etc
             exporter.export()
 
+        exporter.create_release_notes_file()
+        if mode in ['gff', 'gff3', 'bed', 'trackhub']:
+            exporter.create_genomic_readme()
+
     def export_all(self, **kwargs):
         """
         Export the data in all formats.

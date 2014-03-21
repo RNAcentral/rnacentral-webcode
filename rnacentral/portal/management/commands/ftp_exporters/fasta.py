@@ -171,8 +171,6 @@ class FastaExporter(FtpBase):
 
         This directory contains sequences with RNAcentral ids in FASTA format.
 
-        The files are compressed using gzip.
-
         * rnacentral_active.fasta.gz
         Current set of sequences that are present in at least one expert database.
 
