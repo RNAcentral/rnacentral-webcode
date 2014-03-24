@@ -18,7 +18,7 @@ from apiv1 import views
 
 urlpatterns = patterns('',
 	# api root
-	url(r'^v1/?$', views.APIRoot.as_view()),
+	url(r'^v1/?$', views.APIRoot.as_view(), name='api-v1-root'),
 	# api/current endpoints
     # url(r'^current/', include('rest_framework.urls', namespace='current_api', app_name='current_api')),
 	# list of all RNAcentral entries
