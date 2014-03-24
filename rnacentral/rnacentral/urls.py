@@ -27,10 +27,10 @@ urlpatterns = patterns('',
     url(r'^(?P<page>about|help|thanks|coming-soon)/?$', views.StaticView.as_view()),
     url(r'^docs/(?P<page>genome-browsers)/?$', views.StaticView.as_view()),
     url(r'^(?P<page>expert-databases)/?$', views.StaticView.as_view(), name='expert_databases'),
-    url(r'^api/?$', views.StaticView.as_view(), {'page': 'api-docs'}),
+    url(r'^api/?$', views.StaticView.as_view(), {'page': 'api-docs'}, name='api-docs'),
     url(r'^api/v2/?$', views.StaticView.as_view(), {'page': 'coming-soon'}, name='api_v2'),
     # contact us
-    url(r'^contact/?$', views.ContactView.as_view()),
+    url(r'^contact/?$', views.ContactView.as_view(), name='contact-us'),
     # temporary API
     url(r'^expert-database/(?P<expert_db_name>.+)/lineage/?$', 'portal.views.get_expert_database_organism_sunburst'),
     url(r'^rna/(?P<upi>\w+)/xrefs/?$', 'portal.views.get_xrefs_data'),
