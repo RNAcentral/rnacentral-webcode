@@ -84,11 +84,11 @@ class XrefsExporter(FtpBase):
             """
             Get a dictionary telling where to look for external database ids.
             """
-            # skip 'RFAM' for now
             return {
                 'xref': ['ENA'], # output xref.ac
-                'external_id': ['TMRNA_WEB', 'SRPDB', 'MIRBASE', 'VEGA'], # output accession.external_id
+                'external_id': ['TMRNA_WEB', 'SRPDB', 'MIRBASE', 'VEGA', 'RFAM'], # output accession.external_id
                 'optional_id': ['VEGA'], # output accession.optional_id
+                # for VEGA output both transcript and gene ids
             }
 
         def process_xref_entries():
@@ -96,7 +96,6 @@ class XrefsExporter(FtpBase):
             Write output for each xref.
             """
             counter = 0
-            previous_upi = ''
 
             for row in self.cursor:
                 if self.test and counter > self.test_entries:
@@ -106,11 +105,6 @@ class XrefsExporter(FtpBase):
                 upi = result['upi']
                 database = result['descr']
                 taxid = result['taxid']
-
-                if upi == previous_upi:
-                    continue
-                else:
-                    previous_upi = upi
 
                 if database in accession_source['xref']:
                     line = '{upi}\t{database}\t{accession}\t{taxid}\n'.format(upi=upi,
@@ -151,7 +145,8 @@ class XrefsExporter(FtpBase):
 
 
         * id_mapping.tsv.gz
-        Tab-separated file with RNAcentral ids and their external ids.
+        Tab-separated file with RNAcentral ids, corresponding external ids,
+        and NCBI taxon ids.
 
         * example.txt
         A small file showing the first few entries.
