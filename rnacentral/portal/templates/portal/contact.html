@@ -22,7 +22,7 @@ Contact Us
 <div class="row">
 
   <div class="col-md-8">
-    <h1>Contact us</h1>
+    <h1><i class="fa fa-envelope"></i> Contact us</h1>
     <form action="/contact/" method="post" role="form">{% csrf_token %}
       {{ form.non_field_errors }}
       <div class="form-group {% if form.subject.errors %} has-error {% endif %}" >
