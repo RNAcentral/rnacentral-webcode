@@ -104,7 +104,7 @@ class Md5Exporter(FtpBase):
         Tab-separated file with RNAcentral ids and md5 hashes of their corresponding sequences.
         This file can be used to look up RNAcentral ids for a set of sequences given their md5.
 
-        * md5.example.tsv
+        * example.txt
         A small file showing the first few md5 entries.
         """
         text = self.create_readme.__doc__
