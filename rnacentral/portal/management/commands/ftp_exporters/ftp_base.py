@@ -218,13 +218,13 @@ class FtpBase(object):
         UCSC-style track hub description:
         https://genome.ucsc.edu/goldenPath/help/hgTrackHubHelp.html
 
-        Folder structure:
-            genomes.txt [list of annotated genomes]
-            hub.txt [track hub description]
-            hg19 [human GRCh37 assembly]
-                rnacentral.BigBed [bigBed binary data file]
-                rnacentral.html []
-                trackDb.txt [track description]
+        Track hub folder structure:
+        - genomes.txt [list of annotated genomes]
+        - hub.txt [track hub description]
+        - hg19 [human GRCh37 assembly]
+        -- rnacentral.BigBed [bigBed binary data file]
+        -- rnacentral.html []
+        -- trackDb.txt [track description]
         """
         text = self.create_genomic_readme.__doc__
         text = self.format_docstring(text)
