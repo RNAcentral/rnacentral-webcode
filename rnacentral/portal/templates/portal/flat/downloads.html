@@ -1,0 +1,87 @@
+<!--
+Copyright [2009-2014] EMBL-European Bioinformatics Institute
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+{% extends "portal/base.html" %}
+
+{% block title %}
+Downloads
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+
+  <div class="col-md-12">
+    <h1><i class="fa fa-cloud-download"></i> Downloads</h1>
+
+    <h2>Downloading individual RNAcentral entries</h2>
+
+    <p>
+      Individual entries can be downloaded in several formats by
+      clicking on the <strong>Download dropdown</strong> available on each Unique RNAcentral Sequence page
+      (for example, <a href="/rna/URS000063A371">URS000063A371</a>).
+    </p>
+
+    <h2>FTP Archive</h2>
+
+    {% with rnacentral_ftp_url='ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral' %}
+    <p>
+      To retrieve <strong>large amounts of data</strong> or to download <strong>archived data snapshots</strong>,
+      it is recommended to use the RNAcentral FTP Archive
+      located at <a href="{{ rnacentral_ftp_url }}" target="_blank">{{ rnacentral_ftp_url }}</a>
+      (no authentication requred).
+    </p>
+
+    <p>
+      <a href="{{ rnacentral_ftp_url }}" target="_blank" class="btn btn-primary">Explore FTP Archive</a>
+    </p>
+    {% endwith %}
+
+    <h2>REST API</h2>
+
+    <p>
+      To access the <strong>latest data</strong> or to integrate <strong>third-party software</strong> with RNAcentral,
+      please refer to the <a href="{% url 'api-docs' %}">REST API documentation</a>.
+      The RNAcentral API is web browsable which means that you can explore the API without leaving the browser.
+    </p>
+
+    <p>
+      <a href="{% url 'api-v1-root' %}" class="btn btn-primary">Browse the API</a>
+    </p>
+
+    <h2>ENA Non-coding Product</h2>
+
+    <p>
+      The Non-coding product is the main feed source of sequence data for RNAcentral. It contains nucleotide sequences of non-coding features annotated in the <a href="http://www.ebi.ac.uk/ena/" target="_blank">EMBL nucleotide sequence database</a>.
+
+      The data are distributed in a <a href="ftp://ftp.ebi.ac.uk/pub/databases/embl/doc/usrman.txt" target="_blank">flat-file format</a>, similar to that of the EMBL database, but with each entry representing a single feature and with the sequence of only that entry.
+    </p>
+
+    <p>
+      <a class="btn btn-primary" role="button" href="ftp://ftp.ebi.ac.uk/pub/databases/ena/non-coding/release/" target="_blank">Latest release</a>
+      <a class="btn btn-primary" role="button" href="ftp://ftp.ebi.ac.uk/pub/databases/ena/non-coding/update/" target="_blank">Latest updates</a>
+    </p>
+
+    <hr>
+
+    <p>
+      Feel free to <a href="{% url 'contact-us' %}">contact us</a> with any questions or requests.
+    </p>
+
+    <hr>
+
+  </div>
+
+</div>
+
+{% endblock %}

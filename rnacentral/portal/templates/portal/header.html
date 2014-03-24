@@ -56,15 +56,6 @@ limitations under the License.
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-left">
-        <li><a href="/about">About</a></li>
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">API<b class="caret"></b></a>
-          <ul class="dropdown-menu">
-            <li><a href="/api/v1">Browsable API</a></li>
-            <li class="divider"></li>
-            <li><a href="/api">API Documentation</a></li>
-          </ul>
-        </li>
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">Expert databases<b class="caret"></b></a>
           <ul class="dropdown-menu">
@@ -76,6 +67,15 @@ limitations under the License.
             <li><a href="/expert-databases">All Expert databases</a></li>
           </ul>
         </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">API<b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="/api/v1">Browsable API</a></li>
+            <li class="divider"></li>
+            <li><a href="/api">API Documentation</a></li>
+          </ul>
+        </li>
+        <li><a href="/downloads">Downloads</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li class="dropdown">
@@ -84,8 +84,7 @@ limitations under the License.
             <li><a href="/docs/genome-browsers">Genome browsers</a></li>
           </ul>
         </li>
-        <li><a href="/contact">Contact</a></li>
-        <li><a href="#">Share</a></li>
+        <li><a href="{% url 'contact-us' %}">Contact</a></li>
       </ul>
     </div><!--/.nav-collapse -->
   </div>
