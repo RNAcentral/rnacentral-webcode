@@ -174,7 +174,8 @@ class FtpBase(object):
         """
         Get RNA sequences with genomic coordinates.
         """
-        xrefs = Xref.objects.filter(db_id=5).\
+        xrefs = Xref.objects.filter(db_id=1).\
+                             exclude(accession__assembly__chromosome__isnull=True).\
                              select_related('accession', 'accession__assembly',
                                             'accession__assembly__chromosome').\
                              all()

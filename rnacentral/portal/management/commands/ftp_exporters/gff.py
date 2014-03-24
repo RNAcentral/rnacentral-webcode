@@ -69,7 +69,7 @@ class Gff3Exporter(FtpBase):
         super(Gff3Exporter, self).__init__(*args, **kwargs)
 
         self.subdirectory = self.make_subdirectory(self.destination, self.subfolders['coordinates'])
-        self.log = 'gff3_log.txt'
+        self.logger = logging.getLogger(__name__)
 
     def export(self, genome):
         """
@@ -82,16 +82,15 @@ class Gff3Exporter(FtpBase):
                                                 parent_dir=self.subdirectory)
         f = open(gff_file, 'w')
         example = open(example_file, 'w')
-        counter = 0
-        f.write('##gff-version 3\n')
-        example.write('##gff-version 3\n')
-        for xref in self.get_xrefs_with_genomic_coordinates():
+        header = '##gff-version 3\n'
+        f.write(header)
+        example.write(header)
+        for counter, xref in enumerate(self.get_xrefs_with_genomic_coordinates()):
             text = xref.get_gff3()
             if text:
                 f.write(text)
-            if counter < self.examples:
-                example.write(text)
-            counter += 1
+                if counter < self.examples:
+                    example.write(text)
         f.close()
         example.close()
         self.logger.info('Created file %s' % gff_file)

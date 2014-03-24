@@ -417,16 +417,16 @@ def _xref_to_gff3_format(xref):
     if assemblies.count() == 0:
         return gff
     for i, assembly in enumerate(assemblies):
-        seqid = assembly.chromosome.ena_accession
+        seqid = assembly.chromosome.chromosome
         source = 'RNAcentral'
-        seq_type = 'SO:0000198' # non-coding exon
+        seq_type = 'noncoding_exon'
         start = assembly.primary_start
         end = assembly.primary_end
         score = '.'
         strand = '+' if assembly.strand > 0 else '-'
         phase = '.'
         attributes = {
-            'ID': '_'.join([xref.accession.accession, str(i)]),
+            'ID': '_'.join([xref.accession.accession, 'exon' + str(i+1)]),
             'Name': xref.upi.upi,
         }
         attributes_joined = ';'.join("%s=%s" % t for t in attributes.iteritems())

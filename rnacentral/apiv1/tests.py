@@ -164,7 +164,7 @@ class ApiV1Test(unittest.TestCase):
         self._output_format_tester(formats, targets)
         # further check the gff text output
         r = requests.get(self._get_api_url(targets[0]+'.gff3'))
-        self.assertIn('SO:0000198', r.text)
+        self.assertIn('noncoding_exon', r.text)
         # test a sequence without genomic coordinates
         r = requests.get(self._get_api_url('rna/%s.gff3' % self.upi))
         self.assertIn('# Genomic coordinates not available', r.text)
