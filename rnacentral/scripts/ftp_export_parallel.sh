@@ -46,4 +46,5 @@ bsub -o logs/gff3_lsfreport.txt -e logs/gff3_output.txt python manage.py ftp_exp
 bsub -o logs/md5_lsfreport.txt -e logs/md5_output.txt python manage.py ftp_export -f md5 -d $destination
 
 # bed and UCSC trackhub, `bed` must preceed `trackhub` because the trackhub job uses bigbed files produced by `bed`
-bsub -o logs/bed_lsfreport.txt -e logs/bed_output.txt python manage.py ftp_export -f bed -d $destination -b $ucsc_tools && python manage.py ftp_export -f trackhub -d $destination
+# the python commands are quoted so that they both are executed by bsub
+bsub -o logs/bed_lsfreport.txt -e logs/bed_output.txt 'python manage.py ftp_export -f bed -d $destination -b $ucsc_tools && python manage.py ftp_export -f trackhub -d $destination'
