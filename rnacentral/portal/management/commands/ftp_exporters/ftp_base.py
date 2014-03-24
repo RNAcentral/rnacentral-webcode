@@ -12,12 +12,14 @@ limitations under the License.
 """
 
 from django.conf import settings
-from portal.models import Xref
+from portal.models import Rna, Database, Xref
+from django.contrib.humanize.templatetags.humanize import intcomma
 import cx_Oracle
 import logging
 import os
 import re
 import subprocess
+import time
 
 
 class FtpBase(object):
@@ -234,10 +236,31 @@ class FtpBase(object):
 
     def create_release_notes_file(self):
         """
-        Create an empty placeholder release_notes.txt file.
+        ===================================================================
+        RNAcentral Release {release_date}
+        ===================================================================
+
+        RNAcentral is an online resource for organising data
+        about non-protein coding RNA genes.
+
+        This release consists of {sequence_count} unique RNA sequences
+        with {xrefs_count} cross-references to {database_count} Expert Databases.
+
+        RNAcentral is available online at http://rnacentral.org.
+        For more ways of downloading the data go to http://rnacentral.org/downloads.
         """
-        filename = self.get_output_filename('release_notes.txt')
-        if os.path.exists(filename):
-            return
-        f = open(filename, 'w')
+        text = self.create_release_notes_file.__doc__
+        text = self.format_docstring(text)
+
+        release_date = time.strftime("%d/%m/%Y")
+        sequence_count = intcomma(Rna.objects.count())
+        xrefs_count = intcomma(Xref.objects.count())
+        database_count = intcomma(Database.objects.count())
+
+        text = text.format(release_date=release_date,
+                           sequence_count=sequence_count,
+                           database_count=database_count,
+                           xrefs_count=xrefs_count)
+        f = open(self.get_output_filename('release_notes_template.txt'), 'w')
+        f.write(text)
         f.close()
