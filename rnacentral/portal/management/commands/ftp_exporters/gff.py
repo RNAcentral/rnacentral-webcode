@@ -37,12 +37,20 @@ class GffExporter(FtpBase):
         self.logger.info('Exporting gff')
         gff_file = self.get_output_filename('%s.gff' % genome,
                                             parent_dir=self.subdirectory)
+        example_file = self.get_output_filename('gff_example.txt',
+                                                parent_dir=self.subdirectory)
         f = open(gff_file, 'w')
+        example = open(example_file, 'w')
+        counter = 0
         for xref in self.get_xrefs_with_genomic_coordinates():
             text = xref.get_gff()
             if text:
                 f.write(text)
+            if counter < self.examples:
+                example.write(text)
+            counter += 1
         f.close()
+        example.close()
         self.logger.info('Created file %s' % gff_file)
         self.gzip_file(gff_file)
         os.remove(gff_file)
@@ -70,13 +78,22 @@ class Gff3Exporter(FtpBase):
         self.logger.info('Exporting gff3')
         gff_file = self.get_output_filename('%s.gff3' % genome,
                                             parent_dir=self.subdirectory)
+        example_file = self.get_output_filename('gff3_example.txt',
+                                                parent_dir=self.subdirectory)
         f = open(gff_file, 'w')
+        example = open(example_file, 'w')
+        counter = 0
         f.write('##gff-version 3\n')
+        example.write('##gff-version 3\n')
         for xref in self.get_xrefs_with_genomic_coordinates():
             text = xref.get_gff3()
             if text:
                 f.write(text)
+            if counter < self.examples:
+                example.write(text)
+            counter += 1
         f.close()
+        example.close()
         self.logger.info('Created file %s' % gff_file)
         self.gzip_file(gff_file)
         os.remove(gff_file)

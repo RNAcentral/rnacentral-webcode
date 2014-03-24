@@ -35,6 +35,7 @@ class BedExporter(FtpBase):
             'bed_sorted': self.get_output_filename('{genome}.bed', parent_dir=self.subdirectory),
             'bed_unsorted': self.get_output_filename('{genome}_unsorted.bed', parent_dir=self.subdirectory),
             'big_bed': self.get_output_filename('{genome}.bigBed', parent_dir=self.subdirectory),
+            'example': self.get_output_filename('bed_example.txt', parent_dir=self.subdirectory),
             'chrom_sizes': '', # initialize later with fetch_chromosome_sizes()
         }
         self.names = {}
@@ -90,11 +91,17 @@ class BedExporter(FtpBase):
             Export unsorted genomic coordinates in BED format.
             """
             f = open(self.names['bed_unsorted'], 'w')
+            example = open(self.names['example'], 'w')
+            counter = 0
             for xref in self.get_xrefs_with_genomic_coordinates():
                 text = xref.get_ucsc_bed()
                 if text:
                     f.write(text)
+                if counter < self.examples:
+                    example.write(text)
+                counter += 1
             f.close()
+            example.close()
             self.logger.info('Exported to file "%s"' % self.names['bed_unsorted'])
 
         def bed_sort():
