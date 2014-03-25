@@ -97,9 +97,11 @@ class BedExporter(FtpBase):
                 text = xref.get_ucsc_bed()
                 if text:
                     f.write(text)
-                if counter < self.examples:
-                    example.write(text)
-                counter += 1
+                    counter += 1
+                    if counter < self.examples:
+                        example.write(text)
+                    if self.test and counter > self.test_entries:
+                        break
             f.close()
             example.close()
             self.logger.info('Exported to file "%s"' % self.names['bed_unsorted'])

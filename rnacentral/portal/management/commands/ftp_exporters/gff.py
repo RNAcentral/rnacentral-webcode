@@ -46,9 +46,11 @@ class GffExporter(FtpBase):
             text = xref.get_gff()
             if text:
                 f.write(text)
-            if counter < self.examples:
-                example.write(text)
-            counter += 1
+                counter += 1
+                if counter < self.examples:
+                    example.write(text)
+                if self.test and counter > self.test_entries:
+                    break
         f.close()
         example.close()
         self.logger.info('Created file %s' % gff_file)
@@ -85,12 +87,16 @@ class Gff3Exporter(FtpBase):
         header = '##gff-version 3\n'
         f.write(header)
         example.write(header)
-        for counter, xref in enumerate(self.get_xrefs_with_genomic_coordinates()):
+        counter = 0
+        for xref in self.get_xrefs_with_genomic_coordinates():
             text = xref.get_gff3()
             if text:
                 f.write(text)
+                counter += 1
                 if counter < self.examples:
                     example.write(text)
+                if self.test and counter > self.test_entries:
+                    break
         f.close()
         example.close()
         self.logger.info('Created file %s' % gff_file)
