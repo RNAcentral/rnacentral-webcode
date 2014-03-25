@@ -244,6 +244,10 @@ class FtpBase(object):
         This release consists of {sequence_count} unique RNA sequences
         with {xrefs_count} cross-references to {database_count} Expert Databases.
 
+        The release data are stored in subdirectories in this folder. Large data files
+        are compressed with Gzip. Small uncompressed example files are also provided.
+        Each folder contains a readme file with data description.
+
         RNAcentral is available online at http://rnacentral.org.
         For more ways of downloading the data go to http://rnacentral.org/downloads.
         """
