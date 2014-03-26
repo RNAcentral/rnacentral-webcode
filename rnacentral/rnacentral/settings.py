@@ -96,10 +96,6 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    # caching
-    'django.middleware.cache.UpdateCacheMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware',
     # gzip
     'django.middleware.gzip.GZipMiddleware',
     # default
@@ -108,10 +104,10 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    # Uncomment the next line for simple clickjacking protection:
-    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware', # django-debug-toolbar
-    'maintenancemode.middleware.MaintenanceModeMiddleware', # django-maintenance
+    # django-debug-toolbar
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    # django-maintenance
+    'maintenancemode.middleware.MaintenanceModeMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -125,9 +121,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "portal.context_processors.baseurl",
 )
 
-CACHE_MIDDLEWARE_ALIAS = 'default'
-CACHE_MIDDLEWARE_SECONDS = 600
-CACHE_MIDDLEWARE_KEY_PREFIX = ''
+USE_ETAGS=True
 
 ROOT_URLCONF = 'rnacentral.urls'
 
@@ -269,12 +263,28 @@ DEBUG_TOOLBAR_PANELS = (
 # django-maintenance
 MAINTENANCE_MODE = False
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'rnacentral-main-cache'
-    }
-}
+# caching
+def get_cache():
+    """
+    If unix memcached socket is created use memcached,
+    otherwise fall back on LocMemCache.
+    """
+    memcached_sock = os.path.join(os.path.dirname(os.path.realpath(__file__)), "memcached.sock")
+    if os.path.exists(memcached_sock):
+        memcached_sock = 'unix:' + memcached_sock
+        return {
+          'default': {
+            'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+            'LOCATION': memcached_sock,
+          }
+        }
+    else:
+        return {
+          'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+          }
+        }
+CACHES = get_cache()
 
 # django-markdown-deux
 MARKDOWN_DEUX_STYLES = {
