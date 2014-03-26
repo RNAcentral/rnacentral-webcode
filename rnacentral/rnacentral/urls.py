@@ -31,7 +31,7 @@ urlpatterns = patterns('',
     url(r'^api/v2/?$', views.StaticView.as_view(), {'page': 'coming-soon'}, name='api_v2'),
     # contact us
     url(r'^contact/?$', views.ContactView.as_view(), name='contact-us'),
-    # temporary API
+    # internal API
     url(r'^expert-database/(?P<expert_db_name>.+)/lineage/?$', 'portal.views.get_expert_database_organism_sunburst'),
     url(r'^rna/(?P<upi>\w+)/xrefs/?$', 'portal.views.get_xrefs_data'),
     url(r'^rna/(?P<upi>\w+)/lineage/?$', 'portal.views.get_sequence_lineage'),
