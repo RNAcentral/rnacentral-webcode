@@ -135,7 +135,7 @@ class SequencePage(BasePage):
         """
             Click the first citation button on the page and then click on the abstract button.
         """
-        timeout = 5
+        timeout = 10
         self.browser.find_element_by_class_name("literature-refs-retrieve").click()
         try:
             result = WebDriverWait(self.browser, timeout).until(lambda s: s.find_element(By.CLASS_NAME, "literature-refs-content").is_displayed())
