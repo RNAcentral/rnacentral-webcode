@@ -33,8 +33,9 @@ def deploy():
   """
   Deploy to a server (either test or production).
 
-  File fab.cfg must contain the following line:
+  File fab.cfg must contain the following lines:
   rnacentral_site=/path/to/manage.py
+  virtualenv=/path/to/virtualenvs/RNAcentral/bin/activate
 
   Usage:
   fab -H user@server1,user@server2 -c /path/to/fab.cfg remote
@@ -49,6 +50,8 @@ def deploy():
 	parent_dir = os.path.abspath(os.path.join(this_dir, os.pardir))
 	with cd(parent_dir):
 		run('git submodule update')
+	# activate virtual environment
+		run('source %s' % env['virtualenv'])
 	# install all python requirements
 	run('pip install -r requirements.txt')
 	# move static files to the deployment location
