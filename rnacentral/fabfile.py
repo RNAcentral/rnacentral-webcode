@@ -16,7 +16,6 @@ limitations under the License.
 import os.path
 from fabric.api import *
 
-env.hosts = ['apetrov@ebi-003.ebi.ac.uk']
 git_branch = 'django'
 
 def test(base_url="http://localhost:8000/"):
@@ -31,28 +30,32 @@ def test(base_url="http://localhost:8000/"):
 	local('python portal/tests/selenium_tests.py --base_url %s' % base_url)
 
 def deploy():
-	"""
-	Run on the test server to deploy the latest changes.
+  """
+  Deploy to a server (either test or production).
 
-	Usage:
-	fab deploy
-	"""
+  File fab.cfg must contain the following line:
+  rnacentral_site=/path/to/manage.py
+
+  Usage:
+  fab -H user@server1,user@server2 -c /path/to/fab.cfg remote
+  """
+  with cd(env['rnacentral_site']):
 	# make sure we are on the right branch
-	local('git checkout %s' % git_branch)
+	run('git checkout %s' % git_branch)
 	# get latest changes
-	local('git pull')
+	run('git pull')
 	# update git submodules
 	this_dir = os.path.dirname(os.path.realpath(__file__))
 	parent_dir = os.path.abspath(os.path.join(this_dir, os.pardir))
-	with lcd(parent_dir):
-		local('git submodule update')
+	with cd(parent_dir):
+		run('git submodule update')
 	# install all python requirements
-	local('pip install -r requirements.txt')
+	run('pip install -r requirements.txt')
 	# move static files to the deployment location
-	local('python manage.py collectstatic --noinput')
+	run('python manage.py collectstatic --noinput')
 	# TODO: django-compressor offline compression
 	# flush memcached
 	with settings(warn_only=True):
-		local('echo "stats" | nc -U rnacentral/memcached.sock')
+		run('echo "stats" | nc -U rnacentral/memcached.sock')
 	# restart the django app
-	local('touch rnacentral/wsgi.py')
+	run('touch rnacentral/wsgi.py')
