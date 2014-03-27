@@ -1,5 +1,6 @@
 BeautifulSoup==3.2.1
 Django==1.6
+Fabric==1.8.3
 Markdown==2.3.1
 PyYAML==3.10
 astroid==1.0.1
@@ -11,8 +12,11 @@ django-filter==0.7
 django-maintenancemode==0.10
 django-markdown-deux==1.0.4
 djangorestframework==2.3.12
+ecdsa==0.11
 logilab-common==0.60.1
 markdown2==2.2.0
+paramiko==1.12.3
+pycrypto==2.6.1
 pylint==1.1.0
 python-dateutil==2.1
 python-memcached==1.53
