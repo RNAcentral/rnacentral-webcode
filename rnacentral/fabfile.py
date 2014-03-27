@@ -36,6 +36,8 @@ def deploy():
   File fab.cfg must contain the following lines:
   rnacentral_site=/path/to/manage.py
   activate=source /path/to/virtualenvs/RNAcentral/bin/activate
+  ld_library_path=export LD_LIBRARY_PATH=/usr/lib/oracle/11.2/client64/lib/:$LD_LIBRARY_PATH
+  oracle_home=export ORACLE_HOME=/usr/lib/oracle/11.2/client64/lib/
 
   Usage:
   fab -H user@server1,user@server2 -c /path/to/fab.cfg remote
@@ -51,7 +53,7 @@ def deploy():
 	with cd(parent_dir):
 		run('git submodule update')
 	# activate virtual environment
-	with prefix(env['activate']):
+	with prefix(env['activate']), prefix(env['ld_library_path']), prefix(env['oracle_home']):
 		# install all python requirements
 		run('pip install -r requirements.txt')
 		# move static files to the deployment location
