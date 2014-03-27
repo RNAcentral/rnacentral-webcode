@@ -35,7 +35,7 @@ def deploy():
 
   File fab.cfg must contain the following lines:
   rnacentral_site=/path/to/manage.py
-  virtualenv=/path/to/virtualenvs/RNAcentral/bin/activate
+  activate=source /path/to/virtualenvs/RNAcentral/bin/activate
 
   Usage:
   fab -H user@server1,user@server2 -c /path/to/fab.cfg remote
@@ -51,13 +51,13 @@ def deploy():
 	with cd(parent_dir):
 		run('git submodule update')
 	# activate virtual environment
-		run('source %s' % env['virtualenv'])
-	# install all python requirements
-	run('pip install -r requirements.txt')
-	# move static files to the deployment location
-	run('python manage.py collectstatic --noinput')
-	# TODO: django-compressor offline compression
-	# flush memcached
+	with prefix(env['activate']):
+		# install all python requirements
+		run('pip install -r requirements.txt')
+		# move static files to the deployment location
+		run('python manage.py collectstatic --noinput')
+		# TODO: django-compressor offline compression
+		# flush memcached
 	with settings(warn_only=True):
 		run('echo "stats" | nc -U rnacentral/memcached.sock')
 	# restart the django app
