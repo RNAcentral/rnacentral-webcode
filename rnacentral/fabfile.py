@@ -13,6 +13,7 @@ limitations under the License.
 
 # fabric deployment script
 
+import os.path
 from fabric.api import *
 
 env.hosts = ['apetrov@ebi-003.ebi.ac.uk']
@@ -41,7 +42,9 @@ def deploy():
 	# get latest changes
 	local('git pull')
 	# update git submodules
-	with cd('../'):
+	this_dir = os.path.dirname(os.path.realpath(__file__))
+	parent_dir = os.path.abspath(os.path.join(this_dir, os.pardir))
+	with lcd(parent_dir):
 		local('git submodule update')
 	# install all python requirements
 	local('pip install -r requirements.txt')
