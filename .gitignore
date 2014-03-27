@@ -94,6 +94,7 @@ nosetests.xml
 *.pot
 *.pyc
 local_settings.py
+fab.cfg
 
 ####################
 # project specific #

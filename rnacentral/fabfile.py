@@ -16,7 +16,6 @@ limitations under the License.
 import os.path
 from fabric.api import *
 
-git_branch = 'django'
 
 def test(base_url="http://localhost:8000/"):
 	"""
@@ -30,37 +29,60 @@ def test(base_url="http://localhost:8000/"):
 	local('python portal/tests/selenium_tests.py --base_url %s' % base_url)
 
 def deploy():
-  """
-  Deploy to a server (either test or production).
+	"""
+	Deploy to a server.
 
-  File fab.cfg must contain the following lines:
-  rnacentral_site=/path/to/manage.py
-  activate=source /path/to/virtualenvs/RNAcentral/bin/activate
-  ld_library_path=export LD_LIBRARY_PATH=/usr/lib/oracle/11.2/client64/lib/:$LD_LIBRARY_PATH
-  oracle_home=export ORACLE_HOME=/usr/lib/oracle/11.2/client64/lib/
+	fab.cfg template:
+	rnacentral_site=/path/to/manage.py
+	activate=source /path/to/virtualenvs/RNAcentral/bin/activate
+	ld_library_path=export LD_LIBRARY_PATH=/path/to/oracle/libraries/:$LD_LIBRARY_PATH
+	oracle_home=export ORACLE_HOME=/path/to/oracle/libraries/
 
-  Usage:
-  fab -H user@server1,user@server2 -c /path/to/fab.cfg remote
-  """
-  with cd(env['rnacentral_site']):
-	# make sure we are on the right branch
-	run('git checkout %s' % git_branch)
-	# get latest changes
-	run('git pull')
-	# update git submodules
-	this_dir = os.path.dirname(os.path.realpath(__file__))
-	parent_dir = os.path.abspath(os.path.join(this_dir, os.pardir))
-	with cd(parent_dir):
-		run('git submodule update')
-	# activate virtual environment
-	with prefix(env['activate']), prefix(env['ld_library_path']), prefix(env['oracle_home']):
-		# install all python requirements
-		run('pip install -r requirements.txt')
-		# move static files to the deployment location
-		run('python manage.py collectstatic --noinput')
-		# TODO: django-compressor offline compression
-		# flush memcached
-	with settings(warn_only=True):
-		run('echo "stats" | nc -U rnacentral/memcached.sock')
-	# restart the django app
-	run('touch rnacentral/wsgi.py')
+	Usage:
+	fab -H user@server1,user@server2 -c /path/to/fab.cfg deploy
+	"""
+
+	def git_updates():
+		"""
+		"""
+		git_branch = 'django'
+		# make sure we are on the right branch
+		run('git checkout %s' % git_branch)
+		# get latest changes
+		run('git pull')
+		# update git submodules
+		this_dir = os.path.dirname(os.path.realpath(__file__))
+		parent_dir = os.path.abspath(os.path.join(this_dir, os.pardir))
+		with cd(parent_dir):
+			run('git submodule update')
+
+	def django_updates():
+		"""
+		* activate virtual environment
+		* set Oracle variables
+		* install all python requirements
+		* move static files to the deployment location
+		"""
+		with prefix(env['activate']), prefix(env['ld_library_path']), prefix(env['oracle_home']):
+			run('pip install -r requirements.txt')
+			run('python manage.py collectstatic --noinput')
+			# TODO: django-compressor offline compression
+
+	def	flush_memcached():
+		"""
+		Delete all cached data.
+		"""
+		with settings(warn_only=True):
+			run('echo "flush_all" | nc -U rnacentral/memcached.sock')
+
+	def restart_django():
+		"""
+		Apply the changes.
+		"""
+		run('touch rnacentral/wsgi.py')
+
+	with cd(env['rnacentral_site']):
+		git_updates()
+		django_updates()
+		flush_memcached()
+		restart_django()
