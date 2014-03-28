@@ -29,7 +29,7 @@ Search
 
     <div class="col-md-10">
       <div class="input-group">
-        <input type="text" placeholder="RNAcentral metadata search" class="form-control" id="search" tabindex=1>
+        <input type="text" placeholder="RNAcentral metadata search" class="form-control" id="search" tabindex="1" autofocus="autofocus">
         <div class="input-group-btn">
           <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-search"></span> <span class="caret"></span></button>
           <ul class="dropdown-menu pull-right">
@@ -50,6 +50,7 @@ Search
 {% block extra_js %}
   {{ block.super }}
   <script type="text/javascript" src="{% static "js/vendor/underscore/underscore-min.js" %}"></script>
+  <script type="text/javascript" src="{% static "js/vendor/angular/angular.min.js" %}"></script>
   <script type="text/javascript" src="{% static "js/search/metadata.search.js" %}"></script>
 
   <script type="text/javascript">
