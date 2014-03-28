@@ -24,9 +24,37 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.reverse import reverse
 from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, XrefSerializer, \
-                              RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer
+                              RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
+                              RnaSearchSerializer
 import django_filters
 import re
+import requests
+
+
+class Search(APIView):
+    """
+    """
+    permission_classes = (AllowAny,)
+    renderer_classes = (renderers.JSONRenderer,)
+
+    def get(self, request):
+        """
+        accession    sequence_md5
+        KF849944.1:14671..14739:tRNA 0026a4417938693f6af2993bc2920970
+        """
+        url = 'http://www.ebi.ac.uk/ena/data/warehouse/search?query=%22tax_eq(9606)%22&domain=noncoding&fields=sequence_md5&display=report&result=noncoding_update&sortfields=sequence_md5&offset=0&limit=100'
+        r = requests.get(url)
+        md5s = []
+        for i, line in enumerate(r.text.split('\n')):
+            if i == 0 or line == '':
+                continue
+            (accession, md5) = line.split('\t')
+            md5s.append(md5)
+        md5s = set(md5s)
+        rna = Rna.objects.filter(md5__in=md5s).all()
+
+        serializer = RnaSearchSerializer(rna)
+        return Response(serializer.data)
 
 
 def _get_xrefs_from_genomic_coordinates(chromosome, start, end):

@@ -14,24 +14,33 @@ limitations under the License.
 {% extends "portal/base.html" %}
 {% load staticfiles %}
 
+{% block stylesheets %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static "js/vendor/angular/loading-bar/loading-bar.css" %}"/>
+{% endblock %}
+
+
 {% block title %}
 Search
 {% endblock %}
 
 {% block content %}
 
-<div class="row">
+<h1><i class="fa fa-search"></i> Search</h1>
 
-  <div class="col-md-12">
-    <h1><i class="fa fa-search"></i> Search</h1>
+<br>
 
-    <br>
+<div ng-app="rnaMetasearch">
 
+  <div class="row col-md-12" >
     <div class="col-md-10">
       <div class="input-group">
-        <input type="text" placeholder="RNAcentral metadata search" class="form-control" id="search" tabindex="1" autofocus="autofocus">
+        <input type="text" placeholder="RNAcentral metadata search" class="form-control" id="search" tabindex="1" autofocus="autofocus" ng-model="query">
         <div class="input-group-btn">
-          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-search"></span> <span class="caret"></span></button>
+          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+            <span class="glyphicon glyphicon-search"></span>
+            <span class="caret"></span>
+          </button>
           <ul class="dropdown-menu pull-right">
             <li><a href="#">Advanced search</a></li>
             <li><a href="#">Search Help</a></li>
@@ -39,7 +48,49 @@ Search
         </div><!-- /btn-group -->
       </div><!-- /input-group -->
     </div>
+  </div>
 
+  <hr>
+
+  <div class="row col-md-12" class="results" ng-controller="ResultsListCtrl">
+
+    <h2>
+      Results
+      <small class="ng-cloak" ng-cloak>
+        {% verbatim %}
+        {{ rnas.length }}
+        {% endverbatim %}
+        entries found
+      </small>
+    </h2>
+
+    <div class="col-md-12 ng-cloak" ng-repeat="rna in rnas" ng-cloak>
+      {% verbatim %}
+      <a href="/rna/{{rna.rnacentral_id}}">{{rna.rnacentral_id}}</a>
+
+      <ul class="list-inline">
+        <li>
+          {{rna.xrefs}}
+            <ng-pluralize count="rna.xrefs"
+                when="{'0': '',
+                       '1': 'annotation',
+                       'other': 'annotations'}">
+            </ng-pluralize>
+        </li>
+        <li>
+          {{rna.databases}}
+            <ng-pluralize count="rna.databases"
+                when="{'0': '',
+                       '1': 'database',
+                       'other': 'databases'}">
+            </ng-pluralize>
+        </li>
+        <li>
+          {{rna.databases}} species
+        </li>
+      </ul>
+      {% endverbatim %}
+    </div>
 
   </div>
 
@@ -51,6 +102,7 @@ Search
   {{ block.super }}
   <script type="text/javascript" src="{% static "js/vendor/underscore/underscore-min.js" %}"></script>
   <script type="text/javascript" src="{% static "js/vendor/angular/angular.min.js" %}"></script>
+  <script type="text/javascript" src="{% static "js/vendor/angular/loading-bar/loading-bar.js" %}"></script>
   <script type="text/javascript" src="{% static "js/search/metadata.search.js" %}"></script>
 
   <script type="text/javascript">

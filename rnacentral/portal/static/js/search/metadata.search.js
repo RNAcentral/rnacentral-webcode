@@ -13,8 +13,12 @@ limitations under the License.
 
 // RNAcentral metasearch app.
 
-;(function() {
+;var rnaMetasearch = angular.module('rnaMetasearch', ['chieffancypants.loadingBar']);
 
-	console.log('RNAcentral metasearch');
+rnaMetasearch.controller('ResultsListCtrl', function ($scope, $http) {
 
-})();
+  $http.get('/api/v1/search').success(function(data) {
+	$scope.rnas = data;
+  });
+
+});
