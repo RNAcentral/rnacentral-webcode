@@ -43,5 +43,5 @@ urlpatterns = patterns('',
     # status page
     url(r'^status/?', 'portal.views.website_status_view'),
     # django-rest-framework API, use trailing slashes
-    url(r'^api/', include('apiv1.urls')),
+    url(r'^api/v1/', include('apiv1.urls')),
 )
