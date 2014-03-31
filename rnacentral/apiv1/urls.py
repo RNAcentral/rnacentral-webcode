@@ -38,7 +38,7 @@ urlpatterns = patterns('',
     url(r'^v1/feature/region/human/(?P<chromosome>(\d+|Y|X))\:(?P<start>(\d|,)+)-(?P<end>(\d|,)+)/?$',
         cache_page(CACHE_TIMEOUT)(views.GenomeAnnotations.as_view()), name='human-genome-coordinates'),
     # DAS-like endpoints
-    url(r'^v1/das/sources/?$', cache_page(CACHE_TIMEOUT)(views.DasSources.as_view()), name='das-sources'),
+    url(r'^v1/das(?:/sources)?/?$', cache_page(CACHE_TIMEOUT)(views.DasSources.as_view()), name='das-sources'),
     url(r'^v1/das/RNAcentral_GRCh37/features/?$', cache_page(CACHE_TIMEOUT)(views.DasFeatures.as_view()), name='das-features'),
 	url(r'^v1/das/RNAcentral_GRCh37/stylesheet/?$', cache_page(CACHE_TIMEOUT)(views.DasStylesheet.as_view()), name='das-stylesheet'),
 )
