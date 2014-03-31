@@ -274,8 +274,11 @@ def get_cache():
         memcached_sock = 'unix:' + memcached_sock
         return {
           'default': {
-            'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+            'BACKEND': 'portal.backends.memcached.MemcachedCache', # custom backend to overcome 1Mb size limit
             'LOCATION': memcached_sock,
+            'OPTIONS': {
+                'SERVER_MAX_VALUE_LENGTH': 1024 * 1024 * 15, # increase size limit to 15Mb
+            }
           }
         }
     else:
