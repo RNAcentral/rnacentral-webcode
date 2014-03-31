@@ -15,6 +15,7 @@ from django.conf.urls import patterns, url, include
 from django.views.decorators.cache import cache_page
 from rest_framework.urlpatterns import format_suffix_patterns
 from apiv1 import views
+from apiv1.metasearch import MetaSearch
 
 CACHE_TIMEOUT = 60 * 60 * 24 * 1 # per-view cache timeout in seconds
 
@@ -41,8 +42,11 @@ urlpatterns = patterns('',
     url(r'^das/sources/?$', cache_page(CACHE_TIMEOUT)(views.DasSources.as_view()), name='das-sources'),
     url(r'^das/RNAcentral_GRCh37/features/?$', cache_page(CACHE_TIMEOUT)(views.DasFeatures.as_view()), name='das-features'),
 	url(r'^das/RNAcentral_GRCh37/stylesheet/?$', cache_page(CACHE_TIMEOUT)(views.DasStylesheet.as_view()), name='das-stylesheet'),
-    # search
-    url(r'^search/?$', views.Search.as_view(), name='search'),
 )
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'yaml', 'fasta', 'api', 'gff', 'gff3', 'bed'])
+
+urlpatterns += patterns('',
+    # search
+    url(r'^search/?$', MetaSearch.as_view(), name='search'),
+)
