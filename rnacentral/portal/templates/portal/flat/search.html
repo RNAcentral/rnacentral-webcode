@@ -30,29 +30,26 @@ Search
 
 <br>
 
-<div ng-app="rnaMetasearch">
+<div ng-app="rnaMetasearch" ng-controller="ResultsListCtrl">
 
   <div class="row" >
     <div class="col-md-10">
-      <div class="input-group">
-        <input type="text" placeholder="RNAcentral metadata search" class="form-control" id="search" tabindex="1" autofocus="autofocus" ng-model="query">
-        <div class="input-group-btn">
-          <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-            <span class="glyphicon glyphicon-search"></span>
-            <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu pull-right">
-            <li><a href="#">Advanced search</a></li>
-            <li><a href="#">Search Help</a></li>
-          </ul>
-        </div><!-- /btn-group -->
-      </div><!-- /input-group -->
+      <form ng-submit="submit_query()">
+        <div class="input-group">
+          <input type="text" placeholder="RNAcentral metadata search" class="form-control" id="search" tabindex="1" autofocus="autofocus" ng-model="query">
+          <div class="input-group-btn">
+            <button type="submit" class="btn btn-default" tabindex="2">
+              <span class="glyphicon glyphicon-search"></span>
+            </button>
+          </div><!-- /btn-group -->
+        </div><!-- /input-group -->
+      </form>
     </div><!-- /col-md-10 -->
   </div><!-- /row -->
 
   <hr>
 
-  <div class="row" class="results" ng-controller="ResultsListCtrl">
+  <div class="row" class="results">
 
     <h2>
       Results

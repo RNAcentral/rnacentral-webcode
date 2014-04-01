@@ -15,10 +15,14 @@ limitations under the License.
 
 ;var rnaMetasearch = angular.module('rnaMetasearch', ['chieffancypants.loadingBar']);
 
-rnaMetasearch.controller('ResultsListCtrl', function ($scope, $http) {
+rnaMetasearch.controller('ResultsListCtrl', function($scope, $http) {
 
-  $http.get('/api/v1/search').success(function(data) {
-	$scope.rnas = data;
-  });
+	$scope.query = '9606';
+
+    $scope.submit_query = function() {
+		$http.get('/api/v1/search').success(function(data) {
+			$scope.rnas = data;
+		});
+    };
 
 });
