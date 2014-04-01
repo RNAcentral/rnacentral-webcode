@@ -227,8 +227,8 @@ REST_FRAMEWORK = {
 
     # API throttling
     'DEFAULT_THROTTLE_CLASSES': (
-        'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle'
+        'apiv1.rest_framework_override.throttling.SafeCacheKeyAnonRateThrottle',
+        'apiv1.rest_framework_override.throttling.SafeCacheKeyUserRateThrottle'
     ),
     'DEFAULT_THROTTLE_RATES': {
         'anon': '20/second',
