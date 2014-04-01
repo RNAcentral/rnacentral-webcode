@@ -78,6 +78,9 @@ class Rna(models.Model):
     def count_distinct_databases(self):
         return self.xrefs.values('db_id').distinct().count()
 
+    def count_xrefs(self):
+        return self.xrefs.count()
+
     def first_seen(self):
         data = self.xrefs.aggregate(first_seen=Min('created__release_date'))
         return data['first_seen']

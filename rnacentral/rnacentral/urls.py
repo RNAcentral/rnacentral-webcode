@@ -27,6 +27,7 @@ urlpatterns = patterns('',
     url(r'^(?P<page>about|help|thanks|coming-soon|downloads)/?$', views.StaticView.as_view()),
     url(r'^docs/(?P<page>genome-browsers)/?$', views.StaticView.as_view()),
     url(r'^(?P<page>expert-databases)/?$', views.StaticView.as_view(), name='expert_databases'),
+    url(r'^(?P<page>search)/?$', views.StaticView.as_view(), name='search'),
     url(r'^api/?$', views.StaticView.as_view(), {'page': 'api-docs'}, name='api-docs'),
     url(r'^api/v2/?$', views.StaticView.as_view(), {'page': 'coming-soon'}, name='api_v2'),
     # contact us
@@ -42,5 +43,5 @@ urlpatterns = patterns('',
     # status page
     url(r'^status/?', 'portal.views.website_status_view'),
     # django-rest-framework API, use trailing slashes
-    url(r'^api/', include('apiv1.urls')),
+    url(r'^api/v1/', include('apiv1.urls')),
 )

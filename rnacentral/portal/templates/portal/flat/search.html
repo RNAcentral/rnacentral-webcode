@@ -1,0 +1,132 @@
+<!--
+Copyright [2009-2014] EMBL-European Bioinformatics Institute
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+{% extends "portal/base.html" %}
+{% load staticfiles %}
+
+{% block stylesheets %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static "js/vendor/angular/loading-bar/loading-bar.css" %}"/>
+{% endblock %}
+
+
+{% block title %}
+Search
+{% endblock %}
+
+{% block content %}
+
+<h1><i class="fa fa-search"></i> Search</h1>
+
+<br>
+
+<div ng-app="rnaMetasearch" ng-controller="ResultsListCtrl">
+
+  <div class="row" >
+    <div class="col-md-10">
+      <form name="queryForm" ng-submit="submit_query()">
+
+<div class="form-group has-error">
+  <label class="control-label" for="inputError1">Input with error</label>
+  <div class="input-group">
+
+    <input type="text" class="form-control" id="inputError1">
+
+            <div class="input-group-btn">
+              <button type="submit" class="btn btn-default" tabindex="2">
+                <span class="glyphicon glyphicon-search"></span>
+              </button>
+            </div><!-- /btn-group -->
+  </div>
+
+</div>
+
+    <span class="error" ng-show="myForm.input.$error.required">Required!</span><br> {# test #}
+        <div class="input-group">
+          <input type="text"
+                 placeholder="RNAcentral metadata search"
+                 class="form-control"
+                 tabindex="1"
+                 ng-model="user.query"
+                 ng-minlength=5
+                 autofocus required>
+          <div class="input-group-btn">
+            <button type="submit" class="btn btn-default" tabindex="2">
+              <span class="glyphicon glyphicon-search"></span>
+            </button>
+          </div><!-- /btn-group -->
+        </div><!-- /input-group -->
+      </form>
+    </div><!-- /col-md-10 -->
+  </div><!-- /row -->
+
+  <hr>
+
+  <div class="row" class="results">
+
+    <h2>
+      Results
+      <small class="ng-cloak" ng-cloak>
+        {% verbatim %}
+        {{ rnas.length }}
+        {% endverbatim %}
+        entries found
+      </small>
+    </h2>
+
+    <div class="col-md-12 ng-cloak" ng-repeat="rna in rnas" ng-cloak>
+      {% verbatim %}
+      <a href="/rna/{{rna.rnacentral_id}}">{{rna.rnacentral_id}}</a>
+
+      <ul class="list-inline">
+        <li>
+          {{rna.xrefs}}
+            <ng-pluralize count="rna.xrefs"
+                when="{'0': '',
+                       '1': 'annotation',
+                       'other': 'annotations'}">
+            </ng-pluralize>
+        </li>
+        <li>
+          {{rna.databases}}
+            <ng-pluralize count="rna.databases"
+                when="{'0': '',
+                       '1': 'database',
+                       'other': 'databases'}">
+            </ng-pluralize>
+        </li>
+        <li>
+          {{rna.databases}} species
+        </li>
+      </ul>
+      {% endverbatim %}
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock content %}
+
+{% block extra_js %}
+  {{ block.super }}
+  <script type="text/javascript" src="{% static "js/vendor/underscore/underscore-min.js" %}"></script>
+  <script type="text/javascript" src="{% static "js/vendor/angular/angular.min.js" %}"></script>
+  <script type="text/javascript" src="{% static "js/vendor/angular/loading-bar/loading-bar.js" %}"></script>
+  <script type="text/javascript" src="{% static "js/search/metadata.search.js" %}"></script>
+
+  <script type="text/javascript">
+    $(function() {
+    });
+  </script>
+{% endblock extra_js %}

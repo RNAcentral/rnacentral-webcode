@@ -227,8 +227,8 @@ REST_FRAMEWORK = {
 
     # API throttling
     'DEFAULT_THROTTLE_CLASSES': (
-        'rest_framework.throttling.AnonRateThrottle',
-        'rest_framework.throttling.UserRateThrottle'
+        'apiv1.rest_framework_override.throttling.SafeCacheKeyAnonRateThrottle',
+        'apiv1.rest_framework_override.throttling.SafeCacheKeyUserRateThrottle'
     ),
     'DEFAULT_THROTTLE_RATES': {
         'anon': '20/second',
@@ -274,8 +274,11 @@ def get_cache():
         memcached_sock = 'unix:' + memcached_sock
         return {
           'default': {
-            'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+            'BACKEND': 'portal.backends.memcached.MemcachedCache', # custom backend to overcome 1Mb size limit
             'LOCATION': memcached_sock,
+            'OPTIONS': {
+                'SERVER_MAX_VALUE_LENGTH': 1024 * 1024 * 15, # increase size limit to 15Mb
+            }
           }
         }
     else:

@@ -99,6 +99,20 @@ class RnaFlatSerializer(RnaNestedSerializer):
     xrefs = XrefSerializer()
 
 
+class RnaSearchSerializer(serializers.ModelSerializer):
+    """
+    Serializer used for returning metasearch results.
+    """
+    rnacentral_id = serializers.CharField(source='upi')
+    species = serializers.Field(source='count_distinct_organisms')
+    databases = serializers.Field(source='count_distinct_databases')
+    xrefs = serializers.Field(source='count_xrefs')
+
+    class Meta:
+        model = Rna
+        fields = ('rnacentral_id', 'species', 'databases', 'xrefs')
+
+
 class RnaFastaSerializer(serializers.ModelSerializer):
     """
     Serializer for presenting RNA sequences in FASTA format

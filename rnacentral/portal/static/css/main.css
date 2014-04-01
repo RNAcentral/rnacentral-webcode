@@ -26,6 +26,7 @@ Master Stylesheet for the RNAcentral Portal
 5.3 D3 species tree
 5.4 API docs affix
 5.5 Hopscotch walkthrough tour
+5.6 Angular.js
 
 -------------------------------------------------------------------*/
 
@@ -577,4 +578,12 @@ ul.affix-bottom {
 .pulse {
   -webkit-animation-name: pulse;
   animation-name: pulse;
+}
+
+/*------------------------------------------------------------------
+[5.6 Angular.js]
+*/
+/* required to hide Angular templates before they are rendered */
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none !important;
 }
