@@ -17,9 +17,17 @@ limitations under the License.
 
 rnaMetasearch.controller('ResultsListCtrl', function($scope, $http) {
 
-	$scope.query = '9606';
+	$scope.query = {
+					text: 9606,
+					failed: false
+	               };
 
     $scope.submit_query = function() {
+    	if (!$scope.queryForm.$valid) {
+    		$scope.query.failed = true;
+    		return;
+    	}
+    	$scope.query.failed = false;
 		$http.get('/api/v1/search').success(function(data) {
 			$scope.rnas = data;
 		});

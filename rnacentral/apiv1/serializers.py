@@ -110,7 +110,7 @@ class RnaSearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Rna
-        fields = ('rnacentral_id', 'species', 'databases', 'xrefs')
+        fields = ('rnacentral_id', 'species', 'databases', 'xrefs', 'length')
 
 
 class RnaFastaSerializer(serializers.ModelSerializer):
