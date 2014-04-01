@@ -12,7 +12,12 @@ limitations under the License.
 """
 
 """
-Docstrings of the classes exposed in urlpatters support markdown.
+The throttling classes are overriden after a problem with the Ensembl Das system.
+
+The issue was caused by bad Memcached keys
+set by the throttling layer of the RNAcentral API.
+The remote address header and the X_FORWARDED_FOR headers
+were concatenated with a whitespace character, which is not allowed in Memcached keys.
 """
 
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
