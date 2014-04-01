@@ -34,9 +34,32 @@ Search
 
   <div class="row" >
     <div class="col-md-10">
-      <form ng-submit="submit_query()">
+      <form name="queryForm" ng-submit="submit_query()">
+
+<div class="form-group has-error">
+  <label class="control-label" for="inputError1">Input with error</label>
+  <div class="input-group">
+
+    <input type="text" class="form-control" id="inputError1">
+
+            <div class="input-group-btn">
+              <button type="submit" class="btn btn-default" tabindex="2">
+                <span class="glyphicon glyphicon-search"></span>
+              </button>
+            </div><!-- /btn-group -->
+  </div>
+
+</div>
+
+    <span class="error" ng-show="myForm.input.$error.required">Required!</span><br> {# test #}
         <div class="input-group">
-          <input type="text" placeholder="RNAcentral metadata search" class="form-control" id="search" tabindex="1" autofocus="autofocus" ng-model="query">
+          <input type="text"
+                 placeholder="RNAcentral metadata search"
+                 class="form-control"
+                 tabindex="1"
+                 ng-model="user.query"
+                 ng-minlength=5
+                 autofocus required>
           <div class="input-group-btn">
             <button type="submit" class="btn btn-default" tabindex="2">
               <span class="glyphicon glyphicon-search"></span>
