@@ -31,9 +31,8 @@ Search
 <br>
 
 <div ng-app="rnaMetasearch" ng-controller="ResultsListCtrl">
-
   <div class="row" >
-    <div class="col-md-10">
+    <div class="col-md-8">
       <form name="queryForm" ng-submit="submit_query()">
         <div class="form-group" ng-class="(query.failed || queryForm.$dirty && queryForm.text.$error.maxlength) ? 'has-error' : ''">
           <div class="input-group">
@@ -44,15 +43,19 @@ Search
                    name="text"
                    tabindex="1"
                    ng-model="query.text"
-                   ng-minlength=2
-                   ng-maxlength=100
+                   ng-minlength="2"
+                   ng-maxlength="100"
                    autofocus required>
             <div class="input-group-btn">
-              <button type="submit" class="btn btn-default" tabindex="2">
+              <button type="submit" class="btn btn-default btn-primary" tabindex="2">
                 <span class="glyphicon glyphicon-search"></span>
               </button>
             </div><!-- /input-group-btn -->
           </div><!--input-group -->
+          <span class="help-block">
+            Currently only supports searching by taxids.
+            <i>Examples: <a href="#" ng-click="query.text='9606'">human</a>, <a href="#" ng-click="query.text='562'">E.coli</a></i>
+          </span>
           <label class="control-label ng-cloak has-error"
                  for="query-text" ng-show="queryForm.$dirty && queryForm.text.$error.maxlength"
                  ng-cloak>
