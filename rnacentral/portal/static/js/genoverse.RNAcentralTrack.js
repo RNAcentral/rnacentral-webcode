@@ -70,7 +70,15 @@ var genoverseConfig = {
       100000    : false
     }),
     Genoverse.Track.extend({
-      name      : 'Ensembl',
+      name      : 'Ensembl genes',
+      info      : 'Ensembl API genes & transcripts, see <a href="http://beta.rest.ensembl.org/" target="_blank">beta.rest.ensembl.org</a> for more details',
+      resizable : 'auto',
+      labels : true,
+      model  : Genoverse.Track.Model.Gene.Ensembl,
+      view   : Genoverse.Track.View.Gene.Ensembl
+    }),
+    Genoverse.Track.extend({
+      name      : 'Ensembl transcripts',
       info      : 'Ensembl API genes & transcripts, see <a href="http://beta.rest.ensembl.org/" target="_blank">beta.rest.ensembl.org</a> for more details',
       resizable : 'auto',
       labels : true,
