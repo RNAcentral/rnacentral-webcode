@@ -28,7 +28,11 @@ rnaMetasearch.controller('ResultsListCtrl', function($scope, $http) {
     		return;
     	}
     	$scope.query.failed = false;
-		$http.get('/api/v1/search').success(function(data) {
+		$http({
+			url: '/api/v1/search',
+			method: 'GET',
+			params: {taxid: $scope.query.text}
+		}).success(function(data) {
 			$scope.rnas = data;
 		});
     };

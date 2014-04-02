@@ -67,19 +67,17 @@ Search
 
   <div class="row" class="results">
 
-    <h2>
-      Results
-      <small class="ng-cloak" ng-cloak>
-        {% verbatim %}
-          {{ rnas.length }}
-          <ng-pluralize count="rnas.length"
-              when="{'0': '',
-                     '1': 'entry found',
-                     'other': 'entries found'}">
-          </ng-pluralize>
-        {% endverbatim %}
-      </small>
-    </h2>
+
+    <p class="ng-cloak" ng-cloak>
+      {% verbatim %}
+        {{ rnas.length }}
+        <ng-pluralize count="rnas.length"
+            when="{'0': 'No results',
+                   '1': 'entry found',
+                   'other': 'entries found'}">
+        </ng-pluralize>
+      {% endverbatim %}
+    </p>
 
     <div class="col-md-12 ng-cloak" ng-repeat="rna in rnas" ng-cloak>
       {% verbatim %}

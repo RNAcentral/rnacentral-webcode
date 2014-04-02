@@ -43,8 +43,12 @@ class MetaSearch(APIView):
 
         # return Response(self.get_all_md5())
 
-        url = 'http://www.ebi.ac.uk/ena/data/warehouse/search?query=%22tax_eq(9606)%22&domain=noncoding&fields=sequence_md5&display=report&result=noncoding_update&sortfields=sequence_md5&offset=0&limit=100'
-        r = requests.get(url)
+        taxid = request.QUERY_PARAMS['taxid']
+        if not taxid:
+            return Response([])
+
+        url = 'http://www.ebi.ac.uk/ena/data/warehouse/search?query=%22tax_eq({taxid})%22&domain=noncoding&fields=sequence_md5&display=report&result=noncoding_release&sortfields=sequence_md5&offset=0&limit=100'
+        r = requests.get(url.format(taxid=taxid))
         md5s = []
         for i, line in enumerate(r.text.split('\n')):
             if i == 0 or line == '':
