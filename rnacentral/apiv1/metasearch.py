@@ -23,7 +23,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.reverse import reverse
-from apiv1.serializers import RnaSearchSerializer
 import re
 import requests
 
@@ -47,19 +46,30 @@ class MetaSearch(APIView):
         if not taxid:
             return Response([])
 
-        url = 'http://www.ebi.ac.uk/ena/data/warehouse/search?query=%22tax_eq({taxid})%22&domain=noncoding&fields=sequence_md5&display=report&result=noncoding_release&sortfields=sequence_md5&offset=0&limit=100'
+        url = 'http://www.ebi.ac.uk/ena/data/warehouse/search?query=%22tax_eq({taxid})%22&domain=noncoding&fields=sequence_md5,description&display=report&result=noncoding_release&sortfields=sequence_md5&offset=0&limit=30'
         r = requests.get(url.format(taxid=taxid))
         md5s = []
+        descriptions = {}
         for i, line in enumerate(r.text.split('\n')):
             if i == 0 or line == '':
                 continue
-            (accession, md5) = line.split('\t')
+            (accession, md5, description) = line.split('\t')
             md5s.append(md5)
+            descriptions[md5] = description
         md5s = set(md5s)
-        rna = Rna.objects.filter(md5__in=md5s).all()
+        rnas = Rna.objects.filter(md5__in=md5s).all()
 
-        serializer = RnaSearchSerializer(rna)
-        return Response(serializer.data)
+        data = []
+        for rna in rnas:
+            data.append({
+                'rnacentral_id': rna.upi,
+                'species': rna.count_distinct_organisms(),
+                'databases': rna.count_distinct_databases(),
+                'xrefs': rna.count_xrefs(),
+                'description': descriptions[rna.md5],
+            })
+
+        return Response(data)
 
 
     def get_all_md5(self):
