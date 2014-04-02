@@ -27,6 +27,7 @@ Master Stylesheet for the RNAcentral Portal
 5.4 API docs affix
 5.5 Hopscotch walkthrough tour
 5.6 Angular.js
+5.7 Search results
 
 -------------------------------------------------------------------*/
 
@@ -586,4 +587,24 @@ ul.affix-bottom {
 /* required to hide Angular templates before they are rendered */
 [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
   display: none !important;
+}
+
+/*------------------------------------------------------------------
+[5.7 Search results]
+*/
+.result li {
+  margin-bottom: 20px;
+}
+
+.result h3, .result h4 {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.result ul {
+  padding-left: 10px;
+}
+
+.result h3 a {
+  text-decoration: none;
 }
