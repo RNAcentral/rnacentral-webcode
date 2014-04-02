@@ -31,17 +31,10 @@ class SafeCacheKeyAnonRateThrottle(AnonRateThrottle):
     """
 
     def get_cache_key(self, request, view):
-        if request.user.is_authenticated():
-            return None  # Only throttle unauthenticated requests.
-
-        ident = request.META.get('HTTP_X_FORWARDED_FOR')
-        if ident is None:
-            ident = request.META.get('REMOTE_ADDR')
-
-        unsafe_key = self.cache_format % {
-            'scope': self.scope,
-            'ident': ident
-        }
+        """
+        Strip out whitespace from the key.
+        """
+        unsafe_key = super(SafeCacheKeyAnonRateThrottle, self).get_cache_key(request, view)
         return unsafe_key.replace(' ', '')
 
 
@@ -56,13 +49,8 @@ class SafeCacheKeyUserRateThrottle(UserRateThrottle):
     scope = 'user'
 
     def get_cache_key(self, request, view):
-        if request.user.is_authenticated():
-            ident = request.user.id
-        else:
-            ident = request.META.get('REMOTE_ADDR', None)
-
-        unsafe_key = self.cache_format % {
-            'scope': self.scope,
-            'ident': ident
-        }
+        """
+        Strip out whitespace from the key.
+        """
+        unsafe_key = super(SafeCacheKeyUserRateThrottle, self).get_cache_key(request, view)
         return unsafe_key.replace(' ', '')
