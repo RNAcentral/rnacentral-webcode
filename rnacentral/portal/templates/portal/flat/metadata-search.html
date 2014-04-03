@@ -86,45 +86,45 @@ Search
       </p>
     </div>
 
-  <ul  class="list-unstyled ng-cloak" ng-repeat="rna in rnas" ng-cloak>
-    {% verbatim %}
-    <li class="result">
-      <div class="col-md-12">
+    <ul  class="list-unstyled ng-cloak" ng-repeat="rna in rnas" ng-cloak>
+      {% verbatim %}
+      <li class="result">
+        <div class="col-md-12">
 
-        <h4><a href="/rna/{{rna.rnacentral_id}}">{{rna.rnacentral_id}}</a></h4>
+          <h4><a href="/rna/{{rna.rnacentral_id}}">{{rna.rnacentral_id}}</a></h4>
 
-        <h4>{{rna.description}}</h4>
+          <h4>{{rna.description}}</h4>
 
-        <ul class="list-inline small">
-          <li>
-            <i class="fa fa-external-link-square"></i> <strong>{{rna.xrefs}}</strong>
-              <ng-pluralize count="rna.xrefs"
-                  when="{'0': '',
-                         '1': 'annotation',
-                         'other': 'annotations'}">
-              </ng-pluralize>
-          </li>
-          <li>
-            <i class="fa fa-archive"></i> <strong>{{rna.databases}}</strong>
-              <ng-pluralize count="rna.databases"
-                  when="{'0': '',
-                         '1': 'database',
-                         'other': 'databases'}">
-              </ng-pluralize>
-          </li>
-          <li>
-            <i class="fa fa-leaf"></i> <strong>{{rna.species}}</strong> species
-          </li>
-          <li>
-            <i class="fa fa-arrows-h"></i> <strong>{{rna.length}}</strong> nucleotides
-          </li>
-        </ul>
-      </div>
-    </li>
-    {% endverbatim %}
-    </ul>
+          <ul class="list-inline small">
+            <li>
+              <i class="fa fa-external-link-square"></i> <strong>{{rna.xrefs}}</strong>
+                <ng-pluralize count="rna.xrefs"
+                    when="{'0': '',
+                           '1': 'annotation',
+                           'other': 'annotations'}">
+                </ng-pluralize>
+            </li>
+            <li>
+              <i class="fa fa-archive"></i> <strong>{{rna.databases}}</strong>
+                <ng-pluralize count="rna.databases"
+                    when="{'0': '',
+                           '1': 'database',
+                           'other': 'databases'}">
+                </ng-pluralize>
+            </li>
+            <li>
+              <i class="fa fa-leaf"></i> <strong>{{rna.species}}</strong> species
+            </li>
+            <li>
+              <i class="fa fa-arrows-h"></i> <strong>{{rna.length}}</strong> nucleotides
+            </li>
+          </ul>
+        </div>
+      </li>
+      {% endverbatim %}
+      </ul>
 
-    </div>
+    </div><!--/row-->
 
 </div>
 
