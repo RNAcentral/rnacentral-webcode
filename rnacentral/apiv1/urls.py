@@ -16,6 +16,7 @@ from django.views.decorators.cache import cache_page
 from rest_framework.urlpatterns import format_suffix_patterns
 from apiv1 import views
 from apiv1.metasearch import MetaSearch
+from apiv1.sequence_search import SequenceSearch
 
 CACHE_TIMEOUT = 60 * 60 * 24 * 1 # per-view cache timeout in seconds
 
@@ -53,4 +54,5 @@ urlpatterns += patterns('',
 # search
 urlpatterns += patterns('',
     url(r'^search/?$', MetaSearch.as_view(), name='search'),
+    url(r'^sequence-search/?$', SequenceSearch.as_view(), name='sequence-search'),
 )

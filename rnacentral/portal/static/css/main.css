@@ -27,7 +27,8 @@ Master Stylesheet for the RNAcentral Portal
 5.4 API docs affix
 5.5 Hopscotch walkthrough tour
 5.6 Angular.js
-5.7 Search results
+5.7 Metadata search
+5.8 Sequence search
 
 -------------------------------------------------------------------*/
 
@@ -579,6 +580,7 @@ ul.affix-bottom {
 .pulse {
   -webkit-animation-name: pulse;
   animation-name: pulse;
+  -webkit-animation-delay: 0.5s;
 }
 
 /*------------------------------------------------------------------
@@ -590,10 +592,10 @@ ul.affix-bottom {
 }
 
 /*------------------------------------------------------------------
-[5.7 Search results]
+[5.7 Metadata search]
 */
-.result li {
-  margin-bottom: 20px;
+li.result {
+  margin-bottom: 25px;
 }
 
 .result h3, .result h4 {
@@ -607,4 +609,21 @@ ul.affix-bottom {
 
 .result h3 a {
   text-decoration: none;
+}
+
+/*------------------------------------------------------------------
+[5.8 Sequence search]
+*/
+textarea {
+  resize: vertical;
+}
+
+.sequence-search-input button {
+  margin-bottom: 5px;
+}
+
+.result pre {
+  overflow: auto;
+  word-wrap: normal;
+  white-space: pre;
 }

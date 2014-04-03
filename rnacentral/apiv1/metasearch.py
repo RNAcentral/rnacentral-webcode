@@ -11,24 +11,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-"""
-Docstrings of the classes exposed in urlpatters support markdown.
-"""
-
 from django.core.cache import cache
 from portal.models import Rna
-from rest_framework import generics
 from rest_framework import renderers
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
-from rest_framework.reverse import reverse
-import re
 import requests
 
 
 class MetaSearch(APIView):
     """
+    Main class for handling RNAcentral metadata search.
     """
     permission_classes = (AllowAny,)
     renderer_classes = (renderers.JSONRenderer,)

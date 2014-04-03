@@ -47,8 +47,8 @@ Search
                    ng-maxlength="100"
                    autofocus required>
             <div class="input-group-btn">
-              <button type="submit" class="btn btn-default btn-primary" tabindex="2">
-                <span class="glyphicon glyphicon-search"></span>
+              <button type="submit" class="btn btn-primary" tabindex="2">
+                <i class="fa fa-search"></i>
               </button>
             </div><!-- /input-group-btn -->
           </div><!--input-group -->
@@ -66,7 +66,7 @@ Search
     </div><!-- /col-md-10 -->
   </div><!-- /row -->
 
-  <div class="row" class="results">
+  <div class="row">
 
     <div class="col-md-12">
       <p class="small ng-cloak" ng-cloak>
@@ -83,14 +83,14 @@ Search
 
   <ul  class="list-unstyled ng-cloak" ng-repeat="rna in rnas" ng-cloak>
     {% verbatim %}
-    <li>
-      <div class="col-md-12 result">
+    <li class="result">
+      <div class="col-md-12">
 
         <h4><a href="/rna/{{rna.rnacentral_id}}">{{rna.rnacentral_id}}</a></h4>
 
         <h4>{{rna.description}}</h4>
 
-        <ul class="list-inline">
+        <ul class="list-inline small">
           <li>
             <i class="fa fa-external-link-square"></i> <strong>{{rna.xrefs}}</strong>
               <ng-pluralize count="rna.xrefs"
@@ -131,9 +131,4 @@ Search
   <script type="text/javascript" src="{% static "js/vendor/angular/angular.min.js" %}"></script>
   <script type="text/javascript" src="{% static "js/vendor/angular/loading-bar/loading-bar.js" %}"></script>
   <script type="text/javascript" src="{% static "js/search/metadata.search.js" %}"></script>
-
-  <script type="text/javascript">
-    $(function() {
-    });
-  </script>
 {% endblock extra_js %}

@@ -1,0 +1,122 @@
+<!--
+Copyright [2009-2014] EMBL-European Bioinformatics Institute
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+{% extends "portal/base.html" %}
+{% load staticfiles %}
+
+{% block stylesheets %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static "js/vendor/angular/loading-bar/loading-bar.css" %}"/>
+{% endblock %}
+
+{% block title %}
+Sequence search
+{% endblock %}
+
+{% block content %}
+
+<h1>
+  <i class="fa fa-search"></i> Sequence search
+  <small>
+    Local alignment using <a href="http://www.ncbi.nlm.nih.gov/pmc/articles/PMC553969/" target="_blank">Exonerate</a>
+  </small>
+</h1>
+
+<br>
+
+<div ng-app="rnaSequenceSearch" ng-controller="ResultsListCtrl">
+  <div class="row sequence-search-input" >
+      <form name="queryForm" novalidate>
+
+        <div class="col-md-8 form-group" ng-class="(query.failed || queryForm.$dirty && queryForm.sequence.$invalid) ? 'has-error' : ''">
+          <textarea class="form-control"
+                    rows="3"
+                    placeholder="Enter RNA or DNA sequence in fasta or plain text format."
+                    name="sequence"
+                    id="query-sequence"
+                    ng-model="query.sequence"
+                    ng-minlength="12"
+                    ng-required
+                    autofocus></textarea>
+
+            <span class="help-block">
+              <i>Examples: <a ng-click="query.sequence='ACGUTUTUTUTUTUTUU'">human</a>, <a ng-click="query.sequence='> test\nTTTATATCG'">E.coli</a></i>
+            </span>
+
+            <label class="control-label has-error ng-cloak"
+                   for="query-sequence" ng-show="queryForm.$dirty && queryForm.sequence.$error.minlength"
+                   ng-cloak>
+              Your sequence is too short
+            </label>
+        </div>
+
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-primary animated pulse" tabindex="2" ng-click="submit_query()">
+            <i class="fa fa-search"></i>
+            Search
+          </button>
+
+          <button class="btn btn-default" tabindex="3" ng-click="query.sequence=''">
+            <i class="fa fa-trash-o"></i>
+            Clear
+          </button>
+        </div>
+
+      </form><!-- /form -->
+  </div><!-- /row -->
+
+  <div class="row">
+
+    <div class="col-md-10">
+
+      <p class="small ng-cloak" ng-cloak ng-show="alignments">
+        {% verbatim %}
+          {{ alignments.length }}
+          <ng-pluralize count="alignments.length"
+              when="{'0': 'No results',
+                     '1': 'alignment found',
+                     'other': 'alignments found'}">
+          </ng-pluralize>
+        {% endverbatim %}
+      </p>
+
+      <ul  class="list-unstyled ng-cloak" ng-repeat="alignment in alignments" ng-cloak>
+        {% verbatim %}
+        <li class="result">
+          <div>
+
+            <h4><a href="/rna/{{alignment.accession}}">{{alignment.accession}}</a></h4>
+
+            <h4>{{alignment.description}}</h4>
+
+            <pre>{{alignment.alignment}}</pre>
+
+          </div>
+        </li>
+        {% endverbatim %}
+      </ul>
+
+    </div> <!--/col-md-10 -->
+
+  </div><!--/row -->
+
+</div><!--/ng-app -->
+
+{% endblock content %}
+
+{% block extra_js %}
+  {{ block.super }}
+  <script type="text/javascript" src="{% static "js/vendor/angular/angular.min.js" %}"></script>
+  <script type="text/javascript" src="{% static "js/vendor/angular/loading-bar/loading-bar.js" %}"></script>
+  <script type="text/javascript" src="{% static "js/search/sequence.search.js" %}"></script>
+{% endblock extra_js %}
