@@ -18,10 +18,10 @@ from portal import views
 urlpatterns = patterns('',
     # homepage
     url(r'^$', 'portal.views.homepage', name='homepage'),
-    # unique RNA sequence view
-    url(r'^rna/(?P<upi>URS[0-9A-Fa-f]{10})/?$', 'portal.views.rna_view', name='rna_view'),
+    # unique RNA sequence
+    url(r'^rna/(?P<upi>URS[0-9A-Fa-f]{10})/?$', 'portal.views.rna_view', name='unique-rna-sequence'),
     # expert database
-    url(r'^expert-database/(?P<expert_db_name>[-\w]+)/?$', 'portal.views.expert_database_view', name='expert_database'),
+    url(r'^expert-database/(?P<expert_db_name>[-\w]+)/?$', 'portal.views.expert_database_view', name='expert-database'),
     # expert databases
     url(r'^expert-databases/?$', views.StaticView.as_view(), {'page': 'expert-databases'}, name='expert-databases'),
     # metadata search

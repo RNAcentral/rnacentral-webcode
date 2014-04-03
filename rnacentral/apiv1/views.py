@@ -179,7 +179,7 @@ class DasFeatures(APIView):
                     continue
                 coordinates = xref.get_genomic_coordinates()
                 transcript_id = rnacentral_id + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
-                rnacentral_url = request.build_absolute_uri(reverse('rna_view', kwargs={'upi': rnacentral_id}))
+                rnacentral_url = request.build_absolute_uri(reverse('unique-rna-sequence', kwargs={'upi': rnacentral_id}))
                 # exons
                 for i, exon in enumerate(xref.accession.assembly.all()):
                     exon_id = '_'.join([transcript_id, 'exon_' + str(i+1)])

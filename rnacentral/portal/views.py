@@ -125,9 +125,9 @@ def expert_database_view(request, expert_db_name):
         context['first_imported'] = data.order_by('xrefs__timestamp')[0].xrefs.all()[0].timestamp
         context['len_counts'] = data.values('length').annotate(counts=Count('length')).order_by('length')
         context.update(data.aggregate(min_length=Min('length'), max_length=Max('length'), avg_length=Avg('length')))
-        return render_to_response('portal/expert_database.html', {'context': context})
+        return render_to_response('portal/expert-database.html', {'context': context})
     elif expert_db_name == 'coming_soon':
-        return render_to_response('portal/expert_database_coming_soon.html', {'context': context})
+        return render_to_response('portal/expert-database-coming-soon.html', {'context': context})
     else:
         raise Http404()
 
