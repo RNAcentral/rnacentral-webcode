@@ -200,8 +200,7 @@ separate copyright notices and license terms. Your use of the source
 code for the these subcomponents is subject to the terms and
 conditions of the following licenses.
 
-COMPONENT: assets/bootstrap/* and
-           rnacentral/portal/static/fonts/glyphicons*
+COMPONENT: rnacentral/portal/static/vendor/bootstrap/*
 
 These files are part of the Bootstrap project available from http://getbootstrap.com/.
 
