@@ -32,21 +32,25 @@ urlpatterns = patterns('',
 	url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/xrefs/?$', cache_page(CACHE_TIMEOUT)(views.XrefList.as_view()), name='rna-xrefs'),
     # literature citations associated with ENA records
     url(r'^accession/(?P<pk>.*?)/citations/?$', cache_page(CACHE_TIMEOUT)(views.CitationView.as_view()), name='accession-citations'),
-    # view for individual cross-references
+    # view for an individual cross-reference
     # all ENA accessions end with RNA feature name + ordinal
     url(r'^accession/(?P<pk>.*?(RNA|feature)(:\d+)?)/?$', cache_page(CACHE_TIMEOUT)(views.AccessionView.as_view()), name='accession-detail'),
+)
+
+urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'yaml', 'fasta', 'api', 'gff', 'gff3', 'bed'])
+
+# genome coordinates
+urlpatterns += patterns('',
     # Ensembl-like genome coordinates endpoint
     url(r'^feature/region/human/(?P<chromosome>(\d+|Y|X))\:(?P<start>(\d|,)+)-(?P<end>(\d|,)+)/?$',
         cache_page(CACHE_TIMEOUT)(views.GenomeAnnotations.as_view()), name='human-genome-coordinates'),
     # DAS-like endpoints
     url(r'^das(?:/sources)?/?$', cache_page(CACHE_TIMEOUT)(views.DasSources.as_view()), name='das-sources'),
     url(r'^das/RNAcentral_GRCh37/features/?$', cache_page(CACHE_TIMEOUT)(views.DasFeatures.as_view()), name='das-features'),
-	url(r'^das/RNAcentral_GRCh37/stylesheet/?$', cache_page(CACHE_TIMEOUT)(views.DasStylesheet.as_view()), name='das-stylesheet'),
+    url(r'^das/RNAcentral_GRCh37/stylesheet/?$', cache_page(CACHE_TIMEOUT)(views.DasStylesheet.as_view()), name='das-stylesheet'),
 )
 
-urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'yaml', 'fasta', 'api', 'gff', 'gff3', 'bed'])
-
+# search
 urlpatterns += patterns('',
-    # search
     url(r'^search/?$', MetaSearch.as_view(), name='search'),
 )
