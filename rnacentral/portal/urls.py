@@ -24,8 +24,6 @@ urlpatterns = patterns('',
     url(r'^(?P<page>about|thanks|coming-soon|downloads)/?$', views.StaticView.as_view()),
     # help centre
     url(r'^help/?$', views.StaticView.as_view(), {'page': 'help'}, name='help'),
-    # expert databases
-    url(r'^(?P<page>expert-databases)/?$', views.StaticView.as_view(), name='expert_databases'),
     # metadata search
     url(r'^search/?$', views.StaticView.as_view(), {'page': 'metadata-search'}, name='metadata-search'),
     # sequence search
@@ -35,8 +33,10 @@ urlpatterns = patterns('',
     url(r'^api/v2/?$', views.StaticView.as_view(), {'page': 'coming-soon'}, name='api-v2'),
     # contact us
     url(r'^contact/?$', views.ContactView.as_view(), name='contact-us'),
-    # expert databases
+    # expert database
     url(r'^expert-database/(?P<expert_db_name>[-\w]+)/?$', 'portal.views.expert_database_view', name='expert_database'),
+    # expert databases
+    url(r'^expert-databases/?$', views.StaticView.as_view(), {'page': 'expert-databases'}, name='expert-databases'),
     # status page
     url(r'^status/?', 'portal.views.website_status_view', name='website-status'),
 )
