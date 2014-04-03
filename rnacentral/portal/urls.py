@@ -20,24 +20,28 @@ urlpatterns = patterns('',
     url(r'^$', 'portal.views.homepage', name='homepage'),
     # unique RNA sequence view
     url(r'^rna/(?P<upi>URS[0-9A-Fa-f]{10})/?$', 'portal.views.rna_view', name='rna_view'),
-    # flat pages
-    url(r'^(?P<page>about|thanks|coming-soon|downloads)/?$', views.StaticView.as_view()),
-    # help centre
-    url(r'^help/?$', views.StaticView.as_view(), {'page': 'help'}, name='help'),
+    # expert database
+    url(r'^expert-database/(?P<expert_db_name>[-\w]+)/?$', 'portal.views.expert_database_view', name='expert_database'),
+    # expert databases
+    url(r'^expert-databases/?$', views.StaticView.as_view(), {'page': 'expert-databases'}, name='expert-databases'),
     # metadata search
     url(r'^search/?$', views.StaticView.as_view(), {'page': 'metadata-search'}, name='metadata-search'),
     # sequence search
     url(r'^(?P<page>sequence-search)/?$', views.StaticView.as_view(), name='sequence-search'),
+    # flat pages
+    url(r'^(?P<page>thanks|coming-soon)/?$', views.StaticView.as_view()),
+    # downloads
+    url(r'^downloads/?$', views.StaticView.as_view(), {'page': 'downloads'}, name='downloads'),
+    # help centre
+    url(r'^help/?$', views.StaticView.as_view(), {'page': 'help'}, name='help'),
+    # about us
+    url(r'^about-us/?$', views.StaticView.as_view(), {'page': 'about'}, name='about'),
     # API documentation
     url(r'^api/?$', views.StaticView.as_view(), {'page': 'api-docs'}, name='api-docs'),
     url(r'^api/v2/?$', views.StaticView.as_view(), {'page': 'coming-soon'}, name='api-v2'),
     # contact us
     url(r'^contact/?$', views.ContactView.as_view(), name='contact-us'),
-    # expert database
-    url(r'^expert-database/(?P<expert_db_name>[-\w]+)/?$', 'portal.views.expert_database_view', name='expert_database'),
-    # expert databases
-    url(r'^expert-databases/?$', views.StaticView.as_view(), {'page': 'expert-databases'}, name='expert-databases'),
-    # status page
+    # status
     url(r'^status/?', 'portal.views.website_status_view', name='website-status'),
 )
 

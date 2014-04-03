@@ -70,11 +70,11 @@ limitations under the License.
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">API<b class="caret"></b></a>
           <ul class="dropdown-menu">
-            <li><a href="/api/v1">Browsable API</a></li>
-            <li><a href="/api">API Documentation</a></li>
+            <li><a href="{% url 'api-v1-root' %}">Browsable API</a></li>
+            <li><a href="{% url 'api-docs' %}">API Documentation</a></li>
           </ul>
         </li>
-        <li><a href="/downloads">Downloads</a></li>
+        <li><a href="{% url 'downloads' %}">Downloads</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li class="dropdown">
