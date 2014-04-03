@@ -156,7 +156,7 @@ def website_status_view(request):
     context['is_api_up'] = _is_api_up()
     context['is_search_up'] = _is_search_up()
     context['overall_status'] = context['is_database_up'] and context['is_api_up'] and context['is_search_up']
-    return render_to_response('portal/website_status_view.html', {'context': context})
+    return render_to_response('portal/website-status-view.html', {'context': context})
 
 #####################
 # Class-based views #

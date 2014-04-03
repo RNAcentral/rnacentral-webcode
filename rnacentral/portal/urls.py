@@ -25,18 +25,18 @@ urlpatterns = patterns('',
     # expert databases
     url(r'^(?P<page>expert-databases)/?$', views.StaticView.as_view(), name='expert_databases'),
     # metadata search
-    url(r'^(?P<page>search)/?$', views.StaticView.as_view(), name='search'),
+    url(r'^search/?$', views.StaticView.as_view(), {'page': 'metadata-search'}, name='metadata-search'),
     # sequence search
     url(r'^(?P<page>sequence-search)/?$', views.StaticView.as_view(), name='sequence-search'),
     # API documentation
     url(r'^api/?$', views.StaticView.as_view(), {'page': 'api-docs'}, name='api-docs'),
-    url(r'^api/v2/?$', views.StaticView.as_view(), {'page': 'coming-soon'}, name='api_v2'),
+    url(r'^api/v2/?$', views.StaticView.as_view(), {'page': 'coming-soon'}, name='api-v2'),
     # contact us
     url(r'^contact/?$', views.ContactView.as_view(), name='contact-us'),
     # expert databases
     url(r'^expert-database/(?P<expert_db_name>[-\w]+)/?$', 'portal.views.expert_database_view', name='expert_database'),
     # status page
-    url(r'^status/?', 'portal.views.website_status_view'),
+    url(r'^status/?', 'portal.views.website_status_view', name='website-status'),
 )
 
 # internal API

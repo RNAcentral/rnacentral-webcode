@@ -14,14 +14,14 @@ limitations under the License.
 {% extends "portal/base.html" %}
 
 {% block title %}
-RNAcentral Website Status
+Website Status
 {% endblock %}
 
 
 {% block content %}
 
 <h1>
-  RNAcentral Website Status
+Website Status
 </h1>
 
 <div class="row">
@@ -29,9 +29,9 @@ RNAcentral Website Status
   <div class="col-md-6">
 
     <p>
-      We continuously monitor the status of <a href="http://rnacentral.org">rnacentral.org</a> and its related services.
+      We continuously monitor the status of <a href="/">rnacentral.org</a> and its related services.
       If any problems are detected, a notice will appear on this page.
-      Please email <a href="mailto:helpdesk@rnacentral.org?subject=Service%20Interruption">helpdesk@rnacentral.org</a>
+      Please <a href="{% url 'contact-us' %}">contact us</a>
       if you are experiencing problems not reflected here.
     </p>
 
@@ -81,4 +81,3 @@ RNAcentral Website Status
 </div>
 
 {% endblock content %}
-
