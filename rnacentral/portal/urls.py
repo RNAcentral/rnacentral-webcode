@@ -22,7 +22,6 @@ urlpatterns = patterns('',
     url(r'^rna/(?P<upi>URS[0-9A-Fa-f]{10})/?$', 'portal.views.rna_view', name='rna_view'),
     # flat pages
     url(r'^(?P<page>about|help|thanks|coming-soon|downloads)/?$', views.StaticView.as_view()),
-    url(r'^docs/(?P<page>genome-browsers)/?$', views.StaticView.as_view()),
     # expert databases
     url(r'^(?P<page>expert-databases)/?$', views.StaticView.as_view(), name='expert_databases'),
     # metadata search
