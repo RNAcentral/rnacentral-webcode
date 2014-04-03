@@ -57,7 +57,7 @@ def get_xrefs_data(request, upi):
         rna = Rna.objects.get(upi=upi)
     except Rna.DoesNotExist:
         raise Http404
-    return render(request, 'portal/xref_table.html', {'context': {'rna': rna}})
+    return render(request, 'portal/xref-table.html', {'context': {'rna': rna}})
 
 
 @cache_page(CACHE_TIMEOUT)
@@ -104,7 +104,7 @@ def rna_view(request, upi):
         }
     except Rna.DoesNotExist:
         raise Http404
-    return render(request, 'portal/rna_view.html', {'rna': rna, 'context': context})
+    return render(request, 'portal/unique-rna-sequence.html', {'rna': rna, 'context': context})
 
 
 @cache_page(CACHE_TIMEOUT)
@@ -156,7 +156,7 @@ def website_status_view(request):
     context['is_api_up'] = _is_api_up()
     context['is_search_up'] = _is_search_up()
     context['overall_status'] = context['is_database_up'] and context['is_api_up'] and context['is_search_up']
-    return render_to_response('portal/website-status-view.html', {'context': context})
+    return render_to_response('portal/website-status.html', {'context': context})
 
 #####################
 # Class-based views #
