@@ -12,16 +12,12 @@ limitations under the License.
 """
 
 from django.conf.urls import patterns, url, include
-from django.contrib import admin
 from django.views.generic import TemplateView
 
-admin.autodiscover()
 
 urlpatterns = patterns('',
     # RNAcentral portal
     url(r'', include('portal.urls')),
-    # admin
-    url(r'^admin/?', include(admin.site.urls)),
     # REST API (use trailing slashes)
     url(r'^api/v1/', include('apiv1.urls')),
     # robots.txt
