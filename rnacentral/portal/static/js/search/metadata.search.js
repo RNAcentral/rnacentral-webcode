@@ -17,24 +17,24 @@ limitations under the License.
 
 rnaMetasearch.controller('ResultsListCtrl', function($scope, $http) {
 
-	$scope.query = {
-		text: '',
-		failed: false
-	};
+    $scope.query = {
+        text: '',
+        submitted: false
+    };
 
     $scope.submit_query = function() {
-    	if (!$scope.queryForm.$valid) {
-    		$scope.query.failed = true;
-    		return;
-    	}
-    	$scope.query.failed = false;
-		$http({
-			url: '/api/v1/search',
-			method: 'GET',
-			params: {taxid: $scope.query.text}
-		}).success(function(data) {
-			$scope.rnas = data;
-		});
+        $scope.query.submitted = true;
+        if ($scope.queryForm.$invalid) {
+            return;
+        }
+        $http({
+            url: '/api/v1/search',
+            method: 'GET',
+            params: {taxid: $scope.query.text}
+        }).success(function(data) {
+            $scope.rnas = data;
+            $scope.query.submitted = false;
+        });
     };
 
 });

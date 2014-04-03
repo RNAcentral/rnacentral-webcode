@@ -33,8 +33,8 @@ Search
 <div ng-app="rnaMetasearch" ng-controller="ResultsListCtrl">
   <div class="row" >
     <div class="col-md-8">
-      <form name="queryForm" ng-submit="submit_query()">
-        <div class="form-group" ng-class="(query.failed || queryForm.$dirty && queryForm.text.$error.maxlength) ? 'has-error' : ''">
+      <form novalidate name="queryForm" ng-submit="submit_query()">
+        <div class="form-group" ng-class="(query.submitted && queryForm.$invalid) ? 'has-error' : ''">
           <div class="input-group">
             <input type="text"
                    placeholder="RNAcentral metadata search"
@@ -57,7 +57,12 @@ Search
             <i>Examples: <a href="#" ng-click="query.text='9606'">human</a>, <a href="#" ng-click="query.text='562'">E.coli</a></i>
           </span>
           <label class="control-label ng-cloak has-error"
-                 for="query-text" ng-show="queryForm.$dirty && queryForm.text.$error.maxlength"
+                 for="query-text" ng-show="query.submitted && (queryForm.text.$error.required || queryForm.text.$error.minlength)"
+                 ng-cloak>
+            Your query is too short
+          </label>
+          <label class="control-label ng-cloak"
+                 for="query-text" ng-show="query.submitted && (queryForm.text.$error.maxlength)"
                  ng-cloak>
             Your query is too long
           </label>
