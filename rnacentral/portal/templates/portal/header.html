@@ -23,23 +23,47 @@ limitations under the License.
         <a href="/"><img src="{% static "img/logo/RNAcentral_logo.png" %}" alt="RNAcentral logo" class="rnacentral-header-logo"></a>
       </div>
 
-      <div class="col-md-8 col-md-offset-1">
-        <form name="rnacentral-search" method="post" class="global-search">
+      <div class="col-md-8 col-md-offset-1" ng-controller="QueryCtrl">
 
+        <form novalidate name="queryForm" class="global-search" ng-submit="submit_query()">
           <fieldset>
+          <div class="form-group" ng-class="(query.submitted && queryForm.$invalid) ? 'has-error' : ''">
             <div class="input-group">
-              <input type="text" placeholder="Search is under development" class="form-control" id="search" tabindex=1 disabled>
+              <input type="text"
+                     placeholder="RNAcentral metadata search"
+                     class="form-control"
+                     id="query-text"
+                     name="text"
+                     tabindex="1"
+                     ng-model="query.text"
+                     ng-minlength="2"
+                     ng-maxlength="100"
+                     autocomplete="off"
+                     autofocus required>
               <div class="input-group-btn">
-                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-search"></span> <span class="caret"></span></button>
-                <ul class="dropdown-menu pull-right">
-                  <li><a href="#">Advanced search</a></li>
-                  <li><a href="#">Search Help</a></li>
-                </ul>
-              </div><!-- /btn-group -->
-            </div><!-- /input-group -->
+                <button type="submit" class="btn btn-primary" tabindex="2">
+                  <i class="fa fa-search"></i>
+                </button>
+              </div><!-- /input-group-btn -->
+            </div><!--input-group -->
+            <span class="help-block">
+              Currently only supports searching by taxids.
+              <i>Examples: <a ng-click="search('9606')">human</a>, <a ng-click="search('562')">E.coli</a></i>
+            </span>
+            <label class="control-label ng-cloak has-error"
+                   for="query-text" ng-show="query.submitted && (queryForm.text.$error.required || queryForm.text.$error.minlength)"
+                   ng-cloak>
+              Your query is too short
+            </label>
+            <label class="control-label ng-cloak"
+                   for="query-text" ng-show="query.submitted && (queryForm.text.$error.maxlength)"
+                   ng-cloak>
+              Your query is too long
+            </label>
+          </div><!-- /form-group -->
           </fieldset>
+        </form><!-- /form -->
 
-        </form>
       </div>
     </div>
     <!-- /local-search -->
@@ -57,7 +81,7 @@ limitations under the License.
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-left">
         <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Expert databases<b class="caret"></b></a>
+          <a class="dropdown-toggle" data-toggle="dropdown">Expert databases<b class="caret"></b></a>
           <ul class="dropdown-menu">
             <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='mirbase' %}">miRBase</a></li>
             <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='srpdb' %}">SRPDB</a></li>
@@ -68,7 +92,7 @@ limitations under the License.
           </ul>
         </li>
         <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">API<b class="caret"></b></a>
+          <a class="dropdown-toggle" data-toggle="dropdown">API<b class="caret"></b></a>
           <ul class="dropdown-menu">
             <li><a href="{% url 'api-v1-root' %}">Browsable API</a></li>
             <li><a href="{% url 'api-docs' %}">API Documentation</a></li>

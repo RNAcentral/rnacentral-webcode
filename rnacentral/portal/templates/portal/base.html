@@ -25,6 +25,7 @@ limitations under the License.
           <meta name="description" content="">
           <meta name="viewport" content="width=device-width">
         {% endblock meta_tags %}
+        <base href="/">
 
         <title>
             {% block title %} RNAcentral {% endblock %}
@@ -44,6 +45,7 @@ limitations under the License.
             <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/karyotype.css" %}">
             <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/resizer.css" %}">
             <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/trackControls.css" %}">
+            <link rel="stylesheet" type="text/css" href="{% static "js/vendor/angular/loading-bar/loading-bar.css" %}"/>
           {% endblock stylesheets %}
         {% endcompress %}
 
@@ -68,7 +70,7 @@ limitations under the License.
         {% block extra_head %}{% endblock %}
     </head>
 
-    <body class="level2">
+    <body class="level2" ng-app="rnacentralApp">
         <!--[if lt IE 7]>
             <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a></li> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a></li> to improve your experience.</p>
         <![endif]-->
@@ -84,7 +86,11 @@ limitations under the License.
                 Javasript is currently disabled or is not supported by this browser. Please enable JavaScript for full functionality.
               </div>
             </noscript>
-            {% block content %}{% endblock %}
+
+            <div ng-show="!show_results" ng-controller="MainContent">
+              {% block content %}{% endblock %}
+            </div>
+            {% include "portal/search_results.html" %}
           </div>
 
           <footer>
@@ -99,10 +105,13 @@ limitations under the License.
 
         {% compress js %}
           {% block extra_js %}
-            <script src="{% static "js/vendor/jquery-1.10.1.min.js" %}"></script>
-            <script src="{% static "js/vendor/bootstrap/js/bootstrap.min.js" %}"></script>
-            <script src="{% static "js/vendor/hopscotch/js/hopscotch.js" %}"></script>
-            <script src="{% static "js/main.js" %}"></script>
+            <script type="text/javascript" src="{% static "js/vendor/jquery-1.10.1.min.js" %}"></script>
+            <script type="text/javascript" src="{% static "js/vendor/bootstrap/js/bootstrap.min.js" %}"></script>
+            <script type="text/javascript" src="{% static "js/vendor/hopscotch/js/hopscotch.js" %}"></script>
+            <script type="text/javascript" src="{% static "js/vendor/angular/angular.min.js" %}"></script>
+            <script type="text/javascript" src="{% static "js/vendor/angular/loading-bar/loading-bar.js" %}"></script>
+            <script type="text/javascript" src="{% static "js/search/metadata.search.js" %}"></script>
+
             <script>
                 $(function() {
                   // record javascript errors for selenium

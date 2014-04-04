@@ -13,28 +13,113 @@ limitations under the License.
 
 // RNAcentral metasearch app.
 
-;var rnaMetasearch = angular.module('rnaMetasearch', ['chieffancypants.loadingBar']);
+;var rnaMetasearch = angular.module('rnacentralApp', ['chieffancypants.loadingBar']);
 
-rnaMetasearch.controller('ResultsListCtrl', function($scope, $http) {
+rnaMetasearch.config(['$locationProvider', function($locationProvider) {
+    $locationProvider.html5Mode(true);
+}]);
+
+rnaMetasearch.service('results', function() {
+    var rnas = [];
+    var show_results = false;
+
+    return {
+        get_status: function() {
+            return show_results;
+        },
+        set_status: function() {
+            show_results = true;
+        },
+        store: function(data) {
+            rnas = data;
+        },
+        get: function() {
+            return rnas;
+        }
+    }
+});
+
+rnaMetasearch.controller('MainContent', function($scope, results) {
+
+    $scope.$watch(function () { return results.get_status(); }, function (newValue, oldValue) {
+        if (newValue != null) {
+            $scope.show_results= newValue;
+           }
+    });
+});
+
+rnaMetasearch.controller('ResultsListCtrl', function($scope, results) {
+
+    $scope.rnas = results.get();
+    $scope.show_results = results.get_status();
+
+    $scope.$watch(function () { return results.get(); }, function (newValue, oldValue) {
+        if (newValue != null) {
+            $scope.rnas= newValue;
+           }
+    });
+
+    $scope.$watch(function () { return results.get_status(); }, function (newValue, oldValue) {
+        if (newValue != null) {
+            $scope.show_results= newValue;
+           }
+    });
+
+});
+
+rnaMetasearch.controller('QueryCtrl', function($scope, $http, $location, results) {
 
     $scope.query = {
         text: '',
         submitted: false
     };
 
-    $scope.submit_query = function() {
-        $scope.query.submitted = true;
-        if ($scope.queryForm.$invalid) {
-            return;
-        }
+    $scope.show_results = false;
+    $scope.store_data = results.store;
+    $scope.set_status = results.set_status;
+
+    // watch url changes to perform a new search
+    // TODO resolve conflict with anchor tag navigation and bootstrap tabs
+    $scope.$watch(function () { return $location.url(); }, function (newUrl, oldUrl) {
+
+    	// TODO: initialize the search when going to a search url
+    	// this function only executes on url update
+
+         // a regular non-search url, potentially unchanged
+         if (newUrl !== oldUrl) {
+            if (newUrl.indexOf('search') !== -1) {
+                // already a search result page, launch a new search
+                $scope.query.text = $location.search().q;
+                 $scope.search($location.search().q);
+             } else {
+                 console.log('About to redirect ' + window.location.pathname);
+                 window.location.href = newUrl;
+             }
+         }
+    });
+
+    $scope.search = function(query) {
+        $scope.query.text = query;
+        $scope.show_results = true;
+        $scope.set_status();
+        $location.url('/search' + '?q=' + query);
         $http({
             url: '/api/v1/search',
             method: 'GET',
             params: {taxid: $scope.query.text}
         }).success(function(data) {
-            $scope.rnas = data;
+            $scope.store_data(data);
             $scope.query.submitted = false;
         });
+    }
+
+    $scope.submit_query = function() {
+        $scope.query.submitted = true;
+        if ($scope.queryForm.text.$invalid) {
+            return;
+        }
+
+        $scope.search($scope.query.text);
     };
 
 });
