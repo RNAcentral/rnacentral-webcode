@@ -42,7 +42,7 @@ urlpatterns = patterns('',
     # contact us
     url(r'^contact/?$', views.ContactView.as_view(), name='contact-us'),
     # status
-    url(r'^status/?', 'portal.views.website_status_view', name='website-status'),
+    url(r'^status/?$', 'portal.views.website_status_view', name='website-status'),
 )
 
 # internal API
