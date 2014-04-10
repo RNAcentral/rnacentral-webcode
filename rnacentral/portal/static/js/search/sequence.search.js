@@ -11,11 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// RNAcentral metasearch app.
+// RNAcentral sequence search
 
-;var rnaSequenceSearch = angular.module('rnaSequenceSearch', ['chieffancypants.loadingBar']);
-
-rnaSequenceSearch.controller('ResultsListCtrl', function($scope, $http) {
+;rnaMetasearch.controller('SeqResultsListCtrl', function($scope, $http) {
 
 	$scope.query = {
 		sequence: '',
@@ -24,7 +22,7 @@ rnaSequenceSearch.controller('ResultsListCtrl', function($scope, $http) {
 	$scope.alignments = [];
 
     $scope.submit_query = function() {
-    	if (!$scope.queryForm.$valid) {
+    	if (!$scope.seqQueryForm.$valid) {
     		$scope.query.failed = true;
     		return;
     	}

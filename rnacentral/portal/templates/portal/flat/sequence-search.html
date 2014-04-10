@@ -14,11 +14,6 @@ limitations under the License.
 {% extends "portal/base.html" %}
 {% load staticfiles %}
 
-{% block stylesheets %}
-    {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static "js/vendor/angular/loading-bar/loading-bar.css" %}"/>
-{% endblock %}
-
 {% block title %}
 Sequence search
 {% endblock %}
@@ -34,11 +29,12 @@ Sequence search
 
 <br>
 
-<div ng-app="rnaSequenceSearch" ng-controller="ResultsListCtrl">
-  <div class="row sequence-search-input" >
-      <form name="queryForm" novalidate>
+<div ng-controller="SeqResultsListCtrl">
 
-        <div class="col-md-8 form-group" ng-class="(query.failed || queryForm.$dirty && queryForm.sequence.$invalid) ? 'has-error' : ''">
+  <div class="row sequence-search-input" >
+      <form name="seqQueryForm" novalidate>
+
+        <div class="col-md-8 form-group" ng-class="(query.failed || seqQueryForm.$dirty && seqQueryForm.sequence.$invalid) ? 'has-error' : ''">
           <textarea class="form-control"
                     rows="3"
                     placeholder="Enter RNA or DNA sequence in fasta or plain text format."
@@ -54,7 +50,7 @@ Sequence search
             </span>
 
             <label class="control-label has-error ng-cloak"
-                   for="query-sequence" ng-show="queryForm.$dirty && queryForm.sequence.$error.minlength"
+                   for="query-sequence" ng-show="seqQueryForm.$dirty && seqQueryForm.sequence.$error.minlength"
                    ng-cloak>
               Your sequence is too short
             </label>
@@ -110,13 +106,11 @@ Sequence search
 
   </div><!--/row -->
 
-</div><!--/ng-app -->
+</div><!--/ng-controller -->
 
 {% endblock content %}
 
 {% block extra_js %}
   {{ block.super }}
-  <script type="text/javascript" src="{% static "js/vendor/angular/angular.min.js" %}"></script>
-  <script type="text/javascript" src="{% static "js/vendor/angular/loading-bar/loading-bar.js" %}"></script>
   <script type="text/javascript" src="{% static "js/search/sequence.search.js" %}"></script>
 {% endblock extra_js %}
