@@ -25,8 +25,15 @@ class SequenceSearchError(Exception):
     def __init__(self, message):
         self.message = message
 
-    def __str__(self):
-        return repr(self.message)
+
+class ResultsUnavailableError(Exception):
+    """
+    An exception class raised when search results are not available
+    or have expired.
+    """
+    def __init__(self):
+        self.message = ('Results not available or expired. '
+                        'Please repeat the search')
 
 
 class ENASequenceSearchClient(object):
@@ -54,6 +61,7 @@ class ENASequenceSearchClient(object):
                                   'collection=' + collection,
             'status':  base_url + '/searchStatus?job_id={job_id}',
             'results': base_url + '/searchResults?job_id={job_id}&'
+                                  'length={length}&offset={offset}&'
                                   'fields=' + ','.join(self.field_names),
         }
         # ENA minimum word size that can be searched
@@ -208,35 +216,38 @@ class ENASequenceSearchClient(object):
         else:
             return 'In progress'
 
-    def get_results(self, job_id, jsession_id):
+    def get_results(self, job_id, jsession_id, length=10, offset=0):
         """
-        Retrieve job results in tab delimited format.
+        Retrieve job results in json format.
         """
-        results = ''
+        def format_results(results):
+            """
+            Convert results from tab-delimited to json format.
+            """
+            data = []
+            for line in results.split('\n'):
+                if line == '':
+                    continue
+                fields = line.split('\t')
+                entry = {}
+                for i, field in enumerate(fields):
+                    entry[self.field_names[i]] = field
+                data.append(entry)
+            return data
+
+        results = []
         try:
-            r = requests.get(self.endpoints['results'].format(job_id=job_id),
-                             cookies={self.JSESSIONID: jsession_id})
+            url = self.endpoints['results'].format(job_id=job_id,
+                                                   offset=offset,
+                                                   length=length)
+            r = requests.get(url, cookies={self.JSESSIONID: jsession_id})
         except RequestException, exc:
             print 'Results could not be retrieved: ' + exc.message
         else:
-            print r.text
-            results = r.text
+            if r.status_code == 500:
+                raise ResultsUnavailableError()
+            results = format_results(r.text)
         return results
-
-    def format_results(self, results):
-        """
-        Convert results to json.
-        """
-        data = []
-        for line in results.split('\n'):
-            if line == '':
-                continue
-            fields = line.split('\t')
-            entry = {}
-            for i, field in enumerate(fields):
-                entry[self.field_names[i]] = field
-            data.append(entry)
-        return data
 
     def search(self, sequence=''):
         """
@@ -247,9 +258,7 @@ class ENASequenceSearchClient(object):
         while status != 'Done':
             time.sleep(self.refresh_rate)
             status = self.get_status(job_id, jsession_id)
-        tsv_results = self.get_results(job_id, jsession_id)
-        json_results = self.format_results(tsv_results)
-        results = json_results
-        for entry in json_results:
+        results = self.get_results(job_id, jsession_id)
+        for entry in results:
             print entry
         return results

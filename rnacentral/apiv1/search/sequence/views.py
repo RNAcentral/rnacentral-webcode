@@ -11,12 +11,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from django.utils.datastructures import MultiValueDictKeyError
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
 from apiv1.search.sequence.rest_client import ENASequenceSearchClient, \
-    SequenceSearchError
+    SequenceSearchError, ResultsUnavailableError
 
 
 @api_view(['GET'])
@@ -130,8 +131,55 @@ def get_status(request):
 @api_view(['GET'])
 @permission_classes((AllowAny,))
 def get_results(request):
-    pass
+    """
+    Get query results given a `job_id` and a `jsession_id`.
 
+    The results set can be paginated over using the
+    `page_size` and `page` query parameters.
 
+    Status codes:
+    * 400 - no input parameters
+    * 404 - results unavailable or expired
+    * 500 - internal error
+    """
+    # default return values
+    results = []
+    message = ''
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
 
+    # optional pagination parameters
+    page_number = int(request.QUERY_PARAMS.get('page', 1))
+    page_size = int(request.QUERY_PARAMS.get('page_size', 10))
+    # convert to length/offset pagination
+    length = page_size
+    offset = page_size * (page_number - 1)
+    offset += 1 # TODO: remove when the ENA offset bug is fixed
 
+    try:
+        job_id = request.QUERY_PARAMS['job_id']
+        jsession_id = request.QUERY_PARAMS['jsession_id']
+    except MultiValueDictKeyError:
+        message = '`job_id` and `jsession_id` query parameters are required'
+        status_code = status.HTTP_400_BAD_REQUEST
+    else:
+        client = ENASequenceSearchClient()
+        try:
+            results = client.get_results(job_id, jsession_id, length, offset)
+        except SequenceSearchError as exc:
+            message = exc.message
+            status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        except ResultsUnavailableError as exc:
+            message = exc.message
+            status_code = status.HTTP_404_NOT_FOUND
+        except Exception:
+            message = 'Unknown error'
+            status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        else:
+            message = 'OK'
+            status_code = status.HTTP_200_OK
+
+    data = {
+        'results': results,
+        'message': message
+    }
+    return Response(data, status=status_code)
