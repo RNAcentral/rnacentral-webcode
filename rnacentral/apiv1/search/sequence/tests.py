@@ -115,8 +115,7 @@ class SubmitAPITest(RNAcentralAPITestBaseClass):
     def test_sequence_submit_success(self):
         r = self._submit_sequence(self.sequence)
         self.assertEqual(r.status_code, 200)
-        self.assertTrue('job_id' in r.json())
-        self.assertTrue('jsession_id' in r.json())
+        self.assertTrue('url' in r.json())
 
     def test_sequence_submit_empty(self):
         url = self._get_api_url('submit')
@@ -150,6 +149,7 @@ class StatusAPITest(RNAcentralAPITestBaseClass):
         r = self._check_status(data['job_id'], data['jsession_id'])
         data = r.json()
         self.assertEqual(r.status_code, 200)
+        self.assertTrue('url' in data)
         self.assertIn(data['status'], ['In progress', 'Done'])
         self.assertNotEqual(data['status'], 'Failed')
 
