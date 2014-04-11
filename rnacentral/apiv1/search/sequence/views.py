@@ -93,7 +93,7 @@ def submit(request):
             message = e.message
             code = status.HTTP_500_INTERNAL_SERVER_ERROR
         else:
-            message = 'Query successfully submitted'
+            message = 'OK'
             code = status.HTTP_200_OK
             url = request.build_absolute_uri(
                 reverse('apiv1.search.sequence.views.get_status') +
@@ -110,8 +110,13 @@ def submit(request):
 @permission_classes((AllowAny,))
 def get_status(request):
     """
-    Check the query status using `job_id` and `jsession_id`
-    query parameters.
+    Check the query status using `job_id` and `jsession_id` query parameters.
+
+    Status codes:
+
+    * 200 - query 'Done' or 'In progress' depending on the `message` value
+    * 400 - bad input parameters
+    * 500 - internal error
 
     Returns a status `message` and a `status` code, which can be:
 
@@ -138,7 +143,7 @@ def get_status(request):
             message = e.message
             code = status.HTTP_500_INTERNAL_SERVER_ERROR
         else:
-            message = 'No errors'
+            message = 'OK'
             code = status.HTTP_200_OK
             url = request.build_absolute_uri(
                 reverse('apiv1.search.sequence.views.get_results') +
@@ -159,15 +164,20 @@ def get_results(request):
     """
     Get query results given a `job_id` and a `jsession_id`.
 
-    The results set can be paginated over using the
+    The results set can be paginated over using
     `page_size` and `page` query parameters.
 
     Status codes:
 
-    * 200 - empty or non-empty results
-    * 400 - no input parameters
+    * 200 - results ready
+    * 400 - bad input parameters
     * 404 - results unavailable or expired
     * 500 - internal error
+
+    Return values:
+
+    * results - list of dictionaries or an empty list
+    * message - status or error message.
     """
     # default return values
     results = []
