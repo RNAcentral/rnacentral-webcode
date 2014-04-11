@@ -20,20 +20,27 @@ import time
 
 class SequenceSearchError(Exception):
     """
-    An exception class for sequence search error handling.
+    A default exception class for sequence search error handling.
     """
-    def __init__(self, message):
+    def __init__(self, message='Internal error'):
         self.message = message
 
 
 class ResultsUnavailableError(Exception):
     """
-    An exception class raised when search results are not available
-    or have expired.
+    An exception raised when search results are not available or have expired.
     """
     def __init__(self):
         self.message = ('Results not available or expired. '
                         'Please repeat the search')
+
+
+class InvalidSequenceError(Exception):
+    """
+    An exception raised when the sequence is not valid.
+    """
+    def __init__(self):
+        self.message = 'Invalid sequence'
 
 
 class ENASequenceSearchClient(object):
@@ -75,13 +82,16 @@ class ENASequenceSearchClient(object):
         # get logger instance
         self.logger = logging.getLogger(__name__)
 
-    def __raise_error(self, message):
+    def __raise_error(self, message='', exception_class=SequenceSearchError):
         """
         Internal method for error reporting.
-        Raise the error after logging the message.
+        Raise an error after logging the message.
         """
-        self.logger.error(message)
-        raise SequenceSearchError(message)
+        if message:
+            self.logger.error(message)
+            raise exception_class(message)
+        else:
+            raise exception_class()
 
     def submit_query(self, sequence):
         """
@@ -118,7 +128,7 @@ class ENASequenceSearchClient(object):
             except RequestException, exc:
                 message = 'Query could not be submitted: {error}'.\
                           format(error=exc.message)
-                self.__raise_error(message)
+                self.__raise_error(message=message)
 
         def validate_response(text):
             """
@@ -127,7 +137,7 @@ class ENASequenceSearchClient(object):
             if 'Tomcat' in text:
                 message = 'Tomcat error instead of status url: {error}'.\
                           format(error=text)
-                self.__raise_error(message)
+                self.__raise_error(message=message)
 
         def get_job_id(status_url):
             """
@@ -140,7 +150,7 @@ class ENASequenceSearchClient(object):
             else:
                 message = 'Job id not found in url {status_url}'.\
                           format(status_url=status_url)
-                self.__raise_error(message)
+                self.__raise_error(message=message)
 
         def get_jsession_id(cookies):
             """
@@ -151,7 +161,7 @@ class ENASequenceSearchClient(object):
                 return cookies[self.JSESSIONID]
             else:
                 message = 'Session id not found'
-                self.__raise_error(message)
+                self.__raise_error(message=message)
 
         sequence = format_sequence(sequence)
         if is_valid_sequence(sequence):
@@ -160,7 +170,7 @@ class ENASequenceSearchClient(object):
             job_id = get_job_id(response.text)
             jsession_id = get_jsession_id(response.cookies)
         else:
-            self.__raise_error('Invalid sequence')
+            self.__raise_error(exception_class=InvalidSequenceError)
         return (job_id, jsession_id)
 
     def get_status(self, job_id, jsession_id):
@@ -195,7 +205,7 @@ class ENASequenceSearchClient(object):
             if attempt > RETRY_ATTEMPTS:
                 message = 'Getting status failed after {attempt} attempts'.\
                           format(attempt=attempt)
-                self.__raise_error(message)
+                self.__raise_error(message=message)
             else:
                 return response.text
 
@@ -206,7 +216,7 @@ class ENASequenceSearchClient(object):
             """
             if 'not found in session' in status_string:
                 message = 'Job could not be found'
-                self.__raise_error(message)
+                self.__raise_error(message=message)
 
         def get_results_count(status_string):
             """
@@ -219,7 +229,7 @@ class ENASequenceSearchClient(object):
             else:
                 message = 'Results count not found in {status_string}'.\
                           format(status_string=status_string)
-                self.__raise_error(message)
+                self.__raise_error(message=message)
 
         status_string = get_status_string()
         validate_response(status_string)

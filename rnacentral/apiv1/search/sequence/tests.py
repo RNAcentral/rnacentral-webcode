@@ -26,7 +26,8 @@ python apiv1/search/sequence/tests.py --base_url=http://test.rnacentral.org
 import requests
 import time
 import unittest
-from rest_client import ENASequenceSearchClient, SequenceSearchError
+from rest_client import ENASequenceSearchClient, SequenceSearchError, \
+                        InvalidSequenceError
 
 
 class ENASequenceSearchTest(unittest.TestCase):
@@ -51,7 +52,6 @@ class ENASequenceSearchTest(unittest.TestCase):
     	"""
         sequence = self.sequences['multiple_hits']
         data = self.client.search(sequence)
-        print data
         self.assertTrue(len(data) > 0)
         self.assertTrue(isinstance(data[0]['accession'], unicode))
         self.assertTrue(len(data[0]['accession']) > 0)
@@ -69,7 +69,7 @@ class ENASequenceSearchTest(unittest.TestCase):
     	Should raise an error.
     	"""
         sequence = self.sequences['too_short']
-        with self.assertRaises(SequenceSearchError) as context_manager:
+        with self.assertRaises(InvalidSequenceError) as context_manager:
             self.client.submit_query(sequence)
         exc = context_manager.exception
         self.assertEqual(exc.message, 'Invalid sequence')

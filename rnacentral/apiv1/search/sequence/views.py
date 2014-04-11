@@ -18,7 +18,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
 from apiv1.search.sequence.rest_client import ENASequenceSearchClient, \
-    SequenceSearchError, ResultsUnavailableError
+    SequenceSearchError, ResultsUnavailableError, InvalidSequenceError
 
 
 @api_view(['GET'])
@@ -62,8 +62,18 @@ def search(request):
 @permission_classes((AllowAny,))
 def submit(request):
     """
-    Submit a sequence and get `job_id` and `jsession_id`
-    for retrieving results.
+    Submit a sequence and get a url for retrieving results.
+
+    Status codes:
+
+    * 200 - query submitted
+    * 400 - invalid sequence/job_id/jsession_id
+    * 500 - other internal error
+
+    Return values:
+
+    * `url` for checking query status
+    * `message` with a status or an error message
     """
     job_id = jsession_id = url = message = None
     code = status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -76,6 +86,9 @@ def submit(request):
         client = ENASequenceSearchClient()
         try:
             (job_id, jsession_id) = client.submit_query(sequence)
+        except InvalidSequenceError, e:
+            message = e.message
+            code = status.HTTP_400_BAD_REQUEST
         except SequenceSearchError, e:
             message = e.message
             code = status.HTTP_500_INTERNAL_SERVER_ERROR
@@ -87,8 +100,6 @@ def submit(request):
                 '?jsession_id={0}&job_id={1}'.format(jsession_id, job_id)
             )
     data = {
-        'job_id': job_id,
-        'jsession_id': jsession_id,
         'message': message,
         'url': url,
     }
