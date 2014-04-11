@@ -15,7 +15,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
-from apiv1.search.sequence.rest_client import ENASequenceSearchClient,
+from apiv1.search.sequence.rest_client import ENASequenceSearchClient, \
     SequenceSearchError
 
 
@@ -106,6 +106,7 @@ def get_status(request):
         job_id = request.QUERY_PARAMS['job_id']
         jsession_id = request.QUERY_PARAMS['jsession_id']
     except:
+        query_status = 'Failed'
         message = '`job_id` and `jsession_id` query parameters are required'
         code = status.HTTP_400_BAD_REQUEST
     else:
