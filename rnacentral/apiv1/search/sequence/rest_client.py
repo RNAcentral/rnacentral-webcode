@@ -151,8 +151,6 @@ class ENASequenceSearchClient(object):
             validate_response(response.text)
             job_id = get_job_id(response.text)
             jsession_id = get_jsession_id(response.cookies)
-            print job_id
-            print jsession_id
         else:
             self.__raise_error('Invalid sequence')
         return (job_id, jsession_id)
