@@ -24,6 +24,7 @@ python apiv1/search/sequence/tests.py --base_url=http://test.rnacentral.org
 """
 
 import requests
+import time
 import unittest
 from rest_client import ENASequenceSearchClient, SequenceSearchError
 
@@ -50,6 +51,7 @@ class ENASequenceSearchTest(unittest.TestCase):
     	"""
         sequence = self.sequences['multiple_hits']
         data = self.client.search(sequence)
+        print data
         self.assertTrue(len(data) > 0)
         self.assertTrue(isinstance(data[0]['accession'], unicode))
         self.assertTrue(len(data[0]['accession']) > 0)
@@ -84,40 +86,34 @@ class ENASequenceSearchTest(unittest.TestCase):
         self.assertEqual(exc.message, 'Job could not be found')
 
 
-class RNAcentralSequenceSearchAPITest(unittest.TestCase):
+class RNAcentralAPITestBaseClass(unittest.TestCase):
     """
-    Tests for the Django sequence search API.
+    Base class for Django sequence search API tests.
     """
     base_url = ''
     api_url = 'api/v1/sequence-search/'
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
+    # URS000063A371
+    sequence = 'GATGCCTTGTTGAGCTTTGAAGCACATTGAGAAGAATCTGAAATCCTTCCTCATTATGGGGTGTGTTCAGGCTGCTGAGGTGCCCATTCTCAAGATTTTCACTGGACATTCTGGGGTCCCAGTTCAAGTATTTTCCAATGTGAGTCAAGGTGAACCAGAGCCTGAA' # pylint: disable=line-too-long
 
     def _get_api_url(self, extra=''):
         return self.base_url + self.api_url + extra
 
-    def _submit_sequence(self):
+    def _submit_sequence(self, sequence):
         """
         Auxiliary function for submitting a sequence and returning
         job_id and jsession_id.
         """
-        sequence = 'GATGCCTTGTTGAGCTTTGAAGCACATTGAGAAGAATCTGAAATCCTTCCTCATTATGGGGTGTGTTCAGGCTGCTGAGGTGCCCATTCTCAAGATTTTCACTGGACATTCTGGGGTCCCAGTTCAAGTATTTTCCAATGTGAGTCAAGGTGAACCAGAGCCTGAA' # pylint: disable=line-too-long
         url = self._get_api_url('submit?sequence={0}'.format(sequence))
         return requests.get(url)
 
-    def _check_status(self, job_id, jsession_id):
-        """
-        """
-        url = self._get_api_url('status?job_id={0}&jsession_id={1}'.\
-            format(job_id, jsession_id))
-        return requests.get(url)
+
+class SubmitAPITest(RNAcentralAPITestBaseClass):
+    """
+    Tests for submitting a sequence.
+    """
 
     def test_sequence_submit_success(self):
-        r = self._submit_sequence()
+        r = self._submit_sequence(self.sequence)
         self.assertEqual(r.status_code, 200)
         self.assertTrue('job_id' in r.json())
         self.assertTrue('jsession_id' in r.json())
@@ -128,13 +124,27 @@ class RNAcentralSequenceSearchAPITest(unittest.TestCase):
         self.assertEqual(r.status_code, 400) # bad request
 
     def test_sequence_submit_bad_input(self):
-        url = self._get_api_url('submit?sequence={0}'.format('A'*4))
+        short_sequence = 'A'*4
+        url = self._get_api_url('submit?sequence={0}'.format(short_sequence))
         r = requests.get(url)
         self.assertEqual(r.status_code, 500)
 
+
+class StatusAPITest(RNAcentralAPITestBaseClass):
+    """
+    Tests for search status retrieval.
+    """
+
+    def _check_status(self, job_id, jsession_id):
+        """
+        """
+        url = self._get_api_url('status?job_id={0}&jsession_id={1}'.\
+            format(job_id, jsession_id))
+        return requests.get(url)
+
     def test_existing_session_id(self):
         # submit a sequence to get job_id and jsession_id
-        r = self._submit_sequence()
+        r = self._submit_sequence(self.sequence)
         data = r.json()
         # check status
         r = self._check_status(data['job_id'], data['jsession_id'])
@@ -151,6 +161,91 @@ class RNAcentralSequenceSearchAPITest(unittest.TestCase):
         self.assertEqual(data['message'], 'Job could not be found')
 
 
+class ResultsAPITest(RNAcentralAPITestBaseClass):
+    """
+    Tests for search results retrieval.
+    """
+
+    def test_results_bad_request(self):
+        url = self._get_api_url('results')
+        r = requests.get(url)
+        self.assertEqual(r.status_code, 400)
+
+    def test_results_not_available(self):
+        fake_id = 'ABCD'*6
+        job_id = jsession_id = fake_id
+        url = self._get_api_url('results?job_id={0}&jsession_id={1}'.format(
+                                job_id, jsession_id))
+        r = requests.get(url)
+        self.assertEqual(r.json()['results'], [])
+        self.assertEqual(r.status_code, 404)
+
+    def test_results_pagination(self):
+        PAGE_SIZE = 10
+
+        # submit a test sequence and wait for results
+        r = self._submit_sequence('GGGGCCGAAACAGGAUCGACGAACGUCUAAAGGGGUUAGCUUUGUCUCGGCUGGGUGCCACCGUUAUCGGCCUAAAUUGUACAGUUGCAAACGACAACCGUGCUCCGGUGGCCGUUGCUGCGUAAGCAGUAACAACACCGAAACUUAAGUCCUUGCGCCUAGCAGCGUAAGGCGGGGUUCGCAGGCACCUGGCAACAGAAGCCUGCACA')
+        jsession_id = r.json()['jsession_id']
+        job_id = r.json()['job_id']
+        time.sleep(5)
+
+        # default page and page_size
+        url = self._get_api_url('results?job_id={0}&'
+                                'jsession_id={1}'.format(job_id, jsession_id))
+        r = requests.get(url)
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(len(r.json()['results']), PAGE_SIZE)
+
+        # page=1
+        page = 1
+        url = self._get_api_url('results?job_id={0}&jsession_id={1}&'
+                                'page={2}'.format(job_id, jsession_id, page))
+        r = requests.get(url)
+        self.assertEqual(r.status_code, 200)
+        data1 = r.json()['results']
+        self.assertEqual(len(data1), PAGE_SIZE)
+
+        # page=2
+        page = 2
+        url = self._get_api_url('results?job_id={0}&jsession_id={1}&'
+                                'page={2}'.format(job_id, jsession_id, page))
+        r = requests.get(url)
+        self.assertEqual(r.status_code, 200)
+        data2 = r.json()['results']
+        self.assertEqual(len(data2), PAGE_SIZE)
+        self.assertNotEqual(data1, data2)
+
+        # page=1&page_size=20
+        page = 1
+        page_size = 20
+        url = self._get_api_url('results?job_id={0}&jsession_id={1}&'
+                                'page={2}&page_size={3}'.format(job_id,
+                                jsession_id, page, page_size))
+        r = requests.get(url)
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(len(r.json()['results']), page_size)
+
+        # TODO: test pagination over non-existing ranges
+        # page=10000000
+        # page = pow(10, 7)
+        # url = self._get_api_url('results?job_id={0}&jsession_id={1}&'
+        #                         'page={2}'.format(job_id, jsession_id, page))
+        # r = requests.get(url)
+        # print url
+        # self.assertEqual(r.status_code, 404)
+        # self.assertEqual(len(r.json()['results']), 0)
+
+        # # page=1&page_size=10000000
+        # page = 1
+        # page_size = pow(10, 7)
+        # url = self._get_api_url('results?job_id={0}&jsession_id={1}&'
+        #                         'page={2}&page_size={3}'.format(job_id,
+        #                         jsession_id, page, page_size))
+        # r = requests.get(url)
+        # self.assertEqual(r.status_code, 404)
+        # self.assertEqual(len(r.json()['results']), 0)
+
+
 if __name__ == '__main__':
     import argparse
     import sys
@@ -161,7 +256,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if args.base_url[-1] != '/':
         args.base_url += '/'
-    RNAcentralSequenceSearchAPITest.base_url = args.base_url
+    RNAcentralAPITestBaseClass.base_url = args.base_url
 
     sys.argv[1:] = args.unittest_args
     unittest.main()

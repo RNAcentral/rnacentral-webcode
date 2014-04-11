@@ -227,6 +227,7 @@ class ENASequenceSearchClient(object):
         status = 'Done' if 'COMPLETE' in status_string else 'In progress'
         return (status, num_results)
 
+    # TODO fix length default which fails tests for results with < 10 hits
     def get_results(self, job_id, jsession_id, length=10, offset=0):
         """
         Retrieve job results in json format.
