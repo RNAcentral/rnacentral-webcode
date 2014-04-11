@@ -11,6 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from django.core.urlresolvers import reverse
 from django.utils.datastructures import MultiValueDictKeyError
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -64,7 +65,7 @@ def submit(request):
     Submit a sequence and get `job_id` and `jsession_id`
     for retrieving results.
     """
-    job_id = jsession_id = message = None
+    job_id = jsession_id = url = message = None
     code = status.HTTP_500_INTERNAL_SERVER_ERROR
     try:
         sequence = request.QUERY_PARAMS['sequence']
@@ -81,10 +82,15 @@ def submit(request):
         else:
             message = 'Query successfully submitted'
             code = status.HTTP_200_OK
+            url = request.build_absolute_uri(
+                reverse('apiv1.search.sequence.views.get_status') +
+                '?jsession_id={0}&job_id={1}'.format(jsession_id, job_id)
+            )
     data = {
         'job_id': job_id,
         'jsession_id': jsession_id,
         'message': message,
+        'url': url,
     }
     return Response(data, status=code)
 
@@ -102,6 +108,8 @@ def get_status(request):
     * `In progress`
     * `Failed`
     """
+    url = None
+    count = 0
     code = status.HTTP_500_INTERNAL_SERVER_ERROR
     try:
         job_id = request.QUERY_PARAMS['job_id']
@@ -113,7 +121,7 @@ def get_status(request):
     else:
         client = ENASequenceSearchClient()
         try:
-            query_status = client.get_status(job_id, jsession_id)
+            (query_status, count) = client.get_status(job_id, jsession_id)
         except SequenceSearchError, e:
             query_status = 'Failed'
             message = e.message
@@ -121,9 +129,15 @@ def get_status(request):
         else:
             message = 'No errors'
             code = status.HTTP_200_OK
+            url = request.build_absolute_uri(
+                reverse('apiv1.search.sequence.views.get_results') +
+                '?jsession_id={0}&job_id={1}'.format(jsession_id, job_id)
+            )
     data = {
-        'status': query_status,
         'message': message,
+        'status': query_status,
+        'url': url,
+        'count': count,
     }
     return Response(data, status=code)
 
@@ -138,6 +152,8 @@ def get_results(request):
     `page_size` and `page` query parameters.
 
     Status codes:
+
+    * 200 - empty or non-empty results
     * 400 - no input parameters
     * 404 - results unavailable or expired
     * 500 - internal error
@@ -153,7 +169,6 @@ def get_results(request):
     # convert to length/offset pagination
     length = page_size
     offset = page_size * (page_number - 1)
-    offset += 1 # TODO: remove when the ENA offset bug is fixed
 
     try:
         job_id = request.QUERY_PARAMS['job_id']

@@ -208,13 +208,24 @@ class ENASequenceSearchClient(object):
                 message = 'Job could not be found'
                 self.__raise_error(message)
 
+        def get_results_count(status_string):
+            """
+            Parse out the total number of results.
+            """
+            match = re.search(r'\t(\d+)\s+$', status_string)
+            if match:
+                count = match.group(1)
+                return count
+            else:
+                message = 'Results count not found in {status_string}'.\
+                          format(status_string=status_string)
+                self.__raise_error(message)
+
         status_string = get_status_string()
         validate_response(status_string)
-        # TODO parse status_string to get the total number of results
-        if 'COMPLETE' in status_string:
-            return 'Done'
-        else:
-            return 'In progress'
+        num_results = get_results_count(status_string)
+        status = 'Done' if 'COMPLETE' in status_string else 'In progress'
+        return (status, num_results)
 
     def get_results(self, job_id, jsession_id, length=10, offset=0):
         """
@@ -257,7 +268,7 @@ class ENASequenceSearchClient(object):
         (job_id, jsession_id) = self.submit_query(sequence)
         while status != 'Done':
             time.sleep(self.refresh_rate)
-            status = self.get_status(job_id, jsession_id)
+            (status, count) = self.get_status(job_id, jsession_id)
         results = self.get_results(job_id, jsession_id)
         for entry in results:
             print entry
