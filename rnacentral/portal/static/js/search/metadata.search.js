@@ -87,7 +87,7 @@ rnaMetasearch.controller('QueryCtrl', function($scope, $http, $location, results
 
          // a regular non-search url, potentially unchanged
          if (newUrl !== oldUrl) {
-            if (newUrl.indexOf('search') !== -1) {
+            if (newUrl.indexOf('/search') !== -1) {
                 // already a search result page, launch a new search
                 $scope.query.text = $location.search().q;
                  $scope.search($location.search().q);
