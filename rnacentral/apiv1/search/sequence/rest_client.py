@@ -43,6 +43,14 @@ class InvalidSequenceError(Exception):
         self.message = 'Invalid sequence'
 
 
+class StatusNotFoundError(Exception):
+    """
+    An exception raised when the status is not found when session have expired.
+    """
+    def __init__(self):
+        self.message = 'Query status not found'
+
+
 class ENASequenceSearchClient(object):
     """
     A class for interacting with the ENA REST Sequence Search API.
@@ -56,12 +64,15 @@ class ENASequenceSearchClient(object):
         Configurable parameters.
         """
         # ENA REST API base url (NB! no trailing slash)
-        base_url = 'http://jweb-1a:21160/ena/search'
+        base_url = 'http://www.ebi.ac.uk/ena/search'
         # ENA Non-coding sequence collection name, url encoded
         collection = '/All Sequences/All EMBL-Bank/Non-coding'.\
                      replace('/', '%2F')
         # ENA results columns in tab-delimited format
-        self.field_names = ['accession', 'e_value', 'identity'] #, 'formatted_alignment']
+        self.field_names = ['accession', 'e_value', 'identity', 'target_length',
+                            'query_range', 'target_range','alignment_length',
+                            'target_length','identities', 'gaps']
+                            #, 'formatted_alignment']
         # ENA REST API endpoints
         self.endpoints = {
             'search':  base_url + '/executeSearch?Sequence={sequence}&'
@@ -97,7 +108,10 @@ class ENASequenceSearchClient(object):
         """
         Submit a sequence to ENA and return job id and cookies.
         job_id and jsession_id are both required for identifying the query.
-        Throws SequenceSearchError.
+
+        Exception types:
+            InvalidSequenceError - for invalid sequences
+            SequenceSearchError  - all other errors.
         """
         job_id = jsession_id = None
 
@@ -130,13 +144,13 @@ class ENASequenceSearchClient(object):
                           format(error=exc.message)
                 self.__raise_error(message=message)
 
-        def validate_response(text):
+        def validate_response(response):
             """
-            Make sure that this is not a Tomcat error message.
+            Make sure that this is not an error response.
             """
-            if 'Tomcat' in text:
-                message = 'Tomcat error instead of status url: {error}'.\
-                          format(error=text)
+            if response.status_code != 200 or 'Tomcat' in response.text:
+                message = 'Got error instead of status url: {error}'.\
+                          format(error=response.text)
                 self.__raise_error(message=message)
 
         def get_job_id(status_url):
@@ -166,7 +180,7 @@ class ENASequenceSearchClient(object):
         sequence = format_sequence(sequence)
         if is_valid_sequence(sequence):
             response = send_request(sequence)
-            validate_response(response.text)
+            validate_response(response)
             job_id = get_job_id(response.text)
             jsession_id = get_jsession_id(response.cookies)
         else:
@@ -182,11 +196,15 @@ class ENASequenceSearchClient(object):
         Return values:
             "Done" if results are available
             "In progress"  if results are not yet available
-        Throws SequenceSearchError.
+
+        Exception types:
+            SequenceSearchError - if there is a persisting connection problem.
+            StatusNotFoundError - if query status was not found on the server.
         """
-        def get_status_string():
+        def get_status_response():
             """
-            Retrieve status string from ENA, retry several times on error.
+            Retrieve status string from ENA, retry several times if there are
+            connection problems.
             """
             RETRY_ATTEMPTS = 3
             DELAY_BEFORE_RETRY = 0.5
@@ -198,25 +216,23 @@ class ENASequenceSearchClient(object):
                     break
                 except RequestException, exc:
                     self.logger.warning('Getting query status failed '
-                        'on attempt {attempt} with error: {error}'.\
-                        format(attempt=attempt, error=e.message))
+                        'on attempt {attempt} with error: {error}'.format(
+                        attempt=attempt, error=e.message))
                     time.sleep(DELAY_BEFORE_RETRY)
                     attempt += 1
             if attempt > RETRY_ATTEMPTS:
                 message = 'Getting status failed after {attempt} attempts'.\
                           format(attempt=attempt)
-                self.__raise_error(message=message)
+                self.__raise_error(message=message) # SequenceSearchError
             else:
-                return response.text
+                return response
 
-        def validate_response(status_string):
+        def validate_response(response):
             """
-            Check the status string to make sure
-            that this is not a Tomcat error message.
+            Make sure that this is not an error response.
             """
-            if 'not found in session' in status_string:
-                message = 'Job could not be found'
-                self.__raise_error(message=message)
+            if response.status_code == 404 or 'not found in session' in response.text:
+                self.__raise_error(exception_class=StatusNotFoundError)
 
         def get_results_count(status_string):
             """
@@ -227,20 +243,24 @@ class ENASequenceSearchClient(object):
                 count = match.group(1)
                 return count
             else:
-                message = 'Results count not found in {status_string}'.\
-                          format(status_string=status_string)
+                message = 'Results count not found in {status_string}'.format(
+                           status_string=status_string)
                 self.__raise_error(message=message)
 
-        status_string = get_status_string()
-        validate_response(status_string)
-        num_results = get_results_count(status_string)
-        status = 'Done' if 'COMPLETE' in status_string else 'In progress'
+        response = get_status_response()
+        validate_response(response)
+        num_results = get_results_count(response.text)
+        status = 'Done' if 'COMPLETE' in response.text else 'In progress'
         return (status, num_results)
 
     # TODO fix length default which fails tests for results with < 10 hits
-    def get_results(self, job_id, jsession_id, length=10, offset=0):
+    def get_results(self, job_id, jsession_id, length=10, offset=1):
         """
         Retrieve job results in json format.
+
+        Exception types:
+            ResultsUnavailableError - when results are not available
+            SequenceSearchError     - all other erros
         """
         def format_results(results):
             """
@@ -264,7 +284,8 @@ class ENASequenceSearchClient(object):
                                                    length=length)
             r = requests.get(url, cookies={self.JSESSIONID: jsession_id})
         except RequestException, exc:
-            print 'Results could not be retrieved: ' + exc.message
+            message = 'Results could not be retrieved: ' + exc.message
+            self.__raise_error(message=message)
         else:
             if r.status_code == 500:
                 raise ResultsUnavailableError()
@@ -281,6 +302,8 @@ class ENASequenceSearchClient(object):
             time.sleep(self.refresh_rate)
             (status, count) = self.get_status(job_id, jsession_id)
         results = self.get_results(job_id, jsession_id)
-        for entry in results:
-            print entry
+        print 'Found {0} results'.format(len(results))
+        if results:
+            print 'First result:'
+            print results[0]
         return results

@@ -18,7 +18,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework import status
 from apiv1.search.sequence.rest_client import ENASequenceSearchClient, \
-    SequenceSearchError, ResultsUnavailableError, InvalidSequenceError
+    SequenceSearchError, ResultsUnavailableError, InvalidSequenceError, \
+    StatusNotFoundError
 
 
 @api_view(['GET'])
@@ -43,7 +44,7 @@ def search(request):
     Sbjct 12473799  CATTCTGGGGTCCCAGTTCAAGTATTTTCCAACGTGAGTCAAGGTGAACCAGAGCCTGAA 12473858""".replace('T', 'U'),
                 'accession': 'test accession',
                 'description': 'test description',
-            },{
+            }, {
                 'alignment': """
     Query 47        TTCCTCATTATGGGGTGTGTTCAGGCTGCTGAGGTGCCCATTCTCAAGATTTTCACTGGA 106
                     |||||  |||  || |||||||||||||||||||||||||||||||||||||||||||||
@@ -116,6 +117,7 @@ def get_status(request):
 
     * 200 - query 'Done' or 'In progress' depending on the `message` value
     * 400 - bad input parameters
+    * 404 - query status not found
     * 500 - internal error
 
     Returns a status `message` and a `status` code, which can be:
@@ -142,6 +144,10 @@ def get_status(request):
             query_status = 'Failed'
             message = e.message
             code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        except StatusNotFoundError, exc:
+            query_status = 'Failed'
+            message = exc.message
+            code = status.HTTP_404_NOT_FOUND
         else:
             message = 'OK'
             code = status.HTTP_200_OK
@@ -189,7 +195,7 @@ def get_results(request):
     page_size = int(request.QUERY_PARAMS.get('page_size', 10))
     # convert to length/offset pagination
     length = page_size
-    offset = page_size * (page_number - 1)
+    offset = page_size * (page_number - 1) + 1 # TODO remove the "+ 1" bit when the offset bugfix is deployed
 
     try:
         job_id = request.QUERY_PARAMS['job_id']

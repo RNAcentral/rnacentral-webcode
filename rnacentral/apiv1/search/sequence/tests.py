@@ -27,7 +27,7 @@ import requests
 import time
 import unittest
 from rest_client import ENASequenceSearchClient, SequenceSearchError, \
-                        InvalidSequenceError
+                        InvalidSequenceError, StatusNotFoundError
 
 
 class ENASequenceSearchTest(unittest.TestCase):
@@ -38,18 +38,16 @@ class ENASequenceSearchTest(unittest.TestCase):
     def setUp(self):
         self.client = ENASequenceSearchClient()
         self.sequences = {
-            'multiple_hits': 'GATGCCTTGTTGAGCTTTGAAGCACATTGAGAAGAATCTGAAATCCTTCCTCATTATGGGGTGTGTTCAGGCTGCTGAGGTGCCCATTCTCAAGATTTTCACTGGACATTCTGGGGTCCCAGTTCAAGTATTTTCCAATGTGAGTCAAGGTGAACCAGAGCCTGAA', # pylint: disable=line-too-long
+            # URS00006497EA
+            'multiple_hits': 'GTCCTTCGGGACTATGGACATAAACGCGCTCGTAATAAGCGGATCGGACCCGGGGGCGGTACCCGGCGGCTCCACCAACAGCCCTGTCGTTTGCAGGCAGAGGGGGCCGAAACAGGATCGACGAACGTCTAAAGGGGTTAGCTTTGTCTCGGCTGGGTGCCACCGTTATCGGCCTAAATTGTACAGTTGCAAACGACAACCGTGCTCCGGTGGCCGTTGCTGCGTAAGCAGTAACAACACCGAAACTTAAGTCCTTGCGCCTAGCAGCGTAAGGCGGGGTTCGCAGGCACCTGGCAACAGAAGCCTGCACA', # pylint: disable=line-too-long
             'no_hits': 'A'*40,
             'too_short': 'A'*4,
         }
 
-    def tearDown(self):
-        pass
-
     def test_multiple_hits(self):
-    	"""
-    	Should return an array of dictionaries.
-    	"""
+        """
+        Should return an array of dictionaries.
+        """
         sequence = self.sequences['multiple_hits']
         data = self.client.search(sequence)
         self.assertTrue(len(data) > 0)
@@ -57,17 +55,17 @@ class ENASequenceSearchTest(unittest.TestCase):
         self.assertTrue(len(data[0]['accession']) > 0)
 
     def test_no_hits(self):
-    	"""
-    	Should return an empty array.
-    	"""
+        """
+        Should return an empty array.
+        """
         sequence = self.sequences['no_hits']
         data = self.client.search(sequence)
         self.assertTrue(len(data) == 0)
 
     def test_too_short(self):
-    	"""
-    	Should raise an error.
-    	"""
+        """
+        Should raise an error.
+        """
         sequence = self.sequences['too_short']
         with self.assertRaises(InvalidSequenceError) as context_manager:
             self.client.submit_query(sequence)
@@ -80,10 +78,9 @@ class ENASequenceSearchTest(unittest.TestCase):
         """
         job_id = '1234'*6
         jsession_id = 'ABCD'*6
-        with self.assertRaises(SequenceSearchError) as context_manager:
+        with self.assertRaises(StatusNotFoundError) as context_manager:
             self.client.get_status(job_id, jsession_id)
         exc = context_manager.exception
-        self.assertEqual(exc.message, 'Job could not be found')
 
 
 class RNAcentralAPITestBaseClass(unittest.TestCase):
@@ -126,7 +123,7 @@ class SubmitAPITest(RNAcentralAPITestBaseClass):
         short_sequence = 'A'*4
         url = self._get_api_url('submit?sequence={0}'.format(short_sequence))
         r = requests.get(url)
-        self.assertEqual(r.status_code, 500)
+        self.assertEqual(r.status_code, 400) # bad request
 
 
 class StatusAPITest(RNAcentralAPITestBaseClass):
@@ -134,19 +131,11 @@ class StatusAPITest(RNAcentralAPITestBaseClass):
     Tests for search status retrieval.
     """
 
-    def _check_status(self, job_id, jsession_id):
-        """
-        """
-        url = self._get_api_url('status?job_id={0}&jsession_id={1}'.\
-            format(job_id, jsession_id))
-        return requests.get(url)
-
     def test_existing_session_id(self):
         # submit a sequence to get job_id and jsession_id
         r = self._submit_sequence(self.sequence)
-        data = r.json()
         # check status
-        r = self._check_status(data['job_id'], data['jsession_id'])
+        r = requests.get(r.json()['url'])
         data = r.json()
         self.assertEqual(r.status_code, 200)
         self.assertTrue('url' in data)
@@ -154,11 +143,12 @@ class StatusAPITest(RNAcentralAPITestBaseClass):
         self.assertNotEqual(data['status'], 'Failed')
 
     def test_non_existing_session_id(self):
-        r = self._check_status('some_job_id', 'some_session_id')
+        url = self._get_api_url('status?job_id={0}&jsession_id={1}'.format(
+                                'some_job_id', 'some_session_id'))
+        r = requests.get(url)
         data = r.json()
-        self.assertEqual(r.status_code, 500)
+        self.assertEqual(r.status_code, 404)
         self.assertEqual(data['status'], 'Failed')
-        self.assertEqual(data['message'], 'Job could not be found')
 
 
 class ResultsAPITest(RNAcentralAPITestBaseClass):
@@ -183,23 +173,28 @@ class ResultsAPITest(RNAcentralAPITestBaseClass):
     def test_results_pagination(self):
         PAGE_SIZE = 10
 
-        # submit a test sequence and wait for results
-        r = self._submit_sequence('GGGGCCGAAACAGGAUCGACGAACGUCUAAAGGGGUUAGCUUUGUCUCGGCUGGGUGCCACCGUUAUCGGCCUAAAUUGUACAGUUGCAAACGACAACCGUGCUCCGGUGGCCGUUGCUGCGUAAGCAGUAACAACACCGAAACUUAAGUCCUUGCGCCUAGCAGCGUAAGGCGGGGUUCGCAGGCACCUGGCAACAGAAGCCUGCACA')
-        jsession_id = r.json()['jsession_id']
-        job_id = r.json()['job_id']
-        time.sleep(5)
+        # submit a test sequence
+        r = self._submit_sequence('GGGGCCGAAACAGGAUCGACGAACGUCUAAAGGGGUUAGCUUUGUCUCGGCUGGGUGCCACCGUUAUCGGCCUAAAUUGUACAGUUGCAAACGACAACCGUGCUCCGGUGGCCGUUGCUGCGUAAGCAGUAACAACACCGAAACUUAAGUCCUUGCGCCUAGCAGCGUAAGGCGGGGUUCGCAGGCACCUGGCAACAGAAGCCUGCACA') # pylint: disable=line-too-long
+        status_url = r.json()['url']
+
+        # wait for resutls
+        time.sleep(1)
+        while True:
+            r = requests.get(status_url)
+            if r.json()['status'] == 'Done':
+                results_url = r.json()['url']
+                break
+            else:
+                time.sleep(1)
 
         # default page and page_size
-        url = self._get_api_url('results?job_id={0}&'
-                                'jsession_id={1}'.format(job_id, jsession_id))
-        r = requests.get(url)
+        r = requests.get(results_url)
         self.assertEqual(r.status_code, 200)
         self.assertEqual(len(r.json()['results']), PAGE_SIZE)
 
         # page=1
         page = 1
-        url = self._get_api_url('results?job_id={0}&jsession_id={1}&'
-                                'page={2}'.format(job_id, jsession_id, page))
+        url = '{0}&page={1}'.format(results_url, page)
         r = requests.get(url)
         self.assertEqual(r.status_code, 200)
         data1 = r.json()['results']
@@ -207,8 +202,7 @@ class ResultsAPITest(RNAcentralAPITestBaseClass):
 
         # page=2
         page = 2
-        url = self._get_api_url('results?job_id={0}&jsession_id={1}&'
-                                'page={2}'.format(job_id, jsession_id, page))
+        url = '{0}&page={1}'.format(results_url, page)
         r = requests.get(url)
         self.assertEqual(r.status_code, 200)
         data2 = r.json()['results']
@@ -218,9 +212,7 @@ class ResultsAPITest(RNAcentralAPITestBaseClass):
         # page=1&page_size=20
         page = 1
         page_size = 20
-        url = self._get_api_url('results?job_id={0}&jsession_id={1}&'
-                                'page={2}&page_size={3}'.format(job_id,
-                                jsession_id, page, page_size))
+        url = '{0}&page={1}&page_size={2}'.format(results_url, page, page_size)
         r = requests.get(url)
         self.assertEqual(r.status_code, 200)
         self.assertEqual(len(r.json()['results']), page_size)
