@@ -210,21 +210,19 @@ class Accession(models.Model):
 
     def get_expert_db_external_url(self):
         """
-        Get the external url to the expert database.
+        Get external url to expert database.
         """
-        if self.database == 'RFAM':
-            base_url = "http://rfam.sanger.ac.uk/family/"
-        elif self.database == 'SRPDB':
-            base_url = "http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/"
-        elif self.database == 'VEGA':
-            base_url = "http://vega.sanger.ac.uk/Homo_sapiens/Gene/Summary?db=core;g="
-        elif self.database == 'MIRBASE':
-            base_url = "http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc="
-        elif self.database == 'TMRNA_WEB':
-            base_url = "http://bioinformatics.sandia.gov/tmrna/seqs/"
+        urls = {
+            'RFAM': 'http://rfam.sanger.ac.uk/family/',
+            'SRPDB': 'http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/',
+            'VEGA': 'http://vega.sanger.ac.uk/Homo_sapiens/Gene/Summary?db=core;g=',
+            'MIRBASE': 'http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc=',
+            'TMRNA_WEB': 'http://bioinformatics.sandia.gov/tmrna/seqs/',
+        }
+        if self.database in urls.keys():
+            return urls[self.database] + self.external_id
         else:
-            return ""
-        return base_url + self.external_id
+            return ''
 
 
 class Xref(models.Model):
