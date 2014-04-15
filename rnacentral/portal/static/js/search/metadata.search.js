@@ -48,6 +48,9 @@ rnaMetasearch.controller('MainContent', function($scope, results) {
     });
 });
 
+// minification-safe method
+// phonecatApp.controller('PhoneListCtrl', ['$scope', '$http', function($scope, $http) {...}]);
+
 rnaMetasearch.controller('ResultsListCtrl', function($scope, results) {
 
     $scope.rnas = results.get();
