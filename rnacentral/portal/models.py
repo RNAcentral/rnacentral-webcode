@@ -89,6 +89,24 @@ class Rna(models.Model):
         data = self.xrefs.aggregate(last_seen=Max('last__release_date'))
         return data['last_seen']
 
+    def is_active(self):
+        """
+        Return True if at least one xref is still active.
+        """
+        return self.xrefs.filter(deleted='N').count() > 0
+
+    def get_description(self):
+        """
+        Get a single description line.
+        """
+        return ('Unique RNAcentral sequence from {organisms} organisms '
+                'with {annotations} annotations '
+                'from {databases} databases'.format(
+                    organisms=self.count_distinct_organisms(),
+                    annotations=self.count_xrefs(),
+                    databases=self.count_distinct_databases(),
+                ))
+
     def get_sequence_fasta(self):
         """
         Split long sequences by a fixed number of characters per line.
