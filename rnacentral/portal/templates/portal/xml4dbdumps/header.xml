@@ -1,0 +1,7 @@
+<database>
+    <name>RNAcentral</name>
+    <description>a database to organise data for non-protein coding RNA genes</description>
+    <release>{{ release }}</release>
+    <release_date>{{ release_date }}</release_date>
+    <entry_count>{{ entry_count }}</entry_count>
+    <entries>

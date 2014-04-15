@@ -1,0 +1,22 @@
+<entry id="{{ rna.upi }}">
+    <name>{{ rna.upi }}</name>
+    <description>{{ rna.get_description }}</description>
+    <cross_references>
+   		{% spaceless %}
+    		{% for xref in rna.xrefs.all %}
+    			{% if xref.accession.non_coding_id %}
+					<ref dbkey="{{ xref.accession.external_id }}" dbname="{{ xref.db.descr }}" />
+				{% else %}
+					<ref dbkey="{{ xref.accession.accession }}" dbname="{{ xref.db.descr }}" />
+				{% endif %}
+			{% endfor %}
+		{% endspaceless %}
+    </cross_references>
+    <dates>
+        <date value="{{ rna.first_seen }}" type="first_seen" />
+        <date value="{{ rna.last_seen }}" type="last_seen" />
+    </dates>
+    <additional_fields>
+        <field name="active">{{ rna.is_active }}</field>
+    </additional_fields>
+</entry>
