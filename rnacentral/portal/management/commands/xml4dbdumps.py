@@ -12,6 +12,7 @@ limitations under the License.
 """
 
 from django.core.management.base import BaseCommand, CommandError
+from django.template import Context, loader
 from django.template.loader import render_to_string
 from optparse import make_option
 from cProfile import Profile
@@ -69,8 +70,9 @@ class Command(BaseCommand):
         super(Command, self).__init__(*args, **kwargs)
 
         self.filename = 'xml4dbdumps.xml'
+        self.test_entries = 10000
         self.options = {
-            'destination': '',
+            'destination': None,
             'test': False,
         }
 
@@ -135,20 +137,15 @@ class Command(BaseCommand):
             """
             Write out RNA entries.
             """
-            def get_rna_data():
-                """
-                Get either an efficient Django iterator for all RNA entries or
-                a small subset of entries for testing mode.
-                """
+            t = loader.get_template('portal/xml4dbdumps/entry.xml')
+            data = Rna.objects.select_related('Xref', 'Xref__db',
+                                              'Xref__accession')
+            for rna in data.iterator():
                 if self.options['test']:
-                    data = Rna.objects.all()[:100]
-                else:
-                    data = Rna.objects.iterator()
-                return data
-
-            for rna in get_rna_data():
-                f.write(render_to_string('portal/xml4dbdumps/entry.xml',
-                        {'rna': rna}))
+                    self.test_entries -= 1
+                if self.test_entries == 0:
+                    break
+                f.write(t.render(Context({'rna': rna})))
                 f.flush()
 
         def write_xml_footer():

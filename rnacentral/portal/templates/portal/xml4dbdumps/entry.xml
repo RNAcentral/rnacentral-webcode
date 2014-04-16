@@ -3,7 +3,7 @@
     <description>{{ rna.get_description }}</description>
     <cross_references>
    		{% spaceless %}
-    		{% for xref in rna.xrefs.all %}
+    		{% for xref in rna.xrefs.iterator %}
     			{% if xref.accession.non_coding_id %}
 					<ref dbkey="{{ xref.accession.external_id }}" dbname="{{ xref.db.descr }}" />
 				{% else %}
