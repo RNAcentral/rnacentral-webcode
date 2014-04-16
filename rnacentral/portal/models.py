@@ -13,6 +13,7 @@ limitations under the License.
 
 from django.db import models
 from django.db.models import Min, Max
+from django.utils.functional import cached_property
 import re
 
 # to make text fields searchable, add character set functional indexes in Oracle
@@ -78,29 +79,45 @@ class Rna(models.Model):
         """
         return self.get_ena_xrefs() | self.get_expert_database_xrefs()
 
+    @cached_property
     def count_distinct_organisms(self):
+        """
+        Count the number of distinct taxids referenced by the sequence.
+        """
         return self.xrefs.values('taxid').distinct().count()
 
+    @cached_property
     def count_distinct_databases(self):
+        """
+        Count the number of distinct databases referenced by the sequence.
+        """
         return self.xrefs.values('db_id').distinct().count()
 
+    @cached_property
     def count_xrefs(self):
+        """
+        Count the number of cross-references associated with the sequence.
+        """
         return self.xrefs.count()
 
+    @cached_property
     def first_seen(self):
         data = self.xrefs.aggregate(first_seen=Min('created__release_date'))
         return data['first_seen']
 
+    @cached_property
     def last_seen(self):
         data = self.xrefs.aggregate(last_seen=Max('last__release_date'))
         return data['last_seen']
 
+    @cached_property
     def is_active(self):
         """
         Return True if at least one xref is still active.
         """
         return self.xrefs.filter(deleted='N').count() > 0
 
+    @cached_property
     def get_description(self):
         """
         Get a single description line.
@@ -340,6 +357,7 @@ class Xref(models.Model):
         }
         return data
 
+    @cached_property
     def get_assembly_start(self):
         """
         Select the minimum starting coordinates to account for complementary strands.
@@ -347,6 +365,7 @@ class Xref(models.Model):
         data = self.accession.assembly.aggregate(assembly_start = Min('primary_start'))
         return data['assembly_start']
 
+    @cached_property
     def get_assembly_end(self):
         """
         Select the maximum ending coordinates to account for complementary strands.
@@ -354,12 +373,14 @@ class Xref(models.Model):
         data = self.accession.assembly.aggregate(assembly_end = Max('primary_end'))
         return data['assembly_end']
 
+    @cached_property
     def get_assembly_chromosome(self):
         """
         Get the chromosome for the genomic coordinates.
         """
         return self.accession.assembly.first().chromosome.chromosome
 
+    @cached_property
     def get_assembly_strand(self):
         """
         Get the strand for the genomic coordinates.
