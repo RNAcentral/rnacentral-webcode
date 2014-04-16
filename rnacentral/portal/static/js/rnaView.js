@@ -24,7 +24,6 @@ rnaSequenceView.prototype.initialize = function() {
 	activate_literature_references();
 	activate_species_tree();
 	enable_show_species_tab_action();
-	enable_tab_hashtags();
 	enable_species_tree_scroll_action();
 
 	function load_xrefs() {
@@ -101,25 +100,8 @@ rnaSequenceView.prototype.initialize = function() {
     function enable_show_species_tab_action() {
       // clicking the species link to view the Species tab
       $("#show-species-tab").click(function(){
-        $('#tabs a[href="#species"]').tab('show');
-        window.location.hash = "#species";
+        $('#tabs a[data-target="#species"]').tab('show');
         return false;
-      });
-    };
-
-    function enable_tab_hashtags() {
-      // update the url hashtag when tabs are clicked
-      var hash = window.location.hash;
-      hash && $('#tabs a[href="' + hash + '"]').tab('show');
-      $('.nav-tabs a').click(function (e) {
-        var $this = $(this);
-        // only show the active tabs
-        if ( $this.attr('id') == 'overview' || $this.attr('id') == 'species' ) {
-           $this.tab('show');
-        }
-        var scrollmem = $('body').scrollTop();
-        window.location.hash = this.hash;
-        $('html,body').scrollTop(scrollmem);
       });
     };
 

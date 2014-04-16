@@ -37,19 +37,19 @@ limitations under the License.
 
       <ul class="nav nav-tabs" id="tabs">
         <li class="active">
-          <a href="#overview" data-toggle="tab">Overview</a>
+          <a data-target="#overview" data-toggle="tab">Overview</a>
         </li>
         <li>
-          <a href="#species" data-toggle="tab">Species</a>
+          <a data-target="#species" data-toggle="tab">Species</a>
         </li>
         <li class="disabled" data-toggle="tab">
-          <a href="#2d">2D</a>
+          <a data-target="#2d">2D</a>
         </li>
         <li class="disabled" data-toggle="tab">
-          <a href="#3d">3D</a>
+          <a data-target="#3d">3D</a>
         </li>
         <li class="dropdown pull-right">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+          <a class="dropdown-toggle" data-toggle="dropdown">
                       <i class="fa fa-download"></i> Download
                       <b class="caret"></b>
                   </a>
@@ -75,7 +75,7 @@ limitations under the License.
                 <li><strong>{{ rna.length|intcomma }}</strong> nucleotides</li>
                 <li><strong>{{ rna.count_distinct_databases|intcomma }}</strong> database{{ rna.count_distinct_databases|pluralize }}</li> {{context.num_db}}
                 <li>
-                  <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="#" id="show-species-tab">species</a>
+                  <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a id="show-species-tab">species</a>
                 </li>
                 <li>first seen <time datetime="{{ rna.first_seen|date:'Y-m-d' }}">{{ rna.first_seen|date:'d M Y' }}</time></li>
                 <li>last updated <time datetime="{{ rna.last_seen|date:'Y-m-d' }}">{{ rna.last_seen|date:'d M Y' }}</time></li>
