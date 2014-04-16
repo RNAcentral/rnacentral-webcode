@@ -346,37 +346,37 @@ These requests should return the same results, both in the browser and when retr
   <nav id="affix-nav" class="sidebar col-md-3 hidden-print visible-lg" role="complementary">
     <ul class="nav sidenav affix" data-spy="affix" id="affix-ul">
         <li>
-          <a href="#overview">API Overview</a>
+          <a ng-click="scrollTo('overview')">API Overview</a>
           <ul class="nav">
-            <li><a href="#web-browsable-api">Web browsable API</a></li>
-            <li><a href="#versioning">Versioning</a></li>
-            <li><a href="#throttling">Throttling</a></li>
+            <li><a ng-click="scrollTo('web-browsable-api')">Web browsable API</a></li>
+            <li><a ng-click="scrollTo('versioning')">Versioning</a></li>
+            <li><a ng-click="scrollTo('throttling')">Throttling</a></li>
           </ul>
         </li>
         <li>
-          <a href="#v1">API v1 documentation</a>
+          <a ng-click="scrollTo('v1')">API v1 documentation</a>
           <ul class="nav">
             <li>
-              <a href="#v1-example-responses">Example responses</a>
+              <a ng-click="scrollTo('v1-example-responses')">Example responses</a>
               <ul class="nav">
-                <li><a href="#v1-hyperlinked-vs-flat-responses">Hyperlinked vs flat responses</a></li>
+                <li><a ng-click="scrollTo('v1-hyperlinked-vs-flat-responses')">Hyperlinked vs flat responses</a></li>
               </ul>
             </li>
-            <li><a href="#v1-pagination">Pagination</a></li>
-            <li><a href="#v1-output-formats">Output formats</a></li>
+            <li><a ng-click="scrollTo('v1-pagination')">Pagination</a></li>
+            <li><a ng-click="scrollTo('v1-output-formats')">Output formats</a></li>
             <li>
-              <a href="#v1-filtering">Filtering</a>
+              <a ng-click="scrollTo('v1-filtering')">Filtering</a>
               <ul class="nav">
-                <li><a href="#v1-filtering-by-sequence-length">Filtering by length</a></li>
-                <li><a href="#v1-filtering-by-database">Filtering by database</a></li>
-                <li><a href="#v1-filtering-by-external-ids">Filtering by external ids</a></li>
-                <li><a href="#v1-combined-filters">Combined filters</a></li>
+                <li><a ng-click="scrollTo('v1-filtering-by-sequence-length')">Filtering by length</a></li>
+                <li><a ng-click="scrollTo('v1-filtering-by-database')">Filtering by database</a></li>
+                <li><a ng-click="scrollTo('v1-filtering-by-external-ids')">Filtering by external ids</a></li>
+                <li><a ng-click="scrollTo('v1-combined-filters')">Combined filters</a></li>
               </ul>
             </li>
-            <li><a href="#v1-genome-annotations">Genome annotations</a></li>
-            <li><a href="#v1-example-script">Example script</a></li>
-            <li><a href="#v1-cross-domain-requests">Cross-domain requests</a></li>
-            <li><a href="#v1-trailing-slash">Trailing slash</a></li>
+            <li><a ng-click="scrollTo('v1-genome-annotations')">Genome annotations</a></li>
+            <li><a ng-click="scrollTo('v1-example-script')">Example script</a></li>
+            <li><a ng-click="scrollTo('v1-cross-domain-requests')">Cross-domain requests</a></li>
+            <li><a ng-click="scrollTo('v1-trailing-slash')">Trailing slash</a></li>
           </ul>
         </li>
     </ul>

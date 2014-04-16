@@ -39,7 +39,12 @@ rnaMetasearch.service('results', function() {
     }
 });
 
-rnaMetasearch.controller('MainContent', function($scope, results) {
+rnaMetasearch.controller('MainContent', function($scope, $anchorScroll, $location, results) {
+
+    $scope.scrollTo = function(id) {
+        $location.hash(id);
+        $anchorScroll();
+    };
 
     $scope.$watch(function () { return results.get_status(); }, function (newValue, oldValue) {
         if (newValue != null) {
@@ -89,16 +94,17 @@ rnaMetasearch.controller('QueryCtrl', function($scope, $http, $location, results
     	// this function only executes on url update
 
          // a regular non-search url, potentially unchanged
-         if (newUrl !== oldUrl) {
-            if (newUrl.indexOf('/search') !== -1) {
-                // already a search result page, launch a new search
+        if (newUrl !== oldUrl) {
+            if (newUrl.indexOf('/search') == -1) {
+                // not a search page, redirect
+                console.log('About to redirect ' + window.location.pathname);
+                window.location.href = newUrl;
+            } else {
+                // a search result page, launch a new search
                 $scope.query.text = $location.search().q;
-                 $scope.search($location.search().q);
-             } else {
-                 console.log('About to redirect ' + window.location.pathname);
-                 window.location.href = newUrl;
-             }
-         }
+                $scope.search($location.search().q);
+            }
+        }
     });
 
     $scope.search = function(query) {
