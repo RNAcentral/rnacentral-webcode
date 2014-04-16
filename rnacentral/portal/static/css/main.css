@@ -75,6 +75,15 @@ body {
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bcd8e0', endColorstr='#9ac3ce',GradientType=1 ); /* IE6-9 */
 }
 
+.rnacentral-masthead .form-group {
+  margin-bottom: 0;
+}
+
+.rnacentral-masthead .help-block {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
 .rnacentral-masthead-menu {
 	background-color: #3F7D97;
   padding: 0px;

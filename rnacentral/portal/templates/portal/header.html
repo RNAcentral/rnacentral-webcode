@@ -30,7 +30,7 @@ limitations under the License.
           <div class="form-group" ng-class="(query.submitted && queryForm.$invalid) ? 'has-error' : ''">
             <div class="input-group">
               <input type="text"
-                     placeholder="RNAcentral metadata search"
+                     placeholder="Currently only supports searching by taxids"
                      class="form-control"
                      id="query-text"
                      name="text"
@@ -47,8 +47,9 @@ limitations under the License.
               </div><!-- /input-group-btn -->
             </div><!--input-group -->
             <span class="help-block">
-              Currently only supports searching by taxids.
-              <i>Examples: <a ng-click="search('9606')">human</a>, <a ng-click="search('562')">E.coli</a></i>
+              <small>
+                <i>Examples: <a ng-click="search('9606')">human</a>, <a ng-click="search('562')">E.coli</a></i>
+              </small>
             </span>
             <label class="control-label ng-cloak has-error"
                    for="query-text" ng-show="query.submitted && (queryForm.text.$error.required || queryForm.text.$error.minlength)"
