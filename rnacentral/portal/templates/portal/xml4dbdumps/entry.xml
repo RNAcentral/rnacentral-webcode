@@ -1,6 +1,6 @@
 <entry id="{{ rna.upi }}">
     <name>{{ rna.upi }}</name>
-    <description>{{ rna.get_description }}</description>
+    <description>Unique RNAcentral sequence from {{ rna.count_distinct_organisms }} organism{{ rna.count_distinct_organisms|pluralize }} with {{ rna.count_xrefs }} annotation{{ rna.count_xrefs|pluralize }} from {{ rna.count_distinct_databases }} database{{ rna.count_distinct_databases|pluralize }}</description>
     <cross_references>
    		{% spaceless %}
     		{% for xref in rna.xrefs.iterator %}

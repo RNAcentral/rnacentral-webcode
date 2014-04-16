@@ -14,6 +14,7 @@ limitations under the License.
 from django.db import models
 from django.db.models import Min, Max
 from django.utils.functional import cached_property
+from django.template.defaultfilters import pluralize
 import re
 
 # to make text fields searchable, add character set functional indexes in Oracle
@@ -116,19 +117,6 @@ class Rna(models.Model):
         Return True if at least one xref is still active.
         """
         return self.xrefs.filter(deleted='N').count() > 0
-
-    @cached_property
-    def get_description(self):
-        """
-        Get a single description line.
-        """
-        return ('Unique RNAcentral sequence from {organisms} organisms '
-                'with {annotations} annotations '
-                'from {databases} databases'.format(
-                    organisms=self.count_distinct_organisms(),
-                    annotations=self.count_xrefs(),
-                    databases=self.count_distinct_databases(),
-                ))
 
     def get_sequence_fasta(self):
         """
@@ -357,7 +345,6 @@ class Xref(models.Model):
         }
         return data
 
-    @cached_property
     def get_assembly_start(self):
         """
         Select the minimum starting coordinates to account for complementary strands.
@@ -365,7 +352,6 @@ class Xref(models.Model):
         data = self.accession.assembly.aggregate(assembly_start = Min('primary_start'))
         return data['assembly_start']
 
-    @cached_property
     def get_assembly_end(self):
         """
         Select the maximum ending coordinates to account for complementary strands.
@@ -373,14 +359,12 @@ class Xref(models.Model):
         data = self.accession.assembly.aggregate(assembly_end = Max('primary_end'))
         return data['assembly_end']
 
-    @cached_property
     def get_assembly_chromosome(self):
         """
         Get the chromosome for the genomic coordinates.
         """
         return self.accession.assembly.first().chromosome.chromosome
 
-    @cached_property
     def get_assembly_strand(self):
         """
         Get the strand for the genomic coordinates.
