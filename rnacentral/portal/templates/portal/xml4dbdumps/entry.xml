@@ -17,5 +17,6 @@
     </dates>
     <additional_fields>
         <field name="active">{{ rna.is_active }}</field>
+        <field name="length">{{ rna.length }}</field>
     </additional_fields>
 </entry>
