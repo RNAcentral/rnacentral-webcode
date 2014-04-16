@@ -70,7 +70,7 @@ class Command(BaseCommand):
         super(Command, self).__init__(*args, **kwargs)
 
         self.filename = 'xml4dbdumps.xml'
-        self.test_entries = 10000
+        self.test_entries = 100
         self.options = {
             'destination': None,
             'test': False,
