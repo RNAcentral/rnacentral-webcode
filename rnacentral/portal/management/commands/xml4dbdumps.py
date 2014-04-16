@@ -139,9 +139,7 @@ class Command(BaseCommand):
             Write out RNA entries.
             """
             t = loader.get_template('portal/xml4dbdumps/entry.xml')
-            data = Rna.objects.select_related('Xref', 'Xref__db',
-                                              'Xref__accession')
-            for rna in data.iterator():
+            for rna in Rna.objects.iterator():
                 if self.options['test']:
                     self.test_entries -= 1
                 if self.test_entries == 0:
