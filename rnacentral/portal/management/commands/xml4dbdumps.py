@@ -70,7 +70,7 @@ class Command(BaseCommand):
         super(Command, self).__init__(*args, **kwargs)
 
         self.filename = 'xml4dbdumps.xml'
-        self.test_entries = 100
+        self.test_entries = 1000
         self.options = {
             'destination': None,
             'test': False,
@@ -110,6 +110,7 @@ class Command(BaseCommand):
             profiler = Profile()
             profiler.runcall(_handle, self, *args, **options)
             profiler.print_stats()
+            profiler.dump_stats('profile.txt')
         else:
             _handle(self, *args, **options)
 
