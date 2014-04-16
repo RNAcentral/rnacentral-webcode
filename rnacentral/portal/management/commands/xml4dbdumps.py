@@ -86,7 +86,7 @@ class Command(BaseCommand):
             """
             def set_command_line_options():
                 """
-                Store the command line options in the corresponding `self` variables.
+                Store command line options in `self.options`.
                 """
                 cmd_options = ['destination', 'test']
                 for cmd_option in cmd_options:
@@ -98,7 +98,7 @@ class Command(BaseCommand):
                 Validate the command line options.
                 """
                 if not self.options['destination']:
-                    raise CommandError('Please specify the --destination option')
+                    raise CommandError('Please specify --destination')
                 if not os.path.exists(self.options['destination']):
                     os.makedirs(self.options['destination'])
 
