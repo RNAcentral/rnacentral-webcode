@@ -33,10 +33,16 @@ class Rna(models.Model):
         db_table = 'rna'
 
     def get_sequence(self):
+        """
+        Sequences of up to 4000 nucleotides are stored in seq_short, while the
+        longer ones are in stored in seq_long as CLOB objects
+        due to Oracle column size restrictions.
+        """
         if self.seq_short:
-            return self.seq_short.replace('T', 'U').upper()
+            sequence = self.seq_short
         else:
-            return self.seq_long.replace('T', 'U').upper()
+            sequence = self.seq_long
+        return sequence.replace('T', 'U').upper()
 
     def count_symbols(self):
         seq = self.get_sequence()
