@@ -184,6 +184,40 @@ class Rna(models.Model):
         else:
             return self.xrefs.filter(deleted='N').count() > 0
 
+    def get_distinct_taxids(self):
+        """
+        Return a list of distinct taxids.
+        """
+        if self._count_ena_xrefs() == 1:
+            return [self._get_first_xref().taxid]
+        else:
+            return self.xrefs.values_list('taxid', flat=True).distinct()
+
+    def get_distinct_species(self):
+        """
+        Return a list of distinct species.
+        """
+        if self._count_ena_xrefs() == 1:
+            return [self._get_first_xref().accession.species]
+        else:
+            return self.xrefs.values_list('accession__species',
+                                              flat=True).distinct()
+
+    def get_distinct_expert_dbs(self):
+        """
+        Return a list of distinct expert databases referencing the sequence.
+        """
+        return self.xrefs.values_list('db__display_name', flat=True).distinct()
+
+    def get_distinct_organelles(self):
+        """
+        """
+        data = self.xrefs.values_list('accession__organelle', flat=True).distinct()
+        if len(data) == 1 and data[0] == '':
+            return []
+        else:
+            return data
+
     def get_sequence_fasta(self):
         """
         Split long sequences by a fixed number of characters per line.
