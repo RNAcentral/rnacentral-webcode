@@ -147,6 +147,7 @@ class Command(BaseCommand):
                 xrefs = rna.xrefs.select_related('accession', 'db').values(
                             'accession__accession','accession__non_coding_id',
                             'accession__external_id', 'db__descr')
+                rna._cached = dict() # reset internal cache
                 f.write(t.render(Context({'rna': rna, 'xrefs': xrefs})))
                 f.flush()
 
