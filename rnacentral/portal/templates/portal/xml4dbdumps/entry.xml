@@ -2,11 +2,11 @@
     <description>Unique RNAcentral sequence from {{ rna.count_distinct_organisms }} organism{{ rna.count_distinct_organisms|pluralize }} with {{ rna.count_xrefs }} annotation{{ rna.count_xrefs|pluralize }} from {{ rna.count_distinct_databases }} database{{ rna.count_distinct_databases|pluralize }}</description>
     <cross_references>
    		{% spaceless %}
-    		{% for xref in rna.xrefs.iterator %}
-    			{% if xref.accession.non_coding_id %}
-					<ref dbkey="{{ xref.accession.external_id }}" dbname="{{ xref.db.descr }}" />
+    		{% for xref in xrefs %}
+    			{% if xref.accession__non_coding_id %}
+					<ref dbkey="{{ xref.accession__external_id }}" dbname="{{ xref.db__descr }}" />
 				{% else %}
-					<ref dbkey="{{ xref.accession.accession }}" dbname="{{ xref.db.descr }}" />
+					<ref dbkey="{{ xref.accession__accession }}" dbname="{{ xref.db__descr }}" />
 				{% endif %}
 			{% endfor %}
 		{% endspaceless %}

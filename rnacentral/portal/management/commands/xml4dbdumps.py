@@ -144,7 +144,10 @@ class Command(BaseCommand):
                     self.test_entries -= 1
                 if self.test_entries == 0:
                     break
-                f.write(t.render(Context({'rna': rna})))
+                xrefs = rna.xrefs.select_related('accession', 'db').values(
+                            'accession__accession','accession__non_coding_id',
+                            'accession__external_id', 'db__descr')
+                f.write(t.render(Context({'rna': rna, 'xrefs': xrefs})))
                 f.flush()
 
         def write_xml_footer():

@@ -30,6 +30,7 @@ class Rna(models.Model):
     seq_short = models.CharField(max_length=4000)
     seq_long = models.TextField()
     md5 = models.CharField(max_length=32, unique=True, db_index=True)
+    _cached = dict()
 
     class Meta:
         db_table = 'rna'
@@ -80,43 +81,108 @@ class Rna(models.Model):
         """
         return self.get_ena_xrefs() | self.get_expert_database_xrefs()
 
+    def _get_first_xref(self):
+        """
+        Cache the first xref for faster access.
+
+        This is useful for entries with a single source xref, which means
+        that all attributes can be retrieved from this single xref instead
+        of querying the database.
+        """
+        key = self._get_first_xref.__name__
+        if key not in self._cached:
+            self._cached[key] = self.xrefs.first()
+        return self._cached[key]
+
+    def _count_ena_xrefs(self):
+        """
+        Count the number of ENA cross-references associated with the sequence,
+        which is the number of distinct underlying ncRNA features.
+
+        The count has to be cached manually because django doesn't cache counts
+        to avoid outdated results.
+        """
+        key = self._count_ena_xrefs.__name__
+        if key not in self._cached:
+            self._cached[key] = self.xrefs.filter(db__id=1).count()
+        return self._cached[key]
+
+    def count_xrefs(self):
+        """
+        Count the number of cross-references associated with the sequence.
+
+        Manually cache the result so that it can be used in other methods
+        of this model.
+        """
+        key = self.count_xrefs.__name__
+        if key not in self._cached:
+            self._cached[key] = self.xrefs.count()
+        return self._cached[key]
+
     @cached_property
     def count_distinct_organisms(self):
         """
         Count the number of distinct taxids referenced by the sequence.
+
+        Equals to 1 if there is only 1 ENA source xref.
         """
-        return self.xrefs.values('taxid').distinct().count()
+        if self._count_ena_xrefs() == 1:
+            return 1
+        else:
+            return self.xrefs.values('taxid').distinct().count()
 
     @cached_property
     def count_distinct_databases(self):
         """
         Count the number of distinct databases referenced by the sequence.
-        """
-        return self.xrefs.values('db_id').distinct().count()
 
-    @cached_property
-    def count_xrefs(self):
+        Equals to 1 if there is only 1 ENA source xref.
         """
-        Count the number of cross-references associated with the sequence.
-        """
-        return self.xrefs.count()
+        if self.count_xrefs() == 1:
+            return 1
+        else:
+            return self.xrefs.values('db_id').distinct().count()
 
     @cached_property
     def first_seen(self):
-        data = self.xrefs.aggregate(first_seen=Min('created__release_date'))
-        return data['first_seen']
+        """
+        Return the earliest release the sequence is referenced in.
+
+        If there is only 1 ENA source xref, then its release date can be used
+        immediately without hitting the database.
+        """
+        if self._count_ena_xrefs() == 1:
+            return self._get_first_xref().created.release_date
+        else:
+            data = self.xrefs.aggregate(first_seen=Min('created__release_date'))
+            return data['first_seen']
 
     @cached_property
     def last_seen(self):
-        data = self.xrefs.aggregate(last_seen=Max('last__release_date'))
-        return data['last_seen']
+        """
+        Like `first_seen` but the order is reversed.
+        """
+        if self._count_ena_xrefs() == 1:
+            return self._get_first_xref().last.release_date
+        else:
+            data = self.xrefs.aggregate(last_seen=Max('last__release_date'))
+            return data['last_seen']
 
     @cached_property
     def is_active(self):
         """
         Return True if at least one xref is still active.
+
+        If there is only 1 ENA source xref, then its `deleted` value can be used
+        immediately without hitting the database.
         """
-        return self.xrefs.filter(deleted='N').count() > 0
+        if self._count_ena_xrefs() == 1:
+            if self._get_first_xref().deleted == 'N':
+                return True
+            else:
+                return False
+        else:
+            return self.xrefs.filter(deleted='N').count() > 0
 
     def get_sequence_fasta(self):
         """
