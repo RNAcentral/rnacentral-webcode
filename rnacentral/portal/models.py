@@ -207,16 +207,22 @@ class Rna(models.Model):
         """
         Return a list of distinct expert databases referencing the sequence.
         """
-        return self.xrefs.values_list('db__display_name', flat=True).distinct()
+        if self._count_ena_xrefs() == 1:
+            return [self._get_first_xref().db.display_name]
+        else:
+            return self.xrefs.values_list('db__display_name',
+                                          flat=True).distinct()
 
     def get_distinct_organelles(self):
         """
+        Return a list of distinct organelles.
         """
-        data = self.xrefs.values_list('accession__organelle', flat=True).distinct()
-        if len(data) == 1 and data[0] == '':
-            return []
+        if self._count_ena_xrefs() == 1:
+            data = [self._get_first_xref().accession.organelle]
         else:
-            return data
+            data = self.xrefs.values_list('accession__organelle', flat=True).distinct()
+        data = [x for x in data if x != ''] # do not report unknown organelles
+        return data
 
     def get_sequence_fasta(self):
         """
