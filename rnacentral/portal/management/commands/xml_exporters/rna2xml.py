@@ -14,7 +14,7 @@ limitations under the License.
 from xml.sax.saxutils import escape
 from django.template.defaultfilters import pluralize
 from portal.management.commands.common_exporters.oracle_connection \
-	import OracleConnection
+    import OracleConnection
 
 
 class RnaXmlExporter(OracleConnection):
@@ -163,7 +163,7 @@ class RnaXmlExporter(OracleConnection):
                                 'available descriptions)').format(
                                 num_descriptions=num_descriptions,
                                 description_line=description_line)
-        return escape(description_line)
+        return description_line
 
     def count(self, source):
         """
@@ -185,7 +185,7 @@ class RnaXmlExporter(OracleConnection):
             if value: # organelle can be empty e.g.
                 text.append('<field name="{0}">{1}</field>'.format(field,
                     value))
-        return escape('\n'.join(text))
+        return '\n'.join(text)
 
     def get_cross_references(self):
         """
@@ -248,7 +248,10 @@ class RnaXmlExporter(OracleConnection):
             """
             Store redundant data in sets in order to get distinct values.
             """
+            escape_fields = ['description', 'species']
             for field in self.redundant_fields:
+                if field in escape_fields:
+                    result[field] = escape(result[field])
                 self.data[field].add(result[field])
 
         def store_xrefs(result):
