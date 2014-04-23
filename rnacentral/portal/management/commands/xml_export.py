@@ -161,7 +161,7 @@ class Command(BaseCommand):
             for rna in Rna.objects.iterator():
                 if self.options['test']:
                     self.test_entries -= 1
-                if self.test_entries == 0:
+                if self.test_entries < 0:
                     break
                 filehandle.write(exporter.get_xml_entry(rna.upi))
                 filehandle.flush()
