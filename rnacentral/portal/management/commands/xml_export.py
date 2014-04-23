@@ -12,13 +12,13 @@ limitations under the License.
 """
 
 from django.core.management.base import BaseCommand, CommandError
-from django.template import Context, loader
-from django.template.loader import render_to_string
 from optparse import make_option
 from cProfile import Profile
 import os
+import subprocess
 import time
 from portal.models import Rna
+from portal.management.commands.xml_exporters.rna2xml import RnaXmlExporter
 
 
 class Command(BaseCommand):
@@ -127,38 +127,77 @@ class Command(BaseCommand):
             """
             Write out the beginning of the xml file.
             """
+            def get_entry_count():
+                """
+                Get either the test or the full entry count.
+                """
+                if self.options['test']:
+                    return self.test_entries
+                else:
+                    return Rna.objects.count()
+
             database = {
+                'name': 'RNAcentral',
+                'description': ('a database for non-protein coding RNA '
+                                'sequences'),
                 'release': '1beta',
                 'release_date': time.strftime("%d/%m/%Y"),
-                'entry_count': Rna.objects.count(),
+                'entry_count': get_entry_count(),
             }
-            f.write(render_to_string('portal/xml4dbdumps/header.xml', database))
+            header = """<database>
+            <name>{name}</name>
+            <description>{description}</description>
+            <release>{release}</release>
+            <release_date>{release_date}</release_date>
+            <entry_count>{entry_count}</entry_count>
+            <entries>""".format(**database)
+            filehandle.write(header)
 
         def write_rna_entries():
             """
             Write out RNA entries.
             """
-            t = loader.get_template('portal/xml4dbdumps/entry.xml')
+            exporter = RnaXmlExporter()
             for rna in Rna.objects.iterator():
                 if self.options['test']:
                     self.test_entries -= 1
                 if self.test_entries == 0:
                     break
-                xrefs = rna.xrefs.select_related('accession', 'db').values(
-                            'accession__accession','accession__non_coding_id',
-                            'accession__external_id', 'db__descr')
-                rna._cached = dict() # reset internal cache
-                f.write(t.render(Context({'rna': rna, 'xrefs': xrefs})))
-                f.flush()
+                filehandle.write(exporter.get_xml_entry(rna.upi))
+                filehandle.flush()
 
         def write_xml_footer():
             """
             Write out the end of the xml file.
             """
-            f.write(render_to_string('portal/xml4dbdumps/footer.xml'))
+            filehandle.write('</entries></database>')
 
-        f = open(os.path.join(self.options['destination'], self.filename), 'w')
+        def xmllint():
+            """
+            Run xmllint on the output file and print the resulting report.
+            """
+            schema_url = 'http://www.ebi.ac.uk/ebisearch/XML4dbDumps.xsd'
+            cmd = "xmllint {filepath} --schema {schema_url} --noout".format(
+                  filepath=filepath, schema_url=schema_url)
+            print subprocess.check_output(cmd, shell=True)
+
+        def gzip_file():
+            """
+            Gzip output file and keep the original.
+            """
+            gzipped_filename = '%s.gz' % filepath
+            cmd = 'gzip < %s > %s' % (filepath, gzipped_filename)
+            status = subprocess.call(cmd, shell=True)
+            if status == 0:
+                print 'File compressed, new file %s' % gzipped_filename
+            else:
+                print 'Compressing failed, no file created'
+
+        filepath = os.path.join(self.options['destination'], self.filename)
+        filehandle = open(filepath, 'w')
         write_xml_header()
         write_rna_entries()
         write_xml_footer()
-        f.close()
+        filehandle.close()
+        xmllint()
+        gzip_file()
