@@ -14,7 +14,8 @@ limitations under the License.
 from django.conf import settings
 from portal.models import Rna, Database, Xref
 from django.contrib.humanize.templatetags.humanize import intcomma
-import cx_Oracle
+from portal.management.commands.common_exporters.oracle_connection \
+    import OracleConnection
 import logging
 import os
 import re
@@ -22,7 +23,7 @@ import subprocess
 import time
 
 
-class FtpBase(object):
+class FtpBase(OracleConnection):
     """
     Base class for FTP export helper classes.
     """
@@ -124,40 +125,6 @@ class FtpBase(object):
     ##################
     # Oracle helpers #
     ##################
-
-    def get_connection(self):
-        """
-        Get Oracle connection using database details from Django settings.
-        """
-        db_url = '{username}/{password}@{db_name}'.format(username=settings.DATABASES['default']['USER'],
-                                                          password=settings.DATABASES['default']['PASSWORD'],
-                                                          db_name=settings.DATABASES['default']['NAME'])
-        self.connection = cx_Oracle.Connection(db_url)
-
-    def get_cursor(self):
-        """
-        Get Oracle cursor.
-        """
-        if not self.connection:
-            self.get_connection()
-        self.cursor = self.connection.cursor()
-        self.cursor.arraysize = 128
-
-    def close_connection(self):
-        """
-        Close Oracle connection.
-        """
-        try:
-            self.connection.close()
-        except:
-            self.logger.critical('Could not close Oracle connection.')
-
-    def row_to_dict(self, row):
-        """
-        Convert Oracle results from tuples to dicts to improve code readability.
-        """
-        description = [d[0].lower() for d in self.cursor.description]
-        return dict(zip(description, row))
 
     def log_oracle_error(self, oracle_exception):
         """
