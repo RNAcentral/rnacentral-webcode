@@ -185,7 +185,7 @@ class RnaXmlExporter(OracleConnection):
             if value: # organelle can be empty e.g.
                 text.append('<field name="{0}">{1}</field>'.format(field,
                     value))
-        return '\n'.join(escape(text))
+        return escape('\n'.join(text))
 
     def get_cross_references(self):
         """
