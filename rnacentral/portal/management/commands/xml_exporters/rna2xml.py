@@ -11,6 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from xml.sax.saxutils import escape
 from django.template.defaultfilters import pluralize
 from portal.management.commands.common_exporters.oracle_connection \
 	import OracleConnection
@@ -162,7 +163,7 @@ class RnaXmlExporter(OracleConnection):
                                 'available descriptions)').format(
                                 num_descriptions=num_descriptions,
                                 description_line=description_line)
-        return description_line
+        return escape(description_line)
 
     def count(self, source):
         """
