@@ -41,13 +41,15 @@ class RnaXmlExporter(OracleConnection):
                    t2.description, t2.non_coding_id, t2.accession,
                    t3.display_name as expert_db,
                    t4.timestamp as created,
-                   t5.timestamp as last
+                   t5.timestamp as last,
+                   t6.len as length
             FROM xref t1, rnc_accessions t2, rnc_database t3, rnc_release t4,
-                 rnc_release t5
+                 rnc_release t5, rna t6
             WHERE t1.ac = t2.accession AND
                   t1.dbid = t3.id AND
                   t1.created = t4.id AND
                   t1.last = t5.id AND
+                  t1.upi = t6.upi AND
                   t1.upi = :upi
             """
             self.cursor.prepare(sql)
@@ -71,7 +73,7 @@ class RnaXmlExporter(OracleConnection):
         """
         self.data = {
             'upi': None,
-            'length': 0, # todo: implement lookup
+            'length': 0,
             'xrefs': [],
         }
         for field in self.redundant_fields:
@@ -270,4 +272,5 @@ class RnaXmlExporter(OracleConnection):
             result = self.row_to_dict(row)
             store_sets(result)
             store_xrefs(result)
+            self.data['length'] = result['length']
         return self.format_xml_entry()
