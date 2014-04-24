@@ -265,8 +265,9 @@ class RnaXmlExporter(OracleConnection):
                 self.data['xrefs'].append((result['expert_db'],
                                            result['external_id']))
             else: # source ENA entry
-                self.data['xrefs'].append((result['expert_db'],
-                                           result['accession']))
+                # rename expert_db in order to link to non-coding ENA entries
+                expert_db = 'NON-CODING' # EBeye requirement
+                self.data['xrefs'].append((expert_db, result['accession']))
 
         self.reset()
         self.data['upi'] = upi
