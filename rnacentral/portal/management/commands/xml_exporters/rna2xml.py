@@ -132,7 +132,7 @@ class RnaXmlExporter(OracleConnection):
         """
         distinct_species = self.count('species')
         distinct_databases = self.count('expert_db')
-        xrefs_count = self.count('xrefs')
+        xrefs_count = self.count('xrefs') # will be 0 when is_active = False
 
         description = ('Unique RNA sequence from {distinct_organisms} '
                        'organism{species_suffix} '
