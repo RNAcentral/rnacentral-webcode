@@ -59,7 +59,7 @@ class MetaSearch(APIView):
                 'rnacentral_id': rna.upi,
                 'species': rna.count_distinct_organisms,
                 'databases': rna.count_distinct_databases,
-                'xrefs': rna.count_xrefs,
+                'xrefs': rna.count_xrefs(),
                 'description': descriptions[rna.md5],
                 'length': rna.length,
             })
