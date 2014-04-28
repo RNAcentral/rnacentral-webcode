@@ -217,6 +217,19 @@ class Accession(models.Model):
     database = models.CharField(max_length=20)
     external_id = models.CharField(max_length=100)
     optional_id = models.CharField(max_length=100)
+    anticodon = models.CharField(max_length=50)
+    experiment = models.CharField(max_length=200)
+    function = models.CharField(max_length=500)
+    gene = models.CharField(max_length=50)
+    gene_synonym = models.CharField(max_length=400)
+    inference = models.CharField(max_length=100)
+    locus_tag = models.CharField(max_length=50)
+    genome_position = models.CharField(max_length=200, db_column='map')
+    mol_type = models.CharField(max_length=50)
+    ncrna_class = models.CharField(max_length=50)
+    note = models.CharField(max_length=1500)
+    old_locus_tag = models.CharField(max_length=50)
+    product = models.CharField(max_length=300)
 
     class Meta:
         db_table = 'rnc_accessions'
