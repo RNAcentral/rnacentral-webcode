@@ -114,11 +114,7 @@ rnaMetasearch.controller('QueryCtrl', function($scope, $http, $location, results
     $scope.set_status = results.set_status;
 
     // watch url changes to perform a new search
-    // TODO resolve conflict with anchor tag navigation and bootstrap tabs
     $scope.$watch(function () { return $location.url(); }, function (newUrl, oldUrl) {
-
-    	// TODO: initialize the search when going to a search url
-    	// this function only executes on url update
 
          // a regular non-search url, potentially unchanged
         if (newUrl !== oldUrl) {
@@ -164,4 +160,15 @@ rnaMetasearch.controller('QueryCtrl', function($scope, $http, $location, results
         $scope.search($scope.query.text);
     };
 
+    var check_if_search_url = function () {
+       // check if there is query in url
+        if ($location.url().indexOf("/search?q=") > -1) {
+            // a search result page, launch a new search
+            $scope.query.text = $location.search().q;
+            $scope.search($location.search().q);
+        }
+    };
+
+    // run once at initialisation
+    check_if_search_url();
 });
