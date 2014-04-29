@@ -13,13 +13,24 @@ limitations under the License.
 
 // RNAcentral metasearch app.
 
-;var underscore = angular.module('underscore', []);
+;
+
+/**
+ * Make it possible to include underscore as a dependency.
+ */
+var underscore = angular.module('underscore', []);
 underscore.factory('_', function() {
     return window._;
 });
 
+/**
+ * Create RNAcentral app.
+ */
 var rnaMetasearch = angular.module('rnacentralApp', ['chieffancypants.loadingBar', 'underscore']);
 
+/**
+ * html5mode removes hashtags from urls.
+ */
 rnaMetasearch.config(['$locationProvider', function($locationProvider) {
     $locationProvider.html5Mode(true);
 }]);
@@ -28,27 +39,25 @@ rnaMetasearch.config(['$locationProvider', function($locationProvider) {
  * Service for passing data between controllers.
  */
 rnaMetasearch.service('results', ['_', function(_) {
-    var result;
+    var result = {
+        'hits': null,
+        'rnas': []
+    }
     var show_results = false;
 
     /**
-     * Process json files like this:
+     * Process deeply nested json objects like this:
      * { "field" : [ {"id": "description", "values": {"value": "description_value"}} ] }
      * into key-value pairs like this:
      * {"description": "description_value"}
      */
-    function flatten_entry_fields(ebeye_json) {
-        var result = {
-            'hits': ebeye_json.result.hitCount,
-            'rnas': []
-        }
-
-        result.rnas = _.each(ebeye_json.result.entries.entry, function(entry){
+    function preprocess_results(data) {
+        result.hits = data.result.hitCount;
+        result.rnas = _.each(data.result.entries.entry, function(entry){
             _.each(entry.fields.field, function(field){
                 entry[field['@id']] = field.values.value;
             });
         });
-        return result;
     };
 
     return {
@@ -58,18 +67,21 @@ rnaMetasearch.service('results', ['_', function(_) {
         set_status: function() {
             show_results = true;
         },
-        store: function(data) {
-            result = flatten_entry_fields(data);
+        save_results: function(data) {
+            preprocess_results(data);
             console.log(result);
         },
-        get: function() {
+        get_results: function() {
             return result;
         }
     }
 }]);
 
 rnaMetasearch.controller('MainContent', ['$scope', '$anchorScroll', '$location', 'results', function($scope, $anchorScroll, $location, results) {
-
+    /**
+     * Enables scrolling to anchor tags.
+     * <a ng-click="scrollTo('anchor')">Title</a>
+     */
     $scope.scrollTo = function(id) {
         $location.hash(id);
         $anchorScroll();
@@ -77,26 +89,26 @@ rnaMetasearch.controller('MainContent', ['$scope', '$anchorScroll', '$location',
 
     $scope.$watch(function () { return results.get_status(); }, function (newValue, oldValue) {
         if (newValue != null) {
-            $scope.show_results= newValue;
-           }
+            $scope.show_results = newValue;
+        }
     });
 }]);
 
 rnaMetasearch.controller('ResultsListCtrl', ['$scope', 'results', function($scope, results) {
 
-    $scope.result = results.get();
+    $scope.result = results.get_results();
     $scope.show_results = results.get_status();
 
-    $scope.$watch(function () { return results.get(); }, function (newValue, oldValue) {
+    $scope.$watch(function () { return results.get_results(); }, function (newValue, oldValue) {
         if (newValue != null) {
-            $scope.result= newValue;
-           }
+            $scope.result = newValue;
+        }
     });
 
     $scope.$watch(function () { return results.get_status(); }, function (newValue, oldValue) {
         if (newValue != null) {
-            $scope.show_results= newValue;
-           }
+            $scope.show_results = newValue;
+        }
     });
 
 }]);
@@ -107,10 +119,19 @@ rnaMetasearch.controller('QueryCtrl', ['$scope', '$http', '$location', 'results'
         text: '',
         submitted: false
     };
-
     $scope.show_results = false;
-    $scope.store_data = results.store;
+    $scope.save_results = results.save_results;
     $scope.set_status = results.set_status;
+
+    var ebeye_base_url = 'http://ash-4.ebi.ac.uk:8080';
+    var fields = ['description', 'active', 'length', 'name'];
+    var query_urls = {
+        'ebeye_search': ebeye_base_url + '/ebisearch/ws/rest/rnacentral' +
+                                         '?query={QUERY}' +
+                                         '&format=json' +
+                                         '&fields=' + fields.join(),
+        'proxy': 'http://localhost:8000/api/internal/ebeye?url={EBEYE_URL}'
+    };
 
     // watch url changes to perform a new search
     $scope.$watch(function () { return $location.url(); }, function (newUrl, oldUrl) {
@@ -119,7 +140,6 @@ rnaMetasearch.controller('QueryCtrl', ['$scope', '$http', '$location', 'results'
         if (newUrl !== oldUrl) {
             if (newUrl.indexOf('/search') == -1) {
                 // not a search page, redirect
-                console.log('About to redirect ' + window.location.pathname);
                 window.location.href = newUrl;
             } else {
                 // a search result page, launch a new search
@@ -135,17 +155,14 @@ rnaMetasearch.controller('QueryCtrl', ['$scope', '$http', '$location', 'results'
         $scope.set_status();
         $location.url('/search' + '?q=' + query);
 
-
-        var ebeye_url = 'http://ash-4.ebi.ac.uk:8080/ebisearch/ws/rest/rnacentral?query={QUERY}&fields=description,active,length,name&format=json';
-        ebeye_url = ebeye_url.replace('{QUERY}', query);
-        var url = 'http://localhost:8000/api/internal/ebeye?url=' + encodeURIComponent(ebeye_url);
+        var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query);
+        var url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url));
 
         $http({
             url: url,
             method: 'GET'
-            // params: {taxid: $scope.query.text}
         }).success(function(data) {
-            $scope.store_data(data);
+            $scope.save_results(data);
             $scope.query.submitted = false;
         });
     }
@@ -155,7 +172,6 @@ rnaMetasearch.controller('QueryCtrl', ['$scope', '$http', '$location', 'results'
         if ($scope.queryForm.text.$invalid) {
             return;
         }
-
         $scope.search($scope.query.text);
     };
 
