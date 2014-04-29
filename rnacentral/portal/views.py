@@ -22,6 +22,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.template import TemplateDoesNotExist
 import re
+import requests
 import json
 
 
@@ -30,6 +31,23 @@ CACHE_TIMEOUT = 60 * 60 * 24 * 1 # per-view cache timeout in seconds
 ########################
 # Function-based views #
 ########################
+
+def ebeye_proxy(request):
+    """
+    Internal API.
+    Get EBeye search URL from the client and send back the results.
+    Bypasses EBeye same-origin policy.
+    """
+    url = request.GET['url']
+    try:
+        response = requests.get(url)
+        data = response.text
+    except RequestException, exc:
+        data = json.dumps({
+            'status': 'failed',
+        })
+    return HttpResponse(data)
+
 
 @cache_page(CACHE_TIMEOUT)
 def get_expert_database_organism_sunburst(request, expert_db_name):
