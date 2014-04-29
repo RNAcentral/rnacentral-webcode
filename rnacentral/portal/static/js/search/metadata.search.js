@@ -20,12 +20,11 @@ underscore.factory('_', function() {
 
 var rnaMetasearch = angular.module('rnacentralApp', ['chieffancypants.loadingBar', 'underscore']);
 
-
 rnaMetasearch.config(['$locationProvider', function($locationProvider) {
     $locationProvider.html5Mode(true);
 }]);
 
-rnaMetasearch.service('results', function(_) {
+rnaMetasearch.service('results', ['_', function(_) {
     var result;
     var show_results = false;
 
@@ -64,9 +63,9 @@ rnaMetasearch.service('results', function(_) {
             return result;
         }
     }
-});
+}]);
 
-rnaMetasearch.controller('MainContent', function($scope, $anchorScroll, $location, results) {
+rnaMetasearch.controller('MainContent', ['$scope', '$anchorScroll', '$location', 'results', function($scope, $anchorScroll, $location, results) {
 
     $scope.scrollTo = function(id) {
         $location.hash(id);
@@ -78,12 +77,9 @@ rnaMetasearch.controller('MainContent', function($scope, $anchorScroll, $locatio
             $scope.show_results= newValue;
            }
     });
-});
+}]);
 
-// minification-safe method
-// phonecatApp.controller('PhoneListCtrl', ['$scope', '$http', function($scope, $http) {...}]);
-
-rnaMetasearch.controller('ResultsListCtrl', function($scope, results) {
+rnaMetasearch.controller('ResultsListCtrl', ['$scope', 'results', function($scope, results) {
 
     $scope.result = results.get();
     $scope.show_results = results.get_status();
@@ -100,9 +96,9 @@ rnaMetasearch.controller('ResultsListCtrl', function($scope, results) {
            }
     });
 
-});
+}]);
 
-rnaMetasearch.controller('QueryCtrl', function($scope, $http, $location, results) {
+rnaMetasearch.controller('QueryCtrl', ['$scope', '$http', '$location', 'results', function($scope, $http, $location, results) {
 
     $scope.query = {
         text: '',
@@ -171,4 +167,4 @@ rnaMetasearch.controller('QueryCtrl', function($scope, $http, $location, results
 
     // run once at initialisation
     check_if_search_url();
-});
+}]);
