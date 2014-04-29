@@ -24,26 +24,29 @@ rnaMetasearch.config(['$locationProvider', function($locationProvider) {
     $locationProvider.html5Mode(true);
 }]);
 
+/**
+ * Service for passing data between controllers.
+ */
 rnaMetasearch.service('results', ['_', function(_) {
     var result;
     var show_results = false;
 
+    /**
+     * Process json files like this:
+     * { "field" : [ {"id": "description", "values": {"value": "description_value"}} ] }
+     * into key-value pairs like this:
+     * {"description": "description_value"}
+     */
     function flatten_entry_fields(ebeye_json) {
         var result = {
             'hits': ebeye_json.result.hitCount,
             'rnas': []
         }
+
         result.rnas = _.each(ebeye_json.result.entries.entry, function(entry){
-
-            var keys = ['description', 'active', 'length', 'name'];
-
-            _.each(keys, function(key){
-                var data = _.find(entry.fields.field, function(field){
-                  return field['@id'] == key;
-                });
-                entry[key] = data.values.value;
+            _.each(entry.fields.field, function(field){
+                entry[field['@id']] = field.values.value;
             });
-
         });
         return result;
     };
