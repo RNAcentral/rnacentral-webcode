@@ -13,15 +13,41 @@ limitations under the License.
 
 // RNAcentral metasearch app.
 
-;var rnaMetasearch = angular.module('rnacentralApp', ['chieffancypants.loadingBar']);
+;var underscore = angular.module('underscore', []);
+underscore.factory('_', function() {
+    return window._;
+});
+
+var rnaMetasearch = angular.module('rnacentralApp', ['chieffancypants.loadingBar', 'underscore']);
+
 
 rnaMetasearch.config(['$locationProvider', function($locationProvider) {
     $locationProvider.html5Mode(true);
 }]);
 
-rnaMetasearch.service('results', function() {
-    var rnas = [];
+rnaMetasearch.service('results', function(_) {
+    var result;
     var show_results = false;
+
+    function flatten_entry_fields(ebeye_json) {
+        var result = {
+            'hits': ebeye_json.result.hitCount,
+            'rnas': []
+        }
+        result.rnas = _.each(ebeye_json.result.entries.entry, function(entry){
+
+            var keys = ['description', 'active', 'length', 'name'];
+
+            _.each(keys, function(key){
+                var data = _.find(entry.fields.field, function(field){
+                  return field['@id'] == key;
+                });
+                entry[key] = data.values.value;
+            });
+
+        });
+        return result;
+    };
 
     return {
         get_status: function() {
@@ -31,10 +57,11 @@ rnaMetasearch.service('results', function() {
             show_results = true;
         },
         store: function(data) {
-            rnas = data;
+            result = flatten_entry_fields(data);
+            console.log(result);
         },
         get: function() {
-            return rnas;
+            return result;
         }
     }
 });
@@ -58,12 +85,12 @@ rnaMetasearch.controller('MainContent', function($scope, $anchorScroll, $locatio
 
 rnaMetasearch.controller('ResultsListCtrl', function($scope, results) {
 
-    $scope.rnas = results.get();
+    $scope.result = results.get();
     $scope.show_results = results.get_status();
 
     $scope.$watch(function () { return results.get(); }, function (newValue, oldValue) {
         if (newValue != null) {
-            $scope.rnas= newValue;
+            $scope.result= newValue;
            }
     });
 
@@ -112,10 +139,16 @@ rnaMetasearch.controller('QueryCtrl', function($scope, $http, $location, results
         $scope.show_results = true;
         $scope.set_status();
         $location.url('/search' + '?q=' + query);
+
+
+        var ebeye_url = 'http://ash-4.ebi.ac.uk:8080/ebisearch/ws/rest/rnacentral?query={QUERY}&fields=description,active,length,name&format=json';
+        ebeye_url = ebeye_url.replace('{QUERY}', query);
+        var url = 'http://localhost:8000/api/internal/ebeye?url=' + encodeURIComponent(ebeye_url);
+
         $http({
-            url: '/api/v1/search',
-            method: 'GET',
-            params: {taxid: $scope.query.text}
+            url: url,
+            method: 'GET'
+            // params: {taxid: $scope.query.text}
         }).success(function(data) {
             $scope.store_data(data);
             $scope.query.submitted = false;

@@ -30,7 +30,7 @@ limitations under the License.
           <div class="form-group" ng-class="(query.submitted && queryForm.$invalid) ? 'has-error' : ''">
             <div class="input-group">
               <input type="text"
-                     placeholder="Currently only supports searching by taxids"
+                     placeholder="Organism, database, gene product"
                      class="form-control"
                      id="query-text"
                      name="text"
@@ -48,7 +48,7 @@ limitations under the License.
             </div><!--input-group -->
             <span class="help-block">
               <small>
-                <i>Examples: <a ng-click="search('9606')">human</a>, <a ng-click="search('562')">E.coli</a></i>
+                <i>Examples: <a ng-click="search('human')">human</a>, <a ng-click="search('mirbase')">miRBase</a></i>
               </small>
             </span>
             <label class="control-label ng-cloak has-error"
