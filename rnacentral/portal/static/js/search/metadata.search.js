@@ -40,8 +40,9 @@ rnaMetasearch.config(['$locationProvider', function($locationProvider) {
  */
 rnaMetasearch.service('results', ['_', function(_) {
     var result = {
-        'hits': null,
-        'rnas': []
+        hits: null,
+        rnas: [],
+        facets: []
     }
     var show_results = false;
 
@@ -53,7 +54,17 @@ rnaMetasearch.service('results', ['_', function(_) {
      */
     function preprocess_results(data) {
         result.hits = data.result.hitCount;
+
+        result.facets = _.each(data.result.facets.facet, function(facet){
+            // wrap single entry in an array
+            if ( !_.isArray(facet.facetValues.facetValue) ) {
+                facet.facetValues.facetValue = [facet.facetValues.facetValue];
+            }
+            return facet;
+        });
+
         result.rnas = _.each(data.result.entries.entry, function(entry){
+            // flatten deeply nested arrays
             _.each(entry.fields.field, function(field){
                 entry[field['@id']] = field.values.value;
             });
@@ -123,14 +134,24 @@ rnaMetasearch.controller('QueryCtrl', ['$scope', '$http', '$location', 'results'
     $scope.save_results = results.save_results;
     $scope.set_status = results.set_status;
 
-    var ebeye_base_url = 'http://ash-4.ebi.ac.uk:8080';
-    var fields = ['description', 'active', 'length', 'name'];
+    var search_config = {
+        ebeye_base_url: 'http://ash-4.ebi.ac.uk:8080',
+        rnacentral_base_url: 'http://localhost:8000',
+        fields: ['description', 'active', 'length', 'name'],
+        facetfields: ['active', 'expert_db', 'TAXONOMY'],
+        facetcount: 10
+    };
+
     var query_urls = {
-        'ebeye_search': ebeye_base_url + '/ebisearch/ws/rest/rnacentral' +
-                                         '?query={QUERY}' +
-                                         '&format=json' +
-                                         '&fields=' + fields.join(),
-        'proxy': 'http://localhost:8000/api/internal/ebeye?url={EBEYE_URL}'
+        'ebeye_search': search_config.ebeye_base_url +
+                        '/ebisearch/ws/rest/rnacentral' +
+                        '?query={QUERY}' +
+                        '&format=json' +
+                        '&fields=' + search_config.fields.join() +
+                        '&facetcount=' + search_config.facetcount +
+                        '&facetfields=' + search_config.facetfields.join(),
+        'proxy': search_config.rnacentral_base_url +
+                 '/api/internal/ebeye?url={EBEYE_URL}'
     };
 
     // watch url changes to perform a new search
