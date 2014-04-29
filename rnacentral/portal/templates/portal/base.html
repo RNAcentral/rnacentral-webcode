@@ -14,10 +14,10 @@ limitations under the License.
 {% load staticfiles %}
 {% load compress %}
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<!--[if lt IE 7]>      <html xmlns:ng="http://angularjs.org" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html xmlns:ng="http://angularjs.org" class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html xmlns:ng="http://angularjs.org" class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html xmlns:ng="http://angularjs.org" class="no-js"> <!--<![endif]-->
     <head>
         {% block meta_tags %}
           <meta charset="utf-8">
@@ -53,6 +53,23 @@ limitations under the License.
           {% block javascript %}
             <script src="{% static "js/vendor/modernizr-2.6.2-respond-1.1.0.min.js" %}"></script>
           {% endblock javascript %}
+          <!-- polyfill JSON.stringify for Angular.js -->
+          <!--[if lte IE 7]>
+            <script src="{% static "js/vendor/angular/json3/json3.min.js" %}"></script>
+          <![endif]-->
+          <!-- create Angular.js custom element tags -->
+          <!--[if lte IE 8]>
+            <script>
+              document.createElement('ng-include');
+              document.createElement('ng-pluralize');
+              document.createElement('ng-view');
+
+              // Optionally these for CSS
+              document.createElement('ng:include');
+              document.createElement('ng:pluralize');
+              document.createElement('ng:view');
+            </script>
+          <![endif]-->
         {% endcompress %}
 
         <!-- Favicons -->
