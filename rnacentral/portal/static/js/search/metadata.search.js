@@ -181,7 +181,6 @@ rnaMetasearch.controller('QueryCtrl', ['$scope', '$http', '$location', 'results'
         $scope.query.text = query;
         $scope.show_results = true;
         $scope.set_status();
-        $location.url('/search' + '?q=' + query);
 
         var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query);
         var url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url));
@@ -200,7 +199,7 @@ rnaMetasearch.controller('QueryCtrl', ['$scope', '$http', '$location', 'results'
         if ($scope.queryForm.text.$invalid) {
             return;
         }
-        $scope.search($scope.query.text);
+        $location.url('/search' + '?q=' + $scope.query.text);
     };
 
     var check_if_search_url = function () {
