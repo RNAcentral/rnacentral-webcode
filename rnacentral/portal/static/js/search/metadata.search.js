@@ -145,7 +145,7 @@ rnaMetasearch.controller('QueryCtrl', ['$scope', '$http', '$location', 'results'
         ebeye_base_url: 'http://ash-4.ebi.ac.uk:8080',
         rnacentral_base_url: 'http://localhost:8000',
         fields: ['description', 'active', 'length', 'name'],
-        facetfields: ['active', 'expert_db', 'TAXONOMY'],
+        facetfields: ['active', 'expert_db', 'rna_type', 'TAXONOMY'],
         facetcount: 10
     };
 
