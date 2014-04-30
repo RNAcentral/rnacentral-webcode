@@ -32,49 +32,48 @@
 
   <div class="row">
 
-    <div>
-        <div class="col-md-3">
-          <ul  class="list-unstyled ng-cloak" ng-repeat="facet in result.facets" ng-cloak ng-show="result.hits > 0">
+    <div class="col-md-3">
+      <ul  class="list-unstyled ng-cloak" ng-repeat="facet in result.facets" ng-cloak ng-show="result.hits > 0">
 
-            <li class="facet">
-              <div class="col-md-12">
+        <li class="facet">
+          <div class="col-md-12">
 
-                <h4>{{facet['@label']}}</h4>
+            <h4>{{facet['@label']}}</h4>
 
-                <ul ng-repeat="facet_value in facet.facetValues.facetValue">
-                    <li>
-                      <a>{{facet_value['label']}} ({{facet_value['count']}})</a>
-                    </li>
-                </ul>
+            <ul ng-repeat="facet_value in facet.facetValues.facetValue">
+                <li>
+                  <a>{{facet_value['label']}} ({{facet_value['count']}})</a>
+                </li>
+            </ul>
 
-              </div>
-            </li>
+          </div>
+        </li>
 
-          </ul>
-        </div>
-        <div class="col-md-9">
-          <ul  class="list-unstyled ng-cloak" ng-repeat="rna in result.rnas" ng-cloak>
+      </ul>
+    </div>
 
-            <li class="result">
-              <div class="col-md-12">
+    <div class="col-md-9">
+      <br>
+      <ul  class="list-unstyled ng-cloak" ng-repeat="rna in result.rnas" ng-cloak>
 
-                <h4><a href="/rna/{{rna['@id']}}">{{rna['@id']}}</a></h4>
+        <li class="result">
+          <div class="col-md-12">
 
-                <h4>{{rna.description}}</h4>
+            <h4><a href="/rna/{{rna['@id']}}">{{rna.description}}</a></h4>
 
-                <small>{{rna.name}}</small>
+            <ul class="list-inline small">
+              <li>
+                {{rna['@id']}}
+              </li>
+              <li>
+                <i class="fa fa-arrows-h"></i> <strong>{{rna.length}}</strong> nucleotides
+              </li>
+            </ul>
 
-                <ul class="list-inline small">
-                  <li>
-                    <i class="fa fa-arrows-h"></i> <strong>{{rna.length}}</strong> nucleotides
-                  </li>
-                </ul>
+          </div>
+        </li>
 
-              </div>
-            </li>
-
-          </ul>
-        </div>
+      </ul>
     </div>
 
   </div><!--/row-->
