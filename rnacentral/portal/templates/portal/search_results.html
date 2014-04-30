@@ -1,28 +1,41 @@
+{% verbatim %}
 <div ng-show="show_results" ng-controller="ResultsListCtrl">
 
-  <h1><i class="fa fa-search"></i> Results</h1>
+  <h1>
+    <i class="fa fa-search"></i> Results
+    <small class="ng-cloak" ng-cloak ng-show="result.hits > 0">
+      {{ result.hits }}
+      <ng-pluralize count="result.hits"
+          when="{'1': 'entry found',
+                 'other': 'entries found'}">
+      </ng-pluralize>
+    </small>
+  </h1>
 
-  <br>
-
-  <div class="row">
+  <div class="row ng-cloak" ng-cloak ng-show="result.hits == 0">
 
     <div class="col-md-12">
-      <p class="small ng-cloak" ng-cloak>
-        {% verbatim %}
-          {{ result.hits }}
-          <ng-pluralize count="result.hits"
-              when="{'0': 'No results',
-                     '1': 'entry found',
-                     'other': 'entries found'}">
-          </ng-pluralize>
-        {% endverbatim %}
-      </p>
+      <div class="alert alert-warning col-md-12">
+        <strong>No results</strong>
+      </div>
     </div>
+
+    <div class="col-md-12">
+      <h2>Search tips</h2>
+      <ul>
+        <li>Try relaxing your query by adding wildcards (*) to one or more of your search terms.</li>
+        <li>Check for typos (fuzzy search is not supported!)</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div class="row">
 
     <div>
         <div class="col-md-3">
           <ul  class="list-unstyled ng-cloak" ng-repeat="facet in result.facets" ng-cloak ng-show="result.hits > 0">
-            {% verbatim %}
+
             <li class="facet">
               <div class="col-md-12">
 
@@ -36,12 +49,12 @@
 
               </div>
             </li>
-            {% endverbatim %}
+
           </ul>
         </div>
         <div class="col-md-9">
           <ul  class="list-unstyled ng-cloak" ng-repeat="rna in result.rnas" ng-cloak>
-            {% verbatim %}
+
             <li class="result">
               <div class="col-md-12">
 
@@ -59,7 +72,7 @@
 
               </div>
             </li>
-            {% endverbatim %}
+
           </ul>
         </div>
     </div>
@@ -67,3 +80,4 @@
   </div><!--/row-->
 
 </div>
+{% endverbatim %}
