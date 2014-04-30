@@ -56,19 +56,26 @@ rnaMetasearch.service('results', ['_', function(_) {
         result.hits = data.result.hitCount;
 
         result.facets = _.each(data.result.facets.facet, function(facet){
-            // wrap single entry in an array
-            if ( !_.isArray(facet.facetValues.facetValue) ) {
-                facet.facetValues.facetValue = [facet.facetValues.facetValue];
-            }
+            facet.facetValues.facetValue = wrap_in_array(facet.facetValues.facetValue);
             return facet;
         });
 
+        data.result.entries.entry = wrap_in_array(data.result.entries.entry);
         result.rnas = _.each(data.result.entries.entry, function(entry){
             // flatten deeply nested arrays
             _.each(entry.fields.field, function(field){
                 entry[field['@id']] = field.values.value;
             });
         });
+
+        function wrap_in_array(data) {
+            // wrap single entry in an array
+            if ( !_.isArray(data) ) {
+                return [data]
+            } else {
+                return data;
+            }
+        };
     };
 
     return {
