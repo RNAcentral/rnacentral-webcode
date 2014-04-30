@@ -132,43 +132,47 @@ class RnaXmlExporter(OracleConnection):
         """
         return self.__first_or_last_seen('last')
 
-    def get_generic_description(self):
-        """
-        Construct a generic description line for each unique RNA sequence.
-        """
-        distinct_species = self.count('species')
-        distinct_databases = self.count('expert_db')
-        xrefs_count = self.count('xrefs') # will be 0 when is_active = False
-
-        description = ('Unique RNA sequence from {distinct_organisms} '
-                       'organism{species_suffix} '
-                       'with {xrefs_count} annotation{xrefs_suffix} '
-                       'from {distinct_databases} '
-                       'database{expert_dbs_suffix}').format(
-                        distinct_organisms=distinct_species,
-                        species_suffix=pluralize(distinct_species),
-                        xrefs_count=xrefs_count,
-                        xrefs_suffix=pluralize(xrefs_count),
-                        distinct_databases=distinct_databases,
-                        expert_dbs_suffix=pluralize(distinct_databases),
-        )
-        return description
-
     def get_description(self):
         """
-        Select 1 description line from the existing entry descriptions.
+        if one ENA entry
+            use its description line
+        if more than one ENA entry:
+            if from 1 organism:
+                {species} {rna_type}
+                Example: Homo sapiens tRNA
+            if from multiple organisms:
+                {rna_type} from {x} species
+                Example: tRNA from 10 species
+                if multuple rna_types, join them by '/'
 
-        If one ENA entry: show the description line
-        If more than one ENA entry:
-            One of 10 descriptions:
+        Using product or gene is tricky because the same entity can be
+        described in a number of ways, for example one sequence
+        has the following clearly redundant products:
+        tRNA-Phe, transfer RNA-Phe, tRNA-Phe (GAA), tRNA-Phe-GAA etc
         """
         num_descriptions = self.count('xrefs')
-        description_line = self.data['description'].pop().capitalize()
-        if num_descriptions > 1:
-            description_line = ('{description_line} (one of {num_descriptions} '
-                                'available descriptions)').format(
-                                num_descriptions=num_descriptions,
-                                description_line=description_line)
+
+        if num_descriptions == 1:
+            description_line = self.data['description'].pop().capitalize()
+        else:
+            distinct_species = self.count('species')
+
+            if len(self.data['product']) == 1:
+                rna_type = self.data['product'].pop()
+            elif len(self.data['gene']) == 1:
+                rna_type = self.data['gene'].pop()
+            else:
+                rna_type = '/'.join(self.data['rna_type'])
+
+            if distinct_species == 1:
+                species = self.data['species'].pop()
+                description_line = '{species} {rna_type}'.format(
+                                    species=species, rna_type=rna_type)
+            else:
+                description_line = ('{rna_type} from '
+                                    '{distinct_species} species').format(
+                                    rna_type=rna_type,
+                                    distinct_species=distinct_species)
         return description_line
 
     def count(self, source):
@@ -217,7 +221,7 @@ class RnaXmlExporter(OracleConnection):
         """
         return """
         <entry id="{upi}">
-            <name>{name}</name>
+            <name>Unique RNA Sequence {upi}</name>
             <description>{description}</description>
             <dates>
                 <date value="{first_seen}" type="first_seen" />
@@ -240,7 +244,6 @@ class RnaXmlExporter(OracleConnection):
                 {product}
             </additional_fields>
         </entry>""".format(upi=self.data['upi'],
-                           name=self.get_generic_description(),
                            description=self.get_description(),
                            first_seen=self.first_seen(),
                            last_seen=self.last_seen(),
@@ -268,9 +271,10 @@ class RnaXmlExporter(OracleConnection):
             """
             escape_fields = ['description', 'species']
             for field in self.redundant_fields:
-                if field in escape_fields:
-                    result[field] = escape(result[field])
-                self.data[field].add(result[field])
+                if result[field]:
+                    if field in escape_fields:
+                        result[field] = escape(result[field])
+                    self.data[field].add(result[field])
 
         def store_xrefs(result):
             """
