@@ -194,12 +194,16 @@ rnaMetasearch.controller('QueryCtrl', ['$scope', '$http', '$location', 'results'
         });
     }
 
+    $scope.trigger_search = function(query) {
+        $location.url('/search' + '?q=' + query);
+    }
+
     $scope.submit_query = function() {
         $scope.query.submitted = true;
         if ($scope.queryForm.text.$invalid) {
             return;
         }
-        $location.url('/search' + '?q=' + $scope.query.text);
+        $scope.trigger_search($scope.query.text);
     };
 
     var check_if_search_url = function () {
