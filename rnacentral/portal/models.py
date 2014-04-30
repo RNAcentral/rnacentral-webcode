@@ -162,6 +162,85 @@ class Rna(models.Model):
             bed += _xref_to_bed_format(xref)
         return bed
 
+    def get_description(self):
+        """
+        Get entry description.
+        This function mimics the logic implemented in the xml dumping pipeline.
+        See portal/management/commands/xml_exporters/rna2xml.py
+        """
+        def count_ena_xrefs():
+            """
+            Count xrefs from ENA.
+            """
+            return self.xrefs.filter(db__descr='ENA').count()
+
+        def get_distinct_products():
+            """
+            Get distinct non-null product values as a list.
+            """
+            return self.xrefs.values_list('accession__product', flat=True).\
+                              filter(accession__product__isnull=False).\
+                              distinct()
+        def get_distinct_genes():
+            """
+            Get distinct non-null gene values as a list.
+            """
+            return self.xrefs.values_list('accession__gene', flat=True).\
+                              filter(accession__gene__isnull=False).\
+                              distinct()
+
+        def get_distinct_feature_names():
+            """
+            Get distinct feature names as a list.
+            """
+            return self.xrefs.values_list('accession__feature_name',
+                                          flat=True).distinct()
+
+        def get_distinct_ncrna_classes():
+            """
+            For ncRNA features, get distinct ncrna_class values as a list.
+            """
+            return self.xrefs.values_list('accession__ncrna_class',
+                                          flat=True).\
+                              filter(accession__ncrna_class__isnull=False).\
+                              distinct()
+
+        def get_rna_type():
+            """
+            product > gene > feature name
+            For ncRNA features, use ncrna_class annotations.
+            """
+            products = get_distinct_products()
+            genes = get_distinct_genes()
+            if len(products) == 1:
+                rna_type = products[0]
+            elif len(genes) == 1:
+                rna_type = genes[0]
+            else:
+                feature_names = get_distinct_feature_names()
+                if feature_names[0] == 'ncRNA' and len(feature_names) == 1:
+                    ncrna_classes = get_distinct_ncrna_classes()
+                    rna_type = '/'.join(ncrna_classes)
+                else:
+                    rna_type = '/'.join(feature_names)
+            return rna_type
+
+        num_descriptions = count_ena_xrefs()
+        if num_descriptions == 1:
+            description_line = self.xrefs.all()[0].accession.description.capitalize()
+        else:
+            distinct_species = self.count_distinct_organisms
+            rna_type = get_rna_type()
+            if distinct_species == 1:
+                species = self.xrefs.all()[0].accession.species
+                description_line = '{species} {rna_type}'.format(
+                                    species=species, rna_type=rna_type)
+            else:
+                description_line = ('{rna_type} from '
+                                    '{distinct_species} species').format(
+                                    rna_type=rna_type,
+                                    distinct_species=distinct_species)
+        return description_line
 
 class Database(models.Model):
     timestamp = models.DateField()

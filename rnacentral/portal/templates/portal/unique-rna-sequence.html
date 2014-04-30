@@ -71,6 +71,7 @@ limitations under the License.
 
           <div class="panel panel-default">
             <div class="panel-body">
+              <p><strong>Description:</strong> {{rna.get_description}}</p>
               <ul class="list-inline">
                 <li><strong>{{ rna.length|intcomma }}</strong> nucleotides</li>
                 <li><strong>{{ rna.count_distinct_databases|intcomma }}</strong> database{{ rna.count_distinct_databases|pluralize }}</li> {{context.num_db}}
