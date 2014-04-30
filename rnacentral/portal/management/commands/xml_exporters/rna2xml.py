@@ -40,6 +40,8 @@ class RnaXmlExporter(OracleConnection):
             SELECT t1.taxid, t1.deleted,
                    t2.species, t2.organelle, t2.external_id,
                    t2.description, t2.non_coding_id, t2.accession,
+                   t2.function, t2.gene, t2.gene_synonym, t2.feature_name,
+                   t2.ncrna_class, t2.product, t2.common_name,
                    t3.display_name as expert_db,
                    t4.timestamp as created,
                    t5.timestamp as last,
@@ -61,7 +63,9 @@ class RnaXmlExporter(OracleConnection):
         # these strings must match the SQL query return values
         # and will become keys in self.data
         self.redundant_fields = ['taxid', 'species', 'expert_db', 'organelle',
-                                 'created', 'last', 'deleted', 'description']
+                                 'created', 'last', 'deleted', 'description',
+                                 'function', 'gene', 'gene_synonym',
+                                 'product', 'common_name']
         self.initialize()
         self.get_connection()
         self.get_cursor()
@@ -79,6 +83,8 @@ class RnaXmlExporter(OracleConnection):
         }
         for field in self.redundant_fields:
             self.data[field] = set()
+        # additional data requiring custom treatment
+        self.data['rna_type'] = set()
 
     def reset(self):
         """
@@ -226,6 +232,12 @@ class RnaXmlExporter(OracleConnection):
                 {species}
                 {organelles}
                 {expert_dbs}
+                {common_name}
+                {function}
+                {gene}
+                {gene_synonym}
+                {rna_type}
+                {product}
             </additional_fields>
         </entry>""".format(upi=self.data['upi'],
                            name=self.get_generic_description(),
@@ -237,7 +249,13 @@ class RnaXmlExporter(OracleConnection):
                            length=self.data['length'],
                            species=self.get_additional_field('species'),
                            organelles=self.get_additional_field('organelle'),
-                           expert_dbs=self.get_additional_field('expert_db'))
+                           expert_dbs=self.get_additional_field('expert_db'),
+                           common_name=self.get_additional_field('common_name'),
+                           function=self.get_additional_field('function'),
+                           gene=self.get_additional_field('gene'),
+                           gene_synonym=self.get_additional_field('gene_synonym'),
+                           rna_type=self.get_additional_field('rna_type'),
+                           product=self.get_additional_field('product'))
 
     def get_xml_entry(self, upi):
         """
@@ -269,6 +287,20 @@ class RnaXmlExporter(OracleConnection):
                 expert_db = 'NON-CODING' # EBeye requirement
                 self.data['xrefs'].append((expert_db, result['accession']))
 
+        def store_rna_type(result):
+            """
+            Store distinct RNA type annotations in a set.
+            If an entry is an 'ncRNA' feature, it will have a mandatory field
+            'ncrna_class' with useful description.
+            If an entry is any other RNA feature, use that feature_name
+            as rna_type.
+            """
+            if result['ncrna_class']:
+                rna_type = result['ncrna_class']
+            else:
+                rna_type = result['feature_name']
+            self.data['rna_type'].add(rna_type.replace('_', ' '))
+
         self.reset()
         self.data['upi'] = upi
         self.cursor.execute(None, {'upi': upi})
@@ -277,5 +309,6 @@ class RnaXmlExporter(OracleConnection):
             result = self.row_to_dict(row)
             store_sets(result)
             store_xrefs(result)
+            store_rna_type(result)
             self.data['length'] = result['length']
         return self.format_xml_entry()
