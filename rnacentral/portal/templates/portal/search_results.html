@@ -50,9 +50,9 @@
       </ul>
     </div>
 
-    <div class="col-md-9">
+    <div class="col-md-9" class="ng-cloak" ng-cloak>
       <br>
-      <ul  class="list-unstyled ng-cloak" ng-repeat="rna in result.rnas" ng-cloak>
+      <ul class="list-unstyled" ng-repeat="rna in result.rnas">
 
         <li class="result">
           <div class="col-md-12">
@@ -72,6 +72,9 @@
         </li>
 
       </ul>
+
+      <button class="btn btn-default" ng-click="load_more()" ng-show="result.hits > page_size">Load more results</button>
+      <br>
     </div>
 
   </div><!--/row-->

@@ -38,13 +38,37 @@ rnaMetasearch.config(['$locationProvider', function($locationProvider) {
 /**
  * Service for passing data between controllers.
  */
-rnaMetasearch.service('results', ['_', '$http', function(_, $http) {
+rnaMetasearch.service('results', ['_', '$http', '$location', function(_, $http, $location) {
     var result = {
         hits: null,
         rnas: [],
         facets: []
     }
     var show_results = false;
+
+    var search_config = {
+        ebeye_base_url: 'http://ash-4.ebi.ac.uk:8080',
+        rnacentral_base_url: 'http://localhost:8000',
+        fields: ['description', 'active', 'length', 'name'],
+        facetfields: ['active', 'expert_db', 'rna_type', 'TAXONOMY'],
+        facetcount: 10,
+        page_size: 15
+    };
+    var page_size = search_config.page_size;
+
+    var query_urls = {
+        'ebeye_search': search_config.ebeye_base_url +
+                        '/ebisearch/ws/rest/rnacentral' +
+                        '?query={QUERY}' +
+                        '&format=json' +
+                        '&fields=' + search_config.fields.join() +
+                        '&facetcount=' + search_config.facetcount +
+                        '&facetfields=' + search_config.facetfields.join() +
+                        '&size={SIZE}' +
+                        '&start=0',
+        'proxy': search_config.rnacentral_base_url +
+                 '/api/internal/ebeye?url={EBEYE_URL}'
+    };
 
     /**
      * Process deeply nested json objects like this:
@@ -81,34 +105,13 @@ rnaMetasearch.service('results', ['_', '$http', function(_, $http) {
     /**
      * Launch EBeye search
      */
-    this.search = function(query) {
+    this.search = function(query, page_size) {
         // display results section
         show_results = true;
 
-        var search_config = {
-            ebeye_base_url: 'http://ash-4.ebi.ac.uk:8080',
-            rnacentral_base_url: 'http://localhost:8000',
-            fields: ['description', 'active', 'length', 'name'],
-            facetfields: ['active', 'expert_db', 'rna_type', 'TAXONOMY'],
-            facetcount: 10,
-            page_size: 15 //$scope.query.size,
-        };
+        page_size = page_size || search_config.page_size;
 
-        var query_urls = {
-            'ebeye_search': search_config.ebeye_base_url +
-                            '/ebisearch/ws/rest/rnacentral' +
-                            '?query={QUERY}' +
-                            '&format=json' +
-                            '&fields=' + search_config.fields.join() +
-                            '&facetcount=' + search_config.facetcount +
-                            '&facetfields=' + search_config.facetfields.join() +
-                            '&size=15' +
-                            '&start=0',
-            'proxy': search_config.rnacentral_base_url +
-                     '/api/internal/ebeye?url={EBEYE_URL}'
-        };
-
-        var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query); //.replace('{SIZE}', $scope.query.size);
+        var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query).replace('{SIZE}', page_size);
         var url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url));
         $http({
             url: url,
@@ -118,6 +121,15 @@ rnaMetasearch.service('results', ['_', '$http', function(_, $http) {
         });
     };
 
+    this.load_more = function() {
+        page_size += search_config.page_size;
+        query = $location.search().q;
+        this.search(query, page_size);
+    };
+
+    this.get_page_size = function() {
+        return search_config.page_size;
+    };
 
     this.get_status = function() {
         return show_results;
@@ -156,6 +168,9 @@ rnaMetasearch.controller('MainContent', ['$scope', '$anchorScroll', '$location',
 }]);
 
 rnaMetasearch.controller('ResultsListCtrl', ['$scope', 'results', function($scope, results) {
+
+    $scope.page_size = results.get_page_size();
+
     $scope.$watch(function () { return results.get_results(); }, function (newValue, oldValue) {
         if (newValue != null) {
             $scope.result = newValue;
@@ -167,6 +182,10 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', 'results', function($scop
             $scope.show_results = newValue;
         }
     });
+
+    $scope.load_more = function() {
+        results.load_more();
+    }
 
 }]);
 
