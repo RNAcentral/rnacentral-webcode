@@ -11,9 +11,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// RNAcentral metasearch app.
+/**
+ * RNAcentral metadata search Angular.js app.
+ */
 
-;
+; // concatenation safeguard
 
 /**
  * Make it possible to include underscore as a dependency.
@@ -44,7 +46,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', function(_, $http, 
         rnas: [],
         facets: []
     }
-    var show_results = false;
+    var show_results = false; // hide results section at first
 
     var search_config = {
         ebeye_base_url: 'http://ash-4.ebi.ac.uk:8080',
@@ -54,8 +56,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', function(_, $http, 
         facetcount: 10,
         page_size: 15
     };
-    var page_size = search_config.page_size;
-    console.log(get_base_url());
+    var page_size = search_config.page_size; // set to the default value
 
     var query_urls = {
         'ebeye_search': search_config.ebeye_base_url +
@@ -71,6 +72,9 @@ rnaMetasearch.service('results', ['_', '$http', '$location', function(_, $http, 
                  '/api/internal/ebeye?url={EBEYE_URL}'
     };
 
+    /**
+     * Calculate base url for production and development environments.
+     */
     function get_base_url() {
         var base_url = $location.protocol() + '://' + $location.host();
         var port = $location.port();
@@ -131,6 +135,10 @@ rnaMetasearch.service('results', ['_', '$http', '$location', function(_, $http, 
         });
     };
 
+    /**
+     * Increment `page_size` and retrieve all entries from the server.
+     * The new entries will be added to the results list.
+     */
     this.load_more = function() {
         page_size += search_config.page_size;
         query = $location.search().q;
@@ -177,28 +185,45 @@ rnaMetasearch.controller('MainContent', ['$scope', '$anchorScroll', '$location',
 
 }]);
 
+/**
+ * Results display controller
+ * Responsible for visualising search results.
+ */
 rnaMetasearch.controller('ResultsListCtrl', ['$scope', 'results', function($scope, results) {
 
-    $scope.page_size = results.get_page_size();
+    $scope.page_size = results.get_page_size(); // know when to show Load more button
 
+    /**
+     * Refresh results data.
+     */
     $scope.$watch(function () { return results.get_results(); }, function (newValue, oldValue) {
         if (newValue != null) {
             $scope.result = newValue;
         }
     });
 
+    /**
+     * Get notified when show_results changes.
+     */
     $scope.$watch(function () { return results.get_status(); }, function (newValue, oldValue) {
         if (newValue != null) {
             $scope.show_results = newValue;
         }
     });
 
+    /**
+     * Fired when "Load more" button is clicked.
+     */
     $scope.load_more = function() {
         results.load_more();
     }
 
 }]);
 
+/**
+ * Query controller
+ * Responsible for the search box in the header.
+ */
 rnaMetasearch.controller('QueryCtrl', ['$scope', '$location', 'results', function($scope, $location, results) {
 
     $scope.query = {
@@ -206,16 +231,17 @@ rnaMetasearch.controller('QueryCtrl', ['$scope', '$location', 'results', functio
         submitted: false
     };
 
-    // watch url changes to perform a new search
+    /**
+     * Control browser navigation buttons.
+     */
     $scope.$watch(function () { return $location.url(); }, function (newUrl, oldUrl) {
-
-         // a regular non-search url, potentially unchanged
+        // url has changed
         if (newUrl !== oldUrl) {
             if (newUrl.indexOf('/search') == -1) {
-                // not a search page, redirect
+                // a non-search url, load that page
                 window.location.href = newUrl;
             } else {
-                // a search result page, launch a new search
+                // the new url is a search result page, launch that search
                 $scope.query.text = $location.search().q;
                 results.search($location.search().q);
                 $scope.query.submitted = false;
@@ -223,10 +249,18 @@ rnaMetasearch.controller('QueryCtrl', ['$scope', '$location', 'results', functio
         }
     });
 
+    /**
+     * To launch a new search, change browser url,
+     * which will automatically trigger a new search because the url changes
+     * are watched.
+     */
     $scope.search = function(query) {
         $location.url('/search' + '?q=' + query);
     }
 
+    /**
+     * Called when the form is submitted.
+     */
     $scope.submit_query = function() {
         $scope.query.submitted = true;
         if ($scope.queryForm.text.$invalid) {
