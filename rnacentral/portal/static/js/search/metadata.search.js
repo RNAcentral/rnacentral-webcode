@@ -48,13 +48,14 @@ rnaMetasearch.service('results', ['_', '$http', '$location', function(_, $http, 
 
     var search_config = {
         ebeye_base_url: 'http://ash-4.ebi.ac.uk:8080',
-        rnacentral_base_url: 'http://localhost:8000',
+        rnacentral_base_url: get_base_url(),
         fields: ['description', 'active', 'length', 'name'],
         facetfields: ['active', 'expert_db', 'rna_type', 'TAXONOMY'],
         facetcount: 10,
         page_size: 15
     };
     var page_size = search_config.page_size;
+    console.log(get_base_url());
 
     var query_urls = {
         'ebeye_search': search_config.ebeye_base_url +
@@ -68,6 +69,15 @@ rnaMetasearch.service('results', ['_', '$http', '$location', function(_, $http, 
                         '&start=0',
         'proxy': search_config.rnacentral_base_url +
                  '/api/internal/ebeye?url={EBEYE_URL}'
+    };
+
+    function get_base_url() {
+        var base_url = $location.protocol() + '://' + $location.host();
+        var port = $location.port();
+        if (port !== '') {
+            base_url += ':' + port
+        }
+        return base_url;
     };
 
     /**
