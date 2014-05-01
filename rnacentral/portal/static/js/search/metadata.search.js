@@ -38,7 +38,7 @@ rnaMetasearch.config(['$locationProvider', function($locationProvider) {
 /**
  * Service for passing data between controllers.
  */
-rnaMetasearch.service('results', ['_', function(_) {
+rnaMetasearch.service('results', ['_', '$http', function(_, $http) {
     var result = {
         hits: null,
         rnas: [],
@@ -52,7 +52,7 @@ rnaMetasearch.service('results', ['_', function(_) {
      * into key-value pairs like this:
      * {"description": "description_value"}
      */
-    function preprocess_results(data) {
+    var preprocess_results = function(data) {
         result.hits = data.result.hitCount;
 
         result.facets = _.each(data.result.facets.facet, function(facet){
@@ -78,21 +78,59 @@ rnaMetasearch.service('results', ['_', function(_) {
         };
     };
 
-    return {
-        get_status: function() {
-            return show_results;
-        },
-        set_status: function() {
-            show_results = true;
-        },
-        save_results: function(data) {
+    /**
+     * Launch EBeye search
+     */
+    this.search = function(query) {
+        // display results section
+        show_results = true;
+
+        var search_config = {
+            ebeye_base_url: 'http://ash-4.ebi.ac.uk:8080',
+            rnacentral_base_url: 'http://localhost:8000',
+            fields: ['description', 'active', 'length', 'name'],
+            facetfields: ['active', 'expert_db', 'rna_type', 'TAXONOMY'],
+            facetcount: 10,
+            page_size: 15 //$scope.query.size,
+        };
+
+        var query_urls = {
+            'ebeye_search': search_config.ebeye_base_url +
+                            '/ebisearch/ws/rest/rnacentral' +
+                            '?query={QUERY}' +
+                            '&format=json' +
+                            '&fields=' + search_config.fields.join() +
+                            '&facetcount=' + search_config.facetcount +
+                            '&facetfields=' + search_config.facetfields.join() +
+                            '&size=15' +
+                            '&start=0',
+            'proxy': search_config.rnacentral_base_url +
+                     '/api/internal/ebeye?url={EBEYE_URL}'
+        };
+
+        var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query); //.replace('{SIZE}', $scope.query.size);
+        var url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url));
+        $http({
+            url: url,
+            method: 'GET'
+        }).success(function(data) {
             preprocess_results(data);
-            console.log(result);
-        },
-        get_results: function() {
-            return result;
-        }
-    }
+        });
+    };
+
+
+    this.get_status = function() {
+        return show_results;
+    };
+
+    this.set_status = function() {
+        show_results = true;
+    };
+
+    this.get_results = function() {
+        return result;
+    };
+
 }]);
 
 rnaMetasearch.controller('MainContent', ['$scope', '$anchorScroll', '$location', 'results', function($scope, $anchorScroll, $location, results) {
@@ -105,18 +143,19 @@ rnaMetasearch.controller('MainContent', ['$scope', '$anchorScroll', '$location',
         $anchorScroll();
     };
 
+    /**
+     * Watch show_results in order to hide non-search-related content
+     * when a search is initiated.
+     */
     $scope.$watch(function () { return results.get_status(); }, function (newValue, oldValue) {
         if (newValue != null) {
             $scope.show_results = newValue;
         }
     });
+
 }]);
 
 rnaMetasearch.controller('ResultsListCtrl', ['$scope', 'results', function($scope, results) {
-
-    $scope.result = results.get_results();
-    $scope.show_results = results.get_status();
-
     $scope.$watch(function () { return results.get_results(); }, function (newValue, oldValue) {
         if (newValue != null) {
             $scope.result = newValue;
@@ -131,34 +170,11 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', 'results', function($scop
 
 }]);
 
-rnaMetasearch.controller('QueryCtrl', ['$scope', '$http', '$location', 'results', function($scope, $http, $location, results) {
+rnaMetasearch.controller('QueryCtrl', ['$scope', '$location', 'results', function($scope, $location, results) {
 
     $scope.query = {
         text: '',
         submitted: false
-    };
-    $scope.show_results = false;
-    $scope.save_results = results.save_results;
-    $scope.set_status = results.set_status;
-
-    var search_config = {
-        ebeye_base_url: 'http://ash-4.ebi.ac.uk:8080',
-        rnacentral_base_url: 'http://localhost:8000',
-        fields: ['description', 'active', 'length', 'name'],
-        facetfields: ['active', 'expert_db', 'rna_type', 'TAXONOMY'],
-        facetcount: 10
-    };
-
-    var query_urls = {
-        'ebeye_search': search_config.ebeye_base_url +
-                        '/ebisearch/ws/rest/rnacentral' +
-                        '?query={QUERY}' +
-                        '&format=json' +
-                        '&fields=' + search_config.fields.join() +
-                        '&facetcount=' + search_config.facetcount +
-                        '&facetfields=' + search_config.facetfields.join(),
-        'proxy': search_config.rnacentral_base_url +
-                 '/api/internal/ebeye?url={EBEYE_URL}'
     };
 
     // watch url changes to perform a new search
@@ -172,29 +188,13 @@ rnaMetasearch.controller('QueryCtrl', ['$scope', '$http', '$location', 'results'
             } else {
                 // a search result page, launch a new search
                 $scope.query.text = $location.search().q;
-                $scope.search($location.search().q);
+                results.search($location.search().q);
+                $scope.query.submitted = false;
             }
         }
     });
 
     $scope.search = function(query) {
-        $scope.query.text = query;
-        $scope.show_results = true;
-        $scope.set_status();
-
-        var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query);
-        var url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url));
-
-        $http({
-            url: url,
-            method: 'GET'
-        }).success(function(data) {
-            $scope.save_results(data);
-            $scope.query.submitted = false;
-        });
-    }
-
-    $scope.trigger_search = function(query) {
         $location.url('/search' + '?q=' + query);
     }
 
@@ -203,18 +203,19 @@ rnaMetasearch.controller('QueryCtrl', ['$scope', '$http', '$location', 'results'
         if ($scope.queryForm.text.$invalid) {
             return;
         }
-        $scope.trigger_search($scope.query.text);
+        $scope.search($scope.query.text);
     };
 
-    var check_if_search_url = function () {
-       // check if there is query in url
+    /**
+     * Check if the url contains a query when the controller is first created
+     * and initiate a search if necessary.
+     */
+    (function () {
         if ($location.url().indexOf("/search?q=") > -1) {
             // a search result page, launch a new search
             $scope.query.text = $location.search().q;
-            $scope.search($location.search().q);
+            results.search($location.search().q);
         }
-    };
+    })();
 
-    // run once at initialisation
-    check_if_search_url();
 }]);
