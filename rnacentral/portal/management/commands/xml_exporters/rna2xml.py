@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from xml.sax.saxutils import escape
+from xml.sax import saxutils
 from django.template.defaultfilters import pluralize
 from portal.management.commands.common_exporters.oracle_connection \
     import OracleConnection
@@ -268,12 +268,14 @@ class RnaXmlExporter(OracleConnection):
         def store_sets(result):
             """
             Store redundant data in sets in order to get distinct values.
+            Escape '&', '<', and '>'.
             """
-            escape_fields = ['description', 'species']
+            escape_fields = ['species', 'description', 'product', 'common_name',
+                             'function', 'gene', 'gene_synonym']
             for field in self.redundant_fields:
                 if result[field]:
                     if field in escape_fields:
-                        result[field] = escape(result[field])
+                        result[field] = saxutils.escape(result[field])
                     self.data[field].add(result[field])
 
         def store_xrefs(result):
