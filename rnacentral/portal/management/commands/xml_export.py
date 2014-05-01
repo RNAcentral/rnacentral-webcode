@@ -177,9 +177,13 @@ class Command(BaseCommand):
             Run xmllint on the output file and print the resulting report.
             """
             schema_url = 'http://www.ebi.ac.uk/ebisearch/XML4dbDumps.xsd'
-            cmd = "xmllint {filepath} --schema {schema_url} --noout".format(
-                  filepath=filepath, schema_url=schema_url)
-            print subprocess.check_output(cmd, shell=True)
+            cmd = ('xmllint {filepath} --schema {schema_url} --noout; '
+                   'exit 0').format(filepath=filepath, schema_url=schema_url)
+            output = subprocess.check_output(cmd, shell=True,
+                                             stderr=subprocess.STDOUT)
+            if 'validates' not in output:
+                print 'ERROR: xmllint validation failed'
+                print output
 
         def gzip_file():
             """
