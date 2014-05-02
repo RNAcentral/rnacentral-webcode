@@ -612,6 +612,11 @@ ul.affix-bottom {
   margin: 3px 0px;
 }
 
+.metasearch-organism-facet {
+  overflow: auto;
+  max-height: 200px;
+}
+
 .metasearch-results {
   border-left: 1px solid #eeeeee;
 }

@@ -53,7 +53,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
         rnacentral_base_url: get_base_url(),
         fields: ['description', 'active', 'length', 'name'],
         facetfields: ['expert_db', 'rna_type', 'TAXONOMY', 'active'], // will be displayed in this order
-        facetcount: 11, // 10 will be displayed, 1 extra is used to detect if there are more facet values
+        facetcount: 31, // 30 will be displayed, 1 extra is used to detect if there are more facet values
         page_size: 15,
         max_facet_count: 1000,
     };
