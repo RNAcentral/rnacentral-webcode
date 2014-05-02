@@ -122,6 +122,20 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
     };
 
     /**
+     * Format urls and execute remote request.
+     */
+    var execute_ebeye_search = function(query, page_size) {
+        var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query).replace('{SIZE}', page_size);
+        var url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url));
+        $http({
+            url: url,
+            method: 'GET'
+        }).success(function(data) {
+            preprocess_results(data);
+        });
+    };
+
+    /**
      * Launch EBeye search
      */
     this.search = function(query, new_page_size) {
@@ -140,14 +154,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
             page_size = new_page_size;
         }
 
-        var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query).replace('{SIZE}', page_size);
-        var url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url));
-        $http({
-            url: url,
-            method: 'GET'
-        }).success(function(data) {
-            preprocess_results(data);
-        });
+        execute_ebeye_search(query, page_size);
     };
 
     /**
