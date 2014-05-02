@@ -1,9 +1,12 @@
 {% verbatim %}
-<div ng-show="show_results" ng-controller="ResultsListCtrl">
+<div ng-show="show_results" class="ng-cloak" ng-cloak ng-controller="ResultsListCtrl">
 
   <h1>
     <i class="fa fa-search"></i> Results
-    <small class="ng-cloak" ng-cloak ng-show="result.hits > 0">
+    <small ng-show="result.hits === null">
+      <i class="fa fa-spinner fa-spin"></i>
+    </small>
+    <small ng-show="result.hits > 0">
       {{ result.hits }}
       <ng-pluralize count="result.hits"
           when="{'1': 'entry found',
@@ -12,7 +15,7 @@
     </small>
   </h1>
 
-  <div class="row ng-cloak" ng-cloak ng-show="result.hits == 0">
+  <div class="row" ng-show="result.hits == 0">
 
     <div class="col-md-12">
       <div class="alert alert-warning col-md-12">
@@ -30,10 +33,10 @@
 
   </div>
 
-  <div class="row">
+  <div class="row" ng-show="result.hits > 0">
 
     <div class="col-md-3 col-sm-4 col-xs-6">
-      <ul  class="list-unstyled ng-cloak" ng-repeat="facet in result.facets" ng-cloak ng-show="result.hits > 0">
+      <ul  class="list-unstyled" ng-repeat="facet in result.facets">
         <li class="facet">
             <h3>{{facet['@label']}}</h3>
             <ul ng-repeat="facet_value in facet.facetValues.facetValue">
@@ -47,7 +50,7 @@
       <hr>
     </div>
 
-    <div class="col-md-9 col-sm-8 col-xs-6 metasearch-results" class="ng-cloak" ng-cloak>
+    <div class="col-md-9 col-sm-8 col-xs-6 metasearch-results">
       <ul class="list-unstyled" ng-repeat="rna in result.rnas">
         <li class="result">
           <div class="col-md-12">

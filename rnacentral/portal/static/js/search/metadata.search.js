@@ -123,6 +123,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
         // display results section
         show_results = true;
         $window.document.title = 'Search: ' + query;
+        result.hits = null;
 
         page_size = page_size || search_config.page_size;
 
