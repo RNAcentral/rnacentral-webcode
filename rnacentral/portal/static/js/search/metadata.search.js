@@ -247,6 +247,13 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', f
         $location.search('q', new_query);
     };
 
+    /**
+     * Calculate the number of currently displayed items.
+     */
+    $scope.displayed_items = function() {
+        return Math.min($scope.page_size, $scope.result.hits);
+    };
+
 }]);
 
 /**
