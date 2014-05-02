@@ -41,7 +41,7 @@
 
             <ul ng-repeat="facet_value in facet.facetValues.facetValue">
                 <li>
-                  <a>{{facet_value['label']}} ({{facet_value['count']}})</a>
+                  <a ng-click="facet_search(facet['@id'], facet_value.value)">{{facet_value.label}} ({{facet_value.count}})</a>
                 </li>
             </ul>
 

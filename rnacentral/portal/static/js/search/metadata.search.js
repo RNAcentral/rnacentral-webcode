@@ -189,7 +189,7 @@ rnaMetasearch.controller('MainContent', ['$scope', '$anchorScroll', '$location',
  * Results display controller
  * Responsible for visualising search results.
  */
-rnaMetasearch.controller('ResultsListCtrl', ['$scope', 'results', function($scope, results) {
+rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', function($scope, $location, results) {
 
     $scope.page_size = results.get_page_size(); // know when to show Load more button
 
@@ -216,7 +216,17 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', 'results', function($scop
      */
     $scope.load_more = function() {
         results.load_more();
-    }
+    };
+
+    /**
+     * Repeat a search with a facet enabled.
+     */
+    $scope.facet_search = function(facet_id, facet_value) {
+        var query = $location.search().q;
+        var new_query = query + ' AND ' + facet_id + ':' + facet_value;
+        console.log(new_query);
+        $location.search('q', new_query);
+    };
 
 }]);
 
