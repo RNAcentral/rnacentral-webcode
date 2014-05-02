@@ -167,7 +167,7 @@ xrefLoader.prototype.load_xrefs = function() {
 		function enable_hopscotch_genomic_tour() {
 			if ( _genomic_results_present() ) {
 	            // create the tour button
-	            $('h1').append('<small><button type="button" class="btn btn-info pull-right tour help animated pulse" title="Take an interactive tour to see genome integration features in action">Tour genome-related features</button></small>');
+	            $('h1').first().append('<small><button type="button" class="btn btn-info pull-right tour help animated pulse" title="Take an interactive tour to see genome integration features in action">Tour genome-related features</button></small>');
 
 	            // Define hopscotch genome location tour
 	            var tour = {
