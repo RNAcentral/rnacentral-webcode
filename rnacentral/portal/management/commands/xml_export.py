@@ -177,7 +177,7 @@ class Command(BaseCommand):
             Run xmllint on the output file and print the resulting report.
             """
             schema_url = 'http://www.ebi.ac.uk/ebisearch/XML4dbDumps.xsd'
-            cmd = ('xmllint {filepath} --schema {schema_url} --noout; '
+            cmd = ('xmllint {filepath} --schema {schema_url} --noout --stream; '
                    'exit 0').format(filepath=filepath, schema_url=schema_url)
             output = subprocess.check_output(cmd, shell=True,
                                              stderr=subprocess.STDOUT)
