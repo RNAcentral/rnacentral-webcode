@@ -40,7 +40,7 @@ rnaMetasearch.config(['$locationProvider', function($locationProvider) {
 /**
  * Service for passing data between controllers.
  */
-rnaMetasearch.service('results', ['_', '$http', '$location', function(_, $http, $location) {
+rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function(_, $http, $location, $window) {
     var result = {
         hits: null,
         rnas: [],
@@ -122,6 +122,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', function(_, $http, 
     this.search = function(query, page_size) {
         // display results section
         show_results = true;
+        $window.document.title = 'Search: ' + query;
 
         page_size = page_size || search_config.page_size;
 
