@@ -119,13 +119,21 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
     /**
      * Launch EBeye search
      */
-    this.search = function(query, page_size) {
+    this.search = function(query, page_size_arg) {
         // display results section
         show_results = true;
+        // update page title
         $window.document.title = 'Search: ' + query;
+        // display spinner
         result.hits = null;
 
-        page_size = page_size || search_config.page_size;
+        if (typeof(page_size_arg) == "undefined") {
+            // if not specified, reset to default
+            page_size = search_config.page_size;
+        } else {
+            // use supplied value
+            page_size = page_size_arg;
+        }
 
         var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query).replace('{SIZE}', page_size);
         var url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url));
@@ -148,7 +156,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
     };
 
     this.get_page_size = function() {
-        return search_config.page_size;
+        return page_size;
     };
 
     this.get_status = function() {
@@ -210,6 +218,15 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', f
     $scope.$watch(function () { return results.get_status(); }, function (newValue, oldValue) {
         if (newValue != null) {
             $scope.show_results = newValue;
+        }
+    });
+
+    /**
+     * Monitor page_size changes.
+     */
+    $scope.$watch(function () { return results.get_page_size(); }, function (newValue, oldValue) {
+        if (newValue != oldValue) {
+            $scope.page_size = newValue;
         }
     });
 
