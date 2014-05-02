@@ -49,18 +49,18 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
     var show_results = false; // hide results section at first
 
     var search_config = {
-        ebeye_base_url: 'http://ash-4.ebi.ac.uk:8080',
+        ebeye_base_url: 'http://ash-4.ebi.ac.uk:8080/ebisearch/ws/rest/rnacentral',
         rnacentral_base_url: get_base_url(),
         fields: ['description', 'active', 'length', 'name'],
         facetfields: ['expert_db', 'rna_type', 'TAXONOMY', 'active'], // will be displayed in this order
-        facetcount: 10,
-        page_size: 15
+        facetcount: 11, // 10 will be displayed, 1 extra is used to detect if there are more facet values
+        page_size: 15,
+        max_facet_count: 1000,
     };
     var page_size = search_config.page_size; // set to the default value
 
     var query_urls = {
         'ebeye_search': search_config.ebeye_base_url +
-                        '/ebisearch/ws/rest/rnacentral' +
                         '?query={QUERY}' +
                         '&format=json' +
                         '&fields=' + search_config.fields.join() +
@@ -69,7 +69,13 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
                         '&size={SIZE}' +
                         '&start=0',
         'proxy': search_config.rnacentral_base_url +
-                 '/api/internal/ebeye?url={EBEYE_URL}'
+                 '/api/internal/ebeye?url={EBEYE_URL}',
+        'get_more_facet_values': search_config.ebeye_base_url +
+                                 '?query={QUERY}' +
+                                 '&format=json' +
+                                 '&facetcount=' + search_config.max_facet_count +
+                                 '&facetfields={FACET_ID}' +
+                                 '&size=0', // retrieve just facets
     };
 
     /**
@@ -124,9 +130,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
     /**
      * Format urls and execute remote request.
      */
-    var execute_ebeye_search = function(query, page_size) {
-        var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query).replace('{SIZE}', page_size);
-        var url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url));
+    var execute_ebeye_search = function(url) {
         $http({
             url: url,
             method: 'GET'
@@ -150,21 +154,39 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
             // initial search, display spinner
             result.hits = null;
         } else {
-            // load_more search, use supplied new_page_size value
+            // load_more_results search, use supplied new_page_size value
             page_size = new_page_size;
         }
 
-        execute_ebeye_search(query, page_size);
+        var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query).replace('{SIZE}', page_size);
+        var url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url));
+        execute_ebeye_search(url);
     };
 
     /**
      * Increment `page_size` and retrieve all entries from the server.
      * The new entries will be added to the results list.
      */
-    this.load_more = function() {
+    this.load_more_results = function() {
         page_size += search_config.page_size;
         query = $location.search().q;
         this.search(query, page_size);
+    };
+
+    this.load_more_facets = function(facet_id) {
+        console.log(facet_id);
+        var query = $location.search().q;
+        var ebeye_url = query_urls.get_more_facet_values.replace('{QUERY}', query).replace('{FACET_ID}', facet_id);
+        var url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url)) ;
+        console.log(ebeye_url);
+        $http({
+            url: url,
+            method: 'GET'
+        }).success(function(data) {
+            result.facets[2].facetValues.facetValue = data.result.facets.facet.facetValues.facetValue;
+            console.log(result);
+        });
+
     };
 
     this.get_page_size = function() {
@@ -245,8 +267,12 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', f
     /**
      * Fired when "Load more" button is clicked.
      */
-    $scope.load_more = function() {
-        results.load_more();
+    $scope.load_more_results = function() {
+        results.load_more_results();
+    };
+
+    $scope.load_more_facets = function(facet_id) {
+        results.load_more_facets(facet_id);
     };
 
     /**
