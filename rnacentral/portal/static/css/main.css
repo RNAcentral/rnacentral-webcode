@@ -607,6 +607,10 @@ ul.affix-bottom {
   border-left: 1px solid #eeeeee;
 }
 
+.metasearch-results h4, .metasearch-results ul li ul li {
+  padding-left: 0;
+}
+
 button.load-more {
   margin: 20px 0px;
 }
