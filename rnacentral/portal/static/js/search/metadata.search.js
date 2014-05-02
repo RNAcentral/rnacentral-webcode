@@ -119,20 +119,20 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
     /**
      * Launch EBeye search
      */
-    this.search = function(query, page_size_arg) {
+    this.search = function(query, new_page_size) {
         // display results section
         show_results = true;
         // update page title
         $window.document.title = 'Search: ' + query;
-        // display spinner
-        result.hits = null;
 
-        if (typeof(page_size_arg) == "undefined") {
-            // if not specified, reset to default
+        if (typeof(new_page_size) == "undefined") {
+            // if unspecified, use default
             page_size = search_config.page_size;
+            // initial search, display spinner
+            result.hits = null;
         } else {
-            // use supplied value
-            page_size = page_size_arg;
+            // load_more search, use supplied new_page_size value
+            page_size = new_page_size;
         }
 
         var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query).replace('{SIZE}', page_size);
