@@ -242,8 +242,7 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', f
      */
     $scope.facet_search = function(facet_id, facet_value) {
         var query = $location.search().q;
-        var new_query = query + ' AND ' + facet_id + ':' + facet_value;
-        console.log(new_query);
+        var new_query = query + ' AND ' + facet_id + ':"' + facet_value + '"';
         $location.search('q', new_query);
     };
 
