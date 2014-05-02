@@ -32,11 +32,11 @@
 
   <div class="row" ng-show="result.hits > 0">
 
-    <div class="col-md-3 col-sm-4 col-xs-6">
-      <ul  class="list-unstyled" ng-repeat="facet in result.facets">
+    <div class="col-md-3 col-sm-4 col-xs-6 metasearch-facets">
+      <ul class="list-unstyled" ng-repeat="facet in result.facets">
         <li class="facet">
             <h3>{{facet['@label']}}</h3>
-            <ul ng-repeat="facet_value in facet.facetValues.facetValue">
+            <ul class="list-unstyled metasearch-facet-values" ng-repeat="facet_value in facet.facetValues.facetValue">
                 <li>
                   <a ng-if="facet.facetValues.facetValue.length > 1" ng-click="facet_search(facet['@id'], facet_value.value)">{{facet_value.label}} ({{facet_value.count}})</a>
                   <span ng-if="facet.facetValues.facetValue.length == 1">{{facet_value.label}} ({{facet_value.count}})</span>

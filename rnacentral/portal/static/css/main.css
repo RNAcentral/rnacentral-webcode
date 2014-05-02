@@ -603,11 +603,20 @@ ul.affix-bottom {
 /*------------------------------------------------------------------
 [5.7 Metadata search]
 */
+.metasearch-facets {
+  font-size: smaller;
+  padding-left: 20px;
+}
+
+.metasearch-facet-values li {
+  margin: 3px 0px;
+}
+
 .metasearch-results {
   border-left: 1px solid #eeeeee;
 }
 
-.metasearch-results h4, .metasearch-results ul li ul li {
+.metasearch-results h4, .metasearch-results ul li ul li, .metasearch-facets h3 {
   padding-left: 0;
 }
 
