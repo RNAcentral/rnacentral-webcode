@@ -34,45 +34,32 @@
 
     <div class="col-md-3">
       <ul  class="list-unstyled ng-cloak" ng-repeat="facet in result.facets" ng-cloak ng-show="result.hits > 0">
-
         <li class="facet">
-
             <h4>{{facet['@label']}}</h4>
-
             <ul ng-repeat="facet_value in facet.facetValues.facetValue">
                 <li>
                   <a ng-click="facet_search(facet['@id'], facet_value.value)">{{facet_value.label}} ({{facet_value.count}})</a>
                 </li>
             </ul>
-
         </li>
-
       </ul>
     </div>
 
     <div class="col-md-9" class="ng-cloak" ng-cloak>
       <br>
       <ul class="list-unstyled" ng-repeat="rna in result.rnas">
-
         <li class="result">
           <div class="col-md-12">
-
             <h4><a href="/rna/{{rna['@id']}}">{{rna.description}}</a></h4>
-
             <ul class="list-inline small">
-              <li>
-                {{rna['@id']}}
-              </li>
+              <li>{{rna['@id']}}</li>
               <li>
                 <i class="fa fa-arrows-h"></i> <strong>{{rna.length}}</strong> nucleotides
               </li>
             </ul>
-
           </div>
         </li>
-
       </ul>
-
       <button class="btn btn-default" ng-click="load_more()" ng-show="result.hits > page_size">Load more results</button>
       <br>
     </div>
