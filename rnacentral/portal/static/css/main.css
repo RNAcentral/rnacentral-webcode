@@ -603,21 +603,12 @@ ul.affix-bottom {
 /*------------------------------------------------------------------
 [5.7 Metadata search]
 */
-li.result {
-  margin-bottom: 25px;
+.metasearch-results {
+  border-left: 1px solid #eeeeee;
 }
 
-.result h3, .result h4 {
-  margin-top: 5px;
-  margin-bottom: 5px;
-}
-
-.result ul {
-  padding-left: 10px;
-}
-
-.result h3 a {
-  text-decoration: none;
+button.load-more {
+  margin: 20px 0px;
 }
 
 /*------------------------------------------------------------------
