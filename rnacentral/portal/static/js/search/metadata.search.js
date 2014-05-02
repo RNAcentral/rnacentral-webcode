@@ -52,7 +52,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
         ebeye_base_url: 'http://ash-4.ebi.ac.uk:8080',
         rnacentral_base_url: get_base_url(),
         fields: ['description', 'active', 'length', 'name'],
-        facetfields: ['active', 'expert_db', 'rna_type', 'TAXONOMY'],
+        facetfields: ['expert_db', 'rna_type', 'TAXONOMY', 'active'], // will be displayed in this order
         facetcount: 10,
         page_size: 15
     };
@@ -104,6 +104,11 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
             _.each(entry.fields.field, function(field){
                 entry[field['@id']] = field.values.value;
             });
+        });
+
+        // sort facets the same way as in config
+        result.facets = _.sortBy(result.facets, function(facet){
+            return _.indexOf(search_config.facetfields, facet['@id']);
         });
 
         function wrap_in_array(data) {
