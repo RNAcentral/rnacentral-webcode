@@ -52,11 +52,10 @@
       <ul class="list-unstyled" ng-repeat="rna in result.rnas">
         <li class="result">
           <div class="col-md-12">
-            <h4><a href="/rna/{{rna['@id']}}">{{rna.description}}</a></h4>
+            <h4><a href="/rna/{{rna['@id']}}">{{rna.description}} ({{rna['@id']}})</a></h4>
             <ul class="list-inline small">
-              <li>{{rna['@id']}}</li>
               <li>
-                <i class="fa fa-arrows-h"></i> <strong>{{rna.length}}</strong> nucleotides
+                <strong>{{rna.length}}</strong> nucleotides
               </li>
             </ul>
           </div>
