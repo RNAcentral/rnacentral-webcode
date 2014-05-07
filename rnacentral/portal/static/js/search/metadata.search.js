@@ -47,6 +47,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
         facets: []
     }
     var show_results = false; // hide results section at first
+    var search_in_progress = false;
 
     var search_config = {
         ebeye_base_url: 'http://ash-4.ebi.ac.uk:8080/ebisearch/ws/rest/rnacentral',
@@ -131,11 +132,15 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
      * Format urls and execute remote request.
      */
     var execute_ebeye_search = function(url) {
+        search_in_progress = true;
         $http({
             url: url,
             method: 'GET'
         }).success(function(data) {
             preprocess_results(data);
+            search_in_progress = false;
+        }).error(function(){
+            search_in_progress = false;
         });
     };
 
@@ -209,6 +214,10 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
         return search_config.max_facet_count;
     };
 
+    this.get_search_in_progress = function() {
+        return search_in_progress;
+    };
+
 }]);
 
 rnaMetasearch.controller('MainContent', ['$scope', '$anchorScroll', '$location', 'results', function($scope, $anchorScroll, $location, results) {
@@ -241,6 +250,7 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', f
 
     $scope.page_size = results.get_page_size(); // know when to show Load more button
     $scope.max_facet_count = results.get_max_facet_count();
+    $scope.search_in_progress = results.get_search_in_progress();
 
     /**
      * Refresh results data.
@@ -252,7 +262,7 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', f
     });
 
     /**
-     * Get notified when show_results changes.
+     * Monitor show_results changes.
      */
     $scope.$watch(function () { return results.get_status(); }, function (newValue, oldValue) {
         if (newValue != null) {
@@ -266,6 +276,15 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', f
     $scope.$watch(function () { return results.get_page_size(); }, function (newValue, oldValue) {
         if (newValue != oldValue) {
             $scope.page_size = newValue;
+        }
+    });
+
+    /**
+     * Monitor search_in_progress changes.
+     */
+    $scope.$watch(function () { return results.get_search_in_progress(); }, function (newValue, oldValue) {
+        if (newValue != oldValue) {
+            $scope.search_in_progress = newValue;
         }
     });
 
