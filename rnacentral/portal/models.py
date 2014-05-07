@@ -174,6 +174,13 @@ class Rna(models.Model):
             """
             return self.xrefs.filter(db__descr='ENA').count()
 
+        def count_distinct_descriptions():
+            """
+            Count distinct description lines.
+            """
+            return self.xrefs.values_list('accession__description', flat=True).\
+                              distinct().count()
+
         def get_distinct_products():
             """
             Get distinct non-null product values as a list.
@@ -181,6 +188,7 @@ class Rna(models.Model):
             return self.xrefs.values_list('accession__product', flat=True).\
                               filter(accession__product__isnull=False).\
                               distinct()
+
         def get_distinct_genes():
             """
             Get distinct non-null gene values as a list.
@@ -225,8 +233,9 @@ class Rna(models.Model):
                     rna_type = '/'.join(feature_names)
             return rna_type
 
-        num_descriptions = count_ena_xrefs()
-        if num_descriptions == 1:
+        num_ena_entries = count_ena_xrefs()
+        num_distinct_descriptions = count_distinct_descriptions()
+        if num_ena_entries == 1 or num_distinct_descriptions == 1:
             description_line = self.xrefs.all()[0].accession.description.capitalize()
         else:
             distinct_species = self.count_distinct_organisms

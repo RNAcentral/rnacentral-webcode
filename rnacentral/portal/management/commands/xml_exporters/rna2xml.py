@@ -150,7 +150,7 @@ class RnaXmlExporter(OracleConnection):
         has the following clearly redundant products:
         tRNA-Phe, transfer RNA-Phe, tRNA-Phe (GAA), tRNA-Phe-GAA etc
         """
-        num_descriptions = self.count('xrefs')
+        num_descriptions = len(self.data['description'])
 
         if num_descriptions == 1:
             description_line = self.data['description'].pop().capitalize()
