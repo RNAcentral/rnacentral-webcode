@@ -53,7 +53,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
         rnacentral_base_url: get_base_url(),
         fields: ['description', 'active', 'length', 'name'],
         facetfields: ['expert_db', 'rna_type', 'TAXONOMY', 'active'], // will be displayed in this order
-        facetcount: 31, // 30 will be displayed, 1 extra is used to detect if there are more facet values
+        facetcount: 30,
         page_size: 15,
         max_facet_count: 1000,
     };
@@ -174,19 +174,19 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
     };
 
     this.load_more_facets = function(facet_id) {
-        console.log(facet_id);
         var query = $location.search().q;
         var ebeye_url = query_urls.get_more_facet_values.replace('{QUERY}', query).replace('{FACET_ID}', facet_id);
         var url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url)) ;
-        console.log(ebeye_url);
         $http({
             url: url,
             method: 'GET'
         }).success(function(data) {
-            result.facets[2].facetValues.facetValue = data.result.facets.facet.facetValues.facetValue;
-            console.log(result);
+            // find where to insert new data
+            var facet_num = _.indexOf(_.map(result.facets, function(facet){
+                return facet['@id'] === facet_id;
+            }), true);
+            result.facets[facet_num].facetValues.facetValue = data.result.facets.facet.facetValues.facetValue;
         });
-
     };
 
     this.get_page_size = function() {
@@ -203,6 +203,10 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
 
     this.get_results = function() {
         return result;
+    };
+
+    this.get_max_facet_count = function() {
+        return search_config.max_facet_count;
     };
 
 }]);
@@ -236,6 +240,7 @@ rnaMetasearch.controller('MainContent', ['$scope', '$anchorScroll', '$location',
 rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', function($scope, $location, results) {
 
     $scope.page_size = results.get_page_size(); // know when to show Load more button
+    $scope.max_facet_count = results.get_max_facet_count();
 
     /**
      * Refresh results data.

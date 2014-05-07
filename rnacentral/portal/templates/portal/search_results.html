@@ -41,7 +41,8 @@
                   <a ng-if="facet.facetValues.facetValue.length > 1" ng-click="facet_search(facet['@id'], facet_value.value)">{{facet_value.label}} ({{facet_value.count}})</a>
                   <span ng-if="facet.facetValues.facetValue.length == 1">{{facet_value.label}} ({{facet_value.count}})</span>
                 </li>
-                <!--<button class="btn btn-xs btn-default" ng-show="facet.facetValues.facetValue.length > 25" ng-click="load_more_facets(facet['@id'])">more</button>-->
+                <!--<button ng-if="facet['@label'] == 'Organisms' && facet.facetValues.facetValue.length != max_facet_count" class="btn btn-xs btn-default" ng-show="facet.facetValues.facetValue.length > 25" ng-click="load_more_facets(facet['@id'])">more</button>-->
+                <small ng-if="facet.facetValues.facetValue.length == 30" class="text-muted">Showing top 30 organisms</small>
             </ul>
         </li>
       </ul>
