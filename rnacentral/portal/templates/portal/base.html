@@ -14,10 +14,7 @@ limitations under the License.
 {% load staticfiles %}
 {% load compress %}
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html xmlns:ng="http://angularjs.org" class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html xmlns:ng="http://angularjs.org" class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<!--[if IE 8]>         <html xmlns:ng="http://angularjs.org" class="no-js lt-ie9"> <![endif]-->
-<!--[if gt IE 8]><!--> <html xmlns:ng="http://angularjs.org" class="no-js"> <!--<![endif]-->
+<html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="rnacentralApp">
     <head>
         {% block meta_tags %}
           <meta charset="utf-8">
@@ -87,7 +84,7 @@ limitations under the License.
         {% block extra_head %}{% endblock %}
     </head>
 
-    <body class="level2" ng-app="rnacentralApp" id="ng-app">
+    <body class="level2">
         <!--[if lt IE 7]>
             <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a></li> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a></li> to improve your experience.</p>
         <![endif]-->
