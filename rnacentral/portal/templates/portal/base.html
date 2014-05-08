@@ -85,9 +85,6 @@ limitations under the License.
     </head>
 
     <body class="level2">
-        <!--[if lt IE 7]>
-            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a></li> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a></li> to improve your experience.</p>
-        <![endif]-->
         <header>
         {% include "portal/header.html" %}
         </header>
@@ -95,8 +92,14 @@ limitations under the License.
         <div class="container">
 
           <div class="container-main">
+            <!--[if lt IE 10]>
+              <div class="alert alert-danger">
+                You are using an <strong>outdated browser</strong> and as a result this website may not function as intended. Please <a href="http://whatbrowser.org/">upgrade your browser</a> to improve your experience.</p>
+              </div>
+            <![endif]-->
+
             <noscript>
-              <div class="alert alert-warning">
+              <div class="alert alert-danger">
                 Javasript is currently disabled or is not supported by this browser. Please enable JavaScript for full functionality.
               </div>
             </noscript>
