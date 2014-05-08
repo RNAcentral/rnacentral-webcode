@@ -315,6 +315,19 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', f
         return Math.min($scope.page_size, $scope.result.hits);
     };
 
+    /**
+     * Show/hide search facets to save screen space.
+     * Uses jQuery for simplicity.
+     * Activated only on mobile devices.
+     */
+    $scope.toggle_facets = function() {
+        var facets = $('.metasearch-facets');
+        facets.toggleClass('hidden-xs', !facets.hasClass('hidden-xs'));
+        $('#toggle-facets').text(function(i, text){
+          return text === "Show facets" ? "Hide facets" : "Show facets";
+        });
+    };
+
 }]);
 
 /**

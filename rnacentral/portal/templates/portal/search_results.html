@@ -12,6 +12,12 @@
     </small>
   </h1>
 
+  <div class="row visible-xs">
+    <div class="col-xs-12">
+      <button class="btn btn-default" ng-click="toggle_facets()" id="toggle-facets">Show facets</button>
+    </div>
+  </div>
+
   <div class="row" ng-show="result.hits == 0">
 
     <div class="col-md-12">
@@ -32,7 +38,7 @@
 
   <div class="row" ng-show="result.hits > 0">
 
-    <div class="col-md-3 col-sm-4 col-xs-6 metasearch-facets">
+    <div class="col-md-3 col-sm-4 hidden-xs metasearch-facets">
       <ul class="list-unstyled">
         <li class="facet" ng-repeat="facet in result.facets">
             <h3>{{facet['@label']}}</h3>
@@ -49,10 +55,10 @@
       <hr>
     </div>
 
-    <div class="col-md-9 col-sm-8 col-xs-6 metasearch-results">
+    <div class="col-md-9 col-sm-8 col-xs-12 metasearch-results">
       <ul class="list-unstyled" ng-repeat="rna in result.rnas">
         <li class="result">
-          <div class="col-md-12">
+          <div>
             <h4><a href="/rna/{{rna['@id']}}">{{rna.description}} ({{rna['@id']}})</a></h4>
             <ul class="list-inline small">
               <li>
