@@ -67,7 +67,7 @@ class ENASequenceSearchClient(object):
         base_url = 'http://www.ebi.ac.uk/ena/search'
         # ENA Non-coding sequence collection name, url encoded
         collection = '/All Sequences/All EMBL-Bank/Non-coding'.\
-                     replace('/', '%2F')
+                     replace('/', '%2F').replace(' ', '%20')
         # ENA results columns in tab-delimited format
         self.field_names = ['accession', 'e_value', 'identity', 'target_length',
                             'query_range', 'target_range','alignment_length',
