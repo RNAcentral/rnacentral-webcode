@@ -77,7 +77,7 @@ class ENASequenceSearchClient(object):
         self.endpoints = {
             'search':  base_url + '/executeSearch?Sequence={sequence}&'
                                   'collection=' + collection,
-            'status':  base_url + '/searchStatus?job_id={job_id}',
+            'status':  base_url + '/searchStatus?job_id={job_id}&display=json',
             'results': base_url + '/searchResults?job_id={job_id}&'
                                   'length={length}&offset={offset}&'
                                   'display=json&'
@@ -235,24 +235,14 @@ class ENASequenceSearchClient(object):
             if response.status_code == 404 or 'not found in session' in response.text:
                 self.__raise_error(exception_class=StatusNotFoundError)
 
-        def get_results_count(status_string):
-            """
-            Parse out the total number of results.
-            """
-            match = re.search(r'\t(\d+)\s+$', status_string)
-            if match:
-                count = match.group(1)
-                return count
-            else:
-                message = 'Results count not found in {status_string}'.format(
-                           status_string=status_string)
-                self.__raise_error(message=message)
-
         response = get_status_response()
         validate_response(response)
-        num_results = get_results_count(response.text)
-        status = 'Done' if 'COMPLETE' in response.text else 'In progress'
-        return (status, num_results)
+        count = response.json()['alignment_count']
+        if response.json()['status'] == 'COMPLETE':
+            status = 'Done'
+        else:
+            status = 'In progress'
+        return (status, count)
 
     # TODO fix length default which fails tests for results with < 10 hits
     def get_results(self, job_id, jsession_id, length=10, offset=1):
