@@ -660,3 +660,7 @@ textarea {
   white-space: pre;
   margin-left: 10px;
 }
+
+.sequence-search-results h2 {
+  margin-top: 5px;
+}
