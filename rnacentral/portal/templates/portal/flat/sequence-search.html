@@ -36,7 +36,7 @@ Sequence search
 
         <div class="col-md-8 form-group" ng-class="(query.failed || seqQueryForm.$dirty && seqQueryForm.sequence.$invalid) ? 'has-error' : ''">
           <textarea class="form-control"
-                    rows="3"
+                    rows="6"
                     placeholder="Enter RNA or DNA sequence in fasta or plain text format."
                     name="sequence"
                     id="query-sequence"
@@ -46,7 +46,7 @@ Sequence search
                     autofocus></textarea>
 
             <span class="help-block">
-              <i>Examples: <a ng-click="query.sequence='ACGUTUTUTUTUTUTUU'">human</a>, <a ng-click="query.sequence='> test\nTTTATATCG'">E.coli</a></i>
+              <i>Example sequences: <a ng-click="query.sequence='GTCCTTCGGGACTATGGACATAAACGCGCTCGTAATAAGCGGATCGGACCCGGGGGCGGTACCCGGCGGCTCCACCAACAGCCCTGTCGTTTGCAGGCAGAGGGGGCCGAAACAGGATCGACGAACGTCTAAAGGGGTTAGCTTTGTCTCGGCTGGGTGCCACCGTTATCGGCCTAAATTGTACAGTTGCAAACGACAACCGTGCTCCGGTGGCCGTTGCTGCGTAAGCAGTAACAACACCGAAACTTAAGTCCTTGCGCCTAGCAGCGTAAGGCGGGGTTCGCAGGCACCTGGCAACAGAAGCCTGCACA'">human</a>, <a ng-click="query.sequence='> test\nTTTATATCG'">E.coli</a></i>
             </span>
 
             <label class="control-label has-error ng-cloak"
@@ -75,27 +75,27 @@ Sequence search
 
     <div class="col-md-10">
 
-      <p class="small ng-cloak" ng-cloak ng-show="alignments">
+      <p class="small ng-cloak" ng-cloak ng-show="results">
         {% verbatim %}
-          {{ alignments.length }}
-          <ng-pluralize count="alignments.length"
+          {{ results.length }}
+          <ng-pluralize count="results.length"
               when="{'0': 'No results',
-                     '1': 'alignment found',
-                     'other': 'alignments found'}">
+                     '1': 'result found',
+                     'other': 'results found'}">
           </ng-pluralize>
         {% endverbatim %}
       </p>
 
-      <ul  class="list-unstyled ng-cloak" ng-repeat="alignment in alignments" ng-cloak>
+      <ul  class="list-unstyled ng-cloak" ng-repeat="result in results" ng-cloak>
         {% verbatim %}
         <li class="result">
           <div>
 
-            <h4><a href="/rna/{{alignment.accession}}">{{alignment.accession}}</a></h4>
+            <!--<h4><a href="/rna/{{alignment.accession}}">{{alignment.accession}}</a></h4>-->
 
-            <h4>{{alignment.description}}</h4>
+            <h4>{{result.accession}}</h4>
 
-            <pre>{{alignment.alignment}}</pre>
+            <pre>{{result.formatted_alignment}}</pre>
 
           </div>
         </li>

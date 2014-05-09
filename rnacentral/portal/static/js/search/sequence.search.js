@@ -19,7 +19,8 @@ limitations under the License.
 		sequence: '',
 		failed: false
 	};
-	$scope.alignments = [];
+	$scope.results = [];
+	$scope.data = '';
 
     $scope.submit_query = function() {
     	if (!$scope.seqQueryForm.$valid) {
@@ -27,12 +28,35 @@ limitations under the License.
     		return;
     	}
     	$scope.query.failed = false;
+        // submit
 		$http({
-			url: '/api/v1/sequence-search',
+			url: '/api/v1/sequence-search/submit?sequence=' + $scope.query.sequence,
 			method: 'GET',
 			params: {sequence: $scope.query.sequence}
 		}).success(function(data) {
-			$scope.alignments = data;
+			console.log(data);
+			//check status
+			var interval = setInterval(function(){
+				console.log('checking status');
+				$http({
+					url: data.url,
+					method: 'GET'
+				}).success(function(data){
+					if (data.status === 'Done') {
+						console.log('Results ready');
+						window.clearInterval(interval);
+						// get results
+						$http({
+							url: data.url,
+							method: 'GET'
+						}).success(function(data){
+							console.log('Results retrieved');
+							console.log(data);
+							$scope.results = data.results;
+						});
+					}
+				});
+			}, 1000);
 		});
     };
 
