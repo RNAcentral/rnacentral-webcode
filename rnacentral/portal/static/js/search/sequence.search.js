@@ -22,43 +22,71 @@ limitations under the License.
 	$scope.results = [];
 	$scope.count = 0;
 
+    /**
+     * Retrive results given a results url.
+     */
+	var get_results = function(url) {
+		$http({
+			url: url,
+			method: 'GET'
+		}).success(function(data){
+			console.log('Results retrieved');
+			console.log(data);
+			$scope.results = data.results;
+		}).error(function(){
+			// todo
+		});
+	};
+
+    /**
+     * Poll job status in regular intervals.
+     */
+	var poll_job_status = function(url) {
+		var polling_interval = 1000; // milliseconds
+		var interval = setInterval(function(){
+			console.log('Checking status');
+			$http({
+				url: url,
+				method: 'GET'
+			}).success(function(data){
+				if (data.status === 'Done') {
+					$scope.count = data.count;
+					console.log('Results ready');
+					window.clearInterval(interval);
+					// get results
+					get_results(data.url);
+				}
+			}).error(function(){
+				// todo
+			});
+		}, polling_interval);
+	};
+
+    /**
+     * Initiate sequence search.
+     */
+	var search = function(sequence) {
+		$http({
+			url: '/api/v1/sequence-search/submit?sequence=' + sequence,
+			method: 'GET', // todo: switch to POST
+		}).success(function(data) {
+			console.log(data);
+			poll_job_status(data.url);
+		}).error(function() {
+			// todo
+		});
+	};
+
+    /**
+     * Public method for submitting the query.
+     */
     $scope.submit_query = function() {
     	if (!$scope.seqQueryForm.$valid) {
     		$scope.query.failed = true;
     		return;
     	}
     	$scope.query.failed = false;
-        // submit
-		$http({
-			url: '/api/v1/sequence-search/submit?sequence=' + $scope.query.sequence,
-			method: 'GET',
-			params: {sequence: $scope.query.sequence}
-		}).success(function(data) {
-			console.log(data);
-			//check status
-			var interval = setInterval(function(){
-				console.log('checking status');
-				$http({
-					url: data.url,
-					method: 'GET'
-				}).success(function(data){
-					if (data.status === 'Done') {
-						$scope.count = data.count;
-						console.log('Results ready');
-						window.clearInterval(interval);
-						// get results
-						$http({
-							url: data.url,
-							method: 'GET'
-						}).success(function(data){
-							console.log('Results retrieved');
-							console.log(data);
-							$scope.results = data.results;
-						});
-					}
-				});
-			}, 1000);
-		});
+        search($scope.query.sequence);
     };
 
 });
