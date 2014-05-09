@@ -39,12 +39,14 @@ Sequence search
         <div class="col-md-8 form-group" ng-class="(query.failed || seqQueryForm.$dirty && seqQueryForm.sequence.$invalid) ? 'has-error' : ''">
           <textarea class="form-control"
                     rows="6"
-                    placeholder="Enter RNA or DNA sequence in fasta or plain text format."
+                    placeholder="RNA or DNA sequence (fasta currently not supported)"
                     name="sequence"
                     id="query-sequence"
                     ng-model="query.sequence"
                     ng-minlength="12"
                     ng-maxlength="1000"
+                    ng-pattern="/^[acgtun\s]+$/i"
+                    tabindex="2"
                     required
                     autofocus></textarea>
 
@@ -53,13 +55,18 @@ Sequence search
             </span>
 
             <label class="control-label has-error"
-                   for="query-sequence" ng-show="seqQueryForm.$dirty && seqQueryForm.sequence.$error.minlength">
+                   for="query-sequence" ng-show="$scope.query.failed && seqQueryForm.$dirty && seqQueryForm.sequence.$error.minlength">
               The sequence cannot be shorter than 12 nucleotides.
+            </label>
+
+            <label class="control-label has-error"
+                   for="query-sequence" ng-show="seqQueryForm.sequence.$error.pattern">
+              The sequence can only have A, C, G, U, T or N characters.
             </label>
         </div>
 
         <div class="col-md-2">
-          <button type="submit" class="btn btn-primary animated pulse" tabindex="2" ng-click="submit_query()">
+          <button type="submit" class="btn btn-primary animated pulse" tabindex="3" ng-click="submit_query()">
             <i class="fa fa-search" ng-show="!search_in_progress"></i>
             <i class="fa fa-spinner fa-spin" ng-show="search_in_progress"></i> Search
           </button>
