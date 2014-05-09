@@ -27,10 +27,6 @@ Sequence search
     <small ng-show="search_in_progress">
       <i class="fa fa-spinner fa-spin"></i>
     </small>
-    <small ng-show="count > 0">
-      <span ng-if="count == 1">1 alignment</span>
-      <span ng-if="count > 1">10 out of {{count | number}} alignments</span>
-    </small>
   </h1>
 
   <p class="text-muted">
@@ -80,14 +76,13 @@ Sequence search
 
     <div class="col-md-8 sequence-search-results">
 
-      <p class="small" ng-show="results">
-          {{ count }}
-          <ng-pluralize count="count"
-              when="{'0': 'No results',
-                     '1': 'result found',
-                     'other': 'results found'}">
-          </ng-pluralize>
-      </p>
+      <h2 ng-show="count > 0">
+        Results
+        <small>
+          <span ng-if="count == 1">1 alignment</span>
+          <span ng-if="count > 1">{{displayed_items()}} out of {{count | number}} alignments</span>
+        </small>
+      </h2>
 
       <ul  class="list-unstyled" ng-repeat="result in results">
         <li class="result">
@@ -96,7 +91,8 @@ Sequence search
             <pre>{{result.formatted_alignment}}</pre>
         </li>
       </ul>
-
+      <button class="btn btn-default load-more col-md-3" ng-click="load_more_results()" ng-show="count > page_size"><i class="fa fa-spinner fa-spin" ng-show="search_in_progress"></i> Load more</button>
+      <br>
     </div> <!--/col-md-10 -->
 
   </div><!--/row -->

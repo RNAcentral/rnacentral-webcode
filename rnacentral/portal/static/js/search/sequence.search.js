@@ -15,6 +15,8 @@ limitations under the License.
 
 ;rnaMetasearch.controller('SeqResultsListCtrl', function($scope, $http) {
 
+	var default_page_size = 15;
+
 	$scope.query = {
 		sequence: '',
 		failed: false
@@ -22,20 +24,38 @@ limitations under the License.
 	$scope.results = [];
 	$scope.count = 0;
 	$scope.search_in_progress = false;
+	$scope.results_urls = '';
+	$scope.page_size = default_page_size;
 
     /**
      * Retrive results given a results url.
      */
-	var get_results = function(url) {
+	var get_results = function() {
+		$scope.search_in_progress = true;
+
+	    /**
+	     * ENA REST API will not return any results if page_size exceeds
+	     * the number of hits. ENA hits are counted starting at 0, so the
+	     * page_size has to decremented by 1.
+	     */
+		var calculate_page_size = function() {
+			return Math.min($scope.count, $scope.page_size) - 1;
+		};
+
 		$http({
-			url: url,
-			method: 'GET'
+			url: $scope.results_url,
+			method: 'GET',
+			params: {
+				page_size: calculate_page_size(),
+				page: 1,
+			}
 		}).success(function(data){
 			console.log('Results retrieved');
 			console.log(data);
 			$scope.results = data.results;
 			$scope.search_in_progress = false;
 		}).error(function(){
+			$scope.search_in_progress = false;
 			// todo
 		});
 	};
@@ -56,7 +76,8 @@ limitations under the License.
 					console.log('Results ready');
 					window.clearInterval(interval);
 					// get results
-					get_results(data.url);
+					$scope.results_url = data.url;
+					get_results();
 				}
 			}).error(function(){
 				// todo
@@ -90,6 +111,18 @@ limitations under the License.
     	}
     	$scope.query.failed = false;
         search($scope.query.sequence);
+    };
+
+    /**
+     * Load more results.
+     */
+    $scope.load_more_results = function() {
+        $scope.page_size += default_page_size;
+        get_results();
+    };
+
+    $scope.displayed_items = function() {
+        return Math.min($scope.page_size, $scope.count);
     };
 
 });
