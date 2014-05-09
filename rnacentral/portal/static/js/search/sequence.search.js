@@ -26,6 +26,7 @@ limitations under the License.
 	$scope.search_in_progress = false;
 	$scope.results_urls = '';
 	$scope.page_size = default_page_size;
+	$scope.error_message = '';
 
     /**
      * Retrive results given a results url.
@@ -96,8 +97,11 @@ limitations under the License.
 		}).success(function(data) {
 			console.log(data);
 			poll_job_status(data.url);
-		}).error(function() {
-			// todo
+		}).error(function(data, status) {
+			$scope.error_message = data.message;
+			console.log(data);
+			console.log(status);
+			$scope.search_in_progress = false;
 		});
 	};
 
@@ -121,6 +125,9 @@ limitations under the License.
         get_results();
     };
 
+    /**
+     * Calculate how many items are visible.
+     */
     $scope.displayed_items = function() {
         return Math.min($scope.page_size, $scope.count);
     };
