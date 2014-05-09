@@ -71,8 +71,8 @@ class ENASequenceSearchClient(object):
         # ENA results columns in tab-delimited format
         self.field_names = ['accession', 'e_value', 'identity', 'target_length',
                             'query_range', 'target_range','alignment_length',
-                            'target_length','identities', 'gaps']
-                            #, 'formatted_alignment']
+                            'target_length','identities', 'gaps',
+                            'formatted_alignment']
         # ENA REST API endpoints
         self.endpoints = {
             'search':  base_url + '/executeSearch?Sequence={sequence}&'
@@ -80,6 +80,7 @@ class ENASequenceSearchClient(object):
             'status':  base_url + '/searchStatus?job_id={job_id}',
             'results': base_url + '/searchResults?job_id={job_id}&'
                                   'length={length}&offset={offset}&'
+                                  'display=json&'
                                   'fields=' + ','.join(self.field_names),
         }
         # ENA minimum word size that can be searched
@@ -262,22 +263,6 @@ class ENASequenceSearchClient(object):
             ResultsUnavailableError - when results are not available
             SequenceSearchError     - all other erros
         """
-        def format_results(results):
-            """
-            Convert results from tab-delimited to json format.
-            """
-            data = []
-            for line in results.split('\n'):
-                if line == '':
-                    continue
-                fields = line.split('\t')
-                entry = {}
-                for i, field in enumerate(fields):
-                    entry[self.field_names[i]] = field
-                data.append(entry)
-            return data
-
-        results = []
         try:
             url = self.endpoints['results'].format(job_id=job_id,
                                                    offset=offset,
@@ -289,8 +274,7 @@ class ENASequenceSearchClient(object):
         else:
             if r.status_code == 500:
                 raise ResultsUnavailableError()
-            results = format_results(r.text)
-        return results
+        return r.json()
 
     def search(self, sequence=''):
         """
