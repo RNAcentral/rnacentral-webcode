@@ -27,7 +27,7 @@ urlpatterns = patterns('',
     # metadata search
     url(r'^search/?$', views.StaticView.as_view(), {'page': 'metadata-search'}, name='metadata-search'),
     # sequence search
-    url(r'^(?P<page>sequence-search)/?$', views.StaticView.as_view(), name='sequence-search'),
+    url(r'^sequence-search/?$', views.StaticView.as_view(), {'page': 'sequence-search'}, name='sequence-search'),
     # flat pages
     url(r'^(?P<page>thanks|coming-soon)/?$', views.StaticView.as_view()),
     # downloads
