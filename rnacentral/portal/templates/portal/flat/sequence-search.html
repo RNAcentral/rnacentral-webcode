@@ -19,17 +19,23 @@ Sequence search
 {% endblock %}
 
 {% block content %}
-
-<h1>
-  <i class="fa fa-search"></i> Sequence search
-  <small>
-    Local alignment using <a href="http://www.ncbi.nlm.nih.gov/pmc/articles/PMC553969/" target="_blank">Exonerate</a>
-  </small>
-</h1>
-
-<br>
-
+{% verbatim %}
 <div ng-controller="SeqResultsListCtrl" class="ng-cloak" ng-cloak>
+
+  <h1>
+    <i class="fa fa-search"></i> Sequence search
+    <small ng-show="search_in_progress">
+      <i class="fa fa-spinner fa-spin"></i>
+    </small>
+    <small ng-show="count > 0">
+      <span ng-if="count == 1">1 alignment</span>
+      <span ng-if="count > 1">10 out of {{count | number}} alignments</span>
+    </small>
+  </h1>
+
+  <p class="text-muted">
+    <i class="fa fa-info-circle"></i> Local alignment using the <a href="http://www.ncbi.nlm.nih.gov/pmc/articles/PMC553969/" target="_blank">Exonerate</a> search algorithm.
+  </p>
 
   <div class="row sequence-search-input" >
       <form name="seqQueryForm" novalidate>
@@ -57,8 +63,8 @@ Sequence search
 
         <div class="col-md-2">
           <button type="submit" class="btn btn-primary animated pulse" tabindex="2" ng-click="submit_query()">
-            <i class="fa fa-search"></i>
-            Search
+            <i class="fa fa-search" ng-show="!search_in_progress"></i>
+            <i class="fa fa-spinner fa-spin" ng-show="search_in_progress"></i> Search
           </button>
 
           <button class="btn btn-default" tabindex="3" ng-click="query.sequence=''">
@@ -75,24 +81,20 @@ Sequence search
     <div class="col-md-8 sequence-search-results">
 
       <p class="small" ng-show="results">
-        {% verbatim %}
           {{ count }}
           <ng-pluralize count="count"
               when="{'0': 'No results',
                      '1': 'result found',
                      'other': 'results found'}">
           </ng-pluralize>
-        {% endverbatim %}
       </p>
 
       <ul  class="list-unstyled" ng-repeat="result in results">
-        {% verbatim %}
         <li class="result">
             <!--<h4><a href="/rna/{{alignment.accession}}">{{alignment.accession}}</a></h4>-->
             <h4>{{result.accession}}</h4>
             <pre>{{result.formatted_alignment}}</pre>
         </li>
-        {% endverbatim %}
       </ul>
 
     </div> <!--/col-md-10 -->
@@ -100,7 +102,7 @@ Sequence search
   </div><!--/row -->
 
 </div><!--/ng-controller -->
-
+{% endverbatim %}
 {% endblock content %}
 
 {% block extra_js %}

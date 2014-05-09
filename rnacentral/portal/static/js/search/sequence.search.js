@@ -21,6 +21,7 @@ limitations under the License.
 	};
 	$scope.results = [];
 	$scope.count = 0;
+	$scope.search_in_progress = false;
 
     /**
      * Retrive results given a results url.
@@ -33,6 +34,7 @@ limitations under the License.
 			console.log('Results retrieved');
 			console.log(data);
 			$scope.results = data.results;
+			$scope.search_in_progress = false;
 		}).error(function(){
 			// todo
 		});
@@ -66,6 +68,7 @@ limitations under the License.
      * Initiate sequence search.
      */
 	var search = function(sequence) {
+		$scope.search_in_progress = true;
 		$http({
 			url: '/api/v1/sequence-search/submit?sequence=' + sequence,
 			method: 'GET', // todo: switch to POST
