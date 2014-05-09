@@ -77,8 +77,8 @@ Sequence search
 
       <p class="small ng-cloak" ng-cloak ng-show="results">
         {% verbatim %}
-          {{ results.length }}
-          <ng-pluralize count="results.length"
+          {{ count }}
+          <ng-pluralize count="count"
               when="{'0': 'No results',
                      '1': 'result found',
                      'other': 'results found'}">

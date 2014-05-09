@@ -20,7 +20,7 @@ limitations under the License.
 		failed: false
 	};
 	$scope.results = [];
-	$scope.data = '';
+	$scope.count = 0;
 
     $scope.submit_query = function() {
     	if (!$scope.seqQueryForm.$valid) {
@@ -43,6 +43,7 @@ limitations under the License.
 					method: 'GET'
 				}).success(function(data){
 					if (data.status === 'Done') {
+						$scope.count = data.count;
 						console.log('Results ready');
 						window.clearInterval(interval);
 						// get results
