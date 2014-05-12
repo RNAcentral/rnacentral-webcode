@@ -15,42 +15,45 @@ limitations under the License.
 
 ;rnaMetasearch.controller('SeqResultsListCtrl', function($scope, $http) {
 
-	var default_page_size = 10;
-
 	$scope.query = {
 		sequence: '',
 		failed: false
 	};
-	$scope.results = [];
-	$scope.count = 0;
-	$scope.ena_count = 0;
-	$scope.search_in_progress = false;
-	$scope.results_urls = '';
-	$scope.page_size = default_page_size;
-	$scope.error_message = '';
+
+	$scope.defaults = {
+		page_size: 10,
+	};
+
+	$scope.params = {
+		search_in_progress: false,
+		page_size: $scope.defaults.page_size,
+		error_message: '',
+	};
+
+	$scope.results = results_init();
 
     /**
      * Retrive results given a results url.
      */
 	var get_results = function() {
-		$scope.search_in_progress = true;
+		$scope.params.search_in_progress = true;
 
 		$http({
-			url: $scope.results_url,
+			url: $scope.results.url,
 			method: 'GET',
 			params: {
-				page_size: $scope.page_size,
-				page: 1,
+				page_size: $scope.params.page_size,
+				page: 1, // all results on 1 page
 			}
 		}).success(function(data){
 			console.log('Results retrieved');
 			console.log(data);
-			$scope.count = data.results.count;
-			$scope.ena_count = data.results.ena_count;
-			$scope.results = data.results;
-			$scope.search_in_progress = false;
+			$scope.results.count = data.results.count;
+			$scope.results.ena_count = data.results.ena_count;
+			$scope.results.alignments = data.results.alignments;
+			$scope.params.search_in_progress = false;
 		}).error(function(){
-			$scope.search_in_progress = false;
+			$scope.params.search_in_progress = false;
 			// todo
 		});
 	};
@@ -70,7 +73,7 @@ limitations under the License.
 					console.log('Results ready');
 					window.clearInterval(interval);
 					// get results
-					$scope.results_url = data.url;
+					$scope.results.url = data.url;
 					get_results();
 				}
 			}).error(function(){
@@ -83,7 +86,7 @@ limitations under the License.
      * Initiate sequence search.
      */
 	var search = function(sequence) {
-		$scope.search_in_progress = true;
+		$scope.params.search_in_progress = true;
 		$http({
 			url: '/api/v1/sequence-search/submit?sequence=' + sequence,
 			method: 'GET', // todo: switch to POST
@@ -91,10 +94,10 @@ limitations under the License.
 			console.log(data);
 			poll_job_status(data.url);
 		}).error(function(data, status) {
-			$scope.error_message = data.message;
+			$scope.params.error_message = data.message;
 			console.log(data);
 			console.log(status);
-			$scope.search_in_progress = false;
+			$scope.params.search_in_progress = false;
 		});
 	};
 
@@ -114,7 +117,7 @@ limitations under the License.
      * Load more results.
      */
     $scope.load_more_results = function() {
-        $scope.page_size += default_page_size;
+        $scope.params.page_size += $scope.defaults.page_size;
         get_results();
     };
 
@@ -122,7 +125,28 @@ limitations under the License.
      * Calculate how many items are visible.
      */
     $scope.displayed_items = function() {
-        return Math.min($scope.page_size, $scope.count);
+        return Math.min($scope.params.page_size, $scope.results.count);
     };
+
+    /**
+     * Initialize results object.
+     */
+	function results_init() {
+		return {
+			alignments: [],
+			count: 0,
+			ena_count: 0,
+			url: '',
+		}
+	};
+
+    /**
+     * Reset the form.
+     */
+    $scope.reset = function() {
+		$scope.query.sequence = '';
+		$scope.results = results_init();
+		$('textarea').focus();
+	};
 
 });

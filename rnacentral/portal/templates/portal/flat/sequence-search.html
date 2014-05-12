@@ -24,7 +24,7 @@ Sequence search
 
   <h1>
     <i class="fa fa-search"></i> Sequence search
-    <small ng-show="search_in_progress">
+    <small ng-show="params.search_in_progress">
       <i class="fa fa-spinner fa-spin"></i>
     </small>
   </h1>
@@ -71,7 +71,7 @@ Sequence search
             <i class="fa fa-spinner fa-spin" ng-show="search_in_progress"></i> Search
           </button>
 
-          <button class="btn btn-default" tabindex="3" ng-click="query.sequence=''">
+          <button class="btn btn-default" tabindex="3" ng-click="reset()">
             <i class="fa fa-trash-o"></i>
             Clear
           </button>
@@ -80,10 +80,10 @@ Sequence search
       </form><!-- /form -->
   </div><!-- /row -->
 
-  <div class="row" ng-show="error_message">
+  <div class="row" ng-show="params.error_message">
     <div class="col-md-12">
       <div class="alert alert-danger">
-        {{error_message}}
+        {{params.error_message}}
       </div>
     </div>
   </div>
@@ -92,17 +92,17 @@ Sequence search
 
     <div class="col-md-8 sequence-search-results">
 
-      <h2 ng-show="count > 0">
+      <h2 ng-show="results.count > 0">
         Results
         <small>
-          <span ng-if="count == 1">1 alignment</span>
-          <span ng-if="count > 1">{{displayed_items()}} out of {{count | number}} alignments</span>
+          <span ng-if="results.count == 1">1 alignment</span>
+          <span ng-if="results.count > 1">{{displayed_items()}} out of {{results.count | number}} alignments</span>
         </small>
       </h2>
 
       <small>
-        <span ng-if="ena_count == 1">1 ENA entry</span>
-        <span ng-if="ena_count > 1">{{ena_count}} ENA entries</span>
+        <span ng-if="results.ena_count == 1">1 ENA entry</span>
+        <span ng-if="results.ena_count > 1">{{results.ena_count}} ENA entries</span>
       </small>
 
       <ul  class="list-unstyled" ng-repeat="result in results.alignments">
@@ -111,7 +111,7 @@ Sequence search
             <pre>{{result.formatted_alignment}}</pre>
         </li>
       </ul>
-      <button class="btn btn-default load-more col-md-3" ng-click="load_more_results()" ng-show="count > page_size"><i class="fa fa-spinner fa-spin" ng-show="search_in_progress"></i> Load more</button>
+      <button class="btn btn-default load-more col-md-3" ng-click="load_more_results()" ng-show="results.count > params.page_size"><i class="fa fa-spinner fa-spin" ng-show="params.search_in_progress"></i> Load more</button>
       <br>
     </div> <!--/col-md-10 -->
 
