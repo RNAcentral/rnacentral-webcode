@@ -76,6 +76,7 @@ class ENASequenceSearchClient(object):
         # ENA REST API endpoints
         self.endpoints = {
             'search':  base_url + '/executeSearch?Sequence={sequence}&'
+                                  'type=sensitive&'
                                   'collection=' + collection,
             'status':  base_url + '/searchStatus?job_id={job_id}&display=json',
             'results': base_url + '/searchResults?job_id={job_id}&'
