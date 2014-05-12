@@ -51,7 +51,7 @@ Sequence search
                     autofocus></textarea>
 
             <span class="help-block">
-              <i>Example sequences: <a ng-click="query.sequence='GTCCTTCGGGACTATGGACATAAACGCGCTCGTAATAAGCGGATCGGACCCGGGGGCGGTACCCGGCGGCTCCACCAACAGCCCTGTCGTTTGCAGGCAGAGGGGGCCGAAACAGGATCGACGAACGTCTAAAGGGGTTAGCTTTGTCTCGGCTGGGTGCCACCGTTATCGGCCTAAATTGTACAGTTGCAAACGACAACCGTGCTCCGGTGGCCGTTGCTGCGTAAGCAGTAACAACACCGAAACTTAAGTCCTTGCGCCTAGCAGCGTAAGGCGGGGTTCGCAGGCACCTGGCAACAGAAGCCTGCACA'">human</a>, <a ng-click="query.sequence='> test\nTTTATATCG'">E.coli</a></i>
+              <i>Example sequences: <a ng-click="query.sequence='GTCCTTCGGGACTATGGACATAAACGCGCTCGTAATAAGCGGATCGGACCCGGGGGCGGTACCCGGCGGCTCCACCAACAGCCCTGTCGTTTGCAGGCAGAGGGGGCCGAAACAGGATCGACGAACGTCTAAAGGGGTTAGCTTTGTCTCGGCTGGGTGCCACCGTTATCGGCCTAAATTGTACAGTTGCAAACGACAACCGTGCTCCGGTGGCCGTTGCTGCGTAAGCAGTAACAACACCGAAACTTAAGTCCTTGCGCCTAGCAGCGTAAGGCGGGGTTCGCAGGCACCTGGCAACAGAAGCCTGCACA'">human</a>, <a ng-click="query.sequence='CUUCGGGGGAGGAGAGAAGC'">E.coli</a></i>
             </span>
 
             <label class="control-label has-error"
@@ -100,10 +100,14 @@ Sequence search
         </small>
       </h2>
 
-      <ul  class="list-unstyled" ng-repeat="result in results">
+      <small>
+        <span ng-if="ena_count == 1">1 ENA entry</span>
+        <span ng-if="ena_count > 1">{{ena_count}} ENA entries</span>
+      </small>
+
+      <ul  class="list-unstyled" ng-repeat="result in results.alignments">
         <li class="result">
-            <!--<h4><a href="/rna/{{alignment.accession}}">{{alignment.accession}}</a></h4>-->
-            <h4>{{result.accession}}</h4>
+            <h4><a href="/rna/{{result.rnacentral_id}}">{{result.rnacentral_id}}</a></h4>
             <pre>{{result.formatted_alignment}}</pre>
         </li>
       </ul>

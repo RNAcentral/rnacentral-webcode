@@ -23,6 +23,12 @@ python apiv1/search/sequence/tests.py
 python apiv1/search/sequence/tests.py --base_url=http://test.rnacentral.org
 """
 
+# add Django project to the path in order to import models in rest_client.py
+import os, sys
+from os.path import dirname
+sys.path.append(os.path.abspath(__file__ + "/../../../.."))
+os.environ["DJANGO_SETTINGS_MODULE"] = "rnacentral.settings"
+
 import requests
 import time
 import unittest
@@ -51,8 +57,8 @@ class ENASequenceSearchTest(unittest.TestCase):
         sequence = self.sequences['multiple_hits']
         data = self.client.search(sequence)
         self.assertTrue(len(data) > 0)
-        self.assertTrue(isinstance(data[0]['accession'], unicode))
-        self.assertTrue(len(data[0]['accession']) > 0)
+        self.assertTrue(isinstance(data['alignments'][0]['rnacentral_id'], unicode))
+        self.assertTrue('URS' in data['alignments'][0]['rnacentral_id'])
 
     def test_no_hits(self):
         """
@@ -60,7 +66,7 @@ class ENASequenceSearchTest(unittest.TestCase):
         """
         sequence = self.sequences['no_hits']
         data = self.client.search(sequence)
-        self.assertTrue(len(data) == 0)
+        self.assertTrue(data['count'] == 0)
 
     def test_too_short(self):
         """
@@ -190,14 +196,14 @@ class ResultsAPITest(RNAcentralAPITestBaseClass):
         # default page and page_size
         r = requests.get(results_url)
         self.assertEqual(r.status_code, 200)
-        self.assertEqual(len(r.json()['results']), PAGE_SIZE)
+        self.assertEqual(len(r.json()['results']['alignments']), PAGE_SIZE)
 
         # page=1
         page = 1
         url = '{0}&page={1}'.format(results_url, page)
         r = requests.get(url)
         self.assertEqual(r.status_code, 200)
-        data1 = r.json()['results']
+        data1 = r.json()['results']['alignments']
         self.assertEqual(len(data1), PAGE_SIZE)
 
         # page=2
@@ -205,17 +211,17 @@ class ResultsAPITest(RNAcentralAPITestBaseClass):
         url = '{0}&page={1}'.format(results_url, page)
         r = requests.get(url)
         self.assertEqual(r.status_code, 200)
-        data2 = r.json()['results']
-        self.assertEqual(len(data2), PAGE_SIZE)
+        data2 = r.json()['results']['alignments']
         self.assertNotEqual(data1, data2)
 
-        # page=1&page_size=20
+        # page=1&page_size=10
         page = 1
-        page_size = 20
+        page_size = 15
         url = '{0}&page={1}&page_size={2}'.format(results_url, page, page_size)
         r = requests.get(url)
         self.assertEqual(r.status_code, 200)
-        self.assertEqual(len(r.json()['results']), page_size)
+        self.assertTrue(len(r.json()['results']['alignments']) <= page_size)
+        self.assertTrue('URS' in r.json()['results']['alignments'][0]['rnacentral_id'])
 
         # TODO: test pagination over non-existing ranges
         # page=10000000

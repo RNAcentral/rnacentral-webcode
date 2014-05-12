@@ -15,7 +15,7 @@ limitations under the License.
 
 ;rnaMetasearch.controller('SeqResultsListCtrl', function($scope, $http) {
 
-	var default_page_size = 15;
+	var default_page_size = 10;
 
 	$scope.query = {
 		sequence: '',
@@ -23,6 +23,7 @@ limitations under the License.
 	};
 	$scope.results = [];
 	$scope.count = 0;
+	$scope.ena_count = 0;
 	$scope.search_in_progress = false;
 	$scope.results_urls = '';
 	$scope.page_size = default_page_size;
@@ -34,25 +35,18 @@ limitations under the License.
 	var get_results = function() {
 		$scope.search_in_progress = true;
 
-	    /**
-	     * ENA REST API will not return any results if page_size exceeds
-	     * the number of hits. ENA hits are counted starting at 0, so the
-	     * page_size has to decremented by 1.
-	     */
-		var calculate_page_size = function() {
-			return Math.min($scope.count, $scope.page_size) - 1;
-		};
-
 		$http({
 			url: $scope.results_url,
 			method: 'GET',
 			params: {
-				page_size: calculate_page_size(),
+				page_size: $scope.page_size,
 				page: 1,
 			}
 		}).success(function(data){
 			console.log('Results retrieved');
 			console.log(data);
+			$scope.count = data.results.count;
+			$scope.ena_count = data.results.ena_count;
 			$scope.results = data.results;
 			$scope.search_in_progress = false;
 		}).error(function(){
@@ -73,7 +67,6 @@ limitations under the License.
 				method: 'GET'
 			}).success(function(data){
 				if (data.status === 'Done') {
-					$scope.count = data.count;
 					console.log('Results ready');
 					window.clearInterval(interval);
 					// get results

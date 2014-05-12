@@ -193,9 +193,6 @@ def get_results(request):
     # optional pagination parameters
     page_number = int(request.QUERY_PARAMS.get('page', 1))
     page_size = int(request.QUERY_PARAMS.get('page_size', 10))
-    # convert to length/offset pagination
-    length = page_size
-    offset = page_size * (page_number - 1) + 1 # TODO remove the "+ 1" bit when the offset bugfix is deployed
 
     try:
         job_id = request.QUERY_PARAMS['job_id']
@@ -206,7 +203,7 @@ def get_results(request):
     else:
         client = ENASequenceSearchClient()
         try:
-            results = client.get_results(job_id, jsession_id, length, offset)
+            results = client.get_results(job_id, jsession_id, page_number, page_size)
         except SequenceSearchError as exc:
             message = exc.message
             status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
