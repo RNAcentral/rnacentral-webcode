@@ -659,6 +659,8 @@ textarea {
   word-wrap: normal;
   white-space: pre;
   margin-left: 10px;
+  margin-bottom: 0px;
+  font-size: smaller;
 }
 
 .sequence-search-results h2 {
