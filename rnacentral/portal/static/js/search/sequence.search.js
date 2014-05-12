@@ -153,8 +153,8 @@ limitations under the License.
      * Launch the search from template.
      */
 	$scope.sequence_search = function(sequence) {
-		$scope.sequence = sequence;
-		search($scope.sequence);
+		$scope.query.sequence = sequence;
+		search($scope.query.sequence);
 	};
 
 });
