@@ -149,4 +149,12 @@ limitations under the License.
 		$('textarea').focus();
 	};
 
+    /**
+     * Launch the search from template.
+     */
+	$scope.sequence_search = function(sequence) {
+		$scope.sequence = sequence;
+		search($scope.sequence);
+	};
+
 });
