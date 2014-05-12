@@ -80,7 +80,8 @@ class ENASequenceSearchClient(object):
                                   'collection=' + collection,
             'status':  base_url + '/searchStatus?job_id={job_id}&display=json',
             'results': base_url + '/searchResults?job_id={job_id}&'
-                                  'length={length}&offset={offset}&'
+                                  'length={length}&'
+                                  'offset={offset}&'
                                   'display=json&'
                                   'fields=' + ','.join(self.field_names),
         }
