@@ -134,7 +134,7 @@ limitations under the License.
 	function results_init() {
 		return {
 			alignments: [],
-			count: 0,
+			count: null,
 			ena_count: 0,
 			url: '',
 		}
