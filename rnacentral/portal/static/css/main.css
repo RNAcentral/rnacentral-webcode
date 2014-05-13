@@ -629,3 +629,7 @@ textarea {
   -webkit-animation-duration: 2.5s;
   animation-duration: 2.5s;
 }
+
+.sequence-search-results .load-more {
+  margin: 10px;
+}
