@@ -119,10 +119,10 @@ Sequence search
         <button id="toggle-alignments" ng-click="toggle_alignments()" class="btn btn-default btn-sm">Hide alignments</button>
       </h2>
 
-      <small>
+      <p>
         <span ng-if="results.ena_count == 1">1 ENA entry</span>
         <span ng-if="results.ena_count > 1">{{results.ena_count}} ENA entries</span>
-      </small>
+      </p>
 
       <ul  class="list-unstyled" ng-repeat="result in results.alignments">
         <li class="result">
@@ -149,6 +149,11 @@ Sequence search
             <pre ng-show="params.show_alignments">{{result.formatted_alignment}}</pre>
         </li>
       </ul>
+
+      <p class="text-info">
+        <span ng-if="results.count > 1">Displaying {{displayed_items()}} out of {{results.count | number}} alignments</span>
+      </p>
+
       <button class="btn btn-default load-more col-md-3" ng-click="load_more_results()" ng-show="results.count > params.page_size"><i class="fa fa-spinner fa-spin" ng-show="params.search_in_progress"></i> Load more</button>
       <br>
     </div> <!--/col-md-10 -->
