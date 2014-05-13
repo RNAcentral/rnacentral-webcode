@@ -123,14 +123,23 @@ Sequence search
 
       <ul  class="list-unstyled" ng-repeat="result in results.alignments">
         <li class="result">
-            <h4><a href="/rna/{{result.rnacentral_id}}">{{result.description}} ({{result.rnacentral_id}})</a></h4>
+            <h4><a href="/rna/{{result.rnacentral_id}}" target="_blank">{{result.description}} ({{result.rnacentral_id}})</a></h4>
 
             <ul class="list-inline small">
+              <li>
+                E-value: <strong>{{format_evalue(result.e_value)}}</strong>
+              </li>
               <li>
                 <strong>{{result.identity}}%</strong> identity
               </li>
               <li>
-                E-value: <strong>{{format_evalue(result.e_value)}}</strong>
+                <strong>{{(result.alignment_length/query.sequence.length)*100 | number:0}}%</strong> query coverage ({{result.alignment_length}}/{{query.sequence.length}})
+              </li>
+              <li>
+                <strong>{{(result.target_length/result.full_target_length)*100 | number:0}}%</strong> target coverage ({{result.target_length}}/{{result.full_target_length}})
+              </li>
+              <li>
+                <strong>{{result.gaps}}%</strong> gaps ({{count_gaps(result.formatted_alignment)}}/{{result.alignment_length}})
               </li>
             </ul>
 

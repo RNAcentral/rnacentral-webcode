@@ -70,8 +70,14 @@ class ENASequenceSearchClient(object):
         collection = '/All Sequences/All EMBL-Bank/Non-coding'.\
                      replace('/', '%2F').replace(' ', '%20')
         # ENA results columns in tab-delimited format
-        self.field_names = ['accession', 'e_value', 'identity',
-                            'alignment_length', 'formatted_alignment']
+        self.field_names = ['accession',
+                            'formatted_alignment',
+                            'e_value',
+                            'identity',
+                            'gaps',             # % number of gaps in both sequences / length of aligned result
+                            'alignment_length', # the number of aligned query nucleotides (gaps not included)
+                            'target_length',    # the number of aligned nucleotides in the target (gaps not included)
+                            ]
         # ENA REST API endpoints
         self.endpoints = {
             'search':  base_url + '/executeSearch?Sequence={sequence}&'
@@ -294,6 +300,17 @@ class ENASequenceSearchClient(object):
                 referring to the same RNAcentral id.
                 Filter out entries that do not map to any RNAcentral id.
                 """
+
+                def extra_results_formatting():
+                    """
+                    Apply additional formatting or add extra fields
+                    to the results.
+                    """
+                    target = Rna.objects.get(upi=rnacentral_id)
+                    result['description'] = target.get_description()
+                    result['full_target_length'] = target.length
+                    result['formatted_alignment'] = result['formatted_alignment'].rstrip()
+
                 unique_ids = [] # to keep track of stored RNAcentral ids
                 data = []
                 for result in search_results:
@@ -301,8 +318,7 @@ class ENASequenceSearchClient(object):
                         rnacentral_id = id_mapping[result['accession']]
                         if rnacentral_id not in unique_ids:
                             result['rnacentral_id'] = rnacentral_id
-                            result['description'] = Rna.objects.get(upi=rnacentral_id).get_description()
-                            result['formatted_alignment'] = result['formatted_alignment'].rstrip()
+                            extra_results_formatting()
                             data.append(result)
                             unique_ids.append(rnacentral_id)
                 return data

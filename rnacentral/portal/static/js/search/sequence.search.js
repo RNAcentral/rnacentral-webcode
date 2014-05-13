@@ -173,6 +173,13 @@ limitations under the License.
         $('#toggle-alignments').text(function(i, text){
           return text === "Show alignments" ? "Hide alignments" : "Show alignments";
         });
-	}
+	};
+
+    /**
+     * Count the number of gaps in `formatted_alignment`.
+     */
+	$scope.count_gaps = function(formatted_alignment) {
+		return (formatted_alignment.match(/-/g)||[]).length;
+	};
 
 });
