@@ -28,6 +28,7 @@ limitations under the License.
 		search_in_progress: false,
 		page_size: $scope.defaults.page_size,
 		error_message: '',
+		status_message: '',
 		show_alignments: true,
 	};
 
@@ -38,6 +39,7 @@ limitations under the License.
      */
 	var get_results = function() {
 		$scope.params.search_in_progress = true;
+		$scope.params.status_message = 'Loading results';
 
 		$http({
 			url: $scope.results.url,
@@ -53,8 +55,10 @@ limitations under the License.
 			$scope.results.ena_count = data.results.ena_count;
 			$scope.results.alignments = data.results.alignments;
 			$scope.params.search_in_progress = false;
+			$scope.params.status_message = 'Done';
 		}).error(function(){
 			$scope.params.search_in_progress = false;
+			$scope.params.status_message = 'Error';
 			// todo
 		});
 	};
@@ -63,6 +67,7 @@ limitations under the License.
      * Poll job status in regular intervals.
      */
 	var poll_job_status = function(url) {
+		$scope.params.status_message = 'Waiting for results';
 		var polling_interval = 1000; // milliseconds
 		var interval = setInterval(function(){
 			console.log('Checking status');
@@ -78,7 +83,7 @@ limitations under the License.
 					get_results();
 				}
 			}).error(function(){
-				// todo
+				$scope.params.status_message = 'Error';
 			});
 		}, polling_interval);
 	};
@@ -88,6 +93,7 @@ limitations under the License.
      */
 	var search = function(sequence) {
 		$scope.params.search_in_progress = true;
+		$scope.params.status_message = 'Submitting query';
 		$http({
 			url: '/api/v1/sequence-search/submit?sequence=' + sequence,
 			method: 'GET', // todo: switch to POST
@@ -96,6 +102,7 @@ limitations under the License.
 			poll_job_status(data.url);
 		}).error(function(data, status) {
 			$scope.params.error_message = data.message;
+			$scope.params.status_message = 'Error';
 			console.log(data);
 			console.log(status);
 			$scope.params.search_in_progress = false;
@@ -118,6 +125,7 @@ limitations under the License.
      */
     $scope.load_more_results = function() {
         $scope.params.page_size += $scope.defaults.page_size;
+		$scope.params.status_message = 'Loading more results';
         get_results();
     };
 
@@ -147,6 +155,7 @@ limitations under the License.
 		$scope.query.sequence = '';
 		$scope.query.submit_attempted = false;
 		$scope.results = results_init();
+		$scope.params.status_message = '';
 		$('textarea').focus();
 	};
 

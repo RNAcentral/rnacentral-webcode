@@ -555,56 +555,6 @@ ul.affix-bottom {
   box-sizing: content-box;
 }
 
-.animated {
-  -webkit-animation-duration: 1s;
-  animation-duration: 1s;
-  -webkit-animation-fill-mode: both;
-  animation-fill-mode: both;
-}
-
-@-webkit-keyframes pulse {
-  0% {
-    -webkit-transform: scale(1);
-    transform: scale(1);
-  }
-
-  50% {
-    -webkit-transform: scale(1.1);
-    transform: scale(1.1);
-  }
-
-  100% {
-    -webkit-transform: scale(1);
-    transform: scale(1);
-  }
-}
-
-@keyframes pulse {
-  0% {
-    -webkit-transform: scale(1);
-    -ms-transform: scale(1);
-    transform: scale(1);
-  }
-
-  50% {
-    -webkit-transform: scale(1.1);
-    -ms-transform: scale(1.1);
-    transform: scale(1.1);
-  }
-
-  100% {
-    -webkit-transform: scale(1);
-    -ms-transform: scale(1);
-    transform: scale(1);
-  }
-}
-
-.pulse {
-  -webkit-animation-name: pulse;
-  animation-name: pulse;
-  -webkit-animation-delay: 0.5s;
-}
-
 /*------------------------------------------------------------------
 [5.6 Angular.js]
 */
@@ -673,4 +623,9 @@ textarea {
 
 .sequence-search-results #toggle-alignments {
   margin-left: 5px;
+}
+
+#sequence-search-status {
+  -webkit-animation-duration: 2.5s;
+  animation-duration: 2.5s;
 }
