@@ -36,7 +36,7 @@ Sequence search
   <div class="row sequence-search-input" >
       <form name="seqQueryForm" novalidate>
 
-        <div class="col-md-8 form-group" ng-class="(query.failed || seqQueryForm.$dirty && seqQueryForm.sequence.$invalid) ? 'has-error' : ''">
+        <div class="col-md-7 form-group" ng-class="(query.failed || seqQueryForm.$dirty && seqQueryForm.sequence.$invalid) ? 'has-error' : ''">
           <textarea class="form-control"
                     rows="6"
                     placeholder="RNA or DNA sequence (fasta currently not supported)"
@@ -89,7 +89,7 @@ Sequence search
   </div>
 
   <div class="row" ng-show="results.count===0">
-    <div class="col-md-8">
+    <div class="col-md-7">
       <div class="alert alert-warning">
         No results found.
       </div>
@@ -98,7 +98,7 @@ Sequence search
 
   <div class="row">
 
-    <div class="col-md-8 sequence-search-results">
+    <div class="col-md-7 sequence-search-results">
 
       <h2 ng-show="results.count > 0">
         Results
