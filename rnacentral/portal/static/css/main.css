@@ -666,3 +666,7 @@ textarea {
 .sequence-search-results h2 {
   margin-top: 5px;
 }
+
+.sequence-search-results .list-inline > li {
+  padding-left: 9px;
+}

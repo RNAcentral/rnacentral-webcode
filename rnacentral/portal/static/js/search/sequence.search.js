@@ -157,4 +157,11 @@ limitations under the License.
 		search($scope.query.sequence);
 	};
 
+    /**
+     * Format e_value.
+     */
+	$scope.format_evalue = function(e_value) {
+		return parseFloat(e_value).toExponential(2);
+	};
+
 });

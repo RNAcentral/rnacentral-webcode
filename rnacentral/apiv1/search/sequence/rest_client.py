@@ -70,10 +70,8 @@ class ENASequenceSearchClient(object):
         collection = '/All Sequences/All EMBL-Bank/Non-coding'.\
                      replace('/', '%2F').replace(' ', '%20')
         # ENA results columns in tab-delimited format
-        self.field_names = ['accession', 'e_value', 'identity', 'target_length',
-                            'query_range', 'target_range','alignment_length',
-                            'target_length','identities', 'gaps',
-                            'formatted_alignment']
+        self.field_names = ['accession', 'e_value', 'identity',
+                            'alignment_length', 'formatted_alignment']
         # ENA REST API endpoints
         self.endpoints = {
             'search':  base_url + '/executeSearch?Sequence={sequence}&'
@@ -303,6 +301,8 @@ class ENASequenceSearchClient(object):
                         rnacentral_id = id_mapping[result['accession']]
                         if rnacentral_id not in unique_ids:
                             result['rnacentral_id'] = rnacentral_id
+                            result['description'] = Rna.objects.get(upi=rnacentral_id).get_description()
+                            result['formatted_alignment'] = result['formatted_alignment'].rstrip()
                             data.append(result)
                             unique_ids.append(rnacentral_id)
                 return data
