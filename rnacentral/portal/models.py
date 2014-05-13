@@ -236,7 +236,8 @@ class Rna(models.Model):
         num_ena_entries = count_ena_xrefs()
         num_distinct_descriptions = count_distinct_descriptions()
         if num_ena_entries == 1 or num_distinct_descriptions == 1:
-            description_line = self.xrefs.all()[0].accession.description.capitalize()
+            description_line = self.xrefs.all()[0].accession.description
+            description_line = description_line[0].upper() + description_line[1:]
         else:
             distinct_species = self.count_distinct_organisms
             rna_type = get_rna_type()

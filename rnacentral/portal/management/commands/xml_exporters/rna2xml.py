@@ -153,7 +153,8 @@ class RnaXmlExporter(OracleConnection):
         num_descriptions = len(self.data['description'])
 
         if num_descriptions == 1:
-            description_line = self.data['description'].pop().capitalize()
+            description_line = self.data['description'].pop()
+            description_line = description_line[0].upper() + description_line[1:]
         else:
             distinct_species = self.count('species')
 
