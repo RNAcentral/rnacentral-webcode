@@ -191,4 +191,11 @@ limitations under the License.
 		return (formatted_alignment.match(/-/g)||[]).length;
 	};
 
+	(function(){
+		$('body').tooltip({
+			selector: '.help',
+			delay: { show: 200, hide: 100 }
+		});
+	})();
+
 });
