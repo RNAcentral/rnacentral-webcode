@@ -60,6 +60,11 @@ Sequence search
             </label>
 
             <label class="control-label has-error"
+                   for="query-sequence" ng-show="seqQueryForm.sequence.$error.maxlength">
+              The sequence cannot be longer than 1000 nucleotides.
+            </label>
+
+            <label class="control-label has-error"
                    for="query-sequence" ng-show="seqQueryForm.sequence.$error.pattern">
               The sequence can only have A, C, G, U, T or N characters.
             </label>
