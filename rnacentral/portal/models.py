@@ -91,7 +91,7 @@ class Rna(models.Model):
         """
         Count the number of distinct taxids referenced by the sequence.
         """
-        return self.xrefs.values('taxid').distinct().count()
+        return self.xrefs.values('accession__species').distinct().count()
 
     @cached_property
     def count_distinct_databases(self):
