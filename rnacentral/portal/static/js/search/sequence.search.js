@@ -28,6 +28,7 @@ limitations under the License.
 		search_in_progress: false,
 		page_size: $scope.defaults.page_size,
 		error_message: '',
+		show_alignments: true,
 	};
 
 	$scope.results = results_init();
@@ -163,5 +164,15 @@ limitations under the License.
 	$scope.format_evalue = function(e_value) {
 		return parseFloat(e_value).toExponential(2);
 	};
+
+    /**
+     * Toggle alignments button.
+     */
+	$scope.toggle_alignments = function() {
+		$scope.params.show_alignments = !$scope.params.show_alignments;
+        $('#toggle-alignments').text(function(i, text){
+          return text === "Show alignments" ? "Hide alignments" : "Show alignments";
+        });
+	}
 
 });

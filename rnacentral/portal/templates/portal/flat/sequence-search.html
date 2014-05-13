@@ -113,6 +113,7 @@ Sequence search
           <span ng-if="results.count == 1">1 alignment</span>
           <span ng-if="results.count > 1">{{displayed_items()}} out of {{results.count | number}} alignments</span>
         </small>
+        <button id="toggle-alignments" ng-click="toggle_alignments()" class="btn btn-default btn-sm">Hide alignments</button>
       </h2>
 
       <small>
@@ -133,7 +134,7 @@ Sequence search
               </li>
             </ul>
 
-            <pre>{{result.formatted_alignment}}</pre>
+            <pre ng-show="params.show_alignments">{{result.formatted_alignment}}</pre>
         </li>
       </ul>
       <button class="btn btn-default load-more col-md-3" ng-click="load_more_results()" ng-show="results.count > params.page_size"><i class="fa fa-spinner fa-spin" ng-show="params.search_in_progress"></i> Load more</button>
