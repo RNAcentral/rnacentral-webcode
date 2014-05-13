@@ -116,7 +116,7 @@ body {
 
 .navbar-default .navbar-nav>li>a,
 .navbar-default .navbar-nav>li>a>b {
-	color: #C9C9C9;
+	color: #DDDDDD;
 }
 
 .rnacentral-masthead-menu .navbar-text {
@@ -125,14 +125,14 @@ body {
 }
 
 .release-number {
-  background-color: #C9C9C9;
+  background-color: #DDDDDD;
   color: #3F7D97;
 }
 
 .navbar-default .navbar-nav>.dropdown>a .caret
 {
-	border-top-color: #C9C9C9;
-	border-bottom-color: #C9C9C9;
+	border-top-color: #DDDDDD;
+	border-bottom-color: #DDDDDD;
 }
 
 .navbar-default .navbar-nav>.dropdown>a:hover .caret,
@@ -162,7 +162,7 @@ div#local-search form fieldset, form#local-search fieldset {
 @media (max-width: 767px) {
   .navbar-default .navbar-nav .open .dropdown-menu>li>a,
   .navbar-default .navbar-nav>li>a>b {
-    color: #C9C9C9;
+    color: #DDDDDD;
   }
   .navbar-default .navbar-nav .open .dropdown-menu>li>a:hover {
     color: white;
