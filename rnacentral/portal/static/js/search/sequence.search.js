@@ -17,7 +17,7 @@ limitations under the License.
 
 	$scope.query = {
 		sequence: '',
-		failed: false
+		submit_attempted: false,
 	};
 
 	$scope.defaults = {
@@ -105,11 +105,10 @@ limitations under the License.
      * Public method for submitting the query.
      */
     $scope.submit_query = function() {
+		$scope.query.submit_attempted = true;
     	if (!$scope.seqQueryForm.$valid) {
-    		$scope.query.failed = true;
     		return;
     	}
-    	$scope.query.failed = false;
         search($scope.query.sequence);
     };
 
@@ -145,6 +144,7 @@ limitations under the License.
      */
     $scope.reset = function() {
 		$scope.query.sequence = '';
+		$scope.query.submit_attempted = false;
 		$scope.results = results_init();
 		$('textarea').focus();
 	};

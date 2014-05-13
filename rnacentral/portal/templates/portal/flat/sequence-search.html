@@ -36,14 +36,14 @@ Sequence search
   <div class="row sequence-search-input" >
       <form name="seqQueryForm" novalidate>
 
-        <div class="col-md-7 form-group" ng-class="(query.failed || seqQueryForm.$dirty && seqQueryForm.sequence.$invalid) ? 'has-error' : ''">
+        <div class="col-md-7 form-group">
           <textarea class="form-control"
                     rows="6"
-                    placeholder="RNA or DNA sequence (fasta currently not supported)"
+                    placeholder="Enter bare RNA or DNA sequence"
                     name="sequence"
                     id="query-sequence"
                     ng-model="query.sequence"
-                    ng-minlength="12"
+                    ng-minlength="20"
                     ng-maxlength="1000"
                     ng-pattern="/^[acgtun\s]+$/i"
                     tabindex="2"
@@ -51,23 +51,25 @@ Sequence search
                     autofocus></textarea>
 
             <span class="help-block">
-              <i>Example sequences: <a ng-click="sequence_search('GTCCTTCGGGACTATGGACATAAACGCGCTCGTAATAAGCGGATCGGACCCGGGGGCGGTACCCGGCGGCTCCACCAACAGCCCTGTCGTTTGCAGGCAGAGGGGGCCGAAACAGGATCGACGAACGTCTAAAGGGGTTAGCTTTGTCTCGGCTGGGTGCCACCGTTATCGGCCTAAATTGTACAGTTGCAAACGACAACCGTGCTCCGGTGGCCGTTGCTGCGTAAGCAGTAACAACACCGAAACTTAAGTCCTTGCGCCTAGCAGCGTAAGGCGGGGTTCGCAGGCACCTGGCAACAGAAGCCTGCACA')">human</a>, <a ng-click="sequence_search('CUUCGGGGGAGGAGAGAAGC')">E.coli</a></i>
+              <i>Examples: <a ng-click="sequence_search('GTCCTTCGGGACTATGGACATAAACGCGCTCGTAATAAGCGGATCGGACCCGGGGGCGGTACCCGGCGGCTCCACCAACAGCCCTGTCGTTTGCAGGCAGAGGGGGCCGAAACAGGATCGACGAACGTCTAAAGGGGTTAGCTTTGTCTCGGCTGGGTGCCACCGTTATCGGCCTAAATTGTACAGTTGCAAACGACAACCGTGCTCCGGTGGCCGTTGCTGCGTAAGCAGTAACAACACCGAAACTTAAGTCCTTGCGCCTAGCAGCGTAAGGCGGGGTTCGCAGGCACCTGGCAACAGAAGCCTGCACA')">human</a>, <a ng-click="sequence_search('CUUCGGGGGAGGAGAGAAGC')">E.coli</a></i>
             </span>
 
-            <label class="control-label has-error"
-                   for="query-sequence" ng-show="$scope.query.failed && seqQueryForm.$dirty && seqQueryForm.sequence.$error.minlength">
-              The sequence cannot be shorter than 12 nucleotides.
-            </label>
+            <div class="form-group" ng-class="(seqQueryForm.sequence.$invalid) ? 'has-error' : ''">
+              <label class="control-label"
+                     for="query-sequence" ng-show="query.submit_attempted && seqQueryForm.sequence.$error.minlength">
+                The sequence cannot be shorter than 12 nucleotides.
+              </label>
 
-            <label class="control-label has-error"
-                   for="query-sequence" ng-show="seqQueryForm.sequence.$error.maxlength">
-              The sequence cannot be longer than 1000 nucleotides.
-            </label>
+              <label class="control-label"
+                     for="query-sequence" ng-show="seqQueryForm.sequence.$error.maxlength">
+                The sequence cannot be longer than 1000 nucleotides.
+              </label>
 
-            <label class="control-label has-error"
-                   for="query-sequence" ng-show="seqQueryForm.sequence.$error.pattern">
-              The sequence can only have A, C, G, U, T or N characters.
-            </label>
+              <label class="control-label"
+                     for="query-sequence" ng-show="seqQueryForm.sequence.$error.pattern">
+                The sequence can only have A, C, G, U, T or N characters.
+              </label>
+            </div>
         </div>
 
         <div class="col-md-2">
@@ -96,7 +98,7 @@ Sequence search
   <div class="row" ng-show="results.count===0">
     <div class="col-md-7">
       <div class="alert alert-warning">
-        No results found.
+        No results
       </div>
     </div>
   </div>
