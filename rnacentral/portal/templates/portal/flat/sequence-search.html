@@ -54,7 +54,11 @@ Sequence search
                     autofocus></textarea>
 
             <span class="help-block">
-              <i>Examples: <a ng-click="sequence_search('UGAGGUAGUAGAUUGUAUAGUU')">miRNA hsa-let-7f-5p</a>, <a ng-click="sequence_search('UGCCUGGCGGCCGUAGCGCGGUGGUCCCACCUGACCCCAUGCCGAACUCAGAAGUGAAACGCCGUAGCGCCGAUGGUAGUGUGGGGUCUCCCCAUGCGAGAGUAGGGAACUGCCAGGCAU')">5S rRNA</a></i>
+              <i>
+                Examples:
+                <a ng-click="sequence_search('UGAGGUAGUAGAUUGUAUAGUU')">miRNA hsa-let-7f-5p</a>,
+                <a ng-click="sequence_search('UGCCUGGCGGCCGUAGCGCGGUGGUCCCACCUGACCCCAUGCCGAACUCAGAAGUGAAACGCCGUAGCGCCGAUGGUAGUGUGGGGUCUCCCCAUGCGAGAGUAGGGAACUGCCAGGCAU')">5S rRNA</a>
+              </i>
             </span>
 
             <div class="form-group" ng-class="(seqQueryForm.sequence.$invalid) ? 'has-error' : ''">
@@ -172,7 +176,7 @@ Sequence search
 
       <button class="btn btn-default load-more col-md-3" ng-click="load_more_results()" ng-show="results.count > params.page_size"><i class="fa fa-spinner fa-spin" ng-show="params.search_in_progress"></i> Load more</button>
       <br>
-    </div> <!--/col-md-10 -->
+    </div> <!--/col-md-7 -->
 
   </div><!--/row -->
 
@@ -182,5 +186,5 @@ Sequence search
 
 {% block extra_js %}
   {{ block.super }}
-  <script type="text/javascript" src="{% static "js/search/sequence.search.js" %}"></script>
+  <script src="{% static "js/search/sequence.search.js" %}"></script>
 {% endblock extra_js %}
