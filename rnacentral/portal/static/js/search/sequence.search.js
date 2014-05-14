@@ -60,8 +60,6 @@ limitations under the License.
 				page: 1, // all results are always on 1 page
 			}
 		}).success(function(data){
-			console.log(data);
-			console.log(data.results.ena_count + ' ENA entries');
 			$scope.results.count = data.results.count;
 			$scope.results.alignments = data.results.alignments;
 			$scope.params.search_in_progress = false;
@@ -107,13 +105,10 @@ limitations under the License.
 			method: 'POST',
 			params: {sequence: sequence},
 		}).success(function(data) {
-			console.log(data);
 			poll_job_status(data.url);
 		}).error(function(data, status) {
 			$scope.params.error_message = data.message;
 			$scope.params.status_message = $scope.defaults.messages.failed;
-			console.log(data);
-			console.log(status);
 			$scope.params.search_in_progress = false;
 		});
 	};
