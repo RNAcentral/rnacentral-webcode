@@ -90,10 +90,10 @@ class ENASequenceSearchClient(object):
                                   'display=json&'
                                   'fields=' + ','.join(self.field_names),
         }
-        # ENA minimum word size that can be searched
-        self.min_length = 12
-        # set to infinity for now. TODO: put the real cutoff
-        self.max_length = float("inf")
+        # ENA minimum query length and minimum URS length
+        self.min_length = 10
+        # ENA maximum query length
+        self.max_length = 50000
         # ENA-generated session id cookie
         self.JSESSIONID = 'JSESSIONID'
         # refresh interval for retrieving results
