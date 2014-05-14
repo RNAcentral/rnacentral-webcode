@@ -637,3 +637,7 @@ textarea {
 .sequence-search-results .load-more {
   margin: 10px;
 }
+
+.sequence-search-results .table-header td {
+  border-top-color: white;
+}
