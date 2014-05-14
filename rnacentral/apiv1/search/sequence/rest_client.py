@@ -127,7 +127,7 @@ class ENASequenceSearchClient(object):
             """
             Prepare the query sequence for submission.
             """
-            return sequence.upper().replace('U', 'T').replace(' ', '')
+            return re.sub('\s', '', sequence).upper().replace('U', 'T')
 
         def is_valid_sequence(sequence):
             """
