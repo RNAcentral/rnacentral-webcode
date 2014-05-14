@@ -51,8 +51,8 @@ limitations under the License.
 		}).success(function(data){
 			console.log('Results retrieved');
 			console.log(data);
+			console.log(data.results.ena_count + ' ENA entries');
 			$scope.results.count = data.results.count;
-			$scope.results.ena_count = data.results.ena_count;
 			$scope.results.alignments = data.results.alignments;
 			$scope.params.search_in_progress = false;
 			$scope.params.status_message = 'Done';
@@ -143,7 +143,6 @@ limitations under the License.
 		return {
 			alignments: [],
 			count: null,
-			ena_count: 0,
 			url: '',
 		}
 	};
