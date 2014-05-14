@@ -306,10 +306,12 @@ class ENASequenceSearchClient(object):
                     Apply additional formatting or add extra fields
                     to the results.
                     """
+                    result['rnacentral_id'] = rnacentral_id
                     target = Rna.objects.get(upi=rnacentral_id)
                     result['description'] = target.get_description()
                     result['full_target_length'] = target.length
                     result['formatted_alignment'] = result['formatted_alignment'].rstrip()
+                    del result['accession']
 
                 unique_ids = [] # to keep track of stored RNAcentral ids
                 data = []
@@ -317,7 +319,6 @@ class ENASequenceSearchClient(object):
                     if result['accession'] in id_mapping:
                         rnacentral_id = id_mapping[result['accession']]
                         if rnacentral_id not in unique_ids:
-                            result['rnacentral_id'] = rnacentral_id
                             extra_results_formatting()
                             data.append(result)
                             unique_ids.append(rnacentral_id)
