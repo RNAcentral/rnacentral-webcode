@@ -35,7 +35,7 @@ limitations under the License.
             <link rel="stylesheet" href="{% static "css/ebi-global.css" %}">
             <link rel="stylesheet" href="{% static "css/ebi-visual.css" %}">
             <link rel="stylesheet" href="{% static "css/main.css" %}">
-            <link rel="stylesheet" href="{% static "css/animate/animate.min.css" %}" type="text/css"/>
+            <link rel="stylesheet" href="{% static "css/animate/animate.min.css" %}">
             <link rel="stylesheet" href="{% static "js/vendor/hopscotch/css/hopscotch.css" %}">
             <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/genoverse.css" %}">
             <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/controlPanel.css" %}">
@@ -43,7 +43,7 @@ limitations under the License.
             <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/karyotype.css" %}">
             <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/resizer.css" %}">
             <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/trackControls.css" %}">
-            <link rel="stylesheet" type="text/css" href="{% static "js/vendor/angular/loading-bar/loading-bar.css" %}"/>
+            <link rel="stylesheet" href="{% static "js/vendor/angular/loading-bar/loading-bar.css" %}">
           {% endblock stylesheets %}
         {% endcompress %}
 
@@ -123,13 +123,13 @@ limitations under the License.
 
         {% compress js %}
           {% block extra_js %}
-            <script type="text/javascript" src="{% static "js/vendor/jquery-1.10.1.min.js" %}"></script>
-            <script type="text/javascript" src="{% static "js/vendor/bootstrap/js/bootstrap.min.js" %}"></script>
-            <script type="text/javascript" src="{% static "js/vendor/hopscotch/js/hopscotch.js" %}"></script>
-            <script type="text/javascript" src="{% static "js/vendor/angular/angular.min.js" %}"></script>
-            <script type="text/javascript" src="{% static "js/vendor/underscore/underscore-min.js" %}"></script>
-            <script type="text/javascript" src="{% static "js/vendor/angular/loading-bar/loading-bar.js" %}"></script>
-            <script type="text/javascript" src="{% static "js/search/metadata.search.js" %}"></script>
+            <script src="{% static "js/vendor/jquery-1.10.1.min.js" %}"></script>
+            <script src="{% static "js/vendor/bootstrap/js/bootstrap.min.js" %}"></script>
+            <script src="{% static "js/vendor/hopscotch/js/hopscotch.js" %}"></script>
+            <script src="{% static "js/vendor/angular/angular.min.js" %}"></script>
+            <script src="{% static "js/vendor/underscore/underscore-min.js" %}"></script>
+            <script src="{% static "js/vendor/angular/loading-bar/loading-bar.js" %}"></script>
+            <script src="{% static "js/search/metadata.search.js" %}"></script>
 
             <script>
                 $(function() {
