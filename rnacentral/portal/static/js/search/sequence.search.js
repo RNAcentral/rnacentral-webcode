@@ -11,7 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-// RNAcentral sequence search
+/**
+ * Angular.js app for RNAcentral sequence search.
+ */
 
 ;rnaMetasearch.controller('SeqResultsListCtrl', function($scope, $http) {
 
@@ -22,6 +24,15 @@ limitations under the License.
 
 	$scope.defaults = {
 		page_size: 10,
+		submit_endpoint: '/api/v1/sequence-search/submit?sequence=',
+		messages: {
+			get_results: 'Loading results',
+			done: 'Done',
+			failed: 'Error',
+			poll_job_status: 'Waiting for results',
+			submitting: 'Submitting query',
+			loading_more_results: 'Loading more results',
+		},
 	};
 
 	$scope.params = {
@@ -39,27 +50,25 @@ limitations under the License.
      */
 	var get_results = function() {
 		$scope.params.search_in_progress = true;
-		$scope.params.status_message = 'Loading results';
+		$scope.params.status_message = $scope.defaults.messages.get_results;
 
 		$http({
 			url: $scope.results.url,
 			method: 'GET',
 			params: {
 				page_size: $scope.params.page_size,
-				page: 1, // all results on 1 page
+				page: 1, // all results are always on 1 page
 			}
 		}).success(function(data){
-			console.log('Results retrieved');
 			console.log(data);
 			console.log(data.results.ena_count + ' ENA entries');
 			$scope.results.count = data.results.count;
 			$scope.results.alignments = data.results.alignments;
 			$scope.params.search_in_progress = false;
-			$scope.params.status_message = 'Done';
+			$scope.params.status_message = $scope.defaults.messages.done;
 		}).error(function(){
 			$scope.params.search_in_progress = false;
-			$scope.params.status_message = 'Error';
-			// todo
+			$scope.params.status_message = $scope.defaults.messages.failed;
 		});
 	};
 
@@ -67,23 +76,21 @@ limitations under the License.
      * Poll job status in regular intervals.
      */
 	var poll_job_status = function(url) {
-		$scope.params.status_message = 'Waiting for results';
+		$scope.params.status_message = $scope.defaults.messages.poll_job_status;
 		var polling_interval = 1000; // milliseconds
 		var interval = setInterval(function(){
-			console.log('Checking status');
 			$http({
 				url: url,
 				method: 'GET'
 			}).success(function(data){
 				if (data.status === 'Done') {
-					console.log('Results ready');
 					window.clearInterval(interval);
 					// get results
 					$scope.results.url = data.url;
 					get_results();
 				}
 			}).error(function(){
-				$scope.params.status_message = 'Error';
+				$scope.params.status_message = $scope.defaults.messages.failed;
 			});
 		}, polling_interval);
 	};
@@ -93,16 +100,16 @@ limitations under the License.
      */
 	var search = function(sequence) {
 		$scope.params.search_in_progress = true;
-		$scope.params.status_message = 'Submitting query';
+		$scope.params.status_message = $scope.defaults.messages.submitting;
 		$http({
-			url: '/api/v1/sequence-search/submit?sequence=' + sequence,
+			url: $scope.defaults.submit_endpoint + sequence,
 			method: 'GET', // todo: switch to POST
 		}).success(function(data) {
 			console.log(data);
 			poll_job_status(data.url);
 		}).error(function(data, status) {
 			$scope.params.error_message = data.message;
-			$scope.params.status_message = 'Error';
+			$scope.params.status_message = $scope.defaults.messages.failed;
 			console.log(data);
 			console.log(status);
 			$scope.params.search_in_progress = false;
@@ -125,12 +132,12 @@ limitations under the License.
      */
     $scope.load_more_results = function() {
         $scope.params.page_size += $scope.defaults.page_size;
-		$scope.params.status_message = 'Loading more results';
+		$scope.params.status_message = $scope.defaults.messages.loading_more_results;
         get_results();
     };
 
     /**
-     * Calculate how many items are visible.
+     * Calculate how many items are currently visible.
      */
     $scope.displayed_items = function() {
         return Math.min($scope.params.page_size, $scope.results.count);
@@ -190,6 +197,9 @@ limitations under the License.
 		return (formatted_alignment.match(/-/g)||[]).length;
 	};
 
+    /**
+     * Activate Bootstrap tooltips when the controller is created.
+     */
 	(function(){
 		$('body').tooltip({
 			selector: '.help',
