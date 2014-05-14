@@ -124,27 +124,48 @@ Sequence search
         <span ng-if="results.ena_count > 1">{{results.ena_count}} ENA entries</span>
       </p>
 
-      <ul  class="list-unstyled" ng-repeat="result in results.alignments">
-        <li class="result">
+      <ul  class="list-unstyled">
+        <li class="result" ng-repeat="result in results.alignments">
             <h4><a href="/rna/{{result.rnacentral_id}}" target="_blank">{{result.description}} ({{result.rnacentral_id}})</a></h4>
 
-            <ul class="list-inline small">
-              <li>
-                E-value: <strong>{{format_evalue(result.e_value)}}</strong>
-              </li>
-              <li>
-                <strong>{{result.identity}}%</strong> identity
-              </li>
-              <li>
-                <strong>{{(result.alignment_length/query.sequence.length)*100 | number:0}}%</strong> query coverage ({{result.alignment_length}}/{{query.sequence.length}})
-              </li>
-              <li>
-                <strong>{{(result.target_length/result.full_target_length)*100 | number:0}}%</strong> target coverage ({{result.target_length}}/{{result.full_target_length}})
-              </li>
-              <li>
-                <strong>{{result.gaps}}%</strong> gaps ({{count_gaps(result.formatted_alignment)}}/{{result.alignment_length}})
-              </li>
-            </ul>
+            <div class="table-responsive">
+              <table class="table table-condensed">
+                <tr>
+                  <td>
+                    <span class="help" data-placement="right" title="The likelihood of finding this alignment by chance (lower is better)">E-value</span>
+                  </td>
+                  <td>
+                    <span class="help" data-placement="top" title="The number of identical nucleotides">Identity</span>
+                  </td>
+                  <td>
+                    <span class="help" data-placement="top" title="Percentage of the query sequence aligned to the target">Query coverage</span>
+                  </td>
+                  <td>
+                    <span class="help" data-placement="top" title="Percentage of the target sequence aligned to the query">Target coverage</span>
+                  </td>
+                  <td>
+                    <span class="help" data-placement="left" title="The number of gaps in the alignment">Gaps</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>{{format_evalue(result.e_value)}}</strong>
+                  </td>
+                  <td>
+                    <strong>{{result.identity}}%</strong>
+                  </td>
+                  <td>
+                    <strong>{{(result.alignment_length/query.sequence.length)*100 | number:0}}%</strong> ({{result.alignment_length}}/{{query.sequence.length}})
+                  </td>
+                  <td>
+                    <strong>{{(result.target_length/result.full_target_length)*100 | number:0}}%</strong> ({{result.target_length}}/{{result.full_target_length}})
+                  </td>
+                  <td>
+                    <strong>{{result.gaps}}%</strong> ({{count_gaps(result.formatted_alignment)}}/{{result.alignment_length}})
+                  </td>
+                </tr>
+              </table>
+            </div>
 
             <pre ng-show="params.show_alignments">{{result.formatted_alignment}}</pre>
         </li>

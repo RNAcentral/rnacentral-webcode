@@ -609,16 +609,20 @@ textarea {
   word-wrap: normal;
   white-space: pre;
   margin-left: 10px;
-  margin-bottom: 0px;
+  margin-bottom: 0;
   font-size: smaller;
+}
+
+.sequence-search-results li {
+  margin-bottom: 25px;
 }
 
 .sequence-search-results h2 {
   margin-top: 5px;
 }
 
-.sequence-search-results .list-inline > li {
-  padding-left: 9px;
+.sequence-search-results table {
+  margin-left: 10px;
 }
 
 .sequence-search-results #toggle-alignments {

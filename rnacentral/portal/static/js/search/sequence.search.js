@@ -194,7 +194,8 @@ limitations under the License.
 	(function(){
 		$('body').tooltip({
 			selector: '.help',
-			delay: { show: 200, hide: 100 }
+			delay: { show: 200, hide: 100 },
+			container: 'body',
 		});
 	})();
 
