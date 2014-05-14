@@ -24,7 +24,7 @@ limitations under the License.
 
 	$scope.defaults = {
 		page_size: 10,
-		submit_endpoint: '/api/v1/sequence-search/submit?sequence=',
+		submit_endpoint: '/api/v1/sequence-search/submit',
 		messages: {
 			get_results: 'Loading results',
 			done: 'Done',
@@ -103,8 +103,9 @@ limitations under the License.
 		$scope.params.search_in_progress = true;
 		$scope.params.status_message = $scope.defaults.messages.submitting;
 		$http({
-			url: $scope.defaults.submit_endpoint + sequence,
-			method: 'GET', // todo: switch to POST
+			url: $scope.defaults.submit_endpoint,
+			method: 'POST',
+			params: {sequence: sequence},
 		}).success(function(data) {
 			console.log(data);
 			poll_job_status(data.url);
