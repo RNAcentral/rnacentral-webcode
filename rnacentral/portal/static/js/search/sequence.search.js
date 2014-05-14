@@ -29,6 +29,8 @@ limitations under the License.
 			get_results: 'Loading results',
 			done: 'Done',
 			failed: 'Error',
+			submit_failed: 'There was a problem submitting your query. Please try again later or get in touch if the error persists.',
+			results_failed: 'There was a problem retrieving the results. Please try again later or get in touch if the error persists.',
 			poll_job_status: 'Waiting for results',
 			submitting: 'Submitting query',
 			loading_more_results: 'Loading more results',
@@ -67,6 +69,7 @@ limitations under the License.
 		}).error(function(){
 			$scope.params.search_in_progress = false;
 			$scope.params.status_message = $scope.defaults.messages.failed;
+			$scope.params.error_message = $scope.defaults.messages.results_failed;
 		});
 	};
 
@@ -89,6 +92,7 @@ limitations under the License.
 				}
 			}).error(function(){
 				$scope.params.status_message = $scope.defaults.messages.failed;
+				$scope.params.error_message = $scope.defaults.messages.results_failed;
 			});
 		}, polling_interval);
 	};
@@ -107,7 +111,7 @@ limitations under the License.
 		}).success(function(data) {
 			poll_job_status(data.url);
 		}).error(function(data, status) {
-			$scope.params.error_message = data.message;
+			$scope.params.error_message = $scope.defaults.messages.submit_failed;
 			$scope.params.status_message = $scope.defaults.messages.failed;
 			$scope.params.search_in_progress = false;
 		});
