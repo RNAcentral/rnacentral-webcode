@@ -101,6 +101,7 @@ limitations under the License.
      * Initiate sequence search.
      */
 	var search = function(sequence) {
+		$scope.results = results_init();
 		$scope.query.sequence = sequence.replace(/\s/g, '');
 		$scope.params.search_in_progress = true;
 		$scope.params.status_message = $scope.defaults.messages.submitting;
