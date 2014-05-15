@@ -13,20 +13,39 @@ limitations under the License.
 
 from django import forms
 from rnacentral import local_settings
+import smtplib
 
 
 class ContactForm(forms.Form):
-    subject = forms.CharField(max_length=100)
+    subject = forms.CharField(max_length=200)
     message = forms.CharField()
     sender = forms.EmailField()
     cc_myself = forms.BooleanField(required=False)
 
     def send_email(self):
         subject = '[RNAcentral Contact Us] ' + self.cleaned_data['subject']
-        message = self.cleaned_data['message']
         sender = self.cleaned_data['sender']
         recipients = [local_settings.EMAIL_RNACENTRAL_HELPDESK]
         if self.cleaned_data['cc_myself']:
             recipients.append(sender)
-        from django.core.mail import send_mail
-        send_mail(subject, message, sender, recipients)
+
+        message = """From: <{sender}>
+To: RNAcentral Help Desk <{helpdesk}>
+MIME-Version: 1.0
+Content-type: text/html
+Subject: {subject}
+
+{message}
+""".format(sender=sender, helpdesk=local_settings.EMAIL_RNACENTRAL_HELPDESK,
+           subject=subject, message=self.cleaned_data['message'])
+
+        try:
+            if local_settings.EMAIL_PORT:
+                smtpObj = smtplib.SMTP('localhost', local_settings.EMAIL_PORT)
+            else:
+                smtpObj = smtplib.SMTP('localhost')
+            smtpObj.sendmail(sender, recipients, message)
+            return 1
+        except:
+            print 'Email not sent'
+            return -1
