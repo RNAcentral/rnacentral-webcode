@@ -341,8 +341,7 @@ class ENASequenceSearchClient(object):
             this function sets length=5 so that the 5 results are returned.
             """
             try:
-                (status, count) = self.get_status(job_id, jsession_id)
-                return count
+                return self.get_status(job_id, jsession_id)
             except StatusNotFoundError, exc:
                 raise ResultsUnavailableError()
 
@@ -373,7 +372,7 @@ class ENASequenceSearchClient(object):
             end = start + page_size
             return results[start:end]
 
-        ena_results_count = get_ena_results_count()
+        (status, ena_results_count) = get_ena_results_count()
         ena_results = get_ena_results(length=ena_results_count, offset=0)
         mapped_results = map_to_rnacentral_ids(ena_results)
         paginated_results = get_paginated_results(mapped_results, page, page_size)
