@@ -28,8 +28,8 @@ urlpatterns = patterns('',
     url(r'^search/?$', 'portal.views.homepage'),
     # sequence search
     url(r'^sequence-search/?$', views.StaticView.as_view(), {'page': 'sequence-search'}, name='sequence-search'),
-    # flat pages
-    url(r'^(?P<page>thanks|coming-soon)/?$', views.StaticView.as_view()),
+    # coming soon
+    url(r'^(?P<page>coming-soon)/?$', views.StaticView.as_view(), name='coming-soon'),
     # downloads
     url(r'^downloads/?$', views.StaticView.as_view(), {'page': 'downloads'}, name='downloads'),
     # help centre
@@ -41,6 +41,10 @@ urlpatterns = patterns('',
     url(r'^api/v2/?$', views.StaticView.as_view(), {'page': 'coming-soon'}, name='api-v2'),
     # contact us
     url(r'^contact/?$', views.ContactView.as_view(), name='contact-us'),
+    # contact us success
+    url(r'^thanks/?$', views.StaticView.as_view(), {'page': 'thanks'}, name='contact-us-success'),
+    # error
+    url(r'^error/?$', views.StaticView.as_view(), {'page': 'error'}, name='error'),
     # status
     url(r'^status/?$', 'portal.views.website_status_view', name='website-status'),
 )

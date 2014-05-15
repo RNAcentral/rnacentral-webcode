@@ -45,7 +45,6 @@ Subject: {subject}
             else:
                 smtpObj = smtplib.SMTP('localhost')
             smtpObj.sendmail(sender, recipients, message)
-            return 1
+            return True
         except:
-            print 'Email not sent'
-            return -1
+            return False

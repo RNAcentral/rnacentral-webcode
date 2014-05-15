@@ -15,7 +15,7 @@ from portal.models import Rna, Database, Release, Xref, Accession
 from portal.forms import ContactForm
 
 from django.http import Http404, HttpResponseRedirect, HttpResponse
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render, render_to_response, redirect
 from django.db.models import Min, Max, Count, Avg
 from django.views.decorators.cache import cache_page, never_cache
 from django.views.generic.base import TemplateView
@@ -199,13 +199,14 @@ class ContactView(FormView):
     """
     template_name = 'portal/contact.html'
     form_class = ContactForm
-    success_url = '/thanks/'
 
     def form_valid(self, form):
         # This method is called when valid form data has been POSTed.
         # It should return an HttpResponse.
-        status = form.send_email()
-        return HttpResponseRedirect('/thanks/')
+        if form.send_email():
+            return redirect('contact-us-success')
+        else:
+            return redirect('error')
 
 ####################
 # Helper functions #
