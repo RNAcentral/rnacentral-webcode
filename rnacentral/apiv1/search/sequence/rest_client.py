@@ -380,7 +380,6 @@ class ENASequenceSearchClient(object):
         return {
             'count': len(mapped_results),
             'alignments': paginated_results,
-            'ena_count': ena_results_count,
         }
 
     def search(self, sequence=''):
