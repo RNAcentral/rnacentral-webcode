@@ -1,0 +1,46 @@
+<!--
+Copyright [2009-2014] EMBL-European Bioinformatics Institute
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+{% extends "portal/base.html" %}
+
+{% block title %}
+Browser compatibility
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-md-9" role="main">
+    {% load markdown_deux_tags %}
+    {% markdown %}
+      {% include  'portal/docs/browser-compatibility.md' %}
+    {% endmarkdown %}
+    <br>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block extra_js %}
+  {{ block.super }}
+
+  <script type="text/javascript">
+    $(function() {
+      // open all content links in new windows
+      $('.container-main a').not('a.btn').each(function() {
+        var $this = $(this);
+        $this.html($this.html() + '&nbsp;<i class="fa fa-external-link"></i>').attr('target', '_blank');
+      });
+    });
+  </script>
+{% endblock extra_js %}
