@@ -185,7 +185,7 @@ class StaticView(TemplateView):
     Render flat pages.
     """
     def get(self, request, page, *args, **kwargs):
-        self.template_name = 'portal/flat/' + page + '.html'
+        self.template_name = 'portal/' + page + '.html'
         response = super(StaticView, self).get(request, *args, **kwargs)
         try:
             return response.render()
