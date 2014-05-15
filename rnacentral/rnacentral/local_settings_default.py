@@ -29,11 +29,7 @@ TEMPLATE_DIRS = (
 
 STATIC_ROOT = ''
 
-EMAIL_HOST = ''
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = ''
-EMAIL_PORT = 0
-EMAIL_USE_TLS = True
+EMAIL_PORT = None # leave None in production, configure in dev if necessary
 EMAIL_RNACENTRAL_HELPDESK = ''
 
 SECRET_KEY = ''
