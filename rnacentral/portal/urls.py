@@ -37,7 +37,7 @@ urlpatterns = patterns('',
     # about us
     url(r'^about-us/?$', views.StaticView.as_view(), {'page': 'about'}, name='about'),
     # API documentation
-    url(r'^api/?$', views.StaticView.as_view(), {'page': 'api-docs'}, name='api-docs'),
+    url(r'^api/?$', views.StaticView.as_view(), {'page': 'api-v1'}, name='api-docs'),
     url(r'^api/v2/?$', views.StaticView.as_view(), {'page': 'coming-soon'}, name='api-v2'),
     # contact us
     url(r'^contact/?$', views.ContactView.as_view(), name='contact-us'),
