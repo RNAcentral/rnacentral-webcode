@@ -81,7 +81,7 @@ limitations under the License.
 
       // loading the abstract for the first time
       $target.hide();
-      var query = 'ext_id:' + pubmed_id + '&format=json&resulttype=core&callback=callback"';
+      var query = 'ext_id:' + pubmed_id + '&format=json&resulttype=core&callback=callback';
 
       $.ajax({
         url: $.fn.EuropePMCAbstracts.options.europepmc_url + query,
@@ -93,10 +93,10 @@ limitations under the License.
             show_message($target, get_abstract_text(data));
             set_button_label($this, $target);
         } else {
-            show_message($target, msg.error);
+            show_message($target, $.fn.EuropePMCAbstracts.options.msg.error);
         }
       }).fail(function(){
-          show_message($target, msg.error);
+          show_message($target, $.fn.EuropePMCAbstracts.options.msg.error);
       });
 
       return this; // for chaining
@@ -105,7 +105,7 @@ limitations under the License.
 
     // plugin initialization
     $.fn.EuropePMCAbstracts = function(options){
-        $.fn.EuropePMCAbstracts.options = $.extend( {}, $.fn.EuropePMCAbstracts.options, options );
+        $.fn.EuropePMCAbstracts.options = $.extend(true, $.fn.EuropePMCAbstracts.options, options);
         return this.each(function(){
             $(this).on('click', function(){
               $(this).toggleAbstract();
