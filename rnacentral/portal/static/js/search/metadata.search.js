@@ -42,8 +42,8 @@ rnaMetasearch.config(['$locationProvider', function($locationProvider) {
  */
 rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function(_, $http, $location, $window) {
     var result = {
-        hits: null,
-        rnas: [],
+        hitCount: null,
+        entries: [],
         facets: []
     }
     var show_results = false; // hide results section at first
@@ -98,34 +98,22 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
      * {"description": "description_value"}
      */
     var preprocess_results = function(data) {
-        result.hits = data.result.hitCount;
-
-        result.facets = _.each(data.result.facets.facet, function(facet){
-            facet.facetValues.facetValue = wrap_in_array(facet.facetValues.facetValue);
-            return facet;
-        });
-
-        data.result.entries.entry = wrap_in_array(data.result.entries.entry);
-        result.rnas = _.each(data.result.entries.entry, function(entry){
-            // flatten deeply nested arrays
-            _.each(entry.fields.field, function(field){
-                entry[field['@id']] = field.values.value;
+        result.hitCount = data.hitCount;
+        // flatten deeply nested arrays
+        result.entries = _.each(data.entries, function(entry){
+            _.each(entry.fields, function(field){
+                for (var name in field) {
+                    if (field.hasOwnProperty(name)) {
+                        entry[name] = field[name][0];
+                    }
+                }
             });
         });
 
         // sort facets the same way as in config
-        result.facets = _.sortBy(result.facets, function(facet){
-            return _.indexOf(search_config.facetfields, facet['@id']);
+        result.facets = _.sortBy(data.facets, function(facet){
+            return _.indexOf(search_config.facetfields, facet.id);
         });
-
-        function wrap_in_array(data) {
-            // wrap single entry in an array
-            if ( !_.isArray(data) ) {
-                return [data]
-            } else {
-                return data;
-            }
-        };
     };
 
     /**
@@ -157,7 +145,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
             // if unspecified, use default
             page_size = search_config.page_size;
             // initial search, display spinner
-            result.hits = null;
+            result.hitCount = null;
         } else {
             // load_more_results search, use supplied new_page_size value
             page_size = new_page_size;
@@ -188,9 +176,9 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
         }).success(function(data) {
             // find where to insert new data
             var facet_num = _.indexOf(_.map(result.facets, function(facet){
-                return facet['@id'] === facet_id;
+                return facet['id'] === facet_id;
             }), true);
-            result.facets[facet_num].facetValues.facetValue = data.result.facets.facet.facetValues.facetValue;
+            result.facets[facet_num].facetValues = data.facets.facet.facetValues;
         });
     };
 
@@ -312,7 +300,7 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', f
      * Calculate the number of currently displayed items.
      */
     $scope.displayed_items = function() {
-        return Math.min($scope.page_size, $scope.result.hits);
+        return Math.min($scope.page_size, $scope.result.hitCount);
     };
 
     /**
