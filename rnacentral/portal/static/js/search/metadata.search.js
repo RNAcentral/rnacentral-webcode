@@ -99,17 +99,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
      */
     var preprocess_results = function(data) {
         result.hitCount = data.hitCount;
-        // flatten deeply nested arrays
-        result.entries = _.each(data.entries, function(entry){
-            _.each(entry.fields, function(field){
-                for (var name in field) {
-                    if (field.hasOwnProperty(name)) {
-                        entry[name] = field[name][0];
-                    }
-                }
-            });
-        });
-
+        result.entries = data.entries;
         // sort facets the same way as in config
         result.facets = _.sortBy(data.facets, function(facet){
             return _.indexOf(search_config.facetfields, facet.id);
