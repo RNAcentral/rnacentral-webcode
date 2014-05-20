@@ -52,7 +52,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
     var search_config = {
         ebeye_base_url: 'http://ash-4.ebi.ac.uk:8080/ebisearch/ws/rest/rnacentral',
         rnacentral_base_url: get_base_url(),
-        fields: ['description', 'active', 'length', 'name'],
+        fields: ['description', 'active', 'length'],
         facetfields: ['expert_db', 'rna_type', 'TAXONOMY', 'active'], // will be displayed in this order
         facetcount: 30,
         page_size: 15,
