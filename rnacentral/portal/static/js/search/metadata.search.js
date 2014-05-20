@@ -92,16 +92,12 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
     };
 
     /**
-     * Process deeply nested json objects like this:
-     * { "field" : [ {"id": "description", "values": {"value": "description_value"}} ] }
-     * into key-value pairs like this:
-     * {"description": "description_value"}
+     * Pre-process the data received from the server.
      */
     var preprocess_results = function(data) {
-        result.hitCount = data.hitCount;
-        result.entries = data.entries;
+        result = data;
         // sort facets the same way as in config
-        result.facets = _.sortBy(data.facets, function(facet){
+        result.facets = _.sortBy(result.facets, function(facet){
             return _.indexOf(search_config.facetfields, facet.id);
         });
     };
