@@ -134,7 +134,7 @@ def expert_database_view(request, expert_db_name):
     """
     context = dict()
     expert_db_name = _normalize_expert_db_name(expert_db_name)
-    if expert_db_name:
+    if expert_db_name and expert_db_name != 'coming_soon':
         data = Rna.objects.filter(xrefs__deleted='N', xrefs__db__descr=expert_db_name)
         context['expert_db'] = Database.objects.get(descr=expert_db_name)
         context['total_sequences'] = data.count()
@@ -306,7 +306,7 @@ def _normalize_expert_db_name(expert_db_name):
     Expert_db_name should match RNACEN.RNC_DATABASE.DESCR
     """
     dbs = ('SRPDB', 'MIRBASE', 'VEGA', 'TMRNA_WEB')
-    dbs_coming_soon = ('ENA', 'RFAM')
+    dbs_coming_soon = ('ENA', 'RFAM', 'LNCRNADB', 'GTRNADB')
     if re.match('tmrna-website', expert_db_name, flags=re.IGNORECASE):
         expert_db_name = 'TMRNA_WEB'
     else:
@@ -314,7 +314,7 @@ def _normalize_expert_db_name(expert_db_name):
     if expert_db_name in dbs:
         return expert_db_name
     elif expert_db_name in dbs_coming_soon:
-        expert_db_name = 'coming_soon'
+        return 'coming_soon'
     else:
         return False
 
