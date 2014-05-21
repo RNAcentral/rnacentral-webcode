@@ -349,6 +349,11 @@ h3.panel-title {
   display: none;
 }
 
+.expert-db-logo img {
+  float: left;
+  margin-right: 10px;
+}
+
 /*------------------------------------------------------------------
 [5. Misc]
 */

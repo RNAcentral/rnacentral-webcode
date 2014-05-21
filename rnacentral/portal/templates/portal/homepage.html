@@ -25,241 +25,100 @@ RNAcentral
 
   <div class="row">
     <div class="col-md-12">
-      <p class="lead text-info">RNAcentral is a new resource to organise data for non-protein coding RNA genes</p>
+      <p>
+        <span class="lead text-info">RNAcentral is a new resource to organise data for non-protein coding RNA genes</span>
+        <br>
+        <span class="text-muted">
+          RNAcentral provides unified access to the sequence data supplied by the Expert Databases.
+          <a class="small" href="{% url 'about' %}">Learn more</a>
+        </span>
+      </p>
     </div>
   </div>
+
+  <br>
+
+  <div id="expert-databases">
+    {% for database in context.databases %}
+      {% if forloop.counter == 1 or forloop.counter == 5 %}<div class="row">{% endif %}
+      <div class="mix col-md-3 col-sm-6 col-xs-12">
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <a class="expert-db-logo" href="/expert-database/{{database.label}}">
+                <img class="img-rounded" src="{% static 'img/expert-db-logos' %}/{{database.logo}}" alt="{{database.name}} logo">
+            </a>
+            <div class="small">
+              <strong>{{database.name}}</strong>
+              {{database.description}}.
+              <ul class="list-unstyled">
+                <li><strong>{{database.seq_count|intcomma}}</strong> sequences (<a href="/rna/{{database.examples|first}}">example</a>)</li>
+              </ul>
+              <a class="btn btn-xs btn-default" href="/expert-database/{{database.label}}">Explore {{database.name}}</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% if forloop.counter == 4 or forloop.counter == 8 %}</div>{% endif %}
+    {% endfor %}
+  </div>
+
+  <br>
 
   <div class="row">
-    <div class="col-md-7">
 
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title"><span class="glyphicon glyphicon-star"></span> Expert Databases</h3>
-        </div>
-        <div class="panel-body">
-
-          <ul class="media-list">
-
-            <li class="media">
-              <p class="small">
-                The RNAcentral sequences are provided by a group of <a href="/expert-databases">expert databases</a> and supplemented by sequences from the <a href="http://www.insdc.org/" target="_blank" title="International Nucleotide Sequence Database">INSDC</a>.
-              </p>
-            </li>
-
-            <li class="media">
-              <a class="pull-left expert-db-logo" href="{% url 'expert-database' 'rfam' %}">
-                <img class="media-object img-rounded" src="{% static 'img/expert-db-logos/rfam.png' %}" alt="RFAM logo">
-              </a>
-              <div class="media-body">
-                <h4 class="media-heading">RFAM</h4>
-                <div class="small">
-                  <p>
-                    <a href="{% url 'expert-database' 'rfam' %}">RFAM</a> is a database containing information about non-coding RNA (ncRNA) families and other structured RNA elements.
-                    <br>
-                    <strong>YY</strong> sequences
-                  </p>
-                  <p id="rfam-examples">
-                    <strong>Examples</strong>: coming soon.
-                  </p>
-                </div>
-              </div>
-            </li>
-
-            <li class="media">
-              <a class="pull-left expert-db-logo" href="{% url 'expert-database' 'tmrna-website' %}">
-                <img class="media-object img-rounded" src="{% static 'img/expert-db-logos/tmlogo.png' %}" alt="tmRNA Website logo">
-              </a>
-              <div class="media-body">
-                <h4 class="media-heading">tmRNA Website</h4>
-                <div class="small">
-                  <p>
-                    <a href="{% url 'expert-database' 'tmrna-website' %}">The tmRNA Website</a> contains predicted tmRNA sequences from RefSeq prokaryotic genomes, plasmids and bacteriophages.
-                    <br>
-                    <strong>21,318</strong> sequences
-                  </p>
-                  <p id="tmrna-website-examples">
-                    <strong>Examples</strong>: <a href="/rna/URS0000646B13">URS0000646B13</a>, <a href="/rna/URS000064AECD">URS000064AECD</a>, <a href="/rna/URS000064B0CC">URS000064B0CC</a>.
-                  </p>
-                </div>
-              </div>
-            </li>
-
-            <li class="media">
-              <a class="pull-left expert-db-logo" href="{% url 'expert-database' 'VEGA' %}">
-                <img class="media-object img-rounded" src="{% static 'img/expert-db-logos/vega.gif' %}" alt="VEGA logo">
-              </a>
-              <div class="media-body">
-                <h4 class="media-heading">VEGA</h4>
-                <div class="small">
-                  <p>
-                    <a href="{% url 'expert-database' 'vega' %}">VEGA</a> (Vertebrate Genome Annotation) is a repository for high-quality gene models produced by the manual annotation of vertebrate genomes.
-                    <br>
-                    <strong>21,388</strong> human lncRNA sequences
-                  </p>
-                  <p id="vega-examples">
-                    <strong>Examples</strong>: <a href="/rna/URS000063A371">URS000063A371</a>, <a href="/rna/URS000063A296">URS000063A296</a>, <a href="/rna/URS0000638AD4">URS0000638AD4</a>.
-                  </p>
-                </div>
-              </div>
-            </li>
-
-            <li class="media">
-              <a class="pull-left expert-db-logo" href="{% url 'expert-database' 'mirbase' %}">
-                <img class="media-object img-rounded" src="{% static 'img/expert-db-logos/mirbase-logo-blue-web.png' %}" alt="miRBase logo">
-              </a>
-              <div class="media-body">
-                <h4 class="media-heading">miRBase</h4>
-                <div class="small">
-                  <p>
-                    <a href="{% url 'expert-database' 'mirbase' %}">miRBase</a> is a database of published miRNA sequences and annotations.
-                    <br>
-                    <strong>3,661</strong> sequences
-                  </p>
-                  <p id="mirbase-examples">
-                    <strong>Examples</strong>: <a href="/rna/URS0000026D73">URS0000026D73</a>, <a href="/rna/URS000052CD0D">URS000052CD0D</a>, <a href="/rna/URS00005BE7F9">URS00005BE7F9</a>.
-                  </p>
-                </div>
-              </div>
-            </li>
-
-            <li class="media">
-              <a class="pull-left expert-db-logo" href="{% url 'expert-database' 'srpdb' %}">
-                <img class="media-object img-rounded" src="{% static 'img/expert-db-logos/SRPLogo-small.gif' %}" alt="SRPDB logo">
-              </a>
-              <div class="media-body">
-                <h4 class="media-heading">SRPDB</h4>
-                <div class="small">
-                  <p>
-                    <a href="{% url 'expert-database' 'srpdb' %}">SRPDB</a> (Signal Recognition Particle Database) provides aligned, annotated and phylogenetically ordered sequences related to structure and function of SRP.
-                    <br>
-                    <strong>855</strong> sequences
-                  </p>
-                  <p id="srpdb-examples">
-                    <strong>Examples</strong>: <a href="/rna/URS000030A37C">URS000030A37C</a>, <a href="/rna/URS0000227674">URS0000227674</a>, <a href="/rna/URS000005F2FD">URS000005F2FD</a>.
-                  </p>
-                </div>
-              </div>
-            </li>
-
-            <li class="media">
-              <a class="pull-left expert-db-logo" href="{% url 'expert-database' 'lncRNAdb' %}">
-                <img class="media-object img-rounded" src="{% static 'img/expert-db-logos/lncrnadb.png' %}" alt="lncRNAdb logo">
-              </a>
-              <div class="media-body">
-                <h4 class="media-heading">lncRNAdb</h4>
-                <div class="small">
-                  <p>
-                    <a href="{% url 'expert-database' 'lncrnadb' %}">lncRNAdb</a> is a database providing comprehensive annotations of eukaryotic long non-coding RNAs (lncRNAs).
-                    <br>
-                    <strong>XX</strong> sequences
-                  </p>
-                  <p id="lncrnadb-examples">
-                    <strong>Examples</strong>: coming soon.
-                  </p>
-                </div>
-              </div>
-            </li>
-
-            <li class="media">
-              <a class="pull-left expert-db-logo" href="{% url 'expert-database' 'gtRNAdb' %}">
-                <img class="media-object img-rounded" src="{% static 'img/expert-db-logos/gtrnadb.png' %}" alt="gtRNAdb logo">
-              </a>
-              <div class="media-body">
-                <h4 class="media-heading">gtRNAdb</h4>
-                <div class="small">
-                  <p>
-                    <a href="{% url 'expert-database' 'gtrnadb' %}">gtRNAdb</a> contains tRNA gene predictions on complete or nearly complete genomes.
-                    <br>
-                    <strong>YY</strong> sequences
-                  </p>
-                  <p id="gtrnadb-examples">
-                    <strong>Examples</strong>: coming soon.
-                  </p>
-                </div>
-              </div>
-            </li>
-
-          </ul>
+      <div class="col-md-4">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> Statistics</h3>
+          </div>
+          <div class="panel-body small">
+            <p>
+              <em>{{ context.seq_count|intcomma }}</em> sequences from <em>{{ context.databases|length }}</em> Expert Databases
+              <br>
+              <strong>Last daily update</strong>: {{ context.last_daily_update.release_date }}
+              <br>
+              <strong>Last full update:</strong> {{ context.last_full_update.release_date }}
+            </p>
+          </div>
         </div>
       </div>
 
-    </div>
-
-    <div class="col-md-5">
-
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title"><span class="glyphicon glyphicon-info-sign"></span> About RNAcentral
-            <small><a href="/about">Learn more</a></small>
-          </h3>
-        </div>
-        <div class="panel-body">
-          <p>
-              The RNAcentral portal:
-              <ul class="no-margin-bottom">
-                <li>provides data access via sequence and meta-data search</li>
-                <li>links together the <a href="/expert-databases">expert databases</a></li>
-                <li>provides unique identifiers for individual molecules</li>
-              </ul>
-          </p>
+      <div class="col-md-4">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-rss"></i> News</h3>
+          </div>
+          <div class="panel-body small">
+            <ul>
+              <li><a href="#">The tmRNA Website imported into RNAcentral</a></li>
+              <li><a href="#">Human lncRNAs from VEGA imported into RNAcentral</a></li>
+              <li><a href="#">Micro RNAs from miRBase imported into RNAcentral</a></li>
+              <li><a href="#">First RNAcentral data hits the public domain</a></li>
+            </ul>
+            <p>
+              <a href="#">RNAcentral blog</a> | <a href="">RSS feed</a> | <a href="">Mailing list</a>
+            </p>
+          </div>
         </div>
       </div>
 
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title"><span class="glyphicon glyphicon-bullhorn"></span> News</h3>
-        </div>
-        <div class="panel-body">
-          <ul>
-            <li><a href="#">The tmRNA Website imported into RNAcentral</a></li>
-            <li><a href="#">Human lncRNAs from VEGA imported into RNAcentral</a></li>
-            <li><a href="#">Micro RNAs from miRBase imported into RNAcentral</a></li>
-            <li><a href="#">First RNAcentral data hits the public domain</a></li>
-          </ul>
-          <p>
-            <a href="#">RNAcentral blog</a> | <a href="">RSS feed</a> | <a href="">Mailing list</a>
-          </p>
-        </div>
-      </div>
-
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> Statistics</h3>
-        </div>
-        <div class="panel-body">
-          <p>
-            <em>{{ context.seq_count|intcomma }}</em> sequences from <em>{{ context.databases|length }}</em> Expert Databases.
-            <br>
-            <strong>Last daily update</strong>: {{ context.last_daily_update.release_date }}
-            <br>
-            <strong>Last full update:</strong> {{ context.last_full_update.release_date }}
-            <br>
-            <a href="#">Learn more</a>
-          </p>
+      <div class="col-md-4">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title"><i class="fa fa-bookmark"></i> Citing RNAcentral</h3>
+          </div>
+          <div class="panel-body small">
+            <p>
+              If you use RNAcentral, please cite the following paper:
+              <blockquote class="small">
+                <p>RNAcentral: A vision for an international database of RNA sequences</p>
+                <footer>Bateman et al, 2011 (<a href="http://rnajournal.cshlp.org/content/17/11/1941.full" target="_blank">RNA</a>)</footer>
+              </blockquote>
+            </p>
+          </div>
         </div>
       </div>
-
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3 class="panel-title"><span class="glyphicon glyphicon-book"></span> Citing RNAcentral</h3>
-        </div>
-        <div class="panel-body">
-          <p>
-            If you use RNAcentral, please cite the following paper:
-            <blockquote class="small">
-              <p>
-                Bateman, A., Agrawal, S., Birney, E., Bruford, E. A., Bujnicki, J. M., Cochrane, G., Cole, J. R., et al. (2011).
-                RNAcentral: A vision for an international database of RNA sequences.
-                <a href="http://rnajournal.cshlp.org/content/17/11/1941.full" target="_blank">RNA</a>.
-              </p>
-            </blockquote>
-          </p>
-        </div>
-      </div>
-
-    </div>
 
   </div>
-
 
 {% endblock content %}
