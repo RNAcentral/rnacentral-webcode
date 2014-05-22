@@ -1,5 +1,10 @@
 
-<h1 id="overview"><i class="fa fa-book"></i> API overview</h1>
+<h1 id="overview">
+  <i class="fa fa-book"></i> API overview
+  <small>
+    <a class="btn btn-default btn-sm" href="https://github.com/RNAcentral/rnacentral-webcode/edit/django/rnacentral/portal/templates/portal/docs/api-v1.md" target="_blank"><i class="fa fa-pencil-square-o"></i> Improve this page</a>
+  </small>
+</h1>
 
 Most data in RNAcentral can be accessed programmatically using a RESTful API
 allowing for integration with other resources.
