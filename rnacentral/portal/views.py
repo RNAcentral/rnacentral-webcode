@@ -23,8 +23,8 @@ from django.views.generic.edit import FormView
 from django.template import TemplateDoesNotExist
 import re
 import requests
+import random
 import json
-from random import shuffle
 
 
 CACHE_TIMEOUT = 60 * 60 * 24 * 1 # per-view cache timeout in seconds
@@ -107,9 +107,8 @@ def homepage(request):
         context['last_daily_update'] = Release.objects.filter(release_type='I').order_by('-release_date').all()[0]
     except Exception, e:
         context['last_daily_update'] = context['last_full_update']
-    context['databases'] = Database.objects.all()
-    print context['databases']
-    # shuffle(context['databases'])
+    context['databases'] = list(Database.objects.all())
+    random.shuffle(context['databases'])
     return render(request, 'portal/homepage.html', {'context': context})
 
 
