@@ -333,7 +333,6 @@ def _get_database_data():
             'description': 'is an INSDC database that stores a wide range of sequence data',
             'abbreviation': 'European Nucleotide Archive',
             'examples': ['URS000000041', 'URS000000031'],
-            'logo': 'ena.png',
             'seq_count': 6000000,
         },
         {
@@ -343,7 +342,6 @@ def _get_database_data():
             'description': 'is a database containing information about ncRNA families and other structured RNA elements',
             'abbreviation': '',
             'examples': [],
-            'logo': 'rfam.png',
             'seq_count': 0,
         },
         {
@@ -353,7 +351,6 @@ def _get_database_data():
             'description': 'is a database of published miRNA sequences and annotations',
             'abbreviation': '',
             'examples': ['URS0000026D73', 'URS0000026D73', 'URS00005BE7F9'],
-            'logo': 'mirbase-logo-blue-web.png',
             'seq_count': 3661,
         },
         {
@@ -363,7 +360,6 @@ def _get_database_data():
             'description': 'is a repository for high-quality gene models produced by the manual annotation of vertebrate genomes',
             'abbreviation': 'Vertebrate Genome Annotation',
             'examples': ['URS000063A371', 'URS000063A296', 'URS0000638AD4'],
-            'logo': 'vega.gif',
             'seq_count': 21388,
         },
         {
@@ -373,7 +369,6 @@ def _get_database_data():
             'description': 'contains predicted tmRNA sequences from RefSeq prokaryotic genomes, plasmids and bacteriophages',
             'abbreviation': '',
             'examples': ['URS0000646B13', 'URS000064AECD', 'URS000064B0CC'],
-            'logo': 'tmlogo.png',
             'seq_count': 21318,
         },
         {
@@ -383,7 +378,6 @@ def _get_database_data():
             'description': 'provides aligned, annotated and phylogenetically ordered sequences related to structure and function of SRP',
             'abbreviation': 'Signal Recognition Particle Database',
             'examples': ['URS000030A37C', 'URS0000227674', 'URS000005F2FD'],
-            'logo': 'SRPLogo-small.gif',
             'seq_count': 855,
         },
         {
@@ -393,16 +387,15 @@ def _get_database_data():
             'description': 'is a database providing comprehensive annotations of eukaryotic long non-coding RNAs (lncRNAs)',
             'abbreviation': '',
             'examples': [],
-            'logo': 'lncrnadb.png',
             'seq_count': 0,
         },
         {
             'name': 'gtRNAdb',
+            'label': 'gtrnadb',
             'url': 'http://gtrnadb.ucsc.edu/',
             'description': 'contains tRNA gene predictions on complete or nearly complete genomes',
             'abbreviation': '',
             'examples': [],
-            'logo': 'gtrnadb.png',
             'seq_count': 0,
         },
     ]
