@@ -85,8 +85,8 @@ ExpertDatabaseTreemap = function(selector){
         .data(nodes)
       .enter().append("svg:g")
         .attr("class", "cell")
-        .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; })
-        .on("click", function(d) { return zoom(node == d.parent ? root : d.parent); });
+        .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+        // .on("click", function(d) { return zoom(node == d.parent ? root : d.parent); });
 
     cell.append("svg:rect")
         .attr("width", function(d) { return d.dx - 1; })
@@ -103,7 +103,7 @@ ExpertDatabaseTreemap = function(selector){
         .style("fill", "whitesmoke")
         .style("opacity", function(d) { d.w = this.getComputedTextLength(); return d.dx > d.w ? 1 : 0; });
 
-    d3.select(window).on("click", function() { zoom(root); });
+    // d3.select(window).on("click", function() { zoom(root); });
 
     // d3.select("select").on("change", function() {
     //   treemap.value(this.value == "size" ? size : xref).nodes(xrefsort);
