@@ -68,6 +68,10 @@ limitations under the License.
     {% endfor %}
     </p>
 
+    <p>
+      <a class="btn btn-primary" ng-click="meta_search('expert_db:{{expert_db.display_name}}')">Browse all sequences</a>
+    </p>
+
     <h2>Links</h2>
     <ul>
       <li><a href="{{ expert_db.url }}" target="_blank">{{ expert_db.display_name }} homepage</a></li>

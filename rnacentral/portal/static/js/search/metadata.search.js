@@ -37,6 +37,23 @@ rnaMetasearch.config(['$locationProvider', function($locationProvider) {
     $locationProvider.html5Mode(true);
 }]);
 
+
+/**
+ * Service for launching a metadata search.
+ */
+rnaMetasearch.service('search', ['$location', function($location) {
+
+    /**
+     * To launch a new search, change browser url,
+     * which will automatically trigger a new search
+     * since the url changes are watched in the query controller.
+     */
+    this.meta_search = function(query) {
+        $location.url('/search' + '?q=' + query);
+    }
+
+}]);
+
 /**
  * Service for passing data between controllers.
  */
@@ -194,7 +211,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
 
 }]);
 
-rnaMetasearch.controller('MainContent', ['$scope', '$anchorScroll', '$location', 'results', function($scope, $anchorScroll, $location, results) {
+rnaMetasearch.controller('MainContent', ['$scope', '$anchorScroll', '$location', 'results', 'search', function($scope, $anchorScroll, $location, results, search) {
     /**
      * Enables scrolling to anchor tags.
      * <a ng-click="scrollTo('anchor')">Title</a>
@@ -213,6 +230,13 @@ rnaMetasearch.controller('MainContent', ['$scope', '$anchorScroll', '$location',
             $scope.show_results = newValue;
         }
     });
+
+    /**
+     * Launch a metadata search using the service.
+     */
+    $scope.meta_search = function(query) {
+        search.meta_search(query);
+    }
 
 }]);
 
@@ -308,12 +332,19 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', f
  * Query controller
  * Responsible for the search box in the header.
  */
-rnaMetasearch.controller('QueryCtrl', ['$scope', '$location', 'results', function($scope, $location, results) {
+rnaMetasearch.controller('QueryCtrl', ['$scope', '$location', 'results', 'search', function($scope, $location, results, search) {
 
     $scope.query = {
         text: '',
         submitted: false
     };
+
+    /**
+     * Launch a metadata search using the service.
+     */
+    $scope.meta_search = function(query) {
+        search.meta_search(query);
+    }
 
     /**
      * Control browser navigation buttons.
@@ -332,15 +363,6 @@ rnaMetasearch.controller('QueryCtrl', ['$scope', '$location', 'results', functio
             }
         }
     });
-
-    /**
-     * To launch a new search, change browser url,
-     * which will automatically trigger a new search because the url changes
-     * are watched.
-     */
-    $scope.search = function(query) {
-        $location.url('/search' + '?q=' + query);
-    }
 
     /**
      * Called when the form is submitted.
