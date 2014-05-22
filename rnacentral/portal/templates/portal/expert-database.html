@@ -164,11 +164,19 @@ limitations under the License.
 
   <div class="tab-content">
     <div class="tab-pane active" id="seq-length">
-      <div id="d3-seq-length-distribution"></div>
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <div id="d3-seq-length-distribution"></div>
+        </div>
+      </div>
     </div>
 
     <div class="tab-pane" id="species">
-      <div id="d3-species-sunburst"><i class="fa fa-spinner fa-spin fa-2x"></i></div>
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <div id="d3-species-sunburst"><i class="fa fa-spinner fa-spin fa-2x"></i></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -203,7 +211,7 @@ limitations under the License.
               success: function(data) {
                 var sunburst = $('#d3-species-sunburst');
                 sunburst.hide().html('');
-                d3SpeciesSunburst(data, '#d3-species-sunburst', 550, 400);
+                d3SpeciesSunburst(data, '#d3-species-sunburst', 500, 300);
                 sunburst.fadeIn();
               }
             });
