@@ -304,7 +304,7 @@ class Accession(models.Model):
     is_composite = models.CharField(max_length=1)
     non_coding_id = models.CharField(max_length=100)
     database = models.CharField(max_length=20)
-    external_id = models.CharField(max_length=100)
+    external_id = models.CharField(max_length=150)
     optional_id = models.CharField(max_length=100)
     anticodon = models.CharField(max_length=50)
     experiment = models.CharField(max_length=250)
