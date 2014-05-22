@@ -44,16 +44,16 @@ RNAcentral
       <div class="mix col-md-3 col-sm-6 col-xs-12">
         <div class="panel panel-default">
           <div class="panel-body">
-            <a class="expert-db-logo" href="/expert-database/{{database.label}}">
-                <img class="img-rounded" src="{% static 'img/expert-db-logos' %}/{{database.label}}.png" alt="{{database.name}} logo">
+            <a class="expert-db-logo homepage" href="/expert-database/{{database.label}}">
+                <img class="img-rounded" src="{% static 'img/expert-db-logos' %}/{{database.label}}.png" alt="{{database.display_name}} logo">
             </a>
             <div class="small">
-              <strong>{{database.name}}</strong>
+              <strong>{{database.display_name}}</strong>
               {{database.description}}.
               <ul class="list-unstyled">
                 <li><strong>{{database.seq_count|intcomma}}</strong> sequences (<a href="/rna/{{database.examples|first}}">example</a>)</li>
               </ul>
-              <a class="btn btn-xs btn-default" href="/expert-database/{{database.label}}">Explore {{database.name}}</a>
+              <a class="btn btn-xs btn-default" href="/expert-database/{{database.label}}">Explore {{database.display_name}}</a>
             </div>
           </div>
         </div>

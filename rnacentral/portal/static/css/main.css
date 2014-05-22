@@ -270,6 +270,11 @@ ul.breadcrumb.rnacentral-api {
   max-height: 100px;
 }
 
+.expert-db-logo.homepage img {
+  float: left;
+  margin-right: 10px;
+}
+
 .media {
   margin-top: 5px;
 }
@@ -349,11 +354,6 @@ h3.panel-title {
 
 #xrefs-table {
   display: none;
-}
-
-.expert-db-logo img {
-  float: left;
-  margin-right: 10px;
 }
 
 /*------------------------------------------------------------------
