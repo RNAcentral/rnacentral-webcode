@@ -53,6 +53,7 @@ Contact Us
         {% endif %}
         <input type="email" class="form-control" name="sender" id="emailSender" placeholder="" tabindex="3"
             {% if form.sender.errors %}value={{ form.sender.value }}{% endif %}>
+        </div>
       </div>
       <div class="checkbox">
         {{ form.cc_myself.errors }}
@@ -64,7 +65,6 @@ Contact Us
       <button type="submit" class="btn btn-primary" tabindex="5">Submit</button>
     </form>
   </div>
-
 
 </div>
 
