@@ -15,39 +15,6 @@ limitations under the License.
 {% load staticfiles %}
 {% load humanize %}
 
-{% block extra_head %}
-<style type="text/css">
-  .axis path,
-  .axis line {
-    fill: none;
-    stroke: #000;
-    stroke-width: 1px;
-    shape-rendering: crispEdges;
-  }
-
-  .area {
-    fill: #6baed6;
-    opacity: 0.6;
-    stroke-width: 0px;
-  }
-
-  .axis text {
-    font-family: sans-serif;
-    font-size: 12px;
-  }
-
-  .overlay {
-    fill: none;
-    pointer-events: all;
-  }
-
-  .focus circle {
-    fill: none;
-    stroke: #6baed6;
-  }
-</style>
-{% endblock extra_head %}}
-
 {% block title %}
   {{ expert_db.display_name }} Expert Database
 {% endblock %}
@@ -232,7 +199,7 @@ limitations under the License.
               success: function(data) {
                 var sunburst = $('#d3-species-sunburst');
                 sunburst.hide().html('');
-                d3SpeciesSunburst(data, '#d3-species-sunburst', 600, 400);
+                d3SpeciesSunburst(data, '#d3-species-sunburst', 550, 400);
                 sunburst.fadeIn();
               }
             });

@@ -30,6 +30,7 @@ Master Stylesheet for the RNAcentral Portal
 5.7 Metadata search
 5.8 Sequence search
 5.9 D3 expert database treemap
+5.10 D3 expert database sequence length
 
 -------------------------------------------------------------------*/
 
@@ -672,4 +673,36 @@ textarea {
 
 #treemap {
   overflow-x: auto;
+}
+
+/*------------------------------------------------------------------
+[5.10 D3 expert database sequence length]
+*/
+#seq-length .axis path,
+#seq-length .axis line {
+  fill: none;
+  stroke: #000;
+  stroke-width: 1px;
+  shape-rendering: crispEdges;
+}
+
+#seq-length .area {
+  fill: #6baed6;
+  opacity: 0.6;
+  stroke-width: 0px;
+}
+
+#seq-length .axis text {
+  font-family: sans-serif;
+  font-size: 12px;
+}
+
+#seq-length .overlay {
+  fill: none;
+  pointer-events: all;
+}
+
+#seq-length .focus circle {
+  fill: none;
+  stroke: #6baed6;
 }
