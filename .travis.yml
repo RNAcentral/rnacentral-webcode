@@ -1,0 +1,11 @@
+language: python
+python:
+  - "2.6"
+# command to install dependencies
+install: pip install -r requirements.txt
+# command to run tests
+script:  python rnacentral/apiv1/tests.py --base_url=http://test.rnacentral.org
+# whitelist
+branches:
+  only:
+    - django
