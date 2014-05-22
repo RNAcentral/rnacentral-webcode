@@ -372,7 +372,7 @@ rnaMetasearch.controller('QueryCtrl', ['$scope', '$location', 'results', 'search
         if ($scope.queryForm.text.$invalid) {
             return;
         }
-        $scope.search($scope.query.text);
+        $scope.meta_search($scope.query.text);
     };
 
     /**
