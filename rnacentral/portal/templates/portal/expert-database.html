@@ -49,30 +49,29 @@ limitations under the License.
 {% endblock extra_head %}}
 
 {% block title %}
-  {{ context.expert_db.display_name }} Expert Database
+  {{ expert_db.display_name }} Expert Database
 {% endblock %}
 
 {% block content %}
 
 <h1>
-  <a href="{{ context.expert_db.url }}" target="_blank" class="expert-db-logo">
-    <img src="{% static 'img/expert-db-logos/'|add:context.expert_db.logo|add:'' %}" alt="{{context.expert_db.display_name}} logo" class="img-rounded">
+  <a href="{{ expert_db.url }}" target="_blank" class="expert-db-logo">
+    <img src="{% static 'img/expert-db-logos/' %}{{expert_db.label}}.png" alt="{{expert_db.display_name}} logo" class="img-rounded">
   </a>
-  {{ context.expert_db.display_name }} Expert Database
+  {{ expert_db.display_name }} Expert Database
 </h1>
 
-<p>
-  {% if context.expert_db.display_name == 'miRBase' %}
-    <a href="{{ context.expert_db.url }}" target="_blank">miRBase</a> is a searchable database of published miRNA sequences and annotation. Each entry in the miRBase Sequence database represents a predicted hairpin portion of a miRNA transcript (termed mir in the database), with information on the location and sequence of the mature miRNA sequence (termed miR). Both hairpin and mature sequences are available for searching and browsing, and entries can also be retrieved by name, keyword, references and annotation.
-  {% elif context.expert_db.display_name == 'SRPDB' %}
-    <a href="{{ context.expert_db.url }}" target="_blank">SRPDB</a> (Signal Recognition Particle Database)
-    provides aligned, annotated and phylogenetically ordered sequences related to structure and function of SRP.
-  {% elif context.expert_db.display_name == 'VEGA' %}
-    <a href="{{ context.expert_db.url }}" target="_blank">VEGA</a> database provides high quality manual annotation of vertebrate finished genome sequences.
-  {% elif context.expert_db.display_name == 'tmRNA Website' %}
-    <a href="{{ context.expert_db.url }}" target="_blank">The tmRNA Website</a> contains predicted tmRNA sequences from RefSeq prokaryotic genomes, plasmids and bacteriophages.
-  {% endif %}
-</p>
+<div class="row">
+  <div class="col-md-12">
+    <p>
+      <a href="{{expert_db.url}}" target="_blank">{{expert_db.display_name}}</a>
+      {% if expert_db.abbreviation %}
+        ({{expert_db.abbreviation}})
+      {% endif %}
+      {{expert_db.description}}.
+    </p>
+  </div>
+</div>
 
 <div class="row">
 
@@ -97,16 +96,16 @@ limitations under the License.
 
     <h2>Example entries</h2>
     <p>
-    {% for example in context.examples %}
-      <a href="{% url 'portal.views.rna_view' upi=example.upi %}">{{ example.upi }}</a>{% if not forloop.last %},{% else %}.{% endif %}
+    {% for example in expert_db.examples %}
+      <a href="{% url 'portal.views.rna_view' upi=example %}">{{ example }}</a>{% if not forloop.last %},{% else %}.{% endif %}
     {% endfor %}
     </p>
 
     <h2>Links</h2>
     <ul>
-      <li><a href="{{ context.expert_db.url }}" target="_blank">{{ context.expert_db.display_name }} homepage</a></li>
-      {% if context.expert_db.project_id %}
-        <li><a href="http://www.ebi.ac.uk/ena/data/view/{{ context.expert_db.project_id }}" target="_blank">ENA project</a></li>
+      <li><a href="{{ expert_db.url }}" target="_blank">{{ expert_db.display_name }} homepage</a></li>
+      {% if expert_db.project_id %}
+        <li><a href="http://www.ebi.ac.uk/ena/data/view/{{ expert_db.project_id }}" target="_blank">ENA project</a></li>
       {% endif %}
     </ul>
 
@@ -114,7 +113,7 @@ limitations under the License.
 
     <h2>References</h2>
 
-    {% if context.expert_db.display_name == 'miRBase' %}
+    {% if expert_db.display_name == 'miRBase' %}
       <blockquote>
         <strong>
           miRBase: integrating microRNA annotation and deep-sequencing data.
@@ -125,7 +124,7 @@ limitations under the License.
           Nucleic Acids Res. 39(Database issue): D152-7 (2011 Jan)
         </small>
       </blockquote>
-    {% elif context.expert_db.display_name == 'SRPDB' %}
+    {% elif expert_db.display_name == 'SRPDB' %}
         <blockquote>
           <strong>
             Kinship in the SRP RNA family.
@@ -147,7 +146,7 @@ limitations under the License.
             Nucleic Acids Res. 34(Database issue): D163-8 (2006 Jan)
           </small>
         </blockquote>
-    {% elif context.expert_db.display_name == 'VEGA' %}
+    {% elif expert_db.display_name == 'VEGA' %}
         <blockquote>
           <strong>
             The GENCODE v7 catalog of human long noncoding RNAs: analysis of their gene structure, evolution, and expression.
@@ -169,7 +168,7 @@ limitations under the License.
             Genome Res. 22(9): 1760-1774 (2012 Sep)
           </small>
         </blockquote>
-    {% elif context.expert_db.display_name == 'tmRNA Website' %}
+    {% elif expert_db.display_name == 'tmRNA Website' %}
         <blockquote>
           <strong>
             The tmRNA website: reductive evolution of tmRNA in plastids and other endosymbionts.
@@ -228,7 +227,7 @@ limitations under the License.
             ExpertDatabaseSequenceDistribution("#d3-seq-length-distribution", data, 500, 300);
 
             $.ajax({
-              url: "/expert-database/{{ context.expert_db.descr  }}/lineage",
+              url: "/expert-database/{{ expert_db.descr  }}/lineage",
               dataType: "json",
               success: function(data) {
                 var sunburst = $('#d3-species-sunburst');

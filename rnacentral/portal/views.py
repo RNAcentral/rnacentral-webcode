@@ -107,8 +107,9 @@ def homepage(request):
         context['last_daily_update'] = Release.objects.filter(release_type='I').order_by('-release_date').all()[0]
     except Exception, e:
         context['last_daily_update'] = context['last_full_update']
-    context['databases'] = _get_database_data()
-    shuffle(context['databases'])
+    context['databases'] = Database.objects.all()
+    print context['databases']
+    # shuffle(context['databases'])
     return render(request, 'portal/homepage.html', {'context': context})
 
 
@@ -132,11 +133,11 @@ def expert_database_view(request, expert_db_name):
     """
     Expert database view.
     """
-    context = dict()
     expert_db_name = _normalize_expert_db_name(expert_db_name)
     if expert_db_name and expert_db_name != 'coming_soon':
+        context = dict()
         data = Rna.objects.filter(xrefs__deleted='N', xrefs__db__descr=expert_db_name)
-        context['expert_db'] = Database.objects.get(descr=expert_db_name)
+        expert_db = Database.objects.get(descr=expert_db_name)
         context['total_sequences'] = data.count()
         context['total_organisms'] = len(data.values('xrefs__taxid').annotate(n=Count("pk")))
         context['examples'] = data.all()[:8]
@@ -145,9 +146,12 @@ def expert_database_view(request, expert_db_name):
         context['first_imported'] = data.order_by('xrefs__timestamp')[0].xrefs.all()[0].timestamp
         context['len_counts'] = data.values('length').annotate(counts=Count('length')).order_by('length')
         context.update(data.aggregate(min_length=Min('length'), max_length=Max('length'), avg_length=Avg('length')))
-        return render_to_response('portal/expert-database.html', {'context': context})
+        return render_to_response('portal/expert-database.html', {
+            'context': context,
+            'expert_db': expert_db,
+        })
     elif expert_db_name == 'coming_soon':
-        return render_to_response('portal/expert-database-coming-soon.html', {'context': context})
+        return render_to_response('portal/expert-database-coming-soon.html')
     else:
         raise Http404()
 
@@ -317,85 +321,3 @@ def _normalize_expert_db_name(expert_db_name):
         return 'coming_soon'
     else:
         return False
-
-def _get_database_data():
-    """
-    The data about databases is stored in one place in order to reuse the same
-    information on the homepage and on the expert database pages.
-    Previously the data was retrieved from the database, but that was
-    inconvenient for deployment and development purposes.
-    """
-    return [
-        {
-            'name': 'ENA',
-            'label': 'ena',
-            'url': 'http://www.ebi.ac.uk/ena/',
-            'description': 'is an INSDC database that stores a wide range of sequence data',
-            'abbreviation': 'European Nucleotide Archive',
-            'examples': ['URS000000041', 'URS000000031'],
-            'seq_count': 6000000,
-        },
-        {
-            'name': 'RFAM',
-            'label': 'rfam',
-            'url': 'http://rfam.xfam.org',
-            'description': 'is a database containing information about ncRNA families and other structured RNA elements',
-            'abbreviation': '',
-            'examples': [],
-            'seq_count': 0,
-        },
-        {
-            'name': 'miRBase',
-            'label': 'mirbase',
-            'url': 'http://www.mirbase.org/',
-            'description': 'is a database of published miRNA sequences and annotations',
-            'abbreviation': '',
-            'examples': ['URS0000026D73', 'URS0000026D73', 'URS00005BE7F9'],
-            'seq_count': 3661,
-        },
-        {
-            'name': 'VEGA',
-            'label': 'vega',
-            'url': 'http://vega.sanger.ac.uk/',
-            'description': 'is a repository for high-quality gene models produced by the manual annotation of vertebrate genomes',
-            'abbreviation': 'Vertebrate Genome Annotation',
-            'examples': ['URS000063A371', 'URS000063A296', 'URS0000638AD4'],
-            'seq_count': 21388,
-        },
-        {
-            'name': 'tmRNA Website',
-            'label': 'tmrna-website',
-            'url': 'http://bioinformatics.sandia.gov/tmrna/',
-            'description': 'contains predicted tmRNA sequences from RefSeq prokaryotic genomes, plasmids and bacteriophages',
-            'abbreviation': '',
-            'examples': ['URS0000646B13', 'URS000064AECD', 'URS000064B0CC'],
-            'seq_count': 21318,
-        },
-        {
-            'name': 'SRPDB',
-            'label': 'srpdb',
-            'url': 'http://rnp.uthscsa.edu/rnp/SRPDB/SRPDB.html',
-            'description': 'provides aligned, annotated and phylogenetically ordered sequences related to structure and function of SRP',
-            'abbreviation': 'Signal Recognition Particle Database',
-            'examples': ['URS000030A37C', 'URS0000227674', 'URS000005F2FD'],
-            'seq_count': 855,
-        },
-        {
-            'name': 'lncRNAdb',
-            'label': 'lncrnadb',
-            'url': 'http://lncrnadb.org/',
-            'description': 'is a database providing comprehensive annotations of eukaryotic long non-coding RNAs (lncRNAs)',
-            'abbreviation': '',
-            'examples': [],
-            'seq_count': 0,
-        },
-        {
-            'name': 'gtRNAdb',
-            'label': 'gtrnadb',
-            'url': 'http://gtrnadb.ucsc.edu/',
-            'description': 'contains tRNA gene predictions on complete or nearly complete genomes',
-            'abbreviation': '',
-            'examples': [],
-            'seq_count': 0,
-        },
-    ]

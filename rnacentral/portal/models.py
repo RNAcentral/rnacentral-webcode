@@ -267,6 +267,137 @@ class Database(models.Model):
     class Meta:
         db_table = 'rnc_database'
 
+    @cached_property
+    def description(self):
+        """
+        Get database description.
+        """
+        return self.__get_database_attribute(self.display_name, 'description')
+
+    @cached_property
+    def label(self):
+        """
+        Get database slugified label.
+        """
+        return self.__get_database_attribute(self.display_name, 'label')
+
+    @cached_property
+    def seq_count(self):
+        """
+        Get database sequence count.
+        """
+        return self.__get_database_attribute(self.display_name, 'seq_count')
+
+    @cached_property
+    def examples(self):
+        """
+        Get database examples.
+        """
+        return self.__get_database_attribute(self.display_name, 'examples')
+
+    @cached_property
+    def url(self):
+        """
+        Get database url.
+        """
+        return self.__get_database_attribute(self.display_name, 'url')
+
+    @cached_property
+    def abbreviation(self):
+        """
+        Get database name abbreviation.
+        """
+        return self.__get_database_attribute(self.display_name, 'abbreviation')
+
+    def __get_database_attribute(self, db_name, attribute):
+        """
+        An accessor method for retrieving attributes from a list.
+        """
+        data = self.__get_database_data()
+        return [x[attribute] for x in data if x['name'] == db_name].pop()
+
+    def __get_database_data(self):
+        """
+        Some data about the databases should not be stored in the main database
+        in order to make the update process easier.
+        If references, examples, and descriptions are stored in the database,
+        then each time a piece of data needs to be updated, one has to propagate
+        the change across all databases, which is inconvenient and error prone.
+        """
+        return [
+            {
+                'name': 'ENA',
+                'label': 'ena',
+                'url': 'http://www.ebi.ac.uk/ena/',
+                'description': 'is an INSDC database that stores a wide range of sequence data',
+                'abbreviation': 'European Nucleotide Archive',
+                'examples': ['URS000000041', 'URS000000031'],
+                'seq_count': 6000000,
+            },
+            {
+                'name': 'RFAM',
+                'label': 'rfam',
+                'url': 'http://rfam.xfam.org',
+                'description': 'is a database containing information about ncRNA families and other structured RNA elements',
+                'abbreviation': '',
+                'examples': [],
+                'seq_count': 0,
+            },
+            {
+                'name': 'miRBase',
+                'label': 'mirbase',
+                'url': 'http://www.mirbase.org/',
+                'description': 'is a database of published miRNA sequences and annotations',
+                'abbreviation': '',
+                'examples': ['URS0000026D73', 'URS0000026D73', 'URS00005BE7F9'],
+                'seq_count': 3661,
+            },
+            {
+                'name': 'VEGA',
+                'label': 'vega',
+                'url': 'http://vega.sanger.ac.uk/',
+                'description': 'is a repository for high-quality gene models produced by the manual annotation of vertebrate genomes',
+                'abbreviation': 'Vertebrate Genome Annotation',
+                'examples': ['URS000063A371', 'URS000063A296', 'URS0000638AD4'],
+                'seq_count': 21388,
+            },
+            {
+                'name': 'tmRNA Website',
+                'label': 'tmrna-website',
+                'url': 'http://bioinformatics.sandia.gov/tmrna/',
+                'description': 'contains predicted tmRNA sequences from RefSeq prokaryotic genomes, plasmids and phages',
+                'abbreviation': '',
+                'examples': ['URS0000646B13', 'URS000064AECD', 'URS000064B0CC'],
+                'seq_count': 21318,
+            },
+            {
+                'name': 'SRPDB',
+                'label': 'srpdb',
+                'url': 'http://rnp.uthscsa.edu/rnp/SRPDB/SRPDB.html',
+                'description': 'provides aligned, annotated and phylogenetically ordered sequences related to structure and function of SRP',
+                'abbreviation': 'Signal Recognition Particle Database',
+                'examples': ['URS000030A37C', 'URS0000227674', 'URS000005F2FD'],
+                'seq_count': 855,
+            },
+            {
+                'name': 'lncRNAdb',
+                'label': 'lncrnadb',
+                'url': 'http://lncrnadb.org/',
+                'description': 'is a database providing comprehensive annotations of eukaryotic long non-coding RNAs (lncRNAs)',
+                'abbreviation': '',
+                'examples': [],
+                'seq_count': 0,
+            },
+            {
+                'name': 'gtRNAdb',
+                'label': 'gtrnadb',
+                'url': 'http://gtrnadb.ucsc.edu/',
+                'description': 'contains tRNA gene predictions on complete or nearly complete genomes',
+                'abbreviation': '',
+                'examples': [],
+                'seq_count': 0,
+            },
+        ]
 
 class Release(models.Model):
     db = models.ForeignKey(Database, db_column='dbid', related_name='db')
