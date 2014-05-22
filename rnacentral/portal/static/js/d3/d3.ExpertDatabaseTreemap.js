@@ -23,9 +23,7 @@ ExpertDatabaseTreemap = function(selector){
       "color": "#428bca",
       "children": [
         {"name": "CRW", "size": 14.3, "info": "comparative sequence and structure information for ribosomal, intron, and other RNAs"},
-        {"name": "gtRNAdb", "size": 14.3, "info": "tRNA predictions in genomes"},
         {"name": "HGNC", "size": 14.3, "info": "HUGO Gene Nomenclature Committee"},
-        {"name": "lncRNAdb", "size": 14.3, "info": "annotations of eukaryotic long non-coding RNAs"},
         {"name": "MODOMICS", "size": 20, "info": "RNA modification data"},
         {"name": "NONCODE", "size": 14.3, "info": "integrative annotation of long noncoding RNAs"},
         {"name": "NPInter", "size": 14.3, "info": "experimentally determined functional interactions between ncRNAs and proteins, mRNAs or genomic DNA"},
@@ -34,18 +32,20 @@ ExpertDatabaseTreemap = function(selector){
         {"name": "RDP", "size": 14.3, "info": "ribosome-related data and services"},
         {"name": "RNApathways", "size": 14.3, "info": "RNA maturation and decay pathways"},
         {"name": "snoRNAdb", "size": 14.3, "info": "predicted snoRNA genes"},
-        {"name": "RFAM", "size": 14.3, "info": "collection of RNA families, each represented by multiple sequence alignments, consensus secondary structures and covariance models"},
         {"name": "SILVA", "size": 14.3, "info": "quality checked and aligned ribosomal RNA sequences"}
       ]},
 
       {"name": "Imported",
       "color": "#5cb85c",
       "children": [
-        {"name": "tmRNA Website", "size": 20, "xref": 20000, "info": "tmRNA sequence data"},
+        {"name": "RFAM", "size": 30, "info": "collection of RNA families, each represented by multiple sequence alignments, consensus secondary structures and covariance models"},
+        {"name": "lncRNAdb", "size": 14.3, "info": "annotations of eukaryotic long non-coding RNAs"},
+        {"name": "gtRNAdb", "size": 14.3, "info": "tRNA predictions in genomes"},
+        {"name": "tmRNA Website", "size": 30, "xref": 20000, "info": "tmRNA sequence data"},
         {"name": "SRPDB", "size": 10, "xref": 20000, "info": "aligned, annotated and phylogenetically ordered sequences related to structure and function of SRP" },
         {"name": "VEGA", "size": 10, "xref": 21000, "info": "high quality manual annotation of vertebrate finished genome sequence"},
         {"name": "miRBase", "size": 10, "xref": 20000, "info": "microRNA sequences and annotation"},
-        {"name": "ENA", "size": 60, "xref": 6000000, "info": "European Nucleotide Archive stores a comprehensive record of the world's nucleotide sequencing information"}
+        {"name": "ENA", "size": 40, "xref": 6000000, "info": "European Nucleotide Archive stores a comprehensive record of the world's nucleotide sequencing information"}
       ]}
     ]
   };
