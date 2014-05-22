@@ -29,6 +29,7 @@ Master Stylesheet for the RNAcentral Portal
 5.6 Angular.js
 5.7 Metadata search
 5.8 Sequence search
+5.9 D3 expert database treemap
 
 -------------------------------------------------------------------*/
 
@@ -645,4 +646,29 @@ textarea {
 
 .sequence-search-results .table-header td {
   border-top-color: white;
+}
+
+/*------------------------------------------------------------------
+[5.9 D3 expert database treemap]
+*/
+.treemap .chart {
+  display: block;
+  margin: 20px 0;
+}
+
+.treemap text {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.treemap rect {
+  fill: none;
+}
+
+.treemap .arc path {
+  stroke: #fff;
+}
+
+#treemap {
+  overflow-x: auto;
 }

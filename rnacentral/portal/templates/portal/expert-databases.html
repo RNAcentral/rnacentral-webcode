@@ -14,71 +14,21 @@ limitations under the License.
 {% extends "portal/base.html" %}
 {% load staticfiles %}
 
-{% block stylesheets %}
-  {{ block.super }}
-  <style type="text/css">
-    .chart {
-      display: block;
-      margin: 20px 0px;
-    }
-
-    text {
-      font-size: 16px;
-      font-weight: bold;
-    }
-
-    rect {
-      fill: none;
-    }
-
-    .arc path {
-      stroke: #fff;
-    }
-  </style>
-{% endblock %}
-
 {% block content %}
 
 <div class="row">
 
   <div class="col-md-12">
-    <h1>RNAcentral Expert Databases</h1>
+    <h1><i class="fa fa-star"></i> RNAcentral Expert Databases</h1>
 
-    <div id="treemap">
-        Five expert databases have already been <span class="label label-success">imported</span> into RNAcentral,
-        and work is underway to import the other <span class="label label-primary">member databases</span>.
-    </div>
+    <strong>Eight</strong> expert databases have already been <span class="label label-success">imported</span> into RNAcentral,
+    and work is underway to import the other <span class="label label-primary">member databases</span>.
 
-    <h2>Sequence statistics</h2>
+    <div id="treemap" class="treemap"></div>
 
-    <div class="col-md-5">
-      <table class="table table-hover table-condensed table-bordered">
-        <tr>
-          <th>Expert Database</th>
-          <th>Sequences</th>
-        </tr>
-        <tr>
-          <td>ENA</td>
-          <td>>6M</td>
-        </tr>
-        <tr>
-          <td><a href="{% url 'expert-database' 'vega' %}">VEGA</a></td>
-          <td>21,388</td>
-        </tr>
-        <tr>
-          <td><a href="{% url 'expert-database' 'tmrna-website' %}">tmRNA Website</a></td>
-          <td>21,318</td>
-        </tr>
-        <tr>
-          <td><a href="{% url 'expert-database' 'mirbase' %}">miRBase</a></td>
-          <td>3,661</td>
-        </tr>
-        <tr>
-          <td><a href="{% url 'expert-database' 'srpdb' %}">SRPDB</a></td>
-          <td>855</td>
-        </tr>
-      </table>
-    </div>
+    <p class="text-muted">
+      <i class="fa fa-info-circle"></i> Currently the size of the boxes is not to scale.
+    </p>
 
   </div>
 
