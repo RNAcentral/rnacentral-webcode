@@ -24,6 +24,9 @@ limitations under the License.
     Each page class has an attribute "url", which should be properly
     initialized in the constructor.
 
+    By default the tests use Firefox, but one can use a headless PhantomJS
+    browser (http://phantomjs.org/) as an alternative.
+
     Usage:
 
     # test localhost
@@ -31,10 +34,14 @@ limitations under the License.
 
     # test an RNAcentral instance
     python selenium_tests.py --base_url http://test.rnacentral.org/
+
+    # test an RNAcentral instance using PhantomJS
+    python selenium_tests.py --base_url http://test.rnacentral.org/ --driver=phantomjs
 """
 
 import unittest
 import re
+import sys
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
@@ -265,9 +272,15 @@ class GenoverseTestPage(BasePage):
 
 class RNAcentralTest(unittest.TestCase):
     """Unit tests entry point"""
+    driver = 'firefox'
 
     def setUp(self):
-        self.browser = webdriver.Firefox()
+        if self.driver == 'firefox':
+            self.browser = webdriver.Firefox()
+        elif self.driver == 'phantomjs':
+            self.browser = webdriver.PhantomJS()
+        else:
+            sys.exit('Driver not found')
         self.homepage = Homepage(self.browser)
         self.homepage.navigate()
 
@@ -355,12 +368,15 @@ if __name__ == '__main__':
     import sys
     parser = argparse.ArgumentParser()
     parser.add_argument('--base_url', default='http://127.0.0.1:8000/')
+    parser.add_argument('--driver', default='firefox',
+                        choices=['firefox', 'phantomjs'])
     parser.add_argument('unittest_args', nargs='*')
 
     args = parser.parse_args()
     if args.base_url[-1] != '/':
         args.base_url += '/'
     BasePage.base_url = args.base_url
+    RNAcentralTest.driver = args.driver
 
     sys.argv[1:] = args.unittest_args
     unittest.main()
