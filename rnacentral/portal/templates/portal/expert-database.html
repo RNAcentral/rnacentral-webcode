@@ -47,8 +47,8 @@ limitations under the License.
   <h2>Statistics</h2>
   <ul>
     <li>
-      <strong>{{ context.total_sequences|intcomma }}</strong> sequences
-      from <strong>{{ context.total_organisms|intcomma }}</strong> organism{{ context.total_organisms|pluralize}}.
+      <strong>{{ expert_db.count_sequences|intcomma }}</strong> sequences
+      from <strong>{{ expert_db.count_organisms|intcomma }}</strong> organism{{ expert_db.count_organisms|pluralize}}.
     </li>
     <li>
       The shortest sequence has <strong>{{ context.min_length|intcomma }}</strong> nucleotides, the longest <strong>{{ context.max_length|intcomma }}</strong>.
@@ -57,7 +57,7 @@ limitations under the License.
       The average length is <strong>{{ context.avg_length|floatformat:"0" }}</strong> nucleotide{{ context.avg_length|pluralize }}.
     </li>
     <li>
-      First imported: {{ context.first_imported|date:"d M, Y" }}.
+      First imported: {{ expert_db.first_imported|date:"d M, Y" }}.
     </li>
   </ul>
 

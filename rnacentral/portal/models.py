@@ -267,6 +267,25 @@ class Database(models.Model):
     class Meta:
         db_table = 'rnc_database'
 
+    def count_sequences(self):
+        """
+        Count unique sequences associated with the database.
+        """
+        return self.xrefs.values_list('upi', flat=True).distinct().count()
+
+    @cached_property
+    def count_organisms(self):
+        """
+        Count distinct taxids associated with the database.
+        """
+        return self.xrefs.values_list('taxid', flat=True).distinct().count()
+
+    def first_imported(self):
+        """
+        Get the earliest imported date.
+        """
+        return self.xrefs.order_by('timestamp').first().timestamp
+
     @cached_property
     def description(self):
         """
@@ -485,7 +504,7 @@ class Accession(models.Model):
 
 
 class Xref(models.Model):
-    db = models.ForeignKey(Database, db_column='dbid')
+    db = models.ForeignKey(Database, db_column='dbid', related_name='xrefs')
     accession = models.ForeignKey(Accession, db_column='ac', to_field='accession', related_name='xrefs', unique=True)
     created = models.ForeignKey(Release, db_column='created', related_name='release_created')
     last = models.ForeignKey(Release, db_column='last', related_name='last_release')

@@ -134,17 +134,16 @@ def expert_database_view(request, expert_db_name):
     """
     expert_db_name = _normalize_expert_db_name(expert_db_name)
     if expert_db_name and expert_db_name != 'coming_soon':
-        context = dict()
-        data = Rna.objects.filter(xrefs__deleted='N', xrefs__db__descr=expert_db_name)
         expert_db = Database.objects.get(descr=expert_db_name)
-        context['total_sequences'] = data.count()
-        context['total_organisms'] = len(data.values('xrefs__taxid').annotate(n=Count("pk")))
-        context['examples'] = data.all()[:8]
-        for i, example in enumerate(context['examples']):
-            context['examples'][i].upi = context['examples'][i].upi
-        context['first_imported'] = data.order_by('xrefs__timestamp')[0].xrefs.all()[0].timestamp
-        context['len_counts'] = data.values('length').annotate(counts=Count('length')).order_by('length')
-        context.update(data.aggregate(min_length=Min('length'), max_length=Max('length'), avg_length=Avg('length')))
+        rnas = Rna.objects.filter(xrefs__deleted='N',
+                                  xrefs__db__descr=expert_db_name)
+        context = dict()
+        context['len_counts'] = rnas.values('length').\
+                                     annotate(counts=Count('length')).\
+                                     order_by('length')
+        context.update(rnas.aggregate(min_length=Min('length'),
+                                      max_length=Max('length'),
+                                      avg_length=Avg('length')))
         return render_to_response('portal/expert-database.html', {
             'context': context,
             'expert_db': expert_db,
