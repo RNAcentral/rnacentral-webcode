@@ -5,8 +5,8 @@ python:
 install: pip install requests selenium
 # command to run tests
 script:
-	- python rnacentral/apiv1/tests.py --base_url=http://test.rnacentral.org
-	- python portal/tests/selenium_tests.py --base_url=http://test.rnacentral.org --driver=phantomjs
+    - python rnacentral/apiv1/tests.py --base_url=http://test.rnacentral.org
+    - python portal/tests/selenium_tests.py --base_url=http://test.rnacentral.org --driver=phantomjs
 # whitelist
 branches:
   only:
