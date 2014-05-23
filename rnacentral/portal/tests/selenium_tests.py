@@ -270,6 +270,31 @@ class GenoverseTestPage(BasePage):
         return True
 
 
+class MetaSearchPage(BasePage):
+    """
+    Can be any page because the search box is in the site-wide header.
+    """
+    url = ''
+
+    def __init__(self, browser):
+        BasePage.__init__(self, browser, self.url)
+
+    def test_example_searches(self):
+        """
+        Click on example searches in the header and make sure there are results.
+        """
+        results = []
+        success = []
+        examples = self.browser.find_elements_by_css_selector('.example-searches a')
+        for example in examples:
+            example.click()
+            results = WebDriverWait(self.browser, 30).until(
+                        lambda s: s.find_elements(By.CLASS_NAME, "result"))
+            if len(results) > 0:
+                success.append(1)
+        return len(success) == len(examples)
+
+
 class RNAcentralTest(unittest.TestCase):
     """Unit tests entry point"""
     driver = 'firefox'
@@ -292,6 +317,14 @@ class RNAcentralTest(unittest.TestCase):
         page.navigate()
         self.assertFalse(page.js_errors_found())
         self.assertIn("RNAcentral", page.get_title())
+
+    def test_metasearch(self):
+        """
+        Test metasearch, can be done on any page.
+        """
+        page = MetaSearchPage(self.browser)
+        page.navigate()
+        self.assertTrue(page.test_example_searches())
 
     def test_all_expert_database_page(self):
         page = ExpertDatabasesOverviewPage(self.browser)
