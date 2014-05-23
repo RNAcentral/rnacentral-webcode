@@ -46,7 +46,7 @@ Sequence search
                     name="sequence"
                     id="query-sequence"
                     ng-model="query.sequence"
-                    ng-minlength="10"
+                    ng-minlength="12"
                     ng-maxlength="50000"
                     ng-pattern="/^[acgtun\s]+$/i"
                     tabindex="2"
@@ -64,7 +64,7 @@ Sequence search
             <div class="form-group" ng-class="(seqQueryForm.sequence.$invalid) ? 'has-error' : ''">
               <label class="control-label"
                      for="query-sequence" ng-show="query.submit_attempted && seqQueryForm.sequence.$error.minlength">
-                The sequence cannot be shorter than 10 nucleotides.
+                The sequence cannot be shorter than 12 nucleotides.
               </label>
 
               <label class="control-label"
