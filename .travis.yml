@@ -2,9 +2,11 @@ language: python
 python:
   - "2.7"
 # command to install dependencies
-install: pip install requests
+install: pip install requests selenium
 # command to run tests
-script:  python rnacentral/apiv1/tests.py --base_url=http://test.rnacentral.org
+script:
+	- python rnacentral/apiv1/tests.py --base_url=http://test.rnacentral.org
+	- python portal/tests/selenium_tests.py --base_url=http://test.rnacentral.org --driver=phantomjs
 # whitelist
 branches:
   only:
