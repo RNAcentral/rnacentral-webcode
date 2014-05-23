@@ -437,7 +437,7 @@ class Accession(models.Model):
     external_id = models.CharField(max_length=150)
     optional_id = models.CharField(max_length=100)
     anticodon = models.CharField(max_length=50)
-    experiment = models.CharField(max_length=250)
+    experiment = models.CharField(max_length=500)
     function = models.CharField(max_length=500)
     gene = models.CharField(max_length=50)
     gene_synonym = models.CharField(max_length=400)
