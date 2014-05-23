@@ -294,6 +294,18 @@ class MetaSearchPage(BasePage):
                 success.append(1)
         return len(success) == len(examples)
 
+    def _submit_search(self, query):
+        searchbox = self.browser.find_element_by_css_selector('.rnacentral-masthead input')
+        searchbox.send_keys(query)
+        searchbutton = self.browser.find_element_by_css_selector('.rnacentral-masthead button')
+        searchbutton.click()
+
+    def warnings_displayed(self):
+        """
+        """
+        warning = WebDriverWait(self.browser, 30).until(lambda s: s.find_element(By.CSS_SELECTOR, ".metasearch-info .alert-warning"))
+        return warning.is_displayed()
+
 
 class RNAcentralTest(unittest.TestCase):
     """Unit tests entry point"""
@@ -325,6 +337,20 @@ class RNAcentralTest(unittest.TestCase):
         page = MetaSearchPage(self.browser)
         page.navigate()
         self.assertTrue(page.test_example_searches())
+
+    def test_metasearch_no_results(self):
+        page = MetaSearchPage(self.browser)
+        page.navigate()
+        query = 'Foo bar baz'
+        page._submit_search(query)
+        self.assertTrue(page.warnings_displayed())
+
+    def test_metasearch_no_warnings(self):
+        page = MetaSearchPage(self.browser)
+        page.navigate()
+        query = 'RNA'
+        page._submit_search(query)
+        self.assertFalse(page.warnings_displayed())
 
     def test_all_expert_database_page(self):
         page = ExpertDatabasesOverviewPage(self.browser)
