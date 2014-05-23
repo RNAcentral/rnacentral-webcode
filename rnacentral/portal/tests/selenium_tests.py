@@ -325,10 +325,10 @@ class RNAcentralTest(unittest.TestCase):
             self.assertFalse(page.js_errors_found())
             self.assertTrue(page.get_svg_diagrams())
 
-    def test_long_loading_page(self):
-        page = SequencePage(self.browser, 'URS00002FA515')
-        page.navigate()
-        self._sequence_view_checks(page)
+    # def test_long_loading_page(self):
+    #     page = SequencePage(self.browser, 'URS00002FA515')
+    #     page.navigate()
+    #     self._sequence_view_checks(page)
 
     def test_genoverse_page(self):
         page = GenoverseTestPage(self.browser, 'URS000063A371')
