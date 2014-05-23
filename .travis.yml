@@ -2,7 +2,7 @@ language: python
 python:
   - "2.6"
 # command to install dependencies
-install: pip install -r rnacentral/requirements.txt --allow-all-external
+install: pip install -r rnacentral/requirements.txt --allow-all-external --allow-unverified cx-Oracle
 # command to run tests
 script:  python rnacentral/apiv1/tests.py --base_url=http://test.rnacentral.org
 # whitelist
