@@ -88,6 +88,7 @@ class ENASequenceSearchClient(object):
                                   'length={length}&'
                                   'offset={offset}&'
                                   'display=json&'
+                                  'sort=true&'
                                   'fields=' + ','.join(self.field_names),
         }
         # ENA minimum query length and minimum URS length
