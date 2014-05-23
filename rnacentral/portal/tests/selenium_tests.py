@@ -247,13 +247,15 @@ class ExpertDatabaseLandingPage(BasePage):
 
 class GenoverseTestPage(BasePage):
     """A page with an embedded genome browser"""
-    url = 'docs/genome-browsers/'
+    url = 'rna/'
 
-    def __init__(self, browser):
+    def __init__(self, browser, rnacentral_id):
         BasePage.__init__(self, browser, self.url)
+        self.url += rnacentral_id
 
     def genoverse_ok(self):
-        self.browser.find_element_by_id('genoverse')
+        genoverse_button = WebDriverWait(self.browser, 30).until(lambda s: s.find_element(By.CLASS_NAME, "genoverse-xref"))
+        genoverse_button.click()
         try:
             WebDriverWait(self.browser, 5).until(lambda s: s.find_element(By.CSS_SELECTOR, "table.genoverse").is_displayed())
         except:
@@ -329,7 +331,7 @@ class RNAcentralTest(unittest.TestCase):
         self._sequence_view_checks(page)
 
     def test_genoverse_page(self):
-        page = GenoverseTestPage(self.browser)
+        page = GenoverseTestPage(self.browser, 'URS000063A371')
         page.navigate()
         self.assertTrue(page.genoverse_ok())
 

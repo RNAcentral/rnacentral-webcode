@@ -51,7 +51,7 @@ RNAcentral
               <strong>{{database.display_name}}</strong>
               {{database.description}}.
               <ul class="list-unstyled">
-                <li><strong>{{database.seq_count|intcomma}}</strong> sequences (<a href="/rna/{{database.examples|first}}">example</a>)</li>
+                <li id="{{database.label}}-examples"><strong>{{database.seq_count|intcomma}}</strong> sequences (<a href="/rna/{{database.examples|first}}">example</a>)</li>
               </ul>
               <a class="btn btn-xs btn-default" href="/expert-database/{{database.label}}">Explore {{database.display_name}}</a>
             </div>
