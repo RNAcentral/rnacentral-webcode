@@ -354,6 +354,7 @@ rnaMetasearch.controller('QueryCtrl', ['$scope', '$location', 'results', 'search
         if (newUrl !== oldUrl) {
             if (newUrl.indexOf('/search') == -1) {
                 // a non-search url, load that page
+                $scope.$apply(); // makes back button work on Firefox
                 window.location.href = newUrl;
             } else {
                 // the new url is a search result page, launch that search
