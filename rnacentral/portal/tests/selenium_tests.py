@@ -300,11 +300,17 @@ class MetaSearchPage(BasePage):
         searchbutton = self.browser.find_element_by_css_selector('.rnacentral-masthead button')
         searchbutton.click()
 
-    def warnings_displayed(self):
+    def warnings_present(self):
         """
+        div.metasearch-no-results is only generated when a search returns
+        zero results. This test makes sure that the element is present and
+        displayed.
         """
-        warning = WebDriverWait(self.browser, 30).until(lambda s: s.find_element(By.CLASS_NAME, "metasearch-no-results"))
-        return warning.is_displayed()
+        try:
+            warning = WebDriverWait(self.browser, 5).until(lambda s: s.find_element(By.CLASS_NAME, "metasearch-no-results"))
+            return warning.is_displayed()
+        except:
+            return False
 
 
 class RNAcentralTest(unittest.TestCase):
@@ -343,14 +349,14 @@ class RNAcentralTest(unittest.TestCase):
         page.navigate()
         query = 'Foo bar baz'
         page._submit_search(query)
-        self.assertTrue(page.warnings_displayed())
+        self.assertTrue(page.warnings_present())
 
     def test_metasearch_no_warnings(self):
         page = MetaSearchPage(self.browser)
         page.navigate()
         query = 'RNA'
         page._submit_search(query)
-        self.assertFalse(page.warnings_displayed())
+        self.assertFalse(page.warnings_present())
 
     def test_all_expert_database_page(self):
         page = ExpertDatabasesOverviewPage(self.browser)
