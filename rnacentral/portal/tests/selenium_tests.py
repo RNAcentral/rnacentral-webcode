@@ -303,7 +303,7 @@ class MetaSearchPage(BasePage):
     def warnings_displayed(self):
         """
         """
-        warning = WebDriverWait(self.browser, 5).until(lambda s: s.find_element(By.CLASS_NAME, "metasearch-no-results"))
+        warning = WebDriverWait(self.browser, 30).until(lambda s: s.find_element(By.CLASS_NAME, "metasearch-no-results"))
         return warning.is_displayed()
 
 
