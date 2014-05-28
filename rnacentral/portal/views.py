@@ -100,14 +100,11 @@ def homepage(request):
     """
     RNAcentral homepage.
     """
-    context = dict()
-    context['seq_count'] = Rna.objects.count()
-    context['last_full_update'] = Release.objects.filter(release_type='F').order_by('-release_date').all()[0]
-    try:
-        context['last_daily_update'] = Release.objects.filter(release_type='I').order_by('-release_date').all()[0]
-    except Exception, e:
-        context['last_daily_update'] = context['last_full_update']
-    context['databases'] = list(Database.objects.all())
+    context = {
+        'seq_count': Rna.objects.count(),
+        'last_update': Release.objects.order_by('-release_date').all()[0],
+        'databases': list(Database.objects.all()),
+    }
     random.shuffle(context['databases'])
     return render(request, 'portal/homepage.html', {'context': context})
 

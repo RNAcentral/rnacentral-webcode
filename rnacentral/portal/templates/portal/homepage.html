@@ -75,9 +75,8 @@ RNAcentral
             <p>
               <em>{{ context.seq_count|intcomma }}</em> sequences from <em>{{ context.databases|length }}</em> Expert Databases
               <br>
-              <strong>Last daily update</strong>: {{ context.last_daily_update.release_date }}
-              <br>
-              <strong>Last full update:</strong> {{ context.last_full_update.release_date }}
+              Last updated: {{ context.last_update.release_date }}
+              (release <strong>1.0beta</strong>)
             </p>
           </div>
         </div>
