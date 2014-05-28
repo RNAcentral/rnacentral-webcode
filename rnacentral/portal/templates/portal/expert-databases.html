@@ -21,50 +21,227 @@ limitations under the License.
   <div class="col-md-12">
     <h1><i class="fa fa-star"></i> RNAcentral Expert Databases</h1>
 
-    <strong>Eight</strong> expert databases have already been <span class="label label-success">imported</span> into RNAcentral,
-    and work is underway to import the other <span class="label label-primary">member databases</span>.
-
-    <div id="treemap" class="treemap"></div>
-
-    <p class="text-muted">
-      <i class="fa fa-info-circle"></i> Currently the size of the boxes is not to scale.
+    <p>
+      Currently the RNAcentral Consortium is formed by <strong>21</strong> Expert Databases,
+      <strong>8</strong> of which have already been integrated into RNAcentral
+      (marked with a <span class="badge badge-success help"><i class="fa fa-check"></i></span> below).
+      If you are running an ncRNA database and would like to join RNAcentral, please
+      <a href="{% url 'contact-us' %}">contact us</a>.
     </p>
 
+    <div class="col-md-11">
+    <table class="table table-condensed table-hover">
+      <tr>
+          <td>
+              <a href="http://www.ebi.ac.uk/ena/" target="_blank">ENA</a>
+              <span class="badge badge-success help" title="Imported into RNAcentral"><i class="fa fa-check"></i></span>
+          </td>
+          <td>
+              comprehensive record of the world's nucleotide sequencing information
+          </td>
+      </tr>
+
+      <tr>
+          <td>
+              <a href="http://www.rna.ccbb.utexas.edu/" target="_blank">Comparative RNA Website</a>
+          </td>
+          <td>
+              comparative sequence and structure information for ribosomal, intron, and other RNAs
+          </td>
+      </tr>
+
+      <tr>
+          <td>
+              <a href="http://gtrnadb.ucsc.edu/" target="_blank">Genomic tRNA Database</a>
+              <span class="badge badge-success help" title="Imported into RNAcentral"><i class="fa fa-check"></i></span>
+          </td>
+          <td>
+              tRNA predictions in genomes
+          </td>
+      </tr>
+
+      <tr>
+          <td>
+              <a href="http://www.genenames.org/" target="_blank">HGNC</a>
+          </td>
+          <td>
+              HUGO Gene Nomenclature Committee
+          </td>
+      </tr>
+
+      <tr>
+          <td>
+              <a href="http://lncrnadb.org/" target="_blank">lncRNAdb</a>
+              <span class="badge badge-success help" title="Imported into RNAcentral"><i class="fa fa-check"></i></span>
+          </td>
+          <td>
+              annotations of eukaryotic long non-coding RNAs
+          </td>
+      </tr>
+
+      <tr>
+          <td>
+              <a href="http://www.mirbase.org/" target="_blank">miRBase</a>
+              <span class="badge badge-success help" title="Imported into RNAcentral"><i class="fa fa-check"></i></span>
+          </td>
+          <td>
+              microRNA sequences and annotation
+          </td>
+      </tr>
+
+      <tr>
+          <td>
+              <a href="http://modomics.genesilico.pl/" target="_blank">MODOMICS</a>
+          </td>
+          <td>
+              RNA modification data
+          </td>
+      </tr>
+
+      <tr>
+          <td>
+              <a href="http://www.noncode.org/" target="_blank">NONCODE</a>
+          </td>
+          <td>
+              integrative annotation of long noncoding RNAs
+          </td>
+      </tr>
+
+      <tr>
+          <td>
+              <a href="http://bioinfo.ibp.ac.cn/NPInter/" target="_blank">NPInter</a>
+          </td>
+          <td>
+              experimentally determined functional interactions between ncRNAs and proteins, mRNAs or genomic DNA
+          </td>
+      </tr>
+
+      <tr>
+          <td>
+              <a href="http://pirnabank.ibab.ac.in/" target="_blank">piRNABank</a>
+          </td>
+          <td>
+              comprehensive resource on Piwi-interacting RNAs
+          </td>
+      </tr>
+
+      <tr>
+          <td>
+              <a href="http://chualab.rockefeller.edu/gbrowse2/homepage.html" target="_blank">PLncDB</a>
+          </td>
+          <td>
+              plant long noncoding RNA Database
+          </td>
+      </tr>
+
+      <tr>
+          <td>
+              <a href="http://www.ncbi.nlm.nih.gov/refseq/" target="_blank">RefSeq</a>
+          </td>
+          <td>
+              comprehensive, integrated, non-redundant, well-annotated set of reference sequences
+          </td>
+      </tr>
+
+      <tr>
+          <td>
+              <a href="http://rdp.cme.msu.edu" target="_blank">Ribosomal Database Project</a>
+          </td>
+          <td>
+              ribosome-related data and services
+          </td>
+      </tr>
+
+      <tr>
+          <td>
+              <a href="http://rfam.sanger.ac.uk/" target="_blank">Rfam</a>
+              <span class="badge badge-success help" title="Imported into RNAcentral"><i class="fa fa-check"></i></span>
+          </td>
+          <td>
+              collection of RNA families
+          </td>
+      </tr>
+
+      <tr>
+          <td>
+              <a href="http://genesilico.pl/rnapathwaysdb" target="_blank">RNApathwaysDB</a>
+          </td>
+          <td>
+              RNA maturation and decay pathways
+          </td>
+      </tr>
+
+      <tr>
+          <td>
+              <a href="http://www.arb-silva.de/" target="_blank">SILVA</a>
+          </td>
+          <td>
+              quality checked and aligned ribosomal RNA sequences
+          </td>
+      </tr>
+
+      <tr>
+          <td>
+              <a href="http://lowelab.ucsc.edu/snoRNAdb/" target="_blank">snoRNA Database</a>
+          </td>
+          <td>
+              predicted snoRNA genes
+          </td>
+      </tr>
+
+      <tr>
+          <td>
+              <a href="http://rnp.uthscsa.edu/rnp/SRPDB/SRPDB.html" target="_blank">SRPDB</a>
+              <span class="badge badge-success help" title="Imported into RNAcentral"><i class="fa fa-check"></i></span>
+          </td>
+          <td>
+              aligned, annotated and phylogenetically ordered sequences related to structure and function of SRP
+          </td>
+      </tr>
+
+      <tr>
+          <td>
+              <a href="http://bioinformatics.sandia.gov/tmrna" target="_blank">tmRNA Website</a>
+              <span class="badge badge-success help" title="Imported into RNAcentral"><i class="fa fa-check"></i></span>
+          </td>
+          <td>
+              tmRNA sequence data
+          </td>
+      </tr>
+
+      <tr>
+          <td>
+              <a href="http://trna.bioinf.uni-leipzig.de/DataOutput/" target="_blank">tRNAdb</a>
+          </td>
+          <td>
+              compilation of tRNA sequences and tRNA genes
+          </td>
+      </tr>
+
+      <tr>
+          <td>
+              <a href="http://vega.sanger.ac.uk/index.html" target="_blank">VEGA</a>
+              <span class="badge badge-success help" title="Imported into RNAcentral"><i class="fa fa-check"></i></span>
+          </td>
+          <td>
+              high quality manual annotation of vertebrate finished genome sequence
+          </td>
+      </tr>
+
+    </table>
+    </div>
   </div>
 
 </div>
 
-{% endblock %}
+<br>
 
-{% block extra_js %}
-  {{ block.super }}
-  <script type="text/javascript" src="{% static "js/vendor/d3/d3.min.js" %}"></script>
 {% endblock %}
-
 
 {% block extra_js_uncompressed %}
-  {{ block.super }}
-
-  <script type="text/javascript" src="{% static "js/d3/d3.ExpertDatabaseTreemap.js" %}"></script>
-  <script type="text/javascript">
-
-    $(document).ready(function () {
-
-        // initializing treemap
-        ExpertDatabaseTreemap("#treemap");
-
-        //initializing tooltips
-        $("svg rect").tooltip({
-            'container': 'body',
-            'placement': 'top'
-        });
-
-        $("svg path").tooltip({
-            'container': 'body',
-            'placement': 'right'
-        });
+  <script>
+    $(function() {
+      $('.help').tooltip();
     });
-
   </script>
-
 {% endblock %}
