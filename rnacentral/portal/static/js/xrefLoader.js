@@ -145,8 +145,8 @@ xrefLoader.prototype.load_xrefs = function() {
 			// if the url hash does not refer to any of the tabs, update the search field
 			var hash = window.location.hash.substring(1);
 			if (hash != 'species' && hash != 'overview') {
-				dataTables_search.val(hash).focus();
-				oTable.fnFilter(hash);
+				dataTables_search.val(decodeURIComponent(hash)).focus();
+				oTable.fnFilter(decodeURIComponent(hash));
 			}
 		};
 
