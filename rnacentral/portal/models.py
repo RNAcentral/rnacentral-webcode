@@ -348,7 +348,7 @@ class Database(models.Model):
                 'name': 'ENA',
                 'label': 'ena',
                 'url': 'http://www.ebi.ac.uk/ena/',
-                'description': 'is an INSDC database that stores a wide range of sequence data',
+                'description': "provides a comprehensive record of the world's nucleotide sequencing information",
                 'abbreviation': 'European Nucleotide Archive',
                 'examples': ['URS000000041', 'URS000000031'],
                 'seq_count': 6000000,
