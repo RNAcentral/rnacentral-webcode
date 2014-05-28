@@ -221,9 +221,9 @@ class ExpertDatabasesOverviewPage(BasePage):
     def __init__(self, browser):
         BasePage.__init__(self, browser, self.url)
 
-    def get_expert_db_svg_rect_count(self):
+    def get_expert_tr_count(self):
         """get the number of rectangles representing expert databases"""
-        expert_dbs = self.browser.find_elements_by_tag_name("rect")
+        expert_dbs = self.browser.find_elements_by_tag_name("tr")
         return len(expert_dbs)
 
 
@@ -362,7 +362,7 @@ class RNAcentralTest(unittest.TestCase):
         page = ExpertDatabasesOverviewPage(self.browser)
         page.navigate()
         self.assertFalse(page.js_errors_found())
-        self.assertEqual(page.get_expert_db_svg_rect_count(), 19)
+        self.assertEqual(page.get_expert_tr_count(), 21)
 
     def test_tmrna_website_example_pages(self):
         for example_id in self._get_expert_db_example_ids('tmrna-website-examples'):
