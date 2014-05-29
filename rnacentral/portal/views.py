@@ -51,21 +51,6 @@ def ebeye_proxy(request):
 
 
 @cache_page(CACHE_TIMEOUT)
-def get_expert_database_organism_sunburst(request, expert_db_name):
-    """
-    Internal API.
-    Get lineages from all sequences for the sunburst diagram.
-    """
-    try:
-        expert_db_name = _normalize_expert_db_name(expert_db_name)
-        accessions = Accession.objects.only("classification").filter(database=expert_db_name).all()
-        json_lineage_tree = _get_json_lineage_tree(accessions)
-    except Exception, e:
-        raise Http404
-    return HttpResponse(json_lineage_tree, content_type="application/json")
-
-
-@cache_page(CACHE_TIMEOUT)
 def get_xrefs_data(request, upi):
     """
     Internal API.
@@ -132,17 +117,7 @@ def expert_database_view(request, expert_db_name):
     expert_db_name = _normalize_expert_db_name(expert_db_name)
     if expert_db_name and expert_db_name != 'coming_soon':
         expert_db = Database.objects.get(descr=expert_db_name)
-        rnas = Rna.objects.filter(xrefs__deleted='N',
-                                  xrefs__db__descr=expert_db_name)
-        context = dict()
-        context['len_counts'] = rnas.values('length').\
-                                     annotate(counts=Count('length')).\
-                                     order_by('length')
-        context.update(rnas.aggregate(min_length=Min('length'),
-                                      max_length=Max('length'),
-                                      avg_length=Avg('length')))
         return render_to_response('portal/expert-database.html', {
-            'context': context,
             'expert_db': expert_db,
         })
     elif expert_db_name == 'coming_soon':
@@ -304,8 +279,8 @@ def _normalize_expert_db_name(expert_db_name):
     """
     Expert_db_name should match RNACEN.RNC_DATABASE.DESCR
     """
-    dbs = ('SRPDB', 'MIRBASE', 'VEGA', 'TMRNA_WEB')
-    dbs_coming_soon = ('ENA', 'RFAM', 'LNCRNADB', 'GTRNADB')
+    dbs = ('SRPDB', 'MIRBASE', 'VEGA', 'TMRNA_WEB', 'ENA', 'RFAM')
+    dbs_coming_soon = ('LNCRNADB', 'GTRNADB')
     if re.match('tmrna-website', expert_db_name, flags=re.IGNORECASE):
         expert_db_name = 'TMRNA_WEB'
     else:

@@ -263,6 +263,13 @@ class Database(models.Model):
     display_name = models.CharField(max_length=40)
     url = models.CharField(max_length=100)
     project_id = models.CharField(max_length=10)
+    avg_length = models.IntegerField()
+    min_length = models.IntegerField()
+    max_length = models.IntegerField()
+    num_sequences = models.IntegerField()
+    num_organisms = models.IntegerField()
+    length_counts = models.TextField()
+    taxonomic_lineage = models.TextField()
 
     class Meta:
         db_table = 'rnc_database'

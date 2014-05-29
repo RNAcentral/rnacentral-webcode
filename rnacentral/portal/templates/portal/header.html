@@ -92,12 +92,14 @@ limitations under the License.
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown">Expert databases<b class="caret"></b></a>
           <ul class="dropdown-menu">
-            <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='gtrnadb' %}">gtRNAdb</a></li>
-            <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='lncrnadb' %}">lncRNAdb</a></li>
+            <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='ena' %}">ENA</a></li>
+            <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='rfam' %}">RFAM</a></li>
+            <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='vega' %}">VEGA</a></li>
             <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='mirbase' %}">miRBase</a></li>
             <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='srpdb' %}">SRPDB</a></li>
             <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='tmrna-website' %}">tmRNA Website</a></li>
-            <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='vega' %}">VEGA</a></li>
+            <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='gtrnadb' %}">gtRNAdb</a></li>
+            <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='lncrnadb' %}">lncRNAdb</a></li>
             <li class="divider"></li>
             <li><a href="{% url 'expert-databases' %}">All Expert databases</a></li>
           </ul>

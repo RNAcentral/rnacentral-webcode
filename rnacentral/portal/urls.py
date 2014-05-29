@@ -52,8 +52,6 @@ urlpatterns = patterns('',
 
 # internal API
 urlpatterns += patterns('',
-    # get organism sunburst
-    url(r'^expert-database/(?P<expert_db_name>.+)/lineage/?$', 'portal.views.get_expert_database_organism_sunburst'),
     # get xrefs table
     url(r'^rna/(?P<upi>\w+)/xrefs/?$', 'portal.views.get_xrefs_data'),
     # get species tree
