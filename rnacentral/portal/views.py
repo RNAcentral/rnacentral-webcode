@@ -219,8 +219,12 @@ def _get_json_lineage_tree(accessions):
                 container = {}
                 container[head] = 1
         else:
-            if head not in container:
-                container[head] = {}
+            try:
+                if head not in container:
+                    container[head] = {}
+            except:
+                container = {}
+                container[head] = 1
             build_nested_dict_helper('; '.join(tail), text, container[head])
 
     def get_nested_dict(lineages):
