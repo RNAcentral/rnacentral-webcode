@@ -23,7 +23,6 @@ from django.views.generic.edit import FormView
 from django.template import TemplateDoesNotExist
 import re
 import requests
-import random
 import json
 
 
@@ -90,7 +89,6 @@ def homepage(request):
         'last_update': Release.objects.order_by('-release_date').all()[0],
         'databases': list(Database.objects.all()),
     }
-    random.shuffle(context['databases'])
     return render(request, 'portal/homepage.html', {'context': context})
 
 
