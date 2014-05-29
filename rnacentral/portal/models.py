@@ -356,7 +356,7 @@ class Database(models.Model):
                 'url': 'http://www.ebi.ac.uk/ena/',
                 'description': "provides a comprehensive record of the world's nucleotide sequencing information",
                 'abbreviation': 'European Nucleotide Archive',
-                'examples': ['URS000000041', 'URS000000031'],
+                'examples': ['URS0000026D73', 'URS0000026D73', 'URS00005BE7F9'],
                 'seq_count': 6000000,
             },
             {
