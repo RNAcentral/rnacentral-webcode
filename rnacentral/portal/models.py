@@ -280,7 +280,6 @@ class Database(models.Model):
         """
         return self.xrefs.values_list('upi', flat=True).distinct().count()
 
-    @cached_property
     def count_organisms(self):
         """
         Count distinct taxids associated with the database.
