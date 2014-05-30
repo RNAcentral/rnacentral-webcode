@@ -171,18 +171,20 @@ limitations under the License.
 
           <h2>Taxonomic Tree</h2>
 
+          <p>
+            <small>
+              <i class="fa fa-info-circle"></i>
+              This tree displays the lineages of all taxonomic groups in which this sequence has been found.
+              <br>
+              <strong>Scroll around</strong> to explore the entire tree.
+              <strong>Click</strong> the tree nodes to collapse or expand them.
+              <strong>Hover</strong> your mouse over taxon names to display full names.
+            </small>
+          </p>
+
           <div class="panel panel-default d3-species">
-
+            <button id="d3-species-scroll-tree" class="btn btn-default btn-sm">Scroll to species</button>
             <div class="tab-pane panel-body d3-species force-scrollbars" id="d3-species-tree-tab">
-              <div class="text-muted">
-                <small>
-                  <i class="fa fa-info-circle"></i>
-                  The organisms tree is generated automatically by combining the lineages from all database cross-references.
-                  The nodes can be clicked to collapse or expand them. Long taxon names appear truncated but can be displayed by hovering over the name.
-                </small>
-                <button id="d3-species-scroll-tree" class="btn btn-default btn-sm">Scroll to species</button>
-              </div>
-
               <div id="d3-species-tree">
                 <i class="fa fa-spinner fa-spin fa-2x"></i>
                 Loading taxonomic tree...
