@@ -281,8 +281,8 @@ def _normalize_expert_db_name(expert_db_name):
     """
     Expert_db_name should match RNACEN.RNC_DATABASE.DESCR
     """
-    dbs = ('SRPDB', 'MIRBASE', 'VEGA', 'TMRNA_WEB', 'ENA', 'RFAM')
-    dbs_coming_soon = ('LNCRNADB', 'GTRNADB')
+    dbs = ('SRPDB', 'MIRBASE', 'VEGA', 'TMRNA_WEB', 'ENA', 'RFAM', 'LNCRNADB', 'GTRNADB')
+    dbs_coming_soon = ()
     if re.match('tmrna-website', expert_db_name, flags=re.IGNORECASE):
         expert_db_name = 'TMRNA_WEB'
     else:
