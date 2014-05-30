@@ -72,12 +72,12 @@ RNAcentral
             <h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> Statistics</h3>
           </div>
           <div class="panel-body small">
-            <p>
-              <em>{{ context.seq_count|intcomma }}</em> sequences from <em>{{ context.databases|length }}</em> Expert Databases
-              <br>
-              Last updated: {{ context.last_update.release_date }}
-              (release <strong>1.0beta</strong>)
-            </p>
+            <ul>
+              <li>Release <strong>1.0beta</strong></li>
+              <li><em>{{ context.seq_count|intcomma }}</em> distinct sequences</li>
+              <li><em>{{ context.databases|length }}</em> Expert Databases</li>
+              <li>Last updated on {{ context.last_update.release_date }}</li>
+            </ul>
           </div>
         </div>
       </div>
