@@ -48,11 +48,20 @@ d3SpeciesSunburst = function(data, selector, width, height){
 	      .data(partition.nodes(jsonTree))
 	    .enter().append("g");
 
+	  // show the number of sequences for terminal nodes
+	  var get_title = function(d){
+	    var title = d.name;
+	    if (d.hasOwnProperty('size')) {
+	      title += " (" + d.size + " sequences)";
+	    }
+	    return title;
+	  };
+
 	  var path = g.append("path")
 	    .attr("d", arc)
 	    // .style("fill", function(d) { return color((d.children ? d : d.parent).name); })
 	    .attr("fill", function(d) { return "#6baed6"; })
-	    .attr("title", function(d) { return d.name; })
+	    .attr("title", function(d) { return get_title(d); })
 		.on("mouseover", function() {
 		  d3.select(this)
 		    .attr('fill', '#f0ad4e')
