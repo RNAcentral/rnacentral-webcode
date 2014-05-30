@@ -70,15 +70,25 @@ class Rna(models.Model):
         """
         Get ENA xrefs that don't have corresponding expert database entries.
         """
-        expert_db_projects = [db.project_id for db in Database.objects.exclude(project_id=None).all()]
-        return self.xrefs.filter(db__descr='ENA').exclude(accession__project__in=expert_db_projects).select_related().all()
+        expert_db_projects = Database.objects.exclude(project_id=None).\
+                                              values_list('project_id', flat=True)
+        return self.xrefs.filter(db__descr='ENA').\
+                          exclude(accession__project__in=expert_db_projects).\
+                          select_related().\
+                          all()
+
+    def get_rfam_xrefs(self):
+        """
+        Get RFAM xrefs, which require separate treatment because they are not
+        """
+        return self.xrefs.filter(db__descr='RFAM').select_related().all()
 
     def get_xrefs(self):
         """
         Concatenate querysets putting the expert database xrefs
         at the beginning of the resulting queryset.
         """
-        return self.get_ena_xrefs() | self.get_expert_database_xrefs()
+        return self.get_ena_xrefs() | self.get_rfam_xrefs() | self.get_expert_database_xrefs()
 
     def count_xrefs(self):
         """
