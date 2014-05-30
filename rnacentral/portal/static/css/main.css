@@ -261,6 +261,10 @@ ul.breadcrumb.rnacentral-api {
   margin-top: 10px;
 }
 
+.alert.rnacentral-api {
+  margin-bottom: 0;
+}
+
 .prettyprint a {
   text-decoration: underline;
   color: #DD8621;

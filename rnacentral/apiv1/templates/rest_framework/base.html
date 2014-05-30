@@ -36,8 +36,21 @@ limitations under the License.
         {% endfor %}
     </ul>
 
+    <br>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="alert alert-info rnacentral-api">
+                <i class="fa fa-info-circle"></i> This is the <strong>RNAcentral Browsable API</strong>. When this page is opened
+                in a browser, it is rendered as a <strong>human-friendly</strong> document, but when the same page is requested
+                programmatically, the response is returned in a <strong>machine-readable</strong> format.
+                See <a href="/api">API documentation</a> for more details.
+            </div>
+        </div>
+    </div>
+
     <div class="content-main">
-        <div class="page-header"><h2>{{ name }}</h2></div>
+        <h2>{{ name }}</h2>
         <div class="row">
             <div class="col-md-10"><p>{{ description }}</p></div>
             <div class="col-md-2">
