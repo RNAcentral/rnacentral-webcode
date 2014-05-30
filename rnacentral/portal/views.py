@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from portal.models import Rna, Database, Release, Xref, Accession
+from portal.models import Rna, Database, Release, Xref, Accession, DatabaseStats
 from portal.forms import ContactForm
 
 from django.http import Http404, HttpResponseRedirect, HttpResponse
@@ -115,8 +115,10 @@ def expert_database_view(request, expert_db_name):
     expert_db_name = _normalize_expert_db_name(expert_db_name)
     if expert_db_name and expert_db_name != 'coming_soon':
         expert_db = Database.objects.get(descr=expert_db_name)
+        expert_db_stats = DatabaseStats.objects.get(database=expert_db_name)
         return render_to_response('portal/expert-database.html', {
             'expert_db': expert_db,
+            'expert_db_stats': expert_db_stats,
         })
     elif expert_db_name == 'coming_soon':
         return render_to_response('portal/expert-database-coming-soon.html')

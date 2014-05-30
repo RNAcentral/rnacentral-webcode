@@ -198,10 +198,10 @@ limitations under the License.
 
     <script type="text/javascript">
         $(function(){
-            var data = {% autoescape off %}{{expert_db.length_counts}}{% endautoescape %};
+            var data = {% autoescape off %}{{expert_db_stats.length_counts}}{% endautoescape %};
             ExpertDatabaseSequenceDistribution("#d3-seq-length-distribution", data, 500, 300);
             {% if expert_db.descr != 'ENA' and expert_db.descr != 'RFAM' %}
-                data = {% autoescape off %}{{expert_db.taxonomic_lineage}}{% endautoescape %};
+                data = {% autoescape off %}{{expert_db_stats.taxonomic_lineage}}{% endautoescape %};
                 d3SpeciesSunburst(data, '#d3-species-sunburst', 500, 300);
             {% endif %}
         });

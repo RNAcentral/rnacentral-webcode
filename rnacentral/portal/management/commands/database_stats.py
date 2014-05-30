@@ -12,7 +12,7 @@ limitations under the License.
 """
 
 from django.core.management.base import BaseCommand
-from portal.models import Database, Rna, Accession
+from portal.models import Database, Rna, Accession, DatabaseStats
 from portal.views import _get_json_lineage_tree
 from django.db.models import Min, Max, Count, Avg
 import json
@@ -58,12 +58,14 @@ def compute_database_stats():
         expert_db.max_length = context['max_length']
         expert_db.num_sequences = expert_db.count_sequences()
         expert_db.num_organisms = expert_db.count_organisms()
-        # django produces 'counts' keys, but d3 expects 'count' keys
-        expert_db.length_counts = json.dumps(context['len_counts']).\
-                                  replace('counts', 'count')
-        expert_db.taxonomic_lineage = lineages
-        # save to the database
         expert_db.save()
+
+        expert_db_stats = DatabaseStats.objects.get(database=expert_db.descr)
+        # django produces 'counts' keys, but d3 expects 'count' keys
+        expert_db_stats.length_counts = json.dumps(context['len_counts']).\
+                                  replace('counts', 'count')
+        expert_db_stats.taxonomic_lineage = lineages
+        expert_db_stats.save()
 
 
 class Command(BaseCommand):
