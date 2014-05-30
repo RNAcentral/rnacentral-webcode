@@ -30,6 +30,11 @@ underscore.factory('_', function() {
  */
 var rnaMetasearch = angular.module('rnacentralApp', ['chieffancypants.loadingBar', 'underscore']);
 
+// hide spinning wheel
+rnaMetasearch.config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
+    cfpLoadingBarProvider.includeSpinner = false;
+}]);
+
 /**
  * html5mode removes hashtags from urls.
  */
