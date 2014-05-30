@@ -329,13 +329,6 @@ class Database(models.Model):
         return self.__get_database_attribute(self.display_name, 'label')
 
     @cached_property
-    def seq_count(self):
-        """
-        Get database sequence count.
-        """
-        return self.__get_database_attribute(self.display_name, 'seq_count')
-
-    @cached_property
     def examples(self):
         """
         Get database examples.
@@ -379,7 +372,6 @@ class Database(models.Model):
                 'description': "provides a comprehensive record of the world's nucleotide sequencing information",
                 'abbreviation': 'European Nucleotide Archive',
                 'examples': ['URS0000026D73', 'URS0000026D73', 'URS00005BE7F9'],
-                'seq_count': 6000000,
             },
             {
                 'name': 'RFAM',
@@ -388,7 +380,6 @@ class Database(models.Model):
                 'description': 'is a database containing information about ncRNA families and other structured RNA elements',
                 'abbreviation': '',
                 'examples': [],
-                'seq_count': 0,
             },
             {
                 'name': 'miRBase',
@@ -397,7 +388,6 @@ class Database(models.Model):
                 'description': 'is a database of published miRNA sequences and annotations',
                 'abbreviation': '',
                 'examples': ['URS0000026D73', 'URS0000026D73', 'URS00005BE7F9'],
-                'seq_count': 3661,
             },
             {
                 'name': 'VEGA',
@@ -406,7 +396,6 @@ class Database(models.Model):
                 'description': 'is a repository for high-quality gene models produced by the manual annotation of vertebrate genomes',
                 'abbreviation': 'Vertebrate Genome Annotation',
                 'examples': ['URS000063A371', 'URS000063A296', 'URS0000638AD4'],
-                'seq_count': 21388,
             },
             {
                 'name': 'tmRNA Website',
@@ -415,7 +404,6 @@ class Database(models.Model):
                 'description': 'contains predicted tmRNA sequences from RefSeq prokaryotic genomes, plasmids and phages',
                 'abbreviation': '',
                 'examples': ['URS0000646B13', 'URS000064AECD', 'URS000064B0CC'],
-                'seq_count': 21318,
             },
             {
                 'name': 'SRPDB',
@@ -424,7 +412,6 @@ class Database(models.Model):
                 'description': 'provides aligned, annotated and phylogenetically ordered sequences related to structure and function of SRP',
                 'abbreviation': 'Signal Recognition Particle Database',
                 'examples': ['URS000030A37C', 'URS0000227674', 'URS000005F2FD'],
-                'seq_count': 855,
             },
             {
                 'name': 'lncRNAdb',
@@ -433,7 +420,6 @@ class Database(models.Model):
                 'description': 'is a database providing comprehensive annotations of eukaryotic long non-coding RNAs (lncRNAs)',
                 'abbreviation': '',
                 'examples': [],
-                'seq_count': 0,
             },
             {
                 'name': 'gtRNAdb',
@@ -442,7 +428,6 @@ class Database(models.Model):
                 'description': 'contains tRNA gene predictions on complete or nearly complete genomes',
                 'abbreviation': '',
                 'examples': [],
-                'seq_count': 0,
             },
         ]
 

@@ -87,7 +87,7 @@ def homepage(request):
     context = {
         'seq_count': Rna.objects.count(),
         'last_update': Release.objects.order_by('-release_date').all()[0],
-        'databases': list(Database.objects.all()),
+        'databases': list(Database.objects.order_by('-num_sequences').all()),
     }
     return render(request, 'portal/homepage.html', {'context': context})
 
