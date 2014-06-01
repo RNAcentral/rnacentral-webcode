@@ -51,6 +51,10 @@ limitations under the License.
       {% else %}
         <span class="label label-info help" title="part of an automatically generated FULL alignment">full alignment</span>
       {% endif %}
+      <br>
+      <i class="fa fa-angle-right"></i>
+      Source accession: <a href="http://www.ebi.ac.uk/ena/data/view/{{ xref.accession.parent_ac }}" target="_blank">{{ xref.accession.parent_ac }}</a>
+      (nucleotides {{ xref.accession.feature_start|intcomma }}:{{ xref.accession.feature_end|intcomma }})
     {% elif xref.db.display_name == 'SRPDB' %}
       SRPDB:
       <a class="srpdb-external-url" href="{{ xref.accession.get_expert_db_external_url }}.fasta" target="_blank">{{ xref.accession.get_srpdb_id }}</a>
