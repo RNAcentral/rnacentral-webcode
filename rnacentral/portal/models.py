@@ -335,6 +335,12 @@ class Database(models.Model):
         """
         return self.__get_database_attribute(self.display_name, 'examples')
 
+    def references(self):
+        """
+        Get literature references.
+        """
+        return self.__get_database_attribute(self.display_name, 'references')
+
     @cached_property
     def url(self):
         """
@@ -372,6 +378,20 @@ class Database(models.Model):
                 'description': "provides a comprehensive record of the world's nucleotide sequencing information",
                 'abbreviation': 'European Nucleotide Archive',
                 'examples': ['URS0000026D73', 'URS0000026D73', 'URS00005BE7F9'],
+                'references': [
+                    {
+                        'title': 'Facing growth in the European Nucleotide Archive',
+                        'authors': 'Cochrane G, Alako B, Amid C, Bower L, Cerdeno-Tarraga A, Cleland I, Gibson R, Goodgame N, Jang M, Kay S et al.',
+                        'journal': 'Nucleic Acids Res. 2013 Jan;41(Database issue):D30-5',
+                        'pubmed_id': 23203883,
+                    },
+                    {
+                        'title': 'Assembly information services in the European Nucleotide Archive',
+                        'authors': 'Pakseresht N, Alako B, Amid C, Cerdeno-Tarraga A, Cleland I, Gibson R, Goodgame N, Gur T, Jang M, Kay S et al.',
+                        'journal': 'Nucleic Acids Res. 2014 Jan;42(Database issue):D38-43',
+                        'pubmed_id': 24214989,
+                    },
+                ],
             },
             {
                 'name': 'RFAM',
@@ -380,6 +400,14 @@ class Database(models.Model):
                 'description': 'is a database containing information about ncRNA families and other structured RNA elements',
                 'abbreviation': '',
                 'examples': [],
+                'references': [
+                    {
+                        'title': 'Rfam 11.0: 10 years of RNA families',
+                        'authors': 'Burge SW, Daub J, Eberhardt R, Tate J, Barquist L, Nawrocki EP, Eddy SR, Gardner PP, Bateman A',
+                        'journal': 'Nucleic Acids Res. 2013 Jan;41(Database issue):D226-32',
+                        'pubmed_id': 23125362,
+                    },
+                ],
             },
             {
                 'name': 'miRBase',
@@ -388,6 +416,14 @@ class Database(models.Model):
                 'description': 'is a database of published miRNA sequences and annotations',
                 'abbreviation': '',
                 'examples': ['URS0000026D73', 'URS0000026D73', 'URS00005BE7F9'],
+                'references': [
+                    {
+                        'title': 'miRBase: integrating microRNA annotation and deep-sequencing data',
+                        'authors': 'Kozomara A., Griffiths-Jones S.',
+                        'journal': 'Nucleic Acids Res. 39(Database issue): D152-7 (2011 Jan)',
+                        'pubmed_id': 21037258,
+                    },
+                ],
             },
             {
                 'name': 'VEGA',
@@ -395,7 +431,21 @@ class Database(models.Model):
                 'url': 'http://vega.sanger.ac.uk/',
                 'description': 'is a repository for high-quality gene models produced by the manual annotation of vertebrate genomes',
                 'abbreviation': 'Vertebrate Genome Annotation',
-                'examples': ['URS000063A371', 'URS000063A296', 'URS0000638AD4'],
+                'examples': ['URS00000B15DA'],
+                'references': [
+                    {
+                        'title': 'The GENCODE v7 catalog of human long noncoding RNAs: analysis of their gene structure, evolution, and expression.',
+                        'authors': 'Derrien T., Johnson R., Bussotti G., Tanzer A., Djebali S., Tilgner H., Guernec G., Martin D., Merkel A., Knowles DG. et al.',
+                        'journal': 'Genome Res. 22(9): 1775-1789 (2012 Sep)',
+                        'pubmed_id': 22955988,
+                    },
+                    {
+                        'title': 'GENCODE: the reference human genome annotation for The ENCODE Project',
+                        'authors': 'Harrow J., Frankish A., Gonzalez JM., Tapanari E., Diekhans M., Kokocinski F., Aken BL., Barrell D., Zadissa A., Searle S. et al.',
+                        'journal': 'Genome Res. 22(9): 1760-1774 (2012 Sep)',
+                        'pubmed_id': 22955987,
+                    },
+                ],
             },
             {
                 'name': 'tmRNA Website',
@@ -404,6 +454,14 @@ class Database(models.Model):
                 'description': 'contains predicted tmRNA sequences from RefSeq prokaryotic genomes, plasmids and phages',
                 'abbreviation': '',
                 'examples': ['URS0000646B13', 'URS000064AECD', 'URS000064B0CC'],
+                'references': [
+                    {
+                        'title': 'The tmRNA website: reductive evolution of tmRNA in plastids and other endosymbionts',
+                        'authors': 'Gueneau de Novoa P., Williams KP.',
+                        'journal': 'Nucleic Acids Res. 32(Database issue): D104-8 (2004 Jan)',
+                        'pubmed_id': 14681369,
+                    },
+                ],
             },
             {
                 'name': 'SRPDB',
@@ -412,6 +470,20 @@ class Database(models.Model):
                 'description': 'provides aligned, annotated and phylogenetically ordered sequences related to structure and function of SRP',
                 'abbreviation': 'Signal Recognition Particle Database',
                 'examples': ['URS000030A37C', 'URS0000227674', 'URS000005F2FD'],
+                'references': [
+                    {
+                        'title': 'Kinship in the SRP RNA family',
+                        'authors': 'Rosenblad MA., Larsen N., Samuelsson T., Zwieb C.',
+                        'journal': 'RNA Biol 6(5): 508-516 (2009 Nov-Dec)',
+                        'pubmed_id': 19838050,
+                    },
+                    {
+                        'title': 'The tmRDB and SRPDB resources',
+                        'authors': 'Andersen ES., Rosenblad MA., Larsen N., Westergaard JC., Burks J., Wower IK., Wower J., Gorodkin J., Samuelsson T., Zwieb C.',
+                        'journal': 'Nucleic Acids Res. 34(Database issue): D163-8 (2006 Jan)',
+                        'pubmed_id': 16381838,
+                    },
+                ],
             },
             {
                 'name': 'lncRNAdb',
@@ -419,7 +491,15 @@ class Database(models.Model):
                 'url': 'http://lncrnadb.org/',
                 'description': 'is a database providing comprehensive annotations of eukaryotic long non-coding RNAs (lncRNAs)',
                 'abbreviation': '',
-                'examples': [],
+                'examples': ['URS0000733CD2', 'URS00005E1511', 'URS0000147018'],
+                'references': [
+                    {
+                        'title': 'lncRNAdb: a reference database for long noncoding RNAs',
+                        'authors': 'Amaral P.P., Clark M.B., Gascoigne D.K., Dinger M.E., Mattick J.S.',
+                        'journal': 'Nucleic Acids Res. 39(Database issue):D146-D151(2011)',
+                        'pubmed_id': '21112873',
+                    },
+                ],
             },
             {
                 'name': 'gtRNAdb',
@@ -427,7 +507,15 @@ class Database(models.Model):
                 'url': 'http://gtrnadb.ucsc.edu/',
                 'description': 'contains tRNA gene predictions on complete or nearly complete genomes',
                 'abbreviation': '',
-                'examples': [],
+                'examples': ['URS000047C79B', 'URS00006725C9', 'URS00001F9D54'],
+                'references': [
+                    {
+                        'title': 'GtRNAdb: a database of transfer RNA genes detected in genomic sequence',
+                        'authors': 'Chan P.P., Lowe T.M.',
+                        'journal': 'Nucleic Acids Res. 37(Database issue):D93-D97(2009)',
+                        'pubmed_id': 18984615,
+                    },
+                ],
             },
         ]
 

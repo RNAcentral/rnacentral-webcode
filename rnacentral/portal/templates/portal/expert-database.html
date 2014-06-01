@@ -81,73 +81,25 @@ limitations under the License.
 
     <h2>References</h2>
 
-    {% if expert_db.display_name == 'miRBase' %}
+    {% for reference in expert_db.references %}
       <blockquote>
         <strong>
-          miRBase: integrating microRNA annotation and deep-sequencing data.
+          {{ reference.title }}.
         </strong>
         <br>
-          Kozomara A., Griffiths-Jones S.
+          {{ reference.authors }}
         <small>
-          Nucleic Acids Res. 39(Database issue): D152-7 (2011 Jan)
+          {{ reference.journal }}
+          <br>
+          <div class="abstract-preview">
+            <button class="btn btn-xs btn-default abstract-btn abstract-control" data-pubmed-id="{{reference.pubmed_id}}">Show abstract</button>
+            <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{reference.pubmed_id}}" target="_blank" class="abstract-control">PubMed</a>
+            <div class="abstract-text"></div>
+          </div>
         </small>
       </blockquote>
-    {% elif expert_db.display_name == 'SRPDB' %}
-        <blockquote>
-          <strong>
-            Kinship in the SRP RNA family.
-          </strong>
-          <br>
-            Rosenblad MA., Larsen N., Samuelsson T., Zwieb C.
-          <small>
-            RNA Biol 6(5): 508-516 (2009 Nov-Dec)
-          </small>
-        </blockquote>
+    {% endfor %}
 
-        <blockquote>
-          <strong>
-            The tmRDB and SRPDB resources.
-          </strong>
-          <br>
-            Andersen ES., Rosenblad MA., Larsen N., Westergaard JC., Burks J., Wower IK., Wower J., Gorodkin J., Samuelsson T., Zwieb C.
-          <small>
-            Nucleic Acids Res. 34(Database issue): D163-8 (2006 Jan)
-          </small>
-        </blockquote>
-    {% elif expert_db.display_name == 'VEGA' %}
-        <blockquote>
-          <strong>
-            The GENCODE v7 catalog of human long noncoding RNAs: analysis of their gene structure, evolution, and expression.
-          </strong>
-          <br>
-            Derrien T., Johnson R., Bussotti G., Tanzer A., Djebali S., Tilgner H., Guernec G., Martin D., Merkel A., Knowles DG. et al.
-          <small>
-              Genome Res. 22(9): 1775-1789 (2012 Sep)
-          </small>
-        </blockquote>
-
-        <blockquote>
-          <strong>
-              GENCODE: the reference human genome annotation for The ENCODE Project.
-          </strong>
-          <br>
-            Harrow J., Frankish A., Gonzalez JM., Tapanari E., Diekhans M., Kokocinski F., Aken BL., Barrell D., Zadissa A., Searle S. et al.
-          <small>
-            Genome Res. 22(9): 1760-1774 (2012 Sep)
-          </small>
-        </blockquote>
-    {% elif expert_db.display_name == 'tmRNA Website' %}
-        <blockquote>
-          <strong>
-            The tmRNA website: reductive evolution of tmRNA in plastids and other endosymbionts.
-          </strong>
-          <br>
-            Gueneau de Novoa P., Williams KP.
-          <small>
-            Nucleic Acids Res. 32(Database issue): D104-8 (2004 Jan).
-          </small>
-        </blockquote>
-    {% endif %}
   </div>
 
 </div>
@@ -190,6 +142,7 @@ limitations under the License.
     {{ block.super }}
     <script src="{% static "js/vendor/d3/d3.min.js" %}"></script>
     <script src="{% static "js/d3/d3.ExpertDatabaseSequenceDistribution.js" %}"></script>
+    <script type="text/javascript" src="{% static "js/jquery.EuropePMCAbstracts.js" %}"></script>
     <script type="text/javascript" src="{% static "js/d3/d3.speciesSunburst.js" %}"></script>
 {% endblock extra_js %}
 
@@ -204,6 +157,15 @@ limitations under the License.
                 data = {% autoescape off %}{{expert_db_stats.taxonomic_lineage}}{% endautoescape %};
                 d3SpeciesSunburst(data, '#d3-species-sunburst', 500, 300);
             {% endif %}
+
+            $('.abstract-btn').EuropePMCAbstracts({
+              'target_class': '.abstract-text',
+              'pubmed_id_data_attribute': 'pubmed-id',
+              'msg': {
+                'show_abstract': 'Show abstract',
+                'hide_abstract': 'Hide abstract',
+              }
+            });
         });
   </script>
 
