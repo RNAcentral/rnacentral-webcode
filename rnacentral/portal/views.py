@@ -79,7 +79,7 @@ def get_sequence_lineage(request, upi):
     return HttpResponse(json_lineage_tree, content_type="application/json")
 
 
-@cache_page(60*5) # shorter cache to enable database shuffling
+@cache_page(CACHE_TIMEOUT)
 def homepage(request):
     """
     RNAcentral homepage.
