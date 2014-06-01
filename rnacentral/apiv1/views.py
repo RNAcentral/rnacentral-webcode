@@ -455,6 +455,10 @@ class RnaList(RnaMixin, generics.ListAPIView):
             database = 5
         elif re.match('tmrna_website', database, re.IGNORECASE):
             database = 6
+        elif re.match('lncrnadb', database, re.IGNORECASE):
+            database = 7
+        elif re.match('gtrnadb', database, re.IGNORECASE):
+            database = 8
         return database
 
     def get_queryset(self):
