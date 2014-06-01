@@ -125,17 +125,11 @@ limitations under the License.
       <div class="literature-refs-content"></div>
     </span>
 
-    <br>
-    <small>
+    {% if xref.deleted == 'Y' %}
+      <br>
       <i class="fa fa-angle-right"></i>
-      {% if xref.deleted == 'Y' %}
-        <span class="label label-danger">Obsolete</span>
-      {% endif %}
-      First seen
-      <time datetime="{{ xref.created.release_date|date:'Y-m-d' }}">{{ xref.created.release_date|date:'d M Y' }}</time>;
-      last seen
-      <time datetime="{{ xref.last.release_date|date:'Y-m-d' }}">{{ xref.last.release_date|date:'d M Y' }}</time>.
-    </small>
+      <small><span class="label label-danger">Obsolete</span></small>
+    {% endif %}
 
     </td>
     <!-- accession -->
