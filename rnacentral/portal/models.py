@@ -534,6 +534,16 @@ class Xref(models.Model):
     class Meta:
         db_table = 'xref'
 
+    def is_rfam_seed(self):
+        """
+        Determine whether an xref is part of a manually curated
+        RFAM seed alignment.
+        """
+        if re.search('alignment\:seed', self.accession.note, re.IGNORECASE) is not None:
+            return True
+        else:
+            return False
+
     def get_ucsc_bed(self):
         """
         Format genomic coordinates in BED format.

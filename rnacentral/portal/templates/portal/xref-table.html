@@ -45,7 +45,12 @@ limitations under the License.
     {% if xref.db.display_name == 'ENA' %}
       ENA: <a href="{{ xref.accession.get_ena_url }}" target="_blank" title="{{ xref.accession.accession }} at ENA">{{ xref.accession.accession }}</a>
     {% elif xref.db.display_name == 'RFAM' %}
-      RFAM family: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }} family)
+      RFAM family: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }})
+      {% if xref.is_rfam_seed %}
+        <span class="label label-success help" title="part of a manually curated SEED alignment">seed alignment</span>
+      {% else %}
+        <span class="label label-info help" title="part of an automatically generated FULL alignment">full alignment</span>
+      {% endif %}
     {% elif xref.db.display_name == 'SRPDB' %}
       SRPDB:
       <a class="srpdb-external-url" href="{{ xref.accession.get_expert_db_external_url }}.fasta" target="_blank">{{ xref.accession.get_srpdb_id }}</a>
