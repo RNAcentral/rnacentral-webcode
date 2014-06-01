@@ -377,7 +377,7 @@ class Database(models.Model):
                 'url': 'http://www.ebi.ac.uk/ena/',
                 'description': "provides a comprehensive record of the world's nucleotide sequencing information",
                 'abbreviation': 'European Nucleotide Archive',
-                'examples': ['URS0000026D73', 'URS0000026D73', 'URS00005BE7F9'],
+                'examples': ['URS0000000001'],
                 'references': [
                     {
                         'title': 'Facing growth in the European Nucleotide Archive',
@@ -399,7 +399,7 @@ class Database(models.Model):
                 'url': 'http://rfam.xfam.org',
                 'description': 'is a database containing information about ncRNA families and other structured RNA elements',
                 'abbreviation': '',
-                'examples': [],
+                'examples': ['URS00000478B7', 'URS000066DAB6'],
                 'references': [
                     {
                         'title': 'Rfam 11.0: 10 years of RNA families',
@@ -415,7 +415,7 @@ class Database(models.Model):
                 'url': 'http://www.mirbase.org/',
                 'description': 'is a database of published miRNA sequences and annotations',
                 'abbreviation': '',
-                'examples': ['URS0000026D73', 'URS0000026D73', 'URS00005BE7F9'],
+                'examples': ['URS00003B7674', 'URS00003B7674', 'URS000016FD1A'],
                 'references': [
                     {
                         'title': 'miRBase: integrating microRNA annotation and deep-sequencing data',
@@ -431,7 +431,7 @@ class Database(models.Model):
                 'url': 'http://vega.sanger.ac.uk/',
                 'description': 'is a repository for high-quality gene models produced by the manual annotation of vertebrate genomes',
                 'abbreviation': 'Vertebrate Genome Annotation',
-                'examples': ['URS00000B15DA'],
+                'examples': ['URS00000B15DA', 'URS00000A54A6', 'URS00003B2BEF'],
                 'references': [
                     {
                         'title': 'The GENCODE v7 catalog of human long noncoding RNAs: analysis of their gene structure, evolution, and expression.',
@@ -453,7 +453,7 @@ class Database(models.Model):
                 'url': 'http://bioinformatics.sandia.gov/tmrna/',
                 'description': 'contains predicted tmRNA sequences from RefSeq prokaryotic genomes, plasmids and phages',
                 'abbreviation': '',
-                'examples': ['URS0000646B13', 'URS000064AECD', 'URS000064B0CC'],
+                'examples': ['URS000060F5B3', 'URS000058C344', 'URS000048A91D'],
                 'references': [
                     {
                         'title': 'The tmRNA website: reductive evolution of tmRNA in plastids and other endosymbionts',
@@ -469,7 +469,7 @@ class Database(models.Model):
                 'url': 'http://rnp.uthscsa.edu/rnp/SRPDB/SRPDB.html',
                 'description': 'provides aligned, annotated and phylogenetically ordered sequences related to structure and function of SRP',
                 'abbreviation': 'Signal Recognition Particle Database',
-                'examples': ['URS000030A37C', 'URS0000227674', 'URS000005F2FD'],
+                'examples': ['URS00000478B7', 'URS00001C03DC', 'URS00005C64FE'],
                 'references': [
                     {
                         'title': 'Kinship in the SRP RNA family',
@@ -491,7 +491,7 @@ class Database(models.Model):
                 'url': 'http://lncrnadb.org/',
                 'description': 'is a database providing comprehensive annotations of eukaryotic long non-coding RNAs (lncRNAs)',
                 'abbreviation': '',
-                'examples': ['URS0000733CD2', 'URS00005E1511', 'URS0000147018'],
+                'examples': ['URS00000478B7', 'URS00005E1511', 'URS0000147018'],
                 'references': [
                     {
                         'title': 'lncRNAdb: a reference database for long noncoding RNAs',
