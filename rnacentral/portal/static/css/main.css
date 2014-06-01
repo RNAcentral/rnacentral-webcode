@@ -361,6 +361,11 @@ h3.panel-title {
   display: none;
 }
 
+#seq-length .panel {
+  max-height: 350px;
+  overflow-y: auto;
+}
+
 /*------------------------------------------------------------------
 [5. Misc]
 */

@@ -115,7 +115,36 @@ limitations under the License.
     <div class="tab-pane active" id="seq-length">
       <div class="panel panel-default">
         <div class="panel-body">
-          <div id="d3-seq-length-distribution"></div>
+          {% if expert_db.descr == 'LNCRNADB' %}
+            <div class="alert alert-info">
+              <i class="fa fa-info-circle"></i> Due to the small number of entries,
+              a list of all lincRNAdb entries is provided instead of a sequence distribution graph.
+            </div>
+
+            <table class="table table-bordered table-striped table-condensed">
+              <thead>
+                <tr>
+                  <th>lncRNAdb sequence</th>
+                  <th>length</th>
+                </tr>
+              </thead>
+              {% for rna in lncrnadb  %}
+                <tr>
+                  <td>
+                    <a href="{% url 'unique-rna-sequence' rna.upi %}">
+                    {% with rna.xrefs.all|first as xref %}
+                      {{xref.accession.description}}
+                    {% endwith %}
+                    ({{rna.upi}})
+                    </a>
+                  </td>
+                  <td>{{rna.length}}</td>
+                </tr>
+              {% endfor %}
+            </table>
+          {% else %}
+            <div id="d3-seq-length-distribution"></div>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -151,8 +180,10 @@ limitations under the License.
 
     <script type="text/javascript">
         $(function(){
-            var data = {% autoescape off %}{{expert_db_stats.length_counts}}{% endautoescape %};
-            ExpertDatabaseSequenceDistribution("#d3-seq-length-distribution", data, 500, 300);
+            {% if expert_db.descr != 'LNCRNADB' %}
+              var data = {% autoescape off %}{{expert_db_stats.length_counts}}{% endautoescape %};
+              ExpertDatabaseSequenceDistribution("#d3-seq-length-distribution", data, 500, 300);
+            {% endif %}
             {% if expert_db.descr != 'ENA' and expert_db.descr != 'RFAM' %}
                 data = {% autoescape off %}{{expert_db_stats.taxonomic_lineage}}{% endautoescape %};
                 d3SpeciesSunburst(data, '#d3-species-sunburst', 500, 300);
