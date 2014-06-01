@@ -504,7 +504,7 @@ class Accession(models.Model):
         Get external url to expert database.
         """
         urls = {
-            'RFAM': 'http://rfam.sanger.ac.uk/family/',
+            'RFAM': 'http://rfam.xfam.org/family/',
             'SRPDB': 'http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/',
             'VEGA': 'http://vega.sanger.ac.uk/Homo_sapiens/Gene/Summary?db=core;g=',
             'MIRBASE': 'http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc=',
