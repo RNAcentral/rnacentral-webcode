@@ -30,8 +30,10 @@ limitations under the License.
 {% for xref in context.rna.get_xrefs %}
   <tr {% if xref.deleted == 'Y' %}class="warning"{% endif %}>
     <td>
-      {% if xref.db.display_name != 'ENA' and xref.db.display_name != 'RFAM' %}
-        <span class="badge badge-success help" data-toggle="tooltip" title="RNAcentral Expert Database"><span class="glyphicon glyphicon-star"></span></span>
+      {% if xref.db.display_name != 'ENA' %}
+        <span class="badge badge-success help" data-toggle="tooltip" title="RNAcentral Expert Database">
+          <span class="glyphicon glyphicon-star"></span>
+        </span>
       {% endif %}
       <a href="{% url 'portal.views.expert_database_view' expert_db_name=xref.db.descr %}">{{ xref.db.display_name.split|join:"&nbsp;" }}</a>
     </td>
