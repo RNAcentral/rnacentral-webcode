@@ -52,6 +52,9 @@ limitations under the License.
     {% elif xref.db.display_name == 'lncRNAdb' %}
       lncRNAdb:
       <a class="lncrnadb-external-url" href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.optional_id }}</a>
+    {% elif xref.db.display_name == 'gtRNAdb' %}
+      gtRNAdb:
+      <a class="gtrnadb-external-url" href="{{ xref.accession.get_expert_db_external_url }}.html" target="_blank">{{ xref.accession.external_id }}</a>
     {% elif xref.db.display_name == 'miRBase' %}
       miRBase:
       <a class="mirbase-external-url" href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>

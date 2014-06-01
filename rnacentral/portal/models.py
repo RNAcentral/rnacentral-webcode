@@ -510,6 +510,7 @@ class Accession(models.Model):
             'MIRBASE': 'http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc=',
             'TMRNA_WEB': 'http://bioinformatics.sandia.gov/tmrna/seqs/',
             'LNCRNADB': 'http://www.lncrnadb.org/Detail.aspx?TKeyID=',
+            'GTRNADB': 'http://lowelab.ucsc.edu/GtRNAdb/',
         }
         if self.database in urls.keys():
             return urls[self.database] + self.external_id
