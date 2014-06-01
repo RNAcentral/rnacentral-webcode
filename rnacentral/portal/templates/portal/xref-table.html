@@ -99,22 +99,12 @@ limitations under the License.
     {# tmRNA Website #}
     {% elif xref.db.display_name == 'tmRNA Website' %}
       tmRNA Website: <a href="{{ xref.accession.get_expert_db_external_url }}.html" target="_blank">{{ xref.accession.external_id }}</a>
-      {% with tmrna_type=xref.get_tmrna_type %}
-        <br>
-        <i class="fa fa-angle-right"></i>
-        {% if tmrna_type == 1 %}
-          One-piece tmRNA or tmRNA precursor
-        {% elif tmrna_type == 2 %}
-          {% with tmrna_mate=xref.get_tmrna_mate_upi %}
-            Two-piece tmRNA partner: <a href="{% url 'portal.views.rna_view' upi=tmrna_mate %}">{{ tmrna_mate }}</a>
-          {% endwith %}
-        {% endif %}
-      {% endwith %}
-      {% if xref.accession.organelle %}
-        <br>
-        <i class="fa fa-angle-right"></i>
-        found in {{ xref.accession.organelle|lower }}
-      {% endif %}
+    {% endif %}
+
+    {% if xref.accession.organelle %}
+      <br>
+      <i class="fa fa-angle-right"></i>
+      found in {{ xref.accession.organelle|lower }}
     {% endif %}
 
     {% if xref.accession.is_composite == 'Y' %}
