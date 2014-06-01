@@ -509,6 +509,7 @@ class Accession(models.Model):
             'VEGA': 'http://vega.sanger.ac.uk/Homo_sapiens/Gene/Summary?db=core;g=',
             'MIRBASE': 'http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc=',
             'TMRNA_WEB': 'http://bioinformatics.sandia.gov/tmrna/seqs/',
+            'LNCRNADB': 'http://www.lncrnadb.org/Detail.aspx?TKeyID=',
         }
         if self.database in urls.keys():
             return urls[self.database] + self.external_id
