@@ -411,7 +411,7 @@ class RNAcentralTest(unittest.TestCase):
     #     self._sequence_view_checks(page)
 
     def test_genoverse_page(self):
-        page = GenoverseTestPage(self.browser, 'URS000063A371')
+        page = GenoverseTestPage(self.browser, 'URS00000B15DA')
         page.navigate()
         self.assertTrue(page.genoverse_ok())
 
