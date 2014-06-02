@@ -366,6 +366,11 @@ h3.panel-title {
   overflow-y: auto;
 }
 
+#expert-databases .label {
+  font-size: 85%;
+  margin-left: 0;
+}
+
 /*------------------------------------------------------------------
 [5. Misc]
 */

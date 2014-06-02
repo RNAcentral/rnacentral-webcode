@@ -51,7 +51,12 @@ RNAcentral
               <strong>{{database.display_name}}</strong>
               {{database.description}}.
               <ul class="list-unstyled">
-                <li id="{{database.label}}-examples"><strong>{{database.num_sequences|intcomma}}</strong> sequences (<a href="/rna/{{database.examples|first}}">example</a>)</li>
+                <li id="{{database.label}}-examples"><strong>{{database.num_sequences|intcomma}}</strong> sequences
+                {% if database.display_name == 'VEGA' %}
+                  with embedded <span class="label label-primary">genome browsers</span>
+                {% endif %}
+                (<a href="/rna/{{database.examples|first}}">example</a>)
+                </li>
               </ul>
               <a class="btn btn-xs btn-default" href="/expert-database/{{database.label}}">Explore {{database.display_name}}</a>
             </div>
