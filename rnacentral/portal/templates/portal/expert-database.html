@@ -155,6 +155,21 @@ limitations under the License.
           <div id="d3-species-sunburst"></div>
           {% if expert_db.descr == 'ENA' or expert_db.descr == 'RFAM' %}
             Too many species to display.
+          {% else %}
+            <button type="button" class="btn btn-default btn-sm" data-toggle="collapse" data-target="#sunburst-help">
+            <i class="fa fa-info-circle"></i> Help
+            </button>
+
+            <div id="sunburst-help" class="collapse">
+              <p>
+                <small>
+                  This diagram shows the combined lineages of all taxonomic groups annotated by {{ expert_db.display_name }}.
+                  The circle segments are sized proportionally to the number of sequences from the corresponding taxon.
+                  <br>
+                  <strong>Hover</strong> your mouse over circle segments to display taxon names.
+                </small>
+              </p>
+            </div>
           {% endif %}
         </div>
       </div>
