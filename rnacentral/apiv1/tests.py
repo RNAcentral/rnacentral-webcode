@@ -41,9 +41,9 @@ class ApiV1Test(unittest.TestCase):
 
     def setUp(self):
         self.upi = 'URS0000000001'
-        self.md5 = '06808191a979cc0b933265d9a9c213fd'
+        self.md5 = '6bba097c8c39ed9a0fdf02273ee1c79a'
         self.accession = 'Y09527.1:2562..2627:tRNA'
-        self.upi_with_genomic_coordinates = 'URS000063A371'
+        self.upi_with_genomic_coordinates = 'URS00000B15DA'
 
     def tearDown(self):
         pass
@@ -69,7 +69,7 @@ class ApiV1Test(unittest.TestCase):
         url = self._get_api_url('rna/%s/' % self.upi)
         data = self._check_urls(url)
         self.assertEqual(data['md5'], self.md5)
-        self.assertEqual(data['length'], 66)
+        self.assertEqual(data['length'], 200)
 
     def test_rna_xrefs(self):
         url = self._get_api_url('rna/%s/xrefs' % self.upi)
@@ -95,7 +95,7 @@ class ApiV1Test(unittest.TestCase):
 
     def test_rna_length_filter(self):
         filter_tests = ['rna/?min_length=200000', 'rna/?length=2014',
-                        'rna/?max_length=10', 'rna/?min_length=1&max_length=4']
+                        'rna/?max_length=11', 'rna/?min_length=11&max_length=12']
         for filter_test in filter_tests:
             url = self._get_api_url(filter_test)
             data = self._check_urls(url)
