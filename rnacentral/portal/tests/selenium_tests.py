@@ -234,20 +234,21 @@ class ExpertDatabaseLandingPage(BasePage):
     def __init__(self, browser, expert_db_id):
         BasePage.__init__(self, browser, self.url)
         self.url += expert_db_id
+        self.expert_db_id = expert_db_id
 
     def get_svg_diagrams(self):
         """
             Make sure all svg are generated.
             Override the default behavior because of the ajax requests.
         """
+        NO_SUNBURST = ['ena', 'rfam']
+        NO_SEQ_DIST = ['lncrnadb']
         try:
-            sunburst = WebDriverWait(self.browser, 5).until(lambda s: s.find_element(By.CSS_SELECTOR, "#d3-species-sunburst svg"))
-            seq_dist = WebDriverWait(self.browser, 5).until(lambda s: s.find_element(By.CSS_SELECTOR, "#d3-seq-length-distribution svg"))
+            if self.expert_db_id not in NO_SUNBURST:
+                sunburst = self.browser.find_element(By.CSS_SELECTOR, "#d3-species-sunburst svg")
+            if self.expert_db_id not in NO_SEQ_DIST:
+                seq_dist = self.browser.find_element(By.CSS_SELECTOR, "#d3-seq-length-distribution svg")
         except:
-            if not sunburst:
-                print 'No sunburst'
-            if not seq_dist:
-                print 'No seq dist'
             return False
         return True
 
@@ -396,7 +397,8 @@ class RNAcentralTest(unittest.TestCase):
             self.assertTrue(page.external_urls_exist('srpdb'))
 
     def test_expert_database_landing_pages(self):
-        expert_dbs = ['tmrna-website', 'srpdb', 'mirbase', 'vega']
+        expert_dbs = ['tmrna-website', 'srpdb', 'mirbase', 'vega',
+                      'ena', 'rfam', 'lncrnadb', 'gtrnadb']
         for expert_db in expert_dbs:
             page = ExpertDatabaseLandingPage(self.browser, expert_db)
             page.navigate()
