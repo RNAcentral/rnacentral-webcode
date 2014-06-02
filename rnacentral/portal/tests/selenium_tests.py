@@ -149,8 +149,9 @@ class SequencePage(BasePage):
             if not result:
                 raise NoSuchElementException
             try:
+                citations_loaded = WebDriverWait(self.browser, timeout).until(lambda s: s.find_element_by_class_name("abstract-control").is_displayed())
                 self.browser.find_element_by_class_name("abstract-control").click()
-                WebDriverWait(self.browser, timeout).until(lambda s: s.find_element(By.CLASS_NAME, "abstract-text").is_displayed())
+                WebDriverWait(self.browser, timeout).until(lambda s: s.find_element(By.CLASS_NAME, "abstract-text"))
             except NoSuchElementException:
                 pass  # some citations don't have pubmed ids and don't have abstract buttons
         except:
