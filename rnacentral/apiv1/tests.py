@@ -76,7 +76,7 @@ class ApiV1Test(unittest.TestCase):
         self._check_urls(url)
 
     def test_accession_entry(self):
-        url = self._get_api_url('accession/%s' % self.accession)
+        url = self._get_api_url('accession/%s/info' % self.accession)
         self._check_urls(url)
 
     def test_accession_citations(self):
@@ -137,7 +137,8 @@ class ApiV1Test(unittest.TestCase):
                    'yaml': 'application/yaml',
                    'api': 'text/html'}
         targets = ('rna', 'rna/%s' % self.upi, 'rna/%s/xrefs' % self.upi,
-                   'accession/%s' % self.accession, 'accession/%s/citations' % self.accession)
+                   'accession/%s/info' % self.accession,
+                   'accession/%s/citations' % self.accession)
         self._output_format_tester(formats, targets)
 
     def test_fasta_output(self):

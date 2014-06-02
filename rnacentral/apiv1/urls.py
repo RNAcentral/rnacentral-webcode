@@ -34,7 +34,7 @@ urlpatterns = patterns('',
     url(r'^accession/(?P<pk>.*?)/citations/?$', cache_page(CACHE_TIMEOUT)(views.CitationView.as_view()), name='accession-citations'),
     # view for an individual cross-reference
     # all ENA accessions end with RNA feature name + ordinal
-    url(r'^accession/(?P<pk>.*?(RNA|feature)(:\d+)?)/?$', cache_page(CACHE_TIMEOUT)(views.AccessionView.as_view()), name='accession-detail'),
+    url(r'^accession/(?P<pk>.*?)/info/?$', cache_page(CACHE_TIMEOUT)(views.AccessionView.as_view()), name='accession-detail'),
     # Ensembl-like genome coordinates endpoint
     url(r'^feature/region/human/(?P<chromosome>(\d+|Y|X))\:(?P<start>(\d|,)+)-(?P<end>(\d|,)+)/?$',
         cache_page(CACHE_TIMEOUT)(views.GenomeAnnotations.as_view()), name='human-genome-coordinates'),
