@@ -377,7 +377,7 @@ class Database(models.Model):
                 'url': 'http://www.ebi.ac.uk/ena/',
                 'description': "provides a comprehensive record of the world's nucleotide sequencing information",
                 'abbreviation': 'European Nucleotide Archive',
-                'examples': ['URS0000000001'],
+                'examples': ['URS00002D0E0C', 'URS000035EE7E', 'URS0000000001'],
                 'references': [
                     {
                         'title': 'Facing growth in the European Nucleotide Archive',
@@ -399,7 +399,7 @@ class Database(models.Model):
                 'url': 'http://rfam.xfam.org',
                 'description': 'is a database containing information about ncRNA families and other structured RNA elements',
                 'abbreviation': '',
-                'examples': ['URS00000478B7', 'URS000066DAB6'],
+                'examples': ['URS00000478B7', 'URS000066DAB6', 'URS000068EEC5'],
                 'references': [
                     {
                         'title': 'Rfam 11.0: 10 years of RNA families',
