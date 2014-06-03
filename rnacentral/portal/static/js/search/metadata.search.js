@@ -159,6 +159,9 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
             page_size = new_page_size;
         }
 
+        // uppercase logic operators
+        query = query.replace(/\s+and\s+/gi, ' AND ').replace(/\s+or\s+/gi, ' OR ').replace(/\s+not\s+/gi, ' NOT ');
+
         var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query).replace('{SIZE}', page_size);
         var url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url));
         execute_ebeye_search(url);
