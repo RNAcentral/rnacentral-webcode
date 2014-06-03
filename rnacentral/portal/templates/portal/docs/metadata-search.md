@@ -43,6 +43,8 @@ By default all fields are searched against a query, but search can also be restr
 
 	*Example*: `TAXONOMY:"9606"` where [9606](http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606) is the NCBI taxonomy id for Homo sapiens.
 
+---
+
 ### Logic operators
 
 * **and** (default)
@@ -58,11 +60,15 @@ By default all fields are searched against a query, but search can also be restr
 
 	*Example: `expert_db:lncrnadb not expert_db:rfam`.
 
+---
+
 ### Wildcard
 
 The `*` character can match any number of characters.
 
 *Example*: a search for `1*S` will find both 18S and 16S rRNAs.
+
+---
 
 ### Exact match
 
@@ -70,11 +76,15 @@ Use double quotes (`""`) to search for exact matches.
 
 *Example*: `"precursor RNA"`
 
+---
+
 ### Grouping
 
 Use parentheses to group and nest logical terms.
 
 *Example*: `(expert_db:mirbase OR expert_db:lncrnadb) NOT expert_db:mirbase`
+
+---
 
 ## Search tips
 

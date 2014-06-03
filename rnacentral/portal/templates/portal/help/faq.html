@@ -33,15 +33,7 @@ Help
   </div>
 
   <div class="col-md-4">
-
-    <h3>Other help topics:</h3>
-    <ul>
-      <li><a href="{% url 'api-docs' %}">API v1 documentation</a></li>
-      <li><a href="{% url 'help-browser-compatibility' %}">Browser compatibility</a></li>
-      <li><a href="{% url 'help-sequence-search' %}">Sequence search</a></li>
-      <li><a href="{% url 'help-metadata-search' %}">Metadata search</a></li>
-    </ul>
-
+    {% include 'portal/help/sidebar.html' %}
   </div>
 
 </div>

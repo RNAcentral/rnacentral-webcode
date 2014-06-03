@@ -20,7 +20,7 @@ Help: Browser compatibility
 {% block content %}
 
 <div class="row">
-  <div class="col-md-9" role="main">
+  <div class="col-md-8" role="main">
     {% load markdown_deux_tags %}
     {% markdown %}
       {% include  'portal/docs/browser-compatibility.md' %}
@@ -29,20 +29,10 @@ Help: Browser compatibility
 
     <a class="btn btn-default btn-sm" title="Edit on GitHub" href="https://github.com/RNAcentral/rnacentral-webcode/edit/django/rnacentral/portal/templates/portal/docs/browser-compatibility.md" target="_blank"><i class="fa fa-pencil-square-o"></i> Improve this page</a>
   </div>
+
+  <div class="col-md-4">
+    {% include 'portal/help/sidebar.html' %}
+  </div>
 </div>
 
 {% endblock content %}
-
-{% block extra_js %}
-  {{ block.super }}
-
-  <script type="text/javascript">
-    $(function() {
-      // open all content links in new windows
-      $('.container-main a').not('a.btn').each(function() {
-        var $this = $(this);
-        $this.html($this.html() + '&nbsp;<i class="fa fa-external-link"></i>').attr('target', '_blank');
-      });
-    });
-  </script>
-{% endblock extra_js %}
