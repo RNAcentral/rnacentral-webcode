@@ -13,23 +13,30 @@ limitations under the License.
 
 {% extends "portal/base.html" %}
 
+{% block title %}
+Help: Metadata search
+{% endblock %}
+
 {% block content %}
 
 <div class="row">
 
-  <div class="col-md-12">
-  	<h1>Help</h1>
+  <div class="col-md-8">
+    {% load markdown_deux_tags %}
+    {% markdown %}
+      {% include  'portal/docs/metadata-search.md' %}
+    {% endmarkdown %}
 
-    <ul>
-      <li><a href="{% url 'api-docs' %}">API v1 documentation</a></li>
-      <li><a href="{% url 'browser-compatibility' %}">Browser compatibility</a></li>
-    </ul>
+    <hr>
 
+    <a class="btn btn-default btn-sm" title="Edit on GitHub" href="https://github.com/RNAcentral/rnacentral-webcode/edit/django/rnacentral/portal/templates/portal/docs/metadata-search.md" target="_blank"><i class="fa fa-pencil-square-o"></i> Improve this page</a>
   </div>
 
   <div class="col-md-4">
   </div>
 
 </div>
+
+<br>
 
 {% endblock %}

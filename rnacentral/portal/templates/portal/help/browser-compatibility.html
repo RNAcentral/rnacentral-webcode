@@ -14,7 +14,7 @@ limitations under the License.
 {% extends "portal/base.html" %}
 
 {% block title %}
-Browser compatibility
+Help: Browser compatibility
 {% endblock %}
 
 {% block content %}
@@ -25,7 +25,9 @@ Browser compatibility
     {% markdown %}
       {% include  'portal/docs/browser-compatibility.md' %}
     {% endmarkdown %}
-    <br>
+    <hr>
+
+    <a class="btn btn-default btn-sm" title="Edit on GitHub" href="https://github.com/RNAcentral/rnacentral-webcode/edit/django/rnacentral/portal/templates/portal/docs/browser-compatibility.md" target="_blank"><i class="fa fa-pencil-square-o"></i> Improve this page</a>
   </div>
 </div>
 

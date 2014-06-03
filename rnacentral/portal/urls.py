@@ -33,8 +33,10 @@ urlpatterns = patterns('',
     # downloads
     url(r'^downloads/?$', views.StaticView.as_view(), {'page': 'downloads'}, name='downloads'),
     # help centre
-    url(r'^help/?$', views.StaticView.as_view(), {'page': 'help/main'}, name='help'),
-    url(r'^help/browser-compatibility/?$', views.StaticView.as_view(), {'page': 'help/browser-compatibility'}, name='browser-compatibility'),
+    url(r'^help/?$', views.StaticView.as_view(), {'page': 'help/faq'}, name='help'),
+    url(r'^help/browser-compatibility/?$', views.StaticView.as_view(), {'page': 'help/browser-compatibility'}, name='help-browser-compatibility'),
+    url(r'^help/sequence-search/?$', views.StaticView.as_view(), {'page': 'help/sequence-search'}, name='help-sequence-search'),
+    url(r'^help/metadata-search/?$', views.StaticView.as_view(), {'page': 'help/metadata-search'}, name='help-metadata-search'),
     # about us
     url(r'^about-us/?$', views.StaticView.as_view(), {'page': 'about'}, name='about'),
     # API documentation
