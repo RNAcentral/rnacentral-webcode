@@ -137,7 +137,7 @@ class Rna(models.Model):
         while i < len(seq):
             split_seq += seq[i:i+max_column] + "\n"
             i += max_column
-        fasta = ">%s\n%s" % (self.upi, split_seq)
+        fasta = ">%s; %s\n%s" % (self.upi, self.get_description(), split_seq)
         return fasta
 
     def get_gff(self):
