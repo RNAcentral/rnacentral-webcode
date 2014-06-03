@@ -573,6 +573,17 @@ class Accession(models.Model):
     class Meta:
         db_table = 'rnc_accessions'
 
+    def get_rna_type(self):
+        """
+        Get the type of RNA, which either the name of the feature from the
+        feature table in the Non-coding product, or for `ncRNA` features,
+        it's one of the ncRNA classes defined by INSDC.
+        """
+        if self.feature_name == 'ncRNA':
+            return self.ncrna_class
+        else:
+            return self.feature_name
+
     def get_srpdb_id(self):
         return re.sub('\.\d+$', '', self.external_id)
 

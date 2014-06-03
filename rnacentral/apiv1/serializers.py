@@ -44,12 +44,13 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
     id = serializers.CharField(source='accession')
     citations = serializers.HyperlinkedIdentityField(view_name='accession-citations')
     source_url = serializers.Field(source='get_ena_url')
+    rna_type = serializers.Field(source='get_rna_type')
     expert_db_url = serializers.Field(source='get_expert_db_external_url')
 
     class Meta:
         model = Accession
-        fields = ('url', 'id', 'description', 'external_id', 'optional_id', 'feature_name',
-                  'keywords', 'species', 'organelle',
+        fields = ('url', 'id', 'description', 'external_id', 'optional_id',
+                  'species', 'rna_type', 'gene', 'product', 'organelle',
                   'citations', 'source_url', 'expert_db_url')
 
 
