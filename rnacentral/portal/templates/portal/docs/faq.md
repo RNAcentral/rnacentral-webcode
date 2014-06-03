@@ -1,7 +1,5 @@
 
-<h1><i class="fa fa-question-circle"></i> Help</h1>
-
-## Frequently Asked Questions
+<h1><i class="fa fa-info-circle"></i> Frequently Asked Questions</h1>
 
 ### What is RNAcentral?
 
