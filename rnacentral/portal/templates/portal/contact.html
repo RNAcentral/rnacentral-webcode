@@ -14,15 +14,16 @@ limitations under the License.
 {% extends "portal/base.html" %}
 
 {% block title %}
-Contact Us
+Contact us
 {% endblock %}
 
 {% block content %}
 
+<h1><i class="fa fa-envelope"></i> Contact us</h1>
+
 <div class="row">
 
   <div class="col-md-8">
-    <h1><i class="fa fa-envelope"></i> Contact us</h1>
     <form action="/contact/" method="post" role="form">{% csrf_token %}
       {{ form.non_field_errors }}
       <div class="form-group {% if form.subject.errors %} has-error {% endif %}" >
@@ -64,6 +65,16 @@ Contact Us
 
       <button type="submit" class="btn btn-primary" tabindex="5">Submit</button>
     </form>
+  </div>
+
+  <div class="col-md-4">
+    <br>
+    <p class="well">
+      <i class="fa fa-github fa-3x pull-left"></i>
+      If you would like to report a problem with the website, consider
+      <a href="http://github.com/RNAcentral/rnacentral-webcode/issues" target="_blank">submitting an issue</a>
+      on GitHub.
+    </p>
   </div>
 
 </div>
