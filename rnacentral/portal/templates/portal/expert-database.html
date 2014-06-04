@@ -108,7 +108,9 @@ limitations under the License.
 
   <ul class="nav nav-tabs">
     <li class="active"><a data-target="#seq-length" data-toggle="tab">Sequence length</a></li>
-    <li><a data-target="#species" data-toggle="tab">Species sunburst</a></li>
+    {% if expert_db.descr != 'ENA' and expert_db.descr != 'RFAM' %}
+      <li><a data-target="#species" data-toggle="tab">Species sunburst</a></li>
+    {% endif %}
   </ul>
 
   <div class="tab-content">
@@ -149,13 +151,11 @@ limitations under the License.
       </div>
     </div>
 
+    {% if expert_db.descr != 'ENA' and expert_db.descr != 'RFAM' %}
     <div class="tab-pane" id="species">
       <div class="panel panel-default">
         <div class="panel-body">
           <div id="d3-species-sunburst"></div>
-          {% if expert_db.descr == 'ENA' or expert_db.descr == 'RFAM' %}
-            Too many species to display.
-          {% else %}
             <button type="button" class="btn btn-default btn-sm" data-toggle="collapse" data-target="#sunburst-help">
             <i class="fa fa-info-circle"></i> Help
             </button>
@@ -170,10 +170,10 @@ limitations under the License.
                 </small>
               </p>
             </div>
-          {% endif %}
         </div>
       </div>
     </div>
+    {% endif %}
   </div>
 
 </div>
