@@ -24,7 +24,7 @@ Sequence search
 
   <h1>
     <i class="fa fa-search"></i> Sequence search
-    <small ng-show="params.search_in_progress">
+    <small ng-show="params.search_in_progress && !params.error_message">
       <i class="fa fa-spinner fa-spin"></i>
     </small>
     <small id="sequence-search-status" ng-class="(params.status_message !== 'Done' && params.status_message !== 'Error') ? 'animated flash infinite' : ''">
