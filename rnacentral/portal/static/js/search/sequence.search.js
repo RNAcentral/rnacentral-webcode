@@ -48,7 +48,7 @@ limitations under the License.
 	$scope.results = results_init();
 
     /**
-     * Retrive results given a results url.
+     * Retrieve results given a results url.
      */
 	var get_results = function() {
 		$scope.params.search_in_progress = true;
@@ -104,6 +104,7 @@ limitations under the License.
 		$scope.results = results_init();
 		$scope.query.sequence = sequence.replace(/\s/g, '');
 		$scope.params.search_in_progress = true;
+		$scope.params.error_message = '';
 		$scope.params.status_message = $scope.defaults.messages.submitting;
 		$http({
 			url: $scope.defaults.submit_endpoint,
