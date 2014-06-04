@@ -86,7 +86,6 @@ class XrefsExporter(FtpBase):
             """
             return {
                 'xref': ['ENA'], # output xref.ac
-                'external_id': ['TMRNA_WEB', 'SRPDB', 'MIRBASE', 'VEGA', 'RFAM'], # output accession.external_id
                 'optional_id': ['VEGA'], # output accession.optional_id
                 # for VEGA output both transcript and gene ids
             }
@@ -111,7 +110,7 @@ class XrefsExporter(FtpBase):
                                                                               database=database,
                                                                               accession=result['accession'],
                                                                               taxid=taxid)
-                elif database in accession_source['external_id']:
+                else:
                     line = '{upi}\t{database}\t{accession}\t{taxid}\n'.format(upi=upi,
                                                                               database=database,
                                                                               accession=result['external_id'],
@@ -119,6 +118,7 @@ class XrefsExporter(FtpBase):
                 self.filehandles['xrefs'].write(line)
                 if counter < self.examples:
                     self.filehandles['example'].write(line)
+                # write out optional ids too, if necessary
                 if database in accession_source['optional_id']:
                     line = '{upi}\t{database}\t{accession}\t{taxid}\n'.format(upi=upi,
                                                                               database=database,
