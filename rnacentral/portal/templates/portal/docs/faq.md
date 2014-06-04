@@ -13,8 +13,17 @@ and RNA sequences, while maintaining an archive of past associations.
 
 ### What sequences does RNAcentral contain?
 
-RNAcentral contains ncRNA sequence imported from the [expert databases]({% url 'expert-databases' %}),
-which are at least **10 nucleotides long** and have **no more than 10%
+The [INSDC](http://www.insdc.org/) databases contain a large number of sequences
+annotated with **non-coding features**, which describe nucleotide ranges
+where various non-coding RNAs are found. A single INSDC entry may have 0, 1 or more non-coding features.
+
+RNAcentral imports **all** non-coding features found on INSDC entries
+as individual sequences, including the data submitted to INSDC by the expert databases.
+
+In addition, RNAcentral contains sequences from RFAM seed and full alignments,
+which also refer to the INSDC accession space.
+
+All sequences are at least **10 nucleotides long** and have **no more than 10%
 of unknown characters** (Ns).
 
 ### What are RNAcentral identifiers?
