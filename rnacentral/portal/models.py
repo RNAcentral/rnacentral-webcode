@@ -413,7 +413,7 @@ class Database(models.Model):
                 'name': 'miRBase',
                 'label': 'mirbase',
                 'url': 'http://www.mirbase.org/',
-                'description': 'is a database of published miRNA sequences and annotations',
+                'description': 'is a database of published miRNA sequences and annotations that provides a centralised system for assigning names to miRNA genes',
                 'abbreviation': '',
                 'examples': ['URS00003B7674', 'URS00003B7674', 'URS000016FD1A'],
                 'references': [
