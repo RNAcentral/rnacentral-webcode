@@ -158,9 +158,9 @@ xrefLoader.prototype.load_xrefs = function() {
           	// append download links if genomic coordinates are found
           	var url = '/api/v1/rna/' + obj.upi;
          	if ( _genomic_results_present() ) {
-		        $(obj.config.dom.downloads).append('<li><a href="' + url + '.bed"  download='  + obj.upi + '.bed>bed</a></li>')
-		                                   .append('<li><a href="' + url + '.gff"  download='  + obj.upi + '.gff>gff</a></li>')
-		                                   .append('<li><a href="' + url + '.gff3" download='  + obj.upi + '.gff3>gff3</a></li>');
+		        $(obj.config.dom.downloads).append('<li><a href="' + url + '.bed"  download="'  + obj.upi + '.bed">bed</a></li>')
+		                                   .append('<li><a href="' + url + '.gff"  download="'  + obj.upi + '.gff">gff</a></li>')
+		                                   .append('<li><a href="' + url + '.gff3" download="'  + obj.upi + '.gff3">gff3</a></li>');
         	}
 		};
 
