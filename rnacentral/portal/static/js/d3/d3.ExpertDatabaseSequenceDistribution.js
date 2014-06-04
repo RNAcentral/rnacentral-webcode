@@ -118,7 +118,7 @@ ExpertDatabaseSequenceDistribution = function(selector, data, max_width, max_hei
         var x0 = x.invert(d3.mouse(this)[0]),
             i = bisect(data, x0, 1),
             d0 = data[i - 1],
-            d1 = data[i],
+            d1 = data[Math.min(i + 1, data.length - 1)],
             d = x0 - d0.count > d1.count - x0 ? d1 : d0;
         focus.attr("transform", "translate(" + x(d.length) + "," + y(d.count) + ")");
         focus.select("text").text(d.length + " nts");
