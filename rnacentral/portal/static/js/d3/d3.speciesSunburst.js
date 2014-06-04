@@ -68,7 +68,7 @@ d3SpeciesSunburst = function(data, selector, width, height){
 		})
 		.on("mouseout",  function() {
 		  d3.select(this)
-		    .attr('fill', '#3F7D97' )
+		    .attr('fill', '#6baed6' )
 	  	});
 
 	    ;
