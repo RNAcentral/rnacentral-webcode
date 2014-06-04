@@ -31,6 +31,10 @@ By default all fields are searched against a query, but search can also be restr
 
 	*Example*: `description:16S`
 
+* **length**
+
+	*Example*: `length:1500`
+
 * **scientific species name**
 
 	*Example*: `species:"Mus musculus"`
