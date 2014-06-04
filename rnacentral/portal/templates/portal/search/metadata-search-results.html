@@ -19,6 +19,9 @@ limitations under the License.
     <small ng-show="search_in_progress">
       <i class="fa fa-spinner fa-spin"></i>
     </small>
+    <small id="metadata-search-status" ng-show="search_in_progress" ng-class="search_in_progress ? 'animated flash infinite' : ''">
+      Searching...
+    </small>
     <small ng-show="result.hitCount > 0">
       <span ng-if="result.hitCount == 1">1 sequence</span>
       <span ng-if="result.hitCount > 1">{{displayed_items()}} out of {{result.hitCount | number}} sequences</span>
