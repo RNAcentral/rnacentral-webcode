@@ -51,7 +51,6 @@ urlpatterns += patterns('',
 
 # search
 urlpatterns += patterns('',
-    url(r'^sequence-search/?$', 'apiv1.search.sequence.views.search', name='api-sequence-search'),
     url(r'^sequence-search/submit$', 'apiv1.search.sequence.views.submit', name='api-sequence-submit'),
     url(r'^sequence-search/status$', 'apiv1.search.sequence.views.get_status', name='api-sequence-status'),
     url(r'^sequence-search/results$', 'apiv1.search.sequence.views.get_results', name='api-sequence-results'),

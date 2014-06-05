@@ -22,43 +22,6 @@ from apiv1.search.sequence.rest_client import ENASequenceSearchClient, \
     StatusNotFoundError
 
 
-@api_view(['GET'])
-@permission_classes((AllowAny,))
-def search(request):
-    """
-    Placeholder endpoint for testing.
-    """
-    try:
-        sequence = request.QUERY_PARAMS['sequence']
-    except:
-        return Response([])
-
-    data = [{
-                'alignment': """
-    Query 47        TTCCTCATTATGGGGTGTGTTCAGGCTGCTGAGGTGCCCATTCTCAAGATTTTCACTGGA 106
-                    |||||  |||  || |||||||||||||||||||||||||||||||||||||||||||||
-    Sbjct 12473741  TTCCTG-TTACAGG-TGTGTTCAGGCTGCTGAGGTGCCCATTCTCAAGATTTTCACTGGA 12473798
-
-    Query 107       CATTCTGGGGTCCCAGTTCAAGTATTTTCCAATGTGAGTCAAGGTGAACCAGAGCCTGAA 166
-                    |||||||||||||||||||||||||||||||| |||||||||||||||||||||||||||
-    Sbjct 12473799  CATTCTGGGGTCCCAGTTCAAGTATTTTCCAACGTGAGTCAAGGTGAACCAGAGCCTGAA 12473858""".replace('T', 'U'),
-                'accession': 'test accession',
-                'description': 'test description',
-            }, {
-                'alignment': """
-    Query 47        TTCCTCATTATGGGGTGTGTTCAGGCTGCTGAGGTGCCCATTCTCAAGATTTTCACTGGA 106
-                    |||||  |||  || |||||||||||||||||||||||||||||||||||||||||||||
-    Sbjct 12473741  TTCCTG-TTACAGG-TGTGTTCAGGCTGCTGAGGTGCCCATTCTCAAGATTTTCACTGGA 12473798
-
-    Query 107       CATTCTGGGGTCCCAGTTCAAGTATTTTCCAATGTGAGTCAAGGTGAACCAGAGCCTGAA 166
-                    |||||||||||||||||||||||||||||||| |||||||||||||||||||||||||||
-    Sbjct 12473799  CATTCTGGGGTCCCAGTTCAAGTATTTTCCAACGTGAGTCAAGGTGAACCAGAGCCTGAA 12473858""".replace('T', 'U'),
-                'accession': 'test accession 2',
-                'description': 'test description 2',
-            }]
-    return Response(data)
-
-
 @api_view(['GET', 'POST'])
 @permission_classes((AllowAny,))
 def submit(request):
