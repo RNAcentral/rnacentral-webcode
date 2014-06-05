@@ -54,6 +54,20 @@ limitations under the License.
 		$scope.params.search_in_progress = true;
 		$scope.params.status_message = $scope.defaults.messages.get_results;
 
+	    /**
+	     * Add new fields used for results sorting.
+	     * The fields cannot be calculated on the server because it doesn't
+	     * know the length of the query sequence at the time of generating
+	     * results.
+	     */
+		var preprocess_results = function(data){
+			_.each(data.results.alignments, function(result) {
+				result.identity = parseFloat(result.identity);
+				result.query_coverage = ( parseFloat(result.alignment_length)/parseFloat($scope.query.sequence.length) )*100;
+				result.target_coverage = ( parseFloat(result.target_length)/parseFloat(result.full_target_length) )*100;
+			});
+		};
+
 		$http({
 			url: $scope.results.url,
 			method: 'GET',
@@ -62,6 +76,7 @@ limitations under the License.
 				page: 1, // all results are always on 1 page
 			}
 		}).success(function(data){
+			preprocess_results(data);
 			$scope.results.count = data.results.count;
 			$scope.results.alignments = data.results.alignments;
 			$scope.params.search_in_progress = false;
@@ -131,22 +146,6 @@ limitations under the License.
     };
 
     /**
-     * Load more results.
-     */
-    $scope.load_more_results = function() {
-        $scope.params.page_size += $scope.defaults.page_size;
-		$scope.params.status_message = $scope.defaults.messages.loading_more_results;
-        get_results();
-    };
-
-    /**
-     * Calculate how many items are currently visible.
-     */
-    $scope.displayed_items = function() {
-        return Math.min($scope.params.page_size, $scope.results.count);
-    };
-
-    /**
      * Initialize results object.
      */
 	function results_init() {
@@ -198,6 +197,11 @@ limitations under the License.
      */
 	$scope.count_gaps = function(formatted_alignment) {
 		return (formatted_alignment.match(/-/g)||[]).length;
+	};
+
+
+	$scope.custom_results_ordering = function(result) {
+	   return parseFloat(result.identity) + (parseFloat(result.alignment_length)/parseFloat($scope.query.sequence.length))*100 + (parseFloat(result.target_length)/parseFloat(result.full_target_length))*100;
 	};
 
     /**

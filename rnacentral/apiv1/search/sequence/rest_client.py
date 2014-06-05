@@ -88,7 +88,6 @@ class ENASequenceSearchClient(object):
                                   'length={length}&'
                                   'offset={offset}&'
                                   'display=json&'
-                                  'sort=true&'
                                   'fields=' + ','.join(self.field_names),
         }
         # ENA minimum query length
@@ -252,7 +251,7 @@ class ENASequenceSearchClient(object):
             status = 'In progress'
         return (status, count)
 
-    def get_results(self, job_id, jsession_id, page=1, page_size=10):
+    def get_results(self, job_id, jsession_id, page=1, page_size=10, map_ids=True):
         """
         Retrieve job results in json format.
 
@@ -375,15 +374,20 @@ class ENASequenceSearchClient(object):
 
         (status, ena_results_count) = get_ena_results_count()
         ena_results = get_ena_results(length=ena_results_count, offset=0)
-        mapped_results = map_to_rnacentral_ids(ena_results)
-        paginated_results = get_paginated_results(mapped_results, page, page_size)
-
+        if map_ids:
+            mapped_results = map_to_rnacentral_ids(ena_results)
+        else:
+            mapped_results = ena_results
+        # pagination is disabled because the results are not properly sorted
+        # by ENA, which sorts them by e value, raw score, identity, and then
+        # alphabetically by ENA accession, but that's undesirable.
+        # paginated_results = get_paginated_results(mapped_results, page, page_size)
         return {
             'count': len(mapped_results),
-            'alignments': paginated_results,
+            'alignments': mapped_results,
         }
 
-    def search(self, sequence=''):
+    def search(self, sequence='', map_ids=True):
         """
         Perform sequence search synchronously.
         """
@@ -392,9 +396,5 @@ class ENASequenceSearchClient(object):
         while status != 'Done':
             time.sleep(self.refresh_rate)
             (status, count) = self.get_status(job_id, jsession_id)
-        results = self.get_results(job_id, jsession_id)
-        print 'Found {0} results'.format(len(results))
-        if results['count'] > 0:
-            print 'First result:'
-            print results['alignments'][0]
+        results = self.get_results(job_id, jsession_id, map_ids=map_ids)
         return results

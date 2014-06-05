@@ -118,13 +118,13 @@ Sequence search
         Results
         <small>
           <span ng-if="results.count == 1">1 alignment</span>
-          <span ng-if="results.count > 1">{{displayed_items()}} out of {{results.count | number}} alignments</span>
+          <span ng-if="results.count > 1">{{results.count | number}} alignments</span>
         </small>
         <button id="toggle-alignments" ng-click="toggle_alignments()" class="btn btn-default btn-sm">Hide alignments</button>
       </h2>
 
       <ul  class="list-unstyled">
-        <li class="result" ng-repeat="result in results.alignments">
+        <li class="result" ng-repeat="result in results.alignments | orderBy:['-identity', '-query_coverage', '-target_coverage']">
             <h4><a href="/rna/{{result.rnacentral_id}}" target="_blank">{{result.description}} ({{result.rnacentral_id}})</a></h4>
 
             <div class="table-responsive">
@@ -154,10 +154,10 @@ Sequence search
                     <strong>{{result.identity}}%</strong>
                   </td>
                   <td>
-                    <strong>{{(result.alignment_length/query.sequence.length)*100 | number:1}}%</strong> ({{result.alignment_length}}/{{query.sequence.length}})
+                    <strong>{{ result.query_coverage | number:1}}%</strong> ({{result.alignment_length}}/{{query.sequence.length}})
                   </td>
                   <td>
-                    <strong>{{(result.target_length/result.full_target_length)*100 | number:1}}%</strong> ({{result.target_length}}/{{result.full_target_length}})
+                    <strong>{{ result.target_coverage | number:1}}%</strong> ({{result.target_length}}/{{result.full_target_length}})
                   </td>
                   <td>
                     <strong>{{result.gaps}}%</strong> ({{count_gaps(result.formatted_alignment)}}/{{result.alignment_length}})
@@ -169,12 +169,6 @@ Sequence search
             <pre ng-show="params.show_alignments">{{result.formatted_alignment}}</pre>
         </li>
       </ul>
-
-      <p class="text-info">
-        <span ng-if="results.count > 1">Displaying {{displayed_items()}} out of {{results.count | number}} alignments</span>
-      </p>
-
-      <button class="btn btn-default load-more col-md-3" ng-click="load_more_results()" ng-show="results.count > params.page_size"><i class="fa fa-spinner fa-spin" ng-show="params.search_in_progress"></i> Load more</button>
       <br>
     </div> <!--/col-md-7 -->
 
