@@ -15,7 +15,7 @@ limitations under the License.
  * Angular.js app for RNAcentral sequence search.
  */
 
-;rnaMetasearch.controller('SeqResultsListCtrl', function($scope, $http) {
+;rnaMetasearch.controller('SeqResultsListCtrl', function($scope, $http, $timeout) {
 
 	$scope.query = {
 		sequence: '',
@@ -126,7 +126,9 @@ limitations under the License.
 			method: 'POST',
 			params: {sequence: sequence},
 		}).success(function(data) {
-			poll_job_status(data.url);
+			$timeout(function() {
+				poll_job_status(data.url)
+			}, 1000);
 		}).error(function(data, status) {
 			$scope.params.error_message = $scope.defaults.messages.submit_failed;
 			$scope.params.status_message = $scope.defaults.messages.failed;
