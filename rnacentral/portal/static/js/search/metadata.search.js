@@ -28,7 +28,7 @@ underscore.factory('_', function() {
 /**
  * Create RNAcentral app.
  */
-var rnaMetasearch = angular.module('rnacentralApp', ['chieffancypants.loadingBar', 'underscore']);
+var rnaMetasearch = angular.module('rnacentralApp', ['chieffancypants.loadingBar', 'underscore', 'ngAnimate']);
 
 // hide spinning wheel
 rnaMetasearch.config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
