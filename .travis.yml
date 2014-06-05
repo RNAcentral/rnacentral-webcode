@@ -7,7 +7,6 @@ install: pip install requests selenium
 script:
     - python rnacentral/apiv1/tests.py --base_url=http://test.rnacentral.org
     - python rnacentral/portal/tests/selenium_tests.py --base_url=http://test.rnacentral.org --driver=phantomjs
-    - python rnacentral/apiv1/search/sequence/tests.py --base_url=http://test.rnacentral.org
 # define branches
 branches:
   only:
