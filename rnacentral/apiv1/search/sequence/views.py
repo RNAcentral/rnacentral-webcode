@@ -12,6 +12,7 @@ limitations under the License.
 """
 
 from django.core.urlresolvers import reverse
+from django.views.decorators.cache import never_cache
 from django.utils.datastructures import MultiValueDictKeyError
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
@@ -72,6 +73,7 @@ def submit(request):
 
 @api_view(['GET'])
 @permission_classes((AllowAny,))
+@never_cache
 def get_status(request):
     """
     Check the query status using `job_id` and `jsession_id` query parameters.
