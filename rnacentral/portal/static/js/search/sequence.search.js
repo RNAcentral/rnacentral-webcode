@@ -104,6 +104,10 @@ limitations under the License.
 					// get results
 					$scope.results.url = data.url;
 					get_results();
+				} else if (data.status === 'Failed') {
+					window.clearInterval(interval);
+					$scope.params.status_message = $scope.defaults.messages.failed;
+					$scope.params.error_message = $scope.defaults.messages.results_failed;
 				}
 			}).error(function(){
 				$scope.params.status_message = $scope.defaults.messages.failed;
