@@ -91,8 +91,8 @@ class ENASequenceSearchClient(object):
                                   'sort=true&'
                                   'fields=' + ','.join(self.field_names),
         }
-        # ENA minimum query length and minimum URS length
-        self.min_length = 12
+        # ENA minimum query length
+        self.min_length = 20
         # ENA maximum query length
         self.max_length = 50000
         # ENA-generated session id cookie
