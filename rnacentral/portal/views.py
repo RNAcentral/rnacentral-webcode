@@ -32,6 +32,7 @@ CACHE_TIMEOUT = 60 * 60 * 24 * 1 # per-view cache timeout in seconds
 # Function-based views #
 ########################
 
+@never_cache
 def ebeye_proxy(request):
     """
     Internal API.
