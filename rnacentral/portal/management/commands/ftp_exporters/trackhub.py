@@ -174,7 +174,7 @@ class TrackDb(HubBase):
         self.genome = genome
         self.html = html
         self.bigBed = bigBed
-        self.base_url = 'http://test.rnacentral.org' # todo: determine dynamically
+        self.base_url = 'http://rnacentral.org'
 
     def get_track_db_path(self, filename):
         """
