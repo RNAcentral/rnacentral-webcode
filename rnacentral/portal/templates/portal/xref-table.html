@@ -32,7 +32,7 @@ limitations under the License.
     <td>
       {% if xref.db.display_name != 'ENA' %}
         <span class="badge badge-success help" data-toggle="tooltip" title="RNAcentral Expert Database">
-          <span class="glyphicon glyphicon-star"></span>
+          <i class="fa fa-star"></i>
         </span>
       {% endif %}
       <a href="{% url 'portal.views.expert_database_view' expert_db_name=xref.db.descr %}">{{ xref.db.display_name.split|join:"&nbsp;" }}</a>
