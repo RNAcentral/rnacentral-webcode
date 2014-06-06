@@ -45,11 +45,11 @@ For a **large number of sequences**, one can:
 
 * use an [example script](http://gist.github.com/AntonPetrov/177cef0a3b4799f01536) that interacts with the [RNAcentral API]({% url 'api-docs' %});
 
-* download a [mapping file](ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/.current_release/md5/)
+* download a [mapping file](ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/md5/)
 from the RNAcentral FTP site with correspondences
 between [md5](http://en.wikipedia.org/wiki/MD5) values and RNAcentral ids;
 
-* download a [mapping file](ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/.current_release/id_mapping/)
+* download a [mapping file](ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/)
 with correspondences between external database identifiers and RNAcentral ids.
 
 ### How do I submit sequences to RNAcentral?
