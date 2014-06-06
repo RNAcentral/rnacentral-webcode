@@ -12,6 +12,7 @@ limitations under the License.
 """
 
 from portal.management.commands.ftp_exporters.ftp_base import FtpBase
+from portal.models import Xref
 import logging
 import os
 import subprocess
@@ -93,8 +94,8 @@ class BedExporter(FtpBase):
             f = open(self.names['bed_unsorted'], 'w')
             example = open(self.names['example'], 'w')
             counter = 0
-            for xref in self.get_xrefs_with_genomic_coordinates():
-                text = xref.get_ucsc_bed()
+            for accession in self.get_xrefs_with_genomic_coordinates():
+                text = Xref.objects.get(accession=accession).get_ucsc_bed()
                 if text:
                     f.write(text)
                     counter += 1

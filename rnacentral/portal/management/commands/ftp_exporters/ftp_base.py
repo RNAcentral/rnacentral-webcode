@@ -144,7 +144,8 @@ class FtpBase(OracleConnection):
         xrefs = Xref.objects.select_related('accession__assembly__chromosome').\
                              filter(db_id=1).\
                              filter(accession__assembly__chromosome__chromosome__isnull=False).\
-                             iterator()
+                             values_list('accession', flat=True).\
+                             distinct()
         return xrefs
 
     ########

@@ -12,6 +12,7 @@ limitations under the License.
 """
 
 from portal.management.commands.ftp_exporters.ftp_base import FtpBase
+from portal.models import Xref
 import logging
 import os
 
@@ -42,8 +43,8 @@ class GffExporter(FtpBase):
         f = open(gff_file, 'w')
         example = open(example_file, 'w')
         counter = 0
-        for xref in self.get_xrefs_with_genomic_coordinates():
-            text = xref.get_gff()
+        for accession in self.get_xrefs_with_genomic_coordinates():
+            text = Xref.objects.get(accession=accession).get_gff()
             if text:
                 f.write(text)
                 counter += 1
@@ -88,8 +89,8 @@ class Gff3Exporter(FtpBase):
         f.write(header)
         example.write(header)
         counter = 0
-        for xref in self.get_xrefs_with_genomic_coordinates():
-            text = xref.get_gff3()
+        for accession in self.get_xrefs_with_genomic_coordinates():
+            text = Xref.objects.get(accession=accession).get_gff3()
             if text:
                 f.write(text)
                 counter += 1
