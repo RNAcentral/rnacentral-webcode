@@ -19,6 +19,15 @@ Page not found
 
 {% block content %}
 
-<h2>Page not found</h2>
+<h2><i class="fa fa-exclamation-triangle"></i> Page not found</h2>
+
+<div class="row">
+  <div class="col-md-12">
+    <p>
+      Sorry, the page you're looking for cannot be found.
+      Check our <a href="{% url 'help' %}">Help</a> or go to the <a href="{% url 'homepage' %}">home page</a>.
+    </p>
+  </div>
+</div>
 
 {% endblock content %}
