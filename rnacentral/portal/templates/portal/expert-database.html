@@ -48,7 +48,8 @@ limitations under the License.
   <ul>
     <li>
       <strong>{{ expert_db.num_sequences|intcomma }}</strong> sequences
-      from <strong>{{ expert_db.num_organisms|intcomma }}</strong> organism{{ expert_db.num_organisms|pluralize}}.
+      from <strong>{{ expert_db.num_organisms|intcomma }}</strong> organism{{ expert_db.num_organisms|pluralize}}
+      contributed to RNAcentral.
     </li>
     <li>
       The shortest sequence has <strong>{{ expert_db.min_length|intcomma }}</strong> nucleotides, the longest <strong>{{ expert_db.max_length|intcomma }}</strong>.
@@ -66,7 +67,7 @@ limitations under the License.
     </p>
 
     <p>
-      <a class="btn btn-primary" ng-click="meta_search('expert_db:{{expert_db.display_name}}')">Browse all sequences</a>
+      <a class="btn btn-primary" ng-click="meta_search('expert_db:{{expert_db.display_name}}')">Browse all {{expert_db.display_name}} sequences</a>
     </p>
 
     <h2>Links</h2>
