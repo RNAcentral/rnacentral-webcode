@@ -14,6 +14,15 @@ limitations under the License.
 {% extends "portal/base.html" %}
 {% load staticfiles %}
 
+{% block meta_tags %}
+    {{ block.super }}
+    <meta name="description" content="List of RNAcentral expert databases"/>
+{% endblock %}
+
+{% block title %}
+RNAcentral Expert Databases
+{% endblock %}
+
 {% block content %}
 
 <div class="row">

@@ -15,6 +15,11 @@ limitations under the License.
 {% load staticfiles %}
 {% load humanize %}
 
+{% block meta_tags %}
+    {{ block.super }}
+    <meta name="description" content="Summary for the {{expert_db.display_name}} expert database"/>
+{% endblock %}
+
 {% block title %}
   {{ expert_db.display_name }} Expert Database
 {% endblock %}

@@ -15,6 +15,11 @@ limitations under the License.
 {% load staticfiles %}
 {% load humanize %}
 
+{% block meta_tags %}
+    {{ block.super }}
+    <meta name="description" content="RNAcentral is a new resource to organise data for non-protein coding RNA genes"/>
+{% endblock %}
+
 {% block title %}
 RNAcentral
 {% endblock %}

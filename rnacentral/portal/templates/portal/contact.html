@@ -13,6 +13,11 @@ limitations under the License.
 
 {% extends "portal/base.html" %}
 
+{% block meta_tags %}
+    {{ block.super }}
+    <meta name="description" content="Get in touch with the RNAcentral team"/>
+{% endblock %}
+
 {% block title %}
 Contact us
 {% endblock %}

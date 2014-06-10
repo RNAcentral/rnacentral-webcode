@@ -13,10 +13,14 @@ limitations under the License.
 
 {% extends "portal/base.html" %}
 
+{% block meta_tags %}
+    {{ block.super }}
+    <meta name="description" content="RNAcentral website status"/>
+{% endblock %}
+
 {% block title %}
 Website Status
 {% endblock %}
-
 
 {% block content %}
 
