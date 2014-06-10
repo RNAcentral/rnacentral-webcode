@@ -14,6 +14,7 @@ limitations under the License.
 # fabric deployment script
 
 import os.path
+import requests
 from fabric.api import *
 
 
@@ -28,7 +29,7 @@ def test(base_url="http://localhost:8000/"):
 	local('python apiv1/tests.py --base_url=%s' % base_url)
 	local('python portal/tests/selenium_tests.py --base_url %s' % base_url)
 
-def deploy():
+def deploy(restart_url="http://rnacentral.org"):
 	"""
 	Deploy to a server.
 
@@ -39,7 +40,7 @@ def deploy():
 	oracle_home=export ORACLE_HOME=/path/to/oracle/libraries/
 
 	Usage:
-	fab -H user@server1,user@server2 -c /path/to/fab.cfg deploy
+	fab -H user@server1,user@server2 -c /path/to/fab.cfg deploy:website_url
 	"""
 
 	def git_updates():
@@ -77,9 +78,12 @@ def deploy():
 
 	def restart_django():
 		"""
-		Apply the changes.
+		Restart django process and visit the website.
 		"""
 		run('touch rnacentral/wsgi.py')
+		r = requests.get(restart_url)
+		if r.status_code != 200:
+		    print 'Error: Website cannot be reached'
 
 	with cd(env['rnacentral_site']):
 		git_updates()
