@@ -188,14 +188,6 @@ limitations under the License.
 
 {% endblock content %}
 
-{% block extra_js %}
-    {{ block.super }}
-    <script src="{% static "js/vendor/d3/d3.min.js" %}"></script>
-    <script src="{% static "js/d3/d3.ExpertDatabaseSequenceDistribution.js" %}"></script>
-    <script type="text/javascript" src="{% static "js/jquery.EuropePMCAbstracts.js" %}"></script>
-    <script type="text/javascript" src="{% static "js/d3/d3.speciesSunburst.js" %}"></script>
-{% endblock extra_js %}
-
 {% block extra_js_uncompressed %}
     {{ block.super }}
 

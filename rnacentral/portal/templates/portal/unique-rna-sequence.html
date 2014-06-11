@@ -260,27 +260,12 @@ limitations under the License.
 {% endblock content %}
 
 
-{% block extra_js %}
+{% block extra_js_uncompressed %}
   {{ block.super }}
-  <script type="text/javascript" src="{% static "js/vendor/DataTables-1.9.4/media/js/jquery.dataTables.min.js" %}"></script>
-  <script type="text/javascript" src="{% static "js/vendor/DataTables-plugins/integration/bootstrap/3/dataTables.bootstrap.js" %}"></script>
-  <script type="text/javascript" src="{% static "js/vendor/d3/d3.min.js" %}"></script>
-  <script type="text/javascript" src="{% static "js/vendor/handlebars-v1.1.2.js" %}"></script>
-  <script type="text/javascript" src="{% static "js/d3/d3.speciesTree.js" %}"></script>
-  <script type="text/javascript" src="{% static "js/xrefLoader.js" %}"></script>
-  <script type="text/javascript" src="{% static "js/rnaView.js" %}"></script>
-  <script type="text/javascript" src="{% static "js/jquery.EuropePMCAbstracts.js" %}"></script>
-  <script type="text/javascript" src="{% static "js/vendor/Genoverse/js/genoverse.combined.js" %}"></script>
-  <script type="text/javascript" src="{% static "js/genoverse.RNAcentralTrack.js" %}"></script>
-
-  <script type="text/javascript">
+    <script type="text/javascript">
     $(function() {
       rna_sequence_view = new rnaSequenceView('{{rna.upi}}');
       rna_sequence_view.initialize();
     });
   </script>
-{% endblock extra_js %}
-
-{% block extra_js_uncompressed %}
-  {{ block.super }}
 {% endblock %}
