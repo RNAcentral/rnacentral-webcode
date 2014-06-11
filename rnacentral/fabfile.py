@@ -26,8 +26,9 @@ def rsync_git_repo():
 	with lcd(env['rnacentral_site']):
 		this_dir = os.path.dirname(os.path.realpath(__file__))
 		parent_dir = os.path.abspath(os.path.join(this_dir, os.pardir))
-		cmd = 'rsync -av {git_root} {host}:{git_root}'.format(
-			host=env.host, git_root=parent_dir)
+		parent_parent_dir = os.path.abspath(os.path.join(parent_dir, os.pardir))
+		cmd = 'rsync -av {src} {host}:{dst}'.format(
+			host=env.host, src=parent_dir, dst=parent_parent_dir)
 		local(cmd)
 
 def git_updates():
