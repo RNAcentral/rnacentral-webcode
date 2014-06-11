@@ -18,13 +18,6 @@ import requests
 from fabric.api import *
 
 
-env.roledefs = {
-    'test': ['ves-hx-61'],
-    'production': ['ves-oy-66', 'ves-pg-66'],
-}
-
-
-@roles('production')
 def rsync_git_repo():
 	"""
 	Use rsync to sync git repositories. This is required for django-compressor
@@ -35,13 +28,12 @@ def rsync_git_repo():
 			host=env.host, rnacentral_site=env['rnacentral_site'])
 		local(cmd)
 
-@roles('test')
 def git_updates():
 	"""
 	Perform git updates, but only on the test server because the production
 	servers must use rsync to preserve file modification time.
 	"""
-	with lcd(env['rnacentral_site']):
+	with cd(env['rnacentral_site']):
 		git_branch = 'django'
 		# make sure we are on the right branch
 		run('git checkout %s' % git_branch)
@@ -50,7 +42,7 @@ def git_updates():
 		# update git submodules
 		this_dir = os.path.dirname(os.path.realpath(__file__))
 		parent_dir = os.path.abspath(os.path.join(this_dir, os.pardir))
-		with lcd(parent_dir):
+		with cd(parent_dir):
 			run('git submodule update')
 
 def django_updates():
@@ -95,8 +87,10 @@ def deploy(restart_url="http://rnacentral.org"):
 	Usage:
 	fab -H user@server1,user@server2 -c /path/to/fab.cfg deploy:website_url
 	"""
-	execute(rsync_git_repo) # will run only when deploying production servers
-	execute(git_updates) # will run only when deploying test servers
+	if env.host == 'ves-hx-61':
+		execute(git_updates) # will run only when deploying test servers
+	else:
+		execute(rsync_git_repo) # will run only when deploying production servers
 	execute(django_updates)
 	execute(flush_memcached)
 	execute(restart_django)
