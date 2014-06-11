@@ -64,7 +64,7 @@ def	flush_memcached():
 	with cd(env['rnacentral_site']), settings(warn_only=True):
 			run('echo "flush_all" | nc -U rnacentral/memcached.sock')
 
-def restart_django():
+def restart_django(restart_url):
 	"""
 	Restart django process and visit the website.
 	"""
@@ -88,12 +88,12 @@ def deploy(restart_url="http://rnacentral.org"):
 	fab -H user@server1,user@server2 -c /path/to/fab.cfg deploy:website_url
 	"""
 	if env.host == 'ves-hx-61':
-		execute(git_updates) # will run only when deploying test servers
+		git_updates() # will run only when deploying test servers
 	else:
-		execute(rsync_git_repo) # will run only when deploying production servers
-	execute(django_updates)
-	execute(flush_memcached)
-	execute(restart_django)
+		rsync_git_repo() # will run only when deploying production servers
+	django_updates()
+	flush_memcached()
+	restart_django(restart_url)
 
 def test(base_url="http://localhost:8000/"):
 	"""
