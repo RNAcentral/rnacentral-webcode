@@ -20,6 +20,7 @@ urlpatterns = patterns('',
     url(r'', include('portal.urls')),
     # REST API (use trailing slashes)
     url(r'^api/v1/', include('apiv1.urls')),
+    url(r'^api/current/', include('apiv1.urls')),
     # robots.txt
     url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
 )

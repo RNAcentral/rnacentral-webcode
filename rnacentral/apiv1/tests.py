@@ -51,6 +51,10 @@ class ApiV1Test(unittest.TestCase):
     def _get_api_url(self, extra=''):
         return self.base_url + self.api_url + extra
 
+    def test_current_api_endpoint(self):
+        url = self.base_url + 'api/current'
+        self._check_urls(url)
+
     def test_api_v1_endpoint(self):
         url = self._get_api_url()
         self._check_urls(url)

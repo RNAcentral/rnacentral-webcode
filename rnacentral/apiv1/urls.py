@@ -22,8 +22,6 @@ CACHE_TIMEOUT = 60 * 60 * 24 * 1 # per-view cache timeout in seconds
 urlpatterns = patterns('',
 	# api root
 	url(r'^$', cache_page(CACHE_TIMEOUT)(views.APIRoot.as_view()), name='api-v1-root'),
-	# api/current endpoints
-    # url(r'^current/', include('rest_framework.urls', namespace='current_api', app_name='current_api')),
 	# list of all RNAcentral entries
 	url(r'^rna/?$', cache_page(CACHE_TIMEOUT)(views.RnaList.as_view()), name='rna-list'),
 	# single RNAcentral sequence
