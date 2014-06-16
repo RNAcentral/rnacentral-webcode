@@ -340,7 +340,7 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', f
  * Query controller
  * Responsible for the search box in the header.
  */
-rnaMetasearch.controller('QueryCtrl', ['$scope', '$location', 'results', 'search', function($scope, $location, results, search) {
+rnaMetasearch.controller('QueryCtrl', ['$scope', '$location', '$window', '$timeout', 'results', 'search', function($scope, $location, $window, $timeout, results, search) {
 
     $scope.query = {
         text: '',
@@ -362,8 +362,10 @@ rnaMetasearch.controller('QueryCtrl', ['$scope', '$location', 'results', 'search
         if (newUrl !== oldUrl) {
             if (newUrl.indexOf('/search') == -1) {
                 // a non-search url, load that page
-                $scope.$apply(); // makes back button work on Firefox
-                window.location.href = newUrl;
+                $timeout(function() {
+                    // wrapping in $timeout to avoid "digest in progress" errors
+                    $window.location = newUrl;
+                });
             } else {
                 // the new url is a search result page, launch that search
                 $scope.query.text = $location.search().q;
