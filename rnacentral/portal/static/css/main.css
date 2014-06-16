@@ -198,6 +198,31 @@ footer a:hover {
 /*------------------------------------------------------------------
 [4. General styles]
 */
+
+/* change external link color on hover */
+a[href^="http://"]:not([href*="rnacentral.org"]):hover, .gv_menu a:hover {
+  color: #DD8621;
+}
+
+/* append external link icon to all external links */
+a[href^="http://"]:not([href*="rnacentral.org"]):after {
+  content: "\f08e";
+  font-family: FontAwesome;
+  font-weight: normal;
+  font-style: normal;
+  font-size: x-small;
+  display: inline-block;
+  text-decoration: none;
+  padding-left: 4px;
+}
+
+/* remove external link icon from links to own domain or with class no-icon */
+a[href*="rnacentral.org"]:after,
+a.no-icon:after {
+  content: "" !important;
+  padding-left: 0;
+}
+
 p {
   margin: 0 0 10px 0;
 }
@@ -316,11 +341,6 @@ a.expert-db-logo:hover {
 
 h1, h2, h3 {
   color: #BF8E3E;
-}
-
-/*highlight external links on hover*/
-a[href^="http://"]:not([href*="rnacentral.org"]):hover, .gv_menu a:hover {
-  color: #DD8621;
 }
 
 h3.panel-title {
