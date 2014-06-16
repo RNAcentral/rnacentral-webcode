@@ -35,7 +35,7 @@ limitations under the License.
           <i class="fa fa-star"></i>
         </span>
       {% endif %}
-      <a href="{% url 'portal.views.expert_database_view' expert_db_name=xref.db.descr %}">{{ xref.db.display_name.split|join:"&nbsp;" }}</a>
+      {{ xref.db.display_name.split|join:"&nbsp;" }}
     </td>
     <!-- accession -->
     <td>
@@ -91,8 +91,8 @@ limitations under the License.
           <button type="button" class="btn btn-primary btn-xs genoverse-xref help margin-right-5px" data-genomic-start="{{ genomic_coordinates.start }}" data-genomic-end="{{ genomic_coordinates.end }}" data-chromosome="{{ genomic_coordinates.chromosome }}" title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> View genomic location</button>
           <small>
             <span class="margin-right-5px">chr{{ genomic_coordinates.chromosome }}:{{ genomic_coordinates.start|intcomma }}-{{ genomic_coordinates.end|intcomma }}</span>
-            <span class="margin-right-5px ensembl-link"><a href="http://www.ensembl.org/Homo_sapiens/Location/View?r={{ genomic_coordinates.chromosome }}%3A{{ genomic_coordinates.start }}-{{ genomic_coordinates.end }};contigviewbottom=das:{{ BASE_URL }}/api/v1/das/RNAcentral_GRCh37=labels" target="_blank">Ensembl <i class="fa fa-external-link"></i></a></span>
-            <span class="margin-right-5px ucsc-link"><a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ genomic_coordinates.chromosome }}%3A{{ genomic_coordinates.start }}-{{ genomic_coordinates.end }}&hgct_customText=track%20type=bigBed%20name=RNAcentral%20description=%22%20RNAcentral%20Unique%20Sequences%22%20visibility=full%20bigDataUrl={{ BASE_URL }}/data/trackhubs/1.0beta/hg19/rnacentral.bigBed%20itemRgb=on%20url={{ BASE_URL }}/rna/$$%20htmlUrl={{ BASE_URL }}/data/trackhubs/1.0beta/hg19/rnacentral.html" target="_blank">UCSC <i class="fa fa-external-link"></i></a></span>
+            <span class="margin-right-5px ensembl-link"><a href="http://www.ensembl.org/Homo_sapiens/Location/View?r={{ genomic_coordinates.chromosome }}%3A{{ genomic_coordinates.start }}-{{ genomic_coordinates.end }};contigviewbottom=das:{{ BASE_URL }}/api/v1/das/RNAcentral_GRCh37=labels" target="_blank">Ensembl</a></span>
+            <span class="margin-right-5px ucsc-link"><a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=hg19&position=chr{{ genomic_coordinates.chromosome }}%3A{{ genomic_coordinates.start }}-{{ genomic_coordinates.end }}&hgct_customText=track%20type=bigBed%20name=RNAcentral%20description=%22%20RNAcentral%20Unique%20Sequences%22%20visibility=full%20bigDataUrl={{ BASE_URL }}/data/trackhubs/1.0beta/hg19/rnacentral.bigBed%20itemRgb=on%20url={{ BASE_URL }}/rna/$$%20htmlUrl={{ BASE_URL }}/data/trackhubs/1.0beta/hg19/rnacentral.html" target="_blank">UCSC</a></span>
           </small>
         {% endwith %}
       {% endif %}
