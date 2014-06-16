@@ -358,6 +358,9 @@ rnaMetasearch.controller('QueryCtrl', ['$scope', '$location', '$window', '$timeo
      * Control browser navigation buttons.
      */
     $scope.$watch(function () { return $location.url(); }, function (newUrl, oldUrl) {
+        // ignore url hash
+        newUrl = newUrl.replace(/#.+$/, '');
+        oldUrl = oldUrl.replace(/#.+$/, '');
         // url has changed
         if (newUrl !== oldUrl) {
             if (newUrl.indexOf('/search') == -1) {
