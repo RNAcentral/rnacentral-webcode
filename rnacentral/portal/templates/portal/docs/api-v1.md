@@ -26,7 +26,7 @@ To ensure that changes in the RNAcentral API don't break the applications
 relying on it, the API is versioned, and **the version is included in the API's URL**.
 
 For example, the **current API is at Version 1** and is available at [{{ BASE_URL }}/api/v1](/api/v1),
-and the next version will be available at [{{ BASE_URL }}/api/v2](/api/v2).
+and the next version will be available at {{ BASE_URL }}/api/v2.
 
 The **latest version** of the API can be accessed at [{{ BASE_URL }}/api/current](/api/current),
 but it's not recommended to use this endpoint for long-term
@@ -46,7 +46,7 @@ The following **non-disruptive changes** may be implemented to a public API:
 * adding new filtering methods
 
 An advance notice will be given before obsoleting an API version. To stay up to date,
-please consider signing up for the [RNAcentral updates](#).
+please consider signing up for the [RNAcentral updates](http://blog.rnacentral.org).
 
 <h2 id="throttling">Throttling</h2>
 
