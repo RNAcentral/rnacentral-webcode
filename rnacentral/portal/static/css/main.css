@@ -200,7 +200,7 @@ footer a:hover {
 */
 
 /* change external link color on hover */
-a[href^="http://"]:not([href*="rnacentral.org"]):hover, .gv_menu a:hover {
+a[href^="http://"]:not([href^="http://rnacentral.org"]):hover, .gv_menu a:hover {
   color: #DD8621;
 }
 
