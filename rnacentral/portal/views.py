@@ -18,6 +18,7 @@ from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, render_to_response, redirect
 from django.db.models import Min, Max, Count, Avg
 from django.views.decorators.cache import cache_page, never_cache
+from django.utils.cache import patch_cache_control
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.template import TemplateDoesNotExist
@@ -41,13 +42,13 @@ def ebeye_proxy(request):
     """
     url = request.GET['url']
     try:
-        response = requests.get(url)
-        data = response.text
-    except RequestException, exc:
-        data = json.dumps({
-            'status': 'failed',
-        })
-    return HttpResponse(data)
+        ebeye_response = requests.get(url)
+        response = HttpResponse(ebeye_response.text)
+        patch_cache_control(response, no_cache=True, no_store=True,
+                            must_revalidate=True)
+        return response
+    except:
+        raise Http404
 
 
 @cache_page(CACHE_TIMEOUT)
