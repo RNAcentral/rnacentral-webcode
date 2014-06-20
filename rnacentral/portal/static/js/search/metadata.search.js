@@ -144,10 +144,8 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
      * Launch EBeye search
      */
     this.search = function(query, new_page_size) {
-        // display results section
-        show_results = true;
-        // update page title
-        $window.document.title = 'Search: ' + query;
+        display_results();
+        update_page_title();
 
         if (typeof(new_page_size) == "undefined") {
             // if unspecified, use default
@@ -159,12 +157,72 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
             page_size = new_page_size;
         }
 
-        // uppercase logic operators
-        query = query.replace(/\s+and\s+/gi, ' AND ').replace(/\s+or\s+/gi, ' OR ').replace(/\s+not\s+/gi, ' NOT ');
+        query = preprocess_query(query);
+        query_url = format_query_url(query, page_size);
+        execute_ebeye_search(query_url);
 
-        var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query).replace('{SIZE}', page_size);
-        var url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url));
-        execute_ebeye_search(url);
+        /**
+         * Change page title, which is also used in browser tabs.
+         */
+        function update_page_title() {
+            $window.document.title = 'Search: ' + query;
+        };
+
+        /**
+         * Setting show_results value to true hides all non-search page content
+         * and begins displaying the search results interface.
+         */
+        function display_results() {
+            show_results = true;
+        };
+
+        /**
+         * Create an RNAcentral proxy query url which includes EBeye query url.
+         */
+        function format_query_url() {
+            var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query).replace('{SIZE}', page_size);
+            var url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url));
+            return url;
+        };
+
+        /**
+         * Escape special symbols used by Lucene
+         * Escaped: + - && || ! { } [ ] ^ ~ ? : \
+         * Not escaped: * " ( ) because they may be used deliberately by the user
+         */
+        function escape_search_term(search_term) {
+            return search_term.replace(/[\+\-&|!\{\}\[\]\^~\?\:\\]/g, "\\$&");
+        };
+
+        /**
+         * Split query into words and then:
+         *  - append wildcards to all terms without double quotes and not ending with wildcards
+         *  - escape special symbols
+         *  - capitalize logical operators
+         */
+        function preprocess_query(query) {
+            var words = query.split(/\s+/);
+            var array_length = words.length;
+            for (var i = 0; i < array_length; i++) {
+                if ( words[i].match(/and|or|not/gi) ) {
+                    // capitalize logical operators
+                    words[i] = words[i].toUpperCase();
+                } else if ( words[i].match(/\w+\:".+?"/gi) ) {
+                    // faceted search terms, do nothing
+                } else if ( words[i].match(/^".+?"$/) ) {
+                    // double quotes, do nothing
+                } else if ( words[i].match(/\*$/) ) {
+                    // wildcard, escape term
+                    words[i] = escape_search_term(words[i]);
+                } else {
+                    // all other words
+                    // escape term, add wildcard
+                    words[i] = escape_search_term(words[i]) + '*';
+                };
+            }
+            query = words.join(' ');
+            return query;
+        };
     };
 
     /**
