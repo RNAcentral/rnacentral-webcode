@@ -306,11 +306,31 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', f
     };
 
     /**
-     * Repeat a search with a facet enabled.
+     * Determine if the facet has already been applied.
+     */
+    $scope.is_facet_applied = function(facet_id, facet_value) {
+        var query = $location.search().q || '';
+        var facet_query = facet_id + ':"' + facet_value + '"';
+        if (query.indexOf(facet_query) == -1) {
+            return false;
+        } else {
+            return true;
+        }
+    };
+
+    /**
+     * Run a search with a facet enabled.
+     * The facet will be toggled on and off in the repeated calls with the same
+     * parameters.
      */
     $scope.facet_search = function(facet_id, facet_value) {
-        var query = $location.search().q;
-        var new_query = query + ' AND ' + facet_id + ':"' + facet_value + '"';
+        var query = $location.search().q || '';
+        var facet_query = ' AND ' + facet_id + ':"' + facet_value + '"';
+        if ($scope.is_facet_applied(facet_id, facet_value)) {
+            new_query = query.replace(facet_query, ''); // remove facet
+        } else {
+            new_query = query + facet_query; // add new facet
+        }
         $location.search('q', new_query);
     };
 
