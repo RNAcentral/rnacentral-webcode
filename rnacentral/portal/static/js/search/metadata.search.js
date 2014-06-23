@@ -186,6 +186,8 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
                 } else if ( words[i].match(/\*$/) ) {
                     // wildcard, escape term
                     words[i] = escape_search_term(words[i]);
+                } else if ( words[i].match(/\)$/) ) {
+                    // right closing grouping parenthesis, don't add a wildcard
                 } else {
                     // all other words
                     // escape term, add wildcard
