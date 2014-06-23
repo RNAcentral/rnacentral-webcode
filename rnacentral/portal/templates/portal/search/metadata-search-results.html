@@ -24,7 +24,7 @@ limitations under the License.
     </small>
     <small ng-show="result.hitCount > 0">
       <span ng-if="result.hitCount == 1">1 sequence</span>
-      <span ng-if="result.hitCount > 1">{{displayed_items()}} out of {{result.hitCount | number}} sequences</span>
+      <span ng-if="result.hitCount > 1">{{result.entries.length}} out of {{result.hitCount | number}} sequences</span>
     </small>
   </h1>
 
@@ -69,7 +69,7 @@ limitations under the License.
             <h3>{{facet.label}}</h3>
             <ul class="list-unstyled metasearch-facet-values" ng-class="{'metasearch-organism-facet force-scrollbars': facet.label=='Organisms' || facet.label=='RNA type'}">
                 <li ng-repeat="facet_value in facet.facetValues">
-                  <input type="checkbox" name="facet.label" ng-checked="is_facet_applied(facet.id, facet_value.value)">
+                  <input type="checkbox" name="facet.label" ng-checked="is_facet_applied(facet.id, facet_value.value)" ng-click="facet_search(facet.id, facet_value.value)">
                   <a href="" ng-click="facet_search(facet.id, facet_value.value)">{{facet_value.label}} ({{facet_value.count | number}})</a>
                 </li>
                 <small ng-if="facet.facetValues.length == 30" class="text-muted">Showing top 30 organisms</small>
@@ -92,7 +92,7 @@ limitations under the License.
           </div>
         </li>
       </ul>
-      <button class="btn btn-default load-more col-md-3" ng-click="load_more_results()" ng-show="result.hitCount > page_size"><i class="fa fa-spinner fa-spin" ng-show="search_in_progress"></i> Load more</button>
+      <button class="btn btn-default load-more col-md-3" ng-click="load_more_results()" ng-show="result.hitCount > result.entries.length"><i class="fa fa-spinner fa-spin" ng-show="search_in_progress"></i> Load more</button>
       <br>
     </div>
 

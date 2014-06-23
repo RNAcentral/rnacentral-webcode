@@ -67,7 +67,11 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
         hitCount: null,
         entries: [],
         facets: []
-    }
+    };
+
+    var status = {
+        page: 0, // 0-based indexing, {START} url parameter
+    };
     var show_results = false; // hide results section at first
     var search_in_progress = false;
 
@@ -80,7 +84,6 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
         page_size: 15,
         max_facet_count: 1000,
     };
-    var page_size = search_config.page_size; // set to the default value
 
     var query_urls = {
         'ebeye_search': search_config.ebeye_base_url +
@@ -89,8 +92,8 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
                         '&fields=' + search_config.fields.join() +
                         '&facetcount=' + search_config.facetcount +
                         '&facetfields=' + search_config.facetfields.join() +
-                        '&size={SIZE}' +
-                        '&start=0',
+                        '&size=' + search_config.page_size +
+                        '&start={START}',
         'proxy': search_config.rnacentral_base_url +
                  '/api/internal/ebeye?url={EBEYE_URL}',
         'get_more_facet_values': search_config.ebeye_base_url +
@@ -114,52 +117,21 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
     };
 
     /**
-     * Pre-process the data received from the server.
-     */
-    var preprocess_results = function(data) {
-        result = data;
-        // sort facets the same way as in config
-        result.facets = _.sortBy(result.facets, function(facet){
-            return _.indexOf(search_config.facetfields, facet.id);
-        });
-    };
-
-    /**
-     * Format urls and execute remote request.
-     */
-    var execute_ebeye_search = function(url) {
-        search_in_progress = true;
-        $http({
-            url: url,
-            method: 'GET'
-        }).success(function(data) {
-            preprocess_results(data);
-            search_in_progress = false;
-        }).error(function(){
-            search_in_progress = false;
-        });
-    };
-
-    /**
      * Launch EBeye search
      */
-    this.search = function(query, new_page_size) {
+    this.search = function(query, start) {
         display_results();
         update_page_title();
 
-        if (typeof(new_page_size) == "undefined") {
-            // if unspecified, use default
-            page_size = search_config.page_size;
-            // initial search, display spinner
+        start = start || 0;
+        if (start === 0) {
+            // display spinner
             result.hitCount = null;
-        } else {
-            // load_more_results search, use supplied new_page_size value
-            page_size = new_page_size;
         }
 
         query = preprocess_query(query);
-        query_url = format_query_url(query, page_size);
-        execute_ebeye_search(query_url);
+        query_url = format_query_url(query, start);
+        execute_ebeye_search(query_url, start === 0);
 
         /**
          * Change page title, which is also used in browser tabs.
@@ -180,7 +152,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
          * Create an RNAcentral proxy query url which includes EBeye query url.
          */
         function format_query_url() {
-            var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query).replace('{SIZE}', page_size);
+            var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query).replace('{START}', start);
             var url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url));
             return url;
         };
@@ -228,52 +200,56 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
             query = words.join(' ');
             return query;
         };
+
+        /**
+         * Execute remote request.
+         */
+        function execute_ebeye_search(url, overwrite) {
+            search_in_progress = true;
+            $http({
+                url: url,
+                method: 'GET'
+            }).success(function(data) {
+                data = preprocess_results(data);
+                overwrite = overwrite || false;
+                if (overwrite) {
+                    result = data;
+                } else {
+                    result.entries = result.entries.concat(data.entries);
+                }
+                search_in_progress = false;
+            }).error(function(){
+                search_in_progress = false;
+            });
+
+            /**
+             * Preprocess data received from the server.
+             */
+            function preprocess_results(data) {
+                // sort facets the same way as in config
+                _.sortBy(data.facets, function(facet){
+                    return _.indexOf(search_config.facetfields, facet.id);
+                });
+                return data;
+            };
+        };
+
     };
 
     /**
-     * Increment `page_size` and retrieve all entries from the server.
-     * The new entries will be added to the results list.
+     * Load more results starting from the last loaded index.
      */
     this.load_more_results = function() {
-        page_size += search_config.page_size;
         query = $location.search().q;
-        this.search(query, page_size);
-    };
-
-    this.load_more_facets = function(facet_id) {
-        var query = $location.search().q;
-        var ebeye_url = query_urls.get_more_facet_values.replace('{QUERY}', query).replace('{FACET_ID}', facet_id);
-        var url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url)) ;
-        $http({
-            url: url,
-            method: 'GET'
-        }).success(function(data) {
-            // find where to insert new data
-            var facet_num = _.indexOf(_.map(result.facets, function(facet){
-                return facet['id'] === facet_id;
-            }), true);
-            result.facets[facet_num].facetValues = data.facets.facet.facetValues;
-        });
-    };
-
-    this.get_page_size = function() {
-        return page_size;
+        this.search(query, result.entries.length);
     };
 
     this.get_status = function() {
         return show_results;
     };
 
-    this.set_status = function() {
-        show_results = true;
-    };
-
     this.get_results = function() {
         return result;
-    };
-
-    this.get_max_facet_count = function() {
-        return search_config.max_facet_count;
     };
 
     this.get_search_in_progress = function() {
@@ -317,12 +293,13 @@ rnaMetasearch.controller('MainContent', ['$scope', '$anchorScroll', '$location',
  */
 rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', function($scope, $location, results) {
 
-    $scope.page_size = results.get_page_size(); // know when to show Load more button
-    $scope.max_facet_count = results.get_max_facet_count();
+    $scope.result = {
+        entries: [],
+    };
     $scope.search_in_progress = results.get_search_in_progress();
 
     /**
-     * Refresh results data.
+     * Monitor `result` changes.
      */
     $scope.$watch(function () { return results.get_results(); }, function (newValue, oldValue) {
         if (newValue != null) {
@@ -331,7 +308,7 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', f
     });
 
     /**
-     * Monitor show_results changes.
+     * Monitor `show_results` changes.
      */
     $scope.$watch(function () { return results.get_status(); }, function (newValue, oldValue) {
         if (newValue != null) {
@@ -340,16 +317,7 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', f
     });
 
     /**
-     * Monitor page_size changes.
-     */
-    $scope.$watch(function () { return results.get_page_size(); }, function (newValue, oldValue) {
-        if (newValue != oldValue) {
-            $scope.page_size = newValue;
-        }
-    });
-
-    /**
-     * Monitor search_in_progress changes.
+     * Monitor `search_in_progress` changes.
      */
     $scope.$watch(function () { return results.get_search_in_progress(); }, function (newValue, oldValue) {
         if (newValue != oldValue) {
@@ -362,10 +330,6 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', f
      */
     $scope.load_more_results = function() {
         results.load_more_results();
-    };
-
-    $scope.load_more_facets = function(facet_id) {
-        results.load_more_facets(facet_id);
     };
 
     /**
@@ -395,13 +359,6 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', f
             new_query = query + facet_query; // add new facet
         }
         $location.search('q', new_query);
-    };
-
-    /**
-     * Calculate the number of currently displayed items.
-     */
-    $scope.displayed_items = function() {
-        return Math.min($scope.page_size, $scope.result.hitCount);
     };
 
     /**
