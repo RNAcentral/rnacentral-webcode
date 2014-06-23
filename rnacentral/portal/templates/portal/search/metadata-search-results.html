@@ -135,8 +135,12 @@ limitations under the License.
           </div>
         </li>
       </ul>
-      <button class="btn btn-default load-more col-md-3" ng-click="load_more_results()" ng-show="result.hitCount > result.entries.length"><i class="fa fa-spinner fa-spin" ng-show="search_in_progress"></i> Load more</button>
+
       <br>
+      <small ng-if="result.hitCount > result.entries.length" class="text-muted">Displaying {{result.entries.length}} out of {{result.hitCount | number}} sequences</small>
+      <br>
+
+      <button class="btn btn-default load-more col-md-3" ng-click="load_more_results()" ng-show="result.hitCount > result.entries.length"><i class="fa fa-spinner fa-spin" ng-show="search_in_progress"></i> Load more</button>
     </div>
 
   </div><!--/row-->
