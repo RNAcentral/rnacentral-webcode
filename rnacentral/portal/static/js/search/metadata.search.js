@@ -76,6 +76,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
     var status = {
         display_search_interface: false, // hide results section at first
         search_in_progress: false, // display spinning wheel while searching
+        show_error: false, // display error message
     };
 
     var search_config = {
@@ -209,6 +210,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
          */
         function execute_ebeye_search(url, overwrite_results) {
             status.search_in_progress = true;
+            status.show_error = false;
             $http({
                 url: url,
                 method: 'GET'
@@ -224,6 +226,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
                 status.search_in_progress = false;
             }).error(function(){
                 status.search_in_progress = false;
+                status.show_error = true;
             });
 
             /**
@@ -269,6 +272,13 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
         return status.search_in_progress;
     };
 
+    /**
+     * Broadcast whether an error has occurred.
+     */
+    this.get_show_error = function() {
+        return status.show_error;
+    };
+
 }]);
 
 rnaMetasearch.controller('MainContent', ['$scope', '$anchorScroll', '$location', 'results', 'search', function($scope, $anchorScroll, $location, results, search) {
@@ -311,6 +321,7 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', f
     };
 
     $scope.search_in_progress = results.get_search_in_progress();
+    $scope.show_error = results.get_show_error();
 
     /**
      * Watch `result` changes.
@@ -336,6 +347,15 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', f
     $scope.$watch(function () { return results.get_search_in_progress(); }, function (newValue, oldValue) {
         if (newValue != oldValue) {
             $scope.search_in_progress = newValue;
+        }
+    });
+
+    /**
+     * Watch `show_error` changes.
+     */
+    $scope.$watch(function () { return results.get_show_error(); }, function (newValue, oldValue) {
+        if (newValue != oldValue) {
+            $scope.show_error = newValue;
         }
     });
 

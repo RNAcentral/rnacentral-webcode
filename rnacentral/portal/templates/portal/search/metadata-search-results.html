@@ -39,6 +39,34 @@ limitations under the License.
     </div>
   </div>
 
+  <div class="row" ng-if="show_error">
+
+    <div class="col-md-12">
+      <div class="alert alert-danger col-md-12">
+        There was an error while processing your query
+      </div>
+    </div>
+
+    <div class="col-md-12">
+      <h2>Suggestions:</h2>
+      <ul>
+        <li>
+          <p>
+            Try reloading the page
+          </p>
+        </li>
+        <li>
+          <p>
+{% endverbatim %}
+            <a href="{% url 'contact-us' %}">Contact us</a> if the problem persists
+{% verbatim %}
+          </p>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+
   <div class="row" ng-if="result.hitCount == 0">
 
     <div class="col-md-12">
