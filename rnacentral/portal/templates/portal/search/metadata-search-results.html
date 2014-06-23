@@ -26,11 +26,16 @@ limitations under the License.
       <span ng-if="result.hitCount == 1">1 sequence</span>
       <span ng-if="result.hitCount > 1">{{result.entries.length}} out of {{result.hitCount | number}} sequences</span>
     </small>
+{% endverbatim %}
+    <small class="pull-right">
+      <a class="btn btn-default btn-sm hidden-xs" href="{% url 'help-metadata-search' %}">Search help</a>
+    </small>
+{% verbatim %}
   </h1>
-
   <div class="row visible-xs">
     <div class="col-xs-12">
       <button class="btn btn-default" ng-click="toggle_facets()" id="toggle-facets">Show facets</button>
+      <button class="btn btn-default" href="{% url 'help-metadata-search' %}">Search help</button>
     </div>
   </div>
 
