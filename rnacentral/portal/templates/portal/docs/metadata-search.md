@@ -3,9 +3,30 @@
 
 ## Query syntax
 
+### Wildcards
+
+The wildcard character (`*`) can match any number of characters.
+
+**Wildcards are added automatically** to all search terms that are not part of field-specific
+search and that are not enclosed in double quotes (see below).
+
+*Example*: a search for `HOTAIR` (no double quotes) will find both HOTAIR and HOTAIRM1 genes
+and a search for `"HOTAIR"` (with double quotes) will find only HOTAIR.
+
+---
+
+### Exact matching
+
+Use double quotes (`""`) to search for exact matches.
+
+*Example*: `"precursor RNA"`
+
+---
+
 ### Field-specific search
 
-Search can also be restricted to specific fields such as:
+Search can be restricted to specific fields using the `field_name:"field value"` syntax.
+Please note that `"field value"` must be enclosed in double quotes.
 
 * **expert database**
 
@@ -47,8 +68,6 @@ Search can also be restricted to specific fields such as:
 
 	*Example*: `TAXONOMY:"9606"` where [9606](http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606) is the NCBI taxonomy id for Homo sapiens.
 
-Please note that the field must be enclosed in double quotes: `field_name:"field value"`.
-
 ---
 
 ### Logic operators
@@ -68,42 +87,20 @@ Please note that the field must be enclosed in double quotes: `field_name:"field
 
 ---
 
-### Exact match
-
-Use double quotes (`""`) to search for exact matches.
-
-*Example*: `"precursor RNA"`
-
----
-
-### Wildcards
-
-The `*` character can match any number of characters.
-
-*Example*: a search for `1*S` will find both 18S and 16S rRNAs.
-
-By default, **wildcards are added automatically** to all search terms that are not part of field-specific
-search and that are not enclosed in double quotes.
-
-*Example*: a search for `HOTAIR` (no double quotes) will find both HOTAIR and HOTAIRM1 genes
-and a search for `"HOTAIR"` (with double quotes) will find only HOTAIR.
-
----
-
 ### Grouping
 
 Use parentheses to group and nest logical terms.
 
-*Example*: `(expert_db:mirbase OR expert_db:lncrnadb) NOT expert_db:mirbase`
+*Example*: `(expert_db:"mirbase" OR expert_db:"lncrnadb") NOT expert_db:"rfam"`
 
 ---
 
 ## Search tips
 
+* Make sure your **spelling** is correct.
+
+    *Example*: misspelled terms like `Esherichia` (missing "c") won't find any results.
+
 * Use **full species names**.
 
     *Example*: use `Escherichia coli` and not `E. coli` as your search terms.
-
-* Make sure your **spelling** is correct.
-
-    *Example*: misspelled terms like `Esherichia` (missing "c") will find no results.
