@@ -42,6 +42,7 @@ class RnaXmlExporter(OracleConnection):
                    t2.description, t2.non_coding_id, t2.accession,
                    t2.function, t2.gene, t2.gene_synonym, t2.feature_name,
                    t2.ncrna_class, t2.product, t2.common_name,
+                   t2.parent_ac || '.' || t2.seq_version as parent_accession,
                    t3.display_name as expert_db,
                    t4.timestamp as created,
                    t5.timestamp as last,
@@ -65,7 +66,7 @@ class RnaXmlExporter(OracleConnection):
         self.redundant_fields = ['taxid', 'species', 'expert_db', 'organelle',
                                  'created', 'last', 'deleted', 'description',
                                  'function', 'gene', 'gene_synonym',
-                                 'product', 'common_name']
+                                 'product', 'common_name', 'parent_accession']
         self.initialize()
         self.get_connection()
         self.get_cursor()
@@ -79,7 +80,7 @@ class RnaXmlExporter(OracleConnection):
         self.data = {
             'upi': None,
             'length': 0,
-            'xrefs': [],
+            'xrefs': set(),
         }
         for field in self.redundant_fields:
             self.data[field] = set()
@@ -288,12 +289,14 @@ class RnaXmlExporter(OracleConnection):
                 return
             # an expert_db entry
             if result['non_coding_id'] or result['expert_db'] == 'RFAM':
-                self.data['xrefs'].append((result['expert_db'],
-                                           result['external_id']))
+                self.data['xrefs'].add((result['expert_db'],
+                                        result['external_id']))
             else: # source ENA entry
-                # rename expert_db in order to link to non-coding ENA entries
+                # Non-coding entry
                 expert_db = 'NON-CODING' # EBeye requirement
-                self.data['xrefs'].append((expert_db, result['accession']))
+                self.data['xrefs'].add((expert_db, result['accession']))
+            # parent ENA entry
+            self.data['xrefs'].add(('ENA', result['parent_accession']))
 
         def store_rna_type(result):
             """
