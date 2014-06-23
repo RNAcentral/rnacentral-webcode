@@ -55,7 +55,7 @@ rnaMetasearch.service('search', ['$location', function($location) {
      */
     this.meta_search = function(query) {
         $location.url('/search' + '?q=' + query);
-    }
+    };
 
 }]);
 
@@ -63,17 +63,20 @@ rnaMetasearch.service('search', ['$location', function($location) {
  * Service for passing data between controllers.
  */
 rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function(_, $http, $location, $window) {
+
+    /**
+     * Service initialization.
+     */
     var result = {
         hitCount: null,
         entries: [],
-        facets: []
+        facets: [],
     };
 
     var status = {
-        page: 0, // 0-based indexing, {START} url parameter
+        display_search_interface: false, // hide results section at first
+        search_in_progress: false, // display spinning wheel while searching
     };
-    var show_results = false; // hide results section at first
-    var search_in_progress = false;
 
     var search_config = {
         ebeye_base_url: 'http://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral',
@@ -81,8 +84,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
         fields: ['description', 'active', 'length'],
         facetfields: ['expert_db', 'rna_type', 'TAXONOMY'], // will be displayed in this order
         facetcount: 30,
-        page_size: 15,
-        max_facet_count: 1000,
+        pagesize: 15,
     };
 
     var query_urls = {
@@ -92,16 +94,10 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
                         '&fields=' + search_config.fields.join() +
                         '&facetcount=' + search_config.facetcount +
                         '&facetfields=' + search_config.facetfields.join() +
-                        '&size=' + search_config.page_size +
+                        '&size=' + search_config.pagesize +
                         '&start={START}',
         'proxy': search_config.rnacentral_base_url +
                  '/api/internal/ebeye?url={EBEYE_URL}',
-        'get_more_facet_values': search_config.ebeye_base_url +
-                                 '?query={QUERY}' +
-                                 '&format=json' +
-                                 '&facetcount=' + search_config.max_facet_count +
-                                 '&facetfields={FACET_ID}' +
-                                 '&size=0', // retrieve just facets
     };
 
     /**
@@ -114,57 +110,55 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
             base_url += ':' + port
         }
         return base_url;
-    };
+    }
 
     /**
-     * Launch EBeye search
+     * Launch EBeye search.
+     * `start` determines the range of the results to be returned.
      */
     this.search = function(query, start) {
-        display_results();
+        start = start || 0;
+
+        display_search_interface();
+        display_spinner();
         update_page_title();
 
-        start = start || 0;
-        if (start === 0) {
-            // display spinner
-            result.hitCount = null;
-        }
-
         query = preprocess_query(query);
-        query_url = format_query_url(query, start);
+        query_url = get_query_url(query, start);
         execute_ebeye_search(query_url, start === 0);
+
+        /**
+         * Display search spinner if not a "load more" request.
+         */
+        function display_spinner() {
+            if (start === 0) {
+                result.hitCount = null; // display spinner
+            }
+        }
 
         /**
          * Change page title, which is also used in browser tabs.
          */
         function update_page_title() {
             $window.document.title = 'Search: ' + query;
-        };
+        }
 
         /**
-         * Setting show_results value to true hides all non-search page content
-         * and begins displaying the search results interface.
+         * Setting `display_search_interface` value to true hides all non-search page content
+         * and begins displaying search results interface.
          */
-        function display_results() {
-            show_results = true;
-        };
+        function display_search_interface() {
+            status.display_search_interface = true;
+        }
 
         /**
          * Create an RNAcentral proxy query url which includes EBeye query url.
          */
-        function format_query_url() {
+        function get_query_url() {
             var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query).replace('{START}', start);
             var url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url));
             return url;
-        };
-
-        /**
-         * Escape special symbols used by Lucene
-         * Escaped: + - && || ! { } [ ] ^ ~ ? : \
-         * Not escaped: * " ( ) because they may be used deliberately by the user
-         */
-        function escape_search_term(search_term) {
-            return search_term.replace(/[\+\-&|!\{\}\[\]\^~\?\:\\]/g, "\\$&");
-        };
+        }
 
         /**
          * Split query into words and then:
@@ -199,27 +193,37 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
             }
             query = words.join(' ');
             return query;
-        };
+
+            /**
+             * Escape special symbols used by Lucene
+             * Escaped: + - && || ! { } [ ] ^ ~ ? : \
+             * Not escaped: * " ( ) because they may be used deliberately by the user
+             */
+            function escape_search_term(search_term) {
+                return search_term.replace(/[\+\-&|!\{\}\[\]\^~\?\:\\]/g, "\\$&");
+            }
+        }
 
         /**
          * Execute remote request.
          */
-        function execute_ebeye_search(url, overwrite) {
-            search_in_progress = true;
+        function execute_ebeye_search(url, overwrite_results) {
+            status.search_in_progress = true;
             $http({
                 url: url,
                 method: 'GET'
             }).success(function(data) {
                 data = preprocess_results(data);
-                overwrite = overwrite || false;
-                if (overwrite) {
-                    result = data;
+                overwrite_results = overwrite_results || false;
+                if (overwrite_results) {
+                    result = data; // replace
                 } else {
+                    // append only entries
                     result.entries = result.entries.concat(data.entries);
                 }
-                search_in_progress = false;
+                status.search_in_progress = false;
             }).error(function(){
-                search_in_progress = false;
+                status.search_in_progress = false;
             });
 
             /**
@@ -231,10 +235,10 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
                     return _.indexOf(search_config.facetfields, facet.id);
                 });
                 return data;
-            };
-        };
+            }
+        }
 
-    };
+    }
 
     /**
      * Load more results starting from the last loaded index.
@@ -244,16 +248,25 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
         this.search(query, result.entries.length);
     };
 
+    /**
+     * Broadcast whether search interface should be displayed.
+     */
     this.get_status = function() {
-        return show_results;
+        return status.display_search_interface;
     };
 
-    this.get_results = function() {
+    /**
+     * Broadcast search results changes.
+     */
+    this.get_result = function() {
         return result;
     };
 
+    /**
+     * Broadcast whether search is in progress.
+     */
     this.get_search_in_progress = function() {
-        return search_in_progress;
+        return status.search_in_progress;
     };
 
 }]);
@@ -269,21 +282,21 @@ rnaMetasearch.controller('MainContent', ['$scope', '$anchorScroll', '$location',
     };
 
     /**
-     * Watch show_results in order to hide non-search-related content
+     * Watch `display_search_interface` in order to hide non-search-related content
      * when a search is initiated.
      */
     $scope.$watch(function () { return results.get_status(); }, function (newValue, oldValue) {
         if (newValue != null) {
-            $scope.show_results = newValue;
+            $scope.display_search_interface = newValue;
         }
     });
 
     /**
-     * Launch a metadata search using the service.
+     * Launch a metadata search from a web page.
      */
     $scope.meta_search = function(query) {
         search.meta_search(query);
-    }
+    };
 
 }]);
 
@@ -296,28 +309,29 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', f
     $scope.result = {
         entries: [],
     };
+
     $scope.search_in_progress = results.get_search_in_progress();
 
     /**
-     * Monitor `result` changes.
+     * Watch `result` changes.
      */
-    $scope.$watch(function () { return results.get_results(); }, function (newValue, oldValue) {
+    $scope.$watch(function () { return results.get_result(); }, function (newValue, oldValue) {
         if (newValue != null) {
             $scope.result = newValue;
         }
     });
 
     /**
-     * Monitor `show_results` changes.
+     * Watch `display_search_interface` changes.
      */
     $scope.$watch(function () { return results.get_status(); }, function (newValue, oldValue) {
         if (newValue != null) {
-            $scope.show_results = newValue;
+            $scope.display_search_interface = newValue;
         }
     });
 
     /**
-     * Monitor `search_in_progress` changes.
+     * Watch `search_in_progress` changes.
      */
     $scope.$watch(function () { return results.get_search_in_progress(); }, function (newValue, oldValue) {
         if (newValue != oldValue) {
@@ -392,7 +406,7 @@ rnaMetasearch.controller('QueryCtrl', ['$scope', '$location', '$window', '$timeo
      */
     $scope.meta_search = function(query) {
         search.meta_search(query);
-    }
+    };
 
     /**
      * Control browser navigation buttons.
