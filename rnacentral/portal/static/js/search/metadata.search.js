@@ -199,16 +199,21 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
          *  - append wildcards to all terms without double quotes and not ending with wildcards
          *  - escape special symbols
          *  - capitalize logical operators
+         *
+         *  Splitting into words is based on this SO question:
+         *  http://stackoverflow.com/questions/366202/regex-for-splitting-a-string-using-space-when-not-surrounded-by-single-or-double
+         * Each "word" is a sequence of characters that aren't spaces or quotes,
+         * or a sequence of characters that begin and end with a quote, with no quotes in between.
          */
         function preprocess_query(query) {
-            var words = query.split(/\s+/);
+            var words = query.match(/[^\s"]+|"[^"]*"/g);
             var array_length = words.length;
             for (var i = 0; i < array_length; i++) {
                 if ( words[i].match(/and|or|not/gi) ) {
                     // capitalize logical operators
                     words[i] = words[i].toUpperCase();
-                } else if ( words[i].match(/\w+\:".+?"/gi) ) {
-                    // faceted search terms, do nothing
+                } else if ( words[i].match(/\:$/gi) ) {
+                    // faceted search term, do nothing
                 } else if ( words[i].match(/^".+?"$/) ) {
                     // double quotes, do nothing
                 } else if ( words[i].match(/\*$/) ) {
