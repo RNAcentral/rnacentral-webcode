@@ -339,6 +339,7 @@ class MetaSearchPage(BasePage):
             )
 
         success = []
+        self.browser.maximize_window() # sometimes phantomjs cannot find elements without this
         examples = self.browser.find_elements_by_css_selector('.example-searches a')
         for example in examples:
             results = []
