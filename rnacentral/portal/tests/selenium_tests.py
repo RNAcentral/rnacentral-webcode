@@ -287,10 +287,10 @@ class MetaSearchPage(BasePage):
         """
         Click on example searches in the header and make sure there are results.
         """
-        results = []
         success = []
         examples = self.browser.find_elements_by_css_selector('.example-searches a')
         for example in examples:
+            results = []
             example.click()
             results = WebDriverWait(self.browser, 30).until(
                         lambda s: s.find_elements(By.CLASS_NAME, "result"))
@@ -344,7 +344,7 @@ class RNAcentralTest(unittest.TestCase):
         self.assertFalse(page.js_errors_found())
         self.assertIn("RNAcentral", page.get_title())
 
-    def test_metasearch(self):
+    def test_metasearch_examples(self):
         """
         Test metasearch, can be done on any page.
         """
