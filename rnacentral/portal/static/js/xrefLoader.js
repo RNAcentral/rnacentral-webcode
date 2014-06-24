@@ -105,7 +105,7 @@ xrefLoader.prototype.load_xrefs = function() {
 
 			function adjust_dataTables_controls() {
 				$('.dataTables_filter input').attr('placeholder', 'Filter table').
-				                              attr("tabindex", 1).
+				                              attr("tabindex", 2).
 				                              attr('type', 'search').
 				                              addClass('form-control input-sm');
 				$('#xrefs-table_filter').appendTo('#xrefs-datatables-filter').
@@ -144,7 +144,7 @@ xrefLoader.prototype.load_xrefs = function() {
 			});
 			// if the url hash does not refer to any of the tabs, update the search field
 			var hash = window.location.hash.substring(1);
-			if (hash != 'species' && hash != 'overview') {
+			if (hash != 'species' && hash != 'overview' && hash != '') {
 				dataTables_search.val(decodeURIComponent(hash)).focus();
 				oTable.fnFilter(decodeURIComponent(hash));
 			}
