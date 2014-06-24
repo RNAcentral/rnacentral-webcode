@@ -281,21 +281,22 @@ class MetaSearchPage(BasePage):
     """
     url = ''
 
-    def __init__(self, browser):
+    def __init__(self, browser, query_url=''):
         BasePage.__init__(self, browser, self.url)
+        self.url += query_url
         self.page_size = 15
+
+    def get_metasearch_results(self):
+        """
+        Get results as an array of list elements.
+        """
+        return WebDriverWait(self.browser, 30).until(
+                lambda s: s.find_elements(By.CLASS_NAME, "result"))
 
     def test_example_searches(self):
         """
         Click on example searches in the header and make sure there are results.
         """
-
-        def get_metasearch_results():
-            """
-            Get results as an array of list elements.
-            """
-            return WebDriverWait(self.browser, 30).until(
-                    lambda s: s.find_elements(By.CLASS_NAME, "result"))
 
         def click_load_more():
             """
@@ -342,7 +343,7 @@ class MetaSearchPage(BasePage):
             example.click()
             click_load_more()
             enable_facet()
-            results = get_metasearch_results()
+            results = self.get_metasearch_results()
             if len(results) > 0:
                 success.append(1)
         return len(success) == len(examples)
@@ -422,6 +423,14 @@ class RNAcentralTest(unittest.TestCase):
         query = 'RNA'
         page._submit_search(query)
         self.assertFalse(page.warnings_present())
+
+    def test_metasearch_load_search_url(self):
+        """
+        Load a metadata search using a search url.
+        """
+        page = MetaSearchPage(self.browser, 'search?q=mirbase')
+        page.navigate()
+        self.assertTrue(len(page.get_metasearch_results()) > 0)
 
     def test_all_expert_database_page(self):
         page = ExpertDatabasesOverviewPage(self.browser)
