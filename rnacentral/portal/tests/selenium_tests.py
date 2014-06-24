@@ -43,6 +43,8 @@ import unittest
 import random
 import re
 import sys
+import time
+import urllib
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
@@ -393,6 +395,20 @@ class RNAcentralTest(unittest.TestCase):
         page.navigate()
         self.assertFalse(page.js_errors_found())
         self.assertIn("RNAcentral", page.get_title())
+
+    def test_browser_back_button(self):
+        """
+        Make sure browser history is recorded correctly.
+        """
+        history = ['contact', 'downloads', 'search?q=mirbase',
+                   'search?q=foobar']
+        page = MetaSearchPage(self.browser)
+        for item in history:
+            page.browser.get(page.base_url + item)
+            time.sleep(2)
+        for item in reversed(history):
+            self.assertIn(urllib.quote(item), urllib.quote(page.browser.current_url))
+            page.browser.back()
 
     def test_metasearch_examples(self):
         """
