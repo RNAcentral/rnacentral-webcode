@@ -315,12 +315,33 @@ class MetaSearchPage(BasePage):
                     )
                 )
 
+        def enable_facet():
+            """
+            Select a facet at random and enable it. Make sure that the results
+            are filtered correctly.
+            """
+            facet_link = WebDriverWait(self.browser, 5).until(
+                EC.element_to_be_clickable(
+                    (By.CLASS_NAME, "metasearch-facet-link")
+                )
+            )
+            # get the number of entries in the facet
+            facet_count = re.search(r'\((.+?)\)$', facet_link.text)
+            facet_link.click()
+            WebDriverWait(self.browser, 5).until(
+                EC.text_to_be_present_in_element(
+                    (By.ID, "metasearch-results-count"),
+                    'out of %s' % facet_count.group(1)
+                )
+            )
+
         success = []
         examples = self.browser.find_elements_by_css_selector('.example-searches a')
         for example in examples:
             results = []
             example.click()
             click_load_more()
+            enable_facet()
             results = get_metasearch_results()
             if len(results) > 0:
                 success.append(1)
