@@ -424,6 +424,16 @@ class RNAcentralTest(unittest.TestCase):
         page._submit_search(query)
         self.assertFalse(page.warnings_present())
 
+    def test_metasearch_grouping_operators(self):
+        """
+        Test a query with logical operators and query grouping.
+        """
+        page = MetaSearchPage(self.browser)
+        page.navigate()
+        query = '(expert_db:"mirbase" OR expert_db:"lncrnadb") NOT expert_db:"rfam"'
+        page._submit_search(query)
+        self.assertTrue(len(page.get_metasearch_results()) > 0)
+
     def test_metasearch_load_search_url(self):
         """
         Load a metadata search using a search url.
