@@ -351,7 +351,7 @@ class MetaSearchPage(BasePage):
         search_box = self.browser.find_element_by_css_selector('.rnacentral-masthead input')
         search_box.send_keys(query)
         search_button = self.browser.find_element_by_css_selector('.rnacentral-masthead button')
-        # submit either by hitting Enter or clicking Submit.
+        # submit either by hitting Enter or clicking Submit
         if random.randint(1, 2) == 1:
             search_button.click()
         else:
@@ -395,13 +395,17 @@ class RNAcentralTest(unittest.TestCase):
 
     def test_metasearch_examples(self):
         """
-        Test metasearch, can be done on any page.
+        Test metasearch examples, can be done on any page.
         """
         page = MetaSearchPage(self.browser)
         page.navigate()
         self.assertTrue(page.test_example_searches())
 
     def test_metasearch_no_results(self):
+        """
+        Run a metasearch query that won't find any results, make sure that
+        no results are displayed.
+        """
         page = MetaSearchPage(self.browser)
         page.navigate()
         query = 'Foo bar baz'
@@ -409,6 +413,10 @@ class RNAcentralTest(unittest.TestCase):
         self.assertTrue(page.warnings_present())
 
     def test_metasearch_no_warnings(self):
+        """
+        Run a metasearch query that will find results, make sure that some
+        results are displyaed. The opposite of `test_metasearch_no_results`.
+        """
         page = MetaSearchPage(self.browser)
         page.navigate()
         query = 'RNA'
