@@ -24,7 +24,7 @@ limitations under the License.
     </small>
     <small ng-show="result.hitCount > 0">
       <span ng-if="result.hitCount == 1">1 sequence</span>
-      <span ng-if="result.hitCount > 1">{{result.entries.length}} out of {{result.hitCount | number}} sequences</span>
+      <span ng-if="result.hitCount > 1" id="metasearch-results-count">{{result.entries.length}} out of {{result.hitCount | number}} sequences</span>
     </small>
 {% endverbatim %}
     <small class="pull-right">

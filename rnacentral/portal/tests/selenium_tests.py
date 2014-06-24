@@ -47,6 +47,7 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 
 
@@ -282,18 +283,45 @@ class MetaSearchPage(BasePage):
 
     def __init__(self, browser):
         BasePage.__init__(self, browser, self.url)
+        self.page_size = 15
 
     def test_example_searches(self):
         """
         Click on example searches in the header and make sure there are results.
         """
+
+        def get_metasearch_results():
+            """
+            Get results as an array of list elements.
+            """
+            return WebDriverWait(self.browser, 30).until(
+                    lambda s: s.find_elements(By.CLASS_NAME, "result"))
+
+        def click_load_more():
+            """
+            Click the Load more button and verify the number of results.
+            """
+            load_more = WebDriverWait(self.browser, 30).until(
+                EC.element_to_be_clickable(
+                    (By.CLASS_NAME, 'load-more')
+                )
+            )
+            for i in [2, 3, 4]:
+                load_more.click()
+                WebDriverWait(self.browser, 5).until(
+                    EC.text_to_be_present_in_element(
+                        (By.ID, "metasearch-results-count"),
+                        '%i out of ' % (i * self.page_size)
+                    )
+                )
+
         success = []
         examples = self.browser.find_elements_by_css_selector('.example-searches a')
         for example in examples:
             results = []
             example.click()
-            results = WebDriverWait(self.browser, 30).until(
-                        lambda s: s.find_elements(By.CLASS_NAME, "result"))
+            click_load_more()
+            results = get_metasearch_results()
             if len(results) > 0:
                 success.append(1)
         return len(success) == len(examples)
