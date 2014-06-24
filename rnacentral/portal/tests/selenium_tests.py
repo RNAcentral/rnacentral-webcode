@@ -40,12 +40,14 @@ limitations under the License.
 """
 
 import unittest
+import random
 import re
 import sys
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.common.keys import Keys
 
 
 class BasePage(object):
@@ -297,10 +299,14 @@ class MetaSearchPage(BasePage):
         return len(success) == len(examples)
 
     def _submit_search(self, query):
-        searchbox = self.browser.find_element_by_css_selector('.rnacentral-masthead input')
-        searchbox.send_keys(query)
-        searchbutton = self.browser.find_element_by_css_selector('.rnacentral-masthead button')
-        searchbutton.click()
+        search_box = self.browser.find_element_by_css_selector('.rnacentral-masthead input')
+        search_box.send_keys(query)
+        search_button = self.browser.find_element_by_css_selector('.rnacentral-masthead button')
+        # submit either by hitting Enter or clicking Submit.
+        if random.randint(1, 2) == 1:
+            search_button.click()
+        else:
+            search_box.send_keys(Keys.RETURN)
 
     def warnings_present(self):
         """
