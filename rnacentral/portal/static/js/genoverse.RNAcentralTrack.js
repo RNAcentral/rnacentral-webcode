@@ -53,10 +53,15 @@ Genoverse.Track.Model.Transcript.RNAcentral = Genoverse.Track.Model.Transcript.e
 
 });
 
+// Genoverse.Track.Model.Gene.RNAcentral = Genoverse.Track.Model.Gene.Ensembl.extend({
+
+// });
+
+
 // default Genoverse config object
 var genoverseConfig = {
   container     : '#genoverse',
-  genome        : 'grch37', // see js/genomes/
+  chromosomeSize: Math.pow(10, 20), // should be greater than any chromosome size
   chr           : '',
   showUrlCoords : false, // do not show genomic coordinates in the url
   plugins       : [ 'controlPanel', 'karyotype', 'resizer', 'fileDrop' ],
@@ -130,22 +135,10 @@ var genoverseConfig = {
         // create Genoverse object
         genoverseConfig.chr = params.chromosome;
         window.browser = new Genoverse(genoverseConfig);
-        // set track position
-        browser.moveTo(params.start, params.end, false);
-        browser.zoomOut();
-    } else {
-        if ( browser.chr != this.params.chromosome ) {
-          // update chromosome and chromosomeSize
-          browser.chr = params.chromosome;
-          browser.chromosomeSize = browser.genome[browser.chr].size;
-          // reload the data for the current chromosome
-          browser.tracksById[track_id].model.receiveData(browser.tracksById[track_id].model.data, 1, browser.chromosomeSize);
-        }
-        // navigate to the region of interest
-        browser.moveTo(params.start, params.end, false);
-        browser.zoomOut();
     }
-
+    // navigate to the region of interest
+    browser.moveTo(params.start, params.end, false);
+    browser.zoomOut();
   };
 
   set_genoverse_width = function() {
