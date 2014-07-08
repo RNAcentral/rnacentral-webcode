@@ -619,6 +619,20 @@ class Accession(models.Model):
             return ''
 
 
+class GenomicCoordinates(models.Model):
+    accession = models.ForeignKey('Accession', db_column='accession', to_field='accession', related_name='coordinates')
+    primary_accession = models.CharField(max_length=50)
+    local_start = models.IntegerField()
+    local_end = models.IntegerField()
+    chromosome = models.CharField(max_length=50, db_column='name')
+    primary_start = models.IntegerField()
+    primary_end = models.IntegerField()
+    strand = models.IntegerField()
+
+    class Meta:
+        db_table = 'rnc_coordinates'
+
+
 class Xref(models.Model):
     db = models.ForeignKey(Database, db_column='dbid', related_name='xrefs')
     accession = models.ForeignKey(Accession, db_column='ac', to_field='accession', related_name='xrefs', unique=True)
@@ -702,6 +716,68 @@ class Xref(models.Model):
         else:
             tmrna_type = 2 # two-piece tmRNA
         return tmrna_type
+
+    def get_ensembl_url_no_das(self):
+        """
+        Get an Ensembl url
+        TODO: check that the species exists in Ensembl.
+        """
+        return ('http://www.ensembl.org/{species}/Location/'
+                'View?r={chromosome}%3A{start}-{end}'.format(
+                        species=self.accession.species.replace(' ', '_'),
+                        chromosome=self.get_feature_chromosome(),
+                        start=self.get_feature_start(),
+                        end=self.get_feature_end()
+                    )
+                )
+
+    def new_has_genomic_coordinates(self):
+        """
+        Mirror the existing API while using the new GenomicCoordinates model.
+        TODO: remove "new_" from the method name.
+        """
+        return True if self.accession.coordinates.count() > 0 else False
+
+    def new_get_genomic_coordinates(self):
+        """
+        Mirror the existing API while using the new GenomicCoordinates model.
+        TODO: remove "new_" from the method name.
+        """
+        return {
+            'chromosome': self.get_feature_chromosome(),
+            'strand': self.get_feature_strand(),
+            'start': self.get_feature_start(),
+            'end': self.get_feature_end(),
+        }
+
+    def get_feature_chromosome(self):
+        """
+        Get the chromosome name for the genomic location.
+        The name represents a toplevel accession as defined
+        by the Ensembl API and can include patch/scaffold names etc.
+        """
+        return self.accession.coordinates.first().chromosome
+
+    def get_feature_strand(self):
+        """
+        Return 1 or -1 to indicate the forward and reverse strands respectively.
+        """
+        return self.accession.coordinates.first().strand
+
+    def get_feature_start(self):
+        """
+        Get the `start` coordinates of the genomic feature.
+        """
+        data = self.accession.coordinates.aggregate(min_feature_start = Min('primary_start'))
+        return data['min_feature_start']
+
+    def get_feature_end(self):
+        """
+        Get the `end` coordinates of the genomic feature.
+        """
+        data = self.accession.coordinates.aggregate(max_feature_end = Max('primary_end'))
+        return data['max_feature_end']
+
 
     def has_genomic_coordinates(self):
         """

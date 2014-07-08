@@ -113,6 +113,16 @@ limitations under the License.
       Source ENA entry: <a href="{{ xref.accession.get_ena_url }}" target="_blank" title="{{ xref.accession.non_coding_id }} at ENA">{{ xref.accession.non_coding_id }}</a>
     {% endif %}
 
+    {# show genomic locations for non-human species #}
+    {% if xref.new_has_genomic_coordinates  %}
+      <br>
+      <i class="fa fa-angle-right"></i>
+      Genomic coordinates:
+      {% with genomic_coordinates=xref.new_get_genomic_coordinates %}
+        <a href="{{xref.get_ensembl_url_no_das}}" target="_blank">chr{{ genomic_coordinates.chromosome }}:{{ genomic_coordinates.start|intcomma }}-{{ genomic_coordinates.end|intcomma }} ({{ genomic_coordinates.strand }})</a>
+      {% endwith %}
+    {% endif %}
+
     {# literature references #}
     <span class="literature-refs">
       <button class="literature-refs-retrieve btn btn-default btn-xs pull-right help" data-accession="{{ xref.accession.accession }}" title="Literature citations"><i class="fa fa-book"></i></button>
