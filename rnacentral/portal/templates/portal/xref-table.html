@@ -88,7 +88,7 @@ limitations under the License.
         <br>
         <i class="fa fa-angle-right"></i>
         {% with genomic_coordinates=xref.get_genomic_coordinates %}
-          <button type="button" class="btn btn-primary btn-xs genoverse-xref help margin-right-5px" data-genomic-start="{{ genomic_coordinates.start }}" data-genomic-end="{{ genomic_coordinates.end }}" data-chromosome="{{ genomic_coordinates.chromosome }}" data-species="homo_sapiens" title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> View genomic location</button>
+          <button type="button" class="btn btn-primary btn-xs genoverse-xref help margin-right-5px" data-genomic-start="{{ genomic_coordinates.start }}" data-genomic-end="{{ genomic_coordinates.end }}" data-chromosome="{{ genomic_coordinates.chromosome }}" data-species="{{xref.get_ensembl_species_name}}" title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> View genomic location</button>
           <small>
             <span class="margin-right-5px">chr{{ genomic_coordinates.chromosome }}:{{ genomic_coordinates.start|intcomma }}-{{ genomic_coordinates.end|intcomma }}</span>
             <span class="margin-right-5px ensembl-link"><a href="http://www.ensembl.org/Homo_sapiens/Location/View?r={{ genomic_coordinates.chromosome }}%3A{{ genomic_coordinates.start }}-{{ genomic_coordinates.end }};contigviewbottom=das:{{ BASE_URL }}/api/v1/das/RNAcentral_GRCh37=labels" target="_blank">Ensembl</a></span>
@@ -117,9 +117,12 @@ limitations under the License.
     {% if xref.new_has_genomic_coordinates  %}
       <br>
       <i class="fa fa-angle-right"></i>
-      Genomic coordinates:
       {% with genomic_coordinates=xref.new_get_genomic_coordinates %}
-        <a href="{{xref.get_ensembl_url_no_das}}" target="_blank">chr{{ genomic_coordinates.chromosome }}:{{ genomic_coordinates.start|intcomma }}-{{ genomic_coordinates.end|intcomma }} ({{ genomic_coordinates.strand }})</a>
+        <button type="button" class="btn btn-primary btn-xs genoverse-xref help margin-right-5px" data-genomic-start="{{ genomic_coordinates.start }}" data-genomic-end="{{ genomic_coordinates.end }}" data-chromosome="{{ genomic_coordinates.chromosome }}" data-species="{{xref.get_ensembl_species_name}}" title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> View genomic location</button>
+        <small>
+          <span class="margin-right-5px">chr{{ genomic_coordinates.chromosome }}:{{ genomic_coordinates.start|intcomma }}-{{ genomic_coordinates.end|intcomma }}</span>
+          <span class="margin-right-5px ensembl-link"><a href="{{xref.get_ensembl_url_no_das}}" target="_blank">Ensembl</a></span>
+        </small>
       {% endwith %}
     {% endif %}
 

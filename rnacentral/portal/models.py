@@ -717,6 +717,12 @@ class Xref(models.Model):
             tmrna_type = 2 # two-piece tmRNA
         return tmrna_type
 
+    def get_ensembl_species_name(self):
+        """
+        Get a species name that can be used in Ensembl urls.
+        """
+        return self.accession.species.replace(' ', '_').lower()
+
     def get_ensembl_url_no_das(self):
         """
         Get an Ensembl url
