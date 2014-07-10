@@ -29,7 +29,7 @@ import django_filters
 import re
 
 
-def _get_xrefs_from_genomic_coordinates(chromosome, start, end):
+def _get_xrefs_from_genomic_coordinates(species, chromosome, start, end):
     """
     Common function for retrieving xrefs based on genomic coordinates.
     """
@@ -41,6 +41,13 @@ def _get_xrefs_from_genomic_coordinates(chromosome, start, end):
                                     deleted='N').\
                              select_related('accession', 'accession__assembly').\
                              all()
+        if not xrefs:
+            xrefs = Xref.objects.filter(accession__coordinates__chromosome=chromosome,
+                                        accession__coordinates__primary_start__gte=start,
+                                        accession__coordinates__primary_end__lte=end,
+                                        accession__species=species.replace('_', ' ').capitalize()).\
+                            select_related('accession', 'accession__coordinates').\
+                            all()
         return xrefs
     except:
         return []
@@ -224,7 +231,8 @@ class DasFeatures(APIView):
 </DASGFF>"""
 
         (chromosome, start, end) = _parse_query_parameters()
-        xrefs = _get_xrefs_from_genomic_coordinates(chromosome, start, end)
+        # TODO: remove hardcoded species name
+        xrefs = _get_xrefs_from_genomic_coordinates('Homo sapiens', chromosome, start, end)
         segments = _format_segment()
         das = _format_das_response()
         return Response(das)
@@ -240,13 +248,13 @@ class GenomeAnnotations(APIView):
 
     permission_classes = (AllowAny,)
 
-    def get(self, request, chromosome, start, end, format=None):
+    def get(self, request, species, chromosome, start, end, format=None):
         """
         """
         start = start.replace(',','')
         end = end.replace(',','')
 
-        xrefs = _get_xrefs_from_genomic_coordinates(chromosome, start, end)
+        xrefs = _get_xrefs_from_genomic_coordinates(species, chromosome, start, end)
 
         rnacentral_ids = []
         data = []
@@ -257,7 +265,11 @@ class GenomeAnnotations(APIView):
                 rnacentral_ids.append(rnacentral_id)
             else:
                 continue
-            coordinates = xref.get_genomic_coordinates()
+            # TODO: remove try/catch
+            try:
+                coordinates = xref.get_genomic_coordinates()
+            except:
+                coordinates = xref.new_get_genomic_coordinates()
             transcript_id = rnacentral_id + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
             data.append({
                 'ID': transcript_id,
