@@ -41,9 +41,17 @@ limitations under the License.
      * Load Genoverse for the first time or switch to a different species.
      */
     function initialize_genoverse() {
-      if (typeof window.browser === 'undefined' || this.params._species !== this.params.species) {
+      if (typeof window.browser === 'undefined' || switch_species()) {
           // (re-)create Genoverse object
           window.browser = new Genoverse(get_genoverse_config_object());
+      }
+
+      /**
+       * Return true if the current and the previous browser states refer to
+       * different species.
+       */
+      function switch_species() {
+        return this.params._species !== this.params.species && this.params._species !== '';
       }
     }
 
@@ -221,7 +229,7 @@ limitations under the License.
 
         var species = $this.data('species');
         if (species !== this.params.species) {
-          this.params._species = this.params.species;
+          _species = this.params.species;
         }
 
         this.params = {
@@ -229,6 +237,7 @@ limitations under the License.
           'start': $this.data('genomic-start'),
           'end': $this.data('genomic-end'),
           'species': species,
+          '_species': _species,
           'endpoint': $this.data('endpoint'),
         };
       }
