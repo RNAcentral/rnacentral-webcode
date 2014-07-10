@@ -33,7 +33,7 @@ urlpatterns = patterns('',
     # view for an individual cross-reference
     url(r'^accession/(?P<pk>.*?)/info/?$', cache_page(CACHE_TIMEOUT)(views.AccessionView.as_view()), name='accession-detail'),
     # Ensembl-like genome coordinates endpoint
-    url(r'^feature/region/human/(?P<chromosome>(\d+|Y|X))\:(?P<start>(\d|,)+)-(?P<end>(\d|,)+)/?$',
+    url(r'^feature/region/(human|homo_sapiens)/(?P<chromosome>(\d+|Y|X))\:(?P<start>(\d|,)+)-(?P<end>(\d|,)+)/?$',
         cache_page(CACHE_TIMEOUT)(views.GenomeAnnotations.as_view()), name='human-genome-coordinates'),
 )
 

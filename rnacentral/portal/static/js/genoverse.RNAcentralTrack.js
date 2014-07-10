@@ -11,169 +11,234 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-/*
-Manage the Genoverse embedded browser.
-*/
-
-if (!window.location.origin)
-     window.location.origin = window.location.protocol + "//" + window.location.host + '/';
-
-// RNAcentral REST API
-Genoverse.Track.Model.Gene.RNAcentral = Genoverse.Track.Model.Gene.Ensembl.extend({
-  url: window.location.origin + '/api/v1/feature/region/human/__CHR__:__START__-__END__',
-  dataRequestLimit : 5000000,
-});
-
-// RNAcentral REST API
-Genoverse.Track.Model.Transcript.RNAcentral = Genoverse.Track.Model.Transcript.extend({
-  url: window.location.origin + '/api/v1/feature/region/human/__CHR__:__START__-__END__',
-  dataRequestLimit : 5000000,
-
-  parseData: function (data) {
-    for (var i = 0; i < data.length; i++) {
-      var feature = data[i];
-
-      if (feature.feature_type === 'transcript' && !this.featuresById[feature.ID]) {
-        feature.id    = feature.ID;
-        feature.label = feature.external_name;
-        feature.exons = [];
-        feature.cds   = [];
-
-        this.insertFeature(feature);
-      } else if (feature.feature_type === 'exon' && this.featuresById[feature.Parent]) {
-        feature.id = feature.ID;
-
-        if (!this.featuresById[feature.Parent].exons[feature.id]) {
-          this.featuresById[feature.Parent].exons.push(feature);
-          this.featuresById[feature.Parent].exons[feature.id] = feature;
-        }
-      }
-    }
-  }
-
-});
-
-// default Genoverse config object
-var genoverseConfig = {
-  container     : '#genoverse',
-  genome        : 'grch37', // see js/genomes/
-  chr           : '',
-  showUrlCoords : false, // do not show genomic coordinates in the url
-  plugins       : [ 'controlPanel', 'karyotype', 'resizer', 'fileDrop' ],
-  tracks        : [
-    Genoverse.Track.Scalebar,
-    Genoverse.Track.extend({
-      name      : 'Sequence',
-      model     : Genoverse.Track.Model.Sequence.Ensembl,
-      view      : Genoverse.Track.View.Sequence,
-      resizable : 'auto',
-      100000    : false
-    }),
-    Genoverse.Track.extend({
-      name      : 'Ensembl genes',
-      info      : 'Ensembl API genes & transcripts, see <a href="http://beta.rest.ensembl.org/" target="_blank">beta.rest.ensembl.org</a> for more details',
-      resizable : 'auto',
-      labels : true,
-      model  : Genoverse.Track.Model.Gene.Ensembl,
-      view   : Genoverse.Track.View.Gene.Ensembl
-    }),
-    Genoverse.Track.extend({
-      name      : 'Ensembl transcripts',
-      info      : 'Ensembl API genes & transcripts, see <a href="http://beta.rest.ensembl.org/" target="_blank">beta.rest.ensembl.org</a> for more details',
-      resizable : 'auto',
-      labels : true,
-      model  : Genoverse.Track.Model.Transcript.Ensembl,
-      view   : Genoverse.Track.View.Transcript.Ensembl
-    }),
-    Genoverse.Track.extend({
-      name      : 'RNAcentral',
-      id        : 'RNAcentral',
-      info      : 'Unique RNAcentral Sequences',
-      resizable : 'auto',
-      labels : true,
-      model  : Genoverse.Track.Model.Transcript.RNAcentral,
-      view   : Genoverse.Track.View.Transcript.Ensembl
-    })
-  ]
-};
+/**
+ * Manage Genoverse embedded browser.
+ */
 
 ;(function(){
 
-  // genomic coordinates to display
+  /**
+   * Internal object for storing the browser state.
+   */
   params = {
     'chromosome': '',
     'start': '',
-    'end': ''
+    'end': '',
+    'species': '',
+    '_species': '', // previous species
   };
 
-  // store the data- values in the internal object
-  set_params = function($this) {
-    this.params = {
-      'chromosome': $this.data('chromosome'),
-      'start': $this.data('genomic-start'),
-      'end': $this.data('genomic-end'),
-    };
-  };
+  /**
+   * Main function for launching Genoverse.
+   */
+  display_genomic_location = function() {
 
-  show_genoverse_header = function() {
-    $('.genoverse-wrap h2').show();
-  };
+    show_genoverse_section_header();
+    initialize_genoverse();
+    navigate_to_feature();
 
-  // main function
-  genoverse_wrapper = function(params) {
+    /**
+     * Load Genoverse for the first time or switch to a different species.
+     */
+    function initialize_genoverse() {
+      if (typeof window.browser === 'undefined' || this.params._species !== this.params.species) {
+          // (re-)create Genoverse object
+          window.browser = new Genoverse(get_genoverse_config_object());
+      }
+    }
 
-    var track_id = 'RNAcentral';
+    /**
+     * Navigate to the region of interest.
+     */
+    function navigate_to_feature() {
+      browser.moveTo(this.params.start, this.params.end, false);
+      browser.zoomOut();
+    }
 
-    // loading genoverse for the first time
-    if (typeof window.browser === 'undefined') {
-        show_genoverse_header();
-        // create Genoverse object
-        genoverseConfig.chr = params.chromosome;
-        window.browser = new Genoverse(genoverseConfig);
-        // set track position
-        browser.moveTo(params.start, params.end, false);
-        browser.zoomOut();
-    } else {
-        if ( browser.chr != this.params.chromosome ) {
-          // update chromosome and chromosomeSize
-          browser.chr = params.chromosome;
-          browser.chromosomeSize = browser.genome[browser.chr].size;
-          // reload the data for the current chromosome
-          browser.tracksById[track_id].model.receiveData(browser.tracksById[track_id].model.data, 1, browser.chromosomeSize);
-        }
-        // navigate to the region of interest
-        browser.moveTo(params.start, params.end, false);
-        browser.zoomOut();
+    /**
+     * Display Genoverse section header.
+     */
+    function show_genoverse_section_header() {
+      $('.genoverse-wrap h2').show();
     }
 
   };
 
+  /**
+   * Configure Genoverse initialization object.
+   */
+  get_genoverse_config_object = function() {
+
+    var genoverseConfig = {
+      container     : '#genoverse',
+      chromosomeSize: Math.pow(10, 20), // should be greater than any chromosome size
+      // genome: 'grch37',
+      chr           : this.params.chromosome,
+      showUrlCoords : false, // do not show genomic coordinates in the url
+      plugins       : [ 'controlPanel', 'karyotype', 'resizer', 'fileDrop' ],
+      tracks        : [
+        Genoverse.Track.Scalebar,
+        Genoverse.Track.extend({
+          name      : 'Sequence',
+          model     : configure_genoverse_model('ensembl_sequence'),
+          view      : Genoverse.Track.View.Sequence,
+          resizable : 'auto',
+          100000    : false,
+        }),
+        Genoverse.Track.extend({
+          name      : 'Ensembl genes',
+          info      : 'Ensembl API genes',
+          resizable : 'auto',
+          labels : true,
+          model  : configure_genoverse_model('ensembl_gene'),
+          view   : Genoverse.Track.View.Gene.Ensembl,
+        }),
+        Genoverse.Track.extend({
+          name      : 'Ensembl transcripts',
+          info      : 'Ensembl API transcripts',
+          resizable : 'auto',
+          labels : true,
+          model  : configure_genoverse_model('ensembl_transcript'),
+          view   : Genoverse.Track.View.Transcript.Ensembl,
+        }),
+        Genoverse.Track.extend({
+          name      : 'RNAcentral',
+          id        : 'RNAcentral',
+          info      : 'Unique RNAcentral Sequences',
+          resizable : 'auto',
+          labels : true,
+          model  : configure_genoverse_model('rnacentral'),
+          view   : Genoverse.Track.View.Transcript.Ensembl,
+        })
+      ]
+    };
+
+    return genoverseConfig;
+
+    /**
+     * Each Genoverse model is configured with an organism-specific url.
+     * In addition, a new RNAcentral models that's mimicking Ensembl API is defined.
+     */
+    function configure_genoverse_model(model_type) {
+
+      var model;
+
+      if (model_type === 'ensembl_gene') {
+        // Ensembl Gene track
+        new_url = '//beta.rest.ensembl.org/feature/region/__SPECIES__/__CHR__:__START__-__END__?feature=gene;content-type=application/json'.replace('__SPECIES__', this.params.species);
+        model = Genoverse.Track.Model.Gene.Ensembl.extend({
+          url: new_url,
+        });
+      } else if (model_type === 'ensembl_transcript') {
+        // Ensembl Transcript track
+        new_url = '//rest.ensembl.org/overlap/region/__SPECIES__/__CHR__:__START__-__END__?feature=transcript;feature=exon;feature=cds;content-type=application/json'.replace('__SPECIES__', this.params.species);
+        model = Genoverse.Track.Model.Transcript.Ensembl.extend({
+          url: new_url,
+        });
+      } else if (model_type === 'ensembl_sequence') {
+        // Ensembl sequence view
+        new_url = '//beta.rest.ensembl.org/sequence/region/__SPECIES__/__CHR__:__START__-__END__?content-type=text/plain'.replace('__SPECIES__', this.params.species);
+        model = Genoverse.Track.Model.Sequence.Ensembl.extend({
+          url: new_url,
+        });
+      } else if (model_type === 'rnacentral') {
+        // custom RNAcentral track
+        if (!window.location.origin) {
+          window.location.origin = window.location.protocol + "//" + window.location.host + '/';
+        }
+        new_url = window.location.origin + '/api/v1/feature/region/__SPECIES__/__CHR__:__START__-__END__'.replace('__SPECIES__', this.params.species);
+        model = Genoverse.Track.Model.Gene.Ensembl.extend({
+          url: new_url,
+
+          parseData: function (data) {
+            for (var i = 0; i < data.length; i++) {
+              var feature = data[i];
+
+              if (feature.feature_type === 'transcript' && !this.featuresById[feature.ID]) {
+                feature.id    = feature.ID;
+                feature.label = feature.external_name;
+                feature.exons = [];
+                feature.cds   = [];
+
+                this.insertFeature(feature);
+              } else if (feature.feature_type === 'exon' && this.featuresById[feature.Parent]) {
+                feature.id = feature.ID;
+
+                if (!this.featuresById[feature.Parent].exons[feature.id]) {
+                  this.featuresById[feature.Parent].exons.push(feature);
+                  this.featuresById[feature.Parent].exons[feature.id] = feature;
+                }
+              }
+            }
+          }
+        });
+      }
+
+      return model;
+    }
+
+  };
+
+  /**
+   * Maximize Genoverse container width.
+   */
   set_genoverse_width = function() {
     var w = $('.container').width();
     $('.wrap').width(w);
     $('#genoverse').width(w);
   };
 
-  resize_genoverse_on_window_resize = function() {
-    window.onresize = function() {
-      set_genoverse_width();
-    };
-  };
-
-  genoverse_trigger = function() {
-    $('body').on("click", '.genoverse-xref', function(e){
-        e.preventDefault();
-        set_params($(this));
-        genoverse_wrapper(params);
-    });
-  };
-
+  /**
+   * Attach all event handlers.
+   */
   bind_events = function() {
     resize_genoverse_on_window_resize();
     genoverse_trigger();
+
+    /**
+     * Ensure Genoverse is resized when the browser window is resized.
+     */
+    function resize_genoverse_on_window_resize() {
+      window.onresize = function() {
+        set_genoverse_width();
+      };
+    }
+
+    /**
+     * Create an event for launching Genoverse.
+     */
+    function genoverse_trigger()  {
+      $('body').on("click", '.genoverse-xref', function(e){
+          e.preventDefault();
+          set_params($(this));
+          display_genomic_location();
+      });
+
+      /**
+       * Store new parameters in the internal object.
+       */
+      function set_params($this) {
+
+        var species = $this.data('species');
+        if (species !== this.params.species) {
+          this.params._species = this.params.species;
+        }
+
+        this.params = {
+          'chromosome': $this.data('chromosome'),
+          'start': $this.data('genomic-start'),
+          'end': $this.data('genomic-end'),
+          'species': species,
+          'endpoint': $this.data('endpoint'),
+        };
+      }
+    }
+
   };
 
-  // run
+  /**
+   * Run module.
+   */
   (function(){
     set_genoverse_width();
     bind_events();

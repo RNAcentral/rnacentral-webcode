@@ -35,12 +35,12 @@ def _get_xrefs_from_genomic_coordinates(chromosome, start, end):
     """
     try:
         xrefs = Xref.objects.filter(accession__assembly__chromosome__chromosome=chromosome,
-                                            accession__assembly__primary_start__gte=start,
-                                            accession__assembly__primary_end__lte=end,
-                                            db__id=1,
-                                            deleted='N').\
-                                     select_related('accession', 'accession__assembly').\
-                                     all()
+                                    accession__assembly__primary_start__gte=start,
+                                    accession__assembly__primary_end__lte=end,
+                                    db__id=1,
+                                    deleted='N').\
+                             select_related('accession', 'accession__assembly').\
+                             all()
         return xrefs
     except:
         return []
