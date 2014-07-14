@@ -742,7 +742,7 @@ class Xref(models.Model):
         Mirror the existing API while using the new GenomicCoordinates model.
         TODO: remove "new_" from the method name.
         """
-        return True if self.accession.coordinates.count() > 0 else False
+        return True if self.accession.coordinates.first() and self.accession.coordinates.first().chromosome else False
 
     def new_get_genomic_coordinates(self):
         """
