@@ -124,7 +124,7 @@ limitations under the License.
           {# Ensembl url, DAS track only for human #}
           <span class="margin-right-5px ensembl-link">
             {% with ensembl_species_name=xref.get_ensembl_species_name %}
-              <a href="http://www.ensembl.org/{{ensembl_species_name}}/Location/View?r={{ genomic_coordinates.chromosome }}%3A{{ genomic_coordinates.start }}-{{ genomic_coordinates.end }}{% if ensembl_species_name == 'homo_sapiens' %};contigviewbottom=das:{{ BASE_URL }}/api/v1/das/RNAcentral_GRCh37=labels{% endif %}" target="_blank">Ensembl</a>
+              <a href="http://{% if ensembl_species_name == 'homo_sapiens' %}grch37.{% endif %}ensembl.org/{{ensembl_species_name}}/Location/View?r={{ genomic_coordinates.chromosome }}%3A{{ genomic_coordinates.start }}-{{ genomic_coordinates.end }}{% if ensembl_species_name == 'homo_sapiens' %};contigviewbottom=das:{{ BASE_URL }}/api/v1/das/RNAcentral_GRCh37=labels{% endif %}" target="_blank">Ensembl</a>
             {% endwith %}
           </span>
           {# UCSC url only for human #}
