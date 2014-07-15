@@ -283,7 +283,8 @@ class GenomeAnnotations(APIView):
                 'end': coordinates['end'],
             })
             # exons
-            for i, exon in enumerate(xref.accession.assembly.all()):
+            exons = xref.accession.coordinates.all() or xref.accession.assembly.all()
+            for i, exon in enumerate(exons):
                 exon_id = '_'.join([xref.accession.accession, 'exon_' + str(i)])
                 data.append({
                     'external_name': exon_id,
