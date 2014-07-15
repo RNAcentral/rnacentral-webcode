@@ -723,20 +723,6 @@ class Xref(models.Model):
         """
         return self.accession.species.replace(' ', '_').lower()
 
-    def get_ensembl_url_no_das(self):
-        """
-        Get an Ensembl url
-        TODO: check that the species exists in Ensembl.
-        """
-        return ('http://www.ensembl.org/{species}/Location/'
-                'View?r={chromosome}%3A{start}-{end}'.format(
-                        species=self.accession.species.replace(' ', '_'),
-                        chromosome=self.get_feature_chromosome(),
-                        start=self.get_feature_start(),
-                        end=self.get_feature_end()
-                    )
-                )
-
     def new_has_genomic_coordinates(self):
         """
         Mirror the existing API while using the new GenomicCoordinates model.
