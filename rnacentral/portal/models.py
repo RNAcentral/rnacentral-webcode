@@ -723,6 +723,19 @@ class Xref(models.Model):
         """
         return self.accession.species.replace(' ', '_').lower()
 
+    def get_ucsc_db_id(self):
+        """
+        Get UCSC id for the genome assembly.
+        http://genome.ucsc.edu/FAQ/FAQreleases.html
+        """
+        ucsc_db_ids = {
+            9606: 'hg19', # human
+        }
+        if self.taxid in ucsc_db_ids.keys():
+            return ucsc_db_ids[self.taxid]
+        else:
+            return None
+
     def new_has_genomic_coordinates(self):
         """
         Mirror the existing API while using the new GenomicCoordinates model.
