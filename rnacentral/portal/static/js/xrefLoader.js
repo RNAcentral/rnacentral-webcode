@@ -28,6 +28,8 @@ var xrefLoader = function(upi) {
 			loading_error_msg: '#handlebars-loading-error-tmpl',
 		}
 	};
+
+	this.enable_genomic_features = false;
 };
 
 xrefLoader.prototype.load_xrefs = function() {
@@ -56,6 +58,7 @@ xrefLoader.prototype.load_xrefs = function() {
 		var url = '/rna/' + obj.upi + '/xrefs';
     	$.get(url, function(data){
         	$(obj.config.dom.xref_table_container).html(data);
+			obj.enable_genomic_features = data.indexOf('View genomic location') > 0;
       	}).fail(function() {
       		show_error();
       	}).done(function(){
@@ -150,14 +153,10 @@ xrefLoader.prototype.load_xrefs = function() {
 			}
 		};
 
-		function _genomic_results_present() {
-			return $('.genoverse-xref').length > 0;
-		};
-
 		function append_download_links() {
           	// append download links if genomic coordinates are found
           	var url = '/api/v1/rna/' + obj.upi;
-         	if ( _genomic_results_present() ) {
+			if ( obj.enable_genomic_features ) {
 		        $(obj.config.dom.downloads).append('<li><a href="' + url + '.bed"  download="'  + obj.upi + '.bed">bed</a></li>')
 		                                   .append('<li><a href="' + url + '.gff"  download="'  + obj.upi + '.gff">gff</a></li>')
 		                                   .append('<li><a href="' + url + '.gff3" download="'  + obj.upi + '.gff3">gff3</a></li>');
@@ -165,7 +164,7 @@ xrefLoader.prototype.load_xrefs = function() {
 		};
 
 		function enable_hopscotch_genomic_tour() {
-			if ( _genomic_results_present() ) {
+			if ( obj.enable_genomic_features ) {
 	            // create the tour button
 	            $('h1').first().append('<small><button type="button" class="btn btn-info pull-right tour help animated pulse" title="Take an interactive tour to see genome integration features in action">Tour genome-related features</button></small>');
 
