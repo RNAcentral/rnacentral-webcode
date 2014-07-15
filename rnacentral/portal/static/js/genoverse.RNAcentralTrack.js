@@ -139,7 +139,7 @@ limitations under the License.
         });
       } else if (model_type === 'ensembl_transcript') {
         // Ensembl Transcript track
-        new_url = '//rest.ensembl.org/overlap/region/__SPECIES__/__CHR__:__START__-__END__?feature=transcript;feature=exon;feature=cds;content-type=application/json'.replace('__SPECIES__', this.params.species);
+        new_url = '//beta.rest.ensembl.org/feature/region/__SPECIES__/__CHR__:__START__-__END__?feature=transcript;feature=exon;feature=cds;content-type=application/json'.replace('__SPECIES__', this.params.species);
         model = Genoverse.Track.Model.Transcript.Ensembl.extend({
           url: new_url,
         });
