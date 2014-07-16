@@ -573,6 +573,19 @@ class Accession(models.Model):
     class Meta:
         db_table = 'rnc_accessions'
 
+    def get_biotype(self):
+        """
+        Biotype annotations are stored in notes and come from Ensembl and VEGA
+        entries.
+        Biotype is used to color entries in Genoverse.
+        If biotype contains the word "RNA" it is given a predefined color.
+        """
+        biotype = 'ncRNA' # default biotype
+        match = re.search(r'biotype\:(\w+)', self.note)
+        if match:
+            biotype = match.group(1)
+        return biotype
+
     def get_rna_type(self):
         """
         Get the type of RNA, which either the name of the feature from the
