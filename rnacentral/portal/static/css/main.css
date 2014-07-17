@@ -778,6 +778,14 @@ textarea {
   vertical-align: top;
 }
 
+.genoverse_karyotype_placeholder p {
+  padding-top: 15px;
+  font-family: Verdana;
+  font-size: 11px;
+  font-weight: bold;
+  color: #F2F5F7;
+}
+
 .gv_chromosome {
   border: 1px solid white;
   border-radius: 5px 5px 5px 5px;

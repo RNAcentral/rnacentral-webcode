@@ -62,7 +62,7 @@ limitations under the License.
        */
       function add_karyotype_placeholder() {
         if (!is_karyotype_available()) {
-            $('.gv_wrapper').prepend('<div class="genoverse_karyotype_placeholder" title="Karyotype display not available for this species"></div>');
+            $('.gv_wrapper').prepend('<div class="genoverse_karyotype_placeholder"><p>Karyotype display not available for this species</p></div>');
         }
       }
     }
