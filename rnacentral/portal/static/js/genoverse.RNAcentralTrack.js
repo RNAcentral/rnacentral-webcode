@@ -194,9 +194,7 @@ limitations under the License.
 
       if (model_type === 'ensembl_gene') {
         // Ensembl Gene track
-        new_url = '//__ENDPOINT__/feature/region/__SPECIES__/__CHR__:__START__-__END__?feature=gene;content-type=application/json'.\
-          replace('__ENDPOINT__', endpoint).\
-          replace('__SPECIES__', this.params.species);
+        new_url = '//__ENDPOINT__/feature/region/__SPECIES__/__CHR__:__START__-__END__?feature=gene;content-type=application/json'.replace('__ENDPOINT__', endpoint).replace('__SPECIES__', this.params.species);
         model = Genoverse.Track.Model.Gene.Ensembl.extend({
           url: new_url,
         });
