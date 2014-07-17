@@ -158,7 +158,7 @@ limitations under the License.
     function get_ensembl_or_ensemblgenomes_endpoint() {
       var endpoint;
       var ensembl_species = ["ailuropoda_melanoleuca", "anas_platyrhynchos", "anolis_carolinensis", "astyanax_mexicanus",
-                             "bos_taurus", "caenorhabditis_elegans", "callithrix_jacchus", "canis_lupus_familiaris",
+                             "bos_taurus", "callithrix_jacchus", "canis_lupus_familiaris",
                              "cavia_porcellus", "ceratotherium_simum_simum", "chlorocebus_sabaeus", "choloepus_hoffmanni",
                              "chrysemys_picta_bellii", "ciona_intestinalis", "ciona_savignyi", "cricetulus_griseus", "danio_rerio",
                              "dasypus_novemcinctus", "dipodomys_ordii", "drosophila_melanogaster", "echinops_telfairi",
@@ -171,10 +171,11 @@ limitations under the License.
                              "oreochromis_niloticus", "ornithorhynchus_anatinus", "orycteropus_afer_afer", "oryctolagus_cuniculus",
                              "oryzias_latipes", "otolemur_garnettii", "ovis_aries", "pan_troglodytes", "papio_anubis",
                              "papio_hamadryas", "pelodiscus_sinensis", "petromyzon_marinus", "poecilia_formosa", "pongo_abelii",
-                             "procavia_capensis", "pteropus_vampyrus", "rattus_norvegicus", "saccharomyces_cerevisiae",
+                             "procavia_capensis", "pteropus_vampyrus", "rattus_norvegicus",
                              "saimiri_boliviensis", "sarcophilus_harrisii", "sorex_araneus", "sus_scrofa", "sus_scrofa_map",
                              "taeniopygia_guttata", "takifugu_rubripes", "tarsius_syrichta", "tetraodon_nigroviridis", "tupaia_belangeri",
                              "tursiops_truncatus", "vicugna_pacos", "xenopus_tropicalis", "xiphophorus_maculatus"];
+                             // "saccharomyces_cerevisiae", "caenorhabditis_elegans", - use EG for those
       if (ensembl_species.indexOf(this.params.species) > -1) {
         endpoint = 'beta.rest.ensembl.org';
       } else {
