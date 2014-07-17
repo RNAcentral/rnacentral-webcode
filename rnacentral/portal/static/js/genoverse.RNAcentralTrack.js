@@ -149,31 +149,70 @@ limitations under the License.
     }
 
     /**
+     * Dynamically choose whether to use E! or EG REST API based on species.
+     * If species not in E!, use EG.
+     * Ensembl species list: http://www.ensembl.org/info/about/species.html
+     */
+    function get_ensembl_or_ensemblgenomes_endpoint() {
+      var endpoint;
+      var ensembl_species = ["ailuropoda_melanoleuca", "anas_platyrhynchos", "anolis_carolinensis", "astyanax_mexicanus",
+                             "bos_taurus", "caenorhabditis_elegans", "callithrix_jacchus", "canis_lupus_familiaris",
+                             "cavia_porcellus", "ceratotherium_simum_simum", "chlorocebus_sabaeus", "choloepus_hoffmanni",
+                             "chrysemys_picta_bellii", "ciona_intestinalis", "ciona_savignyi", "cricetulus_griseus", "danio_rerio",
+                             "dasypus_novemcinctus", "dipodomys_ordii", "drosophila_melanogaster", "echinops_telfairi",
+                             "equus_caballus", "erinaceus_europaeus", "felis_catus", "ficedula_albicollis", "gadus_morhua",
+                             "gallus_gallus", "gasterosteus_aculeatus", "gorilla_gorilla_gorilla", "heterocephalus_glaber",
+                             "homo_sapiens", "ictidomys_tridecemlineatus", "latimeria_chalumnae", "lepisosteus_oculatus",
+                             "loxodonta_africana", "macaca_fascicularis", "macaca_mulatta", "macropus_eugenii", "meleagris_gallopavo",
+                             "melopsittacus_undulatus", "microcebus_murinus", "microtus_ochrogaster", "monodelphis_domestica",
+                             "mus_musculus", "mustela_putorius_furo", "myotis_lucifugus", "nomascus_leucogenys", "ochotona_princeps",
+                             "oreochromis_niloticus", "ornithorhynchus_anatinus", "orycteropus_afer_afer", "oryctolagus_cuniculus",
+                             "oryzias_latipes", "otolemur_garnettii", "ovis_aries", "pan_troglodytes", "papio_anubis",
+                             "papio_hamadryas", "pelodiscus_sinensis", "petromyzon_marinus", "poecilia_formosa", "pongo_abelii",
+                             "procavia_capensis", "pteropus_vampyrus", "rattus_norvegicus", "saccharomyces_cerevisiae",
+                             "saimiri_boliviensis", "sarcophilus_harrisii", "sorex_araneus", "sus_scrofa", "sus_scrofa_map",
+                             "taeniopygia_guttata", "takifugu_rubripes", "tarsius_syrichta", "tetraodon_nigroviridis", "tupaia_belangeri",
+                             "tursiops_truncatus", "vicugna_pacos", "xenopus_tropicalis", "xiphophorus_maculatus"];
+      if (ensembl_species.indexOf(this.params.species) > -1) {
+        endpoint = 'beta.rest.ensembl.org';
+      } else {
+        endpoint = 'test.rest.ensemblgenomes.org';
+      }
+      return endpoint;
+    }
+
+    /**
      * Each Genoverse model is configured with an organism-specific url.
      * In addition, a new RNAcentral models that's mimicking Ensembl API is defined.
      */
     function configure_genoverse_model(model_type) {
 
       var model;
+      var endpoint = get_ensembl_or_ensemblgenomes_endpoint();
 
       if (model_type === 'ensembl_gene') {
         // Ensembl Gene track
-        new_url = '//beta.rest.ensembl.org/feature/region/__SPECIES__/__CHR__:__START__-__END__?feature=gene;content-type=application/json'.replace('__SPECIES__', this.params.species);
+        new_url = '//__ENDPOINT__/feature/region/__SPECIES__/__CHR__:__START__-__END__?feature=gene;content-type=application/json'.\
+          replace('__ENDPOINT__', endpoint).\
+          replace('__SPECIES__', this.params.species);
         model = Genoverse.Track.Model.Gene.Ensembl.extend({
           url: new_url,
         });
+
       } else if (model_type === 'ensembl_transcript') {
         // Ensembl Transcript track
-        new_url = '//beta.rest.ensembl.org/feature/region/__SPECIES__/__CHR__:__START__-__END__?feature=transcript;feature=exon;feature=cds;content-type=application/json'.replace('__SPECIES__', this.params.species);
+        new_url = '//__ENDPOINT__/feature/region/__SPECIES__/__CHR__:__START__-__END__?feature=transcript;feature=exon;feature=cds;content-type=application/json'.replace('__ENDPOINT__', endpoint).replace('__SPECIES__', this.params.species);
         model = Genoverse.Track.Model.Transcript.Ensembl.extend({
           url: new_url,
         });
+
       } else if (model_type === 'ensembl_sequence') {
         // Ensembl sequence view
-        new_url = '//beta.rest.ensembl.org/sequence/region/__SPECIES__/__CHR__:__START__-__END__?content-type=text/plain'.replace('__SPECIES__', this.params.species);
+        new_url = '//__ENDPOINT__/sequence/region/__SPECIES__/__CHR__:__START__-__END__?content-type=text/plain'.replace('__ENDPOINT__', endpoint).replace('__SPECIES__', this.params.species);
         model = Genoverse.Track.Model.Sequence.Ensembl.extend({
           url: new_url,
         });
+
       } else if (model_type === 'rnacentral') {
         // custom RNAcentral track
         if (!window.location.origin) {
