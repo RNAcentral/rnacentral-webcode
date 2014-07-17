@@ -44,6 +44,7 @@ limitations under the License.
       if (typeof window.browser === 'undefined' || switch_species()) {
           // (re-)create Genoverse object
           window.browser = new Genoverse(get_genoverse_config_object());
+          add_karyotype_placeholder();
       }
 
       /**
@@ -52,6 +53,17 @@ limitations under the License.
        */
       function switch_species() {
         return this.params._species !== this.params.species && this.params._species !== '';
+      }
+
+      /**
+       * Karyotype is supported only for a limited number of species,
+       * so a placeholder div is used to replace the karyotype div
+       * to keep the display consistent.
+       */
+      function add_karyotype_placeholder() {
+        if (!is_karyotype_available()) {
+            $('.gv_wrapper').prepend('<div class="genoverse_karyotype_placeholder" title="Karyotype display not available for this species"></div>');
+        }
       }
     }
 
@@ -79,11 +91,9 @@ limitations under the License.
 
     var genoverseConfig = {
       container     : '#genoverse',
-      chromosomeSize: Math.pow(10, 20), // should be greater than any chromosome size
-      // genome: 'grch37',
       chr           : this.params.chromosome,
       showUrlCoords : false, // do not show genomic coordinates in the url
-      plugins       : [ 'controlPanel', 'karyotype', 'resizer', 'fileDrop' ],
+      plugins       : [ 'controlPanel', 'resizer', 'fileDrop' ],
       tracks        : [
         Genoverse.Track.Scalebar,
         Genoverse.Track.extend({
@@ -121,7 +131,22 @@ limitations under the License.
       ]
     };
 
+    genoverseConfig = configure_karyotype_display(genoverseConfig);
+
     return genoverseConfig;
+
+    /**
+     * Determine whether karyotype should be displayed.
+     */
+    function configure_karyotype_display(genoverseConfig) {
+      if (is_karyotype_available()) {
+        genoverseConfig.plugins.push('karyotype');
+        genoverseConfig.genome = 'grch37'; // determine dynamically when more karyotypes are available
+      } else {
+        genoverseConfig.chromosomeSize = Math.pow(10, 20); // should be greater than any chromosome size
+      }
+      return genoverseConfig;
+    }
 
     /**
      * Each Genoverse model is configured with an organism-specific url.
@@ -194,6 +219,18 @@ limitations under the License.
     var w = $('.container').width();
     $('.wrap').width(w);
     $('#genoverse').width(w);
+  };
+
+  /**
+   * Determine if karyotype information is available for this species.
+   */
+  is_karyotype_available = function() {
+    var karyotype_available = ["homo_sapiens"]; // TODO: support more species
+    if (karyotype_available.indexOf(this.params.species) === -1) {
+      return false;
+    } else {
+      return true;
+    }
   };
 
   /**
