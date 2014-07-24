@@ -140,7 +140,7 @@ class Command(BaseCommand):
                 'name': 'RNAcentral',
                 'description': ('a database for non-protein coding RNA '
                                 'sequences'),
-                'release': '1beta',
+                'release': '1.0',
                 'release_date': time.strftime("%d/%m/%Y"),
                 'entry_count': get_entry_count(),
             }
