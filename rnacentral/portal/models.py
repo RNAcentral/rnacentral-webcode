@@ -517,6 +517,22 @@ class Database(models.Model):
                     },
                 ],
             },
+            {
+                'name': 'RefSeq',
+                'label': 'refseq',
+                'url': 'http://www.ncbi.nlm.nih.gov/refseq/',
+                'description': 'is a comprehensive, integrated, non-redundant, well-annotated set of reference sequences',
+                'abbreviation': 'NCBI Reference Sequence Database',
+                'examples': ['', '', ''],
+                'references': [
+                    {
+                        'title': 'RefSeq: an update on mammalian reference sequences.',
+                        'authors': 'Pruitt K.D., Brown G.R., Hiatt S.M., Thibaud-Nissen F., Astashyn A., Ermolaeva O., Farrell C.M., Hart J., Landrum M.J., McGarvey K.M. et al.',
+                        'journal': 'Nucleic Acids Res. 2014 Jan;42(Database issue):D756-63',
+                        'pubmed_id': '24259432',
+                    },
+                ],
+            },
         ]
 
 class Release(models.Model):

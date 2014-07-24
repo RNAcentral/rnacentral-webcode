@@ -482,6 +482,12 @@ class RNAcentralTest(unittest.TestCase):
             self.assertTrue(page.gene_and_transcript_is_ok())
             self.assertTrue(page.alternative_transcripts_is_ok())
 
+    def test_refseq_example_pages(self):
+        for example_id in self._get_expert_db_example_ids('refseq-examples'):
+            page = RefseqSequencePage(self.browser, example_id)
+            page.navigate()
+            self._sequence_view_checks(page)
+
     def test_mirbase_example_pages(self):
         for example_id in self._get_expert_db_example_ids('mirbase-examples'):
             page = MirbaseSequencePage(self.browser, example_id)
@@ -498,7 +504,7 @@ class RNAcentralTest(unittest.TestCase):
 
     def test_expert_database_landing_pages(self):
         expert_dbs = ['tmrna-website', 'srpdb', 'mirbase', 'vega',
-                      'ena', 'rfam', 'lncrnadb', 'gtrnadb']
+                      'ena', 'rfam', 'lncrnadb', 'gtrnadb', 'refseq']
         for expert_db in expert_dbs:
             page = ExpertDatabaseLandingPage(self.browser, expert_db)
             page.navigate()

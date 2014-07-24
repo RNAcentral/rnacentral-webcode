@@ -30,7 +30,7 @@ Please note that `"field value"` must be enclosed in double quotes.
 
 * **expert database**
 
-	Possible values: ena, rfam, mirbase, vega, gtrnadb, srpdb, "tmRNA Website"
+	Possible values: "ena", "gtrnadb", "lncrnadb", "mirbase", "refseq", "rfam", "srpdb", "tmRNA Website", "vega"
 
 	*Examples*: `expert_db:"tmrna website"`, `expert_db:"mirbase"`
 

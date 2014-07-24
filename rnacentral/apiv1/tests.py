@@ -106,7 +106,7 @@ class ApiV1Test(unittest.TestCase):
             self.assertNotEqual(data['count'], 0)
 
     def test_rna_database_filter(self):
-        for database in ['srpdb', 'mirbase', 'vega', 'tmrna_website']:
+        for database in ['srpdb', 'mirbase', 'vega', 'tmrna_website', 'refseq']:
             url = self._get_api_url('rna/?database=%s' % database)
             data = self._check_urls(url)
             self.assertNotEqual(data['count'], 0)

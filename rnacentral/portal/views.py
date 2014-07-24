@@ -114,6 +114,23 @@ def expert_database_view(request, expert_db_name):
     """
     Expert database view.
     """
+    def _normalize_expert_db_name(expert_db_name):
+        """
+        Expert_db_name should match RNACEN.RNC_DATABASE.DESCR
+        """
+        dbs = ('SRPDB', 'MIRBASE', 'VEGA', 'TMRNA_WEB', 'ENA', 'RFAM', 'LNCRNADB', 'GTRNADB')
+        dbs_coming_soon = ('REFSEQ')
+        if re.match('tmrna-website', expert_db_name, flags=re.IGNORECASE):
+            expert_db_name = 'TMRNA_WEB'
+        else:
+            expert_db_name = expert_db_name.upper()
+        if expert_db_name in dbs:
+            return expert_db_name
+        elif expert_db_name in dbs_coming_soon:
+            return 'coming_soon'
+        else:
+            return False
+
     expert_db_name = _normalize_expert_db_name(expert_db_name)
     if expert_db_name and expert_db_name != 'coming_soon':
         expert_db = Database.objects.get(descr=expert_db_name)
@@ -130,7 +147,7 @@ def expert_database_view(request, expert_db_name):
             'lncrnadb': lncrnadb,
         })
     elif expert_db_name == 'coming_soon':
-        return render_to_response('portal/expert-database-coming-soon.html')
+        return render_to_response('portal/coming-soon.html')
     else:
         raise Http404()
 
@@ -286,21 +303,3 @@ def _get_json_lineage_tree(accessions):
     nodes = get_nested_dict(lineages)
     json_lineage_tree = get_nested_tree(nodes, {})
     return json.dumps(json_lineage_tree)
-
-
-def _normalize_expert_db_name(expert_db_name):
-    """
-    Expert_db_name should match RNACEN.RNC_DATABASE.DESCR
-    """
-    dbs = ('SRPDB', 'MIRBASE', 'VEGA', 'TMRNA_WEB', 'ENA', 'RFAM', 'LNCRNADB', 'GTRNADB')
-    dbs_coming_soon = ()
-    if re.match('tmrna-website', expert_db_name, flags=re.IGNORECASE):
-        expert_db_name = 'TMRNA_WEB'
-    else:
-        expert_db_name = expert_db_name.upper()
-    if expert_db_name in dbs:
-        return expert_db_name
-    elif expert_db_name in dbs_coming_soon:
-        return 'coming_soon'
-    else:
-        return False
