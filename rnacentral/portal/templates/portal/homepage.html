@@ -83,10 +83,9 @@ RNAcentral
           </div>
           <div class="panel-body small">
             <ul>
-              <li>Release <strong>1.0beta</strong></li>
+              <li>Release <strong>1.0beta</strong> ({{ context.last_update.release_date }})</li>
               <li><em>{{ context.seq_count|intcomma }}</em> distinct sequences</li>
               <li><em>{{ context.databases|length }}</em> Expert Databases</li>
-              <li>Last updated on {{ context.last_update.release_date }}</li>
             </ul>
           </div>
         </div>
