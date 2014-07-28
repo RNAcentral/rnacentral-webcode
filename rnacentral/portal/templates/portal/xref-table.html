@@ -99,6 +99,13 @@ limitations under the License.
     {# tmRNA Website #}
     {% elif xref.db.display_name == 'tmRNA Website' %}
       tmRNA Website: <a href="{{ xref.accession.get_expert_db_external_url }}.html" target="_blank">{{ xref.accession.external_id }}</a>
+
+    {# RefSeq #}
+    {% elif xref.db.display_name == 'RefSeq' %}
+      RefSeq: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+
+    {% else %}
+      {{ xref.accession.external_id }} {{ xref.accession.optional_id }}
     {% endif %}
 
     {% if xref.accession.organelle %}

@@ -77,9 +77,17 @@ class Rna(models.Model):
                           select_related().\
                           all()
 
+    def get_refseq_xrefs(self):
+        """
+        Get RefSeq xrefs, which require separate treatment because they are not
+        part of the Non-coding product.
+        """
+        return self.xrefs.filter(db__descr='REFSEQ').select_related().all()
+
     def get_rfam_xrefs(self):
         """
         Get RFAM xrefs, which require separate treatment because they are not
+        part of the Non-coding product.
         """
         return self.xrefs.filter(db__descr='RFAM').select_related().all()
 
@@ -88,7 +96,7 @@ class Rna(models.Model):
         Concatenate querysets putting the expert database xrefs
         at the beginning of the resulting queryset.
         """
-        return self.get_ena_xrefs() | self.get_rfam_xrefs() | self.get_expert_database_xrefs()
+        return self.get_ena_xrefs() | self.get_rfam_xrefs() | self.get_refseq_xrefs() | self.get_expert_database_xrefs()
 
     def count_xrefs(self):
         """
@@ -641,6 +649,7 @@ class Accession(models.Model):
             'TMRNA_WEB': 'http://bioinformatics.sandia.gov/tmrna/seqs/',
             'LNCRNADB': 'http://www.lncrnadb.org/Detail.aspx?TKeyID=',
             'GTRNADB': 'http://lowelab.ucsc.edu/GtRNAdb/',
+            'REFSEQ': 'http://www.ncbi.nlm.nih.gov/nuccore/',
         }
         if self.database in urls.keys():
             return urls[self.database] + self.external_id
