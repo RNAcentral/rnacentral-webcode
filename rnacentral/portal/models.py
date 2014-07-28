@@ -593,6 +593,7 @@ class Accession(models.Model):
     note = models.CharField(max_length=1500)
     old_locus_tag = models.CharField(max_length=50)
     product = models.CharField(max_length=300)
+    db_xref = models.CharField(max_length=100)
 
     class Meta:
         db_table = 'rnc_accessions'
@@ -696,6 +697,16 @@ class Xref(models.Model):
             return True
         else:
             return False
+
+    def get_ncbi_gene_id(self):
+        """
+        GeneID links are stored in the db_xref field.
+        """
+        match = re.search('GeneID\:(\d+)', self.accession.db_xref, re.IGNORECASE)
+        if match:
+            return match.group(1)
+        else:
+            return None
 
     def get_ucsc_bed(self):
         """

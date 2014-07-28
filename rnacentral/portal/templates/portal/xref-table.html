@@ -134,6 +134,14 @@ limitations under the License.
         {% endwith %}
       {% endif %} {# is_refseq_mirna #}
 
+      {% with gene_id=xref.get_ncbi_gene_id %}
+          {% if gene_id %}
+            <br>
+            <i class="fa fa-angle-right"></i>
+            NCBI GeneID: <a href="http://www.ncbi.nlm.nih.gov/gene/{{ gene_id }}" target="_blank">{{ gene_id }}</a>
+          {% endif %}
+      {% endwith %}
+
     {% else %}
       {{ xref.accession.external_id }} {{ xref.accession.optional_id }}
     {% endif %}
