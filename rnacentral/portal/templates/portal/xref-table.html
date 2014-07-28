@@ -42,8 +42,11 @@ limitations under the License.
     <strong>{{ xref.accession.description }}</strong>
     <br>
     <i class="fa fa-angle-right"></i>
+    {# ENA #}
     {% if xref.db.display_name == 'ENA' %}
       ENA: <a href="{{ xref.accession.get_ena_url }}" target="_blank" title="{{ xref.accession.accession }} at ENA">{{ xref.accession.accession }}</a>
+
+    {# RFAM #}
     {% elif xref.db.display_name == 'RFAM' %}
       RFAM family: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }}),
       {% if xref.is_rfam_seed %}
@@ -55,18 +58,27 @@ limitations under the License.
       <i class="fa fa-angle-right"></i>
       Source ENA entry: <a href="http://www.ebi.ac.uk/ena/data/view/{{ xref.accession.parent_ac }}" target="_blank">{{ xref.accession.parent_ac }}</a>
       (nucleotides {{ xref.accession.feature_start|intcomma }}:{{ xref.accession.feature_end|intcomma }})
+
+    {# SRPDB #}
     {% elif xref.db.display_name == 'SRPDB' %}
       SRPDB:
       <a class="srpdb-external-url" href="{{ xref.accession.get_expert_db_external_url }}.fasta" target="_blank">{{ xref.accession.get_srpdb_id }}</a>
+
+    {# lncRNAdb #}
     {% elif xref.db.display_name == 'lncRNAdb' %}
       lncRNAdb:
       <a class="lncrnadb-external-url" href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.optional_id }}</a>
+
+    {# gtRNAdb #}
     {% elif xref.db.display_name == 'gtRNAdb' %}
       gtRNAdb:
       <a class="gtrnadb-external-url" href="{{ xref.accession.get_expert_db_external_url }}.html" target="_blank">{{ xref.accession.external_id }}</a>
+
+    {# miRBase #}
     {% elif xref.db.display_name == 'miRBase' %}
       miRBase:
       <a class="mirbase-external-url" href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+
     {# VEGA #}
     {% elif xref.db.display_name == 'VEGA' %}
       VEGA transcript <a href="http://vega.sanger.ac.uk/Homo_sapiens/Transcript/Summary?db=core;t={{ xref.accession.optional_id }}" target="_blank" title="View the transcript at VEGA">{{ xref.accession.optional_id }}</a>
@@ -96,6 +108,7 @@ limitations under the License.
           </small>
         {% endwith %}
       {% endif %}
+
     {# tmRNA Website #}
     {% elif xref.db.display_name == 'tmRNA Website' %}
       tmRNA Website: <a href="{{ xref.accession.get_expert_db_external_url }}.html" target="_blank">{{ xref.accession.external_id }}</a>
