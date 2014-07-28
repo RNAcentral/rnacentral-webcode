@@ -715,6 +715,44 @@ class Xref(models.Model):
         """
         return _xref_to_gff3_format(self)
 
+    def is_refseq_mirna(self):
+        """
+        RefSeq miRNAs are stored in 3 xrefs:
+            * precursor_RNA
+            * 5-prime ncRNA
+            * 3-prime ncRNA
+        which share the same parent accession.
+        """
+        same_parent = Accession.objects.filter(parent_ac=self.accession.parent_ac).all()
+        if len(same_parent) > 1:
+            return True
+        else:
+            return False
+
+    def get_refseq_mirna_precursor(self):
+        """
+        Given a 5-prime or 3-prime mature product, retrieve its precursor miRNA.
+        """
+        if self.accession.feature_name != 'precursor_RNA':
+            rna = Xref.objects.filter(accession__parent_ac=self.accession.parent_ac,
+                                      accession__feature_name='precursor_RNA').\
+                               first()
+            return rna.upi
+        else:
+            return None
+
+    def get_refseq_mirna_mature_products(self):
+        """
+        Given a precursor miRNA, retrieve its mature products.
+        """
+        mature_products = Xref.objects.filter(accession__parent_ac=self.accession.parent_ac,
+                                              accession__feature_name='ncRNA').\
+                                       all()
+        upis = []
+        for mature_product in mature_products:
+            upis.append(mature_product.upi)
+        return upis
+
     def get_vega_splice_variants(self):
         splice_variants = []
         if self.db.display_name != 'VEGA':
