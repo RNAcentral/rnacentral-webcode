@@ -175,7 +175,8 @@ limitations under the License.
                              "saimiri_boliviensis", "sarcophilus_harrisii", "sorex_araneus", "sus_scrofa", "sus_scrofa_map",
                              "taeniopygia_guttata", "takifugu_rubripes", "tarsius_syrichta", "tetraodon_nigroviridis", "tupaia_belangeri",
                              "tursiops_truncatus", "vicugna_pacos", "xenopus_tropicalis", "xiphophorus_maculatus"];
-                             // "saccharomyces_cerevisiae", "caenorhabditis_elegans", - use EG for those
+                             // "saccharomyces_cerevisiae", "caenorhabditis_elegans"];
+                              // "saccharomyces_cerevisiae", "caenorhabditis_elegans" could use either E! or EG
       if (ensembl_species.indexOf(this.params.species) > -1) {
         endpoint = 'beta.rest.ensembl.org';
       } else {
