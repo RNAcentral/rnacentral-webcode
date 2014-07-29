@@ -178,19 +178,13 @@ xrefLoader.prototype.load_xrefs = function() {
 	              steps: [
 	                {
 	                  title: "Genome integration",
-	                  content: "Some annotations are linked to the <strong>human genome</strong> and have additional functionality.",
+	                  content: "Some annotations are linked to their genomic location and have additional functionality.",
 	                  target: "xrefs-table-div",
 	                  placement: "top"
 	                },
 	                {
-	                  title: "Links to genome browsers",
-	                  content: "View this genomic location in <strong>Ensembl</strong> or <strong>UCSC</strong> with the pre-loaded RNAcentral track.",
-	                  target: document.querySelector(".ensembl-link"),
-	                  placement: "top"
-	                },
-	                {
 	                  title: "Embedded genome browser",
-	                  content: "This genomic location can also be visualised right on this page.",
+	                  content: "Click <strong>View genomic location</strong> to open a genome browser on this page.",
 	                  target: document.querySelector(".genoverse-xref"),
 	                  placement: "top",
 	                  onNext: function(){
@@ -199,7 +193,7 @@ xrefLoader.prototype.load_xrefs = function() {
 	                },
 	                {
 	                  title: "Using the embedded browser",
-	                  content: "You can <strong>scroll</strong> the browser or click on the entries to view the <strong>popup menus</strong> with links to Ensembl and other RNAcentral entries.",
+	                  content: "You can scroll along the genome or click on the entries to view <strong>popup menus</strong> with additional information.",
 	                  target: 'genoverse',
 	                  placement: "top",
 	                }
