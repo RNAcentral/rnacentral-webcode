@@ -94,6 +94,7 @@ limitations under the License.
     var genoverseConfig = {
       container     : '#genoverse',
       chr           : this.params.chromosome,
+      species       : this.params.species,
       showUrlCoords : false, // do not show genomic coordinates in the url
       plugins       : [ 'controlPanel', 'resizer', 'fileDrop' ],
       tracks        : [
