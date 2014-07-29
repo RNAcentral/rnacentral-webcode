@@ -106,7 +106,7 @@ limitations under the License.
           100000    : false,
         }),
         Genoverse.Track.extend({
-          name      : 'Ensembl genes',
+          name      : 'Genes',
           info      : 'Ensembl API genes',
           resizable : 'auto',
           labels : true,
@@ -114,7 +114,7 @@ limitations under the License.
           view   : Genoverse.Track.View.Gene.Ensembl,
         }),
         Genoverse.Track.extend({
-          name      : 'Ensembl transcripts',
+          name      : 'Transcripts',
           info      : 'Ensembl API transcripts',
           resizable : 'auto',
           labels : true,
