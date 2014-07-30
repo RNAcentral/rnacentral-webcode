@@ -118,15 +118,7 @@ def expert_database_view(request, expert_db_name):
         """
         Expert_db_name should match RNACEN.RNC_DATABASE.DESCR
         """
-        dbs = ('ENA',
-               'GTRNADB',
-               'LNCRNADB',
-               'MIRBASE',
-               'REFSEQ'
-               'RFAM',
-               'TMRNA_WEB',
-               'VEGA',
-               'SRPDB')
+        dbs = Database.objects.values_list('descr', flat=True)
         dbs_coming_soon = ()
         if re.match('tmrna-website', expert_db_name, flags=re.IGNORECASE):
             expert_db_name = 'TMRNA_WEB'

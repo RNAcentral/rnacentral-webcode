@@ -207,7 +207,7 @@ There are 3 url parameters: `length`, `min_length` (greater or equal length), an
 <h3 id="v1-filtering-by-database">Filtering by database</h3>
 
 The expert database can be specified by setting the `database` url parameter
-(possible values: *srpdb*, *mirbase*, *vega*, *tmrna_website*, *lncrnadb*, *gtrnadb*, *ena*, *rfam*, *refseq*).
+(possible values: *srpdb*, *mirbase*, *vega*, *tmrna_website*, *lncrnadb*, *gtrnadb*, *ena*, *rdp*, *rfam*, *refseq*).
 
 #### Examples
 
@@ -218,6 +218,7 @@ The expert database can be specified by setting the `database` url parameter
 * [{{ BASE_URL }}/api/v1/rna/?database=lncrnadb](/api/v1/rna/?database=lncrnadb)
 * [{{ BASE_URL }}/api/v1/rna/?database=gtrnadb](/api/v1/rna/?database=gtrnadb)
 * [{{ BASE_URL }}/api/v1/rna/?database=ena](/api/v1/rna/?database=ena)
+* [{{ BASE_URL }}/api/v1/rna/?database=rdp](/api/v1/rna/?database=rdp)
 * [{{ BASE_URL }}/api/v1/rna/?database=rfam](/api/v1/rna/?database=rfam)
 * [{{ BASE_URL }}/api/v1/rna/?database=refseq](/api/v1/rna/?database=refseq)
 

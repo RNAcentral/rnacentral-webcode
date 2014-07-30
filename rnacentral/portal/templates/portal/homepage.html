@@ -17,7 +17,7 @@ limitations under the License.
 
 {% block meta_tags %}
     {{ block.super }}
-    <meta name="description" content="RNAcentral is a new resource to organise data for non-protein coding RNA genes"/>
+    <meta name="description" content="RNAcentral is a new resource to organise data for non-protein coding RNAs"/>
 {% endblock %}
 
 {% block title %}
@@ -28,25 +28,24 @@ RNAcentral
 
   <br>
 
-  <div class="row">
-    <div class="col-md-12">
-      <p>
-        <span class="lead text-info">RNAcentral is a new resource to organise data for non-protein coding RNA genes</span>
-        <br>
-        <span class="text-muted">
-          RNAcentral provides unified access to the sequence data supplied by the Expert Databases.
-          <a class="small" href="{% url 'about' %}">Learn more</a>
-        </span>
-      </p>
-    </div>
-  </div>
-
-  <br>
-
   <div id="expert-databases">
     {% for database in context.databases %}
-      {% if forloop.counter == 1 or forloop.counter == 4 or forloop.counter == 7 %}<div class="row">{% endif %}
-      <div class="col-md-4 col-sm-4 col-xs-12">
+      {% if forloop.counter == 1 or forloop.counter == 3 or forloop.counter == 7 %}<div class="row">{% endif %}
+      {% if forloop.counter == 1 %}
+        <div class="col-md-6 col-sm-6 col-xs-12">
+          <div class="panel panel-default">
+            <div class="panel-body">
+              <p>
+                <span class="lead text-info">RNAcentral is a new resource that provides unified access to the ncRNA sequence data supplied by the Expert Databases.</span>
+                <span class="text-muted">
+                  <a class="small" href="{% url 'about' %}">Learn more</a>
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+      <div class="col-md-3 col-sm-6 col-xs-12">
         <div class="panel panel-default">
           <div class="panel-body">
             <a class="expert-db-logo homepage" href="/expert-database/{{database.label}}">
@@ -57,9 +56,6 @@ RNAcentral
               {{database.description}}.
               <ul class="list-unstyled">
                 <li id="{{database.label}}-examples"><strong>{{database.num_sequences|intcomma}}</strong> sequences
-                {% if database.display_name == 'VEGA' %}
-                  with embedded <span class="label label-primary">genome browsers</span>
-                {% endif %}
                 (<a href="/rna/{{database.examples|first}}">example</a>)
                 </li>
               </ul>
@@ -68,10 +64,9 @@ RNAcentral
           </div>
         </div>
       </div>
-      {% if forloop.counter == 3 or forloop.counter == 6 or forloop.last %}</div>{% endif %}
+      {% if forloop.counter == 2 or forloop.counter == 6 or forloop.last %}</div>{% endif %}
     {% endfor %}
   </div>
-
   <br>
 
   <div class="row">

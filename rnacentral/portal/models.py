@@ -541,6 +541,22 @@ class Database(models.Model):
                     },
                 ],
             },
+            {
+                'name': 'RDP',
+                'label': 'rdp',
+                'url': 'http://rdp.cme.msu.edu/',
+                'description': 'provides quality-controlled, aligned and annotated rRNA sequences and a suite of analysis tools',
+                'abbreviation': 'Ribosomal Database Project',
+                'examples': ['URS0000000001'],
+                'references': [
+                    {
+                        'title': 'Ribosomal Database Project: data and tools for high throughput rRNA analysis',
+                        'authors': 'Cole J.R., Wang Q., Fish J.A., Chai B., McGarrell D.M., Sun Y., Brown C.T., Porras-Alfaro A., Kuske C.R., Tiedje J.M.',
+                        'journal': 'Nucleic Acids Res. 2014 Jan;42(Database issue):D633-42',
+                        'pubmed_id': '24288368',
+                    },
+                ],
+            },
         ]
 
 class Release(models.Model):
@@ -651,6 +667,7 @@ class Accession(models.Model):
             'LNCRNADB': 'http://www.lncrnadb.org/Detail.aspx?TKeyID=',
             'GTRNADB': 'http://lowelab.ucsc.edu/GtRNAdb/',
             'REFSEQ': 'http://www.ncbi.nlm.nih.gov/nuccore/',
+            'RDP': 'http://rdp.cme.msu.edu/hierarchy/detail.jsp?seqid=',
         }
         if self.database in urls.keys():
             return urls[self.database] + self.external_id

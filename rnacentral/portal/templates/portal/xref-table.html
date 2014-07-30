@@ -142,6 +142,10 @@ limitations under the License.
           {% endif %}
       {% endwith %}
 
+    {# RDP #}
+    {% elif xref.db.display_name == 'RDP' %}
+      RDP: <a href="{{ xref.accession.get_expert_db_external_url }}.html" target="_blank">{{ xref.accession.external_id }}</a>
+
     {% else %}
       {{ xref.accession.external_id }} {{ xref.accession.optional_id }}
     {% endif %}

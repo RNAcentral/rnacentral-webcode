@@ -475,6 +475,8 @@ class RnaList(RnaMixin, generics.ListAPIView):
             database = 8
         elif re.match('refseq', database, re.IGNORECASE):
             database = 9
+        elif re.match('rdp', database, re.IGNORECASE):
+            database = 10
         return database
 
     def get_queryset(self):
