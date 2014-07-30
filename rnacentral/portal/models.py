@@ -34,6 +34,15 @@ class Rna(models.Model):
     class Meta:
         db_table = 'rna'
 
+    def has_genomic_coordinates(self):
+        """
+        Return True if at least one cross-reference has genomic coordinates.
+        """
+        for xref in self.xrefs.iterator():
+            if xref.new_has_genomic_coordinates():
+                return True
+        return False
+
     def get_sequence(self):
         """
         Sequences of up to 4000 nucleotides are stored in seq_short, while the

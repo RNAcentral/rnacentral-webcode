@@ -244,6 +244,7 @@ class RnaXmlExporter(OracleConnection):
                 {gene_synonym}
                 {rna_type}
                 {product}
+                {has_genomic_coordinates}
             </additional_fields>
         </entry>""".format(upi=self.data['upi'],
                            description=self.get_description(),
@@ -260,9 +261,10 @@ class RnaXmlExporter(OracleConnection):
                            gene=self.get_additional_field('gene'),
                            gene_synonym=self.get_additional_field('gene_synonym'),
                            rna_type=self.get_additional_field('rna_type'),
-                           product=self.get_additional_field('product'))
+                           product=self.get_additional_field('product'),
+                           has_genomic_coordinates=self.get_additional_field('has_genomic_coordinates'))
 
-    def get_xml_entry(self, upi):
+    def get_xml_entry(self, rna):
         """
         Public method for outputting an xml dump entry for a given UPI.
         """
@@ -313,8 +315,9 @@ class RnaXmlExporter(OracleConnection):
             self.data['rna_type'].add(rna_type.replace('_', ' '))
 
         self.reset()
-        self.data['upi'] = upi
-        self.cursor.execute(None, {'upi': upi})
+        self.data['upi'] = rna.upi
+        self.data['has_genomic_coordinates'] = (str(rna.has_genomic_coordinates()),)
+        self.cursor.execute(None, {'upi': rna.upi})
 
         for row in self.cursor:
             result = self.row_to_dict(row)

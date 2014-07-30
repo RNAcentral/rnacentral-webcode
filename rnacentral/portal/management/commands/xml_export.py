@@ -163,7 +163,7 @@ class Command(BaseCommand):
                     self.test_entries -= 1
                 if self.test_entries < 0:
                     break
-                filehandle.write(exporter.get_xml_entry(rna.upi))
+                filehandle.write(exporter.get_xml_entry(rna))
                 filehandle.flush()
 
         def write_xml_footer():
