@@ -554,7 +554,7 @@ class Database(models.Model):
                 'url': 'http://rdp.cme.msu.edu/',
                 'description': 'provides quality-controlled, aligned and annotated rRNA sequences and a suite of analysis tools',
                 'abbreviation': 'Ribosomal Database Project',
-                'examples': ['URS0000000001'],
+                'examples': ['URS000064300F', 'URS00006FBF68', 'URS000070C439'],
                 'references': [
                     {
                         'title': 'Ribosomal Database Project: data and tools for high throughput rRNA analysis',
