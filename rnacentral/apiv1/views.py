@@ -273,6 +273,8 @@ class GenomeAnnotations(APIView):
             exons = xref.accession.coordinates.all() or xref.accession.assembly.all()
             for i, exon in enumerate(exons):
                 exon_id = '_'.join([xref.accession.accession, 'exon_' + str(i)])
+                if not exon.chromosome:
+                    continue # some exons may not be mapped onto the genome (common in RefSeq)
                 data.append({
                     'external_name': exon_id,
                     'ID': exon_id,
