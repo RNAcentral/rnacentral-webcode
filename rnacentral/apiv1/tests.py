@@ -187,7 +187,7 @@ class ApiV1Test(unittest.TestCase):
         self.assertIn('# Genomic coordinates not available', r.text)
 
     def test_genome_annotations(self):
-        targets = ['feature/region/human/Y:26,631,479-26,632,610', 'feature/region/human/2:39,745,816-39,826,679']
+        targets = ['feature/region/homo_sapiens/Y:26,631,479-26,632,610', 'feature/region/homo_sapiens/2:39,745,816-39,826,679']
         for target in targets:
             url = self._get_api_url(target)
             data = self._check_urls(url)
