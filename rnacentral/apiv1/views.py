@@ -299,7 +299,6 @@ class BrowsableAPIRenderer(renderers.BrowsableAPIRenderer):
         """
         """
         context = super(BrowsableAPIRenderer, self).get_context(data, accepted_media_type, renderer_context)
-        context['new_variable'] = ['new variable']
         return context
 
 
