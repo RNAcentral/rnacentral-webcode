@@ -46,7 +46,6 @@ class Command(BaseCommand):
 
         make_option('--minimum',
             dest='min',
-            type='int',
             help='[Required] Minimum RNA id to output'),
 
         make_option('--maximum',
@@ -94,7 +93,8 @@ class Command(BaseCommand):
                 cmd_options = ['destination', 'min', 'max']
                 for cmd_option in cmd_options:
                     if options[cmd_option]:
-                        self.options[cmd_option] = options[cmd_option]
+                        self.options[cmd_option] = str(options[cmd_option])
+                print self.options
 
             def validate_command_line_options():
                 """
@@ -103,9 +103,9 @@ class Command(BaseCommand):
                 if not self.options['destination']:
                     raise CommandError('Please specify --destination')
                 if not self.options['min']:
-                    raise CommandError('Please specify -min')
+                    raise CommandError('Please specify --minimum')
                 if not self.options['max']:
-                    raise CommandError('Please specify -max')
+                    raise CommandError('Please specify --maximum')
                 if not os.path.exists(self.options['destination']):
                     os.makedirs(self.options['destination'])
 
@@ -138,7 +138,7 @@ class Command(BaseCommand):
                 """
                 Get the number of entries to be written out.
                 """
-                return self.options['max'] - self.options['min']
+                return int(self.options['max']) - int(self.options['min'])
 
             database = {
                 'name': 'RNAcentral',
@@ -162,7 +162,7 @@ class Command(BaseCommand):
             Write out RNA entries.
             """
             exporter = RnaXmlExporter()
-            for rna in Rna.objects.filter(id__gt=self.options['min'], id__lte=self.options['max']).iterator():
+            for rna in Rna.objects.filter(id__gt=int(self.options['min']), id__lte=int(self.options['max'])).iterator():
                 filehandle.write(exporter.get_xml_entry(rna))
                 filehandle.flush()
 
@@ -197,7 +197,7 @@ class Command(BaseCommand):
             else:
                 print 'Compressing failed, no file created'
 
-        self.filename = self.filename.replace('MIN', str(self.options['min'])).replace('MAX', str(self.options['max']))
+        self.filename = self.filename.replace('MIN', self.options['min']).replace('MAX', self.options['max'])
         filepath = os.path.join(self.options['destination'], self.filename)
         filehandle = open(filepath, 'w')
         write_xml_header()
