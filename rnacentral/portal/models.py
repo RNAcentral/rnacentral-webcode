@@ -419,7 +419,7 @@ class Database(models.Model):
                 ],
             },
             {
-                'name': 'RFAM',
+                'name': 'Rfam',
                 'label': 'rfam',
                 'url': 'http://rfam.xfam.org',
                 'description': 'is a database containing information about ncRNA families and other structured RNA elements',
