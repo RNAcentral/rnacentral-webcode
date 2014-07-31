@@ -22,6 +22,7 @@ import re
 
 
 class Rna(models.Model):
+    id = models.IntegerField(db_column='id')
     upi = models.CharField(max_length=13, db_index=True, primary_key=True)
     timestamp = models.DateField()
     userstamp = models.CharField(max_length=30)

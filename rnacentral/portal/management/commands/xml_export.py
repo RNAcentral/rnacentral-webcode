@@ -44,16 +44,19 @@ class Command(BaseCommand):
             dest='destination',
             help='[Required] Full path to the output directory'),
 
+        make_option('--minimum',
+            dest='min',
+            type='int',
+            help='[Required] Minimum RNA id to output'),
+
+        make_option('--maximum',
+            dest='max',
+            type='int',
+            help='[Required] Maximum RNA id to output'),
+
         make_option('--profile',
             default=False,
             help='[Optional] Show cProfile information for profiling purposes'),
-
-        make_option('--test',
-            action='store',
-            dest='test',
-            default=False,
-            help='[Optional] Run in test mode, which retrieves '
-                 'only a small subset of all data'),
     )
     # shown with -h, --help
     help = ('Export RNAcentral data in xml4dbdump format for EBeye search. '
@@ -69,11 +72,11 @@ class Command(BaseCommand):
         """
         super(Command, self).__init__(*args, **kwargs)
 
-        self.filename = 'xml4dbdumps.xml'
-        self.test_entries = 1000
+        self.filename = 'xml4dbdumps__MIN__MAX.xml'
         self.options = {
             'destination': None,
-            'test': False,
+            'min': 0,
+            'max': 0,
         }
 
     def handle(self, *args, **options):
@@ -88,7 +91,7 @@ class Command(BaseCommand):
                 """
                 Store command line options in `self.options`.
                 """
-                cmd_options = ['destination', 'test']
+                cmd_options = ['destination', 'min', 'max']
                 for cmd_option in cmd_options:
                     if options[cmd_option]:
                         self.options[cmd_option] = options[cmd_option]
@@ -99,6 +102,10 @@ class Command(BaseCommand):
                 """
                 if not self.options['destination']:
                     raise CommandError('Please specify --destination')
+                if not self.options['min']:
+                    raise CommandError('Please specify -min')
+                if not self.options['max']:
+                    raise CommandError('Please specify -max')
                 if not os.path.exists(self.options['destination']):
                     os.makedirs(self.options['destination'])
 
@@ -129,12 +136,9 @@ class Command(BaseCommand):
             """
             def get_entry_count():
                 """
-                Get either the test or the full entry count.
+                Get the number of entries to be written out.
                 """
-                if self.options['test']:
-                    return self.test_entries
-                else:
-                    return Rna.objects.count()
+                return self.options['max'] - self.options['min']
 
             database = {
                 'name': 'RNAcentral',
@@ -158,11 +162,7 @@ class Command(BaseCommand):
             Write out RNA entries.
             """
             exporter = RnaXmlExporter()
-            for rna in Rna.objects.iterator():
-                if self.options['test']:
-                    self.test_entries -= 1
-                if self.test_entries < 0:
-                    break
+            for rna in Rna.objects.filter(id__gt=self.options['min'], id__lte=self.options['max']).iterator():
                 filehandle.write(exporter.get_xml_entry(rna))
                 filehandle.flush()
 
@@ -197,6 +197,7 @@ class Command(BaseCommand):
             else:
                 print 'Compressing failed, no file created'
 
+        self.filename = self.filename.replace('MIN', str(self.options['min'])).replace('MAX', str(self.options['max']))
         filepath = os.path.join(self.options['destination'], self.filename)
         filehandle = open(filepath, 'w')
         write_xml_header()
