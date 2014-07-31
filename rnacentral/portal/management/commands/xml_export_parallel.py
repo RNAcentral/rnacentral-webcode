@@ -52,7 +52,7 @@ class Command(BaseCommand):
             raise CommandError('Please specify --destination')
 
         total = Rna.objects.count()
-        step = pow(20,5)
+        step = pow(10,5) * 2
         start = 0
         stop = 0
 
