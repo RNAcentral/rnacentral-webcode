@@ -34,20 +34,10 @@ def _get_xrefs_from_genomic_coordinates(species, chromosome, start, end):
     Common function for retrieving xrefs based on genomic coordinates.
     """
     try:
-        xrefs = Xref.objects.filter(accession__assembly__chromosome__chromosome=chromosome,
-                                    accession__assembly__primary_start__gte=start,
-                                    accession__assembly__primary_end__lte=end,
-                                    db__id=1,
-                                    deleted='N').\
-                             select_related('accession', 'accession__assembly').\
-                             all()
-        if not xrefs:
-            xrefs = Xref.objects.filter(accession__coordinates__chromosome=chromosome,
-                                        accession__coordinates__primary_start__gte=start,
-                                        accession__coordinates__primary_end__lte=end,
-                                        accession__species=species.replace('_', ' ').capitalize()).\
-                            select_related('accession', 'accession__coordinates').\
-                            all()
+        xrefs = Xref.objects.filter(accession__coordinates__chromosome=chromosome,
+                                    accession__coordinates__primary_start__gte=start,
+                                    accession__coordinates__primary_end__lte=end,
+                                    accession__species=species.replace('_', ' ').capitalize()).all()
         return xrefs
     except:
         return []
@@ -265,11 +255,7 @@ class GenomeAnnotations(APIView):
                 rnacentral_ids.append(rnacentral_id)
             else:
                 continue
-            # TODO: remove try/catch
-            try:
-                coordinates = xref.get_genomic_coordinates()
-            except:
-                coordinates = xref.new_get_genomic_coordinates()
+            coordinates = xref.new_get_genomic_coordinates()
             transcript_id = rnacentral_id + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
             biotype = xref.accession.get_biotype()
             data.append({
