@@ -28,6 +28,8 @@ limitations under the License.
     '_species': '', // previous species
   };
 
+  genoverse_container = '#genoverse';
+
   /**
    * Main function for launching Genoverse.
    */
@@ -43,6 +45,8 @@ limitations under the License.
     function initialize_genoverse() {
       if (typeof window.browser === 'undefined' || switch_species()) {
           // (re-)create Genoverse object
+          delete window.browser;
+          $(this.genoverse_container).html('');
           window.browser = new Genoverse(get_genoverse_config_object());
           add_karyotype_placeholder();
       }
@@ -92,7 +96,7 @@ limitations under the License.
   get_genoverse_config_object = function() {
 
     var genoverseConfig = {
-      container     : '#genoverse',
+      container     : this.genoverse_container,
       chr           : this.params.chromosome,
       species       : this.params.species,
       showUrlCoords : false, // do not show genomic coordinates in the url
