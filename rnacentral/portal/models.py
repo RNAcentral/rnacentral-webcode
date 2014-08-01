@@ -850,7 +850,7 @@ class Xref(models.Model):
         http://genome.ucsc.edu/FAQ/FAQreleases.html
         """
         ucsc_db_ids = {
-            9606: 'hg19', # human
+            9606: 'hg38', # human
         }
         if self.taxid in ucsc_db_ids.keys():
             return ucsc_db_ids[self.taxid]
