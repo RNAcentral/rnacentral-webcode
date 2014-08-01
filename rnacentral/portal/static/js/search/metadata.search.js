@@ -83,7 +83,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
         ebeye_base_url: 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral',
         rnacentral_base_url: get_base_url(),
         fields: ['description', 'active', 'length'],
-        facetfields: ['expert_db', 'rna_type', 'TAXONOMY'], // will be displayed in this order
+        facetfields: ['expert_db', 'rna_type', 'TAXONOMY', 'has_genomic_coordinates'], // will be displayed in this order
         facetcount: 30,
         pagesize: 15,
     };
@@ -236,7 +236,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
              */
             function preprocess_results(data) {
                 // sort facets the same way as in config
-                _.sortBy(data.facets, function(facet){
+                data.facets = _.sortBy(data.facets, function(facet){
                     return _.indexOf(search_config.facetfields, facet.id);
                 });
                 return data;
