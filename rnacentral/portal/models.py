@@ -74,7 +74,7 @@ class Rna(models.Model):
         """
         Get xrefs from expert databases.
         """
-        return self.xrefs.select_related().exclude(accession__is_composite='N').all()
+        return self.xrefs.select_related().exclude(accession__is_composite='N').filter(deleted='N').all()
 
     def get_ena_xrefs(self):
         """
@@ -82,7 +82,7 @@ class Rna(models.Model):
         """
         expert_db_projects = Database.objects.exclude(project_id=None).\
                                               values_list('project_id', flat=True)
-        return self.xrefs.filter(db__descr='ENA').\
+        return self.xrefs.filter(db__descr='ENA', deleted='N').\
                           exclude(accession__project__in=expert_db_projects).\
                           select_related().\
                           all()
@@ -92,28 +92,33 @@ class Rna(models.Model):
         Get RDP xrefs, which require separate treatment because they are not
         part of the Non-coding product.
         """
-        return self.xrefs.filter(db__descr='RDP').select_related().all()
+        return self.xrefs.filter(db__descr='RDP', deleted='N').select_related().all()
 
     def get_refseq_xrefs(self):
         """
         Get RefSeq xrefs, which require separate treatment because they are not
         part of the Non-coding product.
         """
-        return self.xrefs.filter(db__descr='REFSEQ').select_related().all()
+        return self.xrefs.filter(db__descr='REFSEQ', deleted='N').select_related().all()
 
     def get_rfam_xrefs(self):
         """
         Get RFAM xrefs, which require separate treatment because they are not
         part of the Non-coding product.
         """
-        return self.xrefs.filter(db__descr='RFAM').select_related().all()
+        return self.xrefs.filter(db__descr='RFAM', deleted='N').select_related().all()
 
     def get_xrefs(self):
         """
         Concatenate querysets putting the expert database xrefs
         at the beginning of the resulting queryset.
         """
-        return self.get_ena_xrefs() | self.get_rfam_xrefs() | self.get_rdp_xrefs() | self.get_refseq_xrefs() | self.get_expert_database_xrefs()
+        xrefs = self.get_ena_xrefs() | self.get_refseq_xrefs() | self.get_rdp_xrefs() | \
+                self.get_rfam_xrefs() | self.get_expert_database_xrefs()
+        if xrefs:
+            return xrefs
+        else:
+            return self.xrefs.filter(deleted='Y').select_related().all()
 
     def count_xrefs(self):
         """
