@@ -904,13 +904,6 @@ class Xref(models.Model):
         data = self.accession.coordinates.aggregate(max_feature_end = Max('primary_end'))
         return data['max_feature_end']
 
-
-    def has_genomic_coordinates(self):
-        """
-        True for sequences with genomic coordinates.
-        """
-        return True if self.accession.assembly.count() > 0 else False
-
     def get_genomic_coordinates(self):
         """
         """
