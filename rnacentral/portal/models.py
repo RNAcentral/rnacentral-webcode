@@ -687,6 +687,11 @@ class Accession(models.Model):
             'RDP': 'http://rdp.cme.msu.edu/hierarchy/detail.jsp?seqid=',
         }
         if self.database in urls.keys():
+            if self.database == 'GTRNADB':
+                if 'summary' in self.external_id:
+                    return urls[self.database] + self.external_id + '.html'
+                else:
+                    return urls[self.database] + self.external_id + '/' + self.external_id + '-summary.html'
             return urls[self.database] + self.external_id
         else:
             return ''

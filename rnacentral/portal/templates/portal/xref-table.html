@@ -72,7 +72,7 @@ limitations under the License.
     {# gtRNAdb #}
     {% elif xref.db.display_name == 'gtRNAdb' %}
       gtRNAdb:
-      <a class="gtrnadb-external-url" href="{{ xref.accession.get_expert_db_external_url }}.html" target="_blank">{{ xref.accession.external_id }}</a>
+      <a class="gtrnadb-external-url" href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>
 
     {# miRBase #}
     {% elif xref.db.display_name == 'miRBase' %}
