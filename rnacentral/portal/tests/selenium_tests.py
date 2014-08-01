@@ -228,8 +228,13 @@ class ExpertDatabasesOverviewPage(BasePage):
         BasePage.__init__(self, browser, self.url)
 
     def get_expert_tr_count(self):
-        """get the number of rectangles representing expert databases"""
+        """get the number of rows representing expert databases"""
         expert_dbs = self.browser.find_elements_by_tag_name("tr")
+        return len(expert_dbs)
+
+    def get_footer_expert_db_count(self):
+        """get the number of expert database links in the footer"""
+        expert_dbs = self.browser.find_elements_by_css_selector('#global-footer .col-md-7 li>a')
         return len(expert_dbs)
 
 
@@ -463,7 +468,9 @@ class RNAcentralTest(unittest.TestCase):
         page = ExpertDatabasesOverviewPage(self.browser)
         page.navigate()
         self.assertFalse(page.js_errors_found())
-        self.assertEqual(page.get_expert_tr_count(), 21)
+        print page.get_footer_expert_db_count()
+        print page.get_expert_tr_count()
+        self.assertEqual(page.get_expert_tr_count(), page.get_footer_expert_db_count())
 
     def test_tmrna_website_example_pages(self):
         for example_id in self._get_expert_db_example_ids('tmrna-website-examples'):
