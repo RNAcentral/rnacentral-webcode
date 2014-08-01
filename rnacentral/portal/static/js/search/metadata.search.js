@@ -176,7 +176,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
             var words = query.match(/[^\s"]+|"[^"]*"/g);
             var array_length = words.length;
             for (var i = 0; i < array_length; i++) {
-                if ( words[i].match(/and|or|not/gi) ) {
+                if ( words[i].match(/^(and|or|not)$/gi) ) {
                     // capitalize logical operators
                     words[i] = words[i].toUpperCase();
                 } else if ( words[i].match(/\:$/gi) ) {
