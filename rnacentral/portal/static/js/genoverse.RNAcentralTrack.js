@@ -67,7 +67,7 @@ limitations under the License.
       function add_karyotype_placeholder() {
         if (!is_karyotype_available()) {
             $('.gv_wrapper').prepend('<div class="genoverse_karyotype_placeholder">' +
-                                     '  <p>Karyotype display is not available for this species</p>' +
+                                     '  <p>Karyotype display is not available</p>' +
                                      '</div>');
         }
       }
@@ -271,13 +271,38 @@ limitations under the License.
    * Determine if karyotype information is available for this species.
    */
   is_karyotype_available = function() {
-    var karyotype_available = ["homo_sapiens"]; // TODO: support more species
-    if (karyotype_available.indexOf(this.params.species) === -1) {
-      return false;
-    } else {
-      return true;
+
+    return species_supported() && chromosome_size_available();
+
+
+    function species_supported() {
+      var species = ["homo_sapiens"]; // TODO: support more species
+      if (species.indexOf(this.params.species) !== -1) {
+        return true;
+      } else {
+        return false;
+      }
     }
-  };
+
+    /**
+     * Get a list of chromosomes from the karyotype object and determine
+     * whether the size of the displayed region is known.
+     * Some RNAs are defined on scaffolds or other non-chromosomal objects
+     * for which the size is not stored in the karyotype object.
+     */
+    function chromosome_size_available() {
+      var chromosomes = [];
+      for(var key in grch38) {
+        chromosomes.push(key);
+      }
+      if ( chromosomes.indexOf(this.params.chromosome.toString()) !== -1) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+  }
 
   /**
    * Attach all event handlers.
