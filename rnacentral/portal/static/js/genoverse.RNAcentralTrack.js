@@ -148,7 +148,7 @@ limitations under the License.
     function configure_karyotype_display(genoverseConfig) {
       if (is_karyotype_available()) {
         genoverseConfig.plugins.push('karyotype');
-        genoverseConfig.genome = 'grch37'; // determine dynamically when more karyotypes are available
+        genoverseConfig.genome = 'grch38'; // determine dynamically when more karyotypes are available
       } else {
         genoverseConfig.chromosomeSize = Math.pow(10, 20); // should be greater than any chromosome size
       }
@@ -183,9 +183,9 @@ limitations under the License.
                              // "saccharomyces_cerevisiae", "caenorhabditis_elegans"];
                               // "saccharomyces_cerevisiae", "caenorhabditis_elegans" could use either E! or EG
       if (ensembl_species.indexOf(this.params.species) > -1) {
-        endpoint = 'beta.rest.ensembl.org';
+        endpoint = 'rest.ensembl.org';
       } else {
-        endpoint = 'test.rest.ensemblgenomes.org';
+        endpoint = 'rest.ensemblgenomes.org';
       }
       return endpoint;
     }
@@ -201,14 +201,14 @@ limitations under the License.
 
       if (model_type === 'ensembl_gene') {
         // Ensembl Gene track
-        new_url = '//__ENDPOINT__/feature/region/__SPECIES__/__CHR__:__START__-__END__?feature=gene;content-type=application/json'.replace('__ENDPOINT__', endpoint).replace('__SPECIES__', this.params.species);
+        new_url = '//__ENDPOINT__/overlap/region/__SPECIES__/__CHR__:__START__-__END__?feature=gene;content-type=application/json'.replace('__ENDPOINT__', endpoint).replace('__SPECIES__', this.params.species);
         model = Genoverse.Track.Model.Gene.Ensembl.extend({
           url: new_url,
         });
 
       } else if (model_type === 'ensembl_transcript') {
         // Ensembl Transcript track
-        new_url = '//__ENDPOINT__/feature/region/__SPECIES__/__CHR__:__START__-__END__?feature=transcript;feature=exon;feature=cds;content-type=application/json'.replace('__ENDPOINT__', endpoint).replace('__SPECIES__', this.params.species);
+        new_url = '//__ENDPOINT__/overlap/region/__SPECIES__/__CHR__:__START__-__END__?feature=transcript;feature=exon;feature=cds;content-type=application/json'.replace('__ENDPOINT__', endpoint).replace('__SPECIES__', this.params.species);
         model = Genoverse.Track.Model.Transcript.Ensembl.extend({
           url: new_url,
         });

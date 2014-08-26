@@ -253,7 +253,7 @@ Genome annotations are available for all sequences from [VEGA](/expert-database/
 Only **human genome** is currently supported, but more data from more genomes will become available in future.
 
 The response content is similar to that provided by the
-[Ensembl REST API](http://beta.rest.ensembl.org/documentation/info/feature_region)
+[Ensembl REST API](http://rest.ensembl.org/documentation/info/overlap_region)
 and can be directly used to visualise the data using the [Genoverse](http://genoverse.org) HTML5 genome browser.
 
 The genome location should be in the `chromosome:start-end` format and may contain optional commas.
