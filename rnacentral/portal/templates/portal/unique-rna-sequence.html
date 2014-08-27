@@ -167,8 +167,12 @@ limitations under the License.
           </h2>
 
           <p>
-            {{ rna.length|intcomma }} nucleotides ({{ context.counts.A|intcomma }} As; {{ context.counts.C|intcomma }} Cs;
-            {{ context.counts.G|intcomma }} Gs; {{ context.counts.U|intcomma }} Us), {{ context.counts.N|intcomma|default:"no " }} unknown characters.
+            {{ rna.length|intcomma }} nucleotides
+            <small>
+              ({{ context.counts.A|intcomma }} A; {{ context.counts.C|intcomma }} C;
+              {{ context.counts.G|intcomma }} G; {{ context.counts.U|intcomma }} U,
+              {{ context.counts.N|intcomma|default:"no " }} N)
+            </small>
           </p>
           <pre class="pre-scrollable">
 {{ rna.get_sequence }}</pre>
