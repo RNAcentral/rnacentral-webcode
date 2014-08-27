@@ -86,7 +86,7 @@ xrefLoader.prototype.load_xrefs = function() {
 		function launch_dataTables() {
 			oTable = $(obj.config.dom.xref_table).dataTable(
 				{
-					"aoColumns": [null, null, null, {"bVisible": false}, {"bVisible": false}], // hide columns, but keep them sortable
+					"aoColumns": [null, null, null, {"bVisible": false}, {"bVisible": false}, {"bVisible": false}], // hide columns, but keep them sortable
 					"bAutoWidth": true, // pre-recalculate column widths
 					"sDom": "ftpil", // filter, table, pagination, information, length
 					"iDisplayLength": 5, // show 5 entries by default
@@ -100,6 +100,7 @@ xrefLoader.prototype.load_xrefs = function() {
 						"sPrevious": "",
 					},
 				},
+				"aaSorting": [[ 5, "desc" ]], // prioritize entries with genomic coordinates
 				"aLengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
 				"fnInitComplete": function(oSettings, json) {
 					adjust_dataTables_controls();
