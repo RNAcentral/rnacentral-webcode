@@ -104,7 +104,7 @@ limitations under the License.
 
     {# RefSeq #}
     {% elif xref.db.display_name == 'RefSeq' %}
-      RefSeq: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+      RefSeq: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}.{{ xref.accession.seq_version }}</a>
 
       {% if xref.is_refseq_mirna %}
         {% with mirna_precursor=xref.get_refseq_mirna_precursor %}
