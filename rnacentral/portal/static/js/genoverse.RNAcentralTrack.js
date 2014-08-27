@@ -141,7 +141,6 @@ limitations under the License.
         Genoverse.Track.extend({
           name      : 'Genes',
           info      : 'Ensembl API genes',
-          resizable : 'auto',
           labels : true,
           model  : configure_genoverse_model('ensembl_gene'),
           view   : Genoverse.Track.View.Gene.Ensembl,
@@ -149,7 +148,6 @@ limitations under the License.
         Genoverse.Track.extend({
           name      : 'Transcripts',
           info      : 'Ensembl API transcripts',
-          resizable : 'auto',
           labels : true,
           model  : configure_genoverse_model('ensembl_transcript'),
           view   : Genoverse.Track.View.Transcript.Ensembl,
@@ -158,7 +156,6 @@ limitations under the License.
           name      : 'RNAcentral',
           id        : 'RNAcentral',
           info      : 'Unique RNAcentral Sequences',
-          resizable : 'auto',
           labels : true,
           model  : configure_genoverse_model('rnacentral'),
           view   : Genoverse.Track.View.Transcript.Ensembl,
