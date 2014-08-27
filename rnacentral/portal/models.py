@@ -1023,15 +1023,17 @@ def _xref_to_gff_format(xref):
     Return genome coordinates of an xref in GFF format. Available in Rna and Xref models.
     """
     gff = ''
-    assemblies = xref.accession.assembly.select_related('chromosome').all()
-    if assemblies.count() == 0:
+    exons = xref.accession.coordinates.all()
+    if exons.count() == 0:
         return gff
-    for assembly in assemblies:
-        gff += "chr%s\tRNAcentral\texon\t%s\t%s\t.\t%s\t.\t%s\n" % (assembly.chromosome.chromosome,
-                                                                    assembly.primary_start,
-                                                                    assembly.primary_end,
-                                                                    '+' if assembly.strand > 0 else '-',
-                                                                    xref.upi.upi)
+    for exon in exons:
+        if not exon.chromosome:
+            continue
+        gff += "chr%s\tRNAcentral\texon\t%s\t%s\t.\t%s\t.\t%s\n" % (exon.chromosome,
+                                                                    exon.primary_start,
+                                                                    exon.primary_end,
+                                                                    '+' if exon.strand > 0 else '-',
+                                                                    xref.accession.accession)
     return gff
 
 def _xref_to_gff3_format(xref):
