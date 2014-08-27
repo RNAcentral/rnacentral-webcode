@@ -250,7 +250,7 @@ limitations under the License.
         if (!window.location.origin) {
           window.location.origin = window.location.protocol + "//" + window.location.host + '/';
         }
-        new_url = window.location.origin + '/api/v1/feature/region/__SPECIES__/__CHR__:__START__-__END__'.replace('__SPECIES__', this.params.species);
+        new_url = window.location.origin + '/api/v1/overlap/region/__SPECIES__/__CHR__:__START__-__END__'.replace('__SPECIES__', this.params.species);
         model = Genoverse.Track.Model.Gene.Ensembl.extend({
           url: new_url,
 
