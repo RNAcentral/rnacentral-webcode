@@ -155,7 +155,7 @@ limitations under the License.
       <br>
       <i class="fa fa-angle-right"></i>
       {% with genomic_coordinates=xref.new_get_genomic_coordinates %}
-        <button type="button" class="btn btn-primary btn-xs genoverse-xref help margin-right-5px" data-genomic-start="{{ genomic_coordinates.start }}" data-genomic-end="{{ genomic_coordinates.end }}" data-chromosome="{{ genomic_coordinates.chromosome }}" data-species="{{xref.get_ensembl_species_name}}" title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> View genomic location</button>
+        <button type="button" class="btn btn-primary btn-xs genoverse-xref help margin-right-5px" data-genomic-start="{{ genomic_coordinates.start }}" data-genomic-end="{{ genomic_coordinates.end }}" data-chromosome="{{ genomic_coordinates.chromosome }}" data-species="{{xref.get_ensembl_species_name}}" data-description="{{ xref.accession.description }}" data-species-label="{{ xref.accession.species }}" title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> View genomic location</button>
         <small>
           <span class="margin-right-5px">{{ genomic_coordinates.chromosome }}:{{ genomic_coordinates.start|intcomma }}-{{ genomic_coordinates.end|intcomma }}</span>
           {# Ensembl url #}

@@ -26,6 +26,8 @@ limitations under the License.
     'end': '',
     'species': '',
     '_species': '', // previous species
+    'species_label': '',
+    'description': '',
   };
 
   genoverse_container = '#genoverse';
@@ -36,6 +38,7 @@ limitations under the License.
   display_genomic_location = function() {
 
     show_genoverse_section_header();
+    show_genoverse_section_info();
     initialize_genoverse();
     navigate_to_feature();
 
@@ -86,6 +89,31 @@ limitations under the License.
      */
     function show_genoverse_section_header() {
       $('.genoverse-wrap h2').show();
+    }
+
+    /**
+     * Display xref description in Genoverse section.
+     */
+    function show_genoverse_section_info() {
+      // display xref coordinates
+      var text = '<em>' +
+                 this.params.species_label + ' ' +
+                 this.params.chromosome + ':' +
+                 number_with_commas(this.params.start) + '-' +
+                 number_with_commas(this.params.end) +
+                 '</em>';
+      $('#genoverse-coordinates').html('').html(text);
+      // display xref description
+      text = '<p>' + this.params.description + '</p>';
+      $('#genoverse-description').html('').html(text);
+
+      /**
+       * Format the coordinates with commas as thousands separators.
+       * http://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
+       */
+      function number_with_commas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      }
     }
 
   };
@@ -346,7 +374,9 @@ limitations under the License.
           'end': $this.data('genomic-end'),
           'species': species,
           '_species': _species,
+          'species_label': $this.data('species-label'),
           'endpoint': $this.data('endpoint'),
+          'description': $this.data('description'),
         };
       }
     }
