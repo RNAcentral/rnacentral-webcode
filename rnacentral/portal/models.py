@@ -1078,28 +1078,32 @@ def _xref_to_bed_format(xref):
     Return genome coordinates of an xref in BED format. Available in Rna and Xref models.
     """
     bed = ''
-    assemblies = xref.accession.assembly.select_related('chromosome').order_by('primary_start').all()
-    if assemblies.count() == 0:
+    exons_all = xref.accession.coordinates.order_by('primary_start').all()
+    exons = []
+    for exon in exons_all:
+        if exon.chromosome: # some exons may not be mapped to genomic coordinates
+            exons.append(exon)
+    if len(exons) == 0:
         return bed
     # prepare fields
-    chromosome = assemblies[0].chromosome.chromosome
-    chrom_start = xref.get_assembly_start()
-    chrom_end = xref.get_assembly_end()
+    chromosome = xref.get_feature_chromosome()
+    chrom_start = xref.get_feature_start()
+    chrom_end = xref.get_feature_end()
     upi = xref.upi.upi
     score = 0
-    strand = '+' if assemblies[0].strand > 0 else '-'
+    strand = '+' if xref.get_feature_strand() > 0 else '-'
     thick_start = chrom_start
     thick_end = chrom_end
     item_rgb = "63,125,151"
-    block_count = assemblies.count()
+    block_count = len(exons)
     block_sizes = []
     block_starts = []
-    for i, exon in enumerate(assemblies):
+    for i, exon in enumerate(exons):
         block_sizes.append(exon.primary_end - exon.primary_start)
         if i == 0:
             block_starts.append(0)
         else:
-            block_starts.append(exon.primary_start - assemblies[0].primary_start)
+            block_starts.append(exon.primary_start - exons[0].primary_start)
     bed = "chr%s\t%i\t%i\t%s\t%i\t%s\t%i\t%i\t%s\t%i\t%s\t%s\n" % (chromosome,
                                                                    chrom_start,
                                                                    chrom_end,
