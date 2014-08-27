@@ -47,8 +47,8 @@ limitations under the License.
     {% if xref.db.display_name == 'ENA' %}
       ENA: <a href="{{ xref.accession.get_ena_url }}" target="_blank" title="{{ xref.accession.accession }} at ENA">{{ xref.accession.accession }}</a>
 
-    {# RFAM #}
-    {% elif xref.db.display_name == 'RFAM' %}
+    {# Rfam #}
+    {% elif xref.db.display_name == 'Rfam' %}
       RFAM family: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }}),
       {% if xref.is_rfam_seed %}
         <span class="text-success">seed alignment</span> <i class="fa fa-info-circle help" title="part of a manually curated RFAM seed alignment"></i>
