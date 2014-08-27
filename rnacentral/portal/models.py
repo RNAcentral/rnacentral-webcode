@@ -553,7 +553,7 @@ class Database(models.Model):
                 'url': 'http://www.ncbi.nlm.nih.gov/refseq/',
                 'description': 'is a comprehensive, integrated, non-redundant, well-annotated set of reference sequences',
                 'abbreviation': 'NCBI Reference Sequence Database',
-                'examples': ['URS000075A3E5', 'URS000075D2CB', 'URS000075A08B'],
+                'examples': ['URS000075A3E5', 'URS000075ADFF', 'URS00003A96B7'],
                 'references': [
                     {
                         'title': 'RefSeq: an update on mammalian reference sequences.',
