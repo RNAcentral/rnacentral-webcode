@@ -14,6 +14,7 @@ limitations under the License.
 from django.conf.urls import patterns, url, include
 from django.contrib import admin
 from portal import views
+from portal.models import get_ensembl_divisions
 
 urlpatterns = patterns('',
     # homepage
@@ -37,6 +38,7 @@ urlpatterns = patterns('',
     url(r'^help/browser-compatibility/?$', views.StaticView.as_view(), {'page': 'help/browser-compatibility'}, name='help-browser-compatibility'),
     url(r'^help/sequence-search/?$', views.StaticView.as_view(), {'page': 'help/sequence-search'}, name='help-sequence-search'),
     url(r'^help/metadata-search/?$', views.StaticView.as_view(), {'page': 'help/metadata-search'}, name='help-metadata-search'),
+    url(r'^help/genomic-mapping/?$', views.StaticView.as_view(), {'page': 'help/genomic-mapping', 'divisions': get_ensembl_divisions()}, name='help-genomic-mapping'),
     # about us
     url(r'^about-us/?$', views.StaticView.as_view(), {'page': 'about'}, name='about'),
     # API documentation

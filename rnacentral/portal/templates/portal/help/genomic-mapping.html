@@ -1,0 +1,68 @@
+<!--
+Copyright [2009-2014] EMBL-European Bioinformatics Institute
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+{% extends "portal/base.html" %}
+
+{% block title %}
+Help: Genomic mapping
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-md-8" role="main">
+    {% load markdown_deux_tags %}
+    {% markdown %}
+      {% include  'portal/docs/genomic-mapping.md' %}
+    {% endmarkdown %}
+
+    <h2>Species with genomic annotations</h2>
+
+    <p>
+      Click on a species to view the sequences annotated with genomic coordinates.
+    </p>
+
+    <div class="row">
+
+    {% for division in divisions %}
+      {% if division.species %}
+        <div class="col-md-4">
+          <h4>{{ division.name }}</h4>
+
+          <ol>
+          {% for species in division.species %}
+            <li>
+              <a href="" ng-click="meta_search('TAXONOMY:%22{{ species.taxid }}%22 AND has_genomic_coordinates:%22True%22')">{{ species.name }}</a>
+            </li>
+          {% endfor %}
+          </ol>
+        </div>
+      {% endif %}
+    {% endfor %}
+
+    </div>
+
+    <hr>
+
+    <a class="btn btn-default btn-sm" title="Edit on GitHub" href="https://github.com/RNAcentral/rnacentral-webcode/edit/django/rnacentral/portal/templates/portal/docs/genomic-mapping.md" target="_blank"><i class="fa fa-pencil-square-o"></i> Improve this page</a>
+  </div>
+
+  <div class="col-md-4">
+    {% include 'portal/help/sidebar.html' %}
+  </div>
+
+</div>
+
+<br>
+
+{% endblock content %}
