@@ -854,6 +854,22 @@ class Xref(models.Model):
         """
         return self.accession.species.replace(' ', '_').lower()
 
+    def get_ensembl_division(self):
+        """
+        Get Ensembl or Ensembl Genomes division for the cross-reference.
+        """
+        species = self.get_ensembl_species_name()
+        species = species.replace('_', ' ').capitalize()
+
+        ensembl_divisions = get_ensembl_divisions()
+        for division in ensembl_divisions:
+            if species in division['species']:
+                return division
+        return { # fall back to ensembl.org
+            'name': 'Ensembl',
+            'url': 'http://ensembl.org',
+        }
+
     def get_ucsc_db_id(self):
         """
         Get UCSC id for the genome assembly.
@@ -1093,3 +1109,72 @@ def _xref_to_bed_format(xref):
                                                                    ','.join(map(str,block_starts))
                                                                    )
     return bed
+
+def get_ensembl_divisions():
+    """
+    A list of species with genomic coordinates grouped by Ensembl division.
+    Used for creating links to Ensembl sites.
+    """
+    return [
+        {
+            'url': 'http://ensembl.org',
+            'name': 'Ensembl',
+            'species': [
+                'Homo sapiens',
+                'Mus musculus',
+                'Bos taurus',
+                'Rattus norvegicus',
+                'Felis catus',
+                'Danio rerio',
+                'Macaca mulatta',
+                'Pan troglodytes',
+                'Canis lupus familiaris',
+                'Gorilla gorilla gorilla',
+            ]
+        },
+        {
+            'url': 'http://fungi.ensembl.org',
+            'name': 'Ensembl Fungi',
+            'species': [
+                'Saccharomyces cerevisiae',
+                'Schizosaccharomyces pombe',
+                'Aspergillus nidulans',
+                'Puccinia graminis',
+                'Zymoseptoria tritici',
+                'Magnaporthe oryzae',
+            ],
+        },
+        {
+            'url': 'http://metazoa.ensembl.org',
+            'name': 'Ensembl Metazoa',
+            'species': [
+                'Caenorhabditis elegans',
+                'Drosophila melanogaster',
+                'Bombyx mori',
+                'Anopheles gambiae',
+                'Trichoplax adhaerens',
+            ],
+        },
+        {
+            'url': 'http://protists.ensembl.org',
+            'name': 'Ensembl Protists',
+            'species': [
+                'Dictyostelium discoideum',
+                'Plasmodium falciparum',
+                'Phytophthora infestans',
+                'Leishmania major',
+            ],
+        },
+        {
+            'url': 'http://plants.ensembl.org',
+            'name': 'Ensembl Plants',
+            'species': [
+                'Arabidopsis thaliana',
+            ],
+        },
+        {
+            'url': 'http://bacteria.ensembl.org',
+            'name': 'Ensembl Bacteria',
+            'species': [],
+        },
+    ]

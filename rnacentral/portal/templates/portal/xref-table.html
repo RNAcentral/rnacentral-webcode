@@ -158,10 +158,12 @@ limitations under the License.
         <button type="button" class="btn btn-primary btn-xs genoverse-xref help margin-right-5px" data-genomic-start="{{ genomic_coordinates.start }}" data-genomic-end="{{ genomic_coordinates.end }}" data-chromosome="{{ genomic_coordinates.chromosome }}" data-species="{{xref.get_ensembl_species_name}}" title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> View genomic location</button>
         <small>
           <span class="margin-right-5px">{{ genomic_coordinates.chromosome }}:{{ genomic_coordinates.start|intcomma }}-{{ genomic_coordinates.end|intcomma }}</span>
-          {# Ensembl url, DAS track only for human #}
+          {# Ensembl url #}
           <span class="margin-right-5px ensembl-link">
             {% with ensembl_species_name=xref.get_ensembl_species_name %}
-              <a href="http://ensembl.org/{{ensembl_species_name}}/Location/View?r={{ genomic_coordinates.chromosome }}%3A{{ genomic_coordinates.start }}-{{ genomic_coordinates.end }}" target="_blank">Ensembl</a>
+              {% with ensembl_division=xref.get_ensembl_division %}
+                <a href="{{ ensembl_division.url }}/{{ensembl_species_name}}/Location/View?r={{ genomic_coordinates.chromosome }}%3A{{ genomic_coordinates.start }}-{{ genomic_coordinates.end }}" target="_blank">{{ ensembl_division.name }}</a>
+              {% endwith %}
             {% endwith %}
           </span>
           {# UCSC url only for human #}
