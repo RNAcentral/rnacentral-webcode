@@ -40,7 +40,7 @@ class Rna(models.Model):
         Return True if at least one cross-reference has genomic coordinates.
         """
         for xref in self.xrefs.iterator():
-            if xref.new_has_genomic_coordinates():
+            if xref.has_genomic_coordinates():
                 return True
         return False
 
@@ -885,10 +885,9 @@ class Xref(models.Model):
         else:
             return None
 
-    def new_has_genomic_coordinates(self):
+    def has_genomic_coordinates(self):
         """
-        Mirror the existing API while using the new GenomicCoordinates model.
-        TODO: remove "new_" from the method name.
+        Determine whether an xref has genomic coordinates.
         """
         return True if self.accession.coordinates.first() and self.accession.coordinates.first().chromosome else False
 

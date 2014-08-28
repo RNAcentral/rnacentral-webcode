@@ -152,7 +152,7 @@ limitations under the License.
     {% endif %}
 
     {# show genomic locations for non-human species #}
-    {% if xref.new_has_genomic_coordinates  %}
+    {% if xref.has_genomic_coordinates  %}
       <br>
       <i class="fa fa-angle-right"></i>
       {% with genomic_coordinates=xref.new_get_genomic_coordinates %}
@@ -197,7 +197,7 @@ limitations under the License.
     <td><time datetime="{{ xref.created.release_date|date:'Y-m-d' }}">{{ xref.created.release_date|date:'d M Y' }}</time></td>
     <td><time datetime="{{ xref.last.release_date|date:'Y-m-d' }}">{{ xref.last.release_date|date:'d M Y' }}</time></td>
     <td>
-      {% if xref.new_has_genomic_coordinates  %}
+      {% if xref.has_genomic_coordinates  %}
       1
       {% else %}
       0
