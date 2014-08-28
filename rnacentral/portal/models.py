@@ -173,8 +173,10 @@ class Rna(models.Model):
     def get_gff(self):
         """
         Format genomic coordinates from all xrefs into a single file in GFF2 format.
+        To reduce redundancy, keep only xrefs from the source entries,
+        not the entries added from the DR lines.
         """
-        xrefs = self.xrefs.filter(db_id=1).all()
+        xrefs = self.xrefs.filter(db_id__in=[1,2,9,10]).all()
         gff = ''
         for xref in xrefs:
             gff += _xref_to_gff_format(xref)
@@ -184,7 +186,7 @@ class Rna(models.Model):
         """
         Format genomic coordinates from all xrefs into a single file in GFF3 format.
         """
-        xrefs = self.xrefs.filter(db_id=1).all()
+        xrefs = self.xrefs.filter(db_id__in=[1,2,9,10]).all()
         gff = '##gff-version 3\n'
         for xref in xrefs:
             gff += _xref_to_gff3_format(xref)
@@ -196,7 +198,7 @@ class Rna(models.Model):
         Example:
         chr1    29554    31097    RNA000063C361    0    +   29554    31097    255,0,0    3    486,104,122    0,1009,1421
         """
-        xrefs = self.xrefs.filter(db_id=1).all()
+        xrefs = self.xrefs.filter(db_id__in=[1,2,9,10]).all()
         bed = ''
         for xref in xrefs:
             bed += _xref_to_bed_format(xref)
