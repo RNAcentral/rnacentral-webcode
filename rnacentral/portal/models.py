@@ -638,6 +638,16 @@ class Accession(models.Model):
     class Meta:
         db_table = 'rnc_accessions'
 
+    def get_hgnc_id(self):
+        """
+        Search db_xref field for an HGNC id.
+        """
+        hgnc_id = ''
+        match = re.search(r'HGNC\:HGNC\:(\d+)', self.db_xref)
+        if match:
+            hgnc_id = match.group(1)
+        return hgnc_id
+
     def get_biotype(self):
         """
         Biotype annotations are stored in notes and come from Ensembl and VEGA

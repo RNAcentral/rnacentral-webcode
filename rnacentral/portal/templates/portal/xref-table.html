@@ -151,6 +151,14 @@ limitations under the License.
       Source ENA entry: <a href="{{ xref.accession.get_ena_url }}" target="_blank" title="{{ xref.accession.non_coding_id }} at ENA">{{ xref.accession.non_coding_id }}</a>
     {% endif %}
 
+    {% with hgnc_id=xref.accession.get_hgnc_id %}
+      {% if hgnc_id %}
+      <br>
+      <i class="fa fa-angle-right"></i>
+      HGNC gene <a href="http://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id=HGNC:{{ hgnc_id }}" target="_blank" title="HGNC gene {{ xref.accession.gene }}">{{ xref.accession.gene }}</a>
+      {% endif %}
+    {% endwith %}
+
     {# show genomic locations for non-human species #}
     {% if xref.has_genomic_coordinates  %}
       <br>
