@@ -37,7 +37,7 @@ def git_updates():
     servers must use rsync to preserve file modification time.
     """
     with cd(env['rnacentral_site']):
-        git_branch = 'django'
+        git_branch = 'release/1.0'
         # make sure we are on the right branch
         run('git checkout %s' % git_branch)
         # get latest changes
