@@ -891,7 +891,7 @@ class Xref(models.Model):
         """
         return True if self.accession.coordinates.first() and self.accession.coordinates.first().chromosome else False
 
-    def new_get_genomic_coordinates(self):
+    def get_genomic_coordinates(self):
         """
         Mirror the existing API while using the new GenomicCoordinates model.
         TODO: remove "new_" from the method name.
@@ -930,43 +930,6 @@ class Xref(models.Model):
         """
         data = self.accession.coordinates.aggregate(max_feature_end = Max('primary_end'))
         return data['max_feature_end']
-
-    def get_genomic_coordinates(self):
-        """
-        """
-        data = {
-            'chromosome': self.get_assembly_chromosome(),
-            'strand': self.get_assembly_strand(),
-            'start': self.get_assembly_start(),
-            'end': self.get_assembly_end()
-        }
-        return data
-
-    def get_assembly_start(self):
-        """
-        Select the minimum starting coordinates to account for complementary strands.
-        """
-        data = self.accession.assembly.aggregate(assembly_start = Min('primary_start'))
-        return data['assembly_start']
-
-    def get_assembly_end(self):
-        """
-        Select the maximum ending coordinates to account for complementary strands.
-        """
-        data = self.accession.assembly.aggregate(assembly_end = Max('primary_end'))
-        return data['assembly_end']
-
-    def get_assembly_chromosome(self):
-        """
-        Get the chromosome for the genomic coordinates.
-        """
-        return self.accession.assembly.first().chromosome.chromosome
-
-    def get_assembly_strand(self):
-        """
-        Get the strand for the genomic coordinates.
-        """
-        return self.accession.assembly.first().strand
 
 
 class Chromosome(models.Model):

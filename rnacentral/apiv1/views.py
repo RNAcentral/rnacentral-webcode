@@ -255,7 +255,7 @@ class GenomeAnnotations(APIView):
                 rnacentral_ids.append(rnacentral_id)
             else:
                 continue
-            coordinates = xref.new_get_genomic_coordinates()
+            coordinates = xref.get_genomic_coordinates()
             transcript_id = rnacentral_id + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
             biotype = xref.accession.get_biotype()
             data.append({
