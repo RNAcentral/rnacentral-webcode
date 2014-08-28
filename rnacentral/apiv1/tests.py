@@ -187,7 +187,7 @@ class ApiV1Test(unittest.TestCase):
         self.assertIn('# Genomic coordinates not available', r.text)
 
     def test_genome_annotations(self):
-        targets = ['feature/region/homo_sapiens/Y:26,631,479-26,632,610', 'overlap/region/homo_sapiens/2:39,745,816-39,826,679']
+        targets = ['feature/region/homo_sapiens/Y:25,183,643-25,184,773', 'overlap/region/homo_sapiens/2:39,745,816-39,826,679']
         for target in targets:
             url = self._get_api_url(target)
             data = self._check_urls(url)
@@ -204,7 +204,7 @@ class ApiV1Test(unittest.TestCase):
         """
         Test DAS `feature` method response.
         """
-        target = 'das/RNAcentral_GRCh37/features?segment=Y:26631479,26632610'
+        target = 'das/RNAcentral_GRCh37/features?segment=Y:25183643,25184773'
         url = self._get_api_url(target)
         r = requests.get(url)
         self.assertEqual(r.status_code, 200)
