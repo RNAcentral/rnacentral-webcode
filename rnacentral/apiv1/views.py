@@ -46,7 +46,7 @@ def _get_xrefs_from_genomic_coordinates(species, chromosome, start, end):
 class DasSources(APIView):
     """
     DAS `sources` method for determining supported capabilities.
-    RNAcentral emulates the Homo_sapiens.GRCh37.gene Ensembl DAS source.
+    RNAcentral emulates the Homo_sapiens.GRCh38.gene Ensembl DAS source.
     """
 
     permission_classes = (AllowAny,)
@@ -65,11 +65,11 @@ class DasSources(APIView):
 
         sources = """<?xml version="1.0" encoding="UTF-8" ?>
 <SOURCES>
-    <SOURCE uri="RNAcentral_GRCh37" title="RNAcentral" description="Unique RNAcentral Sequences">
+    <SOURCE uri="RNAcentral_GRCh38" title="RNAcentral" description="Unique RNAcentral Sequences">
         <MAINTAINER email="helpdesk@rnacentral.org" />
-        <VERSION uri="RNAcentral_GRCh37" created="2014-03-06">
+        <VERSION uri="RNAcentral_GRCh38" created="2014-03-06">
             <PROP name="label" value="RNAcentral" />
-            <COORDINATES uri="http://www.dasregistry.org/dasregistry/coordsys/CS_DS311" taxid="9606" source="Chromosome" authority="GRCh" test_range="Y:26631479,26632610" version="37">GRCh_37,Chromosome,Homo sapiens</COORDINATES>
+            <COORDINATES uri="http://www.dasregistry.org/dasregistry/coordsys/CS_DS311" taxid="9606" source="Chromosome" authority="GRCh" test_range="Y:26631479,26632610" version="38">GRCh_38,Chromosome,Homo sapiens</COORDINATES>
             <CAPABILITY type="das1:features" query_uri="{0}" />
             <CAPABILITY type="das1:stylesheet" query_uri="{1}" />
         </VERSION>
@@ -90,7 +90,7 @@ class DasStylesheet(APIView):
         """
         Style features created in DasFeatures.
         Example:
-            http://www.ensembl.org/das/Homo_sapiens.GRCh37.transcript/stylesheet
+            http://www.ensembl.org/das/Homo_sapiens.GRCh38.transcript/stylesheet
         """
         stylesheet = """<?xml version="1.0" standalone="no"?>
 <!DOCTYPE DASSTYLE SYSTEM "http://www.biodas.org/dtd/dasstyle.dtd">
@@ -137,9 +137,9 @@ class DasFeatures(APIView):
         Does not use serializers and renderers because the XML has self-closing tags.
         Example:
         # get annotations
-        http://www.ensembl.org/das/Homo_sapiens.GRCh37.transcript/features?segment=Y:26631479,26632610
+        http://www.ensembl.org/das/Homo_sapiens.GRCh38.transcript/features?segment=Y:25183643,25184773
         # no annotations, empty response
-        http://www.ensembl.org/das/Homo_sapiens.GRCh37.transcript/features?segment=Y:100,120
+        http://www.ensembl.org/das/Homo_sapiens.GRCh38.transcript/features?segment=Y:100,120
         """
 
         def _parse_query_parameters():

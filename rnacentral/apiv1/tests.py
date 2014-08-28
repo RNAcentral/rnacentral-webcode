@@ -204,7 +204,7 @@ class ApiV1Test(unittest.TestCase):
         """
         Test DAS `feature` method response.
         """
-        target = 'das/RNAcentral_GRCh37/features?segment=Y:25183643,25184773'
+        target = 'das/RNAcentral_GRCh38/features?segment=Y:25183643,25184773'
         url = self._get_api_url(target)
         r = requests.get(url)
         self.assertEqual(r.status_code, 200)
@@ -215,7 +215,7 @@ class ApiV1Test(unittest.TestCase):
         """
         Test DAS `feature` method response with no annotations.
         """
-        target = 'das/RNAcentral_GRCh37/features?segment=Y:100,120'
+        target = 'das/RNAcentral_GRCh38/features?segment=Y:100,120'
         url = self._get_api_url(target)
         r = requests.get(url)
         self.assertEqual(r.status_code, 200)
@@ -230,14 +230,14 @@ class ApiV1Test(unittest.TestCase):
         url = self._get_api_url(target)
         r = requests.get(url)
         self.assertEqual(r.status_code, 200)
-        self.assertIn('RNAcentral_GRCh37', r.text)
+        self.assertIn('RNAcentral_GRCh38', r.text)
         self._validate_xml(r.text)
 
     def test_das_stylesheet(self):
         """
         Test DAS `stylesheet` method.
         """
-        target = 'das/RNAcentral_GRCh37/stylesheet'
+        target = 'das/RNAcentral_GRCh38/stylesheet'
         url = self._get_api_url(target)
         r = requests.get(url)
         self.assertEqual(r.status_code, 200)

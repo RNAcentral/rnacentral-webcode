@@ -43,8 +43,8 @@ urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'yaml', 'fast
 urlpatterns += patterns('',
     # DAS-like endpoints
     url(r'^das(?:/sources)?/?$', cache_page(CACHE_TIMEOUT)(views.DasSources.as_view()), name='das-sources'),
-    url(r'^das/RNAcentral_GRCh37/features/?$', cache_page(CACHE_TIMEOUT)(views.DasFeatures.as_view()), name='das-features'),
-    url(r'^das/RNAcentral_GRCh37/stylesheet/?$', cache_page(CACHE_TIMEOUT)(views.DasStylesheet.as_view()), name='das-stylesheet'),
+    url(r'^das/RNAcentral_GRCh38/features/?$', cache_page(CACHE_TIMEOUT)(views.DasFeatures.as_view()), name='das-features'),
+    url(r'^das/RNAcentral_GRCh38/stylesheet/?$', cache_page(CACHE_TIMEOUT)(views.DasStylesheet.as_view()), name='das-stylesheet'),
 )
 
 # search
