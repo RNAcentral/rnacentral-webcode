@@ -123,12 +123,13 @@ limitations under the License.
     function scroll_to_genoverse() {
         if ( !isElementInViewport($(this.genoverse_container))) {
           $('html, body').animate({
-              scrollTop: $("#genoverse").offset().top
+              scrollTop: $("#genoverse").offset().top - 100
           }, 1200);
         }
 
       /**
        * Determine if element is in viewport.
+       * Adapted from:
        * http://stackoverflow.com/questions/123999/how-to-tell-if-a-dom-element-is-visible-in-the-current-viewport
        */
       function isElementInViewport (el) {
@@ -137,10 +138,7 @@ limitations under the License.
           }
           var rect = el.getBoundingClientRect();
           return (
-              rect.top >= 0 &&
-              rect.left >= 0 &&
-              rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-              rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+              rect.top <= (window.innerHeight || document.documentElement.clientHeight)
           );
       }
     }
