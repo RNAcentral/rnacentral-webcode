@@ -141,9 +141,9 @@ class FtpBase(OracleConnection):
         """
         Get RNA sequences with genomic coordinates.
         """
-        xrefs = Xref.objects.select_related('accession__assembly__chromosome').\
-                             filter(db_id=1).\
-                             filter(accession__assembly__chromosome__chromosome__isnull=False).\
+        xrefs = Xref.objects.select_related('accession__coordinates').\
+                             filter(db_id__in=[1,2,9,10]).\
+                             filter(accession__coordinates__chromosome__isnull=False).\
                              values_list('accession', flat=True).\
                              distinct()
         return xrefs

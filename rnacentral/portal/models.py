@@ -942,27 +942,6 @@ class Xref(models.Model):
         return data['max_feature_end']
 
 
-class Chromosome(models.Model):
-    ena_accession = models.CharField(max_length=20, db_column='assembly', primary_key=True)
-    chromosome = models.CharField(max_length=2)
-
-    class Meta:
-        db_table = 'rnc_chromosome'
-
-
-class Assembly(models.Model):
-    accession = models.ForeignKey(Accession, db_column='accession', to_field='accession', related_name='assembly')
-    chromosome = models.ForeignKey(Chromosome, db_column='primary_identifier', to_field='ena_accession', related_name='genome')
-    local_start = models.IntegerField()
-    local_end = models.IntegerField()
-    primary_start = models.IntegerField()
-    primary_end = models.IntegerField()
-    strand = models.IntegerField()
-
-    class Meta:
-        db_table = 'rnc_assembly'
-
-
 class Reference(models.Model):
     authors = models.TextField()
     location = models.CharField(max_length=4000)
@@ -1015,7 +994,6 @@ def _xref_to_gff3_format(xref):
     Return genome coordinates of an xref in GFF3 format. Available in Rna and Xref models.
     """
     gff = ''
-    # assemblies = xref.accession.assembly.select_related('chromosome').all()
     exons = xref.accession.coordinates.all()
     if exons.count() == 0:
         return gff

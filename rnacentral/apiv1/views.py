@@ -178,7 +178,7 @@ class DasFeatures(APIView):
                 transcript_id = rnacentral_id + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
                 rnacentral_url = request.build_absolute_uri(reverse('unique-rna-sequence', kwargs={'upi': rnacentral_id}))
                 # exons
-                for i, exon in enumerate(xref.accession.assembly.all()):
+                for i, exon in enumerate(xref.accession.coordinates.all()):
                     exon_id = '_'.join([transcript_id, 'exon_' + str(i+1)])
                     features += """
   <FEATURE id="{exon_id}">
@@ -270,7 +270,7 @@ class GenomeAnnotations(APIView):
                 'end': coordinates['end'],
             })
             # exons
-            exons = xref.accession.coordinates.all() or xref.accession.assembly.all()
+            exons = xref.accession.coordinates.all()
             for i, exon in enumerate(exons):
                 exon_id = '_'.join([xref.accession.accession, 'exon_' + str(i)])
                 if not exon.chromosome:
