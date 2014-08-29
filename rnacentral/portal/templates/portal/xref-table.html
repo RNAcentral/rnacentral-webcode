@@ -57,7 +57,7 @@ limitations under the License.
       {% endif %}
       <br>
       <i class="fa fa-angle-right"></i>
-      Source ENA entry: <a href="http://www.ebi.ac.uk/ena/data/view/{{ xref.accession.parent_ac }}" target="_blank">{{ xref.accession.parent_ac }}</a>
+      Source ENA entry: <a href="http://www.ebi.ac.uk/ena/data/view/{{ xref.accession.parent_ac }}.{{ xref.accession.seq_version }}" target="_blank">{{ xref.accession.parent_ac }}.{{ xref.accession.seq_version }}</a>
       (nucleotides {{ xref.accession.feature_start|intcomma }}:{{ xref.accession.feature_end|intcomma }})
 
     {# SRPDB #}
