@@ -40,6 +40,7 @@ limitations under the License.
     show_genoverse_section_header();
     show_genoverse_section_info();
     initialize_genoverse();
+    scroll_to_genoverse();
     navigate_to_feature();
 
     /**
@@ -116,6 +117,33 @@ limitations under the License.
       }
     }
 
+    /**
+     * If Genoverse is not in viewport, scroll to it, otherwise don't do anything.
+     */
+    function scroll_to_genoverse() {
+        if ( !isElementInViewport($(this.genoverse_container))) {
+          $('html, body').animate({
+              scrollTop: $("#genoverse").offset().top
+          }, 1200);
+        }
+
+      /**
+       * Determine if element is in viewport.
+       * http://stackoverflow.com/questions/123999/how-to-tell-if-a-dom-element-is-visible-in-the-current-viewport
+       */
+      function isElementInViewport (el) {
+          if (el instanceof jQuery) {
+              el = el[0];
+          }
+          var rect = el.getBoundingClientRect();
+          return (
+              rect.top >= 0 &&
+              rect.left >= 0 &&
+              rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+              rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+          );
+      }
+    }
   };
 
   /**
