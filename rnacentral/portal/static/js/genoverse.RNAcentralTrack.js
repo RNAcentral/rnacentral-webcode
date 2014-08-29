@@ -103,10 +103,10 @@ limitations under the License.
                  number_with_commas(this.params.start) + '-' +
                  number_with_commas(this.params.end) +
                  '</em>';
-      $('#genoverse-coordinates').html('').html(text);
+      $('#genoverse-coordinates').html('').hide().html(text).fadeIn('slow');
       // display xref description
       text = '<p>' + this.params.description + '</p>';
-      $('#genoverse-description').html('').html(text);
+      $('#genoverse-description').html('').hide().html(text).fadeIn('slow');
 
       /**
        * Format the coordinates with commas as thousands separators.
