@@ -477,8 +477,7 @@ div.hopscotch-bubble .hopscotch-bubble-arrow-container.left .hopscotch-bubble-ar
   top: -34px;
 }
 div.hopscotch-bubble .hopscotch-bubble-arrow-container.left .hopscotch-bubble-arrow-border {
-  border-right: 17px solid #000000;
-  border-right: 17px solid rgba(0, 0, 0, 0.5);
+  border-right: 17px solid #dddddd;
   border-bottom: 17px solid transparent;
   border-top: 17px solid transparent;
 }
@@ -495,8 +494,7 @@ div.hopscotch-bubble .hopscotch-bubble-arrow-container.right .hopscotch-bubble-a
   top: -34px;
 }
 div.hopscotch-bubble .hopscotch-bubble-arrow-container.right .hopscotch-bubble-arrow-border {
-  border-left: 17px solid #000000;
-  border-left: 17px solid rgba(0, 0, 0, 0.5);
+  border-left: 17px solid #dddddd;
   border-bottom: 17px solid transparent;
   border-top: 17px solid transparent;
 }

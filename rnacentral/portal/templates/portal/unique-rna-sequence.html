@@ -28,6 +28,11 @@ limitations under the License.
 
 <h1>
   Unique RNA Sequence {{ rna.upi }}
+  <small>
+    <button type="button" class="btn btn-info pull-right tour help hidden-xs" title="Take an interactive tour to explore RNAcentral features" id="guided-tour">
+      <i class="fa fa-info-circle"></i> Interactive tour
+    </button>
+  </small>
 </h1>
 
 <div class="alert alert-info">
@@ -274,6 +279,10 @@ limitations under the License.
     $(function() {
       rna_sequence_view = new rnaSequenceView('{{rna.upi}}');
       rna_sequence_view.initialize();
+
+      // hopscotch guided tour
+      hopscotch_tour = new guidedTour;
+      hopscotch_tour.initialize();
     });
   </script>
 {% endblock %}

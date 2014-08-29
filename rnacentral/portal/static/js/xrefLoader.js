@@ -20,7 +20,6 @@ var xrefLoader = function(upi) {
 			xref_table: '#xrefs-table',
 			xref_loading_container: '#xrefs-loading',
 			xref_msg: '#xrefs-loading-msg',
-			hopscotch_tour: '.tour',
 			downloads: '#download-formats'
 		},
 		templates: {
@@ -81,7 +80,6 @@ xrefLoader.prototype.load_xrefs = function() {
   		enable_sorting();
   		enable_url_filering();
   		append_download_links();
-  		enable_hopscotch_genomic_tour();
 
 		function launch_dataTables() {
 			oTable = $(obj.config.dom.xref_table).dataTable(
@@ -162,51 +160,6 @@ xrefLoader.prototype.load_xrefs = function() {
 		                                   .append('<li><a href="' + url + '.gff"  download="'  + obj.upi + '.gff">gff</a></li>')
 		                                   .append('<li><a href="' + url + '.gff3" download="'  + obj.upi + '.gff3">gff3</a></li>');
         	}
-		};
-
-		function enable_hopscotch_genomic_tour() {
-			if ( obj.enable_genomic_features ) {
-	            // create the tour button
-	            $('h1').first().append('<small><button type="button" class="btn btn-info pull-right tour help animated pulse" title="Take an interactive tour to see genome integration features in action">Tour genome-related features</button></small>');
-
-	            // Define hopscotch genome location tour
-	            var tour = {
-	              id: "tour-hopscotch",
-	              showPrevButton: true,
-	              onStart: function(){
-                    $('#tabs a[href="#overview"]').tab('show');
-	              },
-	              steps: [
-	                {
-	                  title: "Genome integration",
-	                  content: "Some annotations are linked to their genomic location and have additional functionality.",
-	                  target: "xrefs-table-div",
-	                  placement: "top"
-	                },
-	                {
-	                  title: "Embedded genome browser",
-	                  content: "Click <strong>View genomic location</strong> to open a genome browser on this page.",
-	                  target: document.querySelector(".genoverse-xref"),
-	                  placement: "top",
-	                  onNext: function(){
-	                    $(".genoverse-xref").first().click(); // launch genoverse
-	                  }
-	                },
-	                {
-	                  title: "Using the embedded browser",
-	                  content: "You can scroll along the genome or click on the entries to view <strong>popup menus</strong> with additional information.",
-	                  target: 'genoverse',
-	                  placement: "top",
-	                }
-	              ]
-	            };
-
-	            // initialize the tour
-	            $(obj.config.dom.hopscotch_tour).click(function(){
-	              var firstStep = 0; // always start at the first step
-	              hopscotch.startTour(tour, firstStep);
-	            });
-			};
 		};
 
 	};
