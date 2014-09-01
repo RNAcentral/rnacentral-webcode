@@ -99,8 +99,8 @@ limitations under the License.
                 <li>
                   <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" id="show-species-tab">organism{{ rna.count_distinct_organisms|pluralize }}</a>
                 </li>
-                <li>first seen <time datetime="{{ rna.first_seen|date:'Y-m-d' }}">{{ rna.first_seen|date:'d M Y' }}</time></li>
-                <li>last updated <time datetime="{{ rna.last_seen|date:'Y-m-d' }}">{{ rna.last_seen|date:'d M Y' }}</time></li>
+                <li><small>first seen <time datetime="{{ rna.first_seen|date:'Y-m-d' }}">{{ rna.first_seen|date:'d M Y' }}</time></small></li>
+                <li><small>last updated <time datetime="{{ rna.last_seen|date:'Y-m-d' }}">{{ rna.last_seen|date:'d M Y' }}</time></small></li>
               </ul>
             </div>
           </div> <!-- .panel .panel-default -->
