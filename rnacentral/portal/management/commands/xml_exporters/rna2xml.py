@@ -290,7 +290,7 @@ class RnaXmlExporter(OracleConnection):
             if result['deleted'] == 'Y':
                 return
             # an expert_db entry
-            if result['non_coding_id'] or result['expert_db'] == 'RFAM':
+            if result['non_coding_id'] or result['expert_db'] in ['RFAM', 'REFSEQ', 'RDP']:
                 self.data['xrefs'].add((result['expert_db'],
                                         result['external_id']))
             else: # source ENA entry
