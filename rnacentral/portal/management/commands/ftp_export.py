@@ -116,8 +116,7 @@ class Command(BaseCommand):
         self.formats = ['xrefs', 'fasta', 'gff', 'gff3', 'bed', 'trackhub', 'md5', 'all'] # available export formats
         # Add more genomes here once they are supported
         self.genomes = {
-            'human_hg19': 'hg19', # GRCh37
-            # 'human_hg38': 'hg38', # GRCh38
+            'human_hg38': 'hg38', # GRCh38
             # 'mouse'     : 'mm10',
         }
 

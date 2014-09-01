@@ -169,16 +169,16 @@ class FtpBase(OracleConnection):
         This directory contains genomic coordinates for a subset of RNAcentral ids
         where such mapping is available.
 
-        * hg19.bed.gz
+        * hg38.bed.gz
         Bed format description:
         http://www.ensembl.org/info/website/upload/bed.html
         http://genome.ucsc.edu/FAQ/FAQformat.html
 
-        * hg19.gff.gz
+        * hg38.gff.gz
         Gff2 format description:
         http://www.sanger.ac.uk/resources/software/gff/spec.html
 
-        * hg19.gff3.gz
+        * hg38.gff3.gz
         Gff3 format description:
         http://www.sequenceontology.org/gff3.shtml
 
@@ -189,7 +189,7 @@ class FtpBase(OracleConnection):
         Track hub folder structure:
         - genomes.txt [list of annotated genomes]
         - hub.txt [track hub description]
-        - hg19 [human GRCh37 assembly]
+        - hg38 [human GRCh38 assembly]
         -- rnacentral.BigBed [bigBed binary data file]
         -- rnacentral.html []
         -- trackDb.txt [track description]

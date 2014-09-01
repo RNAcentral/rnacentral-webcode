@@ -62,7 +62,7 @@ class HubBase(object):
     """
     Base class for all other track hub classes.
 
-    Track Hub structure:
+    Example Track Hub structure:
 
     track_hub/
         hub.txt
