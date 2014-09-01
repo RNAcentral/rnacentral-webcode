@@ -134,11 +134,16 @@ class Rna(models.Model):
         return self.xrefs.values('accession__species').distinct().count()
 
     @cached_property
-    def count_distinct_databases(self):
+    def get_distinct_database_names(self):
         """
-        Count the number of distinct databases referenced by the sequence.
+        Get a non-redundant list of databases referencing the sequence.
         """
-        return self.xrefs.values('db_id').distinct().count()
+        databases = []
+        db_ids = self.xrefs.values_list('db_id', flat=True).distinct()
+        for db in Database.objects.filter(id__in=db_ids).all():
+            databases.append(db.display_name)
+        databases = sorted(databases, key=lambda s: s.lower()) # case-insensitive
+        return databases
 
     @cached_property
     def first_seen(self):

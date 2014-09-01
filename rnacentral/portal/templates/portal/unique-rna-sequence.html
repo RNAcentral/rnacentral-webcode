@@ -86,7 +86,16 @@ limitations under the License.
               </ul>
               <ul class="list-inline">
                 <li><strong>{{ rna.length|intcomma }}</strong> nucleotides</li>
-                <li><strong>{{ rna.count_distinct_databases|intcomma }}</strong> database{{ rna.count_distinct_databases|pluralize }}</li>
+                <li>
+                  {% with dbs=rna.get_distinct_database_names %}
+                    <strong>{{ dbs|length|intcomma }}</strong> database{{ dbs|length|pluralize }}
+                    <small>
+                      {% for db in dbs %}
+                        {% if forloop.first %}({% endif %}{{db}}{% if not forloop.last %},{% else %}){% endif %}
+                      {% endfor %}
+                    </small>
+                  {% endwith %}
+                </li>
                 <li>
                   <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" id="show-species-tab">organism{{ rna.count_distinct_organisms|pluralize }}</a>
                 </li>
