@@ -188,6 +188,8 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
                     words[i] = escape_search_term(words[i]);
                 } else if ( words[i].match(/\)$/) ) {
                     // right closing grouping parenthesis, don't add a wildcard
+                } else if ( words[i].length < 3 ) {
+                    // the word is too short for wildcards, do nothing
                 } else {
                     // all other words
                     // escape term, add wildcard
