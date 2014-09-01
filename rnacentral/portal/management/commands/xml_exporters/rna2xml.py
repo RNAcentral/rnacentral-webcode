@@ -289,6 +289,8 @@ class RnaXmlExporter(OracleConnection):
             """
             if result['deleted'] == 'Y':
                 return
+            # expert_db should not contain spaces, EBeye requirement
+            result['expert_db'] = result['expert_db'].replace(' ','_').upper()
             # an expert_db entry
             if result['non_coding_id'] or result['expert_db'] in ['RFAM', 'REFSEQ', 'RDP']:
                 self.data['xrefs'].add((result['expert_db'],
