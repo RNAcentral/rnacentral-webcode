@@ -22,6 +22,7 @@ from django.utils.cache import patch_cache_control
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.template import TemplateDoesNotExist
+from portal.config.expert_databases import expert_dbs
 import re
 import requests
 import json
@@ -92,6 +93,18 @@ def homepage(request):
         'databases': list(Database.objects.order_by('-num_sequences').all()),
     }
     return render(request, 'portal/homepage.html', {'context': context})
+
+
+@cache_page(CACHE_TIMEOUT)
+def expert_databases_view(request):
+    """
+    List of RNAcentral expert databases.
+    """
+    context = {
+        'expert_dbs': sorted(expert_dbs, key=lambda x: x['name'].lower()),
+        'num_imported': len([x for x in expert_dbs if x['imported']]),
+    }
+    return render(request, 'portal/expert-databases.html', {'context': context})
 
 
 @cache_page(CACHE_TIMEOUT)
