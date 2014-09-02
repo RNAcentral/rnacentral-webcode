@@ -172,7 +172,9 @@ class Rna(models.Model):
         while i < len(seq):
             split_seq += seq[i:i+max_column] + "\n"
             i += max_column
-        fasta = ">%s; %s\n%s" % (self.upi, self.get_description(), split_seq)
+        # use a random description line (for faster performance)
+        description = self.xrefs.first().accession.description
+        fasta = ">%s; %s\n%s" % (self.upi, description, split_seq)
         return fasta
 
     def get_gff(self):
