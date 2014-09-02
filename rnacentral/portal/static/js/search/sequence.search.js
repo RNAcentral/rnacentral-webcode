@@ -24,6 +24,7 @@ limitations under the License.
 
 	$scope.defaults = {
 		page_size: 10,
+		min_length: 20,
 		submit_endpoint: '/api/v1/sequence-search/submit',
 		messages: {
 			get_results: 'Loading results',
@@ -34,6 +35,7 @@ limitations under the License.
 			poll_job_status: 'Waiting for results',
 			submitting: 'Submitting query',
 			loading_more_results: 'Loading more results',
+			too_short: 'The sequence cannot be shorter than 20 nucleotides',
 		},
 	};
 
@@ -61,9 +63,10 @@ limitations under the License.
 	     * results.
 	     */
 		var preprocess_results = function(data){
+			var sequence = parse_fasta($scope.query.sequence);
 			_.each(data.results.alignments, function(result) {
 				result.identity = parseFloat(result.identity);
-				result.query_coverage = ( parseFloat(result.alignment_length)/parseFloat($scope.query.sequence.length) )*100;
+				result.query_coverage = ( parseFloat(result.alignment_length)/parseFloat(sequence.length) )*100;
 				result.target_coverage = ( parseFloat(result.target_length)/parseFloat(result.full_target_length) )*100;
 			});
 		};
@@ -121,7 +124,10 @@ limitations under the License.
      */
 	var search = function(sequence) {
 		$scope.results = results_init();
-		$scope.query.sequence = sequence.replace(/\s/g, '');
+		var sequence = parse_fasta(sequence);
+		if (!is_valid_sequence()) {
+			return;
+		}
 		$scope.params.search_in_progress = true;
 		$scope.params.error_message = '';
 		$scope.params.status_message = $scope.defaults.messages.submitting;
@@ -138,6 +144,19 @@ limitations under the License.
 			$scope.params.status_message = $scope.defaults.messages.failed;
 			$scope.params.search_in_progress = false;
 		});
+
+		/**
+		 * Check sequence length once the fasta header line is removed.
+		 */
+		function is_valid_sequence() {
+			if (sequence.length < $scope.defaults.min_length) {
+				$scope.params.error_message = $scope.defaults.messages.too_short;
+				$scope.params.status_message = $scope.defaults.messages.failed;
+				return false;
+			} else {
+				return true;
+			}
+		}
 	};
 
     /**
@@ -178,6 +197,7 @@ limitations under the License.
      * Launch the search from template.
      */
 	$scope.sequence_search = function(sequence) {
+		$scope.query.sequence = sequence;
 		search(sequence);
 	};
 
@@ -207,8 +227,16 @@ limitations under the License.
 
 
 	$scope.custom_results_ordering = function(result) {
-	   return parseFloat(result.identity) + (parseFloat(result.alignment_length)/parseFloat($scope.query.sequence.length))*100 + (parseFloat(result.target_length)/parseFloat(result.full_target_length))*100;
+		var sequence = parse_fasta($scope.query.sequence);
+		return parseFloat(result.identity) + (parseFloat(result.alignment_length)/parseFloat(sequence.length))*100 + (parseFloat(result.target_length)/parseFloat(result.full_target_length))*100;
 	};
+
+	/**
+	 * Remove fasta header and spaces and newlines.
+	 */
+	function parse_fasta(sequence) {
+		return sequence.replace(/^>.+?[\n\r]/, '').replace(/\s/g, '')
+	}
 
     /**
      * Activate Bootstrap tooltips when the controller is created.
