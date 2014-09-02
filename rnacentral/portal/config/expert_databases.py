@@ -204,11 +204,11 @@ expert_dbs = [
         'imported': True,
     },
     {
-        'name': 'Comparative RNA Website',
+        'name': 'CRW Site',
         'label': '',
         'url': 'http://www.rna.ccbb.utexas.edu/',
         'description': 'comparative sequence and structure information for ribosomal, intron, and other RNAs',
-        'abbreviation': '',
+        'abbreviation': 'Comparative RNA Website',
         'examples': '',
         'references': [],
         'imported': False,
