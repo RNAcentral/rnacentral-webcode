@@ -521,7 +521,7 @@ class Accession(models.Model):
             'LNCRNADB': 'http://www.lncrnadb.org/Detail.aspx?TKeyID=',
             'GTRNADB': 'http://lowelab.ucsc.edu/GtRNAdb/',
             'REFSEQ': 'http://www.ncbi.nlm.nih.gov/nuccore/',
-            'RDP': 'http://rdp.cme.msu.edu/hierarchy/detail.jsp?seqid=',
+            'RDP': 'http://rdp.cme.msu.edu/search?searchStr=ID:',
         }
         if self.database in urls.keys():
             if self.database == 'GTRNADB':
