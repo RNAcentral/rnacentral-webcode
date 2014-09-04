@@ -133,7 +133,7 @@ limitations under the License.
 
     {# RDP #}
     {% elif xref.db.display_name == 'RDP' %}
-      RDP: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+      RDP: <a href="{{ xref.accession.get_expert_db_external_url }}&format=genbank" target="_blank">{{ xref.accession.external_id }}</a>
 
     {% else %}
       {{ xref.accession.external_id }} {{ xref.accession.optional_id }}
