@@ -602,6 +602,42 @@ class Xref(models.Model):
         """
         return _xref_to_gff3_format(self)
 
+    def is_mirbase_mirna_precursor(self):
+        """
+        True if the accession is a miRBase precursor miRNA.
+        """
+        if self.accession.feature_name == 'precursor_RNA' and \
+           self.accession.database == 'MIRBASE':
+            return True
+        else:
+            return False
+
+    def get_mirbase_mature_products(self):
+        """
+        miRBase mature products and precursors share
+        the same external MI* identifier.
+        """
+        mature_products = Xref.objects.filter(accession__external_id=self.accession.external_id,
+                                              accession__feature_name='ncRNA').\
+                                       all()
+        upis = []
+        for mature_product in mature_products:
+            upis.append(mature_product.upi)
+        return upis
+
+    def get_mirbase_precursor(self):
+        """
+        miRBase mature products and precursors share
+        the same external MI* identifier.
+        """
+        precursor = Xref.objects.filter(accession__external_id=self.accession.external_id,
+                                        accession__feature_name='precursor_RNA').\
+                                 first()
+        if precursor:
+            return precursor.upi.upi
+        else:
+            return None
+
     def is_refseq_mirna(self):
         """
         RefSeq miRNAs are stored in 3 xrefs:

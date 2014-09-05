@@ -80,6 +80,21 @@ limitations under the License.
       miRBase:
       <a class="mirbase-external-url" href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>
 
+      {% if xref.is_mirbase_mirna_precursor %}
+        {% with mature_products=xref.get_mirbase_mature_products %}
+          - precursor miRNA (mature product{{mature_products|length|pluralize}}
+          {% for mature_product in mature_products %}
+            <a href="{% url  'portal.views.rna_view' upi=mature_product.upi %}">{{ mature_product.upi }}</a>{% if not forloop.last %},{% else %}){% endif %}
+          {% endfor %}
+        {% endwith %}
+      {% else %}
+        {% with mirna_precursor=xref.get_mirbase_precursor %}
+          {% if mirna_precursor %}
+            - mature miRNA (precursor <a href="{% url  'portal.views.rna_view' upi=mirna_precursor %}">{{ mirna_precursor }}</a>)
+          {% endif %}
+        {% endwith %}
+      {% endif %}
+
     {# VEGA #}
     {% elif xref.db.display_name == 'VEGA' %}
       VEGA transcript <a href="http://vega.sanger.ac.uk/Homo_sapiens/Transcript/Summary?db=core;t={{ xref.accession.optional_id }}" target="_blank" title="View the transcript at VEGA">{{ xref.accession.optional_id }}</a>
