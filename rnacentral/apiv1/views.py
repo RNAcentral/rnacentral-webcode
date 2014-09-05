@@ -37,7 +37,9 @@ def _get_xrefs_from_genomic_coordinates(species, chromosome, start, end):
         xrefs = Xref.objects.filter(accession__coordinates__chromosome=chromosome,
                                     accession__coordinates__primary_start__gte=start,
                                     accession__coordinates__primary_end__lte=end,
-                                    accession__species=species.replace('_', ' ').capitalize()).all()
+                                    accession__species=species.replace('_', ' ').capitalize(),
+                                    deleted='N').\
+                             all()
         return xrefs
     except:
         return []
