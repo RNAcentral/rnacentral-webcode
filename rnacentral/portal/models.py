@@ -648,7 +648,8 @@ class Xref(models.Model):
                                                 exclude(accession=self.accession.accession).\
                                                 all():
             for splice_xref in splice_variant.xrefs.all():
-                splice_variants.append(splice_xref.upi)
+                if splice_xref.deleted == 'N':
+                    splice_variants.append(splice_xref.upi)
             splice_variants.sort(key=lambda x: x.length)
         return splice_variants
 
