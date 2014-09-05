@@ -37,6 +37,16 @@ class Rna(models.Model):
     class Meta:
         db_table = 'rna'
 
+    def is_active(self):
+        """
+        A sequence is considered active if it has at least one active cross_reference.
+        """
+        deleted = self.xrefs.values_list('deleted', flat=True).distinct()
+        if 'N' in deleted:
+            return True
+        else:
+            return False
+
     def has_genomic_coordinates(self):
         """
         Return True if at least one cross-reference has genomic coordinates.
