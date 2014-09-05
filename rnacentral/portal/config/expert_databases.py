@@ -78,7 +78,7 @@ expert_dbs = [
         'url': 'http://vega.sanger.ac.uk/',
         'description': 'is a repository for high-quality gene models produced by the manual annotation of vertebrate genomes',
         'abbreviation': 'Vertebrate Genome Annotation',
-        'examples': ['URS00000B15DA', 'URS00000A54A6', 'URS00003B2BEF'],
+        'examples': ['URS00000B15DA', 'URS00000A54A6', 'URS0000301B08'],
         'references': [
             {
                 'title': 'The GENCODE v7 catalog of human long noncoding RNAs: analysis of their gene structure, evolution, and expression.',
