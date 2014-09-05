@@ -83,6 +83,9 @@ limitations under the License.
     function navigate_to_feature() {
       browser.moveTo(this.params.start, this.params.end, false);
       browser.zoomOut();
+      var timerId = setInterval(function(){
+        $('.resizer').click();
+      }, 500);
     }
 
     /**
