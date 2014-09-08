@@ -211,12 +211,22 @@ class TmRNASequencePage(SequencePage):
 
 
 class MirbaseSequencePage(SequencePage):
-    """Sequence page with miRBase xrefs. Add miRBase-specific tests as necessary."""
+    """Sequence page with miRBase xrefs. Add miRBase-specific tests here."""
     pass
 
 
-class SrpdbsequencePage(SequencePage):
-    """Sequence page with SRPdb xrefs. Add SRPdb-specific tests as necessary."""
+class SrpdbSequencePage(SequencePage):
+    """Sequence page with SRPdb xrefs. Add SRPdb-specific tests here."""
+    pass
+
+
+class RefseqSequencePage(SequencePage):
+    """Sequence page with RefSeq xrefs. Add RefSeq-specific tests here."""
+    pass
+
+
+class RdpSequencePage(SequencePage):
+    """Sequence page with Rdp xrefs. Add RefSeq-specific tests here."""
     pass
 
 
@@ -468,8 +478,6 @@ class RNAcentralTest(unittest.TestCase):
         page = ExpertDatabasesOverviewPage(self.browser)
         page.navigate()
         self.assertFalse(page.js_errors_found())
-        print page.get_footer_expert_db_count()
-        print page.get_expert_tr_count()
         self.assertEqual(page.get_expert_tr_count(), page.get_footer_expert_db_count())
 
     def test_tmrna_website_example_pages(self):
@@ -495,6 +503,12 @@ class RNAcentralTest(unittest.TestCase):
             page.navigate()
             self._sequence_view_checks(page)
 
+    def test_rdp_example_pages(self):
+        for example_id in self._get_expert_db_example_ids('rdp-examples'):
+            page = RdpSequencePage(self.browser, example_id)
+            page.navigate()
+            self._sequence_view_checks(page)
+
     def test_mirbase_example_pages(self):
         for example_id in self._get_expert_db_example_ids('mirbase-examples'):
             page = MirbaseSequencePage(self.browser, example_id)
@@ -504,14 +518,14 @@ class RNAcentralTest(unittest.TestCase):
 
     def test_srpdb_example_pages(self):
         for example_id in self._get_expert_db_example_ids('srpdb-examples'):
-            page = MirbaseSequencePage(self.browser, example_id)
+            page = SrpdbSequencePage(self.browser, example_id)
             page.navigate()
             self._sequence_view_checks(page)
             self.assertTrue(page.external_urls_exist('srpdb'))
 
     def test_expert_database_landing_pages(self):
         expert_dbs = ['tmrna-website', 'srpdb', 'mirbase', 'vega',
-                      'ena', 'rfam', 'lncrnadb', 'gtrnadb', 'refseq']
+                      'ena', 'rfam', 'lncrnadb', 'gtrnadb', 'refseq', 'rdp']
         for expert_db in expert_dbs:
             page = ExpertDatabaseLandingPage(self.browser, expert_db)
             page.navigate()
