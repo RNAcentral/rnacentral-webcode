@@ -30,7 +30,7 @@ var guidedTour = function() {
 		showPrevButton: true,
 		onStart: function(){
 			// make sure we are on the overview tab
-			$('#tabs a[href="#overview"]').tab('show');
+			$('*[data-target="#overview"]').tab('show');
 		},
 		scrollDuration: 700,
 		steps: [
