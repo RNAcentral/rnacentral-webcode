@@ -151,7 +151,7 @@ class Rna(models.Model):
         Get a non-redundant list of databases referencing the sequence.
         """
         databases = []
-        db_ids = self.xrefs.values_list('db_id', flat=True).distinct()
+        db_ids = self.xrefs.filter(deleted='N').values_list('db_id', flat=True).distinct()
         for db in Database.objects.filter(id__in=db_ids).all():
             databases.append(db.display_name)
         databases = sorted(databases, key=lambda s: s.lower()) # case-insensitive
