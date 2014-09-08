@@ -53,6 +53,21 @@ limitations under the License.
           $(this.genoverse_container).html('');
           window.browser = new Genoverse(get_genoverse_config_object());
           add_karyotype_placeholder();
+          register_genoverse_events();
+
+          /**
+           * Register custom Genoverse events.
+           */
+          function register_genoverse_events() {
+            // resize tracks
+            window.browser.on({
+              afterSetRange: function () {
+                setTimeout(function(){
+                  $('.genoverse-wrap .resizer').click();
+                }, 1000);
+              }
+            });
+          }
       }
 
       /**
@@ -83,9 +98,6 @@ limitations under the License.
     function navigate_to_feature() {
       browser.moveTo(this.params.start, this.params.end, false);
       browser.zoomOut();
-      var timerId = setInterval(function(){
-        $('.resizer').click();
-      }, 500);
     }
 
     /**
