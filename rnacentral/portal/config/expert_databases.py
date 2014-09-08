@@ -61,7 +61,7 @@ expert_dbs = [
         'url': 'http://www.mirbase.org/',
         'description': 'is a database of published miRNA sequences and annotations that provides a centralised system for assigning names to miRNA genes',
         'abbreviation': '',
-        'examples': ['URS00003B7674', 'URS00003B7674', 'URS000016FD1A'],
+        'examples': ['URS000075A685', 'URS00003B7674', 'URS000016FD1A'],
         'references': [
             {
                 'title': 'miRBase: integrating microRNA annotation and deep-sequencing data',
