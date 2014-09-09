@@ -765,8 +765,14 @@ class Xref(models.Model):
     def has_genomic_coordinates(self):
         """
         Determine whether an xref has genomic coordinates.
+        Return true only if all exons are mapped to genomic coordinates.
         """
-        return True if self.accession.coordinates.first() and self.accession.coordinates.first().chromosome else False
+        if not self.accession.coordinates.first():
+            return False
+        for coordinate in self.accession.coordinates.all():
+            if not coordinate.chromosome:
+                return False
+        return True
 
     def get_genomic_coordinates(self):
         """
