@@ -190,13 +190,13 @@ limitations under the License.
               {% endwith %}
             {% endwith %}
           </span>
-          {# UCSC url only for human #}
+          {# UCSC url #}
           {% with ucsc_db_id=xref.get_ucsc_db_id %}
-              {% if ucsc_db_id == 'hg38' %}
-                <span class="margin-right-5px ucsc-link">
-                  <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db={{ ucsc_db_id }}&position=chr{{ genomic_coordinates.chromosome }}%3A{{ genomic_coordinates.start }}-{{ genomic_coordinates.end }}" target="_blank">UCSC</a>
-                </span>
-              {% endif %}
+            {% if ucsc_db_id %}
+              <span class="margin-right-5px ucsc-link">
+                <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db={{ ucsc_db_id }}&position={{ genomic_coordinates.ucsc_chromosome }}%3A{{ genomic_coordinates.start }}-{{ genomic_coordinates.end }}" target="_blank">UCSC</a>
+              </span>
+            {% endif %}
           {% endwith %}
         </small>
       {% endwith %}

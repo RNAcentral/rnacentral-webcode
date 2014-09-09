@@ -754,13 +754,10 @@ class Xref(models.Model):
         Get UCSC id for the genome assembly.
         http://genome.ucsc.edu/FAQ/FAQreleases.html
         """
-        ucsc_db_ids = {
-            9606: 'hg38', # human
-        }
-        if self.taxid in ucsc_db_ids.keys():
-            return ucsc_db_ids[self.taxid]
-        else:
-            return None
+        for genome in rnacentral_genomes:
+            if self.taxid == genome['taxid']:
+                return genome['assembly_ucsc']
+        return None
 
     def has_genomic_coordinates(self):
         """
@@ -779,12 +776,17 @@ class Xref(models.Model):
         Mirror the existing API while using the new GenomicCoordinates model.
         TODO: remove "new_" from the method name.
         """
-        return {
+        data = {
             'chromosome': self.get_feature_chromosome(),
             'strand': self.get_feature_strand(),
             'start': self.get_feature_start(),
             'end': self.get_feature_end(),
         }
+        if re.match(r'\d+', data['chromosome']):
+            data['ucsc_chromosome'] = 'chr' + data['chromosome']
+        else:
+            data['ucsc_chromosome'] = data['chromosome']
+        return data
 
     def get_feature_chromosome(self):
         """
