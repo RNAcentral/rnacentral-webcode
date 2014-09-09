@@ -782,7 +782,8 @@ class Xref(models.Model):
             'start': self.get_feature_start(),
             'end': self.get_feature_end(),
         }
-        if re.match(r'\d+', data['chromosome']):
+        exceptions = ['X', 'Y']
+        if re.match(r'\d+', data['chromosome']) or data['chromosome'] in exceptions:
             data['ucsc_chromosome'] = 'chr' + data['chromosome']
         else:
             data['ucsc_chromosome'] = data['chromosome']
