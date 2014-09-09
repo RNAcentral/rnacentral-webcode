@@ -932,19 +932,19 @@ def _xref_to_bed_format(xref):
             block_starts.append(0)
         else:
             block_starts.append(exon.primary_start - exons[0].primary_start)
-    bed = "chr%s\t%i\t%i\t%s\t%i\t%s\t%i\t%i\t%s\t%i\t%s\t%s\n" % (chromosome,
-                                                                   chrom_start,
-                                                                   chrom_end,
-                                                                   upi,
-                                                                   score,
-                                                                   strand,
-                                                                   thick_start,
-                                                                   thick_end,
-                                                                   item_rgb,
-                                                                   block_count,
-                                                                   ','.join(map(str,block_sizes)),
-                                                                   ','.join(map(str,block_starts))
-                                                                   )
+    bed = "%s\t%i\t%i\t%s\t%i\t%s\t%i\t%i\t%s\t%i\t%s\t%s\n" % (chromosome,
+                                                                chrom_start,
+                                                                chrom_end,
+                                                                upi,
+                                                                score,
+                                                                strand,
+                                                                thick_start,
+                                                                thick_end,
+                                                                item_rgb,
+                                                                block_count,
+                                                                ','.join(map(str,block_sizes)),
+                                                                ','.join(map(str,block_starts))
+                                                                )
     return bed
 
 def get_ensembl_divisions():

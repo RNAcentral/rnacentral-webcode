@@ -117,20 +117,18 @@ class BedExporter(FtpBase):
                 if not bed_file:
                     return False
                 lines = bed_file.split('\n')
-                accepted = ['']
+                accepted = []
                 for line in lines:
                     if not line:
                         continue
                     words = line.split('\t')
                     if words[0] not in self.chrom_sizes:
-                        # try without "chr"
-                        words[0] = words[0].replace('chr','')
+                        # try with "chr"
+                        words[0] = 'chr' + words[0]
                         if words[0] not in self.chrom_sizes:
-                            print 'Invalid fragment'
-                            print bed_file
                             return False
                     accepted.append('\t'.join(words))
-                return '\n'.join(accepted)
+                return '\n'.join(accepted) + '\n'
 
             f = open(self.names['bed_unsorted'], 'w')
             example = open(self.names['example'], 'w')
