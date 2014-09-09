@@ -79,13 +79,6 @@ genomes = [
         'taxid': 9615,
         'division': 'Ensembl',
     },
-    {
-        'species': 'Gorilla gorilla gorilla',
-        'assembly': 'gorGor3.1',
-        'assembly_ucsc': 'gorGor3',
-        'taxid': 9595,
-        'division': 'Ensembl',
-    },
     # Ensembl Fungi
     {
         'species': 'Saccharomyces cerevisiae',

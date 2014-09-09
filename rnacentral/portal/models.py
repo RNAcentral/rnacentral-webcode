@@ -855,11 +855,12 @@ def _xref_to_gff_format(xref):
     for exon in exons:
         if not exon.chromosome:
             continue
-        gff += "chr%s\tRNAcentral\texon\t%s\t%s\t.\t%s\t.\t%s\n" % (exon.chromosome,
-                                                                    exon.primary_start,
-                                                                    exon.primary_end,
-                                                                    '+' if exon.strand > 0 else '-',
-                                                                    xref.accession.accession)
+        gff += "%s\tRNAcentral\texon\t%s\t%s\t.\t%s\t.\tID \"%s\";Name \"%s\"\n" % (exon.chromosome,
+                                                                                    exon.primary_start,
+                                                                                    exon.primary_end,
+                                                                                    '+' if exon.strand > 0 else '-',
+                                                                                    xref.accession.accession,
+                                                                                    xref.upi.upi)
     return gff
 
 def _xref_to_gff3_format(xref):
@@ -887,15 +888,15 @@ def _xref_to_gff3_format(xref):
         }
         attributes_joined = ';'.join("%s=%s" % t for t in attributes.iteritems())
         gff += "%s\t%s\t%s\t%i\t%i\t%s\t%s\t%s\t%s\n" % (seqid,
-                                                           source,
-                                                           seq_type,
-                                                           start,
-                                                           end,
-                                                           score,
-                                                           strand,
-                                                           phase,
-                                                           attributes_joined
-                                                           )
+                                                         source,
+                                                         seq_type,
+                                                         start,
+                                                         end,
+                                                         score,
+                                                         strand,
+                                                         phase,
+                                                         attributes_joined
+                                                        )
     return gff
 
 def _xref_to_bed_format(xref):
@@ -906,8 +907,10 @@ def _xref_to_bed_format(xref):
     exons_all = xref.accession.coordinates.order_by('primary_start').all()
     exons = []
     for exon in exons_all:
-        if exon.chromosome: # some exons may not be mapped to genomic coordinates
+        if exon.chromosome:
             exons.append(exon)
+        else:
+            return bed  # skip entries with unmapped exons
     if len(exons) == 0:
         return bed
     # prepare fields
@@ -998,12 +1001,6 @@ def get_ensembl_divisions():
                     'taxid': 9615,
 
                 },
-                {
-                    'name': 'Gorilla gorilla gorilla',
-                    'taxid': 9595,
-
-                },
-
             ],
         },
         {

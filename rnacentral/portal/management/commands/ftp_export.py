@@ -20,6 +20,7 @@ from portal.management.commands.ftp_exporters.xrefs import XrefsExporter
 from portal.management.commands.ftp_exporters.gff import GffExporter, Gff3Exporter
 from portal.management.commands.ftp_exporters.bed import BedExporter
 from portal.management.commands.ftp_exporters.trackhub import TrackhubExporter
+from portal.config.genomes import genomes
 import os
 
 
@@ -114,11 +115,6 @@ class Command(BaseCommand):
         }
         # the formats must come in the correct execution order, e.g. `bed` should preceed `trackhub`
         self.formats = ['xrefs', 'fasta', 'gff', 'gff3', 'bed', 'trackhub', 'md5', 'all'] # available export formats
-        # Add more genomes here once they are supported
-        self.genomes = {
-            'human_hg38': 'hg38', # GRCh38
-            # 'mouse'     : 'mm10',
-        }
 
     def handle(self, *args, **options):
         """
@@ -180,11 +176,10 @@ class Command(BaseCommand):
         exporter = constructor(destination=self.options['destination'], test=self.options['test'])
 
         if mode in ['gff', 'gff3']: # genome coordinates
-            # todo: create genomic readme
-            for genome in self.genomes.values():
+            for genome in genomes:
                 exporter.export(genome=genome)
         elif mode == 'bed':
-            for genome in self.genomes.values():
+            for genome in genomes:
                 exporter.export(genome=genome, bedToBigBed=self.options['bedToBigBed'])
         elif mode == 'trackhub':
             exporter.export(all_genomes=self.genomes)

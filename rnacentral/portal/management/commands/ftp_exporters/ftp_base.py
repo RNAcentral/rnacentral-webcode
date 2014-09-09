@@ -137,12 +137,14 @@ class FtpBase(OracleConnection):
     # Data retrieval #
     ##################
 
-    def get_xrefs_with_genomic_coordinates(self):
+    def get_xrefs_with_genomic_coordinates(self, taxid):
         """
         Get RNA sequences with genomic coordinates.
         """
         xrefs = Xref.objects.select_related('accession__coordinates').\
                              filter(db_id__in=[1,2,9,10]).\
+                             filter(taxid=taxid).\
+                             filter(deleted='N').\
                              filter(accession__coordinates__chromosome__isnull=False).\
                              values_list('accession', flat=True).\
                              distinct()
@@ -169,17 +171,17 @@ class FtpBase(OracleConnection):
         This directory contains genomic coordinates for a subset of RNAcentral ids
         where such mapping is available.
 
-        * hg38.bed.gz
-        Bed format description:
+        * Bed
+        Format description:
         http://www.ensembl.org/info/website/upload/bed.html
         http://genome.ucsc.edu/FAQ/FAQformat.html
 
-        * hg38.gff.gz
-        Gff2 format description:
+        * Gff2
+        Format description:
         http://www.sanger.ac.uk/resources/software/gff/spec.html
 
-        * hg38.gff3.gz
-        Gff3 format description:
+        * Gff3
+        Format description:
         http://www.sequenceontology.org/gff3.shtml
 
         * track_hub/

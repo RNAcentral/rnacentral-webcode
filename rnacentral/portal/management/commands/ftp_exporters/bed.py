@@ -13,6 +13,7 @@ limitations under the License.
 
 from portal.management.commands.ftp_exporters.ftp_base import FtpBase
 from portal.models import Xref
+import csv
 import logging
 import os
 import subprocess
@@ -33,49 +34,67 @@ class BedExporter(FtpBase):
 
         self.subdirectory = self.make_subdirectory(self.destination, self.subfolders['coordinates'])
         self.name_templates = {
-            'bed_sorted': self.get_output_filename('{genome}.bed', parent_dir=self.subdirectory),
-            'bed_unsorted': self.get_output_filename('{genome}_unsorted.bed', parent_dir=self.subdirectory),
-            'big_bed': self.get_output_filename('{genome}.bigBed', parent_dir=self.subdirectory),
+            'bed_sorted': self.get_output_filename('{species}.{assembly}.bed', parent_dir=self.subdirectory),
+            'bed_unsorted': self.get_output_filename('{species}.{assembly}_unsorted.bed', parent_dir=self.subdirectory),
+            'big_bed': self.get_output_filename('{assembly_ucsc}.bigBed', parent_dir=self.subdirectory),
             'example': self.get_output_filename('bed_example.txt', parent_dir=self.subdirectory),
             'chrom_sizes': '', # initialize later with fetch_chromosome_sizes()
         }
         self.names = {}
-        self.genome = ''
+        self.genome = None
+        self.chrom_sizes = None
         self.bedToBigBed = ''
         self.logger = logging.getLogger(__name__)
 
-    def export(self, genome='', bedToBigBed=''):
+    def export(self, genome=None, bedToBigBed=''):
         """
         Main export function.
         """
         self.genome = genome
+        if not genome['assembly_ucsc']:
+            self.logger.info('Skipping genome %s because no UCSC assembly was found' % genome['species'])
+            return
+        self.chrom_sizes = dict()
+        self.genome['species'] = self.genome['species'].replace(' ','_')
         self.bedToBigBed = bedToBigBed
 
         def fetch_chromosome_sizes():
             """
             Fetch chromosome sizes for a specific genome and return the name of the output file.
             """
-            filename = '{genome}.chrom.sizes'.format(genome=self.genome)
+            filename = '{assembly_ucsc}.chrom.sizes'.format(assembly_ucsc=self.genome['assembly_ucsc'])
             chrom_sizes_file = self.get_output_filename(filename, parent_dir=self.subdirectory)
-            cmd = '. %s/fetchChromSizes %s > %s' % (self.bedToBigBed, self.genome, chrom_sizes_file)
+            cmd = '. %s/fetchChromSizes %s > %s' % (self.bedToBigBed, self.genome['assembly_ucsc'], chrom_sizes_file)
             status = subprocess.call(cmd, shell=True)
             if status == 0:
                 self.logger.info('Chromosome sizes fetched')
                 return chrom_sizes_file
             else:
-                self.logger.critical('BigBed file could not be created')
+                self.logger.critical(cmd)
+                self.logger.critical('Chromosome sizes file was not retrieved')
                 sys.exit(1)
 
         def initialize_names():
             """
             Replace placeholders in `name_templates` with self.genome
             """
-            self.names = self.name_templates
+            self.names = self.name_templates.copy()
             self.names['chrom_sizes'] = fetch_chromosome_sizes()
             for key, value in self.names.iteritems():
-                self.names[key] = value.format(genome=self.genome)
+                self.names[key] = value.format(**self.genome)
+
+        def parse_chrom_sizes():
+            """
+            Store chromosome sizes in a dictionary.
+            """
+            self.chrom_sizes = dict()
+            with open(self.names['chrom_sizes'], 'r') as f:
+                reader = csv.reader(f, delimiter='\t')
+                for row in reader:
+                    self.chrom_sizes[row[0]] = row[1]
 
         initialize_names()
+        parse_chrom_sizes()
         try:
             self.export_bed_data()
         except:
@@ -91,11 +110,34 @@ class BedExporter(FtpBase):
             """
             Export unsorted genomic coordinates in BED format.
             """
+            def validate_chr_names(bed_file):
+                """
+                Ensure that all chr names appear in the chrom.sizes file.
+                """
+                if not bed_file:
+                    return False
+                lines = bed_file.split('\n')
+                accepted = ['']
+                for line in lines:
+                    if not line:
+                        continue
+                    words = line.split('\t')
+                    if words[0] not in self.chrom_sizes:
+                        # try without "chr"
+                        words[0] = words[0].replace('chr','')
+                        if words[0] not in self.chrom_sizes:
+                            print 'Invalid fragment'
+                            print bed_file
+                            return False
+                    accepted.append('\t'.join(words))
+                return '\n'.join(accepted)
+
             f = open(self.names['bed_unsorted'], 'w')
             example = open(self.names['example'], 'w')
             counter = 0
-            for accession in self.get_xrefs_with_genomic_coordinates():
-                text = Xref.objects.get(accession=accession).get_ucsc_bed()
+            for accession in self.get_xrefs_with_genomic_coordinates(taxid=self.genome['taxid']):
+                text = Xref.objects.get(accession=accession, deleted='N').get_ucsc_bed()
+                text = validate_chr_names(text)
                 if text:
                     f.write(text)
                     counter += 1
@@ -140,10 +182,12 @@ class BedExporter(FtpBase):
         """
         Run bedToBigBed and produce the output.
         """
+        print self.names['chrom_sizes']
         cmd = '%s/bedToBigBed %s %s %s' % (self.bedToBigBed, self.names['bed_sorted'], self.names['chrom_sizes'], self.names['big_bed'])
         status = subprocess.call(cmd, shell=True)
         if status == 0:
             self.logger.info('BigBed file created')
         else:
+            self.logger.critical(status)
             self.logger.critical('BigBed file could not be created')
             sys.exit(1)

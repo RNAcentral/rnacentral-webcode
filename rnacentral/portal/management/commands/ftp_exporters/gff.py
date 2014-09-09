@@ -20,7 +20,6 @@ import os
 class GffExporter(FtpBase):
     """
     Create GFF output files.
-    Total runtime for 21K records: ~2 min
     """
 
     def __init__(self, *args, **kwargs):
@@ -36,15 +35,15 @@ class GffExporter(FtpBase):
         Main export function.
         """
         self.logger.info('Exporting gff')
-        gff_file = self.get_output_filename('%s.gff' % genome,
-                                            parent_dir=self.subdirectory)
+        filename = '%s.%s.gff' % (genome['species'].replace(' ', '_'), genome['assembly'])
+        gff_file = self.get_output_filename(filename, parent_dir=self.subdirectory)
         example_file = self.get_output_filename('gff_example.txt',
                                                 parent_dir=self.subdirectory)
         f = open(gff_file, 'w')
         example = open(example_file, 'w')
         counter = 0
-        for accession in self.get_xrefs_with_genomic_coordinates():
-            text = Xref.objects.get(accession=accession).get_gff()
+        for accession in self.get_xrefs_with_genomic_coordinates(taxid=genome['taxid']):
+            text = Xref.objects.get(accession=accession, deleted='N').get_gff()
             if text:
                 f.write(text)
                 counter += 1
@@ -63,7 +62,6 @@ class GffExporter(FtpBase):
 class Gff3Exporter(FtpBase):
     """
     Create GFF3 output files.
-    Total runtime for 21K records: ~2 min
     """
 
     def __init__(self, *args, **kwargs):
@@ -79,8 +77,8 @@ class Gff3Exporter(FtpBase):
         Main export function.
         """
         self.logger.info('Exporting gff3')
-        gff_file = self.get_output_filename('%s.gff3' % genome,
-                                            parent_dir=self.subdirectory)
+        filename = '%s.%s.gff3' % (genome['species'].replace(' ', '_'), genome['assembly'])
+        gff_file = self.get_output_filename(filename, parent_dir=self.subdirectory)
         example_file = self.get_output_filename('gff3_example.txt',
                                                 parent_dir=self.subdirectory)
         f = open(gff_file, 'w')
@@ -89,8 +87,8 @@ class Gff3Exporter(FtpBase):
         f.write(header)
         example.write(header)
         counter = 0
-        for accession in self.get_xrefs_with_genomic_coordinates():
-            text = Xref.objects.get(accession=accession).get_gff3()
+        for accession in self.get_xrefs_with_genomic_coordinates(taxid=genome['taxid']):
+            text = Xref.objects.get(accession=accession, deleted='N').get_gff3()
             if text:
                 f.write(text)
                 counter += 1
