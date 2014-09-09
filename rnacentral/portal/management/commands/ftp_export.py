@@ -182,7 +182,7 @@ class Command(BaseCommand):
             for genome in genomes:
                 exporter.export(genome=genome, bedToBigBed=self.options['bedToBigBed'])
         elif mode == 'trackhub':
-            exporter.export(all_genomes=self.genomes)
+            exporter.export(all_genomes=genomes)
         else: # fasta, md5, xrefs etc
             exporter.export()
 

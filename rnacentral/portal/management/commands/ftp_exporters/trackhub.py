@@ -40,7 +40,7 @@ class TrackhubExporter(FtpBase):
             Get the name of the bigBed file for a genome.
             """
             parent_dir = os.path.join(self.destination, self.subfolders['coordinates'])
-            return self.get_output_filename('%s.bigBed' % genome, parent_dir=parent_dir)
+            return self.get_output_filename('%s.bigBed' % genome['assembly_ucsc'], parent_dir=parent_dir)
 
         self.logger.info('Exporting track hub to %s' % self.subdirectory)
 
@@ -50,9 +50,11 @@ class TrackhubExporter(FtpBase):
         genomes = Genomes(subdirectory=self.subdirectory, genomes=all_genomes)
         genomes.render()
 
-        for genome in all_genomes.values():
+        for genome in all_genomes:
+            if not genome['assembly_ucsc']:
+                continue
             bigBed = get_bigbed_name()
-            trackDb = TrackDb(subdirectory=self.subdirectory, genome=genome, html="", bigBed=bigBed) # can customize html if necessary
+            trackDb = TrackDb(subdirectory=self.subdirectory, genome=genome['assembly_ucsc'], html="", bigBed=bigBed) # can customize html if necessary
             trackDb.render()
 
         self.logger.info('Track hub export complete')
@@ -128,11 +130,13 @@ class Genomes(HubBase):
         """
         """
         data = []
-        for genome in self.genomes.values():
+        for genome in self.genomes:
+            if not genome['assembly_ucsc']:
+                continue
             data.append({
-            'genome' : genome,
-            'trackDb': os.path.join(genome, 'trackDb.txt'),
-        })
+                'genome' : genome['assembly_ucsc'],
+                'trackDb': os.path.join(genome['assembly_ucsc'], 'trackDb.txt'),
+            })
         self._render(data)
 
 
