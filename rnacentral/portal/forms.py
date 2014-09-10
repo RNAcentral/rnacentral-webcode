@@ -21,8 +21,12 @@ class ContactForm(forms.Form):
     message = forms.CharField()
     sender = forms.EmailField()
     cc_myself = forms.BooleanField(required=False)
+    phone = forms.CharField(required=False) # honeypot anti-spam hidden field
 
     def send_email(self):
+        if self.cleaned_data['phone']:
+            # this field would only be filled out by a spam bot
+            return False
         subject = '[RNAcentral Contact Us] ' + self.cleaned_data['subject']
         sender = self.cleaned_data['sender']
         recipients = [local_settings.EMAIL_RNACENTRAL_HELPDESK]
