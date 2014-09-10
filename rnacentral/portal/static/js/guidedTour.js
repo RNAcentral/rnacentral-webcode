@@ -44,7 +44,7 @@ var guidedTour = function() {
 			{
 				title: 'Database annotations',
 				content: 'Databases that refer to this sequence are listed here.' +
-						 'The table can be <strong>filtered</strong> using the search box on the right',
+						 'The table can be <strong>filtered</strong> using the search box on the right.',
 				target: '#xrefs-table-div',
 				placement: 'top',
 				onShow: function() {
@@ -125,7 +125,8 @@ var guidedTour = function() {
 			{
 				title: 'Additional features',
 				content: 'More features available for some entries. <br>' +
-				         'For example, take a tour <a href="/rna/URS000025784F" target="_blank">here</a>.', // XIST/TSIX page
+				         'For example, take a tour <a href="/rna/URS000025784F" target="_blank">here</a> ' +
+				         '(opens in a new window).', // XIST/TSIX page
 				target: '#xrefs-table-div',
 				placement: 'top',
 				showSkip: true, // show Skip button instead of Next
@@ -136,7 +137,7 @@ var guidedTour = function() {
 
 			{
 				title: 'Thank you!',
-				content: 'Feel free to take the tour again anytime',
+				content: 'Feel free to take the tour again anytime.',
 				target: 'guided-tour',
 				placement: 'left',
 				onPrev: function(){
