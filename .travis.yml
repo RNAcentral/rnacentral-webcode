@@ -10,4 +10,4 @@ script:
 # define branches
 branches:
   only:
-    - django
+    - master
