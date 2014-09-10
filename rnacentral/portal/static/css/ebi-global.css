@@ -94,12 +94,6 @@ a {
   height: 23px;
 }
 
-.oldie div#global-masthead ul li
-a {
-  width: 5em;
-  text-align: center;
-}
-
 div#global-masthead ul li.first
 a {
   border-left: 0 none;
@@ -220,16 +214,13 @@ input.submit {
   height: 24px;
   margin: 0;
   display: inline;
-  background: url(/web_guidelines/images/global/search-button.png) no-repeat;
   background-position: 0 0;
   width: 24px;
   height: 24px;
   -moz-box-shadow: 0 0 0 transparent;
   -webkit-box-shadow: 0 0 0 transparent;
   box-shadow: 0 0 0 transparent;
-  border: 0
-none;
-  filter: none;
+  border: none;
 }
 
 form#global-search input.submit:hover,
@@ -279,12 +270,6 @@ ul {
   width: 100%;
   background-color: #111;
   background-color: rgba(17, 17, 17, 0.4);
-}
-
-.oldie div#local-masthead
-ul {
-  background-color: transparent;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#66111111',EndColorStr='#66111111') !important;
 }
 
 div#local-masthead ul
@@ -347,15 +332,15 @@ a {
 }
 
 body.section-about div#local-masthead {
-  background: #60bdc4 url(/web_guidelines/images/banners/EBI_ABOUT_Banner.jpg) top right no-repeat;
+  background: #60bdc4 top right no-repeat;
 }
 
 body.section-industry div#local-masthead {
-  background: #83a3c9 url(/web_guidelines/images/banners/EBI_INDUSTRY_Banner.jpg) top right no-repeat;
+  background: #83a3c9 top right no-repeat;
 }
 
 body.section-research div#local-masthead {
-  background: #a8d793 url(/web_guidelines/images/banners/EBI_RESEARCH_Banner.jpg) top right no-repeat;
+  background: #a8d793 top right no-repeat;
 }
 
 body.section-research div#local-title h1,
@@ -367,11 +352,11 @@ a {
 }
 
 body.section-services div#local-masthead {
-  background: #60bdc4 url(/web_guidelines/images/banners/EBI_SERVICES_Banner.jpg) top right no-repeat;
+  background: #60bdc4 top right no-repeat;
 }
 
 body.section-training div#local-masthead {
-  background: #f9e292 url(/web_guidelines/images/banners/EBI_TRAINING_Banner.jpg) top right no-repeat;
+  background: #f9e292 top right no-repeat;
 }
 
 body.section-training div#local-title h1,
@@ -383,7 +368,7 @@ a {
 }
 
 body.section-home div#local-masthead {
-  background: #1d8086 url(/web_guidelines/images/banners/EBI_HOMEPAGE_Banner.jpg) top right no-repeat;
+  background: #1d8086 top right no-repeat;
 }
 
 ul#local-nav
@@ -444,13 +429,6 @@ fieldset {
   background-color: #fff;
   background-color: rgba(255, 255, 255, 0.8);
   padding: 0.5em 2em 0.5em 0.3em;
-}
-
-.oldie div#local-search form fieldset,
-.oldie form#local-search
-fieldset {
-  background-color: transparent;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#ccffffff',EndColorStr='#ccffffff');
 }
 
 div#local-search form fieldset div.left,
@@ -528,12 +506,6 @@ nav#breadcrumb {
 div#local-footer,div#global-footer {
   background-color: white;
   background-color: rgba(255, 255, 255, 0.85);
-}
-
-.oldie div#local-footer,
-.oldie div#global-footer {
-  background-color: transparent;
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#d9ffffff',EndColorStr='#d9ffffff');
 }
 
 #ebi-footer-meta {
@@ -627,7 +599,8 @@ img {
 #global-nav-expanded
 h3 {
   margin-top: 20px;
-  margin-bottom 5px;line-height: 1.538;
+  margin-bottom: 5px;
+  line-height: 1.538;
 }
 
 #global-nav-expanded
