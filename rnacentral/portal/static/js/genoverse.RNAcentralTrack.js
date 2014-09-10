@@ -47,6 +47,7 @@ limitations under the License.
      * Load Genoverse for the first time or switch to a different species.
      */
     function initialize_genoverse() {
+
       if (typeof window.browser === 'undefined' || switch_species()) {
           // (re-)create Genoverse object
           delete window.browser;
@@ -54,20 +55,20 @@ limitations under the License.
           window.browser = new Genoverse(get_genoverse_config_object());
           add_karyotype_placeholder();
           register_genoverse_events();
+      }
 
-          /**
-           * Register custom Genoverse events.
-           */
-          function register_genoverse_events() {
-            // resize tracks
-            window.browser.on({
-              afterSetRange: function () {
-                setTimeout(function(){
-                  $('.genoverse-wrap .resizer').click();
-                }, 1000);
-              }
-            });
+      /**
+       * Register custom Genoverse events.
+       */
+      function register_genoverse_events() {
+        // resize tracks after load
+        window.browser.on({
+          afterSetRange: function () {
+            setTimeout(function(){
+              $('.genoverse-wrap .resizer').click();
+            }, 1000);
           }
+        });
       }
 
       /**
