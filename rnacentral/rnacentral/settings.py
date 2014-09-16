@@ -99,6 +99,7 @@ MIDDLEWARE_CLASSES = (
     # gzip
     'django.middleware.gzip.GZipMiddleware',
     # default
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -123,6 +124,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 USE_ETAGS=True
 
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_URLS_REGEX = r'^/api/.*$'
+
 ROOT_URLCONF = 'rnacentral.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
@@ -144,6 +148,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.comments',
     'django.contrib.humanize',
+    'corsheaders',
     'portal',
     'apiv1',
     'rest_framework',
