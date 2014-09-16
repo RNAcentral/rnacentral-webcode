@@ -36,7 +36,11 @@ limitations under the License.
           <i class="fa fa-star"></i>
         </span>
       {% endif %}
-      {{ xref.db.display_name.split|join:"&nbsp;" }}
+      {{ xref.db.name.split|join:"&nbsp;" }}
+      {% if xref.db.name == 'Vega' %}
+        <br>
+        (GENCODE)
+      {% endif %}
     </td>
     <!-- accession -->
     <td>
@@ -95,10 +99,10 @@ limitations under the License.
         {% endwith %}
       {% endif %}
 
-    {# VEGA #}
-    {% elif xref.db.display_name == 'VEGA' %}
-      VEGA transcript <a href="http://vega.sanger.ac.uk/Homo_sapiens/Transcript/Summary?db=core;t={{ xref.accession.optional_id }}" target="_blank" title="View the transcript at VEGA">{{ xref.accession.optional_id }}</a>
-      from gene <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank" title="View the gene at VEGA">{{ xref.accession.external_id }}</a>
+    {# Vega #}
+    {% elif xref.db.name == 'Vega' %}
+      {{ xref.db.name }} transcript <a href="http://vega.sanger.ac.uk/Homo_sapiens/Transcript/Summary?db=core;t={{ xref.accession.optional_id }}" target="_blank" title="View the transcript at {{ xref.db.name }}">{{ xref.accession.optional_id }}</a>
+      from gene <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank" title="View the gene at {{ xref.db.name }}">{{ xref.accession.external_id }}</a>
       {% with splice_variants=xref.get_vega_splice_variants %}
         {% if splice_variants %}
           <br>
