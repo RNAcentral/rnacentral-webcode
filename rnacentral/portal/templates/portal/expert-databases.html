@@ -51,7 +51,7 @@ RNAcentral Expert Databases
               {% endif %}
             </td>
             <td>
-              {{ expert_db.description }}
+              {{ expert_db.description|safe }}
             </td>
           </tr>
         {% endfor %}
