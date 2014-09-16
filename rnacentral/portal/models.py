@@ -406,11 +406,19 @@ class Database(models.Model):
         """
         return self.__get_database_attribute(self.display_name, 'abbreviation')
 
+    @cached_property
+    def name(self):
+        """
+        Get database display name. This is safer than using self.display_name
+        because it doesn't require updating the database field.
+        """
+        return self.__get_database_attribute(self.display_name, 'name')
+
     def __get_database_attribute(self, db_name, attribute):
         """
         An accessor method for retrieving attributes from a list.
         """
-        return [x[attribute] for x in rnacentral_expert_dbs if x['name'] == db_name].pop()
+        return [x[attribute] for x in rnacentral_expert_dbs if x['name'].lower() == db_name.lower()].pop()
 
 
 class Release(models.Model):
@@ -688,7 +696,7 @@ class Xref(models.Model):
 
     def get_vega_splice_variants(self):
         splice_variants = []
-        if self.db.display_name != 'VEGA':
+        if not re.match('vega', self.db.display_name, re.IGNORECASE):
             return splice_variants
         for splice_variant in Accession.objects.filter(external_id=self.accession.external_id).\
                                                 exclude(accession=self.accession.accession).\
