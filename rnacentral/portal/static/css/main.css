@@ -212,7 +212,7 @@ a[href^="http://"]:after {
   font-weight: normal;
   font-style: normal;
   font-size: x-small;
-  display: inline-block;
+  display: inline;
   text-decoration: none;
   padding-left: 4px;
 }

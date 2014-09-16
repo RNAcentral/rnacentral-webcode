@@ -11,8 +11,7 @@ become readily apparent when viewed in a genome browser
 For a number of key species we establish a mapping between the RNAcentral entries
 and their genomic coordinates in reference genomes using the [Ensembl Perl API](http://www.ensembl.org/info/docs/api/index.html).
 
-Notably, all human entries are mapped to the new human genome assembly, **GRCh38**,
-including the [miRBase](http://rnacentral.org/expert-database/mirbase) and [VEGA](http://rnacentral.org/expert-database/vega) Expert Database datasets.
+Notably, the new human genome assembly, **GRCh38**, is used for the mapping.
 
 Currently the mapping only applies to the RNAcentral entries from the INSDC accessions used to assemble the reference genomes.
 In the future we plan to expand the mapping to sequences that are not part of reference genomes.

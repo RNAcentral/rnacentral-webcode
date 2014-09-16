@@ -17,30 +17,30 @@ limitations under the License.
 
 {% block meta_tags %}
     {{ block.super }}
-    <meta name="description" content="Summary for the {{expert_db.display_name}} expert database"/>
+    <meta name="description" content="Summary for the {{expert_db.name}} expert database"/>
 {% endblock %}
 
 {% block title %}
-  {{ expert_db.display_name }} Expert Database
+  {{ expert_db.name }} Expert Database
 {% endblock %}
 
 {% block content %}
 
 <h1>
   <a href="{{ expert_db.url }}" target="_blank" class="expert-db-logo no-icon">
-    <img src="{% static 'img/expert-db-logos/' %}{{expert_db.label}}.png" alt="{{expert_db.display_name}} logo" class="img-rounded">
+    <img src="{% static 'img/expert-db-logos/' %}{{expert_db.label}}.png" alt="{{expert_db.name}} logo" class="img-rounded">
   </a>
-  {{ expert_db.display_name }} Expert Database
+  {{ expert_db.name }} Expert Database
 </h1>
 
 <div class="row">
   <div class="col-md-12">
     <p>
-      <a href="{{expert_db.url}}" target="_blank">{{expert_db.display_name}}</a>
+      <a href="{{expert_db.url}}" target="_blank">{{expert_db.name}}</a>
       {% if expert_db.abbreviation %}
         ({{expert_db.abbreviation}})
       {% endif %}
-      {{expert_db.description}}.
+      {{expert_db.description|safe}}.
     </p>
   </div>
 </div>
@@ -72,12 +72,15 @@ limitations under the License.
     </p>
 
     <p>
-      <a class="btn btn-primary" ng-click="meta_search('expert_db:%22{{expert_db.display_name}}%22')">Browse all {{expert_db.display_name}} sequences</a>
+      <a class="btn btn-primary" ng-click="meta_search('expert_db:%22{{expert_db.name}}%22')">Browse all {{expert_db.name}} sequences</a>
     </p>
 
     <h2>Links</h2>
     <ul>
-      <li><a href="{{ expert_db.url }}" target="_blank">{{ expert_db.display_name }} homepage</a></li>
+      <li><a href="{{ expert_db.url }}" target="_blank">{{ expert_db.name }} homepage</a></li>
+      {% if expert_db.name == 'Vega' %}
+        <li><a href="http://www.gencodegenes.org/" target="_blank">GENCODE</a></li>
+      {% endif %}
       {% if expert_db.project_id %}
         <li><a href="http://www.ebi.ac.uk/ena/data/view/{{ expert_db.project_id }}" target="_blank">ENA project</a></li>
       {% endif %}
@@ -169,7 +172,7 @@ limitations under the License.
             <div id="sunburst-help" class="collapse">
               <p>
                 <small>
-                  This diagram shows the combined lineages of all taxonomic groups annotated by {{ expert_db.display_name }}.
+                  This diagram shows the combined lineages of all taxonomic groups annotated by {{ expert_db.name }}.
                   The circle segments are sized proportionally to the number of sequences from the corresponding taxon.
                   <br>
                   <strong>Hover</strong> your mouse over circle segments to display taxon names.

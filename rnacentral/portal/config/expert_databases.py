@@ -73,10 +73,11 @@ expert_dbs = [
         'imported': True,
     },
     {
-        'name': 'VEGA',
+        'name': 'Vega',
         'label': 'vega',
         'url': 'http://vega.sanger.ac.uk/',
-        'description': 'is a repository for high-quality gene models produced by the manual annotation of vertebrate genomes',
+        'description': """is a repository for high-quality gene models produced by the manual annotation of vertebrate genomes.
+                          Human and mouse data from Vega are merged into <a href="http://www.gencodegenes.org/" target="_blank">GENCODE</a>""",
         'abbreviation': 'Vertebrate Genome Annotation',
         'examples': ['URS00000B15DA', 'URS00000A54A6', 'URS0000301B08'],
         'references': [

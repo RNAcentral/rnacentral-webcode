@@ -31,12 +31,16 @@ limitations under the License.
 {% for xref in context.rna.get_xrefs %}
   <tr {% if xref.deleted == 'Y' %}class="warning"{% endif %}>
     <td>
-      {% if xref.db.display_name != 'ENA' %}
+      {% if xref.db.name != 'ENA' %}
         <span class="badge badge-success help" data-toggle="tooltip" title="RNAcentral Expert Database">
           <i class="fa fa-star"></i>
         </span>
       {% endif %}
-      {{ xref.db.display_name.split|join:"&nbsp;" }}
+      {{ xref.db.name }}
+      {% if xref.db.name == 'Vega' %}
+        <br>
+        (GENCODE)
+      {% endif %}
     </td>
     <!-- accession -->
     <td>
@@ -44,11 +48,11 @@ limitations under the License.
     <br>
     <i class="fa fa-angle-right"></i>
     {# ENA #}
-    {% if xref.db.display_name == 'ENA' %}
+    {% if xref.db.name == 'ENA' %}
       ENA: <a href="{{ xref.accession.get_ena_url }}" target="_blank" title="{{ xref.accession.accession }} at ENA">{{ xref.accession.accession }}</a>
 
     {# Rfam #}
-    {% elif xref.db.display_name == 'Rfam' %}
+    {% elif xref.db.name == 'Rfam' %}
       RFAM family: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }}),
       {% if xref.is_rfam_seed %}
         <span class="text-success">seed alignment</span> <i class="fa fa-info-circle help" title="part of a manually curated RFAM seed alignment"></i>
@@ -61,22 +65,22 @@ limitations under the License.
       (nucleotides {{ xref.accession.feature_start|intcomma }}:{{ xref.accession.feature_end|intcomma }})
 
     {# SRPDB #}
-    {% elif xref.db.display_name == 'SRPDB' %}
+    {% elif xref.db.name == 'SRPDB' %}
       SRPDB:
       <a class="srpdb-external-url" href="{{ xref.accession.get_expert_db_external_url }}.fasta" target="_blank">{{ xref.accession.get_srpdb_id }}</a>
 
     {# lncRNAdb #}
-    {% elif xref.db.display_name == 'lncRNAdb' %}
+    {% elif xref.db.name == 'lncRNAdb' %}
       lncRNAdb:
       <a class="lncrnadb-external-url" href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.optional_id }}</a>
 
     {# gtRNAdb #}
-    {% elif xref.db.display_name == 'gtRNAdb' %}
+    {% elif xref.db.name == 'gtRNAdb' %}
       gtRNAdb:
       <a class="gtrnadb-external-url" href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>
 
     {# miRBase #}
-    {% elif xref.db.display_name == 'miRBase' %}
+    {% elif xref.db.name == 'miRBase' %}
       miRBase:
       <a class="mirbase-external-url" href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>
 
@@ -95,10 +99,10 @@ limitations under the License.
         {% endwith %}
       {% endif %}
 
-    {# VEGA #}
-    {% elif xref.db.display_name == 'VEGA' %}
-      VEGA transcript <a href="http://vega.sanger.ac.uk/Homo_sapiens/Transcript/Summary?db=core;t={{ xref.accession.optional_id }}" target="_blank" title="View the transcript at VEGA">{{ xref.accession.optional_id }}</a>
-      from gene <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank" title="View the gene at VEGA">{{ xref.accession.external_id }}</a>
+    {# Vega #}
+    {% elif xref.db.name == 'Vega' %}
+      {{ xref.db.name }} transcript <a href="http://vega.sanger.ac.uk/Homo_sapiens/Transcript/Summary?db=core;t={{ xref.accession.optional_id }}" target="_blank" title="View the transcript at {{ xref.db.name }}">{{ xref.accession.optional_id }}</a>
+      from gene <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank" title="View the gene at {{ xref.db.name }}">{{ xref.accession.external_id }}</a>
       {% with splice_variants=xref.get_vega_splice_variants %}
         {% if splice_variants %}
           <br>
@@ -114,11 +118,11 @@ limitations under the License.
       {% endwith %}
 
     {# tmRNA Website #}
-    {% elif xref.db.display_name == 'tmRNA Website' %}
+    {% elif xref.db.name == 'tmRNA Website' %}
       tmRNA Website: <a href="{{ xref.accession.get_expert_db_external_url }}.html" target="_blank">{{ xref.accession.external_id }}</a>
 
     {# RefSeq #}
-    {% elif xref.db.display_name == 'RefSeq' %}
+    {% elif xref.db.name == 'RefSeq' %}
       RefSeq: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}.{{ xref.accession.seq_version }}</a>
 
       {% if xref.is_refseq_mirna %}
@@ -147,7 +151,7 @@ limitations under the License.
       {% endwith %}
 
     {# RDP #}
-    {% elif xref.db.display_name == 'RDP' %}
+    {% elif xref.db.name == 'RDP' %}
       RDP: <a href="{{ xref.accession.get_expert_db_external_url }}&format=genbank" target="_blank">{{ xref.accession.external_id }}</a>
 
     {% else %}

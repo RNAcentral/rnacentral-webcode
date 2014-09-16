@@ -12,6 +12,7 @@ limitations under the License.
 -->
 
 {% load staticfiles %}
+{% load portal_extras %}
 
 <div class="navbar navbar-default navbar-static-top">
 
@@ -92,16 +93,12 @@ limitations under the License.
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="">Expert databases<b class="caret"></b></a>
           <ul class="dropdown-menu">
-            <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='ena' %}">ENA</a></li>
-            <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='gtrnadb' %}">gtRNAdb</a></li>
-            <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='lncrnadb' %}">lncRNAdb</a></li>
-            <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='mirbase' %}">miRBase</a></li>
-            <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='rdp' %}">RDP</a></li>
-            <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='refseq' %}">RefSeq</a></li>
-            <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='rfam' %}">RFAM</a></li>
-            <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='srpdb' %}">SRPDB</a></li>
-            <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='tmrna-website' %}">tmRNA Website</a></li>
-            <li><a href="{% url 'portal.views.expert_database_view' expert_db_name='vega' %}">VEGA</a></li>
+            {% get_expert_databases_list as expert_dbs %}
+
+            {% for expert_db in expert_dbs %}
+              <li><a href="{% url 'portal.views.expert_database_view' expert_db_name=expert_db.label %}">{{ expert_db.name }}</a></li>
+            {% endfor %}
+
             <li class="divider"></li>
             <li><a href="{% url 'expert-databases' %}">All Expert databases</a></li>
           </ul>
