@@ -233,7 +233,7 @@ The external id can be specified by setting the `external_id` url parameter.
 
 * <a href="/api/v1/rna/?external_id=Stap.epid._AF269831" target="_blank">{{ BASE_URL }}/api/v1/rna/?external_id=Stap.epid._AF269831</a> (SRPDB)
 * <a href="/api/v1/rna/?external_id=MIMAT0000091" target="_blank">{{ BASE_URL }}/api/v1/rna/?external_id=MIMAT0000091</a> (miRBase)
-* <a href="/api/v1/rna/?external_id=OTTHUMG00000172092" target="_blank">{{ BASE_URL }}/api/v1/rna/?external_id=OTTHUMG00000172092</a> (VEGA)
+* <a href="/api/v1/rna/?external_id=OTTHUMG00000172092" target="_blank">{{ BASE_URL }}/api/v1/rna/?external_id=OTTHUMG00000172092</a> (Vega)
 * <a href="/api/v1/rna/?external_id=Lepto_inter_Lai566" target="_blank">{{ BASE_URL }}/api/v1/rna/?external_id=Lepto_inter_Lai566</a> (tmRNA Website)
 
 <h3 id="v1-combined-filters">Combined filters</h3>
@@ -248,9 +248,7 @@ which acts as the logical `AND` operator. More logical operators will be support
 
 <h2 id="v1-genome-annotations">Genome annotations</h2>
 
-The API provides an endpoint for retrieving annotations based on genomic coordinates.
-Genome annotations are available for all sequences from [VEGA](/expert-database/vega).
-Only **human genome** is currently supported, but more data from more genomes will become available in future.
+The API provides an endpoint for retrieving annotations based on genomic coordinates for a [number of species](/help/genomic-mapping).
 
 The response content is similar to that provided by the
 [Ensembl REST API](http://rest.ensembl.org/documentation/info/overlap_region)
