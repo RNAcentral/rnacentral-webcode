@@ -25,13 +25,13 @@ class Command(BaseCommand):
     """
 
     Usage:
-    python manage.py xml4dbdumps <options>
+    python manage.py xml_export <options>
 
     Example:
-    python manage.py xml4dbdumps --destination /full/path/to/output/location
+    python manage.py xml_export --destination /full/path/to/output/location --minimum=0 --maximum=100
 
     Help:
-    python manage.py xml4dbdumps -h
+    python manage.py xml_export -h
     """
 
     ########################
@@ -59,7 +59,7 @@ class Command(BaseCommand):
     )
     # shown with -h, --help
     help = ('Export RNAcentral data in xml4dbdump format for EBeye search. '
-           'Run `python manage.py export -h` for more information.')
+            'Run `python manage.py xml_export -h` for more information.')
 
     ######################
     # Django entry point #
