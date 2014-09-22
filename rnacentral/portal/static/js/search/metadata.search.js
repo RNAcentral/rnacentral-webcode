@@ -390,11 +390,17 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', f
      */
     $scope.facet_search = function(facet_id, facet_value) {
         var query = $location.search().q || '';
-        var facet_query = ' AND ' + facet_id + ':"' + facet_value + '"';
+        var facet = facet_id + ':"' + facet_value + '"';
+
         if ($scope.is_facet_applied(facet_id, facet_value)) {
-            new_query = query.replace(facet_query, ''); // remove facet
+            var new_query = query;
+            // remove facet in different contexts
+            new_query = new_query.replace(' AND ' + facet + ' AND ', ' AND ', 'i');
+            new_query = new_query.replace(facet + ' AND ', '', 'i');
+            new_query = new_query.replace(' AND ' + facet, '', 'i');
+            new_query = new_query.replace(facet, '', 'i') || 'RNA';
         } else {
-            new_query = query + facet_query; // add new facet
+            new_query = query + ' AND ' + facet; // add new facet
         }
         $location.search('q', new_query);
     };
