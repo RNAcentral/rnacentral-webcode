@@ -81,7 +81,7 @@ class FastaExporter(FtpBase):
             return """
             SELECT t1.upi, t1.seq_short, t1.seq_long
             FROM rna t1, xref t2
-            WHERE t1.upi=t2.upi AND t2.dbid=1 AND t2.deleted='N'
+            WHERE t1.upi=t2.upi AND t2.deleted='N'
             ORDER BY t1.upi
             """
 
@@ -93,7 +93,7 @@ class FastaExporter(FtpBase):
             previous_upi = ''
 
             for row in self.cursor:
-                if self.test and counter > self.test_entries:
+                if self.test and counter >= self.test_entries:
                     return
                 result = self.row_to_dict(row)
                 if result['upi'] == previous_upi:
