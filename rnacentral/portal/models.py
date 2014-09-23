@@ -536,7 +536,7 @@ class Accession(models.Model):
             'VEGA': 'http://vega.sanger.ac.uk/Homo_sapiens/Gene/Summary?db=core;g=',
             'MIRBASE': 'http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc=',
             'TMRNA_WEB': 'http://bioinformatics.sandia.gov/tmrna/seqs/',
-            'LNCRNADB': 'http://www.lncrnadb.org/Detail.aspx?TKeyID=',
+            'LNCRNADB': 'http://www.lncrnadb.org/',
             'GTRNADB': 'http://lowelab.ucsc.edu/GtRNAdb/',
             'REFSEQ': 'http://www.ncbi.nlm.nih.gov/nuccore/',
             'RDP': 'http://rdp.cme.msu.edu/hierarchy/detail.jsp?seqid=',
@@ -547,6 +547,8 @@ class Accession(models.Model):
                     return urls[self.database] + self.external_id + '.html'
                 else:
                     return urls[self.database] + self.external_id + '/' + self.external_id + '-summary.html'
+            elif self.database == 'LNCRNADB':
+                return urls[self.database] + self.optional_id
             return urls[self.database] + self.external_id
         else:
             return ''
