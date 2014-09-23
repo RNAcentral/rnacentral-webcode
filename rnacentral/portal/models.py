@@ -548,7 +548,7 @@ class Accession(models.Model):
                 else:
                     return urls[self.database] + self.external_id + '/' + self.external_id + '-summary.html'
             elif self.database == 'LNCRNADB':
-                return urls[self.database] + self.optional_id
+                return urls[self.database] + self.optional_id.replace(' ', '')
             return urls[self.database] + self.external_id
         else:
             return ''
