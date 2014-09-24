@@ -23,6 +23,16 @@ import re
 # CREATE INDEX index_name ON table_name(SYS_OP_C2C(column_name));
 
 
+class Clusters(models.Model):
+    id = models.AutoField(primary_key=True)
+    cluster_id = models.CharField(max_length=200, db_index=True)
+    size = models.IntegerField(db_index=True)
+    method_id = models.IntegerField()
+
+    class Meta:
+        db_table = 'rnc_clusters'
+
+
 class Rna(models.Model):
     id = models.IntegerField(db_column='id')
     upi = models.CharField(max_length=13, db_index=True, primary_key=True)
