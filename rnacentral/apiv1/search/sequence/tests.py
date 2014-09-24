@@ -95,7 +95,7 @@ class ENASequenceSearchTest(unittest.TestCase):
         """
         test_case = {
             'sequence': 'ACCAGUGUUCAGACGGUGGA',
-            'accession': 'DQ930848.1:1..20:misc_RNA',
+            'accession': 'DQ930848.1:1..20:ncRNA',
             'upi': 'URS00003989D1',
         }
         self.__verify_results(test_case)
