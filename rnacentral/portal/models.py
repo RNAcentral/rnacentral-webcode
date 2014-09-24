@@ -26,6 +26,9 @@ import re
 class Clusters(models.Model):
     id = models.AutoField(primary_key=True)
     cluster_id = models.CharField(max_length=200, db_index=True)
+    start = models.IntegerField(null=True)
+    end = models.IntegerField(null=True)
+    chromosome = models.CharField(max_length=50, null=True)
     size = models.IntegerField(db_index=True)
     method_id = models.IntegerField()
 
