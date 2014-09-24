@@ -36,6 +36,26 @@ class Clusters(models.Model):
         db_table = 'rnc_clusters'
 
 
+class ClusterMember(models.Model):
+    id = models.AutoField(primary_key=True)
+    cluster_id = models.CharField(max_length=200, db_index=True)
+    upi = models.CharField(max_length=13, db_index=True)
+    method_id = models.IntegerField()
+
+    class Meta:
+        db_table = 'rnc_cluster_members'
+
+
+class ClusteringMethod(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=100)
+    command = models.TextField()
+    description = models.TextField()
+
+    class Meta:
+        db_table = 'rnc_clustering_method'
+
+
 class Rna(models.Model):
     id = models.IntegerField(db_column='id')
     upi = models.CharField(max_length=13, db_index=True, primary_key=True)
