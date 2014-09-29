@@ -52,6 +52,9 @@ limitations under the License.
         <li>
           <a href="" data-target="#species" data-toggle="tab">Taxonomy</a>
         </li>
+        <li>
+          <a href="" data-target="#related-seqs" data-toggle="tab">Related human sequences</a>
+        </li>
         <li class="disabled hidden-xs" data-toggle="tab">
           <a data-target="#2d" class="help" title="Coming soon">2D</a>
         </li>
@@ -222,6 +225,45 @@ limitations under the License.
 
         </div>
 
+        <div class="tab-pane" id="related-seqs">
+          <table class="table table-hover table-condensed table-bordered" id="related-seqs-table">
+            <thead>
+              <th>#</th>
+              <th>RNAcentral id</th>
+              <th>Length</th>
+              <th>Description</th>
+              <th>Human Xrefs</th>
+              <th>Species</th>
+              <th>Genome mapping</th>
+              <th>Ns</th>
+              <th>Databases</th>
+            </thead>
+
+            {% for related in rna.get_related_entries %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td><a href="/rna/{{ related.upi }}#homo">{{ related.upi }}</a></td>
+                <td>{{ related.length }}</td>
+                <td>{{ related.get_description }}</td>
+                <td>{{ related.count_human_xrefs }}</td>
+                <td>{{ related.count_distinct_organisms }}</td>
+                <td>{{ related.has_human_genomic_coordinates|yesno:"yes,no" }}</td>
+                <td>{{ related.count_symbols.N }}</td>
+                <td>
+                  {% with dbs=related.get_distinct_database_names %}
+                    <small>
+                      {% for db in dbs %}
+                        {{db}}{% if not forloop.last %},{% endif %}
+                      {% endfor %}
+                    </small>
+                  {% endwith %}
+                </td>
+              </tr>
+            {% endfor %}
+
+          </table>
+        </div>
+
         <div class="tab-pane" id="2d">
         </div>
 
@@ -292,6 +334,9 @@ limitations under the License.
       // hopscotch guided tour
       hopscotch_tour = new guidedTour;
       hopscotch_tour.initialize();
+
+      $('#related-seqs-table').dataTable();
+
     });
   </script>
 {% endblock %}

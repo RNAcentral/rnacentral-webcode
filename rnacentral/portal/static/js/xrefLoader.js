@@ -106,20 +106,20 @@ xrefLoader.prototype.load_xrefs = function() {
 			});
 
 			function adjust_dataTables_controls() {
-				$('.dataTables_filter input').attr('placeholder', 'Filter table').
+				$('#overview .dataTables_filter input').attr('placeholder', 'Filter table').
 				                              attr("tabindex", 2).
 				                              attr('type', 'search').
 				                              addClass('form-control input-sm');
-				$('#xrefs-table_filter').appendTo('#xrefs-datatables-filter').
+				$('#overview #xrefs-table_filter').appendTo('#xrefs-datatables-filter').
 				                         addClass('pull-right hidden-xs');
-				$('#xrefs-table_info').appendTo('#xrefs-datatables-counter');
+				$('#overview #xrefs-table_info').appendTo('#xrefs-datatables-counter');
 				// hide pagination controls for tables with one page
-				if ( $('.dataTables_paginate').find('li').length == 3 ) { // 3 elements: <-, 1, ->
-					$('.dataTables_paginate').hide();
-					$('#xrefs-table_length').hide();
+				if ( $('#overview .dataTables_paginate').find('li').length == 3 ) { // 3 elements: <-, 1, ->
+					$('#overview .dataTables_paginate').hide();
+					$('#overview #xrefs-table_length').hide();
 				} else {
-					$('.dataTables_paginate').addClass('pull-left').
-					                          appendTo('.xref-datatables-controls');
+					$('#overview .dataTables_paginate').addClass('pull-left').
+					                                    appendTo('.xref-datatables-controls');
 					$('#xrefs-table_length').addClass('pull-right text-muted small').
 					                         appendTo('.xref-datatables-controls');
 				}

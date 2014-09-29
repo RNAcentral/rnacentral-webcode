@@ -70,6 +70,18 @@ class Rna(models.Model):
     class Meta:
         db_table = 'rna'
 
+    def get_related_entries(self):
+        """
+        cd-hit
+        """
+        method_id = 2
+        cluster = ClusterMember.objects.filter(upi=self.upi, method_id=method_id).first()
+        if cluster:
+            upis = ClusterMember.objects.filter(cluster_id=cluster.cluster_id, method_id=method_id).exclude(upi=self.upi).values_list('upi', flat=True).distinct()
+            return Rna.objects.filter(upi__in=upis).iterator()
+        else:
+            return []
+
     def is_active(self):
         """
         A sequence is considered active if it has at least one active cross_reference.
@@ -85,6 +97,14 @@ class Rna(models.Model):
         Return True if at least one cross-reference has genomic coordinates.
         """
         for xref in self.xrefs.iterator():
+            if xref.has_genomic_coordinates():
+                return True
+        return False
+
+    def has_human_genomic_coordinates(self):
+        """
+        """
+        for xref in self.xrefs.filter(taxid=9606).iterator():
             if xref.has_genomic_coordinates():
                 return True
         return False
@@ -170,6 +190,11 @@ class Rna(models.Model):
         Count the number of cross-references associated with the sequence.
         """
         return self.xrefs.count()
+
+    def count_human_xrefs(self):
+        """
+        """
+        return self.xrefs.filter(taxid=9606, deleted='N').count()
 
     @cached_property
     def count_distinct_organisms(self):
