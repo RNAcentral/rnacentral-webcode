@@ -157,7 +157,7 @@ class Rna(models.Model):
         """
         Count the number of cross-references associated with the sequence.
         """
-        return self.xrefs.count()
+        return self.xrefs.filter(db__id__in=[1,2,9,10], deleted='N').count()
 
     def count_human_xrefs(self):
         """
