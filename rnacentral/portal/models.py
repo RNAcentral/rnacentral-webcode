@@ -135,55 +135,23 @@ class Rna(models.Model):
             'N': len(seq) - (count_A + count_C + count_G + count_U)
         }
 
-    def get_expert_database_xrefs(self):
+    def get_xrefs(self):
         """
-        Get xrefs from expert databases.
-        """
-        return self.xrefs.select_related().exclude(accession__is_composite='N').filter(deleted='N').all()
-
-    def get_ena_xrefs(self):
-        """
-        Get ENA xrefs that don't have corresponding expert database entries.
+        Get all xrefs, show non-ENA annotations first.
+        Exclude source ENA entries that are associated with other expert db entries.
+        For example, only fetch Vega xrefs and don't retrieve the ENA entries they are
+        based on.
         """
         expert_db_projects = Database.objects.exclude(project_id=None).\
                                               values_list('project_id', flat=True)
-        return self.xrefs.filter(db__descr='ENA', deleted='N').\
-                          exclude(accession__project__in=expert_db_projects).\
-                          select_related().\
-                          all()
-
-    def get_rdp_xrefs(self):
-        """
-        Get RDP xrefs, which require separate treatment because they are not
-        part of the Non-coding product.
-        """
-        return self.xrefs.filter(db__descr='RDP', deleted='N').select_related().all()
-
-    def get_refseq_xrefs(self):
-        """
-        Get RefSeq xrefs, which require separate treatment because they are not
-        part of the Non-coding product.
-        """
-        return self.xrefs.filter(db__descr='REFSEQ', deleted='N').select_related().all()
-
-    def get_rfam_xrefs(self):
-        """
-        Get RFAM xrefs, which require separate treatment because they are not
-        part of the Non-coding product.
-        """
-        return self.xrefs.filter(db__descr='RFAM', deleted='N').select_related().all()
-
-    def get_xrefs(self):
-        """
-        Concatenate querysets putting the expert database xrefs
-        at the beginning of the resulting queryset.
-        """
-        xrefs = self.get_ena_xrefs() | self.get_refseq_xrefs() | self.get_rdp_xrefs() | \
-                self.get_rfam_xrefs() | self.get_expert_database_xrefs()
-        if xrefs:
-            return xrefs
+        xrefs = self.xrefs.filter(deleted='N').\
+                           exclude(db__id=1, accession__project__in=expert_db_projects).\
+                           order_by('-db__id').\
+                           select_related()
+        if xrefs.exists():
+            return xrefs.iterator()
         else:
-            return self.xrefs.filter(deleted='Y').select_related().all()
+            return self.xrefs.filter(deleted='Y').select_related().iterator()
 
     def count_xrefs(self):
         """
