@@ -112,6 +112,7 @@ xrefLoader.prototype.load_xrefs = function() {
 				                              addClass('form-control input-sm');
 				$('#overview #xrefs-table_filter').appendTo('#xrefs-datatables-filter').
 				                         addClass('pull-right hidden-xs');
+				$('#xrefs-datatables-counter').html('');
 				$('#overview #xrefs-table_info').appendTo('#xrefs-datatables-counter');
 				// hide pagination controls for tables with one page
 				if ( $('#overview .dataTables_paginate').find('li').length == 3 ) { // 3 elements: <-, 1, ->
