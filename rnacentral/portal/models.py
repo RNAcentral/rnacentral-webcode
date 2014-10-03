@@ -23,6 +23,25 @@ import re
 # CREATE INDEX index_name ON table_name(SYS_OP_C2C(column_name));
 
 
+class BlastResult(models.Model):
+    id = models.AutoField(primary_key=True)
+    query = models.CharField(max_length=13, db_index=True)
+    target = models.CharField(max_length=13, db_index=True)
+    identity = models.FloatField(db_index=True)
+    length = models.IntegerField()
+    mismatches = models.IntegerField()
+    gapopenings = models.IntegerField()
+    query_start = models.IntegerField()
+    query_end = models.IntegerField()
+    target_start = models.IntegerField()
+    target_end = models.IntegerField()
+    evalue = models.FloatField()
+    bitscore = models.FloatField()
+
+    class Meta:
+        db_table = 'rnc_blast_results'
+
+
 class Clusters(models.Model):
     id = models.AutoField(primary_key=True)
     cluster_id = models.CharField(max_length=200, db_index=True)
