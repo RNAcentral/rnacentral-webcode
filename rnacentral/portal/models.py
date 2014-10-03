@@ -96,7 +96,7 @@ class Rna(models.Model):
         method_id = 2
         cluster = ClusterMember.objects.filter(upi=self.upi, method_id=method_id).first()
         if cluster:
-            upis = ClusterMember.objects.filter(cluster_id=cluster.cluster_id, method_id=method_id).exclude(upi=self.upi).values_list('upi', flat=True).distinct()
+            upis = ClusterMember.objects.filter(cluster_id=cluster.cluster_id, method_id=method_id).values_list('upi', flat=True).distinct()
             return Rna.objects.filter(upi__in=upis).iterator()
         else:
             return []
