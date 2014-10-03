@@ -242,7 +242,12 @@ limitations under the License.
             {% for related in rna.get_related_entries %}
               <tr>
                 <td>{{ forloop.counter }}</td>
-                <td><a href="/rna/{{ related.upi }}#homo">{{ related.upi }}</a></td>
+                <td>
+                  {% if  related.upi == rna.upi %}
+                    &rarr; <a href="/rna/{{ related.upi }}#homo">{{ related.upi }}</a></td>
+                  {% else %}
+                    <a href="/rna/{{ related.upi }}#homo">{{ related.upi }}</a></td>
+                  {% endif %}
                 <td>{{ related.length }}</td>
                 <td>{{ related.get_description }}</td>
                 <td>{{ related.count_human_xrefs }}</td>
