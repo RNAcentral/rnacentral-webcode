@@ -940,7 +940,7 @@ def _xref_to_bed_format(xref):
     block_sizes = []
     block_starts = []
     for i, exon in enumerate(exons):
-        block_sizes.append(exon.primary_end - exon.primary_start)
+        block_sizes.append(exon.primary_end - exon.primary_start or 1) # equals 1 if start == end
         if i == 0:
             block_starts.append(0)
         else:
