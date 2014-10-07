@@ -305,6 +305,8 @@ MARKDOWN_DEUX_STYLES = {
     },
 }
 
+SILENCED_SYSTEM_CHECKS = ['1_6.W001']
+
 try:
    from local_settings import *
 except ImportError, e:
