@@ -37,3 +37,15 @@ def get_expert_databases_list():
 	"""
 	imported_dbs = [x for x in expert_dbs if x['imported']]
 	return sorted(imported_dbs, key=lambda x: x['name'].lower())
+
+@register.filter
+def key_value(dict, key):
+	"""
+	Retrieve dictionary values by key in templates.
+	Example:
+	# view:
+	data = {'test': True}
+	# template:
+	data|key_value:test
+	"""
+    return dict.get(key, '')
