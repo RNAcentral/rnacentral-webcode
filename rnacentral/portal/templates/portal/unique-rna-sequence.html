@@ -126,9 +126,9 @@ limitations under the License.
               <span id="xrefs-datatables-filter"></span>
             </h2>
 
-            {% if rna.count_xrefs > 1000 %}
+            {% if rna.count_xrefs > context.xref_page_size %}
               <div class="alert alert-warning" role="alert">
-                Showing 1,000 entries out of {{ rna.count_xrefs|intcomma }}.
+                Showing {{ context.xref_page_size|intcomma }} entries out of {{ rna.count_xrefs|intcomma }}.
                 Navigate between batches:
                 <ul class="pagination pagination-sm">
                   {% for xref_page in context.xref_pages %}
