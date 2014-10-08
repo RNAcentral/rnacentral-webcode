@@ -14,6 +14,7 @@ limitations under the License.
 {% extends "portal/base.html" %}
 {% load staticfiles %}
 {% load humanize %}
+{% load portal_extras %}
 
 {% block meta_tags %}
     {{ block.super }}
@@ -240,6 +241,13 @@ limitations under the License.
         </div>
 
         <div class="tab-pane" id="related-seqs">
+
+          <h3>Overlapping accessions</h3>
+          {% for overlap in rna.get_overlapping_entries %}
+            <a href="/rna/{{ overlap }}">{{overlap}}</a>{% if not forloop.last %}, {% endif %}
+          {% endfor %}
+
+          <h3>CD-HIT</h3>
           <table class="table table-hover table-condensed table-bordered" id="related-seqs-table">
             <thead>
               <th>#</th>
@@ -251,6 +259,7 @@ limitations under the License.
               <th>Genome mapping</th>
               <th>Ns</th>
               <th>Databases</th>
+              <th>Identity</th>
             </thead>
 
             {% for related in rna.get_related_entries %}
@@ -263,11 +272,11 @@ limitations under the License.
                     <a href="/rna/{{ related.upi }}#homo">{{ related.upi }}</a></td>
                   {% endif %}
                 <td>{{ related.length }}</td>
-                <td>{{ related.get_description }}</td>
-                <td>{{ related.count_human_xrefs }}</td>
-                <td>{{ related.count_distinct_organisms }}</td>
-                <td>{{ related.has_human_genomic_coordinates|yesno:"yes,no" }}</td>
-                <td>{{ related.count_symbols.N }}</td>
+                <td>{{ related.precomputed.description }}</td>
+                <td>{{ related.precomputed.count_human_xrefs }}</td>
+                <td>{{ related.precomputed.count_distinct_organisms }}</td>
+                <td>{{ related.precomputed.has_human_genomic_coordinates|yesno:"yes,no" }}</td>
+                <td>{{ related.precomputed.N_symbols }}</td>
                 <td>
                   {% with dbs=related.get_distinct_database_names %}
                     <small>
@@ -277,10 +286,86 @@ limitations under the License.
                     </small>
                   {% endwith %}
                 </td>
+                <td>{{ context.blast|key_value:related.upi }}</td>
               </tr>
             {% endfor %}
 
           </table>
+
+          <h3>MCL 4.0</h3>
+
+          <table class="table table-hover table-condensed table-bordered" id="related-seqs-table2">
+            <thead>
+              <th>#</th>
+              <th>RNAcentral id</th>
+              <th>Length</th>
+              <th>Description</th>
+              <th>Human Xrefs</th>
+              <th>Species</th>
+              <th>Genome mapping</th>
+              <th>Ns</th>
+              <th>Databases</th>
+              <th>Identity</th>
+            </thead>
+
+            {% for related in rna.get_mcl_related_entries %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>
+                  {% if  related.upi == rna.upi %}
+                    &rarr; <a href="/rna/{{ related.upi }}#homo">{{ related.upi }}</a></td>
+                  {% else %}
+                    <a href="/rna/{{ related.upi }}#homo">{{ related.upi }}</a></td>
+                  {% endif %}
+                <td>{{ related.length }}</td>
+                <td>{{ related.precomputed.description }}</td>
+                <td>{{ related.precomputed.count_human_xrefs }}</td>
+                <td>{{ related.precomputed.count_distinct_organisms }}</td>
+                <td>{{ related.precomputed.has_human_genomic_coordinates|yesno:"yes,no" }}</td>
+                <td>{{ related.precomputed.N_symbols }}</td>
+                <td>
+                  {% with dbs=related.get_distinct_database_names %}
+                    <small>
+                      {% for db in dbs %}
+                        {{db}}{% if not forloop.last %},{% endif %}
+                      {% endfor %}
+                    </small>
+                  {% endwith %}
+                </td>
+                <td>{{ context.blast|key_value:related.upi }}</td>
+              </tr>
+            {% endfor %}
+
+          </table>
+
+          <h3>Blast</h3>
+
+          <table class="table table-hover table-condensed table-bordered" id="related-seqs-table3">
+            <thead>
+              <th>#</th>
+              <th>RNAcentral id</th>
+              <th>Identity</th>
+            </thead>
+
+            {% for related in rna.get_blast_related_entries %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>
+                {% if related.query == related.target %}
+                  &rarr; {{ related.target }}
+                {% elif rna.upi == related.query %}
+                  {{related.target}}
+                {% elif rna.upi == related.target %}
+                 {{ related.query }}
+                {% endif %}
+                </td>
+                <td>{{ related.identity }}</td>
+              </tr>
+            {% endfor %}
+
+          </table>
+
+
         </div>
 
         <div class="tab-pane" id="2d">
@@ -354,7 +439,9 @@ limitations under the License.
       hopscotch_tour = new guidedTour;
       hopscotch_tour.initialize();
 
-      $('#related-seqs-table').dataTable();
+      $('#related-seqs-table').dataTable({"aLengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]]});
+      $('#related-seqs-table2').dataTable({"aLengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]]});
+      $('#related-seqs-table3').dataTable({"aLengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]]});
 
     });
   </script>

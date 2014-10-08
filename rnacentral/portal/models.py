@@ -101,6 +101,15 @@ class Rna(models.Model):
     class Meta:
         db_table = 'rna'
 
+    def get_overlapping_entries(self):
+        """
+        Get entries that overlap the same location in the same ENA accession.
+        """
+        overlaps = set()
+        for xref in self.xrefs.iterator():
+            overlaps.update(xref.get_overlapping_entries())
+        return overlaps
+
     def get_related_entries(self):
         """
         cd-hit
@@ -113,6 +122,28 @@ class Rna(models.Model):
         else:
             return []
 
+    def get_blast_related_entries(self):
+        """
+        Get Blast hits with the upi as query or target.
+        """
+        from django.db.models import Q
+        return BlastResult.objects.filter(Q(query=self.upi) | Q(target=self.upi)).\
+                                   order_by('-identity').\
+                                   iterator()
+
+    def get_blast_identity(self):
+        """
+        Get a dictionary with blast identity scores relative to the current RNA entry.
+        """
+        identity = dict()
+        for blast_hit in BlastResult.objects.filter(query=self.upi).iterator():
+            identity[blast_hit.target] = blast_hit.identity
+
+        for blast_hit in BlastResult.objects.filter(target=self.upi).iterator():
+            if blast_hit.query not in identity or blast_hit.identity < identity[blast_hit.query]:
+                identity[blast_hit.query] = blast_hit.identity
+        return identity
+
     def is_active(self):
         """
         A sequence is considered active if it has at least one active cross_reference.
@@ -122,6 +153,18 @@ class Rna(models.Model):
             return True
         else:
             return False
+
+    def get_mcl_related_entries(self):
+        """
+        mcl 4.0
+        """
+        method_id = 4
+        cluster = ClusterMember.objects.filter(upi=self.upi, method_id=method_id).first()
+        if cluster:
+            upis = ClusterMember.objects.filter(cluster_id=cluster.cluster_id, method_id=method_id).values_list('upi', flat=True).distinct()
+            return Rna.objects.filter(upi__in=upis).iterator()
+        else:
+            return []
 
     def has_genomic_coordinates(self):
         """
@@ -136,7 +179,7 @@ class Rna(models.Model):
         """
         """
         for xref in self.xrefs.filter(taxid=9606).iterator():
-            if xref.has_genomic_coordinates():
+            if xref.has_genomic_coordinates:
                 return True
         return False
 
@@ -642,6 +685,38 @@ class Xref(models.Model):
     class Meta:
         db_table = 'xref'
 
+    def get_overlapping_entries(self):
+        """
+        select t1.accession, t2.accession
+        from rnc_accessions t1, rnc_accessions t2
+        where t1.parent_ac = t2.parent_ac and t1.SEQ_VERSION = t1.SEQ_VERSION
+        and t1.FEATURE_START < t2.feature_start and t1.FEATURE_END > t2.feature_end;
+        HM352658.1:237..399:rRNA
+        Should exclude precursor/mature overlaps.
+        """
+        overlaps = []
+        # contained in another entry
+        for xref in Xref.objects.filter(taxid=9606,
+                                        accession__parent_ac=self.accession.parent_ac,
+                                        accession__seq_version=self.accession.seq_version,
+                                        accession__feature_start__lte=self.accession.feature_start,
+                                        accession__feature_end__gte=self.accession.feature_end).\
+                                 exclude(accession__accession=self.accession.accession).\
+                                 iterator():
+            overlaps.append(xref.upi.upi)
+
+        # contain other entries
+        for xref in Xref.objects.filter(taxid=9606,
+                                        accession__parent_ac=self.accession.parent_ac,
+                                        accession__seq_version=self.accession.seq_version,
+                                        accession__feature_start__gte=self.accession.feature_start,
+                                        accession__feature_end__lte=self.accession.feature_end).\
+                                 exclude(accession__accession=self.accession.accession).\
+                                 iterator():
+            overlaps.append(xref.upi.upi)
+
+        return overlaps
+
     def is_rfam_seed(self):
         """
         Determine whether an xref is part of a manually curated
@@ -827,17 +902,17 @@ class Xref(models.Model):
                 return genome['assembly_ucsc']
         return None
 
+    @cached_property
     def has_genomic_coordinates(self):
         """
         Determine whether an xref has genomic coordinates.
         Return true only if all exons are mapped to genomic coordinates.
         """
-        if not self.accession.coordinates.first():
+        chromosomes = self.accession.coordinates.values_list('chromosome', flat=True)
+        if not chromosomes or '' in chromosomes:
             return False
-        for coordinate in self.accession.coordinates.all():
-            if not coordinate.chromosome:
-                return False
-        return True
+        else:
+            return True
 
     def get_genomic_coordinates(self):
         """
