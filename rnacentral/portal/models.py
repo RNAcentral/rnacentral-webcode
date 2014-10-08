@@ -487,9 +487,9 @@ class Release(models.Model):
 class Accession(models.Model):
     accession = models.CharField(max_length=100, primary_key=True)
     parent_ac = models.CharField(max_length=100)
-    seq_version = models.IntegerField()
-    feature_start = models.IntegerField()
-    feature_end = models.IntegerField()
+    seq_version = models.IntegerField(db_index=True)
+    feature_start = models.IntegerField(db_index=True)
+    feature_end = models.IntegerField(db_index=True)
     feature_name = models.CharField(max_length=20)
     ordinal = models.IntegerField()
     division = models.CharField(max_length=3)
