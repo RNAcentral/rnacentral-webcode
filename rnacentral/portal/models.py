@@ -166,11 +166,12 @@ class Rna(models.Model):
         xrefs = self.xrefs.filter(deleted='N').\
                            exclude(db__id=1, accession__project__in=expert_db_projects).\
                            order_by('-db__id').\
+                           order_by('accession__coordinates__chromosome').\
                            select_related()
         if xrefs.exists():
-            return xrefs.iterator()
+            return xrefs
         else:
-            return self.xrefs.filter(deleted='Y').select_related().iterator()
+            return self.xrefs.filter(deleted='Y').select_related()
 
     def count_xrefs(self):
         """

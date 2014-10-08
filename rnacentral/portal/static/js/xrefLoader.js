@@ -20,7 +20,7 @@ var xrefLoader = function(upi) {
 			xref_table: '#xrefs-table',
 			xref_loading_container: '#xrefs-loading',
 			xref_msg: '#xrefs-loading-msg',
-			downloads: '#download-formats'
+			downloads: '#download-formats',
 		},
 		templates: {
 			delay_msg: '#handlebars-loading-info-tmpl',
@@ -31,30 +31,59 @@ var xrefLoader = function(upi) {
 	this.enable_genomic_features = false;
 };
 
-xrefLoader.prototype.load_xrefs = function() {
+xrefLoader.prototype.load_xrefs = function(page) {
 
 	obj = this;
+	page = page || 1;
+	initial_load = is_initial_load();
+
+	hide_xref_table();
+	show_loading_indicator();
 	set_xref_timer();
 	get_xrefs();
 
+	/**
+	 * If the annotations table is empty, then this is the first data load.
+	 */
+	function is_initial_load() {
+		return $(obj.config.dom.xref_table + ' tr').length === 0;
+	};
+
+	/**
+	 * Hide the xrefs table.
+	 */
+	function hide_xref_table() {
+		$(obj.config.dom.xref_table).hide();
+	};
+
+	/**
+	 * Show loading indicator.
+	 */
+	function show_loading_indicator() {
+		$(obj.config.dom.xref_loading_container).show();
+	};
+
 	function set_xref_timer() {
+		var timer_delay = 5000;
+
 		// show an info message if xrefs are taking too long to load
 		var target = $(obj.config.dom.xref_msg),
 				     delay_template = $(obj.config.templates.delay_msg),
-		             delay = 5000;
+		             delay = timer_delay;
 
 		var timer = setTimeout(function() {
 			// do not update the message if there was an error
-			if (target.html().indexOf("alert-danger") != -1) {
+			if (target.html().indexOf("alert-danger") !== -1) {
 				return;
 			}
 			var msg = Handlebars.compile(delay_template.html());
+			target.find(".alert-info").remove();
 			target.append(msg).slideDown();
 		}, delay);
 	};
 
 	function get_xrefs() {
-		var url = '/rna/' + obj.upi + '/xrefs';
+		var url = '/rna/{UPI}/xrefs?page={PAGE}'.replace('{UPI}', obj.upi).replace('{PAGE}', page);
     	$.get(url, function(data){
         	$(obj.config.dom.xref_table_container).html(data);
 			obj.enable_genomic_features = data.indexOf('View genomic location') > 0;
@@ -77,11 +106,17 @@ xrefLoader.prototype.load_xrefs = function() {
 
 		launch_dataTables();
 		show_dataTables();
-  		enable_sorting();
-  		enable_url_filering();
-  		append_download_links();
+
+		if (initial_load) {
+			enable_sorting();
+			enable_url_filering();
+			append_download_links();
+		}
 
 		function launch_dataTables() {
+
+			delete_dataTables_controls();
+
 			oTable = $(obj.config.dom.xref_table).dataTable(
 				{
 					"aoColumns": [null, null, null, {"bVisible": false}, {"bVisible": false}, {"bVisible": false}], // hide columns, but keep them sortable
@@ -105,13 +140,24 @@ xrefLoader.prototype.load_xrefs = function() {
 				},
 			});
 
+			/**
+			 * Remove the old dataTables controls so that they are not duplicated.
+			 */
+			function delete_dataTables_controls() {
+				if (!initial_load) {
+					$('#overview .dataTables_paginate').remove();
+					$('#overview .dataTables_filter input').remove();
+					$('#xrefs-table_length').remove();
+				}
+			};
+
 			function adjust_dataTables_controls() {
 				$('#overview .dataTables_filter input').attr('placeholder', 'Filter table').
-				                              attr("tabindex", 2).
-				                              attr('type', 'search').
-				                              addClass('form-control input-sm');
+				                                        attr("tabindex", 2).
+				                                        attr('type', 'search').
+				                                        addClass('form-control input-sm');
 				$('#overview #xrefs-table_filter').appendTo('#xrefs-datatables-filter').
-				                         addClass('pull-right hidden-xs');
+				                                   addClass('pull-right hidden-xs');
 				$('#xrefs-datatables-counter').html('');
 				$('#overview #xrefs-table_info').appendTo('#xrefs-datatables-counter');
 				// hide pagination controls for tables with one page

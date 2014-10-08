@@ -15,21 +15,30 @@ var rnaSequenceView = function(upi) {
 	this.upi = upi;
 };
 
+rnaSequenceView.prototype.load_xrefs = function(page) {
+  xref_loader = new xrefLoader(obj.upi);
+  xref_loader.load_xrefs(page || 1);
+};
+
 rnaSequenceView.prototype.initialize = function() {
 
 	obj = this;
 
-	load_xrefs();
+	this.load_xrefs();
 	activate_tooltips();
 	activate_literature_references();
 	activate_species_tree();
 	enable_show_species_tab_action();
 	enable_species_tree_scroll_action();
+  enable_xref_pagination();
 
-	function load_xrefs() {
-      xref_loader = new xrefLoader(obj.upi);
-      xref_loader.load_xrefs();
-	};
+  function enable_xref_pagination() {
+      $('.xref-pagination').click(function(){
+          var pagination_link = $(this);
+          pagination_link.parent().addClass('active').siblings().removeClass('active');
+          rna_sequence_view.load_xrefs(pagination_link.data('xref-page'));
+      });
+  };
 
 	function activate_tooltips() {
       $('body').tooltip({

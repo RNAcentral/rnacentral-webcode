@@ -126,6 +126,20 @@ limitations under the License.
               <span id="xrefs-datatables-filter"></span>
             </h2>
 
+            {% if rna.count_xrefs > 1000 %}
+              <div class="alert alert-warning" role="alert">
+                Showing 1,000 entries out of {{ rna.count_xrefs|intcomma }}.
+                Navigate between batches:
+                <ul class="pagination pagination-sm">
+                  {% for xref_page in context.xref_pages %}
+                    <li {% if forloop.first %}class="active"{% endif %}>
+                      <a href="" data-xref-page="{{xref_page}}" class="xref-pagination">{{ xref_page }}</a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+
             <div class="table-responsive force-scrollbars">
 
               <div class="panel panel-default" id="xrefs-loading">
