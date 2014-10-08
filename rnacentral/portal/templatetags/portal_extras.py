@@ -19,33 +19,33 @@ register = template.Library()
 
 @register.assignment_tag
 def get_expert_databases_columns():
-	"""
-	Return expert databases grouped and order for the website footer.
-	"""
-	dbs = sorted(expert_dbs, key=lambda x: x['name'].lower())
-	return [
-				[dbs[x] for x in [1,0,2,3,4,5,6]],
-				dbs[7:13],
-				dbs[13:19],
-				dbs[19:]
-			]
+    """
+    Return expert databases grouped and order for the website footer.
+    """
+    dbs = sorted(expert_dbs, key=lambda x: x['name'].lower())
+    return [
+                [dbs[x] for x in [1,0,2,3,4,5,6]],
+                dbs[7:13],
+                dbs[13:19],
+                dbs[19:]
+            ]
 
 @register.assignment_tag
 def get_expert_databases_list():
-	"""
-	Get an alphabetically sorted list of imported expert databases.
-	"""
-	imported_dbs = [x for x in expert_dbs if x['imported']]
-	return sorted(imported_dbs, key=lambda x: x['name'].lower())
+    """
+    Get an alphabetically sorted list of imported expert databases.
+    """
+    imported_dbs = [x for x in expert_dbs if x['imported']]
+    return sorted(imported_dbs, key=lambda x: x['name'].lower())
 
 @register.filter
 def key_value(dict, key):
-	"""
-	Retrieve dictionary values by key in templates.
-	Example:
-	# view:
-	data = {'test': True}
-	# template:
-	data|key_value:test
-	"""
+    """
+    Retrieve dictionary values by key in templates.
+    Example:
+    # view:
+    data = {'test': True}
+    # template:
+    data|key_value:test
+    """
     return dict.get(key, '')
