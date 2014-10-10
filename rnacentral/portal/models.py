@@ -330,12 +330,6 @@ class Rna(models.Model):
         This function mimics the logic implemented in the xml dumping pipeline.
         See portal/management/commands/xml_exporters/rna2xml.py
         """
-        def count_ena_xrefs():
-            """
-            Count xrefs from ENA.
-            """
-            return self.xrefs.filter(db__descr='ENA').count()
-
         def count_distinct_descriptions():
             """
             Count distinct description lines.
@@ -395,9 +389,8 @@ class Rna(models.Model):
                     rna_type = '/'.join(feature_names)
             return rna_type
 
-        num_ena_entries = count_ena_xrefs()
         num_distinct_descriptions = count_distinct_descriptions()
-        if num_ena_entries == 1 or num_distinct_descriptions == 1:
+        if num_distinct_descriptions == 1:
             description_line = self.xrefs.all()[0].accession.description
             description_line = description_line[0].upper() + description_line[1:]
         else:
