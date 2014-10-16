@@ -286,6 +286,10 @@ class Rna(models.Model):
         db_ids = self.xrefs.filter(deleted='N').values_list('db_id', flat=True).distinct()
         for db in Database.objects.filter(id__in=db_ids).all():
             databases.append(db.display_name)
+        if 'Rfam' in databases:
+            if self.xrefs.filter(db__display_name='Rfam',
+                                 accession__note__iregex=r'alignment:seed').exists():
+                databases.append('Rfam seed')
         databases = sorted(databases, key=lambda s: s.lower()) # case-insensitive
         return databases
 
