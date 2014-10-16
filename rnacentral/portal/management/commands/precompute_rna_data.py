@@ -30,12 +30,16 @@ def precompute_rna_data():
             continue
         else:
             prev_upi = rna.upi
-        precomputed = RnaPrecomputedData(upi=rna,
-                                         description=rna.get_description(),
-                                         count_human_xrefs=rna.count_human_xrefs(),
-                                         count_distinct_organisms=rna.count_distinct_organisms,
-                                         has_human_genomic_coordinates=rna.has_human_genomic_coordinates(),
-                                         N_symbols=rna.count_symbols()['N'])
+        precomputed = RnaPrecomputedData.objects.filter(upi=rna).get() or RnaPrecomputedData()
+
+        # populate or update the fields
+        precomputed.upi=rna
+        precomputed.description=rna.get_description()
+        precomputed.count_human_xrefs=rna.count_human_xrefs()
+        precomputed.count_distinct_organisms=rna.count_distinct_organisms
+        precomputed.has_human_genomic_coordinates=rna.has_human_genomic_coordinates()
+        precomputed.N_symbols=rna.count_symbols()['N']
+
         print precomputed.description
         precomputed.save()
 
