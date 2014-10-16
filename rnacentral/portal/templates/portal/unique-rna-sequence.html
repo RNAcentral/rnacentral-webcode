@@ -259,7 +259,7 @@ limitations under the License.
             {% endfor %}
           </p>
 
-          <h3>MCL 4.0</h3>
+          <h3>MCL 6.0</h3>
 
           <table class="table table-hover table-condensed table-bordered" id="related-seqs-table2">
             <thead>
@@ -276,7 +276,55 @@ limitations under the License.
               <th>Hit length</th>
             </thead>
 
-            {% for related in rna.get_mcl_related_entries %}
+            {% for related in context.related_mcl_60 %}
+              <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>
+                  {% if  related.upi == rna.upi %}
+                    &rarr; <a href="/rna/{{ related.upi }}#homo">{{ related.upi }}</a></td>
+                  {% else %}
+                    <a href="/rna/{{ related.upi }}#homo">{{ related.upi }}</a></td>
+                  {% endif %}
+                <td>{{ related.length }}</td>
+                <td>{{ related.precomputed.description }}</td>
+                <td>{{ related.precomputed.count_human_xrefs }}</td>
+                <td>{{ related.precomputed.count_distinct_organisms }}</td>
+                <td>{{ related.precomputed.has_human_genomic_coordinates|yesno:"yes,no" }}</td>
+                <td>{{ related.precomputed.N_symbols }}</td>
+                <td>
+                  {% with dbs=related.get_distinct_database_names %}
+                    <small>
+                      {% for db in dbs %}
+                        {{db}}{% if not forloop.last %},{% endif %}
+                      {% endfor %}
+                    </small>
+                  {% endwith %}
+                </td>
+                <td>{{ context.blast_identity|key_value:related.upi }}</td>
+                <td>{{ context.blast_length|key_value:related.upi }}</td>
+              </tr>
+            {% endfor %}
+
+          </table>
+
+          <h3>MCL 4.0</h3>
+
+          <table class="table table-hover table-condensed table-bordered" id="related-seqs-table-mcl-40">
+            <thead>
+              <th>#</th>
+              <th>RNAcentral id</th>
+              <th>Length</th>
+              <th>Description</th>
+              <th>Human Xrefs</th>
+              <th>Species</th>
+              <th>Genome mapping</th>
+              <th>Ns</th>
+              <th>Databases</th>
+              <th>Identity</th>
+              <th>Hit length</th>
+            </thead>
+
+            {% for related in context.related_mcl_20 %}
               <tr>
                 <td>{{ forloop.counter }}</td>
                 <td>
@@ -461,7 +509,7 @@ limitations under the License.
       $('#related-seqs-table').dataTable({"aLengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]]});
       $('#related-seqs-table2').dataTable({"aLengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]]});
       $('#related-seqs-table3').dataTable({"aLengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]]});
-
+      $('#related-seqs-table-mcl-40').dataTable({"aLengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]]});
     });
   </script>
 {% endblock %}

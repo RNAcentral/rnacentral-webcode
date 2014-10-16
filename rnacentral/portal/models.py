@@ -129,31 +129,30 @@ class Rna(models.Model):
         cluster = ClusterMember.objects.filter(upi=self.upi, method_id=method_id).first()
         if cluster:
             upis = ClusterMember.objects.filter(cluster_id=cluster.cluster_id, method_id=method_id).values_list('upi', flat=True).distinct()
-            mcl_upis = self.get_mcl_upis()
+            mcl_upis = self.get_mcl_upis(60)
             upis = list(set(upis) - set(mcl_upis))
             return Rna.objects.filter(upi__in=upis).iterator()
         else:
             return []
 
-    def get_mcl_related_entries(self):
+    def get_mcl_related_entries(self, mcl_type):
         """
-        mcl 4.0
         """
-        method_id = 4
-        cluster = ClusterMember.objects.filter(upi=self.upi, method_id=method_id).first()
-        if cluster:
-            upis = ClusterMember.objects.filter(cluster_id=cluster.cluster_id, method_id=method_id).values_list('upi', flat=True).distinct()
-            return Rna.objects.filter(upi__in=upis).iterator()
-        else:
-            return []
+        if mcl_type == 20:
+            method_id = 3
+        elif mcl_type == 60:
+            method_id = 4
 
-    def get_mcl_upis(self):
+        upis = self.get_mcl_upis(method_id)
+        return Rna.objects.filter(upi__in=upis).iterator()
+
+    def get_mcl_upis(self, mcl_type):
         """
         """
-        method_id = 4
-        mcl_cluster = ClusterMember.objects.filter(upi=self.upi, method_id=4).first()
+        method_id = mcl_type
+        mcl_cluster = ClusterMember.objects.filter(upi=self.upi, method_id=mcl_type).first()
         if mcl_cluster:
-            return ClusterMember.objects.filter(cluster_id=mcl_cluster.cluster_id, method_id=4).\
+            return ClusterMember.objects.filter(cluster_id=mcl_cluster.cluster_id, method_id=mcl_type).\
                                          values_list('upi', flat=True)\
                                          .distinct()
         else:
@@ -164,7 +163,7 @@ class Rna(models.Model):
         Get Blast hits with the upi as query or target.
         """
         from django.db.models import Q
-        mcl_upis = self.get_mcl_upis()
+        mcl_upis = self.get_mcl_upis(60)
 
         blast1 = BlastResult.objects.filter(query=self.upi).\
                                      exclude(target__in=mcl_upis).\

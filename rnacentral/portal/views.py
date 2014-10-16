@@ -140,6 +140,8 @@ def rna_view(request, upi):
         (blast_identity, blast_length) = rna.get_blast_identity()
         context['blast_identity'] = blast_identity
         context['blast_length'] = blast_length
+        context['related_mcl_20'] = rna.get_mcl_related_entries(20)
+        context['related_mcl_60'] = rna.get_mcl_related_entries(60)
     except Rna.DoesNotExist:
         raise Http404
     return render(request, 'portal/unique-rna-sequence.html', {'rna': rna, 'context': context})
