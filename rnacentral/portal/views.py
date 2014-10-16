@@ -135,9 +135,11 @@ def rna_view(request, upi):
         context = {
             'counts': rna.count_symbols(),
             'xref_pages': get_xrefs_pages(),
-            'blast': rna.get_blast_identity(),
             'xref_page_size': XREF_PAGE_SIZE,
         }
+        (blast_identity, blast_length) = rna.get_blast_identity()
+        context['blast_identity'] = blast_identity
+        context['blast_length'] = blast_length
     except Rna.DoesNotExist:
         raise Http404
     return render(request, 'portal/unique-rna-sequence.html', {'rna': rna, 'context': context})

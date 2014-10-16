@@ -286,7 +286,7 @@ limitations under the License.
                     </small>
                   {% endwith %}
                 </td>
-                <td>{{ context.blast|key_value:related.upi }}</td>
+                <td>{{ context.blast_identity|key_value:related.upi }}</td>
               </tr>
             {% endfor %}
 
@@ -306,6 +306,7 @@ limitations under the License.
               <th>Ns</th>
               <th>Databases</th>
               <th>Identity</th>
+              <th>Hit length</th>
             </thead>
 
             {% for related in rna.get_mcl_related_entries %}
@@ -332,7 +333,8 @@ limitations under the License.
                     </small>
                   {% endwith %}
                 </td>
-                <td>{{ context.blast|key_value:related.upi }}</td>
+                <td>{{ context.blast_identity|key_value:related.upi }}</td>
+                <td>{{ context.blast_length|key_value:related.upi }}</td>
               </tr>
             {% endfor %}
 

@@ -136,13 +136,16 @@ class Rna(models.Model):
         Get a dictionary with blast identity scores relative to the current RNA entry.
         """
         identity = dict()
+        length = dict()
         for blast_hit in BlastResult.objects.filter(query=self.upi).iterator():
             identity[blast_hit.target] = blast_hit.identity
+            length[blast_hit.target] = blast_hit.length
 
         for blast_hit in BlastResult.objects.filter(target=self.upi).iterator():
             if blast_hit.query not in identity or blast_hit.identity < identity[blast_hit.query]:
                 identity[blast_hit.query] = blast_hit.identity
-        return identity
+                length[blast_hit.query] = blast_hit.length
+        return (identity, length)
 
     def is_active(self):
         """
