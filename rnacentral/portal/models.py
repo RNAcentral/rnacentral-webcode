@@ -60,7 +60,7 @@ class Clusters(models.Model):
     start = models.IntegerField(null=True)
     end = models.IntegerField(null=True)
     chromosome = models.CharField(max_length=50, null=True)
-    size = models.IntegerField(db_index=True)
+    cluster_size = models.IntegerField(db_index=True)
     method_id = models.IntegerField()
 
     class Meta:
