@@ -253,7 +253,7 @@ limitations under the License.
 
           <p>
             {% for overlap in rna.get_genomic_overlapping_entries %}
-              <a href="/rna/{{ overlap.upi }}">{{overlap.upi}}</a>{% if not forloop.last %}, {% endif %}
+              <a href="/rna/{{ overlap.upi }}">{{overlap.upi}}</a>, {{overlap.precomputed.description}}{% if not forloop.last %}<br>{% endif %}
             {% empty %}
               None found
             {% endfor %}
