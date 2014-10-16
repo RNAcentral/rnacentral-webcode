@@ -101,6 +101,17 @@ class Rna(models.Model):
     class Meta:
         db_table = 'rna'
 
+    def get_genomic_overlapping_entries(self):
+        """
+        """
+        method_id = 1
+        cluster = ClusterMember.objects.filter(upi=self.upi, method_id=method_id).first()
+        if cluster:
+            upis = ClusterMember.objects.filter(cluster_id=cluster.cluster_id, method_id=method_id).values_list('upi', flat=True).distinct()
+            return Rna.objects.filter(upi__in=upis).exclude(upi=self.upi).iterator()
+        else:
+            return []
+
     def get_overlapping_entries(self):
         """
         Get entries that overlap the same location in the same ENA accession.

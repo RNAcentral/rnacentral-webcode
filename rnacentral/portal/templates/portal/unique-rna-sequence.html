@@ -245,7 +245,19 @@ limitations under the License.
           <h3>Overlapping accessions</h3>
           {% for overlap in rna.get_overlapping_entries %}
             <a href="/rna/{{ overlap }}">{{overlap}}</a>{% if not forloop.last %}, {% endif %}
+          {% empty %}
+            None found
           {% endfor %}
+
+          <h3>Overlapping genomic locations</h3>
+
+          <p>
+            {% for overlap in rna.get_genomic_overlapping_entries %}
+              <a href="/rna/{{ overlap.upi }}">{{overlap.upi}}</a>{% if not forloop.last %}, {% endif %}
+            {% empty %}
+              None found
+            {% endfor %}
+          </p>
 
           <h3>MCL 4.0</h3>
 
