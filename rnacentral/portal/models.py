@@ -110,7 +110,7 @@ class Rna(models.Model):
             overlaps.update(xref.get_overlapping_entries())
         return overlaps
 
-    def get_related_entries(self):
+    def get_cdhit_related_entries(self):
         """
         cd-hit
         """
@@ -118,7 +118,33 @@ class Rna(models.Model):
         cluster = ClusterMember.objects.filter(upi=self.upi, method_id=method_id).first()
         if cluster:
             upis = ClusterMember.objects.filter(cluster_id=cluster.cluster_id, method_id=method_id).values_list('upi', flat=True).distinct()
+            mcl_upis = self.get_mcl_upis()
+            upis = list(set(upis) - set(mcl_upis))
             return Rna.objects.filter(upi__in=upis).iterator()
+        else:
+            return []
+
+    def get_mcl_related_entries(self):
+        """
+        mcl 4.0
+        """
+        method_id = 4
+        cluster = ClusterMember.objects.filter(upi=self.upi, method_id=method_id).first()
+        if cluster:
+            upis = ClusterMember.objects.filter(cluster_id=cluster.cluster_id, method_id=method_id).values_list('upi', flat=True).distinct()
+            return Rna.objects.filter(upi__in=upis).iterator()
+        else:
+            return []
+
+    def get_mcl_upis(self):
+        """
+        """
+        method_id = 4
+        mcl_cluster = ClusterMember.objects.filter(upi=self.upi, method_id=4).first()
+        if mcl_cluster:
+            return ClusterMember.objects.filter(cluster_id=mcl_cluster.cluster_id, method_id=4).\
+                                         values_list('upi', flat=True)\
+                                         .distinct()
         else:
             return []
 
@@ -127,9 +153,23 @@ class Rna(models.Model):
         Get Blast hits with the upi as query or target.
         """
         from django.db.models import Q
-        return BlastResult.objects.filter(Q(query=self.upi) | Q(target=self.upi)).\
-                                   order_by('-identity').\
-                                   iterator()
+        mcl_upis = self.get_mcl_upis()
+
+        blast1 = BlastResult.objects.filter(query=self.upi).\
+                                     exclude(target__in=mcl_upis).\
+                                     order_by('-identity').\
+                                     all()
+        blast_upis = []
+        for hit in blast1:
+            blast_upis.append(hit.target)
+        blast_upis = list(set(blast_upis))
+
+        blast2 = BlastResult.objects.filter(target=self.upi).\
+                                     exclude(query__in=mcl_upis).\
+                                     exclude(query__in=blast_upis).\
+                                     order_by('-identity').\
+                                     all()
+        return blast1 | blast2
 
     def get_blast_identity(self):
         """
@@ -156,18 +196,6 @@ class Rna(models.Model):
             return True
         else:
             return False
-
-    def get_mcl_related_entries(self):
-        """
-        mcl 4.0
-        """
-        method_id = 4
-        cluster = ClusterMember.objects.filter(upi=self.upi, method_id=method_id).first()
-        if cluster:
-            upis = ClusterMember.objects.filter(cluster_id=cluster.cluster_id, method_id=method_id).values_list('upi', flat=True).distinct()
-            return Rna.objects.filter(upi__in=upis).iterator()
-        else:
-            return []
 
     def has_genomic_coordinates(self):
         """
