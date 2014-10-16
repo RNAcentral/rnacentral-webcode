@@ -739,6 +739,10 @@ class Xref(models.Model):
                                  iterator():
             overlaps.append(xref.upi.upi)
 
+        try:
+            overlaps.remove(self.upi.upi)
+        except ValueError:
+            pass
         return overlaps
 
     def is_rfam_seed(self):
