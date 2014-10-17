@@ -16,13 +16,18 @@ limitations under the License.
 
 d3SpeciesTree = function(data, selector){
 
-  var m = [20, 120, 20, 120],
-      jsonTree = data,
-      w = 2200 - m[1] - m[3], // width
-      h = 400 - m[0] - m[2], // height
-      edgeLength = 100,
+  var levelWidth = [1],
+      edgeLength = 150,
+      duration = 500,
+      speciesLabelsWidth = 350,
+      m = [20, 120, 20, 120],
       i = 0,
       root;
+
+  childCount(0, data);
+
+  var w = levelWidth.length * edgeLength,
+      h = d3.max(levelWidth) * 30;
 
   var tree = d3.layout.tree()
       .size([h, w]);
@@ -36,11 +41,11 @@ d3SpeciesTree = function(data, selector){
     .append("svg:g")
       .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
 
-  // replace the anonymous functin with d3.json if necessary
+  // replace the anonymous function with d3.json if necessary
   (function(){
-    root = jsonTree;
+    root = data;
     root.x0 = h / 2;
-    root.y0 = 0;
+    root.y0 = w;
 
     function toggleAll(d) {
       if (d.children) {
@@ -59,32 +64,13 @@ d3SpeciesTree = function(data, selector){
   })();
 
   function update(source) {
-    var duration = d3.event && d3.event.altKey ? 3000 : 500;
-
-    // compute the new height
-    var levelWidth = [1];
-    var childCount = function(level, n) {
-
-      if(n.children && n.children.length > 0) {
-        if(levelWidth.length <= level + 1) levelWidth.push(0);
-
-        levelWidth[level+1] += n.children.length;
-        n.children.forEach(function(d) {
-          childCount(level + 1, d);
-        });
-      }
-    };
-    childCount(0, root);
-    var newHeight = d3.max(levelWidth) * 20; // 20 pixels per line
-    tree = tree.size([newHeight, w]);
-
     // Compute the new tree layout.
     var nodes = tree.nodes(root).reverse();
 
     // Normalize for fixed-depth.
-    nodes.forEach(function(d) { d.y = d.depth * edgeLength; });
+    nodes.forEach(function(d) { d.y = w - (d.depth * edgeLength); });
 
-    // Update the nodes…
+    // Update the nodes
     var node = vis.selectAll("g.node")
         .data(nodes, function(d) { return d.id || (d.id = ++i); });
 
@@ -99,9 +85,9 @@ d3SpeciesTree = function(data, selector){
         .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
 
     nodeEnter.append("svg:text")
-        .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
+        .attr("x", function(d) { return d.children || d._children ? 10 : -10; })
         .attr("dy", ".35em")
-        .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
+        .attr("text-anchor", function(d) { return d.children || d._children ? "start" : "end"; })
         .text(function(d) { return getNodeName(d); })
         .style("fill-opacity", 1e-6);
 
@@ -132,7 +118,7 @@ d3SpeciesTree = function(data, selector){
     nodeExit.select("text")
         .style("fill-opacity", 1e-6);
 
-    // Update the links…
+    // Update the links
     var link = vis.selectAll("path.link")
         .data(tree.links(nodes), function(d) { return d.target.id; });
 
@@ -167,10 +153,17 @@ d3SpeciesTree = function(data, selector){
       d.y0 = d.y;
     });
 
-    // Set height and width
-    var speciesLabels = 350;
-    $('#d3-species-tree svg').attr('height', newHeight + 20);
-    $('#d3-species-tree svg').attr('width', levelWidth.length * edgeLength + speciesLabels);
+  }
+
+  function childCount(level, n) {
+    if(n.children && n.children.length > 0) {
+      if(levelWidth.length <= level + 1) levelWidth.push(0);
+
+      levelWidth[level+1] += n.children.length;
+      n.children.forEach(function(d) {
+        childCount(level + 1, d);
+      });
+    }
   }
 
   // Toggle children.
@@ -188,11 +181,11 @@ d3SpeciesTree = function(data, selector){
     var nodeName = '';
     if (node.size) {
       // terminal node, display cross-reference counts
-      nodeName = [node.name, ' (', node.size, ' cross-references)'].join('')
+      nodeName = [node.name, ' (', node.size, ' cross-reference', node.size > 1 ? 's' : '', ')'].join('')
     } else {
       // truncate long taxon names
-      if (node.name.length > 10) {
-        nodeName = node.name.substr(0,10) + '...';
+      if (node.name.length > 20) {
+        nodeName = node.name.substr(0,20) + '...';
       } else {
         nodeName = node.name;
       }
