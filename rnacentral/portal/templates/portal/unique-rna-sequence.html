@@ -242,6 +242,8 @@ limitations under the License.
 
         <div class="tab-pane" id="related-seqs">
 
+          <button class="btn btn-default" ng-click="meta_search('({% for related in context.related_mcl_20 %}{{related.upi}}{% if not forloop.last %} OR {% endif %}{% endfor %})')">Browse related sequences</button>
+
           <h3>Overlapping accessions</h3>
           {% for overlap in rna.get_overlapping_entries %}
             <a href="/rna/{{ overlap }}">{{overlap}}</a>{% if not forloop.last %}, {% endif %}
