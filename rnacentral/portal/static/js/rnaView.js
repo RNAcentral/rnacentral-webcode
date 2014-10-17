@@ -25,7 +25,6 @@ rnaSequenceView.prototype.initialize = function() {
 	activate_literature_references();
 	activate_species_tree();
 	enable_show_species_tab_action();
-	enable_species_tree_scroll_action();
 
 	function load_xrefs() {
       xref_loader = new xrefLoader(obj.upi, obj.taxid);
@@ -103,13 +102,6 @@ rnaSequenceView.prototype.initialize = function() {
       $("#show-species-tab").click(function(){
         $('#tabs a[data-target="#species"]').tab('show');
         return false;
-      });
-    };
-
-    function enable_species_tree_scroll_action() {
-      // scoll the species tree to the species level
-      $("#d3-species-scroll-tree").click(function(){
-        $('#d3-species-tree-tab').scrollLeft($('#d3-species-tree-tab svg').attr('width'));
       });
     };
 
