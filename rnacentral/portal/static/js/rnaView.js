@@ -99,7 +99,7 @@ rnaSequenceView.prototype.initialize = function() {
 
     function enable_show_species_tab_action() {
       // clicking the species link to view the Species tab
-      $("#show-species-tab").click(function(){
+      $(".show-species-tab").click(function(){
         $('#tabs a[data-target="#species"]').tab('show');
         return false;
       });
