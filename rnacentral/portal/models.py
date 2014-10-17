@@ -131,7 +131,7 @@ class Rna(models.Model):
             upis = ClusterMember.objects.filter(cluster_id=cluster.cluster_id, method_id=method_id).values_list('upi', flat=True).distinct()
             mcl_upis = self.get_mcl_upis(60)
             upis = list(set(upis) - set(mcl_upis))
-            return Rna.objects.filter(upi__in=upis).iterator()
+            return Rna.objects.filter(upi__in=upis).exclude(upi=self.upi).iterator()
         else:
             return []
 
