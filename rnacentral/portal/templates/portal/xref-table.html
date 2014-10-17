@@ -28,7 +28,7 @@ limitations under the License.
 
 <tbody>
 
-{% for xref in context.rna.get_xrefs %}
+{% for xref in context.xrefs %}
   <tr {% if xref.deleted == 'Y' %}class="warning"{% endif %}>
     <td>
       {% if xref.db.name != 'ENA' %}

@@ -53,7 +53,7 @@ def ebeye_proxy(request):
 
 
 @cache_page(CACHE_TIMEOUT)
-def get_xrefs_data(request, upi):
+def get_xrefs_data(request, upi, taxid=None):
     """
     Internal API.
     Get the data for the xrefs table. Improves DataTables performance for entries
@@ -61,9 +61,10 @@ def get_xrefs_data(request, upi):
     """
     try:
         rna = Rna.objects.get(upi=upi)
+        xrefs = rna.get_xrefs_new(taxid)
     except Rna.DoesNotExist:
         raise Http404
-    return render(request, 'portal/xref-table.html', {'context': {'rna': rna}})
+    return render(request, 'portal/xref-table.html', {'context': {'xrefs': xrefs}})
 
 
 @cache_page(CACHE_TIMEOUT)
@@ -108,14 +109,28 @@ def expert_databases_view(request):
 
 
 @cache_page(CACHE_TIMEOUT)
-def rna_view(request, upi):
+def rna_view(request, upi, taxid=0):
     """
     Unique RNAcentral Sequence view.
     """
+
+    def get_species_name_from_taxid(taxid):
+        """
+        """
+        # species_name = 'test'
+        species_name = ''
+        if taxid != 0:
+            xref = Xref.objects.filter(taxid=taxid).select_related('accession')[:1].get()
+            if xref:
+                species_name = xref.accession.species
+        return species_name
+
     try:
         rna = Rna.objects.get(upi=upi)
         context = {
             'counts': rna.count_symbols(),
+            'taxid': taxid,
+            'species': get_species_name_from_taxid(taxid),
         }
     except Rna.DoesNotExist:
         raise Http404

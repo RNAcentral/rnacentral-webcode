@@ -35,10 +35,6 @@ limitations under the License.
   </small>
 </h1>
 
-<div class="alert alert-info">
-  <i class="fa fa-info-circle"></i> A unique RNA sequence entry in RNAcentral groups together all identical RNA sequences no matter what species they are from.
-</div>
-
 <div class="row">
 
   <div class="col-md-12">
@@ -74,6 +70,31 @@ limitations under the License.
       <div class="tab-content">
 
         <div class="tab-pane fade in active" id="overview">
+
+          {% if context.species %}
+            <div class="panel panel-info">
+              <div class="panel-heading">
+                <strong>{{ context.species }}</strong> (taxid {{ context.taxid }})
+              </div>
+              <div class="panel-body">
+                <small>
+                  To choose a different species go to the <a href="" class="show-species-tab">Taxonomy tab</a>
+                  or <a href="/rna/{{ rna.upi }}">view all annotations</a>.
+                </small>
+              </div>
+            </div>
+          {% else %}
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                Showing all species
+              </div>
+              <div class="panel-body">
+                <small>
+                  To view annotations from a single species go to the <a href="" class="show-species-tab">Taxonomy tab</a>.
+                </small>
+              </div>
+            </div>
+          {% endif %}
 
           <h2>
             Overview
@@ -286,7 +307,7 @@ limitations under the License.
   {{ block.super }}
     <script type="text/javascript">
     $(function() {
-      rna_sequence_view = new rnaSequenceView('{{rna.upi}}');
+      rna_sequence_view = new rnaSequenceView('{{rna.upi}}', {{ context.taxid }});
       rna_sequence_view.initialize();
 
       // hopscotch guided tour

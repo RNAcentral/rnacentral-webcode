@@ -11,8 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-var xrefLoader = function(upi) {
+var xrefLoader = function(upi, taxid) {
 	this.upi = upi;
+	this.taxid = taxid || 0;
 
 	this.config = {
 		dom: {
@@ -55,6 +56,9 @@ xrefLoader.prototype.load_xrefs = function() {
 
 	function get_xrefs() {
 		var url = '/rna/' + obj.upi + '/xrefs';
+		if (obj.taxid) {
+			url += '/' + obj.taxid;
+		}
     	$.get(url, function(data){
         	$(obj.config.dom.xref_table_container).html(data);
 			obj.enable_genomic_features = data.indexOf('View genomic location') > 0;

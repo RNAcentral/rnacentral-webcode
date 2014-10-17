@@ -21,6 +21,7 @@ urlpatterns = patterns('',
     url(r'^$', 'portal.views.homepage', name='homepage'),
     # unique RNA sequence
     url(r'^rna/(?P<upi>URS[0-9A-Fa-f]{10})/?$', 'portal.views.rna_view', name='unique-rna-sequence'),
+    url(r'^rna/(?P<upi>URS[0-9A-Fa-f]{10})/(?P<taxid>\d+)/?$', 'portal.views.rna_view', name='unique-rna-sequence'),
     # expert database
     url(r'^expert-database/(?P<expert_db_name>[-\w]+)/?$', 'portal.views.expert_database_view', name='expert-database'),
     # expert databases
@@ -58,6 +59,7 @@ urlpatterns = patterns('',
 urlpatterns += patterns('',
     # get xrefs table
     url(r'^rna/(?P<upi>\w+)/xrefs/?$', 'portal.views.get_xrefs_data'),
+    url(r'^rna/(?P<upi>\w+)/xrefs/(?P<taxid>\d+)/?$', 'portal.views.get_xrefs_data'),
     # get species tree
     url(r'^rna/(?P<upi>\w+)/lineage/?$', 'portal.views.get_sequence_lineage'),
     # query EBeye

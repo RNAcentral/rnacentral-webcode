@@ -11,8 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-var rnaSequenceView = function(upi) {
+var rnaSequenceView = function(upi, taxid) {
 	this.upi = upi;
+  this.taxid = !taxid || taxid === 0 ? undefined : taxid ;
 };
 
 rnaSequenceView.prototype.initialize = function() {
@@ -27,7 +28,7 @@ rnaSequenceView.prototype.initialize = function() {
 	enable_species_tree_scroll_action();
 
 	function load_xrefs() {
-      xref_loader = new xrefLoader(obj.upi);
+      xref_loader = new xrefLoader(obj.upi, obj.taxid);
       xref_loader.load_xrefs();
 	};
 
