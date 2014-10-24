@@ -244,56 +244,61 @@ class Rna(models.Model):
             bed += _xref_to_bed_format(xref)
         return bed
 
-    def get_description(self):
+    def xref_with_taxid_exists(self, taxid):
         """
-        Get entry description.
-        This function mimics the logic implemented in the xml dumping pipeline.
-        See portal/management/commands/xml_exporters/rna2xml.py
+        Return True if the Rna has xrefs with a given taxid.
         """
-        def count_ena_xrefs():
-            """
-            Count xrefs from ENA.
-            """
-            return self.xrefs.filter(db__descr='ENA').count()
+        if self.xrefs.filter(taxid=taxid).exists():
+            return True
+        else:
+            return False
+
+    def get_description(self, taxid=None):
+        """
+        Get entry description based on its xrefs.
+        If taxid is provided, use only species-specific xrefs.
+
+        The xml dumping pipeline uses a separate logic, see:
+        portal/management/commands/xml_exporters/rna2xml.py
+        """
 
         def count_distinct_descriptions():
             """
             Count distinct description lines.
             """
-            return self.xrefs.values_list('accession__description', flat=True).\
-                              distinct().count()
+            results = xrefs.values_list('accession__description', flat=True)
+            return results.distinct().count()
 
         def get_distinct_products():
             """
             Get distinct non-null product values as a list.
             """
-            return self.xrefs.values_list('accession__product', flat=True).\
-                              filter(accession__product__isnull=False).\
-                              distinct()
+            results = xrefs.values_list('accession__product', flat=True).\
+                            filter(accession__product__isnull=False)
+            return results.distinct()
 
         def get_distinct_genes():
             """
             Get distinct non-null gene values as a list.
             """
-            return self.xrefs.values_list('accession__gene', flat=True).\
-                              filter(accession__gene__isnull=False).\
-                              distinct()
+            results = xrefs.values_list('accession__gene', flat=True).\
+                            filter(accession__gene__isnull=False)
+            return results.distinct()
 
         def get_distinct_feature_names():
             """
             Get distinct feature names as a list.
             """
-            return self.xrefs.values_list('accession__feature_name',
-                                          flat=True).distinct()
+            results = xrefs.values_list('accession__feature_name', flat=True)
+            return results.distinct()
 
         def get_distinct_ncrna_classes():
             """
             For ncRNA features, get distinct ncrna_class values as a list.
             """
-            return self.xrefs.values_list('accession__ncrna_class',
-                                          flat=True).\
-                              filter(accession__ncrna_class__isnull=False).\
-                              distinct()
+            results = xrefs.values_list('accession__ncrna_class', flat=True).\
+                            filter(accession__ncrna_class__isnull=False)
+            return results.distinct()
 
         def get_rna_type():
             """
@@ -308,6 +313,7 @@ class Rna(models.Model):
                 rna_type = genes[0]
             else:
                 feature_names = get_distinct_feature_names()
+                print feature_names
                 if feature_names[0] == 'ncRNA' and len(feature_names) == 1:
                     ncrna_classes = get_distinct_ncrna_classes()
                     rna_type = '/'.join(ncrna_classes)
@@ -315,16 +321,21 @@ class Rna(models.Model):
                     rna_type = '/'.join(feature_names)
             return rna_type
 
-        num_ena_entries = count_ena_xrefs()
-        num_distinct_descriptions = count_distinct_descriptions()
-        if num_ena_entries == 1 or num_distinct_descriptions == 1:
-            description_line = self.xrefs.all()[0].accession.description
+        if taxid and not self.xref_with_taxid_exists(taxid):
+            taxid = None # ignore taxid
+
+        xrefs = self.xrefs
+        if taxid:
+            xrefs = xrefs.filter(taxid=taxid)
+
+        if count_distinct_descriptions() == 1:
+            description_line = xrefs.first().accession.description
             description_line = description_line[0].upper() + description_line[1:]
         else:
-            distinct_species = self.count_distinct_organisms
             rna_type = get_rna_type()
-            if distinct_species == 1:
-                species = self.xrefs.all()[0].accession.species
+            distinct_species = self.count_distinct_organisms
+            if taxid or distinct_species == 1:
+                species = xrefs.first().accession.species
                 description_line = '{species} {rna_type}'.format(
                                     species=species, rna_type=rna_type)
             else:
