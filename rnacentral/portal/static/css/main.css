@@ -397,6 +397,11 @@ code {
   white-space: normal;
 }
 
+#overview .lead {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
 /*------------------------------------------------------------------
 [5. Misc]
 */
