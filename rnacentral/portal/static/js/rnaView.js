@@ -13,7 +13,7 @@ limitations under the License.
 
 var rnaSequenceView = function(upi, taxid) {
 	this.upi = upi;
-  this.taxid = !taxid || taxid === 0 ? undefined : taxid ;
+  this.taxid = taxid || undefined;
 };
 
 rnaSequenceView.prototype.initialize = function() {
