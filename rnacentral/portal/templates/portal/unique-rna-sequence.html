@@ -71,31 +71,6 @@ limitations under the License.
 
         <div class="tab-pane fade in active" id="overview">
 
-          {% if context.species %}
-            <div class="panel panel-info">
-              <div class="panel-heading">
-                <strong>{{ context.species }}</strong> (taxid {{ context.taxid }})
-              </div>
-              <div class="panel-body">
-                <small>
-                  To choose a different species go to the <a href="" class="show-species-tab">Taxonomy tab</a>
-                  or <a href="/rna/{{ rna.upi }}">view all annotations</a>.
-                </small>
-              </div>
-            </div>
-          {% else %}
-            <div class="panel panel-default">
-              <div class="panel-heading">
-                Showing all species
-              </div>
-              <div class="panel-body">
-                <small>
-                  To view annotations from a single species go to the <a href="" class="show-species-tab">Taxonomy tab</a>.
-                </small>
-              </div>
-            </div>
-          {% endif %}
-
           <h2>
             Overview
           </h2>
