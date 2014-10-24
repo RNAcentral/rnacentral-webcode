@@ -75,9 +75,8 @@ def get_sequence_lineage(request, upi):
     classifications from all database cross-references.
     """
     try:
-        xrefs = Xref.objects.filter(upi=upi).all()
-        accessions = [xref.accession for xref in xrefs]
-        json_lineage_tree = _get_json_lineage_tree(accessions)
+        xrefs = Xref.objects.filter(upi=upi).select_related('accession').iterator()
+        json_lineage_tree = _get_json_lineage_tree(xrefs)
     except Rna.DoesNotExist:
         raise Http404
     return HttpResponse(json_lineage_tree, content_type="application/json")
@@ -242,24 +241,23 @@ class ContactView(FormView):
 # Helper functions #
 ####################
 
-def _get_json_lineage_tree(accessions):
+def _get_json_lineage_tree(xrefs):
     """
     Combine lineages from multiple xrefs to produce a single species tree.
     The data are used by the d3 library.
     """
 
-    def get_lineages(accessions):
+    def get_lineages_and_taxids():
         """
         Combine the lineages from all accessions in a single list.
         """
-        taxons = []
-        for accession in accessions:
-            taxons.append(accession.classification)
-        return taxons
+        for xref in xrefs:
+            lineages.append(xref.accession.classification)
+            taxids[xref.accession.classification.split('; ')[-1]] = xref.taxid
 
     def build_nested_dict_helper(path, text, container):
         """
-            Recursive function that builds the nested dictionary.
+        Recursive function that builds the nested dictionary.
         """
         segs = path.split('; ')
         head = segs[0]
@@ -317,7 +315,8 @@ def _get_json_lineage_tree(accessions):
             if isinstance(children, int):
                 container['children'].append({
                     "name": name,
-                    "size": children
+                    "size": children,
+                    "taxid": taxids[name],
                 })
             else:
                 container['children'].append({
@@ -327,7 +326,9 @@ def _get_json_lineage_tree(accessions):
                 get_nested_tree(children, container['children'][-1])
         return container
 
-    lineages = get_lineages(accessions)
+    lineages = []
+    taxids = dict()
+    get_lineages_and_taxids()
     nodes = get_nested_dict(lineages)
     json_lineage_tree = get_nested_tree(nodes, {})
     return json.dumps(json_lineage_tree)
