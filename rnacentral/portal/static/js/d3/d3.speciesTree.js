@@ -14,19 +14,24 @@ limitations under the License.
 // Displays species tree based on the combined lineages from all xrefs.
 // Based on http://mbostock.github.io/d3/talk/20111018/tree.html
 
-d3SpeciesTree = function(data, selector){
+d3SpeciesTree = function(data, upi, selector){
 
   var levelWidth = [1],
       edgeLength = 150,
       duration = 500,
-      speciesLabelsWidth = 350,
-      m = [20, 120, 20, 120],
-      i = 0,
-      root;
+      longestLabel = 0,
+      maxLabelLength = 20,
+      m = {
+        'top': 20,
+        'right': 40,
+        'bottom': 20,
+        'left': 40
+      },
+      i = 0;
 
   childCount(0, data);
 
-  var w = levelWidth.length * edgeLength,
+  var w = levelWidth.length * edgeLength + longestLabel * 3,
       h = d3.max(levelWidth) * 30;
 
   var tree = d3.layout.tree()
@@ -36,16 +41,14 @@ d3SpeciesTree = function(data, selector){
       .projection(function(d) { return [d.y, d.x]; });
 
   var vis = d3.select(selector).append("svg:svg")
-      .attr("width", w + m[1] + m[3])
-      .attr("height", h + m[0] + m[2])
+      .attr("width", w + m.left + m.right)
+      .attr("height", h + m.top + m.bottom)
     .append("svg:g")
-      .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+      .attr("transform", "translate(" + m.top + "," + m.bottom + ")");
 
-  // replace the anonymous function with d3.json if necessary
   (function(){
-    root = data;
-    root.x0 = h / 2;
-    root.y0 = w;
+    data.x0 = h / 2;
+    data.y0 = w;
 
     function toggleAll(d) {
       if (d.children) {
@@ -55,17 +58,17 @@ d3SpeciesTree = function(data, selector){
     }
 
     // Initialize the display to show the nodes.
-    toggle(root.children);
-    toggle(root);
-    update(root);
-    toggle(root);
-    update(root);
+    toggle(data.children);
+    toggle(data);
+    update(data);
+    toggle(data);
+    update(data);
 
   })();
 
   function update(source) {
     // Compute the new tree layout.
-    var nodes = tree.nodes(root).reverse();
+    var nodes = tree.nodes(data).reverse();
 
     // Normalize for fixed-depth.
     nodes.forEach(function(d) { d.y = w - (d.depth * edgeLength); });
@@ -84,7 +87,18 @@ d3SpeciesTree = function(data, selector){
         .attr("r", 1e-6)
         .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
 
-    nodeEnter.append("svg:text")
+    nodeEnter.filter(function(d){return d.hasOwnProperty('taxid');})
+      .append("a")
+        .attr("xlink:href", function (d) { return "/rna/" + upi + "/" + d.taxid; })
+      .append("text")
+        .attr("x", function(d) { return d.children || d._children ? 10 : -10; })
+        .attr("dy", ".35em")
+        .attr("class", "species-node")
+        .attr("text-anchor", "end")
+        .style("fill", "steelblue")
+        .text(function(d){return d.name;});
+
+    nodeEnter.filter(function(d){return !d.hasOwnProperty('taxid');}).append("svg:text")
         .attr("x", function(d) { return d.children || d._children ? 10 : -10; })
         .attr("dy", ".35em")
         .attr("text-anchor", function(d) { return d.children || d._children ? "start" : "end"; })
@@ -92,7 +106,7 @@ d3SpeciesTree = function(data, selector){
         .style("fill-opacity", 1e-6);
 
     nodeEnter.append("svg:title")
-      .text(function(d) { return d.name; });
+      .text(function(d) { return getHoverText(d) });
 
     // Transition nodes to their new position.
     var nodeUpdate = node.transition()
@@ -160,8 +174,12 @@ d3SpeciesTree = function(data, selector){
       if(levelWidth.length <= level + 1) levelWidth.push(0);
 
       levelWidth[level+1] += n.children.length;
+
       n.children.forEach(function(d) {
         childCount(level + 1, d);
+        if (d.name && d.name.length > longestLabel) {
+          longestLabel = d.name.length;
+        }
       });
     }
   }
@@ -177,18 +195,23 @@ d3SpeciesTree = function(data, selector){
     }
   }
 
-  function getNodeName(node) {
-    var nodeName = '';
+  function getHoverText(node) {
+    var hoverText = '';
     if (node.size) {
-      // terminal node, display cross-reference counts
-      nodeName = [node.name, ' (', node.size, ' cross-reference', node.size > 1 ? 's' : '', ')'].join('')
+      hoverText += [node.size, ' cross-reference', node.size > 1 ? 's' : ''].join('');
+    } else if (node.name.length > maxLabelLength) {
+      hoverText = node.name;
+    }
+    return hoverText;
+  }
+
+  function getNodeName(node) {
+    var nodeName;
+    // truncate long taxon names
+    if (node.name.length > maxLabelLength) {
+      nodeName = node.name.substr(0,maxLabelLength) + '...';
     } else {
-      // truncate long taxon names
-      if (node.name.length > 20) {
-        nodeName = node.name.substr(0,20) + '...';
-      } else {
-        nodeName = node.name;
-      }
+      nodeName = node.name;
     }
     return nodeName;
   }

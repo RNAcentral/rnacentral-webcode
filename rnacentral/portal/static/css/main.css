@@ -724,6 +724,10 @@ textarea {
   overflow-x: auto;
 }
 
+.species-node {
+  text-decoration: underline;
+}
+
 /*------------------------------------------------------------------
 [5.10 D3 expert database sequence length]
 */

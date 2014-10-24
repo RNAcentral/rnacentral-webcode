@@ -85,7 +85,7 @@ rnaSequenceView.prototype.initialize = function() {
           success: function(data) {
             var tree = $('#d3-species-tree');
             tree.hide().html('');
-            d3SpeciesTree(data, '#d3-species-tree');
+            d3SpeciesTree(data, obj.upi, '#d3-species-tree');
             tree.fadeIn();
           },
           error: function() {
