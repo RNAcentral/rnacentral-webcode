@@ -108,31 +108,63 @@ def expert_databases_view(request):
 
 
 @cache_page(CACHE_TIMEOUT)
-def rna_view(request, upi, taxid=0):
+def rna_view(request, upi, taxid=None):
     """
     Unique RNAcentral Sequence view.
+    Display all annotations or customize the page using the taxid (optional).
     """
 
-    def get_species_name_from_taxid(taxid):
+    def is_taxid_filtering_possible():
         """
+        Determine if the page should be customized using the taxid.
         """
-        # species_name = 'test'
-        species_name = ''
-        if taxid != 0:
-            xref = Xref.objects.filter(taxid=taxid).select_related('accession')[:1].get()
-            if xref:
-                species_name = xref.accession.species
-        return species_name
+        if taxid:
+            if rna.xref_with_taxid_exists(taxid):
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    def get_single_species():
+        """
+        Determine if the sequence has only one species or get the taxid species.
+        """
+
+        def get_species_name_from_taxid(taxid):
+            """
+            Get a species name given an NCBI taxid.
+            """
+            species_name = ''
+            if taxid:
+                xref = Xref.objects.filter(taxid=taxid).select_related('accession')[:1].get()
+                if xref:
+                    species_name = xref.accession.species
+            return species_name
+
+        if taxid_filtering:
+            return get_species_name_from_taxid(taxid)
+        else:
+            if rna.count_distinct_organisms == 1:
+                return rna.xrefs.first().accession.species
+            else:
+                return None
 
     try:
         rna = Rna.objects.get(upi=upi)
-        context = {
-            'counts': rna.count_symbols(),
-            'taxid': taxid,
-            'species': get_species_name_from_taxid(taxid),
-        }
     except Rna.DoesNotExist:
         raise Http404
+
+    taxid_filtering = is_taxid_filtering_possible()
+
+    context = {
+        'counts': rna.count_symbols(),
+        'taxid': taxid,
+        'taxid_filtering': taxid_filtering,
+        'single_species': get_single_species(),
+        'description': rna.get_description(taxid) if taxid_filtering else rna.get_description(),
+    }
+
     return render(request, 'portal/unique-rna-sequence.html', {'rna': rna, 'context': context})
 
 

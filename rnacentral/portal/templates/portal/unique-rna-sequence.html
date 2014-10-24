@@ -27,13 +27,49 @@ limitations under the License.
 {% block content %}
 
 <h1>
-  Unique RNA Sequence {{ rna.upi }}
-  <small>
-    <button type="button" class="btn btn-info pull-right tour help hidden-xs" title="Take an interactive tour to explore RNAcentral features" id="guided-tour">
+  Sequence {{ rna.upi }}
+
+  {% if context.single_species %}
+    <small><em>{{ context.single_species }}</em></small>
+  {% else %}
+    <small>{{ rna.count_distinct_organisms|intcomma }}</strong> species</small>
+  {% endif %}
+
+  <small class="pull-right hidden-xs">
+    <button type="button" class="btn btn-info tour help" title="Take an interactive tour to explore RNAcentral features" id="guided-tour">
       <i class="fa fa-info-circle"></i> Interactive tour
     </button>
   </small>
 </h1>
+
+{% if context.taxid and not context.taxid_filtering %}
+  <div class="alert alert-danger">
+    You requested annotations from taxid:{{context.taxid}}, but none were found. Please check the taxid in the URL.
+  </div>
+{% elif context.taxid_filtering %}
+  <div class="well well-sm">
+    <i class="fa fa-filter"></i> Showing annotations from <strong><em>{{ context.single_species}}</em></strong>.
+
+    {% if rna.count_distinct_organisms > 1 %}
+      <a href="" class="show-species-tab">Switch species</a> or
+      view data from {{ rna.count_distinct_organisms|add:"-1" }} <a href="{% url 'portal.views.rna_view' rna.upi %}">more species</a>.
+    {% else %}
+      This sequence is only observed in this species.
+    {% endif %}
+
+  </div>
+{% else %}
+  <div class="well well-sm">
+
+    {% if rna.count_distinct_organisms > 1 %}
+      <i class="fa fa-info-circle"></i> This unique sequence was observed in multiple species.
+      <a href="" class="show-species-tab">Filter annotations</a> by species.
+    {% else %}
+      <i class="fa fa-info-circle"></i> This sequence is only observed in this species.
+    {% endif %}
+
+  </div>
+{% endif %}
 
 <div class="row">
 
@@ -78,7 +114,7 @@ limitations under the License.
           <div class="panel panel-default">
             <div class="panel-body">
               <ul class="list-inline">
-                <li><strong>Description:</strong> {{rna.get_description}}</li>
+                <li class="lead">{{ context.description }}</li>
               </ul>
               <ul class="list-inline">
                 <li><strong>{{ rna.length|intcomma }}</strong> nucleotides</li>
@@ -93,7 +129,7 @@ limitations under the License.
                   {% endwith %}
                 </li>
                 <li>
-                  <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab">organism{{ rna.count_distinct_organisms|pluralize }}</a>
+                  Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab">species</a>
                 </li>
                 <li><small>imported <time datetime="{{ rna.first_seen|date:'Y-m-d' }}">{{ rna.first_seen|date:'d M Y' }}</time></small></li>
                 <li><small>last updated <time datetime="{{ rna.last_seen|date:'Y-m-d' }}">{{ rna.last_seen|date:'d M Y' }}</time></small></li>
