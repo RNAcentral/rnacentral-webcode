@@ -53,21 +53,12 @@ limitations under the License.
     {% if rna.count_distinct_organisms > 1 %}
       <a href="" class="show-species-tab">Switch species</a> or
       view data from {{ rna.count_distinct_organisms|add:"-1" }} <a href="{% url 'portal.views.rna_view' rna.upi %}">more species</a>.
-    {% else %}
-      This sequence is only observed in this species.
     {% endif %}
-
   </div>
-{% else %}
+{% elif rna.count_distinct_organisms > 1 %}
   <div class="well well-sm">
-
-    {% if rna.count_distinct_organisms > 1 %}
-      <i class="fa fa-info-circle"></i> This unique sequence was observed in multiple species.
-      <a href="" class="show-species-tab">Filter annotations</a> by species.
-    {% else %}
-      <i class="fa fa-info-circle"></i> This sequence is only observed in this species.
-    {% endif %}
-
+    <i class="fa fa-info-circle"></i> This unique sequence was observed in multiple species.
+    <a href="" class="show-species-tab">Filter annotations</a> by species.
   </div>
 {% endif %}
 
