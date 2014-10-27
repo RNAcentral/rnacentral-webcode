@@ -528,6 +528,10 @@ path {
   max-height: 800px;
 }
 
+.species-node {
+  font-weight: bold;
+}
+
 /*------------------------------------------------------------------
 [5.4 API docs affix]
 */
@@ -727,10 +731,6 @@ textarea {
 
 #treemap {
   overflow-x: auto;
-}
-
-.species-node {
-  font-weight: bold;
 }
 
 /*------------------------------------------------------------------
