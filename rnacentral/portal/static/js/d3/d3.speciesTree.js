@@ -14,15 +14,25 @@ limitations under the License.
 // Displays species tree based on the combined lineages from all xrefs.
 // Based on http://mbostock.github.io/d3/talk/20111018/tree.html
 
-d3SpeciesTree = function(data, selector){
+d3SpeciesTree = function(data, upi, selector){
 
-  var m = [20, 120, 20, 120],
-      jsonTree = data,
-      w = 2200 - m[1] - m[3], // width
-      h = 400 - m[0] - m[2], // height
-      edgeLength = 100,
-      i = 0,
-      root;
+  var levelWidth = [1],
+      edgeLength = 150,
+      duration = 500,
+      depth = [],
+      maxLabelLength = 20,
+      m = {
+        'top': 20,
+        'right': 40,
+        'bottom': 20,
+        'left': 40
+      },
+      i = 0;
+
+  childCount(0, data);
+
+  var w = (levelWidth.length - 1) * edgeLength + textWidth(depth[depth.length-1]) + m.right,
+      h = d3.max(levelWidth) * 20;
 
   var tree = d3.layout.tree()
       .size([h, w]);
@@ -31,16 +41,14 @@ d3SpeciesTree = function(data, selector){
       .projection(function(d) { return [d.y, d.x]; });
 
   var vis = d3.select(selector).append("svg:svg")
-      .attr("width", w + m[1] + m[3])
-      .attr("height", h + m[0] + m[2])
+      .attr("width", w + m.left + m.right)
+      .attr("height", h + m.top + m.bottom)
     .append("svg:g")
-      .attr("transform", "translate(" + m[3] + "," + m[0] + ")");
+      .attr("transform", "translate(" + m.top + "," + m.bottom + ")");
 
-  // replace the anonymous functin with d3.json if necessary
   (function(){
-    root = jsonTree;
-    root.x0 = h / 2;
-    root.y0 = 0;
+    data.x0 = h / 2;
+    data.y0 = w;
 
     function toggleAll(d) {
       if (d.children) {
@@ -50,41 +58,22 @@ d3SpeciesTree = function(data, selector){
     }
 
     // Initialize the display to show the nodes.
-    toggle(root.children);
-    toggle(root);
-    update(root);
-    toggle(root);
-    update(root);
+    toggle(data.children);
+    toggle(data);
+    update(data);
+    toggle(data);
+    update(data);
 
   })();
 
   function update(source) {
-    var duration = d3.event && d3.event.altKey ? 3000 : 500;
-
-    // compute the new height
-    var levelWidth = [1];
-    var childCount = function(level, n) {
-
-      if(n.children && n.children.length > 0) {
-        if(levelWidth.length <= level + 1) levelWidth.push(0);
-
-        levelWidth[level+1] += n.children.length;
-        n.children.forEach(function(d) {
-          childCount(level + 1, d);
-        });
-      }
-    };
-    childCount(0, root);
-    var newHeight = d3.max(levelWidth) * 20; // 20 pixels per line
-    tree = tree.size([newHeight, w]);
-
     // Compute the new tree layout.
-    var nodes = tree.nodes(root).reverse();
+    var nodes = tree.nodes(data).reverse();
 
     // Normalize for fixed-depth.
-    nodes.forEach(function(d) { d.y = d.depth * edgeLength; });
+    nodes.forEach(function(d) { d.y = w - (d.depth * edgeLength); });
 
-    // Update the nodes…
+    // Update the nodes
     var node = vis.selectAll("g.node")
         .data(nodes, function(d) { return d.id || (d.id = ++i); });
 
@@ -98,15 +87,26 @@ d3SpeciesTree = function(data, selector){
         .attr("r", 1e-6)
         .style("fill", function(d) { return d._children ? "lightsteelblue" : "#fff"; });
 
-    nodeEnter.append("svg:text")
-        .attr("x", function(d) { return d.children || d._children ? -10 : 10; })
+    nodeEnter.filter(function(d){return d.hasOwnProperty('taxid');})
+      .append("a")
+        .attr("xlink:href", function (d) { return "/rna/" + upi + "/" + d.taxid; })
+      .append("text")
+        .attr("x", function(d) { return d.children || d._children ? 10 : -10; })
         .attr("dy", ".35em")
-        .attr("text-anchor", function(d) { return d.children || d._children ? "end" : "start"; })
+        .attr("class", "species-node")
+        .attr("text-anchor", "end")
+        .style("fill", "steelblue")
+        .text(function(d){return d.name;});
+
+    nodeEnter.filter(function(d){return !d.hasOwnProperty('taxid');}).append("svg:text")
+        .attr("x", function(d) { return d.children || d._children ? 10 : -10; })
+        .attr("dy", ".35em")
+        .attr("text-anchor", function(d) { return d.children || d._children ? "start" : "end"; })
         .text(function(d) { return getNodeName(d); })
         .style("fill-opacity", 1e-6);
 
     nodeEnter.append("svg:title")
-      .text(function(d) { return d.name; });
+      .text(function(d) { return getHoverText(d) });
 
     // Transition nodes to their new position.
     var nodeUpdate = node.transition()
@@ -132,7 +132,7 @@ d3SpeciesTree = function(data, selector){
     nodeExit.select("text")
         .style("fill-opacity", 1e-6);
 
-    // Update the links…
+    // Update the links
     var link = vis.selectAll("path.link")
         .data(tree.links(nodes), function(d) { return d.target.id; });
 
@@ -167,10 +167,26 @@ d3SpeciesTree = function(data, selector){
       d.y0 = d.y;
     });
 
-    // Set height and width
-    var speciesLabels = 350;
-    $('#d3-species-tree svg').attr('height', newHeight + 20);
-    $('#d3-species-tree svg').attr('width', levelWidth.length * edgeLength + speciesLabels);
+  }
+
+  function childCount(level, n) {
+    if(n.children && n.children.length > 0) {
+      if(levelWidth.length <= level + 1) levelWidth.push(0);
+
+      levelWidth[level+1] += n.children.length;
+
+      n.children.forEach(function(d) {
+        childCount(level + 1, d);
+      });
+    } else {
+      if (depth[level]) {
+        if (n.name.length > depth[level].length) {
+          depth[level] = n.name;
+        }
+      } else {
+        depth[level] = n.name;
+      }
+    }
   }
 
   // Toggle children.
@@ -184,20 +200,33 @@ d3SpeciesTree = function(data, selector){
     }
   }
 
-  function getNodeName(node) {
-    var nodeName = '';
+  function getHoverText(node) {
+    var hoverText = '';
     if (node.size) {
-      // terminal node, display cross-reference counts
-      nodeName = [node.name, ' (', node.size, ' cross-references)'].join('')
+      hoverText += [node.size, ' cross-reference', node.size > 1 ? 's' : ''].join('');
+    } else if (node.name.length > maxLabelLength) {
+      hoverText = node.name;
+    }
+    return hoverText;
+  }
+
+  function getNodeName(node) {
+    var nodeName;
+    // truncate long taxon names
+    if (node.name.length > maxLabelLength) {
+      nodeName = node.name.substr(0,maxLabelLength) + '...';
     } else {
-      // truncate long taxon names
-      if (node.name.length > 10) {
-        nodeName = node.name.substr(0,10) + '...';
-      } else {
-        nodeName = node.name;
-      }
+      nodeName = node.name;
     }
     return nodeName;
   }
+
+  // measure the width of some text by creating a fake hidden element and
+  // getting its width
+  function textWidth(text) {
+      var fakeEl = $('<span id="fake"></span>').hide().appendTo(document.body);
+      fakeEl.text(text).css('font-weight', 'bold').css('font-size', '11px');
+      return fakeEl.width();
+  };
 
 };

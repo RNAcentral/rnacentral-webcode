@@ -12,7 +12,7 @@ limitations under the License.
 """
 
 from django.core.management.base import BaseCommand
-from portal.models import Database, Rna, Accession, DatabaseStats
+from portal.models import Database, Rna, Xref, DatabaseStats
 from portal.views import _get_json_lineage_tree
 from django.db.models import Min, Max, Count, Avg
 import json
@@ -48,9 +48,9 @@ def compute_database_stats():
                                      annotate(counts=Count('length')).\
                                      order_by('length'))
         # taxonomic_lineage
-        accessions = Accession.objects.only("classification").\
-                                       filter(database=expert_db.descr).all()
-        lineages = _get_json_lineage_tree(accessions)
+        xrefs = Xref.objects.select_related('accession').\
+                             filter(db__descr=expert_db.descr).iterator()
+        lineages = _get_json_lineage_tree(xrefs)
 
         # update expert_db object
         expert_db.avg_length = context['avg_length']

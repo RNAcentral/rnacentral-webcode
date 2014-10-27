@@ -11,8 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-var rnaSequenceView = function(upi) {
+var rnaSequenceView = function(upi, taxid) {
 	this.upi = upi;
+  this.taxid = taxid || undefined;
 };
 
 rnaSequenceView.prototype.load_xrefs = function(page) {
@@ -29,7 +30,6 @@ rnaSequenceView.prototype.initialize = function() {
 	activate_literature_references();
 	activate_species_tree();
 	enable_show_species_tab_action();
-	enable_species_tree_scroll_action();
   enable_xref_pagination();
 
   function enable_xref_pagination() {
@@ -39,6 +39,11 @@ rnaSequenceView.prototype.initialize = function() {
           rna_sequence_view.load_xrefs(pagination_link.data('xref-page'));
       });
   };
+
+	function load_xrefs() {
+      xref_loader = new xrefLoader(obj.upi, obj.taxid);
+      xref_loader.load_xrefs();
+	};
 
 	function activate_tooltips() {
       $('body').tooltip({
@@ -94,7 +99,7 @@ rnaSequenceView.prototype.initialize = function() {
           success: function(data) {
             var tree = $('#d3-species-tree');
             tree.hide().html('');
-            d3SpeciesTree(data, '#d3-species-tree');
+            d3SpeciesTree(data, obj.upi, '#d3-species-tree');
             tree.fadeIn();
           },
           error: function() {
@@ -108,16 +113,9 @@ rnaSequenceView.prototype.initialize = function() {
 
     function enable_show_species_tab_action() {
       // clicking the species link to view the Species tab
-      $("#show-species-tab").click(function(){
+      $(".show-species-tab").click(function(){
         $('#tabs a[data-target="#species"]').tab('show');
         return false;
-      });
-    };
-
-    function enable_species_tree_scroll_action() {
-      // scoll the species tree to the species level
-      $("#d3-species-scroll-tree").click(function(){
-        $('#d3-species-tree-tab').scrollLeft($('#d3-species-tree-tab svg').attr('width'));
       });
     };
 

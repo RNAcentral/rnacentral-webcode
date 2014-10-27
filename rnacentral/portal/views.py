@@ -55,8 +55,9 @@ def ebeye_proxy(request):
         raise Http404
 
 
+
 @never_cache
-def get_xrefs_data(request, upi):
+def get_xrefs_data(request, upi, taxid=None):
     """
     Internal API.
     Get the xrefs table in batches.
@@ -83,9 +84,8 @@ def get_sequence_lineage(request, upi):
     classifications from all database cross-references.
     """
     try:
-        xrefs = Xref.objects.filter(upi=upi).all()
-        accessions = [xref.accession for xref in xrefs]
-        json_lineage_tree = _get_json_lineage_tree(accessions)
+        xrefs = Xref.objects.filter(upi=upi).select_related('accession').iterator()
+        json_lineage_tree = _get_json_lineage_tree(xrefs)
     except Rna.DoesNotExist:
         raise Http404
     return HttpResponse(json_lineage_tree, content_type="application/json")
@@ -117,9 +117,10 @@ def expert_databases_view(request):
 
 
 @cache_page(CACHE_TIMEOUT)
-def rna_view(request, upi):
+def rna_view(request, upi, taxid=None):
     """
     Unique RNAcentral Sequence view.
+    Display all annotations or customize the page using the taxid (optional).
     """
     def get_xrefs_pages():
         """
@@ -130,20 +131,65 @@ def rna_view(request, upi):
         """
         return xrange(1, int(math.ceil(rna.count_xrefs()/float(XREF_PAGE_SIZE))) + 1)
 
+    def is_taxid_filtering_possible():
+        """
+        Determine if the page should be customized using the taxid.
+        """
+        if taxid:
+            if rna.xref_with_taxid_exists(taxid):
+                return True
+            else:
+                return False
+        else:
+            return False
+
+    def get_single_species():
+        """
+        Determine if the sequence has only one species or get the taxid species.
+        """
+
+        def get_species_name_from_taxid(taxid):
+            """
+            Get a species name given an NCBI taxid.
+            """
+            species_name = ''
+            if taxid:
+                xref = Xref.objects.filter(taxid=taxid).select_related('accession')[:1].get()
+                if xref:
+                    species_name = xref.accession.species
+            return species_name
+
+        if taxid_filtering:
+            return get_species_name_from_taxid(taxid)
+        else:
+            if rna.count_distinct_organisms == 1:
+                return rna.xrefs.first().accession.species
+            else:
+                return None
+
     try:
         rna = Rna.objects.get(upi=upi)
-        context = {
-            'counts': rna.count_symbols(),
-            'xref_pages': get_xrefs_pages(),
-            'xref_page_size': XREF_PAGE_SIZE,
-        }
-        (blast_identity, blast_length) = rna.get_blast_identity()
-        context['blast_identity'] = blast_identity
-        context['blast_length'] = blast_length
-        context['related_mcl_20'] = rna.get_mcl_related_entries(20)
-        context['related_mcl_60'] = rna.get_mcl_related_entries(60)
     except Rna.DoesNotExist:
         raise Http404
+
+    taxid_filtering = is_taxid_filtering_possible()
+
+    context = {
+        'counts': rna.count_symbols(),
+        'taxid': taxid,
+        'taxid_filtering': taxid_filtering,
+        'single_species': get_single_species(),
+        'description': rna.get_description(taxid) if taxid_filtering else rna.get_description(),
+        'distinct_databases': rna.get_distinct_database_names(taxid),
+        'xref_pages': get_xrefs_pages(),
+        'xref_page_size': XREF_PAGE_SIZE,
+    }
+    (blast_identity, blast_length) = rna.get_blast_identity()
+    context['blast_identity'] = blast_identity
+    context['blast_length'] = blast_length
+    context['related_mcl_20'] = rna.get_mcl_related_entries(20)
+    context['related_mcl_60'] = rna.get_mcl_related_entries(60)
+
     return render(request, 'portal/unique-rna-sequence.html', {'rna': rna, 'context': context})
 
 
@@ -252,24 +298,23 @@ class ContactView(FormView):
 # Helper functions #
 ####################
 
-def _get_json_lineage_tree(accessions):
+def _get_json_lineage_tree(xrefs):
     """
     Combine lineages from multiple xrefs to produce a single species tree.
     The data are used by the d3 library.
     """
 
-    def get_lineages(accessions):
+    def get_lineages_and_taxids():
         """
         Combine the lineages from all accessions in a single list.
         """
-        taxons = []
-        for accession in accessions:
-            taxons.append(accession.classification)
-        return taxons
+        for xref in xrefs:
+            lineages.append(xref.accession.classification)
+            taxids[xref.accession.classification.split('; ')[-1]] = xref.taxid
 
     def build_nested_dict_helper(path, text, container):
         """
-            Recursive function that builds the nested dictionary.
+        Recursive function that builds the nested dictionary.
         """
         segs = path.split('; ')
         head = segs[0]
@@ -327,7 +372,8 @@ def _get_json_lineage_tree(accessions):
             if isinstance(children, int):
                 container['children'].append({
                     "name": name,
-                    "size": children
+                    "size": children,
+                    "taxid": taxids[name],
                 })
             else:
                 container['children'].append({
@@ -337,7 +383,9 @@ def _get_json_lineage_tree(accessions):
                 get_nested_tree(children, container['children'][-1])
         return container
 
-    lineages = get_lineages(accessions)
+    lineages = []
+    taxids = dict()
+    get_lineages_and_taxids()
     nodes = get_nested_dict(lineages)
     json_lineage_tree = get_nested_tree(nodes, {})
     return json.dumps(json_lineage_tree)

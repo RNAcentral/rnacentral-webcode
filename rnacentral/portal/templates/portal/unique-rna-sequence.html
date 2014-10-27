@@ -28,17 +28,40 @@ limitations under the License.
 {% block content %}
 
 <h1>
-  Unique RNA Sequence {{ rna.upi }}
-  <small>
-    <button type="button" class="btn btn-info pull-right tour help hidden-xs" title="Take an interactive tour to explore RNAcentral features" id="guided-tour">
+  Sequence {{ rna.upi }}
+
+  {% if context.single_species %}
+    <small><em>{{ context.single_species }}</em></small>
+  {% else %}
+    <small>{{ rna.count_distinct_organisms|intcomma }}</strong> species</small>
+  {% endif %}
+
+  <small class="pull-right hidden-xs">
+    <button type="button" class="btn btn-info tour help" title="Take an interactive tour to explore RNAcentral features" id="guided-tour">
       <i class="fa fa-info-circle"></i> Interactive tour
     </button>
   </small>
 </h1>
 
-<div class="alert alert-info">
-  <i class="fa fa-info-circle"></i> A unique RNA sequence entry in RNAcentral groups together all identical RNA sequences no matter what species they are from.
-</div>
+{% if context.taxid and not context.taxid_filtering %}
+  <div class="alert alert-danger">
+    You requested annotations from taxid:{{context.taxid}}, but none were found. Please check the taxid in the URL.
+  </div>
+{% elif context.taxid_filtering %}
+  <div class="well well-sm">
+    <i class="fa fa-filter"></i> Showing annotations from <strong><em>{{ context.single_species}}</em></strong>.
+
+    {% if rna.count_distinct_organisms > 1 %}
+      <a href="" class="show-species-tab">Switch species</a> or
+      view data from {{ rna.count_distinct_organisms|add:"-1" }} <a href="{% url 'portal.views.rna_view' rna.upi %}">more species</a>.
+    {% endif %}
+  </div>
+{% elif rna.count_distinct_organisms > 1 %}
+  <div class="well well-sm">
+    <i class="fa fa-info-circle"></i> This unique sequence was observed in multiple species.
+    <a href="" class="show-species-tab">Filter annotations</a> by species.
+  </div>
+{% endif %}
 
 <div class="row">
 
@@ -86,12 +109,12 @@ limitations under the License.
           <div class="panel panel-default">
             <div class="panel-body">
               <ul class="list-inline">
-                <li><strong>Description:</strong> {{rna.get_description}}</li>
+                <li class="lead">{{ context.description }}</li>
               </ul>
               <ul class="list-inline">
                 <li><strong>{{ rna.length|intcomma }}</strong> nucleotides</li>
                 <li>
-                  {% with dbs=rna.get_distinct_database_names %}
+                  {% with dbs=context.distinct_databases %}
                     <strong>{{ dbs|length|intcomma }}</strong> database{{ dbs|length|pluralize }}
                     <small>
                       {% for db in dbs %}
@@ -101,9 +124,9 @@ limitations under the License.
                   {% endwith %}
                 </li>
                 <li>
-                  <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" id="show-species-tab">organism{{ rna.count_distinct_organisms|pluralize }}</a>
+                  Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab">species</a>
                 </li>
-                <li><small>first seen <time datetime="{{ rna.first_seen|date:'Y-m-d' }}">{{ rna.first_seen|date:'d M Y' }}</time></small></li>
+                <li><small>imported <time datetime="{{ rna.first_seen|date:'Y-m-d' }}">{{ rna.first_seen|date:'d M Y' }}</time></small></li>
                 <li><small>last updated <time datetime="{{ rna.last_seen|date:'Y-m-d' }}">{{ rna.last_seen|date:'d M Y' }}</time></small></li>
               </ul>
             </div>
@@ -202,7 +225,7 @@ limitations under the License.
             {{ rna.length|intcomma }} nucleotides
             <small>
               ({{ context.counts.A|intcomma }} A; {{ context.counts.C|intcomma }} C;
-              {{ context.counts.G|intcomma }} G; {{ context.counts.U|intcomma }} U,
+              {{ context.counts.G|intcomma }} G; {{ context.counts.U|intcomma }} U;
               {{ context.counts.N|intcomma|default:"no " }} N)
             </small>
           </p>
@@ -217,19 +240,19 @@ limitations under the License.
           <h2>Taxonomic Tree</h2>
 
           <p>
-            <small>
+            This sequence has been observed in <strong>{{ rna.count_distinct_organisms }}</strong> organisms.
+            Get <strong>species-specific urls</strong> by clicking on <span class="text-primary"><strong>species names</strong></span>.
+            <br>
+            <small class="text-muted">
               <i class="fa fa-info-circle"></i>
-              This tree displays the lineages of all taxonomic groups in which this sequence has been found.
-              <br>
               <strong>Scroll around</strong> to explore the entire tree.
-              <strong>Click</strong> the tree nodes to collapse or expand them.
-              <strong>Hover</strong> over taxon names to display full names.
+              <strong>Click</strong> tree nodes to collapse or expand them.
+              <strong>Hover</strong> over taxon names to display additional information.
             </small>
           </p>
 
           <div class="panel panel-default d3-species">
-            <button id="d3-species-scroll-tree" class="btn btn-default btn-sm">Scroll to species</button>
-            <div class="tab-pane panel-body d3-species force-scrollbars" id="d3-species-tree-tab">
+            <div class="tab-pane panel-body d3-species force-scrollbars d3-species-tree-tab">
               <div id="d3-species-tree">
                 <i class="fa fa-spinner fa-spin fa-2x"></i>
                 Loading taxonomic tree...
@@ -448,10 +471,6 @@ limitations under the License.
   </div> <!--  col-md-12 -->
 </div> <!--  row -->
 
-<script type="text/javascript">
-  var json_lineage_tree = '{{ context.json_lineage_tree|escapejs}}';
-</script>
-
 {# Handlebars #}
 {% verbatim %}
 <script id="handlebars-literature-reference-tmpl" type="text/x-handlebars-template">
@@ -501,7 +520,11 @@ limitations under the License.
   {{ block.super }}
     <script type="text/javascript">
     $(function() {
-      rna_sequence_view = new rnaSequenceView('{{rna.upi}}');
+      {% if context.taxid_filtering %}
+        rna_sequence_view = new rnaSequenceView('{{rna.upi}}', {{ context.taxid }});
+      {% else %}
+        rna_sequence_view = new rnaSequenceView('{{rna.upi}}');
+      {% endif %}
       rna_sequence_view.initialize();
 
       // hopscotch guided tour
