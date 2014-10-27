@@ -62,7 +62,7 @@ def get_xrefs_data(request, upi, taxid=None):
     Internal API.
     Get the xrefs table in batches.
     """
-    xref_list = Rna.objects.get(upi=upi).get_xrefs().all()
+    xref_list = Rna.objects.get(upi=upi).get_xrefs(taxid=taxid).all()
     paginator = Paginator(xref_list, XREF_PAGE_SIZE)
 
     page = request.GET.get('page')

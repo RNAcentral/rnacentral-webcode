@@ -17,7 +17,7 @@ var rnaSequenceView = function(upi, taxid) {
 };
 
 rnaSequenceView.prototype.load_xrefs = function(page) {
-  xref_loader = new xrefLoader(obj.upi);
+  xref_loader = new xrefLoader(obj.upi, obj.taxid);
   xref_loader.load_xrefs(page || 1);
 };
 

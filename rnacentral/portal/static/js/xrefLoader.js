@@ -84,11 +84,11 @@ xrefLoader.prototype.load_xrefs = function(page) {
 	};
 
 	function get_xrefs() {
-		var url = '/rna/' + obj.upi;
+		var url = '/rna/' + obj.upi + '/xrefs';
 		if (obj.taxid) {
 			url += '/' + obj.taxid;
 		}
-		url += '/xrefs?page={PAGE}'.replace('{PAGE}', page)
+		url += '?page={PAGE}'.replace('{PAGE}', page)
     	$.get(url, function(data){
         	$(obj.config.dom.xref_table_container).html(data);
 			obj.enable_genomic_features = data.indexOf('View genomic location') > 0;
