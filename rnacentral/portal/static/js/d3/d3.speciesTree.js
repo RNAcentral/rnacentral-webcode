@@ -19,7 +19,7 @@ d3SpeciesTree = function(data, upi, selector){
   var levelWidth = [1],
       edgeLength = 150,
       duration = 500,
-      longestLabel = 0,
+      depth = [],
       maxLabelLength = 20,
       m = {
         'top': 20,
@@ -31,8 +31,8 @@ d3SpeciesTree = function(data, upi, selector){
 
   childCount(0, data);
 
-  var w = levelWidth.length * edgeLength + longestLabel * 3,
-      h = d3.max(levelWidth) * 30;
+  var w = (levelWidth.length - 1) * edgeLength + textWidth(depth[depth.length-1]) + m.right,
+      h = d3.max(levelWidth) * 20;
 
   var tree = d3.layout.tree()
       .size([h, w]);
@@ -177,10 +177,15 @@ d3SpeciesTree = function(data, upi, selector){
 
       n.children.forEach(function(d) {
         childCount(level + 1, d);
-        if (d.name && d.name.length > longestLabel) {
-          longestLabel = d.name.length;
-        }
       });
+    } else {
+      if (depth[level]) {
+        if (n.name.length > depth[level]) {
+          depth[level] = n.name;
+        }
+      } else {
+        depth[level] = n.name;
+      }
     }
   }
 
@@ -215,5 +220,13 @@ d3SpeciesTree = function(data, upi, selector){
     }
     return nodeName;
   }
+
+  // measure the width of some text by creating a fake hidden element and
+  // getting its width
+  function textWidth(text) {
+      var fakeEl = $('<span id="fake"></span>').hide().appendTo(document.body);
+      fakeEl.text(text).css('font-weight', 'bold').css('font-size', '11px');
+      return fakeEl.width();
+  };
 
 };

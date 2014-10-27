@@ -730,7 +730,7 @@ textarea {
 }
 
 .species-node {
-  text-decoration: underline;
+  font-weight: bold;
 }
 
 /*------------------------------------------------------------------
