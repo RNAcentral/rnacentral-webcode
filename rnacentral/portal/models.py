@@ -49,7 +49,6 @@ class Rna(models.Model):
         xrefs = self.xrefs.filter(deleted='N').\
                            exclude(db__id=1, accession__project__in=expert_db_projects).\
                            order_by('-db__id').\
-                           order_by('accession__coordinates__chromosome').\
                            select_related()
         if taxid:
             xrefs = xrefs.filter(taxid=taxid)
