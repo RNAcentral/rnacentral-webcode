@@ -166,15 +166,14 @@ class Rna(models.Model):
         """
         return self.xrefs.values('accession__species').distinct().count()
 
-    @cached_property
-    def get_distinct_database_names(self):
+    def get_distinct_database_names(self, taxid=None):
         """
         Get a non-redundant list of databases referencing the sequence.
         """
-        databases = []
-        db_ids = self.xrefs.filter(deleted='N').values_list('db_id', flat=True).distinct()
-        for db in Database.objects.filter(id__in=db_ids).all():
-            databases.append(db.display_name)
+        databases = self.xrefs.filter(deleted='N')
+        if taxid:
+            databases = databases.filter(taxid=taxid)
+        databases = databases.values_list('db__display_name', flat=True).distinct()
         databases = sorted(databases, key=lambda s: s.lower()) # case-insensitive
         return databases
 

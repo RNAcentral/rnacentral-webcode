@@ -110,7 +110,7 @@ limitations under the License.
               <ul class="list-inline">
                 <li><strong>{{ rna.length|intcomma }}</strong> nucleotides</li>
                 <li>
-                  {% with dbs=rna.get_distinct_database_names %}
+                  {% with dbs=context.distinct_databases %}
                     <strong>{{ dbs|length|intcomma }}</strong> database{{ dbs|length|pluralize }}
                     <small>
                       {% for db in dbs %}
