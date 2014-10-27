@@ -197,26 +197,6 @@ class Rna(models.Model):
                 length[blast_hit.query] = blast_hit.length
         return (identity, length)
 
-    def get_xrefs_new(self, taxid=None):
-        """
-        Get all xrefs, show non-ENA annotations first.
-        Exclude source ENA entries that are associated with other expert db entries.
-        For example, only fetch Vega xrefs and don't retrieve the ENA entries they are
-        based on.
-        """
-        expert_db_projects = Database.objects.exclude(project_id=None).\
-                                              values_list('project_id', flat=True)
-        xrefs = self.xrefs.filter(deleted='N').\
-                           exclude(db__id=1, accession__project__in=expert_db_projects).\
-                           order_by('-db__id').\
-                           select_related()
-        if taxid:
-            xrefs = xrefs.filter(taxid=taxid)
-        if xrefs.exists():
-            return xrefs
-        else:
-            return self.xrefs.filter(deleted='Y').select_related()
-
     def is_active(self):
         """
         A sequence is considered active if it has at least one active cross_reference.
@@ -270,7 +250,7 @@ class Rna(models.Model):
             'N': len(seq) - (count_A + count_C + count_G + count_U)
         }
 
-    def get_xrefs(self):
+    def get_xrefs(self, taxid=None):
         """
         Get all xrefs, show non-ENA annotations first.
         Exclude source ENA entries that are associated with other expert db entries.
@@ -282,8 +262,9 @@ class Rna(models.Model):
         xrefs = self.xrefs.filter(deleted='N').\
                            exclude(db__id=1, accession__project__in=expert_db_projects).\
                            order_by('-db__id').\
-                           order_by('accession__coordinates__chromosome').\
                            select_related()
+        if taxid:
+            xrefs = xrefs.filter(taxid=taxid)
         if xrefs.exists():
             return xrefs
         else:
