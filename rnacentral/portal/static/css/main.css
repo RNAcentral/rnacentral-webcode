@@ -659,6 +659,10 @@ button.load-more {
   margin: 20px 0px;
 }
 
+.metasearch-facets hr {
+  margin-bottom: 5px;
+}
+
 /*------------------------------------------------------------------
 [5.8 Sequence search]
 */

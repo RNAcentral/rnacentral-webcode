@@ -140,6 +140,20 @@ limitations under the License.
               {% endwith %}
             {% endif %}
         {% endwith %}
+      {% else %}
+        {% with splice_variants=xref.get_refseq_splice_variants  %}
+          {% if splice_variants %}
+            <br>
+            <i class="fa fa-angle-right"></i>
+            {{splice_variants|length}} alternative transcript{{splice_variants|length|pluralize}}:
+            <small>
+              {% for splice_variant in splice_variants %}
+                <a href="{% url  'portal.views.rna_view' upi=splice_variant.upi %}">{{ splice_variant.upi }}</a>
+                ({{ splice_variant.length|intcomma }} nts){% if not forloop.last %},{% else %}.{% endif %}
+              {% endfor %}
+            </small>
+          {% endif %}
+        {% endwith %}
       {% endif %} {# is_refseq_mirna #}
 
       {% with gene_id=xref.get_ncbi_gene_id %}

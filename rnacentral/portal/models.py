@@ -726,6 +726,24 @@ class Xref(models.Model):
             upis.append(mature_product.upi)
         return upis
 
+    def get_refseq_splice_variants(self):
+        """
+        RefSeq splice variants are identified by the same GeneID.
+        Example: URS000075D687.
+        """
+        splice_variants = []
+        gene_id = self.get_ncbi_gene_id()
+        if gene_id:
+            xrefs = Xref.objects.filter(db__display_name='RefSeq',
+                                        deleted='N',
+                                        accession__db_xref__regex=gene_id).\
+                                 exclude(accession=self.accession.accession).\
+                                 all()
+            for splice_variant in xrefs:
+                splice_variants.append(splice_variant.upi)
+            splice_variants.sort(key=lambda x: x.length)
+        return splice_variants
+
     def get_vega_splice_variants(self):
         splice_variants = []
         if not re.match('vega', self.db.display_name, re.IGNORECASE):

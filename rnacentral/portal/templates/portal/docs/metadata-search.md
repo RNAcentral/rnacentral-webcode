@@ -3,18 +3,6 @@
 
 ## Query syntax
 
-### Wildcards
-
-The wildcard character (`*`) can match any number of characters.
-
-**Wildcards are added automatically** to all search terms that are not part of field-specific
-search and that are not enclosed in double quotes (see below).
-
-*Example*: a search for `HOTAIR` (no double quotes) will find both HOTAIR and HOTAIRM1 genes
-and a search for `"HOTAIR"` (with double quotes) will find only HOTAIR.
-
----
-
 ### Exact matching
 
 Use double quotes (`""`) to search for exact matches.
@@ -23,10 +11,22 @@ Use double quotes (`""`) to search for exact matches.
 
 ---
 
+### Wildcards
+
+The wildcard character (`*`) can match any number of characters.
+
+Wildcards are added automatically to all search terms that are not part of field-specific
+search and that are not enclosed in double quotes.
+
+*Example*: a search for `HOTAIR` (no double quotes) will find both HOTAIR and HOTAIRM1 genes
+and a search for `"HOTAIR"` (with double quotes) will find only HOTAIR.
+
+---
+
 ### Field-specific search
 
 Search can be restricted to specific fields using the `field_name:"field value"` syntax.
-Please note that `"field value"` must be enclosed in double quotes.
+Please note that `"field value"` **must be enclosed in double quotes**.
 
 * **expert database**
 
@@ -34,27 +34,9 @@ Please note that `"field value"` must be enclosed in double quotes.
 
 	*Examples*: `expert_db:"tmrna website"`, `expert_db:"mirbase"`
 
-* **gene**
+* **NCBI taxonomic identifier**
 
-	*Example*: `gene:"hotair"`
-
-* **organelle**
-
-	*Example*: `organelle:"mitochondrion"`
-
-* **RNA type**
-
-	To see the list of possible values, search for `RNA` and look at the "RNA types" facet.
-
-	*Example*: `rna_type:"pirna"`.
-
-* **description**
-
-	*Example*: `description:"16S"`
-
-* **length**
-
-	*Example*: `length:"1500"`
+	*Example*: `TAXONOMY:"9606"` where [9606](http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606) is the NCBI taxonomy id for Homo sapiens.
 
 * **scientific species name**
 
@@ -64,9 +46,27 @@ Please note that `"field value"` must be enclosed in double quotes.
 
 	*Example*: `common_name:"mouse"`
 
-* **NCBI taxonomic identifier**
+* **RNA type**
 
-	*Example*: `TAXONOMY:"9606"` where [9606](http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606) is the NCBI taxonomy id for Homo sapiens.
+	To see the list of possible values, search for `RNA` and look at the "RNA types" facet.
+
+	*Example*: `rna_type:"pirna"`.
+
+* **gene**
+
+	*Example*: `gene:"hotair"`
+
+* **organelle**
+
+	*Example*: `organelle:"mitochondrion"`
+
+* **description**
+
+	*Example*: `description:"16S"`
+
+* **length**
+
+	*Example*: `length:"1500"`
 
 ---
 
@@ -104,3 +104,10 @@ Use parentheses to group and nest logical terms.
 * Use **full species names**.
 
     *Example*: use `Escherichia coli` and not `E. coli` as your search terms.
+
+---
+
+## About RNAcentral search
+
+RNAcentral is powered by the [EBI search](http://www.ebi.ac.uk/ebisearch/),
+which provides publicly available REST and SOAP interfaces for querying the data.
