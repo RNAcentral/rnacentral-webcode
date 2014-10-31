@@ -165,6 +165,12 @@ class SequencePage(BasePage):
         return True
 
 
+class TaxidFilteringSequencePage(SequencePage):
+    """
+    Class for testing page customization based on taxid.
+    """
+
+
 class VegaSequencePage(SequencePage):
     """Sequence page with VEGA xrefs."""
 
@@ -541,6 +547,15 @@ class RNAcentralTest(unittest.TestCase):
         page = GenoverseTestPage(self.browser, 'URS00000B15DA')
         page.navigate()
         self.assertTrue(page.genoverse_ok())
+
+    def test_taxid_filtering_off(self):
+        pass
+
+    def test_taxid_filtering_on(self):
+        pass
+
+    def test_taxid_filtering_spurious_taxid(self):
+        pass
 
     def _get_expert_db_example_ids(self, expert_db_id):
         """Retrieve example RNAcentral ids from the homepage"""
