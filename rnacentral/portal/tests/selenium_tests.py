@@ -167,8 +167,37 @@ class SequencePage(BasePage):
 
 class TaxidFilteringSequencePage(SequencePage):
     """
-    Class for testing page customization based on taxid.
+    Class for testing sequence page customization based on taxid.
     """
+
+    def get_info_text(self):
+        """
+        """
+        info_box = self.browser.find_element_by_class_name('well')
+        return info_box.text
+
+    def get_page_subtitle(self):
+        """
+        Page subtitle is either the name of the species or the number of species.
+        """
+        subtitle = self.browser.find_element_by_css_selector('h1 small')
+        return subtitle.text
+
+    def get_warning_info_text(self):
+        """
+        When a taxid from the url doesn't match any annotations, a warning should be displayed.
+        """
+        warning = self.browser.find_element_by_class_name('alert-danger')
+        return warning.text
+
+    def get_species_from_xref_table(self):
+        """
+        When taxid filtering is enabled, the xref table should have annotations
+        only from one species.
+        """
+        tds = self.browser.find_elements_by_css_selector('#xrefs-table td')
+        species = [x.text for x in tds[2::3]] #3, 6, 9 etc tds
+        return set(species)
 
 
 class VegaSequencePage(SequencePage):
@@ -549,13 +578,25 @@ class RNAcentralTest(unittest.TestCase):
         self.assertTrue(page.genoverse_ok())
 
     def test_taxid_filtering_off(self):
-        pass
+        page = TaxidFilteringSequencePage(self.browser, 'URS000047C79B')
+        page.navigate()
+        self.assertTrue(re.match('\d+ species', page.get_page_subtitle()))
+        self.assertIn('This unique sequence was observed in multiple species', page.get_info_text())
 
     def test_taxid_filtering_on(self):
-        pass
+        taxid = {'species': 'Homo sapiens', 'ncbi_id': '9606'}
+        page = TaxidFilteringSequencePage(self.browser, 'URS000047C79B' + '/' + taxid['ncbi_id'])
+        page.navigate()
+        species = page.get_species_from_xref_table()
+        self.assertEqual(len(species), 1)
+        self.assertEqual(species.pop(), taxid['species'])
+        self.assertEqual(page.get_page_subtitle(), taxid['species'])
+        self.assertIn('Showing annotations from ' + taxid['species'], page.get_info_text())
 
     def test_taxid_filtering_spurious_taxid(self):
-        pass
+        page = TaxidFilteringSequencePage(self.browser, 'URS000047C79B' + '/' + '0'*10)
+        page.navigate()
+        self.assertIn('Please check the taxid in the URL', page.get_warning_info_text())
 
     def _get_expert_db_example_ids(self, expert_db_id):
         """Retrieve example RNAcentral ids from the homepage"""
