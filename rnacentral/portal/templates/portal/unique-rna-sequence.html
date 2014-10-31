@@ -33,7 +33,7 @@ limitations under the License.
   {% if context.single_species %}
     <small><em>{{ context.single_species }}</em></small>
   {% else %}
-    <small>{{ rna.count_distinct_organisms|intcomma }}</strong> species</small>
+    <small>{{ rna.count_distinct_organisms|intcomma }} species</small>
   {% endif %}
 
   <small class="pull-right hidden-xs">

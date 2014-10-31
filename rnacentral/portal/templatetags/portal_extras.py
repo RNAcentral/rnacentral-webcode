@@ -19,16 +19,16 @@ register = template.Library()
 
 @register.assignment_tag
 def get_expert_databases_columns():
-    """
-    Return expert databases grouped and order for the website footer.
-    """
-    dbs = sorted(expert_dbs, key=lambda x: x['name'].lower())
-    return [
-                [dbs[x] for x in [1,0,2,3,4,5,6]],
-                dbs[7:13],
-                dbs[13:19],
-                dbs[19:]
-            ]
+	"""
+	Return expert databases grouped and order for the website footer.
+	"""
+	dbs = sorted(expert_dbs, key=lambda x: x['name'].lower())
+	return [
+				[dbs[x] for x in [1,0,2,3,4,5,6,7]],
+				dbs[8:16],
+				dbs[16:23],
+				dbs[23:]
+			]
 
 @register.assignment_tag
 def get_expert_databases_list():
