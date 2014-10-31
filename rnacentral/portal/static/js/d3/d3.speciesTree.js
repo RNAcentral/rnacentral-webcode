@@ -180,7 +180,7 @@ d3SpeciesTree = function(data, upi, selector){
       });
     } else {
       if (depth[level]) {
-        if (n.name.length > depth[level]) {
+        if (n.name.length > depth[level].length) {
           depth[level] = n.name;
         }
       } else {
