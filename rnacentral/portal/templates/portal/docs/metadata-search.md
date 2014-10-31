@@ -104,3 +104,10 @@ Use parentheses to group and nest logical terms.
 * Use **full species names**.
 
     *Example*: use `Escherichia coli` and not `E. coli` as your search terms.
+
+---
+
+## About RNAcentral search
+
+RNAcentral is powered by the [EBI search](http://www.ebi.ac.uk/ebisearch/),
+which provides publicly available REST and SOAP interfaces for querying the data.
