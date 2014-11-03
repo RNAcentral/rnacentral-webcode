@@ -296,7 +296,6 @@ class Rna(models.Model):
         if taxid:
             databases = databases.filter(taxid=taxid)
         databases = list(databases.values_list('db__display_name', flat=True).distinct())
-        print databases
         if 'Rfam' in databases:
             if self.xrefs.filter(db__display_name='Rfam',
                                  accession__note__iregex=r'alignment:seed').exists():
