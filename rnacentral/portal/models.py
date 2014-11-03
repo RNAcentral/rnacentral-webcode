@@ -144,7 +144,7 @@ class Rna(models.Model):
             method_id = 4
 
         upis = self.get_mcl_upis(method_id)
-        return Rna.objects.filter(upi__in=upis).iterator()
+        return Rna.objects.filter(upi__in=upis).all()
 
     def get_mcl_upis(self, mcl_type):
         """
