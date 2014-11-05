@@ -706,7 +706,7 @@ class Xref(models.Model):
         if gene_id:
             xrefs = Xref.objects.filter(db__display_name='RefSeq',
                                         deleted='N',
-                                        accession__db_xref__regex=gene_id).\
+                                        accession__db_xref__iregex='GeneId:'+gene_id).\
                                  exclude(accession=self.accession.accession).\
                                  all()
             for splice_variant in xrefs:
