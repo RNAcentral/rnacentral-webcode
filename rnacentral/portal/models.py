@@ -22,6 +22,16 @@ import re
 # to make text fields searchable, add character set functional indexes in Oracle
 # CREATE INDEX index_name ON table_name(SYS_OP_C2C(column_name));
 
+class EditDistance(models.Model):
+    id = models.AutoField(primary_key=True)
+    query = models.CharField(max_length=13, db_index=True)
+    target = models.CharField(max_length=13, db_index=True)
+    distance = models.IntegerField()
+
+    class Meta:
+        db_table = 'rnc_edit_distance'
+
+
 class RnaPrecomputedData(models.Model):
     id = models.AutoField(primary_key=True)
     upi = models.OneToOneField('Rna', db_column='upi', to_field='upi', related_name='precomputed', unique=True, db_index=True)
