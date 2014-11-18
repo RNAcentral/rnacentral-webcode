@@ -11,6 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import re
 from xml.sax import saxutils
 from django.template.defaultfilters import pluralize
 from portal.management.commands.common_exporters.oracle_connection \
@@ -89,6 +90,10 @@ class RnaXmlExporter(OracleConnection):
             self.data[field] = set()
         # additional data requiring custom treatment
         self.data['rna_type'] = set()
+        self.data['authors'] = set()
+        self.data['journal'] = set()
+        self.data['insdc_submission'] = set()
+        self.data['paper_title'] = set()
 
     def reset(self):
         """
@@ -220,6 +225,16 @@ class RnaXmlExporter(OracleConnection):
             text.append('<ref dbkey="{0}" dbname="ncbi_taxonomy_id" />'.format(taxid))
         return '\n'.join(text)
 
+    def get_author_fields(self):
+        """
+        Store authors in separate tags to enable more precise searching.
+        """
+        authors = set()
+        for author_list in self.data['authors']:
+            for author in author_list.split(', '):
+                authors.add(author)
+        return '\n'.join([self.wrap_in_field_tag('author', x) for x in authors])
+
     #####################
     # Output formatting #
     #####################
@@ -254,6 +269,10 @@ class RnaXmlExporter(OracleConnection):
                 {product}
                 {has_genomic_coordinates}
                 {md5}
+                {authors}
+                {journal}
+                {insdc_submission}
+                {paper_title}
             </additional_fields>
         </entry>""".format(upi=self.data['upi'],
                            md5=self.wrap_in_field_tag('md5', self.data['md5']),
@@ -272,6 +291,10 @@ class RnaXmlExporter(OracleConnection):
                            gene_synonym=self.get_additional_field('gene_synonym'),
                            rna_type=self.get_additional_field('rna_type'),
                            product=self.get_additional_field('product'),
+                           authors=self.get_author_fields(),
+                           journal=self.get_additional_field('journal'),
+                           insdc_submission = self.get_additional_field('insdc_submission'),
+                           paper_title=self.get_additional_field('paper_title'),
                            has_genomic_coordinates=self.get_additional_field('has_genomic_coordinates'))
 
     ##################
@@ -330,6 +353,36 @@ class RnaXmlExporter(OracleConnection):
                 rna_type = result['feature_name']
             self.data['rna_type'].add(rna_type.replace('_', ' '))
 
+        def store_literature_references(rna):
+            """
+            Store literature reference data.
+            """
+
+            def process_location(location):
+                """
+                Store the location field either as journal or INSDC submission.
+                """
+                if re.match('^Submitted', location):
+                    location = re.sub('Submitted \(\d{2}\-\w{3}\-\d{4}\) to the INSDC\. ?', '', location)
+                    if location:
+                        self.data['insdc_submission'].add(location)
+                else:
+                    if location:
+                        self.data['journal'].add(location)
+
+            for xref in rna.xrefs.iterator():
+                for ref in xref.accession.refs.all():
+                    if ref.data.authors:
+                        self.data['authors'].add(ref.data.authors)
+                    if ref.data.title:
+                        self.data['paper_title'].add(ref.data.title)
+                    if ref.data.pubmed:
+                        self.data['xrefs'].add(('PUBMED', ref.data.pubmed))
+                    if ref.data.doi:
+                        self.data['xrefs'].add(('DOI', ref.data.doi))
+                    if ref.data.location:
+                        process_location(ref.data.location)
+
         self.reset()
         self.data['upi'] = rna.upi
         self.data['md5'] = rna.md5
@@ -342,4 +395,5 @@ class RnaXmlExporter(OracleConnection):
             store_xrefs(result)
             store_rna_type(result)
             self.data['length'] = result['length']
+        store_literature_references(rna)
         return self.format_xml_entry()
