@@ -30,6 +30,7 @@ class RnaXmlExporter(OracleConnection):
         Connect to the database, prepare the query and set up all variables.
         """
         super(RnaXmlExporter, self).__init__()
+
         def prepare_sql_statement():
             """
             The SQL query retrieves the data about a single sequence
@@ -59,8 +60,9 @@ class RnaXmlExporter(OracleConnection):
             self.cursor.prepare(sql)
 
         self.data = dict()
+
         # fields with redundant values; for example, a single sequence
-        # can be associated with multiple, potentially repeating, taxids.
+        # can be associated with multiple taxids.
         # these strings must match the SQL query return values
         # and will become keys in self.data
         self.redundant_fields = ['taxid', 'species', 'expert_db', 'organelle',
@@ -181,6 +183,7 @@ class RnaXmlExporter(OracleConnection):
         """
         Convenience method for finding the number of distinct taxids, expert_dbs
         and other arrays from self.data.
+        Example:
         self.count('taxid')
         """
         if source in self.data:
@@ -202,8 +205,7 @@ class RnaXmlExporter(OracleConnection):
     def get_cross_references(self):
         """
         Wrap xrefs and taxids in <ref dbname="" dbkey=""/> tags.
-        Taxids are stored in <cross-references> section similar to how
-        it is done in EnsemblGenomes.
+        Taxids are stored as cross-references.
         """
         text = []
         for xref in self.data['xrefs']:
@@ -263,6 +265,10 @@ class RnaXmlExporter(OracleConnection):
                            rna_type=self.get_additional_field('rna_type'),
                            product=self.get_additional_field('product'),
                            has_genomic_coordinates=self.get_additional_field('has_genomic_coordinates'))
+
+    ##################
+    # Public methods #
+    ##################
 
     def get_xml_entry(self, rna):
         """
