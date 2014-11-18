@@ -28,7 +28,7 @@ class Command(BaseCommand):
     python manage.py xml_export <options>
 
     Example:
-    python manage.py xml_export --destination /full/path/to/output/location --minimum=0 --maximum=100
+    python manage.py xml_export --destination /full/path/to/output/location --min=0 --max=100
 
     Help:
     python manage.py xml_export -h
@@ -44,11 +44,11 @@ class Command(BaseCommand):
             dest='destination',
             help='[Required] Full path to the output directory'),
 
-        make_option('--minimum',
+        make_option('--min',
             dest='min',
             help='[Required] Minimum RNA id to output'),
 
-        make_option('--maximum',
+        make_option('--max',
             dest='max',
             type='int',
             help='[Required] Maximum RNA id to output'),
@@ -102,9 +102,9 @@ class Command(BaseCommand):
                 if not self.options['destination']:
                     raise CommandError('Please specify --destination')
                 if not self.options['min']:
-                    raise CommandError('Please specify --minimum')
+                    raise CommandError('Please specify --min')
                 if not self.options['max']:
-                    raise CommandError('Please specify --maximum')
+                    raise CommandError('Please specify --max')
                 if not os.path.exists(self.options['destination']):
                     os.makedirs(self.options['destination'])
 

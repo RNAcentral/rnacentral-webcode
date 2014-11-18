@@ -59,11 +59,11 @@ class Command(BaseCommand):
         for i in xrange(step,total,step):
             start = stop
             stop = min(total, i)
-            cmd = "bsub python manage.py xml_export --minimum %i --maximum %i -d %s" % (start, stop, options['destination'])
+            cmd = "bsub python manage.py xml_export --min %i --max %i -d %s" % (start, stop, options['destination'])
             print cmd
 
         if stop < total:
             start = stop
             stop = total
-            cmd = "bsub python manage.py xml_export --minimum %i --maximum %i -d %s" % (start, stop, options['destination'])
+            cmd = "bsub python manage.py xml_export --min %i --max %i -d %s" % (start, stop, options['destination'])
             print cmd
