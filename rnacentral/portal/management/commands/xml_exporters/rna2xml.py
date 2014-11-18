@@ -83,6 +83,7 @@ class RnaXmlExporter(OracleConnection):
             'upi': None,
             'length': 0,
             'xrefs': set(),
+            'md5': None,
         }
         for field in self.redundant_fields:
             self.data[field] = set()
@@ -191,6 +192,12 @@ class RnaXmlExporter(OracleConnection):
         else:
             return None
 
+    def wrap_in_field_tag(self, name, value):
+        """
+        A method for creating field tags.
+        """
+        return '<field name="{0}">{1}</field>'.format(name, value)
+
     def get_additional_field(self, field):
         """
         Wrap additional fields in <field name=""></field> tags.
@@ -198,8 +205,7 @@ class RnaXmlExporter(OracleConnection):
         text = []
         for value in self.data[field]:
             if value: # organelle can be empty e.g.
-                text.append('<field name="{0}">{1}</field>'.format(field,
-                    value))
+                text.append(self.wrap_in_field_tag(field, value))
         return '\n'.join(text)
 
     def get_cross_references(self):
@@ -247,8 +253,10 @@ class RnaXmlExporter(OracleConnection):
                 {rna_type}
                 {product}
                 {has_genomic_coordinates}
+                {md5}
             </additional_fields>
         </entry>""".format(upi=self.data['upi'],
+                           md5=self.wrap_in_field_tag('md5', self.data['md5']),
                            description=self.get_description(),
                            first_seen=self.first_seen(),
                            last_seen=self.last_seen(),
@@ -324,6 +332,7 @@ class RnaXmlExporter(OracleConnection):
 
         self.reset()
         self.data['upi'] = rna.upi
+        self.data['md5'] = rna.md5
         self.data['has_genomic_coordinates'] = (str(rna.has_genomic_coordinates()),)
         self.cursor.execute(None, {'upi': rna.upi})
 
