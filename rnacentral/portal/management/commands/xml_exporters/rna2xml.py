@@ -86,8 +86,11 @@ class RnaXmlExporter(OracleConnection):
             'xrefs': set(),
             'md5': None,
         }
+
+        # create sets for all redundant fields
         for field in self.redundant_fields:
             self.data[field] = set()
+
         # additional data requiring custom treatment
         self.data['rna_type'] = set()
         self.data['authors'] = set()
