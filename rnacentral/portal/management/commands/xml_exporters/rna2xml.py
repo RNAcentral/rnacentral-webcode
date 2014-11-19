@@ -259,8 +259,8 @@ class RnaXmlExporter(OracleConnection):
                 {cross_references}
             </cross_references>
             <additional_fields>
-                <field name="active">{is_active}</field>
-                <field name="length">{length}</field>
+                {is_active}
+                {length}
                 {species}
                 {organelles}
                 {expert_dbs}
@@ -286,8 +286,8 @@ class RnaXmlExporter(OracleConnection):
                    first_seen=self.first_seen(),
                    last_seen=self.last_seen(),
                    cross_references=self.get_cross_references(),
-                   is_active=self.is_active(),
-                   length=self.data['length'],
+                   is_active=self.wrap_in_field_tag('active', self.is_active()),
+                   length=self.wrap_in_field_tag('length', self.data['length']),
                    species=self.get_additional_field('species'),
                    organelles=self.get_additional_field('organelle'),
                    expert_dbs=self.get_additional_field('expert_db'),
