@@ -13,7 +13,6 @@ limitations under the License.
 
 import re
 from xml.sax import saxutils
-from django.template.defaultfilters import pluralize
 from portal.management.commands.common_exporters.oracle_connection \
     import OracleConnection
 
