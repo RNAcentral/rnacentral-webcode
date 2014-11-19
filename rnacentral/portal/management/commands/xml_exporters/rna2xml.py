@@ -386,13 +386,13 @@ class RnaXmlExporter(OracleConnection):
                     if ref.data.authors:
                         self.data['authors'].add(ref.data.authors)
                     if ref.data.title:
-                        self.data['pub_title'].add(ref.data.title)
+                        self.data['pub_title'].add(saxutils.escape(ref.data.title))
                     if ref.data.pubmed:
                         self.data['xrefs'].add(('PUBMED', ref.data.pubmed))
                     if ref.data.doi:
                         self.data['xrefs'].add(('DOI', ref.data.doi))
                     if ref.data.location:
-                        process_location(ref.data.location)
+                        process_location(saxutils.escape(ref.data.location))
 
         def store_popular_species():
             """
