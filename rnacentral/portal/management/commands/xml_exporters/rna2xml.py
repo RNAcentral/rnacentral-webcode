@@ -87,6 +87,7 @@ class RnaXmlExporter(OracleConnection):
         self.data = {
             'upi': None,
             'md5': None,
+            'boost': None,
             'length': 0,
         }
 
@@ -278,6 +279,7 @@ class RnaXmlExporter(OracleConnection):
                 {pub_title}
                 {pub_id}
                 {popular_species}
+                {boost}
             </additional_fields>
         </entry>
         """.format(upi=self.data['upi'],
@@ -303,6 +305,7 @@ class RnaXmlExporter(OracleConnection):
                    pub_title=self.get_additional_field('pub_title'),
                    pub_id=self.get_additional_field('pub_id'),
                    popular_species=self.get_additional_field('popular_species'),
+                   boost=self.wrap_in_field_tag('boost', self.data['boost']),
                    has_genomic_coordinates=self.get_additional_field('has_genomic_coordinates'))
         text = re.sub('\n\s+\n', '\n', text) # delete empty lines (if gene_synonym is empty e.g. )
         return re.sub('\n +', '\n', text) # delete whitespace at the beginning of lines
@@ -410,6 +413,15 @@ class RnaXmlExporter(OracleConnection):
             ])
             self.data['popular_species'] = self.data['taxid'] & popular_species # intersection
 
+        def get_boost_value():
+            """
+            Determine if the entry should be boosted in search results or not.
+            """
+            if self.is_active() == 'Active' and 9606 in self.data['taxid']:
+                return 'True'
+            else:
+                return 'False'
+
         self.reset()
         self.data['upi'] = rna.upi
         self.data['md5'] = rna.md5
@@ -422,6 +434,9 @@ class RnaXmlExporter(OracleConnection):
             store_xrefs(result)
             store_rna_type(result)
             self.data['length'] = result['length']
+
         store_literature_references(rna)
         store_popular_species()
+        self.data['boost'] = get_boost_value()
+
         return self.format_xml_entry()
