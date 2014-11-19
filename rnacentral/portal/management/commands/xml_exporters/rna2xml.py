@@ -98,6 +98,7 @@ class RnaXmlExporter(OracleConnection):
         self.data['insdc_submission'] = set()
         self.data['pub_title'] = set()
         self.data['pub_id'] = set()
+        self.data['popular_species'] = set()
 
     def reset(self):
         """
@@ -278,6 +279,7 @@ class RnaXmlExporter(OracleConnection):
                 {insdc_submission}
                 {pub_title}
                 {pub_id}
+                {popular_species}
             </additional_fields>
         </entry>
         """.format(upi=self.data['upi'],
@@ -302,6 +304,7 @@ class RnaXmlExporter(OracleConnection):
                    insdc_submission = self.get_additional_field('insdc_submission'),
                    pub_title=self.get_additional_field('pub_title'),
                    pub_id=self.get_additional_field('pub_id'),
+                   popular_species=self.get_additional_field('popular_species'),
                    has_genomic_coordinates=self.get_additional_field('has_genomic_coordinates'))
         text = re.sub('\n\s+\n', '\n', text) # delete empty lines (if gene_synonym is empty e.g. )
         return re.sub('\n +', '\n', text) # delete whitespace at the beginning of lines
@@ -393,6 +396,22 @@ class RnaXmlExporter(OracleConnection):
                     if ref.data.location:
                         process_location(ref.data.location)
 
+        def store_popular_species():
+            """
+            Get a subset of all species that are thought to be most popular.
+            The data are used to create the Popular species facet.
+            """
+            popular_species = set([
+                9606,   # human
+                10090,  # mouse
+                3702,   # Arabidopsis thaliana
+                6239,   # Caenorhabditis elegans
+                7227,   # Drosophila melanogaster
+                559292, # Saccharomyces cerevisiae S288c
+                4896,   # Schizosaccharomyces pombe
+            ])
+            self.data['popular_species'] = self.data['taxid'] & popular_species # intersection
+
         self.reset()
         self.data['upi'] = rna.upi
         self.data['md5'] = rna.md5
@@ -406,4 +425,5 @@ class RnaXmlExporter(OracleConnection):
             store_rna_type(result)
             self.data['length'] = result['length']
         store_literature_references(rna)
+        store_popular_species()
         return self.format_xml_entry()
