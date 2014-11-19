@@ -96,7 +96,8 @@ class RnaXmlExporter(OracleConnection):
         self.data['authors'] = set()
         self.data['journal'] = set()
         self.data['insdc_submission'] = set()
-        self.data['paper_title'] = set()
+        self.data['pub_title'] = set()
+        self.data['pub_id'] = set()
 
     def reset(self):
         """
@@ -275,7 +276,8 @@ class RnaXmlExporter(OracleConnection):
                 {authors}
                 {journal}
                 {insdc_submission}
-                {paper_title}
+                {pub_title}
+                {pub_id}
             </additional_fields>
         </entry>
         """.format(upi=self.data['upi'],
@@ -298,7 +300,8 @@ class RnaXmlExporter(OracleConnection):
                    authors=self.get_author_fields(),
                    journal=self.get_additional_field('journal'),
                    insdc_submission = self.get_additional_field('insdc_submission'),
-                   paper_title=self.get_additional_field('paper_title'),
+                   pub_title=self.get_additional_field('pub_title'),
+                   pub_id=self.get_additional_field('pub_id'),
                    has_genomic_coordinates=self.get_additional_field('has_genomic_coordinates'))
         text = re.sub('\n\s+\n', '\n', text) # delete empty lines (if gene_synonym is empty e.g. )
         return re.sub('\n +', '\n', text) # delete whitespace at the beginning of lines
@@ -378,10 +381,11 @@ class RnaXmlExporter(OracleConnection):
 
             for xref in rna.xrefs.iterator():
                 for ref in xref.accession.refs.all():
+                    self.data['pub_id'].add(ref.data.id)
                     if ref.data.authors:
                         self.data['authors'].add(ref.data.authors)
                     if ref.data.title:
-                        self.data['paper_title'].add(ref.data.title)
+                        self.data['pub_title'].add(ref.data.title)
                     if ref.data.pubmed:
                         self.data['xrefs'].add(('PUBMED', ref.data.pubmed))
                     if ref.data.doi:
