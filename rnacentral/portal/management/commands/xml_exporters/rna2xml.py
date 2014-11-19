@@ -247,7 +247,7 @@ class RnaXmlExporter(OracleConnection):
         Format self.data as an xml entry.
         Using Django templates is slower than constructing the entry manually.
         """
-        return """
+        text = """
         <entry id="{upi}">
             <name>Unique RNA Sequence {upi}</name>
             <description>{description}</description>
@@ -277,28 +277,31 @@ class RnaXmlExporter(OracleConnection):
                 {insdc_submission}
                 {paper_title}
             </additional_fields>
-        </entry>""".format(upi=self.data['upi'],
-                           md5=self.wrap_in_field_tag('md5', self.data['md5']),
-                           description=self.get_description(),
-                           first_seen=self.first_seen(),
-                           last_seen=self.last_seen(),
-                           cross_references=self.get_cross_references(),
-                           is_active=self.is_active(),
-                           length=self.data['length'],
-                           species=self.get_additional_field('species'),
-                           organelles=self.get_additional_field('organelle'),
-                           expert_dbs=self.get_additional_field('expert_db'),
-                           common_name=self.get_additional_field('common_name'),
-                           function=self.get_additional_field('function'),
-                           gene=self.get_additional_field('gene'),
-                           gene_synonym=self.get_additional_field('gene_synonym'),
-                           rna_type=self.get_additional_field('rna_type'),
-                           product=self.get_additional_field('product'),
-                           authors=self.get_author_fields(),
-                           journal=self.get_additional_field('journal'),
-                           insdc_submission = self.get_additional_field('insdc_submission'),
-                           paper_title=self.get_additional_field('paper_title'),
-                           has_genomic_coordinates=self.get_additional_field('has_genomic_coordinates'))
+        </entry>
+        """.format(upi=self.data['upi'],
+                   md5=self.wrap_in_field_tag('md5', self.data['md5']),
+                   description=self.get_description(),
+                   first_seen=self.first_seen(),
+                   last_seen=self.last_seen(),
+                   cross_references=self.get_cross_references(),
+                   is_active=self.is_active(),
+                   length=self.data['length'],
+                   species=self.get_additional_field('species'),
+                   organelles=self.get_additional_field('organelle'),
+                   expert_dbs=self.get_additional_field('expert_db'),
+                   common_name=self.get_additional_field('common_name'),
+                   function=self.get_additional_field('function'),
+                   gene=self.get_additional_field('gene'),
+                   gene_synonym=self.get_additional_field('gene_synonym'),
+                   rna_type=self.get_additional_field('rna_type'),
+                   product=self.get_additional_field('product'),
+                   authors=self.get_author_fields(),
+                   journal=self.get_additional_field('journal'),
+                   insdc_submission = self.get_additional_field('insdc_submission'),
+                   paper_title=self.get_additional_field('paper_title'),
+                   has_genomic_coordinates=self.get_additional_field('has_genomic_coordinates'))
+        text = re.sub('\n\s+\n', '\n', text) # delete empty lines (if gene_synonym is empty e.g. )
+        return re.sub('\n +', '\n', text) # delete whitespace at the beginning of lines
 
     ##################
     # Public methods #
