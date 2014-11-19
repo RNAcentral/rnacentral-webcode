@@ -69,7 +69,11 @@ class RnaXmlExporter(OracleConnection):
         self.redundant_fields = ['taxid', 'species', 'expert_db', 'organelle',
                                  'created', 'last', 'deleted', 'description',
                                  'function', 'gene', 'gene_synonym',
-                                 'product', 'common_name', 'parent_accession']
+                                 'product', 'common_name', 'parent_accession',]
+        # other data fields for which the sets should be (re-)created
+        self.data_fields = ['rna_type', 'authors', 'journal', 'popular_species',
+                            'pub_title', 'pub_id', 'insdc_submission', 'xrefs',]
+
         self.initialize()
         self.get_connection()
         self.get_cursor()
@@ -82,23 +86,17 @@ class RnaXmlExporter(OracleConnection):
         """
         self.data = {
             'upi': None,
-            'length': 0,
-            'xrefs': set(),
             'md5': None,
+            'length': 0,
         }
 
-        # create sets for all redundant fields
+        # (re-)create sets for all redundant fields
         for field in self.redundant_fields:
             self.data[field] = set()
 
-        # additional data requiring custom treatment
-        self.data['rna_type'] = set()
-        self.data['authors'] = set()
-        self.data['journal'] = set()
-        self.data['insdc_submission'] = set()
-        self.data['pub_title'] = set()
-        self.data['pub_id'] = set()
-        self.data['popular_species'] = set()
+        # sets for additional data requiring custom treatment
+        for field in self.data_fields:
+            self.data[field] = set()
 
     def reset(self):
         """
