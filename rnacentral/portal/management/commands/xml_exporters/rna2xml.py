@@ -223,19 +223,19 @@ class RnaXmlExporter(OracleConnection):
 
         num_descriptions = count('description')
         if num_descriptions == 1:
-            description_line = self.data['description'].pop()
+            description_line = next(iter(self.data['description']))
             description_line = description_line[0].upper() + description_line[1:]
         else:
             if count('product') == 1:
-                rna_type = self.data['product'].pop()
+                rna_type = next(iter(self.data['product']))
             elif count('gene') == 1:
-                rna_type = self.data['gene'].pop()
+                rna_type = next(iter(self.data['gene']))
             else:
                 rna_type = '/'.join(self.data['rna_type'])
 
             distinct_species = count('species')
             if distinct_species == 1:
-                species = self.data['species'].pop()
+                species = next(iter(self.data['species']))
                 description_line = '{species} {rna_type}'.format(
                                     species=species, rna_type=rna_type)
             else:
