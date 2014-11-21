@@ -654,6 +654,10 @@ button.load-more {
   margin-bottom: 5px;
 }
 
+.hidden {
+  display: none;
+}
+
 /*------------------------------------------------------------------
 [5.8 Sequence search]
 */
