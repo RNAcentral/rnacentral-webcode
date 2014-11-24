@@ -31,10 +31,11 @@ class CitationSerializer(serializers.HyperlinkedModelSerializer):
     pubmed_id = serializers.CharField(source='data.pubmed')
     doi = serializers.CharField(source='data.doi')
     title = serializers.Field(source='data.get_title')
+    pub_id = serializers.Field(source='data.id')
 
     class Meta:
         model = Reference_map
-        fields = ('title', 'authors', 'publication', 'pubmed_id', 'doi')
+        fields = ('title', 'authors', 'publication', 'pubmed_id', 'doi', 'pub_id')
 
 
 class AccessionSerializer(serializers.HyperlinkedModelSerializer):
