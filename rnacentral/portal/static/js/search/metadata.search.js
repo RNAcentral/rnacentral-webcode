@@ -80,7 +80,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
     };
 
     var search_config = {
-        ebeye_base_url: 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral',
+        ebeye_base_url: 'http://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral',
         rnacentral_base_url: get_base_url(),
         fields: ['description', 'active', 'length'],
         facetfields: ['expert_db', 'rna_type', 'TAXONOMY', 'has_genomic_coordinates'], // will be displayed in this order
