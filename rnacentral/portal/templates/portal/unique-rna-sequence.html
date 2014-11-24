@@ -250,13 +250,19 @@ limitations under the License.
        {{authors}}
        <small>
         {{publication}}
-        {{#if pubmed_id}}
-          <div class="abstract-preview">
-            <button class="btn btn-xs btn-default abstract-btn abstract-control" data-pubmed-id="{{pubmed_id}}">Show abstract</button>
-            <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{pubmed_id}}" target="_blank" class="abstract-control">PubMed</a>
-            <div class="abstract-text"></div>
-          </div>
-        {{/if}}
+        <div class="abstract-preview">
+          {{#if pubmed_id}}
+              <button class="btn btn-xs btn-default abstract-btn abstract-control" data-pubmed-id="{{pubmed_id}}">Show abstract</button>
+              <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{pubmed_id}}" target="_blank" class="abstract-control">PubMed</a>
+              {{#if doi}}
+                <a href="http://dx.doi.org/{{doi}}" target="_blank" class="abstract-control">Full text</a>
+              {{/if}}
+              <div class="abstract-text"></div>
+          {{else}}
+            <br>
+          {{/if}}
+        </div>
+        <a class="abstract-control" href='/search?q=pub_id:"{{pub_id}}"' target="_blank"><i class="fa fa-search"></i> Find other sequences from this reference</a>
        </small>
       </blockquote>
     {{/each}}
