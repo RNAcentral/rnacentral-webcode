@@ -183,6 +183,8 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
                     // faceted search term, do nothing
                 } else if ( words[i].match(/\-/)) {
                     // do not add wildcards to words with hyphens
+                } else if ( words[i].match(/\//)) {
+                    // do not add wildcards to DOIs
                 } else if ( words[i].match(/^".+?"$/) ) {
                     // double quotes, do nothing
                 } else if ( words[i].match(/\*$/) ) {
