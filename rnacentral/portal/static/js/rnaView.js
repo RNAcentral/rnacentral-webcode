@@ -23,6 +23,7 @@ rnaSequenceView.prototype.initialize = function() {
 	activate_tooltips();
 	activate_literature_references();
 	activate_species_tree();
+  activate_abstract_buttons($('.abstract-btn'));
 	enable_show_species_tab_action();
 	enable_species_tree_scroll_action();
 
@@ -51,23 +52,12 @@ rnaSequenceView.prototype.initialize = function() {
               target.html(template(wrapper));
           };
 
-          activate_abstract_buttons = function() {
-              $this.siblings().find('.abstract-btn').EuropePMCAbstracts({
-                'target_class': '.abstract-text',
-                'pubmed_id_data_attribute': 'pubmed-id',
-                'msg': {
-                  'show_abstract': 'Show abstract',
-                  'hide_abstract': 'Hide abstract',
-                }
-              });
-          };
-
           if ( target.html().length > 0 ) {
               target.slideToggle();
           } else {
             $.get('/api/v1/accession/' + accession + '/citations', function(data){
                 insert_content(data);
-                activate_abstract_buttons();
+                activate_abstract_buttons($this.siblings().find('.abstract-btn'));
                 target.slideDown();
             });
           }
@@ -110,6 +100,17 @@ rnaSequenceView.prototype.initialize = function() {
       $("#d3-species-scroll-tree").click(function(){
         $('#d3-species-tree-tab').scrollLeft($('#d3-species-tree-tab svg').attr('width'));
       });
+    };
+
+    function activate_abstract_buttons(target) {
+        target.EuropePMCAbstracts({
+          'target_class': '.abstract-text',
+          'pubmed_id_data_attribute': 'pubmed-id',
+          'msg': {
+            'show_abstract': 'Show abstract',
+            'hide_abstract': 'Hide abstract',
+          }
+        });
     };
 
 };
