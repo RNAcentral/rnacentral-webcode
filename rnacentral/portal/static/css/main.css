@@ -362,6 +362,10 @@ h3.panel-title {
   margin: 0 0.5em;
 }
 
+.abstract-text {
+  display: none;
+}
+
 .small {
   font-size: 85%;
 }
@@ -463,6 +467,10 @@ table.table thead .sorting_desc_disabled {
 
 .margin-left-5px {
   margin-left: 5px;
+}
+
+.margin-bottom-10px {
+  margin-bottom: 10px;
 }
 
 /*------------------------------------------------------------------
