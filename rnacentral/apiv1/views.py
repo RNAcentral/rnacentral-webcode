@@ -15,7 +15,7 @@ limitations under the License.
 Docstrings of the classes exposed in urlpatters support markdown.
 """
 
-from portal.models import Rna, Accession, Xref
+from portal.models import Rna, Accession, Xref, Reference
 from rest_framework import generics
 from rest_framework import renderers
 from rest_framework import status
@@ -24,7 +24,8 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.reverse import reverse
 from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, XrefSerializer, \
-                              RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer
+                              RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
+                              RawCitationSerializer
 import django_filters
 import re
 
@@ -549,3 +550,20 @@ class CitationView(generics.RetrieveAPIView):
         serializer = CitationSerializer(citations, context={'request': request})
         return Response(serializer.data)
 
+
+class RnaCitationsView(generics.ListAPIView):
+    """
+    API endpoint that allows the citations associated with
+    each Unique RNA Sequence to be viewed.
+
+    [API documentation](/api)
+    """
+    # the above docstring appears on the API website
+    permission_classes = (AllowAny,)
+    serializer_class = RawCitationSerializer
+
+    def get_queryset(self):
+        """
+        """
+        upi = self.kwargs['pk']
+        return list(Rna.objects.get(upi=upi).get_publications())
