@@ -880,6 +880,9 @@ class Reference(models.Model):
             title = title if title else 'No title available'
         return title
 
+    def get_authors(self):
+        return self.authors.split(', ')
+
     class Meta:
         db_table = 'rnc_references'
 

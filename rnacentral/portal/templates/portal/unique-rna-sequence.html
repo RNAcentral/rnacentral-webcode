@@ -52,6 +52,9 @@ limitations under the License.
         <li>
           <a href="" data-target="#species" data-toggle="tab">Taxonomy</a>
         </li>
+        <li>
+          <a href="" data-target="#publications" data-toggle="tab">Publications</a>
+        </li>
         <li class="disabled hidden-xs" data-toggle="tab">
           <a data-target="#2d" class="help" title="Coming soon">2D</a>
         </li>
@@ -217,6 +220,45 @@ limitations under the License.
                 Loading taxonomic tree...
               </div>
             </div>
+
+          </div>
+
+        </div>
+
+        <div class="tab-pane" id="publications">
+
+          <h2>Publications</h2>
+
+          <div class="row">
+
+          <ol>
+          {% for ref in rna.get_publications %}
+            <div class="col-md-8">
+            <li class="margin-bottom-10px">
+              <strong>{{ ref.get_title }}</strong>
+              <br>
+              <small>
+                {% if ref.authors %}
+                  {% for author in ref.get_authors %}
+                    <a href='/search?q=author:"{{ author }}"'>{{ author }}</a>{% if not forloop.last %},{% else %}.{% endif %}
+                  {% endfor %}
+                  <br>
+                {% endif %}
+                {% if ref.location %}
+                  <em>{{ ref.location }}</em>
+                {% endif %}
+                {% if ref.pubmed %}
+                  <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ ref.pubmed }}" class="margin-left-5px">Pubmed</a>
+                  <button class="btn btn-xs btn-default abstract-btn abstract-control" data-pubmed-id="{{ ref.pubmed }}">Show abstract</button>
+                  <div class="abstract-text"></div>
+                {% endif %}
+                <br>
+                <a href='/search?q=pub_id:"{{ ref.id }}"' class="margin-left-5px"><i class="fa fa-search"></i> Find other sequences from this reference</a>
+              </small>
+            </li>
+            </div>
+          {% endfor %}
+          </ol>
 
           </div>
 
