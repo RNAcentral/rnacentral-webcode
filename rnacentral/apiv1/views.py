@@ -316,7 +316,7 @@ class APIRoot(APIView):
 
     def get(self, request, format=format):
         return Response({
-            'rna': reverse('rna-list', request=request),
+            'rna': reverse('rna-sequences', request=request),
         })
 
 
@@ -410,7 +410,7 @@ class RnaMixin(object):
     """
     def get_serializer_class(self):
         """
-        Determine a serializer for RnaList and RnaDetail views.
+        Determine a serializer for RnaSequences and RnaDetail views.
         """
         if self.request.accepted_renderer.format == 'fasta':
             return RnaFastaSerializer
@@ -427,7 +427,7 @@ class RnaMixin(object):
         return RnaNestedSerializer
 
 
-class RnaList(RnaMixin, generics.ListAPIView):
+class RnaSequences(RnaMixin, generics.ListAPIView):
     """
     Unique RNAcentral Sequences
 
