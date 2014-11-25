@@ -24,6 +24,7 @@ rnaSequenceView.prototype.initialize = function() {
 	activate_tooltips();
 	activate_literature_references();
 	activate_species_tree();
+  activate_abstract_buttons($('.abstract-btn'));
 	enable_show_species_tab_action();
 
 	function load_xrefs() {
@@ -44,6 +45,16 @@ rnaSequenceView.prototype.initialize = function() {
           var accession = $this.data('accession');
           var target = $this.siblings('.literature-refs-content');
 
+          toggle_slider_icon = function() {
+              var up = '<i class="fa fa-caret-up"></i>';
+              var down = '<i class="fa fa-caret-down"></i>';
+              if ($this.html() === up) {
+                  $this.html(down);
+              } else {
+                  $this.html(up);
+              }
+          };
+
           insert_content = function(data) {
               var source = $("#handlebars-literature-reference-tmpl").html();
               var template = Handlebars.compile(source);
@@ -51,23 +62,13 @@ rnaSequenceView.prototype.initialize = function() {
               target.html(template(wrapper));
           };
 
-          activate_abstract_buttons = function() {
-              $this.siblings().find('.abstract-btn').EuropePMCAbstracts({
-                'target_class': '.abstract-text',
-                'pubmed_id_data_attribute': 'pubmed-id',
-                'msg': {
-                  'show_abstract': 'Show abstract',
-                  'hide_abstract': 'Hide abstract',
-                }
-              });
-          };
-
+          toggle_slider_icon();
           if ( target.html().length > 0 ) {
               target.slideToggle();
           } else {
             $.get('/api/v1/accession/' + accession + '/citations', function(data){
                 insert_content(data);
-                activate_abstract_buttons();
+                activate_abstract_buttons($this.siblings().find('.abstract-btn'));
                 target.slideDown();
             });
           }
@@ -103,6 +104,17 @@ rnaSequenceView.prototype.initialize = function() {
         $('#tabs a[data-target="#species"]').tab('show');
         return false;
       });
+    };
+
+    function activate_abstract_buttons(target) {
+        target.EuropePMCAbstracts({
+          'target_class': '.abstract-text',
+          'pubmed_id_data_attribute': 'pubmed-id',
+          'msg': {
+            'show_abstract': 'Show abstract',
+            'hide_abstract': 'Hide abstract',
+          }
+        });
     };
 
 };

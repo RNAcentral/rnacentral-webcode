@@ -57,6 +57,25 @@ class Rna(models.Model):
         else:
             return self.xrefs.filter(deleted='Y').select_related()
 
+    def get_publications(self):
+        """
+        Get all publications associated with a Unique RNA Sequence.
+        Use raw SQL query for better performance.
+        """
+        query = """
+        SELECT b.id, b.location, b.title, b.pmid as pubmed, b.doi
+        FROM
+            (SELECT DISTINCT t3.id
+            FROM xref t1, rnc_reference_map t2, RNC_REFERENCES t3
+            WHERE t1.ac = t2.accession AND
+                  t1.upi = %s AND
+                  t2.reference_id = t3.id) a
+        JOIN
+            rnc_references b
+        ON a.id = b.id
+        ORDER BY b.title"""
+        return Reference.objects.raw(query, [self.upi])
+
     def is_active(self):
         """
         A sequence is considered active if it has at least one active cross_reference.
@@ -890,6 +909,9 @@ class Reference(models.Model):
         else:
             title = title if title else 'No title available'
         return title
+
+    def get_authors(self):
+        return self.authors.split(', ')
 
     class Meta:
         db_table = 'rnc_references'

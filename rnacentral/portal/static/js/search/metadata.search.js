@@ -80,7 +80,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
     };
 
     var search_config = {
-        ebeye_base_url: 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral',
+        ebeye_base_url: 'http://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral',
         rnacentral_base_url: get_base_url(),
         fields: ['description', 'active', 'length'],
         facetfields: ['expert_db', 'rna_type', 'TAXONOMY', 'has_genomic_coordinates'], // will be displayed in this order
@@ -181,6 +181,10 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
                     words[i] = words[i].toUpperCase();
                 } else if ( words[i].match(/\:$/gi) ) {
                     // faceted search term, do nothing
+                } else if ( words[i].match(/\-/)) {
+                    // do not add wildcards to words with hyphens
+                } else if ( words[i].match(/\//)) {
+                    // do not add wildcards to DOIs
                 } else if ( words[i].match(/^".+?"$/) ) {
                     // double quotes, do nothing
                 } else if ( words[i].match(/\*$/) ) {
@@ -486,3 +490,14 @@ rnaMetasearch.controller('QueryCtrl', ['$scope', '$location', '$window', '$timeo
     })();
 
 }]);
+
+
+/**
+ * Create a keyboard shortcut for quickly accessing the search box.
+ */
+function keyboard_shortcuts(e) {
+    if (e.keyCode == 191) { // forward slash, "/"
+        $('#query-text').focus();
+    }
+}
+document.addEventListener('keyup', keyboard_shortcuts);

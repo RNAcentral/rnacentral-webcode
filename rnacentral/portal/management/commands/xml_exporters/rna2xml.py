@@ -11,8 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import re
 from xml.sax import saxutils
-from django.template.defaultfilters import pluralize
 from portal.management.commands.common_exporters.oracle_connection \
     import OracleConnection
 
@@ -30,6 +30,7 @@ class RnaXmlExporter(OracleConnection):
         Connect to the database, prepare the query and set up all variables.
         """
         super(RnaXmlExporter, self).__init__()
+
         def prepare_sql_statement():
             """
             The SQL query retrieves the data about a single sequence
@@ -59,43 +60,99 @@ class RnaXmlExporter(OracleConnection):
             self.cursor.prepare(sql)
 
         self.data = dict()
+
         # fields with redundant values; for example, a single sequence
-        # can be associated with multiple, potentially repeating, taxids.
+        # can be associated with multiple taxids.
         # these strings must match the SQL query return values
         # and will become keys in self.data
         self.redundant_fields = ['taxid', 'species', 'expert_db', 'organelle',
                                  'created', 'last', 'deleted', 'description',
                                  'function', 'gene', 'gene_synonym',
-                                 'product', 'common_name', 'parent_accession']
-        self.initialize()
+                                 'product', 'common_name', 'parent_accession',]
+        # other data fields for which the sets should be (re-)created
+        self.data_fields = ['rna_type', 'authors', 'journal', 'popular_species',
+                            'pub_title', 'pub_id', 'insdc_submission', 'xrefs',]
+
+        self.reset()
         self.get_connection()
         self.get_cursor()
         prepare_sql_statement()
 
-    def initialize(self):
+    def reset(self):
         """
         Initialize or reset self.data so that the same object can be reused
         for different sequences.
         """
         self.data = {
             'upi': None,
+            'md5': None,
+            'boost': None,
             'length': 0,
-            'xrefs': set(),
         }
-        for field in self.redundant_fields:
+
+        # (re-)create sets for all data fields
+        for field in self.redundant_fields + self.data_fields:
             self.data[field] = set()
-        # additional data requiring custom treatment
-        self.data['rna_type'] = set()
 
-    def reset(self):
+    def retrieve_data_from_database(self, upi):
         """
-        Convenience method for self.initialize().
+        Some data is retrieved directly from the database because
+        django ORM creates too much overhead.
         """
-        self.initialize()
 
-    ####################
-    # Accessor methods #
-    ####################
+        def store_redundant_fields():
+            """
+            Store redundant data in sets in order to get distinct values.
+            Escape '&', '<', and '>'.
+            """
+            escape_fields = ['species', 'description', 'product', 'common_name',
+                             'function', 'gene', 'gene_synonym']
+            for field in self.redundant_fields:
+                if result[field]:
+                    if field in escape_fields:
+                        result[field] = saxutils.escape(result[field])
+                    self.data[field].add(result[field])
+
+        def store_xrefs():
+            """
+            Store xrefs as (database, accession) tuples in self.data['xrefs'].
+            Do not store deleted xrefs so that they are not indexed.
+            """
+            if result['deleted'] == 'Y':
+                return
+            # expert_db should not contain spaces, EBeye requirement
+            result['expert_db'] = result['expert_db'].replace(' ','_').upper()
+            # an expert_db entry
+            if result['non_coding_id'] or result['expert_db'] in ['RFAM', 'REFSEQ', 'RDP']:
+                self.data['xrefs'].add((result['expert_db'],
+                                        result['external_id']))
+            else: # source ENA entry
+                # Non-coding entry
+                expert_db = 'NON-CODING' # EBeye requirement
+                self.data['xrefs'].add((expert_db, result['accession']))
+            # parent ENA entry
+            self.data['xrefs'].add(('ENA', result['parent_accession']))
+
+        def store_rna_type():
+            """
+            Store distinct RNA type annotations in a set.
+            If an entry is an 'ncRNA' feature, it will have a mandatory field
+            'ncrna_class' with useful description.
+            If an entry is any other RNA feature, use that feature_name
+            as rna_type.
+            """
+            if result['ncrna_class']:
+                rna_type = result['ncrna_class']
+            else:
+                rna_type = result['feature_name']
+            self.data['rna_type'].add(rna_type.replace('_', ' '))
+
+        self.cursor.execute(None, {'upi': upi})
+        for row in self.cursor:
+            result = self.row_to_dict(row)
+            store_redundant_fields()
+            store_xrefs()
+            store_rna_type()
 
     def is_active(self):
         """
@@ -151,23 +208,34 @@ class RnaXmlExporter(OracleConnection):
         has the following clearly redundant products:
         tRNA-Phe, transfer RNA-Phe, tRNA-Phe (GAA), tRNA-Phe-GAA etc
         """
-        num_descriptions = len(self.data['description'])
 
+        def count(source):
+            """
+            Convenience method for finding the number of distinct taxids, expert_dbs
+            and other arrays from self.data.
+            Example:
+            count('taxid')
+            """
+            if source in self.data:
+                return len(self.data[source])
+            else:
+                return None
+
+        num_descriptions = count('description')
         if num_descriptions == 1:
-            description_line = self.data['description'].pop()
+            description_line = next(iter(self.data['description']))
             description_line = description_line[0].upper() + description_line[1:]
         else:
-            distinct_species = self.count('species')
-
-            if len(self.data['product']) == 1:
-                rna_type = self.data['product'].pop()
-            elif len(self.data['gene']) == 1:
-                rna_type = self.data['gene'].pop()
+            if count('product') == 1:
+                rna_type = next(iter(self.data['product']))
+            elif count('gene') == 1:
+                rna_type = next(iter(self.data['gene']))
             else:
                 rna_type = '/'.join(self.data['rna_type'])
 
+            distinct_species = count('species')
             if distinct_species == 1:
-                species = self.data['species'].pop()
+                species = next(iter(self.data['species']))
                 description_line = '{species} {rna_type}'.format(
                                     species=species, rna_type=rna_type)
             else:
@@ -177,51 +245,123 @@ class RnaXmlExporter(OracleConnection):
                                     distinct_species=distinct_species)
         return description_line
 
-    def count(self, source):
+    def store_literature_references(self, rna):
         """
-        Convenience method for finding the number of distinct taxids, expert_dbs
-        and other arrays from self.data.
-        self.count('taxid')
+        Store literature reference data.
         """
-        if source in self.data:
-            return len(self.data[source])
+
+        def process_location(location):
+            """
+            Store the location field either as journal or INSDC submission.
+            """
+            if re.match('^Submitted', location):
+                location = re.sub('Submitted \(\d{2}\-\w{3}\-\d{4}\) to the INSDC\. ?', '', location)
+                if location:
+                    self.data['insdc_submission'].add(location)
+            else:
+                if location:
+                    self.data['journal'].add(location)
+
+        for xref in rna.xrefs.iterator():
+            for ref in xref.accession.refs.all():
+                self.data['pub_id'].add(ref.data.id)
+                if ref.data.authors:
+                    self.data['authors'].add(ref.data.authors)
+                if ref.data.title:
+                    self.data['pub_title'].add(saxutils.escape(ref.data.title))
+                if ref.data.pubmed:
+                    self.data['xrefs'].add(('PUBMED', ref.data.pubmed))
+                if ref.data.doi:
+                    self.data['xrefs'].add(('DOI', ref.data.doi))
+                if ref.data.location:
+                    process_location(saxutils.escape(ref.data.location))
+
+    def store_popular_species(self):
+        """
+        Get a subset of all species that are thought to be most popular.
+        The data are used to create the Popular species facet.
+        """
+        popular_species = set([
+            9606,   # human
+            10090,  # mouse
+            3702,   # Arabidopsis thaliana
+            6239,   # Caenorhabditis elegans
+            7227,   # Drosophila melanogaster
+            559292, # Saccharomyces cerevisiae S288c
+            4896,   # Schizosaccharomyces pombe
+        ])
+        self.data['popular_species'] = self.data['taxid'] & popular_species # intersection
+
+    def store_boost_value(self):
+        """
+        Determine if the entry should be boosted in search results or not.
+        """
+        if self.is_active() == 'Active' and 9606 in self.data['taxid']:
+            boost = 'True'
         else:
-            return None
+            boost = 'False'
+        self.data['boost'] = boost
 
-    def get_additional_field(self, field):
+    def store_rna_properties(self, rna):
         """
-        Wrap additional fields in <field name=""></field> tags.
         """
-        text = []
-        for value in self.data[field]:
-            if value: # organelle can be empty e.g.
-                text.append('<field name="{0}">{1}</field>'.format(field,
-                    value))
-        return '\n'.join(text)
-
-    def get_cross_references(self):
-        """
-        Wrap xrefs and taxids in <ref dbname="" dbkey=""/> tags.
-        Taxids are stored in <cross-references> section similar to how
-        it is done in EnsemblGenomes.
-        """
-        text = []
-        for xref in self.data['xrefs']:
-            text.append('<ref dbname="{0}" dbkey="{1}" />'.format(*xref))
-        for taxid in self.data['taxid']:
-            text.append('<ref dbkey="{0}" dbname="ncbi_taxonomy_id" />'.format(taxid))
-        return '\n'.join(text)
-
-    #####################
-    # Output formatting #
-    #####################
+        self.data['upi'] = rna.upi
+        self.data['md5'] = rna.md5
+        self.data['length'] = rna.length
+        self.data['has_genomic_coordinates'] = rna.has_genomic_coordinates()
 
     def format_xml_entry(self):
         """
         Format self.data as an xml entry.
         Using Django templates is slower than constructing the entry manually.
         """
-        return """
+
+        def wrap_in_field_tag(name, value):
+            """
+            A method for creating field tags.
+            """
+            return '<field name="{0}">{1}</field>'.format(name, value)
+
+        def format_field(field):
+            """
+            Wrap additional fields in <field name=""></field> tags.
+            """
+            text = []
+            for value in self.data[field]:
+                if value: # organelle can be empty e.g.
+                    text.append(wrap_in_field_tag(field, value))
+            return '\n'.join(text)
+
+        def format_cross_references():
+            """
+            Wrap xrefs and taxids in <ref dbname="" dbkey=""/> tags.
+            Taxids are stored as cross-references.
+            """
+            text = []
+            for xref in self.data['xrefs']:
+                text.append('<ref dbname="{0}" dbkey="{1}" />'.format(*xref))
+            for taxid in self.data['taxid']:
+                text.append('<ref dbkey="{0}" dbname="ncbi_taxonomy_id" />'.format(taxid))
+            return '\n'.join(text)
+
+        def format_author_fields():
+            """
+            Store authors in separate tags to enable more precise searching.
+            """
+            authors = set()
+            for author_list in self.data['authors']:
+                for author in author_list.split(', '):
+                    authors.add(author)
+            return '\n'.join([wrap_in_field_tag('author', x) for x in authors])
+
+        def format_whitespace(text):
+            """
+            Strip out useless whitespace.
+            """
+            text = re.sub('\n\s+\n', '\n', text) # delete empty lines (if gene_synonym is empty e.g. )
+            return re.sub('\n +', '\n', text) # delete whitespace at the beginning of lines
+
+        text = """
         <entry id="{upi}">
             <name>Unique RNA Sequence {upi}</name>
             <description>{description}</description>
@@ -233,8 +373,8 @@ class RnaXmlExporter(OracleConnection):
                 {cross_references}
             </cross_references>
             <additional_fields>
-                <field name="active">{is_active}</field>
-                <field name="length">{length}</field>
+                {is_active}
+                {length}
                 {species}
                 {organelles}
                 {expert_dbs}
@@ -245,86 +385,56 @@ class RnaXmlExporter(OracleConnection):
                 {rna_type}
                 {product}
                 {has_genomic_coordinates}
+                {md5}
+                {authors}
+                {journal}
+                {insdc_submission}
+                {pub_title}
+                {pub_id}
+                {popular_species}
+                {boost}
             </additional_fields>
-        </entry>""".format(upi=self.data['upi'],
-                           description=self.get_description(),
-                           first_seen=self.first_seen(),
-                           last_seen=self.last_seen(),
-                           cross_references=self.get_cross_references(),
-                           is_active=self.is_active(),
-                           length=self.data['length'],
-                           species=self.get_additional_field('species'),
-                           organelles=self.get_additional_field('organelle'),
-                           expert_dbs=self.get_additional_field('expert_db'),
-                           common_name=self.get_additional_field('common_name'),
-                           function=self.get_additional_field('function'),
-                           gene=self.get_additional_field('gene'),
-                           gene_synonym=self.get_additional_field('gene_synonym'),
-                           rna_type=self.get_additional_field('rna_type'),
-                           product=self.get_additional_field('product'),
-                           has_genomic_coordinates=self.get_additional_field('has_genomic_coordinates'))
+        </entry>
+        """.format(upi=self.data['upi'],
+                   description=self.get_description(),
+                   first_seen=self.first_seen(),
+                   last_seen=self.last_seen(),
+                   cross_references=format_cross_references(),
+                   is_active=wrap_in_field_tag('active', self.is_active()),
+                   length=wrap_in_field_tag('length', self.data['length']),
+                   species=format_field('species'),
+                   organelles=format_field('organelle'),
+                   expert_dbs=format_field('expert_db'),
+                   common_name=format_field('common_name'),
+                   function=format_field('function'),
+                   gene=format_field('gene'),
+                   gene_synonym=format_field('gene_synonym'),
+                   rna_type=format_field('rna_type'),
+                   product=format_field('product'),
+                   has_genomic_coordinates=wrap_in_field_tag('has_genomic_coordinates',
+                                            str(self.data['has_genomic_coordinates'])),
+                   md5=wrap_in_field_tag('md5', self.data['md5']),
+                   authors=format_author_fields(),
+                   journal=format_field('journal'),
+                   insdc_submission = format_field('insdc_submission'),
+                   pub_title=format_field('pub_title'),
+                   pub_id=format_field('pub_id'),
+                   popular_species=format_field('popular_species'),
+                   boost=wrap_in_field_tag('boost', self.data['boost']))
+        return format_whitespace(text)
+
+    ##################
+    # Public methods #
+    ##################
 
     def get_xml_entry(self, rna):
         """
         Public method for outputting an xml dump entry for a given UPI.
         """
-
-        def store_sets(result):
-            """
-            Store redundant data in sets in order to get distinct values.
-            Escape '&', '<', and '>'.
-            """
-            escape_fields = ['species', 'description', 'product', 'common_name',
-                             'function', 'gene', 'gene_synonym']
-            for field in self.redundant_fields:
-                if result[field]:
-                    if field in escape_fields:
-                        result[field] = saxutils.escape(result[field])
-                    self.data[field].add(result[field])
-
-        def store_xrefs(result):
-            """
-            Store xrefs as (database, accession) tuples in self.data['xrefs'].
-            Do not store deleted xrefs so that they are not indexed.
-            """
-            if result['deleted'] == 'Y':
-                return
-            # expert_db should not contain spaces, EBeye requirement
-            result['expert_db'] = result['expert_db'].replace(' ','_').upper()
-            # an expert_db entry
-            if result['non_coding_id'] or result['expert_db'] in ['RFAM', 'REFSEQ', 'RDP']:
-                self.data['xrefs'].add((result['expert_db'],
-                                        result['external_id']))
-            else: # source ENA entry
-                # Non-coding entry
-                expert_db = 'NON-CODING' # EBeye requirement
-                self.data['xrefs'].add((expert_db, result['accession']))
-            # parent ENA entry
-            self.data['xrefs'].add(('ENA', result['parent_accession']))
-
-        def store_rna_type(result):
-            """
-            Store distinct RNA type annotations in a set.
-            If an entry is an 'ncRNA' feature, it will have a mandatory field
-            'ncrna_class' with useful description.
-            If an entry is any other RNA feature, use that feature_name
-            as rna_type.
-            """
-            if result['ncrna_class']:
-                rna_type = result['ncrna_class']
-            else:
-                rna_type = result['feature_name']
-            self.data['rna_type'].add(rna_type.replace('_', ' '))
-
         self.reset()
-        self.data['upi'] = rna.upi
-        self.data['has_genomic_coordinates'] = (str(rna.has_genomic_coordinates()),)
-        self.cursor.execute(None, {'upi': rna.upi})
-
-        for row in self.cursor:
-            result = self.row_to_dict(row)
-            store_sets(result)
-            store_xrefs(result)
-            store_rna_type(result)
-            self.data['length'] = result['length']
+        self.store_rna_properties(rna)
+        self.retrieve_data_from_database(rna.upi)
+        self.store_literature_references(rna)
+        self.store_popular_species()
+        self.store_boost_value()
         return self.format_xml_entry()

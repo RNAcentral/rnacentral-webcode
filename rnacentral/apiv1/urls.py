@@ -23,11 +23,13 @@ urlpatterns = patterns('',
 	# api root
 	url(r'^$', cache_page(CACHE_TIMEOUT)(views.APIRoot.as_view()), name='api-v1-root'),
 	# list of all RNAcentral entries
-	url(r'^rna/?$', cache_page(CACHE_TIMEOUT)(views.RnaList.as_view()), name='rna-list'),
+	url(r'^rna/?$', cache_page(CACHE_TIMEOUT)(views.RnaSequences.as_view()), name='rna-sequences'),
 	# single RNAcentral sequence
 	url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/?$', cache_page(CACHE_TIMEOUT)(views.RnaDetail.as_view()), name='rna-detail'),
     # view for all cross-references associated with an RNAcentral id
 	url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/xrefs/?$', cache_page(CACHE_TIMEOUT)(views.XrefList.as_view()), name='rna-xrefs'),
+    # all literature citations associated with an RNAcentral id
+    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/publications/?$', cache_page(CACHE_TIMEOUT)(views.RnaCitationsView.as_view()), name='rna-publications'),
     # literature citations associated with ENA records
     url(r'^accession/(?P<pk>.*?)/citations/?$', cache_page(CACHE_TIMEOUT)(views.CitationView.as_view()), name='accession-citations'),
     # view for an individual cross-reference

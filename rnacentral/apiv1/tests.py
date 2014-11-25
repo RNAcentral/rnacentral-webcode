@@ -79,6 +79,11 @@ class ApiV1Test(unittest.TestCase):
         url = self._get_api_url('rna/%s/xrefs' % self.upi)
         self._check_urls(url)
 
+    def test_rna_publications(self):
+        url = self._get_api_url('rna/%s/publications' % self.upi)
+        data = self._check_urls(url)
+        self.assertEqual(len(data['results']), 2)
+
     def test_accession_entry(self):
         url = self._get_api_url('accession/%s/info' % self.accession)
         self._check_urls(url)

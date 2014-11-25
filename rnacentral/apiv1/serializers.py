@@ -22,6 +22,23 @@ from portal.models import Rna, Xref, Reference, Database, Accession, Release, Re
 from rest_framework import serializers
 
 
+class RawCitationSerializer(serializers.ModelSerializer):
+    """
+    Serializer class for literature citations.
+    Used in conjunction with raw querysets.
+    """
+    authors = serializers.CharField(source='authors')
+    publication = serializers.CharField(source='location')
+    pubmed_id = serializers.CharField(source='pubmed')
+    doi = serializers.CharField(source='doi')
+    title = serializers.Field(source='get_title')
+    pub_id = serializers.Field(source='id')
+
+    class Meta:
+        model = Reference
+        fields = ('title', 'authors', 'publication', 'pubmed_id', 'doi', 'pub_id')
+
+
 class CitationSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer class for literature citations.
@@ -31,10 +48,11 @@ class CitationSerializer(serializers.HyperlinkedModelSerializer):
     pubmed_id = serializers.CharField(source='data.pubmed')
     doi = serializers.CharField(source='data.doi')
     title = serializers.Field(source='data.get_title')
+    pub_id = serializers.Field(source='data.id')
 
     class Meta:
         model = Reference_map
-        fields = ('title', 'authors', 'publication', 'pubmed_id', 'doi')
+        fields = ('title', 'authors', 'publication', 'pubmed_id', 'doi', 'pub_id')
 
 
 class AccessionSerializer(serializers.HyperlinkedModelSerializer):
@@ -85,11 +103,12 @@ class RnaNestedSerializer(serializers.HyperlinkedModelSerializer):
     """
     sequence = serializers.Field(source='get_sequence')
     xrefs = serializers.HyperlinkedIdentityField(view_name='rna-xrefs')
+    publications = serializers.HyperlinkedIdentityField(view_name='rna-publications')
     rnacentral_id = serializers.CharField(source='upi')
 
     class Meta:
         model = Rna
-        fields = ('url', 'rnacentral_id', 'md5', 'sequence', 'length', 'xrefs')
+        fields = ('url', 'rnacentral_id', 'md5', 'sequence', 'length', 'xrefs', 'publications')
 
 
 class RnaFlatSerializer(RnaNestedSerializer):
