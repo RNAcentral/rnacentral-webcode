@@ -68,6 +68,18 @@ Please note that `"field value"` **must be enclosed in double quotes**.
 
 	*Example*: `length:"1500"`
 
+* **author**
+
+	*Example*: `author:"Girard A."`
+
+* **pubmed**
+
+	*Example*: `pubmed:"17881443"`
+
+* **md5**
+
+	*Example*: `md5:"020711a90d35bb197e29e085595dd52e"`
+
 ---
 
 ### Logic operators
