@@ -180,7 +180,14 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
                     // capitalize logical operators
                     words[i] = words[i].toUpperCase();
                 } else if ( words[i].match(/\:$/gi) ) {
-                    // faceted search term, do nothing
+                    // faceted search term
+                    var terms = words[i].split(':');
+                    var xrefs = ['pubmed', 'doi', 'taxonomy'];
+                    if ( terms[0].match(new RegExp('^(' + xrefs.join('|') + ')$', 'i') ) ) {
+                        // xref fields must be capitalized
+                        terms[0] = terms[0].toUpperCase();
+                    }
+                    words[i] = terms.join(':');
                 } else if ( words[i].match(/\-/)) {
                     // do not add wildcards to words with hyphens
                 } else if ( words[i].match(/\//)) {
