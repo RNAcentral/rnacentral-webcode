@@ -598,6 +598,11 @@ class RNAcentralTest(unittest.TestCase):
         page.navigate()
         self.assertIn('Please check the taxid in the URL', page.get_warning_info_text())
 
+    def test_taxid_filtering_with_underscore(self):
+        page = TaxidFilteringSequencePage(self.browser, 'URS00000B15DA_9606')
+        page.navigate()
+        self.assertEqual(page.get_page_subtitle(), 'Homo sapiens')
+
     def _get_expert_db_example_ids(self, expert_db_id):
         """Retrieve example RNAcentral ids from the homepage"""
         return self.homepage.get_expert_db_example_ids(expert_db_id)
