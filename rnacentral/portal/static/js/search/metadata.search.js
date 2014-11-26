@@ -386,11 +386,11 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', f
      */
     $scope.is_facet_applied = function(facet_id, facet_value) {
         var query = $location.search().q || '';
-        var facet_query = facet_id + ':"' + facet_value + '"';
-        if (query.indexOf(facet_query) == -1) {
-            return false;
-        } else {
+        var facet_query = new RegExp(facet_id + '\:"' + facet_value + '"', 'i');
+        if (query.match(facet_query)) {
             return true;
+        } else {
+            return false;
         }
     };
 
