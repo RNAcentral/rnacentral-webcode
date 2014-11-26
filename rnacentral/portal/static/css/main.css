@@ -648,6 +648,7 @@ ul.affix-bottom {
   font-size: smaller;
   padding-left: 20px;
   white-space: nowrap;
+  margin-bottom: 5px;
 }
 
 .metasearch-facet-values li {
