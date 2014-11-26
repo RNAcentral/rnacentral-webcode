@@ -726,23 +726,6 @@ code {
   border-color: #999;
 }
 
-kbd {
-  -moz-border-radius: 5px;
-  -khtml-border-radius: 5px;
-  -webkit-border-radius: 5px;
-  border-radius: 5px;
-  border: 1px
-solid #777;
-  color: #222;
-  background-color: #ccc;
-  background-image: -moz-linear-gradient(top, #ccc, #666);
-  background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #ccc),color-stop(1, #666));
-  background-image: -webkit-linear-gradient(#ccc, #666);
-  background-image: linear-gradient(top, #ccc, #666);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#ccc', EndColorStr='#666');
-  padding: 0.2em 0.3em;
-}
-
 .mute {
   color: #666;
 }
