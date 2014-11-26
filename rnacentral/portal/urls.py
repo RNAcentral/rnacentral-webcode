@@ -30,7 +30,7 @@ urlpatterns = patterns('',
     # expert databases
     url(r'^expert-databases/?$', 'portal.views.expert_databases_view', name='expert-databases'),
     # metadata search can route to any page because it will be taken over by Angular
-    url(r'^search/?$', 'portal.views.homepage'),
+    url(r'^search/?$', views.TemplateView.as_view(template_name='portal/base.html')),
     # sequence search
     url(r'^sequence-search/?$', views.StaticView.as_view(), {'page': 'search/sequence-search'}, name='sequence-search'),
     # coming soon
