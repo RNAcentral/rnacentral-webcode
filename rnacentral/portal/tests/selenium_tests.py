@@ -509,6 +509,23 @@ class RNAcentralTest(unittest.TestCase):
         page.navigate()
         self.assertTrue(len(page.get_metasearch_results()) > 0)
 
+    def test_metasearch_species_specific_filtering(self):
+        """
+        Make sure that URS/taxid and URS_taxid are found in metadata search.
+        """
+        # forward slash
+        page = MetaSearchPage(self.browser, 'search?q=URS000047C79B/9606')
+        page.navigate()
+        self.assertEqual(len(page.get_metasearch_results()), 1)
+        # underscore
+        page = MetaSearchPage(self.browser, 'search?q=URS000047C79B_9606')
+        page.navigate()
+        self.assertEqual(len(page.get_metasearch_results()), 1)
+        # non-existing taxid
+        page = MetaSearchPage(self.browser, 'search?q=URS000047C79B_00000')
+        page.navigate()
+        self.assertTrue(page.warnings_present())
+
     def test_all_expert_database_page(self):
         page = ExpertDatabasesOverviewPage(self.browser)
         page.navigate()

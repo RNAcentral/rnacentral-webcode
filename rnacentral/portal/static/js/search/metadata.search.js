@@ -69,6 +69,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
      */
     var result = {
         hitCount: null,
+        taxid: null,
         entries: [],
         facets: [],
     };
@@ -173,6 +174,9 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
          * or a sequence of characters that begin and end with a quote, with no quotes in between.
          */
         function preprocess_query(query) {
+
+            apply_species_specific_filtering();
+
             var words = query.match(/[^\s"]+|"[^"]*"/g);
             var array_length = words.length;
             for (var i = 0; i < array_length; i++) {
@@ -211,6 +215,22 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
             return query;
 
             /**
+             * If query contains URS/taxid or URS_taxid identifiers,
+             * perform species-specific search and show species-specific links.
+             */
+            function apply_species_specific_filtering() {
+                var urs_taxid_regexp = new RegExp('(URS[0-9A-F]{10})(\/|_)(\\d+)', 'i');
+                match = query.match(urs_taxid_regexp);
+                if (match) {
+                    upi = match[1];
+                    result.taxid = match[3];
+                    query = upi + ' taxonomy:"' + result.taxid + '"';
+                } else {
+                    result.taxid = null;
+                }
+            }
+
+            /**
              * Escape special symbols used by Lucene
              * Escaped: + - && || ! { } [ ] ^ ~ ? : \
              * Not escaped: * " ( ) because they may be used deliberately by the user
@@ -233,9 +253,10 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
                 data = preprocess_results(data);
                 overwrite_results = overwrite_results || false;
                 if (overwrite_results) {
+                    data.taxid = result.taxid;
                     result = data; // replace
                 } else {
-                    // append only entries
+                    // append new entries
                     result.entries = result.entries.concat(data.entries);
                 }
                 status.search_in_progress = false;
