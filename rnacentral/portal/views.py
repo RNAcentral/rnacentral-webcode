@@ -164,6 +164,7 @@ def rna_view(request, upi, taxid=None):
         'single_species': get_single_species(),
         'description': rna.get_description(taxid) if taxid_filtering else rna.get_description(),
         'distinct_databases': rna.get_distinct_database_names(taxid),
+        'publications': rna.get_publications(taxid) if taxid_filtering else rna.get_publications(),
     }
 
     return render(request, 'portal/unique-rna-sequence.html', {'rna': rna, 'context': context})

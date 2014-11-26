@@ -57,7 +57,7 @@ class Rna(models.Model):
         else:
             return self.xrefs.filter(deleted='Y').select_related()
 
-    def get_publications(self):
+    def get_publications(self, taxid=None):
         """
         Get all publications associated with a Unique RNA Sequence.
         Use raw SQL query for better performance.
@@ -69,11 +69,16 @@ class Rna(models.Model):
             FROM xref t1, rnc_reference_map t2, RNC_REFERENCES t3
             WHERE t1.ac = t2.accession AND
                   t1.upi = %s AND
+                  {taxid_clause}
                   t2.reference_id = t3.id) a
         JOIN
             rnc_references b
         ON a.id = b.id
         ORDER BY b.title"""
+        if taxid:
+            query = query.format(taxid_clause='t1.taxid = %s AND' % taxid)
+        else:
+            query = query.format(taxid_clause='')
         return Reference.objects.raw(query, [self.upi])
 
     def is_active(self):
