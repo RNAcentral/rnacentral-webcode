@@ -82,7 +82,11 @@ Please note that "field value" **must be enclosed in double quotes**.
 
 	*Example*: `pubmed:"17881443"`
 
-* **md5**
+* **Digital Object Identifier**
+
+	*Example*: `doi:"10.1093/nar/19.22.6328"`
+
+* **MD5**
 
 	Use [MD5](http://en.wikipedia.org/wiki/MD5) hash value of the uppercase DNA version of the sequence
 	to lookup the associated RNAcentral id.
