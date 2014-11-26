@@ -41,3 +41,19 @@ Help: Metadata search
 <br>
 
 {% endblock %}
+
+{% block extra_js_uncompressed %}
+  {{ block.super }}
+
+  <script>
+    // make search examples clickable
+    $(function() {
+      $('code').each(function(){
+        var $this = $(this);
+        var link = '<a href="/search?q=' + encodeURIComponent($this.html()) + '">' + $this.html() + '</a>';
+        $this.html(link);
+      });
+    });
+  </script>
+
+{% endblock %}

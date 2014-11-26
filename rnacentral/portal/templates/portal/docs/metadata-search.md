@@ -1,11 +1,18 @@
 
 <h1><i class="fa fa-info-circle"></i> Metadata search</h1>
 
+## About RNAcentral search
+
+RNAcentral is powered by the [EBI search](http://www.ebi.ac.uk/ebisearch/),
+which provides publicly available REST and SOAP interfaces for querying the data.
+
+---
+
 ## Query syntax
 
 ### Exact matching
 
-Use double quotes (`""`) to search for exact matches.
+Use double quotes (**""**) to search for exact matches.
 
 *Example*: `"precursor RNA"`
 
@@ -13,10 +20,9 @@ Use double quotes (`""`) to search for exact matches.
 
 ### Wildcards
 
-The wildcard character (`*`) can match any number of characters.
+The wildcard character (<strong>*</strong>) can match any number of characters.
 
-Wildcards are added automatically to all search terms that are not part of field-specific
-search and that are not enclosed in double quotes.
+Wildcards are added automatically to all search terms that are not enclosed in double quotes.
 
 *Example*: a search for `HOTAIR` (no double quotes) will find both HOTAIR and HOTAIRM1 genes
 and a search for `"HOTAIR"` (with double quotes) will find only HOTAIR.
@@ -25,8 +31,8 @@ and a search for `"HOTAIR"` (with double quotes) will find only HOTAIR.
 
 ### Field-specific search
 
-Search can be restricted to specific fields using the `field_name:"field value"` syntax.
-Please note that `"field value"` **must be enclosed in double quotes**.
+Search can be restricted to specific fields using the **field_name:"field value"** syntax.
+Please note that "field value" **must be enclosed in double quotes**.
 
 * **expert database**
 
@@ -58,7 +64,7 @@ Please note that `"field value"` **must be enclosed in double quotes**.
 
 * **organelle**
 
-	*Example*: `organelle:"mitochondrion"`
+	*Example*: `organelle:"mitochondrion"`, `organelle:"plastid"`
 
 * **description**
 
@@ -72,11 +78,14 @@ Please note that `"field value"` **must be enclosed in double quotes**.
 
 	*Example*: `author:"Girard A."`
 
-* **pubmed**
+* **PubMed id**
 
 	*Example*: `pubmed:"17881443"`
 
 * **md5**
+
+	Use [MD5](http://en.wikipedia.org/wiki/MD5) hash value of the uppercase DNA version of the sequence
+	to lookup the associated RNAcentral id.
 
 	*Example*: `md5:"020711a90d35bb197e29e085595dd52e"`
 
@@ -86,7 +95,7 @@ Please note that `"field value"` **must be enclosed in double quotes**.
 
 * **and** (default)
 
-	Multiple search terms separated by white spaces are combined using `AND`,
+	Multiple search terms separated by white spaces are combined using AND,
 	so a query like `Homo sapiens` is treated as `Homo AND sapiens` and only entries having both terms will be found.
 
 * **or** (to indicate equivalence)
@@ -116,10 +125,3 @@ Use parentheses to group and nest logical terms.
 * Use **full species names**.
 
     *Example*: use `Escherichia coli` and not `E. coli` as your search terms.
-
----
-
-## About RNAcentral search
-
-RNAcentral is powered by the [EBI search](http://www.ebi.ac.uk/ebisearch/),
-which provides publicly available REST and SOAP interfaces for querying the data.
