@@ -42,7 +42,7 @@ Please note that "field value" **must be enclosed in double quotes**.
 
 * **NCBI taxonomic identifier**
 
-	*Example*: `TAXONOMY:"9606"` where [9606](http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606) is the NCBI taxonomy id for Homo sapiens.
+	*Example*: `taxonomy:"9606"` where [9606](http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606) is the NCBI taxonomy id for Homo sapiens.
 
 * **scientific species name**
 
