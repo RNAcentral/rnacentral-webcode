@@ -73,6 +73,16 @@ class RnaXmlExporter(OracleConnection):
         self.data_fields = ['rna_type', 'authors', 'journal', 'popular_species',
                             'pub_title', 'pub_id', 'insdc_submission', 'xrefs',]
 
+        self.popular_species = set([
+            9606,   # human
+            10090,  # mouse
+            3702,   # Arabidopsis thaliana
+            6239,   # Caenorhabditis elegans
+            7227,   # Drosophila melanogaster
+            559292, # Saccharomyces cerevisiae S288c
+            4896,   # Schizosaccharomyces pombe
+        ])
+
         self.reset()
         self.get_connection()
         self.get_cursor()
@@ -281,16 +291,7 @@ class RnaXmlExporter(OracleConnection):
         Get a subset of all species that are thought to be most popular.
         The data are used to create the Popular species facet.
         """
-        popular_species = set([
-            9606,   # human
-            10090,  # mouse
-            3702,   # Arabidopsis thaliana
-            6239,   # Caenorhabditis elegans
-            7227,   # Drosophila melanogaster
-            559292, # Saccharomyces cerevisiae S288c
-            4896,   # Schizosaccharomyces pombe
-        ])
-        self.data['popular_species'] = self.data['taxid'] & popular_species # intersection
+        self.data['popular_species'] = self.data['taxid'] & self.popular_species # intersection
 
     def store_boost_value(self):
         """
