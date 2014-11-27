@@ -82,7 +82,7 @@ xrefLoader.prototype.load_xrefs = function() {
 		launch_dataTables();
 		show_dataTables();
   		enable_sorting();
-  		enable_url_filering();
+  		xref_url_filering();
   		append_download_links();
 
 		function launch_dataTables() {
@@ -141,18 +141,23 @@ xrefLoader.prototype.load_xrefs = function() {
 			oTable.fnSortListener( document.getElementById('sort-by-last-seen'), 4);
 		};
 
-		function enable_url_filering() {
-			// monitor the xref datatables search field to update the hashtag
-			var dataTables_search = $('#xrefs-table_filter input');
+		/**
+		 * Filter xrefs using url parameter.
+		 */
+		function xref_url_filering() {
+			var dataTables_search = $('#xrefs-table_filter input'),
+			    q = queryString.parse(location.search),
+			    url_param = 'xref-filter';
+
 			dataTables_search.on('input', function(e) {
-				window.location.hash = $(this).val();
+				q[url_param] = $(this).val();
+				history.replaceState({}, "", window.location.pathname + '?' + queryString.stringify(q));
 				return false;
 			});
-			// if the url hash does not refer to any of the tabs, update the search field
-			var hash = window.location.hash.substring(1);
-			if (hash != 'species' && hash != 'overview' && hash != '') {
-				dataTables_search.val(decodeURIComponent(hash)).focus();
-				oTable.fnFilter(decodeURIComponent(hash));
+
+			if (q[url_param]) {
+				dataTables_search.val(decodeURIComponent(q[url_param])).focus();
+				oTable.fnFilter(decodeURIComponent(q[url_param]));
 			}
 		};
 
