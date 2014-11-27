@@ -120,7 +120,7 @@ limitations under the License.
             <ul class="list-unstyled metasearch-facet-values" ng-class="{'metasearch-organism-facet force-scrollbars': facet.label=='Organisms' || facet.label=='RNA type'}">
                 <li ng-repeat="facet_value in facet.facetValues">
                   <input type="checkbox" name="facet.label" ng-checked="is_facet_applied(facet.id, facet_value.value)" ng-click="facet_search(facet.id, facet_value.value)">
-                  <a href="" ng-click="facet_search(facet.id, facet_value.value)" class="metasearch-facet-link">{{facet_value.label}} ({{facet_value.count | number}})</a>
+                  <a href="" ng-click="facet_search(facet.id, facet_value.value)" class="metasearch-facet-link">{{facet_value.label}} <small>({{facet_value.count | number}})</small></a>
                 </li>
                 <small ng-if="facet.facetValues.length == 30" class="text-muted">Showing top 30 organisms</small>
             </ul>
