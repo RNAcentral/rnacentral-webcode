@@ -69,13 +69,13 @@ limitations under the License.
     <div class="tabbable">
 
       <ul class="nav nav-tabs" id="tabs">
-        <li class="active">
+        <li class="tab-toggle {% if not context.tab or context.tab == 'overview' %}active{% endif %}">
           <a href="" data-target="#overview" data-toggle="tab">Overview</a>
         </li>
-        <li>
-          <a href="" data-target="#species" data-toggle="tab">Taxonomy</a>
+        <li class="tab-toggle {% if context.tab == 'taxonomy' %}active{% endif %}">
+          <a href="" data-target="#taxonomy" data-toggle="tab">Taxonomy</a>
         </li>
-        <li>
+        <li class="tab-toggle {% if context.tab == 'publications' %}active{% endif %}">
           <a href="" data-target="#publications" data-toggle="tab">Publications</a>
         </li>
         <li class="disabled hidden-xs" data-toggle="tab">
@@ -99,7 +99,7 @@ limitations under the License.
 
       <div class="tab-content">
 
-        <div class="tab-pane fade in active" id="overview">
+        <div class="tab-pane fade {% if not context.tab or context.tab == 'overview' %}active in{% endif %}" id="overview">
 
           <h2>
             Overview
@@ -220,7 +220,7 @@ limitations under the License.
 
         </div> <!-- .tab-pane .active -->
 
-        <div class="tab-pane fade" id="species">
+        <div class="tab-pane fade {% if context.tab == 'taxonomy' %}active in{% endif %}" id="taxonomy">
 
           <h2>Taxonomic Tree</h2>
 
@@ -248,7 +248,7 @@ limitations under the License.
 
         </div>
 
-        <div class="tab-pane" id="publications">
+        <div class="tab-pane fade {% if context.tab == 'publications' %}active in{% endif %}" id="publications">
 
           <h2>Publications</h2>
 
