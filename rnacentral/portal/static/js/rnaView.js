@@ -114,6 +114,9 @@ rnaSequenceView.prototype.initialize = function() {
       // clicking the species link to view the Species tab
       $(".show-species-tab").click(function(){
         $('#tabs a[data-target="#taxonomy"]').tab('show');
+        var q = queryString.parse(location.search);
+        q.tab = 'taxonomy';
+        history.replaceState({}, "", window.location.pathname + '?' + queryString.stringify(q));
         return false;
       });
     };
