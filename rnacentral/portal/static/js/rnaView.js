@@ -57,23 +57,6 @@ rnaSequenceView.prototype.initialize = function() {
           var accession = $this.data('accession');
           var target = $this.siblings('.literature-refs-content');
 
-          toggle_slider_icon = function() {
-              var up = '<i class="fa fa-caret-up"></i>';
-              var down = '<i class="fa fa-caret-down"></i>';
-              if ($this.html() === up) {
-                  $this.html(down);
-              } else {
-                  $this.html(up);
-              }
-          };
-
-          insert_content = function(data) {
-              var source = $("#handlebars-literature-reference-tmpl").html();
-              var template = Handlebars.compile(source);
-              var wrapper  = {refs: data};
-              target.html(template(wrapper));
-          };
-
           toggle_slider_icon();
           if ( target.html().length > 0 ) {
               target.slideToggle();
@@ -83,6 +66,23 @@ rnaSequenceView.prototype.initialize = function() {
                 activate_abstract_buttons($this.siblings().find('.abstract-btn'));
                 target.slideDown();
             });
+          }
+
+          function toggle_slider_icon() {
+              var up = '<i class="fa fa-caret-up"></i>';
+              var down = '<i class="fa fa-caret-down"></i>';
+              if ($this.html() === up) {
+                  $this.html(down);
+              } else {
+                  $this.html(up);
+              }
+          }
+
+          function insert_content(data) {
+              var source = $("#handlebars-literature-reference-tmpl").html();
+              var template = Handlebars.compile(source);
+              var wrapper  = {refs: data};
+              target.html(template(wrapper));
           }
       });
 	};
