@@ -84,7 +84,13 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
         ebeye_base_url: 'http://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral',
         rnacentral_base_url: get_base_url(),
         fields: ['description', 'active', 'length'],
-        facetfields: ['expert_db', 'rna_type', 'TAXONOMY', 'has_genomic_coordinates'], // will be displayed in this order
+        facetfields: [
+            'expert_db',
+            'rna_type',
+            'TAXONOMY',
+            'has_genomic_coordinates',
+            'popular_species',
+        ], // will be displayed in this order
         facetcount: 30,
         pagesize: 15,
     };
@@ -269,11 +275,82 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
              * Preprocess data received from the server.
              */
             function preprocess_results(data) {
-                // sort facets the same way as in config
-                data.facets = _.sortBy(data.facets, function(facet){
-                    return _.indexOf(search_config.facetfields, facet.id);
-                });
+
+                merge_species_facets();
+                order_facets();
                 return data;
+
+                /**
+                 * Order facets the same way as in the config.
+                 */
+                function order_facets() {
+                    data.facets = _.sortBy(data.facets, function(facet){
+                        return _.indexOf(search_config.facetfields, facet.id);
+                    });
+                }
+
+                /**
+                 * Merge the two species facets putting popular_species
+                 * at the top of the list.
+                 * Species facets:
+                 * - TAXONOMY (all species)
+                 * - popular_species (manually curated set of top organisms).
+                 */
+                function merge_species_facets() {
+
+                    // find the popular species facet
+                    var top_species_facet_id = find_facet_id('popular_species');
+
+                    if (top_species_facet_id) {
+                        // get top species names
+                        var popular_species = _.pluck(data.facets[top_species_facet_id].facetValues, 'label');
+
+                        // find the taxonomy facet
+                        var taxonomy_facet_id = find_facet_id('TAXONOMY');
+
+                        // extract other species from the taxonomy facet
+                        var other_species = get_other_species();
+
+                        // merge popular_species with other_species
+                        data.facets[taxonomy_facet_id].facetValues = data.facets[top_species_facet_id].facetValues.concat(other_species);
+
+                        // remove the Popular species facet
+                        delete data.facets[top_species_facet_id];
+                        data.facets = _.compact(data.facets);
+                    }
+
+                    /**
+                     * Get Taxonomy facet values that are not also in popular_species.
+                     */
+                    function get_other_species() {
+                        var taxonomy_facet = data.facets[taxonomy_facet_id].facetValues,
+                            other_species = [];
+                        for (var i=0; i<taxonomy_facet.length; i++) {
+                            if (_.indexOf(popular_species, taxonomy_facet[i].label) === -1) {
+                                other_species.push(taxonomy_facet[i]);
+                            }
+                        }
+                        return other_species;
+                    }
+
+                    /**
+                     * Find objects in array by attribute value.
+                     * Given an array like:
+                     * [{'id': 'a'}, {'id': 'b'}, {'id': 'c'}]
+                     * find_facet_id('b') -> 1
+                     */
+                    function find_facet_id(facet_label) {
+                        var index;
+                        _.find(data.facets, function(facet, i){
+                            if (facet.id === facet_label) {
+                                index = i;
+                                return true;
+                            };
+                        });
+                        return index;
+                    }
+                }
+
             }
         }
 
