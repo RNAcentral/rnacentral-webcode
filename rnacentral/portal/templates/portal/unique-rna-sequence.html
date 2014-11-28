@@ -240,7 +240,7 @@ limitations under the License.
             <div class="tab-pane panel-body d3-species force-scrollbars d3-species-tree-tab">
               <div id="d3-species-tree">
                 <i class="fa fa-spinner fa-spin fa-2x"></i>
-                Loading taxonomic tree...
+                <span class="margin-left-5px">Loading taxonomic tree...</span>
               </div>
             </div>
 
@@ -250,38 +250,16 @@ limitations under the License.
 
         <div class="tab-pane fade {% if context.tab == 'publications' %}active in{% endif %}" id="publications">
 
-          <h2>Publications</h2>
+          <div id="publications">
 
-          <div class="row">
+            <h2>Publications</h2>
 
-          <ol>
-          {% for ref in context.publications %}
-            <div class="col-md-8">
-            <li class="margin-bottom-10px">
-              <strong>{{ ref.get_title }}</strong>
-              <br>
-              <small>
-                {% if ref.authors %}
-                  {% for author in ref.get_authors %}
-                    <a href='/search?q=author:"{{ author }}"'>{{ author }}</a>{% if not forloop.last %},{% else %}.{% endif %}
-                  {% endfor %}
-                  <br>
-                {% endif %}
-                {% if ref.location %}
-                  <em>{{ ref.location }}</em>
-                {% endif %}
-                {% if ref.pubmed %}
-                  <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ ref.pubmed }}" class="margin-left-5px">Pubmed</a>
-                  <button class="btn btn-xs btn-default abstract-btn abstract-control" data-pubmed-id="{{ ref.pubmed }}">Show abstract</button>
-                  <div class="abstract-text"></div>
-                {% endif %}
-                <br>
-                <a href='/search?q=pub_id:"{{ ref.id }}"' class="margin-left-5px"><i class="fa fa-search"></i> Find other sequences from this reference</a>
-              </small>
-            </li>
+            <div class="row">
+              <div class="col-md-12">
+                <i class="fa fa-spinner fa-spin fa-2x"></i>
+                <span class="margin-left-5px">Loading publications...</span>
+              </div>
             </div>
-          {% endfor %}
-          </ol>
 
           </div>
 
@@ -300,35 +278,62 @@ limitations under the License.
 
 {# Handlebars #}
 {% verbatim %}
+<script id="publication-partial" type="text/x-handlebars-template">
+  {{#if title}}
+    <strong>{{ title }}</strong>
+    <br>
+  {{/if}}
+  <small>
+    {{#if authors}}
+      {{#each authors}}{{#if @index}}, {{/if}}<a href='/search?q=author:"{{ this }}"'>{{ this }}</a>{{/each}}
+      <br>
+    {{/if}}
+    {{#if publication }}
+      <em>{{ publication }}</em>
+    {{/if }}
+    {{#if pubmed_id }}
+      <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ pubmed_id }}" class="margin-left-5px">Pubmed</a>
+      {{#if doi}}
+        <a href="http://dx.doi.org/{{doi}}" target="_blank" class="abstract-control">Full text</a>
+      {{/if}}
+      <button class="btn btn-xs btn-default abstract-btn abstract-control" data-pubmed-id="{{ pubmed_id }}">Show abstract</button>
+      <div class="abstract-text"></div>
+    {{/if }}
+    <br>
+    <a href='/search?q=pub_id:"{{ pub_id }}"' class="margin-left-5px"><i class="fa fa-search"></i> Find other sequences from this reference</a>
+  </small>
+</script>
+
 <script id="handlebars-literature-reference-tmpl" type="text/x-handlebars-template">
   {{#with refs}}
     {{#each .}}
       <blockquote>
-       <strong>
-         {{title}}
-       </strong>
-       <br>
-       {{authors}}
-       <small>
-        {{publication}}
-        <div class="abstract-preview">
-          {{#if pubmed_id}}
-              <button class="btn btn-xs btn-default abstract-btn abstract-control" data-pubmed-id="{{pubmed_id}}">Show abstract</button>
-              <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{pubmed_id}}" target="_blank" class="abstract-control">PubMed</a>
-              {{#if doi}}
-                <a href="http://dx.doi.org/{{doi}}" target="_blank" class="abstract-control">Full text</a>
-              {{/if}}
-              <div class="abstract-text"></div>
-          {{else}}
-            <br>
-          {{/if}}
-        </div>
-        <p>
-          <a href='/search?q=pub_id:"{{pub_id}}"' target="_blank"><i class="fa fa-search"></i> Find other sequences from this reference</a>
-        </p>
-       </small>
+        {{> publication}}
       </blockquote>
     {{/each}}
+  {{/with}}
+</script>
+
+<script id="handlebars-publications" type="text/x-handlebars-template">
+  {{#with data}}
+    <h2>Publications <small>{{total}} total</small></h2>
+    <ol>
+    {{#each results}}
+      <div class="col-md-8">
+        <li class="margin-bottom-10px">
+          {{> publication}}
+        </li>
+      </div>
+    {{/each}}
+    </ol>
+
+    <div class="col-md-8">
+      {{#ifCond count '<' total}}
+        <small class="text-muted">Displaying {{count}} of {{total}} publications</small>
+        <br>
+        <button class="btn btn-default btn-large" id="load-more-publications">Load more</button>
+      {{/ifCond}}
+    </div>
   {{/with}}
 </script>
 

@@ -16,15 +16,94 @@ var rnaSequenceView = function(upi, taxid) {
     this.taxid = taxid || undefined;
 };
 
+/**
+ * Register Handlebars helper for conditional operators with comparisons.
+ */
+Handlebars.registerHelper('ifCond', function (v1, operator, v2, options) {
+    switch (operator) {
+        case '==':
+            return (v1 == v2) ? options.fn(this) : options.inverse(this);
+        case '===':
+            return (v1 === v2) ? options.fn(this) : options.inverse(this);
+        case '<':
+            return (v1 < v2) ? options.fn(this) : options.inverse(this);
+        case '<=':
+            return (v1 <= v2) ? options.fn(this) : options.inverse(this);
+        case '>':
+            return (v1 > v2) ? options.fn(this) : options.inverse(this);
+        case '>=':
+            return (v1 >= v2) ? options.fn(this) : options.inverse(this);
+        case '&&':
+            return (v1 && v2) ? options.fn(this) : options.inverse(this);
+        case '||':
+            return (v1 || v2) ? options.fn(this) : options.inverse(this);
+        default:
+            return options.inverse(this);
+    }
+});
+
+// same template is used for visualizing publications
+Handlebars.registerPartial('publication', $('#publication-partial').html())
+
+/**
+ * Activate EuropePMC abstract retrieval.
+ */
+rnaSequenceView.prototype.activate_abstract_buttons = function(target) {
+    target.EuropePMCAbstracts({
+        'target_class': '.abstract-text',
+        'pubmed_id_data_attribute': 'pubmed-id',
+        'msg': {
+            'show_abstract': 'Show abstract',
+            'hide_abstract': 'Hide abstract',
+        }
+    });
+};
+
+/**
+ * Retrieve publications associated with an RNAcentral id and display
+ * them using a Handlebars template.
+ */
+rnaSequenceView.prototype.load_publications = function(page_size) {
+    var obj = this,
+        target = $('#publications'),
+        load_more_btn_id = '#load-more-publications',
+        template_id = '#handlebars-publications',
+        url = '/api/v1/rna/__URS__/publications?page_size=__PAGE_SIZE__',
+        page_size = page_size || 25;
+
+    $.get(url.replace('__URS__', obj.upi).replace('__PAGE_SIZE__', page_size), function(data) {
+        insert_content(data);
+        obj.activate_abstract_buttons(target.find('.abstract-btn'));
+    });
+
+    // attach event to the load more button
+    target.off('click').on('click', load_more_btn_id, function(){
+        new_page_size = target.find('li').length + page_size;
+        obj.load_publications(new_page_size);
+    });
+
+    function insert_content(data) {
+        var source = $(template_id).html();
+        var template = Handlebars.compile(source);
+        data.total = data.count;
+        data.count = data.results.length;
+        var wrapper = {
+            data: data,
+        };
+        target.html(template(wrapper));
+    }
+};
+
 rnaSequenceView.prototype.initialize = function() {
 
     var obj = this;
 
     load_xrefs();
+    obj.load_publications();
     activate_tooltips();
     activate_literature_references();
     activate_species_tree();
-    activate_abstract_buttons($('.abstract-btn'));
+    obj.activate_abstract_buttons($('.abstract-btn'));
     enable_show_species_tab_action();
     toggle_tabs();
 
@@ -66,7 +145,7 @@ rnaSequenceView.prototype.initialize = function() {
             } else {
                 $.get('/api/v1/accession/' + accession + '/citations', function(data) {
                     insert_content(data);
-                    activate_abstract_buttons($this.siblings().find('.abstract-btn'));
+                    obj.activate_abstract_buttons($this.siblings().find('.abstract-btn'));
                     target.slideDown();
                 });
             }
@@ -125,16 +204,4 @@ rnaSequenceView.prototype.initialize = function() {
             return false;
         });
     }
-
-    function activate_abstract_buttons(target) {
-        target.EuropePMCAbstracts({
-            'target_class': '.abstract-text',
-            'pubmed_id_data_attribute': 'pubmed-id',
-            'msg': {
-                'show_abstract': 'Show abstract',
-                'hide_abstract': 'Hide abstract',
-            }
-        });
-    }
-
 };

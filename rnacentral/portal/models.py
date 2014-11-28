@@ -915,8 +915,14 @@ class Reference(models.Model):
             title = title if title else 'No title available'
         return title
 
-    def get_authors(self):
-        return self.authors.split(', ')
+    def get_authors_list(self):
+        """
+        Get publication authors as a list.
+        """
+        if self.authors:
+            return self.authors.split(', ')
+        else:
+            return []
 
     class Meta:
         db_table = 'rnc_references'

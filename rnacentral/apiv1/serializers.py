@@ -27,7 +27,7 @@ class RawCitationSerializer(serializers.ModelSerializer):
     Serializer class for literature citations.
     Used in conjunction with raw querysets.
     """
-    authors = serializers.CharField(source='authors')
+    authors = serializers.CharField(source='get_authors_list')
     publication = serializers.CharField(source='location')
     pubmed_id = serializers.CharField(source='pubmed')
     doi = serializers.CharField(source='doi')
@@ -43,7 +43,7 @@ class CitationSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer class for literature citations.
     """
-    authors = serializers.CharField(source='data.authors')
+    authors = serializers.CharField(source='data.get_authors_list')
     publication = serializers.CharField(source='data.location')
     pubmed_id = serializers.CharField(source='data.pubmed')
     doi = serializers.CharField(source='data.doi')
