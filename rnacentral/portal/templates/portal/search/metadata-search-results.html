@@ -122,7 +122,7 @@ limitations under the License.
                   <input type="checkbox" name="facet.label" ng-checked="is_facet_applied(facet.id, facet_value.value)" ng-click="facet_search(facet.id, facet_value.value)">
                   <a href="" ng-click="facet_search(facet.id, facet_value.value)" class="metasearch-facet-link">{{facet_value.label}} <small>({{facet_value.count | number}})</small></a>
                 </li>
-                <small ng-if="facet.facetValues.length == 30" class="text-muted">Showing top 30 organisms</small>
+                <small ng-if="facet.label == 'Organisms' && facet.facetValues.length > 10" class="text-muted">Showing top {{facet.facetValues.length}} organisms</small>
             </ul>
         </li>
       </ul>
