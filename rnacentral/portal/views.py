@@ -22,13 +22,16 @@ from django.utils.cache import patch_cache_control
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from django.template import TemplateDoesNotExist
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from portal.config.expert_databases import expert_dbs
 import re
 import requests
 import json
+import math
 
 
 CACHE_TIMEOUT = 60 * 60 * 24 * 1 # per-view cache timeout in seconds
+XREF_PAGE_SIZE = 1000
 
 ########################
 # Function-based views #
@@ -52,19 +55,25 @@ def ebeye_proxy(request):
         raise Http404
 
 
-@cache_page(CACHE_TIMEOUT)
+
+@never_cache
 def get_xrefs_data(request, upi, taxid=None):
     """
     Internal API.
-    Get the data for the xrefs table. Improves DataTables performance for entries
-    with thousands of cross-references.
+    Get the xrefs table in batches.
     """
+    xref_list = Rna.objects.get(upi=upi).get_xrefs(taxid=taxid).all()
+    paginator = Paginator(xref_list, XREF_PAGE_SIZE)
+
+    page = request.GET.get('page')
     try:
-        rna = Rna.objects.get(upi=upi)
-        xrefs = rna.get_xrefs_new(taxid)
-    except Rna.DoesNotExist:
-        raise Http404
-    return render(request, 'portal/xref-table.html', {'context': {'xrefs': xrefs}})
+        xrefs = paginator.page(page)
+    except PageNotAnInteger:
+        xrefs = paginator.page(1)
+    except EmptyPage:
+        xrefs = paginator.page(paginator.num_pages)
+
+    return render_to_response('portal/xref-table.html', {"xrefs": xrefs})
 
 
 @cache_page(CACHE_TIMEOUT)
@@ -121,6 +130,14 @@ def rna_view(request, upi, taxid=None):
     Unique RNAcentral Sequence view.
     Display all annotations or customize the page using the taxid (optional).
     """
+    def get_xrefs_pages():
+        """
+        When the number of xrefs is large, calculate the number of xref batches.
+        Example:
+        count_xrefs = 3095
+        Return [1, 2, 3, 4] for 4 pages.
+        """
+        return xrange(1, int(math.ceil(rna.count_xrefs()/float(XREF_PAGE_SIZE))) + 1)
 
     def is_taxid_filtering_possible():
         """
@@ -174,6 +191,8 @@ def rna_view(request, upi, taxid=None):
         'distinct_databases': rna.get_distinct_database_names(taxid),
         'publications': rna.get_publications(taxid) if taxid_filtering else rna.get_publications(),
         'tab': request.GET.get('tab', ''),
+        'xref_pages': get_xrefs_pages(),
+        'xref_page_size': XREF_PAGE_SIZE,
     }
 
     return render(request, 'portal/unique-rna-sequence.html', {'rna': rna, 'context': context})

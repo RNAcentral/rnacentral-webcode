@@ -32,11 +32,36 @@ var xrefLoader = function (upi, taxid) {
     this.enable_genomic_features = false;
 };
 
-xrefLoader.prototype.load_xrefs = function() {
+xrefLoader.prototype.load_xrefs = function(page) {
 
-    var obj = this;
+    var obj = this,
+        page = page || 1,
+        initial_load = is_initial_load();
+    hide_xref_table();
+    show_loading_indicator();
     set_xref_timer();
     get_xrefs();
+
+    /**
+     * If the annotations table is empty, then this is the first data load.
+     */
+    function is_initial_load() {
+        return $(obj.config.dom.xref_table + ' tr').length === 0;
+    }
+
+    /**
+     * Hide the xrefs table.
+     */
+    function hide_xref_table() {
+        $(obj.config.dom.xref_table).hide();
+    }
+
+    /**
+     * Show loading indicator.
+     */
+    function show_loading_indicator() {
+        $(obj.config.dom.xref_loading_container).show();
+    }
 
     function set_xref_timer() {
         // show an info message if xrefs are taking too long to load
@@ -50,6 +75,7 @@ xrefLoader.prototype.load_xrefs = function() {
                 return;
             }
             var msg = Handlebars.compile(delay_template.html());
+			target.find(".alert-info").remove();
             target.append(msg).slideDown();
         }, delay);
     }
@@ -59,7 +85,7 @@ xrefLoader.prototype.load_xrefs = function() {
         if (obj.taxid) {
             url += '/' + obj.taxid;
         }
-
+		url += '?page={PAGE}'.replace('{PAGE}', page)
         $.get(url, function(data){
             $(obj.config.dom.xref_table_container).html(data);
                 obj.enable_genomic_features = data.indexOf('View genomic location') > 0;
@@ -87,6 +113,9 @@ xrefLoader.prototype.load_xrefs = function() {
             append_download_links();
 
             function launch_dataTables() {
+
+                delete_dataTables_controls();
+
                 oTable = $(obj.config.dom.xref_table).dataTable({
                     "aoColumns": [null, null, null, {"bVisible": false}, {"bVisible": false}, {"bVisible": false}], // hide columns, but keep them sortable
                     "bAutoWidth": true, // pre-recalculate column widths
@@ -109,6 +138,18 @@ xrefLoader.prototype.load_xrefs = function() {
                     },
                 });
 
+                /**
+                 * Remove the old dataTables controls so that they are not duplicated.
+                 */
+                function delete_dataTables_controls() {
+                    if (!initial_load) {
+                        $('#overview .dataTables_paginate').remove();
+                        $('#overview .dataTables_filter input').remove();
+                        $('#xrefs-table_length').remove();
+                        $('#xrefs-table_filter').remove();
+                    }
+                }
+
                 function adjust_dataTables_controls() {
                     $('.dataTables_filter input').attr('placeholder', 'Filter table').
                                                   attr("tabindex", 2).
@@ -116,6 +157,7 @@ xrefLoader.prototype.load_xrefs = function() {
                                                   addClass('form-control input-sm');
                     $('#xrefs-table_filter').appendTo('#xrefs-datatables-filter').
                                              addClass('pull-right hidden-xs');
+                    $('#xrefs-datatables-counter').html('');
                     $('#xrefs-table_info').appendTo('#xrefs-datatables-counter');
                     // hide pagination controls for tables with one page
                     if ( $('.dataTables_paginate').find('li').length == 3 ) { // 3 elements: <-, 1, ->

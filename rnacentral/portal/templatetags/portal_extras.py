@@ -32,8 +32,8 @@ def get_expert_databases_columns():
 
 @register.assignment_tag
 def get_expert_databases_list():
-	"""
-	Get an alphabetically sorted list of imported expert databases.
-	"""
-	imported_dbs = [x for x in expert_dbs if x['imported']]
-	return sorted(imported_dbs, key=lambda x: x['name'].lower())
+    """
+    Get an alphabetically sorted list of imported expert databases.
+    """
+    imported_dbs = [x for x in expert_dbs if x['imported']]
+    return sorted(imported_dbs, key=lambda x: x['name'].lower())

@@ -94,6 +94,11 @@ rnaSequenceView.prototype.load_publications = function(page_size) {
     }
 };
 
+rnaSequenceView.prototype.load_xrefs = function(page) {
+  xref_loader = new xrefLoader(this.upi, this.taxid);
+  xref_loader.load_xrefs(page || 1);
+};
+
 rnaSequenceView.prototype.initialize = function() {
 
     var obj = this;
@@ -106,6 +111,7 @@ rnaSequenceView.prototype.initialize = function() {
     obj.activate_abstract_buttons($('.abstract-btn'));
     enable_show_species_tab_action();
     toggle_tabs();
+    enable_xref_pagination();
 
     /**
      * Update url parameter when tab is changed.
@@ -121,6 +127,14 @@ rnaSequenceView.prototype.initialize = function() {
     function load_xrefs() {
         xref_loader = new xrefLoader(obj.upi, obj.taxid);
         xref_loader.load_xrefs();
+    }
+
+    function enable_xref_pagination() {
+      $('.xref-pagination').click(function(){
+          var pagination_link = $(this);
+          pagination_link.parent().addClass('active').siblings().removeClass('active');
+          rna_sequence_view.load_xrefs(pagination_link.data('xref-page'));
+      });
     }
 
     function activate_tooltips() {

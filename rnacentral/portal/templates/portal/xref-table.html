@@ -12,7 +12,6 @@ limitations under the License.
 -->
 
 {% load humanize %}
-
 <table class="table table-hover table-condensed table-bordered" id="xrefs-table">
 
 <thead>
@@ -28,7 +27,7 @@ limitations under the License.
 
 <tbody>
 
-{% for xref in context.xrefs %}
+{% for xref in xrefs %}
   <tr {% if xref.deleted == 'Y' %}class="warning"{% endif %}>
     <td>
       {% if xref.db.name != 'ENA' %}

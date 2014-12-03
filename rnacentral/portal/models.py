@@ -23,6 +23,19 @@ import re
 # CREATE INDEX index_name ON table_name(SYS_OP_C2C(column_name));
 
 
+class RnaPrecomputedData(models.Model):
+    id = models.AutoField(primary_key=True)
+    upi = models.OneToOneField('Rna', db_column='upi', to_field='upi', related_name='precomputed', unique=True, db_index=True)
+    description = models.CharField(max_length=250, db_index=True)
+    count_human_xrefs = models.PositiveIntegerField(db_index=True)
+    count_distinct_organisms = models.PositiveIntegerField(db_index=True)
+    has_human_genomic_coordinates = models.NullBooleanField(db_index=True)
+    N_symbols = models.PositiveSmallIntegerField(db_index=True)
+
+    class Meta:
+        db_table = 'rnc_rna_precomputed_data'
+
+
 class Rna(models.Model):
     id = models.IntegerField(db_column='id')
     upi = models.CharField(max_length=13, db_index=True, primary_key=True)
@@ -36,26 +49,6 @@ class Rna(models.Model):
 
     class Meta:
         db_table = 'rna'
-
-    def get_xrefs_new(self, taxid=None):
-        """
-        Get all xrefs, show non-ENA annotations first.
-        Exclude source ENA entries that are associated with other expert db entries.
-        For example, only fetch Vega xrefs and don't retrieve the ENA entries they are
-        based on.
-        """
-        expert_db_projects = Database.objects.exclude(project_id=None).\
-                                              values_list('project_id', flat=True)
-        xrefs = self.xrefs.filter(deleted='N').\
-                           exclude(db__id=1, accession__project__in=expert_db_projects).\
-                           order_by('-db__id').\
-                           select_related()
-        if taxid:
-            xrefs = xrefs.filter(taxid=taxid)
-        if xrefs.exists():
-            return xrefs
-        else:
-            return self.xrefs.filter(deleted='Y').select_related()
 
     def get_publications(self, taxid=None):
         """
@@ -126,61 +119,31 @@ class Rna(models.Model):
             'N': len(seq) - (count_A + count_C + count_G + count_U)
         }
 
-    def get_expert_database_xrefs(self):
+    def get_xrefs(self, taxid=None):
         """
-        Get xrefs from expert databases.
-        """
-        return self.xrefs.select_related().exclude(accession__is_composite='N').filter(deleted='N').all()
-
-    def get_ena_xrefs(self):
-        """
-        Get ENA xrefs that don't have corresponding expert database entries.
+        Get all xrefs, show non-ENA annotations first.
+        Exclude source ENA entries that are associated with other expert db entries.
+        For example, only fetch Vega xrefs and don't retrieve the ENA entries they are
+        based on.
         """
         expert_db_projects = Database.objects.exclude(project_id=None).\
                                               values_list('project_id', flat=True)
-        return self.xrefs.filter(db__descr='ENA', deleted='N').\
-                          exclude(accession__project__in=expert_db_projects).\
-                          select_related().\
-                          all()
-
-    def get_rdp_xrefs(self):
-        """
-        Get RDP xrefs, which require separate treatment because they are not
-        part of the Non-coding product.
-        """
-        return self.xrefs.filter(db__descr='RDP', deleted='N').select_related().all()
-
-    def get_refseq_xrefs(self):
-        """
-        Get RefSeq xrefs, which require separate treatment because they are not
-        part of the Non-coding product.
-        """
-        return self.xrefs.filter(db__descr='REFSEQ', deleted='N').select_related().all()
-
-    def get_rfam_xrefs(self):
-        """
-        Get RFAM xrefs, which require separate treatment because they are not
-        part of the Non-coding product.
-        """
-        return self.xrefs.filter(db__descr='RFAM', deleted='N').select_related().all()
-
-    def get_xrefs(self):
-        """
-        Concatenate querysets putting the expert database xrefs
-        at the beginning of the resulting queryset.
-        """
-        xrefs = self.get_ena_xrefs() | self.get_refseq_xrefs() | self.get_rdp_xrefs() | \
-                self.get_rfam_xrefs() | self.get_expert_database_xrefs()
-        if xrefs:
+        xrefs = self.xrefs.filter(deleted='N').\
+                           exclude(db__id=1, accession__project__in=expert_db_projects).\
+                           order_by('-db__id').\
+                           select_related()
+        if taxid:
+            xrefs = xrefs.filter(taxid=taxid)
+        if xrefs.exists():
             return xrefs
         else:
-            return self.xrefs.filter(deleted='Y').select_related().all()
+            return self.xrefs.filter(deleted='Y').select_related()
 
     def count_xrefs(self):
         """
         Count the number of cross-references associated with the sequence.
         """
-        return self.xrefs.count()
+        return self.xrefs.filter(db__id__in=[1,2,9,10], deleted='N').count()
 
     @cached_property
     def count_distinct_organisms(self):
@@ -196,7 +159,7 @@ class Rna(models.Model):
         databases = self.xrefs.filter(deleted='N')
         if taxid:
             databases = databases.filter(taxid=taxid)
-        databases = databases.values_list('db__display_name', flat=True).distinct()
+        databases = list(databases.values_list('db__display_name', flat=True).distinct())
         databases = sorted(databases, key=lambda s: s.lower()) # case-insensitive
         return databases
 
@@ -335,7 +298,6 @@ class Rna(models.Model):
                 rna_type = genes[0]
             else:
                 feature_names = get_distinct_feature_names()
-                print feature_names
                 if feature_names[0] == 'ncRNA' and len(feature_names) == 1:
                     ncrna_classes = get_distinct_ncrna_classes()
                     rna_type = '/'.join(ncrna_classes)
@@ -495,9 +457,9 @@ class Release(models.Model):
 class Accession(models.Model):
     accession = models.CharField(max_length=100, primary_key=True)
     parent_ac = models.CharField(max_length=100)
-    seq_version = models.IntegerField()
-    feature_start = models.IntegerField()
-    feature_end = models.IntegerField()
+    seq_version = models.IntegerField(db_index=True)
+    feature_start = models.IntegerField(db_index=True)
+    feature_end = models.IntegerField(db_index=True)
     feature_name = models.CharField(max_length=20)
     ordinal = models.IntegerField()
     division = models.CharField(max_length=3)
@@ -841,22 +803,21 @@ class Xref(models.Model):
                 return genome['assembly_ucsc']
         return None
 
+    @cached_property
     def has_genomic_coordinates(self):
         """
         Determine whether an xref has genomic coordinates.
         Return true only if all exons are mapped to genomic coordinates.
         """
-        if not self.accession.coordinates.first():
+        chromosomes = self.accession.coordinates.values_list('chromosome', flat=True)
+        if not chromosomes or '' in chromosomes:
             return False
-        for coordinate in self.accession.coordinates.all():
-            if not coordinate.chromosome:
-                return False
-        return True
+        else:
+            return True
 
     def get_genomic_coordinates(self):
         """
         Mirror the existing API while using the new GenomicCoordinates model.
-        TODO: remove "new_" from the method name.
         """
         data = {
             'chromosome': self.get_feature_chromosome(),
