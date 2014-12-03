@@ -43,7 +43,7 @@ Handlebars.registerHelper('ifCond', function (v1, operator, v2, options) {
 });
 
 // same template is used for visualizing publications
-Handlebars.registerPartial('publication', $('#publication-partial').html())
+Handlebars.registerPartial('publication', $('#publication-partial').html());
 
 /**
  * Activate EuropePMC abstract retrieval.
@@ -68,8 +68,8 @@ rnaSequenceView.prototype.load_publications = function(page_size) {
         target = $('#publications'),
         load_more_btn_id = '#load-more-publications',
         template_id = '#handlebars-publications',
-        url = '/api/v1/rna/__URS__/publications?page_size=__PAGE_SIZE__',
-        page_size = page_size || 25;
+        url = '/api/v1/rna/__URS__/publications?page_size=__PAGE_SIZE__';
+    page_size = page_size || 25;
 
     $.get(url.replace('__URS__', obj.upi).replace('__PAGE_SIZE__', page_size), function(data) {
         insert_content(data);
@@ -95,8 +95,8 @@ rnaSequenceView.prototype.load_publications = function(page_size) {
 };
 
 rnaSequenceView.prototype.load_xrefs = function(page) {
-  xref_loader = new xrefLoader(this.upi, this.taxid);
-  xref_loader.load_xrefs(page || 1);
+    xref_loader = new xrefLoader(this.upi, this.taxid);
+    xref_loader.load_xrefs(page || 1);
 };
 
 rnaSequenceView.prototype.initialize = function() {
@@ -124,11 +124,11 @@ rnaSequenceView.prototype.initialize = function() {
 
     function enable_xref_pagination() {
       $('.xref-pagination').click(function(){
-          var pagination_link = $(this);
-          pagination_link.parent().addClass('active').siblings().removeClass('active');
-          rna_sequence_view.load_xrefs(pagination_link.data('xref-page'));
+        var pagination_link = $(this);
+        pagination_link.parent().addClass('active').siblings().removeClass('active');
+        rna_sequence_view.load_xrefs(pagination_link.data('xref-page'));
 
-        q = queryString.parse(location.search),
+        q = queryString.parse(location.search);
         url_param = 'xref-page';
 
         q[url_param] = pagination_link.data(url_param);

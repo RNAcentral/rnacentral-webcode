@@ -35,8 +35,8 @@ var xrefLoader = function (upi, taxid) {
 xrefLoader.prototype.load_xrefs = function(page) {
 
     var obj = this,
-        page = page || 1,
         initial_load = is_initial_load();
+    page = page || 1;
     hide_xref_table();
     show_loading_indicator();
     set_xref_timer();
@@ -85,7 +85,7 @@ xrefLoader.prototype.load_xrefs = function(page) {
         if (obj.taxid) {
             url += '/' + obj.taxid;
         }
-		url += '?page={PAGE}'.replace('{PAGE}', page)
+		url += '?page={PAGE}'.replace('{PAGE}', page);
         $.get(url, function(data){
             $(obj.config.dom.xref_table_container).html(data);
                 obj.enable_genomic_features = data.indexOf('View genomic location') > 0;
