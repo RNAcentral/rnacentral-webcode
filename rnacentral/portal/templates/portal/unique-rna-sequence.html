@@ -155,7 +155,7 @@ limitations under the License.
                 Navigate between batches:
                 <ul class="pagination pagination-sm">
                   {% for xref_page in context.xref_pages %}
-                    <li {% if forloop.first %}class="active"{% endif %}>
+                    <li {% if context.xref_page_num == forloop.counter %}class="active"{% endif %}>
                       <a href="" data-xref-page="{{xref_page}}" class="xref-pagination">{{ xref_page }}</a>
                     </li>
                   {% endfor %}
@@ -380,6 +380,7 @@ limitations under the License.
         rna_sequence_view = new rnaSequenceView('{{rna.upi}}');
       {% endif %}
       rna_sequence_view.initialize();
+      rna_sequence_view.load_xrefs({{ context.xref_page_num }});
 
       // hopscotch guided tour
       hopscotch_tour = new guidedTour;

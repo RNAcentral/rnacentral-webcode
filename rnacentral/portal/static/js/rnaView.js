@@ -102,7 +102,6 @@ rnaSequenceView.prototype.load_xrefs = function(page) {
 rnaSequenceView.prototype.initialize = function() {
 
     var obj = this;
-    obj.load_xrefs();
     obj.load_publications();
     activate_tooltips();
     activate_literature_references();
@@ -128,6 +127,12 @@ rnaSequenceView.prototype.initialize = function() {
           var pagination_link = $(this);
           pagination_link.parent().addClass('active').siblings().removeClass('active');
           rna_sequence_view.load_xrefs(pagination_link.data('xref-page'));
+
+        q = queryString.parse(location.search),
+        url_param = 'xref-page';
+
+        q[url_param] = pagination_link.data(url_param);
+        history.replaceState({}, "", window.location.pathname + '?' + queryString.stringify(q));
       });
     }
 

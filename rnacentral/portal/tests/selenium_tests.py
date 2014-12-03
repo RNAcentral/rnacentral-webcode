@@ -584,10 +584,24 @@ class RNAcentralTest(unittest.TestCase):
             self.assertFalse(page.js_errors_found())
             self.assertTrue(page.get_svg_diagrams())
 
-    # def test_long_loading_page(self):
-    #     page = SequencePage(self.browser, 'URS00002FA515')
-    #     page.navigate()
-    #     self._sequence_view_checks(page)
+    def test_xref_pagination(self):
+        """
+        Test xref table pagination.
+        """
+        class XrefPaginationPage(SequencePage):
+            """
+            Get the active xref page number.
+            """
+            def get_active_xref_page_num(self):
+                active_button = self.browser.find_element_by_css_selector('li.active>a.xref-pagination')
+                return active_button.text
+
+        upi = 'URS00006EC23D'
+        xref_page_num = '5'
+        page = XrefPaginationPage(self.browser, upi + '?xref-page=' + xref_page_num)
+        page.navigate()
+        self.assertTrue(page.get_active_xref_page_num(), xref_page_num)
+        self._sequence_view_checks(page)
 
     def test_genoverse_page(self):
         page = GenoverseTestPage(self.browser, 'URS00000B15DA')

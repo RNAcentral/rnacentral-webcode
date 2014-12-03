@@ -130,6 +130,19 @@ def rna_view(request, upi, taxid=None):
     Unique RNAcentral Sequence view.
     Display all annotations or customize the page using the taxid (optional).
     """
+    def get_xref_page_num():
+        """
+        For pages with many xrefs, get the xref page number.
+        Return it as a number because it is used in numerical comparisons
+        in the template.
+        """
+        xref_page_num = request.GET.get('xref-page')
+        if xref_page_num:
+            xref_page_num = int(xref_page_num)
+        else:
+            xref_page_num = 1
+        return xref_page_num
+
     def get_xrefs_pages():
         """
         When the number of xrefs is large, calculate the number of xref batches.
@@ -193,6 +206,7 @@ def rna_view(request, upi, taxid=None):
         'tab': request.GET.get('tab', ''),
         'xref_pages': get_xrefs_pages(),
         'xref_page_size': XREF_PAGE_SIZE,
+        'xref_page_num': get_xref_page_num(),
     }
 
     return render(request, 'portal/unique-rna-sequence.html', {'rna': rna, 'context': context})
