@@ -56,6 +56,8 @@ urlpatterns = patterns('',
     url(r'^error/?$', views.StaticView.as_view(), {'page': 'error'}, name='error'),
     # status
     url(r'^status/?$', 'portal.views.website_status_view', name='website-status'),
+    # download search results
+    url(r'^download/result/?$', 'portal.views.download_job_result', name='download-job-result'),
 )
 
 # internal API

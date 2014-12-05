@@ -16,6 +16,7 @@ from portal.forms import ContactForm
 
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, render_to_response, redirect
+from django.core.urlresolvers import reverse
 from django.db.models import Min, Max, Count, Avg
 from django.views.decorators.cache import cache_page, never_cache
 from django.utils.cache import patch_cache_control
@@ -37,6 +38,26 @@ XREF_PAGE_SIZE = 1000
 ########################
 # Function-based views #
 ########################
+
+def download_job_result(request):
+    """
+    Download job results given a job id.
+    """
+    job_id = request.GET.get('job', '')
+
+    if not job_id:
+        raise Http404
+
+    q = django_rq.get_queue()
+    job = q.fetch_job(job_id)
+
+    if not job:
+        return HttpResponse('Invalid job id')
+    if job.result:
+        return HttpResponse(job.result)
+    else:
+        return HttpResponse('Check back later')
+
 
 def export_results(query):
     """
@@ -120,7 +141,8 @@ def export_search_results(request):
     job = django_rq.enqueue(export_results, query)
 
     # todo: error handling
-    return HttpResponse(job.id)
+    result_url = '{url}?job={job_id}'.format(url=reverse('download-job-result'), job_id=job.id)
+    return HttpResponse(result_url)
 
 
 @never_cache
