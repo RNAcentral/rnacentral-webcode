@@ -25,6 +25,7 @@ from django.views.generic.edit import FormView
 from django.template import TemplateDoesNotExist
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from portal.config.expert_databases import expert_dbs
+import gzip
 import re
 import requests
 import json
@@ -104,11 +105,14 @@ def export_results(query):
         output = []
         for rna in Rna.objects.filter(upi__in=rnacentral_ids).all():
             output.append(rna.get_sequence_fasta())
-        return output
+        return ''.join(output)
 
     def paginate_over_results():
         """
+        Loop over the results and write out the data in an archive.
         """
+        filename = 'results.txt.gz'
+        archive = gzip.open(filename, 'wb')
         output = []
         start = 0
         page_size = 50
@@ -116,13 +120,14 @@ def export_results(query):
             max_end = start + page_size
             end = min(max_end, hits)
             rnacentral_ids = get_results_page(start, end)
-            output += format_output(rnacentral_ids)
+            archive.write(format_output(rnacentral_ids))
             start = max_end
-        return output
+        archive.close()
+        return filename
 
     hits = get_hit_count()
     if hits == 0:
-        data = ['no results']
+        data = 'no results'
     else:
         data = paginate_over_results()
     return data
