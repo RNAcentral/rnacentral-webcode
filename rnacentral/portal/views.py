@@ -37,12 +37,8 @@ XREF_PAGE_SIZE = 1000
 # Function-based views #
 ########################
 
-@never_cache
-def export_search_results(request):
+def export_results(query):
     """
-    Internal API.
-    Export search results in different formats:
-    * fasta
     """
     endpoint = 'http://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
 
@@ -102,17 +98,29 @@ def export_search_results(request):
             start = max_end
         return output
 
-    query = request.GET.get('q', '')
-    _format = request.GET.get('format', 'fasta')
-    # try:
     hits = get_hit_count()
     if hits == 0:
         data = ['no results']
     else:
         data = paginate_over_results()
+    return data
+
+
+@never_cache
+def export_search_results(request):
+    """
+    Internal API.
+    Export search results in different formats:
+    * fasta
+    """
+    query = request.GET.get('q', '')
+    _format = request.GET.get('format', 'fasta')
+    # try:
+    data = export_results(query)
     return HttpResponse(content=''.join(data), content_type='text/fasta')
     # except:
     #     raise Http404
+
 
 @never_cache
 def ebeye_proxy(request):
