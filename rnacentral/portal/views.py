@@ -16,6 +16,7 @@ from portal.forms import ContactForm
 
 from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, render_to_response, redirect
+from django.core.servers.basehttp import FileWrapper
 from django.core.urlresolvers import reverse
 from django.db.models import Min, Max, Count, Avg
 from django.views.decorators.cache import cache_page, never_cache
@@ -31,6 +32,7 @@ import requests
 import json
 import math
 import django_rq
+import os
 
 
 CACHE_TIMEOUT = 60 * 60 * 24 * 1 # per-view cache timeout in seconds
@@ -55,7 +57,11 @@ def download_job_result(request):
     if not job:
         return HttpResponse('Invalid job id')
     if job.result:
-        return HttpResponse(job.result)
+        wrapper = FileWrapper(open(job.result, 'r'))
+        response = HttpResponse(wrapper, content_type='text/fasta')
+        response['Content-Disposition'] = 'attachment; filename=%s' % job.result
+        response['Content-Length'] = os.path.getsize(job.result)
+        return response
     else:
         return HttpResponse('Check back later')
 
