@@ -67,4 +67,6 @@ urlpatterns += patterns('',
     url(r'^rna/(?P<upi>\w+)/lineage/?$', 'portal.views.get_sequence_lineage'),
     # query EBeye
     url(r'^api/internal/ebeye/?$', 'portal.views.ebeye_proxy', name='ebeye-proxy'),
+    # export search results
+    url(r'^api/internal/export-search-results/?$', 'portal.views.export_search_results', name='export-search-results'),
 )

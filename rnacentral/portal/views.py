@@ -38,6 +38,83 @@ XREF_PAGE_SIZE = 1000
 ########################
 
 @never_cache
+def export_search_results(request):
+    """
+    Internal API.
+    Export search results in different formats:
+    * fasta
+    """
+    endpoint = 'http://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
+
+    def get_hit_count():
+        """
+        Get the total number of results to be exported.
+        """
+        hits = 0
+        url = ''.join([endpoint,
+                      '?query={query}',
+                      '&start=0',
+                      '&size=0',
+                      '&format=json']).format(query=query)
+        # todo error handling
+        results = json.loads(requests.get(url).text)
+        hits = results['hitCount']
+        return hits
+
+    def get_results_page(start, end):
+        """
+        Paginate over search results and record RNAcentral ids.
+        """
+        ids = []
+        page_size = end - start
+        url =  ''.join([endpoint,
+                       '?query={query}',
+                       '&start={start}',
+                       '&size={page_size}',
+                       '&format=json']).format(query=query, start=start, page_size=page_size)
+        # todo error handling
+        data = json.loads(requests.get(url).text)
+        for entry in data['entries']:
+            ids.append(entry['id'])
+        return ids
+
+    def format_output(rnacentral_ids):
+        """
+        Given a list of RNAcentral ids, return the results
+        in the specified format.
+        """
+        output = []
+        for rna in Rna.objects.filter(upi__in=rnacentral_ids).all():
+            output.append(rna.get_sequence_fasta())
+        return output
+
+    def paginate_over_results():
+        """
+        """
+        output = []
+        start = 0
+        page_size = 50
+        while (start < hits):
+            max_end = start + page_size
+            end = min(max_end, hits)
+            rnacentral_ids = get_results_page(start, end)
+            output += format_output(rnacentral_ids)
+            start = max_end
+        return output
+
+    query = request.GET.get('q', '')
+    _format = request.GET.get('format', 'fasta')
+    # try:
+    hits = get_hit_count()
+    if hits == 0:
+        data = ['no results']
+    else:
+        data = paginate_over_results()
+    return HttpResponse(content=''.join(data), content_type='text/fasta')
+    # except:
+    #     raise Http404
+
+@never_cache
 def ebeye_proxy(request):
     """
     Internal API.
