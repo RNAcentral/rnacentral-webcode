@@ -11,28 +11,29 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from portal.models import Rna, Database, Release, Xref, Accession, DatabaseStats
-from portal.forms import ContactForm
+import django_rq
+import gzip
+import json
+import math
+import os
+import re
+import requests
 
-from django.http import Http404, HttpResponseRedirect, HttpResponse
-from django.shortcuts import render, render_to_response, redirect
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.servers.basehttp import FileWrapper
 from django.core.urlresolvers import reverse
 from django.db.models import Min, Max, Count, Avg
-from django.views.decorators.cache import cache_page, never_cache
+from django.http import Http404, HttpResponseRedirect, HttpResponse
+from django.shortcuts import render, render_to_response, redirect
+from django.template import TemplateDoesNotExist
 from django.utils.cache import patch_cache_control
+from django.views.decorators.cache import cache_page, never_cache
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
-from django.template import TemplateDoesNotExist
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
 from portal.config.expert_databases import expert_dbs
-import gzip
-import re
-import requests
-import json
-import math
-import django_rq
-import os
+from portal.forms import ContactForm
+from portal.models import Rna, Database, Release, Xref, Accession, DatabaseStats
 
 
 CACHE_TIMEOUT = 60 * 60 * 24 * 1 # per-view cache timeout in seconds
