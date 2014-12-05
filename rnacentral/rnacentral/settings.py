@@ -155,6 +155,7 @@ INSTALLED_APPS = (
     'debug_toolbar',
     'compressor',
     'markdown_deux',
+    'django_rq',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
@@ -264,6 +265,16 @@ DEBUG_TOOLBAR_PANELS = (
     # 'debug_toolbar.panels.signals.SignalDebugPanel',
     # 'debug_toolbar.panels.logger.LoggingPanel',
 )
+
+RQ_QUEUES = {
+    'default': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+        # 'PASSWORD': 'some-password',
+        'DEFAULT_TIMEOUT': 360,
+    },
+}
 
 # django-maintenance
 MAINTENANCE_MODE = False

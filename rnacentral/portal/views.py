@@ -28,6 +28,7 @@ import re
 import requests
 import json
 import math
+import django_rq
 
 
 CACHE_TIMEOUT = 60 * 60 * 24 * 1 # per-view cache timeout in seconds
@@ -115,11 +116,11 @@ def export_search_results(request):
     """
     query = request.GET.get('q', '')
     _format = request.GET.get('format', 'fasta')
-    # try:
-    data = export_results(query)
-    return HttpResponse(content=''.join(data), content_type='text/fasta')
-    # except:
-    #     raise Http404
+
+    job = django_rq.enqueue(export_results, query)
+
+    # todo: error handling
+    return HttpResponse(job.id)
 
 
 @never_cache
