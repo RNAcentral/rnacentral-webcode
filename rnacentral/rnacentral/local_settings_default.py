@@ -47,3 +47,5 @@ INTERNAL_IPS = ('127.0.0.1',)
 
 # django-maintenance
 MAINTENANCE_MODE = False
+
+EXPORT_RESULTS_DIR = ''

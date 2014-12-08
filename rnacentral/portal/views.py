@@ -24,12 +24,14 @@ from django.core.servers.basehttp import FileWrapper
 from django.core.urlresolvers import reverse
 from django.db.models import Min, Max, Count, Avg
 from django.http import Http404, HttpResponseRedirect, HttpResponse
+from django.conf import settings
 from django.shortcuts import render, render_to_response, redirect
 from django.template import TemplateDoesNotExist
 from django.utils.cache import patch_cache_control
 from django.views.decorators.cache import cache_page, never_cache
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
+from rq import get_current_job
 
 from portal.config.expert_databases import expert_dbs
 from portal.forms import ContactForm
@@ -60,17 +62,18 @@ def download_job_result(request):
     if job.result:
         wrapper = FileWrapper(open(job.result, 'r'))
         response = HttpResponse(wrapper, content_type='text/fasta')
-        response['Content-Disposition'] = 'attachment; filename=%s' % job.result
+        response['Content-Disposition'] = 'attachment; filename=%s' % os.path.basename(job.result)
         response['Content-Length'] = os.path.getsize(job.result)
         return response
     else:
         return HttpResponse('Check back later')
 
 
-def export_results(query):
+def export_results(query, _format):
     """
     """
     endpoint = 'http://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
+    job = get_current_job()
 
     def get_hit_count():
         """
@@ -118,7 +121,8 @@ def export_results(query):
         """
         Loop over the results and write out the data in an archive.
         """
-        filename = 'results.txt.gz'
+        filename = os.path.join(settings.EXPORT_RESULTS_DIR,
+                                '%s.%s.gz' % (job.id, _format))
         archive = gzip.open(filename, 'wb')
         output = []
         start = 0
@@ -150,7 +154,7 @@ def export_search_results(request):
     query = request.GET.get('q', '')
     _format = request.GET.get('format', 'fasta')
 
-    job = django_rq.enqueue(export_results, query)
+    job = django_rq.enqueue(export_results, query, _format)
 
     # todo: error handling
     result_url = '{url}?job={job_id}'.format(url=reverse('download-job-result'), job_id=job.id)
