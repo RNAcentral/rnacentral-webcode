@@ -166,7 +166,10 @@ def export_search_results(request):
     job = django_rq.enqueue(export_results, query, _format)
 
     # todo: error handling
-    result_url = '{url}?job={job_id}'.format(url=reverse('download-job-result'), job_id=job.id)
+    result_url = '<a href="{host}{url}?job={job_id}">{job_id}</a>'.format(
+        host=request.get_host(),
+        url=reverse('download-job-result'),
+        job_id=job.id)
     return HttpResponse(result_url)
 
 
