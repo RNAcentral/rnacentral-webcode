@@ -126,7 +126,7 @@ def export_results(query, _format):
         archive = gzip.open(filename, 'wb')
         output = []
         start = 0
-        page_size = 50
+        page_size = 100
         while (start < hits):
             max_end = start + page_size
             end = min(max_end, hits)
