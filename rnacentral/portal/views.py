@@ -23,7 +23,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.servers.basehttp import FileWrapper
 from django.core.urlresolvers import reverse
 from django.db.models import Min, Max, Count, Avg
-from django.http import Http404, HttpResponseRedirect, HttpResponse
+from django.http import Http404, HttpResponseRedirect, HttpResponse, HttpResponseNotFound
 from django.conf import settings
 from django.shortcuts import render, render_to_response, redirect
 from django.template import TemplateDoesNotExist
@@ -185,12 +185,17 @@ def export_search_results(request):
     """
     Internal API.
     Export search results in different formats:
-    * fasta
+    * fasta (default)
     * json
     * csv
     """
     query = request.GET.get('q', '')
-    _format = request.GET.get('format', 'fasta')
+    _format = request.GET.get('format', 'fasta').lower()
+
+    formats = ['fasta', 'json', 'csv']
+
+    if _format not in formats:
+        return HttpResponseNotFound('Unrecognized format "%s"' % _format)
 
     job = django_rq.enqueue(export_results, query, _format)
 
