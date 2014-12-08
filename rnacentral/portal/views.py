@@ -47,7 +47,9 @@ XREF_PAGE_SIZE = 1000
 
 def download_job_result(request):
     """
-    Download job results given a job id.
+    Internal API.
+    Download metadata search results in a file given a job id.
+    The file is returned via Django in small chunks to control memory usage.
     """
     job_id = request.GET.get('job', '')
 
@@ -58,6 +60,7 @@ def download_job_result(request):
     job = q.fetch_job(job_id)
 
     if not job:
+        # todo: error handling
         return HttpResponse('Invalid job id')
     if job.result:
         wrapper = FileWrapper(open(job.result, 'r'))
@@ -71,7 +74,11 @@ def download_job_result(request):
 
 def export_results(query, _format):
     """
+    RQ worker function.
+    Use EBI search REST API to paginate over the results, extract RNAcentral ids,
+    format the data and write it out to a local file.
     """
+    # todo: switch to production endpoint
     endpoint = 'http://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
     job = get_current_job()
 
@@ -150,6 +157,8 @@ def export_search_results(request):
     Internal API.
     Export search results in different formats:
     * fasta
+    * json
+    * csv
     """
     query = request.GET.get('q', '')
     _format = request.GET.get('format', 'fasta')
