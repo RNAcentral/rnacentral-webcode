@@ -67,10 +67,14 @@ urlpatterns += patterns('',
     url(r'^rna/(?P<upi>\w+)/lineage/?$', 'portal.views.get_sequence_lineage'),
     # query EBeye
     url(r'^api/internal/ebeye/?$', 'portal.views.ebeye_proxy', name='ebeye-proxy'),
+)
+
+# exporting metadata search results
+urlpatterns += patterns('',
     # export search results
-    url(r'^api/internal/export-search-results/?$', 'portal.views.export_search_results', name='export-search-results'),
+    url(r'^export/submit-query/?$', 'portal.views.export_search_results', name='export-submit-query'),
     # download search results
-    url(r'^result/download/?$', 'portal.views.download_job_result', name='download-job-result'),
+    url(r'^export/download-result/?$', 'portal.views.download_job_result', name='export-download-result'),
     # get metadata search export status
-    url(r'^result/status/?$', 'portal.views.get_export_job_status', name='export-job-status'),
+    url(r'^export/job-status/?$', 'portal.views.get_export_job_status', name='export-job-status'),
 )

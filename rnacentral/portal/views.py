@@ -197,7 +197,7 @@ def export_search_results(request):
     # todo: error handling
     result_url = '<a href="{host}{url}?job={job_id}">{job_id}</a>'.format(
         host=request.get_host(),
-        url=reverse('download-job-result'),
+        url=reverse('export-download-result'),
         job_id=job.id)
     return HttpResponse(result_url)
 
