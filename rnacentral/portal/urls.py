@@ -72,9 +72,9 @@ urlpatterns += patterns('',
 # exporting metadata search results
 urlpatterns += patterns('',
     # export search results
-    url(r'^export/submit-query/?$', 'portal.views.export_search_results', name='export-submit-query'),
+    url(r'^export/submit-query/?$', 'portal.views.submit_export_job', name='export-submit-job'),
     # download search results
-    url(r'^export/download-result/?$', 'portal.views.download_job_result', name='export-download-result'),
+    url(r'^export/download-result/?$', 'portal.views.download_search_result_file', name='export-download-result'),
     # get metadata search export status
     url(r'^export/job-status/?$', 'portal.views.get_export_job_status', name='export-job-status'),
 )

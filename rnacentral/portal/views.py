@@ -48,7 +48,7 @@ XREF_PAGE_SIZE = 1000
 # Function-based views #
 ########################
 
-def download_job_result(request):
+def download_search_result_file(request):
     """
     Internal API.
     Download metadata search results in a file given a job id.
@@ -102,7 +102,7 @@ def get_export_job_status(request):
     return HttpResponse(json.dumps(data))
 
 
-def export_results(query, _format):
+def export_search_results(query, _format):
     """
     RQ worker function.
     Use EBI search REST API to paginate over the results, extract RNAcentral ids,
@@ -189,7 +189,7 @@ def export_results(query, _format):
 
 
 @never_cache
-def export_search_results(request):
+def submit_export_job(request):
     """
     Internal API.
     Export search results in different formats:
@@ -205,7 +205,7 @@ def export_search_results(request):
     if _format not in formats:
         return HttpResponseNotFound('Unrecognized format "%s"' % _format)
 
-    job = django_rq.enqueue(export_results, query, _format)
+    job = django_rq.enqueue(export_search_results, query, _format)
 
     # todo: error handling
     result_url = '<a href="{host}{url}?job={job_id}">{job_id}</a>'.format(
