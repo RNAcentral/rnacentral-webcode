@@ -140,6 +140,8 @@ def export_results(query, _format):
             rnacentral_ids = get_results_page(start, end)
             archive.write(format_output(rnacentral_ids))
             start = max_end
+            job.meta['progress'] = max(float(start) / hits, 100)
+            job.save()
         archive.close()
         return filename
 
