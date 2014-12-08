@@ -32,7 +32,10 @@ from django.views.decorators.cache import cache_page, never_cache
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 from rq import get_current_job
+from rest_framework import renderers
 
+from apiv1.serializers import RnaFlatSerializer, RnaFastaSerializer
+from apiv1.views import RnaFastaRenderer
 from portal.config.expert_databases import expert_dbs
 from portal.forms import ContactForm
 from portal.models import Rna, Database, Release, Xref, Accession, DatabaseStats
@@ -146,10 +149,15 @@ def export_results(query, _format):
         Given a list of RNAcentral ids, return the results
         in the specified format.
         """
-        output = []
-        for rna in Rna.objects.filter(upi__in=rnacentral_ids).all():
-            output.append(rna.get_sequence_fasta())
-        return ''.join(output)
+        queryset = Rna.objects.filter(upi__in=rnacentral_ids).all()
+        if _format == 'fasta':
+            serializer = RnaFastaSerializer(queryset, many=True)
+            renderer = RnaFastaRenderer()
+        elif _format == 'json':
+            serializer = RnaFlatSerializer(queryset, many=True)
+            renderer = renderers.JSONRenderer() # todo: fix concatenated json documents
+        output = renderer.render(serializer.data)
+        return output
 
     def paginate_over_results():
         """
