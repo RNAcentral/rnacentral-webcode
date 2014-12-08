@@ -72,6 +72,33 @@ def download_job_result(request):
         return HttpResponse('Check back later')
 
 
+def get_export_job_status(request):
+    """
+    Internal API.
+    Get search export job status and associated metadata.
+    """
+    job_id = request.GET.get('job', '')
+
+    if not job_id:
+        raise Http404
+
+    q = django_rq.get_queue()
+    job = q.fetch_job(job_id)
+
+    if not job:
+        # todo: error handling
+        return HttpResponse('Invalid job id')
+
+    data = {
+        'id': job.id,
+        'status': job.get_status(),
+        'progress': job.meta['progress'],
+        'enqueued_at': str(job.enqueued_at),
+        'ended_at': str(job.ended_at),
+    }
+    return HttpResponse(json.dumps(data))
+
+
 def export_results(query, _format):
     """
     RQ worker function.

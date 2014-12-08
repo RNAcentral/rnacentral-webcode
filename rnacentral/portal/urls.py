@@ -56,8 +56,6 @@ urlpatterns = patterns('',
     url(r'^error/?$', views.StaticView.as_view(), {'page': 'error'}, name='error'),
     # status
     url(r'^status/?$', 'portal.views.website_status_view', name='website-status'),
-    # download search results
-    url(r'^download/result/?$', 'portal.views.download_job_result', name='download-job-result'),
 )
 
 # internal API
@@ -71,4 +69,8 @@ urlpatterns += patterns('',
     url(r'^api/internal/ebeye/?$', 'portal.views.ebeye_proxy', name='ebeye-proxy'),
     # export search results
     url(r'^api/internal/export-search-results/?$', 'portal.views.export_search_results', name='export-search-results'),
+    # download search results
+    url(r'^result/download/?$', 'portal.views.download_job_result', name='download-job-result'),
+    # get metadata search export status
+    url(r'^result/status/?$', 'portal.views.get_export_job_status', name='export-job-status'),
 )
