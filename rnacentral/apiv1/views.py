@@ -349,6 +349,11 @@ class RnaFastaRenderer(renderers.BaseRenderer):
             for entry in data['results']:
                 text += entry['fasta']
             return text
+        elif isinstance(data, list):
+            text = []
+            for entry in data:
+                text.append(entry['fasta'])
+            return ''.join(text)
         else: # single entry
             return data['fasta']
 
