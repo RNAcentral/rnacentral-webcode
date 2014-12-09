@@ -114,11 +114,8 @@ def export_search_results(query, _format):
         return filename
 
     hits = get_hit_count()
-    if hits == 0:
-        data = 'no results'
-    else:
-        data = paginate_over_results()
-    return data
+    filename = paginate_over_results()
+    return filename
 
 
 @never_cache
@@ -152,7 +149,7 @@ def download_search_result_file(request):
         status = 404
         return JsonResponse(messages[status], status=status)
 
-    if job.result:
+    if job.is_finished:
         wrapper = FileWrapper(open(job.result, 'r'))
         response = HttpResponse(wrapper, content_type='text/fasta')
         response['Content-Disposition'] = 'attachment; filename={0}'.format(
