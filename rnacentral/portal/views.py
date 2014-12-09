@@ -23,7 +23,9 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.servers.basehttp import FileWrapper
 from django.core.urlresolvers import reverse
 from django.db.models import Min, Max, Count, Avg
-from django.http import Http404, HttpResponseRedirect, HttpResponse, HttpResponseNotFound
+from django.http import Http404, HttpResponseRedirect, HttpResponse, \
+                        HttpResponseNotFound, HttpResponseBadRequest, \
+                        JsonResponse
 from django.conf import settings
 from django.shortcuts import render, render_to_response, redirect
 from django.template import TemplateDoesNotExist
@@ -31,6 +33,7 @@ from django.utils.cache import patch_cache_control
 from django.views.decorators.cache import cache_page, never_cache
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
+
 from rq import get_current_job
 from rest_framework import renderers
 
@@ -51,20 +54,33 @@ XREF_PAGE_SIZE = 1000
 def download_search_result_file(request):
     """
     Internal API.
-    Download metadata search results in a file given a job id.
-    The file is returned via Django in small chunks to control memory usage.
-    """
-    job_id = request.GET.get('job', '')
+    Download a file with metadata search results given a job id.
+    To control memory usage the file is returned in small chunks via Django.
 
+    HTTP responses:
+    * 400 if job id not provided in the url
+    * 404 if job id not found in the queue
+    * 202 if result is not ready yet
+    * 200 when result is ready
+    """
+    messages = {
+        400: {'message': 'Job id not specified'},
+        404: {'message': 'Job not found'},
+        202: {'message': 'File not ready, check back later'},
+    }
+
+    job_id = request.GET.get('job', '')
     if not job_id:
-        raise Http404
+        status = 400
+        return JsonResponse(messages[status], status=status)
 
     q = django_rq.get_queue()
     job = q.fetch_job(job_id)
 
     if not job:
-        # todo: error handling
-        return HttpResponse('Invalid job id')
+        status = 404
+        return JsonResponse(messages[status], status=status)
+
     if job.result:
         wrapper = FileWrapper(open(job.result, 'r'))
         response = HttpResponse(wrapper, content_type='text/fasta')
@@ -72,7 +88,8 @@ def download_search_result_file(request):
         response['Content-Length'] = os.path.getsize(job.result)
         return response
     else:
-        return HttpResponse('Check back later')
+        status = 202
+        return JsonResponse(messages[status], status=status)
 
 
 def get_export_job_status(request):
@@ -231,7 +248,6 @@ def ebeye_proxy(request):
         return response
     except:
         raise Http404
-
 
 
 @never_cache
