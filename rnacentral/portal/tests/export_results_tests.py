@@ -80,6 +80,32 @@ class ExportSearchResultsTest(unittest.TestCase):
             self.assertEqual(r.status_code, 200)
             self.assertIn('job_id', data)
 
+    def test_get_status_no_job_id(self):
+        """
+        No job id is provided in the url.
+        """
+        url = self.base_url + reverse('export-job-status')
+        r = requests.get(url)
+        self.assertEqual(r.status_code, 400)
+
+    def test_get_status_invalid_job_id(self):
+        """
+        Invalid job id or job id not found.
+        """
+        job_id = 'foobar'
+        url = self.base_url + reverse('export-job-status') + '?job=%s' % job_id
+        r = requests.get(url)
+        self.assertEqual(r.status_code, 404)
+
+    def test_get_status_valid_job(self):
+        """
+        Submit a small query and check its status.
+        """
+        r = self._submit_query(query='hotair')
+        job_id = json.loads(r.text)['job_id']
+        url = self.base_url + reverse('export-job-status') + '?job=%s' % job_id
+        self.assertEqual(r.status_code, 200)
+
     def test_download_no_job_id(self):
         """
         No job id is provided in the url.

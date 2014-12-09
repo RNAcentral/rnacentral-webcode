@@ -96,27 +96,42 @@ def get_export_job_status(request):
     """
     Internal API.
     Get search export job status and associated metadata.
+
+    HTTP responses:
+    * 200 - job found
+    * 400 - job id not provided in the url
+    * 404 - job id not found in the queue
+    * 500 - internal error
     """
-    job_id = request.GET.get('job', '')
-
-    if not job_id:
-        raise Http404
-
-    q = django_rq.get_queue()
-    job = q.fetch_job(job_id)
-
-    if not job:
-        # todo: error handling
-        return HttpResponse('Invalid job id')
-
-    data = {
-        'id': job.id,
-        'status': job.get_status(),
-        'progress': job.meta['progress'],
-        'enqueued_at': str(job.enqueued_at),
-        'ended_at': str(job.ended_at),
+    messages = {
+        400: {'message': 'Job id not specified'},
+        404: {'message': 'Job not found'},
+        500: {'message': 'Error while processing the job id'},
     }
-    return HttpResponse(json.dumps(data))
+
+    job_id = request.GET.get('job', '')
+    if not job_id:
+        status = 400
+        return JsonResponse(messages[status], status=status)
+
+    try:
+        q = django_rq.get_queue()
+        job = q.fetch_job(job_id)
+        if job:
+            data = {
+                'id': job.id,
+                'status': job.get_status(),
+                'progress': job.meta['progress'],
+                'enqueued_at': str(job.enqueued_at),
+                'ended_at': str(job.ended_at),
+            }
+            return JsonResponse(data)
+        else:
+            status = 404
+            return JsonResponse(messages[status], status=status)
+    except:
+        status = 500
+        return JsonResponse(messages[status], status=status)
 
 
 def export_search_results(query, _format):
