@@ -26,6 +26,7 @@ or get in touch using the Contact form on our website.
 * Django REST Framework
 * cx_Oracle
 * Fabric
+* [Python RQ](http://python-rq.org/)
 * see [requirements.txt](https://github.com/RNAcentral/rnacentral-webcode/blob/django/rnacentral/requirements.txt)
 for full list
 
@@ -53,3 +54,7 @@ for full list
 * PhantomJS
 * Travis
 * [BrowserStack](http://browserstack.com)
+
+## Other
+* [Memcached](http://memcached.org/)
+* [Redis](http://redis.io/)
