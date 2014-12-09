@@ -11,18 +11,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-"""
-Test exporting search results.
-
-Usage:
-
-# test localhost
-python export_results_tests.py
-
-# test an RNAcentral instance
-python export_results_tests.py --base_url http://test.rnacentral.org/
-"""
-
 import argparse
 import django
 import json
@@ -34,15 +22,24 @@ import unittest
 from django.core.urlresolvers import reverse
 
 
-class ExportSearchResultsTest(unittest.TestCase):
-    """Unit tests entry point"""
+class ExportSearchResultsTestCase(unittest.TestCase):
+    """
+    Base class for export search results testing.
+
+    Usage:
+
+    # test localhost
+    python export_results_tests.py
+
+    # test an RNAcentral instance
+    python export_results_tests.py --base_url http://test.rnacentral.org/
+    """
     base_url = ''
 
     def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
+        self.queries = {
+            'small': 'hotair',
+        }
 
     def _submit_query(self, query, _format=''):
         """
@@ -53,6 +50,12 @@ class ExportSearchResultsTest(unittest.TestCase):
                        '?q=%s' % query,
                        '&format=%s' % _format if _format else ''])
         return requests.get(url)
+
+
+class SubmitExportTests(ExportSearchResultsTestCase):
+    """
+    Tests for the job submission endpoint.
+    """
 
     def test_submit_empty_query(self):
         """
@@ -65,7 +68,7 @@ class ExportSearchResultsTest(unittest.TestCase):
         """
         Invalid export format.
         """
-        r = self._submit_query(query='foo', _format='bar')
+        r = self._submit_query(query=self.queries['small'], _format='bar')
         self.assertEqual(r.status_code, 404)
 
     def test_submit_export_job(self):
@@ -73,12 +76,18 @@ class ExportSearchResultsTest(unittest.TestCase):
         Submit a small query in multiple formats.
         """
         formats = ['fasta', 'json', '']
-        query = 'hotair'
+        query = self.queries['small']
         for _format in formats:
             r = self._submit_query(query=query, _format=_format)
             data = json.loads(r.text)
             self.assertEqual(r.status_code, 200)
             self.assertIn('job_id', data)
+
+
+class GetStatusTests(ExportSearchResultsTestCase):
+    """
+    Tests for the job status endpoint.
+    """
 
     def test_get_status_no_job_id(self):
         """
@@ -101,10 +110,17 @@ class ExportSearchResultsTest(unittest.TestCase):
         """
         Submit a small query and check its status.
         """
-        r = self._submit_query(query='hotair')
+        r = self._submit_query(query=self.queries['small'])
         job_id = json.loads(r.text)['job_id']
         url = self.base_url + reverse('export-job-status') + '?job=%s' % job_id
+        r = requests.get(url)
         self.assertEqual(r.status_code, 200)
+
+
+class DownloadResultsTests(ExportSearchResultsTestCase):
+    """
+    Tests for the download results endpoint.
+    """
 
     def test_download_no_job_id(self):
         """
@@ -119,25 +135,55 @@ class ExportSearchResultsTest(unittest.TestCase):
         Invalid job id or job id not found.
         """
         job_id = 'foobar'
-        url = self.base_url + reverse('export-download-result') + '?job=%s' % job_id
+        url = ''.join([self.base_url,
+                       reverse('export-download-result'),
+                       '?job=%s' % job_id])
         r = requests.get(url)
         self.assertEqual(r.status_code, 404)
 
 
-if __name__ == '__main__':
+def setup_django_environment():
+    """
+    Setup Django environment in order for `reverse` and other Django
+    functionality to work.
+    """
     os.environ['DJANGO_SETTINGS_MODULE'] = 'rnacentral.settings'
-    project_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+    project_dir = os.path.dirname(
+                    os.path.dirname(
+                        os.path.dirname(
+                            os.path.realpath(__file__))))
     sys.path.append(project_dir)
     django.setup()
 
+def parse_arguments():
+    """
+    Parse arguments.
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument('--base_url', default='http://127.0.0.1:8000')
     parser.add_argument('unittest_args', nargs='*')
 
     args = parser.parse_args()
+
     if args.base_url[-1] == '/':
         args.base_url = args.base_url[:-1]
-    ExportSearchResultsTest.base_url = args.base_url
+    ExportSearchResultsTestCase.base_url = args.base_url
 
     sys.argv[1:] = args.unittest_args
-    unittest.main()
+
+def run_tests():
+    """
+    Organize and run the test suites.
+    """
+    suites = [
+        unittest.TestLoader().loadTestsFromTestCase(SubmitExportTests),
+        unittest.TestLoader().loadTestsFromTestCase(GetStatusTests),
+        unittest.TestLoader().loadTestsFromTestCase(DownloadResultsTests),
+    ]
+
+    unittest.TextTestRunner().run(unittest.TestSuite(suites))
+
+if __name__ == '__main__':
+    setup_django_environment()
+    parse_arguments()
+    run_tests()
