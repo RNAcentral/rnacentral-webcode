@@ -20,6 +20,7 @@ import requests
 from django.conf import settings
 from django.core.servers.basehttp import FileWrapper
 from django.http import JsonResponse, HttpResponse
+from django.utils.text import get_valid_filename
 from django.views.decorators.cache import never_cache
 
 from rq import get_current_job
@@ -150,10 +151,25 @@ def download_search_result_file(request):
         return JsonResponse(messages[status], status=status)
 
     if job.is_finished:
+        def get_download_filename():
+            """
+            Construct a descriptive name for the downloadable file.
+            Use a standard Django function for making valid filenames.
+            """
+            max_length = 50
+            query = job.meta['query']
+            extension = os.path.splitext(job.result)[1]
+            if len(query) > max_length:
+                name = query[:max_length] + '_etc'
+            else:
+                name = query
+            filename = name + '.' + job.meta['format'] + extension
+            return get_valid_filename(filename)
+
         wrapper = FileWrapper(open(job.result, 'r'))
         response = HttpResponse(wrapper, content_type='text/fasta')
         response['Content-Disposition'] = 'attachment; filename={0}'.format(
-                                          os.path.basename(job.result))
+                                          get_download_filename())
         response['Content-Length'] = os.path.getsize(job.result)
         return response
     else:
@@ -243,6 +259,8 @@ def submit_export_job(request):
         job = django_rq.enqueue(export_search_results, query, _format)
         job.meta['progress'] = 0
         job.meta['hits'] = 0
+        job.meta['query'] = query
+        job.meta['format'] = _format
         job.save()
         return JsonResponse({'job_id': job.id})
     except:
