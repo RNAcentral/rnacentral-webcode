@@ -56,6 +56,8 @@ def export_search_results(query, _format):
         # todo error handling
         results = json.loads(requests.get(url).text)
         hits = results['hitCount']
+        job.meta['hits'] = hits
+        job.save()
         return hits
 
     def get_results_page(start, end):
@@ -193,6 +195,7 @@ def get_export_job_status(request):
                 'id': job.id,
                 'status': job.get_status(),
                 'progress': 100 if job.is_finished else job.meta['progress'],
+                'hits': job.meta['hits'],
                 'enqueued_at': str(job.enqueued_at),
                 'ended_at': str(job.ended_at),
             }
@@ -242,6 +245,7 @@ def submit_export_job(request):
     try:
         job = django_rq.enqueue(export_search_results, query, _format)
         job.meta['progress'] = 0
+        job.meta['hits'] = 0
         job.save()
         return JsonResponse({'job_id': job.id})
     except:
