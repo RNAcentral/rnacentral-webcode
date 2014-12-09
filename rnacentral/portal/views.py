@@ -58,10 +58,10 @@ def download_search_result_file(request):
     To control memory usage the file is returned in small chunks via Django.
 
     HTTP responses:
-    * 400 if job id not provided in the url
-    * 404 if job id not found in the queue
-    * 202 if result is not ready yet
-    * 200 when result is ready
+    * 400 - job id not provided in the url
+    * 404 - job id not found in the queue
+    * 202 - result is not ready yet
+    * 200 - result is ready
     """
     messages = {
         400: {'message': 'Job id not specified'},
@@ -209,27 +209,42 @@ def export_search_results(query, _format):
 def submit_export_job(request):
     """
     Internal API.
-    Export search results in different formats:
+    Export search results in different formats.
+
+    Valid formats:
     * fasta (default)
     * json
     * csv
-    """
-    query = request.GET.get('q', '')
-    _format = request.GET.get('format', 'fasta').lower()
 
+    HTTP responses:
+    * 200 - job submitted
+    * 400 - query not specified
+    * 404 - format speciefied incorrectly
+    * 500 - internal error
+    """
+    messages = {
+        400: {'message': 'Query not specified'},
+        404: {'message': 'Unrecognized format'},
+        500: {'message': 'Error submitting the query'},
+    }
     formats = ['fasta', 'json', 'csv']
 
+    query = request.GET.get('q', '')
+    if not query:
+        status = 400
+        return JsonResponse(messages[status], status=status)
+
+    _format = request.GET.get('format', 'fasta').lower()
     if _format not in formats:
-        return HttpResponseNotFound('Unrecognized format "%s"' % _format)
+        status = 404
+        return JsonResponse(messages[status], status=status)
 
-    job = django_rq.enqueue(export_search_results, query, _format)
-
-    # todo: error handling
-    result_url = '<a href="{host}{url}?job={job_id}">{job_id}</a>'.format(
-        host=request.get_host(),
-        url=reverse('export-download-result'),
-        job_id=job.id)
-    return HttpResponse(result_url)
+    try:
+        job = django_rq.enqueue(export_search_results, query, _format)
+        return JsonResponse({'job_id': job.id})
+    except:
+        status = 500
+        return JsonResponse(messages[status], status=status)
 
 
 @never_cache

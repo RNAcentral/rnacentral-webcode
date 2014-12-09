@@ -25,6 +25,7 @@ python export_results_tests.py --base_url http://test.rnacentral.org/
 
 import argparse
 import django
+import json
 import os
 import requests
 import sys
@@ -42,6 +43,42 @@ class ExportSearchResultsTest(unittest.TestCase):
 
     def tearDown(self):
         pass
+
+    def _submit_query(self, query, _format=''):
+        """
+        Submit a query and return the response object.
+        """
+        url = ''.join([self.base_url,
+                       reverse('export-submit-job'),
+                       '?q=%s' % query,
+                       '&format=%s' % _format if _format else ''])
+        return requests.get(url)
+
+    def test_submit_empty_query(self):
+        """
+        No query is provided in the url.
+        """
+        r = self._submit_query(query='')
+        self.assertEqual(r.status_code, 400)
+
+    def test_submit_invalid_format(self):
+        """
+        Invalid export format.
+        """
+        r = self._submit_query(query='foo', _format='bar')
+        self.assertEqual(r.status_code, 404)
+
+    def test_submit_export_job(self):
+        """
+        Submit a small query in multiple formats.
+        """
+        formats = ['fasta', 'json', '']
+        query = 'hotair'
+        for _format in formats:
+            r = self._submit_query(query=query, _format=_format)
+            data = json.loads(r.text)
+            self.assertEqual(r.status_code, 200)
+            self.assertIn('job_id', data)
 
     def test_download_no_job_id(self):
         """
