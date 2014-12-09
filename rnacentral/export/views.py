@@ -106,7 +106,7 @@ def export_search_results(query, _format):
             rnacentral_ids = get_results_page(start, end)
             archive.write(format_output(rnacentral_ids))
             start = max_end
-            job.meta['progress'] = max(float(start) / hits, 100)
+            job.meta['progress'] = round(float(start) * 100 / hits, 2)
             job.save()
         archive.close()
         return filename
@@ -192,7 +192,7 @@ def get_export_job_status(request):
             data = {
                 'id': job.id,
                 'status': job.get_status(),
-                'progress': job.meta['progress'],
+                'progress': 100 if job.is_finished else job.meta['progress'],
                 'enqueued_at': str(job.enqueued_at),
                 'ended_at': str(job.ended_at),
             }
