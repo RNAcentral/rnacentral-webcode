@@ -256,6 +256,8 @@ def submit_export_job(request):
 
     try:
         job = django_rq.enqueue(export_search_results, query, _format)
+        job.meta['progress'] = 0
+        job.save()
         return JsonResponse({'job_id': job.id})
     except:
         status = 500
