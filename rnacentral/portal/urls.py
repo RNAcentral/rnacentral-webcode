@@ -68,13 +68,3 @@ urlpatterns += patterns('',
     # query EBeye
     url(r'^api/internal/ebeye/?$', 'portal.views.ebeye_proxy', name='ebeye-proxy'),
 )
-
-# exporting metadata search results
-urlpatterns += patterns('',
-    # export search results
-    url(r'^export/submit-query/?$', 'portal.views.submit_export_job', name='export-submit-job'),
-    # download search results
-    url(r'^export/download-result/?$', 'portal.views.download_search_result_file', name='export-download-result'),
-    # get metadata search export status
-    url(r'^export/job-status/?$', 'portal.views.get_export_job_status', name='export-job-status'),
-)

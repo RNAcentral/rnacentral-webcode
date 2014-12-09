@@ -11,18 +11,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from django.conf.urls import patterns, url, include
-from django.views.generic import TemplateView
+from django.conf.urls import patterns, url
 
-
+# exporting metadata search results
 urlpatterns = patterns('',
-    # RNAcentral portal
-    url(r'', include('portal.urls')),
-    # REST API (use trailing slashes)
-    url(r'^api/current/', include('apiv1.urls')),
-    url(r'^api/v1/', include('apiv1.urls')),
-    # robots.txt
-    url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
-    # export metadata search results
-    url(r'^export/', include('export.urls')),
+    # export search results
+    url(r'^submit-query/?$',
+        'export.views.submit_export_job',
+        name='export-submit-job'),
+
+    # download search results
+    url(r'^download-result/?$',
+        'export.views.download_search_result_file',
+        name='export-download-result'),
+
+    # get metadata search export status
+    url(r'^job-status/?$',
+        'export.views.get_export_job_status',
+        name='export-job-status'),
 )
