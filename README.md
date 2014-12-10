@@ -58,3 +58,4 @@ for full list
 ## Other
 * [Memcached](http://memcached.org/)
 * [Redis](http://redis.io/)
+* [Supervisor](http://supervisord.org/)
