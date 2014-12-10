@@ -105,3 +105,6 @@ selenium_log.txt
 rnacentral/rnacentral/django.log
 rnacentral/rnacentral/django.log.1
 rnacentral/portal/management/commands/dev*
+
+# script for setting environment variables
+scripts/env.sh
