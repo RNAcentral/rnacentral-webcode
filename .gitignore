@@ -108,3 +108,7 @@ rnacentral/portal/management/commands/dev*
 
 # script for setting environment variables
 scripts/env.sh
+
+# supervisor 
+supervisor/supervisord.pid
+supervisor/logs/*.log
