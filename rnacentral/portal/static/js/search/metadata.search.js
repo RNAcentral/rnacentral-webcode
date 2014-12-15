@@ -72,6 +72,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
         taxid: null,
         entries: [],
         facets: [],
+        _query: null, // query after preprocessing
     };
 
     var status = {
@@ -218,6 +219,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
                 };
             }
             query = words.join(' ');
+            result._query = query;
             return query;
 
             /**
@@ -260,6 +262,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
                 overwrite_results = overwrite_results || false;
                 if (overwrite_results) {
                     data.taxid = result.taxid;
+                    data._query = result._query;
                     result = data; // replace
                 } else {
                     // append new entries
@@ -427,7 +430,7 @@ rnaMetasearch.controller('MainContent', ['$scope', '$anchorScroll', '$location',
  * Results display controller
  * Responsible for visualising search results.
  */
-rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', function($scope, $location, results) {
+rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', '$http', 'results', function($scope, $location, $http, results) {
 
     $scope.result = {
         entries: [],
@@ -524,6 +527,24 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', 'results', f
         facets.toggleClass('hidden-xs', !facets.hasClass('hidden-xs'));
         $('#toggle-facets').text(function(i, text){
           return text === "Show facets" ? "Hide facets" : "Show facets";
+        });
+    };
+
+    /**
+     * Launch results export.
+     * - submit export job
+     * - open the results page in a new window.
+     */
+    $scope.export_results = function(format) {
+        var submit_query_url = '/export/submit-query?q=',
+            results_page_url = '/export/results?job=';
+        $http({
+            url: submit_query_url + $scope.result._query,
+            method: 'GET'
+        }).success(function(data) {
+            window.location.href = results_page_url + data.job_id;
+        }).error(function(){
+            $scope.show_error = true;
         });
     };
 
