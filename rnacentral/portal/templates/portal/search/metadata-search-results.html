@@ -27,8 +27,22 @@ limitations under the License.
       <span ng-if="result.hitCount > 1" id="metasearch-results-count">{{result.entries.length}} out of {{result.hitCount | number}} sequences</span>
     </small>
 {% endverbatim %}
-    <small class="pull-right">
-      <a class="btn btn-default btn-sm hidden-xs" href="{% url 'help-metadata-search' %}"><i class="fa fa-info-circle"></i> Search help</a>
+    <small class="pull-right font-size-14-px hidden-xs">
+      <a class="text-muted margin-right-10px" href="{% url 'help-metadata-search' %}"><i class="fa fa-info-circle"></i> Query syntax</a>
+
+      <div class="btn-group">
+        <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+          Download
+          <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu pull-right" role="menu">
+          <li><a href="" ng-click="export_results('fasta')">FASTA</a></li>
+          <li><a href="" ng-click="export_results('json')">JSON</a></li>
+          <li><a href="" ng-click="export_results('tsv')">Tab delimited</a></li>
+          <li><a href="" ng-click="export_results('list')">Accession list</a></li>
+        </ul>
+      </div>
+
     </small>
 {% verbatim %}
   </h1>

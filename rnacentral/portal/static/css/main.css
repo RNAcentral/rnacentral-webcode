@@ -284,6 +284,26 @@ form input {
   overflow: auto;
 }
 
+.margin-right-5px {
+  margin-right: 5px;
+}
+
+.margin-left-5px {
+  margin-left: 5px;
+}
+
+.margin-bottom-10px {
+  margin-bottom: 10px;
+}
+
+.font-size-14-px {
+  font-size: 14px;
+}
+
+.margin-right-10px {
+  margin-right: 10px;
+}
+
 ul.breadcrumb.rnacentral-api {
   margin-top: 10px;
 }
@@ -468,18 +488,6 @@ table.table thead .sorting_desc_disabled {
 
 .btn-group {
   margin-right: 5px;
-}
-
-.margin-right-5px {
-  margin-right: 5px;
-}
-
-.margin-left-5px {
-  margin-left: 5px;
-}
-
-.margin-bottom-10px {
-  margin-bottom: 10px;
 }
 
 /*------------------------------------------------------------------
