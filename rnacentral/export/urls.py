@@ -12,6 +12,7 @@ limitations under the License.
 """
 
 from django.conf.urls import patterns, url
+from django.views.generic.base import TemplateView
 
 # exporting metadata search results
 urlpatterns = patterns('',
@@ -29,4 +30,9 @@ urlpatterns = patterns('',
     url(r'^job-status/?$',
         'export.views.get_export_job_status',
         name='export-job-status'),
+
+    # interstitial page for a job id
+    url(r'^results/?$',
+        TemplateView.as_view(template_name='portal/search/export-job-results.html'),
+        name='export-job-results'),
 )

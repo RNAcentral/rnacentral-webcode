@@ -1,0 +1,98 @@
+<!--
+Copyright [2009-2014] EMBL-European Bioinformatics Institute
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+{% extends "portal/base.html" %}
+
+{% block title %}
+Exporting search results
+{% endblock %}
+
+
+{% block content %}
+
+{% verbatim %}
+
+<div ng-controller="ExportResultsCtrl">
+
+  <div class="row">
+    <div class="col-md-12">
+      <h1>
+        <i class="fa fa-download"></i> Exporting search results
+        <small>
+          <i class="fa fa-spinner fa-spin" ng-show="export.error_message === '' && export.status !== 'finished'" class="ng-cloak" ng-cloak></i>
+        </small>
+      </h1>
+    </div>
+  </div>
+
+  <div class="ng-cloak" ng-cloak>
+
+    <div class="row">
+      <div class="col-md-12">
+
+        <div class="alert alert-info col-md-6" role="alert" ng-show="export.error_message === '' && export.status !== 'finished'">
+          Your query has been submitted and the results will become available here shortly.
+        </div>
+
+        <div class="alert alert-success col-md-6" role="alert" ng-show="export.status === 'finished'">
+          The results are available for download and will be kept for <strong>7</strong> days
+          (until time).
+        </div>
+
+        <div class="alert alert-danger col-md-6" role="alert" ng-show="export.error_message !== ''">
+          <p>
+            Results not found.
+          </p>
+          <p>
+            The results might have expired.
+            If you think this is an error, please <a href="">send us</a> the job id (<code><small>{{ export.job_id }}</small></code>).
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="row" ng-show="export.progress >= 0">
+      <div class="col-md-6">
+        <div class="progress">
+          <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: {{ export.progress }}%; min-width:30px;">
+            {{ export.progress | number : 0 }}%
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6">
+        <ul>
+          <li>job id <small><code>{{ export.job_id }}</code></small></li>
+          <li>{{ export.hits | number }} hits</li>
+          <li>status: <strong>{{ export.status }}</strong></li>
+          <li><a href="" target="_blank">Edit query</a></li>
+          <li>export format: </li>
+        </ul>
+
+        <div ng-show="export.status === 'finished'" >
+          <hr>
+          <a target="_self" class="btn btn-primary btn-lg" href="{% endverbatim %}{% url 'export-download-result' %}{% verbatim %}?job={{ export.job_id }}">Download results</a>
+        </div>
+
+      </div>
+    </div>
+
+  </div> <!-- cloak -->
+
+</div>
+{% endverbatim %}
+
+{% endblock %}
