@@ -39,6 +39,7 @@ limitations under the License.
             method: 'GET'
         }).success(function(data) {
             $scope.export = _.extend($scope.export, data);
+            $scope.export['expiration'] = new Date($scope.export['expiration']);
             if (data.status === 'finished') {
                 $interval.cancel(interval);
             };

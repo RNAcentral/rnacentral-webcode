@@ -11,6 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import datetime
 import django_rq
 import gzip
 import json
@@ -213,6 +214,7 @@ def get_export_job_status(request):
                 'ended_at': str(job.ended_at),
                 'query': job.meta['query'],
                 'format': job.meta['format'],
+                'expiration': job.meta['expiration'].strftime("%Y-%m-%d %H:%M:%S"),
             }
             return JsonResponse(data)
         else:
@@ -269,6 +271,7 @@ def submit_export_job(request):
         job.meta['hits'] = 0
         job.meta['query'] = query
         job.meta['format'] = _format
+        job.meta['expiration'] = datetime.datetime.now() + datetime.timedelta(seconds=expiration)
         job.save()
         return JsonResponse({'job_id': job.id})
     except:

@@ -45,8 +45,8 @@ Exporting search results
         </div>
 
         <div class="alert alert-success col-md-6" role="alert" ng-show="export.status === 'finished'">
-          The results are available for download and will be kept for <strong>7</strong> days
-          (until time).
+          The results are available for download and will be kept
+          until {{ export.expiration | date:'MMMM d'}}.
         </div>
 
         <div class="alert alert-danger col-md-6" role="alert" ng-show="export.error_message !== ''">
