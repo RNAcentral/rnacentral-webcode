@@ -78,8 +78,8 @@ Exporting search results
           <li>job id <small><code>{{ export.job_id }}</code></small></li>
           <li>{{ export.hits | number }} hits</li>
           <li>status: <strong>{{ export.status }}</strong></li>
-          <li><a href="" target="_blank">Edit query</a></li>
-          <li>export format: </li>
+          <li><a href="/search?q={{ export.query }}" target="_blank">Edit query</a> <small class="text-muted">(opens in a new window)</small></li>
+          <li>export format: {{ export.format }}</li>
         </ul>
 
         <div ng-show="export.status === 'finished'" >

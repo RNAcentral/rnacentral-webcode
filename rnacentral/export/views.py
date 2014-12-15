@@ -211,6 +211,8 @@ def get_export_job_status(request):
                 'hits': job.meta['hits'],
                 'enqueued_at': str(job.enqueued_at),
                 'ended_at': str(job.ended_at),
+                'query': job.meta['query'],
+                'format': job.meta['format'],
             }
             return JsonResponse(data)
         else:
