@@ -257,8 +257,14 @@ def submit_export_job(request):
         status = 404
         return JsonResponse(messages[status], status=status)
 
+    expiration = 60*60*24*7
+    max_run_time = 60*60
     try:
-        job = django_rq.enqueue(export_search_results, query, _format)
+        queue = django_rq.get_queue()
+        job = queue.enqueue_call(func=export_search_results,
+                                 args=(query, _format),
+                                 timeout = max_run_time,
+                                 result_ttl=expiration)
         job.meta['progress'] = 0
         job.meta['hits'] = 0
         job.meta['query'] = query
