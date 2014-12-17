@@ -536,13 +536,15 @@ angular.module('rnacentralApp').controller('ResultsListCtrl', ['$scope', '$locat
      * - open the results page in a new window.
      */
     $scope.export_results = function(format) {
-        var submit_query_url = '/export/submit-query?q=',
-            results_page_url = '/export/results?job=';
+        var submit_query_url = '/export/submit-query',
+            results_page_url = '/export/results';
         $http({
-            url: submit_query_url + $scope.result._query,
+            url: submit_query_url +
+                 '?q=' + $scope.result._query +
+                 '&format=' + format,
             method: 'GET'
         }).success(function(data) {
-            window.location.href = results_page_url + data.job_id;
+            window.location.href = results_page_url + '?job=' + data.job_id;
         }).error(function(){
             $scope.show_error = true;
         });

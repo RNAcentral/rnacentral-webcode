@@ -74,6 +74,10 @@ def export_search_results(query, _format, hits):
         elif _format == 'json':
             serializer = RnaFlatSerializer(queryset, many=True)
             renderer = renderers.JSONRenderer() # todo: fix concatenated json documents
+        elif _format == 'list':
+            return '\n'.join(rnacentral_ids) + '\n'
+        elif _format == 'tsv':
+            return '' # todo
         output = renderer.render(serializer.data)
         return output
 
@@ -242,7 +246,7 @@ def submit_export_job(request):
         404: {'message': 'Unrecognized format'},
         500: {'message': 'Error submitting the query'},
     }
-    formats = ['fasta', 'json', 'csv']
+    formats = ['fasta', 'json', 'list', 'tsv']
 
     query = request.GET.get('q', '')
     if not query:
