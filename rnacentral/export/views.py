@@ -35,20 +35,18 @@ from portal.models import Rna
 def export_search_results(query, _format):
     """
     RQ worker function.
-    Using the EBI search REST API
+
+    * run a query against the EBI search REST API
     * paginate over the results
     * extract RNAcentral ids
-    * format the data
-    * write it out to a local file.
+    * write the data to a local file in the specified format
+    * return the filename
     """
-    endpoint = 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
-    job = get_current_job()
-
     def get_hit_count():
         """
         Get the total number of results to be exported.
         """
-        url = ''.join([endpoint,
+        url = ''.join([ebi_search_endpoint,
                       '?query={query}',
                       '&start=0',
                       '&size=0',
@@ -60,11 +58,11 @@ def export_search_results(query, _format):
 
     def get_results_page(start, end):
         """
-        Paginate over search results and record RNAcentral ids.
+        Retrieve a page of search results and return RNAcentral ids.
         """
-        ids = []
+        rnacentral_ids = []
         page_size = end - start
-        url = ''.join([endpoint,
+        url = ''.join([ebi_search_endpoint,
                       '?query={query}',
                       '&start={start}',
                       '&size={page_size}',
@@ -73,8 +71,8 @@ def export_search_results(query, _format):
         # todo error handling
         data = json.loads(requests.get(url).text)
         for entry in data['entries']:
-            ids.append(entry['id'])
-        return ids
+            rnacentral_ids.append(entry['id'])
+        return rnacentral_ids
 
     def format_output(rnacentral_ids):
         """
@@ -93,7 +91,7 @@ def export_search_results(query, _format):
 
     def paginate_over_results():
         """
-        Loop over the results and write out the data in an archive.
+        Paginate over the results and write out the data to an archive.
         """
         filename = os.path.join(settings.EXPORT_RESULTS_DIR,
                                 '%s.%s.gz' % (job.id, _format))
@@ -112,6 +110,8 @@ def export_search_results(query, _format):
         archive.close()
         return filename
 
+    ebi_search_endpoint = 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
+    job = get_current_job()
     get_hit_count()
     filename = paginate_over_results()
     return filename
