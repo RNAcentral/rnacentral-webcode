@@ -109,6 +109,9 @@ rnacentral/portal/management/commands/dev*
 # script for setting environment variables
 scripts/env.sh
 
-# supervisor 
+# supervisor
 supervisor/supervisord.pid
 supervisor/logs/*.log
+
+# redis database disk dump
+dump.rdb
