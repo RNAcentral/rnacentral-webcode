@@ -15,7 +15,7 @@ limitations under the License.
  * Angular.js code for exporting metadata search results.
  */
 
-;rnaMetasearch.controller('ExportResultsCtrl', ['$scope', '$location', '$http', '$interval', function($scope, $location, $http, $interval) {
+;angular.module('rnacentralApp').controller('ExportResultsCtrl', ['$scope', '$location', '$http', '$interval', function($scope, $location, $http, $interval) {
 
     $scope.export = {
         query: null,

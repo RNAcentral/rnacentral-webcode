@@ -15,7 +15,7 @@ limitations under the License.
  * Angular.js app for RNAcentral sequence search.
  */
 
-;rnaMetasearch.controller('SeqResultsListCtrl', function($scope, $http, $timeout) {
+;angular.module('rnacentralApp').controller('SeqResultsListCtrl', function($scope, $http, $timeout) {
 
 	$scope.query = {
 		sequence: '',

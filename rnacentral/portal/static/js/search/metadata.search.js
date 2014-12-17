@@ -28,17 +28,17 @@ underscore.factory('_', function() {
 /**
  * Create RNAcentral app.
  */
-var rnaMetasearch = angular.module('rnacentralApp', ['chieffancypants.loadingBar', 'underscore', 'ngAnimate']);
+angular.module('rnacentralApp', ['chieffancypants.loadingBar', 'underscore', 'ngAnimate']);
 
 // hide spinning wheel
-rnaMetasearch.config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
+angular.module('rnacentralApp').config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
     cfpLoadingBarProvider.includeSpinner = false;
 }]);
 
 /**
  * html5mode removes hashtags from urls.
  */
-rnaMetasearch.config(['$locationProvider', function($locationProvider) {
+angular.module('rnacentralApp').config(['$locationProvider', function($locationProvider) {
     $locationProvider.html5Mode(true);
 }]);
 
@@ -46,7 +46,7 @@ rnaMetasearch.config(['$locationProvider', function($locationProvider) {
 /**
  * Service for launching a metadata search.
  */
-rnaMetasearch.service('search', ['$location', function($location) {
+angular.module('rnacentralApp').service('search', ['$location', function($location) {
 
     /**
      * To launch a new search, change browser url,
@@ -62,7 +62,7 @@ rnaMetasearch.service('search', ['$location', function($location) {
 /**
  * Service for passing data between controllers.
  */
-rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function(_, $http, $location, $window) {
+angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '$window', function(_, $http, $location, $window) {
 
     /**
      * Service initialization.
@@ -397,7 +397,7 @@ rnaMetasearch.service('results', ['_', '$http', '$location', '$window', function
 
 }]);
 
-rnaMetasearch.controller('MainContent', ['$scope', '$anchorScroll', '$location', 'results', 'search', function($scope, $anchorScroll, $location, results, search) {
+angular.module('rnacentralApp').controller('MainContent', ['$scope', '$anchorScroll', '$location', 'results', 'search', function($scope, $anchorScroll, $location, results, search) {
     /**
      * Enables scrolling to anchor tags.
      * <a ng-click="scrollTo('anchor')">Title</a>
@@ -430,7 +430,7 @@ rnaMetasearch.controller('MainContent', ['$scope', '$anchorScroll', '$location',
  * Results display controller
  * Responsible for visualising search results.
  */
-rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', '$http', 'results', function($scope, $location, $http, results) {
+angular.module('rnacentralApp').controller('ResultsListCtrl', ['$scope', '$location', '$http', 'results', function($scope, $location, $http, results) {
 
     $scope.result = {
         entries: [],
@@ -554,7 +554,7 @@ rnaMetasearch.controller('ResultsListCtrl', ['$scope', '$location', '$http', 're
  * Query controller
  * Responsible for the search box in the header.
  */
-rnaMetasearch.controller('QueryCtrl', ['$scope', '$location', '$window', '$timeout', 'results', 'search', function($scope, $location, $window, $timeout, results, search) {
+angular.module('rnacentralApp').controller('QueryCtrl', ['$scope', '$location', '$window', '$timeout', 'results', 'search', function($scope, $location, $window, $timeout, results, search) {
 
     $scope.query = {
         text: '',
