@@ -32,37 +32,25 @@ from apiv1.views import RnaFastaRenderer
 from portal.models import Rna
 
 
-def export_search_results(query, _format):
+EBI_SEARCH_ENDPOINT = 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
+
+
+def export_search_results(query, _format, hits):
     """
     RQ worker function.
 
-    * run a query against the EBI search REST API
-    * paginate over the results
+    * paginate over EBI search results results
     * extract RNAcentral ids
     * write the data to a local file in the specified format
     * return the filename
     """
-    def get_hit_count():
-        """
-        Get the total number of results to be exported.
-        """
-        url = ''.join([ebi_search_endpoint,
-                      '?query={query}',
-                      '&start=0',
-                      '&size=0',
-                      '&format=json']).format(query=query)
-        # todo error handling
-        results = json.loads(requests.get(url).text)
-        job.meta['hits'] = results['hitCount']
-        job.save()
-
     def get_results_page(start, end):
         """
         Retrieve a page of search results and return RNAcentral ids.
         """
         rnacentral_ids = []
         page_size = end - start
-        url = ''.join([ebi_search_endpoint,
+        url = ''.join([EBI_SEARCH_ENDPOINT,
                       '?query={query}',
                       '&start={start}',
                       '&size={page_size}',
@@ -98,7 +86,6 @@ def export_search_results(query, _format):
         archive = gzip.open(filename, 'wb')
         start = 0
         page_size = 100
-        hits = job.meta['hits']
         while start < hits:
             max_end = start + page_size
             end = min(max_end, hits)
@@ -110,9 +97,7 @@ def export_search_results(query, _format):
         archive.close()
         return filename
 
-    ebi_search_endpoint = 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
     job = get_current_job()
-    get_hit_count()
     filename = paginate_over_results()
     return filename
 
@@ -239,6 +224,19 @@ def submit_export_job(request):
     * 404 - format speciefied incorrectly
     * 500 - internal error
     """
+    def get_hit_count(query):
+        """
+        Get the total number of results to be exported.
+        """
+        url = ''.join([EBI_SEARCH_ENDPOINT,
+                      '?query={query}',
+                      '&start=0',
+                      '&size=0',
+                      '&format=json']).format(query=query)
+        # todo error handling
+        results = json.loads(requests.get(url).text)
+        return results['hitCount']
+
     messages = {
         400: {'message': 'Query not specified'},
         404: {'message': 'Unrecognized format'},
@@ -260,14 +258,15 @@ def submit_export_job(request):
     max_run_time = 60*60
     try:
         queue = django_rq.get_queue()
+        hits = get_hit_count(query)
         job = queue.enqueue_call(func=export_search_results,
-                                 args=(query, _format),
+                                 args=(query, _format, hits),
                                  timeout = max_run_time,
                                  result_ttl=expiration)
         job.meta['progress'] = 0
-        job.meta['hits'] = 0
         job.meta['query'] = query
         job.meta['format'] = _format
+        job.meta['hits'] = hits
         job.meta['expiration'] = datetime.datetime.now() + datetime.timedelta(seconds=expiration)
         job.save()
         return JsonResponse({'job_id': job.id})
