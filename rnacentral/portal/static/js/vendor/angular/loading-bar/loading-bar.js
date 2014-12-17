@@ -13,9 +13,9 @@
 
 'use strict';
 
-// Alias the loading bar so it can be included using a simpler
-// (and maybe more professional) module name:
-angular.module('angular-loading-bar', ['chieffancypants.loadingBar']);
+// Alias the loading bar for various backwards compatibilities since the project has matured:
+angular.module('angular-loading-bar', ['cfp.loadingBarInterceptor']);
+angular.module('chieffancypants.loadingBar', ['cfp.loadingBarInterceptor']);
 
 
 /**
@@ -23,7 +23,7 @@ angular.module('angular-loading-bar', ['chieffancypants.loadingBar']);
  *
  * Registers itself as an Angular interceptor and listens for XHR requests.
  */
-angular.module('chieffancypants.loadingBar', [])
+angular.module('cfp.loadingBarInterceptor', ['cfp.loadingBar'])
   .config(['$httpProvider', function ($httpProvider) {
 
     var interceptor = ['$q', '$cacheFactory', '$timeout', '$rootScope', 'cfpLoadingBar', function ($q, $cacheFactory, $timeout, $rootScope, cfpLoadingBar) {
@@ -67,19 +67,15 @@ angular.module('chieffancypants.loadingBar', [])
        */
       function isCached(config) {
         var cache;
+        var defaultCache = $cacheFactory.get('$http');
         var defaults = $httpProvider.defaults;
 
-        if (config.method !== 'GET' || config.cache === false) {
-          config.cached = false;
-          return false;
-        }
-
-        if (config.cache === true && defaults.cache === undefined) {
-          cache = $cacheFactory.get('$http');
-        } else if (defaults.cache !== undefined) {
-          cache = defaults.cache;
-        } else {
-          cache = config.cache;
+        // Choose the proper cache source. Borrowed from angular: $http service
+        if ((config.cache || defaults.cache) && config.cache !== false &&
+          (config.method === 'GET' || config.method === 'JSONP')) {
+            cache = angular.isObject(config.cache) ? config.cache
+              : angular.isObject(defaults.cache) ? defaults.cache
+              : defaultCache;
         }
 
         var cached = cache !== undefined ?
@@ -111,9 +107,9 @@ angular.module('chieffancypants.loadingBar', [])
         },
 
         'response': function(response) {
-          if (!isCached(response.config)) {
+          if (!response.config.ignoreLoadingBar && !isCached(response.config)) {
             reqsCompleted++;
-            $rootScope.$broadcast('cfpLoadingBar:loaded', {url: response.config.url});
+            $rootScope.$broadcast('cfpLoadingBar:loaded', {url: response.config.url, result: response});
             if (reqsCompleted >= reqsTotal) {
               setComplete();
             } else {
@@ -124,9 +120,9 @@ angular.module('chieffancypants.loadingBar', [])
         },
 
         'responseError': function(rejection) {
-          if (!isCached(rejection.config)) {
+          if (!rejection.config.ignoreLoadingBar && !isCached(rejection.config)) {
             reqsCompleted++;
-            $rootScope.$broadcast('cfpLoadingBar:loaded', {url: rejection.config.url});
+            $rootScope.$broadcast('cfpLoadingBar:loaded', {url: rejection.config.url, result: rejection});
             if (reqsCompleted >= reqsTotal) {
               setComplete();
             } else {
@@ -139,18 +135,19 @@ angular.module('chieffancypants.loadingBar', [])
     }];
 
     $httpProvider.interceptors.push(interceptor);
-  }])
+  }]);
 
 
-  /**
-   * Loading Bar
-   *
-   * This service handles adding and removing the actual element in the DOM.
-   * Generally, best practices for DOM manipulation is to take place in a
-   * directive, but because the element itself is injected in the DOM only upon
-   * XHR requests, and it's likely needed on every view, the best option is to
-   * use a service.
-   */
+/**
+ * Loading Bar
+ *
+ * This service handles adding and removing the actual element in the DOM.
+ * Generally, best practices for DOM manipulation is to take place in a
+ * directive, but because the element itself is injected in the DOM only upon
+ * XHR requests, and it's likely needed on every view, the best option is to
+ * use a service.
+ */
+angular.module('cfp.loadingBar', [])
   .provider('cfpLoadingBar', function() {
 
     this.includeSpinner = true;
@@ -158,14 +155,15 @@ angular.module('chieffancypants.loadingBar', [])
     this.latencyThreshold = 100;
     this.startSize = 0.02;
     this.parentSelector = 'body';
+    this.spinnerTemplate = '<div id="loading-bar-spinner"><div class="spinner-icon"></div></div>';
+    this.loadingBarTemplate = '<div id="loading-bar"><div class="bar"><div class="peg"></div></div></div>';
 
-    this.$get = ['$document', '$timeout', '$animate', '$rootScope', function ($document, $timeout, $animate, $rootScope) {
-
+    this.$get = ['$injector', '$document', '$timeout', '$rootScope', function ($injector, $document, $timeout, $rootScope) {
+      var $animate;
       var $parentSelector = this.parentSelector,
-        $parent = $document.find($parentSelector),
-        loadingBarContainer = angular.element('<div id="loading-bar"><div class="bar"><div class="peg"></div></div></div>'),
+        loadingBarContainer = angular.element(this.loadingBarTemplate),
         loadingBar = loadingBarContainer.find('div').eq(0),
-        spinner = angular.element('<div id="loading-bar-spinner"><div class="spinner-icon"></div></div>');
+        spinner = angular.element(this.spinnerTemplate);
 
       var incTimeout,
         completeTimeout,
@@ -180,6 +178,11 @@ angular.module('chieffancypants.loadingBar', [])
        * Inserts the loading bar element into the dom, and sets it to 2%
        */
       function _start() {
+        if (!$animate) {
+          $animate = $injector.get('$animate');
+        }
+
+        var $parent = $document.find($parentSelector).eq(0);
         $timeout.cancel(completeTimeout);
 
         // do not continually broadcast the started event:
@@ -262,16 +265,27 @@ angular.module('chieffancypants.loadingBar', [])
         return status;
       }
 
+      function _completeAnimation() {
+        status = 0;
+        started = false;
+      }
+
       function _complete() {
+        if (!$animate) {
+          $animate = $injector.get('$animate');
+        }
+
         $rootScope.$broadcast('cfpLoadingBar:completed');
         _set(1);
 
+        $timeout.cancel(completeTimeout);
+
         // Attempt to aggregate any start/complete calls within 500ms:
         completeTimeout = $timeout(function() {
-          $animate.leave(loadingBarContainer, function() {
-            status = 0;
-            started = false;
-          });
+          var promise = $animate.leave(loadingBarContainer, _completeAnimation);
+          if (promise && promise.then) {
+            promise.then(_completeAnimation);
+          }
           $animate.leave(spinner);
         }, 500);
       }
