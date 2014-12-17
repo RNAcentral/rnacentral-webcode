@@ -41,8 +41,7 @@ def export_search_results(query, _format):
     * format the data
     * write it out to a local file.
     """
-    # todo: switch to production endpoint
-    endpoint = 'http://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
+    endpoint = 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
     job = get_current_job()
 
     def get_hit_count():
