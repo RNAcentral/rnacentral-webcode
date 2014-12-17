@@ -265,7 +265,7 @@ def submit_export_job(request):
         hits = get_hit_count(query)
         job = queue.enqueue_call(func=export_search_results,
                                  args=(query, _format, hits),
-                                 timeout = max_run_time,
+                                 timeout=max_run_time,
                                  result_ttl=expiration)
         job.meta['progress'] = 0
         job.meta['query'] = query
