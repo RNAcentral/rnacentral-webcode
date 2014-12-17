@@ -48,7 +48,6 @@ def export_search_results(query, _format):
         """
         Get the total number of results to be exported.
         """
-        hits = 0
         url = ''.join([endpoint,
                       '?query={query}',
                       '&start=0',
@@ -56,10 +55,8 @@ def export_search_results(query, _format):
                       '&format=json']).format(query=query)
         # todo error handling
         results = json.loads(requests.get(url).text)
-        hits = results['hitCount']
-        job.meta['hits'] = hits
+        job.meta['hits'] = results['hitCount']
         job.save()
-        return hits
 
     def get_results_page(start, end):
         """
@@ -103,6 +100,7 @@ def export_search_results(query, _format):
         archive = gzip.open(filename, 'wb')
         start = 0
         page_size = 100
+        hits = job.meta['hits']
         while start < hits:
             max_end = start + page_size
             end = min(max_end, hits)
@@ -114,7 +112,7 @@ def export_search_results(query, _format):
         archive.close()
         return filename
 
-    hits = get_hit_count()
+    get_hit_count()
     filename = paginate_over_results()
     return filename
 
