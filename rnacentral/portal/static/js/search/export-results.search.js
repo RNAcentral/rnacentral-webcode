@@ -66,8 +66,9 @@ limitations under the License.
     function initialize () {
        if ($location.url().indexOf("/export/results?job=") > -1) {
             $scope.export.job_id = $location.search().job;
-            get_job_status();
-            poll_job_status();
+            get_job_status().then(function(){
+                poll_job_status();
+            });
        }
     }
 
