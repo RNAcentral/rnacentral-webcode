@@ -26,10 +26,11 @@ limitations under the License.
       <span ng-if="result.hitCount == 1">1 sequence</span>
       <span ng-if="result.hitCount > 1" id="metasearch-results-count">{{result.entries.length}} out of {{result.hitCount | number}} sequences</span>
     </small>
-{% endverbatim %}
-    <small class="pull-right font-size-14-px hidden-xs">
-      <a class="text-muted margin-right-10px" href="{% url 'help-metadata-search' %}"><i class="fa fa-info-circle"></i> Query syntax</a>
 
+    <small class="pull-right font-size-14-px hidden-xs">
+{% endverbatim %}
+      <a class="text-muted margin-right-10px" href="{% url 'help-metadata-search' %}"><i class="fa fa-info-circle"></i> Query syntax</a>
+{% verbatim %}
       <div class="btn-group">
         <button type="button" ng-class="search_in_progress ? 'disabled' : ''" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
           Download
@@ -42,10 +43,9 @@ limitations under the License.
           <li><a href="" ng-click="export_results('list')">Accession list</a></li>
         </ul>
       </div>
-
     </small>
-{% verbatim %}
   </h1>
+
   <div class="row visible-xs">
     <div class="col-xs-12">
       <button class="btn btn-default" ng-click="toggle_facets()" id="toggle-facets">Show facets</button>
@@ -53,16 +53,14 @@ limitations under the License.
       <a class="btn btn-default" href="{% url 'help-metadata-search' %}">Search help</a>
 {% verbatim %}
     </div>
-  </div>
+  </div> <!-- .visible-xs -->
 
   <div class="row" ng-if="show_error">
-
     <div class="col-md-12">
       <div class="alert alert-danger col-md-12">
         There was an error while processing your query
       </div>
     </div>
-
     <div class="col-md-12">
       <h2>Suggestions:</h2>
       <ul>
@@ -80,8 +78,7 @@ limitations under the License.
         </li>
       </ul>
     </div>
-
-  </div>
+  </div> <!-- ng-if="show_error" -->
 
   <div class="row" ng-if="show_export_error">
 
