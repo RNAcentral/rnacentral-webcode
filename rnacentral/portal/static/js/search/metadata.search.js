@@ -436,6 +436,7 @@ angular.module('rnacentralApp').controller('ResultsListCtrl', ['$scope', '$locat
     $scope.result = {
         entries: [],
     };
+    $scope.show_export_error = false;
 
     $scope.search_in_progress = results.get_search_in_progress();
     $scope.show_error = results.get_show_error();
@@ -539,6 +540,7 @@ angular.module('rnacentralApp').controller('ResultsListCtrl', ['$scope', '$locat
     $scope.export_results = function(format) {
         var submit_query_url = '/export/submit-query',
             results_page_url = '/export/results';
+        $scope.show_export_error = false;
         $http({
             url: submit_query_url +
                  '?q=' + $scope.result._query +
@@ -547,7 +549,7 @@ angular.module('rnacentralApp').controller('ResultsListCtrl', ['$scope', '$locat
         }).success(function(data) {
             window.location.href = results_page_url + '?job=' + data.job_id;
         }).error(function(){
-            $scope.show_error = true;
+            $scope.show_export_error = true;
         });
     };
 
