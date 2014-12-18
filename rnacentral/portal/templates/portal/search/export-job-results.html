@@ -54,7 +54,7 @@ Exporting search results
             There was a problem while exporting the search results.
           </p>
           <p>
-            Please try again or <a href="">send us</a> the job id (<code><small>{{ export.job_id }}</small></code>) if the problem persists.
+            Please try again or <a href="{% endverbatim %}{% url 'contact-us' %} {% verbatim %}">send us</a> the job id (<code><small>{{ export.job_id }}</small></code>) if the problem persists.
           </p>
         </div>
 
@@ -64,7 +64,7 @@ Exporting search results
           </p>
           <p>
             The results might have expired.
-            If you think this is an error, please <a href="">send us</a> the job id (<code><small>{{ export.job_id }}</small></code>).
+            If you think this is an error, please <a href="{% endverbatim %}{% url 'contact-us' %} {% verbatim %}">send us</a> the job id (<code><small>{{ export.job_id }}</small></code>).
           </p>
         </div>
 
