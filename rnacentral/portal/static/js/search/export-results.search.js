@@ -15,7 +15,7 @@ limitations under the License.
  * Angular.js code for exporting metadata search results.
  */
 
-;angular.module('rnacentralApp').controller('ExportResultsCtrl', ['$scope', '$location', '$http', '$interval', function($scope, $location, $http, $interval) {
+;angular.module('rnacentralApp').controller('ExportResultsCtrl', ['$scope', '$location', '$http', '$interval', '$window', function($scope, $location, $http, $interval, $window) {
 
     $scope.export = {
         query: null,
@@ -43,11 +43,13 @@ limitations under the License.
             if (data.status === 'finished' || data.status === 'failed') {
                 $interval.cancel(interval);
             };
+            update_page_title();
         }).error(function(data, status){
             if ( status === 404 ) {
                 $scope.export.error_message = 'Job not found';
                 $interval.cancel(interval);
             }
+            update_page_title();
         });
      }
 
@@ -64,6 +66,18 @@ limitations under the License.
             get_job_status();
         }, polling_interval);
     }
+
+    /**
+     * Show progress in page title.
+     */
+    function update_page_title() {
+        if ($scope.export.status === 'failed') {
+            $window.document.title = 'Export failed';
+        } else if ($scope.export.error_message !== '') {
+            $window.document.title = 'Results expired';
+        } else {
+            $window.document.title = Math.round($scope.export.progress) + '% | Exporting results';
+        }
     }
 
     /**
