@@ -39,10 +39,10 @@ limitations under the License.
             method: 'GET'
         }).success(function(data) {
             $scope.export = _.extend($scope.export, data);
-            $scope.export['expiration'] = new Date($scope.export['expiration']);
+            $scope.export.expiration = new Date($scope.export.expiration);
             if (data.status === 'finished' || data.status === 'failed') {
                 $interval.cancel(interval);
-            };
+            }
             update_page_title();
         }).error(function(data, status){
             if ( status === 404 ) {
@@ -85,7 +85,7 @@ limitations under the License.
     /**
      * Get job id from the url and begin retrieving data.
      */
-    function initialize () {
+    function initialize() {
        if ($location.url().indexOf("/export/results?job=") > -1) {
             $scope.export.job_id = $location.search().job;
             get_job_status().then(function(){
