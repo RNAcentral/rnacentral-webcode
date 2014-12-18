@@ -53,11 +53,17 @@ limitations under the License.
 
     /**
      * Poll the server to get the latest status of the export job.
+     * Set polling interval dynamically based on the number of hits.
      */
     function poll_job_status() {
+        var min_interval = 1, // 1 second
+            max_interval = 3, // 3 seconds
+            polling_interval = Math.max(min_interval, Math.min($scope.export.hits / 1000, max_interval)) * 1000;
+
         interval = $interval(function(){
             get_job_status();
-        }, 1000);
+        }, polling_interval);
+    }
     }
 
     /**
