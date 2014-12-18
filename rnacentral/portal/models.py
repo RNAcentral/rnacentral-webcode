@@ -192,7 +192,7 @@ class Rna(models.Model):
             i += max_column
         # use a random description line (for faster performance)
         description = self.xrefs.first().accession.description
-        fasta = ">%s; %s\n%s" % (self.upi, description, split_seq)
+        fasta = ">%s %s\n%s" % (self.upi, description, split_seq)
         return fasta
 
     def get_gff(self):
