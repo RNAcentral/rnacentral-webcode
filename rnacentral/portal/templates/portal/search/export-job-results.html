@@ -75,11 +75,10 @@ Exporting search results
     <div class="row">
       <div class="col-md-6">
         <ul>
-          <li>job id <small><code>{{ export.job_id }}</code></small></li>
-          <li>{{ export.hits | number }} hits</li>
-          <li>status: <strong>{{ export.status }}</strong></li>
+          <li>Exporting <strong>{{ export.hits | number }}</strong> sequences in <strong>{{ export.format }}</strong> format</li>
+          <li>Query: <code>{{ export.query }}</code></li>
           <li><a href="/search?q={{ export.query }}" target="_blank">Edit query</a> <small class="text-muted">(opens in a new window)</small></li>
-          <li>export format: {{ export.format }}</li>
+          <li>Status: <strong ng-class="{'text-danger': export.status === 'failed', 'text-info': export.status === 'queued', 'text-info': export.status === 'started', 'text-success': export.status === 'finished'}">{{ export.status }}</strong></li>
         </ul>
 
         <div ng-show="export.status === 'finished'" >
