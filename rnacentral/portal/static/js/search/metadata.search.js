@@ -191,14 +191,14 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
                     // capitalize logical operators
                     words[i] = words[i].toUpperCase();
                 } else if ( words[i].match(/\:$/gi) ) {
-                    // faceted search term
-                    var terms = words[i].split(':');
+                    // faceted search term + a colon, e.g. expert_db:
+                    var term = words[i].replace(':','');
                     var xrefs = ['pubmed', 'doi', 'taxonomy'];
-                    if ( terms[0].match(new RegExp('^(' + xrefs.join('|') + ')$', 'i') ) ) {
+                    if ( term.match(new RegExp('^(' + xrefs.join('|') + ')$', 'i') ) ) {
                         // xref fields must be capitalized
-                        terms[0] = terms[0].toUpperCase();
+                        term = term.toUpperCase();
                     }
-                    words[i] = terms.join(':');
+                    words[i] = term + ':';
                 } else if ( words[i].match(/\-/)) {
                     // do not add wildcards to words with hyphens
                 } else if ( words[i].match(/\//)) {
@@ -219,6 +219,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
                 };
             }
             query = words.join(' ');
+            query = query.replace(/\: /g, ':'); // to avoid spaces after faceted search terms
             result._query = query;
             return query;
 
