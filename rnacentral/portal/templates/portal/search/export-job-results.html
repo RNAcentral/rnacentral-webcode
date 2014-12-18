@@ -28,9 +28,6 @@ Exporting search results
     <div class="col-md-12">
       <h1>
         <i class="fa fa-file-text-o"></i> Exporting search results
-        <small>
-          <i class="fa fa-spinner fa-spin" ng-class="export.status == 'queued' || export.status == 'started' ? '' :  'hidden'" class="ng-cloak" ng-cloak></i>
-        </small>
       </h1>
     </div>
   </div>
@@ -40,16 +37,19 @@ Exporting search results
     <div class="row">
       <div class="col-md-12">
 
-        <div class="alert alert-info col-md-7" role="alert" ng-show="export.status === 'queued' || export.status === 'started'">
+        <div class="alert alert-info col-md-6" role="alert" ng-show="export.status === 'queued' || export.status === 'started'">
+          <i class="fa fa-spinner fa-spin fa-2x pull-left"></i>
           Your query has been submitted and the results will become available here shortly.
         </div>
 
         <div class="alert alert-success col-md-6" role="alert" ng-show="export.status === 'finished'">
+          <i class="fa fa-check-circle fa-3x pull-left"></i>
           The results are available for download and will be kept
           until {{ export.expiration | date:'MMMM d'}}.
         </div>
 
         <div class="alert alert-danger col-md-9" role="alert" ng-show="export.status === 'failed'">
+          <i class="fa fa-warning fa-3x pull-left"></i>
           <p>
             There was a problem while exporting the search results.
           </p>
@@ -59,9 +59,7 @@ Exporting search results
         </div>
 
         <div class="alert alert-danger col-md-8" role="alert" ng-show="export.error_message !== '' && export.status !== 'failed'">
-          <p>
-            Results not found.
-          </p>
+          <i class="fa fa-warning fa-3x pull-left"></i>
           <p>
             The results might have expired.
             If you think this is an error, please <a href="{% endverbatim %}{% url 'contact-us' %} {% verbatim %}">send us</a> the job id (<code><small>{{ export.job_id }}</small></code>).
