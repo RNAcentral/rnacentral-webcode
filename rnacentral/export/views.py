@@ -77,6 +77,8 @@ def export_search_results(query, _format, hits):
             output = renderer.render(serializer.data)
             # omit opening and closing square brackets for easy concatenation
             output = output[1:-1]
+            # make relative urls absolute
+            output = output.replace('"/api/v1/', '"http://rnacentral.org/api/v1/')
         elif _format == 'list':
             output = '\n'.join(rnacentral_ids) + '\n'
         elif _format == 'tsv':
