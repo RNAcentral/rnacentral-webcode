@@ -47,8 +47,10 @@ limitations under the License.
         }).error(function(data, status){
             if ( status === 404 ) {
                 $scope.export.error_message = 'Job not found';
-                $interval.cancel(interval);
+            } else {
+                $scope.export.error_message = 'Unknown error';
             }
+            $interval.cancel(interval);
             update_page_title();
         });
      }
