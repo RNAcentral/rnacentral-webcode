@@ -40,7 +40,7 @@ limitations under the License.
         }).success(function(data) {
             $scope.export = _.extend($scope.export, data);
             $scope.export['expiration'] = new Date($scope.export['expiration']);
-            if (data.status === 'finished') {
+            if (data.status === 'finished' || data.status === 'failed') {
                 $interval.cancel(interval);
             };
         }).error(function(data, status){
