@@ -31,10 +31,10 @@ limitations under the License.
     var interval;
 
     /**
-     * Get status of the export job.
+     * Get status of the export job and return a promise.
      */
      function get_job_status() {
-        $http({
+        return $http({
             url: '/export/job-status?job=' + $scope.export.job_id,
             method: 'GET'
         }).success(function(data) {
