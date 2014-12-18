@@ -71,33 +71,46 @@ def export_search_results(query, _format, hits):
         if _format == 'fasta':
             serializer = RnaFastaSerializer(queryset, many=True)
             renderer = RnaFastaRenderer()
+            output = renderer.render(serializer.data)
         elif _format == 'json':
             serializer = RnaFlatSerializer(queryset, many=True)
-            renderer = renderers.JSONRenderer() # todo: fix concatenated json documents
+            renderer = renderers.JSONRenderer()
+            output = renderer.render(serializer.data)
+            # omit opening and closing square brackets for easy concatenation
+            output = output[1:-1]
         elif _format == 'list':
-            return '\n'.join(rnacentral_ids) + '\n'
+            output = '\n'.join(rnacentral_ids) + '\n'
         elif _format == 'tsv':
-            return '' # todo
-        output = renderer.render(serializer.data)
+            output = '' # todo
         return output
 
     def paginate_over_results():
         """
         Paginate over the results and write out the data to an archive.
+        JSON requires special treatment in order to concatenate
+        multiple batches
         """
         filename = os.path.join(settings.EXPORT_RESULTS_DIR,
                                 '%s.%s.gz' % (job.id, _format))
         archive = gzip.open(filename, 'wb')
         start = 0
         page_size = 100
+        if _format == 'json':
+            archive.write('[')
         while start < hits:
             max_end = start + page_size
             end = min(max_end, hits)
             rnacentral_ids = get_results_page(start, end)
-            archive.write(format_output(rnacentral_ids))
+            text = format_output(rnacentral_ids)
+            archive.write(text)
+            if _format == 'json' and end != hits:
+                # join batches with commas except for the last iteration
+                archive.write(',\n')
             start = max_end
             job.meta['progress'] = round(float(start) * 100 / hits, 2)
             job.save()
+        if _format == 'json':
+            archive.write(']')
         archive.close()
         return filename
 
