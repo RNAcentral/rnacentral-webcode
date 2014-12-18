@@ -56,7 +56,6 @@ def export_search_results(query, _format, hits):
                       '&size={page_size}',
                       '&format=json']).format(query=query, start=start,
                                               page_size=page_size)
-        # todo error handling
         data = json.loads(requests.get(url).text)
         for entry in data['entries']:
             rnacentral_ids.append(entry['id'])
@@ -250,7 +249,6 @@ def submit_export_job(request):
                       '&start=0',
                       '&size=0',
                       '&format=json']).format(query=query)
-        # todo error handling
         results = json.loads(requests.get(url).text)
         return results['hitCount']
 
