@@ -36,12 +36,18 @@ angular.module('rnacentralApp').config(['cfpLoadingBarProvider', function(cfpLoa
 }]);
 
 /**
- * html5mode removes hashtags from urls.
+ * Turn on html5mode only in modern browsers because
+ * in the older ones html5mode rewrites urls with Hangbangs
+ * which break normal Django pages.
+ * With html5mode off IE lt 10 will be able to navigate the site
+ * but won't be able to open deep links to Angular pages
+ * (for example, a link to a search result won't load in IE 9).
  */
 angular.module('rnacentralApp').config(['$locationProvider', function($locationProvider) {
-    $locationProvider.html5Mode(true);
+    if (window.history && window.history.pushState) {
+        $locationProvider.html5Mode(true);
+    }
 }]);
-
 
 /**
  * Service for launching a metadata search.
