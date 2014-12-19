@@ -56,6 +56,13 @@ limitations under the License.
      }
 
     /**
+     * Format progress for use with ng-style and CSS.
+     */
+    $scope.get_progress = function() {
+        return $scope.export.progress + '%';
+    };
+
+    /**
      * Poll the server to get the latest status of the export job.
      * Set polling interval dynamically based on the number of hits.
      */
