@@ -47,3 +47,7 @@ INTERNAL_IPS = ('127.0.0.1',)
 
 # django-maintenance
 MAINTENANCE_MODE = False
+
+# used for transparently retrieving search results
+# from multiple servers hosted behind a load balancer
+HOSTS = [''] # e.g. 'test.example.com'

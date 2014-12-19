@@ -17,6 +17,7 @@ import gzip
 import json
 import os
 import requests
+import socket
 
 from django.conf import settings
 from django.core.servers.basehttp import FileWrapper
@@ -188,6 +189,30 @@ def get_export_job_status(request):
     * 404 - job id not found in the queue
     * 500 - internal error
     """
+    def poll_remote_hosts():
+        """
+        If the job is not found in the local queue,
+        query all remote servers.
+
+        As load balancer can direct API requests to servers
+        other than the one hosting the job, it is desirable
+        to make load balancing transparent to the API.
+        """
+        remote_data = None
+        this_host = socket.gethostname()
+        hosts = getattr(settings, "HOSTS", [])
+        for host in hosts:
+            if host == this_host:
+                continue
+            url = ''.join(['http://', host, request.get_full_path()])
+            req = requests.get(url)
+            if req.status_code == 200:
+                data = req.json()
+                if 'id' in data and 'message' not in data: # job found
+                    remote_data = data
+                    break
+        return remote_data
+
     messages = {
         400: {'message': 'Job id not specified'},
         404: {'message': 'Job not found'},
@@ -216,8 +241,13 @@ def get_export_job_status(request):
             }
             return JsonResponse(data)
         else:
-            status = 404
-            return JsonResponse(messages[status], status=status)
+            # job not found in the local queue, try other servers
+            remote_data = poll_remote_hosts()
+            if remote_data:
+                return JsonResponse(remote_data)
+            else:
+                status = 404
+                return JsonResponse(messages[status], status=status)
     except:
         status = 500
         return JsonResponse(messages[status], status=status)
