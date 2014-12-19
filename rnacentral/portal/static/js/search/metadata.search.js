@@ -203,6 +203,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
                     // do not add wildcards to words with hyphens
                 } else if ( words[i].match(/\//)) {
                     // do not add wildcards to DOIs
+                    words[i] = escape_search_term(words[i]);
                 } else if ( words[i].match(/^".+?"$/) ) {
                     // double quotes, do nothing
                 } else if ( words[i].match(/\*$/) ) {
@@ -241,11 +242,11 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
 
             /**
              * Escape special symbols used by Lucene
-             * Escaped: + - && || ! { } [ ] ^ ~ ? : \
+             * Escaped: + - && || ! { } [ ] ^ ~ ? : \ /
              * Not escaped: * " ( ) because they may be used deliberately by the user
              */
             function escape_search_term(search_term) {
-                return search_term.replace(/[\+\-&|!\{\}\[\]\^~\?\:\\]/g, "\\$&");
+                return search_term.replace(/[\+\-&|!\{\}\[\]\^~\?\:\\\/]/g, "\\$&");
             }
         }
 
