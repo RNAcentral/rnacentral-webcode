@@ -212,7 +212,7 @@ def get_export_job_status(request):
                 'ended_at': str(job.ended_at),
                 'query': job.meta['query'],
                 'format': job.meta['format'],
-                'expiration': job.meta['expiration'].strftime("%Y-%m-%d %H:%M:%S"),
+                'expiration': job.meta['expiration'].strftime("%m/%d/%Y"),
             }
             return JsonResponse(data)
         else:
