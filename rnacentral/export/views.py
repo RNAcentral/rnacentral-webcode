@@ -21,7 +21,7 @@ import socket
 
 from django.conf import settings
 from django.core.servers.basehttp import FileWrapper
-from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
+from django.http import JsonResponse, StreamingHttpResponse
 from django.utils.text import get_valid_filename
 from django.views.decorators.cache import never_cache
 
@@ -342,7 +342,8 @@ def submit_export_job(request):
         job.meta['query'] = query
         job.meta['format'] = _format
         job.meta['hits'] = hits
-        job.meta['expiration'] = datetime.datetime.now() + datetime.timedelta(seconds=expiration)
+        job.meta['expiration'] = datetime.datetime.now() + \
+                                 datetime.timedelta(seconds=expiration)
         job.save()
         return JsonResponse({'job_id': job.id})
     except:
