@@ -81,8 +81,6 @@ def export_search_results(query, _format, hits):
             output = output.replace('"/api/v1/', '"http://rnacentral.org/api/v1/')
         elif _format == 'list':
             output = '\n'.join(rnacentral_ids) + '\n'
-        elif _format == 'tsv':
-            output = '' # todo
         return output
 
     def paginate_over_results():
@@ -234,7 +232,7 @@ def submit_export_job(request):
     Valid formats:
     * fasta (default)
     * json
-    * csv
+    * list of RNAcentral ids
 
     HTTP responses:
     * 200 - job submitted
@@ -259,7 +257,7 @@ def submit_export_job(request):
         404: {'message': 'Unrecognized format'},
         500: {'message': 'Error submitting the query'},
     }
-    formats = ['fasta', 'json', 'list', 'tsv']
+    formats = ['fasta', 'json', 'list']
 
     query = request.GET.get('q', '')
     if not query:
