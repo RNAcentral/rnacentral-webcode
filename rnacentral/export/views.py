@@ -21,10 +21,11 @@ import socket
 
 from django.conf import settings
 from django.core.servers.basehttp import FileWrapper
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 from django.utils.text import get_valid_filename
 from django.views.decorators.cache import never_cache
 
+from contextlib import closing
 from rq import get_current_job
 from rest_framework import renderers
 
@@ -147,6 +148,19 @@ def download_search_result_file(request):
     job = queue.fetch_job(job_id)
 
     if not job:
+        this_host = socket.gethostname()
+        hosts = getattr(settings, "HOSTS", [])
+        for host in hosts:
+            if host == this_host:
+                continue
+            url = ''.join(['http://', host, request.get_full_path()])
+            with closing(requests.get(url, stream=True)) as req:
+                if req.status_code == 200:
+                    response = StreamingHttpResponse(req.iter_content(chunk_size=10000),
+                                                     content_type='text/fasta')
+                    response['Content-Disposition'] = req.headers['content-disposition']
+                    response['Content-Length'] = req.headers['content-length']
+                    return response
         status = 404
         return JsonResponse(messages[status], status=status)
 
