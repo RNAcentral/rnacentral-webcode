@@ -181,7 +181,7 @@ def download_search_result_file(request):
             return get_valid_filename(filename)
 
         wrapper = FileWrapper(open(job.result, 'r'))
-        response = HttpResponse(wrapper, content_type='text/fasta')
+        response = StreamingHttpResponse(wrapper, content_type='text/fasta')
         response['Content-Disposition'] = 'attachment; filename={0}'.format(
                                           get_download_filename())
         response['Content-Length'] = os.path.getsize(job.result)
