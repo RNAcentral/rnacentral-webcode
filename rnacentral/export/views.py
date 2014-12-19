@@ -180,8 +180,24 @@ def download_search_result_file(request):
             filename = name + '.' + job.meta['format'] + extension
             return get_valid_filename(filename)
 
+        def get_content_type():
+            """
+            Specify content type based on the export format.
+            """
+            content_types = {
+                'fasta': 'text/fasta',
+                'json': 'application/json',
+                'list': 'text/plain',
+                'default': 'text/plain',
+            }
+            _format = job.meta['format']
+            if _format in content_types:
+                return content_types[_format]
+            else:
+                return content_types['default']
+
         wrapper = FileWrapper(open(job.result, 'r'))
-        response = StreamingHttpResponse(wrapper, content_type='text/fasta')
+        response = StreamingHttpResponse(wrapper, content_type=get_content_type())
         response['Content-Disposition'] = 'attachment; filename={0}'.format(
                                           get_download_filename())
         response['Content-Length'] = os.path.getsize(job.result)
