@@ -47,10 +47,13 @@ def ebeye_proxy(request):
     url = request.GET['url']
     try:
         ebeye_response = requests.get(url)
-        response = HttpResponse(ebeye_response.text)
-        patch_cache_control(response, no_cache=True, no_store=True,
-                            must_revalidate=True)
-        return response
+        if ebeye_response.status_code == 200:
+            response = HttpResponse(ebeye_response.text)
+            patch_cache_control(response, no_cache=True, no_store=True,
+                                must_revalidate=True)
+            return response
+        else:
+            raise Http404
     except:
         raise Http404
 
