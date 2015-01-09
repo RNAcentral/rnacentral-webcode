@@ -803,7 +803,6 @@ class Xref(models.Model):
                 return genome['assembly_ucsc']
         return None
 
-    @cached_property
     def has_genomic_coordinates(self):
         """
         Determine whether an xref has genomic coordinates.

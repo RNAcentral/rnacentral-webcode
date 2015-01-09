@@ -293,14 +293,22 @@ class RnaXmlExporter(OracleConnection):
         """
         self.data['popular_species'] = self.data['taxid'] & self.popular_species # intersection
 
-    def store_boost_value(self):
+    def compute_boost_value(self):
         """
-        Determine if the entry should be boosted in search results or not.
+        Determine ordering in search results.
         """
         if self.is_active() == 'Active' and 9606 in self.data['taxid']:
-            boost = 'True'
+            # human entries have max priority
+            boost = 3
+        elif self.is_active() == 'Active' and self.popular_species & self.data['taxid']:
+            # popular species are given priority
+            boost = 2
+        elif self.is_active() == 'Obsolete':
+            # no priority for obsolete entries
+            boost = 0
         else:
-            boost = 'False'
+            # basic priority level
+            boost = 1
         self.data['boost'] = boost
 
     def store_rna_properties(self, rna):
@@ -437,5 +445,5 @@ class RnaXmlExporter(OracleConnection):
         self.retrieve_data_from_database(rna.upi)
         self.store_literature_references(rna)
         self.store_popular_species()
-        self.store_boost_value()
+        self.compute_boost_value()
         return self.format_xml_entry()
