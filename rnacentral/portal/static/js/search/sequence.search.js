@@ -124,7 +124,7 @@ limitations under the License.
      */
 	var search = function(sequence) {
 		$scope.results = results_init();
-		var sequence = parse_fasta(sequence);
+		sequence = parse_fasta(sequence);
 		if (!is_valid_sequence()) {
 			return;
 		}
@@ -137,7 +137,7 @@ limitations under the License.
 			params: {sequence: sequence},
 		}).success(function(data) {
 			$timeout(function() {
-				poll_job_status(data.url)
+				poll_job_status(data.url);
 			}, 1000);
 		}).error(function(data, status) {
 			$scope.params.error_message = $scope.defaults.messages.submit_failed;
@@ -178,8 +178,8 @@ limitations under the License.
 			alignments: [],
 			count: null,
 			url: '',
-		}
-	};
+		};
+	}
 
     /**
      * Reset the form.
@@ -235,7 +235,7 @@ limitations under the License.
 	 * Remove fasta header and spaces and newlines.
 	 */
 	function parse_fasta(sequence) {
-		return sequence.replace(/^>.+?[\n\r]/, '').replace(/\s/g, '')
+		return sequence.replace(/^>.+?[\n\r]/, '').replace(/\s/g, '');
 	}
 
     /**

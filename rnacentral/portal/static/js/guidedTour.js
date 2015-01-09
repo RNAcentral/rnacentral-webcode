@@ -23,7 +23,7 @@ var guidedTour = function() {
 		'sequence': 5,
 		'additional-features': 6,
 		'thank-you': 7,
-	}
+	};
 
 	this.tour = {
 		id: 'tour-hopscotch',
@@ -63,7 +63,7 @@ var guidedTour = function() {
 				onNext: function(){
 					$('.literature-refs-retrieve').first().click(); // slide up
 					if ($('.genoverse-xref').length === 0) {
-						hopscotch.showStep(steps['sequence']); // skip genoverse steps
+						hopscotch.showStep(steps.sequence); // skip genoverse steps
 					}
 				},
 			},
@@ -113,7 +113,7 @@ var guidedTour = function() {
 					if ($('.genoverse-xref').length > 0) {
 						hopscotch.showStep(steps['using-genoverse']);
 					} else {
-						hopscotch.showStep(steps['citations']);
+						hopscotch.showStep(steps.citations);
 					}
 				},
 			},
@@ -142,7 +142,7 @@ var guidedTour = function() {
 				placement: 'left',
 				onPrev: function(){
 					if ($('.genoverse-xref').length > 0) {
-						hopscotch.showStep(steps['sequence']);
+						hopscotch.showStep(steps.sequence);
 					} else {
 						hopscotch.showStep(steps['additional-features']);
 					}
@@ -161,4 +161,4 @@ guidedTour.prototype.initialize = function() {
       var startingStep = 0; // first step
       hopscotch.startTour(obj.tour, startingStep);
     });
-}
+};

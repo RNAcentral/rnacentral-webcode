@@ -369,7 +369,7 @@ limitations under the License.
       }
     }
 
-  }
+  };
 
   /**
    * Attach all event handlers.

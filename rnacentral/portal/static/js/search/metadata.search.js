@@ -122,7 +122,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
         var base_url = $location.protocol() + '://' + $location.host();
         var port = $location.port();
         if (port !== '') {
-            base_url += ':' + port
+            base_url += ':' + port;
         }
         return base_url;
     }
@@ -223,7 +223,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
                     // all other words
                     // escape term, add wildcard
                     words[i] = escape_search_term(words[i]) + '*';
-                };
+                }
             }
             query = words.join(' ');
             query = query.replace(/\: /g, ':'); // to avoid spaces after faceted search terms
@@ -356,7 +356,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
                             if (facet.id === facet_label) {
                                 index = i;
                                 return true;
-                            };
+                            }
                         });
                         return index;
                     }
@@ -365,7 +365,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
             }
         }
 
-    }
+    };
 
     /**
      * Load more results starting from the last loaded index.
@@ -420,7 +420,7 @@ angular.module('rnacentralApp').controller('MainContent', ['$scope', '$anchorScr
      * when a search is initiated.
      */
     $scope.$watch(function () { return results.get_status(); }, function (newValue, oldValue) {
-        if (newValue != null) {
+        if (newValue !== null) {
             $scope.display_search_interface = newValue;
         }
     });
@@ -452,7 +452,7 @@ angular.module('rnacentralApp').controller('ResultsListCtrl', ['$scope', '$locat
      * Watch `result` changes.
      */
     $scope.$watch(function () { return results.get_result(); }, function (newValue, oldValue) {
-        if (newValue != null) {
+        if (newValue !== null) {
             $scope.result = newValue;
         }
     });
@@ -461,7 +461,7 @@ angular.module('rnacentralApp').controller('ResultsListCtrl', ['$scope', '$locat
      * Watch `display_search_interface` changes.
      */
     $scope.$watch(function () { return results.get_status(); }, function (newValue, oldValue) {
-        if (newValue != null) {
+        if (newValue !== null) {
             $scope.display_search_interface = newValue;
         }
     });
@@ -496,7 +496,7 @@ angular.module('rnacentralApp').controller('ResultsListCtrl', ['$scope', '$locat
      */
     $scope.is_facet_applied = function(facet_id, facet_value) {
         var query = $location.search().q || '';
-        var facet_query = new RegExp(facet_id + '\:"' + facet_value + '"', 'i');
+        var facet_query = new RegExp(facet_id + '\\:"' + facet_value + '"', 'i');
         if (query.match(facet_query)) {
             return true;
         } else {
@@ -510,11 +510,12 @@ angular.module('rnacentralApp').controller('ResultsListCtrl', ['$scope', '$locat
      * parameters.
      */
     $scope.facet_search = function(facet_id, facet_value) {
-        var query = $location.search().q || '';
-        var facet = facet_id + ':"' + facet_value + '"';
+        var query = $location.search().q || '',
+            facet = facet_id + ':"' + facet_value + '"',
+            new_query;
 
         if ($scope.is_facet_applied(facet_id, facet_value)) {
-            var new_query = query;
+            new_query = query;
             // remove facet in different contexts
             new_query = new_query.replace(' AND ' + facet + ' AND ', ' AND ', 'i');
             new_query = new_query.replace(facet + ' AND ', '', 'i');
