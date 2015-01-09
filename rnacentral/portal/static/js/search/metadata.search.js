@@ -589,12 +589,14 @@ angular.module('rnacentralApp').controller('QueryCtrl', ['$scope', '$location', 
         oldUrl = oldUrl.replace(/#.+$/, '');
         // url has changed
         if (newUrl !== oldUrl) {
-            if (newUrl.indexOf('/search') == -1) {
+            if (newUrl.indexOf('tab=') !== -1) {
+                // redirect only if the main part of url has changed
+                if (newUrl.split('?')[0] !== oldUrl.split('?')[0]) {
+                    redirect(newUrl);
+                }
+            } else if (newUrl.indexOf('/search') == -1) {
                 // a non-search url, load that page
-                $timeout(function() {
-                    // wrapping in $timeout to avoid "digest in progress" errors
-                    $window.location = newUrl;
-                });
+                redirect(newUrl);
             } else {
                 // the new url is a search result page, launch that search
                 $scope.query.text = $location.search().q;
@@ -602,6 +604,14 @@ angular.module('rnacentralApp').controller('QueryCtrl', ['$scope', '$location', 
                 $scope.query.submitted = false;
             }
         }
+
+        function redirect(newUrl) {
+            $timeout(function() {
+                // wrapping in $timeout to avoid "digest in progress" errors
+                $window.location = newUrl;
+            });
+        }
+
     });
 
     /**

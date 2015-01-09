@@ -119,6 +119,7 @@ rnaSequenceView.prototype.initialize = function() {
             var q = queryString.parse(location.search);
             q.tab = $(this).find('a').first().data('target').replace('#', '');
             history.replaceState({}, "", window.location.pathname + '?' + queryString.stringify(q));
+            angular.element($("body")).scope().$apply(); // tell angular about the url change
         });
     }
 
