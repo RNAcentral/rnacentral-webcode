@@ -171,7 +171,7 @@ class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
         return ncrna_types
 
     def get_taxid(self, obj):
-        return self.context['taxid']
+        return int(self.context['taxid'])
 
     class Meta:
         model = Rna
