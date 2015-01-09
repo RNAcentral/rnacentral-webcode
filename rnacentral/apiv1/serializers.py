@@ -123,6 +123,7 @@ class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
     species = serializers.SerializerMethodField('get_species_name')
     genes = serializers.SerializerMethodField('get_genes')
     ncrna_types = serializers.SerializerMethodField('get_ncrna_types')
+    taxid = serializers.SerializerMethodField('get_taxid')
 
     def get_species_specific_id(self, obj):
         """
@@ -169,10 +170,13 @@ class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
             ncrna_types = list(feature_names)
         return ncrna_types
 
+    def get_taxid(self, obj):
+        return self.context['taxid']
+
     class Meta:
         model = Rna
         fields = ('rnacentral_id', 'sequence', 'length', 'description',
-                  'species', 'genes', 'ncrna_types')
+                  'species', 'taxid', 'genes', 'ncrna_types')
 
 
 class RnaFlatSerializer(RnaNestedSerializer):
