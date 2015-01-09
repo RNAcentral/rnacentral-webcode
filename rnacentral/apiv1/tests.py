@@ -28,16 +28,23 @@ python apiv1/tests.py
 python apiv1/tests.py --base_url http://test.rnacentral.org/
 """
 
+import argparse
 import unittest
 import requests
 import re
+import sys
 import xml.dom.minidom
 
 
-class ApiV1Test(unittest.TestCase):
-    """Unit tests entry point"""
+class ApiV1BaseClass(unittest.TestCase):
     base_url = ''
     api_url = 'api/v1/'
+
+    def _get_api_url(self, extra=''):
+        return self.base_url + self.api_url + extra
+
+
+class ApiV1TestCase(ApiV1BaseClass):
 
     def setUp(self):
         self.upi = 'URS0000000001'
@@ -47,9 +54,6 @@ class ApiV1Test(unittest.TestCase):
 
     def tearDown(self):
         pass
-
-    def _get_api_url(self, extra=''):
-        return self.base_url + self.api_url + extra
 
     def test_current_api_endpoint(self):
         url = self.base_url + 'api/current'
@@ -288,9 +292,38 @@ class ApiV1Test(unittest.TestCase):
         except xml.parsers.expat.ExpatError:
             self.assertEqual(0,1,"Invalid XML")
 
-if __name__ == '__main__':
-    import argparse
-    import sys
+
+class SpeciesSpecificIdsTestCase(ApiV1BaseClass):
+    """
+    Tests for the species-specific endpoints.
+    """
+    def setUp(self):
+        self.upi = 'URS000047C79B'
+
+    def test_species_specific_id(self):
+        """
+        Get an existing upi and taxid.
+        """
+        taxid = 9606
+        url = self._get_api_url('rna/%s/%i' % (self.upi, taxid))
+        r = requests.get(url)
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.json()['rnacentral_id'], '%s_%i' % (self.upi, taxid))
+
+    def test_nonexistent_taxid(self):
+        """
+        Non-existent taxid should return a 404 error.
+        """
+        taxid = 00000
+        url = self._get_api_url('rna/%s/%i' % (self.upi, taxid))
+        r = requests.get(url)
+        self.assertEqual(r.status_code, 404)
+
+
+def parse_arguments():
+    """
+    Parse arguments.
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument('--base_url', default='http://127.0.0.1:8000/')
     parser.add_argument('unittest_args', nargs='*')
@@ -298,7 +331,20 @@ if __name__ == '__main__':
     args = parser.parse_args()
     if args.base_url[-1] != '/':
         args.base_url += '/'
-    ApiV1Test.base_url = args.base_url
+    ApiV1BaseClass.base_url = args.base_url
 
     sys.argv[1:] = args.unittest_args
-    unittest.main()
+
+def run_tests():
+    """
+    Organize and run the test suites.
+    """
+    suites = [
+        unittest.TestLoader().loadTestsFromTestCase(ApiV1TestCase),
+        unittest.TestLoader().loadTestsFromTestCase(SpeciesSpecificIdsTestCase),
+    ]
+    unittest.TextTestRunner().run(unittest.TestSuite(suites))
+
+if __name__ == '__main__':
+    parse_arguments()
+    run_tests()

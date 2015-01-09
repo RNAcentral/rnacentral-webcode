@@ -111,6 +111,70 @@ class RnaNestedSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('url', 'rnacentral_id', 'md5', 'sequence', 'length', 'xrefs', 'publications')
 
 
+class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
+    """
+    Serializer class for species-specific RNAcentral ids.
+
+    Requires context['xrefs'] and context['taxid'].
+    """
+    sequence = serializers.Field(source='get_sequence')
+    rnacentral_id = serializers.SerializerMethodField('get_species_specific_id')
+    description = serializers.SerializerMethodField('get_species_specific_description')
+    species = serializers.SerializerMethodField('get_species_name')
+    genes = serializers.SerializerMethodField('get_genes')
+    ncrna_types = serializers.SerializerMethodField('get_ncrna_types')
+
+    def get_species_specific_id(self, obj):
+        """
+        Return a species-specific id using the underscore (used by Protein2GO).
+        """
+        return obj.upi + '_' + self.context['taxid']
+
+    def get_species_specific_description(self, obj):
+        """
+        Get species-specific description of the RNA sequence.
+        """
+        return obj.get_description(self.context['taxid'])
+
+    def get_species_name(self, obj):
+        """
+        Get the name of the species based on taxid.
+        """
+        return self.context['xrefs'].first().accession.species
+
+    def get_genes(self, obj):
+        """
+        Get a species-specific list of genes associated with the sequence
+        in this particular sequence.
+        """
+        return self.context['xrefs'].values_list('accession__gene', flat=True).\
+                                     filter(accession__gene__isnull=False).\
+                                     distinct()
+
+    def get_ncrna_types(self, obj):
+        """
+        Get a combined list of ncRNA types from the feature names
+        and expand ncRNA feature type using ncRNA class info.
+        """
+        xrefs = self.context['xrefs']
+        feature_names = xrefs.values_list('accession__feature_name', flat=True).\
+                              distinct()
+        if 'ncRNA' in feature_names:
+            ncrna_classes = xrefs.values_list('accession__ncrna_class', flat=True).\
+                                  filter(accession__ncrna_class__isnull=False).\
+                                  distinct()
+            ncrna_types = set(list(feature_names) + list(ncrna_classes))
+            ncrna_types.discard('ncRNA')
+        else:
+            ncrna_types = list(feature_names)
+        return ncrna_types
+
+    class Meta:
+        model = Rna
+        fields = ('rnacentral_id', 'sequence', 'length', 'description',
+                  'species', 'genes', 'ncrna_types')
+
+
 class RnaFlatSerializer(RnaNestedSerializer):
     """
     Override the xrefs field in the default nested serializer

@@ -15,6 +15,7 @@ limitations under the License.
 Docstrings of the classes exposed in urlpatters support markdown.
 """
 
+from django.http import Http404
 from portal.models import Rna, Accession, Xref, Reference
 from rest_framework import generics
 from rest_framework import renderers
@@ -25,7 +26,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.reverse import reverse
 from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, XrefSerializer, \
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
-                              RawCitationSerializer
+                              RawCitationSerializer, RnaSpeciesSpecificSerializer
 import django_filters
 import re
 
@@ -497,6 +498,37 @@ class RnaDetail(RnaMixin, generics.RetrieveAPIView):
     renderer_classes = (renderers.JSONRenderer, renderers.JSONPRenderer,
                         renderers.BrowsableAPIRenderer, renderers.YAMLRenderer,
                         RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer)
+
+
+class RnaSpeciesSpecificView(generics.RetrieveAPIView):
+    """
+    API endpoint for retrieving species-specific details
+    about Unique RNA Sequences.
+
+    [API documentation](/api)
+    """
+    # the above docstring appears on the API website
+
+    """
+    This endpoint is used by Protein2GO.
+    Contact person: Tony Sawford.
+    """
+    queryset = Rna.objects.all()
+
+    def get(self, request, pk, taxid, format=None):
+        """
+        Respond to Get requests.
+        """
+        rna = self.get_object()
+        xrefs = rna.xrefs.filter(taxid=taxid)
+        if not xrefs:
+            raise Http404
+        serializer = RnaSpeciesSpecificSerializer(rna, context={
+            'request': request,
+            'xrefs': xrefs,
+            'taxid': taxid,
+        })
+        return Response(serializer.data)
 
 
 class XrefList(generics.ListAPIView):
