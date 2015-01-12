@@ -112,6 +112,14 @@ rnaSequenceView.prototype.initialize = function() {
     enable_xref_pagination();
 
     /**
+     * Notify Angular about the changes to the URL
+     * made outside of Angular code.
+     */
+    function angular_apply() {
+        angular.element($("body")).scope().$apply();
+    }
+
+    /**
      * Update url parameter when tab is changed.
      */
     function toggle_tabs() {
@@ -119,7 +127,7 @@ rnaSequenceView.prototype.initialize = function() {
             var q = queryString.parse(location.search);
             q.tab = $(this).find('a').first().data('target').replace('#', '');
             history.replaceState({}, "", window.location.pathname + '?' + queryString.stringify(q));
-            angular.element($("body")).scope().$apply(); // tell angular about the url change
+            angular_apply();
         });
     }
 
@@ -134,6 +142,7 @@ rnaSequenceView.prototype.initialize = function() {
 
         q[url_param] = pagination_link.data(url_param);
         history.replaceState({}, "", window.location.pathname + '?' + queryString.stringify(q));
+        angular_apply();
       });
     }
 
@@ -215,6 +224,7 @@ rnaSequenceView.prototype.initialize = function() {
             var q = queryString.parse(location.search);
             q.tab = 'taxonomy';
             history.replaceState({}, "", window.location.pathname + '?' + queryString.stringify(q));
+            angular_apply();
             return false;
         });
     }
