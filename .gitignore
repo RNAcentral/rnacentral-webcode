@@ -90,7 +90,7 @@ nosetests.xml
 ####################
 # django gitignore #
 ####################
-*.log
+*.log*
 *.pot
 *.pyc
 local_settings.py
