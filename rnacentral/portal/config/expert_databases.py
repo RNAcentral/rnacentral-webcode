@@ -39,6 +39,23 @@ expert_dbs = [
         'imported': True,
     },
     {
+        'name': 'PDB',
+        'label': 'pdb',
+        'url': 'http://www.wwpdb.org/',
+        'description': 'is the single worldwide repository of information about the 3D structures of large biological molecules',
+        'abbreviation': 'Protein Data Bank',
+        'examples': ['URS00007BBA28', 'URS00007BBC98', 'URS00007BBC5B'],
+        'references': [
+            {
+                'title': 'Announcing the worldwide Protein Data Bank',
+                'authors': 'Berman H, Henrick K, Nakamura H',
+                'journal': 'Nat Struct Biol. 2003 Dec;10(12):980.',
+                'pubmed_id': 14634627,
+            },
+        ],
+        'imported': True,
+    },
+    {
         'name': 'FlyBase',
         'label': '',
         'url': 'http://flybase.org/',
