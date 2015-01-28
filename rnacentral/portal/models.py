@@ -556,6 +556,7 @@ class Accession(models.Model):
             'GTRNADB': 'http://lowelab.ucsc.edu/GtRNAdb/',
             'REFSEQ': 'http://www.ncbi.nlm.nih.gov/nuccore/',
             'RDP': 'http://rdp.cme.msu.edu/hierarchy/detail.jsp?seqid=',
+            'SNOPY': 'http://snoopy.med.miyazaki-u.ac.jp/snorna_db.cgi?mode=sno_info&id=',
         }
         if self.database in urls.keys():
             if self.database == 'GTRNADB':

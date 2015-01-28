@@ -373,13 +373,20 @@ expert_dbs = [
     },
     {
         'name': 'snOPY',
-        'label': '',
+        'label': 'snopy',
         'url': 'http://snoopy.med.miyazaki-u.ac.jp',
-        'description': 'comprehensive information about snoRNAs, snoRNA gene loci, and target RNAs',
-        'abbreviation': '',
-        'examples': '',
-        'references': [],
-        'imported': False,
+        'description': 'provides comprehensive information about snoRNAs, snoRNA gene loci, and target RNAs',
+        'abbreviation': 'snoRNA Orthological Gene Database',
+        'examples': ['URS0000456CE0', 'URS00005CC29F', 'URS0000817CAB'],
+        'references': [
+            {
+                'title': 'snOPY: a small nucleolar RNA orthological gene database',
+                'authors': 'Yoshihama M., Nakao A., Kenmochi N.',
+                'journal': 'BMC Res Notes 6:426-426(2013)',
+                'pubmed_id': '24148649',
+            },
+        ],
+        'imported': True,
     },
     {
         'name': 'snoRNA Database',

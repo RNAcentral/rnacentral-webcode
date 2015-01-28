@@ -26,25 +26,24 @@ RNAcentral
 
 {% block content %}
 
-  <br>
+  <div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <p>
+            <span class="lead text-info">RNAcentral is a new resource that provides unified access to the ncRNA sequence data supplied by the Expert Databases.</span>
+            <span class="text-muted">
+              <a class="small" href="{% url 'about' %}">Learn more</a>
+            </span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div id="expert-databases">
     {% for database in context.databases %}
-      {% if forloop.counter == 1 or forloop.counter == 3 or forloop.counter == 7 %}<div class="row">{% endif %}
-      {% if forloop.counter == 1 %}
-        <div class="col-md-6 col-sm-6 col-xs-12">
-          <div class="panel panel-default">
-            <div class="panel-body">
-              <p>
-                <span class="lead text-info">RNAcentral is a new resource that provides unified access to the ncRNA sequence data supplied by the Expert Databases.</span>
-                <span class="text-muted">
-                  <a class="small" href="{% url 'about' %}">Learn more</a>
-                </span>
-              </p>
-            </div>
-          </div>
-        </div>
-      {% endif %}
+      {% if forloop.counter == 1 or forloop.counter == 5 or forloop.counter == 9 %}<div class="row">{% endif %}
       <div class="col-md-3 col-sm-6 col-xs-12">
         <div class="panel panel-default">
           <div class="panel-body">
@@ -64,7 +63,7 @@ RNAcentral
           </div>
         </div>
       </div>
-      {% if forloop.counter == 2 or forloop.counter == 6 or forloop.last %}</div>{% endif %}
+      {% if forloop.counter == 4 or forloop.counter == 8 or forloop.last %}</div>{% endif %}
     {% endfor %}
   </div>
   <br>
