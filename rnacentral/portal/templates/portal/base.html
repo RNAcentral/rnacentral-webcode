@@ -175,6 +175,10 @@ limitations under the License.
         {% endblock %}
 
         <!--TogetherJS screen sharing-->
+        <script>
+          var TogetherJSConfig_includeHashInUrl = true; // observe all changes in the url
+          var TogetherJSConfig_disableWebRTC = true; // do not show audio chat icon
+        </script>
         <script src="https://togetherjs.com/togetherjs-min.js"></script>
 
         <!--Google Analytics-->
