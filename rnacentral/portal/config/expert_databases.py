@@ -44,7 +44,7 @@ expert_dbs = [
         'url': 'http://www.ebi.ac.uk/pdbe/',
         'description': 'is the European repository of information about the 3D structures of large biological molecules. PDBe is a member of the Worldwide Protein Data Bank',
         'abbreviation': 'Protein Data Bank in Europe',
-        'examples': ['URS00007BBA28', 'URS00007BBC98', 'URS00007BBC5B'],
+        'examples': ['URS00000ABFE9', 'URS00004B0F34', 'URS000032B6B6'],
         'references': [
             {
                 'title': 'PDBe: Protein Data Bank in Europe',
