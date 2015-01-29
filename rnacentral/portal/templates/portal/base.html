@@ -148,7 +148,6 @@ limitations under the License.
             <script src="{% static "js/vendor/Genoverse/js/genomes/grch38.js" %}"></script>
             <script src="{% static "js/vendor/Genoverse/js/genoverse.combined.js" %}"></script>
             <script src="{% static "js/genoverse.RNAcentralTrack.js" %}"></script>
-            <script src="https://togetherjs.com/togetherjs-min.js"></script>
 
             <script>
                 $(function() {
@@ -173,6 +172,7 @@ limitations under the License.
         {% endcompress %}
 
         {% block extra_js_uncompressed %}
+          <script src="https://togetherjs.com/togetherjs-min.js"></script>
         {% endblock %}
 
         <!--Google Analytics-->
