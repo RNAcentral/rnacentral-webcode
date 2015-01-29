@@ -17,6 +17,7 @@ from django.utils.functional import cached_property
 from django.template.defaultfilters import pluralize
 from portal.config.genomes import genomes as rnacentral_genomes
 from portal.config.expert_databases import expert_dbs as rnacentral_expert_dbs
+import json
 import re
 
 # to make text fields searchable, add character set functional indexes in Oracle
@@ -491,6 +492,16 @@ class Accession(models.Model):
 
     class Meta:
         db_table = 'rnc_accessions'
+
+    def get_pdb_structured_note(self):
+        """
+        Get 3D structure metadata stored in a structured note.
+        * experimental technique
+        * PDB structure title
+        * release date
+        """
+        note = json.loads(self.note)
+        return note
 
     def get_hgnc_id(self):
         """

@@ -35,10 +35,14 @@ limitations under the License.
           <i class="fa fa-star"></i>
         </span>
       {% endif %}
-      {{ xref.db.name }}
-      {% if xref.db.name == 'Vega' %}
+
+      {% if xref.db.name == 'PDBe' %}
+        PDB
+      {% elif xref.db.name == 'Vega' %}
         <br>
         (GENCODE)
+      {% else %}
+        {{ xref.db.name }}
       {% endif %}
     </td>
     <!-- accession -->
@@ -171,10 +175,22 @@ limitations under the License.
     {% elif xref.db.name == 'PDBe' %}
       PDB: {{ xref.accession.external_id }}, chain {{ xref.accession.optional_id }}
       <br>
-      <a href="http://www.ebi.ac.uk/pdbe-srv/view/entry/{{ xref.accession.external_id }}/summary.html" target="_blank">PDBe</a> |
-      <a href="http://www.pdb.org/pdb/pdb/explore/explore.do?structureId={{ xref.accession.external_id }}" target="_blank">RCSB PDB</a> |
-      <a href="http://pdbj.org/mine/summary/{{ xref.accession.external_id }}" target="_blank">PDBj</a> |
-      <a href="{{ xref.get_ndb_external_url }}" target="_blank">NDB</a>
+      <i class="fa fa-angle-right"></i>
+      <a href="http://www.ebi.ac.uk/pdbe-srv/view/entry/{{ xref.accession.external_id }}/summary.html" target="_blank" title="Protein Data Bank in Europe" class="help">PDBe</a> |
+      <a href="http://www.pdb.org/pdb/pdb/explore/explore.do?structureId={{ xref.accession.external_id }}" target="_blank" title="Protein Data Bank USA" class="help">RCSB PDB</a> |
+      <a href="http://pdbj.org/mine/summary/{{ xref.accession.external_id }}" target="_blank" title="Protein Data Bank Japan" class="help">PDBj</a> |
+      <a href="{{ xref.get_ndb_external_url }}" target="_blank" title="Nucleic Acids Database" class="help">NDB</a>
+      <br>
+      <i class="fa fa-angle-right"></i>
+      <small>Structure title:</small> {{ xref.accession.get_pdb_structured_note.structureTitle }}
+      <br>
+      <i class="fa fa-angle-right"></i>
+      <small>Method:</small> {{ xref.accession.get_pdb_structured_note.experimentalTechnique }} |
+      {% if xref.accession.get_pdb_structured_note.resolution %}
+        {# NMR structures do not have resolution #}
+        <small>resolution:</small> {{ xref.accession.get_pdb_structured_note.resolution }} Å |
+      {% endif %}
+      <small>release date:</small> {{ xref.accession.get_pdb_structured_note.releaseDate }}
 
     {# snOPY #}
     {% elif xref.db.name == 'snOPY' %}
