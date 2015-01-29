@@ -174,7 +174,7 @@ limitations under the License.
       <a href="http://www.ebi.ac.uk/pdbe-srv/view/entry/{{ xref.accession.external_id }}/summary.html" target="_blank">PDBe</a> |
       <a href="http://www.pdb.org/pdb/pdb/explore/explore.do?structureId={{ xref.accession.external_id }}" target="_blank">RCSB PDB</a> |
       <a href="http://pdbj.org/mine/summary/{{ xref.accession.external_id }}" target="_blank">PDBj</a> |
-      <a href="http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget={{ xref.accession.external_id }}" target="_blank">NDB</a>
+      <a href="{{ xref.get_ndb_external_url }}" target="_blank">NDB</a>
 
     {# snOPY #}
     {% elif xref.db.name == 'snOPY' %}

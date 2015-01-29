@@ -621,6 +621,21 @@ class Xref(models.Model):
         else:
             return None
 
+    def get_ndb_external_url(self):
+        """
+        For some entries NDB uses different ids than those assigned by the PDB.
+        NDB ids are store in the db_xref column.
+        This function returns an NDB url using NDB ids where possible
+        with PDB ids used as a fallback.
+        """
+        ndb_url = 'http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget={structure_id}'
+        match = re.search('NDB\:(\w+)', self.accession.db_xref, re.IGNORECASE)
+        if match:
+            structure_id = match.group(1) # NDB id
+        else:
+            structure_id = self.accession.external_id # default to PDB id
+        return ndb_url.format(structure_id=structure_id)
+
     def get_ucsc_bed(self):
         """
         Format genomic coordinates in BED format.
