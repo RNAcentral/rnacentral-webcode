@@ -28,6 +28,8 @@ import os, sys
 from os.path import dirname
 sys.path.append(os.path.abspath(__file__ + "/../../../.."))
 os.environ["DJANGO_SETTINGS_MODULE"] = "rnacentral.settings"
+import django
+django.setup()
 
 import json
 import requests
@@ -54,6 +56,7 @@ class ENASequenceSearchTest(unittest.TestCase):
         self.assertTrue(test_case['accession'] in json.dumps(data))
         # check whether the RNAcentral ids are mapped correctly
         data = self.client.search(test_case['sequence'], map_ids=True)
+
         self.assertTrue(test_case['upi'] in json.dumps(data))
 
     def test_find_itself_refseq_sequence(self):
@@ -106,7 +109,7 @@ class ENASequenceSearchTest(unittest.TestCase):
         """
         test_case = {
             'sequence': 'UGAGGUAGUAGAUUGUAUAGUU',
-            'accession': 'HAAO01000006.1:1..22:ncRNA',
+            'accession': 'AJ421731.1:1..22:misc_RNA',
             'upi': 'URS00003B7674',
         }
         self.__verify_results(test_case)
