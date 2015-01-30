@@ -197,10 +197,16 @@ def rna_view(request, upi, taxid=None):
 
     taxid_filtering = is_taxid_filtering_possible()
 
+    if taxid and not taxid_filtering:
+        response = redirect('unique-rna-sequence', upi=upi)
+        response['Location'] += '?taxid-not-found={taxid}'.format(taxid=taxid)
+        return response
+
     context = {
         'counts': rna.count_symbols(),
         'taxid': taxid,
         'taxid_filtering': taxid_filtering,
+        'taxid_not_found': request.GET.get('taxid-not-found', ''),
         'single_species': get_single_species(),
         'description': rna.get_description(taxid) if taxid_filtering else rna.get_description(),
         'distinct_databases': rna.get_distinct_database_names(taxid),

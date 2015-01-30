@@ -42,9 +42,9 @@ limitations under the License.
   </small>
 </h1>
 
-{% if context.taxid and not context.taxid_filtering %}
+{% if context.taxid_not_found %}
   <div class="alert alert-danger">
-    You requested annotations from taxid:{{context.taxid}}, but none were found. Please check the taxid in the URL.
+    No annotations from taxid:{{context.taxid_not_found}}.
   </div>
 {% elif context.taxid_filtering %}
   <div class="well well-sm">

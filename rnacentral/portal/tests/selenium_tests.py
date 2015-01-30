@@ -625,9 +625,13 @@ class RNAcentralTest(unittest.TestCase):
         self.assertIn('Showing annotations from ' + taxid['species'], page.get_info_text())
 
     def test_taxid_filtering_spurious_taxid(self):
+        """
+        When a taxid is not found, the url is redirected
+        to a non-species-specific id.
+        """
         page = TaxidFilteringSequencePage(self.browser, 'URS000047C79B' + '/' + '0'*10)
         page.navigate()
-        self.assertIn('Please check the taxid in the URL', page.get_warning_info_text())
+        self.assertIn('No annotations from taxid', page.get_warning_info_text())
 
     def test_taxid_filtering_with_underscore(self):
         page = TaxidFilteringSequencePage(self.browser, 'URS00000B15DA_9606')
