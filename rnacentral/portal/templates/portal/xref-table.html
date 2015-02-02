@@ -128,7 +128,7 @@ limitations under the License.
     {% elif xref.db.name == 'RefSeq' %}
       RefSeq: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}.{{ xref.accession.seq_version }}</a>
 
-      {% if xref.is_refseq_mirna %}
+      {% if xref.is_active and xref.is_refseq_mirna %}
         {% with mirna_precursor=xref.get_refseq_mirna_precursor %}
             {% if mirna_precursor %}
               - mature miRNA (precursor <a href="{% url  'portal.views.rna_view' upi=mirna_precursor.upi %}">{{ mirna_precursor.upi }}</a>)
@@ -143,7 +143,7 @@ limitations under the License.
               {% endwith %}
             {% endif %}
         {% endwith %}
-      {% else %}
+      {% elif xref.is_active %}
         {% with splice_variants=xref.get_refseq_splice_variants  %}
           {% if splice_variants %}
             <br>

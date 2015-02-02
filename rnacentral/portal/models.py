@@ -612,6 +612,16 @@ class Xref(models.Model):
     class Meta:
         db_table = 'xref'
 
+    def is_active(self):
+        """
+        Convenience method for determining whether
+        an xref is current or obsolete.
+        """
+        if self.deleted == 'N':
+            return True
+        else:
+            return False
+
     def is_rfam_seed(self):
         """
         Determine whether an xref is part of a manually curated
@@ -709,7 +719,9 @@ class Xref(models.Model):
             * 3-prime ncRNA
         which share the same parent accession.
         """
-        same_parent = Accession.objects.filter(parent_ac=self.accession.parent_ac).all()
+        same_parent = Xref.objects.filter(accession__parent_ac=self.accession.parent_ac,
+                                          deleted=self.deleted).\
+                                   all()
         if len(same_parent) > 1:
             return True
         else:
