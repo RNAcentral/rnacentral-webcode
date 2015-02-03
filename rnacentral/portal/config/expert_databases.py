@@ -375,7 +375,8 @@ expert_dbs = [
         'name': 'snOPY',
         'label': 'snopy',
         'url': 'http://snoopy.med.miyazaki-u.ac.jp',
-        'description': 'provides comprehensive information about snoRNAs, snoRNA gene loci, and target RNAs',
+        'description': """provides comprehensive information about snoRNAs, snoRNA gene loci, and target RNAs
+                          as well as information about snoRNA orthologues""",
         'abbreviation': 'snoRNA Orthological Gene Database',
         'examples': ['URS0000456CE0', 'URS00005CC29F', 'URS0000817CAB'],
         'references': [
