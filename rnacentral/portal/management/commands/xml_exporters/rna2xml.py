@@ -133,7 +133,7 @@ class RnaXmlExporter(OracleConnection):
             # expert_db should not contain spaces, EBeye requirement
             result['expert_db'] = result['expert_db'].replace(' ','_').upper()
             # an expert_db entry
-            if result['non_coding_id'] or result['expert_db'] in ['RFAM', 'REFSEQ', 'RDP']:
+            if result['non_coding_id'] or result['expert_db']:
                 self.data['xrefs'].add((result['expert_db'],
                                         result['external_id']))
             else: # source ENA entry
@@ -141,7 +141,9 @@ class RnaXmlExporter(OracleConnection):
                 expert_db = 'NON-CODING' # EBeye requirement
                 self.data['xrefs'].add((expert_db, result['accession']))
             # parent ENA entry
-            self.data['xrefs'].add(('ENA', result['parent_accession']))
+            # except for PDB entries which are not based on ENA accessions
+            if result['expert_db'] != 'PDBE':
+                self.data['xrefs'].add(('ENA', result['parent_accession']))
 
         def store_rna_type():
             """
