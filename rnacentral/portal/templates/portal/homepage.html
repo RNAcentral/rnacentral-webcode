@@ -44,7 +44,7 @@ RNAcentral
       {% if forloop.counter == 1 or forloop.counter == 5 or forloop.counter == 9 %}<div class="row">{% endif %}
 
       <div class="col-md-3 col-sm-6 col-xs-12">
-        <div class="panel panel-default expert-db-card {% if forloop.counter > 8 %}margin-bottom-0px{% endif %}">
+        <div class="panel panel-default expert-db-card {% if forloop.counter > 8 %}margin-bottom-5px{% endif %}">
 
           <div class="expert-db-card-header">
             <a href="{% url 'expert-database' database.label %}">{{database.name}}</a>
