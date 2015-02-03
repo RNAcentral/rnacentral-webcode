@@ -24,6 +24,7 @@ limitations under the License.
     'chromosome': '',
     'start': '',
     'end': '',
+    'strand': '',
     'species': '',
     '_species': '', // previous species
     'species_label': '',
@@ -117,7 +118,8 @@ limitations under the License.
                  this.params.species_label + ' ' +
                  this.params.chromosome + ':' +
                  number_with_commas(this.params.start) + '-' +
-                 number_with_commas(this.params.end) +
+                 number_with_commas(this.params.end) + ':' +
+                 this.params.strand +
                  '</em>';
       $('#genoverse-coordinates').html('').hide().html(text).fadeIn('slow');
       // display xref description
@@ -411,6 +413,7 @@ limitations under the License.
           'chromosome': $this.data('chromosome'),
           'start': $this.data('genomic-start'),
           'end': $this.data('genomic-end'),
+          'strand': $this.data('strand'),
           'species': species,
           '_species': _species,
           'species_label': $this.data('species-label'),
