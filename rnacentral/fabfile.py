@@ -140,5 +140,5 @@ def test(base_url="http://localhost:8000/"):
     fab test:http://test.rnacentral.org
     """
     local('python apiv1/tests.py --base_url=%s' % base_url)
-    # local('python portal/tests/selenium_tests.py --base_url %s --driver=phantomjs' % base_url)
-    # local('python apiv1/search/sequence/tests.py --base_url %s' % base_url)
+    local('python portal/tests/selenium_tests.py --base_url %s --driver=phantomjs' % base_url)
+    local('python apiv1/search/sequence/tests.py --base_url %s' % base_url)
