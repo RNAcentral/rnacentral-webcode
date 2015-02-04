@@ -11,12 +11,33 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-# fabric deployment script
-
 import os.path
 import requests
 from fabric.api import *
 
+"""
+Fabric deployment script
+
+Usage:
+
+fab -H user@server1,user@server2 -c /path/to/fab.cfg deploy:git_branch=my_git_branch:website_url=my_website_url
+
+where:
+
+* -H - list of host names
+* -c - path to the configuration file
+* deploy - name of the task to run
+* git_branch - git branch to deploy (dev by default)
+* website_url - which url should be used to jumpstart the server
+
+fab.cfg template:
+
+rnacentral_site=/path/to/manage.py
+activate=source /path/to/virtualenvs/RNAcentral/bin/activate
+ld_library_path=export LD_LIBRARY_PATH=/path/to/oracle/libraries/:$LD_LIBRARY_PATH
+oracle_home=export ORACLE_HOME=/path/to/oracle/libraries/
+static_files=/path/to/static/files
+"""
 
 def rsync_git_repo():
     """
@@ -32,13 +53,12 @@ def rsync_git_repo():
             host=env.host, src=parent_dir, dst=parent_parent_dir, local_settings=local_settings)
         local(cmd)
 
-def git_updates():
+def git_updates(git_branch):
     """
     Perform git updates, but only on the test server because the production
     servers must use rsync to preserve file modification time.
     """
     with cd(env['rnacentral_site']):
-        git_branch = 'release/1.0'
         # make sure we are on the right branch
         run('git checkout %s' % git_branch)
         # get latest changes
@@ -95,24 +115,13 @@ def restart_django(restart_url):
         if r.status_code != 200:
             print 'Error: Website cannot be reached'
 
-def deploy(restart_url="http://rnacentral.org"):
+def deploy(git_branch='dev', restart_url="http://rnacentral.org"):
     """
     Deploy to a server.
-
-    fab.cfg template:
-
-    rnacentral_site=/path/to/manage.py
-    activate=source /path/to/virtualenvs/RNAcentral/bin/activate
-    ld_library_path=export LD_LIBRARY_PATH=/path/to/oracle/libraries/:$LD_LIBRARY_PATH
-    oracle_home=export ORACLE_HOME=/path/to/oracle/libraries/
-    static_files=/path/to/static/files
-
-    Usage:
-    fab -H user@server1,user@server2 -c /path/to/fab.cfg deploy:website_url
     """
     if env.host == 'ves-hx-61':
         # will run only when deploying to test servers
-        git_updates()
+        git_updates(git_branch)
         collect_static_files()
     else:
         # will run only when deploying to production servers
@@ -131,5 +140,5 @@ def test(base_url="http://localhost:8000/"):
     fab test:http://test.rnacentral.org
     """
     local('python apiv1/tests.py --base_url=%s' % base_url)
-    local('python portal/tests/selenium_tests.py --base_url %s --driver=phantomjs' % base_url)
-    local('python apiv1/search/sequence/tests.py --base_url %s' % base_url)
+    # local('python portal/tests/selenium_tests.py --base_url %s --driver=phantomjs' % base_url)
+    # local('python apiv1/search/sequence/tests.py --base_url %s' % base_url)
