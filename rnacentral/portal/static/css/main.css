@@ -846,26 +846,29 @@ textarea {
   transform: scale(1.03);
 }
 
-/* hide the links */
-.expert-db-card a {
-  text-decoration: none;
-  color: inherit;
-}
+/* do not hide links on mobile devices */
+@media (min-width: 992px) {
+  /* hide the links */
+  .expert-db-card a {
+    text-decoration: none;
+    color: inherit;
+  }
 
-/* style links on hover */
-.expert-db-card:hover a {
-  color: #2a6496;
-  text-decoration: underline;
-}
+  /* style links on hover */
+  .expert-db-card:hover a {
+    color: #2a6496;
+    text-decoration: underline;
+  }
 
-/* make database descriptions grey */
-.expert-db-card .panel-body {
-  color: #767676;
-}
+  /* make text less prominent */
+  .expert-db-card .panel-body {
+    color: #767676;
+  }
 
-/* make database descriptions dark on hover */
-.expert-db-card:hover .panel-body {
-  color: #333;
+  /* make text more prominent on hover */
+  .expert-db-card:hover .panel-body {
+    color: #333;
+  }
 }
 
 .expert-db-card-header {
