@@ -126,10 +126,7 @@ class RnaXmlExporter(OracleConnection):
         def store_xrefs():
             """
             Store xrefs as (database, accession) tuples in self.data['xrefs'].
-            Do not store deleted xrefs so that they are not indexed.
             """
-            if result['deleted'] == 'Y':
-                return
             # expert_db should not contain spaces, EBeye requirement
             result['expert_db'] = result['expert_db'].replace(' ','_').upper()
             # an expert_db entry

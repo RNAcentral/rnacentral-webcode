@@ -163,9 +163,8 @@ class Command(BaseCommand):
             """
             exporter = RnaXmlExporter()
             for rna in Rna.objects.filter(id__gt=int(self.options['min']), id__lte=int(self.options['max'])).iterator():
-                if rna.is_active():
-                    filehandle.write(exporter.get_xml_entry(rna))
-                    filehandle.flush()
+                filehandle.write(exporter.get_xml_entry(rna))
+                filehandle.flush()
 
         def write_xml_footer():
             """
