@@ -74,6 +74,12 @@ expert_dbs = [
         'examples': ['URS00000478B7', 'URS000066DAB6', 'URS000068EEC5'],
         'references': [
             {
+                'title': 'Rfam 12.0: updates to the RNA families database',
+                'authors': 'Nawrocki EP, Burge SW, Bateman A, Daub J, Eberhardt RY, Eddy SR, Floden EW, Gardner PP, Jones TA, Tate J, Finn RD',
+                'journal': 'Nucleic Acids Res. 2015 Jan 28;43(Database issue):D130-7',
+                'pubmed_id': 25392425,
+            },
+            {
                 'title': 'Rfam 11.0: 10 years of RNA families',
                 'authors': 'Burge SW, Daub J, Eberhardt R, Tate J, Barquist L, Nawrocki EP, Eddy SR, Gardner PP, Bateman A',
                 'journal': 'Nucleic Acids Res. 2013 Jan;41(Database issue):D226-32',
