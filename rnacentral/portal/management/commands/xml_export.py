@@ -16,6 +16,7 @@ from optparse import make_option
 from cProfile import Profile
 import os
 import subprocess
+import sys
 import time
 from portal.models import Rna
 from portal.management.commands.xml_exporters.rna2xml import RnaXmlExporter
@@ -184,6 +185,7 @@ class Command(BaseCommand):
             if 'validates' not in output:
                 print 'ERROR: xmllint validation failed'
                 print output
+                sys.exit(1)
 
         def gzip_file():
             """
