@@ -56,7 +56,7 @@ def install_django_requirements():
     * install all python requirements
     """
     with cd(env['rnacentral_site']), prefix(env['activate']), prefix(env['ld_library_path']), prefix(env['oracle_home']):
-        run('pip install -r requirements.txt')
+        run('pip install --upgrade -r requirements.txt')
 
 def rsync_static_files():
     """
