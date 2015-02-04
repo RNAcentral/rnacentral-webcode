@@ -842,8 +842,8 @@ textarea {
 }
 .expert-db-card:hover img,
 .hvr-grow:hover, .hvr-grow:focus, .hvr-grow:active {
-  -webkit-transform: scale(1.03);
-  transform: scale(1.03);
+  -webkit-transform: scale(1.05);
+  transform: scale(1.05);
 }
 
 /* do not hide links on mobile devices */
@@ -888,6 +888,8 @@ textarea {
 .expert-db-logo img {
   max-width: 130px;
   max-height: 100px;
+  margin-top: 3px;
+  margin-right: 3px;
 }
 
 .expert-db-card .panel-body {
