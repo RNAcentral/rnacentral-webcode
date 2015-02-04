@@ -858,6 +858,16 @@ textarea {
   text-decoration: underline;
 }
 
+/* make database descriptions grey */
+.expert-db-card .panel-body {
+  color: #767676;
+}
+
+/* make database descriptions dark on hover */
+.expert-db-card:hover .panel-body {
+  color: #333;
+}
+
 .expert-db-card-header {
   margin-left: 10px;
   margin-top: 10px;
