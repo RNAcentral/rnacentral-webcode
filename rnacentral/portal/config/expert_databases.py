@@ -69,7 +69,7 @@ expert_dbs = [
         'name': 'Rfam',
         'label': 'rfam',
         'url': 'http://rfam.xfam.org',
-        'description': 'is a database containing information about ncRNA families and other structured RNA elements',
+        'description': 'is a collection of non-coding RNA families represented by manually curated sequence alignments, consensus secondary structures, and predicted homologues',
         'abbreviation': '',
         'examples': ['URS00000478B7', 'URS000066DAB6', 'URS000068EEC5'],
         'references': [
