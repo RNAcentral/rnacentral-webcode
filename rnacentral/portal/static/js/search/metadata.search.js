@@ -594,6 +594,10 @@ angular.module('rnacentralApp').controller('QueryCtrl', ['$scope', '$location', 
                 // redirect only if the main part of url has changed
                 if (newUrl.split('?')[0] !== oldUrl.split('?')[0]) {
                     redirect(newUrl);
+                } else {
+                    // navigate page tabs using browser back button
+                    matches = newUrl.match(/tab=(\w+)&?/);
+                    $('#tabs a[data-target="#' + matches[1] + '"]').tab('show');
                 }
             } else if (newUrl.indexOf('/search') == -1) {
                 // a non-search url, load that page
