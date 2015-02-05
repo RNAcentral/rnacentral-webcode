@@ -407,11 +407,6 @@ h3.panel-title {
   overflow-y: auto;
 }
 
-#expert-databases .label {
-  font-size: 85%;
-  margin-left: 0;
-}
-
 code {
   white-space: normal;
 }
@@ -856,8 +851,12 @@ textarea {
 
   /* style links on hover */
   .expert-db-card:hover a {
-    color: #2a6496;
+    color: #428bca;
     text-decoration: underline;
+  }
+
+  .expert-db-card:hover a:hover {
+    color: #2a6496;
   }
 
   /* make text less prominent */
@@ -868,6 +867,25 @@ textarea {
   /* make text more prominent on hover */
   .expert-db-card:hover .panel-body {
     color: #333;
+  }
+
+  /* adjust panel height for large screen sizes */
+  .expert-db-card .panel-body {
+    min-height: 100px;
+  }
+}
+
+/* adjust panel height for medium screen sizes */
+@media (min-width: 768px) {
+  .expert-db-card .panel-body {
+    min-height: 90px;
+  }
+}
+
+/* adjust panel height for small screen sizes */
+@media (max-width: 768px) {
+  .expert-db-card .panel-body {
+    min-height: 30px;
   }
 }
 
@@ -898,6 +916,7 @@ textarea {
 
 .expert-db-card .panel-footer {
   padding: 6px 10px;
+  font-size: 78%;
 }
 
 .homepage-panel .panel-body {
