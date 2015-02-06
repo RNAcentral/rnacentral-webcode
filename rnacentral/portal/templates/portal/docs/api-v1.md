@@ -207,14 +207,14 @@ There are 3 url parameters: `length`, `min_length` (greater or equal length), an
 <h3 id="v1-filtering-by-database">Filtering by database</h3>
 
 The expert database can be specified by setting the `database` url parameter
-(possible values: *srpdb*, *mirbase*, *vega*, *tmrna_website*, *lncrnadb*, *gtrnadb*, *ena*, *rdp*, *rfam*, *refseq*).
+(possible values: *srpdb*, *mirbase*, *vega*, *tmrna-website*, *lncrnadb*, *gtrnadb*, *ena*, *rdp*, *rfam*, *refseq*, *snopy*, *pdbe*).
 
 #### Examples
 
 * [{{ BASE_URL }}/api/v1/rna/?database=srpdb](/api/v1/rna/?database=srpdb)
 * [{{ BASE_URL }}/api/v1/rna/?database=mirbase](/api/v1/rna/?database=mirbase)
 * [{{ BASE_URL }}/api/v1/rna/?database=vega](/api/v1/rna/?database=vega)
-* [{{ BASE_URL }}/api/v1/rna/?database=tmrna_website](/api/v1/rna/?database=tmrna_website)
+* [{{ BASE_URL }}/api/v1/rna/?database=tmrna-website](/api/v1/rna/?database=tmrna-website)
 * [{{ BASE_URL }}/api/v1/rna/?database=lncrnadb](/api/v1/rna/?database=lncrnadb)
 * [{{ BASE_URL }}/api/v1/rna/?database=gtrnadb](/api/v1/rna/?database=gtrnadb)
 * [{{ BASE_URL }}/api/v1/rna/?database=ena](/api/v1/rna/?database=ena)

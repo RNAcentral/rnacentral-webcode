@@ -29,11 +29,29 @@ python apiv1/tests.py --base_url http://test.rnacentral.org/
 """
 
 import argparse
+import django
+import os
 import unittest
 import requests
 import re
 import sys
 import xml.dom.minidom
+
+
+def setup_django_environment():
+    """
+    Setup Django environment in order for the imports to work.
+    """
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'rnacentral.settings'
+    project_dir = os.path.dirname(
+                    os.path.dirname(
+                        os.path.realpath(__file__)))
+    sys.path.append(project_dir)
+    django.setup()
+
+
+setup_django_environment()
+from portal.models import Database
 
 
 class ApiV1BaseClass(unittest.TestCase):
@@ -115,10 +133,18 @@ class ApiV1TestCase(ApiV1BaseClass):
             self.assertNotEqual(data['count'], 0)
 
     def test_rna_database_filter(self):
-        for database in ['srpdb', 'mirbase', 'vega', 'tmrna_website', 'refseq']:
-            url = self._get_api_url('rna/?database=%s' % database)
+        for database in Database.objects.all():
+            if database.name in ['ENA', 'Rfam']:
+                continue
+            url = self._get_api_url('rna/?database=%s' % database.label)
             data = self._check_urls(url)
             self.assertNotEqual(data['count'], 0)
+
+    def test_non_existing_database_filter(self):
+        url = self._get_api_url('rna/?database=test')
+        data = self._check_urls(url)
+        print data
+        self.assertEqual(data['count'], 0)
 
     def test_rna_external_id_filter(self):
         filter_tests = ['rna/?external_id=Stap.epid._AF269831', 'rna/?external_id=MIMAT0000091',

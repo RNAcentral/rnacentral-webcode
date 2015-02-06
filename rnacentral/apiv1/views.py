@@ -16,7 +16,7 @@ Docstrings of the classes exposed in urlpatters support markdown.
 """
 
 from django.http import Http404
-from portal.models import Rna, Accession, Xref, Reference
+from portal.models import Rna, Accession, Xref, Reference, Database
 from rest_framework import generics
 from rest_framework import renderers
 from rest_framework import status
@@ -446,44 +446,33 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
                         renderers.BrowsableAPIRenderer,
                         renderers.YAMLRenderer, RnaFastaRenderer)
 
-    def _get_database_id(self):
+    def _get_database_id(self, db_name):
         """
         Map the `database` parameter from the url to internal database ids
         """
-        database = self.request.QUERY_PARAMS.get('database', None)
-        if not database:
-            pass
-        elif re.match('ena', database, re.IGNORECASE):
-            database = 1
-        elif re.match('rfam', database, re.IGNORECASE):
-            database = 2
-        elif re.match('srpdb', database, re.IGNORECASE):
-            database = 3
-        elif re.match('mirbase', database, re.IGNORECASE):
-            database = 4
-        elif re.match('vega', database, re.IGNORECASE):
-            database = 5
-        elif re.match('tmrna_website', database, re.IGNORECASE):
-            database = 6
-        elif re.match('lncrnadb', database, re.IGNORECASE):
-            database = 7
-        elif re.match('gtrnadb', database, re.IGNORECASE):
-            database = 8
-        elif re.match('refseq', database, re.IGNORECASE):
-            database = 9
-        elif re.match('rdp', database, re.IGNORECASE):
-            database = 10
-        return database
+        for expert_database in Database.objects.all():
+            if re.match(expert_database.label, db_name, re.IGNORECASE):
+                return expert_database.id
+        return None
 
     def get_queryset(self):
         """
         Manually filter against the `database` query parameter,
         use RnaFilter for other filtering operations.
         """
-        queryset = Rna.objects.defer('seq_short', 'seq_long').select_related().all()
-        database = self._get_database_id()
-        if database:
-            queryset = queryset.filter(xrefs__db=database)
+        db_name = self.request.QUERY_PARAMS.get('database', None)
+        if db_name:
+            db_id = self._get_database_id(db_name)
+            if db_id:
+                queryset = Rna.objects.defer('seq_short', 'seq_long').\
+                                       filter(xrefs__db=db_id).\
+                                       distinct().\
+                                       all()
+            else:
+                queryset = Rna.objects.none()
+        else:
+            queryset = Rna.objects.defer('seq_short', 'seq_long').all()
+
         return queryset
 
 
