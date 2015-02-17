@@ -14,7 +14,7 @@ limitations under the License.
 from django.conf.urls import patterns, url, include
 from django.contrib import admin
 from portal import views
-from portal.models import get_ensembl_divisions
+from portal.models import get_ensembl_divisions, Rna, Database
 
 urlpatterns = patterns('',
     # homepage
@@ -67,4 +67,35 @@ urlpatterns += patterns('',
     url(r'^rna/(?P<upi>\w+)/lineage/?$', 'portal.views.get_sequence_lineage'),
     # query EBeye
     url(r'^api/internal/ebeye/?$', 'portal.views.ebeye_proxy', name='ebeye-proxy'),
+)
+
+# sitemaps
+from django.contrib.sitemaps import GenericSitemap, Sitemap
+from django.contrib.sitemaps.views import sitemap
+from django.core.urlresolvers import reverse
+
+
+class StaticViewSitemap(Sitemap):
+
+    def items(self):
+        return [
+            'homepage', 'about', 'contact-us', 'downloads',
+            'expert-databases', 'sequence-search', 'api-docs',
+            'help', 'help-sequence-search', 'help-metadata-search',
+            'help-genomic-mapping', 'help-genomic-mapping',
+        ]
+
+    def location(self, item):
+        return reverse(item)
+
+
+sitemaps = {
+    'expert-databases': GenericSitemap({'queryset': Database.objects.all()}),
+    'static': StaticViewSitemap(),
+    'rna': GenericSitemap({'queryset': Rna.objects.all()}),
+}
+
+urlpatterns += patterns('django.contrib.sitemaps.views',
+    (r'^sitemap\.xml$', 'index', {'sitemaps': sitemaps}),
+    (r'^sitemap-(?P<section>.+)\.xml$', 'sitemap', {'sitemaps': sitemaps}),
 )

@@ -11,6 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Min, Max
 from django.utils.functional import cached_property
@@ -50,6 +51,13 @@ class Rna(models.Model):
 
     class Meta:
         db_table = 'rna'
+
+    def get_absolute_url(self):
+        """
+        Get a URL for an RNA object.
+        Used for generating sitemaps.
+        """
+        return reverse('unique-rna-sequence', kwargs={'upi': self.upi})
 
     def get_publications(self, taxid=None):
         """
@@ -436,6 +444,13 @@ class Database(models.Model):
         An accessor method for retrieving attributes from a list.
         """
         return [x[attribute] for x in rnacentral_expert_dbs if x['name'].lower() == db_name.lower()].pop()
+
+    def get_absolute_url(self):
+        """
+        Get a URL for a Database object.
+        Used for generating sitemaps.
+        """
+        return reverse('expert-database', kwargs={'expert_db_name': self.label})
 
 
 class Release(models.Model):
