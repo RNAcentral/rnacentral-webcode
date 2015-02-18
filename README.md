@@ -27,8 +27,7 @@ or get in touch using the Contact form on our website.
 * cx_Oracle
 * Fabric
 * [Python RQ](http://python-rq.org/)
-* see [requirements.txt](https://github.com/RNAcentral/rnacentral-webcode/blob/django/rnacentral/requirements.txt)
-for full list
+* see [requirements.txt](rnacentral/requirements.txt) for the full list
 
 ## Javascript
 
@@ -40,14 +39,14 @@ for full list
 * Hopscotch
 * Handlebars
 * [Genoverse](http://genoverse.org)
-* see [LICENSE](https://github.com/RNAcentral/rnacentral-webcode/blob/django/LICENSE) for more details
+* see [LICENSE](LICENSE) for more details
 
 ## CSS
 
 * Twitter Bootstrap
 * Font Awesome
 * Animate.css
-* see [LICENSE](https://github.com/RNAcentral/rnacentral-webcode/blob/django/LICENSE) for more details
+* see [LICENSE](LICENSE) for more details
 
 ## Testing:
 * Selenium
