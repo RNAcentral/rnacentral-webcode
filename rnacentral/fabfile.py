@@ -96,8 +96,8 @@ def collect_static_files():
     * move static files to the deployment location
     """
     with cd(env['rnacentral_site']), prefix(env['activate']), prefix(env['ld_library_path']), prefix(env['oracle_home']):
-        run('. ../scripts/env.sh')
-        run('python manage.py collectstatic --noinput')
+        with prefix('source ../scripts/env.sh'):
+            run('python manage.py collectstatic --noinput')
 
 def flush_memcached():
     """
@@ -110,27 +110,16 @@ def restart_django(restart_url):
     """
     Restart django process and visit the website.
     """
-    with cd(env['rnacentral_site']):
+    with cd(env['rnacentral_site']), prefix('source ../scripts/env.sh'):
         run('touch rnacentral/wsgi.py')
         r = requests.get(restart_url)
         if r.status_code != 200:
             print 'Error: Website cannot be reached'
 
-def setup_environment():
-    """
-    Run the environment setup script.
-    """
-    with cd(env['rnacentral_site']):
-        this_dir = os.path.dirname(os.path.realpath(__file__))
-        parent_dir = os.path.abspath(os.path.join(this_dir, os.pardir))
-        with cd(parent_dir):
-            run('. scripts/env.sh')
-
 def deploy(git_branch='dev', restart_url="http://rnacentral.org"):
     """
     Deploy to a server.
     """
-    setup_environment()
     if env.host == 'ves-hx-61':
         # will run only when deploying to test servers
         git_updates(git_branch)
