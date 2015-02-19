@@ -24,10 +24,10 @@ def get_expert_databases_columns():
 	"""
 	dbs = sorted(expert_dbs, key=lambda x: x['name'].lower())
 	return [
-				dbs[:8],
-				dbs[8:16],
-				dbs[16:24],
-				dbs[24:],
+				dbs[:9],
+				dbs[9:18],
+				dbs[18:27],
+				dbs[27:],
 			]
 
 @register.assignment_tag
