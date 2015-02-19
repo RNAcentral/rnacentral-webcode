@@ -7,15 +7,14 @@ RNAcentral is an open public resource that offers integrated access
 to a comprehensive and up-to-date set of ncRNA sequences.
 
 RNAcentral assigns identifiers to distinct ncRNA sequences
-and automatically updates links between identifiers maintained by [expert databases]({% url 'expert-databases' %})
-and RNA sequences, while maintaining an archive of past associations.
-[Learn more]({% url 'about' %})
+and automatically updates links between sequences and identifiers
+maintained by [expert databases]({% url 'expert-databases' %}).
+More [about RNAcentral]({% url 'about' %}).
 
-### What sequences does RNAcentral contain?
+### What sequences are included in RNAcentral?
 
 The [INSDC](http://www.insdc.org/) databases contain a large number of sequences
-annotated with **non-coding features**, which describe nucleotide ranges
-where various non-coding RNAs are found. A single INSDC entry may have 0, 1 or more non-coding features.
+annotated with **non-coding features**.
 
 RNAcentral imports **all** non-coding features found on INSDC entries
 as individual sequences, including the data submitted to INSDC by the expert databases.
@@ -23,8 +22,11 @@ as individual sequences, including the data submitted to INSDC by the expert dat
 In addition, RNAcentral contains sequences from RFAM seed and full alignments,
 which also refer to the INSDC accession space.
 
-All sequences are at least **10 nucleotides long** and have **no more than 10%
-of unknown characters** (Ns).
+### What sequences are excluded from RNAcentral?
+
+* sequences shorter than **10 nucleotides**
+
+* sequences with **more than 10% of unknown characters** (Ns).
 
 ### What are RNAcentral identifiers?
 
@@ -32,7 +34,7 @@ Each sequence in RNAcentral is assigned a **U**nique **R**NA **S**equence identi
 These identifiers are stable and are not expected to change.
 
 The identifiers have the following format: `URS + sequentially assigned hexadecimal number`
-and can be parsed by the regular expression: `/URS[0-9A-F]{10}/`.
+and can be parsed using this regular expression: `/URS[0-9A-F]{10}/`.
 
 Example identifiers: URS0000000001, URS00000478B7.
 
@@ -57,12 +59,12 @@ with correspondences between external database identifiers and RNAcentral ids.
 Once an ncRNA sequence is submitted to an [INSDC](http://www.insdc.org/) database,
 including [ENA](http://www.ebi.ac.uk/ena), [GenBank](http://www.ncbi.nlm.nih.gov/Genbank/index.html),
 and [DDBJ](http://www.ddbj.nig.ac.jp/), it will automatically
-appear in the subsequent RNAcentral releases.
+appear in a subsequent RNAcentral release.
 
 If you run an ncRNA database and would like to join the RNAcentral Consortium,
 please [get in touch]({% url 'contact-us' %}).
 
 ### How often is RNAcentral updated?
 
-The RNAcentral data will be updated **several times a year**, while the user interface
+The RNAcentral data will be updated **every 3 months**, while the user interface
 and website functionality will be updated continuously.
