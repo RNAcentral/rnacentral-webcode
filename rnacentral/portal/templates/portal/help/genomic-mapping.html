@@ -21,19 +21,17 @@ Help: Genomic mapping
 
 <div class="row">
   <div class="col-md-8" role="main">
-    {% load markdown_deux_tags %}
-    {% markdown %}
-      {% include  'portal/docs/genomic-mapping.md' %}
-    {% endmarkdown %}
+
+    <h1><i class="fa fa-info-circle"></i> Genomic mapping</h1>
 
     <h2>Species with genomic annotations</h2>
 
     <p>
+      The following species are annotated with genomic coordinates (where possible).
       Click on a species to view the sequences annotated with genomic coordinates.
     </p>
 
     <div class="row">
-
     {% for division in divisions %}
       {% if division.species %}
         <div class="col-md-4">
@@ -49,8 +47,12 @@ Help: Genomic mapping
         </div>
       {% endif %}
     {% endfor %}
-
     </div>
+
+    {% load markdown_deux_tags %}
+    {% markdown %}
+      {% include  'portal/docs/genomic-mapping.md' %}
+    {% endmarkdown %}
 
     <hr>
 
