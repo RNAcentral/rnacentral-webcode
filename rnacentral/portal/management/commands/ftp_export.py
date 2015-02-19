@@ -23,157 +23,75 @@ from portal.management.commands.ftp_exporters.trackhub import TrackhubExporter
 from portal.config.genomes import genomes
 import os
 
+"""
+Exporting RNAcentral data in several formats.
 
-class Command(BaseCommand):
+Implemented in Django in order to reuse formatting routines from the RNAcentral REST API.
+Different export modes can be run in parallel.
+
+Usage:
+python manage.py ftp_export <options>
+
+Examples:
+
+# id mappings
+python manage.py ftp_export -d /full/path/to/output/location -f xrefs
+
+# fasta
+python manage.py ftp_export -d /full/path/to/output/location -f fasta
+
+# gff
+python manage.py ftp_export -d /full/path/to/output/location -f gff
+
+# gff3
+python manage.py ftp_export -d /full/path/to/output/location -f gff3
+
+# bed and BigBed
+python manage.py ftp_export -d /full/path/to/output/location -f bed -b /path/to/bedToBigBed
+
+# UCSC track hub
+python manage.py ftp_export -d /full/path/to/output/location -f trackhub
+
+# RNAcentral ids and their corresponding MD5s
+python manage.py ftp_export -d /full/path/to/output/location -f md5
+
+ # all formats
+python manage.py ftp_export -d /full/path/to/output/location -f all -b /path/to/bedToBigBed
+
+Help:
+python manage.py ftp_export -h
+"""
+
+class Exporter(object):
     """
-    Provide a custom Django action for exporting RNAcentral data in several formats.
-
-    Implemented in Django in order to reuse formatting routines from the RNAcentral REST API.
-    Different export modes can be run in parallel.
-
-    Usage:
-    python manage.py ftp_export <options>
-
-    Examples:
-    # id mappings
-    python manage.py ftp_export --destination /full/path/to/output/location --format xrefs
-
-    # fasta
-    python manage.py ftp_export --destination /full/path/to/output/location --format fasta
-
-    # gff
-    python manage.py ftp_export --destination /full/path/to/output/location --format gff
-
-    # gff3
-    python manage.py ftp_export --destination /full/path/to/output/location --format gff3
-
-    # bed and BigBed
-    python manage.py ftp_export --destination /full/path/to/output/location --format bed --bedToBigBed /path/to/bedToBigBed
-
-    # UCSC track hub
-    python manage.py ftp_export --destination /full/path/to/output/location --format trackhub
-
-    # RNAcentral ids and their corresponding MD5s
-    python manage.py ftp_export --destination /full/path/to/output/location --format md5
-
-     # all formats
-    python manage.py ftp_export --destination /full/path/to/output/location --format all --bedToBigBed /path/to/bedToBigBed
-
-    Help:
-    python manage.py ftp_export -h
+    A wrapper object that launches data export
+    in the specified format.
     """
 
-    ########################
-    # Command line options #
-    ########################
-
-    option_list = BaseCommand.option_list + (
-        make_option('-d', '--destination',
-            default='',
-            dest='destination',
-            help='[Required] Full path to the output directory'),
-
-        make_option('-f', '--format',
-            action='store',
-            dest='format',
-            default=False,
-            help='[Required] Output format (xrefs|fasta|gff|gff3|bed|trackhub|md5|all).'),
-
-        make_option('-b', '--bedToBigBed',
-            action='store',
-            dest='bedToBigBed',
-            default='',
-            help='[Required for bed output] Path to bedToBigBed binary and fetchChromSizes (available from UCSC)'),
-
-        make_option('--profile',
-            default=False,
-            help='[Optional] Show cProfile information for profiling purposes.'),
-
-        make_option('--test',
-            action='store',
-            dest='test',
-            default=False,
-            help='[Optional] Run in test mode, which retrieves only a small subset of all data.'),
-    )
-    help = 'Export RNAcentral data in different formats. Run `python manage.py export -h` for more information.' # -h, --help
-
-    ######################
-    # Django entry point #
-    ######################
-
-    def __init__(self, *args, **kwargs):
+    def __init__(self, **kwargs):
         """
-        Set common variables.
+        Store relevant options in `self.options`.
         """
-        super(Command, self).__init__(*args, **kwargs)
+        self.options = dict()
+        for option in ['format', 'destination', 'bedToBigBed', 'test']:
+            if option in kwargs:
+                self.options[option] = kwargs[option]
+        # ensure the destination folder exists
+        if not os.path.exists(self.options['destination']):
+            os.makedirs(self.options['destination'])
 
-        self.options = {
-            'format': '', # selected export format
-            'bedToBigBed': '', # path to UCSC tools, including bedToBigBed
-            'destination': '', # path to output files
-            'test': False, # when true, run on a small subset of data
-        }
-        # the formats must come in the correct execution order, e.g. `bed` should preceed `trackhub`
-        self.formats = ['xrefs', 'fasta', 'gff', 'gff3', 'bed', 'trackhub', 'md5', 'all'] # available export formats
-
-    def handle(self, *args, **options):
+    def __call__(self):
         """
-        Main function, called by django.
+        Dynamically choose an appropriate export class
+        depending on the export format.
         """
-        def _handle(self, *args, **options):
-            """
-            Main program. Separated from `handle` to enable Python profiling.
-            """
-            def set_command_line_options():
-                """
-                Store the command line options in the corresponding `self` variables.
-                """
-                cmd_options = ['bedToBigBed', 'destination', 'format', 'test']
-                for cmd_option in cmd_options:
-                    if options[cmd_option]:
-                        self.options[cmd_option] = options[cmd_option]
-
-            def validate_command_line_options():
-                """
-                Validate the command line options.
-                """
-                if not self.options['destination']:
-                    raise CommandError('Please specify the --destination option')
-                if not os.path.exists(self.options['destination']):
-                    os.makedirs(self.options['destination'])
-                if not self.options['bedToBigBed'] and (options['format'] == 'bed' or options['format'] == 'all'):
-                    raise CommandError('Please specify the --bedToBigBed option')
-                if not self.options['format']:
-                    raise CommandError('Please specify the --format option')
-                if self.options['format'] not in self.formats:
-                    raise CommandError('Please specify correct output format. See --help for details.')
-
-            set_command_line_options()
-            validate_command_line_options()
-            self.export_factory(mode=self.options['format'])
-
-        if options['profile']:
-            profiler = Profile()
-            profiler.runcall(_handle, self, *args, **options)
-            profiler.print_stats()
-        else:
-            _handle(self, *args, **options)
-
-    ####################
-    # Export functions #
-    ####################
-
-    def export_factory(self, mode):
-        """
-        Dynamically initialize the appropriate export class depending on the `mode`.
-        """
-        if mode == 'all':
-            self.export_all()
-            return
-
-        class_name = mode.capitalize() + 'Exporter'
+        class_name = self.options['format'].capitalize() + \
+                     'Exporter' # e.g. GffExporter
         constructor = globals()[class_name]
-        exporter = constructor(destination=self.options['destination'], test=self.options['test'])
+        exporter = constructor(destination=self.options['destination'],
+                               test=self.options['test'])
+
+        mode = self.options['format']
 
         if mode in ['gff', 'gff3']: # genome coordinates
             for genome in genomes:
@@ -190,13 +108,89 @@ class Command(BaseCommand):
         if mode in ['gff', 'gff3', 'bed', 'trackhub']:
             exporter.create_genomic_readme()
 
-    def export_all(self, **kwargs):
+
+class Command(BaseCommand):
+    """
+    Handle command line options.
+    """
+    # formats must be in correct execution order for the `all` parameter to work
+    # e.g. `bed` should preceed `trackhub`
+    formats = ['xrefs', 'fasta', 'gff', 'gff3', 'bed', 'trackhub', 'md5', 'all']
+
+    option_list = BaseCommand.option_list + (
+        make_option('-d', '--destination',
+            default='',
+            dest='destination',
+            help='[Required] Full path to the output directory'),
+
+        make_option('-f', '--format',
+            action='store',
+            dest='format',
+            default=False,
+            help='[Required] Output format (%s).' % '|'.join(formats)),
+
+        make_option('-b', '--bedToBigBed',
+            action='store',
+            dest='bedToBigBed',
+            default='',
+            help='[Required for bed output] Path to `bedToBigBed` and `fetchChromSizes` (available from UCSC)'),
+
+        make_option('-p', '--profile',
+            action='store_true',
+            default=False,
+            help='[Optional] Show cProfile information for profiling purposes.'),
+
+        make_option('-t', '--test',
+            action='store_true',
+            dest='test',
+            default=False,
+            help='[Optional] Run in test mode, which retrieves only a small subset of all data.'),
+    )
+    help = 'Export RNAcentral data in various formats. ' + \
+           'Run `python manage.py export -h` for more information.' # -h, --help
+
+    def export(self, **options):
+        """
+        Main export.
+        """
+        Exporter(**options)()
+
+    def export_all(self, **options):
         """
         Export the data in all formats.
         """
-        self.stdout.write('Exporting the data in all formats')
         for mode in self.formats:
             if mode == 'all':
                 continue # avoid recursive calls to export_all
-            self.export_factory(mode=mode)
-        self.stdout.write('Export complete')
+            self.export(**options)
+
+    def handle(self, **options):
+        """
+        Django entry point.
+        """
+        def validate_options():
+            """
+            Validate command line options.
+            """
+            if not options['destination']:
+                raise CommandError('Please specify the --destination option')
+
+            if not options['format']:
+                raise CommandError('Please specify the --format option')
+
+            if options['format'] in ['bed', 'all'] and not options['bedToBigBed']:
+                raise CommandError('Please specify the --bedToBigBed option')
+
+            if options['format'] not in self.formats:
+                raise CommandError('Please choose a valid output format (%s)' % '|'.join(self.formats))
+
+        validate_options()
+
+        if options['profile']:
+            profiler = Profile()
+            profiler.runcall(self.export, **options)
+            profiler.print_stats()
+        elif options['format'] == 'all':
+            self.export_all(**options)
+        else:
+            self.export(**options)
