@@ -129,6 +129,7 @@ def deploy(git_branch='dev', restart_url="http://rnacentral.org"):
     """
     Deploy to a server.
     """
+    setup_environment()
     if env.host == 'ves-hx-61':
         # will run only when deploying to test servers
         git_updates(git_branch)
@@ -137,7 +138,6 @@ def deploy(git_branch='dev', restart_url="http://rnacentral.org"):
         # will run only when deploying to production servers
         rsync_git_repo()
         rsync_static_files()
-    setup_environment()
     install_django_requirements()
     flush_memcached()
     restart_django(restart_url)
