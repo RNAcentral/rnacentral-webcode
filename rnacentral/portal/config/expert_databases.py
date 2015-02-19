@@ -44,7 +44,11 @@ expert_dbs = [
         'url': 'http://www.ebi.ac.uk/pdbe/',
         'description': 'is the European repository of information about the 3D structures of large biological molecules. PDBe is a member of the Worldwide Protein Data Bank',
         'abbreviation': 'Protein Data Bank in Europe',
-        'examples': ['URS00000ABFE9', 'URS00004B0F34', 'URS000032B6B6'],
+        'examples': [
+            'URS00000ABFE9', # E.coli SSU, 4V4Q chain AA
+            'URS00005A14E2', # Human SSU, 4V6X chain B2
+            'URS000032B6B6', # Human U1 snRNA, PDB 3PGW chain N
+        ],
         'references': [
             {
                 'title': 'PDBe: Protein Data Bank in Europe',
@@ -384,7 +388,7 @@ expert_dbs = [
         'description': """provides comprehensive information about snoRNAs, snoRNA gene loci, and target RNAs
                           as well as information about snoRNA orthologues""",
         'abbreviation': 'snoRNA Orthological Gene Database',
-        'examples': ['URS0000456CE0', 'URS00005CC29F', 'URS0000817CAB'],
+        'examples': ['URS00004B0879', 'URS0000600DF1', 'URS000015A509'],
         'references': [
             {
                 'title': 'snOPY: a small nucleolar RNA orthological gene database',
