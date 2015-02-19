@@ -62,6 +62,8 @@ class Md5Exporter(FtpBase):
             """
             Get RNAcentral ids and md5's of their corresponding sequences.
             """
+            if self.test:
+                return """SELECT * FROM rna"""
             return """
             SELECT DISTINCT upi, md5
             FROM rna

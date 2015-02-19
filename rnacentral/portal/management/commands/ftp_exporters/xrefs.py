@@ -73,6 +73,12 @@ class XrefsExporter(FtpBase):
             """
             Get SQL command for id mappings.
             """
+            if self.test:
+                return """
+                SELECT t1.upi, t2.ac AS accession, t3.external_id, t3.optional_id, t4.descr, t2.taxid
+                FROM rna t1, xref t2, rnc_accessions t3, rnc_database t4
+                WHERE t1.upi=t2.upi AND t2.ac=t3.accession AND t2.dbid=t4.id AND t2.deleted='N'
+                """
             return """
             SELECT t1.upi, t2.ac AS accession, t3.external_id, t3.optional_id, t4.descr, t2.taxid
             FROM rna t1, xref t2, rnc_accessions t3, rnc_database t4
