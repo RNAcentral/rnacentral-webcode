@@ -96,6 +96,7 @@ def collect_static_files():
     * move static files to the deployment location
     """
     with cd(env['rnacentral_site']), prefix(env['activate']), prefix(env['ld_library_path']), prefix(env['oracle_home']):
+        run('. ../scripts/env.sh')
         run('python manage.py collectstatic --noinput')
 
 def flush_memcached():
