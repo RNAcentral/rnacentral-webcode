@@ -115,6 +115,16 @@ def restart_django(restart_url):
         if r.status_code != 200:
             print 'Error: Website cannot be reached'
 
+def setup_environment():
+    """
+    Run the environment setup script.
+    """
+    with cd(env['rnacentral_site']):
+        this_dir = os.path.dirname(os.path.realpath(__file__))
+        parent_dir = os.path.abspath(os.path.join(this_dir, os.pardir))
+        with cd(parent_dir):
+            run('. scripts/env.sh')
+
 def deploy(git_branch='dev', restart_url="http://rnacentral.org"):
     """
     Deploy to a server.
@@ -127,6 +137,7 @@ def deploy(git_branch='dev', restart_url="http://rnacentral.org"):
         # will run only when deploying to production servers
         rsync_git_repo()
         rsync_static_files()
+    setup_environment()
     install_django_requirements()
     flush_memcached()
     restart_django(restart_url)
