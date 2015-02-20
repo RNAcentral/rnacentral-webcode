@@ -82,10 +82,12 @@ Exporting search results
     <div class="row" ng-show="export.progress >= 0">
       <div class="col-md-6">
         <ul>
-          <li>Exporting <strong>{{ export.hits | number }}</strong> sequences in <strong>{{ export.format }}</strong> format</li>
-          <li>Query: <code>{{ export.query }}</code></li>
-          <li><a href="/search?q={{ export.query }}" target="_blank">Edit query</a> <small class="text-muted">(opens in a new window)</small></li>
-          <li>Status: <strong ng-class="{'text-danger': export.status === 'failed', 'text-info': export.status === 'queued', 'text-info': export.status === 'started', 'text-success': export.status === 'finished'}">{{ export.status }}</strong></li>
+          <li class="margin-top-5px">Exporting <strong>{{ export.hits | number }}</strong> sequences in <strong>{{ export.format }}</strong> format</li>
+          <li class="margin-top-5px">
+            Query: <code>{{ export.query }}</code>
+            <small><a href="/search?q={{ export.query }}" target="_blank">Edit</a> <span class="text-muted">(opens in a new window)</span></small>
+          </li>
+          <li class="margin-top-5px">Status: <strong ng-class="{'text-danger': export.status === 'failed', 'text-info': export.status === 'queued', 'text-info': export.status === 'started', 'text-success': export.status === 'finished'}">{{ export.status }}</strong></li>
         </ul>
 
         <div ng-show="export.status === 'finished'" >
