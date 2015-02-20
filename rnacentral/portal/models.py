@@ -149,7 +149,7 @@ class Rna(models.Model):
         """
         Count the number of cross-references associated with the sequence.
         """
-        return self.xrefs.filter(db__id__in=[1,2,9,10], deleted='N').count()
+        return self.xrefs.filter(db__project_id__isnull=True, deleted='N').count()
 
     @cached_property
     def count_distinct_organisms(self):
@@ -207,7 +207,7 @@ class Rna(models.Model):
         To reduce redundancy, keep only xrefs from the source entries,
         not the entries added from the DR lines.
         """
-        xrefs = self.xrefs.filter(db_id__in=[1,2,9,10]).all()
+        xrefs = self.xrefs.filter(db__project_id__isnull=True).all()
         gff = ''
         for xref in xrefs:
             gff += _xref_to_gff_format(xref)
@@ -217,7 +217,7 @@ class Rna(models.Model):
         """
         Format genomic coordinates from all xrefs into a single file in GFF3 format.
         """
-        xrefs = self.xrefs.filter(db_id__in=[1,2,9,10]).all()
+        xrefs = self.xrefs.filter(db__project_id__isnull=True).all()
         gff = '##gff-version 3\n'
         for xref in xrefs:
             gff += _xref_to_gff3_format(xref)
@@ -229,7 +229,7 @@ class Rna(models.Model):
         Example:
         chr1    29554    31097    RNA000063C361    0    +   29554    31097    255,0,0    3    486,104,122    0,1009,1421
         """
-        xrefs = self.xrefs.filter(db_id__in=[1,2,9,10]).all()
+        xrefs = self.xrefs.filter(db__project_id__isnull=True).all()
         bed = ''
         for xref in xrefs:
             bed += _xref_to_bed_format(xref)
