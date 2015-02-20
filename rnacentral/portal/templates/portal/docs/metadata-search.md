@@ -1,14 +1,9 @@
 
 <h1><i class="fa fa-info-circle"></i> Metadata search</h1>
 
-## About RNAcentral search
-
-RNAcentral is powered by the [EBI search](http://www.ebi.ac.uk/ebisearch/),
-which provides publicly available REST and SOAP interfaces for querying the data.
-
----
-
 ## Query syntax
+
+RNAcentral search supports several search operators that allow to compose advanced queries.
 
 ### Exact matching
 
@@ -36,7 +31,7 @@ Please note that "field value" **must be enclosed in double quotes**.
 
 * **expert database**
 
-	Possible values: "ena", "gtrnadb", "lncrnadb", "mirbase", "refseq", "rfam", "srpdb", "tmRNA Website", "vega"
+	Possible values: "ena", "gtrnadb", "lncrnadb", "mirbase", "refseq", "rfam", "srpdb", "tmRNA Website", "vega", "pdbe", "snopy"
 
 	*Examples*: `expert_db:"tmrna website"`, `expert_db:"mirbase"`
 
@@ -129,3 +124,10 @@ Use parentheses to group and nest logical terms.
 * Use **full species names**.
 
     *Example*: use `Escherichia coli` and not `E. coli` as your search terms.
+
+---
+
+## About RNAcentral search
+
+RNAcentral is powered by the [EBI search](http://www.ebi.ac.uk/ebisearch/),
+which provides publicly available REST and SOAP interfaces for querying the data.
