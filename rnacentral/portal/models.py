@@ -21,9 +21,6 @@ from portal.config.expert_databases import expert_dbs as rnacentral_expert_dbs
 import json
 import re
 
-# to make text fields searchable, add character set functional indexes in Oracle
-# CREATE INDEX index_name ON table_name(SYS_OP_C2C(column_name));
-
 
 class RnaPrecomputedData(models.Model):
     id = models.AutoField(primary_key=True)
