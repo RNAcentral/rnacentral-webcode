@@ -143,7 +143,6 @@ class ApiV1TestCase(ApiV1BaseClass):
     def test_non_existing_database_filter(self):
         url = self._get_api_url('rna/?database=test')
         data = self._check_urls(url)
-        print data
         self.assertEqual(data['count'], 0)
 
     def test_rna_external_id_filter(self):
