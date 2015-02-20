@@ -111,6 +111,10 @@ class XrefsExporter(FtpBase):
                 database = result['descr']
                 taxid = result['taxid']
 
+                # use PDB instead of PDB because PDB ids come from wwPDB
+                if database == 'PDBE':
+                    database = 'PDB'
+
                 if database in accession_source['xref']:
                     line = '{upi}\t{database}\t{accession}\t{taxid}\n'.format(upi=upi,
                                                                               database=database,
