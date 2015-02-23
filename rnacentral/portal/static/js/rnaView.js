@@ -108,6 +108,7 @@ rnaSequenceView.prototype.initialize = function() {
     activate_species_tree();
     obj.activate_abstract_buttons($('.abstract-btn'));
     enable_show_species_tab_action();
+    enable_show_publications_tab_action();
     toggle_tabs();
     enable_xref_pagination();
 
@@ -219,14 +220,42 @@ rnaSequenceView.prototype.initialize = function() {
         }
     }
 
+    /**
+     * Activate a Bootstrap tab given its id
+     * and update the url parameter.
+     */
+    function activate_tab(tab_id) {
+        $('#tabs a[data-target="#' + tab_id + '"]').tab('show');
+        var q = queryString.parse(location.search);
+        q.tab = tab_id;
+        update_query_string(q);
+        return false;
+    }
+
+    /**
+     * Scroll to the top of the page.
+     */
+    function scroll_to_top() {
+        jQuery('html,body').animate({scrollTop:0}, 400);
+    }
+
+    /**
+     * Click on a link to view the Species tab.
+     */
     function enable_show_species_tab_action() {
-        // clicking the species link to view the Species tab
         $(".show-species-tab").click(function() {
-            $('#tabs a[data-target="#taxonomy"]').tab('show');
-            var q = queryString.parse(location.search);
-            q.tab = 'taxonomy';
-            update_query_string(q);
-            return false;
+            activate_tab('taxonomy');
         });
     }
+
+    /**
+     * Click on a link to view the Publications tab.
+     */
+    function enable_show_publications_tab_action() {
+        $('body').on('click', '.show-publications-tab', function() {
+            activate_tab('publications');
+            scroll_to_top();
+        });
+    }
+
 };
