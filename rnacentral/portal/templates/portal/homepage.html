@@ -51,7 +51,7 @@ RNAcentral
           </div>
 
           <div class="expert-db-card-logo">
-            <a class="pull-right expert-db-logo" href="{% url 'expert-database' database.label %}">
+            <a class="pull-right expert-db-logo" href="{% url 'expert-database' database.label %}" title="{{database.name}} Expert Database">
               <img class="img-rounded hvr-grow" src="{% static 'img/expert-db-logos' %}/{{database.label}}.png" alt="{{database.name}} logo">
             </a>
           </div>
