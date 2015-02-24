@@ -138,6 +138,19 @@ class BedExporter(FtpBase):
         if os.path.exists(self.names['chrom_sizes']):
             os.remove(self.names['chrom_sizes'])
 
+    def remove_duplicate_features(self):
+        """
+        Bed files should contain only unique URS ids.
+        The duplicates come from multiple xrefs
+        pointing to the same sequence.
+        """
+        cmd = ('cat {input} | uniq -u > {input}_temp && ' + \
+               'mv {input}_temp {input}').format(input=self.names['bed_sorted'])
+        status = subprocess.call(cmd, shell=True)
+        if status != 0:
+            self.logger.critical('Error while removing duplicate features')
+            sys.exit(1)
+
     def export(self, genome=None, bedToBigBed=''):
         """
         Main export function.
@@ -171,6 +184,7 @@ class BedExporter(FtpBase):
         if not exported:
             return
         self.bed_sort()
+        self.remove_duplicate_features()
         if self.bedToBigBed and self.genome['assembly_ucsc']:
             self.export_big_bed()
         self.gzip_file(self.names['bed_sorted'])
