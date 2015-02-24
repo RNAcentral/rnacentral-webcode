@@ -105,7 +105,8 @@ class BedExporter(FtpBase):
              open(self.names['example'], 'w') as example:
             for accession in accessions:
                 text = Xref.objects.get(accession=accession, deleted='N').get_ucsc_bed()
-                text = self.validate_chr_names(text)
+                if self.genome['assembly_ucsc']:
+                    text = self.validate_chr_names(text)
                 if text:
                     f.write(text)
                     counter += 1
@@ -134,26 +135,26 @@ class BedExporter(FtpBase):
         """
         os.remove(self.names['bed_sorted'])
         os.remove(self.names['bed_unsorted'])
-        os.remove(self.names['chrom_sizes'])
+        if os.path.exists(self.names['chrom_sizes']):
+            os.remove(self.names['chrom_sizes'])
 
     def export(self, genome=None, bedToBigBed=''):
         """
         Main export function.
         """
         self.genome = genome
-        if not genome['assembly_ucsc']:
-            self.logger.info('Skipping genome %s because no UCSC assembly was found' % genome['species'])
-            return
         self.chrom_sizes = dict()
         self.genome['species'] = self.genome['species'].replace(' ','_')
         self.bedToBigBed = bedToBigBed
 
         self.names = self.name_templates.copy()
-        self.names['chrom_sizes'] = self.fetch_chromosome_sizes(self.genome['assembly_ucsc'])
+        if genome['assembly_ucsc']:
+            self.names['chrom_sizes'] = self.fetch_chromosome_sizes(self.genome['assembly_ucsc'])
         for key, value in self.names.iteritems():
             self.names[key] = value.format(**self.genome)
 
-        self.parse_chrom_sizes()
+        if genome['assembly_ucsc']:
+            self.parse_chrom_sizes()
         try:
             self.export_bed()
         except:
@@ -170,7 +171,7 @@ class BedExporter(FtpBase):
         if not exported:
             return
         self.bed_sort()
-        if self.bedToBigBed:
+        if self.bedToBigBed and self.genome['assembly_ucsc']:
             self.export_big_bed()
         self.gzip_file(self.names['bed_sorted'])
         self.remove_temp_files()
