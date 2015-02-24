@@ -279,7 +279,7 @@ class ExpertDatabasesOverviewPage(BasePage):
 
     def get_footer_expert_db_count(self):
         """get the number of expert database links in the footer"""
-        expert_dbs = self.browser.find_elements_by_css_selector('#global-footer .col-md-7 li>a')
+        expert_dbs = self.browser.find_elements_by_css_selector('#global-footer .col-md-8 li>a')
         return len(expert_dbs)
 
 
@@ -476,7 +476,7 @@ class RNAcentralTest(unittest.TestCase):
         """
         page = MetaSearchPage(self.browser)
         page.navigate()
-        query = 'Foo bar baz'
+        query = 'foobarbaz'
         page._submit_search(query)
         self.assertTrue(page.warnings_present())
 
