@@ -3,7 +3,7 @@
 
 ## Query syntax
 
-RNAcentral search supports several search operators that allow to compose advanced queries.
+RNAcentral search supports several search operators that can be used to compose advanced queries.
 
 ### Exact matching
 
