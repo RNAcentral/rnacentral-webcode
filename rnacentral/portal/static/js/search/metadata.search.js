@@ -97,6 +97,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
             'TAXONOMY',
             'has_genomic_coordinates',
             'popular_species',
+            'active',
         ], // will be displayed in this order
         facetcount: 30,
         pagesize: 15,
