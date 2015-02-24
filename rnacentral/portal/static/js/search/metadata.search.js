@@ -600,6 +600,10 @@ angular.module('rnacentralApp').controller('QueryCtrl', ['$scope', '$location', 
                     matches = newUrl.match(/tab=(\w+)&?/);
                     $('#tabs a[data-target="#' + matches[1] + '"]').tab('show');
                 }
+            } else if (newUrl.indexOf('xref-filter')) {
+                if (newUrl.split('?')[0] !== oldUrl.split('?')[0]) {
+                    redirect(newUrl);
+                }
             } else if (newUrl.indexOf('/search') == -1) {
                 // a non-search url, load that page
                 redirect(newUrl);
