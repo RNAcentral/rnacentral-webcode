@@ -76,11 +76,14 @@ class RnaXmlExporter(OracleConnection):
         self.popular_species = set([
             9606,   # human
             10090,  # mouse
+            7955,   # zebrafish
             3702,   # Arabidopsis thaliana
             6239,   # Caenorhabditis elegans
             7227,   # Drosophila melanogaster
             559292, # Saccharomyces cerevisiae S288c
             4896,   # Schizosaccharomyces pombe
+            511145, # Escherichia coli str. K-12 substr. MG1655
+            224308, # Bacillus subtilis subsp. subtilis str. 168
         ])
 
         self.reset()
