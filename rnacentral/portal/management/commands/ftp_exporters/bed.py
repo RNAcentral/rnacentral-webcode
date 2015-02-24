@@ -98,6 +98,9 @@ class BedExporter(FtpBase):
         """
         counter = 0
         accessions = self.get_xrefs_with_genomic_coordinates(taxid=self.genome['taxid'])
+        if not len(accessions):
+            self.logger.info('No coordinates to export')
+            return counter
         with open(self.names['bed_unsorted'], 'w') as f, \
              open(self.names['example'], 'w') as example:
             for accession in accessions:
@@ -111,6 +114,7 @@ class BedExporter(FtpBase):
                     if self.test and counter > self.test_entries:
                         break
         self.logger.info('Exported to file "%s"' % self.names['bed_unsorted'])
+        return counter
 
     def bed_sort(self):
         """
@@ -162,7 +166,9 @@ class BedExporter(FtpBase):
         Export the data in sorted BED format.
         """
         self.logger.info('Exporting bed and BigBed')
-        self.export_unsorted_bed_data()
+        exported = self.export_unsorted_bed_data()
+        if not exported:
+            return
         self.bed_sort()
         if self.bedToBigBed:
             self.export_big_bed()
