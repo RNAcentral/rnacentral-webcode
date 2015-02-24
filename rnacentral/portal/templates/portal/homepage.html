@@ -65,7 +65,7 @@ RNAcentral
             <a href="{% url 'unique-rna-sequence' database.examples|first %}" id="{{database.label}}-examples">Example</a>
             {% if database.name == 'PDBe' or database.name == 'snOPY' %}
               <span class="label label-primary help" title="New Expert Database imported in release 2">New</span>
-            {% elif database.name == 'ENA' or database.name == 'RefSeq' or database.name == 'Rfam' %}
+            {% elif database.name == 'ENA' or database.name == 'RefSeq' or database.name == 'Vega' %}
               <span class="label label-primary help" title="New data imported in release 2">Updated</span>
             {% endif %}
           </div>
