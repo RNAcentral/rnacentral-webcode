@@ -600,7 +600,7 @@ angular.module('rnacentralApp').controller('QueryCtrl', ['$scope', '$location', 
                     matches = newUrl.match(/tab=(\w+)&?/);
                     $('#tabs a[data-target="#' + matches[1] + '"]').tab('show');
                 }
-            } else if (newUrl.indexOf('xref-filter')) {
+            } else if (newUrl.indexOf('xref-filter') !== -1) {
                 if (newUrl.split('?')[0] !== oldUrl.split('?')[0]) {
                     redirect(newUrl);
                 }
