@@ -158,8 +158,12 @@ def download_search_result_file(request):
                 if req.status_code == 200:
                     response = StreamingHttpResponse(req.iter_content(chunk_size=10000),
                                                      content_type='text/fasta')
-                    response['Content-Disposition'] = req.headers['content-disposition']
-                    response['Content-Length'] = req.headers['content-length']
+                    content_disposition = req.headers.get('content-disposition', '')
+                    if content_disposition:
+                        response['Content-Disposition'] = content_disposition
+                    content_length = req.headers.get('content-length', '')
+                    if content_length:
+                        response['Content-Length'] = content_length
                     return response
         status = 404
         return JsonResponse(messages[status], status=status)
