@@ -151,7 +151,7 @@ def download_search_result_file(request):
         this_host = socket.gethostname()
         hosts = getattr(settings, "HOSTS", [])
         for host in hosts:
-            if host == this_host:
+            if this_host in host: # host includes port number
                 continue
             url = ''.join(['http://', host, request.get_full_path()])
             with closing(requests.get(url, stream=True)) as req:
@@ -232,7 +232,7 @@ def get_export_job_status(request):
         this_host = socket.gethostname()
         hosts = getattr(settings, "HOSTS", [])
         for host in hosts:
-            if host == this_host:
+            if this_host in host: # host includes port number
                 continue
             url = ''.join(['http://', host, request.get_full_path()])
             req = requests.get(url)
