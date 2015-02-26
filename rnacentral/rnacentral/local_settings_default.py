@@ -11,6 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import os
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle',
@@ -51,3 +53,8 @@ MAINTENANCE_MODE = False
 # used for transparently retrieving search results
 # from multiple servers hosted behind a load balancer
 HOSTS = [''] # e.g. 'test.example.com'
+
+# destination for the search results files
+EXPORT_RESULTS_DIR = os.environ['RNACENTRAL_EXPORT_RESULTS_DIR']
+if not os.path.exists(EXPORT_RESULTS_DIR):
+    os.makedirs(EXPORT_RESULTS_DIR)
