@@ -12,7 +12,10 @@ limitations under the License.
 """
 
 from django import forms
-from rnacentral import local_settings
+try:
+   from local_settings import *
+except ImportError, e:
+   pass
 import smtplib
 
 
