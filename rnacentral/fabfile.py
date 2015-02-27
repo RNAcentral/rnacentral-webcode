@@ -50,7 +50,7 @@ def rsync_git_repo():
         parent_parent_dir = os.path.abspath(os.path.join(parent_dir, os.pardir))
         cmd = ("rsync -av {src} --exclude 'rnacentral/local_settings.py' " + \
                "--exclude '*.log' --exclude '*.pyc' --exclude 'dump.rdb' " + \
-               "{host}:{dst}").format(host=env.host, src=parent_dir,
+               "--exclude '*.pid' {host}:{dst}").format(host=env.host, src=parent_dir,
             dst=parent_parent_dir)
         local(cmd)
 
