@@ -54,7 +54,7 @@ MAINTENANCE_MODE = False
 RQ_QUEUES = {
     'default': {
         'HOST': 'localhost',
-        'PORT': 6379,
+        'PORT': 8051,
         'DB': 0,
         # 'PASSWORD': 'some-password',
         'DEFAULT_TIMEOUT': 360,
@@ -62,7 +62,7 @@ RQ_QUEUES = {
     },
     'remote': {
         'HOST': '',
-        'PORT': 6379,
+        'PORT': 8051,
         'DB': 0,
         # 'PASSWORD': 'some-password',
         'DEFAULT_TIMEOUT': 360,

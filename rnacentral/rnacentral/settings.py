@@ -267,16 +267,6 @@ DEBUG_TOOLBAR_PANELS = (
     # 'debug_toolbar.panels.logger.LoggingPanel',
 )
 
-RQ_QUEUES = {
-    'default': {
-        'HOST': 'localhost',
-        'PORT': 6379,
-        'DB': 0,
-        # 'PASSWORD': 'some-password',
-        'DEFAULT_TIMEOUT': 360,
-    },
-}
-
 # django-maintenance
 MAINTENANCE_MODE = False
 
