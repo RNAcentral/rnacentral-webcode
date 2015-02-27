@@ -48,9 +48,10 @@ def rsync_git_repo():
         this_dir = os.path.dirname(os.path.realpath(__file__))
         parent_dir = os.path.abspath(os.path.join(this_dir, os.pardir))
         parent_parent_dir = os.path.abspath(os.path.join(parent_dir, os.pardir))
-        local_settings = 'rnacentral/local_settings.py'
-        cmd = "rsync -av {src} --exclude '{local_settings}' {host}:{dst}".format(
-            host=env.host, src=parent_dir, dst=parent_parent_dir, local_settings=local_settings)
+        cmd = ("rsync -av {src} --exclude 'rnacentral/local_settings.py' " + \
+               "--exclude '*.log' --exclude '*.pyc' --exclude 'dump.rdb' " + \
+               "{host}:{dst}").format(host=env.host, src=parent_dir,
+            dst=parent_parent_dir, local_settings=local_settings)
         local(cmd)
 
 def git_updates(git_branch):
