@@ -123,14 +123,19 @@ def export_search_results(query, _format, hits):
 def get_job(job_id):
     """
     Get job from local or remote queues.
+
+    Return a tuple (job, remote_server), where
+    * `job` - job object
+    * `remote_server` - server where the job was run
+                        (None for localhost)
     """
     rq_queues = getattr(settings, 'RQ_QUEUES', [])
-    for name in rq_queues.keys():
-        queue = django_rq.get_queue(name)
+    for queue_id, params in rq_queues.iteritems():
+        queue = django_rq.get_queue(queue_id)
         job = queue.fetch_job(job_id)
         if job:
-            return job
-    return None
+            return (job, params['REMOTE_SERVER'])
+    return (None, None)
 
 
 @never_cache
@@ -143,13 +148,74 @@ def download_search_result_file(request):
     HTTP responses:
     * 400 - job id not provided in the url
     * 404 - job id not found in the queue
+    * 500 - internal error
     * 202 - result is not ready yet
-    * 200 - result is ready
     """
+    def get_download_filename():
+        """
+        Construct a descriptive name for the downloadable file.
+        Use a standard Django function for making valid filenames.
+        """
+        max_length = 50
+        query = job.meta['query']
+        extension = os.path.splitext(job.result)[1]
+        if len(query) > max_length:
+            name = query[:max_length] + '_etc'
+        else:
+            name = query
+        filename = name + '.' + job.meta['format'] + extension
+        return get_valid_filename(filename)
+
+    def get_content_type():
+        """
+        Set content type based on the export format.
+        """
+        content_types = {
+            'fasta': 'text/fasta',
+            'json': 'application/json',
+            'list': 'text/plain',
+            'default': 'text/plain',
+        }
+        _format = job.meta['format']
+        if _format in content_types:
+            return content_types[_format]
+        else:
+            return content_types['default']
+
+    def stream_remote_file(server):
+        """
+        Connect to remote server where the job is found,
+        retrieve the results file and pass it through to the user.
+        """
+        url = ''.join(['http://', server, request.get_full_path()])
+        with closing(requests.get(url, stream=True)) as req:
+            if req.status_code == 200:
+                response = StreamingHttpResponse(req.iter_content(chunk_size=10000),
+                                                 content_type='text/fasta')
+                content_disposition = req.headers.get('content-disposition', '')
+                if content_disposition:
+                    response['Content-Disposition'] = content_disposition
+                content_length = req.headers.get('content-length', '')
+                if content_length:
+                    response['Content-Length'] = content_length
+                return response
+
+    def stream_local_file():
+        """
+        Stream a results file hosted on the local server.
+        """
+        wrapper = FileWrapper(open(job.result, 'r'))
+        response = StreamingHttpResponse(wrapper, content_type=get_content_type())
+        response['Content-Disposition'] = 'attachment; filename={0}'.format(
+                                          get_download_filename())
+        response['Content-Length'] = os.path.getsize(job.result)
+        return response
+
     messages = {
         400: {'message': 'Job id not specified'},
         404: {'message': 'Job not found'},
         202: {'message': 'File not ready, check back later'},
+        500: {'message': 'Error while processing the job id'},
     }
 
     job_id = request.GET.get('job', '')
@@ -157,70 +223,23 @@ def download_search_result_file(request):
         status = 400
         return JsonResponse(messages[status], status=status)
 
-    queue = django_rq.get_queue()
-    job = queue.fetch_job(job_id)
+    try:
+        (job, remote_server) = get_job(job_id)
 
-    if not job:
-        this_host = socket.gethostname()
-        hosts = getattr(settings, "HOSTS", [])
-        for host in hosts:
-            if this_host in host: # host includes port number
-                continue
-            url = ''.join(['http://', host, request.get_full_path()])
-            with closing(requests.get(url, stream=True)) as req:
-                if req.status_code == 200:
-                    response = StreamingHttpResponse(req.iter_content(chunk_size=10000),
-                                                     content_type='text/fasta')
-                    content_disposition = req.headers.get('content-disposition', '')
-                    if content_disposition:
-                        response['Content-Disposition'] = content_disposition
-                    content_length = req.headers.get('content-length', '')
-                    if content_length:
-                        response['Content-Length'] = content_length
-                    return response
-        status = 404
-        return JsonResponse(messages[status], status=status)
+        if not job:
+            status = 404
+            return JsonResponse(messages[status], status=status)
 
-    if job.is_finished:
-        def get_download_filename():
-            """
-            Construct a descriptive name for the downloadable file.
-            Use a standard Django function for making valid filenames.
-            """
-            max_length = 50
-            query = job.meta['query']
-            extension = os.path.splitext(job.result)[1]
-            if len(query) > max_length:
-                name = query[:max_length] + '_etc'
+        if job.is_finished:
+            if remote_server:
+                return stream_remote_file(remote_server)
             else:
-                name = query
-            filename = name + '.' + job.meta['format'] + extension
-            return get_valid_filename(filename)
-
-        def get_content_type():
-            """
-            Specify content type based on the export format.
-            """
-            content_types = {
-                'fasta': 'text/fasta',
-                'json': 'application/json',
-                'list': 'text/plain',
-                'default': 'text/plain',
-            }
-            _format = job.meta['format']
-            if _format in content_types:
-                return content_types[_format]
-            else:
-                return content_types['default']
-
-        wrapper = FileWrapper(open(job.result, 'r'))
-        response = StreamingHttpResponse(wrapper, content_type=get_content_type())
-        response['Content-Disposition'] = 'attachment; filename={0}'.format(
-                                          get_download_filename())
-        response['Content-Length'] = os.path.getsize(job.result)
-        return response
-    else:
-        status = 202
+                return stream_local_file()
+        else:
+            status = 202
+            return JsonResponse(messages[status], status=status)
+    except:
+        status = 500
         return JsonResponse(messages[status], status=status)
 
 
@@ -248,7 +267,7 @@ def get_export_job_status(request):
         return JsonResponse(messages[status], status=status)
 
     try:
-        job = get_job(job_id)
+        job = get_job(job_id)[0]
         if job:
             data = {
                 'id': job.id,

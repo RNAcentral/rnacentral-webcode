@@ -50,9 +50,25 @@ INTERNAL_IPS = ('127.0.0.1',)
 # django-maintenance
 MAINTENANCE_MODE = False
 
-# used for transparently retrieving search results
-# from multiple servers hosted behind a load balancer
-HOSTS = [''] # e.g. 'test.example.com'
+# Python-rq Redis queues used for exporting results
+RQ_QUEUES = {
+    'default': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+        # 'PASSWORD': 'some-password',
+        'DEFAULT_TIMEOUT': 360,
+        'REMOTE_SERVER': None,
+    },
+    'remote': {
+        'HOST': '',
+        'PORT': 6379,
+        'DB': 0,
+        # 'PASSWORD': 'some-password',
+        'DEFAULT_TIMEOUT': 360,
+        'REMOTE_SERVER': '',
+    },
+}
 
 # destination for the search results files
 EXPORT_RESULTS_DIR = os.environ['RNACENTRAL_EXPORT_RESULTS_DIR']
