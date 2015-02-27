@@ -2,7 +2,7 @@ language: python
 python:
   - "2.7"
 # install dependencies
-install: pip install requests selenium django djangorestframework django-cors-headers django-debug-toolbar django-compressor django-markdown-deux django-rq
+install: pip install requests selenium django djangorestframework django-cors-headers django-debug-toolbar django-compressor django-markdown-deux django-rq django-filter
 # run tests
 script:
     - python rnacentral/apiv1/tests.py --base_url=http://test.rnacentral.org
