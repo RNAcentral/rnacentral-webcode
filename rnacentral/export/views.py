@@ -120,6 +120,19 @@ def export_search_results(query, _format, hits):
     return filename
 
 
+def get_job(job_id):
+    """
+    Get job from local or remote queues.
+    """
+    rq_queues = getattr(settings, 'RQ_QUEUES', [])
+    for name in rq_queues.keys():
+        queue = django_rq.get_queue(name)
+        job = queue.fetch_job(job_id)
+        if job:
+            return job
+    return None
+
+
 @never_cache
 def download_search_result_file(request):
     """
@@ -223,30 +236,6 @@ def get_export_job_status(request):
     * 404 - job id not found in the queue
     * 500 - internal error
     """
-    def poll_remote_hosts():
-        """
-        If the job is not found in the local queue,
-        query all remote servers.
-
-        As load balancer can direct API requests to servers
-        other than the one hosting the job, it is desirable
-        to make load balancing transparent to the API.
-        """
-        remote_data = None
-        this_host = socket.gethostname()
-        hosts = getattr(settings, "HOSTS", [])
-        for host in hosts:
-            if this_host in host: # host includes port number
-                continue
-            url = ''.join(['http://', host, request.get_full_path()])
-            req = requests.get(url)
-            if req.status_code == 200:
-                data = req.json()
-                if 'id' in data and 'message' not in data: # job found
-                    remote_data = data
-                    break
-        return remote_data
-
     messages = {
         400: {'message': 'Job id not specified'},
         404: {'message': 'Job not found'},
@@ -259,8 +248,7 @@ def get_export_job_status(request):
         return JsonResponse(messages[status], status=status)
 
     try:
-        queue = django_rq.get_queue()
-        job = queue.fetch_job(job_id)
+        job = get_job(job_id)
         if job:
             data = {
                 'id': job.id,
@@ -275,13 +263,8 @@ def get_export_job_status(request):
             }
             return JsonResponse(data)
         else:
-            # job not found in the local queue, try other servers
-            remote_data = poll_remote_hosts()
-            if remote_data:
-                return JsonResponse(remote_data)
-            else:
-                status = 404
-                return JsonResponse(messages[status], status=status)
+            status = 404
+            return JsonResponse(messages[status], status=status)
     except:
         status = 500
         return JsonResponse(messages[status], status=status)
