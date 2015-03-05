@@ -50,7 +50,7 @@ Help: Metadata search
     $(function() {
       $('code').each(function(){
         var $this = $(this);
-        var link = '<a href="/search?q=' + encodeURIComponent($this.html()) + '">' + $this.html() + '</a>';
+        var link = '<a rel="nofollow" href="/search?q=' + encodeURIComponent($this.html()) + '">' + $this.html() + '</a>';
         $this.html(link);
       });
     });
