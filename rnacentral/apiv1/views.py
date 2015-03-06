@@ -473,8 +473,10 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
             else:
                 queryset = Rna.objects.none()
         else:
-            queryset = Rna.objects.defer('seq_short', 'seq_long').all()
-
+            flat = self.request.QUERY_PARAMS.get('flat', None)
+            queryset = Rna.objects.all()
+            if flat:
+                queryset = queryset.prefetch_related('xrefs','xrefs__accession')
         return queryset
 
 
