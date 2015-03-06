@@ -531,7 +531,6 @@ class XrefList(generics.ListAPIView):
     [API documentation](/api)
     """
     queryset = Rna.objects.select_related().all()
-    serializer_class = RnaNestedSerializer
 
     def get(self, request, pk=None, format=None):
         """
