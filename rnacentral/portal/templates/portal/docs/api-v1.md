@@ -258,8 +258,7 @@ The genome location should be in the `chromosome:start-end` format and may conta
 
 #### Examples
 
-* [{{ BASE_URL }}/api/v1/overlap/region/human/Y:26,631,479-26,632,610](/api/v1/overlap/region/human/Y:26,631,479-26,632,610)
-* [{{ BASE_URL }}/api/v1/overlap/region/human/2:39,745,816-39,826,679](/api/v1/overlap/region/human/2:39,745,816-39,826,679)
+* [{{ BASE_URL }}/api/v1/overlap/region/homo_sapiens/2:39,745,816-39,826,679](/api/v1/overlap/region/homo_sapiens/2:39,745,816-39,826,679)
 
 <h2 id="v1-example-script">Example script</h2>
 
