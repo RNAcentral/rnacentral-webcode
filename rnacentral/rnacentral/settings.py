@@ -270,31 +270,16 @@ DEBUG_TOOLBAR_PANELS = (
 # django-maintenance
 MAINTENANCE_MODE = False
 
-# caching
-def get_cache():
-    """
-    If unix memcached socket is created use memcached,
-    otherwise fall back on LocMemCache.
-    """
-    memcached_sock = os.path.join(os.path.dirname(os.path.realpath(__file__)), "memcached.sock")
-    if os.path.exists(memcached_sock):
-        memcached_sock = 'unix:' + memcached_sock
-        return {
-          'default': {
-            'BACKEND': 'portal.backends.memcached.MemcachedCache', # custom backend to overcome 1Mb size limit
-            'LOCATION': memcached_sock,
-            'OPTIONS': {
-                'SERVER_MAX_VALUE_LENGTH': 1024 * 1024 * 15, # increase size limit to 15Mb
-            }
-          }
-        }
-    else:
-        return {
-          'default': {
-            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-          }
-        }
-CACHES = get_cache()
+# Memcached caching
+CACHES = {
+  'default': {
+    'BACKEND': 'caching.backends.memcached.MemcachedCache', # django-cache-machine
+    'LOCATION': 'localhost:11211',
+  }
+}
+
+# cache queries like Rna.objects.count()
+CACHE_COUNT_TIMEOUT = 60 * 60 * 24 # seconds
 
 # django-markdown-deux
 MARKDOWN_DEUX_STYLES = {

@@ -16,6 +16,7 @@ from django.db import models
 from django.db.models import Min, Max
 from django.utils.functional import cached_property
 from django.template.defaultfilters import pluralize
+from caching.base import CachingManager, CachingMixin # django-cache-machine
 from portal.config.genomes import genomes as rnacentral_genomes
 from portal.config.expert_databases import expert_dbs as rnacentral_expert_dbs
 import json
@@ -35,7 +36,7 @@ class RnaPrecomputedData(models.Model):
         db_table = 'rnc_rna_precomputed_data'
 
 
-class Rna(models.Model):
+class Rna(CachingMixin, models.Model):
     id = models.IntegerField(db_column='id')
     upi = models.CharField(max_length=13, db_index=True, primary_key=True)
     timestamp = models.DateField()
@@ -45,6 +46,8 @@ class Rna(models.Model):
     seq_short = models.CharField(max_length=4000)
     seq_long = models.TextField()
     md5 = models.CharField(max_length=32, unique=True, db_index=True)
+
+    objects = CachingManager()
 
     class Meta:
         db_table = 'rna'
@@ -349,7 +352,7 @@ class DatabaseStats(models.Model):
         db_table = 'rnc_database_json_stats'
 
 
-class Database(models.Model):
+class Database(CachingMixin, models.Model):
     timestamp = models.DateField()
     userstamp = models.CharField(max_length=30)
     descr = models.CharField(max_length=30)
@@ -365,6 +368,8 @@ class Database(models.Model):
     max_length = models.IntegerField()
     num_sequences = models.IntegerField()
     num_organisms = models.IntegerField()
+
+    objects = CachingManager()
 
     class Meta:
         db_table = 'rnc_database'
@@ -450,7 +455,7 @@ class Database(models.Model):
         return reverse('expert-database', kwargs={'expert_db_name': self.label})
 
 
-class Release(models.Model):
+class Release(CachingMixin, models.Model):
     db = models.ForeignKey(Database, db_column='dbid', related_name='db')
     release_date = models.DateField()
     release_type = models.CharField(max_length=1)
@@ -459,6 +464,8 @@ class Release(models.Model):
     userstamp = models.CharField(max_length=30)
     descr = models.TextField()
     force_load = models.CharField(max_length=1)
+
+    objects = CachingManager()
 
     def get_release_type(self):
         return 'full' if self.release_type == 'F' else 'incremental'
