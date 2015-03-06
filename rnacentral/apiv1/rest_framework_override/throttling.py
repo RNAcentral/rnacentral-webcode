@@ -34,7 +34,8 @@ class SafeCacheKeyAnonRateThrottle(AnonRateThrottle):
         """
         Strip out whitespace from the key.
         """
-        unsafe_key = super(SafeCacheKeyAnonRateThrottle, self).get_cache_key(request, view)
+        unsafe_key = super(SafeCacheKeyAnonRateThrottle, self).get_cache_key(request, view) \
+                     or ''
         return unsafe_key.replace(' ', '')
 
 
@@ -52,5 +53,6 @@ class SafeCacheKeyUserRateThrottle(UserRateThrottle):
         """
         Strip out whitespace from the key.
         """
-        unsafe_key = super(SafeCacheKeyUserRateThrottle, self).get_cache_key(request, view)
+        unsafe_key = super(SafeCacheKeyUserRateThrottle, self).get_cache_key(request, view) \
+                     or ''
         return unsafe_key.replace(' ', '')
