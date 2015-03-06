@@ -487,10 +487,20 @@ class RnaDetail(RnaMixin, generics.RetrieveAPIView):
     [API documentation](/api)
     """
     # the above docstring appears on the API website
-    queryset = Rna.objects.prefetch_related('xrefs','xrefs__accession').all()
+    permission_classes = (AllowAny,)
     renderer_classes = (renderers.JSONRenderer, renderers.JSONPRenderer,
                         renderers.BrowsableAPIRenderer, renderers.YAMLRenderer,
                         RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer)
+
+    def get_queryset(self):
+        """
+        Prefetch related objects only when `flat=True`.
+        """
+        flat = self.request.QUERY_PARAMS.get('flat', None)
+        queryset = Rna.objects.all()
+        if flat:
+            queryset = queryset.prefetch_related('xrefs','xrefs__accession')
+        return queryset
 
 
 class RnaSpeciesSpecificView(generics.RetrieveAPIView):
