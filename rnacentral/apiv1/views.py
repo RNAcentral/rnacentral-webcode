@@ -17,6 +17,7 @@ Docstrings of the classes exposed in urlpatters support markdown.
 
 from django.core.paginator import Paginator
 from django.http import Http404
+from django.shortcuts import get_object_or_404
 from portal.models import Rna, Accession, Xref, Reference, Database
 from rest_framework import generics
 from rest_framework import renderers
@@ -488,20 +489,30 @@ class RnaDetail(RnaMixin, generics.RetrieveAPIView):
     [API documentation](/api)
     """
     # the above docstring appears on the API website
-    permission_classes = (AllowAny,)
+    queryset = Rna.objects.all()
     renderer_classes = (renderers.JSONRenderer, renderers.JSONPRenderer,
                         renderers.BrowsableAPIRenderer, renderers.YAMLRenderer,
                         RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer)
 
-    def get_queryset(self):
+    def get_object(self):
         """
-        Prefetch related objects only when `flat=True`.
+        Prefetch related objects only when `flat=True`
+        and the number of xrefs is not too large.
         """
+        queryset = self.filter_queryset(self.get_queryset())
+
+        # Perform the lookup filtering.
+        lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field
+        filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
+        rna = get_object_or_404(queryset, **filter_kwargs)
+
+        MAX_XREFS_TO_PREFETCH = 1000
         flat = self.request.QUERY_PARAMS.get('flat', None)
-        queryset = Rna.objects.all()
-        if flat:
+        if flat and rna.xrefs.count() <= MAX_XREFS_TO_PREFETCH:
             queryset = queryset.prefetch_related('xrefs','xrefs__accession')
-        return queryset
+            return get_object_or_404(queryset, **filter_kwargs)
+        else:
+            return rna
 
 
 class RnaSpeciesSpecificView(generics.RetrieveAPIView):
