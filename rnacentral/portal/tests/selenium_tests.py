@@ -436,7 +436,7 @@ class RNAcentralTest(unittest.TestCase):
         else:
             sys.exit('Driver not found')
         self.homepage = Homepage(self.browser)
-        self.homepage.navigate()
+        # self.homepage.navigate()
 
     def tearDown(self):
         self.browser.close()
