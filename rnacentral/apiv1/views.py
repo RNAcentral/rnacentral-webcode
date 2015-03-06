@@ -464,6 +464,8 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
         if db_name:
             db_id = self._get_database_id(db_name)
             if db_id:
+                # `seq_long` **must** be deferred because in Oracle
+                # `distinct` doesn't work with CLOB objects.
                 queryset = Rna.objects.defer('seq_short', 'seq_long').\
                                        filter(xrefs__db=db_id).\
                                        distinct().\
