@@ -280,6 +280,8 @@ CACHES = {
 
 # cache queries like Rna.objects.count()
 CACHE_COUNT_TIMEOUT = 60 * 60 * 24 # seconds
+# by default cache machine doesn't cache empty querysets
+CACHE_EMPTY_QUERYSETS = True
 
 # django-markdown-deux
 MARKDOWN_DEUX_STYLES = {
