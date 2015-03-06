@@ -15,6 +15,7 @@ limitations under the License.
 Docstrings of the classes exposed in urlpatters support markdown.
 """
 
+from django.core.paginator import Paginator
 from django.http import Http404
 from portal.models import Rna, Accession, Xref, Reference, Database
 from rest_framework import generics
@@ -24,7 +25,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
 from rest_framework.reverse import reverse
-from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, XrefSerializer, \
+from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, PaginatedXrefSerializer, \
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
                               RawCitationSerializer, RnaSpeciesSpecificSerializer
 import django_filters
@@ -544,10 +545,16 @@ class XrefList(generics.ListAPIView):
 
     def get(self, request, pk=None, format=None):
         """
+        Get a paginated list 
         """
+        page = request.QUERY_PARAMS.get('page', 1)
+        page_size = request.QUERY_PARAMS.get('page_size', 100)
+
         rna = self.get_object()
         xrefs = rna.get_xrefs()
-        serializer = XrefSerializer(xrefs, context={'request': request})
+        paginator_xrefs = Paginator(xrefs, page_size)
+        xrefs_page = paginator_xrefs.page(page)
+        serializer = PaginatedXrefSerializer(xrefs_page, context={'request': request})
         return Response(serializer.data)
 
 
