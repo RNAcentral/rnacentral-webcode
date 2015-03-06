@@ -20,6 +20,7 @@ HyperlinkedIdentityField - link to a view
 
 from portal.models import Rna, Xref, Reference, Database, Accession, Release, Reference, Reference_map
 from rest_framework import serializers
+from rest_framework import pagination
 
 
 class RawCitationSerializer(serializers.ModelSerializer):
@@ -95,6 +96,14 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Xref
         fields = ('database', 'is_expert_db', 'is_active', 'first_seen', 'last_seen', 'taxid', 'accession')
+
+
+class PaginatedXrefSerializer(pagination.PaginationSerializer):
+    """
+    Paginated version of XrefSerializer.
+    """
+    class Meta:
+        object_serializer_class = XrefSerializer
 
 
 class RnaNestedSerializer(serializers.HyperlinkedModelSerializer):
