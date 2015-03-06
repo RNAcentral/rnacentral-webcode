@@ -463,20 +463,20 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
         use RnaFilter for other filtering operations.
         """
         db_name = self.request.QUERY_PARAMS.get('database', None)
+        # `seq_long` **must** be deferred in order for filters to work
+        queryset = Rna.objects.defer('seq_long')
         if db_name:
             db_id = self._get_database_id(db_name)
             if db_id:
-                # `seq_long` **must** be deferred because in Oracle
-                # `distinct` doesn't work with CLOB objects.
-                queryset = Rna.objects.defer('seq_short', 'seq_long').\
-                                       filter(xrefs__db=db_id).\
-                                       distinct().\
-                                       all()
+                queryset = queryset.\
+                           filter(xrefs__db=db_id).\
+                           distinct().\
+                           all()
             else:
                 queryset = Rna.objects.none()
         else:
             flat = self.request.QUERY_PARAMS.get('flat', None)
-            queryset = Rna.objects.all()
+            queryset = queryset.all()
             if flat:
                 queryset = queryset.prefetch_related('xrefs','xrefs__accession')
         return queryset
