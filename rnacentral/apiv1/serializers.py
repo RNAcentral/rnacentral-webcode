@@ -18,6 +18,7 @@ HyperlinkedIdentityField - link to a view
 
 """
 
+from django.core.paginator import Paginator
 from portal.models import Rna, Xref, Reference, Database, Accession, Release, Reference, Reference_map
 from rest_framework import serializers
 from rest_framework import pagination
@@ -193,7 +194,19 @@ class RnaFlatSerializer(RnaNestedSerializer):
     Override the xrefs field in the default nested serializer
     to provide a flat representation.
     """
-    xrefs = XrefSerializer()
+    xrefs = serializers.SerializerMethodField('paginated_xrefs')
+
+    def paginated_xrefs(self, obj):
+        """
+        Include paginated xrefs.
+        """
+        queryset = obj.xrefs.all()
+        page = self.context.get('page', 1)
+        page_size = self.context.get('page_size', 100)
+        paginator = Paginator(queryset, page_size)
+        xrefs = paginator.page(page)
+        serializer = PaginatedXrefSerializer(xrefs, context=self.context)
+        return serializer.data
 
 
 class RnaFastaSerializer(serializers.ModelSerializer):
