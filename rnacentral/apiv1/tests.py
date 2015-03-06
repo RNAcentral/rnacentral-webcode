@@ -170,6 +170,30 @@ class ApiV1TestCase(ApiV1BaseClass):
         data = self._check_urls(url)
         self.assertNotEqual(len(data['xrefs']), 0)
 
+    def test_large_nested_response(self):
+        """
+        For nested responses only a subset of xrefs is included
+        in the original response and the rest can be paginated
+        in separate requests.
+        """
+        upi = 'URS000065859A' # >200,000 xrefs
+        url = self._get_api_url('rna/%s?flat=true' % upi)
+        data = self._check_urls(url)
+        self.assertTrue(data['xrefs']['count'] > 200000)
+        self.assertTrue(len(data['xrefs']) < 1000)
+
+    def test_xref_pagination(self):
+        """
+        Ensure that xrefs can be paginated.
+        """
+        upi = 'URS0000004483' # >150 xrefs
+        page = 7
+        page_size = 2
+        url = self._get_api_url('rna/{upi}/xrefs?page={page}&page_size={page_size}'.format(
+            upi=upi, page=page, page_size=page_size))
+        data = self._check_urls(url)
+        self.assertTrue(len(data['results']), page_size)
+
     def test_non_fasta_output_formats(self):
         formats = {'json': 'application/json',
                    'yaml': 'application/yaml',
