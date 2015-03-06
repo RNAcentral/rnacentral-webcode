@@ -485,7 +485,7 @@ class RnaDetail(RnaMixin, generics.RetrieveAPIView):
     [API documentation](/api)
     """
     # the above docstring appears on the API website
-    queryset = Rna.objects.select_related().all()
+    queryset = Rna.objects.prefetch_related('xrefs','xrefs__accession').all()
     renderer_classes = (renderers.JSONRenderer, renderers.JSONPRenderer,
                         renderers.BrowsableAPIRenderer, renderers.YAMLRenderer,
                         RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer)
