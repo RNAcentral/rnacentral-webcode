@@ -556,7 +556,7 @@ class XrefList(generics.ListAPIView):
 
     def get(self, request, pk=None, format=None):
         """
-        Get a paginated list 
+        Get a paginated list of cross-references.
         """
         page = request.QUERY_PARAMS.get('page', 1)
         page_size = request.QUERY_PARAMS.get('page_size', 100)
