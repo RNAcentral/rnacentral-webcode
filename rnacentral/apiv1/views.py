@@ -15,6 +15,7 @@ limitations under the License.
 Docstrings of the classes exposed in urlpatters support markdown.
 """
 
+from itertools import chain
 from django.core.paginator import Paginator
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -31,6 +32,10 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RawCitationSerializer, RnaSpeciesSpecificSerializer
 import django_filters
 import re
+
+
+# maximum number of xrefs to use with prefetch_related
+MAX_XREFS_TO_PREFETCH = 1000
 
 
 def _get_xrefs_from_genomic_coordinates(species, chromosome, start, end):
@@ -448,6 +453,65 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
                         renderers.BrowsableAPIRenderer,
                         renderers.YAMLRenderer, RnaFastaRenderer)
 
+    def list(self, request, *args, **kwargs):
+        """
+        List view in Django Rest Framework is responsible
+        for displaying entries from the queryset.
+        Here the view is overridden in order to avoid
+        performance bottlenecks.
+
+        * estimate the number of xrefs for each Rna
+        * prefetch_related only for Rnas with a small number of xrefs
+        * do not attempt to optimise entries with a large number of xrefs
+          letting Django hit the database one time for each xref
+        * flat serializer limits the total number of displayed xrefs
+        """
+        # begin DRF base code
+        self.object_list = self.filter_queryset(self.get_queryset())
+
+        # Default is to allow empty querysets.  This can be altered by setting
+        # `.allow_empty = False`, to raise 404 errors on empty querysets.
+        if not self.allow_empty and not self.object_list:
+            warnings.warn(
+                'The `allow_empty` parameter is deprecated. '
+                'To use `allow_empty=False` style behavior, You should override '
+                '`get_queryset()` and explicitly raise a 404 on empty querysets.',
+                DeprecationWarning
+            )
+            class_name = self.__class__.__name__
+            error_msg = self.empty_error % {'class_name': class_name}
+            raise Http404(error_msg)
+
+        # Switch between paginated or standard style responses
+        page = self.paginate_queryset(self.object_list)
+        # end DRF base code
+
+        # use prefetch_related where possible
+        flat = self.request.QUERY_PARAMS.get('flat', None)
+        if flat:
+            to_prefetch = []
+            no_prefetch = []
+            for rna in page:
+                if rna.xrefs.count() <= MAX_XREFS_TO_PREFETCH:
+                    to_prefetch.append(rna.upi)
+                else:
+                    no_prefetch.append(rna.upi)
+
+            prefetched = Rna.objects.filter(upi__in=to_prefetch).prefetch_related('xrefs__accession').all()
+            not_prefetched = Rna.objects.filter(upi__in=no_prefetch).all()
+
+            result_list = list(chain(prefetched, not_prefetched))
+            page.object_list = result_list # override data while keeping the rest of the pagination object
+
+        # begin DRF base code
+        if page is not None:
+            serializer = self.get_pagination_serializer(page)
+        else:
+            serializer = self.get_serializer(self.object_list, many=True)
+
+        return Response(serializer.data)
+        # end DRF base code
+
     def _get_database_id(self, db_name):
         """
         Map the `database` parameter from the url to internal database ids
@@ -500,7 +564,6 @@ class RnaDetail(RnaMixin, generics.RetrieveAPIView):
         filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
         rna = get_object_or_404(queryset, **filter_kwargs)
 
-        MAX_XREFS_TO_PREFETCH = 1000
         flat = self.request.QUERY_PARAMS.get('flat', None)
         if flat and rna.xrefs.count() <= MAX_XREFS_TO_PREFETCH:
             queryset = queryset.prefetch_related('xrefs','xrefs__accession')
