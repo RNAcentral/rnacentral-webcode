@@ -468,18 +468,12 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
         if db_name:
             db_id = self._get_database_id(db_name)
             if db_id:
-                queryset = queryset.\
-                           filter(xrefs__db=db_id).\
-                           distinct().\
-                           all()
+                return queryset.filter(xrefs__db=db_id).\
+                                distinct().\
+                                all()
             else:
-                queryset = Rna.objects.none()
-        else:
-            flat = self.request.QUERY_PARAMS.get('flat', None)
-            queryset = queryset.all()
-            if flat:
-                queryset = queryset.prefetch_related('xrefs','xrefs__accession')
-        return queryset
+                return Rna.objects.none()
+        return queryset.all()
 
 
 class RnaDetail(RnaMixin, generics.RetrieveAPIView):
