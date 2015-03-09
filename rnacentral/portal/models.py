@@ -564,8 +564,8 @@ class Accession(models.Model):
         Get the ENA entry url that refers to the entry from
         the Non-coding product containing the cross-reference.
         """
-        if self.database == 'RFAM':
-            return '' # no source links for RFAM entries
+        if self.database in ['RFAM', 'PDBE', 'REFSEQ', 'RDP']:
+            return '' # no ENA source links for these entries
         ena_base_url = "http://www.ebi.ac.uk/ena/data/view/Non-coding:"
         if self.is_composite == 'Y':
             return ena_base_url + self.non_coding_id
