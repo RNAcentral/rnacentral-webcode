@@ -370,7 +370,10 @@ class ApiV1TestCase(ApiV1BaseClass):
         if url[-1] == '/':
             url = url[:-1]
         # test without the slash
+        start = time.time()
         r = requests.get(url)
+        end = time.time()
+        self.assertTrue(end - start < self.timeout)
         self.assertEqual(r.status_code, 200)
         # add the slash back if there are no url parameters
         if '?' not in url:
