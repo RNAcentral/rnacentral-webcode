@@ -133,13 +133,6 @@ class ApiV1TestCase(ApiV1BaseClass):
         url = self._get_api_url('accession/%s/citations' % self.accession)
         self._check_urls(url)
 
-    def test_rna_output_formats(self):
-        output_formats = ['json', 'yaml', 'api']
-        for output_format in output_formats:
-            url = self._get_api_url('rna/%s/?format=%s' % (self.upi, output_format))
-            r = requests.get(url)
-            self.assertEqual(r.status_code, 200)
-
     def test_hyperlinked_vs_nested_responses(self):
         # hyperlinked
         url = self._get_api_url('rna/')
