@@ -183,12 +183,21 @@ class ApiV1TestCase(ApiV1BaseClass):
         self.assertEqual(data['count'], 0)
 
     def test_rna_external_id_filter(self):
-        filter_tests = ['rna/?external_id=Stap.epid._AF269831', 'rna/?external_id=MIMAT0000091',
-                        'rna/?external_id=OTTHUMG00000172092', 'rna/?external_id=Lepto_inter_Lai566']
-        for filter_test in filter_tests:
-            url = self._get_api_url(filter_test)
+        """
+        Test filtering by external id.
+        """
+        external_ids = [
+            'Stap.epid._AF269831', # SRPDB
+            'MIMAT0000091', # miRBase
+            'OTTHUMG00000172092', # Vega
+            'Lepto_inter_Lai566', # tmRNA Website
+            '1J5E', # PDB
+            'NR_029645', # RefSeq
+        ]
+        for external_id in external_ids:
+            url = self._get_api_url('rna?external_id=' + external_id)
             data = self._check_urls(url)
-            self.assertNotEqual(data['count'], 0)
+            self.assertNotEqual(data['count'], 0, 'Failed on %s' % url)
 
     def test_rna_output_formats(self):
         output_formats = ['json', 'yaml', 'api']
