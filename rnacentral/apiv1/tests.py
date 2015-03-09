@@ -14,18 +14,14 @@ limitations under the License.
 """
 API v1 tests
 
-The script does not rely on Django in order to avoid
-creating test databases and loading initial data.
-It can be used to test any RNAcentral web app instance
-by specifying the base_url parameter.
-
 Usage:
 
 # test localhost
 python apiv1/tests.py
 
-# test an RNAcentral instance
+# test RNAcentral server
 python apiv1/tests.py --base_url http://test.rnacentral.org/
+python apiv1/tests.py --base_url http://rnacentral.org/
 """
 
 import argparse
