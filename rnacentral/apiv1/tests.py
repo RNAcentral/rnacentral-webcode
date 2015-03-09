@@ -62,20 +62,35 @@ class ApiV1BaseClass(unittest.TestCase):
     api_url = 'api/v1/'
     upi_with_genomic_coordinates = 'URS00000B15DA'
     timeout = 60 # seconds
+    upi = 'URS0000000001'
+    md5 = '6bba097c8c39ed9a0fdf02273ee1c79a'
+    accession = 'Y09527.1:2562..2627:tRNA'
 
     def _get_api_url(self, extra=''):
         return self.base_url + self.api_url + extra
 
+    def _check_urls(self, url):
+        """
+        Auxiliary function for testing the API with and without trailing slash.
+        """
+        # remove the trailing slash if present
+        if url[-1] == '/':
+            url = url[:-1]
+        # test without the slash
+        start = time.time()
+        r = requests.get(url)
+        end = time.time()
+        self.assertTrue(end - start < self.timeout)
+        self.assertEqual(r.status_code, 200)
+        # add the slash back if there are no url parameters
+        if '?' not in url:
+            url += '/'
+            r = requests.get(url)
+            self.assertEqual(r.status_code, 200)
+        return r.json()
+
 
 class ApiV1TestCase(ApiV1BaseClass):
-
-    def setUp(self):
-        self.upi = 'URS0000000001'
-        self.md5 = '6bba097c8c39ed9a0fdf02273ee1c79a'
-        self.accession = 'Y09527.1:2562..2627:tRNA'
-
-    def tearDown(self):
-        pass
 
     def test_current_api_endpoint(self):
         url = self.base_url + 'api/current'
@@ -117,54 +132,6 @@ class ApiV1TestCase(ApiV1BaseClass):
     def test_accession_citations(self):
         url = self._get_api_url('accession/%s/citations' % self.accession)
         self._check_urls(url)
-
-    def test_rna_md5_filter(self):
-        url = self._get_api_url('rna/?md5=%s' % self.md5)
-        data = self._check_urls(url)
-        self.assertEqual(data['results'][0]['rnacentral_id'], self.upi)
-
-    def test_rna_upi_filter(self):
-        url = self._get_api_url('rna/?upi=%s' % self.upi)
-        data = self._check_urls(url)
-        self.assertEqual(data['results'][0]['md5'], self.md5)
-
-    def test_rna_length_filter(self):
-        filter_tests = ['rna/?min_length=200000', 'rna/?length=2014',
-                        'rna/?max_length=11', 'rna/?min_length=11&max_length=12']
-        for filter_test in filter_tests:
-            url = self._get_api_url(filter_test)
-            data = self._check_urls(url)
-            self.assertNotEqual(data['count'], 0)
-
-    def test_rna_database_filter(self):
-        for database in Database.objects.all():
-            if database.name in ['ENA', 'Rfam']:
-                continue
-            url = self._get_api_url('rna/?database=%s' % database.label)
-            data = self._check_urls(url)
-            self.assertNotEqual(data['count'], 0)
-
-    def test_non_existing_database_filter(self):
-        url = self._get_api_url('rna/?database=test')
-        data = self._check_urls(url)
-        self.assertEqual(data['count'], 0)
-
-    def test_rna_external_id_filter(self):
-        """
-        Test filtering by external id.
-        """
-        external_ids = [
-            'Stap.epid._AF269831', # SRPDB
-            'MIMAT0000091', # miRBase
-            'OTTHUMG00000172092', # Vega
-            'Lepto_inter_Lai566', # tmRNA Website
-            '1J5E', # PDB
-            'NR_029645', # RefSeq
-        ]
-        for external_id in external_ids:
-            url = self._get_api_url('rna?external_id=' + external_id)
-            data = self._check_urls(url)
-            self.assertNotEqual(data['count'], 0, 'Failed on %s' % url)
 
     def test_rna_output_formats(self):
         output_formats = ['json', 'yaml', 'api']
@@ -296,25 +263,58 @@ class ApiV1TestCase(ApiV1BaseClass):
                 r = requests.get(url, headers={"Accept": headers}) # accept headers
                 self.assertEqual(r.status_code, 200, url)
 
-    def _check_urls(self, url):
+
+class FiltersTestCase(ApiV1BaseClass):
+    """
+    Test url parameter filters.
+    """
+    def test_rna_md5_filter(self):
+        url = self._get_api_url('rna/?md5=%s' % self.md5)
+        data = self._check_urls(url)
+        self.assertEqual(data['results'][0]['rnacentral_id'], self.upi)
+
+    def test_rna_upi_filter(self):
+        url = self._get_api_url('rna/?upi=%s' % self.upi)
+        data = self._check_urls(url)
+        self.assertEqual(data['results'][0]['md5'], self.md5)
+
+    def test_rna_length_filter(self):
+        filter_tests = ['rna/?min_length=200000', 'rna/?length=2014',
+                        'rna/?max_length=11', 'rna/?min_length=11&max_length=12']
+        for filter_test in filter_tests:
+            url = self._get_api_url(filter_test)
+            data = self._check_urls(url)
+            self.assertNotEqual(data['count'], 0)
+
+    def test_rna_database_filter(self):
+        for database in Database.objects.all():
+            if database.name in ['ENA', 'Rfam']:
+                continue
+            url = self._get_api_url('rna/?database=%s' % database.label)
+            data = self._check_urls(url)
+            self.assertNotEqual(data['count'], 0)
+
+    def test_non_existing_database_filter(self):
+        url = self._get_api_url('rna/?database=test')
+        data = self._check_urls(url)
+        self.assertEqual(data['count'], 0)
+
+    def test_rna_external_id_filter(self):
         """
-        Auxiliary function for testing the API with and without trailing slash.
+        Test filtering by external id.
         """
-        # remove the trailing slash if present
-        if url[-1] == '/':
-            url = url[:-1]
-        # test without the slash
-        start = time.time()
-        r = requests.get(url)
-        end = time.time()
-        self.assertTrue(end - start < self.timeout)
-        self.assertEqual(r.status_code, 200)
-        # add the slash back if there are no url parameters
-        if '?' not in url:
-            url += '/'
-            r = requests.get(url)
-            self.assertEqual(r.status_code, 200)
-        return r.json()
+        external_ids = [
+            'Stap.epid._AF269831', # SRPDB
+            'MIMAT0000091', # miRBase
+            'OTTHUMG00000172092', # Vega
+            'Lepto_inter_Lai566', # tmRNA Website
+            '1J5E', # PDB
+            'NR_029645', # RefSeq
+        ]
+        for external_id in external_ids:
+            url = self._get_api_url('rna?external_id=' + external_id)
+            data = self._check_urls(url)
+            self.assertNotEqual(data['count'], 0, 'Failed on %s' % url)
 
 
 class RandomEntriesTestCase(ApiV1BaseClass):
@@ -464,9 +464,11 @@ def run_tests():
         unittest.TestLoader().loadTestsFromTestCase(SpeciesSpecificIdsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(DasTestCase),
         unittest.TestLoader().loadTestsFromTestCase(RandomEntriesTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(FiltersTestCase),
     ]
     unittest.TextTestRunner().run(unittest.TestSuite(suites))
 
 if __name__ == '__main__':
+    setup_django_environment()
     parse_arguments()
     run_tests()
