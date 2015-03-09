@@ -185,6 +185,25 @@ class ApiV1TestCase(ApiV1BaseClass):
         data = self._check_urls(url)
         self.assertTrue(len(data['results']), page_size)
 
+    def test_genome_annotations(self):
+        targets = ['feature/region/homo_sapiens/Y:25,183,643-25,184,773', 'overlap/region/homo_sapiens/2:39,745,816-39,826,679']
+        for target in targets:
+            url = self._get_api_url(target)
+            data = self._check_urls(url)
+            self.assertNotEqual(len(data), 0)
+            for annotation in data:
+                if annotation['feature_type'] == 'transcript':
+                    self.assertIn('URS', annotation['external_name'])
+                elif annotation['feature_type'] == 'exon':
+                    self.assertIn('URS', annotation['Parent'])
+                else:
+                    self.assertEqual(0, 1, "Unknown genomic annotation type")
+
+
+class OutputFormatsTestCase(ApiV1BaseClass):
+    """
+    Test output formats.
+    """
     def test_non_fasta_output_formats(self):
         formats = {'json': 'application/json',
                    'yaml': 'application/yaml',
@@ -235,23 +254,12 @@ class ApiV1TestCase(ApiV1BaseClass):
         r = requests.get(self._get_api_url('rna/%s.bed' % self.upi))
         self.assertIn('# Genomic coordinates not available', r.text)
 
-    def test_genome_annotations(self):
-        targets = ['feature/region/homo_sapiens/Y:25,183,643-25,184,773', 'overlap/region/homo_sapiens/2:39,745,816-39,826,679']
-        for target in targets:
-            url = self._get_api_url(target)
-            data = self._check_urls(url)
-            self.assertNotEqual(len(data), 0)
-            for annotation in data:
-                if annotation['feature_type'] == 'transcript':
-                    self.assertIn('URS', annotation['external_name'])
-                elif annotation['feature_type'] == 'exon':
-                    self.assertIn('URS', annotation['Parent'])
-                else:
-                    self.assertEqual(0, 1, "Unknown genomic annotation type")
-
     def _output_format_tester(self, formats, targets):
         """
-        Auxiliary function for testing output formats.
+        Test all possible ways of specifying output format:
+        * suffix, e.g. ".json"
+        * url notation, e.g. "?format=json"
+        * accept headers
         """
         urls = [self._get_api_url(x) for x in targets]
         for url in urls:
@@ -465,8 +473,10 @@ def run_tests():
         unittest.TestLoader().loadTestsFromTestCase(DasTestCase),
         unittest.TestLoader().loadTestsFromTestCase(RandomEntriesTestCase),
         unittest.TestLoader().loadTestsFromTestCase(FiltersTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(OutputFormatsTestCase),
     ]
     unittest.TextTestRunner().run(unittest.TestSuite(suites))
+
 
 if __name__ == '__main__':
     setup_django_environment()
