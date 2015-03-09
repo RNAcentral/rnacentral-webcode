@@ -30,12 +30,15 @@ python apiv1/tests.py --base_url http://test.rnacentral.org/
 
 import argparse
 import django
+import math
 import os
 import unittest
 import requests
 import re
 import sys
+import time
 import xml.dom.minidom
+from random import randint
 
 
 def setup_django_environment():
@@ -51,7 +54,7 @@ def setup_django_environment():
 
 
 setup_django_environment()
-from portal.models import Database
+from portal.models import Database, Rna
 
 
 class ApiV1BaseClass(unittest.TestCase):
@@ -69,6 +72,7 @@ class ApiV1TestCase(ApiV1BaseClass):
         self.md5 = '6bba097c8c39ed9a0fdf02273ee1c79a'
         self.accession = 'Y09527.1:2562..2627:tRNA'
         self.upi_with_genomic_coordinates = 'URS00000B15DA'
+        self.timeout = 60 # seconds
 
     def tearDown(self):
         pass
@@ -139,6 +143,39 @@ class ApiV1TestCase(ApiV1BaseClass):
             url = self._get_api_url('rna/?database=%s' % database.label)
             data = self._check_urls(url)
             self.assertNotEqual(data['count'], 0)
+
+    def test_random_api_sequences(self):
+        """
+        Test random API entries.
+        """
+        num_tests = 100
+        rna_count = Rna.objects.count()
+        for i in xrange(num_tests):
+            rna = Rna.objects.only('upi').get(id=randint(1,rna_count))
+            url = self._get_api_url('rna/%s?flat=true' % rna.upi)
+            start = time.time()
+            r = requests.get(url)
+            end = time.time()
+            self.assertEqual(r.status_code, 200, 'Failed on %s' % url)
+            self.assertTrue(end - start < self.timeout)
+
+    def test_random_api_pages(self):
+        """
+        Test random large paginated responses.
+        """
+        num_tests = 5
+        page_size = 100
+        rna_count = Rna.objects.count()
+        num_pages = math.trunc(rna_count/page_size)
+        for i in xrange(num_tests):
+            page = randint(1,num_pages)
+            url = self._get_api_url('rna?flat=true&page_size={page_size}&page={page}'.format(
+                page_size=page_size, page=page))
+            start = time.time()
+            r = requests.get(url)
+            end = time.time()
+            self.assertEqual(r.status_code, 200, 'Failed on %s' % url)
+            self.assertTrue(end - start < self.timeout)
 
     def test_non_existing_database_filter(self):
         url = self._get_api_url('rna/?database=test')
