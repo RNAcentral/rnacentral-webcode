@@ -60,6 +60,7 @@ from portal.models import Database, Rna
 class ApiV1BaseClass(unittest.TestCase):
     base_url = ''
     api_url = 'api/v1/'
+    upi_with_genomic_coordinates = 'URS00000B15DA'
 
     def _get_api_url(self, extra=''):
         return self.base_url + self.api_url + extra
@@ -71,7 +72,6 @@ class ApiV1TestCase(ApiV1BaseClass):
         self.upi = 'URS0000000001'
         self.md5 = '6bba097c8c39ed9a0fdf02273ee1c79a'
         self.accession = 'Y09527.1:2562..2627:tRNA'
-        self.upi_with_genomic_coordinates = 'URS00000B15DA'
         self.timeout = 60 # seconds
 
     def tearDown(self):
@@ -315,6 +315,45 @@ class ApiV1TestCase(ApiV1BaseClass):
                 else:
                     self.assertEqual(0, 1, "Unknown genomic annotation type")
 
+    def _output_format_tester(self, formats, targets):
+        """
+        Auxiliary function for testing output formats.
+        """
+        urls = [self._get_api_url(x) for x in targets]
+        for url in urls:
+            for suffix, headers in formats.iteritems():
+                r = requests.get(url + '.%s' % suffix) # format suffix
+                self.assertEqual(r.status_code, 200, url)
+                r = requests.get(url + '?format=%s' % suffix) # url notation
+                self.assertEqual(r.status_code, 200, url)
+                r = requests.get(url, headers={"Accept": headers}) # accept headers
+                self.assertEqual(r.status_code, 200, url)
+
+    def _check_urls(self, url):
+        """
+        Auxiliary function for testing the API with and without trailing slash.
+        """
+        # remove the trailing slash if present
+        if url[-1] == '/':
+            url = url[:-1]
+        # test without the slash
+        start = time.time()
+        r = requests.get(url)
+        end = time.time()
+        self.assertTrue(end - start < self.timeout)
+        self.assertEqual(r.status_code, 200)
+        # add the slash back if there are no url parameters
+        if '?' not in url:
+            url += '/'
+            r = requests.get(url)
+            self.assertEqual(r.status_code, 200)
+        return r.json()
+
+
+class DasTestCase(ApiV1BaseClass):
+    """
+    Tests for DAS endpoints.
+    """
     def test_valid_das_annotation_request(self):
         """
         Test DAS `feature` method response.
@@ -359,42 +398,9 @@ class ApiV1TestCase(ApiV1BaseClass):
         self.assertIn('exon:non_coding:rnacentral', r.text)
         self._validate_xml(r.text)
 
-    def _output_format_tester(self, formats, targets):
-        """
-        Auxiliary function for testing output formats.
-        """
-        urls = [self._get_api_url(x) for x in targets]
-        for url in urls:
-            for suffix, headers in formats.iteritems():
-                r = requests.get(url + '.%s' % suffix) # format suffix
-                self.assertEqual(r.status_code, 200, url)
-                r = requests.get(url + '?format=%s' % suffix) # url notation
-                self.assertEqual(r.status_code, 200, url)
-                r = requests.get(url, headers={"Accept": headers}) # accept headers
-                self.assertEqual(r.status_code, 200, url)
-
-    def _check_urls(self, url):
-        """
-        Auxiliary function for testing the API with and without trailing slash.
-        """
-        # remove the trailing slash if present
-        if url[-1] == '/':
-            url = url[:-1]
-        # test without the slash
-        start = time.time()
-        r = requests.get(url)
-        end = time.time()
-        self.assertTrue(end - start < self.timeout)
-        self.assertEqual(r.status_code, 200)
-        # add the slash back if there are no url parameters
-        if '?' not in url:
-            url += '/'
-            r = requests.get(url)
-            self.assertEqual(r.status_code, 200)
-        return r.json()
-
     def _validate_xml(self, text):
         """
+        Validate xml input.
         """
         try:
             xml.dom.minidom.parseString(text)
@@ -451,6 +457,7 @@ def run_tests():
     suites = [
         unittest.TestLoader().loadTestsFromTestCase(ApiV1TestCase),
         unittest.TestLoader().loadTestsFromTestCase(SpeciesSpecificIdsTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(DasTestCase),
     ]
     unittest.TextTestRunner().run(unittest.TestSuite(suites))
 
