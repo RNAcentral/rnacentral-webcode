@@ -179,7 +179,10 @@ class ApiV1TestCase(ApiV1BaseClass):
         self.assertTrue(len(data['results']), page_size)
 
     def test_genome_annotations(self):
-        targets = ['feature/region/homo_sapiens/Y:25,183,643-25,184,773', 'overlap/region/homo_sapiens/2:39,745,816-39,826,679']
+        targets = [
+            'feature/region/homo_sapiens/Y:25,183,643-25,184,773',
+            'overlap/region/homo_sapiens/2:39,745,816-39,826,679',
+        ]
         for target in targets:
             url = self._get_api_url(target)
             data = self._check_urls(url)
@@ -201,7 +204,8 @@ class OutputFormatsTestCase(ApiV1BaseClass):
         formats = {'json': 'application/json',
                    'yaml': 'application/yaml',
                    'api': 'text/html'}
-        targets = ('rna', 'rna/%s' % self.upi, 'rna/%s/xrefs' % self.upi,
+        targets = ('rna', 'rna/%s' % self.upi,
+                   'rna/%s/xrefs' % self.upi,
                    'accession/%s/info' % self.accession,
                    'accession/%s/citations' % self.accession)
         self._output_format_tester(formats, targets)
