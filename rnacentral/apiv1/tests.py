@@ -87,7 +87,6 @@ class ApiV1BaseClass(unittest.TestCase):
 
 
 class ApiV1TestCase(ApiV1BaseClass):
-
     def test_current_api_endpoint(self):
         url = self.base_url + 'api/current'
         self._check_urls(url)
@@ -96,13 +95,53 @@ class ApiV1TestCase(ApiV1BaseClass):
         url = self._get_api_url()
         self._check_urls(url)
 
-    def test_rna_endpoint(self):
+    def test_accession_entry(self):
+        url = self._get_api_url('accession/%s/info' % self.accession)
+        self._check_urls(url)
+
+    def test_accession_citations(self):
+        url = self._get_api_url('accession/%s/citations' % self.accession)
+        self._check_urls(url)
+
+    def test_genome_annotations(self):
+        targets = [
+            'feature/region/homo_sapiens/Y:25,183,643-25,184,773',
+            'overlap/region/homo_sapiens/2:39,745,816-39,826,679',
+        ]
+        for target in targets:
+            url = self._get_api_url(target)
+            data = self._check_urls(url)
+            self.assertNotEqual(len(data), 0)
+            for annotation in data:
+                if annotation['feature_type'] == 'transcript':
+                    self.assertIn('URS', annotation['external_name'])
+                elif annotation['feature_type'] == 'exon':
+                    self.assertIn('URS', annotation['Parent'])
+                else:
+                    self.assertEqual(0, 1, "Unknown genomic annotation type")
+
+
+class RnaEndpointsTestCase(ApiV1BaseClass):
+    """
+    Test RNA endpoints
+    * /rna
+    * /rna/upi/xrefs
+    * /rna/upi/publications
+    """
+    def test_rna_list(self):
+        """
+        Test RNA list (flat response).
+        """
         url = self._get_api_url('rna')
         self._check_urls(url)
 
-    def test_rna_pagination(self):
+    def test_rna_list_pagination(self):
+        """
+        Test paginated RNA list (flat response).
+        """
+        page = 10
         page_size = 5
-        url = self._get_api_url('rna/?page=10&page_size=%i' % page_size)
+        url = self._get_api_url('rna/?page=%i&page_size=%i' % (page, page_size))
         data = self._check_urls(url)
         self.assertEqual(len(data['results']), page_size)
 
@@ -121,14 +160,6 @@ class ApiV1TestCase(ApiV1BaseClass):
         data = self._check_urls(url)
         self.assertEqual(len(data['results']), 2)
 
-    def test_accession_entry(self):
-        url = self._get_api_url('accession/%s/info' % self.accession)
-        self._check_urls(url)
-
-    def test_accession_citations(self):
-        url = self._get_api_url('accession/%s/citations' % self.accession)
-        self._check_urls(url)
-
     def test_xref_pagination(self):
         """
         Ensure that xrefs can be paginated.
@@ -140,23 +171,6 @@ class ApiV1TestCase(ApiV1BaseClass):
             upi=upi, page=page, page_size=page_size))
         data = self._check_urls(url)
         self.assertTrue(len(data['results']), page_size)
-
-    def test_genome_annotations(self):
-        targets = [
-            'feature/region/homo_sapiens/Y:25,183,643-25,184,773',
-            'overlap/region/homo_sapiens/2:39,745,816-39,826,679',
-        ]
-        for target in targets:
-            url = self._get_api_url(target)
-            data = self._check_urls(url)
-            self.assertNotEqual(len(data), 0)
-            for annotation in data:
-                if annotation['feature_type'] == 'transcript':
-                    self.assertIn('URS', annotation['external_name'])
-                elif annotation['feature_type'] == 'exon':
-                    self.assertIn('URS', annotation['Parent'])
-                else:
-                    self.assertEqual(0, 1, "Unknown genomic annotation type")
 
 
 class NestedXrefsTestCase(ApiV1BaseClass):
@@ -472,13 +486,14 @@ def run_tests():
     Organize and run the test suites.
     """
     suites = [
-        # unittest.TestLoader().loadTestsFromTestCase(ApiV1TestCase),
-        # unittest.TestLoader().loadTestsFromTestCase(SpeciesSpecificIdsTestCase),
-        # unittest.TestLoader().loadTestsFromTestCase(DasTestCase),
-        # unittest.TestLoader().loadTestsFromTestCase(RandomEntriesTestCase),
-        # unittest.TestLoader().loadTestsFromTestCase(FiltersTestCase),
-        # unittest.TestLoader().loadTestsFromTestCase(OutputFormatsTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(ApiV1TestCase),
+        unittest.TestLoader().loadTestsFromTestCase(SpeciesSpecificIdsTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(DasTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(RandomEntriesTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(FiltersTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(OutputFormatsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(NestedXrefsTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(RnaEndpointsTestCase),
     ]
     unittest.TextTestRunner().run(unittest.TestSuite(suites))
 
