@@ -587,6 +587,7 @@ class Accession(models.Model):
             'REFSEQ': 'http://www.ncbi.nlm.nih.gov/nuccore/',
             'RDP': 'http://rdp.cme.msu.edu/hierarchy/detail.jsp?seqid=',
             'SNOPY': 'http://snoopy.med.miyazaki-u.ac.jp/snorna_db.cgi?mode=sno_info&id=',
+            'PDBE': 'http://www.ebi.ac.uk/pdbe-srv/view/entry/',
         }
         if self.database in urls.keys():
             if self.database == 'GTRNADB':
