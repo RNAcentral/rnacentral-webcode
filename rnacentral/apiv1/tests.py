@@ -133,39 +133,6 @@ class ApiV1TestCase(ApiV1BaseClass):
         url = self._get_api_url('accession/%s/citations' % self.accession)
         self._check_urls(url)
 
-    def test_hyperlinked_vs_nested_responses(self):
-        # hyperlinked
-        url = self._get_api_url('rna/')
-        data = self._check_urls(url)
-        self.assertIn('http', data['results'][0]['xrefs'])
-        # flat
-        url = self._get_api_url('rna/%s%s' % (self.upi, '?flat=true'))
-        data = self._check_urls(url)
-        self.assertNotEqual(len(data['xrefs']), 0)
-
-    def test_large_nested_rna(self):
-        """
-        For nested responses only a subset of xrefs is included
-        in the original response and the rest can be paginated
-        in separate requests.
-        """
-        upi = 'URS000065859A' # >200,000 xrefs
-        url = self._get_api_url('rna/%s?flat=true' % upi)
-        data = self._check_urls(url)
-        self.assertTrue(data['xrefs']['count'] > 200000)
-        self.assertTrue(len(data['xrefs']) < 1000)
-
-    def test_large_nested_page(self):
-        """
-        Ensure that xrefs can be paginated.
-        """
-        page = 115
-        page_size = 100
-        url = self._get_api_url('rna?page={page}&page_size={page_size}'.format(
-            page=page, page_size=page_size))
-        data = self._check_urls(url)
-        self.assertTrue(len(data['results']), page_size)
-
     def test_xref_pagination(self):
         """
         Ensure that xrefs can be paginated.
@@ -194,6 +161,50 @@ class ApiV1TestCase(ApiV1BaseClass):
                     self.assertIn('URS', annotation['Parent'])
                 else:
                     self.assertEqual(0, 1, "Unknown genomic annotation type")
+
+
+class NestedXrefsTestCase(ApiV1BaseClass):
+    """
+    Test flat/hyperlinked pagination.
+    """
+    def test_hyperlinked_responses(self):
+        """
+        Test hyperlinked response explicitly specified in the url.
+        """
+        url = self._get_api_url('rna?flat=false')
+        data = self._check_urls(url)
+        self.assertIn('http', data['results'][0]['xrefs'])
+
+    def test_flat_response(self):
+        """
+        Test flat response explicitly specified in the url.
+        """
+        url = self._get_api_url('rna/%s%s' % (self.upi, '?flat=true'))
+        data = self._check_urls(url)
+        self.assertNotEqual(len(data['xrefs']), 0)
+
+    def test_large_nested_rna(self):
+        """
+        For nested responses only a subset of xrefs is included
+        in the original response and the rest can be paginated
+        in separate requests.
+        """
+        upi = 'URS000065859A' # >200,000 xrefs
+        url = self._get_api_url('rna/%s?flat=true' % upi)
+        data = self._check_urls(url)
+        self.assertTrue(data['xrefs']['count'] > 200000)
+        self.assertTrue(len(data['xrefs']) < 1000)
+
+    def test_large_nested_page(self):
+        """
+        Ensure that xrefs can be paginated.
+        """
+        page = 115
+        page_size = 100
+        url = self._get_api_url('rna?page={page}&page_size={page_size}&flat=true'.format(
+            page=page, page_size=page_size))
+        data = self._check_urls(url)
+        self.assertTrue(len(data['results']), page_size)
 
 
 class OutputFormatsTestCase(ApiV1BaseClass):
@@ -465,12 +476,13 @@ def run_tests():
     Organize and run the test suites.
     """
     suites = [
-        unittest.TestLoader().loadTestsFromTestCase(ApiV1TestCase),
-        unittest.TestLoader().loadTestsFromTestCase(SpeciesSpecificIdsTestCase),
-        unittest.TestLoader().loadTestsFromTestCase(DasTestCase),
-        unittest.TestLoader().loadTestsFromTestCase(RandomEntriesTestCase),
-        unittest.TestLoader().loadTestsFromTestCase(FiltersTestCase),
-        unittest.TestLoader().loadTestsFromTestCase(OutputFormatsTestCase),
+        # unittest.TestLoader().loadTestsFromTestCase(ApiV1TestCase),
+        # unittest.TestLoader().loadTestsFromTestCase(SpeciesSpecificIdsTestCase),
+        # unittest.TestLoader().loadTestsFromTestCase(DasTestCase),
+        # unittest.TestLoader().loadTestsFromTestCase(RandomEntriesTestCase),
+        # unittest.TestLoader().loadTestsFromTestCase(FiltersTestCase),
+        # unittest.TestLoader().loadTestsFromTestCase(OutputFormatsTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(NestedXrefsTestCase),
     ]
     unittest.TextTestRunner().run(unittest.TestSuite(suites))
 
