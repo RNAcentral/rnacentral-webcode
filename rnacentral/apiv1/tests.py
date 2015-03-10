@@ -103,23 +103,6 @@ class ApiV1TestCase(ApiV1BaseClass):
         url = self._get_api_url('accession/%s/citations' % self.accession)
         self._check_urls(url)
 
-    def test_genome_annotations(self):
-        targets = [
-            'feature/region/homo_sapiens/Y:25,183,643-25,184,773',
-            'overlap/region/homo_sapiens/2:39,745,816-39,826,679',
-        ]
-        for target in targets:
-            url = self._get_api_url(target)
-            data = self._check_urls(url)
-            self.assertNotEqual(len(data), 0)
-            for annotation in data:
-                if annotation['feature_type'] == 'transcript':
-                    self.assertIn('URS', annotation['external_name'])
-                elif annotation['feature_type'] == 'exon':
-                    self.assertIn('URS', annotation['Parent'])
-                else:
-                    self.assertEqual(0, 1, "Unknown genomic annotation type")
-
 
 class RnaEndpointsTestCase(ApiV1BaseClass):
     """
@@ -288,6 +271,23 @@ class OutputFormatsTestCase(ApiV1BaseClass):
                 self.assertEqual(r.status_code, 200, url)
                 r = requests.get(url, headers={"Accept": headers}) # accept headers
                 self.assertEqual(r.status_code, 200, url)
+
+    def test_genome_annotations(self):
+        targets = [
+            'feature/region/homo_sapiens/Y:25,183,643-25,184,773',
+            'overlap/region/homo_sapiens/2:39,745,816-39,826,679',
+        ]
+        for target in targets:
+            url = self._get_api_url(target)
+            data = self._check_urls(url)
+            self.assertNotEqual(len(data), 0)
+            for annotation in data:
+                if annotation['feature_type'] == 'transcript':
+                    self.assertIn('URS', annotation['external_name'])
+                elif annotation['feature_type'] == 'exon':
+                    self.assertIn('URS', annotation['Parent'])
+                else:
+                    self.assertEqual(0, 1, "Unknown genomic annotation type")
 
 
 class FiltersTestCase(ApiV1BaseClass):

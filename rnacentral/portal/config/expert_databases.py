@@ -479,4 +479,14 @@ expert_dbs = [
         'references': [],
         'imported': False,
     },
+    {
+        'name': 'TAIR',
+        'label': '',
+        'url': 'http://www.arabidopsis.org/',
+        'description': 'a database of genetic and molecular biology data for the model higher plant Arabidopsis thaliana',
+        'abbreviation': 'The Arabidopsis Information Resource',
+        'examples': [],
+        'references': [],
+        'imported': False,
+    },
 ]
