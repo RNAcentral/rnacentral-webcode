@@ -30,7 +30,6 @@ import math
 import os
 import unittest
 import requests
-import re
 import sys
 import time
 import xml.dom.minidom
@@ -51,7 +50,10 @@ class ApiV1BaseClass(unittest.TestCase):
     timeout = 60 # seconds
 
     def _get_api_url(self, extra=''):
-        return self.base_url + self.api_url + extra
+        """
+        Construct a valid API url.
+        """
+        return ''.join([self.base_url, self.api_url, extra])
 
     def _test_url(self, url):
         """
@@ -100,10 +102,16 @@ class AccessionEndpointsTestCase(ApiV1BaseClass):
     * /accession/id/citations
     """
     def test_accession_entry(self):
+        """
+        Test accession info endpoint.
+        """
         url = self._get_api_url('accession/%s/info' % self.accession)
         self._test_url(url)
 
     def test_accession_citations(self):
+        """
+        Test accession citations endpoint.
+        """
         url = self._get_api_url('accession/%s/citations' % self.accession)
         self._test_url(url)
 
@@ -112,19 +120,19 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
     """
     Test RNA endpoints
     * /rna
-    * /rna/upi/xrefs
-    * /rna/upi/publications
+    * /rna/id/xrefs
+    * /rna/id/publications
     """
     def test_rna_list(self):
         """
-        Test RNA list (flat response).
+        Test RNA list (hyperlinked response).
         """
         url = self._get_api_url('rna')
         self._test_url(url)
 
     def test_rna_list_pagination(self):
         """
-        Test paginated RNA list (flat response).
+        Test paginated RNA list (hyperlinked response).
         """
         page = 10
         page_size = 5
@@ -133,16 +141,25 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         self.assertEqual(len(data['results']), page_size)
 
     def test_rna_sequence(self):
+        """
+        Test RNA entry (hyperlinked response).
+        """
         url = self._get_api_url('rna/%s/' % self.upi)
         data = self._test_url(url)
         self.assertEqual(data['md5'], self.md5)
         self.assertEqual(data['length'], 200)
 
     def test_rna_xrefs(self):
+        """
+        Test RNA xrefs endpoint.
+        """
         url = self._get_api_url('rna/%s/xrefs' % self.upi)
         self._test_url(url)
 
     def test_rna_publications(self):
+        """
+        Test RNA publications endpoint.
+        """
         url = self._get_api_url('rna/%s/publications' % self.upi)
         data = self._test_url(url)
         self.assertEqual(len(data['results']), 2)
@@ -208,7 +225,10 @@ class OutputFormatsTestCase(ApiV1BaseClass):
     """
     Test output formats.
     """
-    def test_non_fasta_output_formats(self):
+    def test_json_yaml_api_formats(self):
+        """
+        Test json/yaml/api formats.
+        """
         formats = {'json': 'application/json',
                    'yaml': 'application/yaml',
                    'api': 'text/html'}
@@ -219,11 +239,17 @@ class OutputFormatsTestCase(ApiV1BaseClass):
         self._output_format_tester(formats, targets)
 
     def test_fasta_output(self):
+        """
+        Test fasta format.
+        """
         formats = {'fasta': 'text/fasta'}
         targets = ('rna', 'rna/%s' % self.upi)
         self._output_format_tester(formats, targets)
 
     def test_gff_output(self):
+        """
+        Test gff output.
+        """
         formats = {'gff': 'text/gff'}
         targets = ('rna/%s' % self.upi_with_genomic_coordinates,)
         # test response status codes
@@ -236,6 +262,9 @@ class OutputFormatsTestCase(ApiV1BaseClass):
         self.assertIn('# Genomic coordinates not available', r.text)
 
     def test_gff3_output(self):
+        """
+        Test gff3 output.
+        """
         formats = {'gff3': 'text/gff3'}
         targets = ('rna/%s' % self.upi_with_genomic_coordinates,)
         # test response status codes
@@ -248,6 +277,9 @@ class OutputFormatsTestCase(ApiV1BaseClass):
         self.assertIn('# Genomic coordinates not available', r.text)
 
     def test_bed_output(self):
+        """
+        Test bed output.
+        """
         formats = {'bed': 'text/bed'}
         targets = ('rna/%s' % self.upi_with_genomic_coordinates,)
         # test response status codes
@@ -277,6 +309,11 @@ class OutputFormatsTestCase(ApiV1BaseClass):
                 self.assertEqual(r.status_code, 200, url)
 
     def test_genome_annotations(self):
+        """
+        Test the Ensembl-like endpoint for retrieving data
+        based on genome coordinates.
+        `feature` was replaced with `overlap` in Ensembl.
+        """
         targets = [
             'feature/region/homo_sapiens/Y:25,183,643-25,184,773',
             'overlap/region/homo_sapiens/2:39,745,816-39,826,679',
@@ -299,32 +336,52 @@ class FiltersTestCase(ApiV1BaseClass):
     Test url parameter filters.
     """
     def test_rna_md5_filter(self):
+        """
+        Test md5 filter.
+        """
         url = self._get_api_url('rna/?md5=%s' % self.md5)
         data = self._test_url(url)
         self.assertEqual(data['results'][0]['rnacentral_id'], self.upi)
 
     def test_rna_upi_filter(self):
+        """
+        Test filtering by RNAcentral id.
+        """
         url = self._get_api_url('rna/?upi=%s' % self.upi)
         data = self._test_url(url)
         self.assertEqual(data['results'][0]['md5'], self.md5)
 
     def test_rna_length_filter(self):
-        filter_tests = ['rna/?min_length=200000', 'rna/?length=2014',
-                        'rna/?max_length=11', 'rna/?min_length=11&max_length=12']
+        """
+        Test filtering by sequence length.
+        """
+        filter_tests = [
+            'rna/?min_length=200000',
+            'rna/?length=2014',
+            'rna/?max_length=11',
+            'rna/?min_length=11&max_length=12',
+        ]
         for filter_test in filter_tests:
             url = self._get_api_url(filter_test)
             data = self._test_url(url)
             self.assertNotEqual(data['count'], 0)
 
     def test_rna_database_filter(self):
+        """
+        Test filtering by database name.
+        """
         for database in Database.objects.all():
             if database.name in ['ENA', 'Rfam']:
-                continue
+                continue # skip large databases
             url = self._get_api_url('rna/?database=%s' % database.label)
             data = self._test_url(url)
             self.assertNotEqual(data['count'], 0)
 
     def test_non_existing_database_filter(self):
+        """
+        Test filtering by database name when the database
+        name does not exist.
+        """
         url = self._get_api_url('rna/?database=test')
         data = self._test_url(url)
         self.assertEqual(data['count'], 0)
@@ -357,7 +414,7 @@ class RandomEntriesTestCase(ApiV1BaseClass):
         """
         num_tests = 10
         rna_count = Rna.objects.count()
-        for i in xrange(num_tests):
+        for _ in xrange(num_tests):
             rna = Rna.objects.only('upi').get(id=randint(1, rna_count))
             url = self._get_api_url('rna/%s?flat=true' % rna.upi)
             start = time.time()
@@ -374,7 +431,7 @@ class RandomEntriesTestCase(ApiV1BaseClass):
         page_size = 100
         rna_count = Rna.objects.count()
         num_pages = math.trunc(rna_count/page_size)
-        for i in xrange(num_tests):
+        for _ in xrange(num_tests):
             page = randint(1, num_pages)
             url = self._get_api_url('rna?flat=true&page_size={page_size}&page={page}'.format(
                 page_size=page_size, page=page))
@@ -440,15 +497,14 @@ class DasTestCase(ApiV1BaseClass):
         try:
             xml.dom.minidom.parseString(text)
         except xml.parsers.expat.ExpatError:
-            self.assertEqual(0,1,"Invalid XML")
+            self.assertEqual(0, 1, "Invalid XML")
 
 
 class SpeciesSpecificIdsTestCase(ApiV1BaseClass):
     """
     Tests for the species-specific endpoints.
     """
-    def setUp(self):
-        self.upi = 'URS000047C79B'
+    upi = 'URS000047C79B'
 
     def test_species_specific_id(self):
         """
