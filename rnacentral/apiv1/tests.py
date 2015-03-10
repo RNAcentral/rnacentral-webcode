@@ -54,13 +54,17 @@ from portal.models import Database, Rna
 
 
 class ApiV1BaseClass(unittest.TestCase):
+    """
+    Base class for API tests.
+    """
     base_url = ''
     api_url = 'api/v1/'
-    upi_with_genomic_coordinates = 'URS00000B15DA'
-    timeout = 60 # seconds
+
     upi = 'URS0000000001'
-    md5 = '6bba097c8c39ed9a0fdf02273ee1c79a'
+    upi_with_genomic_coordinates = 'URS00000B15DA'
+    md5 = '6bba097c8c39ed9a0fdf02273ee1c79a' # URS0000000001
     accession = 'Y09527.1:2562..2627:tRNA'
+    timeout = 60 # seconds
 
     def _get_api_url(self, extra=''):
         return self.base_url + self.api_url + extra
@@ -86,15 +90,31 @@ class ApiV1BaseClass(unittest.TestCase):
         return r.json()
 
 
-class ApiV1TestCase(ApiV1BaseClass):
+class BasicEndpointsTestCase(ApiV1BaseClass):
+    """
+    Basic tests for generic endpoints.
+    """
     def test_current_api_endpoint(self):
+        """
+        Stable endpoint for the latest version of the API.
+        """
         url = self.base_url + 'api/current'
         self._check_urls(url)
 
     def test_api_v1_endpoint(self):
+        """
+        Test API v1 endpoint.
+        """
         url = self._get_api_url()
         self._check_urls(url)
 
+
+class AccessionEndpointsTestCase(ApiV1BaseClass):
+    """
+    Test Accession endpoints.
+    * /accession/id/info
+    * /accession/id/citations
+    """
     def test_accession_entry(self):
         url = self._get_api_url('accession/%s/info' % self.accession)
         self._check_urls(url)
@@ -486,7 +506,7 @@ def run_tests():
     Organize and run the test suites.
     """
     suites = [
-        unittest.TestLoader().loadTestsFromTestCase(ApiV1TestCase),
+        unittest.TestLoader().loadTestsFromTestCase(BasicEndpointsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(SpeciesSpecificIdsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(DasTestCase),
         unittest.TestLoader().loadTestsFromTestCase(RandomEntriesTestCase),
@@ -494,6 +514,7 @@ def run_tests():
         unittest.TestLoader().loadTestsFromTestCase(OutputFormatsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(NestedXrefsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(RnaEndpointsTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(AccessionEndpointsTestCase),
     ]
     unittest.TextTestRunner().run(unittest.TestSuite(suites))
 
