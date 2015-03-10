@@ -137,7 +137,7 @@ class Rna(CachingMixin, models.Model):
         """
         expert_db_projects = Database.objects.exclude(project_id=None).\
                                               values_list('project_id', flat=True)
-        xrefs = self.xrefs.filter(deleted='N').\
+        xrefs = self.xrefs.filter(deleted='N', upi=self.upi).\
                            exclude(db__id=1, accession__project__in=expert_db_projects).\
                            order_by('-db__id').\
                            select_related()
