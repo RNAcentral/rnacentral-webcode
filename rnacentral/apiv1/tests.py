@@ -66,10 +66,10 @@ class ApiV1BaseClass(unittest.TestCase):
     accession = 'Y09527.1:2562..2627:tRNA'
     timeout = 60 # seconds
 
-    def _get_api_url(self, extra=''):
+    def get_api_url(self, extra=''):
         return self.base_url + self.api_url + extra
 
-    def _check_urls(self, url):
+    def test_url(self, url):
         """
         Auxiliary function for testing the API with and without trailing slash.
         """
@@ -99,14 +99,14 @@ class BasicEndpointsTestCase(ApiV1BaseClass):
         Stable endpoint for the latest version of the API.
         """
         url = self.base_url + 'api/current'
-        self._check_urls(url)
+        self.test_url(url)
 
     def test_api_v1_endpoint(self):
         """
         Test API v1 endpoint.
         """
-        url = self._get_api_url()
-        self._check_urls(url)
+        url = self.get_api_url()
+        self.test_url(url)
 
 
 class AccessionEndpointsTestCase(ApiV1BaseClass):
@@ -116,12 +116,12 @@ class AccessionEndpointsTestCase(ApiV1BaseClass):
     * /accession/id/citations
     """
     def test_accession_entry(self):
-        url = self._get_api_url('accession/%s/info' % self.accession)
-        self._check_urls(url)
+        url = self.get_api_url('accession/%s/info' % self.accession)
+        self.test_url(url)
 
     def test_accession_citations(self):
-        url = self._get_api_url('accession/%s/citations' % self.accession)
-        self._check_urls(url)
+        url = self.get_api_url('accession/%s/citations' % self.accession)
+        self.test_url(url)
 
 
 class RnaEndpointsTestCase(ApiV1BaseClass):
@@ -135,8 +135,8 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         """
         Test RNA list (flat response).
         """
-        url = self._get_api_url('rna')
-        self._check_urls(url)
+        url = self.get_api_url('rna')
+        self.test_url(url)
 
     def test_rna_list_pagination(self):
         """
@@ -144,23 +144,23 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         """
         page = 10
         page_size = 5
-        url = self._get_api_url('rna/?page=%i&page_size=%i' % (page, page_size))
-        data = self._check_urls(url)
+        url = self.get_api_url('rna/?page=%i&page_size=%i' % (page, page_size))
+        data = self.test_url(url)
         self.assertEqual(len(data['results']), page_size)
 
     def test_rna_sequence(self):
-        url = self._get_api_url('rna/%s/' % self.upi)
-        data = self._check_urls(url)
+        url = self.get_api_url('rna/%s/' % self.upi)
+        data = self.test_url(url)
         self.assertEqual(data['md5'], self.md5)
         self.assertEqual(data['length'], 200)
 
     def test_rna_xrefs(self):
-        url = self._get_api_url('rna/%s/xrefs' % self.upi)
-        self._check_urls(url)
+        url = self.get_api_url('rna/%s/xrefs' % self.upi)
+        self.test_url(url)
 
     def test_rna_publications(self):
-        url = self._get_api_url('rna/%s/publications' % self.upi)
-        data = self._check_urls(url)
+        url = self.get_api_url('rna/%s/publications' % self.upi)
+        data = self.test_url(url)
         self.assertEqual(len(data['results']), 2)
 
     def test_xref_pagination(self):
@@ -170,9 +170,9 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         upi = 'URS0000004483' # >150 xrefs
         page = 7
         page_size = 2
-        url = self._get_api_url('rna/{upi}/xrefs?page={page}&page_size={page_size}'.format(
+        url = self.get_api_url('rna/{upi}/xrefs?page={page}&page_size={page_size}'.format(
             upi=upi, page=page, page_size=page_size))
-        data = self._check_urls(url)
+        data = self.test_url(url)
         self.assertTrue(len(data['results']), page_size)
 
 
@@ -184,16 +184,16 @@ class NestedXrefsTestCase(ApiV1BaseClass):
         """
         Test hyperlinked response explicitly specified in the url.
         """
-        url = self._get_api_url('rna?flat=false')
-        data = self._check_urls(url)
+        url = self.get_api_url('rna?flat=false')
+        data = self.test_url(url)
         self.assertIn('http', data['results'][0]['xrefs'])
 
     def test_flat_response(self):
         """
         Test flat response explicitly specified in the url.
         """
-        url = self._get_api_url('rna/%s%s' % (self.upi, '?flat=true'))
-        data = self._check_urls(url)
+        url = self.get_api_url('rna/%s%s' % (self.upi, '?flat=true'))
+        data = self.test_url(url)
         self.assertNotEqual(len(data['xrefs']), 0)
 
     def test_large_nested_rna(self):
@@ -203,8 +203,8 @@ class NestedXrefsTestCase(ApiV1BaseClass):
         in separate requests.
         """
         upi = 'URS000065859A' # >200,000 xrefs
-        url = self._get_api_url('rna/%s?flat=true' % upi)
-        data = self._check_urls(url)
+        url = self.get_api_url('rna/%s?flat=true' % upi)
+        data = self.test_url(url)
         self.assertTrue(data['xrefs']['count'] > 200000)
         self.assertTrue(len(data['xrefs']) < 1000)
 
@@ -214,9 +214,9 @@ class NestedXrefsTestCase(ApiV1BaseClass):
         """
         page = 115
         page_size = 100
-        url = self._get_api_url('rna?page={page}&page_size={page_size}&flat=true'.format(
+        url = self.get_api_url('rna?page={page}&page_size={page_size}&flat=true'.format(
             page=page, page_size=page_size))
-        data = self._check_urls(url)
+        data = self.test_url(url)
         self.assertTrue(len(data['results']), page_size)
 
 
@@ -245,10 +245,10 @@ class OutputFormatsTestCase(ApiV1BaseClass):
         # test response status codes
         self._output_format_tester(formats, targets)
         # further check the gff text output
-        r = requests.get(self._get_api_url(targets[0]+'.gff'))
+        r = requests.get(self.get_api_url(targets[0]+'.gff'))
         self.assertIn('exon', r.text)
         # test a sequence without genomic coordinates
-        r = requests.get(self._get_api_url('rna/%s.gff' % self.upi))
+        r = requests.get(self.get_api_url('rna/%s.gff' % self.upi))
         self.assertIn('# Genomic coordinates not available', r.text)
 
     def test_gff3_output(self):
@@ -257,10 +257,10 @@ class OutputFormatsTestCase(ApiV1BaseClass):
         # test response status codes
         self._output_format_tester(formats, targets)
         # further check the gff text output
-        r = requests.get(self._get_api_url(targets[0]+'.gff3'))
+        r = requests.get(self.get_api_url(targets[0]+'.gff3'))
         self.assertIn('noncoding_exon', r.text)
         # test a sequence without genomic coordinates
-        r = requests.get(self._get_api_url('rna/%s.gff3' % self.upi))
+        r = requests.get(self.get_api_url('rna/%s.gff3' % self.upi))
         self.assertIn('# Genomic coordinates not available', r.text)
 
     def test_bed_output(self):
@@ -269,10 +269,10 @@ class OutputFormatsTestCase(ApiV1BaseClass):
         # test response status codes
         self._output_format_tester(formats, targets)
         # further check the gff text output
-        r = requests.get(self._get_api_url(targets[0]+'.bed'))
+        r = requests.get(self.get_api_url(targets[0]+'.bed'))
         self.assertIn(self.upi_with_genomic_coordinates, r.text)
         # test a sequence without genomic coordinates
-        r = requests.get(self._get_api_url('rna/%s.bed' % self.upi))
+        r = requests.get(self.get_api_url('rna/%s.bed' % self.upi))
         self.assertIn('# Genomic coordinates not available', r.text)
 
     def _output_format_tester(self, formats, targets):
@@ -282,7 +282,7 @@ class OutputFormatsTestCase(ApiV1BaseClass):
         * url notation, e.g. "?format=json"
         * accept headers
         """
-        urls = [self._get_api_url(x) for x in targets]
+        urls = [self.get_api_url(x) for x in targets]
         for url in urls:
             for suffix, headers in formats.iteritems():
                 r = requests.get(url + '.%s' % suffix) # format suffix
@@ -298,8 +298,8 @@ class OutputFormatsTestCase(ApiV1BaseClass):
             'overlap/region/homo_sapiens/2:39,745,816-39,826,679',
         ]
         for target in targets:
-            url = self._get_api_url(target)
-            data = self._check_urls(url)
+            url = self.get_api_url(target)
+            data = self.test_url(url)
             self.assertNotEqual(len(data), 0)
             for annotation in data:
                 if annotation['feature_type'] == 'transcript':
@@ -315,34 +315,34 @@ class FiltersTestCase(ApiV1BaseClass):
     Test url parameter filters.
     """
     def test_rna_md5_filter(self):
-        url = self._get_api_url('rna/?md5=%s' % self.md5)
-        data = self._check_urls(url)
+        url = self.get_api_url('rna/?md5=%s' % self.md5)
+        data = self.test_url(url)
         self.assertEqual(data['results'][0]['rnacentral_id'], self.upi)
 
     def test_rna_upi_filter(self):
-        url = self._get_api_url('rna/?upi=%s' % self.upi)
-        data = self._check_urls(url)
+        url = self.get_api_url('rna/?upi=%s' % self.upi)
+        data = self.test_url(url)
         self.assertEqual(data['results'][0]['md5'], self.md5)
 
     def test_rna_length_filter(self):
         filter_tests = ['rna/?min_length=200000', 'rna/?length=2014',
                         'rna/?max_length=11', 'rna/?min_length=11&max_length=12']
         for filter_test in filter_tests:
-            url = self._get_api_url(filter_test)
-            data = self._check_urls(url)
+            url = self.get_api_url(filter_test)
+            data = self.test_url(url)
             self.assertNotEqual(data['count'], 0)
 
     def test_rna_database_filter(self):
         for database in Database.objects.all():
             if database.name in ['ENA', 'Rfam']:
                 continue
-            url = self._get_api_url('rna/?database=%s' % database.label)
-            data = self._check_urls(url)
+            url = self.get_api_url('rna/?database=%s' % database.label)
+            data = self.test_url(url)
             self.assertNotEqual(data['count'], 0)
 
     def test_non_existing_database_filter(self):
-        url = self._get_api_url('rna/?database=test')
-        data = self._check_urls(url)
+        url = self.get_api_url('rna/?database=test')
+        data = self.test_url(url)
         self.assertEqual(data['count'], 0)
 
     def test_rna_external_id_filter(self):
@@ -358,8 +358,8 @@ class FiltersTestCase(ApiV1BaseClass):
             'NR_029645', # RefSeq
         ]
         for external_id in external_ids:
-            url = self._get_api_url('rna?external_id=' + external_id)
-            data = self._check_urls(url)
+            url = self.get_api_url('rna?external_id=' + external_id)
+            data = self.test_url(url)
             self.assertNotEqual(data['count'], 0, 'Failed on %s' % url)
 
 
@@ -375,7 +375,7 @@ class RandomEntriesTestCase(ApiV1BaseClass):
         rna_count = Rna.objects.count()
         for i in xrange(num_tests):
             rna = Rna.objects.only('upi').get(id=randint(1, rna_count))
-            url = self._get_api_url('rna/%s?flat=true' % rna.upi)
+            url = self.get_api_url('rna/%s?flat=true' % rna.upi)
             start = time.time()
             r = requests.get(url)
             end = time.time()
@@ -392,7 +392,7 @@ class RandomEntriesTestCase(ApiV1BaseClass):
         num_pages = math.trunc(rna_count/page_size)
         for i in xrange(num_tests):
             page = randint(1, num_pages)
-            url = self._get_api_url('rna?flat=true&page_size={page_size}&page={page}'.format(
+            url = self.get_api_url('rna?flat=true&page_size={page_size}&page={page}'.format(
                 page_size=page_size, page=page))
             start = time.time()
             r = requests.get(url)
@@ -410,7 +410,7 @@ class DasTestCase(ApiV1BaseClass):
         Test DAS `feature` method response.
         """
         target = 'das/RNAcentral_GRCh38/features?segment=Y:25183643,25184773'
-        url = self._get_api_url(target)
+        url = self.get_api_url(target)
         r = requests.get(url)
         self.assertEqual(r.status_code, 200)
         self.assertIn(self.upi_with_genomic_coordinates, r.text)
@@ -421,7 +421,7 @@ class DasTestCase(ApiV1BaseClass):
         Test DAS `feature` method response with no annotations.
         """
         target = 'das/RNAcentral_GRCh38/features?segment=Y:100,120'
-        url = self._get_api_url(target)
+        url = self.get_api_url(target)
         r = requests.get(url)
         self.assertEqual(r.status_code, 200)
         self.assertNotIn('FEATURE', r.text)
@@ -432,7 +432,7 @@ class DasTestCase(ApiV1BaseClass):
         Test DAS `sources` method.
         """
         target = 'das/sources'
-        url = self._get_api_url(target)
+        url = self.get_api_url(target)
         r = requests.get(url)
         self.assertEqual(r.status_code, 200)
         self.assertIn('RNAcentral_GRCh38', r.text)
@@ -443,7 +443,7 @@ class DasTestCase(ApiV1BaseClass):
         Test DAS `stylesheet` method.
         """
         target = 'das/RNAcentral_GRCh38/stylesheet'
-        url = self._get_api_url(target)
+        url = self.get_api_url(target)
         r = requests.get(url)
         self.assertEqual(r.status_code, 200)
         self.assertIn('exon:non_coding:rnacentral', r.text)
@@ -471,7 +471,7 @@ class SpeciesSpecificIdsTestCase(ApiV1BaseClass):
         Get an existing upi and taxid.
         """
         taxid = 9606
-        url = self._get_api_url('rna/%s/%i' % (self.upi, taxid))
+        url = self.get_api_url('rna/%s/%i' % (self.upi, taxid))
         r = requests.get(url)
         self.assertEqual(r.status_code, 200)
         self.assertEqual(r.json()['rnacentral_id'], '%s_%i' % (self.upi, taxid))
@@ -481,7 +481,7 @@ class SpeciesSpecificIdsTestCase(ApiV1BaseClass):
         Non-existent taxid should return a 404 error.
         """
         taxid = 00000
-        url = self._get_api_url('rna/%s/%i' % (self.upi, taxid))
+        url = self.get_api_url('rna/%s/%i' % (self.upi, taxid))
         r = requests.get(url)
         self.assertEqual(r.status_code, 404)
 
