@@ -420,8 +420,9 @@ class RandomEntriesTestCase(ApiV1BaseClass):
             start = time.time()
             r = requests.get(url)
             end = time.time()
-            self.assertEqual(r.status_code, 200, 'Failed on %s' % url)
-            self.assertTrue(end - start < self.timeout)
+            msg = 'Failed on %s' % url
+            self.assertEqual(r.status_code, 200, msg)
+            self.assertTrue(end - start < self.timeout, msg)
 
     def test_random_api_pages(self):
         """
@@ -438,8 +439,9 @@ class RandomEntriesTestCase(ApiV1BaseClass):
             start = time.time()
             r = requests.get(url)
             end = time.time()
-            self.assertEqual(r.status_code, 200, 'Failed on %s' % url)
-            self.assertTrue(end - start < self.timeout)
+            msg = 'Failed on %s' % url
+            self.assertEqual(r.status_code, 200, msg)
+            self.assertTrue(end - start < self.timeout, msg)
 
 
 class DasTestCase(ApiV1BaseClass):
