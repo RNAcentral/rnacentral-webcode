@@ -2,7 +2,9 @@ language: python
 python:
   - "2.7"
 # install dependencies
-install: pip install requests selenium django djangorestframework django-cors-headers django-debug-toolbar django-compressor django-markdown-deux django-rq django-filter
+install:
+	- "pip install requests selenium django djangorestframework django-cors-headers django-debug-toolbar django-compressor django-markdown-deux django-rq django-filter"
+	- "pip install -e git+https://github.com/jbalogh/django-cache-machine.git@f827f05b195ad3fc1b0111131669471d843d631f#egg=django_cache_machine-dev"
 # run tests
 script:
     - python rnacentral/apiv1/tests.py --base_url=http://test.rnacentral.org
