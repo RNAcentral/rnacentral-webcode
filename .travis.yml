@@ -7,8 +7,8 @@ install:
 	- "pip install -e git+https://github.com/jbalogh/django-cache-machine.git@f827f05b195ad3fc1b0111131669471d843d631f#egg=django_cache_machine-dev"
 # run tests
 script:
-    - python rnacentral/apiv1/tests.py --base_url=http://test.rnacentral.org
-    - python rnacentral/portal/tests/selenium_tests.py --base_url=http://test.rnacentral.org --driver=phantomjs
+  - python rnacentral/apiv1/tests.py --base_url=http://test.rnacentral.org
+  - python rnacentral/portal/tests/selenium_tests.py --base_url=http://test.rnacentral.org --driver=phantomjs
 # define branches
 branches:
   only:
