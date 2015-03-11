@@ -436,7 +436,6 @@ class RNAcentralTest(unittest.TestCase):
         else:
             sys.exit('Driver not found')
         self.homepage = Homepage(self.browser)
-        # self.homepage.navigate()
 
     def tearDown(self):
         self.browser.close()
@@ -640,6 +639,7 @@ class RNAcentralTest(unittest.TestCase):
 
     def _get_expert_db_example_ids(self, expert_db_id):
         """Retrieve example RNAcentral ids from the homepage"""
+        self.homepage.navigate()
         return self.homepage.get_expert_db_example_ids(expert_db_id)
 
     def _sequence_view_checks(self, page):
