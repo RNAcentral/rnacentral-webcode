@@ -105,7 +105,7 @@ def flush_memcached():
     Delete all cached data.
     """
     with cd(env['rnacentral_site']), settings(warn_only=True):
-            run('echo "flush_all" | nc -U rnacentral/memcached.sock')
+            run('echo flush_all | nc localhost 8052')
 
 def restart_django(restart_url):
     """
