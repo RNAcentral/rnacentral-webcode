@@ -507,16 +507,17 @@ class SpeciesSpecificIdsTestCase(ApiV1BaseClass):
     Tests for the species-specific endpoints.
     """
     upi = 'URS000047C79B'
+    taxid = 9606
 
     def test_species_specific_id(self):
         """
         Get an existing upi and taxid.
         """
-        taxid = 9606
-        url = self._get_api_url('rna/%s/%i' % (self.upi, taxid))
+        url = self._get_api_url('rna/%s/%i' % (self.upi, self.taxid))
         r = requests.get(url)
         self.assertEqual(r.status_code, 200)
-        self.assertEqual(r.json()['rnacentral_id'], '%s_%i' % (self.upi, taxid))
+        self.assertEqual(r.json()['rnacentral_id'], '%s_%i' % (self.upi, self.taxid))
+        self.assertEqual(r.json()['is_active'], True)
 
     def test_nonexistent_taxid(self):
         """
@@ -526,6 +527,17 @@ class SpeciesSpecificIdsTestCase(ApiV1BaseClass):
         url = self._get_api_url('rna/%s/%i' % (self.upi, taxid))
         r = requests.get(url)
         self.assertEqual(r.status_code, 404)
+
+    def test_inactive_entry(self):
+        """
+        When there are no active xrefs for a taxid,
+        the `is_active` field should be `False`.
+        """
+        upi = 'URS000017C633'
+        taxid = 9606
+        url = self._get_api_url('rna/%s/%i' % (upi, taxid))
+        r = requests.get(url)
+        self.assertEqual(r.json()['is_active'], False)
 
 
 def setup_django_environment():

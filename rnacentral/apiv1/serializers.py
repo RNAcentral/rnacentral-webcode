@@ -134,6 +134,17 @@ class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
     genes = serializers.SerializerMethodField('get_genes')
     ncrna_types = serializers.SerializerMethodField('get_ncrna_types')
     taxid = serializers.SerializerMethodField('get_taxid')
+    is_active = serializers.SerializerMethodField('is_active_id')
+
+    def is_active_id(self, obj):
+        """
+        Return false if all xrefs with this taxid are inactive.
+        """
+        active_xrefs = self.context['xrefs'].filter(deleted='N').count()
+        if active_xrefs == 0:
+            return False
+        else:
+            return True
 
     def get_species_specific_id(self, obj):
         """
@@ -186,7 +197,7 @@ class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Rna
         fields = ('rnacentral_id', 'sequence', 'length', 'description',
-                  'species', 'taxid', 'genes', 'ncrna_types')
+                  'species', 'taxid', 'genes', 'ncrna_types', 'is_active')
 
 
 class RnaFlatSerializer(RnaNestedSerializer):
