@@ -15,6 +15,7 @@ from optparse import make_option
 import os
 from django.core.management.base import BaseCommand, CommandError
 from common_exporters.oracle_connection import OracleConnection
+from portal.models import Rna
 
 """
 Export RNAcentral species-specific ids in GPI format.
@@ -50,6 +51,13 @@ class GPIExporter(object):
         """
         Export a result row as a string in GPI format.
         """
+        def get_description():
+            """
+            Get species-specific entry description.
+            """
+            rna = Rna(upi=row['upi'])
+            return rna.get_description(taxid=row['taxid'])
+
         # the order of array elements defines the field order in the output
         keys = ['database', 'DB_Object_ID', 'DB_Object_Symbol',
                 'DB_Object_Name', 'DB_Object_Synonym', 'DB_Object_Type',
@@ -59,9 +67,14 @@ class GPIExporter(object):
         for key in keys:
             data[key] = ''
         data['database'] = 'RNAcentral'
+        data['DB_Object_Name'] = get_description()
         data['DB_Object_ID'] = '{upi}_{taxid}'.format(upi=row['upi'], taxid=row['taxid'])
         data['Taxon'] = 'taxon:{taxon}'.format(taxon=row['taxid'])
         data['DB_Object_Type'] = 'rna'
+
+        # safeguard against breaking tsv format
+        for key in keys:
+            data[key] = data[key].replace('\t',' ')
         return '\t'.join([data[key] for key in keys]) + '\n'
 
     def __call__(self):
@@ -78,7 +91,7 @@ class GPIExporter(object):
             WHERE deleted = 'N'
             """
             if self.test:
-                sql_cmd += ' AND dbid = 5' # just Vega xrefs
+                sql_cmd += ' AND dbid = 5 AND taxid = 10090' # just Vega xrefs
             return sql_cmd
 
         counter = 0
