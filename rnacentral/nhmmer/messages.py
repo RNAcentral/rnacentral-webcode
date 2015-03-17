@@ -40,6 +40,14 @@ messages = {
 
     # get status endpoint
     'status': {
-
+        400: {
+            'message': 'Job id not specified',
+        },
+        404: {
+            'message': 'Job not found',
+        },
+        500: {
+            'message': 'Unknown error',
+        },
     },
 }

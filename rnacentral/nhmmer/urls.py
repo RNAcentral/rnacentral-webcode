@@ -21,4 +21,8 @@ urlpatterns = patterns('',
         'nhmmer.views.submit_job',
         name='nhmmer-submit-job'),
 
+    # get nhmmer search job status
+    url(r'^job-status/?$',
+        'nhmmer.views.get_status',
+        name='nhmmer-job-status'),
 )

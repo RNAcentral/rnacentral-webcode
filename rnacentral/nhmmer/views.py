@@ -14,6 +14,7 @@ limitations under the License.
 import datetime
 import django_rq
 
+from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
@@ -59,7 +60,7 @@ def submit_job(request):
     HTTP responses:
     * 201 - job submitted
     * 400 - incorrect input
-    * 500 - unspecified error
+    * 500 - internal error
     """
     msg = messages['submit']
 
@@ -83,6 +84,59 @@ def submit_job(request):
         status = 201
         job_id = enqueue_job(query)
         return JsonResponse({'job_id': job_id}, status=status)
+    except:
+        status = 500
+        return JsonResponse(msg[status], status=status)
+
+def get_job(job_id):
+    """
+    Get job from local or remote queues.
+
+    Return a tuple (job, remote_server), where
+    * `job` - job object
+    * `remote_server` - server where the job was run
+                        (None for localhost)
+    """
+    rq_queues = getattr(settings, 'RQ_QUEUES', [])
+    for queue_id, params in rq_queues.iteritems():
+        queue = django_rq.get_queue(queue_id)
+        job = queue.fetch_job(job_id)
+        if job:
+            return (job, params['REMOTE_SERVER'])
+    return (None, None)
+
+@never_cache
+def get_status(request):
+    """
+    Get status of an nhmmer search.
+
+    HTTP responses:
+    * 200 - job found
+    * 400 - job id not provided in the url
+    * 404 - job not found in the queue
+    * 500 - internal error
+    """
+    msg = messages['status']
+
+    job_id = request.GET.get('job', '')
+    if not job_id:
+        status = 400
+        return JsonResponse(msg[status], status=status)
+
+    try:
+        job = get_job(job_id)[0]
+        if job:
+            data = {
+                'id': job.id,
+                'status': job.get_status(),
+                'enqueued_at': str(job.enqueued_at),
+                'ended_at': str(job.ended_at),
+                'expiration': job.meta['expiration'].strftime("%m/%d/%Y"),
+            }
+            return JsonResponse(data)
+        else:
+            status = 404
+            return JsonResponse(msg[status], status=status)
     except:
         status = 500
         return JsonResponse(msg[status], status=status)

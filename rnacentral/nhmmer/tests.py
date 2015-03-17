@@ -112,6 +112,52 @@ class SubmitTests(NhmmerTestCase):
         self.assertTrue('job_id' in r.json())
 
 
+class GetStatusTests(NhmmerTestCase):
+    """
+    Tests for the job status endpoint.
+    """
+    msg_type = 'status'
+
+    def test_get_status_no_job_id(self):
+        """
+        No job id is provided in the url.
+        """
+        url = self.base_url + reverse('nhmmer-job-status')
+        status = 400
+        message = messages[self.msg_type][status]['message']
+        r = requests.get(url)
+        self.assertEqual(r.status_code, status)
+        self.assertEqual(r.json()['message'], message)
+
+    def test_get_status_invalid_job_id(self):
+        """
+        Invalid job id or job id not found.
+        """
+        job_id = 'foobar'
+        url = self.base_url + reverse('nhmmer-job-status') + '?job=%s' % job_id
+        status = 404
+        message = messages[self.msg_type][status]['message']
+        r = requests.get(url)
+        self.assertEqual(r.status_code, 404)
+        self.assertEqual(r.json()['message'], message)
+
+    def test_get_status_valid_job(self):
+        """
+        Submit a small query and check its status.
+        """
+        sequence = 'ACGU' * 20
+        status = 200
+        # submit query
+        r = self._submit_query(query=sequence)
+        job_id = json.loads(r.text)['job_id']
+        # check query status
+        url = self.base_url + reverse('nhmmer-job-status') + '?job=%s' % job_id
+        r = requests.get(url)
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(json.loads(r.text)['id'], job_id)
+        self.assertTrue('status' in r.text)
+
+
 def setup_django_environment():
     """
     Setup Django environment in order for `reverse` and other Django
@@ -146,6 +192,7 @@ def run_tests():
     """
     suites = [
         unittest.TestLoader().loadTestsFromTestCase(SubmitTests),
+        unittest.TestLoader().loadTestsFromTestCase(GetStatusTests),
     ]
 
     unittest.TextTestRunner().run(unittest.TestSuite(suites))
