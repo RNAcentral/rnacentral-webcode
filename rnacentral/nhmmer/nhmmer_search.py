@@ -44,7 +44,7 @@ class NhmmerSearch(object):
         """
         self.params['query'] = os.path.join(QUERY_DIR, '%s.fasta' % self.job_id)
         with open(self.params['query'], 'w') as f:
-            f.write('> %s\n' % self.job_id)
+            f.write('>query\n')
             f.write(self.sequence)
             f.write('\n')
 
