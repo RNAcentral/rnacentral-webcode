@@ -32,6 +32,7 @@ class NhmmerSearch(object):
         self.params = {
             'query': None,
             'out': os.path.join(RESULTS_DIR, '%s.txt' % job_id),
+            'alignments': os.path.join(RESULTS_DIR, '%s_alignments.txt' % job_id),
             'nhmmer': NHMMER_EXECUTABLE,
             'db': SEQDATABASE,
             'incE': 0.01,
@@ -57,7 +58,7 @@ class NhmmerSearch(object):
              '--qformat fasta '   # query format
              '--tformat hmmerfm ' # target format (precomputed binary db)
              '--tblout {out} '    # store tabular output in a file
-             '-o /dev/null '      # discard main output
+             '-o {alignments} '   # discard main output
              '--incE {incE} '     # use an E-value of <= X as the inclusion threshold
              '-E {E} '            # report target sequences with an E-value of <= X
              '{query} '           # query file
