@@ -22,3 +22,15 @@ EXPIRATION = 60*60*24*7 # seconds
 
 # maximum time to run nhmmer
 MAX_RUN_TIME = 60*60 # seconds
+
+# full path to query files
+QUERY_DIR = ''
+
+# full path to results files
+RESULTS_DIR = ''
+
+# full path to nhmmer executable
+NHMMER_EXECUTABLE = ''
+
+# full path to sequence database
+SEQDATABASE = ''

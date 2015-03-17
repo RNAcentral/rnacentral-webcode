@@ -17,17 +17,21 @@ import django_rq
 from django.http import JsonResponse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
+from rq import get_current_job
 
 from nhmmer.settings import MIN_LENGTH, MAX_LENGTH, EXPIRATION, MAX_RUN_TIME
 from nhmmer.messages import messages
+from nhmmer.nhmmer_search import NhmmerSearch
 
 
 def nhmmer_search(sequence):
     """
     RQ worker function.
     """
-    # TODO: launch nhmmer
-    pass
+    job = get_current_job()
+    return NhmmerSearch(sequence=sequence, job_id=job.id)()
+
+    # parse results and store in db
 
 
 def enqueue_job(query):
