@@ -118,7 +118,7 @@ def get_status(request):
     """
     msg = messages['status']
 
-    job_id = request.GET.get('job', '')
+    job_id = request.GET.get('id', '')
     if not job_id:
         status = 400
         return JsonResponse(msg[status], status=status)

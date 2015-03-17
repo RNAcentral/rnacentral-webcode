@@ -99,7 +99,7 @@ class SubmitTests(NhmmerTestCase):
         status = 201
         r = self._submit_query(query=sequence)
         self.assertEqual(r.status_code, status)
-        self.assertTrue('job_id' in r.json())
+        self.assertTrue('id' in r.json())
 
     def test_post_method(self):
         """
@@ -109,7 +109,7 @@ class SubmitTests(NhmmerTestCase):
         status = 201
         r = self._submit_query(query=sequence, method='post')
         self.assertEqual(r.status_code, status)
-        self.assertTrue('job_id' in r.json())
+        self.assertTrue('id' in r.json())
 
 
 class GetStatusTests(NhmmerTestCase):
@@ -134,7 +134,7 @@ class GetStatusTests(NhmmerTestCase):
         Invalid job id or job id not found.
         """
         job_id = 'foobar'
-        url = self.base_url + reverse('nhmmer-job-status') + '?job=%s' % job_id
+        url = self.base_url + reverse('nhmmer-job-status') + '?id=%s' % job_id
         status = 404
         message = messages[self.msg_type][status]['message']
         r = requests.get(url)
@@ -149,9 +149,9 @@ class GetStatusTests(NhmmerTestCase):
         status = 200
         # submit query
         r = self._submit_query(query=sequence)
-        job_id = json.loads(r.text)['job_id']
+        job_id = json.loads(r.text)['id']
         # check query status
-        url = self.base_url + reverse('nhmmer-job-status') + '?job=%s' % job_id
+        url = self.base_url + reverse('nhmmer-job-status') + '?id=%s' % job_id
         r = requests.get(url)
         self.assertEqual(r.status_code, 200)
         self.assertEqual(json.loads(r.text)['id'], job_id)
