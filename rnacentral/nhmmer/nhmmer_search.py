@@ -61,6 +61,8 @@ class NhmmerSearch(object):
              '-o {alignments} '   # discard main output
              '--incE {incE} '     # use an E-value of <= X as the inclusion threshold
              '-E {E} '            # report target sequences with an E-value of <= X
+             '--rna '             # explicitly specify database alphabet
+             '--toponly '         # search only top strand
              '{query} '           # query file
              '{db}').format(**self.params)
 
