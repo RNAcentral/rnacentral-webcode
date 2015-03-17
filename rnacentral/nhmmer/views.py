@@ -15,6 +15,7 @@ import datetime
 import django_rq
 
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.http import JsonResponse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
@@ -83,7 +84,15 @@ def submit_job(request):
     try:
         status = 201
         job_id = enqueue_job(query)
-        return JsonResponse({'job_id': job_id}, status=status)
+        url = request.build_absolute_uri(
+            reverse('nhmmer-job-status') +
+            '?id=%s' % job_id
+        )
+        data = {
+            'id': job_id,
+            'url': url,
+        }
+        return JsonResponse(data, status=status)
     except:
         status = 500
         return JsonResponse(msg[status], status=status)
