@@ -149,13 +149,10 @@ class GetStatusTests(NhmmerTestCase):
         status = 200
         # submit query
         r = self._submit_query(query=sequence)
-        job_id = json.loads(r.text)['id']
         # check query status
-        url = self.base_url + reverse('nhmmer-job-status') + '?id=%s' % job_id
-        r = requests.get(url)
+        r = requests.get(r.json()['url'])
         self.assertEqual(r.status_code, 200)
-        self.assertEqual(json.loads(r.text)['id'], job_id)
-        self.assertTrue('status' in r.text)
+        self.assertTrue('status' in r.json())
 
 
 def setup_django_environment():
