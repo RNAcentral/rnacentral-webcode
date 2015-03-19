@@ -687,7 +687,7 @@ class Xref(models.Model):
         """
         Format genomic coordinates in GFF format.
         """
-        return GffFormatter(xref)()
+        return GffFormatter(self)()
 
     def get_gff3(self):
         """
