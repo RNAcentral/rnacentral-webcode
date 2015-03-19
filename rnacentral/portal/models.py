@@ -896,13 +896,21 @@ class Xref(models.Model):
         The name represents a toplevel accession as defined
         by the Ensembl API and can include patch/scaffold names etc.
         """
-        return self.accession.coordinates.first().chromosome
+        return GenomicCoordinates.objects.\
+                                  filter(accession=self.accession.accession,
+                                         chromosome__isnull=False).\
+                                  first().\
+                                  chromosome
 
     def get_feature_strand(self):
         """
         Return 1 or -1 to indicate the forward and reverse strands respectively.
         """
-        return self.accession.coordinates.first().strand
+        return GenomicCoordinates.objects.\
+                                  filter(accession=self.accession.accession,
+                                         chromosome__isnull=False, ).\
+                                  first().\
+                                  strand
 
     def get_feature_start(self):
         """
