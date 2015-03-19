@@ -1013,23 +1013,23 @@ class Gff3Formatter(object):
                                                chromosome__isnull=False).\
                                         all()
 
+    def format_attributes(self, attributes, order):
+        """
+        Format the `attributes` field.
+        """
+        return ';'.join("%s=%s" % (key, attributes[key]) for key in order)
+
     def format_transcript(self):
         """
         Format transcipt description.
         Transcipt ID is the Parent of exons.
         """
-        def get_attributes():
-            """
-            Format the `attributes` field.
-            """
-            attributes = {
-                'ID': self.xref.accession.accession,
-                'Name': self.xref.upi.upi,
-                'type': self.xref.accession.get_rna_type(),
-            }
-            order = ['ID', 'Name', 'type']
-            return ';'.join("%s=%s" % (key, attributes[key]) for key in order)
-
+        attributes = {
+            'ID': self.xref.accession.accession,
+            'Name': self.xref.upi.upi,
+            'type': self.xref.accession.get_rna_type(),
+        }
+        order = ['ID', 'Name', 'type']
         data = {
             'seqid': self.xref.get_feature_chromosome(),
             'source': 'RNAcentral',
@@ -1039,7 +1039,7 @@ class Gff3Formatter(object):
             'score': '.',
             'phase': '.',
             'strand': '+' if self.xref.get_feature_strand() > 0 else '-',
-            'attributes': get_attributes(),
+            'attributes': self.format_attributes(attributes, order),
         }
         self.gff += self.template.format(**data)
 
@@ -1048,10 +1048,9 @@ class Gff3Formatter(object):
         Format a list of non-coding exons.
         Transcipt ID is the Parent of exons.
         """
-        def get_attributes():
-            """
-            Format the `attributes` line.
-            """
+        for i, exon in enumerate(self.exons):
+            if not exon.chromosome:
+                continue
             attributes = {
                 'ID': '_'.join([self.xref.accession.accession, 'exon' + str(i+1)]),
                 'Name': self.xref.upi.upi,
@@ -1059,11 +1058,6 @@ class Gff3Formatter(object):
                 'type': self.xref.accession.get_rna_type(),
             }
             order = ['ID', 'Name', 'Parent', 'type']
-            return ';'.join("%s=%s" % (key, attributes[key]) for key in order)
-
-        for i, exon in enumerate(self.exons):
-            if not exon.chromosome:
-                continue
             data = {
                 'seqid': exon.chromosome,
                 'source': 'RNAcentral',
@@ -1073,7 +1067,7 @@ class Gff3Formatter(object):
                 'score': '.',
                 'phase': '.',
                 'strand': '+' if exon.strand > 0 else '-',
-                'attributes': get_attributes(),
+                'attributes': self.format_attributes(attributes, order),
             }
             self.gff += self.template.format(**data)
 
