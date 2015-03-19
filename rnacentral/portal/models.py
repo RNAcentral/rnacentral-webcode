@@ -213,7 +213,7 @@ class Rna(CachingMixin, models.Model):
         xrefs = self.xrefs.filter(db__project_id__isnull=True).all()
         gff = ''
         for xref in xrefs:
-            gff += _xref_to_gff_format(xref)
+            gff += GffFormatter(xref)()
         return gff
 
     def get_gff3(self):
@@ -687,7 +687,7 @@ class Xref(models.Model):
         """
         Format genomic coordinates in GFF format.
         """
-        return _xref_to_gff_format(self)
+        return GffFormatter(xref)()
 
     def get_gff3(self):
         """
@@ -965,26 +965,6 @@ class Reference_map(models.Model):
 """
 Common auxiliary functions.
 """
-def _xref_to_gff_format(xref):
-    """
-    Return genome coordinates of an xref in GFF format. Available in Rna and Xref models.
-    """
-    gff = ''
-    exons = xref.accession.coordinates.all()
-    if exons.count() == 0:
-        return gff
-    for exon in exons:
-        if not exon.chromosome:
-            continue
-        gff += "%s\tRNAcentral\texon\t%s\t%s\t.\t%s\t.\tID \"%s\";Name \"%s\"\n" % (exon.chromosome,
-                                                                                    exon.primary_start,
-                                                                                    exon.primary_end,
-                                                                                    '+' if exon.strand > 0 else '-',
-                                                                                    xref.accession.accession,
-                                                                                    xref.upi.upi)
-    return gff
-
-
 class Gff3Formatter(object):
     """
     GFF3 format documentation:
@@ -1100,6 +1080,20 @@ class Gff3Formatter(object):
         self.format_transcript()
         self.format_exons()
         return self.gff
+
+
+class GffFormatter(Gff3Formatter):
+    """
+    GFF format documentation:
+    https://www.sanger.ac.uk/resources/software/gff/spec.html
+    Use the same logic as in GFF3
+    but format the attributes field differently.
+    """
+    def format_attributes(self, attributes, order):
+        """
+        Format the `attributes` field.
+        """
+        return ';'.join('%s "%s"' % (key, attributes[key]) for key in order)
 
 
 def _xref_to_bed_format(xref):
