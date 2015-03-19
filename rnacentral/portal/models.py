@@ -220,7 +220,7 @@ class Rna(CachingMixin, models.Model):
         """
         Format genomic coordinates from all xrefs into a single file in GFF3 format.
         """
-        xrefs = self.xrefs.filter(db__project_id__isnull=True).all()
+        xrefs = self.xrefs.filter(deleted='N').all()
         gff = '##gff-version 3\n'
         for xref in xrefs:
             gff += _xref_to_gff3_format(xref)
