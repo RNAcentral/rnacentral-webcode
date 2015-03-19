@@ -1077,6 +1077,19 @@ class Gff3Formatter(object):
             }
             self.gff += self.template.format(**data)
 
+    def consistent_strands(self):
+        """
+        Check that all exons are mapped to the same strand.
+        There was a problem with genomic mapping of short exons
+        that could be placed on a wrong strand.
+        Example: URS000075A653 (NR_110790.1:1..1533:ncRNA)
+        """
+        strand = self.exons[0].strand
+        for exon in self.exons:
+            if exon.strand != strand:
+                return False
+        return True
+
     def __call__(self):
         """
         Main entry point for the class.
@@ -1086,6 +1099,9 @@ class Gff3Formatter(object):
             return self.gff
         self.get_exons()
         if self.exons.count() == 0:
+            return self.gff
+        # skip the whole transcript if the strands are inconsistent
+        if not self.consistent_strands():
             return self.gff
         self.format_transcript()
         self.format_exons()
