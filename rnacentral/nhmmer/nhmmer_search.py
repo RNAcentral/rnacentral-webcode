@@ -16,6 +16,8 @@ import shlex
 import subprocess as sub
 
 from nhmmer.local_settings import QUERY_DIR, RESULTS_DIR, NHMMER_EXECUTABLE, SEQDATABASE
+from nhmmer.models import Query, Results
+from nhmmer.nhmmer_parse import NhmmerResultsParser
 
 
 class NhmmerError(Exception):
@@ -86,8 +88,28 @@ class NhmmerSearch(object):
 
     def parse_results(self):
         """
+        Parse results text files
+        and save the data in the database.
         """
-        pass
+        results = []
+        for record in NhmmerResultsParser(filename=self.params['alignments'])():
+            results.append(Results(query_id=self.job_id,
+                                   result_id=record['result_id'],
+                                   rnacentral_id=record['rnacentral_id'],
+                                   description=record['description'],
+                                   score=record['score'],
+                                   bias=record['bias'],
+                                   e_value=record['e_value'],
+                                   query_start=record['query_start'],
+                                   query_end=record['query_end'],
+                                   target_length=record['target_length'],
+                                   target_start=record['target_start'],
+                                   target_end=record['target_end'],
+                                   alignment=record['alignment']))
+        Results.objects.using('nhmmer').bulk_create(results)
+
+        query = Query(id=self.job_id, query=self.sequence, length=len(self.sequence))
+        query.save(using='nhmmer')
 
     def __call__(self):
         """

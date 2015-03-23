@@ -151,6 +151,7 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
     'corsheaders',
     'portal',
+    'nhmmer',
     'apiv1',
     'rest_framework',
     'debug_toolbar',
