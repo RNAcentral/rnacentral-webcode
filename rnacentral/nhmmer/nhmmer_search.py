@@ -16,8 +16,6 @@ import shlex
 import subprocess as sub
 
 from nhmmer.local_settings import QUERY_DIR, RESULTS_DIR, NHMMER_EXECUTABLE, SEQDATABASE
-from nhmmer.models import Query, Results
-from nhmmer.nhmmer_parse import NhmmerResultsParser
 
 
 class NhmmerError(Exception):
@@ -84,32 +82,6 @@ class NhmmerSearch(object):
         return_code = p.returncode
         if return_code != 0:
             raise NhmmerError(errors, output, return_code)
-        return return_code
-
-    def parse_results(self):
-        """
-        Parse results text files
-        and save the data in the database.
-        """
-        results = []
-        for record in NhmmerResultsParser(filename=self.params['alignments'])():
-            results.append(Results(query_id=self.job_id,
-                                   result_id=record['result_id'],
-                                   rnacentral_id=record['rnacentral_id'],
-                                   description=record['description'],
-                                   score=record['score'],
-                                   bias=record['bias'],
-                                   e_value=record['e_value'],
-                                   query_start=record['query_start'],
-                                   query_end=record['query_end'],
-                                   target_length=record['target_length'],
-                                   target_start=record['target_start'],
-                                   target_end=record['target_end'],
-                                   alignment=record['alignment']))
-        Results.objects.bulk_create(results)
-
-        query = Query(id=self.job_id, query=self.sequence, length=len(self.sequence))
-        query.save()
 
     def __call__(self):
         """
@@ -117,6 +89,5 @@ class NhmmerSearch(object):
         """
         self.create_query_file()
         self.get_command()
-        status = self.run_nhmmer()
-        self.parse_results()
-        return status
+        self.run_nhmmer()
+        return self.params['alignments']

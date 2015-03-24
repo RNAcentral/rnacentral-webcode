@@ -24,10 +24,42 @@ from rq import get_current_job
 from nhmmer.settings import MIN_LENGTH, MAX_LENGTH, EXPIRATION, MAX_RUN_TIME
 from nhmmer.messages import messages
 from nhmmer.nhmmer_search import NhmmerSearch
+from nhmmer.nhmmer_parse import NhmmerResultsParser
 from nhmmer.models import Results, Query
 
 from rest_framework import generics, serializers
 from rest_framework.permissions import AllowAny
+
+
+def save_results(filename):
+    """
+    Parse nhmmer results file
+    and save the data in the database.
+    """
+    results = []
+    for record in NhmmerResultsParser(filename=filename)():
+        results.append(Results(query_id=self.job_id,
+                               result_id=record['result_id'],
+                               rnacentral_id=record['rnacentral_id'],
+                               description=record['description'],
+                               score=record['score'],
+                               bias=record['bias'],
+                               e_value=record['e_value'],
+                               query_start=record['query_start'],
+                               query_end=record['query_end'],
+                               target_length=record['target_length'],
+                               target_start=record['target_start'],
+                               target_end=record['target_end'],
+                               alignment=record['alignment']))
+    Results.objects.bulk_create(results)
+
+
+def save_query(job_id, sequence):
+    """
+    Create query object in the main database.
+    """
+    query = Query(id=job_id, query=sequence, length=len(sequence))
+    query.save()
 
 
 def nhmmer_search(sequence):
@@ -35,9 +67,9 @@ def nhmmer_search(sequence):
     RQ worker function.
     """
     job = get_current_job()
-    return NhmmerSearch(sequence=sequence, job_id=job.id)()
-
-    # parse results and store in db
+    results = NhmmerSearch(sequence=sequence, job_id=job.id)()
+    save_query(sequence, job_id)
+    save_results(results)
 
 
 def enqueue_job(query):
