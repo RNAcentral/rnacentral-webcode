@@ -83,8 +83,8 @@ class NhmmerTestCase(unittest.TestCase):
         Get search results and run some basic tests.
         """
         r = self._get_results(query['sequence'])
-        self.assertEqual(r.status_code, 200)
-        self.assertTrue(r.json()['count'] > 0)
+        self.assertEqual(r.status_code, 200, 'Failed on %s' % query['id'])
+        self.assertTrue(r.json()['count'] > 0, 'Failed on %s' % query['id'])
         self.assertEqual(r.json()['results'][0]['rnacentral_id'], query['id'])
 
 
