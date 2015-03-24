@@ -11,81 +11,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import datetime
-import django_rq
-
-from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.views.decorators.cache import never_cache
-from rq import get_current_job
 
-from settings import MIN_LENGTH, MAX_LENGTH, EXPIRATION, MAX_RUN_TIME
+from settings import MIN_LENGTH, MAX_LENGTH
 from messages import messages
-from nhmmer_search import NhmmerSearch
-from nhmmer_parse import NhmmerResultsParser
-from models import Results, Query
+from utils import get_job, enqueue_job
+from models import Results
 
 from rest_framework import generics, serializers
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
-
-
-def save_results(filename):
-    """
-    Parse nhmmer results file
-    and save the data in the database.
-    """
-    results = []
-    for record in NhmmerResultsParser(filename=filename)():
-        results.append(Results(query_id=self.job_id,
-                               result_id=record['result_id'],
-                               rnacentral_id=record['rnacentral_id'],
-                               description=record['description'],
-                               score=record['score'],
-                               bias=record['bias'],
-                               e_value=record['e_value'],
-                               query_start=record['query_start'],
-                               query_end=record['query_end'],
-                               target_length=record['target_length'],
-                               target_start=record['target_start'],
-                               target_end=record['target_end'],
-                               alignment=record['alignment']))
-    Results.objects.bulk_create(results)
-
-
-def save_query(job_id, sequence):
-    """
-    Create query object in the main database.
-    """
-    query = Query(id=job_id, query=sequence, length=len(sequence))
-    query.save()
-
-
-def nhmmer_search(sequence):
-    """
-    RQ worker function.
-    """
-    job = get_current_job()
-    results = NhmmerSearch(sequence=sequence, job_id=job.id)()
-    save_query(sequence, job_id)
-    save_results(results)
-
-
-def enqueue_job(query):
-    """
-    Submit job to the queue and return job id.
-    """
-    queue = django_rq.get_queue()
-    job = queue.enqueue_call(func=nhmmer_search,
-                             args=(query,),
-                             timeout=MAX_RUN_TIME,
-                             result_ttl=EXPIRATION)
-    job.meta['query'] = query
-    job.meta['expiration'] = datetime.datetime.now() + \
-                             datetime.timedelta(seconds=EXPIRATION)
-    job.save()
-    return job.id
 
 
 @never_cache
@@ -134,22 +71,6 @@ def submit_job(request):
         status = 500
         return Response(msg[status], status=status)
 
-def get_job(job_id):
-    """
-    Get job from local or remote queues.
-
-    Return a tuple (job, remote_server), where
-    * `job` - job object
-    * `remote_server` - server where the job was run
-                        (None for localhost)
-    """
-    rq_queues = getattr(settings, 'RQ_QUEUES', [])
-    for queue_id, params in rq_queues.iteritems():
-        queue = django_rq.get_queue(queue_id)
-        job = queue.fetch_job(job_id)
-        if job:
-            return (job, params['REMOTE_SERVER'])
-    return (None, None)
 
 @never_cache
 @api_view(['GET'])
