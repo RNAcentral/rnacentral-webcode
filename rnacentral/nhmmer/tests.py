@@ -120,7 +120,7 @@ class GetStatusTests(NhmmerTestCase):
     """
     msg_type = 'status'
 
-    def test_get_status_no_job_id(self):
+    def test_no_job_id(self):
         """
         No job id is provided in the url.
         """
@@ -131,7 +131,7 @@ class GetStatusTests(NhmmerTestCase):
         self.assertEqual(r.status_code, status)
         self.assertEqual(r.json()['message'], message)
 
-    def test_get_status_invalid_job_id(self):
+    def test_invalid_job_id(self):
         """
         Invalid job id or job id not found.
         """
@@ -143,7 +143,7 @@ class GetStatusTests(NhmmerTestCase):
         self.assertEqual(r.status_code, 404)
         self.assertEqual(r.json()['message'], message)
 
-    def test_get_status_valid_job(self):
+    def test_valid_job(self):
         """
         Submit a small query and check its status.
         """
