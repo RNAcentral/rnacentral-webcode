@@ -191,7 +191,8 @@ def get_status(request):
 
 class ResultsSerializer(serializers.ModelSerializer):
     """
-    Serializer class for nhmmer search results.
+    Django Rest Framework serializer class for
+    listing nhmmer search results.
     """
     id = serializers.CharField(source='result_id')
     rnacentral_id = serializers.CharField(source='rnacentral_id')
@@ -216,7 +217,8 @@ class ResultsSerializer(serializers.ModelSerializer):
 
 class ResultsView(generics.ListAPIView):
     """
-    Nhmmer results for query id.
+    Django Rest Framework Generic View class
+    for listing Nhmmer results based on query id.
     """
     permission_classes = (AllowAny,)
     serializer_class = ResultsSerializer
