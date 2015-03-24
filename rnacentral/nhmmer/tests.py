@@ -30,6 +30,7 @@ import sys
 import time
 import unittest
 
+from random import randint
 from django.core.urlresolvers import reverse
 
 from messages import messages
@@ -52,6 +53,39 @@ class NhmmerTestCase(unittest.TestCase):
             return requests.get(url)
         elif method == 'post':
             return requests.post(url, data={'q': query})
+
+    def _get_results(self, sequence):
+        """
+        Submit query, wait until the job is finished,
+        return the results.
+        """
+        if len(sequence) > 1000:
+            method = 'post'
+        else:
+            method = 'get'
+        r = self._submit_query(query=sequence, method=method)
+        status_url = r.json()['url']
+        while True:
+            r = requests.get(status_url)
+            data = r.json()
+            status = data['status']
+            if status == 'finished':
+                break
+            elif status == 'failed':
+                self.assertTrue(False, 'Job failed')
+            time.sleep(1)
+        results_url = data['url']
+        r = requests.get(results_url)
+        return r
+
+    def _check_results(self, query):
+        """
+        Get search results and run some basic tests.
+        """
+        r = self._get_results(query['sequence'])
+        self.assertEqual(r.status_code, 200)
+        self.assertTrue(r.json()['count'] > 0)
+        self.assertEqual(r.json()['results'][0]['rnacentral_id'], query['id'])
 
 
 class SubmitTests(NhmmerTestCase):
@@ -161,39 +195,6 @@ class ResultsTests(NhmmerTestCase):
     """
     Tests for the results endpoint.
     """
-    def get_results(self, sequence):
-        """
-        Submit query, wait until the job is finished,
-        return the results.
-        """
-        if len(sequence) > 1000:
-            method = 'post'
-        else:
-            method = 'get'
-        r = self._submit_query(query=sequence, method=method)
-        status_url = r.json()['url']
-        while True:
-            r = requests.get(status_url)
-            data = r.json()
-            status = data['status']
-            if status == 'finished':
-                break
-            elif status == 'failed':
-                self.assertTrue(False, 'Job failed')
-            time.sleep(1)
-        results_url = data['url']
-        r = requests.get(results_url)
-        return r
-
-    def check_results(self, query):
-        """
-        Get search results and run some basic tests.
-        """
-        r = self.get_results(query['sequence'])
-        self.assertEqual(r.status_code, 200)
-        self.assertTrue(r.json()['count'] > 0)
-        self.assertEqual(r.json()['results'][0]['rnacentral_id'], query['id'])
-
     def test_URS0000000001(self):
         """
         Test the first RNAcentral id.
@@ -202,7 +203,7 @@ class ResultsTests(NhmmerTestCase):
             'id': 'URS0000000001',
             'sequence': 'AUUGAACGCUGGCGGCAGGCCUAACACAUGCAAGUCGAGCGGUAGAGAGAAGCUUGCUUCUCUUGAGAGCGGCGGACGGGUGAGUAAUGCCUAGGAAUCUGCCUGGUAGUGGGGGAUAACGCUCGGAAACGGACGCUAAUACCGCAUACGUCCUACGGGAGAAAGCAGGGGACCUUCGGGCCUUGCGCUAUCAGAUGAGC',  # pylint: disable=line-too-long
         }
-        self.check_results(query)
+        self._check_results(query)
 
     def test_minimum_length(self):
         """
@@ -212,7 +213,7 @@ class ResultsTests(NhmmerTestCase):
             'id': 'URS00003989D1',
             'sequence': 'ACCAGUGUUCAGACGGUGGA',
         }
-        self.check_results(query)
+        self._check_results(query)
 
     def test_interface_example_1(self):
         """
@@ -222,7 +223,7 @@ class ResultsTests(NhmmerTestCase):
             'id': 'URS00003B7674',
             'sequence': 'UGAGGUAGUAGAUUGUAUAGUU',
         }
-        self.check_results(query)
+        self._check_results(query)
 
     def test_interface_example_2(self):
         """
@@ -232,7 +233,7 @@ class ResultsTests(NhmmerTestCase):
             'id': 'URS0000049E57',
             'sequence': 'UGCCUGGCGGCCGUAGCGCGGUGGUCCCACCUGACCCCAUGCCGAACUCAGAAGUGAAACGCCGUAGCGCCGAUGGUAGUGUGGGGUCUCCCCAUGCGAGAGUAGGGAACUGCCAGGCAU',
         }
-        self.check_results(query)
+        self._check_results(query)
 
     def test_long_sequence(self):
         """
@@ -242,7 +243,7 @@ class ResultsTests(NhmmerTestCase):
             'id': 'URS000016DD3F',
             'sequence': 'GGGGUCUCGGGUCACGUGACAGGCGGCCCAAUCGCACUCGCGCGACGGAAAGCGCCACGGACGUCGGAGGCCCAGGGGGCGGGGCUCCCGAGCUCCGCUCUUUCGUGGUCGGGCGGCGGACCGCACUGUAUUUUUUCCUUCCGGGGGCGGCGGAGCCCAGGGCUAUCCCGGCCUCCGCUCAUACCCGGAGGGCCGGCAGGCGUUCAGUCCUCCAGCCGGUGAGGCUCGGGCCGGGGUGUCGGGACCGCCUGAACACGCGGGCUCUGGGAGCUUCAGGGACCAGGGAGCCACCUCGGCCGAGUUGCGUCGCAGACUACAGCUCCCAGCAUGCGCCGCCGCUCCCAGCAUGCACCUUCCUCCCGAAACGCGUCUCUGCUUCCGGCGCUCUGCUGCGGAGGCCGUGGCCGCGGGUAGUUGGGAGGAACCGAGAUUUACGCUUGGUAAGGCAAGUUGCGAGCUGUCCGGCGCCGGUCGAGUUCCUGCCGCCGUCGUCGUCAGGCAGGGGAGAAGGGGGCCUCAACCCCUCUAGUGACAGCUGUUUGCUACCUAAUAGGGCUUUUCAUCCCACCGGGCCCCAGGGCCUUCGUUAGGAGCCCAGCAGGCUCAACUUCUUGCUGUGGUUCUGGAAAAGGGAGUGACCACCUGGCUCAACACCUCUCUCUGUGAUGUGUUUGGGAGUUUUGGGAAAUGAGACGGCUCCGAGGGAAGAGCUUGAGGGAGCGGCGUCGCACUCGUUCGACCUUCCCGGGCCUGGGCUUUGUUUCUAGGCAUUUUAGGUUGAACGCUCUACAUCUUAACUGGGGGCAGGGGAGGUGGCCAGAGCAUCCCGCUGAGCGUUUUCCGAUUCCCCAGAUGGCCAGGCACCUGGUCCUGGUGGCUGGACAGUGACCCCGUGGACGCACAUUUACAGCUAUAGCCAUUCAGUGCCGCGGGGAGGUGAGGAUAGUGAUCCUGGGACCUGCUCGAGGAUUCACCCUUGCCCCAAGAACCUGUUCCAUUCCCAGGAAUGAAGGCGGUCAGGCAGGGGAGGAGAAGGGGGCCUCAACUCUUCUAGUGACAGCAGUUUGCCACCUAAUAGAGCUUUUCAGAUUUUGCCUCCUCAGGCCAUUUUACUCAGCCUCGGACUAUCAAGGAUGGUCACAUUGAAGCUGUUUUUCUGCAGUCAGGAGCGAAAAGUCCCGGCUGUUGAAGGAGAAACUGAAUCUGGUUCAGGAGUCCCAGGUUCCUCCCUCUGAGAGGCCAGGUGGGGCCUGCGUGAGUAGCAGUUGUUCAGGUGGCAGGACACUGCUGUUUUCAUCCCACCUGGCCCCAGGCCCCUGAUUAGGGGCCCAGAGUGCUUAUGUACUUGCCUCGGUCUGAGAAAGGGAGUGACUGCAUAGCCCAACACCUGUGGGAUGCCUCACUGCCCAGAUGUUUCAUCUCCGGGAUGCUUCAUUGCCCAUUCAGCACCCUCUAUGGUGCUGACUCUUCCGGAAGAUGUUUCUGAUUCCUUGCUAGGCUGGUGGUUGCACCAUAGCUGAGAGGACUCAAGAAGAGCCUGGUCUCAGCUUCACCUAGGAGUCCCGGAGGAGUAAGAAACACGUAUCUUUCCUGUUCUGGGCACAUAUGGGUGGGUAGCAGAGCUGAGGCUAGCUGAGGAUCCCGACUCUCCUUUGGGAGCCUUUGUUGUGCCGCUCUCCCAGGCUGAUCAGAUCUGGAGAGCUAACAGCUUCCUGUGGCCACAUCUGUGUCCAAGGCUGGGCCCAUGCCUGUAGCCAGAUUGCCAGGAUCUGGAAGGGGCCAAGAGACAGCUGGUGCUGGGUAGGCAGCAGCCCUGUGUCAACCUGCCCCCACUAUUACCCCAUGCUGUGAUUUGCAUGUGGUCUGCCCCUGCCCAAAAUGGUAUUGAAAUUUGAGCCUCAAUGAGGCAGUGUUAGGAGGUGGUGCCUAGUAGGAGGAGUUUGGGUAAUAGGGGUGGAUCCCUCAUGGAUAGGUUAGUGUCCUUUGUGGAGGGGUGAGUUCCCAUGAGAGCUGGUUAGAGAGUCAGCCUUCCUGCGGUUGUCUCUUGCUUCCUCUCUCGCCAUAUGGCCACGUAAUCUCUUUGUGCAUGCCUCUCCCCUUCUACUUGCUGCCUUGAGUUGAAGUAGCAUGAGGCCCUCACCAGGUGCAGCUGCCCAAUCUUGAAAUUUCCACCAGAAUUUUGAGCCAAAUAAACCUGUUUUGCUUUUUUAAAAAAAUAAAUUCCCCCACCUUGGCUGGGCGCAGUGGCUCACGCCUGUAAUCCCAGCACUUUGGGAGGCCGAGGCGGGCGGAUCACGAGGUCAGAUCGAGACCAUCUUGGCUAACACGGUGAAACCCCAUCUCUACUGAAAAAAAAAAAGAAACAAAAAAAUUAGCCAGGUGUGGUGGCGGGCACCUGUAGUCCCAGCCCCUCACUCGGGAGGCUGAUUGAGGCAGGAGAAUGGUGUGAACCCGGGAGGCGGAGCUUGCAGUGAGCCCAGAUCGCACCACUGCACUCCAGCCUGGGCGACAGAGCGAGACUCCGUCUCUAAAUAAAUAAAUAAAUAAAUAAAACAAACCCAACCUCAGGUAUAGCAGUGUGAAACAGACUAAGACAUUCCACAUGCCCUGUGGUCCCAUCUGCUACCCCAGGGUGCAAAGAUGUUCCCUCAGCCCUGAAGAAUGACAUUCCCCCCGGCUCCUGGGAUAUCUGGAGGGGUUGUAAGCAGCUUGGGUUGGUGAGAUAAGGAGUUUGGGGGGCAGCUGAUUCAUGACCCUGGCCUCCUCAACUGCAGGCUCUUGGUCUGAAGUACUGUAAUUAAAGUAUGAGAGCCUCGGGGCCCUCACUUCAAGGAGGGAAGAGCAUCCCCAUGCCUCAGCGUUUGGGGAUUGUAGGGAGAUGAGAGUCCUUCAGGUGGGACUAGUUCCCGCCAUGACCCCACUGCUGGCCAGUGGCCUGAAACGCAUCUGACCACUUCUCAGGUUCAUGGGUGUUGAGGAGGAGCCCUGUGGAAUCAACCCUGUCUGCCUCCUCUUAUCCUGCCACUCCUCUUGCUCUGUCUGGAUGACUGCCCUUGUUUUUCAAGGGAAUGUUCCCUGUCUUCCUCAGCCAGGAUUUUUUCUGAACUUGACAUCUCCGUUUGUUCAGGGGGCAAUCAUUGGGCACUUCACUGUGCUGGUCCUUGCAUUCUCAUGGAGAUGCAGAGAUUAAAAAUUAGUAUCUUGUCCACAUACUGCCCAGAGUUAGCAAGGAUUGCUUUUCUGUGGAUUUGUCUCAGGUCGGGCACAGUGGGGGUAGGGUCCUUCUCGAACCUUUUCCUAGCCUAAAGGUUCCAGCUGAAUCUUCCCAGGCAGGGCUGAAACAGGAACCAUUUUAGGCUUUGCUGCAACCCAUGGUCAGUUCUCCAAGAAAAGUGAAGAGGGUUCCACCUGGGGCAGCCCUCAAGGGCUCAGAGGGCCAAAACACACGUACAACAUGUUGAGACACUGAGUUUGUGCGAUCCCCACACAUCUCAGCAGUGAGUAUUUCUGCCUCAUUUUACCGAUGAGGAACCUGAGCUUCAAAGGGAAGAGGUGACAGCUCAGGACCACACAGCUGUAGGUAGGAGGCAGGAAAAUAGGGUCUGAGUGCAGGGAACAUAGGCUGAUUCACACUUCAGUUAUGAUAGGAAAUACCUUCUCCAUAGGACAUAGGCCAAGCAAAUGACUUUGUAACUUCAUCCUCUCCAUCUGCAUAACGUGUGCCCCAAGUAACCAAUGGAAUCACCUAGAGGGUGUUUAAACUCUCAGAAGUUCUGUAACAGGCUCUCCAUCUACAUAACGUGUGCCCCAAGUAACCAAUGGAAUCACCUAGAGGGUAUUUAAACUCUCUGAAGUUCUGUAACAGGGCUUUUGUGCUCCUAUGCUCAGGCUCACCCCCACACUGUGGAGUGUACUUUCAUUUUCAAUAAAUCCCUUCAUUCCUUCUUUGCUCUCUGUGUGUGUUUUGUCCAAUUCUUUAUUUAAGACGCCAAGAACCUGG',  # pylint: disable=line-too-long
         }
-        self.check_results(query)
+        self._check_results(query)
 
     def test_invalid_job_id(self):
         """
@@ -254,6 +255,37 @@ class ResultsTests(NhmmerTestCase):
         data = r.json()
         self.assertEqual(data['count'], 0)
         self.assertEqual(data['results'], [])
+
+
+class RandomSearchesTests(NhmmerTestCase):
+    """
+    Use RNAcentral API to retrieve RNAcenrtal ids and sequences
+    at random and use them to launch sequence searches.
+    """
+    num_tests = 5
+
+    def get_random_query(self):
+        """
+        Get a random entry using the API.
+        """
+        url = self.base_url + reverse('rna-sequences')
+        r = requests.get(url)
+        total = r.json()['count']
+        rna_url = url + '?page_size=1&page=%i' % randint(1, total)
+        r = requests.get(rna_url)
+        data = r.json()['results'][0]
+        return {
+            'id': data['rnacentral_id'],
+            'sequence': data['sequence'],
+        }
+
+    def test_random_entries(self):
+        """
+        Run tests against a random entry.
+        """
+        for i in xrange(self.num_tests):
+            query = self.get_random_query()
+            self._check_results(query)
 
 
 def setup_django_environment():
@@ -292,6 +324,7 @@ def run_tests():
         unittest.TestLoader().loadTestsFromTestCase(SubmitTests),
         unittest.TestLoader().loadTestsFromTestCase(GetStatusTests),
         unittest.TestLoader().loadTestsFromTestCase(ResultsTests),
+        unittest.TestLoader().loadTestsFromTestCase(RandomSearchesTests),
     ]
 
     unittest.TextTestRunner().run(unittest.TestSuite(suites))
