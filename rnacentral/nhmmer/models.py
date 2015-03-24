@@ -11,19 +11,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from caching.base import CachingManager, CachingMixin # django-cache-machine
 from django.db import models
 
 
-class Query(models.Model):
+class Query(CachingMixin, models.Model):
     id = models.CharField(max_length=36, primary_key=True)
     query = models.TextField()
     length = models.PositiveIntegerField()
+
+    objects = CachingManager()
 
     class Meta:
         db_table = 'nhmmer_query'
 
 
-class Results(models.Model):
+class Results(CachingMixin, models.Model):
     id = models.AutoField(primary_key=True)
     query_id = models.CharField(max_length=36, db_index=True)
     result_id = models.PositiveIntegerField(db_index=True)
@@ -38,6 +41,8 @@ class Results(models.Model):
     alignment = models.TextField(null=True)
     score = models.FloatField(null=True)
     e_value = models.FloatField(null=True)
+
+    objects = CachingManager()
 
     class Meta:
         db_table = 'nhmmer_results'
