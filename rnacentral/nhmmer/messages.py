@@ -15,7 +15,7 @@ limitations under the License.
 API messages and status codes.
 """
 
-from nhmmer.settings import MIN_LENGTH, MAX_LENGTH
+from settings import MIN_LENGTH, MAX_LENGTH
 
 
 messages = {

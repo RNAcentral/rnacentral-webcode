@@ -13,7 +13,7 @@ limitations under the License.
 
 from django.conf.urls import patterns, url
 from django.views.generic.base import TemplateView
-from nhmmer import views
+import views
 
 # exporting metadata search results
 urlpatterns = patterns('',

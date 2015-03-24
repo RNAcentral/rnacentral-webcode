@@ -31,7 +31,7 @@ import unittest
 
 from django.core.urlresolvers import reverse
 
-from views import messages
+from messages import messages
 
 
 class NhmmerTestCase(unittest.TestCase):

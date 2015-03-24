@@ -21,11 +21,11 @@ from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
 from rq import get_current_job
 
-from nhmmer.settings import MIN_LENGTH, MAX_LENGTH, EXPIRATION, MAX_RUN_TIME
-from nhmmer.messages import messages
-from nhmmer.nhmmer_search import NhmmerSearch
-from nhmmer.nhmmer_parse import NhmmerResultsParser
-from nhmmer.models import Results, Query
+from settings import MIN_LENGTH, MAX_LENGTH, EXPIRATION, MAX_RUN_TIME
+from messages import messages
+from nhmmer_search import NhmmerSearch
+from nhmmer_parse import NhmmerResultsParser
+from models import Results, Query
 
 from rest_framework import generics, serializers
 from rest_framework.permissions import AllowAny

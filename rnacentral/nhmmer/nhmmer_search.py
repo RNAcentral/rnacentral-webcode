@@ -15,7 +15,7 @@ import os
 import shlex
 import subprocess as sub
 
-from nhmmer.local_settings import QUERY_DIR, RESULTS_DIR, NHMMER_EXECUTABLE, SEQDATABASE
+from local_settings import QUERY_DIR, RESULTS_DIR, NHMMER_EXECUTABLE, SEQDATABASE
 
 
 class NhmmerError(Exception):
