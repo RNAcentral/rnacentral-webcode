@@ -106,10 +106,10 @@ class NhmmerSearch(object):
                                    target_start=record['target_start'],
                                    target_end=record['target_end'],
                                    alignment=record['alignment']))
-        Results.objects.using('nhmmer').bulk_create(results)
+        Results.objects.bulk_create(results)
 
         query = Query(id=self.job_id, query=self.sequence, length=len(self.sequence))
-        query.save(using='nhmmer')
+        query.save()
 
     def __call__(self):
         """

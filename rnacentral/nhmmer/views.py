@@ -142,8 +142,7 @@ def get_status(request):
                 'enqueued_at': str(job.enqueued_at),
                 'ended_at': str(job.ended_at),
                 'expiration': job.meta['expiration'].strftime("%m/%d/%Y"),
-                'count': Results.objects.using('nhmmer').\
-                                         filter(query_id=job.id).\
+                'count': Results.objects.filter(query_id=job.id).\
                                          count(),
             }
             return JsonResponse(data)
