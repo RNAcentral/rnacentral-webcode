@@ -16,7 +16,6 @@ import django_rq
 
 from django.conf import settings
 from django.core.urlresolvers import reverse
-from django.http import JsonResponse
 from django.views.decorators.cache import never_cache
 from rq import get_current_job
 
@@ -153,6 +152,8 @@ def get_job(job_id):
     return (None, None)
 
 @never_cache
+@api_view(['GET'])
+@permission_classes([AllowAny])
 def get_status(request):
     """
     Get status of an nhmmer search.
@@ -168,7 +169,7 @@ def get_status(request):
     job_id = request.GET.get('id', '')
     if not job_id:
         status = 400
-        return JsonResponse(msg[status], status=status)
+        return Response(msg[status], status=status)
 
     try:
         job = get_job(job_id)[0]
@@ -182,13 +183,13 @@ def get_status(request):
                 'count': Results.objects.filter(query_id=job.id).\
                                          count(),
             }
-            return JsonResponse(data)
+            return Response(data)
         else:
             status = 404
-            return JsonResponse(msg[status], status=status)
+            return Response(msg[status], status=status)
     except:
         status = 500
-        return JsonResponse(msg[status], status=status)
+        return Response(msg[status], status=status)
 
 
 class ResultsSerializer(serializers.ModelSerializer):
