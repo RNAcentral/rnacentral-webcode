@@ -41,6 +41,7 @@ class NhmmerSearch(object):
             'db': SEQDATABASE,
             'incE': 0.01,
             'E': 0.01,
+            'cpu': 2,
         }
 
     def create_query_file(self):
@@ -66,6 +67,7 @@ class NhmmerSearch(object):
              '-E {E} '            # report target sequences with an E-value of <= X
              '--rna '             # explicitly specify database alphabet
              '--toponly '         # search only top strand
+             '--cpu {cpu} '       # number of CPUs to use
              '{query} '           # query file
              '{db}').format(**self.params)
 
