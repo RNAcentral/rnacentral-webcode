@@ -28,7 +28,7 @@ class Query(CachingMixin, models.Model):
 
 class Results(CachingMixin, models.Model):
     id = models.AutoField(primary_key=True)
-    query_id = models.CharField(max_length=36, db_index=True)
+    query_id = models.ForeignKey('Query', db_column='query_id', related_name='results', db_index=True)
     result_id = models.PositiveIntegerField(db_index=True)
     rnacentral_id = models.CharField(max_length=13, null=True)
     description = models.TextField(null=True)
