@@ -174,14 +174,17 @@ def get_status(request):
     try:
         job = get_job(job_id)[0]
         if job:
+            url = request.build_absolute_uri(
+                reverse('nhmmer-job-results') +
+                '?id=%s' % job_id
+            )
             data = {
                 'id': job.id,
                 'status': job.get_status(),
                 'enqueued_at': str(job.enqueued_at),
                 'ended_at': str(job.ended_at),
                 'expiration': job.meta['expiration'].strftime("%m/%d/%Y"),
-                'count': Results.objects.filter(query_id=job.id).\
-                                         count(),
+                'url': url,
             }
             return Response(data)
         else:
