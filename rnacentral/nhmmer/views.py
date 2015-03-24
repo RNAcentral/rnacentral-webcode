@@ -156,5 +156,4 @@ class ResultsView(generics.ListAPIView):
         """
         query_id = self.request.QUERY_PARAMS.get('id', None)
         return Results.objects.filter(query_id=query_id).\
-                               order_by('id').\
-                               all()
+                               order_by('id')
