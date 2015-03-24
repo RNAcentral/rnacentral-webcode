@@ -166,7 +166,11 @@ class ResultsTests(NhmmerTestCase):
         Submit query, wait until the job is finished,
         return the results.
         """
-        r = self._submit_query(query=sequence)
+        if len(sequence) > 1000:
+            method = 'post'
+        else:
+            method = 'get'
+        r = self._submit_query(query=sequence, method=method)
         status_url = r.json()['url']
         while True:
             r = requests.get(status_url)
