@@ -22,14 +22,15 @@ from models import Results, Query
 from settings import EXPIRATION, MAX_RUN_TIME
 
 
-def save_results(job_id, filename):
+def save_results(filename, job_id):
     """
     Parse nhmmer results file
     and save the data in the database.
     """
     results = []
+    query = Query.objects.get(id=job_id)
     for record in NhmmerResultsParser(filename=filename)():
-        results.append(Results(query_id=job_id,
+        results.append(Results(query_id=query,
                                result_id=record['result_id'],
                                rnacentral_id=record['rnacentral_id'],
                                description=record['description'],
@@ -45,7 +46,7 @@ def save_results(job_id, filename):
     Results.objects.bulk_create(results)
 
 
-def save_query(job_id, sequence):
+def save_query(sequence, job_id):
     """
     Create query object in the main database.
     """
