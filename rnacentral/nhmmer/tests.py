@@ -23,7 +23,6 @@ python tests.py --base_url http://test.rnacentral.org/
 
 import argparse
 import django
-import json
 import os
 import requests
 import sys
@@ -63,11 +62,11 @@ class NhmmerTestCase(unittest.TestCase):
             method = 'post'
         else:
             method = 'get'
-        r = self._submit_query(query=sequence, method=method)
-        status_url = r.json()['url']
+        request = self._submit_query(query=sequence, method=method)
+        status_url = request.json()['url']
         while True:
-            r = requests.get(status_url)
-            data = r.json()
+            request = requests.get(status_url)
+            data = request.json()
             status = data['status']
             if status == 'finished':
                 break
@@ -75,17 +74,18 @@ class NhmmerTestCase(unittest.TestCase):
                 self.assertTrue(False, 'Job failed')
             time.sleep(1)
         results_url = data['url']
-        r = requests.get(results_url)
-        return r
+        request = requests.get(results_url)
+        return request
 
     def _check_results(self, query):
         """
         Get search results and run some basic tests.
         """
-        r = self._get_results(query['sequence'])
-        self.assertEqual(r.status_code, 200, 'Failed on %s' % query['id'])
-        self.assertTrue(r.json()['count'] > 0, 'Failed on %s' % query['id'])
-        self.assertEqual(r.json()['results'][0]['rnacentral_id'], query['id'])
+        request = self._get_results(query['sequence'])
+        msg = 'Failed on %s' % query['id']
+        self.assertEqual(request.status_code, 200, msg)
+        self.assertTrue(request.json()['count'] > 0, msg)
+        self.assertEqual(request.json()['results'][0]['rnacentral_id'], query['id'])
 
 
 class SubmitTests(NhmmerTestCase):
@@ -101,9 +101,9 @@ class SubmitTests(NhmmerTestCase):
         sequence = ''
         status = 400
         message = messages[self.msg_type][status]['no_sequence']['message']
-        r = self._submit_query(query=sequence)
-        self.assertEqual(r.status_code, status)
-        self.assertEqual(r.json()['message'], message)
+        request = self._submit_query(query=sequence)
+        self.assertEqual(request.status_code, status)
+        self.assertEqual(request.json()['message'], message)
 
     def test_too_short_sequence(self):
         """
@@ -112,9 +112,9 @@ class SubmitTests(NhmmerTestCase):
         sequence = 'ACGU'
         status = 400
         message = messages[self.msg_type][status]['too_short']['message']
-        r = self._submit_query(query=sequence)
-        self.assertEqual(r.status_code, status)
-        self.assertEqual(r.json()['message'], message)
+        request = self._submit_query(query=sequence)
+        self.assertEqual(request.status_code, status)
+        self.assertEqual(request.json()['message'], message)
 
     def test_too_long_sequence(self):
         """
@@ -123,9 +123,9 @@ class SubmitTests(NhmmerTestCase):
         sequence = 'A' * (MAX_LENGTH + 1)
         status = 400
         message = messages[self.msg_type][status]['too_long']['message']
-        r = self._submit_query(query=sequence, method='post')
-        self.assertEqual(r.status_code, status)
-        self.assertEqual(r.json()['message'], message)
+        request = self._submit_query(query=sequence, method='post')
+        self.assertEqual(request.status_code, status)
+        self.assertEqual(request.json()['message'], message)
 
     def test_get_method(self):
         """
@@ -133,9 +133,9 @@ class SubmitTests(NhmmerTestCase):
         """
         sequence = 'ACGU' * 20
         status = 201
-        r = self._submit_query(query=sequence)
-        self.assertEqual(r.status_code, status)
-        self.assertTrue('id' in r.json())
+        request = self._submit_query(query=sequence)
+        self.assertEqual(request.status_code, status)
+        self.assertTrue('id' in request.json())
 
     def test_post_method(self):
         """
@@ -143,9 +143,9 @@ class SubmitTests(NhmmerTestCase):
         """
         sequence = 'ACGU' * 20
         status = 201
-        r = self._submit_query(query=sequence, method='post')
-        self.assertEqual(r.status_code, status)
-        self.assertTrue('id' in r.json())
+        request = self._submit_query(query=sequence, method='post')
+        self.assertEqual(request.status_code, status)
+        self.assertTrue('id' in request.json())
 
 
 class GetStatusTests(NhmmerTestCase):
@@ -161,9 +161,9 @@ class GetStatusTests(NhmmerTestCase):
         url = self.base_url + reverse('nhmmer-job-status')
         status = 400
         message = messages[self.msg_type][status]['message']
-        r = requests.get(url)
-        self.assertEqual(r.status_code, status)
-        self.assertEqual(r.json()['message'], message)
+        request = requests.get(url)
+        self.assertEqual(request.status_code, status)
+        self.assertEqual(request.json()['message'], message)
 
     def test_invalid_job_id(self):
         """
@@ -173,9 +173,9 @@ class GetStatusTests(NhmmerTestCase):
         url = self.base_url + reverse('nhmmer-job-status') + '?id=%s' % job_id
         status = 404
         message = messages[self.msg_type][status]['message']
-        r = requests.get(url)
-        self.assertEqual(r.status_code, 404)
-        self.assertEqual(r.json()['message'], message)
+        request = requests.get(url)
+        self.assertEqual(request.status_code, 404)
+        self.assertEqual(request.json()['message'], message)
 
     def test_valid_job(self):
         """
@@ -184,18 +184,18 @@ class GetStatusTests(NhmmerTestCase):
         sequence = 'ACGU' * 20
         status = 200
         # submit query
-        r = self._submit_query(query=sequence)
+        request = self._submit_query(query=sequence)
         # check query status
-        r = requests.get(r.json()['url'])
-        self.assertEqual(r.status_code, 200)
-        self.assertTrue('status' in r.json())
+        request = requests.get(request.json()['url'])
+        self.assertEqual(request.status_code, status)
+        self.assertTrue('status' in request.json())
 
 
 class ResultsTests(NhmmerTestCase):
     """
     Tests for the results endpoint.
     """
-    def test_URS0000000001(self):
+    def test_first_rnacentral_id(self):
         """
         Test the first RNAcentral id.
         """
@@ -231,7 +231,7 @@ class ResultsTests(NhmmerTestCase):
         """
         query = {
             'id': 'URS0000049E57',
-            'sequence': 'UGCCUGGCGGCCGUAGCGCGGUGGUCCCACCUGACCCCAUGCCGAACUCAGAAGUGAAACGCCGUAGCGCCGAUGGUAGUGUGGGGUCUCCCCAUGCGAGAGUAGGGAACUGCCAGGCAU',
+            'sequence': 'UGCCUGGCGGCCGUAGCGCGGUGGUCCCACCUGACCCCAUGCCGAACUCAGAAGUGAAACGCCGUAGCGCCGAUGGUAGUGUGGGGUCUCCCCAUGCGAGAGUAGGGAACUGCCAGGCAU', # pylint: disable=line-too-long
         }
         self._check_results(query)
 
@@ -251,8 +251,8 @@ class ResultsTests(NhmmerTestCase):
         """
         job_id = 'foobar'
         url = self.base_url + reverse('nhmmer-job-results') + '?id=%s' % job_id
-        r = requests.get(url)
-        data = r.json()
+        request = requests.get(url)
+        data = request.json()
         self.assertEqual(data['count'], 0)
         self.assertEqual(data['results'], [])
 
@@ -269,11 +269,11 @@ class RandomSearchesTests(NhmmerTestCase):
         Get a random entry using the API.
         """
         url = self.base_url + reverse('rna-sequences')
-        r = requests.get(url)
-        total = r.json()['count']
+        request = requests.get(url)
+        total = request.json()['count']
         rna_url = url + '?page_size=1&page=%i' % randint(1, total)
-        r = requests.get(rna_url)
-        data = r.json()['results'][0]
+        request = requests.get(rna_url)
+        data = request.json()['results'][0]
         return {
             'id': data['rnacentral_id'],
             'sequence': data['sequence'],
@@ -283,7 +283,7 @@ class RandomSearchesTests(NhmmerTestCase):
         """
         Run tests against a random entry.
         """
-        for i in xrange(self.num_tests):
+        for _ in xrange(self.num_tests):
             query = self.get_random_query()
             self._check_results(query)
 
