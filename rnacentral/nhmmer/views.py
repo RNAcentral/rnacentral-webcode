@@ -24,7 +24,10 @@ from rq import get_current_job
 from nhmmer.settings import MIN_LENGTH, MAX_LENGTH, EXPIRATION, MAX_RUN_TIME
 from nhmmer.messages import messages
 from nhmmer.nhmmer_search import NhmmerSearch
-from nhmmer.models import Results
+from nhmmer.models import Results, Query
+
+from rest_framework import generics, serializers
+from rest_framework.permissions import AllowAny
 
 
 def nhmmer_search(sequence):
@@ -152,3 +155,45 @@ def get_status(request):
     except:
         status = 500
         return JsonResponse(msg[status], status=status)
+
+
+class ResultsSerializer(serializers.ModelSerializer):
+    """
+    Serializer class for nhmmer search results.
+    """
+    id = serializers.CharField(source='result_id')
+    rnacentral_id = serializers.CharField(source='rnacentral_id')
+    description = serializers.CharField(source='description')
+    bias = serializers.CharField(source='bias')
+    query_start = serializers.CharField(source='query_start')
+    query_end = serializers.CharField(source='query_end')
+    target_start = serializers.CharField(source='target_start')
+    target_end = serializers.CharField(source='target_end')
+    target_length = serializers.CharField(source='target_length')
+    alignment = serializers.CharField(source='alignment')
+    score = serializers.CharField(source='score')
+    e_value = serializers.CharField(source='e_value')
+
+    class Meta:
+        model = Results
+        fields = ('id', 'rnacentral_id', 'description', 'bias',
+                  'query_start', 'query_end', 'target_start',
+                  'target_end', 'target_length', 'alignment',
+                  'score', 'e_value')
+
+
+class ResultsView(generics.ListAPIView):
+    """
+    Nhmmer results for query id.
+    """
+    permission_classes = (AllowAny,)
+    serializer_class = ResultsSerializer
+
+    def get_queryset(self):
+        """
+        Filter results by query id.
+        """
+        query_id = self.request.QUERY_PARAMS.get('id', None)
+        return Results.objects.filter(query_id=query_id).\
+                               order_by('id').\
+                               all()

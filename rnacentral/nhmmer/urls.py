@@ -13,6 +13,7 @@ limitations under the License.
 
 from django.conf.urls import patterns, url
 from django.views.generic.base import TemplateView
+from nhmmer import views
 
 # exporting metadata search results
 urlpatterns = patterns('',
@@ -25,4 +26,9 @@ urlpatterns = patterns('',
     url(r'^job-status/?$',
         'nhmmer.views.get_status',
         name='nhmmer-job-status'),
+
+    # get nhmmer results
+	url(r'^get-results/?$',
+		views.ResultsView.as_view(),
+		name='nhmmer-job-results'),
 )
