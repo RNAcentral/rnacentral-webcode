@@ -18,7 +18,6 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import JsonResponse
 from django.views.decorators.cache import never_cache
-from django.views.decorators.csrf import csrf_exempt
 from rq import get_current_job
 
 from settings import MIN_LENGTH, MAX_LENGTH, EXPIRATION, MAX_RUN_TIME
@@ -29,6 +28,8 @@ from models import Results, Query
 
 from rest_framework import generics, serializers
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
 
 
 def save_results(filename):
@@ -89,7 +90,8 @@ def enqueue_job(query):
 
 
 @never_cache
-@csrf_exempt # to enable POST requests
+@api_view(['GET', 'POST'])
+@permission_classes([AllowAny])
 def submit_job(request):
     """
     Start nhmmer search.
@@ -108,14 +110,14 @@ def submit_job(request):
 
     if not query:
         status = 400
-        return JsonResponse(msg[status]['no_sequence'], status=status)
+        return Response(msg[status]['no_sequence'], status=status)
 
     if len(query) < MIN_LENGTH:
         status = 400
-        return JsonResponse(msg[status]['too_short'], status=status)
+        return Response(msg[status]['too_short'], status=status)
     elif len(query) > MAX_LENGTH:
         status = 400
-        return JsonResponse(msg[status]['too_long'], status=status)
+        return Response(msg[status]['too_long'], status=status)
 
     try:
         status = 201
@@ -128,10 +130,10 @@ def submit_job(request):
             'id': job_id,
             'url': url,
         }
-        return JsonResponse(data, status=status)
+        return Response(data, status=status)
     except:
         status = 500
-        return JsonResponse(msg[status], status=status)
+        return Response(msg[status], status=status)
 
 def get_job(job_id):
     """
