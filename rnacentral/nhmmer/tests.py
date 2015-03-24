@@ -32,6 +32,7 @@ import unittest
 from django.core.urlresolvers import reverse
 
 from messages import messages
+from settings import MAX_LENGTH
 
 
 class NhmmerTestCase(unittest.TestCase):
@@ -84,7 +85,7 @@ class SubmitTests(NhmmerTestCase):
         """
         Test long query sequence.
         """
-        sequence = 'AUCG' * 1000
+        sequence = 'A' * (MAX_LENGTH + 1)
         status = 400
         message = messages[self.msg_type][status]['too_long']['message']
         r = self._submit_query(query=sequence, method='post')
