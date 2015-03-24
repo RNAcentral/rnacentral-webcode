@@ -15,7 +15,7 @@ limitations under the License.
 MIN_LENGTH = 11
 
 # maximum query sequence length
-MAX_LENGTH = 1000
+MAX_LENGTH = 10000
 
 # Redis results expiration time
 EXPIRATION = 60*60*24*7 # seconds
