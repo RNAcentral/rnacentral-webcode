@@ -43,7 +43,7 @@ def save_results(filename, job_id):
                                target_start=record['target_start'],
                                target_end=record['target_end'],
                                alignment=record['alignment']))
-    Results.objects.bulk_create(results)
+    Results.objects.bulk_create(results, 999)
 
 
 def save_query(sequence, job_id):
