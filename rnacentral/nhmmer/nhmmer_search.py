@@ -31,7 +31,7 @@ class NhmmerSearch(object):
     def __init__(self, sequence, job_id):
         """
         """
-        self.sequence = sequence.replace('T','U').upper()
+        self.sequence = sequence.replace('T', 'U').upper()
         self.job_id = job_id
         self.cmd = None
         self.params = {
@@ -77,9 +77,10 @@ class NhmmerSearch(object):
         """
         if not self.cmd:
             self.get_command()
-        p = sub.Popen(shlex.split(self.cmd), stdout=sub.PIPE, stderr=sub.PIPE)
-        output, errors = p.communicate()
-        return_code = p.returncode
+        process = sub.Popen(shlex.split(self.cmd), stdout=sub.PIPE,
+                            stderr=sub.PIPE)
+        output, errors = process.communicate()
+        return_code = process.returncode
         if return_code != 0:
             raise NhmmerError(errors, output, return_code)
 

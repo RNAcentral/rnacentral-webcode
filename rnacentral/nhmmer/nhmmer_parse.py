@@ -24,7 +24,7 @@ class NhmmerResultsParser(object):
         self.filename = filename
         self.stats_text = 'Internal pipeline statistics summary'
 
-    def record_generator(self, file, delimiter='\n', bufsize=4096):
+    def record_generator(self, f, delimiter='\n', bufsize=4096):
         """
         Read file using input record separator.
         Based on this SO question:
@@ -32,7 +32,7 @@ class NhmmerResultsParser(object):
         """
         buf = ''
         while True:
-            newbuf = file.read(bufsize)
+            newbuf = f.read(bufsize)
             if not newbuf:
                 yield buf
                 return
@@ -64,12 +64,12 @@ class NhmmerResultsParser(object):
         """
         lines = text.split('\n')
 
-        line3 = lines[3].replace('!','').strip()
+        line3 = lines[3].replace('!', '').strip()
         scores = re.split(r'\s{2,}', line3)
 
         match = re.search(r'URS[0-9A-Fa-f]{10}', lines[0])
         rnacentral_id = match.group() if match else 'Unknown RNAcentral id'
-        description = lines[0].replace(rnacentral_id,'').strip()
+        description = lines[0].replace(rnacentral_id, '').strip()
 
         return {
             'rnacentral_id': rnacentral_id,
@@ -128,7 +128,6 @@ if __name__ == "__main__":
     """
     Run from command line for testing purposes.
     """
-    import os
     import sys
     if len(sys.argv) < 2:
         print 'Provide full path to the input file with nhmmer search results'
