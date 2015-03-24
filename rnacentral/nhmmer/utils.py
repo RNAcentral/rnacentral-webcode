@@ -59,9 +59,9 @@ def nhmmer_search(sequence):
     RQ worker function.
     """
     job = get_current_job()
-    results = NhmmerSearch(sequence=sequence, job_id=job.id)()
+    filename = NhmmerSearch(sequence=sequence, job_id=job.id)()
     save_query(sequence, job.id)
-    save_results(results, job.id)
+    save_results(filename, job.id)
 
 
 def enqueue_job(query):
