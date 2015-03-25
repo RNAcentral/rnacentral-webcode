@@ -31,4 +31,8 @@ urlpatterns = patterns('',
 	url(r'^get-results/?$',
 		views.ResultsView.as_view(),
 		name='nhmmer-job-results'),
+
+    # user interface
+    url(r'^$', TemplateView.as_view(template_name='nhmmer/sequence-search.html'),
+        name='nhmmer-sequence-search'),
 )
