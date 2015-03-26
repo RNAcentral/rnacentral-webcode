@@ -23,6 +23,7 @@ class NhmmerResultsParser(object):
         """
         self.filename = filename
         self.stats_text = 'Internal pipeline statistics summary'
+        self.query_length = 0
 
     def record_generator(self, f, delimiter='\n', bufsize=4096):
         """
@@ -81,6 +82,7 @@ class NhmmerResultsParser(object):
             'query_end': scores[4].split(' ')[0],
             'target_start': scores[5].split(' ')[0],
             'target_end': scores[6].split(' ')[0],
+            'query_length': self.query_length,
             'target_length': int(scores[9]),
             'alignment': '\n'.join(lines[7:len(lines)-2]),
         }
@@ -108,6 +110,16 @@ class NhmmerResultsParser(object):
             lines = lines[:delete]
         return '\n'.join(lines)
 
+    def get_query_length(self, record):
+        """
+        Get query sequence length.
+        Example line:
+        Query:       query  [M=2905]
+        """
+        match = re.search(r'Query:       query  \[M=(\d+)\]', record)
+        if match:
+            self.query_length = match.group(1)
+
     def __call__(self):
         """
         Split file into matches and return parsed data.
@@ -115,7 +127,8 @@ class NhmmerResultsParser(object):
         with open(self.filename, 'r') as f:
             for i, record in enumerate(self.record_generator(f, '>>')):
                 if i == 0:
-                    # skip first block with job stats
+                    # first block with job stats
+                    self.get_query_length(record)
                     continue
                 if self.is_last_record(record):
                     record = self.strip_out_internal_stats(record)
