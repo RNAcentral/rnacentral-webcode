@@ -31,19 +31,8 @@ def save_results(filename, job_id):
     results = []
     query = Query.objects.get(id=job_id)
     for record in NhmmerResultsParser(filename=filename)():
-        results.append(Results(query_id=query,
-                               result_id=record['result_id'],
-                               rnacentral_id=record['rnacentral_id'],
-                               description=record['description'],
-                               score=record['score'],
-                               bias=record['bias'],
-                               e_value=record['e_value'],
-                               query_start=record['query_start'],
-                               query_end=record['query_end'],
-                               target_length=record['target_length'],
-                               target_start=record['target_start'],
-                               target_end=record['target_end'],
-                               alignment=record['alignment']))
+        record['query_id'] = query
+        results.append(Results(**record))
     Results.objects.bulk_create(results, 999)
 
 
