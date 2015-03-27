@@ -15,7 +15,7 @@ limitations under the License.
  * Angular.js app for RNAcentral sequence search.
  */
 
-;angular.module('rnacentralApp').controller('NhmmerResultsListCtrl', function($scope, $http, $timeout) {
+;angular.module('rnacentralApp').controller('NhmmerResultsListCtrl', ['$scope', '$http', '$timeout', '$location', function($scope, $http, $timeout, $location) {
 
     $scope.query = {
         sequence: '',
@@ -26,6 +26,7 @@ limitations under the License.
         page_size: 10,
         min_length: 20,
         submit_endpoint: '/sequence-search-new/submit-query',
+        results_endpoint: '/sequence-search-new/get-results',
         messages: {
             get_results: 'Loading results',
             done: 'Done',
@@ -52,14 +53,15 @@ limitations under the License.
     /**
      * Retrieve results given a results url.
      */
-    var get_results = function() {
+    var get_results = function(id) {
         $scope.params.search_in_progress = true;
         $scope.params.status_message = $scope.defaults.messages.get_results;
 
         $http({
-            url: $scope.results.url,
+            url: $scope.defaults.results_endpoint,
             method: 'GET',
             params: {
+                id: id,
                 page_size: $scope.params.page_size,
                 page: 1, // all results are always on 1 page
             }
@@ -91,7 +93,7 @@ limitations under the License.
                     window.clearInterval(interval);
                     // get results
                     $scope.results.url = data.url;
-                    get_results();
+                    get_results(data.id);
                 } else if (data.status === 'failed') {
                     window.clearInterval(interval);
                     $scope.params.status_message = $scope.defaults.messages.failed;
@@ -124,6 +126,9 @@ limitations under the License.
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
         }).success(function(data) {
+            // update url
+            $location.search({'id': data.id});
+            // begin polling for results
             $timeout(function() {
                 poll_job_status(data.url);
             }, 1000);
@@ -173,6 +178,7 @@ limitations under the License.
      * Reset the form.
      */
     $scope.reset = function() {
+        $location.search('id', null);
         $scope.query.sequence = '';
         $scope.query.submit_attempted = false;
         $scope.results = results_init();
@@ -227,9 +233,15 @@ limitations under the License.
     }
 
     /**
-     * Activate Bootstrap tooltips when the controller is created.
+     * When the controller is first created:
+     * - activate Bootstrap tooltips when the controller is created.
+     * - retrieve search results if necessary
      */
     (function(){
+        if ($location.url().indexOf("?id=") > -1) {
+            get_results($location.search().id);
+        }
+
         $('body').tooltip({
             selector: '.help',
             delay: { show: 200, hide: 100 },
@@ -237,4 +249,4 @@ limitations under the License.
         });
     })();
 
-});
+}]);
