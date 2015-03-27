@@ -110,6 +110,14 @@ Sequence search
     </div>
   </div>
 
+  <div class="row" ng-show="results.exact_match">
+    <div class="col-md-4">
+      <div class="alert alert-success" role="alert">
+        Exact sequence match: <a href="/rna/{{results.exact_match}}" target="_blank">{{results.exact_match}}</a>
+      </div>
+    </div>
+  </div>
+
   <div class="row">
 
     <div class="col-md-9 sequence-search-results">
@@ -124,8 +132,11 @@ Sequence search
       </h2>
 
       <ul  class="list-unstyled">
-        <li class="result" ng-repeat="result in results.alignments">
-            <h4><a href="/rna/{{result.rnacentral_id}}" target="_blank">{{result.description}}</a> <small>{{result.rnacentral_id}}</small></h4>
+        <li ng-class="result.rnacentral_id === results.exact_match ? 'result alert alert-success' : 'result'" ng-repeat="result in results.alignments">
+            <h4>
+              <a href="/rna/{{result.rnacentral_id}}" target="_blank">{{result.description}}</a>
+              <small>{{result.rnacentral_id}}</small>
+            </h4>
 
             <div class="table-responsive">
               <table class="table table-condensed small">

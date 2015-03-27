@@ -36,6 +36,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
         submit_endpoint: '/sequence-search-new/submit-query',
         results_endpoint: '/sequence-search-new/get-results',
         query_info_endpoint: '/sequence-search-new/query-info',
+        md5_endpoint: '/api/v1/rna',
         messages: {
             get_results: 'Loading results',
             done: 'Done',
@@ -147,6 +148,8 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             $scope.params.search_in_progress = false;
         });
 
+        retrieve_exact_match(sequence);
+
         /**
          * Check sequence length once the fasta header line is removed.
          */
@@ -189,7 +192,29 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             alignments: [],
             count: null,
             next_page: null,
+            exact_match: null,
         };
+    }
+
+    /**
+     * Use RNAcentral API to retrieve an exact match
+     * to the query sequence.
+     */
+    function retrieve_exact_match(sequence) {
+        sequence = parse_fasta(sequence);
+        var md5_hash = md5(sequence.toUpperCase().replace(/U/g, 'T'));
+        var url = $scope.defaults.md5_endpoint + '?md5=' + md5_hash;
+        $http({
+            url: url,
+            method: 'GET',
+            params: {
+                md5: md5_hash,
+            }
+        }).success(function(data) {
+            if (data.count > 0) {
+                $scope.results.exact_match = data.results[0].rnacentral_id;
+            }
+        });
     }
 
     /**
@@ -250,6 +275,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             },
         }).success(function(data) {
             $scope.query.sequence = data.sequence;
+            retrieve_exact_match(data.sequence);
         }).error(function(){
             $scope.params.status_message = $scope.defaults.messages.failed;
             $scope.params.error_message = $scope.defaults.messages.results_failed;
