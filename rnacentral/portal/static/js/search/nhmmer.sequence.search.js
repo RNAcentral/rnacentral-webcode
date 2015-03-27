@@ -53,22 +53,21 @@ limitations under the License.
     /**
      * Retrieve results given a results url.
      */
-    var get_results = function(id) {
+    var get_results = function(id, next_page) {
         $scope.params.search_in_progress = true;
         $scope.params.status_message = $scope.defaults.messages.get_results;
+        next_page = next_page || false;
 
         $http({
-            url: $scope.defaults.results_endpoint,
+            url: next_page ? $scope.results.next_page : $scope.defaults.results_endpoint,
             method: 'GET',
             params: {
                 id: id,
-                page_size: $scope.params.page_size,
-                page: 1, // all results are always on 1 page
-            }
+            },
         }).success(function(data){
-            // preprocess_results(data);
             $scope.results.count = data.count;
-            $scope.results.alignments = data.results;
+            $scope.results.alignments = $scope.results.alignments.concat(data.results);
+            $scope.results.next_page = data.next;
             $scope.params.search_in_progress = false;
             $scope.params.status_message = $scope.defaults.messages.done;
         }).error(function(){
@@ -92,7 +91,6 @@ limitations under the License.
                 if (data.status === 'finished') {
                     window.clearInterval(interval);
                     // get results
-                    $scope.results.url = data.url;
                     get_results(data.id);
                 } else if (data.status === 'failed') {
                     window.clearInterval(interval);
@@ -126,6 +124,8 @@ limitations under the License.
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
         }).success(function(data) {
+            // save query id
+            $scope.results.id = data.id;
             // update url
             $location.search({'id': data.id});
             // begin polling for results
@@ -164,13 +164,22 @@ limitations under the License.
     };
 
     /**
+     * Load more results.
+     */
+    $scope.load_more_results = function() {
+        var next_page = true;
+        get_results($scope.results.id, next_page);
+    };
+
+    /**
      * Initialize results object.
      */
     function results_init() {
         return {
+            id: null,
             alignments: [],
             count: null,
-            url: '',
+            next_page: null,
         };
     }
 
