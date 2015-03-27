@@ -124,22 +124,21 @@ class ResultsSerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='result_id')
     rnacentral_id = serializers.CharField(source='rnacentral_id')
     description = serializers.CharField(source='description')
-    bias = serializers.CharField(source='bias')
-    query_start = serializers.CharField(source='query_start')
-    query_end = serializers.CharField(source='query_end')
-    target_start = serializers.CharField(source='target_start')
-    target_end = serializers.CharField(source='target_end')
-    target_length = serializers.CharField(source='target_length')
+    bias = serializers.FloatField(source='bias')
+    target_length = serializers.IntegerField(source='target_length')
+    query_length = serializers.IntegerField(source='query_length')
     alignment = serializers.CharField(source='alignment')
-    score = serializers.CharField(source='score')
-    e_value = serializers.CharField(source='e_value')
+    score = serializers.FloatField(source='score')
+    e_value = serializers.FloatField(source='e_value')
+    nts_count1 = serializers.IntegerField(source='nts_count1')
+    nts_count2 = serializers.IntegerField(source='nts_count2')
 
     class Meta:
         model = Results
         fields = ('id', 'rnacentral_id', 'description', 'bias',
-                  'query_start', 'query_end', 'target_start',
-                  'target_end', 'target_length', 'alignment',
-                  'score', 'e_value')
+                  'target_length', 'query_length', 'alignment',
+                  'score', 'e_value', 'match_count', 'gap_count',
+                  'alignment_length', 'nts_count1', 'nts_count2')
 
 
 class ResultsView(generics.ListAPIView):

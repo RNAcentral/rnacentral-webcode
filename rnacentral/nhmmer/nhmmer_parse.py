@@ -43,6 +43,103 @@ class NhmmerResultsParser(object):
                 yield line
             buf = lines[-1]
 
+    def parse_record_description(self, lines):
+        """
+        Example:
+ URS0000000013  Vibrio gigantis partial 16S ribosomal RNA
+    score  bias    Evalue   hmmfrom    hmm to     alifrom    ali to      envfrom    env to       sq len      acc
+   ------ ----- ---------   -------   -------    --------- ---------    --------- ---------    ---------    ----
+ !   76.9   4.1   5.4e-23        67       196 ..        41       170 ..        21       175 ..      1421    0.94
+        """
+        def parse_first_line(line):
+            """
+            Get URS id and description.
+            """
+            match = re.search(r'URS[0-9A-Fa-f]{10}', line)
+            return {
+                'rnacentral_id': match.group(),
+                'description': line.replace(match.group(), '').strip(),
+            }
+
+        def parse_fourth_line(line):
+            """
+            Parse out hit statistics.
+            """
+            line = line.replace('!', '').replace('?', '').strip()
+            scores = re.split(r'\s{2,}', line)
+            return {
+                'score': scores[0],
+                'bias': scores[1],
+                'e_value': scores[2],
+                'target_length': int(scores[9]),
+            }
+
+        data = parse_first_line(lines[0])
+        data.update(parse_fourth_line(lines[3]))
+        return data
+
+    def parse_alignment(self, lines):
+        """
+        Example:
+  score: 76.9 bits
+          query  67 gagcggcggacgggugaguaaugccuaggaaucugccugguagugggggauaacgcucggaaacggacgcuaauaccgcauacguccuacgggaga 162
+                    gagcggcggacgggugaguaaugccuaggaa  ugccu g  gugggggauaac  u ggaaacg   gcuaauaccgcaua   ccuacggg  a
+  URS0000000013  41 GAGCGGCGGACGGGUGAGUAAUGCCUAGGAAAUUGCCUUGAUGUGGGGGAUAACCAUUGGAAACGAUGGCUAAUACCGCAUAAUGCCUACGGGCCA 136
+                    789********************************************************************************************* PP
+
+          query 163 aagcaggggaccuucgggccuugcgcuaucagau 196
+                    aag  ggggaccuucgggccu  cgc    agau
+  URS0000000013 137 AAGAGGGGGACCUUCGGGCCUCUCGCGUCAAGAU 170
+                    *********************9999877777766 PP
+        """
+        alignment = []
+        alignment_length = 0
+        matches = 0
+        nts_count1 = 0
+        nts_count2 = 0
+        gap_count = 0
+
+        for i, line in enumerate(lines):
+            gaps = line.count('-')
+            if i % 5 == 0: # query
+                match = re.match(r'^(\s+query\s+\d+ )(.+) \d+', line)
+                if match:
+                    label = match.group(1)
+                    block_length = len(match.group(2))
+                    alignment_length += block_length
+                    line = line.upper().replace('.', '-').replace('QUERY', 'Query')
+                    line = re.sub('^\s+', '', line)
+                    alignment.append(line)
+                    match2 = re.match('^Query\s+\d+ ', line)
+                    whitespace = len(match2.group(0))
+                    nts_count1 += block_length - gaps
+                    gap_count += gaps
+            elif i % 5 == 1: # matches
+                line = ' ' * whitespace + re.sub('\w', '|', line[len(label):])
+                matches += line.count('|')
+                alignment.append(line)
+            elif i % 5 == 2: # target
+                line = re.sub('\s+URS[0-9A-Fa-f]{10}', 'Sbjct', line.upper())
+                match = re.match(r'^Sbjct\s+\d+ (.+) \d+', line)
+                if match:
+                    block_length = len(match.group(1))
+                    nts_count2 += block_length - gaps
+                    gap_count += gaps
+                alignment.append(line)
+            elif i % 5 == 3: # skip nhmmer confidence lines
+                pass
+            elif i % 5 == 4: # blank line
+                alignment.append(line)
+
+        return {
+            'alignment': '\n'.join(alignment),
+            'alignment_length': alignment_length,
+            'gap_count': gap_count,
+            'match_count': matches,
+            'nts_count1': nts_count1,
+            'nts_count2': nts_count2,
+        }
+
     def parse_record(self, text):
         """
         Example record:
@@ -64,28 +161,10 @@ class NhmmerResultsParser(object):
                     *********************9999877777766 PP
         """
         lines = text.split('\n')
-
-        line3 = lines[3].replace('!', '').strip()
-        scores = re.split(r'\s{2,}', line3)
-
-        match = re.search(r'URS[0-9A-Fa-f]{10}', lines[0])
-        rnacentral_id = match.group() if match else 'Unknown RNAcentral id'
-        description = lines[0].replace(rnacentral_id, '').strip()
-
-        return {
-            'rnacentral_id': rnacentral_id,
-            'description': description,
-            'score': scores[0],
-            'bias': scores[1],
-            'e_value': scores[2],
-            'query_start': scores[3].split(' ')[0],
-            'query_end': scores[4].split(' ')[0],
-            'target_start': scores[5].split(' ')[0],
-            'target_end': scores[6].split(' ')[0],
-            'query_length': self.query_length,
-            'target_length': int(scores[9]),
-            'alignment': '\n'.join(lines[7:len(lines)-2]),
-        }
+        data = self.parse_record_description(lines[:6])
+        data.update(self.parse_alignment(lines[7:]))
+        data['query_length'] = self.query_length
+        return data
 
     def is_last_record(self, record):
         """

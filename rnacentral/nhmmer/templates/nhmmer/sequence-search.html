@@ -39,7 +39,7 @@ Sequence search
   <div class="row sequence-search-input" >
       <form name="seqQueryForm" novalidate>
 
-        <div class="col-md-7 form-group">
+        <div class="col-md-9 form-group">
           <textarea class="form-control"
                     rows="6"
                     placeholder="Enter RNA or DNA sequence with or without FASTA description lines"
@@ -151,16 +151,16 @@ Sequence search
                     <strong>{{format_evalue(result.e_value)}}</strong>
                   </td>
                   <td>
-                    <strong>{{result.identity}}%</strong>
+                    <strong>{{(result.match_count / result.alignment_length)*100 | number:1}}%</strong> ({{result.match_count}}/{{result.alignment_length}})
                   </td>
                   <td>
-                    <strong>{{ result.query_coverage | number:1}}%</strong> ({{result.alignment_length}}/{{query.sequence.length}})
+                    <strong>{{(result.nts_count1 / result.query_length)*100 | number:1}}%</strong> ({{result.nts_count1}}/{{result.query_length}})
                   </td>
                   <td>
-                    <strong>{{ result.target_coverage | number:1}}%</strong> ({{result.target_length}}/{{result.full_target_length}})
+                    <strong>{{(result.nts_count2 / result.target_length)*100 | number:1}}%</strong> ({{result.nts_count2}}/{{result.target_length}})
                   </td>
                   <td>
-                    <strong>{{result.gaps}}%</strong> ({{count_gaps(result.formatted_alignment)}}/{{result.alignment_length}})
+                    <strong>{{(result.gap_count / result.alignment_length)*100 | number:1}}%</strong> ({{result.gap_count}}/{{result.alignment_length}})
                   </td>
                 </tr>
               </table>
