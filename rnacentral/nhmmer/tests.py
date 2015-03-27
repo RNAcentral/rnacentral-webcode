@@ -288,6 +288,33 @@ class RandomSearchesTests(NhmmerTestCase):
             self._check_results(query)
 
 
+class QueryInfoTests(NhmmerTestCase):
+    """
+    Tests for the query information retrieval endpoint.
+    """
+    def test_invalid_query_id(self):
+        """
+        Test invalid query id.
+        """
+        url = self.base_url + reverse('nhmmer-query-info') + '?id=foobar'
+        request = requests.get(url)
+        self.assertEqual(request.status_code, 404)
+
+    def test_query_info(self):
+        """
+        Submit a query, then retrieve its details
+        and compare the results.
+        """
+        sequence = 'ACGUACGUACGUACGU'
+        request = self._submit_query(query=sequence)
+        self.assertEqual(request.status_code, 201)
+        url = self.base_url + reverse('nhmmer-query-info') + '?id=%s' % request.json()['id']
+        time.sleep(1)
+        request = requests.get(url)
+        self.assertEqual(request.status_code, 200)
+        self.assertEqual(request.json()['sequence'], sequence)
+
+
 def setup_django_environment():
     """
     Setup Django environment in order for `reverse` and other Django
@@ -325,6 +352,7 @@ def run_tests():
         unittest.TestLoader().loadTestsFromTestCase(GetStatusTests),
         unittest.TestLoader().loadTestsFromTestCase(ResultsTests),
         unittest.TestLoader().loadTestsFromTestCase(RandomSearchesTests),
+        unittest.TestLoader().loadTestsFromTestCase(QueryInfoTests),
     ]
 
     unittest.TextTestRunner().run(unittest.TestSuite(suites))

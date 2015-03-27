@@ -17,7 +17,7 @@ from django.views.decorators.cache import never_cache
 from settings import MIN_LENGTH, MAX_LENGTH
 from messages import messages
 from utils import get_job, enqueue_job
-from models import Results
+from models import Results, Query
 
 from rest_framework import generics, serializers
 from rest_framework.permissions import AllowAny
@@ -156,3 +156,34 @@ class ResultsView(generics.ListAPIView):
         query_id = self.request.QUERY_PARAMS.get('id', None)
         return Results.objects.filter(query_id=query_id).\
                                order_by('id')
+
+
+class QuerySerializer(serializers.ModelSerializer):
+    """
+    Django Rest Framework serializer class for
+    retrieving query details.
+    """
+    id = serializers.CharField(source='id')
+    sequence = serializers.CharField(source='query')
+    length = serializers.IntegerField(source='length')
+
+    class Meta:
+        model = Query
+        fields = ('id', 'sequence', 'length')
+
+
+class QueryView(generics.RetrieveAPIView):
+    """
+    Django Rest Framework view class for retrieving
+    query details.
+    """
+    permission_classes = (AllowAny,)
+    serializer_class = QuerySerializer
+
+    def get_object(self):
+        """
+        Retrieve Query object.
+        """
+        from django.shortcuts import get_object_or_404
+        query_id = self.request.QUERY_PARAMS.get('id', None)
+        return get_object_or_404(Query, pk=query_id)

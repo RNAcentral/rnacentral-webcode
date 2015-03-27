@@ -35,6 +35,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
         min_length: 20,
         submit_endpoint: '/sequence-search-new/submit-query',
         results_endpoint: '/sequence-search-new/get-results',
+        query_info_endpoint: '/sequence-search-new/query-info',
         messages: {
             get_results: 'Loading results',
             done: 'Done',
@@ -237,6 +238,25 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
     }
 
     /**
+     * Retrieve query information in order to load
+     * the query sequence into the search box.
+     */
+    function get_query_info(query_id) {
+        $http({
+            url: $scope.defaults.query_info_endpoint,
+            method: 'GET',
+            params: {
+                id: query_id,
+            },
+        }).success(function(data) {
+            $scope.query.sequence = data.sequence;
+        }).error(function(){
+            $scope.params.status_message = $scope.defaults.messages.failed;
+            $scope.params.error_message = $scope.defaults.messages.results_failed;
+        });
+    }
+
+    /**
      * When the controller is first created:
      * - activate Bootstrap tooltips when the controller is created.
      * - retrieve search results if necessary
@@ -244,6 +264,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
     (function(){
         if ($location.url().indexOf("?id=") > -1) {
             get_results($location.search().id);
+            get_query_info($location.search().id);
         }
 
         $('body').tooltip({
