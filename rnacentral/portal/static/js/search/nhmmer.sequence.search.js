@@ -222,19 +222,6 @@ limitations under the License.
     };
 
     /**
-     * Count the number of gaps in `formatted_alignment`.
-     */
-    $scope.count_gaps = function(formatted_alignment) {
-        return (formatted_alignment.match(/-/g)||[]).length;
-    };
-
-
-    $scope.custom_results_ordering = function(result) {
-        var sequence = parse_fasta($scope.query.sequence);
-        return parseFloat(result.identity) + (parseFloat(result.alignment_length)/parseFloat(sequence.length))*100 + (parseFloat(result.target_length)/parseFloat(result.full_target_length))*100;
-    };
-
-    /**
      * Remove fasta header and spaces and newlines.
      */
     function parse_fasta(sequence) {
