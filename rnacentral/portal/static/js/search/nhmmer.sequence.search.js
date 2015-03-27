@@ -15,6 +15,14 @@ limitations under the License.
  * Angular.js app for RNAcentral sequence search.
  */
 
+/**
+ * Create AngularJS app.
+ */
+angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
+
+/**
+ * Main controller.
+ */
 ;angular.module('rnacentralApp').controller('NhmmerResultsListCtrl', ['$scope', '$http', '$timeout', '$location', function($scope, $http, $timeout, $location) {
 
     $scope.query = {
