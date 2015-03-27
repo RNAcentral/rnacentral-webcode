@@ -132,7 +132,7 @@ class NhmmerResultsParser(object):
                 alignment.append(line)
 
         return {
-            'alignment': '\n'.join(alignment),
+            'alignment': '\n'.join(alignment).strip(),
             'alignment_length': alignment_length,
             'gap_count': gap_count,
             'match_count': matches,
