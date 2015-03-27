@@ -124,7 +124,7 @@ Sequence search
       </h2>
 
       <ul  class="list-unstyled">
-        <li class="result" ng-repeat="result in results.alignments | orderBy:['-identity', '-query_coverage', '-target_coverage']">
+        <li class="result" ng-repeat="result in results.alignments">
             <h4><a href="/rna/{{result.rnacentral_id}}" target="_blank">{{result.description}} <small>{{result.rnacentral_id}}</small></a></h4>
 
             <div class="table-responsive">
