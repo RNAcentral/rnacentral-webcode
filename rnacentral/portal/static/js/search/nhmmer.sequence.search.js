@@ -56,21 +56,6 @@ limitations under the License.
         $scope.params.search_in_progress = true;
         $scope.params.status_message = $scope.defaults.messages.get_results;
 
-        // /**
-        //  * Add new fields used for results sorting.
-        //  * The fields cannot be calculated on the server because it doesn't
-        //  * know the length of the query sequence at the time of generating
-        //  * results.
-        //  */
-        // var preprocess_results = function(data){
-        //     var sequence = parse_fasta($scope.query.sequence);
-        //     _.each(data.results.alignments, function(result) {
-        //         result.identity = parseFloat(result.identity);
-        //         result.query_coverage = ( parseFloat(result.alignment_length)/parseFloat(sequence.length) )*100;
-        //         result.target_coverage = ( parseFloat(result.target_length)/parseFloat(result.full_target_length) )*100;
-        //     });
-        // };
-
         $http({
             url: $scope.results.url,
             method: 'GET',
