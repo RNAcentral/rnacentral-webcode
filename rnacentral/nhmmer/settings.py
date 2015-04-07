@@ -12,7 +12,7 @@ limitations under the License.
 """
 
 # minimum query sequence length
-MIN_LENGTH = 11
+MIN_LENGTH = 10
 
 # maximum query sequence length
 MAX_LENGTH = 10000
