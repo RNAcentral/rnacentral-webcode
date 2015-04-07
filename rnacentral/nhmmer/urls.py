@@ -13,7 +13,9 @@ limitations under the License.
 
 from django.conf.urls import patterns, url
 from django.views.generic.base import TemplateView
+from settings import MIN_LENGTH, MAX_LENGTH
 import views
+
 
 # exporting metadata search results
 urlpatterns = patterns('',
@@ -36,8 +38,31 @@ urlpatterns = patterns('',
     url(r'^query-info/?$',
         views.QueryView.as_view(),
         name='nhmmer-query-info'),
+)
 
+
+class SequenceSearchUIView(TemplateView):
+    """
+    Class-based view for displaying sequence search
+    user interface.
+    """
+    template_name='nhmmer/sequence-search.html'
+
+    def get_context_data(self, **kwargs):
+        """
+        Override the default method in order to pass
+        additional data to the template.
+        """
+        context = super(TemplateView, self).get_context_data(**kwargs)
+        context.update({
+            'MIN_LENGTH': MIN_LENGTH,
+            'MAX_LENGTH': MAX_LENGTH,
+        })
+        return context
+
+
+urlpatterns += patterns('',
     # user interface
-    url(r'^$', TemplateView.as_view(template_name='nhmmer/sequence-search.html'),
+    url(r'^$', SequenceSearchUIView.as_view(),
         name='nhmmer-sequence-search'),
 )
