@@ -31,7 +31,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
     };
 
     $scope.defaults = {
-        polling_interval: 5000, // milliseconds
+        polling_interval: 2500, // milliseconds
 
         // global variables defined in the Django template
         min_length: SEQ_SEARCH_PARAMS.min_length,
@@ -107,7 +107,9 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
                 $scope.params.status_message = $scope.defaults.messages.failed;
                 $scope.params.error_message = $scope.defaults.messages.results_failed;
             } else if (data.status === 'started' || data.status === 'queued' || data.status === 'deferred') {
-                setTimeout(check_job_status(id), $scope.defaults.polling_interval);
+                setTimeout(function() {
+                    check_job_status(id);
+                }, $scope.defaults.polling_interval);
             }
         }).error(function(){
             $scope.params.status_message = $scope.defaults.messages.failed;
@@ -120,7 +122,9 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
      */
     var poll_job_status = function(id) {
         $scope.params.status_message = $scope.defaults.messages.poll_job_status;
-        setTimeout(check_job_status(id), 0);
+        setTimeout(function(){
+            check_job_status(id)
+        }, 0);
     };
 
     /**
@@ -148,9 +152,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             // update url
             $location.search({'id': data.id});
             // begin polling for results
-            $timeout(function() {
-                poll_job_status(data.id);
-            }, $scope.defaults.polling_interval);
+            poll_job_status(data.id);
         }).error(function(data, status) {
             $scope.params.error_message = $scope.defaults.messages.submit_failed;
             $scope.params.status_message = $scope.defaults.messages.failed;
