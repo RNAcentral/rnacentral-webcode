@@ -18,11 +18,6 @@ import subprocess as sub
 from local_settings import QUERY_DIR, RESULTS_DIR, NHMMER_EXECUTABLE, SEQDATABASE
 
 
-class NhmmerError(Exception):
-    """Raise when my specific value is wrong"""
-    pass
-
-
 class NhmmerSearch(object):
     """
     A class for launching nhmmer and storing results.
@@ -82,6 +77,9 @@ class NhmmerSearch(object):
         output, errors = process.communicate()
         return_code = process.returncode
         if return_code != 0:
+            class NhmmerError(Exception):
+                """Raise when nhmmer exits with a non-zero status"""
+                pass
             raise NhmmerError(errors, output, return_code)
 
     def __call__(self):
