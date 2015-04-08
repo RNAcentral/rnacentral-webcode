@@ -31,7 +31,6 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
     };
 
     $scope.defaults = {
-        page_size: 10,
         polling_interval: 5000, // milliseconds
 
         // global variables defined in the Django template
@@ -57,7 +56,6 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
 
     $scope.params = {
         search_in_progress: false,
-        page_size: $scope.defaults.page_size,
         error_message: '',
         status_message: '',
         show_alignments: true,
@@ -245,7 +243,6 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
         $scope.query.submit_attempted = false;
         $scope.results = results_init();
         $scope.params.status_message = '';
-        $scope.params.page_size = $scope.defaults.page_size;
         $('textarea').focus();
     };
 
