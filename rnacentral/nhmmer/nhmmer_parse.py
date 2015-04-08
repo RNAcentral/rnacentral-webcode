@@ -16,7 +16,7 @@ import re
 
 class NhmmerResultsParser(object):
     """
-    A class for parsing nhmmer search results.
+    Class for parsing nhmmer search results.
     """
     def __init__(self, filename=''):
         """

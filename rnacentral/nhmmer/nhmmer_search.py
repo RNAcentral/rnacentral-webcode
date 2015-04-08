@@ -20,17 +20,17 @@ from local_settings import QUERY_DIR, RESULTS_DIR, NHMMER_EXECUTABLE, SEQDATABAS
 
 class NhmmerSearch(object):
     """
-    A class for launching nhmmer and storing results.
+    Class for launching nhmmer and storing results.
     """
-
     def __init__(self, sequence, job_id):
         """
+        Initialize internal variables.
         """
         self.sequence = sequence.replace('T', 'U').upper()
         self.job_id = job_id
         self.cmd = None
         self.params = {
-            'query': None,
+            'query': os.path.join(QUERY_DIR, '%s.fasta' % job_id),
             'output': os.path.join(RESULTS_DIR, '%s.txt' % job_id),
             'nhmmer': NHMMER_EXECUTABLE,
             'db': SEQDATABASE,
@@ -43,7 +43,6 @@ class NhmmerSearch(object):
         """
         Write out query in fasta format.
         """
-        self.params['query'] = os.path.join(QUERY_DIR, '%s.fasta' % self.job_id)
         with open(self.params['query'], 'w') as f:
             f.write('>query\n')
             f.write(self.sequence)

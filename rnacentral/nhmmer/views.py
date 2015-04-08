@@ -12,6 +12,7 @@ limitations under the License.
 """
 
 from django.core.urlresolvers import reverse
+from django.shortcuts import get_object_or_404
 from django.views.decorators.cache import never_cache
 
 from settings import MIN_LENGTH, MAX_LENGTH
@@ -184,6 +185,5 @@ class QueryView(generics.RetrieveAPIView):
         """
         Retrieve Query object.
         """
-        from django.shortcuts import get_object_or_404
         query_id = self.request.QUERY_PARAMS.get('id', None)
         return get_object_or_404(Query, pk=query_id)
