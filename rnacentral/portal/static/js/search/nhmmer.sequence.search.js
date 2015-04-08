@@ -243,6 +243,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
         $scope.query.submit_attempted = false;
         $scope.results = results_init();
         $scope.params.status_message = '';
+        $scope.params.error_message = '';
         $('textarea').focus();
     };
 
