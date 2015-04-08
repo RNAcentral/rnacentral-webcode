@@ -127,9 +127,10 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
      */
     var poll_job_status = function(id) {
         $scope.params.status_message = $scope.defaults.messages.poll_job_status;
-        var interval = setInterval(function(){
+        var interval = setInterval(function lambda(){
             check_job_status(id, interval);
-        }, $scope.defaults.polling_interval);
+            return lambda;
+        }(), $scope.defaults.polling_interval);
     };
 
     /**
