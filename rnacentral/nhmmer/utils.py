@@ -49,8 +49,8 @@ def nhmmer_search(sequence):
     RQ worker function.
     """
     job = get_current_job()
-    filename = NhmmerSearch(sequence=sequence, job_id=job.id)()
     save_query(sequence, job.id)
+    filename = NhmmerSearch(sequence=sequence, job_id=job.id)()
     save_results(filename, job.id)
 
 
