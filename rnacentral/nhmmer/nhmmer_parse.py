@@ -65,8 +65,14 @@ class NhmmerResultsParser(object):
             """
             Parse out hit statistics.
             """
-            line = line.replace('!', '').replace('?', '').strip()
-            scores = re.split(r'\s{2,}', line)
+            line = line.replace('!', '').\
+                        replace('?', '').\
+                        replace('[]', '').\
+                        replace('[.', '').\
+                        replace('.]', '').\
+                        replace('..', '').\
+                        strip()
+            scores = re.split(r' +', line)
             return {
                 'score': scores[0],
                 'bias': scores[1],
