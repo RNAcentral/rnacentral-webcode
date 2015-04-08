@@ -32,6 +32,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
 
     $scope.defaults = {
         page_size: 10,
+        polling_interval: 5000, // milliseconds
 
         // global variables defined in the Django template
         min_length: SEQ_SEARCH_PARAMS.min_length,
@@ -92,30 +93,43 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
     };
 
     /**
-     * Poll job status in regular intervals.
+     * Check job status using REST API.
      */
-    var poll_job_status = function(url) {
-        $scope.params.status_message = $scope.defaults.messages.poll_job_status;
-        var polling_interval = 1000; // milliseconds
-        var interval = setInterval(function(){
-            $http({
-                url: url,
-                method: 'GET'
-            }).success(function(data){
-                if (data.status === 'finished') {
+    var check_job_status = function(id, interval) {
+        interval = interval || null;
+        $http({
+            url: $scope.defaults.job_status_endpoint,
+            method: 'GET',
+            params: {
+                id: id,
+            },
+        }).success(function(data){
+            if (data.status === 'finished') {
+                if (interval) {
                     window.clearInterval(interval);
-                    // get results
-                    get_results(data.id);
-                } else if (data.status === 'failed') {
-                    window.clearInterval(interval);
-                    $scope.params.status_message = $scope.defaults.messages.failed;
-                    $scope.params.error_message = $scope.defaults.messages.results_failed;
                 }
-            }).error(function(){
+                get_results(data.id);
+            } else if (data.status === 'failed') {
+                if (interval) {
+                    window.clearInterval(interval);
+                }
                 $scope.params.status_message = $scope.defaults.messages.failed;
                 $scope.params.error_message = $scope.defaults.messages.results_failed;
-            });
-        }, polling_interval);
+            }
+        }).error(function(){
+            $scope.params.status_message = $scope.defaults.messages.failed;
+            $scope.params.error_message = $scope.defaults.messages.results_failed;
+        });
+    };
+
+    /**
+     * Poll job status at regular intervals.
+     */
+    var poll_job_status = function(id) {
+        $scope.params.status_message = $scope.defaults.messages.poll_job_status;
+        var interval = setInterval(function(){
+            check_job_status(id, interval);
+        }, $scope.defaults.polling_interval);
     };
 
     /**
@@ -144,8 +158,8 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             $location.search({'id': data.id});
             // begin polling for results
             $timeout(function() {
-                poll_job_status(data.url);
-            }, 1000);
+                poll_job_status(data.id);
+            }, $scope.defaults.polling_interval);
         }).error(function(data, status) {
             $scope.params.error_message = $scope.defaults.messages.submit_failed;
             $scope.params.status_message = $scope.defaults.messages.failed;
@@ -293,7 +307,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
      */
     (function(){
         if ($location.url().indexOf("?id=") > -1) {
-            get_results($location.search().id);
+            poll_job_status($location.search().id);
             get_query_info($location.search().id);
         }
 
