@@ -32,11 +32,15 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
 
     $scope.defaults = {
         page_size: 10,
-        min_length: DJANGO_MIN_LENGTH, // global variable defined in the template
-        submit_endpoint: '/sequence-search-new/submit-query',
-        results_endpoint: '/sequence-search-new/get-results',
-        query_info_endpoint: '/sequence-search-new/query-info',
-        md5_endpoint: '/api/v1/rna',
+
+        // global variables defined in the Django template
+        min_length: SEQ_SEARCH_PARAMS.min_length,
+        submit_endpoint: SEQ_SEARCH_PARAMS.submit_endpoint,
+        job_status_endpoint: SEQ_SEARCH_PARAMS.job_status_endpoint,
+        results_endpoint: SEQ_SEARCH_PARAMS.results_endpoint,
+        query_info_endpoint: SEQ_SEARCH_PARAMS.query_info_endpoint,
+        md5_endpoint: SEQ_SEARCH_PARAMS.md5_endpoint,
+
         messages: {
             get_results: 'Loading results',
             done: 'Done',
@@ -46,7 +50,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             poll_job_status: 'Waiting for results',
             submitting: 'Submitting query',
             loading_more_results: 'Loading more results',
-            too_short: 'The sequence cannot be shorter than ' + DJANGO_MIN_LENGTH + ' nucleotides',
+            too_short: 'The sequence cannot be shorter than ' + SEQ_SEARCH_PARAMS.min_length + ' nucleotides',
         },
     };
 
