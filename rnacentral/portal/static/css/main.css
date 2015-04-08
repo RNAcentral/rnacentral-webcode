@@ -207,7 +207,7 @@ a[href^="http://"]:not([href^="http://rnacentral.org"]):hover, .gv_menu a:hover 
 }
 
 /* append external link icon to all full links */
-a[href^="http://"]:after {
+a[href^="http://"]:after, .external-link:after {
   content: "\f08e";
   font-family: FontAwesome;
   font-weight: normal;
