@@ -265,6 +265,15 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
     };
 
     /**
+     * Calculate query sequence length
+     * (without whitespace and fasta header).
+     */
+    $scope.get_query_length = function() {
+        sequence = parse_fasta(document.getElementById("query-sequence").value);
+        return sequence.length || 0;
+    };
+
+    /**
      * Remove fasta header and spaces and newlines.
      */
     function parse_fasta(sequence) {

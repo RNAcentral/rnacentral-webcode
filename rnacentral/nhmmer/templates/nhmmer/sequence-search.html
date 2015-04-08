@@ -54,11 +54,12 @@ Sequence search
                     autofocus></textarea>
 
             <span class="help-block">
-              <i>
-                Examples:
-                <a href="" ng-click="sequence_search('>miRNA hsa-let-7f-5p (URS00003B7674)\nUGAGGUAGUAGAUUGUAUAGUU')">miRNA hsa-let-7f-5p (URS00003B7674)</a>,
-                <a href="" ng-click="sequence_search('UGCCUGGCGGCCGUAGCGCGGUGGUCCCACCUGACCCCAUGCCGAACUCAGAAGUGAAACGCCGUAGCGCCGAUGGUAGUGUGGGGUCUCCCCAUGCGAGAGUAGGGAACUGCCAGGCAU')">5S rRNA (URS0000049E57)</a>
-              </i>
+              <em>Examples:</em>
+              <a href="" ng-click="sequence_search('>miRNA hsa-let-7f-5p (URS00003B7674)\nUGAGGUAGUAGAUUGUAUAGUU')">miRNA hsa-let-7f-5p (URS00003B7674)</a>,
+              <a href="" ng-click="sequence_search('UGCCUGGCGGCCGUAGCGCGGUGGUCCCACCUGACCCCAUGCCGAACUCAGAAGUGAAACGCCGUAGCGCCGAUGGUAGUGUGGGGUCUCCCCAUGCGAGAGUAGGGAACUGCCAGGCAU')">5S rRNA (URS0000049E57)</a>
+              <em>
+                <span class="small pull-right" ng-show="get_query_length() > 0">{{get_query_length()}} nts</span>
+              </em>
             </span>
 
             <div class="form-group" ng-class="(seqQueryForm.sequence.$invalid) ? 'has-error' : ''">
