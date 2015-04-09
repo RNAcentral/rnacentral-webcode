@@ -139,6 +139,9 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
         $scope.params.search_in_progress = true;
         $scope.params.error_message = '';
         $scope.params.status_message = $scope.defaults.messages.submitting;
+
+        retrieve_exact_match(sequence);
+
         $http({
             url: $scope.defaults.submit_endpoint,
             method: 'POST',
@@ -158,8 +161,6 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             $scope.params.status_message = $scope.defaults.messages.failed;
             $scope.params.search_in_progress = false;
         });
-
-        retrieve_exact_match(sequence);
 
         /**
          * Check sequence length once the fasta header line is removed.
