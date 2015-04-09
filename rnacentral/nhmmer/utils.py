@@ -33,7 +33,7 @@ def save_results(filename, job_id):
     for record in NhmmerResultsParser(filename=filename)():
         record['query_id'] = query
         results.append(Results(**record))
-    Results.objects.bulk_create(results, 999)
+    Results.objects.bulk_create(results, 500)
 
 
 def save_query(sequence, job_id):
