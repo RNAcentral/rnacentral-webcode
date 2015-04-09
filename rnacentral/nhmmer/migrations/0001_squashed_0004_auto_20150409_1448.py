@@ -41,6 +41,10 @@ class Migration(migrations.Migration):
                 ('nts_count1', models.PositiveIntegerField(null=True)),
                 ('nts_count2', models.PositiveIntegerField(null=True)),
                 ('query_length', models.PositiveIntegerField(null=True)),
+                ('identity', models.FloatField(null=True)),
+                ('query_coverage', models.FloatField(null=True)),
+                ('target_coverage', models.FloatField(null=True)),
+                ('gaps', models.FloatField(null=True)),
             ],
             options={
                 'db_table': 'nhmmer_results',

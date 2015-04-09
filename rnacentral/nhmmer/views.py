@@ -139,7 +139,9 @@ class ResultsSerializer(serializers.ModelSerializer):
         fields = ('id', 'rnacentral_id', 'description', 'bias',
                   'target_length', 'query_length', 'alignment',
                   'score', 'e_value', 'match_count', 'gap_count',
-                  'alignment_length', 'nts_count1', 'nts_count2')
+                  'alignment_length', 'nts_count1', 'nts_count2',
+                  'identity', 'query_coverage', 'target_coverage',
+                  'gap_count')
 
 
 class ResultsView(generics.ListAPIView):

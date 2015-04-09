@@ -163,16 +163,16 @@ Sequence search
                     <strong>{{format_evalue(result.e_value)}}</strong>
                   </td>
                   <td>
-                    <strong>{{(result.match_count / result.alignment_length)*100 | number:1}}%</strong> ({{result.match_count}}/{{result.alignment_length}})
+                    <strong>{{result.identity | number:1}}%</strong> ({{result.match_count}}/{{result.alignment_length}})
                   </td>
                   <td>
-                    <strong>{{(result.nts_count1 / result.query_length)*100 | number:1}}%</strong> ({{result.nts_count1}}/{{result.query_length}})
+                    <strong>{{result.query_coverage | number:1}}%</strong> ({{result.nts_count1}}/{{result.query_length}})
                   </td>
                   <td>
-                    <strong>{{(result.nts_count2 / result.target_length)*100 | number:1}}%</strong> ({{result.nts_count2}}/{{result.target_length}})
+                    <strong>{{result.target_coverage | number:1}}%</strong> ({{result.nts_count2}}/{{result.target_length}})
                   </td>
                   <td>
-                    <strong>{{(result.gap_count / result.alignment_length)*100 | number:1}}%</strong> ({{result.gap_count}}/{{result.alignment_length}})
+                    <strong>{{result.gaps | number:1}}%</strong> ({{result.gap_count}}/{{result.alignment_length}})
                   </td>
                 </tr>
               </table>

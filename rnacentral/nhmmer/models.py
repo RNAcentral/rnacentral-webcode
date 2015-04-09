@@ -43,6 +43,10 @@ class Results(CachingMixin, models.Model):
     gap_count = models.PositiveIntegerField(null=True)
     nts_count1 = models.PositiveIntegerField(null=True)
     nts_count2 = models.PositiveIntegerField(null=True)
+    identity = models.FloatField(null=True)
+    query_coverage = models.FloatField(null=True)
+    target_coverage = models.FloatField(null=True)
+    gaps = models.FloatField(null=True)
 
     objects = CachingManager()
 

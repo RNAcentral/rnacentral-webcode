@@ -84,7 +84,7 @@ class NhmmerResultsParser(object):
         data.update(parse_fourth_line(lines[3]))
         return data
 
-    def parse_alignment(self, lines):
+    def parse_alignment(self, lines, target_length):
         """
         Example:
   score: 76.9 bits
@@ -144,6 +144,10 @@ class NhmmerResultsParser(object):
             'match_count': matches,
             'nts_count1': nts_count1,
             'nts_count2': nts_count2,
+            'identity': (float(matches) / alignment_length) * 100,
+            'query_coverage': (float(nts_count1) / self.query_length) * 100,
+            'target_coverage': (float(nts_count2) / target_length) * 100,
+            'gaps': (float(gap_count) / alignment_length) * 100,
         }
 
     def parse_record(self, text):
@@ -168,7 +172,7 @@ class NhmmerResultsParser(object):
         """
         lines = text.split('\n')
         data = self.parse_record_description(lines[:6])
-        data.update(self.parse_alignment(lines[7:]))
+        data.update(self.parse_alignment(lines[7:], data['target_length']))
         data['query_length'] = self.query_length
         return data
 
