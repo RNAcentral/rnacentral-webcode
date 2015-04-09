@@ -20,7 +20,7 @@ from messages import messages
 from utils import get_job, enqueue_job
 from models import Results, Query
 
-from rest_framework import generics, serializers
+from rest_framework import generics, serializers, filters
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -141,7 +141,7 @@ class ResultsSerializer(serializers.ModelSerializer):
                   'score', 'e_value', 'match_count', 'gap_count',
                   'alignment_length', 'nts_count1', 'nts_count2',
                   'identity', 'query_coverage', 'target_coverage',
-                  'gap_count')
+                  'gaps')
 
 
 class ResultsView(generics.ListAPIView):
@@ -151,6 +151,9 @@ class ResultsView(generics.ListAPIView):
     """
     permission_classes = (AllowAny,)
     serializer_class = ResultsSerializer
+    filter_backends = (filters.OrderingFilter,)
+    ordering_fields = ('identity', 'query_coverage', 'target_coverage',
+                       'gaps')
 
     def get_queryset(self):
         """
