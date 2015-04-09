@@ -106,9 +106,11 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             if (data.status === 'finished') {
                 get_results(data.id);
             } else if (data.status === 'failed') {
+                $scope.params.search_in_progress = false;
                 $scope.params.status_message = $scope.defaults.messages.failed;
                 $scope.params.error_message = $scope.defaults.messages.results_failed;
             } else {
+                $scope.params.search_in_progress = true;
                 if (data.status === 'queued') {
                     $scope.params.status_message = $scope.defaults.messages.queued;
                 } else if (data.status === 'started') {
