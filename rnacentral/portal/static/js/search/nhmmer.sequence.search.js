@@ -47,6 +47,8 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             failed: 'Error',
             submit_failed: 'There was a problem submitting your query. Please try again later or get in touch if the error persists.',
             results_failed: 'There was a problem retrieving the results. Please try again later or get in touch if the error persists.',
+            queued: 'Queued',
+            started: 'Running',
             poll_job_status: 'Waiting for results',
             submitting: 'Submitting query',
             loading_more_results: 'Loading more results',
@@ -106,7 +108,14 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             } else if (data.status === 'failed') {
                 $scope.params.status_message = $scope.defaults.messages.failed;
                 $scope.params.error_message = $scope.defaults.messages.results_failed;
-            } else if (data.status === 'started' || data.status === 'queued' || data.status === 'deferred') {
+            } else {
+                if (data.status === 'queued') {
+                    $scope.params.status_message = $scope.defaults.messages.queued;
+                } else if (data.status === 'started') {
+                    $scope.params.status_message = $scope.defaults.messages.started;
+                } else {
+                    $scope.params.status_message = '';
+                }
                 setTimeout(function() {
                     check_job_status(id);
                 }, $scope.defaults.polling_interval);
