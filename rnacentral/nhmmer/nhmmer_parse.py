@@ -74,9 +74,9 @@ class NhmmerResultsParser(object):
                         strip()
             scores = re.split(r' +', line)
             return {
-                'score': scores[0],
-                'bias': scores[1],
-                'e_value': scores[2],
+                'score': float(scores[0]),
+                'bias': float(scores[1]),
+                'e_value': float(scores[2]),
                 'target_length': int(scores[9]),
             }
 
@@ -203,7 +203,7 @@ class NhmmerResultsParser(object):
         """
         match = re.search(r'Query:       query  \[M=(\d+)\]', record)
         if match:
-            self.query_length = match.group(1)
+            self.query_length = int(match.group(1))
 
     def __call__(self):
         """
