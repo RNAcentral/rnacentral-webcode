@@ -73,6 +73,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
         status_message: '',
         show_alignments: true,
         selectedOrdering: $scope.ordering[0],
+        initial_page_size: null,
     };
 
     $scope.results = results_init();
@@ -82,11 +83,20 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
      * based on the current user selection.
      */
     $scope.update_ordering = function() {
-        $location.search({
-            id: $location.search().id,
+        $location.search($.extend($location.search(), {
             ordering: $scope.params.selectedOrdering.sort_field,
-        });
-    }
+        }));
+    };
+
+    /**
+     * Update the `page_size` url parameter
+     * based on the number of currently loaded alignments.
+     */
+    var update_page_size = function() {
+        $location.search($.extend($location.search(), {
+            page_size: $scope.results.alignments.length,
+        }));
+    };
 
     /**
      * Retrieve results given a results url.
@@ -103,6 +113,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             params: {
                 id: id,
                 ordering: $scope.params.selectedOrdering.sort_field,
+                page_size: $scope.params.initial_page_size || 10,
             },
         }).success(function(data){
             $scope.results.count = data.count;
@@ -111,9 +122,13 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             } else {
                 $scope.results.alignments = data.results;
             }
+            if ($scope.params.initial_page_size) {
+                $scope.params.initial_page_size = null;
+            }
             $scope.results.next_page = data.next;
             $scope.params.search_in_progress = false;
             $scope.params.status_message = $scope.defaults.messages.done;
+            update_page_size();
         }).error(function(){
             $scope.params.search_in_progress = false;
             $scope.params.status_message = $scope.defaults.messages.failed;
@@ -163,7 +178,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
     var poll_job_status = function(id) {
         $scope.params.status_message = $scope.defaults.messages.poll_job_status;
         setTimeout(function(){
-            check_job_status(id)
+            check_job_status(id);
         }, 0);
     };
 
@@ -280,8 +295,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
      * Reset the form.
      */
     $scope.reset = function() {
-        $location.search('id', null);
-        $location.search('ordering', null);
+        $location.search({});
         $scope.query.sequence = '';
         $scope.query.submit_attempted = false;
         $scope.results = results_init();
@@ -376,6 +390,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             initialize_ordering();
             poll_job_status($location.search().id);
             get_query_info($location.search().id);
+            $scope.params.initial_page_size = $location.search().page_size || null;
         }
 
         $('body').tooltip({
