@@ -57,14 +57,14 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
     };
 
     $scope.ordering = [
-        { sort_field: '-identity', label: 'Identity: high to low &darr;' },
+        { sort_field: '-identity', label: 'Identity: high to low' },
         { sort_field: 'identity', label: 'Identity: low to high' },
         { sort_field: '-query_coverage', label: 'Query coverage: high to low' },
         { sort_field: 'query_coverage', label: 'Query coverage: low to high' },
         { sort_field: '-target_coverage', label: 'Target coverage: high to low' },
         { sort_field: 'target_coverage', label: 'Target coverage: low to high' },
-        { sort_field: 'gaps', label: 'Gaps: high to low' },
-        { sort_field: '-gaps', label: 'Gaps: low to high' },
+        { sort_field: 'gaps', label: 'Gaps: min to max' },
+        { sort_field: '-gaps', label: 'Gaps: max to min' },
     ];
 
     $scope.params = {
