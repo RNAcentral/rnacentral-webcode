@@ -83,8 +83,8 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
      */
     $scope.update_ordering = function() {
         $location.search({
+            id: $location.search().id,
             ordering: $scope.params.selectedOrdering.sort_field,
-            id: $location.search().id
         });
     }
 
