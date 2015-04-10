@@ -121,18 +121,30 @@ Sequence search
 
   <div class="row">
 
-    <div class="col-md-9 sequence-search-results">
+   <pre>{{params.selectedOrdering | json}}</pre>
+
+    <div class="col-md-9">
 
       <h2 ng-show="results.count > 0">
         Results
         <small>
           <span ng-if="results.count == 1">1 alignment</span>
           <span ng-if="results.count > 1">{{results.count | number}} alignments</span>
+
+          <form class="form-inline pull-right">
+            <button id="toggle-alignments" ng-click="toggle_alignments()" class="btn btn-default btn-sm pull-right margin-right-5px">Hide alignments</button>
+            <div class="form-group small">
+              <p class="form-control-static small" style="padding-right:0px;">Sort by:</p>
+            </div>
+            <div class="form-group small margin-right-5px">
+              <select class="form-control small" style="height:30px;" ng-change="get_results()" ng-model="params.selectedOrdering" ng-options="item.label for item in ordering track by item.label"></select>
+            </div>
+          </form>
+
         </small>
-        <button id="toggle-alignments" ng-click="toggle_alignments()" class="btn btn-default btn-sm pull-right">Hide alignments</button>
       </h2>
 
-      <ul  class="list-unstyled">
+      <ul  class="list-unstyled sequence-search-results">
         <li ng-class="result.rnacentral_id === results.exact_match ? 'result alert alert-success' : 'result'" ng-repeat="result in results.alignments">
             <h4>
               <a href="/rna/{{result.rnacentral_id}}" target="_blank">{{result.description}}</a>

@@ -56,11 +56,23 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
         },
     };
 
+    $scope.ordering = [
+        { sort_field: '-identity', label: 'Identity: high to low &darr;' },
+        { sort_field: 'identity', label: 'Identity: low to high' },
+        { sort_field: '-query_coverage', label: 'Query coverage: high to low' },
+        { sort_field: 'query_coverage', label: 'Query coverage: low to high' },
+        { sort_field: '-target_coverage', label: 'Target coverage: high to low' },
+        { sort_field: 'target_coverage', label: 'Target coverage: low to high' },
+        { sort_field: 'gaps', label: 'Gaps: high to low' },
+        { sort_field: '-gaps', label: 'Gaps: low to high' },
+    ];
+
     $scope.params = {
         search_in_progress: false,
         error_message: '',
         status_message: '',
         show_alignments: true,
+        selectedOrdering: $scope.ordering[0],
     };
 
     $scope.results = results_init();
@@ -68,9 +80,10 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
     /**
      * Retrieve results given a results url.
      */
-    var get_results = function(id, next_page) {
+    $scope.get_results = function(id, next_page) {
         $scope.params.search_in_progress = true;
         $scope.params.status_message = $scope.defaults.messages.get_results;
+        id = id || $location.search().id;
         next_page = next_page || false;
 
         $http({
@@ -78,10 +91,15 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             method: 'GET',
             params: {
                 id: id,
+                ordering: $scope.params.selectedOrdering.sort_field,
             },
         }).success(function(data){
             $scope.results.count = data.count;
-            $scope.results.alignments = $scope.results.alignments.concat(data.results);
+            if (next_page) {
+                $scope.results.alignments = $scope.results.alignments.concat(data.results);
+            } else {
+                $scope.results.alignments = data.results;
+            }
             $scope.results.next_page = data.next;
             $scope.params.search_in_progress = false;
             $scope.params.status_message = $scope.defaults.messages.done;
@@ -104,7 +122,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             },
         }).success(function(data){
             if (data.status === 'finished') {
-                get_results(data.id);
+                $scope.get_results(data.id);
             } else if (data.status === 'failed') {
                 $scope.params.search_in_progress = false;
                 $scope.params.status_message = $scope.defaults.messages.failed;
@@ -203,7 +221,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
      */
     $scope.load_more_results = function() {
         var next_page = true;
-        get_results($scope.results.id, next_page);
+        $scope.get_results($scope.results.id, next_page);
     };
 
     /**
