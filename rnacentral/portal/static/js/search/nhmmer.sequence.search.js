@@ -57,16 +57,14 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
     };
 
     $scope.ordering = [
-        { sort_field: 'e_value', label: 'E value: min to max'},
-        { sort_field: '-e_value', label: 'E value: max to min'},
-        { sort_field: '-identity', label: 'Identity: high to low' },
-        { sort_field: 'identity', label: 'Identity: low to high' },
-        { sort_field: '-query_coverage', label: 'Query coverage: high to low' },
-        { sort_field: 'query_coverage', label: 'Query coverage: low to high' },
-        { sort_field: '-target_coverage', label: 'Target coverage: high to low' },
-        { sort_field: 'target_coverage', label: 'Target coverage: low to high' },
-        { sort_field: 'gaps', label: 'Gaps: min to max' },
-        { sort_field: '-gaps', label: 'Gaps: max to min' },
+        { sort_field: 'e_value', label: 'E-value (min to max)'},
+        { sort_field: '-e_value', label: 'E-value (max to min)'},
+        { sort_field: '-identity', label: 'Identity (max to min)' },
+        { sort_field: 'identity', label: 'Identity: (min to max)' },
+        { sort_field: '-query_coverage', label: 'Query coverage: (max to min)' },
+        { sort_field: 'query_coverage', label: 'Query coverage: (min to max)' },
+        { sort_field: '-target_coverage', label: 'Target coverage: (max to min)' },
+        { sort_field: 'target_coverage', label: 'Target coverage: (min to max)' },
     ];
 
     $scope.params = {
