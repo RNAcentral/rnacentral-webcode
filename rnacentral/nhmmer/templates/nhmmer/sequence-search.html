@@ -188,7 +188,7 @@ Sequence search
       <button class="btn btn-default load-more col-md-3" ng-click="load_more_results()" ng-show="results.count > results.alignments.length"><i ng-class="search_in_progress ? 'fa fa-spinner fa-spin' : 'hidden'"></i> Load more</button>
     </div> <!--/col-md-9 -->
 
-    <div class="col-md-3 small sequence-search-toolbar hidden-xs hidden-sm" ng-show="params.status_message === 'Done'">
+    <div class="col-md-3 small sequence-search-toolbar hidden-xs hidden-sm" ng-show="params.status_message === 'Done' && results.count > 0">
 
       <div class="panel panel-default" data-spy="affix" data-offset-top="320">
 
