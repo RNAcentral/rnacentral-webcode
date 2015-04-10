@@ -153,7 +153,8 @@ class ResultsView(generics.ListAPIView):
     serializer_class = ResultsSerializer
     filter_backends = (filters.OrderingFilter,)
     ordering_fields = ('identity', 'query_coverage', 'target_coverage',
-                       'gaps')
+                       'gaps', 'e_value')
+    ordering = ('e_value',) # default ordering
 
     def get_queryset(self):
         """
