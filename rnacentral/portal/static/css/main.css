@@ -731,6 +731,15 @@ textarea {
   border-top-color: white;
 }
 
+.sequence-search-toolbar .affix {
+  top: 200px;
+  width: 260px;
+}
+
+.sequence-search-toolbar .form-group {
+  margin-bottom: 10px;
+}
+
 /*------------------------------------------------------------------
 [5.9 D3 expert database treemap]
 */

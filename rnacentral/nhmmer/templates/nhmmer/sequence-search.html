@@ -128,17 +128,6 @@ Sequence search
         <small>
           <span ng-if="results.count == 1">1 alignment</span>
           <span ng-if="results.count > 1">{{results.count | number}} alignments</span>
-
-          <form class="form-inline pull-right">
-            <button id="toggle-alignments" ng-click="toggle_alignments()" class="btn btn-default btn-sm pull-right margin-right-5px">Hide alignments</button>
-            <div class="form-group small">
-              <p class="form-control-static small" style="padding-right:0px;">Sort by:</p>
-            </div>
-            <div class="form-group small margin-right-5px">
-              <select class="form-control small" style="height:30px;" ng-change="update_ordering(); get_results()" ng-model="params.selectedOrdering" ng-options="item.label for item in ordering track by item.label"></select>
-            </div>
-          </form>
-
         </small>
       </h2>
 
@@ -198,6 +187,36 @@ Sequence search
 
       <button class="btn btn-default load-more col-md-3" ng-click="load_more_results()" ng-show="results.count > results.alignments.length"><i ng-class="search_in_progress ? 'fa fa-spinner fa-spin' : 'hidden'"></i> Load more</button>
     </div> <!--/col-md-9 -->
+
+    <div class="col-md-3 small sequence-search-toolbar hidden-xs hidden-sm" ng-show="params.status_message === 'Done'">
+
+      <div class="panel panel-default" data-spy="affix" data-offset-top="320">
+
+        <div class="panel-heading">
+          <h3 class="panel-title"><i class="fa fa-wrench"></i> Tools</h3>
+        </div>
+
+        <div class="panel-body">
+          <form>
+
+            <div class="form-group">
+              Sort by:
+              <select class="form-control small" ng-change="update_ordering(); get_results();" ng-model="params.selectedOrdering" ng-options="item.label for item in ordering track by item.label"></select>
+            </div>
+
+            <div class="form-group">
+              <button id="toggle-alignments" ng-click="toggle_alignments()" class="btn btn-default btn-sm"><i class="fa fa-align-justify"></i> Hide alignments</button>
+            </div>
+
+            <div class="form-group">
+              <a href="" ng-click="scroll_to_top();"><i class="fa fa-long-arrow-up"></i> Back to top</a>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+    </div>
 
   </div><!--/row -->
 

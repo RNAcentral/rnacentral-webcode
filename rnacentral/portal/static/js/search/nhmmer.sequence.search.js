@@ -236,6 +236,13 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
     };
 
     /**
+     * Scroll page to the top.
+     */
+    $scope.scroll_to_top = function() {
+        $("html, body").animate({ scrollTop: "0px" });
+    };
+
+    /**
      * Initialize results object.
      */
     function results_init() {
@@ -274,6 +281,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
      */
     $scope.reset = function() {
         $location.search('id', null);
+        $location.search('ordering', null);
         $scope.query.sequence = '';
         $scope.query.submit_attempted = false;
         $scope.results = results_init();
@@ -302,8 +310,9 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
      */
     $scope.toggle_alignments = function() {
         $scope.params.show_alignments = !$scope.params.show_alignments;
-        $('#toggle-alignments').text(function(i, text){
-          return text === "Show alignments" ? "Hide alignments" : "Show alignments";
+        $('#toggle-alignments').html(function(i, text){
+          var icon = '<i class="fa fa-align-justify"></i> ';
+          return icon + (text.indexOf("Show alignments") > -1 ? "Hide alignments" : "Show alignments");
         });
     };
 
