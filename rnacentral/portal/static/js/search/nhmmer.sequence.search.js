@@ -78,6 +78,17 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
     $scope.results = results_init();
 
     /**
+     * Update the `ordering` url parameter
+     * based on the current user selection.
+     */
+    $scope.update_ordering = function() {
+        $location.search({
+            ordering: $scope.params.selectedOrdering.sort_field,
+            id: $location.search().id
+        });
+    }
+
+    /**
      * Retrieve results given a results url.
      */
     $scope.get_results = function(id, next_page) {
@@ -333,12 +344,27 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
     }
 
     /**
+     * Set results ordering based on the url parameter.
+     */
+    function initialize_ordering() {
+        if ($location.search().ordering) {
+            var ordering = $location.search().ordering;
+            for (var i=0, len=$scope.ordering.length; i < len; i++) {
+                if ($scope.ordering[i].sort_field === ordering) {
+                    $scope.params.selectedOrdering = $scope.ordering[i];
+                }
+            }
+        }
+    }
+
+    /**
      * When the controller is first created:
      * - activate Bootstrap tooltips when the controller is created.
      * - retrieve search results if necessary
      */
     (function(){
-        if ($location.url().indexOf("?id=") > -1) {
+        if ($location.url().indexOf("id=") > -1) {
+            initialize_ordering();
             poll_job_status($location.search().id);
             get_query_info($location.search().id);
         }
