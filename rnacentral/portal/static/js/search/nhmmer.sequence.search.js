@@ -187,8 +187,8 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
      */
     var search = function(sequence) {
         $scope.results = results_init();
-        sequence = parse_fasta(sequence);
-        if (!is_valid_sequence()) {
+        input = parse_input(sequence);
+        if (!is_valid_sequence(input.sequence)) {
             return;
         }
         $scope.params.search_in_progress = true;
@@ -200,7 +200,10 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
         $http({
             url: $scope.defaults.submit_endpoint,
             method: 'POST',
-            data: $.param({q: sequence}),
+            data: $.param({
+                q: input.sequence,
+                description: input.description,
+            }),
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
@@ -220,7 +223,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
         /**
          * Check sequence length once the fasta header line is removed.
          */
-        function is_valid_sequence() {
+        function is_valid_sequence(sequence) {
             if (sequence.length < $scope.defaults.min_length) {
                 $scope.params.error_message = $scope.defaults.messages.too_short;
                 $scope.params.status_message = $scope.defaults.messages.failed;
@@ -275,8 +278,8 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
      * to the query sequence.
      */
     function retrieve_exact_match(sequence) {
-        sequence = parse_fasta(sequence);
-        var md5_hash = md5(sequence.toUpperCase().replace(/U/g, 'T'));
+        input = parse_input(sequence);
+        var md5_hash = md5(input.sequence.toUpperCase().replace(/U/g, 'T'));
         var url = $scope.defaults.md5_endpoint + '?md5=' + md5_hash;
         $http({
             url: url,
@@ -335,15 +338,26 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
      * (without whitespace and fasta header).
      */
     $scope.get_query_length = function() {
-        sequence = parse_fasta(document.getElementById("query-sequence").value);
-        return sequence.length || 0;
+        input = parse_input(document.getElementById("query-sequence").value);
+        return input.sequence.length || 0;
     };
 
     /**
      * Remove fasta header and spaces and newlines.
      */
-    function parse_fasta(sequence) {
-        return sequence.replace(/^>.+?[\n\r]/, '').replace(/\s/g, '');
+    function parse_input(sequence) {
+        var match = /(^>(.+)[\n\r])?(.+)/.exec(sequence);
+        if (match) {
+            return {
+                description: match[2] || '',
+                sequence: match[3].replace(/\s/g, ''),
+            };
+        } else {
+            return {
+                sequence: '',
+                description: '',
+            };
+        }
     }
 
     /**
@@ -358,7 +372,11 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
                 id: query_id,
             },
         }).success(function(data) {
-            $scope.query.sequence = data.sequence;
+            if (data.description) {
+                $scope.query.sequence = '>' + data.description + '\n' + data.sequence;
+            } else {
+                $scope.query.sequence = data.sequence;
+            }
             retrieve_exact_match(data.sequence);
         }).error(function(){
             $scope.params.status_message = $scope.defaults.messages.failed;

@@ -19,6 +19,9 @@ class Query(CachingMixin, models.Model):
     id = models.CharField(max_length=36, primary_key=True)
     query = models.TextField()
     length = models.PositiveIntegerField()
+    description = models.CharField(max_length=100, null=True)
+    # submitted = 
+    # finished = 
 
     objects = CachingManager()
 

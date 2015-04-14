@@ -42,8 +42,10 @@ def submit_job(request):
 
     if request.method == 'POST':
         query = request.POST.get('q', '')
+        description = request.POST.get('description', '')
     elif request.method == 'GET':
         query = request.GET.get('q', '')
+        description = request.GET.get('description', '')
 
     if not query:
         status = 400
@@ -58,7 +60,7 @@ def submit_job(request):
 
     try:
         status = 201
-        job_id = enqueue_job(query)
+        job_id = enqueue_job(query, description)
         url = request.build_absolute_uri(
             reverse('nhmmer-job-status') +
             '?id=%s' % job_id
@@ -173,10 +175,11 @@ class QuerySerializer(serializers.ModelSerializer):
     id = serializers.CharField(source='id')
     sequence = serializers.CharField(source='query')
     length = serializers.IntegerField(source='length')
+    description = serializers.CharField(source='description')
 
     class Meta:
         model = Query
-        fields = ('id', 'sequence', 'length')
+        fields = ('id', 'sequence', 'length', 'description')
 
 
 class QueryView(generics.RetrieveAPIView):

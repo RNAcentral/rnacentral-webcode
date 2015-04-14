@@ -36,31 +36,32 @@ def save_results(filename, job_id):
     Results.objects.bulk_create(results, 500)
 
 
-def save_query(sequence, job_id):
+def save_query(sequence, job_id, description):
     """
     Create query object in the main database.
     """
-    query = Query(id=job_id, query=sequence, length=len(sequence))
+    query = Query(id=job_id, query=sequence, length=len(sequence),
+                  description=description)
     query.save()
 
 
-def nhmmer_search(sequence):
+def nhmmer_search(sequence, description):
     """
     RQ worker function.
     """
     job = get_current_job()
-    save_query(sequence, job.id)
+    save_query(sequence, job.id, description)
     filename = NhmmerSearch(sequence=sequence, job_id=job.id)()
     save_results(filename, job.id)
 
 
-def enqueue_job(query):
+def enqueue_job(query, description):
     """
     Submit job to the queue and return job id.
     """
     queue = django_rq.get_queue()
     job = queue.enqueue_call(func=nhmmer_search,
-                             args=(query,),
+                             args=(query, description),
                              timeout=MAX_RUN_TIME,
                              result_ttl=EXPIRATION)
     job.meta['query'] = query
