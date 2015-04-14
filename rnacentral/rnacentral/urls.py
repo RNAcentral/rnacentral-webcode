@@ -26,5 +26,5 @@ urlpatterns = patterns('',
     # export metadata search results
     url(r'^export/', include('export.urls')),
     # sequence search
-    url(r'^sequence-search-new/', include('nhmmer.urls')),
+    url(r'^sequence-search-nhmmer/', include('nhmmer.urls')),
 )
