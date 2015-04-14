@@ -34,6 +34,8 @@ def save_results(filename, job_id):
         record['query_id'] = query
         results.append(Results(**record))
     Results.objects.bulk_create(results, 500)
+    query.finished = datetime.datetime.now()
+    query.save()
 
 
 def save_query(sequence, job_id, description):
@@ -41,7 +43,7 @@ def save_query(sequence, job_id, description):
     Create query object in the main database.
     """
     query = Query(id=job_id, query=sequence, length=len(sequence),
-                  description=description)
+                  description=description, submitted=datetime.datetime.now())
     query.save()
 
 

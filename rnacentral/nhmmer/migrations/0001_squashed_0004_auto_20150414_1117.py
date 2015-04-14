@@ -51,4 +51,22 @@ class Migration(migrations.Migration):
             },
             bases=(models.Model,),
         ),
+        migrations.AddField(
+            model_name='query',
+            name='description',
+            field=models.CharField(max_length=100, null=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='query',
+            name='finished',
+            field=models.DateTimeField(null=True, blank=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='query',
+            name='submitted',
+            field=models.DateTimeField(null=True),
+            preserve_default=True,
+        ),
     ]

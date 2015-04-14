@@ -20,8 +20,8 @@ class Query(CachingMixin, models.Model):
     query = models.TextField()
     length = models.PositiveIntegerField()
     description = models.CharField(max_length=100, null=True)
-    # submitted = 
-    # finished = 
+    submitted = models.DateTimeField(null=True)
+    finished = models.DateTimeField(null=True, blank=True)
 
     objects = CachingManager()
 

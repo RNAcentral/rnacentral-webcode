@@ -176,10 +176,13 @@ class QuerySerializer(serializers.ModelSerializer):
     sequence = serializers.CharField(source='query')
     length = serializers.IntegerField(source='length')
     description = serializers.CharField(source='description')
+    submitted = serializers.DateTimeField(source='submitted')
+    finished = serializers.DateTimeField(source='finished')
 
     class Meta:
         model = Query
-        fields = ('id', 'sequence', 'length', 'description')
+        fields = ('id', 'sequence', 'length', 'description',
+                  'submitted', 'finished')
 
 
 class QueryView(generics.RetrieveAPIView):
