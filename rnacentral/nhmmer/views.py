@@ -174,7 +174,7 @@ class QuerySerializer(serializers.ModelSerializer):
     """
     id = serializers.CharField(source='id')
     sequence = serializers.CharField(source='query')
-    length = serializers.IntegerField(source='length')
+    length = serializers.Field(source='get_length')
     description = serializers.CharField(source='description')
     submitted = serializers.DateTimeField(source='submitted')
     finished = serializers.DateTimeField(source='finished')

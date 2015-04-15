@@ -18,7 +18,6 @@ from django.db import models
 class Query(CachingMixin, models.Model):
     id = models.CharField(max_length=36, primary_key=True)
     query = models.TextField()
-    length = models.PositiveIntegerField()
     description = models.CharField(max_length=100, null=True)
     submitted = models.DateTimeField(null=True)
     finished = models.DateTimeField(null=True, blank=True)
@@ -27,6 +26,12 @@ class Query(CachingMixin, models.Model):
 
     class Meta:
         db_table = 'nhmmer_query'
+
+    def get_length(self):
+        """
+        Calculate query sequence length.
+        """
+        return len(self.query)
 
 
 class Results(CachingMixin, models.Model):

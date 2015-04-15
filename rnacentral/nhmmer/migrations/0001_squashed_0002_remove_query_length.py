@@ -69,4 +69,8 @@ class Migration(migrations.Migration):
             field=models.DateTimeField(null=True),
             preserve_default=True,
         ),
+        migrations.RemoveField(
+            model_name='query',
+            name='length',
+        ),
     ]
