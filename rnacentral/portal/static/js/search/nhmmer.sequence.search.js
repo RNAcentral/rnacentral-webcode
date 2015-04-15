@@ -23,7 +23,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
 /**
  * Main controller.
  */
-;angular.module('rnacentralApp').controller('NhmmerResultsListCtrl', ['$scope', '$http', '$timeout', '$location', function($scope, $http, $timeout, $location) {
+;angular.module('rnacentralApp').controller('NhmmerResultsListCtrl', ['$scope', '$http', '$timeout', '$location', '$q', function($scope, $http, $timeout, $location, $q) {
 
     $scope.query = {
         sequence: '',
@@ -187,38 +187,69 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
      */
     var search = function(sequence) {
         $scope.results = results_init();
-        input = parse_input(sequence);
-        if (!is_valid_sequence(input.sequence)) {
-            return;
+
+        var deferred = $q.defer();
+        var promise = deferred.promise;
+        promise = promise.then(parse_rnacentral_id).then(run_search);
+        deferred.resolve(sequence);
+
+        /**
+         * Retrieve sequence given an RNAcentral id using promises.
+         */
+        function parse_rnacentral_id(sequence) {
+            var deferred = $q.defer();
+            if (sequence.match(/^URS[A-Fa-f0-9]{10}$/i)) {
+                $http({
+                    url: $scope.defaults.md5_endpoint + '/' + sequence,
+                }).success(function(data){
+                    $scope.query.sequence = '>' + data.rnacentral_id + '\n' + data.sequence;
+                    deferred.resolve($scope.query.sequence);
+                });
+            } else {
+                deferred.resolve(sequence);
+                return deferred.promise;
+            }
+            return deferred.promise;
         }
-        $scope.params.search_in_progress = true;
-        $scope.params.error_message = '';
-        $scope.params.status_message = $scope.defaults.messages.submitting;
 
-        retrieve_exact_match(sequence);
+        /**
+         * Submit query and begin checking whether the results
+         * are ready.
+         */
+        function run_search(sequence) {
+            input = parse_input(sequence);
+            if (!is_valid_sequence(input.sequence)) {
+                return;
+            }
+            $scope.params.search_in_progress = true;
+            $scope.params.error_message = '';
+            $scope.params.status_message = $scope.defaults.messages.submitting;
 
-        $http({
-            url: $scope.defaults.submit_endpoint,
-            method: 'POST',
-            data: $.param({
-                q: input.sequence,
-                description: input.description,
-            }),
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-        }).success(function(data) {
-            // save query id
-            $scope.results.id = data.id;
-            // update url
-            $location.search({'id': data.id});
-            // begin polling for results
-            poll_job_status(data.id);
-        }).error(function(data, status) {
-            $scope.params.error_message = $scope.defaults.messages.submit_failed;
-            $scope.params.status_message = $scope.defaults.messages.failed;
-            $scope.params.search_in_progress = false;
-        });
+            retrieve_exact_match(sequence);
+
+            return $http({
+                url: $scope.defaults.submit_endpoint,
+                method: 'POST',
+                data: $.param({
+                    q: input.sequence,
+                    description: input.description,
+                }),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            }).success(function(data) {
+                // save query id
+                $scope.results.id = data.id;
+                // update url
+                $location.search({'id': data.id});
+                // begin polling for results
+                poll_job_status(data.id);
+            }).error(function(data, status) {
+                $scope.params.error_message = $scope.defaults.messages.submit_failed;
+                $scope.params.status_message = $scope.defaults.messages.failed;
+                $scope.params.search_in_progress = false;
+            });
+        }
 
         /**
          * Check sequence length once the fasta header line is removed.
@@ -343,7 +374,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
     };
 
     /**
-     * Remove fasta header and spaces and newlines.
+     * Parse fasta header, remove whitespace characters.
      */
     function parse_input(sequence) {
         var match = /(^>(.+)[\n\r])?(.+)/.exec(sequence);

@@ -604,7 +604,7 @@ angular.module('rnacentralApp').controller('QueryCtrl', ['$scope', '$location', 
                 if (newUrl.split('?')[0] !== oldUrl.split('?')[0]) {
                     redirect(newUrl);
                 }
-            } else if (newUrl.indexOf('sequence-search-new') !== -1){
+            } else if (newUrl.indexOf('sequence-search-nhmmer') !== -1){
                 /* let the sequence search app handle it */
             } else if (newUrl.indexOf('/search') == -1) {
                 // a non-search url, load that page

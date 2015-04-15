@@ -42,13 +42,13 @@ Sequence search
         <div class="col-md-9 form-group">
           <textarea class="form-control force-scrollbars"
                     rows="6"
-                    placeholder="Enter RNA or DNA sequence (with an optional description in FASTA format)"
+                    placeholder="Enter RNA/DNA sequence (with an optional description in FASTA format) or an RNAcentral ID"
                     name="sequence"
                     id="query-sequence"
                     ng-model="query.sequence"
                     ng-minlength="{% endverbatim %}{{MIN_LENGTH}}{% verbatim %}"
                     ng-maxlength="{% endverbatim %}{{MAX_LENGTH}}{% verbatim %}"
-                    ng-pattern="/^(>.+?[\n\r])*?[acgtunwsmkrybdhvx\s]+$/i"
+                    ng-pattern="/^(>.+?[\n\r])*?[acgtunwsmkrybdhvx\s]+$|URS[A-Fa-f0-9]{10}/i"
                     tabindex="2"
                     required
                     autofocus></textarea>
