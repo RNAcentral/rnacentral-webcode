@@ -17,7 +17,7 @@ from settings import MIN_LENGTH, MAX_LENGTH
 import views
 
 
-# exporting metadata search results
+# nhmmer sequence search urls
 urlpatterns = patterns('',
     # export search results
     url(r'^submit-query/?$',
