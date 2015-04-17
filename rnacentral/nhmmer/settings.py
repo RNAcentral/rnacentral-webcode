@@ -34,3 +34,11 @@ NHMMER_EXECUTABLE = ''
 
 # full path to sequence database
 SEQDATABASE = ''
+
+# base url of the remote nhmmer server
+NHMMER_SERVER = ''
+
+try:
+   from local_settings import *
+except ImportError, e:
+   pass

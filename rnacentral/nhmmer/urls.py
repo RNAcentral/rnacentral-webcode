@@ -13,7 +13,7 @@ limitations under the License.
 
 from django.conf.urls import patterns, url
 from django.views.generic.base import TemplateView
-from settings import MIN_LENGTH, MAX_LENGTH
+from settings import MIN_LENGTH, MAX_LENGTH, NHMMER_SERVER
 import views
 
 
@@ -57,6 +57,7 @@ class SequenceSearchUIView(TemplateView):
         context.update({
             'MIN_LENGTH': MIN_LENGTH,
             'MAX_LENGTH': MAX_LENGTH,
+            'NHMMER_SERVER': NHMMER_SERVER,
         })
         return context
 
