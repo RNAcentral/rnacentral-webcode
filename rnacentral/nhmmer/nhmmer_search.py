@@ -36,7 +36,7 @@ class NhmmerSearch(object):
             'db': SEQDATABASE,
             'incE': 0.01,
             'E': 0.01,
-            'cpu': 2,
+            'cpu': 4,
         }
 
     def create_query_file(self):
