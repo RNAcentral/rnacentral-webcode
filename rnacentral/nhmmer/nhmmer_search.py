@@ -15,7 +15,7 @@ import os
 import shlex
 import subprocess as sub
 
-from local_settings import QUERY_DIR, RESULTS_DIR, NHMMER_EXECUTABLE, SEQDATABASE
+from settings import QUERY_DIR, RESULTS_DIR, NHMMER_EXECUTABLE, SEQDATABASE
 
 
 class NhmmerSearch(object):
