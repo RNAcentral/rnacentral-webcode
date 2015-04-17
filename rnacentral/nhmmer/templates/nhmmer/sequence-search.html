@@ -48,7 +48,7 @@ Sequence search
                     ng-model="query.sequence"
                     ng-minlength="{% endverbatim %}{{MIN_LENGTH}}{% verbatim %}"
                     ng-maxlength="{% endverbatim %}{{MAX_LENGTH}}{% verbatim %}"
-                    ng-pattern="/^(>.+?[\n\r])*?[acgtunwsmkrybdhvx\s]+$|URS[A-Fa-f0-9]{10}/i"
+                    ng-pattern="/^(>.+?[\n\r])*?[acgtunwsmkrybdhvx\s]+$|^URS[A-Fa-f0-9]{10}$/i"
                     tabindex="2"
                     required
                     autofocus></textarea>
