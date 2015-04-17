@@ -46,6 +46,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             done: 'Done',
             failed: 'Error',
             submit_failed: 'There was a problem submitting your query. Please try again later or get in touch if the error persists.',
+            job_failed: 'There was a problem with your query. Please try again later or get in touch if the error persists.',
             results_failed: 'There was a problem retrieving the results. Please try again later or get in touch if the error persists.',
             queued: 'Queued',
             started: 'Running',
@@ -152,7 +153,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             } else if (data.status === 'failed') {
                 $scope.params.search_in_progress = false;
                 $scope.params.status_message = $scope.defaults.messages.failed;
-                $scope.params.error_message = $scope.defaults.messages.results_failed;
+                $scope.params.error_message = $scope.defaults.messages.job_failed;
             } else {
                 $scope.params.search_in_progress = true;
                 if (data.status === 'queued') {
