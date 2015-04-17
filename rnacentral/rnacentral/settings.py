@@ -126,7 +126,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 USE_ETAGS=True
 
 CORS_ORIGIN_ALLOW_ALL = True
-CORS_URLS_REGEX = r'^/api/.*$'
 
 ROOT_URLCONF = 'rnacentral.urls'
 
