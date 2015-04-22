@@ -243,10 +243,10 @@ Sequence search
   var SEQ_SEARCH_PARAMS = {
     'min_length': {{ MIN_LENGTH }},
     'max_length': {{ MAX_LENGTH }},
-    'submit_endpoint': '{{ NHMMER_SERVER }}/{% url "nhmmer-submit-job" %}',
-    'job_status_endpoint': '{{ NHMMER_SERVER }}/{% url "nhmmer-job-status" %}',
-    'results_endpoint': '{{ NHMMER_SERVER }}/{% url "nhmmer-job-results" %}',
-    'query_info_endpoint': '{{ NHMMER_SERVER }}/{% url "nhmmer-query-info" %}',
+    'submit_endpoint': '{% url "nhmmer-submit-job" %}',
+    'job_status_endpoint': '{% url "nhmmer-job-status" %}',
+    'results_endpoint': '{% url "nhmmer-job-results" %}',
+    'query_info_endpoint': '{% url "nhmmer-query-info" %}',
     'md5_endpoint': '{% url "rna-sequences" %}',
   };
 {% verbatim %}

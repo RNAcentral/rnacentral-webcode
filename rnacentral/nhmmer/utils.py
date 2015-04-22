@@ -12,7 +12,11 @@ limitations under the License.
 """
 
 import datetime
+import requests
+import socket
+
 from django.conf import settings
+from django.http import HttpResponse
 
 import django_rq
 from rq import get_current_job
@@ -20,7 +24,24 @@ from rq import get_current_job
 from nhmmer_search import NhmmerSearch
 from nhmmer_parse import NhmmerResultsParser
 from models import Results, Query
-from settings import EXPIRATION, MAX_RUN_TIME
+from settings import EXPIRATION, MAX_RUN_TIME, NHMMER_SERVER
+
+
+def nhmmer_proxy(request):
+    """
+    Public-facing nodes forward requests
+    to a dedicated machine running nhmmer
+    which is not accessible from outside networks.
+    """
+    if socket.gethostname() not in NHMMER_SERVER:
+        nhmmer_url = NHMMER_SERVER + request.get_full_path()
+        if request.method == 'POST':
+            response = requests.post(nhmmer_url, data=request.POST)
+        elif request.method == 'GET':
+            response = requests.get(nhmmer_url, params=request.GET)
+        return HttpResponse(response.text, status=response.status_code)
+    else:
+        return None
 
 
 def save_results(filename, job_id):

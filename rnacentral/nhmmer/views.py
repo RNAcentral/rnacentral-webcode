@@ -17,7 +17,7 @@ from django.views.decorators.cache import never_cache
 
 from settings import MIN_LENGTH, MAX_LENGTH
 from messages import messages
-from utils import get_job, enqueue_job
+from utils import get_job, enqueue_job, nhmmer_proxy
 from models import Results, Query
 
 from rest_framework import generics, serializers, filters
@@ -38,6 +38,10 @@ def submit_job(request):
     * 400 - incorrect input
     * 500 - internal error
     """
+    proxy_result = nhmmer_proxy(request)
+    if proxy_result:
+        return proxy_result
+
     msg = messages['submit']
 
     if request.method == 'POST':
@@ -88,6 +92,10 @@ def get_status(request):
     * 404 - job not found in the queue
     * 500 - internal error
     """
+    proxy_result = nhmmer_proxy(request)
+    if proxy_result:
+        return proxy_result
+
     msg = messages['status']
 
     job_id = request.GET.get('id', '')
