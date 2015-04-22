@@ -150,8 +150,8 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
                 id: id,
             },
         }).success(function(data){
-            $scope.query.ended_at = new Date(data.ended_at);
-            $scope.query.enqueued_at = new Date(data.enqueued_at);
+            $scope.query.ended_at = moment(data.ended_at).utc();
+            $scope.query.enqueued_at = moment(data.enqueued_at).utc();
             if (data.status === 'finished') {
                 $scope.get_results(data.id);
             } else if (data.status === 'failed') {
@@ -191,7 +191,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
      * Get current time.
      */
     $scope.get_current_timestamp = function() {
-        return new Date();
+        return moment().utc();
     }
 
     /**
@@ -422,8 +422,8 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             } else {
                 $scope.query.sequence = data.sequence;
             }
-            $scope.query.enqueued_at = new Date(data.submitted);
-            $scope.query.ended_at = new Date(data.finished);
+            $scope.query.enqueued_at = moment(data.enqueued_at).utc();
+            $scope.query.ended_at = moment(data.ended_at).utc();
             retrieve_exact_match(data.sequence);
         }).error(function(){
             $scope.params.status_message = $scope.defaults.messages.failed;

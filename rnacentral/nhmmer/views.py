@@ -79,6 +79,18 @@ def submit_job(request):
         return Response(msg[status], status=status)
 
 
+class StatusSerializer(serializers.Serializer):
+    """
+    Serializer class for job status.
+    """
+    id = serializers.CharField()
+    status = serializers.CharField()
+    enqueued_at = serializers.DateTimeField()
+    ended_at = serializers.DateTimeField()
+    expiration = serializers.DateTimeField()
+    url = serializers.CharField()
+
+
 @never_cache
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -110,15 +122,14 @@ def get_status(request):
                 reverse('nhmmer-job-results') +
                 '?id=%s' % job_id
             )
-            data = {
+            return Response(StatusSerializer({
                 'id': job.id,
                 'status': job.get_status(),
-                'enqueued_at': str(job.enqueued_at),
-                'ended_at': str(job.ended_at),
-                'expiration': job.meta['expiration'].strftime("%m/%d/%Y"),
+                'enqueued_at': job.enqueued_at,
+                'ended_at': job.ended_at,
+                'expiration': job.meta['expiration'],
                 'url': url,
-            }
-            return Response(data)
+            }).data)
         else:
             status = 404
             return Response(msg[status], status=status)
@@ -184,13 +195,13 @@ class QuerySerializer(serializers.ModelSerializer):
     sequence = serializers.CharField(source='query')
     length = serializers.Field(source='get_length')
     description = serializers.CharField(source='description')
-    submitted = serializers.DateTimeField(source='submitted')
-    finished = serializers.DateTimeField(source='finished')
+    enqueued_at = serializers.DateTimeField(source='submitted')
+    ended_at = serializers.DateTimeField(source='finished')
 
     class Meta:
         model = Query
         fields = ('id', 'sequence', 'length', 'description',
-                  'submitted', 'finished')
+                  'enqueued_at', 'ended_at')
 
 
 class QueryView(generics.RetrieveAPIView):
