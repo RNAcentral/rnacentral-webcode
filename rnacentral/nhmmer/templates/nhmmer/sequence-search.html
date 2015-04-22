@@ -144,7 +144,7 @@ Sequence search
       </h2>
 
       <ul  class="list-unstyled sequence-search-results">
-        <li ng-class="result.rnacentral_id === results.exact_match ? 'result alert alert-success' : 'result'" ng-repeat="result in results.alignments">
+        <li class="animate-repeat" ng-class="result.rnacentral_id === results.exact_match ? 'result alert alert-success' : 'result'" ng-repeat="result in results.alignments">
             <h4>
               <a href="/rna/{{result.rnacentral_id}}" target="_blank">{{result.description}}</a>
               <small>{{result.rnacentral_id}}</small>
