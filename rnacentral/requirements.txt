@@ -24,6 +24,7 @@ pycrypto==2.6.1
 pylint==1.1.0
 python-dateutil==2.1
 python-memcached==1.53
+pytz==2015.2
 requests==2.2.1
 selenium==2.39.0
 six==1.8.0
