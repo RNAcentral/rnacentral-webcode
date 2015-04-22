@@ -308,6 +308,14 @@ RQ_QUEUES = {
     },
 }
 
+# use pymysql driver instead of the official one
+# because MySQLdb is harder to install
+try:
+    import pymysql
+    pymysql.install_as_MySQLdb()
+except ImportError:
+    pass
+
 try:
    from local_settings import *
 except ImportError, e:
