@@ -28,10 +28,12 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
     $scope.query = {
         sequence: '',
         submit_attempted: false,
+        enqueued_at: null,
+        ended_at: null,
     };
 
     $scope.defaults = {
-        polling_interval: 2500, // milliseconds
+        polling_interval: 1000, // milliseconds
 
         // global variables defined in the Django template
         min_length: SEQ_SEARCH_PARAMS.min_length,
@@ -148,6 +150,8 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
                 id: id,
             },
         }).success(function(data){
+            $scope.query.ended_at = new Date(data.ended_at);
+            $scope.query.enqueued_at = new Date(data.enqueued_at);
             if (data.status === 'finished') {
                 $scope.get_results(data.id);
             } else if (data.status === 'failed') {
@@ -182,6 +186,13 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             check_job_status(id);
         }, 0);
     };
+
+    /**
+     * Get current time.
+     */
+    $scope.get_current_timestamp = function() {
+        return new Date();
+    }
 
     /**
      * Initiate sequence search.
@@ -333,6 +344,8 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
         $location.search({});
         $scope.query.sequence = '';
         $scope.query.submit_attempted = false;
+        $scope.query.enqueued_at = null;
+        $scope.query.ended_at = null;
         $scope.results = results_init();
         $scope.params.status_message = '';
         $scope.params.error_message = '';
@@ -409,6 +422,8 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             } else {
                 $scope.query.sequence = data.sequence;
             }
+            $scope.query.enqueued_at = new Date(data.submitted);
+            $scope.query.ended_at = new Date(data.finished);
             retrieve_exact_match(data.sequence);
         }).error(function(){
             $scope.params.status_message = $scope.defaults.messages.failed;

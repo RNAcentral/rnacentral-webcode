@@ -32,9 +32,21 @@ Sequence search
     </small>
   </h1>
 
-  <p class="text-muted small">
-    <i class="fa fa-info-circle"></i> Local alignment using <a href="http://www.ncbi.nlm.nih.gov/pubmed/23842809" target="_blank" class="help" data-toggle="tooltip" title="Wheeler and Eddy, 2013">nhmmer</a>.
-  </p>
+  <span class="col-md-9 small text-muted">
+    <span>
+      <i class="fa fa-info-circle"></i> Local alignment using <a href="http://www.ncbi.nlm.nih.gov/pubmed/23842809" target="_blank" class="help" data-toggle="tooltip" title="Wheeler and Eddy, 2013">nhmmer</a>.
+    </span>
+
+    <em class="pull-right">
+      <span ng-class="(params.status_message === 'Done' || params.status_message === 'Error') ? '' : 'hidden'">
+        job took {{ query.ended_at - query.enqueued_at | date:"m 'min' ss 's'" }}
+      </span>
+
+      <span ng-class="(params.status_message === 'Queued' || params.status_message === 'Running') ? '' : 'hidden'">
+        {{ get_current_timestamp() - query.enqueued_at | date:"m 'min' ss 's'" }}
+      </span>
+    </em>
+  </span>
 
   <div class="row sequence-search-input" >
       <form name="seqQueryForm" novalidate>
