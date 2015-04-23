@@ -43,7 +43,7 @@ Sequence search
       </span>
 
       <span ng-class="(params.status_message === 'Queued' || params.status_message === 'Running') ? '' : 'hidden'">
-        {{ get_current_timestamp() - query.enqueued_at | date:"m 'min' ss 's'" }}
+        elapsed {{ get_current_timestamp() - query.enqueued_at | date:"m 'min' ss 's'" }}
       </span>
     </em>
   </span>
