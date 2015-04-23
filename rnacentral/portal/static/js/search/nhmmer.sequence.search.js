@@ -149,6 +149,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             params: {
                 id: id,
             },
+            ignoreLoadingBar: true,
         }).success(function(data){
             $scope.query.ended_at = moment(data.ended_at).utc();
             $scope.query.enqueued_at = moment(data.enqueued_at).utc();
