@@ -60,7 +60,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
     };
 
     $scope.ordering = [
-        { sort_field: 'e_value', label: 'E-value (min to max)'},
+        { sort_field: 'e_value', label: 'E-value (min to max) - default'},
         { sort_field: '-e_value', label: 'E-value (max to min)'},
         { sort_field: '-identity', label: 'Identity (max to min)' },
         { sort_field: 'identity', label: 'Identity: (min to max)' },
