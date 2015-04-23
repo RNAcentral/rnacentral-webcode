@@ -23,7 +23,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
 /**
  * Main controller.
  */
-;angular.module('rnacentralApp').controller('NhmmerResultsListCtrl', ['$scope', '$http', '$timeout', '$location', '$q', function($scope, $http, $timeout, $location, $q) {
+;angular.module('rnacentralApp').controller('NhmmerResultsListCtrl', ['$scope', '$http', '$timeout', '$location', '$q', '$window', function($scope, $http, $timeout, $location, $q, $window) {
 
     $scope.query = {
         sequence: '',
@@ -132,10 +132,12 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             $scope.params.search_in_progress = false;
             $scope.params.status_message = $scope.defaults.messages.done;
             update_page_size();
+            update_page_title();
         }).error(function(){
             $scope.params.search_in_progress = false;
             $scope.params.status_message = $scope.defaults.messages.failed;
             $scope.params.error_message = $scope.defaults.messages.results_failed;
+            update_page_title();
         });
     };
 
@@ -159,6 +161,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
                 $scope.params.search_in_progress = false;
                 $scope.params.status_message = $scope.defaults.messages.failed;
                 $scope.params.error_message = $scope.defaults.messages.job_failed;
+                update_page_title();
             } else {
                 $scope.params.search_in_progress = true;
                 if (data.status === 'queued') {
@@ -170,6 +173,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
                 }
                 setTimeout(function() {
                     check_job_status(id);
+                    update_page_title();
                 }, $scope.defaults.polling_interval);
             }
         }).error(function(){
@@ -257,10 +261,12 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
                 $location.search({'id': data.id});
                 // begin polling for results
                 poll_job_status(data.id);
+                update_page_title();
             }).error(function(data, status) {
                 $scope.params.error_message = $scope.defaults.messages.submit_failed;
                 $scope.params.status_message = $scope.defaults.messages.failed;
                 $scope.params.search_in_progress = false;
+                update_page_title();
             });
         }
 
@@ -351,6 +357,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
         $scope.params.status_message = '';
         $scope.params.error_message = '';
         $('textarea').focus();
+        update_page_title();
     };
 
     /**
@@ -443,6 +450,21 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
                     $scope.params.selectedOrdering = $scope.ordering[i];
                 }
             }
+        }
+    }
+
+    /**
+     * Show progress in page title.
+     */
+    function update_page_title() {
+        if ($scope.params.status_message === $scope.defaults.messages.failed) {
+            $window.document.title = 'Search failed';
+        } else if ($scope.params.search_in_progress) {
+            $window.document.title = 'Searching...';
+        } else if ($scope.params.status_message === $scope.defaults.messages.done) {
+            $window.document.title = 'Search done';
+        } else {
+            $window.document.title = 'Sequence search';
         }
     }
 
