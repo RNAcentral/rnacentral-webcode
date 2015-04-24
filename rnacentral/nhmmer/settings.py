@@ -38,6 +38,9 @@ SEQDATABASE = ''
 # base url of the remote nhmmer server
 NHMMER_SERVER = ''
 
+# url of the dashboard showing the status of the queue
+RQDASHBOARD = ''
+
 try:
    from local_settings import *
 except ImportError, e:

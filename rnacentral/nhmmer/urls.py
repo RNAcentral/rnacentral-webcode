@@ -38,6 +38,11 @@ urlpatterns = patterns('',
     url(r'^query-info/?$',
         views.QueryView.as_view(),
         name='nhmmer-query-info'),
+
+    # dashboard
+    url(r'^dashboard/?$',
+        'nhmmer.views.dashboard_view',
+        name='nhmmer-dashboard'),
 )
 
 

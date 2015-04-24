@@ -12,10 +12,11 @@ limitations under the License.
 """
 
 from django.core.urlresolvers import reverse
-from django.shortcuts import get_object_or_404
+from django.db import connections
+from django.shortcuts import get_object_or_404, render_to_response
 from django.views.decorators.cache import never_cache
 
-from settings import MIN_LENGTH, MAX_LENGTH
+from settings import MIN_LENGTH, MAX_LENGTH, RQDASHBOARD
 from messages import messages
 from utils import get_job, enqueue_job, nhmmer_proxy
 from models import Results, Query
@@ -218,3 +219,57 @@ class QueryView(generics.RetrieveAPIView):
         """
         query_id = self.request.QUERY_PARAMS.get('id', None)
         return get_object_or_404(Query, pk=query_id)
+
+
+@never_cache
+def dashboard_view(request):
+    """
+    Dashboard showing the status of sequence search.
+    """
+    def dictfetchall(cursor):
+        """
+        Return all rows from a cursor as a dict
+        """
+        desc = cursor.description
+        return [
+            dict(zip([col[0] for col in desc], row))
+            for row in cursor.fetchall()
+        ]
+
+    def get_queries_over_time(cursor):
+        """
+        Get the number of queries aggregated by date.
+        """
+        cmd = """
+        SELECT DATE_FORMAT(submitted, "%d-%m-%y") as date, count(*) as total
+        FROM nhmmer_query
+        GROUP BY DATE_FORMAT(submitted, "%d-%m-%y")
+        """
+        cursor.execute(cmd, None)
+        return dictfetchall(cursor)
+
+    def get_db_size(cursor):
+        """
+        Get nhmmer search results database size.
+        """
+        schema = 'nhmmer_results'
+        cmd = """
+        SELECT sum( data_length + index_length ) "size"
+        FROM information_schema.TABLES
+        WHERE table_schema = '{0}' GROUP BY table_schema
+        """.format(schema)
+        cursor.execute(cmd, None)
+        return dictfetchall(cursor)
+
+    cursor = connections['nhmmer_db'].cursor()
+    db_size = get_db_size(cursor)
+
+    context = {
+        'total_queries': Query.objects.count(),
+        'data': get_queries_over_time(cursor),
+        'db_size': db_size[0]['size'],
+        'db_percent': 100 - (db_size[0]['size']/500000000000)*100,
+        'oldest_query': Query.objects.order_by('submitted').first(),
+        'rqdashboard': RQDASHBOARD,
+    }
+    return render_to_response('nhmmer/dashboard.html', {"context": context})

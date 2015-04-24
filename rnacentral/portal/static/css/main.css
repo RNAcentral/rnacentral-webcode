@@ -33,6 +33,7 @@ Master Stylesheet for the RNAcentral Portal
 5.10 D3 expert database sequence length
 5.11 Genoverse styling
 5.12 Homepage
+5.13 D3 nhmmer dashboard graph
 
 -------------------------------------------------------------------*/
 
@@ -944,4 +945,22 @@ textarea {
   font-size: 18px;
   padding-top: 10px;
   padding-bottom: 10px;
+}
+
+/*------------------------------------------------------------------
+[5.13 D3 nhmmer dashboard graph]
+*/
+
+.nhmmer-dashboard-graph path {
+    stroke: #4682B4; /*steelblue*/
+    stroke-width: 2;
+    fill: none;
+}
+
+.nhmmer-dashboard-graph .axis path,
+.nhmmer-dashboard-graph .axis line {
+    fill: none;
+    stroke: #808080; /*gray*/
+    stroke-width: 1;
+    shape-rendering: crispEdges;
 }
