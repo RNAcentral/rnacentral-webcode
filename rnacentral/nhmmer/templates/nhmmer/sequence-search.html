@@ -38,7 +38,7 @@ Sequence search
     </span>
 
     <em class="pull-right">
-      <span ng-class="(params.status_message === 'Done' || params.status_message === 'Error') ? '' : 'hidden'">
+      <span ng-class="(params.status_message === 'Done' || params.status_message === 'Error') ? '' : 'hidden'" ng-show="query.ended_at === null || query.enqueued_at === null">
         job took {{ query.ended_at - query.enqueued_at | date:"m 'min' s 's'" }}
       </span>
 
