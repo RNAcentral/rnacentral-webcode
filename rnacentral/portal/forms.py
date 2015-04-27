@@ -13,7 +13,7 @@ limitations under the License.
 
 from django import forms
 try:
-   from local_settings import *
+   from rnacentral.local_settings import EMAIL_RNACENTRAL_HELPDESK, EMAIL_PORT
 except ImportError, e:
    pass
 import smtplib
@@ -32,7 +32,7 @@ class ContactForm(forms.Form):
             return False
         subject = '[RNAcentral Contact Us] ' + self.cleaned_data['subject']
         sender = self.cleaned_data['sender']
-        recipients = [local_settings.EMAIL_RNACENTRAL_HELPDESK]
+        recipients = [EMAIL_RNACENTRAL_HELPDESK]
         if self.cleaned_data['cc_myself']:
             recipients.append(sender)
 
@@ -43,12 +43,12 @@ Content-type: text/html
 Subject: {subject}
 
 {message}
-""".format(sender=sender, helpdesk=local_settings.EMAIL_RNACENTRAL_HELPDESK,
+""".format(sender=sender, helpdesk=EMAIL_RNACENTRAL_HELPDESK,
            subject=subject, message=self.cleaned_data['message'])
 
         try:
-            if local_settings.EMAIL_PORT:
-                smtpObj = smtplib.SMTP('localhost', local_settings.EMAIL_PORT)
+            if EMAIL_PORT:
+                smtpObj = smtplib.SMTP('localhost', EMAIL_PORT)
             else:
                 smtpObj = smtplib.SMTP('localhost')
             smtpObj.sendmail(sender, recipients, message)
