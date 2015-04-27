@@ -12,10 +12,16 @@ limitations under the License.
 """
 
 import datetime
+import os
+import re
 import requests
+import signal
 import socket
+import subprocess
+import traceback
 
 from django.conf import settings
+from django.core.mail import send_mail
 from django.http import HttpResponse
 
 import django_rq
@@ -84,7 +90,7 @@ def enqueue_job(query, description):
     """
     Submit job to the queue and return job id.
     """
-    queue = django_rq.get_queue()
+    queue = django_rq.get_queue('nhmmer')
     job = queue.enqueue_call(func=nhmmer_search,
                              args=(query, description),
                              timeout=MAX_RUN_TIME,
@@ -112,3 +118,50 @@ def get_job(job_id):
         if job:
             return (job, params['REMOTE_SERVER'])
     return (None, None)
+
+
+def kill_nhmmer_job(job_id):
+    """
+    Get pid of an nhmmer job based on its id and kill it.
+    """
+    pid = None
+    job_killed = None
+
+    cmd = 'ps -def | grep nhmmer'
+    output = subprocess.check_output(cmd, shell=True)
+    for line in output.split('\n'):
+        if job_id in line:
+            match = re.match(r'^\s+\d+\s+(\d+)\s+', line)
+            if match:
+                pid = int(match.group(1))
+    if pid:
+        try:
+            os.kill(pid, signal.SIGKILL)
+            job_killed = True
+        except:
+            job_killed = False
+    return job_killed
+
+
+def error_handler(job, exc_type, exc_value, exc_traceback):
+    """
+    If a job times out or in case of other exceptions
+    kill nhmmer process (if it still exists)
+    and send an email notification to the Admins.
+    """
+    # kill job
+    job_killed = kill_nhmmer_job(job.id)
+    # format traceback
+    traceback_formatted = '\n'.join(traceback.format_exception(exc_type,
+        exc_value, exc_traceback))
+    # compose and send email alert
+    subject = 'Nhmmer error'
+    message = (
+        'Traceback:\n'
+        '{0}\n'
+        'Job id: {1}\n'
+        'job_killed: {2}\n'
+    ).format(traceback_formatted, job.id, job_killed)
+    for (_, email) in settings.ADMINS:
+        _from = email
+        send_mail(subject, message, _from, [email])
