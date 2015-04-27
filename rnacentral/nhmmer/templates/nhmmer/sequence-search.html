@@ -39,11 +39,11 @@ Sequence search
 
     <em class="pull-right">
       <span ng-class="(params.status_message === 'Done' || params.status_message === 'Error') ? '' : 'hidden'">
-        job took {{ query.ended_at - query.enqueued_at | date:"m 'min' ss 's'" }}
+        job took {{ query.ended_at - query.enqueued_at | date:"m 'min' s 's'" }}
       </span>
 
       <span ng-class="(params.status_message === 'Queued' || params.status_message === 'Running') ? '' : 'hidden'">
-        elapsed {{ get_current_timestamp() - query.enqueued_at | date:"m 'min' ss 's'" }}
+        elapsed {{ get_current_timestamp() - query.enqueued_at | date:"m 'min' s 's'" }}
       </span>
     </em>
   </span>
