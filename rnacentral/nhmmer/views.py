@@ -128,7 +128,7 @@ def get_status(request):
                 'status': job.get_status(),
                 'enqueued_at': job.enqueued_at,
                 'ended_at': job.ended_at,
-                'expiration': job.meta['expiration'],
+                'expiration': job.meta.get('expiration', None),
                 'url': url,
             }).data)
         else:
