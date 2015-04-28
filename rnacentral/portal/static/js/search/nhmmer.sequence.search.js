@@ -42,6 +42,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
         results_endpoint: SEQ_SEARCH_PARAMS.results_endpoint,
         query_info_endpoint: SEQ_SEARCH_PARAMS.query_info_endpoint,
         md5_endpoint: SEQ_SEARCH_PARAMS.md5_endpoint,
+        cancel_job_endpoint: SEQ_SEARCH_PARAMS.cancel_job_endpoint,
 
         messages: {
             get_results: 'Loading results',
@@ -50,6 +51,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             submit_failed: 'There was a problem submitting your query. Please try again later or get in touch if the error persists.',
             job_failed: 'There was a problem with your query. Please try again later or get in touch if the error persists.',
             results_failed: 'There was a problem retrieving the results. Please try again later or get in touch if the error persists.',
+            cancelled: 'The search was cancelled',
             queued: 'Queued',
             started: 'Running',
             poll_job_status: 'Waiting for results',
@@ -142,6 +144,24 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             update_page_title();
         });
     };
+
+    /**
+     * Cancel remote job and stop polling for results.
+     */
+     $scope.cancel_job = function(){
+        clearTimeout(timeout);
+        $http({
+            url: $scope.defaults.cancel_job_endpoint,
+            method: 'GET',
+            params: {
+                id: $location.search().id,
+            },
+        }).success(function(){
+            $scope.params.search_in_progress = false;
+            $scope.params.status_message = $scope.defaults.messages.cancelled;
+            update_page_title();
+        });
+     };
 
     /**
      * Check job status using REST API.
@@ -344,6 +364,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
         $location.search({});
         $scope.query.sequence = '';
         $scope.query.submit_attempted = false;
+        $scope.params.search_in_progress = false;
         $scope.query.enqueued_at = null;
         $scope.query.ended_at = null;
         $scope.results = results_init();

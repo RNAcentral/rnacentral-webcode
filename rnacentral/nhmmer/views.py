@@ -11,6 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import datetime
+
 from django.core.urlresolvers import reverse
 from django.db import connections
 from django.shortcuts import get_object_or_404, render_to_response
@@ -18,7 +20,7 @@ from django.views.decorators.cache import never_cache
 
 from settings import MIN_LENGTH, MAX_LENGTH, RQDASHBOARD
 from messages import messages
-from utils import get_job, enqueue_job, nhmmer_proxy
+from utils import get_job, enqueue_job, nhmmer_proxy, kill_nhmmer_job
 from models import Results, Query
 
 from rest_framework import generics, serializers, filters
@@ -75,6 +77,46 @@ def submit_job(request):
             'url': url,
         }
         return Response(data, status=status)
+    except:
+        status = 500
+        return Response(msg[status], status=status)
+
+
+@never_cache
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def cancel_job(request):
+    """
+    Cancel nhmmer search.
+
+    HTTP responses:
+    * 200 - job cancelled
+    * 400 - incorrect input
+    * 500 - internal error
+    """
+    proxy_result = nhmmer_proxy(request)
+    if proxy_result:
+        return proxy_result
+
+    msg = messages['cancel']
+
+    job_id = request.GET.get('id', '')
+    if not job_id:
+        status = 400
+        return Response(msg[status], status=status)
+
+    try:
+        # cancel job
+        job = get_job(job_id)[0]
+        job.cancel()
+        # kill nhmmer process
+        kill_nhmmer_job(job_id)
+        # set query `finished` field
+        query = Query.objects.get(id=job_id)
+        query.finished = datetime.datetime.now()
+        query.save()
+        status = 200
+        return Response(msg[status], status=status)
     except:
         status = 500
         return Response(msg[status], status=status)

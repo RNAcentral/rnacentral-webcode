@@ -27,7 +27,7 @@ Sequence search
     <small ng-class="(params.search_in_progress && !params.error_message) ? '' : 'hidden'">
       <i class="fa fa-spinner fa-spin"></i>
     </small>
-    <small id="sequence-search-status" ng-class="(params.status_message !== 'Done' && params.status_message !== 'Error') ? 'animated flash infinite' : 'hidden'">
+    <small id="sequence-search-status" ng-class="(params.status_message === defaults.messages.queued || params.status_message === defaults.messages.started || params.status_message === defaults.messages.get_results || params.status_message === defaults.messages.submitting) ? 'animated flash infinite' : 'hidden'">
       {{params.status_message}}
     </small>
   </h1>
@@ -42,7 +42,7 @@ Sequence search
         job took {{ query.ended_at - query.enqueued_at | date:"m 'min' s 's'" }}
       </span>
 
-      <span ng-class="(params.status_message === 'Queued' || params.status_message === 'Running') ? '' : 'hidden'">
+      <span ng-show="(params.status_message === defaults.messages.queued || params.status_message === defaults.messages.started)">
         elapsed {{ get_current_timestamp() - query.enqueued_at | date:"m 'min' s 's'" }}
       </span>
     </em>
@@ -95,12 +95,19 @@ Sequence search
         <div class="col-md-2">
           <button type="submit" class="btn btn-primary" tabindex="3" ng-click="submit_query()">
             <i class="fa fa-search" ng-show="!params.search_in_progress"></i>
-            <i class="fa fa-spinner fa-spin" ng-class="params.search_in_progress ? '' : 'hidden'"></i> Search
+            <i class="fa fa-spinner fa-spin" ng-class="(params.search_in_progress && !params.error_message) ? '' : 'hidden'"></i> Search
           </button>
 
-          <button class="btn btn-default" tabindex="3" ng-click="reset()">
+          <br>
+
+          <button class="btn btn-default" tabindex="3" ng-click="reset()" ng-show="!params.search_in_progress">
             <i class="fa fa-trash-o"></i>
             Clear
+          </button>
+
+          <button class="btn btn-default" ng-click="cancel_job();" ng-show="params.search_in_progress && !params.error_message">
+            <i class="fa fa-trash-o"></i>
+            Cancel
           </button>
         </div>
 
@@ -111,6 +118,14 @@ Sequence search
     <div class="col-md-7">
       <div class="alert alert-danger">
         {{params.error_message}}
+      </div>
+    </div>
+  </div>
+
+  <div class="row" ng-show="params.status_message === defaults.messages.cancelled">
+    <div class="col-md-4">
+      <div class="alert alert-warning">
+        {{params.status_message}}
       </div>
     </div>
   </div>
@@ -248,6 +263,7 @@ Sequence search
     'results_endpoint': '{% url "nhmmer-job-results" %}',
     'query_info_endpoint': '{% url "nhmmer-query-info" %}',
     'md5_endpoint': '{% url "rna-sequences" %}',
+    'cancel_job_endpoint': '{% url "nhmmer-cancel-job" %}',
   };
 {% verbatim %}
 </script>

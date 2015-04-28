@@ -136,7 +136,7 @@ def kill_nhmmer_job(job_id):
                 pid = int(match.group(1))
     if pid:
         try:
-            os.kill(pid, signal.SIGKILL)
+            os.kill(pid, signal.SIGQUIT) # quit from keyboard
             job_killed = True
         except:
             job_killed = False
@@ -149,6 +149,12 @@ def error_handler(job, exc_type, exc_value, exc_traceback):
     kill nhmmer process (if it still exists)
     and send an email notification to the Admins.
     """
+    try:
+        # job was cancelled, don't send a notification
+        if abs(exc_value[2]) == signal.SIGQUIT:
+            return
+    except:
+        pass
     # kill job
     job_killed = kill_nhmmer_job(job.id)
     # format traceback

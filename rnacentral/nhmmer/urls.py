@@ -24,6 +24,11 @@ urlpatterns = patterns('',
         'nhmmer.views.submit_job',
         name='nhmmer-submit-job'),
 
+    # cancel search results
+    url(r'^cancel-job/?$',
+        'nhmmer.views.cancel_job',
+        name='nhmmer-cancel-job'),
+
     # get nhmmer search job status
     url(r'^job-status/?$',
         'nhmmer.views.get_status',
