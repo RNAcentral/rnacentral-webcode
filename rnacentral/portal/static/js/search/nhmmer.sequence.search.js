@@ -147,6 +147,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
      * Check job status using REST API.
      */
     var check_job_status = function(id) {
+        $scope.params.status_message = $scope.defaults.messages.poll_job_status;
         $http({
             url: $scope.defaults.job_status_endpoint,
             method: 'GET',
@@ -182,16 +183,6 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             $scope.params.status_message = $scope.defaults.messages.failed;
             $scope.params.error_message = $scope.defaults.messages.results_failed;
         });
-    };
-
-    /**
-     * Poll job status at regular intervals.
-     */
-    var poll_job_status = function(id) {
-        $scope.params.status_message = $scope.defaults.messages.poll_job_status;
-        setTimeout(function(){
-            check_job_status(id);
-        }, 0);
     };
 
     /**
@@ -262,7 +253,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
                 // update url
                 $location.search({'id': data.id});
                 // begin polling for results
-                poll_job_status(data.id);
+                check_job_status(data.id);
                 update_page_title();
             }).error(function(data, status) {
                 $scope.params.error_message = $scope.defaults.messages.submit_failed;
@@ -478,7 +469,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
     (function(){
         if ($location.url().indexOf("id=") > -1) {
             initialize_ordering();
-            poll_job_status($location.search().id);
+            check_job_status($location.search().id);
             get_query_info($location.search().id);
             $scope.params.initial_page_size = $location.search().page_size || null;
         }
