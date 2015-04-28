@@ -81,6 +81,8 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
 
     $scope.results = results_init();
 
+    var timeout;
+
     /**
      * Update the `ordering` url parameter
      * based on the current user selection.
@@ -171,7 +173,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
                 } else {
                     $scope.params.status_message = '';
                 }
-                setTimeout(function() {
+                timeout = setTimeout(function() {
                     check_job_status(id);
                     update_page_title();
                 }, $scope.defaults.polling_interval);
