@@ -19,7 +19,7 @@ import views
 
 # nhmmer sequence search urls
 urlpatterns = patterns('',
-    # export search results
+    # launch nhmmer search
     url(r'^submit-query/?$',
         'nhmmer.views.submit_job',
         name='nhmmer-submit-job'),
