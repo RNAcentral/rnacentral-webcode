@@ -405,7 +405,11 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
      * (without whitespace and fasta header).
      */
     $scope.get_query_length = function() {
-        input = parse_input(document.getElementById("query-sequence").value);
+        var text = document.getElementById("query-sequence").value;
+        if (text.match(/^URS[A-Fa-f0-9]{10}$/)) {
+            return 0;
+        }
+        input = parse_input(text);
         return input.sequence.length || 0;
     };
 
