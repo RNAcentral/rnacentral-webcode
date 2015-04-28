@@ -58,7 +58,7 @@ class NhmmerResultsParser(object):
             match = re.search(r'URS[0-9A-Fa-f]{10}', line)
             return {
                 'rnacentral_id': match.group(),
-                'description': line.replace(match.group(), '').strip(),
+                'description': line.replace(match.group(), '').replace(';', '').strip(),
             }
 
         def parse_fourth_line(line):
@@ -125,7 +125,7 @@ class NhmmerResultsParser(object):
                 matches += line.count('|')
                 alignment.append(line)
             elif i % 5 == 2: # target
-                line = re.sub('\s+URS[0-9A-Fa-f]{10}', 'Sbjct', line.upper())
+                line = re.sub('\s+URS[0-9A-Fa-f]{10};?', 'Sbjct', line.upper())
                 match = re.match(r'^Sbjct\s+\d+ (.+) \d+', line)
                 if match:
                     block_length = len(match.group(1))
