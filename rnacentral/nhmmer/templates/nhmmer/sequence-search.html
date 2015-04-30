@@ -45,8 +45,8 @@ Sequence search
         job took {{ query.ended_at - query.enqueued_at | date:"m 'min' s 's'" }}
       </span>
 
-      <span ng-show="(params.status_message === defaults.messages.queued || params.status_message === defaults.messages.started)">
-        elapsed {{ get_current_timestamp() - query.enqueued_at | date:"m 'min' s 's'" }}
+      <span ng-class="(params.status_message === defaults.messages.queued || params.status_message === defaults.messages.started)" ? '' : 'hidden'>
+        elapsed {{ get_time_elapsed() | date:"m 'min' s 's'" }}
       </span>
     </em>
   </span>

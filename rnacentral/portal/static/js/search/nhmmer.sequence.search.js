@@ -202,8 +202,8 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
     /**
      * Get current time.
      */
-    $scope.get_current_timestamp = function() {
-        return moment().utc();
+    $scope.get_time_elapsed = function() {
+        return moment().diff($scope.query.enqueued_at);
     }
 
     /**
