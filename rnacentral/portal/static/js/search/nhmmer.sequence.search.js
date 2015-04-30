@@ -25,12 +25,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
  */
 ;angular.module('rnacentralApp').controller('NhmmerResultsListCtrl', ['$scope', '$http', '$timeout', '$location', '$q', '$window', function($scope, $http, $timeout, $location, $q, $window) {
 
-    $scope.query = {
-        sequence: '',
-        submit_attempted: false,
-        enqueued_at: null,
-        ended_at: null,
-    };
+    $scope.query = query_init();
 
     $scope.defaults = {
         polling_interval: 1000, // milliseconds
@@ -337,6 +332,18 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
     }
 
     /**
+     * Initialize query object.
+     */
+    function query_init() {
+        return {
+            sequence: '',
+            submit_attempted: false,
+            enqueued_at: moment(null).utc(),
+            ended_at: moment(null).utc(),
+        };
+    }
+
+    /**
      * Use RNAcentral API to retrieve an exact match
      * to the query sequence.
      */
@@ -362,11 +369,8 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
      */
     $scope.reset = function() {
         $location.search({});
-        $scope.query.sequence = '';
-        $scope.query.submit_attempted = false;
         $scope.params.search_in_progress = false;
-        $scope.query.enqueued_at = null;
-        $scope.query.ended_at = null;
+        $scope.query = query_init();
         $scope.results = results_init();
         $scope.params.status_message = '';
         $scope.params.error_message = '';
