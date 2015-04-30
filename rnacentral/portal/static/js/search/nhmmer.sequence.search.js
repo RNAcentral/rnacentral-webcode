@@ -487,6 +487,12 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
     }
 
     /**
+     * Add standard Javascript isNaN function to the scope
+     * so that it can be used in the template.
+     */
+    $scope.isNaN = isNaN;
+
+    /**
      * When the controller is first created:
      * - activate Bootstrap tooltips when the controller is created.
      * - retrieve search results if necessary
