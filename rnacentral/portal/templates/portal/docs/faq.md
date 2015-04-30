@@ -41,7 +41,7 @@ Example identifiers: URS0000000001, URS00000478B7.
 ### How do I find RNAcentral identifiers for an RNA sequence?
 
 To find an RNAcentral identifier for a **single sequence**, one can use RNAcentral
-[sequence search]({% url 'sequence-search' %}).
+[sequence search]({% url 'nhmmer-sequence-search' %}).
 
 For a **large number of sequences**, one can:
 
