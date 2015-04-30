@@ -32,7 +32,7 @@ urlpatterns = patterns('',
     # metadata search can route to any page because it will be taken over by Angular
     url(r'^search/?$', views.TemplateView.as_view(template_name='portal/base.html')),
     # sequence search
-    url(r'^sequence-search/?$', views.StaticView.as_view(), {'page': 'search/sequence-search'}, name='sequence-search'),
+    url(r'^sequence-search-ena/?$', views.StaticView.as_view(), {'page': 'search/sequence-search'}, name='sequence-search-ena'),
     # coming soon
     url(r'^(?P<page>coming-soon)/?$', views.StaticView.as_view(), name='coming-soon'),
     # downloads
