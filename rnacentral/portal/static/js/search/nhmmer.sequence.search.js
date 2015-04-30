@@ -162,7 +162,6 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
      * Check job status using REST API.
      */
     var check_job_status = function(id) {
-        $scope.params.status_message = $scope.defaults.messages.poll_job_status;
         $http({
             url: $scope.defaults.job_status_endpoint,
             method: 'GET',
