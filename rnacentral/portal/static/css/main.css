@@ -741,6 +741,10 @@ textarea {
   margin-bottom: 10px;
 }
 
+.sequence-search-toolbar select {
+  font-size: 12px;
+}
+
 /*------------------------------------------------------------------
 [5.9 D3 expert database treemap]
 */
