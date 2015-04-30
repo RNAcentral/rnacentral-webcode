@@ -30,6 +30,9 @@ Sequence search
     <small id="sequence-search-status" ng-class="(params.status_message === defaults.messages.queued || params.status_message === defaults.messages.started || params.status_message === defaults.messages.get_results || params.status_message === defaults.messages.submitting) ? 'animated flash infinite' : 'hidden'">
       {{params.status_message}}
     </small>
+    <small ng-class="params.status_message === defaults.message.failed">
+      {{params.status_message}}
+    </small>
   </h1>
 
   <span class="col-md-9 small text-muted">
