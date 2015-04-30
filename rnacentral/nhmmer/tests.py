@@ -315,6 +315,37 @@ class QueryInfoTests(NhmmerTestCase):
         self.assertEqual(request.json()['sequence'], sequence)
 
 
+class EvalueRangeTests(NhmmerTestCase):
+    """
+    Find E-value ranges for different sequence lengths.
+    """
+    def test_evalues(self):
+        """
+        Use RNAcentral API to search random short sequences
+        and record the E-values of the best hits.
+        """
+        # test sequence ranges from 20 to 110 with step 10
+        ranges = range(20, 110, 10)
+        # for every sequence length
+        for x in ranges:
+            print 'Length: %i' % x
+            # get the total number of sequences of that length
+            url = self.base_url + reverse('rna-sequences')
+            request = requests.get(url + '?length=%i' % x)
+            total = request.json()['count']
+            # get random URS ids
+            for i in xrange(5):
+                rna_url = url + '?length=%i&page_size=1&page=%i' % (x, randint(1, total))
+                request = requests.get(rna_url)
+                urs = request.json()['results'][0]['rnacentral_id']
+                sequence = request.json()['results'][0]['sequence']
+                print urs
+                request = self._get_results(sequence)
+                print 'hits: %i' % request.json()['count']
+                if request.json()['count'] > 0:
+                    print 'Min e_value: ' + request.json()['results'][0]['e_value']
+
+
 def setup_django_environment():
     """
     Setup Django environment in order for `reverse` and other Django
@@ -354,6 +385,12 @@ def run_tests():
         unittest.TestLoader().loadTestsFromTestCase(RandomSearchesTests),
         unittest.TestLoader().loadTestsFromTestCase(QueryInfoTests),
     ]
+
+    # check e-value ranges
+    # NB! need to manually set e-values to >10^5 in nhmmer_search.py
+    # suites = [
+    #     unittest.TestLoader().loadTestsFromTestCase(EvalueRangeTests),
+    # ]
 
     unittest.TextTestRunner().run(unittest.TestSuite(suites))
 

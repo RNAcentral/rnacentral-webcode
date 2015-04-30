@@ -34,10 +34,29 @@ class NhmmerSearch(object):
             'output': os.path.join(RESULTS_DIR, '%s.txt' % job_id),
             'nhmmer': NHMMER_EXECUTABLE,
             'db': SEQDATABASE,
-            'incE': 0.01,
-            'E': 0.01,
             'cpu': 4,
         }
+        self.set_e_values()
+
+    def set_e_values(self):
+        """
+        Set E-values dynamically depending on the query sequence length.
+        The values were computed by searching the full dataset
+        using random short sequences as queries
+        with an extremely high E-value and recording
+        the E-values of the best hit.
+        """
+        length = len(self.sequence)
+        if length <= 30:
+            e_value = pow(10, 5)
+        elif length > 30 and length <= 40:
+            e_value = pow(10, 2)
+        elif length > 40 and length <= 50:
+            e_value = pow(10, -1)
+        else:
+            e_value = pow(10, -2)
+        self.params['incE'] = e_value
+        self.params['E'] = e_value
 
     def create_query_file(self):
         """
