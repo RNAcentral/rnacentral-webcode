@@ -42,7 +42,7 @@ Sequence search
 
     <em class="pull-right">
       <span ng-class="((params.status_message === 'Done' || params.status_message === 'Error')) && (!isNaN(query.ended_at) && !isNaN(query.enqueued_at)) ? '' : 'hidden'">
-        job took {{ query.ended_at - query.enqueued_at | date:"m 'min' s 's'" }}
+        search took {{ query.ended_at - query.enqueued_at | date:"m 'min' s 's'" }}
       </span>
 
       <span ng-bind="'elapsed '+ (get_time_elapsed() | date:&quot;m 'min' s 's'&quot;)" ng-class="(params.status_message === defaults.messages.queued || params.status_message === defaults.messages.started) ? '' : 'hidden'"></span>
