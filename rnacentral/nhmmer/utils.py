@@ -70,7 +70,7 @@ def save_query(sequence, job_id, description):
     Create query object in the main database.
     """
     query = Query(id=job_id,
-                  query=sequence,
+                  query=sequence.upper(),
                   description=description,
                   submitted=datetime.datetime.now())
     query.save()
