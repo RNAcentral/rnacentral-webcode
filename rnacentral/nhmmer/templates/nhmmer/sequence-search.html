@@ -146,9 +146,9 @@ Sequence search
     </div>
   </div>
 
-  <div class="row">
+  <div class="row" id="affix-parent">
 
-    <div class="col-md-9">
+    <div class="col-md-9" id="affix-sibling">
 
       <h2 ng-show="results.count > 0">
         Results
@@ -217,7 +217,7 @@ Sequence search
 
     <div class="col-md-3 small sequence-search-toolbar hidden-xs hidden-sm" ng-show="params.status_message === 'Done' && results.count > 0">
 
-      <div class="panel panel-default" data-spy="affix" data-offset-top="320">
+      <div class="panel panel-default" data-spy="affix" data-offset-top="330" id="affix">
 
         <div class="panel-heading">
           <h3 class="panel-title"><i class="fa fa-wrench"></i> Tools</h3>
@@ -249,8 +249,12 @@ Sequence search
 
 </div><!--/ng-controller -->
 
-<script>
 {% endverbatim %}
+{% endblock content %}
+
+{% block extra_js_uncompressed %}
+<script>
+
   /**
    * Pass common sequence search parameters
    * from Django to Javascript using a global variable.
@@ -265,8 +269,23 @@ Sequence search
     'md5_endpoint': '{% url "rna-sequences" %}',
     'cancel_job_endpoint': '{% url "nhmmer-cancel-job" %}',
   };
-{% verbatim %}
+
+  /**
+   * Keep toolbar width constant on all screen sizes.
+   */
+  $(document).ready(function () {
+      var affix = $('#affix'),
+          parent = $('#affix-parent'),
+          sibling = $('#affix-sibling');
+      var resizeFn = function () {
+          var affixWidth = parent.width() - sibling.width() - 2*parseInt(sibling.css('paddingLeft')) - 2*parseInt(sibling.css('paddingRight')) - parseInt(sibling.css('marginLeft')) - parseInt(sibling.css('marginRight')) - parseInt(sibling.css('borderLeftWidth')) - parseInt(sibling.css('borderRightWidth'));
+          affix.css('width', affixWidth);
+      };
+
+      resizeFn();
+      $(window).resize(resizeFn);
+  });
+
 </script>
 
-{% endverbatim %}
-{% endblock content %}
+{% endblock extra_js_uncompressed %}
