@@ -156,7 +156,7 @@ limitations under the License.
           {% else %}
             <div id="d3-seq-length-distribution"></div>
             <p class="small text-muted">
-              <label class="label label-success">New!</label> Click the graph to search by sequence length
+              <label class="label label-success">New</label> Click the graph to search by sequence length
             </p>
           {% endif %}
         </div>
@@ -168,18 +168,20 @@ limitations under the License.
       <div class="panel panel-default">
         <div class="panel-body">
           <div id="d3-species-sunburst"></div>
-            <button type="button" class="btn btn-default btn-sm" data-toggle="collapse" data-target="#sunburst-help">
-            <i class="fa fa-info-circle"></i> Help
-            </button>
+
+            <p class="small text-muted">
+              <label class="label label-success margin-left-0px">New</label> You can <strong>zoom</strong> and <strong>pan</strong> the diagram
+              <br>
+              <label class="label label-default margin-left-0px">Tip</label> <strong>hover</strong> over sunburst segments to display taxon names
+              <button type="button" class="btn btn-default btn-xs margin-left-5px" data-toggle="collapse" data-target="#sunburst-help">
+                <i class="fa fa-info-circle"></i> Help
+              </button>
+            </p>
 
             <div id="sunburst-help" class="collapse">
-              <p>
-                <small>
-                  This diagram shows the combined lineages of all taxonomic groups annotated by {{ expert_db.name }}.
+              <p class="small text-muted">
+                  This diagram shows combined lineages of all taxonomic groups annotated by {{ expert_db.name }}.
                   The circle segments are sized proportionally to the number of sequences from the corresponding taxon.
-                  <br>
-                  Tip: <strong>hover</strong> your mouse over circle segments to display taxon names.
-                </small>
               </p>
             </div>
         </div>

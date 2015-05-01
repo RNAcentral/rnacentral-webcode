@@ -110,6 +110,20 @@ d3SpeciesSunburst = function(data, selector, width, height){
 	    'container': 'body'
 	});
 
+    // create the zoom listener
+    var zoomListener = d3.behavior.zoom()
+      .scaleExtent([1, 8])
+      .center(null)
+      .on("zoom", zoomHandler);
+
+    // function for handling zoom event
+    function zoomHandler() {
+      g.attr("transform", "translate(" + d3.event.translate + ")scale(" + d3.event.scale + ")");
+    }
+
+    // apply the zoom behavior to the svg image
+    zoomListener(svg);
+
 	// Interpolate the scales!
 	function arcTween(d) {
 	  var xd = d3.interpolate(x.domain(), [d.x, d.x + d.dx]),
