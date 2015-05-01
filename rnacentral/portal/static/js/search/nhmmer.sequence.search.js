@@ -502,10 +502,15 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
      */
     (function(){
         if ($location.url().indexOf("id=") > -1) {
+            // load results
             initialize_ordering();
             check_job_status($location.search().id);
             get_query_info($location.search().id);
             $scope.params.initial_page_size = $location.search().page_size || null;
+        } else if ($location.search().q) {
+            // start sequence search
+            $scope.query.sequence = $location.search().q;
+            search($scope.query.sequence);
         }
 
         $('body').tooltip({
