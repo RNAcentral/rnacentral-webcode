@@ -16,7 +16,7 @@ limitations under the License.
 // http://bl.ocks.org/mbostock/3883195
 // http://bl.ocks.org/mbostock/3902569
 
-ExpertDatabaseSequenceDistribution = function(selector, data, max_width, max_height){
+ExpertDatabaseSequenceDistribution = function(selector, data, max_width, max_height, search_url){
 
     var margin = {top: 20, right: 60, bottom: 40, left: 50},
         width = max_width - margin.left - margin.right,
@@ -75,10 +75,9 @@ ExpertDatabaseSequenceDistribution = function(selector, data, max_width, max_hei
         .attr("transform", "translate(0," + height + ")")
         .call(xAxis)
       .append("text")
-        .attr("x", 330)
+        .attr("x", 300)
         .attr("dy", "2.7em")
-        .style("text-anchor", "middle")
-        .text("Number of nucleotides");
+        .text("Sequence length");
 
     svg.append("g")
         .attr("class", "y axis")
@@ -88,7 +87,7 @@ ExpertDatabaseSequenceDistribution = function(selector, data, max_width, max_hei
         .attr("y", 6)
         .attr("dy", ".71em")
         .style("text-anchor", "end")
-        .text("Sequences");
+        .text("Annotations");
 
     svg.append("path")
         .datum(data)
@@ -156,14 +155,28 @@ ExpertDatabaseSequenceDistribution = function(selector, data, max_width, max_hei
       .attr("height", height)
       .on("mouseover", function() { focus.style("display", null); })
       .on("mouseout", function() { focus.style("display", "none"); })
-      .on("mousemove", mousemove);
+      .on("mousemove", mousemove)
+      .on("click", launchSearch);
+
+    // launch metadata search using expert db name and sequence length
+    function launchSearch() {
+        x0 = x.invert(d3.mouse(this)[0]),
+        i = bisect(data, x0, 1),
+        d0 = data[i - 1],
+        d1 = data[Math.min(i + 1, data.length - 1)],
+        d = x0 - d0.count > d1.count - x0 ? d1 : d0,
+        path = window.location.pathname.split('/'),
+        expert_db = path[path.length-1],
+        new_url = search_url + '?q=expert_db:"' + expert_db + '"%20AND%20length:"' + d.length + '"';
+        window.location = new_url;
+    };
 
     function formatSequenceLabel(d){
         var label = '';
         if (d.count === 1){
-            label = ' sequence';
+            label = ' annotation';
         } else{
-            label = ' sequences';
+            label = ' annotations';
         }
         return d.count + label;
     }

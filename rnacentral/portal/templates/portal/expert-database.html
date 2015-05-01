@@ -52,15 +52,15 @@ limitations under the License.
   <h2>Statistics</h2>
   <ul>
     <li>
-      <strong>{{ expert_db.num_sequences|intcomma }}</strong> sequences
+      <strong>{{ expert_db.num_sequences|intcomma }}</strong> distinct sequences
       from <strong>{{ expert_db.num_organisms|intcomma }}</strong> organism{{ expert_db.num_organisms|pluralize}}
-      contributed to RNAcentral.
+      contributed to RNAcentral
     </li>
     <li>
-      The shortest sequence has <strong>{{ expert_db.min_length|intcomma }}</strong> nucleotides, the longest <strong>{{ expert_db.max_length|intcomma }}</strong>.
+      the shortest sequence has <strong>{{ expert_db.min_length|intcomma }}</strong> nucleotides, the longest <strong>{{ expert_db.max_length|intcomma }}</strong>
     </li>
     <li>
-      The average length is <strong>{{ expert_db.avg_length|floatformat:"0" }}</strong> nucleotide{{ expert_db.avg_length|pluralize }}.
+      the average length is <strong>{{ expert_db.avg_length|floatformat:"0" }}</strong> nucleotide{{ expert_db.avg_length|pluralize }}
     </li>
   </ul>
 
@@ -155,6 +155,9 @@ limitations under the License.
             </table>
           {% else %}
             <div id="d3-seq-length-distribution"></div>
+            <p class="small text-muted">
+              <label class="label label-success">New!</label> Click the graph to search by sequence length
+            </p>
           {% endif %}
         </div>
       </div>
@@ -175,7 +178,7 @@ limitations under the License.
                   This diagram shows the combined lineages of all taxonomic groups annotated by {{ expert_db.name }}.
                   The circle segments are sized proportionally to the number of sequences from the corresponding taxon.
                   <br>
-                  <strong>Hover</strong> your mouse over circle segments to display taxon names.
+                  Tip: <strong>hover</strong> your mouse over circle segments to display taxon names.
                 </small>
               </p>
             </div>
@@ -198,7 +201,8 @@ limitations under the License.
         $(function(){
             {% if expert_db.descr != 'LNCRNADB' %}
               var data = {% autoescape off %}{{expert_db_stats.length_counts}}{% endautoescape %};
-              ExpertDatabaseSequenceDistribution("#d3-seq-length-distribution", data, 500, 300);
+              var search_url = '{% url "metadata-search" %}';
+              ExpertDatabaseSequenceDistribution("#d3-seq-length-distribution", data, 500, 300, search_url);
             {% endif %}
             {% if expert_db.descr != 'ENA' and expert_db.descr != 'RFAM' %}
                 data = {% autoescape off %}{{expert_db_stats.taxonomic_lineage}}{% endautoescape %};

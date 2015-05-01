@@ -408,7 +408,7 @@ h3.panel-title {
 }
 
 #seq-length .panel {
-  max-height: 350px;
+  max-height: 380px;
   overflow-y: auto;
 }
 
