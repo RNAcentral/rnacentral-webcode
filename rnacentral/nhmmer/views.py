@@ -286,6 +286,7 @@ def dashboard_view(request):
         SELECT DATE_FORMAT(submitted, "%d-%m-%y") as date, count(*) as total
         FROM nhmmer_query
         GROUP BY DATE_FORMAT(submitted, "%d-%m-%y")
+        ORDER BY submitted
         """
         cursor.execute(cmd, None)
         return dictfetchall(cursor)
