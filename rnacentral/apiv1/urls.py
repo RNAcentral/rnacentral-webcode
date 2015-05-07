@@ -50,10 +50,3 @@ urlpatterns += patterns('',
     url(r'^das/RNAcentral_GRCh38/features/?$', cache_page(CACHE_TIMEOUT)(views.DasFeatures.as_view()), name='das-features'),
     url(r'^das/RNAcentral_GRCh38/stylesheet/?$', cache_page(CACHE_TIMEOUT)(views.DasStylesheet.as_view()), name='das-stylesheet'),
 )
-
-# search
-urlpatterns += patterns('',
-    url(r'^sequence-search/submit$', 'apiv1.search.sequence.views.submit', name='api-sequence-submit'),
-    url(r'^sequence-search/status$', 'apiv1.search.sequence.views.get_status', name='api-sequence-status'),
-    url(r'^sequence-search/results$', 'apiv1.search.sequence.views.get_results', name='api-sequence-results'),
-)
