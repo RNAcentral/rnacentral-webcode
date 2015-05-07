@@ -127,11 +127,11 @@ def kill_nhmmer_job(job_id):
     pid = None
     job_killed = None
 
-    cmd = 'ps -def | grep nhmmer'
+    cmd = 'ps -eo pid,args | grep nhmmer' # print process id and full command
     output = subprocess.check_output(cmd, shell=True)
     for line in output.split('\n'):
         if job_id in line:
-            match = re.match(r'^\s+\d+\s+(\d+)\s+', line)
+            match = re.match(r'^(\d+)\s+', line)
             if match:
                 pid = int(match.group(1))
     if pid:
