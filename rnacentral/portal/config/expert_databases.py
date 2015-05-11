@@ -333,13 +333,20 @@ expert_dbs = [
     },
     {
         'name': 'PLncDB',
-        'label': '',
+        'label': 'plncdb',
         'url': 'http://chualab.rockefeller.edu/gbrowse2/homepage.html',
-        'description': 'plant long noncoding RNA Database',
-        'abbreviation': '',
-        'examples': '',
-        'references': [],
-        'imported': False,
+        'description': 'provides comprehensive genomic view of Arabidopsis lncRNAs',
+        'abbreviation': 'Plant Long non-coding RNA DataBase',
+        'examples': ['URS0000000000'],
+        'references': [
+            {
+                'title': 'PLncDB: plant long non-coding RNA database',
+                'authors': 'Jin J., Liu J., Wang H., Wong L., Chua N.H.',
+                'journal': 'Bioinformatics. 2013 Apr 15;29(8):1068-71',
+                'pubmed_id': '23476021',
+            },
+        ],
+        'imported': True,
     },
     {
         'name': 'PomBase',
@@ -373,13 +380,20 @@ expert_dbs = [
     },
     {
         'name': 'SGD',
-        'label': '',
+        'label': 'sgd',
         'url': 'http://yeastgenome.org/',
         'description': 'provides comprehensive integrated biological information for the budding yeast',
         'abbreviation': 'Saccharomyces Genome Database',
-        'examples': '',
-        'references': [],
-        'imported': False,
+        'examples': ['URS0000000000'],
+        'references': [
+            {
+                'title': 'Saccharomyces Genome Database: the genomics resource of budding yeast',
+                'authors': 'Cherry J.M., Hong E.L., Amundsen C., Balakrishnan R., Binkley G., Chan E.T., Christie K.R., Costanzo M.C., Dwight S.S., Engel S.R. et al.',
+                'journal': 'Nucleic Acids Res. 2012 Jan;40(Database issue):D700-5',
+                'pubmed_id': '22110037',
+            },
+        ],
+        'imported': True,
     },
     {
         'name': 'snOPY',
@@ -451,13 +465,20 @@ expert_dbs = [
     },
     {
         'name': 'WormBase',
-        'label': '',
+        'label': 'wormbase',
         'url': 'http://www.wormbase.org/',
         'description': "the world's repository for nematode biology",
         'abbreviation': '',
-        'examples': '',
-        'references': [],
-        'imported': False,
+        'examples': ['URS0000000000'],
+        'references': [
+            {
+                'title': 'WormBase 2012: more genomes, more data, new website',
+                'authors': 'Yook K., Harris TW., Bieri T., Cabunoc A., Chan J., Chen WJ., Davis P., de la Cruz N., Duong A., Fang R. et al.',
+                'journal': 'Nucleic Acids Res. 2012 Jan;40(Database issue):D735-41',
+                'pubmed_id': '22067452',
+            },
+        ],
+        'imported': True,
     },
     {
         'name': 'MGI',
@@ -481,12 +502,19 @@ expert_dbs = [
     },
     {
         'name': 'TAIR',
-        'label': '',
+        'label': 'tair',
         'url': 'http://www.arabidopsis.org/',
-        'description': 'a database of genetic and molecular biology data for the model higher plant Arabidopsis thaliana',
+        'description': 'is a database of genetic and molecular biology data for the model higher plant Arabidopsis thaliana',
         'abbreviation': 'The Arabidopsis Information Resource',
-        'examples': [],
-        'references': [],
-        'imported': False,
+        'examples': ['URS0000000000'],
+        'references': [
+            {
+                'title': 'The Arabidopsis Information Resource (TAIR): improved gene annotation and new tools',
+                'authors': 'Lamesch P., Berardini T.Z., Li D., Swarbreck D., Wilks C., Sasidharan R., Muller R., Dreher K., Alexander D.L., Garcia-Hernandez M., Karthikeyan A.S. et al.',
+                'journal': 'Nucleic Acids Res. 2012 Jan;40(Database issue):D1202-10',
+                'pubmed_id': '22140109',
+            },
+        ],
+        'imported': True,
     },
 ]
