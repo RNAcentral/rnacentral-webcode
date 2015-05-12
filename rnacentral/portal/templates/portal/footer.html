@@ -18,7 +18,7 @@ limitations under the License.
 
   <nav id="global-nav-expanded" class="col-md-12">
 
-    <div class="col-md-2 col-xs-12">
+    <div class="col-md-2 col-sm-12 col-xs-12">
       <br>
       <br>
       <a href="http://www.ebi.ac.uk/" class="no-icon" target="_blank" title="European Bioinformatics Institute homepage">
@@ -29,7 +29,7 @@ limitations under the License.
       </a>
     </div>
 
-    <div class="col-md-8 col-xs-6">
+    <div class="col-md-8 col-sm-8 col-xs-12">
       <h3 class="about">
         RNAcentral Expert Databases
       </h3>
@@ -37,7 +37,7 @@ limitations under the License.
       {% get_expert_databases_columns as expert_dbs %}
 
       {% for expert_db_column in expert_dbs %}
-        <div class="col-md-3">
+        <div class="col-md-3 col-sm-6 col-xs-6">
           <ul>
           {% for expert_db in expert_db_column %}
               <li><a class="no-icon" href="{{ expert_db.url }}" target="_blank">{{ expert_db.name }}</a></li>
@@ -45,10 +45,9 @@ limitations under the License.
           </ul>
         </div>
       {% endfor %}
-
     </div>
 
-    <div class="col-md-2 col-xs-6">
+    <div class="col-md-2 col-sm-4 col-xs-12">
       <h3 class="about">Information</h3>
       <ul>
         <li><a href="{% url 'about' %}">About RNAcentral</a></li>
