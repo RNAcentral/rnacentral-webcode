@@ -12,6 +12,7 @@ limitations under the License.
 -->
 
 {% extends "portal/base.html" %}
+{% load staticfiles %}
 
 {% block title %}
 About RNAcentral
@@ -46,9 +47,6 @@ About RNAcentral
   </p>
   </div>
 
-  <div class="col-md-4">
-  </div>
-
 </div>
 
 <div class="row">
@@ -65,4 +63,55 @@ About RNAcentral
   </div>
 </div>
 
-{% endblock %}
+<div class="row">
+  <div class="col-md-12">
+    <h2><i class="fa fa-rocket"></i> Number of sequences in RNAcentral releases</h2>
+  </div>
+
+  <div class="col-md-7">
+    <div class="panel panel-default">
+      <div class="panel-body">
+        <div id="graph" class="nhmmer-dashboard-graph"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <p class="well">
+      <i class="fa fa-line-chart fa-3x pull-left"></i>
+      Hover over the chart to see the number of sequences in each release.
+    </p>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block extra_js_uncompressed %}
+<script src="{% static "js/d3/d3.sequencesOverTime.js" %}"></script>
+<script>
+  var data = [
+    {
+      'date': '11-06-14',
+      'count': 7704884,
+      'label': 'release 1.0beta',
+    },
+    {
+      'date': '05-09-14',
+      'count': 8108241,
+      'label': 'release 1.0',
+    },
+    {
+      'date': '18-02-15',
+      'count': 8446855,
+      'label': 'release 2',
+    },
+    {
+      'date': '20-05-15',
+      'count': 8602124,
+      'label': 'release 3',
+    },
+  ];
+
+  d3Graph(data, '#graph');
+</script>
+{% endblock extra_js_uncompressed %}
