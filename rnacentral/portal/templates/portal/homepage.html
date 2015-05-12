@@ -41,7 +41,7 @@ RNAcentral
 
   <div id="expert-databases">
     {% for database in context.databases %}
-      {% if forloop.counter == 1 or forloop.counter == 5 or forloop.counter == 9 %}<div class="row">{% endif %}
+      {% if forloop.counter == 1 or forloop.counter == 5 or forloop.counter == 9 or forloop.counter == 13 %}<div class="row">{% endif %}
 
       <div class="col-md-3 col-sm-6 col-xs-12">
         <div class="panel panel-default expert-db-card {% if forloop.counter > 8 %}margin-bottom-5px{% endif %}">
@@ -63,17 +63,17 @@ RNAcentral
           <div class="panel-footer small">
             <a href="" rel="nofollow" ng-click="meta_search('expert_db:%22{{database.name}}%22')"><em>{{database.num_sequences|intword|intcomma}}</em> sequences</a> |
             <a href="{% url 'unique-rna-sequence' database.examples|first %}" id="{{database.label}}-examples">Example</a>
-            {% if database.name == 'PDBe' or database.name == 'snOPY' %}
-              <span class="label label-primary help" title="New Expert Database imported in release 2">New</span>
-            {% elif database.name == 'ENA' or database.name == 'RefSeq' or database.name == 'Vega' %}
-              <span class="label label-primary help" title="New data imported in release 2">Updated</span>
+            {% if database.status == 'new' %}
+              <span class="label label-primary help" title="New Expert Database imported in release 3">New</span>
+            {% elif database.status == 'updated' %}
+              <span class="label label-primary help" title="New data imported in release 3">Updated</span>
             {% endif %}
           </div>
 
         </div>
       </div>
 
-      {% if forloop.counter == 4 or forloop.counter == 8 or forloop.last %}</div>{% endif %}
+      {% if forloop.counter == 4 or forloop.counter == 8 or forloop.counter == 12 or forloop.last %}</div>{% endif %}
     {% endfor %}
   </div>
 

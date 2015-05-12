@@ -31,6 +31,9 @@ limitations under the License.
     <img src="{% static 'img/expert-db-logos/' %}{{expert_db.label}}.png" alt="{{expert_db.name}} logo" class="img-rounded">
   </a>
   {{ expert_db.name }} Expert Database
+  {% if expert_db.status %}
+    <small><label class="label label-primary">{{expert_db.status}}</label></small>
+  {% endif %}
 </h1>
 
 <div class="row">
@@ -49,7 +52,7 @@ limitations under the License.
 
 <div class="col-md-6">
 
-  <h2>Statistics</h2>
+  <h2>Overview</h2>
   <ul>
     <li>
       <strong>{{ expert_db.num_sequences|intcomma }}</strong> distinct sequences
@@ -61,6 +64,11 @@ limitations under the License.
     </li>
     <li>
       the average length is <strong>{{ expert_db.avg_length|floatformat:"0" }}</strong> nucleotide{{ expert_db.avg_length|pluralize }}
+    </li>
+    <li>
+      {% if expert_db.version %}
+        database version: <em>{{expert_db.version}}</em>
+      {% endif %}
     </li>
   </ul>
 

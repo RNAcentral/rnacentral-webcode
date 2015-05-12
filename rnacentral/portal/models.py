@@ -441,6 +441,20 @@ class Database(CachingMixin, models.Model):
         """
         return self.__get_database_attribute(self.display_name, 'name')
 
+    @cached_property
+    def status(self):
+        """
+        Get the status of the database (new/updated/etc).
+        """
+        return self.__get_database_attribute(self.display_name, 'status')
+
+    @cached_property
+    def version(self):
+        """
+        Get database version (Rfam 12, PDB as of date etc).
+        """
+        return self.__get_database_attribute(self.display_name, 'version')
+
     def __get_database_attribute(self, db_name, attribute):
         """
         An accessor method for retrieving attributes from a list.

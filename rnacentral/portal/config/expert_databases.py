@@ -37,6 +37,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
+        'status': 'updated',
+        'version': 'release r123 and daily updates until May 11th, 2015',
     },
     {
         'name': 'PDBe',
@@ -58,6 +60,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
+        'status': 'updated',
+        'version': 'as of May 9th, 2015',
     },
     {
         'name': 'FlyBase',
@@ -68,6 +72,8 @@ expert_dbs = [
         'examples': [],
         'references': [],
         'imported': False,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'Rfam',
@@ -91,6 +97,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
+        'status': '',
+        'version': 'Rfam 12.0 (pre-release)',
     },
     {
         'name': 'miRBase',
@@ -108,6 +116,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
+        'status': '',
+        'version': '21 (select species)',
     },
     {
         'name': 'Vega',
@@ -132,6 +142,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
+        'status': 'updated',
+        'version': 'release 59 (human), release 60 (mouse)',
     },
     {
         'name': 'tmRNA Website',
@@ -149,6 +161,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'SRPDB',
@@ -172,6 +186,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'lncRNAdb',
@@ -189,6 +205,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'gtRNAdb',
@@ -206,6 +224,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'RefSeq',
@@ -223,6 +243,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
+        'status': 'updated',
+        'version': '65',
     },
     {
         'name': 'RDP',
@@ -240,6 +262,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'CRW Site',
@@ -250,6 +274,8 @@ expert_dbs = [
         'examples': '',
         'references': [],
         'imported': False,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'HGNC',
@@ -260,6 +286,8 @@ expert_dbs = [
         'examples': '',
         'references': [],
         'imported': False,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'GreenGenes',
@@ -270,6 +298,8 @@ expert_dbs = [
         'examples': '',
         'references': [],
         'imported': False,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'LncBase',
@@ -280,6 +310,8 @@ expert_dbs = [
         'examples': '',
         'references': [],
         'imported': False,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'LNCipedia',
@@ -290,6 +322,8 @@ expert_dbs = [
         'examples': '',
         'references': [],
         'imported': False,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'MODOMICS',
@@ -300,6 +334,8 @@ expert_dbs = [
         'examples': '',
         'references': [],
         'imported': False,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'NONCODE',
@@ -310,6 +346,8 @@ expert_dbs = [
         'examples': '',
         'references': [],
         'imported': False,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'NPInter',
@@ -320,6 +358,8 @@ expert_dbs = [
         'examples': '',
         'references': [],
         'imported': False,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'piRNABank',
@@ -330,6 +370,8 @@ expert_dbs = [
         'examples': '',
         'references': [],
         'imported': False,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'PLncDB',
@@ -347,6 +389,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
+        'status': 'new',
+        'version': '',
     },
     {
         'name': 'PomBase',
@@ -357,6 +401,8 @@ expert_dbs = [
         'examples': '',
         'references': [],
         'imported': False,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'RNApathwaysDB',
@@ -367,6 +413,8 @@ expert_dbs = [
         'examples': '',
         'references': [],
         'imported': False,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'SILVA',
@@ -377,6 +425,8 @@ expert_dbs = [
         'examples': '',
         'references': [],
         'imported': False,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'SGD',
@@ -394,6 +444,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
+        'status': 'new',
+        'version': '',
     },
     {
         'name': 'snOPY',
@@ -412,6 +464,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'snoRNA Database',
@@ -422,6 +476,8 @@ expert_dbs = [
         'examples': '',
         'references': [],
         'imported': False,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'sRNAmap',
@@ -432,6 +488,8 @@ expert_dbs = [
         'examples': '',
         'references': [],
         'imported': False,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'TarBase',
@@ -442,6 +500,8 @@ expert_dbs = [
         'examples': '',
         'references': [],
         'imported': False,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'tmRDB',
@@ -452,6 +512,8 @@ expert_dbs = [
         'examples': '',
         'references': [],
         'imported': False,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'tRNAdb',
@@ -462,6 +524,8 @@ expert_dbs = [
         'examples': '',
         'references': [],
         'imported': False,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'WormBase',
@@ -479,6 +543,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
+        'status': 'new',
+        'version': 'WS247',
     },
     {
         'name': 'MGI',
@@ -489,6 +555,8 @@ expert_dbs = [
         'examples': [],
         'references': [],
         'imported': False,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'RGD',
@@ -499,6 +567,8 @@ expert_dbs = [
         'examples': [],
         'references': [],
         'imported': False,
+        'status': '',
+        'version': '',
     },
     {
         'name': 'TAIR',
@@ -516,5 +586,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
+        'status': 'new',
+        'version': '2',
     },
 ]
