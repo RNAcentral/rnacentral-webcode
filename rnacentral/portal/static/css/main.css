@@ -164,16 +164,71 @@ div#local-search form fieldset, form#local-search fieldset {
   margin: 0px;
 }
 
+/*
+ Multicolumn dropdown adapted from: http://codepen.io/dustlilac/pen/Qwpxbp
+*/
+.dropdown-menu.columns-2 {
+  min-width: 320px;
+}
+
+.dropdown-menu li a {
+  padding: 5px 15px;
+  font-weight: 300;
+}
+
+.multi-column-dropdown {
+  list-style: none;
+  margin: 0px;
+  padding: 0px;
+}
+
+.multi-column-dropdown li a {
+  display: block;
+  clear: both;
+  line-height: 1.428571429;
+  color: black;
+  white-space: normal;
+}
+
+.multi-column-dropdown li a:hover, .multi-column-dropdown li a:focus {
+  text-decoration: none;
+  color: white;
+}
+
+.multi-column-dropdown .divider {
+  margin: 3px 0;
+}
+
+.dropdown-menu .col-sm-5 {
+  padding-right: 0px;
+}
+
+@media (min-width: 767px) {
+  .dropdown-menu .col-sm-7 {
+    padding-left: 0px;
+  }
+  .multi-column-dropdown li a:hover, .multi-column-dropdown li a:focus {
+    background-color: #428bca;
+  }
+}
+
 @media (max-width: 767px) {
   .navbar-default .navbar-nav .open .dropdown-menu>li>a,
-  .navbar-default .navbar-nav>li>a>b {
+  .navbar-default .navbar-nav>li>a>b,
+  .multi-column-dropdown li>a,
+  .multi-column-dropdown li>a>b {
     color: #DDDDDD;
   }
-  .navbar-default .navbar-nav .open .dropdown-menu>li>a:hover {
+  .navbar-default .navbar-nav .open .dropdown-menu>li>a:hover,
+  .multi-column-dropdown .open .dropdown-menu>li>a:hover {
     color: white;
   }
   .rnacentral-masthead-menu .navbar-text {
     margin-left: 15px;
+  }
+  .dropdown-menu.multi-column {
+    min-width: 240px !important;
+    overflow-x: hidden;
   }
 }
 

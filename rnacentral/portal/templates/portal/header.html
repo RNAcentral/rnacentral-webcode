@@ -94,19 +94,40 @@ limitations under the License.
     </div>
     <div class="navbar-collapse collapse">
       <ul class="nav navbar-nav navbar-left">
+        {% get_expert_databases_list as expert_dbs %}
         <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="">Expert databases<b class="caret"></b></a>
-          <ul class="dropdown-menu">
-            {% get_expert_databases_list as expert_dbs %}
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Expert databases <b class="caret"></b></a>
+          <ul class="dropdown-menu multi-column columns-2">
+            <div class="row">
+              {% for expert_db in expert_dbs %}
+                {% if forloop.first %}
+                  <div class="col-sm-5">
+                    <ul class="multi-column-dropdown">
+                {% elif forloop.counter0 == 8 %}
+                  <div class="col-sm-7">
+                    <ul class="multi-column-dropdown">
+                {% endif %}
+                <li>
+                  <a href="{% url 'portal.views.expert_database_view' expert_db_name=expert_db.label %}">{{ expert_db.name }}</a>
+                </li>
+                {% if forloop.counter0 == 7 or forloop.last %}
+                    </ul>
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
 
-            {% for expert_db in expert_dbs %}
-              <li><a href="{% url 'portal.views.expert_database_view' expert_db_name=expert_db.label %}">{{ expert_db.name }}</a></li>
-            {% endfor %}
-
-            <li class="divider"></li>
-            <li><a href="{% url 'expert-databases' %}">All Expert databases</a></li>
+            <div class="row">
+              <div class="col-sm-12">
+              <ul class="multi-column-dropdown">
+                <li class="divider"></li>
+                <li><a href="{% url 'expert-databases' %}">All Expert databases</a></li>
+              </ul>
+              </div>
+            </div>
           </ul>
         </li>
+
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="">API<b class="caret"></b></a>
           <ul class="dropdown-menu">
