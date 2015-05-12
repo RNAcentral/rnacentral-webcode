@@ -531,7 +531,7 @@ expert_dbs = [
         'name': 'WormBase',
         'label': 'wormbase',
         'url': 'http://www.wormbase.org/',
-        'description': "the world's repository for nematode biology",
+        'description': "curates, stores and displays genomic and genetic data about nematodes with primary emphasis on <em>C. elegans</em> and related <em>Caenorhabditis</em> nematodes",
         'abbreviation': '',
         'examples': ['URS0000000000'],
         'references': [
