@@ -1027,6 +1027,14 @@ textarea {
     stroke-width: 1;
     shape-rendering: crispEdges;
 }
+
+#expert-databases {
+  visibility: hidden;
+}
+
+#expert-databases.slick-initialized {
+  visibility: visible;
+}
 #expert-databases .row {
   margin-left: 0px;
 }
