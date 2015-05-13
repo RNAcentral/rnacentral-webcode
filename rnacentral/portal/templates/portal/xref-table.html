@@ -197,6 +197,22 @@ limitations under the License.
     {% elif xref.db.name == 'snOPY' %}
       snOPY: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>
 
+    {# SGD #}
+    {% elif xref.db.name == 'SGD' %}
+      {{ xref.db.name }}: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }})
+
+    {# TAIR #}
+    {% elif xref.db.name == 'TAIR' %}
+      {{ xref.db.name }}: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a> (locus {{ xref.accession.optional_id }})
+
+    {# WormBase #}
+    {% elif xref.db.name == 'WormBase' %}
+      {{ xref.db.name }}: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+
+    {# PLncDB #}
+    {% elif xref.db.name == 'PLncDB' %}
+      {{ xref.db.name }}: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+
     {% else %}
       {{ xref.accession.external_id }} {{ xref.accession.optional_id }}
     {% endif %}

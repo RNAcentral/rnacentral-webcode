@@ -591,17 +591,21 @@ class Accession(models.Model):
         Get external url to expert database.
         """
         urls = {
-            'RFAM': 'http://rfam.xfam.org/family/',
-            'SRPDB': 'http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/',
-            'VEGA': 'http://vega.sanger.ac.uk/Homo_sapiens/Gene/Summary?db=core;g=',
-            'MIRBASE': 'http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc=',
-            'TMRNA_WEB': 'http://bioinformatics.sandia.gov/tmrna/seqs/',
-            'LNCRNADB': 'http://www.lncrnadb.org/',
+            'RFAM': 'http://rfam.xfam.org/family/{id}',
+            'SRPDB': 'http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/{id}',
+            'VEGA': 'http://vega.sanger.ac.uk/Homo_sapiens/Gene/Summary?db=core;g={id}',
+            'MIRBASE': 'http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc={id}',
+            'TMRNA_WEB': 'http://bioinformatics.sandia.gov/tmrna/seqs/{id}',
+            'LNCRNADB': 'http://www.lncrnadb.org/{id}',
+            'REFSEQ': 'http://www.ncbi.nlm.nih.gov/nuccore/{id}',
+            'RDP': 'http://rdp.cme.msu.edu/hierarchy/detail.jsp?seqid={id}',
+            'SNOPY': 'http://snoopy.med.miyazaki-u.ac.jp/snorna_db.cgi?mode=sno_info&id={id}',
+            'PDBE': 'http://www.ebi.ac.uk/pdbe-srv/view/entry/{id}',
+            'SGD': 'http://www.yeastgenome.org/locus/{id}/overview',
+            'TAIR': 'http://www.arabidopsis.org/servlets/TairObject?id={id}&type=locus',
+            'WORMBASE': 'http://www.wormbase.org/species/c_elegans/gene/{id}',
+            'PLNCDB': 'http://chualab.rockefeller.edu/cgi-bin/gb2/gbrowse_details/arabidopsis?name={id}',
             'GTRNADB': 'http://lowelab.ucsc.edu/GtRNAdb/',
-            'REFSEQ': 'http://www.ncbi.nlm.nih.gov/nuccore/',
-            'RDP': 'http://rdp.cme.msu.edu/hierarchy/detail.jsp?seqid=',
-            'SNOPY': 'http://snoopy.med.miyazaki-u.ac.jp/snorna_db.cgi?mode=sno_info&id=',
-            'PDBE': 'http://www.ebi.ac.uk/pdbe-srv/view/entry/',
         }
         if self.database in urls.keys():
             if self.database == 'GTRNADB':
@@ -610,8 +614,8 @@ class Accession(models.Model):
                 else:
                     return urls[self.database] + self.external_id + '/' + self.external_id + '-summary.html'
             elif self.database == 'LNCRNADB':
-                return urls[self.database] + self.optional_id.replace(' ', '')
-            return urls[self.database] + self.external_id
+                return urls[self.database].format(id=self.optional_id.replace(' ', ''))
+            return urls[self.database].format(id=self.external_id)
         else:
             return ''
 
