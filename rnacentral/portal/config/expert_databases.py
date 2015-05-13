@@ -434,7 +434,7 @@ expert_dbs = [
         'url': 'http://yeastgenome.org/',
         'description': 'provides comprehensive integrated biological information for the budding yeast',
         'abbreviation': 'Saccharomyces Genome Database',
-        'examples': ['URS0000000000'],
+        'examples': ['URS0000224E47',],
         'references': [
             {
                 'title': 'Saccharomyces Genome Database: the genomics resource of budding yeast',
@@ -576,7 +576,7 @@ expert_dbs = [
         'url': 'http://www.arabidopsis.org/',
         'description': 'is a database of genetic and molecular biology data for the model higher plant Arabidopsis thaliana',
         'abbreviation': 'The Arabidopsis Information Resource',
-        'examples': ['URS0000000000'],
+        'examples': ['URS0000591E4F',],
         'references': [
             {
                 'title': 'The Arabidopsis Information Resource (TAIR): improved gene annotation and new tools',
