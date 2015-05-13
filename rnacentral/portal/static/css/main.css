@@ -1035,6 +1035,16 @@ textarea {
 #expert-databases.slick-initialized {
   visibility: visible;
 }
+
+#expert-databases {
+  cursor: -webkit-grab;
+  cursor: -moz-grab;
+}
+
+#expert-databases .panel {
+  cursor: default;
+}
+
 #expert-databases .row {
   margin-left: 0px;
 }
