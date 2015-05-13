@@ -39,12 +39,13 @@ RNAcentral
     </div>
   </div>
 
-  <div id="expert-databases">
+  <div id="expert-databases" class="well well-sm">
     {% for database in context.databases %}
-      {% if forloop.counter == 1 or forloop.counter == 5 or forloop.counter == 9 or forloop.counter == 13 %}<div class="row">{% endif %}
+
+      {% if forloop.first or forloop.counter == 5 or forloop.counter == 9 or forloop.counter == 13 %}<div class="row">{% endif %}
 
       <div class="col-md-3 col-sm-6 col-xs-12">
-        <div class="panel panel-default expert-db-card {% if forloop.counter > 8 %}margin-bottom-5px{% endif %}">
+        <div class="panel panel-default expert-db-card">
 
           <div class="expert-db-card-header">
             <a href="{% url 'expert-database' database.label %}">{{database.name}}</a>
@@ -52,7 +53,7 @@ RNAcentral
 
           <div class="expert-db-card-logo">
             <a class="pull-right expert-db-logo" href="{% url 'expert-database' database.label %}" title="{{database.name}} Expert Database">
-              <img class="img-rounded hvr-grow" src="{% static 'img/expert-db-logos' %}/{{database.label}}.png" alt="{{database.name}} logo">
+              <img class="img-rounded hvr-grow" data-lazy="{% static 'img/expert-db-logos' %}/{{database.label}}.png" alt="{{database.name}} logo">
             </a>
           </div>
 
@@ -75,6 +76,10 @@ RNAcentral
 
       {% if forloop.counter == 4 or forloop.counter == 8 or forloop.counter == 12 or forloop.last %}</div>{% endif %}
     {% endfor %}
+  </div>
+
+  <div class="row">
+    <div id="carousel-controls"></div>
   </div>
 
   <hr>
@@ -143,6 +148,18 @@ RNAcentral
 <script>
   $(function() {
     $('.help').tooltip();
+    $('#expert-databases').slick({
+      draggable: true,
+      rows: 2,
+      prevArrow: '<button class="btn btn-default" class="slick-prev"><i class="fa fa-chevron-circle-left fa-2x"></i></button>',
+      nextArrow: '<button class="btn btn-default margin-left-5px" class="slick-prev"><i class="fa fa-chevron-circle-right fa-2x"></i></button>',
+      appendArrows: '#carousel-controls',
+      adaptiveHeight: true,
+      autoplay: true,
+      infinite: true,
+      autoplaySpeed: 6000,
+      lazyLoad: 'ondemand',
+    });
   });
 </script>
 

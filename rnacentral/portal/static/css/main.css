@@ -1027,3 +1027,14 @@ textarea {
     stroke-width: 1;
     shape-rendering: crispEdges;
 }
+#expert-databases .row {
+  margin-left: 0px;
+}
+
+#carousel-controls {
+  text-align: center;
+}
+
+.slick-slider {
+  margin-bottom: 10px;
+}
