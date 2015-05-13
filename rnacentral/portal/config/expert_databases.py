@@ -379,7 +379,7 @@ expert_dbs = [
         'url': 'http://chualab.rockefeller.edu/gbrowse2/homepage.html',
         'description': 'provides comprehensive genomic view of Arabidopsis lncRNAs',
         'abbreviation': 'Plant Long Non-Coding DataBase',
-        'examples': ['URS0000000000'],
+        'examples': ['URS00007C8C27'],
         'references': [
             {
                 'title': 'PLncDB: plant long non-coding RNA database',
@@ -533,7 +533,7 @@ expert_dbs = [
         'url': 'http://www.wormbase.org/',
         'description': "curates, stores and displays genomic and genetic data about nematodes with primary emphasis on <em>C. elegans</em> and related <em>Caenorhabditis</em> nematodes",
         'abbreviation': '',
-        'examples': ['URS0000000000'],
+        'examples': ['URS00001418F1'],
         'references': [
             {
                 'title': 'WormBase 2012: more genomes, more data, new website',
