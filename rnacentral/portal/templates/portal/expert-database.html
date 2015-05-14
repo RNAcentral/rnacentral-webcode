@@ -63,7 +63,7 @@ limitations under the License.
       the shortest sequence has <strong>{{ expert_db.min_length|intcomma }}</strong> nucleotides, the longest <strong>{{ expert_db.max_length|intcomma }}</strong>
     </li>
     <li>
-      the average length is <strong>{{ expert_db.avg_length|floatformat:"0" }}</strong> nucleotide{{ expert_db.avg_length|pluralize }}
+      the average length is <strong>{{ expert_db.avg_length|floatformat:"0"|intcomma }}</strong> nucleotide{{ expert_db.avg_length|pluralize }}
     </li>
     {% if expert_db.version %}
       <li>
