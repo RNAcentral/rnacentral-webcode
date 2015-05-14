@@ -33,7 +33,7 @@ def compute_database_stats():
     length_counts
     taxonomic_lineage
     """
-    for expert_db in Database.objects.all():
+    for expert_db in Database.objects.order_by('-id').all():
         print expert_db.descr
 
         context = dict()
