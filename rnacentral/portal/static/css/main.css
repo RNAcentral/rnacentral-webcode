@@ -1041,6 +1041,11 @@ textarea {
   cursor: -moz-grab;
 }
 
+#expert-databases:active {
+  cursor: -webkit-grabbing;
+  cursor: -moz-grabbing;
+}
+
 #expert-databases .panel {
   cursor: default;
 }
