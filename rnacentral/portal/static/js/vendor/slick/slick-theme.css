@@ -5,16 +5,6 @@
     background: #fff url('./ajax-loader.gif') center center no-repeat;
 }
 
-/* Icons */
-@font-face
-{
-    font-family: 'slick';
-    font-weight: normal;
-    font-style: normal;
-
-    src: url('./fonts/slick.eot');
-    src: url('./fonts/slick.eot?#iefix') format('embedded-opentype'), url('./fonts/slick.woff') format('woff'), url('./fonts/slick.ttf') format('truetype'), url('./fonts/slick.svg#slick') format('svg');
-}
 /* Arrows */
 .slick-prev,
 .slick-next
@@ -23,13 +13,13 @@
     line-height: 0;
 
     position: absolute;
-    top: 50%;
+    top: 0;
+    bottom: 0;
+    height: 100%;
 
     display: block;
 
-    width: 20px;
-    height: 20px;
-    margin-top: -10px;
+    margin-top: 0px;
     padding: 0;
 
     cursor: pointer;
@@ -44,9 +34,7 @@
 .slick-next:hover,
 .slick-next:focus
 {
-    color: transparent;
     outline: none;
-    background: transparent;
 }
 .slick-prev:hover:before,
 .slick-prev:focus:before,
@@ -64,12 +52,11 @@
 .slick-prev:before,
 .slick-next:before
 {
-    font-family: 'slick';
-    font-size: 20px;
+    font-size: 40px;
     line-height: 1;
 
-    opacity: .75;
-    color: white;
+    opacity: 1;
+    color: #9E9E9E;
 
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -77,7 +64,7 @@
 
 .slick-prev
 {
-    left: -25px;
+    left: -10px;
 }
 [dir='rtl'] .slick-prev
 {
@@ -95,7 +82,7 @@
 
 .slick-next
 {
-    right: -25px;
+    right: -15px;
 }
 [dir='rtl'] .slick-next
 {
@@ -114,13 +101,13 @@
 /* Dots */
 .slick-slider
 {
-    margin-bottom: 30px;
+    margin-bottom: 0;
 }
 
 .slick-dots
 {
     position: absolute;
-    bottom: -45px;
+    bottom: 0;
 
     display: block;
 
@@ -174,8 +161,9 @@
 }
 .slick-dots li button:before
 {
-    font-family: 'slick';
-    font-size: 6px;
+    font-family: FontAwesome;
+    content: "\f111";
+    font-size: 20px;
     line-height: 20px;
 
     position: absolute;
@@ -198,4 +186,14 @@
 {
     opacity: .75;
     color: black;
+}
+
+.slick-next:before {
+   font-family: FontAwesome;
+   content: "\f138";
+}
+
+.slick-prev:before {
+   font-family: FontAwesome;
+   content: "\f137";
 }

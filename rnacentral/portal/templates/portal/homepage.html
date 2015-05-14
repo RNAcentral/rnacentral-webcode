@@ -78,10 +78,6 @@ RNAcentral
     {% endfor %}
   </div>
 
-  <div class="row">
-    <div id="carousel-controls"></div>
-  </div>
-
   <hr>
 
   <div class="row">
@@ -151,9 +147,7 @@ RNAcentral
     $('#expert-databases').slick({
       draggable: true,
       rows: 2,
-      prevArrow: '<button class="btn btn-default" class="slick-prev"><i class="fa fa-chevron-circle-left fa-2x"></i></button>',
-      nextArrow: '<button class="btn btn-default margin-left-5px" class="slick-prev"><i class="fa fa-chevron-circle-right fa-2x"></i></button>',
-      appendArrows: '#carousel-controls',
+      dots: true,
       adaptiveHeight: true,
       autoplay: true,
       infinite: true,
