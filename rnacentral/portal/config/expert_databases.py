@@ -38,7 +38,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'release r123 and daily updates until May 11th, 2015',
+        'version': 'release r123 plus daily updates until May 11th, 2015',
     },
     {
         'name': 'PDBe',
@@ -544,7 +544,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'new',
-        'version': 'WS247',
+        'version': 'WS245',
     },
     {
         'name': 'MGI',
@@ -587,6 +587,6 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'new',
-        'version': '2',
+        'version': 'TAIR10',
     },
 ]

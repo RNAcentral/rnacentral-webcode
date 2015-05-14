@@ -65,11 +65,11 @@ limitations under the License.
     <li>
       the average length is <strong>{{ expert_db.avg_length|floatformat:"0" }}</strong> nucleotide{{ expert_db.avg_length|pluralize }}
     </li>
-    <li>
-      {% if expert_db.version %}
+    {% if expert_db.version %}
+      <li>
         database version: <em>{{expert_db.version}}</em>
-      {% endif %}
-    </li>
+      </li>
+    {% endif %}
   </ul>
 
     <h2>Example entries</h2>
