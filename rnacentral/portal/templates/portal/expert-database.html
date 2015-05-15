@@ -75,7 +75,7 @@ limitations under the License.
     <h2>Example entries</h2>
     <p>
     {% for example in expert_db.examples %}
-      <a href="{% url 'portal.views.rna_view' upi=example %}">{{ example }}</a>{% if not forloop.last %},{% else %}.{% endif %}
+      <a href="{% url 'portal.views.rna_view' upi=example %}">{{ example }}</a>{% if not forloop.last %},{% endif %}
     {% endfor %}
     </p>
 
