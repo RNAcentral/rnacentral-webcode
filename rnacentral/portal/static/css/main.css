@@ -918,8 +918,66 @@ textarea {
   transform: scale(1.05);
 }
 
-/* do not hide links on mobile devices */
-@media (min-width: 992px) {
+.expert-db-logo img {
+  margin-top: 3px;
+  margin-right: 3px;
+}
+
+.sequences-label {
+  display: inline !important;
+}
+
+/* Custom, iPhone Retina */
+@media only screen and (min-width : 320px) {
+  .expert-db-card .panel-body {
+    height: 100px;
+  }
+
+  .expert-db-logo img {
+    max-width: 130px;
+    max-height: 100px;
+  }
+}
+
+/* Extra Small Devices, Phones */
+@media only screen and (min-width : 480px) {
+  .expert-db-card .panel-body {
+    height: 70px;
+  }
+
+  .expert-db-logo img {
+    max-width: 130px;
+    max-height: 100px;
+  }
+}
+
+/* Small Devices, Tablets */
+@media only screen and (min-width : 768px) {
+  .expert-db-card .panel-body {
+    height: 110px;
+  }
+
+  .expert-db-logo img {
+    max-width: 130px;
+    max-height: 100px;
+  }
+}
+
+/* Medium Devices, Desktops */
+@media only screen and (min-width : 992px) {
+  .expert-db-card .panel-body {
+    height: 130px;
+  }
+
+  .sequences-label {
+    display: none !important;
+  }
+
+  .expert-db-logo img {
+    max-width: 100px;
+    max-height: 70px;
+  }
+
   /* hide the links */
   .expert-db-card a {
     text-decoration: none;
@@ -945,24 +1003,21 @@ textarea {
   .expert-db-card:hover .panel-body {
     color: #333;
   }
-
-  /* adjust panel height for large screen sizes */
-  .expert-db-card .panel-body {
-    min-height: 110px;
-  }
 }
 
-/* adjust panel height for medium screen sizes */
-@media (max-width: 992px) {
+/* Large Devices, Wide Screens */
+@media only screen and (min-width : 1200px) {
   .expert-db-card .panel-body {
-    min-height: 90px;
+    height: 120px;
   }
-}
 
-/* adjust panel height for small screen sizes */
-@media (max-width: 768px) {
-  .expert-db-card .panel-body {
-    min-height: 30px;
+  .expert-db-logo img {
+    max-width: 130px;
+    max-height: 100px;
+  }
+
+  .sequences-label {
+    display: inline !important;
   }
 }
 
@@ -1006,19 +1061,12 @@ textarea {
   display: inline;
 }
 
-.expert-db-logo img {
-  max-width: 130px;
-  max-height: 100px;
-  margin-top: 3px;
-  margin-right: 3px;
-}
-
 .expert-db-card .panel-body {
   padding: 10px;
 }
 
 .expert-db-card .panel-footer {
-  padding: 6px 10px;
+  padding: 6px 0px 6px 10px;
   font-size: 75%;
 }
 
