@@ -42,7 +42,7 @@ class RnaXmlExporter(OracleConnection):
                    t2.species, t2.organelle, t2.external_id,
                    t2.description, t2.non_coding_id, t2.accession,
                    t2.function, t2.gene, t2.gene_synonym, t2.feature_name,
-                   t2.ncrna_class, t2.product, t2.common_name,
+                   t2.ncrna_class, t2.product, t2.common_name, t2.note,
                    t2.parent_ac || '.' || t2.seq_version as parent_accession,
                    t3.display_name as expert_db,
                    t4.timestamp as created,
@@ -67,7 +67,7 @@ class RnaXmlExporter(OracleConnection):
         # and will become keys in self.data
         self.redundant_fields = ['taxid', 'species', 'expert_db', 'organelle',
                                  'created', 'last', 'deleted', 'description',
-                                 'function', 'gene', 'gene_synonym',
+                                 'function', 'gene', 'gene_synonym', 'note',
                                  'product', 'common_name', 'parent_accession',]
         # other data fields for which the sets should be (re-)created
         self.data_fields = ['rna_type', 'authors', 'journal', 'popular_species',
@@ -144,6 +144,16 @@ class RnaXmlExporter(OracleConnection):
             # except for PDB entries which are not based on ENA accessions
             if result['expert_db'] != 'PDBE':
                 self.data['xrefs'].add(('ENA', result['parent_accession']))
+            if result['note']:
+                # extract GO terms from `note`
+                for go_term in re.findall('GO\:\d+', result['note']):
+                    self.data['xrefs'].add(('GO', go_term))
+                # extract SO terms from `note`
+                for so_term in re.findall('SO\:\d+', result['note']):
+                    self.data['xrefs'].add(('SO', so_term))
+                # extract ECO terms from `note`
+                for eco_term in re.findall('ECO\:\d+', result['note']):
+                    self.data['xrefs'].add(('ECO', eco_term))
 
         def store_rna_type():
             """
