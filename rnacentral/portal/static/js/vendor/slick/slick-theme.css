@@ -107,7 +107,7 @@
 .slick-dots
 {
     position: absolute;
-    bottom: 0;
+    bottom: 5px;
 
     display: block;
 
@@ -163,8 +163,8 @@
 {
     font-family: FontAwesome;
     content: "\f111";
-    font-size: 20px;
-    line-height: 20px;
+    font-size: 30px;
+    line-height: 30px;
 
     position: absolute;
     top: 0;

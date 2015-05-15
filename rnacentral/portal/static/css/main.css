@@ -1023,6 +1023,7 @@ textarea {
 
 #expert-databases {
   visibility: hidden;
+  background-color: #f4f4f4;
 }
 
 #expert-databases.slick-initialized {
