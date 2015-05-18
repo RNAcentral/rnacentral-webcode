@@ -417,6 +417,15 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
     };
 
     /**
+     * Reverse the query sequence in place and repeat the search.
+     * This is helpful when the user accidentally types the sequence in 3' to 5' direction.
+     */
+    $scope.reverse_and_repeat_search = function() {
+        $scope.query.sequence = $scope.query.sequence.split("").reverse().join("");
+        search($scope.query.sequence);
+    };
+
+    /**
      * Parse fasta header, remove whitespace characters.
      */
     function parse_input(sequence) {
@@ -504,6 +513,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
         if ($location.url().indexOf("id=") > -1) {
             // load results
             initialize_ordering();
+            $scope.results.id = $location.search().id;
             check_job_status($location.search().id);
             get_query_info($location.search().id);
             $scope.params.initial_page_size = $location.search().page_size || null;

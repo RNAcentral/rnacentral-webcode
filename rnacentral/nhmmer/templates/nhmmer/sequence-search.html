@@ -142,10 +142,25 @@ Sequence search
   </div>
 
   <div class="row" ng-show="results.count===0">
-    <div class="col-md-7">
+    <div class="col-md-4">
       <div class="alert alert-warning">
-        No results
+        <strong>No results</strong>
       </div>
+    </div>
+    <div class="col-md-12">
+      <h2>Suggestions</h2>
+      <ul>
+        <li>
+          <p>
+            Is your sequence in the 3' to 5' direction? <a href="" ng-click="reverse_and_repeat_search();">Reverse the sequence and search again</a>
+          </p>
+        </li>
+        <li>
+          <p>
+            If you believe that there should be results, please <a href="{% endverbatim %}{% url 'contact-us' %}{% verbatim %}">send us</a> the job id <code>{{ results.id }}</code>
+          </p>
+        </li>
+      </ul>
     </div>
   </div>
 
