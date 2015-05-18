@@ -484,6 +484,10 @@ code a:hover {
   margin-bottom: 5px;
 }
 
+.font-size-large {
+  font-size: large;
+}
+
 /*------------------------------------------------------------------
 [5. Misc]
 */
@@ -1083,6 +1087,10 @@ textarea {
   font-size: 18px;
   padding-top: 10px;
   padding-bottom: 10px;
+}
+
+.twitter-follow-button-list {
+  vertical-align: middle;
 }
 
 /*------------------------------------------------------------------

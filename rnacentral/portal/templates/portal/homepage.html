@@ -91,10 +91,10 @@ RNAcentral
             <h3 class="panel-title text-center"><i class="fa fa-bar-chart-o"></i> Statistics</h3>
           </div>
           <div class="panel-body small">
-            <ul>
-              <li>Release <strong>3</strong> ({{ context.last_update.release_date }})</li>
-              <li><em>{{ context.seq_count|intcomma }}</em> distinct sequences</li>
-              <li><em>{{ context.databases|length }}</em> Expert Databases</li>
+            <ul class="fa-ul">
+              <li><i class="fa-li fa fa-angle-right"></i> Release <strong>3</strong> ({{ context.last_update.release_date }})</li>
+              <li><i class="fa-li fa fa-angle-right"></i> <em>{{ context.seq_count|intcomma }}</em> distinct sequences</li>
+              <li><i class="fa-li fa fa-angle-right"></i> <em>{{ context.databases|length }}</em> Expert Databases</li>
             </ul>
           </div>
         </div>
@@ -106,23 +106,25 @@ RNAcentral
             <h3 class="panel-title text-center"><i class="fa fa-bullhorn"></i> News</h3>
           </div>
           <div class="panel-body small">
-            <ul>
-              <li style="font-size:large;"><a href="http://blog.rnacentral.org/2015/05/rnacentral-release-3.html">RNAcentral release 3</a></li>
-              <li><a href="http://blog.rnacentral.org/2015/04/new-training-course-online-resources.html">New training course: Online resources for ncRNA</a></li>
-              <li><a href="http://blog.rnacentral.org/2015/02/rnacentral-release-2.html">RNAcentral release 2</a></li>
-              <li><a href="http://blog.rnacentral.org/2014/10/new-rnacentral-paper-is-online.html">New RNAcentral paper is online</a></li>
-              <li><a href="http://blog.rnacentral.org/2014/09/rnacentral-release-10.html">RNAcentral release 1.0</a></li>
+            <ul class="fa-ul">
+              <li><i class="fa-li fa fa-angle-right" style="top:0.6em;"></i> <a href="http://blog.rnacentral.org/2015/05/rnacentral-release-3.html" class="font-size-large">RNAcentral release 3</a></li>
+              <li><i class="fa-li fa fa-angle-right"></i> <a href="http://blog.rnacentral.org/2015/04/new-training-course-online-resources.html">New training course: Online resources for ncRNA</a></li>
+              <li><i class="fa-li fa fa-angle-right"></i> <a href="http://blog.rnacentral.org/2015/02/rnacentral-release-2.html">RNAcentral release 2</a></li>
+              <li><i class="fa-li fa fa-angle-right"></i> <a href="http://blog.rnacentral.org/2014/10/new-rnacentral-paper-is-online.html">New RNAcentral paper is online</a></li>
+              <li><i class="fa-li fa fa-angle-right"></i> <a href="http://blog.rnacentral.org/2014/09/rnacentral-release-10.html">RNAcentral release 1.0</a></li>
             </ul>
             <ul class="list-inline">
               <li><a href="http://blog.rnacentral.org" target="_blank"><i class="fa fa-bookmark-o"></i> Blog</a></li>
               <li><a href="http://blog.rnacentral.org/feeds/posts/default" target="_blank"><i class="fa fa-rss"></i> RSS feed</a></li>
-              <li style="vertical-align:middle;"><a class="twitter-follow-button"
-                               href="https://twitter.com/rnacentral"
-                               data-dnt="true"
-                               data-show-count="true"
-                               data-show-screen-name="false"
-                               data-lang="en">Follow</a>
-                            <script>window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));</script></li>
+              <li class="twitter-follow-button-list">
+                <a class="twitter-follow-button"
+                   href="https://twitter.com/rnacentral"
+                   data-dnt="true"
+                   data-show-count="true"
+                   data-show-screen-name="false"
+                   data-lang="en">Follow</a>
+                <script>window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));</script>
+              </li>
             </ul>
           </div>
         </div>
