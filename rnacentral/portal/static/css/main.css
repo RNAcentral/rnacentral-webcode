@@ -361,6 +361,10 @@ form input {
   margin-bottom: 0px;
 }
 
+.margin-bottom-5px {
+  margin-bottom: 5px;
+}
+
 .margin-bottom-10px {
   margin-bottom: 10px;
 }
@@ -811,6 +815,10 @@ textarea {
 .sequence-search-toolbar .back-to-top {
   width: 100%;
   display: block;
+}
+
+.border-color-white {
+  border-color: #FFFFFF;
 }
 
 /*------------------------------------------------------------------

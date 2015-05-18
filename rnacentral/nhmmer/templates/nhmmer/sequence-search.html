@@ -105,15 +105,25 @@ Sequence search
             <i class="fa fa-trash-o"></i>
             Clear
           </button>
-
-          <button class="btn btn-default" ng-click="cancel_job();" ng-show="params.search_in_progress && !params.error_message">
-            <i class="fa fa-times"></i>
-            Cancel
-          </button>
         </div>
 
       </form><!-- /form -->
   </div><!-- /row -->
+
+  <div class="row" ng-show="results.exact_match">
+    <div class="col-md-4">
+      <div class="alert alert-success animated pulse margin-bottom-5px" role="alert">
+        Exact sequence match: <a href="/rna/{{results.exact_match}}" target="_blank" class="external-link">{{results.exact_match}}</a>
+      </div>
+      <div class="well well-sm border-color-white" ng-show="params.search_in_progress">
+        <span class="small">Searching for more matches...</span>
+        <button class="btn btn-default btn-xs" ng-click="cancel_job();" ng-show="params.search_in_progress && !params.error_message">
+          <i class="fa fa-times"></i>
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
 
   <div class="row" ng-show="params.error_message">
     <div class="col-md-7">
@@ -135,14 +145,6 @@ Sequence search
     <div class="col-md-7">
       <div class="alert alert-warning">
         No results
-      </div>
-    </div>
-  </div>
-
-  <div class="row" ng-show="results.exact_match">
-    <div class="col-md-4">
-      <div class="alert alert-success animated pulse" role="alert">
-        Exact sequence match: <a href="/rna/{{results.exact_match}}" target="_blank" class="external-link">{{results.exact_match}}</a>
       </div>
     </div>
   </div>
