@@ -1093,6 +1093,10 @@ textarea {
   vertical-align: middle;
 }
 
+.callout-info {
+  border-left-color: #1B809E;
+}
+
 /*------------------------------------------------------------------
 [5.13 D3 nhmmer dashboard graph]
 */
