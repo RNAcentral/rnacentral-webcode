@@ -808,6 +808,11 @@ textarea {
   font-size: 12px;
 }
 
+.sequence-search-toolbar .back-to-top {
+  width: 100%;
+  display: block;
+}
+
 /*------------------------------------------------------------------
 [5.9 D3 expert database treemap]
 */
