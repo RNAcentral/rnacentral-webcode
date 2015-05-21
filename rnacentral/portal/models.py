@@ -200,7 +200,9 @@ class Rna(CachingMixin, models.Model):
             split_seq += seq[i:i+max_column] + "\n"
             i += max_column
         # use a random description line (for faster performance)
-        description = self.xrefs.first().accession.description
+        description = self.xrefs.select_related('accession').\
+                                 only('upi', 'accession__description').\
+                                 first().accession.description
         fasta = ">%s %s\n%s" % (self.upi, description, split_seq)
         return fasta
 
