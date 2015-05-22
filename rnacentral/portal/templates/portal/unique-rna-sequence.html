@@ -125,8 +125,8 @@ limitations under the License.
                 <li>
                   Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab">species</a>
                 </li>
-                <li><small>imported <time datetime="{{ rna.first_seen|date:'Y-m-d' }}">{{ rna.first_seen|date:'d M Y' }}</time></small></li>
-                <li><small>last updated <time datetime="{{ rna.last_seen|date:'Y-m-d' }}">{{ rna.last_seen|date:'d M Y' }}</time></small></li>
+                <li class="small text-muted">imported <time datetime="{{ rna.first_seen|date:'Y-m-d' }}">{{ rna.first_seen|date:'d M Y' }}</time></li>
+                <li class="small text-muted">last updated <time datetime="{{ rna.last_seen|date:'Y-m-d' }}">{{ rna.last_seen|date:'d M Y' }}</time></li>
               </ul>
             </div>
           </div> <!-- .panel .panel-default -->
@@ -222,11 +222,11 @@ limitations under the License.
 
           <p>
             {{ rna.length|intcomma }} nucleotides
-            <small>
-              ({{ context.counts.A|intcomma }} A; {{ context.counts.C|intcomma }} C;
-              {{ context.counts.G|intcomma }} G; {{ context.counts.U|intcomma }} U;
+            <span class="small text-muted">
+              ({{ context.counts.A|intcomma }} A, {{ context.counts.C|intcomma }} C,
+              {{ context.counts.G|intcomma }} G, {{ context.counts.U|intcomma }} U,
               {{ context.counts.N|intcomma|default:"no " }} N)
-            </small>
+            </span>
             <label class="label label-success">New</label> <a href="{% url 'nhmmer-sequence-search' %}?q={{ rna.upi }}">Search for similar sequences</a>
           </p>
           <pre class="pre-scrollable">
