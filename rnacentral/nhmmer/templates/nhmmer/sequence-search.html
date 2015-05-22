@@ -27,10 +27,7 @@ Sequence search
     <small ng-class="(params.search_in_progress && !params.error_message) ? '' : 'hidden'">
       <i class="fa fa-spinner fa-spin"></i>
     </small>
-    <small id="sequence-search-status" ng-class="(params.status_message === defaults.messages.queued || params.status_message === defaults.messages.started || params.status_message === defaults.messages.get_results || params.status_message === defaults.messages.submitting) ? 'animated flash infinite' : 'hidden'">
-      {{params.status_message}}
-    </small>
-    <small ng-show="params.status_message === defaults.messages.failed">
+    <small id="sequence-search-status">
       {{params.status_message}}
     </small>
   </h1>
