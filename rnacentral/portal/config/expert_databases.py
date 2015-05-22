@@ -379,7 +379,7 @@ expert_dbs = [
         'url': 'http://chualab.rockefeller.edu/gbrowse2/homepage.html',
         'description': 'provides comprehensive genomic view of Arabidopsis lncRNAs',
         'abbreviation': 'Plant Long Non-Coding DataBase',
-        'examples': ['URS00007C8C27'],
+        'examples': [''],
         'references': [
             {
                 'title': 'PLncDB: plant long non-coding RNA database',
@@ -388,7 +388,7 @@ expert_dbs = [
                 'pubmed_id': '23476021',
             },
         ],
-        'imported': True,
+        'imported': False,
         'status': 'new',
         'version': '',
     },
