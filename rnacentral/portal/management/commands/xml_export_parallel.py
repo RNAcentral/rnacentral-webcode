@@ -72,8 +72,8 @@ def get_lsf_command(start, stop, destination):
     Get LSF command.
     """
     return ('bsub '
-                '-o log__{0}__{1}.txt ' # output log
-                '-e log__{0}__{1}.txt ' # error log
+                '-o output__{0}__{1}.txt '
+                '-e errors__{0}__{1}.txt '
             'python manage.py xml_export '
                 '--min {0} '
                 '--max {1} '
