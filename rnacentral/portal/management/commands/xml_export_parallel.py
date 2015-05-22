@@ -59,11 +59,22 @@ class Command(BaseCommand):
         for i in xrange(step,total,step):
             start = stop
             stop = min(total, i)
-            cmd = "bsub python manage.py xml_export --min %i --max %i -d %s" % (start, stop, options['destination'])
-            print cmd
+            print get_lsf_command(start, stop, options['destination'])
 
         if stop < total:
             start = stop
             stop = total
-            cmd = "bsub python manage.py xml_export --min %i --max %i -d %s" % (start, stop, options['destination'])
-            print cmd
+            print get_lsf_command(start, stop, options['destination'])
+
+
+def get_lsf_command(start, stop, destination):
+    """
+    Get LSF command.
+    """
+    return ('bsub '
+                '-o log__{0}__{1}.txt ' # output log
+                '-e log__{0}__{1}.txt ' # error log
+            'python manage.py xml_export '
+                '--min {0} '
+                '--max {1} '
+                '-d {2}').format(start, stop, destination)
