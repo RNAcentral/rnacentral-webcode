@@ -106,7 +106,7 @@ class NhmmerResultsParser(object):
         gap_count = 0
 
         for i, line in enumerate(lines):
-            gaps = line.count('-')
+            gaps = line.count('-') + line.count('.')
             if i % 5 == 0: # query
                 match = re.match(r'^(\s+query\s+\d+ )(.+) \d+', line)
                 if match:
