@@ -244,7 +244,7 @@ class Rna(CachingMixin, models.Model):
         """
         Return True if the Rna has xrefs with a given taxid.
         """
-        if self.xrefs.filter(taxid=taxid).exists():
+        if self.xrefs.filter(taxid=taxid).count() > 0:
             return True
         else:
             return False
