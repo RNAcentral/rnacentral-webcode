@@ -19,7 +19,7 @@ limitations under the License.
     <small ng-show="search_in_progress">
       <i class="fa fa-spinner fa-spin"></i>
     </small>
-    <small id="metadata-search-status" ng-class="search_in_progress ? 'animated flash infinite' : 'hidden'">
+    <small id="metadata-search-status" ng-show="search_in_progress">
       Searching...
     </small>
     <small ng-show="result.hitCount > 0">
