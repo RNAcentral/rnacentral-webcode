@@ -524,6 +524,7 @@ class Accession(models.Model):
     old_locus_tag = models.CharField(max_length=50)
     product = models.CharField(max_length=300)
     db_xref = models.CharField(max_length=100)
+    standard_name = models.CharField(max_length=100)
 
     class Meta:
         db_table = 'rnc_accessions'
