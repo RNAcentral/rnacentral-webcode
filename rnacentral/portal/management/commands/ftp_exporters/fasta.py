@@ -15,6 +15,7 @@ from portal.management.commands.ftp_exporters.ftp_base import FtpBase
 from portal.models import Rna
 import cx_Oracle
 import logging
+import re
 import sys
 
 
@@ -46,6 +47,8 @@ class FastaExporter(FtpBase):
             'readme': 'readme.txt',
             'seq_active': 'rnacentral_active.fasta',
             'seq_inactive': 'rnacentral_inactive.fasta',
+            'nhmmer_db': 'rnacentral_nhmmer.fasta',
+            'nhmmer_db_excluded': 'rnacentral_nhmmer_excluded.fasta',
             'seq_example': 'example.txt',
         }
         self.logger = logging.getLogger(__name__)
@@ -93,6 +96,7 @@ class FastaExporter(FtpBase):
             """
             counter = 0
             previous_upi = ''
+            valid_chars = re.compile('^[ABCDGHKMNRSTVWXYU]+$', re.IGNORECASE) # IUPAC
 
             for row in self.cursor:
                 if self.test and counter >= self.test_entries:
@@ -109,6 +113,10 @@ class FastaExporter(FtpBase):
                 self.filehandles['seq_active'].write(fasta)
                 if counter < self.examples:
                     self.filehandles['seq_example'].write(fasta)
+                if valid_chars.match(rna.get_sequence()):
+                    self.filehandles['nhmmer_db'].write(fasta)
+                else:
+                    self.filehandles['nhmmer_db_excluded'].write(fasta)
                 counter += 1
 
         sql = get_active_sequences_sql()
