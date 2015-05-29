@@ -107,11 +107,14 @@ Sequence search
       </form><!-- /form -->
   </div><!-- /row -->
 
-  <div class="row" ng-show="results.exact_match">
+  <div class="row">
     <div class="col-md-4">
-      <div class="alert alert-success animated pulse margin-bottom-5px" role="alert">
-        Exact sequence match: <a href="/rna/{{results.exact_match}}" target="_blank" class="external-link">{{results.exact_match}}</a>
+      <div ng-show="results.exact_match"> <!-- Pulse animation cannot be on the same element as ng-show -->
+        <div class="alert alert-success animated pulse margin-bottom-5px" role="alert">
+          Exact sequence match: <a href="/rna/{{results.exact_match}}" target="_blank" class="external-link">{{results.exact_match}}</a>
+        </div>
       </div>
+
       <div class="well well-sm border-color-white" ng-show="params.search_in_progress">
         <span class="small">Searching for more matches...</span>
         <button class="btn btn-default btn-xs" ng-click="cancel_job();" ng-show="params.search_in_progress && !params.error_message">
