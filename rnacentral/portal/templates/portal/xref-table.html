@@ -207,7 +207,8 @@ limitations under the License.
 
     {# WormBase #}
     {% elif xref.db.name == 'WormBase' %}
-      {{ xref.db.name }}: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+      {{ xref.db.name }}: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a> <span class="small text-muted">(gene)</span> |
+      <a href="http://www.wormbase.org/species/c_elegans/transcript/{{ xref.accession.optional_id }}" target="_blank">{{ xref.accession.optional_id }}</a> <span class="small text-muted">(transcript)</span>
 
     {# PLncDB #}
     {% elif xref.db.name == 'PLncDB' %}
