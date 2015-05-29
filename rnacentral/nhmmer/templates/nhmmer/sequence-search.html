@@ -116,8 +116,9 @@ Sequence search
       </div>
 
       <div class="well well-sm border-color-white" ng-show="params.search_in_progress">
-        <span class="small">Searching for more matches...</span>
-        <button class="btn btn-default btn-xs" ng-click="cancel_job();" ng-show="params.search_in_progress && !params.error_message">
+        <span class="margin-left-5px" ng-show="!results.exact_match">Searching...</span>
+        <span class="margin-left-5px" ng-show="results.exact_match">Searching for more matches...</span>
+        <button class="btn btn-default btn-sm margin-left-5px" ng-click="cancel_job();" ng-show="params.search_in_progress && !params.error_message">
           <i class="fa fa-times"></i>
           Cancel
         </button>
