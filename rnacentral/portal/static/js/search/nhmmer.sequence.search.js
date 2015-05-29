@@ -429,7 +429,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
      * Parse fasta header, remove whitespace characters.
      */
     function parse_input(sequence) {
-        var match = /(^>(.+)[\n\r])?(.+)/.exec(sequence);
+        var match = /(^>(.+)[\n\r])?([\s\S]+)/.exec(sequence);
         if (match) {
             return {
                 description: match[2] || '',
