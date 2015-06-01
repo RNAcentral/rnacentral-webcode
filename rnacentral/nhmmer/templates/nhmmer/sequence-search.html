@@ -65,8 +65,12 @@ Sequence search
 
             <span class="help-block">
               <em>Examples:</em>
-              <a href="" ng-click="sequence_search('>miRNA hsa-let-7f-5p (URS00003B7674)\nUGAGGUAGUAGAUUGUAUAGUU')">miRNA hsa-let-7f-5p (URS00003B7674)</a>,
-              <a href="" ng-click="sequence_search('UGCCUGGCGGCCGUAGCGCGGUGGUCCCACCUGACCCCAUGCCGAACUCAGAAGUGAAACGCCGUAGCGCCGAUGGUAGUGUGGGGUCUCCCCAUGCGAGAGUAGGGAACUGCCAGGCAU')">5S rRNA (URS0000049E57)</a>
+              <a href="" ng-click="sequence_search('>miRNA hsa-let-7a-1 (URS000004F5D8)\nCUAUACAAUCUACUGUCUUUC')">miRNA hsa-let-7a-1</a>
+              <span class="small">(URS000004F5D8)</span>,
+              <a href="" ng-click="sequence_search('UGCCUGGCGGCCGUAGCGCGGUGGUCCCACCUGACCCCAUGCCGAACUCAGAAGUGAAACGCCGUAGCGCCGAUGGUAGUGUGGGGUCUCCCCAUGCGAGAGUAGGGAACUGCCAGGCAU')">5S rRNA</a>
+              <span class="small">(URS0000049E57)</span>,
+              <a href="" ng-click="sequence_search('URS00008120E1')">NKILA lncRNA</a>
+              <span class="small">(URS00008120E1)</span>
               <em>
                 <span class="small pull-right" ng-show="seqQueryForm.sequence.$valid && get_query_length() > 0">{{get_query_length()}} nts</span>
               </em>
