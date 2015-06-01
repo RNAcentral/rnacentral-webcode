@@ -434,7 +434,11 @@ expert_dbs = [
         'url': 'http://yeastgenome.org/',
         'description': 'provides comprehensive integrated biological information for the budding yeast',
         'abbreviation': 'Saccharomyces Genome Database',
-        'examples': ['URS0000224E47',],
+        'examples': [
+            'URS0000224E47', # HRA1 gene
+            'URS00001CAAE9', # SRP
+            'URS0000077671', # snoRNA
+        ],
         'references': [
             {
                 'title': 'Saccharomyces Genome Database: the genomics resource of budding yeast',
@@ -533,7 +537,11 @@ expert_dbs = [
         'url': 'http://www.wormbase.org/',
         'description': "curates, stores and displays genomic and genetic data about nematodes with primary emphasis on <em>C. elegans</em> and related nematodes",
         'abbreviation': '',
-        'examples': ['URS00001418F1'],
+        'examples': [
+            'URS000022A09E', # miRNA
+            'URS00001218EE', # rRNA
+            'URS00003E1CE3', # snoRNA
+        ],
         'references': [
             {
                 'title': 'WormBase 2012: more genomes, more data, new website',
@@ -576,7 +584,11 @@ expert_dbs = [
         'url': 'http://www.arabidopsis.org/',
         'description': 'is a database of genetic and molecular biology data for the model higher plant Arabidopsis thaliana',
         'abbreviation': 'The Arabidopsis Information Resource',
-        'examples': ['URS0000591E4F',],
+        'examples': [
+            'URS0000591E4F', # tRNA
+            'URS000008172F', # rRNA
+            'URS000035F1B7', # snoRNA
+        ],
         'references': [
             {
                 'title': 'The Arabidopsis Information Resource (TAIR): improved gene annotation and new tools',
