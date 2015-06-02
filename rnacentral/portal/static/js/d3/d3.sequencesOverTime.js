@@ -78,6 +78,17 @@ d3Graph = function(data, selector){
         .attr("class", "line")
         .attr("d", valueline(data));
 
+    // Add circles
+    lineSvg.selectAll("path.line")
+        .data(data)
+        .enter()
+        .append("svg:circle")
+        .attr("cx", function(d) { return x(d.date); })
+        .attr("cy", function(d) { return y(d.count); })
+        .style("fill", "steelblue")
+        .style("stroke", "steelblue")
+        .attr("r", 3);
+
     // Add the X Axis
     svg.append("g")
         .attr("class", "x axis")
@@ -110,9 +121,9 @@ d3Graph = function(data, selector){
     // append the circle at the intersection
     focus.append("circle")
         .attr("class", "y")
-        .style("fill", "none")
+        .style("fill", "steelblue")
         .style("stroke", "steelblue")
-        .attr("r", 4);
+        .attr("r", 3);
 
     // place the value at the intersection
     focus.append("text")
