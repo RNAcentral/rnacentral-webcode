@@ -795,10 +795,6 @@ textarea {
   margin: 10px;
 }
 
-.sequence-search-results .table-header td {
-  border-top-color: white;
-}
-
 .sequence-search-toolbar .affix {
   top: 200px;
   width: 260px;
