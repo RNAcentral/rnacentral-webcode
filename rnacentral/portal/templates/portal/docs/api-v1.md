@@ -1,13 +1,11 @@
 
-<h1 id="overview">
-  <i class="fa fa-book"></i> API overview
-</h1>
+# <i class="fa fa-book" id="overview"></i> API overview
 
 Most data in RNAcentral can be accessed programmatically using a RESTful API
 allowing for integration with other resources.
 The API implementation is based on the [Django Rest Framework](http://www.django-rest-framework.org/).
 
-<h2 id="web-browsable-api">Web browsable API</h2>
+## Web browsable API <a name="web-browsable-api" href="#web-browsable-api" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The RNAcentral API is **web browsable**, which means that:
 
@@ -20,7 +18,7 @@ As a result, developers can familiarise themselves with the API and get a better
 
 <a href="/api/v1" class="btn btn-primary" role="button" target="_blank">Browse the API</a>
 
-<h2 id="versioning">Versioning</h2>
+## Versioning <a name="versioning" href="#versioning" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 To ensure that changes in the RNAcentral API don't break the applications
 relying on it, the API is versioned, and **the version is included in the API's URL**.
@@ -48,7 +46,7 @@ The following **non-disruptive changes** may be implemented to a public API:
 An advance notice will be given before obsoleting an API version. To stay up to date,
 please consider signing up for the [RNAcentral updates](http://blog.rnacentral.org).
 
-<h2 id="throttling">Throttling</h2>
+## Throttling <a name="throttling" href="#throttling" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The maximum number of requests from the same IP address is limited to **20 requests per second**.
 Currently there is no limit on the total number of requests from the same IP.
@@ -57,9 +55,9 @@ The limit can be lifted for registered users, so please get in touch if you requ
 
 <hr>
 
-<h1 id="v1">API v1 documentation</h1>
+# API v1 documentation <a name="v1" href="#v1" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
-<h2 id="v1-example-responses">Example responses</h2>
+## Example responses <a name="v1-example-responses" href="#v1-example-responses" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Responses containing **multiple entries** have the following fields:
 
@@ -104,7 +102,7 @@ Responses containing just a **single entry** don't have the extra navigation fie
 }
 ```
 
-<h3 id="v1-hyperlinked-vs-flat-responses">Hyperlinked vs flat responses</h3>
+### Hyperlinked vs flat responses <a name="v1-hyperlinked-vs-flat-responses" href="#v1-hyperlinked-vs-flat-responses" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Some objects are represented by hyperlinks, for example in the default RNA object cross-references are represented by a hyperlink:
 
@@ -123,7 +121,7 @@ Note that such requests may take longer.
 * [{{ BASE_URL }}/api/v1/rna/URS0000000001](/api/v1/rna/URS0000000001) (hyperlinked)
 * [{{ BASE_URL }}/api/v1/rna/URS0000000001/?flat=true](/api/v1/rna/URS0000000001/?flat=true) (flat)
 
-<h2 id="v1-pagination">Pagination</h2>
+##Pagination <a name="v1-pagination" href="#v1-pagination" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Responses containing multuple entries are paginated to prevent accidental downloads of large amounts of data and to speed up the API.
 
@@ -137,7 +135,7 @@ The page size is controlled by the `page_size` parameter. Its default value is
 * [{{ BASE_URL }}/api/v1/rna/?page_size=5](/api/v1/rna/?page_size=5)
 * [{{ BASE_URL }}/api/v1/rna/?page=2&page_size=5](/api/v1/rna/?page_size=5&page=2)
 
-<h2 id="v1-output-formats">Output formats</h2>
+## Output formats <a name="v1-output-formats" href="#v1-output-formats" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The following output formats are supported for all endpoints:
 **JSON**, **JSONP** (for cross-origin Javascript requests), **YAML**, **HTML**.
@@ -157,7 +155,7 @@ There are three ways of specifying the format:
   * [{{ BASE_URL }}/api/v1/rna/URS000063A371/?format=gff](/api/v1/rna/URS000063A371/?format=gff)
   * [{{ BASE_URL }}/api/v1/rna/URS000063A371/?format=gff3](/api/v1/rna/URS000063A371/?format=gff3)
 
-2. format suffix
+2. `.format` suffix
   * [{{ BASE_URL }}/api/v1/rna/URS0000000001.json](/api/v1/rna/URS0000000001.json)
   * [{{ BASE_URL }}/api/v1/rna/URS0000000001.fasta](/api/v1/rna/URS0000000001.fasta)
   * [{{ BASE_URL }}/api/v1/rna/URS0000000001.yaml](/api/v1/rna/URS0000000001.yaml)
@@ -189,11 +187,11 @@ curl -H "Accept: application/yaml" http://127.0.0.1:8000/api/v1/?format=json
 }
 ```
 
-<h2 id="v1-filtering">Filtering</h2>
+## Filtering <a name="v1-filtering" href="#v1-filtering" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The API supports several filtering operations that complement the main RNAcentral search functionality.
 
-<h3 id="v1-filtering-by-sequence-length">Filtering by sequence length</h3>
+### Filtering by sequence length <a name="v1-filtering-by-sequence-length" href="#v1-filtering-by-sequence-length" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 There are 3 url parameters: `length`, `min_length` (greater or equal length), and `max_length` (less or equal length).
 
@@ -204,7 +202,7 @@ There are 3 url parameters: `length`, `min_length` (greater or equal length), an
 * [{{ BASE_URL }}/api/v1/rna/?max_length=10](/api/v1/rna/?max_length=10)
 * [{{ BASE_URL }}/api/v1/rna/?min_length=1&max_length=4](/api/v1/rna/?min_length=1&max_length=4)
 
-<h3 id="v1-filtering-by-database">Filtering by database</h3>
+### Filtering by database <a name="v1-filtering-by-database" href="#v1-filtering-by-database" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The expert database can be specified by setting the `database` url parameter
 (possible values: *srpdb*, *mirbase*, *vega*, *tmrna-website*, *lncrnadb*, *gtrnadb*, *ena*, *rdp*, *rfam*, *refseq*, *snopy*, *pdbe*).
@@ -222,7 +220,7 @@ The expert database can be specified by setting the `database` url parameter
 * [{{ BASE_URL }}/api/v1/rna/?database=rfam](/api/v1/rna/?database=rfam)
 * [{{ BASE_URL }}/api/v1/rna/?database=refseq](/api/v1/rna/?database=refseq)
 
-<h3 id="v1-filtering-by-external-ids">Filtering by external ids</h3>
+### Filtering by external ids <a name="v1-filtering-by-external-ids" href="#v1-filtering-by-external-ids" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The external id is an id assigned to a sequence in one of the Expert Databases,
 which is imported into RNAcentral as a cross-reference.
@@ -236,7 +234,7 @@ The external id can be specified by setting the `external_id` url parameter.
 * <a href="/api/v1/rna/?external_id=OTTHUMG00000172092" target="_blank">{{ BASE_URL }}/api/v1/rna/?external_id=OTTHUMG00000172092</a> (Vega)
 * <a href="/api/v1/rna/?external_id=Lepto_inter_Lai566" target="_blank">{{ BASE_URL }}/api/v1/rna/?external_id=Lepto_inter_Lai566</a> (tmRNA Website)
 
-<h3 id="v1-combined-filters">Combined filters</h3>
+### Combined filters <a name="v1-combined-filters" href="#v1-combined-filters" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Any filters can be combined to narrow down the query using the `&` symbol as a separator,
 which acts as the logical `AND` operator. More logical operators will be supported in the future.
@@ -246,7 +244,7 @@ which acts as the logical `AND` operator. More logical operators will be support
 * [{{ BASE_URL }}/api/v1/rna/?database=srpdb&min_length=200](/api/v1/rna/?database=srpdb&min_length=200)
 * [{{ BASE_URL }}/api/v1/rna/?min_length=1&max_length=4](/api/v1/rna/?min_length=1&max_length=4)
 
-<h2 id="v1-genome-annotations">Genome annotations</h2>
+## Genome annotations <a name="v1-genome-annotations" href="#v1-genome-annotations" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The API provides an endpoint for retrieving annotations based on genomic coordinates for a [number of species](/help/genomic-mapping).
 
@@ -260,7 +258,7 @@ The genome location should be in the `chromosome:start-end` format and may conta
 
 * [{{ BASE_URL }}/api/v1/overlap/region/homo_sapiens/2:39,745,816-39,826,679](/api/v1/overlap/region/homo_sapiens/2:39,745,816-39,826,679)
 
-<h2 id="v1-example-script">Example script</h2>
+## Example script <a name="v1-example-script" href="#v1-example-script" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 A common task is finding whether some sequence of interest has an RNAcentral id.
 
@@ -281,11 +279,11 @@ Perl module for computing the md5 values. Additional notes:
 {# embedded GitHub gist #}
 <script src="https://gist.github.com/AntonPetrov/177cef0a3b4799f01536.js"></script>
 
-<h2 id='v1-cross-domain-requests'>Cross domain requests</h2>
+## Cross domain requests <a name="v1-cross-domain-requests" href="#v1-cross-domain-requests" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 To use the API in a javascript application, please use jsonp requests.
 
-#### Example using jQuery
+#### Example using jQuery <a name="v1-example-using-jquery" href="#v1-example-using-jquery" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 ```
 $.ajax({
@@ -300,7 +298,7 @@ $.ajax({
 });
 ```
 
-<h2 id="v1-trailing-slash">Trailing slash</h2>
+## Trailing slash <a name="v1-trailing-slash" href="#v1-trailing-slash" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The trailing slash in all urls used in the API is **optional**.
 

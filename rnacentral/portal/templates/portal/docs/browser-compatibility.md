@@ -1,5 +1,5 @@
 
-<h1><i class="fa fa-desktop"></i> Browser compatibility</h1>
+# <i class="fa fa-desktop"></i> Browser compatibility
 
 RNAcentral is designed to work best in the following browsers:
 

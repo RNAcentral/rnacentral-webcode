@@ -1,11 +1,11 @@
 
-<h1><i class="fa fa-info-circle"></i> Metadata search</h1>
+# <i class="fa fa-search"></i> Metadata search
 
 ## Query syntax
 
 RNAcentral search supports several search operators that can be used to compose advanced queries.
 
-### Exact matching
+### Exact matching <a name="exact-matching" href="#exact-matching" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Use double quotes (**""**) to search for exact matches.
 
@@ -13,7 +13,7 @@ Use double quotes (**""**) to search for exact matches.
 
 ---
 
-### Wildcards
+### Wildcards <a name="wildcards" href="#wildcards" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The wildcard character (<strong>*</strong>) can match any number of characters.
 
@@ -24,7 +24,7 @@ and a search for `"HOTAIR"` (with double quotes) will find only HOTAIR.
 
 ---
 
-### Field-specific search
+### Field-specific search <a name="field-specific-search" href="#field-specific-search" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Search can be restricted to specific fields using the **field_name:"field value"** syntax.
 Please note that "field value" **must be enclosed in double quotes**.
@@ -90,7 +90,7 @@ Please note that "field value" **must be enclosed in double quotes**.
 
 ---
 
-### Logic operators
+### Logic operators <a name="logic-operators" href="#logic-operators" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 * **and** (default)
 
@@ -107,7 +107,7 @@ Please note that "field value" **must be enclosed in double quotes**.
 
 ---
 
-### Grouping
+### Grouping <a name="grouping" href="#grouping" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Use parentheses to group and nest logical terms.
 
@@ -115,7 +115,7 @@ Use parentheses to group and nest logical terms.
 
 ---
 
-## Search tips
+## Search tips <a name="tips" href="#tips" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 * Make sure your **spelling** is correct.
 
@@ -127,7 +127,7 @@ Use parentheses to group and nest logical terms.
 
 ---
 
-## About RNAcentral search
+## About RNAcentral search <a name="ebi-search" href="#ebi-search" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 RNAcentral is powered by the [EBI search](http://www.ebi.ac.uk/ebisearch/),
 which provides publicly available REST and SOAP interfaces for querying the data.

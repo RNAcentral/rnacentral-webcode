@@ -453,6 +453,10 @@ h3.panel-title {
   font-size: 85%;
 }
 
+.smaller {
+  font-size: 70%;
+}
+
 .table {
   margin-bottom: 5px;
 }

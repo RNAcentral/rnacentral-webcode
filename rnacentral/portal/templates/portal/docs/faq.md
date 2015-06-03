@@ -1,7 +1,7 @@
 
-<h1><i class="fa fa-info-circle"></i> Frequently Asked Questions</h1>
+# <i class="fa fa-info-circle"></i> Frequently Asked Questions
 
-### What is RNAcentral?
+### What is RNAcentral? <a name="what-is-rnacentral" href="#what-is-rnacentral" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 RNAcentral is an open public resource that offers integrated access
 to a comprehensive and up-to-date set of ncRNA sequences.
@@ -11,7 +11,7 @@ and automatically updates links between sequences and identifiers
 maintained by [expert databases]({% url 'expert-databases' %}).
 More [about RNAcentral]({% url 'about' %}).
 
-### What sequences are included in RNAcentral?
+### What sequences are included in RNAcentral? <a name="included-sequences" href="#included-sequences" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The [INSDC](http://www.insdc.org/) databases contain a large number of sequences
 annotated with **non-coding features**.
@@ -22,13 +22,13 @@ as individual sequences, including the data submitted to INSDC by the expert dat
 In addition, RNAcentral contains sequences from RFAM seed and full alignments,
 which also refer to the INSDC accession space.
 
-### What sequences are excluded from RNAcentral?
+### What sequences are excluded from RNAcentral? <a name="excluded-sequences" href="#excluded-sequences" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 * sequences shorter than **10 nucleotides**
 
 * sequences with **more than 10% of unknown characters** (Ns).
 
-### What are RNAcentral identifiers?
+### What are RNAcentral identifiers? <a name="rnacentral-identifiers" href="#rnacentral-identifiers" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Each sequence in RNAcentral is assigned a **U**nique **R**NA **S**equence identifier (**URS**).
 These identifiers are stable and are not expected to change.
@@ -38,7 +38,7 @@ and can be parsed using this regular expression: `/URS[0-9A-F]{10}/`.
 
 Example identifiers: URS0000000001, URS00000478B7.
 
-### How do I find RNAcentral identifiers for an RNA sequence?
+### How do I find RNAcentral identifiers for an RNA sequence? <a name="how-to-find-rnacentral-id" href="#how-to-find-rnacentral-id" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 To find an RNAcentral identifier for a **single sequence**, one can use RNAcentral
 [sequence search]({% url 'nhmmer-sequence-search' %}).
@@ -54,7 +54,7 @@ between [md5](http://en.wikipedia.org/wiki/MD5) values and RNAcentral ids;
 * download a [mapping file](ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/)
 with correspondences between external database identifiers and RNAcentral ids.
 
-### How do I submit sequences to RNAcentral?
+### How do I submit sequences to RNAcentral? <a name="how-to-submit" href="#how-to-submit" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Once an ncRNA sequence is submitted to an [INSDC](http://www.insdc.org/) database,
 including [ENA](http://www.ebi.ac.uk/ena), [GenBank](http://www.ncbi.nlm.nih.gov/Genbank/index.html),
@@ -64,7 +64,7 @@ appear in a subsequent RNAcentral release.
 If you run an ncRNA database and would like to join the RNAcentral Consortium,
 please [get in touch]({% url 'contact-us' %}).
 
-### How often is RNAcentral updated?
+### How often is RNAcentral updated? <a name="release-schedule" href="#release-schedule" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The RNAcentral data is updated **every 3 months**, while the user interface
 and website functionality is continuously updated.
