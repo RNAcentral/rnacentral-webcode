@@ -1,4 +1,5 @@
 User-agent: *
 Disallow: /api/v1/
+Disallow: /api/current/
 
 Sitemap: http://rnacentral.org/sitemap.xml
