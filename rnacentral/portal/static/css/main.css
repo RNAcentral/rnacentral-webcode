@@ -496,6 +496,10 @@ code a:hover {
   font-size: large;
 }
 
+.overflow-auto {
+  overflow: auto;
+}
+
 /*------------------------------------------------------------------
 [5. Misc]
 */
