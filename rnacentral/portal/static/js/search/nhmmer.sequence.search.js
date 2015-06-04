@@ -114,7 +114,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             method: 'GET',
             params: {
                 id: id,
-                ordering: $scope.params.selectedOrdering.sort_field,
+                ordering: $scope.params.selectedOrdering.sort_field + ',result_id',
                 page_size: $scope.params.initial_page_size || 10,
             },
         }).success(function(data){

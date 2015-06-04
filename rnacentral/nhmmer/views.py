@@ -217,16 +217,15 @@ class ResultsView(generics.ListAPIView):
     serializer_class = ResultsSerializer
     filter_backends = (filters.OrderingFilter,)
     ordering_fields = ('identity', 'query_coverage', 'target_coverage',
-                       'gaps', 'e_value')
-    ordering = ('e_value',) # default ordering
+                       'gaps', 'e_value', 'result_id')
+    ordering = ('e_value', 'result_id') # default ordering
 
     def get_queryset(self):
         """
         Filter results by query id.
         """
         query_id = self.request.QUERY_PARAMS.get('id', None)
-        return Results.objects.filter(query_id=query_id).\
-                               order_by('id')
+        return Results.objects.filter(query_id=query_id)
 
 
 class QuerySerializer(serializers.ModelSerializer):
