@@ -468,7 +468,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
+        'status': 'updated',
         'version': '',
     },
     {
