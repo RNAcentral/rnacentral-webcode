@@ -111,6 +111,27 @@ class GPIExporter(object):
                 sql_cmd += ' AND dbid = 5 AND taxid = 10090' # just Vega xrefs
             return sql_cmd
 
+        def test_unique_ids():
+            """
+            Test uniqueness of URS_taxid identifiers.
+            """
+            number_of_lines = subprocess.check_output(
+                ['cat %s | wc -l' % self.filepath],
+                shell=True).strip()
+            number_of_unique_ids = subprocess.check_output(
+                ["sort -u -t$'\t' -k2,2 %s | wc -l" % self.filepath],
+                shell=True).strip()
+            assert(number_of_lines == number_of_unique_ids)
+
+        def test_none_taxids():
+            """
+            Test that there are no None taxids
+            """
+            none_taxids = subprocess.check_output(
+                ['grep _None %s | wc -l' % self.filepath],
+                shell=True).strip()
+            assert(int(none_taxids) == 0)
+
         counter = 0
         db = OracleConnection()
         db.get_cursor()
@@ -127,6 +148,8 @@ class GPIExporter(object):
         assert(counter > 0)
         assert(os.path.exists(self.filepath))
 
+        test_unique_ids()
+        test_none_taxids()
 
         gzip_file(self.filepath)
         print 'Exported %i entries' % counter
