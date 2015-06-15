@@ -618,6 +618,8 @@ class Accession(models.Model):
                     return urls[self.database] + self.external_id + '/' + self.external_id + '-summary.html'
             elif self.database == 'LNCRNADB':
                 return urls[self.database].format(id=self.optional_id.replace(' ', ''))
+            elif self.database == 'VEGA':
+                return urls[self.database].format(id=self.optional_id)
             return urls[self.database].format(id=self.external_id)
         else:
             return ''
@@ -811,10 +813,15 @@ class Xref(models.Model):
         return splice_variants
 
     def get_vega_splice_variants(self):
+        """
+        Alternative transcripts are grouped by the same Gene id.
+        Vega gene names are stored in optional_id while
+        transcript names are stored in external_id.
+        """
         splice_variants = []
         if not re.match('vega', self.db.display_name, re.IGNORECASE):
             return splice_variants
-        for splice_variant in Accession.objects.filter(external_id=self.accession.external_id).\
+        for splice_variant in Accession.objects.filter(optional_id=self.accession.optional_id).\
                                                 exclude(accession=self.accession.accession).\
                                                 all():
             for splice_xref in splice_variant.xrefs.all():
