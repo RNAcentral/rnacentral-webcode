@@ -13,6 +13,7 @@ limitations under the License.
 
 from optparse import make_option
 import os
+import subprocess
 from django.core.management.base import BaseCommand, CommandError
 from common_exporters.oracle_connection import OracleConnection
 from portal.models import Rna
@@ -33,6 +34,22 @@ http://geneontology.org/page/gene-product-information-gpi-format
 Example GPI file:
 ftp://ftp.ebi.ac.uk/pub/databases/intact/current/various/intact_complex.gpi
 """
+
+def gzip_file(filename):
+    """
+    Compress a given file using gzip, return the compressed file name.
+    """
+    gzipped_filename = '%s.gz' % filename
+    cmd = 'gzip < %s > %s' % (filename, gzipped_filename)
+    print 'Compressing file %s' % filename
+    status = subprocess.call(cmd, shell=True)
+    if status == 0:
+        print 'File compressed, new file %s' % gzipped_filename
+        return gzipped_filename
+    else:
+        print 'Compressing failed, no file created'
+        return ''
+
 
 class GPIExporter(object):
     """
@@ -110,8 +127,9 @@ class GPIExporter(object):
         assert(counter > 0)
         assert(os.path.exists(self.filepath))
 
+
+        gzip_file(self.filepath)
         print 'Exported %i entries' % counter
-        print 'File %s' % self.filepath
 
 
 class Command(BaseCommand):
