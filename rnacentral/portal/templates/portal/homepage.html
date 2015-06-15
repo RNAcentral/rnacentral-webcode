@@ -62,11 +62,11 @@ RNAcentral
           </div>
 
           <div class="panel-footer small">
-            <a href="" rel="nofollow" ng-click="meta_search('expert_db:%22{{database.name}}%22')">
+            <a href="" rel="nofollow" ng-click="meta_search('expert_db:%22{{database.name}}%22')" title="View all sequences" class="help">
               <em>{{database.num_sequences|intword|intcomma}}</em>
               <span class="sequences-label">sequences</span>
             </a> |
-            <a href="{% url 'unique-rna-sequence' database.examples|first %}" id="{{database.label}}-examples">Example</a>
+            <a href="{% url 'unique-rna-sequence' database.examples|first %}" id="{{database.label}}-examples" class="help" title="View example sequence">Example</a>
             {% if database.status == 'new' %}
               <span class="label label-info help" title="New Expert Database imported in release 3">New</span>
             {% elif database.status == 'updated' %}
