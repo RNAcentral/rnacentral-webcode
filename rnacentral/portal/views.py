@@ -190,6 +190,7 @@ def rna_view(request, upi, taxid=None):
             else:
                 return None
 
+    upi = upi.upper()
     try:
         rna = Rna.objects.get(upi=upi)
     except Rna.DoesNotExist:
