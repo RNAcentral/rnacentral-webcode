@@ -394,9 +394,10 @@ class MetaSearchPage(BasePage):
         for example in examples:
             results = []
             example.click()
-            click_load_more()
-            enable_facet()
             results = self.get_metasearch_results()
+            if len(results) > self.page_size:
+                click_load_more()
+            enable_facet()
             if len(results) > 0:
                 success.append(1)
         return len(success) == len(examples)
