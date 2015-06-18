@@ -105,7 +105,7 @@ limitations under the License.
 
     {# Vega #}
     {% elif xref.db.name == 'Vega' %}
-      {{ xref.db.name }} transcript <a href="http://vega.sanger.ac.uk/Homo_sapiens/Transcript/Summary?db=core;t={{ xref.accession.external_id }}" target="_blank" title="View the transcript at {{ xref.db.name }}">{{ xref.accession.external_id }}</a>
+      {{ xref.db.name }} transcript <a href="{{ xref.accession.get_vega_transcript_url }}" target="_blank" title="View the transcript at {{ xref.db.name }}">{{ xref.accession.external_id }}</a>
       from gene <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank" title="View the gene at {{ xref.db.name }}">{{ xref.accession.optional_id }}</a>
       {% with splice_variants=xref.get_vega_splice_variants %}
         {% if splice_variants %}

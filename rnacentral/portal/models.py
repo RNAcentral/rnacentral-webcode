@@ -589,6 +589,14 @@ class Accession(models.Model):
         else:
             return ena_base_url + self.accession
 
+    def get_vega_transcript_url(self):
+        """
+        Get external url for Vega transcripts.
+        """
+        url = 'http://vega.sanger.ac.uk/{species}/Transcript/Summary?db=core;t={id}'.format(
+            id=self.external_id, species=self.species.replace(' ', '_'))
+        return url
+
     def get_expert_db_external_url(self):
         """
         Get external url to expert database.
@@ -596,7 +604,7 @@ class Accession(models.Model):
         urls = {
             'RFAM': 'http://rfam.xfam.org/family/{id}',
             'SRPDB': 'http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/{id}',
-            'VEGA': 'http://vega.sanger.ac.uk/Homo_sapiens/Gene/Summary?db=core;g={id}',
+            'VEGA': 'http://vega.sanger.ac.uk/{species}/Gene/Summary?db=core;g={id}',
             'MIRBASE': 'http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc={id}',
             'TMRNA_WEB': 'http://bioinformatics.sandia.gov/tmrna/seqs/{id}',
             'LNCRNADB': 'http://www.lncrnadb.org/{id}',
@@ -619,7 +627,8 @@ class Accession(models.Model):
             elif self.database == 'LNCRNADB':
                 return urls[self.database].format(id=self.optional_id.replace(' ', ''))
             elif self.database == 'VEGA':
-                return urls[self.database].format(id=self.optional_id)
+                return urls[self.database].format(id=self.optional_id,
+                    species=self.species.replace(' ', '_'))
             return urls[self.database].format(id=self.external_id)
         else:
             return ''
