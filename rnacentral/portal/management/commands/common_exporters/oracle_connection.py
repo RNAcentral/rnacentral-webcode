@@ -27,14 +27,15 @@ class OracleConnection(object):
         self.connection = None
         self.cursor = None
 
-    def get_connection(self):
+    def get_connection(self, db_url=None):
         """
         Get Oracle connection using database details from Django settings.
         """
-        db_url = '{username}/{password}@{db_name}'.format(
-            username=settings.DATABASES['default']['USER'],
-            password=settings.DATABASES['default']['PASSWORD'],
-            db_name=settings.DATABASES['default']['NAME'])
+        if not db_url:
+            db_url = '{username}/{password}@{db_name}'.format(
+                username=settings.DATABASES['default']['USER'],
+                password=settings.DATABASES['default']['PASSWORD'],
+                db_name=settings.DATABASES['default']['NAME'])
         self.connection = cx_Oracle.Connection(db_url)
 
     def get_cursor(self):
