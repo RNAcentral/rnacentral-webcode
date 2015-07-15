@@ -23,6 +23,37 @@ import json
 import re
 
 
+class Modification(CachingMixin, models.Model):
+    """
+    Describe modified nucleotides at certain sequence positions reported in xrefs.
+    """
+    id = models.AutoField(primary_key=True)
+    upi = models.ForeignKey('Rna', db_column='upi', related_name='modifications')
+    xref = models.ForeignKey('Xref', db_column='accession', to_field='accession', related_name='modifications')
+    position = models.PositiveIntegerField() # absolute sequence position, always > 0
+    author_assigned_position = models.IntegerField() # can be negative, e.g. 3I2S chain A
+    modification_id = models.ForeignKey('ChemicalComponent', db_column='modification_id')
+
+    objects = CachingManager()
+
+    class Meta:
+        db_table = 'rnc_modifications'
+
+
+class ChemicalComponent(CachingMixin, models.Model):
+    """
+    List of all possible nucleotide modifications.
+    """
+    id = models.CharField(max_length=3, primary_key=True)
+    description = models.CharField(max_length=500)
+    one_letter_code = models.CharField(max_length=1)
+
+    objects = CachingManager()
+
+    class Meta:
+        db_table = 'rnc_chemical_components'
+
+
 class RnaPrecomputedData(models.Model):
     id = models.AutoField(primary_key=True)
     upi = models.OneToOneField('Rna', db_column='upi', to_field='upi', related_name='precomputed', unique=True, db_index=True)
@@ -524,7 +555,7 @@ class Accession(models.Model):
     old_locus_tag = models.CharField(max_length=50)
     product = models.CharField(max_length=300)
     db_xref = models.CharField(max_length=100)
-    standard_name = models.CharField(max_length=100)
+    standard_name = models.CharField(max_length=100, default='')
 
     class Meta:
         db_table = 'rnc_accessions'
