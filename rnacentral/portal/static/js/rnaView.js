@@ -330,6 +330,7 @@ rnaSequenceView.prototype.initialize = function() {
     enable_show_publications_tab_action();
     toggle_tabs();
     enable_xref_pagination();
+    activate_modified_nucleotides();
 
     /**
      * Update url parameter when tab is changed.
@@ -465,4 +466,55 @@ rnaSequenceView.prototype.initialize = function() {
         });
     }
 
+    /**
+     * Modified nucleotides visualisation.
+     */
+    function activate_modified_nucleotides() {
+        $('body').on('click', 'button[data-modifications]', function(){
+            // destroy any existing popovers before reading in the sequence
+            $('.modified-nt').popover('destroy');
+            var $pre = $('#rna-sequence'),
+                text = $pre.text(),
+                modifications = $(this).data('modifications'),
+                arrayLength = modifications.length,
+                seq_new = '',
+                start = 0,
+                template = Handlebars.compile($("#handlebars-modified-nt-popover-tmpl").html());
+
+            // loop over modifications and insert span tags with modified nucleotide data
+            for (var i = 0; i < arrayLength; i++) {
+              seq_new += text.slice(start, modifications[i].position - 1) +
+                         template(modifications[i].chem_comp);
+              start = modifications[i].position;
+            }
+            seq_new += text.slice(start, text.length);
+
+            // update the sequence (use `html`, not `text`)
+            $pre.html(seq_new);
+            // bring sequence in the viewport
+            scroll_to_pre();
+            // show the entire sequence
+            $pre.css({
+              'overflow': 'auto',
+              'max-height': 'initial',
+            });
+            // initialize popovers
+            $('.modified-nt').popover({
+              placement: 'top',
+              html: true,
+              viewport: '#rna-sequence',
+            });
+            // activate the first popover
+            $('.modified-nt').first().focus().popover('show');
+
+            /**
+             * Scroll to the sequence.
+             */
+            function scroll_to_pre() {
+              $('html, body').animate({
+                  scrollTop: $('pre').offset().top - 100
+              }, 1200);
+            }
+        });
+    }
 };

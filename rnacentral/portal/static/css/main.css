@@ -622,6 +622,16 @@ path {
   font-weight: bold;
 }
 
+.modified-nt {
+  background-color: #d9534f; /* red */
+  color: whitesmoke;
+  cursor: pointer;
+  font-size: larger;
+  font-weight: bold;
+  margin: 0 2px;
+  padding: 0 3px;
+}
+
 /*------------------------------------------------------------------
 [5.4 API docs affix]
 */

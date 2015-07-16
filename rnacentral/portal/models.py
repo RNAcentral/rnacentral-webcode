@@ -22,6 +22,9 @@ from portal.config.expert_databases import expert_dbs as rnacentral_expert_dbs
 import json
 import re
 
+from rest_framework import serializers
+from rest_framework.renderers import JSONRenderer
+
 
 class Modification(CachingMixin, models.Model):
     """
@@ -694,6 +697,60 @@ class Xref(models.Model):
 
     class Meta:
         db_table = 'xref'
+
+    def has_modified_nucleotides(self):
+        """
+        Determine whether an xref has modified nucleotides.
+        """
+        if self.modifications.count() > 0:
+            return True
+        else:
+            return False
+
+    def get_distinct_modifications(self):
+        """
+        Get a list of distinct modified nucleotides described in this xref.
+        """
+        modifications = []
+        seen = None
+        for modification in self.modifications.order_by('modification_id').all():
+            if modification.id == seen:
+                continue
+            else:
+                modifications.append(modification)
+                seen = modification.id
+        return modifications
+
+    def get_modifications_as_json(self):
+        """
+        Get a JSON object listing all modified positions and the chemical
+        components. This object is used for visualising modified nucleotides
+        in the UI.
+        """
+        class ChemicalComponentSerializer(serializers.ModelSerializer):
+            """
+            Django Rest Framework serializer class for chemical components.
+            """
+            id = serializers.CharField()
+            description = serializers.CharField()
+            one_letter_code = serializers.CharField()
+
+            class Meta:
+                model = ChemicalComponent
+
+        class ModificationSerializer(serializers.ModelSerializer):
+            """
+            Django Rest Framework serializer class for modified positions.
+            """
+            position = serializers.IntegerField()
+            author_assigned_position = serializers.IntegerField()
+            chem_comp = ChemicalComponentSerializer(source='modification_id')
+
+            class Meta:
+                model = Modification
+
+        serializer = ModificationSerializer(self.modifications.all(), many=True)
+        return JSONRenderer().render(serializer.data)
 
     def is_active(self):
         """

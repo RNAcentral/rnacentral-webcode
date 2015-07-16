@@ -229,7 +229,7 @@ limitations under the License.
             </span>
             <label class="label label-success">New</label> <a href="{% url 'nhmmer-sequence-search' %}?q={{ rna.upi }}">Search for similar sequences</a>
           </p>
-          <pre class="pre-scrollable">
+          <pre class="pre-scrollable" id="rna-sequence">
 {{ rna.get_sequence }}</pre>
 
 
@@ -366,6 +366,14 @@ limitations under the License.
   </div>
 </script>
 
+<script id="handlebars-modified-nt-popover-tmpl" type="text/x-handlebars-template"><span
+  class="modified-nt"
+  data-trigger="focus"
+  role="button"
+  tabindex="10"
+  data-toggle="popover"
+  title="Modified nucleotide <strong>{{id}}</strong>"
+  data-content='{{description}} <br> <a href="http://www.ebi.ac.uk/pdbe-srv/pdbechem/chemicalCompound/show/{{id}}" target="_blank">More at PDBe</a>'>{{one_letter_code}}</span></script>
 {% endverbatim %}
 
 
