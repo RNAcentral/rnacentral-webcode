@@ -502,6 +502,7 @@ rnaSequenceView.prototype.initialize = function() {
             $('.modified-nt').popover({
               placement: 'top',
               html: true,
+              container: 'body',
               viewport: '#rna-sequence',
             });
             // activate the first popover
