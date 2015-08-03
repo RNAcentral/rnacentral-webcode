@@ -362,6 +362,16 @@ expert_dbs = [
         'version': '',
     },
     {
+        'name': 'piRBase',
+        'label': '',
+        'url': 'http://www.regulatoryrna.org/database/piRNA/',
+        'description': 'a web resource assisting piRNA functional study',
+        'abbreviation': '',
+        'examples': '',
+        'references': [],
+        'imported': False,
+    },
+    {
         'name': 'piRNABank',
         'label': '',
         'url': 'http://pirnabank.ibab.ac.in/',

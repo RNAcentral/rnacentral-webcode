@@ -215,17 +215,17 @@ class Rna(CachingMixin, models.Model):
         xrefs = self.xrefs.filter(db__project_id__isnull=True).all()
         gff = ''
         for xref in xrefs:
-            gff += _xref_to_gff_format(xref)
+            gff += GffFormatter(xref)()
         return gff
 
     def get_gff3(self):
         """
         Format genomic coordinates from all xrefs into a single file in GFF3 format.
         """
-        xrefs = self.xrefs.filter(db__project_id__isnull=True).all()
+        xrefs = self.xrefs.filter(deleted='N').all()
         gff = '##gff-version 3\n'
         for xref in xrefs:
-            gff += _xref_to_gff3_format(xref)
+            gff += Gff3Formatter(xref)()
         return gff
 
     def get_ucsc_bed(self):
@@ -719,13 +719,13 @@ class Xref(models.Model):
         """
         Format genomic coordinates in GFF format.
         """
-        return _xref_to_gff_format(self)
+        return GffFormatter(self)()
 
     def get_gff3(self):
         """
         Format genomic coordinates in GFF3 format.
         """
-        return _xref_to_gff3_format(self)
+        return Gff3Formatter(self)()
 
     def is_mirbase_mirna_precursor(self):
         """
@@ -933,13 +933,21 @@ class Xref(models.Model):
         The name represents a toplevel accession as defined
         by the Ensembl API and can include patch/scaffold names etc.
         """
-        return self.accession.coordinates.first().chromosome
+        return GenomicCoordinates.objects.\
+                                  filter(accession=self.accession.accession,
+                                         chromosome__isnull=False).\
+                                  first().\
+                                  chromosome
 
     def get_feature_strand(self):
         """
         Return 1 or -1 to indicate the forward and reverse strands respectively.
         """
-        return self.accession.coordinates.first().strand
+        return GenomicCoordinates.objects.\
+                                  filter(accession=self.accession.accession,
+                                         chromosome__isnull=False, ).\
+                                  first().\
+                                  strand
 
     def get_feature_start(self):
         """
@@ -994,60 +1002,136 @@ class Reference_map(models.Model):
 """
 Common auxiliary functions.
 """
-def _xref_to_gff_format(xref):
+class Gff3Formatter(object):
     """
-    Return genome coordinates of an xref in GFF format. Available in Rna and Xref models.
+    GFF3 format documentation:
+    http://www.sequenceontology.org/gff3.shtml
+    http://gmod.org/wiki/GFF3#GFF3_Format
     """
-    gff = ''
-    exons = xref.accession.coordinates.all()
-    if exons.count() == 0:
-        return gff
-    for exon in exons:
-        if not exon.chromosome:
-            continue
-        gff += "%s\tRNAcentral\texon\t%s\t%s\t.\t%s\t.\tID \"%s\";Name \"%s\"\n" % (exon.chromosome,
-                                                                                    exon.primary_start,
-                                                                                    exon.primary_end,
-                                                                                    '+' if exon.strand > 0 else '-',
-                                                                                    xref.accession.accession,
-                                                                                    xref.upi.upi)
-    return gff
+    def __init__(self, xref):
+        """
+        Take Xref object instance as an argument.
+        """
+        self.xref = xref
+        self.gff = ''
+        self.exons = None
+        fields = ['seqid', 'source', 'seq_type', 'chrom_start',
+                  'chrom_end', 'score', 'strand', 'phase', 'attributes']
+        self.template =  '\t'.join(['{' + x + '}' for x in fields])  + '\n'
 
-def _xref_to_gff3_format(xref):
-    """
-    Return genome coordinates of an xref in GFF3 format. Available in Rna and Xref models.
-    """
-    gff = ''
-    exons = xref.accession.coordinates.all()
-    if exons.count() == 0:
-        return gff
-    for i, exon in enumerate(exons):
-        if not exon.chromosome:
-            continue
-        seqid = exon.chromosome
-        source = 'RNAcentral'
-        seq_type = 'noncoding_exon'
-        start = exon.primary_start
-        end = exon.primary_end
-        score = '.'
-        strand = '+' if exon.strand > 0 else '-'
-        phase = '.'
+    def get_exons(self):
+        """
+        Get all exons with genome mapping
+        that are associated with a cross-reference.
+        """
+        accession = self.xref.accession.accession
+        self.exons = GenomicCoordinates.objects.\
+                                        filter(accession=accession,
+                                               chromosome__isnull=False).\
+                                        all()
+
+    def format_attributes(self, attributes, order):
+        """
+        Format the `attributes` field.
+        """
+        return ';'.join("%s=%s" % (key, attributes[key]) for key in order)
+
+    def format_transcript(self):
+        """
+        Format transcipt description.
+        Transcipt ID is the Parent of exons.
+        """
         attributes = {
-            'ID': '_'.join([xref.accession.accession, 'exon' + str(i+1)]),
-            'Name': xref.upi.upi,
+            'ID': self.xref.accession.accession,
+            'Name': self.xref.upi.upi,
+            'type': self.xref.accession.get_rna_type(),
         }
-        attributes_joined = ';'.join("%s=%s" % t for t in attributes.iteritems())
-        gff += "%s\t%s\t%s\t%i\t%i\t%s\t%s\t%s\t%s\n" % (seqid,
-                                                         source,
-                                                         seq_type,
-                                                         start,
-                                                         end,
-                                                         score,
-                                                         strand,
-                                                         phase,
-                                                         attributes_joined
-                                                        )
-    return gff
+        order = ['ID', 'Name', 'type']
+        data = {
+            'seqid': self.xref.get_feature_chromosome(),
+            'source': 'RNAcentral',
+            'seq_type': 'transcript',
+            'chrom_start': self.xref.get_feature_start(),
+            'chrom_end': self.xref.get_feature_end(),
+            'score': '.',
+            'phase': '.',
+            'strand': '+' if self.xref.get_feature_strand() > 0 else '-',
+            'attributes': self.format_attributes(attributes, order),
+        }
+        self.gff += self.template.format(**data)
+
+    def format_exons(self):
+        """
+        Format a list of non-coding exons.
+        Transcipt ID is the Parent of exons.
+        """
+        for i, exon in enumerate(self.exons):
+            if not exon.chromosome:
+                continue
+            attributes = {
+                'ID': '_'.join([self.xref.accession.accession, 'exon' + str(i+1)]),
+                'Name': self.xref.upi.upi,
+                'Parent': self.xref.accession.accession,
+                'type': self.xref.accession.get_rna_type(),
+            }
+            order = ['ID', 'Name', 'Parent', 'type']
+            data = {
+                'seqid': exon.chromosome,
+                'source': 'RNAcentral',
+                'seq_type': 'noncoding_exon',
+                'chrom_start': exon.primary_start,
+                'chrom_end': exon.primary_end,
+                'score': '.',
+                'phase': '.',
+                'strand': '+' if exon.strand > 0 else '-',
+                'attributes': self.format_attributes(attributes, order),
+            }
+            self.gff += self.template.format(**data)
+
+    def consistent_strands(self):
+        """
+        Check that all exons are mapped to the same strand.
+        There was a problem with genomic mapping of short exons
+        that could be placed on a wrong strand.
+        Example: URS000075A653 (NR_110790.1:1..1533:ncRNA)
+        """
+        strand = self.exons[0].strand
+        for exon in self.exons:
+            if exon.strand != strand:
+                return False
+        return True
+
+    def __call__(self):
+        """
+        Main entry point for the class.
+        """
+        # skip TPAs to avoid duplication with the corresponding ENA records
+        if self.xref.accession.non_coding_id:
+            return self.gff
+        self.get_exons()
+        if self.exons.count() == 0:
+            return self.gff
+        # skip the whole transcript if the strands are inconsistent
+        if not self.consistent_strands():
+            return self.gff
+        self.format_transcript()
+        self.format_exons()
+        return self.gff
+
+
+class GffFormatter(Gff3Formatter):
+    """
+    GFF format documentation:
+    https://www.sanger.ac.uk/resources/software/gff/spec.html
+    Use the same logic as in GFF3
+    but format the attributes field differently.
+    """
+    def format_attributes(self, attributes, order):
+        """
+        Format the `attributes` field.
+        """
+        return ';'.join('%s "%s"' % (key, attributes[key]) for key in order)
+
 
 def _xref_to_bed_format(xref):
     """
