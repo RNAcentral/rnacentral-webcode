@@ -68,6 +68,8 @@ def export_search_results(query, _format, hits):
         Given a list of RNAcentral ids, return the results
         in the specified format.
         """
+        if _format == 'list':
+            return '\n'.join(rnacentral_ids) + '\n'                
         queryset = Rna.objects.filter(upi__in=rnacentral_ids).all()
         if _format == 'fasta':
             serializer = RnaFastaSerializer(queryset, many=True)
@@ -81,8 +83,6 @@ def export_search_results(query, _format, hits):
             output = output[1:-1]
             # make relative urls absolute
             output = output.replace('"/api/v1/', '"http://rnacentral.org/api/v1/')
-        elif _format == 'list':
-            output = '\n'.join(rnacentral_ids) + '\n'
         return output
 
     def paginate_over_results():
