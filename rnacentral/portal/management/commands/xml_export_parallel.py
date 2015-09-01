@@ -13,8 +13,6 @@ limitations under the License.
 
 from django.core.management.base import BaseCommand, CommandError
 from optparse import make_option
-import subprocess
-import time
 from portal.models import Rna
 
 
