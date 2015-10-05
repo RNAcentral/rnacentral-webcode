@@ -404,15 +404,22 @@ expert_dbs = [
     },
     {
         'name': 'PomBase',
-        'label': '',
+        'label': 'pombase',
         'url': 'http://www.pombase.org/',
         'description': 'the scientific resource for fission yeast',
         'abbreviation': '',
-        'examples': '',
-        'references': [],
+        'examples': ['URS000044FEB9', 'URS00003F73E3', 'URS00002743E8'],
+        'references': [
+            {
+                'title': 'PomBase: a comprehensive online resource for fission yeast',
+                'authors': 'Wood V., Harris M.A., McDowall M.D., Rutherford K., Vaughan B.W., Staines D.M., Aslett M., Lock A., Bahler J., Kersey P.J., Oliver S.G.',
+                'journal': 'Nucleic Acids Res. 2012 Jan;40(Database issue):D695-9',
+                'pubmed_id': '22039153',
+            },
+        ],
         'imported': False,
-        'status': '',
-        'version': '',
+        'status': 'new',
+        'version': 'as of September 6, 2015',
     },
     {
         'name': 'RNApathwaysDB',
