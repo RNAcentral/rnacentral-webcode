@@ -38,7 +38,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'release r123 plus daily updates until May 11th, 2015',
+        'version': 'release r125 plus daily updates through October 6th, 2015',
     },
     {
         'name': 'PDBe',
@@ -61,7 +61,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'as of May 9th, 2015',
+        'version': 'as of October 5th, 2015',
     },
     {
         'name': 'FlyBase',
@@ -117,7 +117,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': '',
-        'version': '21 (select species)',
+        'version': '21 (a subset of species)',
     },
     {
         'name': 'Vega',
@@ -143,7 +143,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'release 59 (human), release 60 (mouse)',
+        'version': 'release 61 (human), release 62 (mouse)',
     },
     {
         'name': 'tmRNA Website',
@@ -399,7 +399,7 @@ expert_dbs = [
             },
         ],
         'imported': False,
-        'status': 'new',
+        'status': '',
         'version': '',
     },
     {
@@ -472,7 +472,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': 'updated',
         'version': '',
     },
     {
@@ -575,7 +575,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': 'updated',
         'version': 'WS245',
     },
     {
@@ -622,7 +622,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': 'TAIR10',
     },
 ]
