@@ -183,6 +183,27 @@ limitations under the License.
       <a href="{{ xref.get_ndb_external_url }}" target="_blank" title="Nucleic Acids Database" class="help">NDB</a>
       <br>
       <i class="fa fa-angle-right"></i>
+      <span class="small">
+      {% if xref.has_modified_nucleotides %}
+        {% with modifications=xref.get_distinct_modifications %}
+          <button class="btn btn-primary btn-xs" data-modifications="{{ xref.get_modifications_as_json }}">
+            <i class="fa fa-crosshairs"></i> View modification{{modifications|length|pluralize}}
+          </button>
+          {% for modification in modifications %}
+            <a class="help" target="_blank"
+               title="{{ modification.modification_id.description }}"
+               href="http://www.ebi.ac.uk/pdbe-srv/pdbechem/chemicalCompound/show/{{ modification.modification_id.id }}">
+              {{ modification.modification_id.id }}
+            </a>
+            {% if not forloop.last %},{% endif %}
+          {% endfor %}
+        {% endwith %}
+      {% else %}
+        No modified nucleotides.
+      {% endif %}
+      </span>
+      <br>
+      <i class="fa fa-angle-right"></i>
       <small>Structure title:</small> {{ xref.accession.get_pdb_structured_note.structureTitle }}
       <br>
       <i class="fa fa-angle-right"></i>
