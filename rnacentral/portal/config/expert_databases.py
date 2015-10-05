@@ -435,15 +435,22 @@ expert_dbs = [
     },
     {
         'name': 'SILVA',
-        'label': '',
+        'label': 'silva',
         'url': 'http://www.arb-silva.de/',
         'description': 'quality checked and aligned ribosomal RNA sequences',
         'abbreviation': '',
-        'examples': '',
-        'references': [],
-        'imported': False,
-        'status': '',
-        'version': '',
+        'examples': ['URS0000224E47'],
+        'references': [
+            {
+                'title': 'The SILVA ribosomal RNA gene database project: improved data processing and web-based tools',
+                'authors': 'Quast C., Pruesse E., Yilmaz P., Gerken J., Schweer T., Yarza P., Peplies J., Glockner F.O.',
+                'journal': 'Nucleic Acids Res. 2013 Jan;41(Database issue):D590-6',
+                'pubmed_id': '23193283',
+            },
+        ],
+        'imported': True,
+        'status': 'new',
+        'version': '122',
     },
     {
         'name': 'SGD',
