@@ -438,7 +438,7 @@ expert_dbs = [
                 'pubmed_id': '22039153',
             },
         ],
-        'imported': False,
+        'imported': True,
         'status': 'new',
         'version': 'as of September 6, 2015',
     },

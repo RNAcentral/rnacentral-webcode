@@ -236,6 +236,10 @@ limitations under the License.
       {{ xref.db.name }}: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>
 
 
+    {# PomBase #}
+    {% elif xref.db.name == 'PomBase' %}
+      {{ xref.db.name }}: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+
     {# Noncode #}
     {% elif xref.db.name == 'NONCODE' %}
       {{ xref.db.name }} (v4): transcipt <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>,
