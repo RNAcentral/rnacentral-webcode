@@ -290,15 +290,22 @@ expert_dbs = [
         'version': '',
     },
     {
-        'name': 'GreenGenes',
-        'label': '',
+        'name': 'Greengenes',
+        'label': 'greengenes',
         'url': 'http://greengenes.secondgenome.com/downloads',
-        'description': '16S rRNA gene database',
+        'description': 'is a full-length 16S rRNA gene database that provides a curated taxonomy based on de novo tree inference',
         'abbreviation': '',
-        'examples': '',
-        'references': [],
-        'imported': False,
-        'status': '',
+        'examples': ['URS00003D0087', 'URS00006DE01B'], # TODO: update examples
+        'references': [
+            {
+                'title': 'An improved Greengenes taxonomy with explicit ranks for ecological and evolutionary analyses of bacteria and archaea',
+                'authors': 'McDonald D, Price MN, Goodrich J, Nawrocki EP, DeSantis TZ, Probst A, Andersen GL, Knight R, Hugenholtz P',
+                'journal': 'ISME J. 2012 Mar;6(3):610-8',
+                'pubmed_id': '22134646',
+            },
+        ],
+        'imported': True,
+        'status': 'new',
         'version': '',
     },
     {
