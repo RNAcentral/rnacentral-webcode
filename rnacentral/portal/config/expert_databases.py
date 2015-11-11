@@ -646,4 +646,27 @@ expert_dbs = [
         'status': '',
         'version': 'TAIR10',
     },
+    {
+        'name': 'dictyBase',
+        'label': 'dictybase',
+        'url': 'http://dictybase.org/',
+        'description': 'is the model organism database for the social amoeba Dictyostelium discoideum',
+        'abbreviation': '',
+        'examples': [
+            'URS00005B4020',
+            'URS0000235EB0',
+            'URS00004A9A20',
+        ],
+        'references': [
+            {
+                'title': 'DictyBase 2013: integrating multiple Dictyostelid species',
+                'authors': 'Basu S, Fey P, Pandit Y, Dodson R, Kibbe WA, Chisholm RL',
+                'journal': 'Nucleic Acids Res. 2013 Jan;41(Database issue):D676-83',
+                'pubmed_id': 23172289,
+            },
+        ],
+        'imported': True,
+        'status': 'new',
+        'version': '',
+    },
 ]
