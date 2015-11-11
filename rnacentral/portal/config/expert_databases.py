@@ -340,15 +340,22 @@ expert_dbs = [
         'version': '3.1',
     },
     {
-        'name': 'MODOMICS',
-        'label': '',
+        'name': 'Modomics',
+        'label': 'modomics',
         'url': 'http://modomics.genesilico.pl/',
-        'description': 'RNA modification data',
+        'description': 'is a comprehensive database of RNA modifications',
         'abbreviation': '',
-        'examples': '',
-        'references': [],
-        'imported': False,
-        'status': '',
+        'examples': ['URS0000000001'], # TODO update examples
+        'references': [
+            {
+                'title': 'MODOMICS: a database of RNA modification pathways--2013 update',
+                'authors': 'Machnicka MA, Milanowska K, Osman Oglou O, Purta E, Kurkowska M, Olchowik A, Januszewski W, Kalinowski S, Dunin-Horkawicz S, Rother KM, Helm M, Bujnicki JM, Grosjean H',
+                'journal': 'Nucleic Acids Res. 2013 Jan;41(Database issue):D262-7',
+                'pubmed_id': '23118484',
+            },
+        ],
+        'imported': True,
+        'status': 'new',
         'version': '',
     },
     {
