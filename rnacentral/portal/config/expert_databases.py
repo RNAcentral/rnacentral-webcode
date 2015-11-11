@@ -427,7 +427,7 @@ expert_dbs = [
         'name': 'PomBase',
         'label': 'pombase',
         'url': 'http://www.pombase.org/',
-        'description': 'the scientific resource for fission yeast',
+        'description': 'is a comprehensive database for the fission yeast Schizosaccharomyces pombe',
         'abbreviation': '',
         'examples': ['URS000044FEB9', 'URS00003F73E3', 'URS00002743E8'],
         'references': [
@@ -458,7 +458,7 @@ expert_dbs = [
         'name': 'SILVA',
         'label': 'silva',
         'url': 'http://www.arb-silva.de/',
-        'description': 'quality checked and aligned ribosomal RNA sequences',
+        'description': 'is a comprehensive resource for quality checked and aligned ribosomal RNA sequence data',
         'abbreviation': '',
         'examples': ['URS0000224E47'],
         'references': [
@@ -601,7 +601,7 @@ expert_dbs = [
     },
     {
         'name': 'MGI',
-        'label': 'Mouse Genome Informatics',
+        'label': 'mgi',
         'url': 'http://www.informatics.jax.org/',
         'description': 'is the international database resource for the laboratory mouse',
         'abbreviation': '',
