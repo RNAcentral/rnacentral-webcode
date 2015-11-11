@@ -651,6 +651,7 @@ class Accession(models.Model):
             'WORMBASE': 'http://www.wormbase.org/species/c_elegans/gene/{id}',
             'PLNCDB': 'http://chualab.rockefeller.edu/cgi-bin/gb2/gbrowse_details/arabidopsis?name={id}',
             'GTRNADB': 'http://lowelab.ucsc.edu/GtRNAdb/',
+            'LNCIPEDIA': 'http://www.lncipedia.org/db/transcript/{id}',
         }
         if self.database in urls.keys():
             if self.database == 'GTRNADB':
