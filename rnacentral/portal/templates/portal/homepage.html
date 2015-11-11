@@ -42,7 +42,7 @@ RNAcentral
   <div id="expert-databases" class="well well-sm">
     {% for database in context.databases %}
 
-      {% if forloop.first or forloop.counter == 5 or forloop.counter == 9 or forloop.counter == 13 %}<div class="row">{% endif %}
+      {% if forloop.first or forloop.counter == 5 or forloop.counter == 9 or forloop.counter == 13 or forloop.counter == 17 %}<div class="row">{% endif %}
 
       <div class="col-md-3 col-sm-6 col-xs-12">
         <div class="panel panel-default expert-db-card">
@@ -77,7 +77,7 @@ RNAcentral
         </div>
       </div>
 
-      {% if forloop.counter == 4 or forloop.counter == 8 or forloop.counter == 12 or forloop.last %}</div>{% endif %}
+      {% if forloop.counter == 4 or forloop.counter == 8 or forloop.counter == 12 or forloop.counter == 16 or forloop.last %}</div>{% endif %}
     {% endfor %}
   </div>
 
