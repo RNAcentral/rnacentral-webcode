@@ -652,6 +652,7 @@ class Accession(models.Model):
             'PLNCDB': 'http://chualab.rockefeller.edu/cgi-bin/gb2/gbrowse_details/arabidopsis?name={id}',
             'GTRNADB': 'http://lowelab.ucsc.edu/GtRNAdb/',
             'DICTYBASE': 'http://dictybase.org/gene/{id}',
+            'SILVA': 'http://www.arb-silva.de/browser/{lsu_ssu}/silva/{id}',
             'POMBASE': 'http://www.pombase.org/spombe/result/{id}',
             'NONCODE': 'http://www.bioinfo.org/NONCODEv4/show_rna.php?id={id}',
             'LNCIPEDIA': 'http://www.lncipedia.org/db/transcript/{id}',
@@ -667,6 +668,9 @@ class Accession(models.Model):
             elif self.database == 'VEGA':
                 return urls[self.database].format(id=self.optional_id,
                     species=self.species.replace(' ', '_'))
+            elif self.database == 'SILVA':
+                return urls[self.database].format(id=self.optional_id,
+                    lsu_ssu='ssu' if 'small' in self.product else 'lsu')
             return urls[self.database].format(id=self.external_id)
         else:
             return ''
