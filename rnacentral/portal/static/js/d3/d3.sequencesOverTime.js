@@ -33,7 +33,7 @@ d3Graph = function(data, selector){
     var y = d3.scale.linear().range([height, 0]);
 
     // Define the axes
-    var xAxis = d3.svg.axis().scale(x).tickFormat(d3.time.format("%B %Y"))
+    var xAxis = d3.svg.axis().scale(x).tickFormat(d3.time.format("%b %y"))
         .orient("bottom").ticks(4);
 
     var yAxis = d3.svg.axis().scale(y).tickFormat(d3.format("s"))
