@@ -664,4 +664,23 @@ expert_dbs = [
         'status': 'new',
         'version': '',
     },
+    {
+        'name': '5S rRNA Database',
+        'label': '5srrnadb',
+        'url': 'http://combio.pl/rrna/',
+        'description': 'is an information resource for 5S ribosomal RNAs',
+        'abbreviation': '',
+        'examples': [],
+        'references': [
+            {
+                'title': '5SRNAdb: an information resource for 5S ribosomal RNAs',
+                'authors': 'Szymanski M, Zielezinski A, Barciszewski J, Erdmann VA, Karlowski WM',
+                'journal': 'Nucleic Acids Res. 2015 Oct 20. pii: gkv1081',
+                'pubmed_id': 26490961,
+            },
+        ],
+        'imported': False,
+        'status': '',
+        'version': '',
+    },
 ]
