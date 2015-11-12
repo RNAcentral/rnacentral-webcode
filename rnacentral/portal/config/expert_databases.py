@@ -400,18 +400,6 @@ expert_dbs = [
         'imported': False,
     },
     {
-        'name': 'piRNABank',
-        'label': '',
-        'url': 'http://pirnabank.ibab.ac.in/',
-        'description': 'comprehensive resource on Piwi-interacting RNAs',
-        'abbreviation': '',
-        'examples': '',
-        'references': [],
-        'imported': False,
-        'status': '',
-        'version': '',
-    },
-    {
         'name': 'PLncDB',
         'label': 'plncdb',
         'url': 'http://chualab.rockefeller.edu/gbrowse2/homepage.html',
