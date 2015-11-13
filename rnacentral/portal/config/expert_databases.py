@@ -364,7 +364,7 @@ expert_dbs = [
         'url': 'http://www.noncode.org/',
         'description': 'is an integrated knowledge database dedicated to non-coding RNAs (excluding tRNAs and rRNAs)',
         'abbreviation': '',
-        'examples': ['URS00008C0A07', 'URS00008189E4', 'URS000058E3EB'],
+        'examples': ['URS000019B796', 'URS00008189E4', 'URS000058E3EB'],
         'references': [
             {
                 'title': 'NONCODEv4: exploring the world of long non-coding RNA genes',
