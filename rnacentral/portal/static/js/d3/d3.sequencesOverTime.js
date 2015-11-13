@@ -66,7 +66,7 @@ d3Graph = function(data, selector){
     // Scale the range of the data
     x.domain(d3.extent(data, function(d) { return d.date; }));
     y.domain(d3.extent(data, function(d) {
-        if (d.count == d3.min(data).count) {
+        if (d.count == d3.min(data).count && d.count > 200000) {
             return d.count - 200000;
         } else {
             return d.count;

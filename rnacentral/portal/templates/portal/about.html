@@ -57,7 +57,7 @@ About RNAcentral
   <div class="col-md-7">
     <div class="panel panel-default overflow-auto">
       <div class="panel-body">
-        <div id="graph" class="nhmmer-dashboard-graph"></div>
+        <div id="sequence-graph" class="nhmmer-dashboard-graph"></div>
       </div>
     </div>
   </div>
@@ -67,6 +67,20 @@ About RNAcentral
       <i class="fa fa-line-chart fa-3x pull-left"></i>
       Hover over the chart to see the number of sequences in each release
     </p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <h2><i class="fa fa-star"></i> Imported Expert Databases over time <a name="databases-chart" href="#databases-chart" class="text-muted smaller"><i class="fa fa-link"></i></a></h2>
+  </div>
+
+  <div class="col-md-7">
+    <div class="panel panel-default overflow-auto">
+      <div class="panel-body">
+        <div id="database-graph" class="nhmmer-dashboard-graph"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -92,31 +106,51 @@ About RNAcentral
   var data = [
     {
       'date': '11-06-14',
-      'count': 7704884,
+      'sequence_count': 7704884,
+      'expert_databases': 8,
       'label': 'release 1.0beta',
     },
     {
       'date': '05-09-14',
-      'count': 8108241,
+      'sequence_count': 8108241,
+      'expert_databases': 10,
       'label': 'release 1.0',
     },
     {
       'date': '18-02-15',
-      'count': 8446855,
+      'sequence_count': 8446855,
+      'expert_databases': 12,
       'label': 'release 2',
     },
     {
       'date': '20-05-15',
-      'count': 8607919,
+      'sequence_count': 8607919,
+      'expert_databases': 15,
       'label': 'release 3',
     },
     {
       'date': '18-11-15',
-      'count': 9320779,
+      'sequence_count': 9320779,
+      'expert_databases': 22,
       'label': 'release 4',
     },
   ];
 
-  d3Graph(data, '#graph');
+  /**
+   * Initialise d3 graphs.
+   */
+  (function(){
+    var d1 = JSON.parse(JSON.stringify(data));
+    $.each(d1, function(key, value){
+      d1[key].count = d1[key].sequence_count;
+    });
+    d3Graph(d1, '#sequence-graph');
+
+    var d2 = JSON.parse(JSON.stringify(data));
+    $.each(d2, function(key, value){
+      d2[key].count = d2[key].expert_databases;
+    });
+    d3Graph(d2, '#database-graph');
+  })();
 </script>
 {% endblock extra_js_uncompressed %}
