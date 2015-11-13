@@ -295,7 +295,7 @@ expert_dbs = [
         'url': 'http://greengenes.secondgenome.com/downloads',
         'description': 'is a full-length 16S rRNA gene database that provides a curated taxonomy based on de novo tree inference',
         'abbreviation': '',
-        'examples': ['URS00003D0087', 'URS00006DE01B'], # TODO: update examples
+        'examples': ['URS00003D0087', 'URS00006DE01B', 'URS00004DD3DC'],
         'references': [
             {
                 'title': 'An improved Greengenes taxonomy with explicit ranks for ecological and evolutionary analyses of bacteria and archaea',
