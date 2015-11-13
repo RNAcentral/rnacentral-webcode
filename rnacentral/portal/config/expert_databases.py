@@ -648,7 +648,7 @@ expert_dbs = [
         'description': 'is the model organism database for the social amoeba Dictyostelium discoideum',
         'abbreviation': '',
         'examples': [
-            'URS00005B4020',
+            'URS00003BBB9E',
             'URS0000235EB0',
             'URS00004A9A20',
         ],
