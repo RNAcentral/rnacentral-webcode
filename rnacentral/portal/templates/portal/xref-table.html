@@ -248,6 +248,15 @@ limitations under the License.
         nucleotides ({{ xref.accession.feature_end|intcomma }} - {{ xref.accession.feature_start|intcomma }})
       {% endif %}
 
+    {# Greengenes #}
+    {% elif xref.db.name == 'Greengenes' %}
+      {{ xref.db.name }}: {{ xref.accession.parent_ac }},
+      {% if xref.accession.feature_start < xref.accession.feature_end %}
+        nucleotides ({{ xref.accession.feature_start|intcomma }} - {{ xref.accession.feature_end|intcomma }})
+      {% else %}
+        nucleotides ({{ xref.accession.feature_end|intcomma }} - {{ xref.accession.feature_start|intcomma }})
+      {% endif %}
+
     {# PomBase #}
     {% elif xref.db.name == 'PomBase' %}
       {{ xref.db.name }}: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>
