@@ -455,7 +455,7 @@ expert_dbs = [
         'url': 'http://www.arb-silva.de/',
         'description': 'is a comprehensive resource for quality checked and aligned ribosomal RNA sequence data',
         'abbreviation': '',
-        'examples': ['URS0000224E47'],
+        'examples': ['URS00005A14E2', 'URS00004DD3DC', 'URS0000224E47'],
         'references': [
             {
                 'title': 'The SILVA ribosomal RNA gene database project: improved data processing and web-based tools',
