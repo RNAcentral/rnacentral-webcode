@@ -998,6 +998,8 @@ class Xref(models.Model):
         """
         Get a species name that can be used in Ensembl urls.
         """
+        if self.accession.species == 'Dictyostelium discoideum AX4':
+            self.accession.species = 'Dictyostelium discoideum'
         return self.accession.species.replace(' ', '_').lower()
 
     def get_ensembl_division(self):
