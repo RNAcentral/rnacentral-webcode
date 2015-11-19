@@ -117,6 +117,8 @@ class PBDModificationsImporter(OracleConnection):
                     xref = xref,
                     position = result['position'],
                     author_assigned_position = result['auth_seq_id'],
+                    ccd_id = pdb_id,
+                    source = 'PDB',
                     modification_id = ChemicalComponent.objects.get(id=result['chem_comp_id'])
                 ))
                 i += 1

@@ -51,6 +51,8 @@ class ChemicalComponent(CachingMixin, models.Model):
     description = models.CharField(max_length=500)
     one_letter_code = models.CharField(max_length=1)
     ccd_id = models.CharField(max_length=3, default='') # Chemical Component Dictionary id
+    source = models.CharField(max_length=10, default='') # Modomics, PDBe, others
+    modomics_short_name = models.CharField(max_length=20, default='') # m2A for 2A
 
     objects = CachingManager()
 
