@@ -270,6 +270,11 @@ limitations under the License.
     {% elif xref.db.name == 'LNCipedia' %}
       {{ xref.db.name }}: transcript <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>,
       gene <a href="http://www.lncipedia.org/db/gene/{{ xref.accession.optional_id }}" target="_blank">{{ xref.accession.optional_id }}</a>
+
+    {# Modomics #}
+    {% elif xref.db.name == 'Modomics' %}
+      {{ xref.db.name }}: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }} alignment</a>
+
     {% else %}
       {{ xref.accession.external_id }} {{ xref.accession.optional_id }}
     {% endif %}

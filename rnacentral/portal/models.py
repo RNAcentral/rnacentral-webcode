@@ -656,6 +656,7 @@ class Accession(models.Model):
             'POMBASE': 'http://www.pombase.org/spombe/result/{id}',
             'NONCODE': 'http://www.bioinfo.org/NONCODEv4/show_rna.php?id={id}',
             'LNCIPEDIA': 'http://www.lncipedia.org/db/transcript/{id}',
+            'MODOMICS': 'http://modomics.genesilico.pl/sequences/list/{id}',
         }
         if self.database in urls.keys():
             if self.database == 'GTRNADB':
