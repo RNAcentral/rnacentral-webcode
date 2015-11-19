@@ -345,7 +345,7 @@ expert_dbs = [
         'url': 'http://modomics.genesilico.pl/',
         'description': 'is a comprehensive database of RNA modifications',
         'abbreviation': '',
-        'examples': ['URS0000000001'], # TODO update examples
+        'examples': ['URS00001BBAFC', 'URS000019192F', 'URS000026426D'],
         'references': [
             {
                 'title': 'MODOMICS: a database of RNA modification pathways--2013 update',
