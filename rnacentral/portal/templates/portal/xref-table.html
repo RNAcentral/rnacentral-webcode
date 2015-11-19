@@ -231,7 +231,7 @@ limitations under the License.
 
     {# dictyBase #}
     {% elif xref.db.name == 'dictyBase' %}
-      {{ xref.db.name }}: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+      {{ xref.db.name }} gene <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>
 
     {# SILVA #}
     {% elif xref.db.name == 'SILVA' %}
