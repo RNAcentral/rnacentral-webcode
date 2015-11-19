@@ -30,12 +30,6 @@ limitations under the License.
 {% for xref in xrefs %}
   <tr {% if xref.deleted == 'Y' %}class="warning"{% endif %}>
     <td>
-      {% if xref.db.name != 'ENA' %}
-        <span class="badge badge-success help" data-toggle="tooltip" title="RNAcentral Expert Database">
-          <i class="fa fa-star"></i>
-        </span>
-      {% endif %}
-
       {% if xref.db.name == 'PDBe' %}
         PDB
       {% elif xref.db.name == 'Vega' %}
