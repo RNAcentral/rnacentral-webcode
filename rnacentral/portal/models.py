@@ -47,9 +47,10 @@ class ChemicalComponent(CachingMixin, models.Model):
     """
     List of all possible nucleotide modifications.
     """
-    id = models.CharField(max_length=3, primary_key=True)
+    id = models.CharField(max_length=8, primary_key=True)
     description = models.CharField(max_length=500)
     one_letter_code = models.CharField(max_length=1)
+    ccd_id = models.CharField(max_length=3, default='') # Chemical Component Dictionary id
 
     objects = CachingManager()
 
