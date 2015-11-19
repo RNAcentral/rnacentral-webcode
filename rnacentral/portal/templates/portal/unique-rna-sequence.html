@@ -373,7 +373,7 @@ limitations under the License.
   tabindex="10"
   data-toggle="popover"
   title="Modified nucleotide <strong>{{id}}</strong>"
-  data-content='{{description}} <br> <a href="http://www.ebi.ac.uk/pdbe-srv/pdbechem/chemicalCompound/show/{{id}}" target="_blank">More at PDBe</a>'>{{one_letter_code}}</span></script>
+  data-content='{{description}} <br> {{#if pdb_url}}<a href="{{pdb_url}}" target="_blank">PDBe</a>{{/if}} <br> {{#if modomics_url}}<a href="{{modomics_url}}" target="_blank">Modomics</a>{{/if}}'>{{one_letter_code}}</span></script>
 {% endverbatim %}
 
 

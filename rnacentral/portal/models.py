@@ -59,6 +59,28 @@ class ChemicalComponent(CachingMixin, models.Model):
     class Meta:
         db_table = 'rnc_chemical_components'
 
+    def get_pdb_url(self):
+        """
+        Get a link to PDB Chemical Component Dictionary from PDB entries and
+        Modomics entries that are mapped to PDB.
+        """
+        pdb_url = 'http://www.ebi.ac.uk/pdbe-srv/pdbechem/chemicalCompound/show/{id}'
+        if self.source == 'PDB':
+            return pdb_url.format(id=self.id)
+        elif self.source == 'Modomics' and self.ccd_id:
+            return pdb_url.format(id=self.ccd_id)
+        else:
+            return None
+
+    def get_modomics_url(self):
+        """
+        Get a link to Modomics modifications.
+        """
+        if self.source == 'Modomics':
+            return 'http://modomics.genesilico.pl/modifications/{id}'.format(id=self.modomics_short_name)
+        else:
+            return None
+
 
 class RnaPrecomputedData(models.Model):
     id = models.AutoField(primary_key=True)
@@ -726,11 +748,11 @@ class Xref(models.Model):
         modifications = []
         seen = None
         for modification in self.modifications.order_by('modification_id').all():
-            if modification.id == seen:
+            if modification.modification_id == seen:
                 continue
             else:
                 modifications.append(modification)
-                seen = modification.id
+                seen = modification.modification_id
         return modifications
 
     def get_modifications_as_json(self):
@@ -746,6 +768,11 @@ class Xref(models.Model):
             id = serializers.CharField()
             description = serializers.CharField()
             one_letter_code = serializers.CharField()
+            ccd_id = serializers.CharField()
+            source = serializers.CharField()
+            modomics_short_name = serializers.CharField()
+            pdb_url = serializers.Field(source='get_pdb_url')
+            modomics_url = serializers.Field(source='get_modomics_url')
 
             class Meta:
                 model = ChemicalComponent
