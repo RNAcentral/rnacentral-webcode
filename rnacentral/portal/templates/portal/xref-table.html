@@ -224,7 +224,7 @@ limitations under the License.
 
     {# Greengenes #}
     {% elif xref.db.name == 'Greengenes' %}
-      {{ xref.db.name }}: {{ xref.accession.parent_ac }},
+      <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.parent_ac }}.{{ xref.accession.seq_version }}</a>
       {% if xref.accession.feature_start < xref.accession.feature_end %}
         nucleotides ({{ xref.accession.feature_start|intcomma }} - {{ xref.accession.feature_end|intcomma }})
       {% else %}
