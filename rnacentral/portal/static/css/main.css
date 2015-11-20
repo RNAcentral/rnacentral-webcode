@@ -961,7 +961,7 @@ textarea {
 /* Custom, iPhone Retina */
 @media only screen and (min-width : 320px) {
   .expert-db-card .panel-body {
-    height: 100px;
+    height: 150px;
   }
 
   .expert-db-logo img {
