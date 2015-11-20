@@ -665,7 +665,7 @@ expert_dbs = [
         'version': '',
     },
     {
-        'name': '5S rRNA Database',
+        'name': '5SrRNAdb',
         'label': '5srrnadb',
         'url': 'http://combio.pl/rrna/',
         'description': 'is an information resource for 5S ribosomal RNAs',
