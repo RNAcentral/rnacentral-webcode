@@ -68,9 +68,9 @@ RNAcentral
             </a> |
             <a href="{% url 'unique-rna-sequence' database.examples|first %}" id="{{database.label}}-examples" class="help" title="View example sequence">Example</a>
             {% if database.status == 'new' %}
-              <span class="label label-info help" title="New Expert Database imported in release 3">New</span>
+              <span class="label label-info help" title="New Expert Database">New</span>
             {% elif database.status == 'updated' %}
-              <span class="label label-primary help" title="New data imported in release 3">Updated</span>
+              <span class="label label-primary help" title="New data imported">Updated</span>
             {% endif %}
           </div>
 
