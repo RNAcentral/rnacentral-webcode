@@ -1034,6 +1034,11 @@ textarea {
   .expert-db-card:hover .panel-body {
     color: #333;
   }
+
+  /* keep constant height for all carousel pages */
+  .slick-slider {
+    height: 450px;
+  }
 }
 
 /* Large Devices, Wide Screens */
@@ -1049,6 +1054,11 @@ textarea {
 
   .sequences-label {
     display: inline !important;
+  }
+
+  /* keep constant height for all carousel pages */
+  .slick-slider {
+    height: 450px;
   }
 }
 
