@@ -267,7 +267,7 @@ limitations under the License.
               {{ modification.modification_id.description }}
               (<a class="help" target="_blank"
                  title="{{ modification.modification_id.id }}"
-                 href="{{ modification.modification_id.get_pdb_url }}">PDBe</a>)
+                 href="{{ modification.modification_id.get_pdb_url }}">PDBe</a>){% if not forloop.last %},{% endif %}
             {% endif %}
 
             {% if modification.modification_id.source = 'Modomics' %}
@@ -278,13 +278,11 @@ limitations under the License.
               {% if modification.modification_id.get_pdb_url %} |
                 <a class="help" target="_blank"
                    title="{{ modification.modification_id.ccd_id }}"
-                   href="{{ modification.modification_id.get_pdb_url }}">PDBe</a>)
+                   href="{{ modification.modification_id.get_pdb_url }}">PDBe</a>){% if not forloop.last %},{% endif %}
               {% else %}
-              )
+              ){% if not forloop.last %},{% endif %}
               {% endif %}
-            {% else %}
             {% endif %}
-            {% if not forloop.last %},{% endif %}
           {% endfor %}
         {% endwith %}
       {% else %}
