@@ -37,7 +37,6 @@ XREF_PAGE_SIZE = 1000
 # Function-based views #
 ########################
 
-@never_cache
 def ebeye_proxy(request):
     """
     Internal API.
