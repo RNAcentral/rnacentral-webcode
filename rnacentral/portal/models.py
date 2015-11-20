@@ -588,6 +588,14 @@ class Accession(models.Model):
     class Meta:
         db_table = 'rnc_accessions'
 
+    def get_pdb_entity_id(self):
+        """
+        Example PDB accession: 1J5E_A_1 (PDB id, chain, entity id)
+        """
+        if self.database == 'PDBE':
+            return self.accession.split('_')[-1]
+        return None
+
     def get_pdb_structured_note(self):
         """
         Get 3D structure metadata stored in a structured note.
