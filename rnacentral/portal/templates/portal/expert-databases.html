@@ -32,22 +32,30 @@ RNAcentral Expert Databases
 
     <p>
       Currently the RNAcentral Consortium is formed by <strong>{{ context.expert_dbs|length }}</strong> Expert Databases,
-      <strong>{{ context.num_imported }}</strong> of which have already been integrated into RNAcentral
-      (marked with a <span class="badge badge-success help"><i class="fa fa-check"></i></span> below).
-      If you run an ncRNA database and would like to join RNAcentral, please
+      <strong>{{ context.num_imported }}</strong> of which have already been imported into RNAcentral.
+      If you maintain an ncRNA database and would like to join RNAcentral, please
       <a href="{% url 'contact-us' %}">contact us</a>.
     </p>
 
     <div class="col-md-11">
       <table class="table table-condensed table-hover">
+        <thead>
+          <tr>
+            <th>Database</th>
+            <th>Imported</th>
+            <th>Description</th>
+          </tr>
+        </thead>
         {% for expert_db in context.expert_dbs %}
           <tr>
             <td>
               <a href="{{ expert_db.url }}" target="_blank">{{ expert_db.name}}</a>
             </td>
-            <td>
+            <td style="text-align: center">
               {% if expert_db.imported %}
-                <span class="badge badge-success help pull-right pull-right" title="Imported into RNAcentral"><i class="fa fa-check"></i></span>
+                <span data-sort="1" class="badge badge-success help" title="Imported into RNAcentral"><i class="fa fa-check"></i></span>
+              {% else %}
+                <span data-sort="0"></span>
               {% endif %}
             </td>
             <td>
@@ -70,6 +78,40 @@ RNAcentral Expert Databases
   <script>
     $(function() {
       $('.help').tooltip();
+
+      /**
+       * Sorting Expert Database table using DataTable.
+       */
+      (function(){
+        /**
+         * Custom ascending sorting function for `imported` table cells.
+         */
+        jQuery.fn.dataTableExt.oSort["is-empty-asc"] = function (x, y) {
+          return $(x).data('sort') - $(y).data('sort');
+        };
+
+        /**
+         * Custom descending sorting function for `imported` table cells.
+         */
+        jQuery.fn.dataTableExt.oSort["is-empty-desc"] = function (x, y) {
+          return $(y).data('sort') - $(x).data('sort');
+        };
+
+        $('table').DataTable({
+          'iDisplayLength': 100, // show all databases
+          'bPaginate': false, // no pagination
+          'bFilter': false, // no search
+          'bInfo': false, // no extra information line
+          'aoColumns': [
+            null, // default options
+            {
+              'sType': 'is-empty', // custom sorting function
+              'sWidth': '10%' // make the column a bit wider
+            },
+            { 'bSortable': false }, // no sorting on descriptions
+          ],
+        });
+      })();
     });
   </script>
 {% endblock %}

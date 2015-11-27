@@ -22,6 +22,65 @@ from portal.config.expert_databases import expert_dbs as rnacentral_expert_dbs
 import json
 import re
 
+from rest_framework import serializers
+from rest_framework.renderers import JSONRenderer
+
+
+class Modification(CachingMixin, models.Model):
+    """
+    Describe modified nucleotides at certain sequence positions reported in xrefs.
+    """
+    id = models.AutoField(primary_key=True)
+    upi = models.ForeignKey('Rna', db_column='upi', related_name='modifications')
+    xref = models.ForeignKey('Xref', db_column='accession', to_field='accession', related_name='modifications')
+    position = models.PositiveIntegerField() # absolute sequence position, always > 0
+    author_assigned_position = models.IntegerField() # can be negative, e.g. 3I2S chain A
+    modification_id = models.ForeignKey('ChemicalComponent', db_column='modification_id')
+
+    objects = CachingManager()
+
+    class Meta:
+        db_table = 'rnc_modifications'
+
+
+class ChemicalComponent(CachingMixin, models.Model):
+    """
+    List of all possible nucleotide modifications.
+    """
+    id = models.CharField(max_length=8, primary_key=True)
+    description = models.CharField(max_length=500)
+    one_letter_code = models.CharField(max_length=1)
+    ccd_id = models.CharField(max_length=3, default='') # Chemical Component Dictionary id
+    source = models.CharField(max_length=10, default='') # Modomics, PDBe, others
+    modomics_short_name = models.CharField(max_length=20, default='') # m2A for 2A
+
+    objects = CachingManager()
+
+    class Meta:
+        db_table = 'rnc_chemical_components'
+
+    def get_pdb_url(self):
+        """
+        Get a link to PDB Chemical Component Dictionary from PDB entries and
+        Modomics entries that are mapped to PDB.
+        """
+        pdb_url = 'http://www.ebi.ac.uk/pdbe-srv/pdbechem/chemicalCompound/show/{id}'
+        if self.source == 'PDB':
+            return pdb_url.format(id=self.id)
+        elif self.source == 'Modomics' and self.ccd_id:
+            return pdb_url.format(id=self.ccd_id)
+        else:
+            return None
+
+    def get_modomics_url(self):
+        """
+        Get a link to Modomics modifications.
+        """
+        if self.source == 'Modomics':
+            return 'http://modomics.genesilico.pl/modifications/{id}'.format(id=self.modomics_short_name)
+        else:
+            return None
+
 
 class RnaPrecomputedData(models.Model):
     id = models.AutoField(primary_key=True)
@@ -524,10 +583,18 @@ class Accession(models.Model):
     old_locus_tag = models.CharField(max_length=50)
     product = models.CharField(max_length=300)
     db_xref = models.CharField(max_length=100)
-    standard_name = models.CharField(max_length=100)
+    standard_name = models.CharField(max_length=100, default='')
 
     class Meta:
         db_table = 'rnc_accessions'
+
+    def get_pdb_entity_id(self):
+        """
+        Example PDB accession: 1J5E_A_1 (PDB id, chain, entity id)
+        """
+        if self.database == 'PDBE':
+            return self.accession.split('_')[-1]
+        return None
 
     def get_pdb_structured_note(self):
         """
@@ -617,6 +684,13 @@ class Accession(models.Model):
             'WORMBASE': 'http://www.wormbase.org/species/c_elegans/gene/{id}',
             'PLNCDB': 'http://chualab.rockefeller.edu/cgi-bin/gb2/gbrowse_details/arabidopsis?name={id}',
             'GTRNADB': 'http://lowelab.ucsc.edu/GtRNAdb/',
+            'DICTYBASE': 'http://dictybase.org/gene/{id}',
+            'SILVA': 'http://www.arb-silva.de/browser/{lsu_ssu}/silva/{id}',
+            'POMBASE': 'http://www.pombase.org/spombe/result/{id}',
+            'GREENGENES': 'http://www.ebi.ac.uk/ena/data/view/{id}',
+            'NONCODE': 'http://www.bioinfo.org/NONCODEv4/show_rna.php?id={id}',
+            'LNCIPEDIA': 'http://www.lncipedia.org/db/transcript/{id}',
+            'MODOMICS': 'http://modomics.genesilico.pl/sequences/list/{id}',
         }
         if self.database in urls.keys():
             if self.database == 'GTRNADB':
@@ -629,6 +703,11 @@ class Accession(models.Model):
             elif self.database == 'VEGA':
                 return urls[self.database].format(id=self.optional_id,
                     species=self.species.replace(' ', '_'))
+            elif self.database == 'SILVA':
+                return urls[self.database].format(id=self.optional_id,
+                    lsu_ssu='ssu' if 'small' in self.product else 'lsu')
+            elif self.database == 'GREENGENES':
+                return urls[self.database].format(id='.'.join([self.parent_ac, str(self.seq_version)]))
             return urls[self.database].format(id=self.external_id)
         else:
             return ''
@@ -663,6 +742,65 @@ class Xref(models.Model):
 
     class Meta:
         db_table = 'xref'
+
+    def has_modified_nucleotides(self):
+        """
+        Determine whether an xref has modified nucleotides.
+        """
+        if self.modifications.count() > 0:
+            return True
+        else:
+            return False
+
+    def get_distinct_modifications(self):
+        """
+        Get a list of distinct modified nucleotides described in this xref.
+        """
+        modifications = []
+        seen = None
+        for modification in self.modifications.order_by('modification_id').all():
+            if modification.modification_id == seen:
+                continue
+            else:
+                modifications.append(modification)
+                seen = modification.modification_id
+        return modifications
+
+    def get_modifications_as_json(self):
+        """
+        Get a JSON object listing all modified positions and the chemical
+        components. This object is used for visualising modified nucleotides
+        in the UI.
+        """
+        class ChemicalComponentSerializer(serializers.ModelSerializer):
+            """
+            Django Rest Framework serializer class for chemical components.
+            """
+            id = serializers.CharField()
+            description = serializers.CharField()
+            one_letter_code = serializers.CharField()
+            ccd_id = serializers.CharField()
+            source = serializers.CharField()
+            modomics_short_name = serializers.CharField()
+            pdb_url = serializers.Field(source='get_pdb_url')
+            modomics_url = serializers.Field(source='get_modomics_url')
+
+            class Meta:
+                model = ChemicalComponent
+
+        class ModificationSerializer(serializers.ModelSerializer):
+            """
+            Django Rest Framework serializer class for modified positions.
+            """
+            position = serializers.IntegerField()
+            author_assigned_position = serializers.IntegerField()
+            chem_comp = ChemicalComponentSerializer(source='modification_id')
+
+            class Meta:
+                model = Modification
+
+        serializer = ModificationSerializer(self.modifications.all(), many=True)
+        return JSONRenderer().render(serializer.data)
 
     def is_active(self):
         """
@@ -871,6 +1009,8 @@ class Xref(models.Model):
         """
         Get a species name that can be used in Ensembl urls.
         """
+        if self.accession.species == 'Dictyostelium discoideum AX4':
+            self.accession.species = 'Dictyostelium discoideum'
         return self.accession.species.replace(' ', '_').lower()
 
     def get_ensembl_division(self):

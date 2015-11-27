@@ -530,7 +530,7 @@ class RNAcentralTest(unittest.TestCase):
         page = ExpertDatabasesOverviewPage(self.browser)
         page.navigate()
         self.assertFalse(page.js_errors_found())
-        self.assertEqual(page.get_expert_tr_count(), page.get_footer_expert_db_count())
+        self.assertEqual(page.get_expert_tr_count(), page.get_footer_expert_db_count() + 1)
 
     def test_tmrna_website_example_pages(self):
         for example_id in self._get_expert_db_example_ids('tmrna-website-examples'):
