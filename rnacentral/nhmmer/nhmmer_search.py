@@ -74,7 +74,7 @@ class NhmmerSearch(object):
         self.cmd = \
             ('{nhmmer} '
              '--qformat fasta '   # query format
-             '--tformat hmmerfm ' # target format (precomputed binary db)
+             '--tformat fasta '   # target format
              '-o {output} '       # direct main output to a file
              '--incE {incE} '     # use an E-value of <= X as the inclusion threshold
              '-E {E} '            # report target sequences with an E-value of <= X
