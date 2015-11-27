@@ -12,6 +12,7 @@ limitations under the License.
 """
 
 from django.core.management.base import BaseCommand
+from optparse import make_option
 from portal.models import Database, Rna, Xref, DatabaseStats
 from portal.views import _get_json_lineage_tree
 from django.db.models import Min, Max, Count, Avg
@@ -21,7 +22,7 @@ import json
 # Export functions #
 ####################
 
-def compute_database_stats():
+def compute_database_stats(database):
     """
     Precompute database statistics for display on Expert Database landing pages.
 
@@ -34,6 +35,10 @@ def compute_database_stats():
     taxonomic_lineage
     """
     for expert_db in Database.objects.order_by('-id').all():
+        if database:
+            if expert_db.descr != database.upper():
+                continue
+
         print expert_db.descr
 
         context = dict()
@@ -83,6 +88,12 @@ class Command(BaseCommand):
     # Command line options #
     ########################
 
+    option_list = BaseCommand.option_list + (
+        make_option('-d',
+            default='',
+            dest='database',
+            help='[Optional] Expert Database that needs to be recomputed'),
+    )
     # shown with -h, --help
     help = ('Calculate per-database statistics used for Expert Database '
             'landing pages')
@@ -91,4 +102,4 @@ class Command(BaseCommand):
         """
         Django entry point
         """
-        compute_database_stats()
+        compute_database_stats(options['database'])

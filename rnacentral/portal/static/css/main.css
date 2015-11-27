@@ -622,6 +622,16 @@ path {
   font-weight: bold;
 }
 
+.modified-nt {
+  background-color: #d9534f; /* red */
+  color: whitesmoke;
+  cursor: pointer;
+  font-size: larger;
+  font-weight: bold;
+  margin: 0 2px;
+  padding: 0 3px;
+}
+
 /*------------------------------------------------------------------
 [5.4 API docs affix]
 */
@@ -951,7 +961,7 @@ textarea {
 /* Custom, iPhone Retina */
 @media only screen and (min-width : 320px) {
   .expert-db-card .panel-body {
-    height: 100px;
+    height: 150px;
   }
 
   .expert-db-logo img {
@@ -1024,6 +1034,11 @@ textarea {
   .expert-db-card:hover .panel-body {
     color: #333;
   }
+
+  /* keep constant height for all carousel pages */
+  .slick-slider {
+    height: 450px;
+  }
 }
 
 /* Large Devices, Wide Screens */
@@ -1039,6 +1054,11 @@ textarea {
 
   .sequences-label {
     display: inline !important;
+  }
+
+  /* keep constant height for all carousel pages */
+  .slick-slider {
+    height: 450px;
   }
 }
 

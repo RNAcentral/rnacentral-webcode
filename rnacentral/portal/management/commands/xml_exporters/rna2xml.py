@@ -341,7 +341,12 @@ class RnaXmlExporter(OracleConnection):
             """
             A method for creating field tags.
             """
-            return '<field name="{0}">{1}</field>'.format(name, value)
+            try:
+                result = '<field name="{0}">{1}</field>'.format(name, value)
+            except UnicodeEncodeError:
+                value = value.encode('ascii', 'ignore').decode('ascii')
+                result = '<field name="{0}">{1}</field>'.format(name, value)
+            return result
 
         def format_field(field):
             """

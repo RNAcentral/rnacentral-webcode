@@ -37,7 +37,6 @@ XREF_PAGE_SIZE = 1000
 # Function-based views #
 ########################
 
-@never_cache
 def ebeye_proxy(request):
     """
     Internal API.
@@ -257,6 +256,7 @@ def expert_database_view(request, expert_db_name):
             'expert_db': expert_db,
             'expert_db_stats': expert_db_stats,
             'lncrnadb': lncrnadb,
+            'no_sunburst': ['ENA', 'RFAM', 'SILVA', 'GREENGENES'],
         })
     elif expert_db_name == 'coming_soon':
         return render_to_response('portal/coming-soon.html')

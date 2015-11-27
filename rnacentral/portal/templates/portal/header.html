@@ -89,7 +89,7 @@ limitations under the License.
       </button>
       <p class="navbar-text">
         <span class="badge release-number">
-          <a href="http://blog.rnacentral.org/2015/06/rnacentral-release-3.html">v3</a>
+          <a href="http://blog.rnacentral.org/2015/11/rnacentral-release-4.html">v4</a>
         </span>
       </p>
     </div>
@@ -104,14 +104,14 @@ limitations under the License.
                 {% if forloop.first %}
                   <div class="col-sm-5">
                     <ul class="multi-column-dropdown">
-                {% elif forloop.counter0 == 8 %}
+                {% elif forloop.counter0 == 11 %}
                   <div class="col-sm-7">
                     <ul class="multi-column-dropdown">
                 {% endif %}
                 <li>
                   <a href="{% url 'portal.views.expert_database_view' expert_db_name=expert_db.label %}">{{ expert_db.name }}</a>
                 </li>
-                {% if forloop.counter0 == 7 or forloop.last %}
+                {% if forloop.counter0 == 10 or forloop.last %}
                     </ul>
                   </div>
                 {% endif %}

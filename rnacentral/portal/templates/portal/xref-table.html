@@ -30,12 +30,6 @@ limitations under the License.
 {% for xref in xrefs %}
   <tr {% if xref.deleted == 'Y' %}class="warning"{% endif %}>
     <td>
-      {% if xref.db.name != 'ENA' %}
-        <span class="badge badge-success help" data-toggle="tooltip" title="RNAcentral Expert Database">
-          <i class="fa fa-star"></i>
-        </span>
-      {% endif %}
-
       {% if xref.db.name == 'PDBe' %}
         PDB
       {% elif xref.db.name == 'Vega' %}
@@ -177,10 +171,11 @@ limitations under the License.
       PDB: {{ xref.accession.external_id }}, chain {{ xref.accession.optional_id }}
       <br>
       <i class="fa fa-angle-right"></i>
-      <a href="http://www.ebi.ac.uk/pdbe-srv/view/entry/{{ xref.accession.external_id }}/summary.html" target="_blank" title="Protein Data Bank in Europe" class="help">PDBe</a> |
+      <a href="http://www.ebi.ac.uk/pdbe/entry/pdb/{{ xref.accession.external_id }}/RNA/{{ xref.accession.get_pdb_entity_id }}" target="_blank" title="Protein Data Bank in Europe" class="help">PDBe</a> |
       <a href="http://www.pdb.org/pdb/pdb/explore/explore.do?structureId={{ xref.accession.external_id }}" target="_blank" title="Protein Data Bank USA" class="help">RCSB PDB</a> |
       <a href="http://pdbj.org/mine/summary/{{ xref.accession.external_id }}" target="_blank" title="Protein Data Bank Japan" class="help">PDBj</a> |
       <a href="{{ xref.get_ndb_external_url }}" target="_blank" title="Nucleic Acids Database" class="help">NDB</a>
+      </span>
       <br>
       <i class="fa fa-angle-right"></i>
       <small>Structure title:</small> {{ xref.accession.get_pdb_structured_note.structureTitle }}
@@ -214,8 +209,85 @@ limitations under the License.
     {% elif xref.db.name == 'PLncDB' %}
       {{ xref.db.name }}: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>
 
+    {# dictyBase #}
+    {% elif xref.db.name == 'dictyBase' %}
+      {{ xref.db.name }} gene <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+
+    {# SILVA #}
+    {% elif xref.db.name == 'SILVA' %}
+      {{ xref.db.name }}: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+      {% if xref.accession.feature_start < xref.accession.feature_end %}
+        nucleotides ({{ xref.accession.feature_start|intcomma }} - {{ xref.accession.feature_end|intcomma }})
+      {% else %}
+        nucleotides ({{ xref.accession.feature_end|intcomma }} - {{ xref.accession.feature_start|intcomma }})
+      {% endif %}
+
+    {# Greengenes #}
+    {% elif xref.db.name == 'Greengenes' %}
+      <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.parent_ac }}.{{ xref.accession.seq_version }}</a>
+      {% if xref.accession.feature_start < xref.accession.feature_end %}
+        nucleotides ({{ xref.accession.feature_start|intcomma }} - {{ xref.accession.feature_end|intcomma }})
+      {% else %}
+        nucleotides ({{ xref.accession.feature_end|intcomma }} - {{ xref.accession.feature_start|intcomma }})
+      {% endif %}
+
+    {# PomBase #}
+    {% elif xref.db.name == 'PomBase' %}
+      {{ xref.db.name }}: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+
+    {# Noncode #}
+    {% elif xref.db.name == 'NONCODE' %}
+      {{ xref.db.name }} (v4): transcipt <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>,
+      gene <a href="http://www.bioinfo.org/NONCODEv4/show_gene.php?id={{ xref.accession.optional_id }}" target="_blank">{{ xref.accession.optional_id }}</a>
+
+    {# LNCipedia #}
+    {% elif xref.db.name == 'LNCipedia' %}
+      {{ xref.db.name }}: transcript <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>,
+      gene <a href="http://www.lncipedia.org/db/gene/{{ xref.accession.optional_id }}" target="_blank">{{ xref.accession.optional_id }}</a>
+
+    {# Modomics #}
+    {% elif xref.db.name == 'Modomics' %}
+      {{ xref.db.name }}: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }} alignment</a>
+
     {% else %}
       {{ xref.accession.external_id }} {{ xref.accession.optional_id }}
+    {% endif %}
+
+    {% if xref.db.name == 'Modomics' or xref.db.name == 'PDBe' %}
+      <br>
+      <i class="fa fa-angle-right"></i>
+      <span class="small">
+      {% if xref.has_modified_nucleotides %}
+        {% with modifications=xref.get_distinct_modifications %}
+          <button class="btn btn-primary btn-xs" data-modifications="{{ xref.get_modifications_as_json }}">
+            <i class="fa fa-crosshairs"></i> View modification{{modifications|length|pluralize}}
+          </button>
+          {% for modification in modifications %}
+            {% if modification.modification_id.source = 'PDB' %}
+              {{ modification.modification_id.description }}
+              (<a class="help" target="_blank"
+                 title="{{ modification.modification_id.id }}"
+                 href="{{ modification.modification_id.get_pdb_url }}">PDBe</a>){% if not forloop.last %},{% endif %}
+            {% endif %}
+
+            {% if modification.modification_id.source = 'Modomics' %}
+              {{ modification.modification_id.description }}
+              (<a class="help" target="_blank"
+                 title="{{ modification.modification_id.id }}"
+                 href="{{ modification.modification_id.get_modomics_url }}">Modomics</a>
+              {% if modification.modification_id.get_pdb_url %} |
+                <a class="help" target="_blank"
+                   title="{{ modification.modification_id.ccd_id }}"
+                   href="{{ modification.modification_id.get_pdb_url }}">PDBe</a>){% if not forloop.last %},{% endif %}
+              {% else %}
+              ){% if not forloop.last %},{% endif %}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+        {% endwith %}
+      {% else %}
+        No modified nucleotides.
+      {% endif %}
     {% endif %}
 
     {% if xref.accession.organelle %}
@@ -279,7 +351,17 @@ limitations under the License.
 
     </td>
     <!-- accession -->
-    <td><a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank" title="{{ xref.accession.classification }}"><em>{{ xref.accession.species }}</em></a></td>
+    <td>
+      {# Greengenes inferred taxonomy #}
+      {% if xref.db.name == 'Greengenes' %}
+        INSDC classification:
+        <a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank" title="{{ xref.accession.classification }}"><em>{{ xref.accession.species }}</em></a>
+        <br>
+        Greengenes classification: <em>{{ xref.accession.inference }}</em>
+      {% else %}
+        <a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank" title="{{ xref.accession.classification }}"><em>{{ xref.accession.species }}</em></a>
+      {% endif %}
+    </td>
     <td><time datetime="{{ xref.created.release_date|date:'Y-m-d' }}">{{ xref.created.release_date|date:'d M Y' }}</time></td>
     <td><time datetime="{{ xref.last.release_date|date:'Y-m-d' }}">{{ xref.last.release_date|date:'d M Y' }}</time></td>
     <td>

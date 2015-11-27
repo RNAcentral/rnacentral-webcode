@@ -34,7 +34,7 @@ from apiv1.views import RnaFastaRenderer
 from portal.models import Rna
 
 
-EBI_SEARCH_ENDPOINT = 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
+EBI_SEARCH_ENDPOINT = 'http://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
 
 
 def export_search_results(query, _format, hits):
