@@ -15,6 +15,7 @@ from django.conf.urls import patterns, url, include
 from django.contrib import admin
 from portal import views
 from portal.models import get_ensembl_divisions, Rna, Database
+from portal.config.genomes import genomes as rnacentral_genomes
 
 urlpatterns = patterns('',
     # homepage
@@ -53,6 +54,8 @@ urlpatterns = patterns('',
     url(r'^error/?$', views.StaticView.as_view(), {'page': 'error'}, name='error'),
     # status
     url(r'^status/?$', 'portal.views.website_status_view', name='website-status'),
+    # genome browser
+    url(r'^genome-browser/?$', views.StaticView.as_view(), {'page': 'genome-browser', 'genomes': sorted(rnacentral_genomes, key = lambda x: x['species'])}, name='genome-browser'),
 )
 
 # internal API
