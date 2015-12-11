@@ -73,18 +73,25 @@ class XrefsExporter(FtpBase):
             """
             Get SQL command for id mappings.
             """
-            if self.test:
-                return """
-                SELECT t1.upi, t2.ac AS accession, t3.external_id, t3.optional_id, t4.descr, t2.taxid
-                FROM rna t1, xref t2, rnc_accessions t3, rnc_database t4
-                WHERE t1.upi=t2.upi AND t2.ac=t3.accession AND t2.dbid=t4.id AND t2.deleted='N'
-                """
-            return """
-            SELECT t1.upi, t2.ac AS accession, t3.external_id, t3.optional_id, t4.descr, t2.taxid
-            FROM rna t1, xref t2, rnc_accessions t3, rnc_database t4
-            WHERE t1.upi=t2.upi AND t2.ac=t3.accession AND t2.dbid=t4.id AND t2.deleted='N'
-            ORDER BY t1.upi
+            sql_command = """
+            SELECT t1.upi, t2.ac AS accession, t2.taxid, t3.external_id,
+                t3.optional_id, t3.feature_name, t3.ncrna_class,
+                t3.gene, t4.descr
+            FROM rna t1,
+                 xref t2,
+                 rnc_accessions t3,
+                 rnc_database t4
+            WHERE t1.upi=t2.upi
+                AND t2.ac=t3.accession
+                AND t2.dbid=t4.id
+                AND t2.deleted='N'
+
             """
+            if self.test:
+                sql_command += ' AND t2.dbid = 8' # small dataset
+            else:
+                sql_command += ' ORDER BY t1.upi'
+            return sql_command
 
         def get_accession_source():
             """
@@ -101,7 +108,6 @@ class XrefsExporter(FtpBase):
             Write output for each xref.
             """
             counter = 0
-
             for row in self.cursor:
                 if self.test and counter > self.test_entries:
                     return
@@ -110,21 +116,28 @@ class XrefsExporter(FtpBase):
                 upi = result['upi']
                 database = result['descr']
                 taxid = result['taxid']
+                gene = '' if result['gene'] is None else result['gene']
+                rna_type = result['feature_name'] if result['feature_name'] != 'ncRNA' else result['ncrna_class']
 
                 # use PDB instead of PDB because PDB ids come from wwPDB
                 if database == 'PDBE':
                     database = 'PDB'
 
+                template = '{upi}\t{database}\t{accession}\t{taxid}\t{rna_type}\t{gene}\n'
                 if database in accession_source['xref']:
-                    line = '{upi}\t{database}\t{accession}\t{taxid}\n'.format(upi=upi,
-                                                                              database=database,
-                                                                              accession=result['accession'],
-                                                                              taxid=taxid)
+                    line = template.format(upi=upi,
+                                           database=database,
+                                           accession=result['accession'],
+                                           taxid=taxid,
+                                           gene=gene,
+                                           rna_type=rna_type)
                 else:
-                    line = '{upi}\t{database}\t{accession}\t{taxid}\n'.format(upi=upi,
-                                                                              database=database,
-                                                                              accession=result['external_id'],
-                                                                              taxid=taxid)
+                    line = template.format(upi=upi,
+                                           database=database,
+                                           accession=result['external_id'],
+                                           taxid=taxid,
+                                           gene=gene,
+                                           rna_type=rna_type)
                 self.filehandles['xrefs'].write(line)
                 if counter < self.examples:
                     self.filehandles['example'].write(line)
@@ -156,10 +169,15 @@ class XrefsExporter(FtpBase):
 
         * id_mapping.tsv.gz
         Tab-separated file with RNAcentral ids, corresponding external ids,
-        and NCBI taxon ids.
+        NCBI taxon ids, RNA types (according to INSDC classification), and gene names.
 
         * example.txt
         A small file showing the first few entries.
+
+        CHANGELOG:
+
+        * December 11, 2015
+        Added two new fields: RNA types and gene names.
         """
         text = self.create_readme.__doc__
         text = self.format_docstring(text)
