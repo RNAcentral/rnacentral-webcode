@@ -159,6 +159,8 @@ limitations under the License.
                   window.onerror=function(msg){
                       $("body").attr("JSError",msg);
                   };
+                  // initialise bootstrap tooltips
+                  $('.help').tooltip();
                 });
                 if(!window.console){ window.console = {log: function(){} }; }
                 console.log('Welcome to the RNAcentral javascipt console!');
