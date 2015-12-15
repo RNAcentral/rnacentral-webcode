@@ -72,6 +72,26 @@ RNAcentral
 
   </div>
 
+  <div class="row well well-sm">
+
+    <h2 class="text-center">Expert Databases</h2>
+
+    <p class="lead text-center">
+      RNAcentral Consortium brings together <a href="{% url 'expert-databases' %}">38 Expert Databases</a>, 22 of which have already been integrated:
+    </p>
+
+    <div id="expert-databases">
+      {% for database in context.databases %}
+        <div>
+          <a class="help expert-db-logo" href="{% url 'expert-database' database.label %}" title="{{database.name}} Expert Database">
+            <img class="img-rounded hvr-grow desaturate" data-lazy="{% static 'img/expert-db-logos' %}/{{database.label}}.png" alt="{{database.name}} logo">
+          </a>
+          <a href="{% url 'unique-rna-sequence' database.examples|first %}" id="{{database.label}}-examples" class="small">Example</a>
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
 
   <div class="row">
 
