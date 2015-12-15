@@ -39,61 +39,39 @@ RNAcentral
   </div>
 
   <div class="row">
-    <div class="col-md-12 col-sm-12 col-xs-12">
 
-      <div class="panel panel-default margin-bottom-10px">
-        <div class="panel-body homepage-callout">
-          <span class="text-info">RNAcentral provides unified access to the ncRNA sequence data supplied by the Expert Databases below</span>
-          <a class="text-muted small margin-left-5px" href="{% url 'about' %}">Learn more</a>
-        </div>
+    <div class="col-md-4 col-sm-6 col-xs-12">
+      <div class="panel panel-default expert-db-card">
+        <h2><i class="fa fa-search"></i> Text search</h2>
+        <p>
+          Filter and compare data from multiple resources using faceted search.
+        </p>
+        <a class="btn btn-primary margin-left-5px margin-bottom-5px" href="/search?q=RNA">Browse sequences</a>
       </div>
-
     </div>
-  </div>
 
-  <div id="expert-databases" class="well well-sm">
-    {% for database in context.databases %}
-
-      {% if forloop.first or forloop.counter == 5 or forloop.counter == 9 or forloop.counter == 13 or forloop.counter == 17 %}<div class="row">{% endif %}
-
-      <div class="col-md-3 col-sm-6 col-xs-12">
-        <div class="panel panel-default expert-db-card">
-
-          <div class="expert-db-card-header">
-            <a href="{% url 'expert-database' database.label %}">{{database.name}}</a>
-          </div>
-
-          <div class="expert-db-card-logo">
-            <a class="pull-right expert-db-logo" href="{% url 'expert-database' database.label %}" title="{{database.name}} Expert Database">
-              <img class="img-rounded hvr-grow" data-lazy="{% static 'img/expert-db-logos' %}/{{database.label}}.png" alt="{{database.name}} logo">
-            </a>
-          </div>
-
-          <div class="panel-body small">
-            {{database.description|striptags}}
-          </div>
-
-          <div class="panel-footer small">
-            <a href="" rel="nofollow" ng-click="meta_search('expert_db:%22{{database.name}}%22')" title="View all sequences" class="help">
-              <em>{{database.num_sequences|intword|intcomma}}</em>
-              <span class="sequences-label">sequences</span>
-            </a> |
-            <a href="{% url 'unique-rna-sequence' database.examples|first %}" id="{{database.label}}-examples" class="help" title="View example sequence">Example</a>
-            {% if database.status == 'new' %}
-              <span class="label label-info help" title="New Expert Database">New</span>
-            {% elif database.status == 'updated' %}
-              <span class="label label-primary help" title="New data imported">Updated</span>
-            {% endif %}
-          </div>
-
-        </div>
+    <div class="col-md-4 col-sm-6 col-xs-12">
+      <div class="panel panel-default expert-db-card">
+        <h2><i class="fa fa-search"></i> Sequence search</h2>
+        <p>
+          Search for similar sequences or look up RNAcentral id starting with a sequence.
+        </p>
+        <a class="btn btn-primary margin-left-5px margin-bottom-5px" href="{% url 'nhmmer-sequence-search' %}" role="button">Search by sequence</a>
       </div>
+    </div>
 
-      {% if forloop.counter == 4 or forloop.counter == 8 or forloop.counter == 12 or forloop.counter == 16 or forloop.last %}</div>{% endif %}
-    {% endfor %}
+    <div class="col-md-4 col-sm-6 col-xs-12">
+      <div class="panel panel-default expert-db-card">
+        <h2><i class="fa fa-map-marker"></i> Genome browser</h2>
+        <p>
+          Explore RNAcentral sequences in your favorite genome locations alongside genes and transcripts from Ensembl/Ensembl Genomes.
+        </p>
+        <a class="btn btn-primary margin-left-5px margin-bottom-5px" href="{% url 'genome-browser' %}" role="button">Browse genomes</a>
+      </div>
+    </div>
+
   </div>
 
-  <hr>
 
   <div class="row">
 
@@ -166,7 +144,6 @@ RNAcentral
 {% block extra_js_uncompressed %}
 <script>
   $(function() {
-    $('.help').tooltip();
     $('#expert-databases').slick({
       draggable: true,
       rows: 1,
