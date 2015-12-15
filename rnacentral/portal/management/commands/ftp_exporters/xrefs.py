@@ -100,6 +100,18 @@ class XrefsExporter(FtpBase):
             """
             Write output for each xref.
             """
+            def format_output(accession):
+                """
+                Format data into a string.
+                """
+                template = '{upi}\t{database}\t{accession}\t{taxid}\t{rna_type}\t{gene}\n'
+                return template.format(upi=upi,
+                                       database=database,
+                                       accession=accession,
+                                       taxid=taxid,
+                                       gene=gene,
+                                       rna_type=rna_type)
+
             counter = 0
             for row in self.cursor:
                 if self.test and counter > self.test_entries:
@@ -109,38 +121,28 @@ class XrefsExporter(FtpBase):
                 upi = result['upi']
                 database = result['descr']
                 taxid = result['taxid']
-                gene = '' if result['gene'] is None else result['gene']
-                rna_type = result['feature_name'] if result['feature_name'] != 'ncRNA' else result['ncrna_class']
+                gene = result['gene'] or ''
+                if result['feature_name'] == 'ncRNA':
+                    rna_type = result['ncrna_class'] or 'RNA'
+                else:
+                    rna_type = result['feature_name'] or 'RNA'
+                gene = gene.replace('\t', '')
 
                 # use PDB instead of PDB because PDB ids come from wwPDB
                 if database == 'PDBE':
                     database = 'PDB'
 
-                template = '{upi}\t{database}\t{accession}\t{taxid}\t{rna_type}\t{gene}\n'
                 if database in accession_source['xref']:
-                    line = template.format(upi=upi,
-                                           database=database,
-                                           accession=result['accession'],
-                                           taxid=taxid,
-                                           gene=gene,
-                                           rna_type=rna_type)
+                    line = format_output(result['accession'])
                 else:
-                    line = template.format(upi=upi,
-                                           database=database,
-                                           accession=result['external_id'],
-                                           taxid=taxid,
-                                           gene=gene,
-                                           rna_type=rna_type)
+                    line = format_output(result['external_id'])
                 self.filehandles['xrefs'].write(line)
+                # write out optional ids, if necessary
+                if database in accession_source['optional_id']:
+                    line = format_output(result['optional_id'])
+                    self.filehandles['xrefs'].write(line)
                 if counter < self.examples:
                     self.filehandles['example'].write(line)
-                # write out optional ids too, if necessary
-                if database in accession_source['optional_id']:
-                    line = '{upi}\t{database}\t{accession}\t{taxid}\n'.format(upi=upi,
-                                                                              database=database,
-                                                                              accession=result['optional_id'],
-                                                                              taxid=taxid)
-                    self.filehandles['xrefs'].write(line)
                 counter += 1
 
         sql = get_xrefs_sql()
