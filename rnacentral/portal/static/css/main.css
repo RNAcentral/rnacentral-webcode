@@ -50,7 +50,6 @@ body {
 
 .container-main {
   min-height: 500px;
-  padding-top: 10px;
 }
 
 @font-face {
@@ -943,10 +942,19 @@ textarea {
   -webkit-transition-property: transform;
   transition-property: transform;
 }
-.expert-db-card:hover img,
+.expert-db-card:hover a,
 .hvr-grow:hover, .hvr-grow:focus, .hvr-grow:active {
   -webkit-transform: scale(1.05);
   transform: scale(1.05);
+}
+
+.slick-dots li button::before {
+  font-size: 30px;
+}
+
+.desaturate {
+  -webkit-filter: grayscale(60%);
+  filter: grayscale(60%);
 }
 
 .expert-db-logo img {
@@ -1009,36 +1017,6 @@ textarea {
     max-height: 70px;
   }
 
-  /* hide the links */
-  .expert-db-card a {
-    text-decoration: none;
-    color: inherit;
-  }
-
-  /* style links on hover */
-  .expert-db-card:hover a {
-    color: #428bca;
-    text-decoration: underline;
-  }
-
-  .expert-db-card:hover a:hover {
-    color: #2a6496;
-  }
-
-  /* make text less prominent */
-  .expert-db-card .panel-body {
-    color: #767676;
-  }
-
-  /* make text more prominent on hover */
-  .expert-db-card:hover .panel-body {
-    color: #333;
-  }
-
-  /* keep constant height for all carousel pages */
-  .slick-slider {
-    height: 450px;
-  }
 }
 
 /* Large Devices, Wide Screens */
