@@ -27,13 +27,14 @@ RNAcentral
 {% block content %}
 
   <div class="row well well-sm homepage-callout">
-    <h2 style="text-align:center;">
+    <h2 class="text-center">
       RNAcentral is a database of non-coding RNA sequences
     </h2>
 
-    <p>
-      A <strong>single entry point</strong> for searching multiple Expert Databases.
+    <p class="text-center">
+      A <strong>single entry point</strong> for searching multiple ncRNA databases.
       <strong>Unique accessions</strong> for all sequences.
+      <br>
       <a class="text-muted small margin-left-5px" href="{% url 'about' %}">More about RNAcentral &rarr;</a>
     </p>
   </div>
@@ -42,31 +43,37 @@ RNAcentral
 
     <div class="col-md-4 col-sm-6 col-xs-12">
       <div class="panel panel-default expert-db-card">
-        <h2><i class="fa fa-search"></i> Text search</h2>
-        <p>
-          Filter and compare data from multiple resources using faceted search.
-        </p>
-        <a class="btn btn-primary margin-left-5px margin-bottom-5px" href="/search?q=RNA">Browse sequences</a>
+        <div class="panel-body text-center">
+          <h2 class="text-center"><i class="fa fa-search"></i> Text search</h2>
+          <p class="text-center">
+            Filter and compare data from multiple resources using faceted search.
+          </p>
+          <a class="btn btn-primary" href="/search?q=RNA">Browse sequences</a>
+        </div>
       </div>
     </div>
 
     <div class="col-md-4 col-sm-6 col-xs-12">
       <div class="panel panel-default expert-db-card">
-        <h2><i class="fa fa-search"></i> Sequence search</h2>
-        <p>
-          Search for similar sequences or look up RNAcentral id starting with a sequence.
-        </p>
-        <a class="btn btn-primary margin-left-5px margin-bottom-5px" href="{% url 'nhmmer-sequence-search' %}" role="button">Search by sequence</a>
+        <div class="panel-body text-center">
+          <h2 class="text-center"><i class="fa fa-search"></i> Sequence search</h2>
+          <p class="text-center">
+            Search for similar sequences or look up RNAcentral id starting with a sequence.
+          </p>
+          <a class="btn btn-primary" href="{% url 'nhmmer-sequence-search' %}" role="button">Search by sequence</a>
+        </div>
       </div>
     </div>
 
     <div class="col-md-4 col-sm-6 col-xs-12">
       <div class="panel panel-default expert-db-card">
-        <h2><i class="fa fa-map-marker"></i> Genome browser</h2>
-        <p>
-          Explore RNAcentral sequences in your favorite genome locations alongside genes and transcripts from Ensembl/Ensembl Genomes.
-        </p>
-        <a class="btn btn-primary margin-left-5px margin-bottom-5px" href="{% url 'genome-browser' %}" role="button">Browse genomes</a>
+        <div class="panel-body text-center">
+          <h2 class="text-center"><i class="fa fa-map-marker"></i> Genome browser</h2>
+          <p class="text-center">
+            Explore RNAcentral sequences in your favorite genome locations.
+          </p>
+          <a class="btn btn-primary" href="{% url 'genome-browser' %}" role="button">Browse genomes</a>
+        </div>
       </div>
     </div>
 

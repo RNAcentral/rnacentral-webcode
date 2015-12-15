@@ -948,6 +948,11 @@ textarea {
   transform: scale(1.05);
 }
 
+.slick-dots {
+  position: inherit;
+  margin-top: 15px;
+}
+
 .slick-dots li button::before {
   font-size: 30px;
 }
@@ -962,8 +967,8 @@ textarea {
   margin-right: 3px;
 }
 
-.sequences-label {
-  display: inline !important;
+.expert-db-card h2 {
+  margin-top: 5px;
 }
 
 /* Custom, iPhone Retina */
@@ -1022,21 +1027,12 @@ textarea {
 /* Large Devices, Wide Screens */
 @media only screen and (min-width : 1200px) {
   .expert-db-card .panel-body {
-    height: 120px;
+    height: 170px;
   }
 
   .expert-db-logo img {
     max-width: 130px;
     max-height: 100px;
-  }
-
-  .sequences-label {
-    display: inline !important;
-  }
-
-  /* keep constant height for all carousel pages */
-  .slick-slider {
-    height: 450px;
   }
 }
 
