@@ -23,15 +23,9 @@ class XrefsExporter(FtpBase):
     Inspired by UniProt id mapping files.
 
     Output format:
-    RNAcentral_id\tDatabase_name\tExternal_id\tTax_id
+    RNAcentral_id\tDatabase_name\tExternal_id\tTax_id\tRNA_type\tGene_name
 
-    Example:
-    URS0000000161\tMIRBASE\tMIMAT0020957\t9606
-
-    Uses the database cursor directly to improve performance.
-    Django cursor seems to be ~10% slower than cx_Oracle cursor.
-
-    Total runtime ~10 min for ~10M id mappings.
+    Use cx_Oracle cursor instead of Django for faster performance.
     """
 
     def __init__(self, *args, **kwargs):
@@ -85,10 +79,9 @@ class XrefsExporter(FtpBase):
                 AND t2.ac=t3.accession
                 AND t2.dbid=t4.id
                 AND t2.deleted='N'
-
             """
             if self.test:
-                sql_command += ' AND t2.dbid = 8' # small dataset
+                sql_command += ' AND t2.dbid = 8' # small dataset for testing
             else:
                 sql_command += ' ORDER BY t1.upi'
             return sql_command
@@ -177,7 +170,7 @@ class XrefsExporter(FtpBase):
         CHANGELOG:
 
         * December 11, 2015
-        Added two new fields: RNA types and gene names.
+        Added two new fields: RNA type and gene name.
         """
         text = self.create_readme.__doc__
         text = self.format_docstring(text)
