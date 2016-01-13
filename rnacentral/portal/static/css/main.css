@@ -1103,8 +1103,8 @@ textarea {
 
 .homepage-callout-overlay {
   background: whitesmoke;
+  background-color: rgba(245, 245, 245, 0.7); /* whitesmoke */
   color: black;
-  opacity: 0.7;
   padding: 15px;
 }
 
