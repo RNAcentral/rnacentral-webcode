@@ -129,14 +129,6 @@ limitations under the License.
         </li>
 
         <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="">API<b class="caret"></b></a>
-          <ul class="dropdown-menu">
-            <li><a href="{% url 'api-v1-root' %}">Browsable API</a></li>
-            <li><a href="{% url 'api-docs' %}">API Documentation</a></li>
-          </ul>
-        </li>
-
-        <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="">Tools<b class="caret"></b></a>
           <ul class="dropdown-menu">
             <li><a href="{% url 'nhmmer-sequence-search' %}">Sequence search</a></li>
@@ -148,6 +140,15 @@ limitations under the License.
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li><a href="{% url 'downloads' %}">Downloads</a></li>
+
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="">API<b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'api-v1-root' %}">Browsable API</a></li>
+            <li><a href="{% url 'api-docs' %}">API Documentation</a></li>
+          </ul>
+        </li>
+
         <li class="dropdown">
           <a href="{% url 'help' %}">Help</a>
         </li>
