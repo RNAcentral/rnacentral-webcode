@@ -26,17 +26,22 @@ RNAcentral
 
 {% block content %}
 
-  <div class="row well well-sm homepage-callout">
-    <h2 class="text-center">
-      RNAcentral is a database of non-coding RNA sequences
-    </h2>
+  <div class="row well well-sm homepage-callout" id="homepage-callout">
 
-    <p class="text-center">
-      A <strong>single entry point</strong> for searching multiple ncRNA databases.
-      <strong>Unique accessions</strong> for all sequences.
-      <br>
-      <a class="text-muted small margin-left-5px" href="{% url 'about' %}">More about RNAcentral &rarr;</a>
-    </p>
+    <div class="homepage-callout-overlay">
+      <h2 class="text-center">
+        Comprehensive database of non-coding RNA sequences
+      </h2>
+
+      <p class="text-center">
+        A <strong>single entry point</strong>
+        for searching multiple ncRNA databases
+        and <strong>unique accessions</strong> for all sequences
+        <br>
+        <a href="{% url 'about' %}" style="">More about RNAcentral &rarr;</a>
+      </p>
+    </div>
+
   </div>
 
   <div class="row">

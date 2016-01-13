@@ -1096,7 +1096,22 @@ textarea {
 }
 
 .homepage-callout {
+  background-image: url('../img/dna-sequence.jpg');
   font-size: 18px;
+  padding: 30px;
+}
+
+.homepage-callout-overlay {
+  background: whitesmoke;
+  color: black;
+  opacity: 0.7;
+  padding: 15px;
+}
+
+.homepage-callout-overlay h2 {
+  color: black;
+  font-weight: bolder;
+  letter-spacing: 0.1em;
 }
 
 .twitter-follow-button-list {
