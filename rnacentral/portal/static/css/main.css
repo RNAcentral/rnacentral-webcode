@@ -974,8 +974,8 @@ textarea {
 
 /* Custom, iPhone Retina */
 @media only screen and (min-width : 320px) {
-  .expert-db-card .panel-body {
-    height: 150px;
+  .expert-db-card .panel {
+    height: 160px;
   }
 
   .expert-db-logo img {
@@ -986,8 +986,8 @@ textarea {
 
 /* Extra Small Devices, Phones */
 @media only screen and (min-width : 480px) {
-  .expert-db-card .panel-body {
-    height: 70px;
+  .expert-db-card .panel {
+    height: 160px;
   }
 
   .expert-db-logo img {
@@ -998,8 +998,8 @@ textarea {
 
 /* Small Devices, Tablets */
 @media only screen and (min-width : 768px) {
-  .expert-db-card .panel-body {
-    height: 110px;
+  .expert-db-card .panel {
+    height: 250px;
   }
 
   .expert-db-logo img {
@@ -1010,8 +1010,8 @@ textarea {
 
 /* Medium Devices, Desktops */
 @media only screen and (min-width : 992px) {
-  .expert-db-card .panel-body {
-    height: 130px;
+  .expert-db-card .panel {
+    height: 180px;
   }
 
   .sequences-label {
@@ -1027,7 +1027,7 @@ textarea {
 
 /* Large Devices, Wide Screens */
 @media only screen and (min-width : 1200px) {
-  .expert-db-card .panel-body {
+  .expert-db-card .panel {
     height: 170px;
   }
 
