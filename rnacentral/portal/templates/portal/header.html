@@ -29,7 +29,7 @@ limitations under the License.
         <form novalidate name="queryForm" class="global-search" ng-submit="submit_query()">
           <fieldset>
           <div class="form-group" ng-class="(query.submitted && queryForm.$invalid) ? 'has-error' : ''">
-            <div class="input-group">
+            <div class="input-group input-group-lg">
               <input type="text"
                      class="form-control"
                      id="query-text"
@@ -43,12 +43,12 @@ limitations under the License.
                      required>
               <div class="input-group-btn">
                 <button type="submit" class="btn btn-primary">
-                  <i class="fa fa-search"></i>
+                  <i class="fa fa-search"></i> Search
                 </button>
               </div><!-- /input-group-btn -->
             </div><!--input-group -->
             <span class="help-block example-searches">
-              <small>
+
                 <i>
                   Examples:
                   <a class="help" data-placement="bottom" title="Search by gene name" href="" rel="nofollow" ng-click="meta_search('HOTAIR')">HOTAIR</a>,
@@ -57,7 +57,7 @@ limitations under the License.
                   <a class="help" data-placement="bottom" title="Search by Expert Database" href="" rel="nofollow" ng-click="meta_search('expert_db:&quot;mirbase&quot;')">miRBase</a>,
                   <a class="help" data-placement="bottom" title="Search by external identifiers" href="" rel="nofollow" ng-click="meta_search('4V4Q')">4V4Q</a>
                 </i>
-              </small>
+
             </span>
             <label class="control-label ng-cloak has-error"
                    for="query-text" ng-show="query.submitted && (queryForm.text.$error.required || queryForm.text.$error.minlength)"

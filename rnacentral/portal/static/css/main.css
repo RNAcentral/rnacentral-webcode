@@ -84,7 +84,6 @@ body {
 }
 
 .rnacentral-masthead .help-block {
-  margin-top: 0;
   margin-bottom: 0;
 }
 
@@ -148,7 +147,7 @@ body {
 
 .rnacentral-header-logo {
 	margin-top: 15px;
-	width: 300px;
+	width: 400px;
 }
 
 div#local-search form fieldset, form#local-search fieldset {
