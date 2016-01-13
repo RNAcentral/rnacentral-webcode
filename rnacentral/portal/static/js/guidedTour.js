@@ -155,7 +155,12 @@ var guidedTour = function() {
 
 guidedTour.prototype.initialize = function() {
 
-	var obj = this;
+		var obj = this;
+
+		// detect if a multi-page tour is already in progress
+		if (hopscotch.getState() === "homepage-tour:4") {
+			hopscotch.startTour(obj.tour, 0);
+		}
 
     $('#guided-tour').click(function(){
       var startingStep = 0; // first step
