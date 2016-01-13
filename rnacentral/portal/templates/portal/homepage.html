@@ -40,6 +40,10 @@ RNAcentral
         <br>
         <a href="{% url 'about' %}" style="">More about RNAcentral &rarr;</a>
       </p>
+
+      <p class="text-center">
+        First time? <a class="btn btn-success" id="guided-tour">Take a tour</a>
+      </p>
     </div>
 
   </div>
@@ -53,7 +57,7 @@ RNAcentral
           <p class="text-center">
             Filter and compare data from multiple resources using faceted search
           </p>
-          <a class="btn btn-primary" href="/search?q=RNA">Browse sequences</a>
+          <a class="btn btn-primary" href="/search?q=RNA" id="btn-browse-sequences">Browse sequences</a>
         </div>
       </div>
     </div>
@@ -67,7 +71,7 @@ RNAcentral
             <br>
             or look up your sequence in RNAcentral
           </p>
-          <a class="btn btn-primary" href="{% url 'nhmmer-sequence-search' %}" role="button">Search by sequence</a>
+          <a class="btn btn-primary" id="btn-sequence-search" href="{% url 'nhmmer-sequence-search' %}" role="button">Search by sequence</a>
         </div>
       </div>
     </div>
@@ -79,7 +83,7 @@ RNAcentral
           <p class="text-center">
             Explore RNAcentral sequences in your favorite genome locations
           </p>
-          <a class="btn btn-primary" href="{% url 'genome-browser' %}" role="button">Browse genomes</a>
+          <a class="btn btn-primary" id="btn-genome-browser" href="{% url 'genome-browser' %}" role="button">Browse genomes</a>
         </div>
       </div>
     </div>
@@ -220,6 +224,55 @@ RNAcentral
       ],
     });
   });
+
+  /**
+   * Hopscotch guided tour.
+   */
+  $('#guided-tour').click(function(){
+    var Tour = {
+  		id: 'homepage-tour',
+  		showPrevButton: true,
+  		scrollDuration: 700,
+  		steps: [
+  			{
+  				title: 'Search by anything',
+  				content: "You can search by <em>gene name</em>, <em>species</em>, <em>accession</em> or any other keyword. <a href={% url 'help-metadata-search' %}>Explore examples</a>",
+  				target: 'query-text',
+  				placement: 'bottom',
+  			},
+        {
+  				title: 'Explore RNAcentral for yourself',
+  				content: 'Use the Browse button to explore all RNAcentral sequences using <strong>faceted search</strong>',
+  				target: 'btn-browse-sequences',
+  				placement: 'top',
+  			},
+        {
+  				title: 'Search all sequences at once',
+  				content: 'For the first time, you can search data from multiple databases in one go',
+  				target: 'btn-sequence-search',
+  				placement: 'top',
+  			},
+        {
+  				title: 'Navigate to your favourite genome region',
+  				content: 'View RNAcentral sequences alongside genes and transcripts from <a href="http://ensembl.org">Ensembl</a> and <a href="http://ensemblgenomes.org">Ensembl Genomes</a>',
+  				target: 'btn-genome-browser',
+  				placement: 'top',
+          multipage: true,
+          onNext: function() {
+            window.location = '/rna/URS000025784F';
+          }
+  			},
+        {
+          title: '',
+          content: '',
+          target: '',
+          placement: ''
+        }
+      ]
+    }
+    hopscotch.startTour(Tour, 0);
+  });
+
 </script>
 
 <script type="application/ld+json">
