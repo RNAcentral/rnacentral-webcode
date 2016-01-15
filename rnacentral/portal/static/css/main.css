@@ -942,8 +942,8 @@ textarea {
 }
 .expert-db-card:hover a,
 .hvr-grow:hover, .hvr-grow:focus, .hvr-grow:active {
-  -webkit-transform: scale(1.06);
-  transform: scale(1.06);
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
   -webkit-transition-duration: 0.5s;
   transition-duration: 0.5s;
 }
