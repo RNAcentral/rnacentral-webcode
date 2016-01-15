@@ -999,10 +999,6 @@ textarea {
 
 /* Extra Small Devices, Phones */
 @media only screen and (min-width : 480px) {
-  .expert-db-card {
-    height: 160px;
-  }
-
   .expert-db-logo img {
     max-width: 130px;
     max-height: 100px;
@@ -1076,35 +1072,12 @@ textarea {
   margin-left: 0px;
 }
 
-.expert-db-card-header {
-  margin-left: 10px;
-  margin-top: 10px;
-  display: inline-block;
-}
-
-.expert-db-card-header a {
-  font-size: 18px;
-}
-
 .expert-db-card-logo {
   display: inline;
 }
 
 .expert-db-card .panel-body {
   padding: 10px;
-}
-
-.expert-db-card .panel-footer {
-  padding: 6px 0px 6px 10px;
-  font-size: 75%;
-}
-
-.homepage-panel .panel-body {
-  padding: 10px 5px;
-}
-
-.homepage-panel .panel {
-  margin-bottom: 10px;
 }
 
 .homepage-callout {
