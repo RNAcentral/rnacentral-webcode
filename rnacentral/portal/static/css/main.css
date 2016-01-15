@@ -973,7 +973,7 @@ textarea {
 
 /* Custom, iPhone Retina */
 @media only screen and (min-width : 320px) {
-  .expert-db-card .panel {
+  .expert-db-card {
     height: 160px;
   }
 
@@ -985,7 +985,7 @@ textarea {
 
 /* Extra Small Devices, Phones */
 @media only screen and (min-width : 480px) {
-  .expert-db-card .panel {
+  .expert-db-card {
     height: 160px;
   }
 
@@ -997,7 +997,7 @@ textarea {
 
 /* Small Devices, Tablets */
 @media only screen and (min-width : 768px) {
-  .expert-db-card .panel {
+  .expert-db-card {
     height: 250px;
   }
 
@@ -1009,7 +1009,7 @@ textarea {
 
 /* Medium Devices, Desktops */
 @media only screen and (min-width : 992px) {
-  .expert-db-card .panel {
+  .expert-db-card {
     height: 180px;
   }
 
@@ -1026,7 +1026,7 @@ textarea {
 
 /* Large Devices, Wide Screens */
 @media only screen and (min-width : 1200px) {
-  .expert-db-card .panel {
+  .expert-db-card {
     height: 170px;
   }
 
