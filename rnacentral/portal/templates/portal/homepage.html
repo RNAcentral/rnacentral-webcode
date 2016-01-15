@@ -38,7 +38,7 @@ RNAcentral
         for searching multiple ncRNA databases
         and getting <strong>unique accessions</strong> for RNA sequences
         <br>
-        <a href="{% url 'about' %}" style="">More about RNAcentral &rarr;</a>
+        <a href="{% url 'about' %}">More about RNAcentral &rarr;</a>
       </p>
 
       <p class="text-center">
@@ -98,7 +98,7 @@ RNAcentral
 
     <div id="expert-databases">
       {% for database in context.databases %}
-        <div class="hvr-grow" style="margin-left:35px;">
+        <div class="hvr-grow">
           <a class="help expert-db-logo" href="{% url 'expert-database' database.label %}" title="{{database.abbreviation}}">
             <img class="img-rounded desaturate" data-lazy="{% static 'img/expert-db-logos' %}/{{database.label}}.png" alt="{{database.name}} logo">
           </a>

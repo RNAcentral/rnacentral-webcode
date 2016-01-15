@@ -966,6 +966,10 @@ textarea {
   z-index: 1000;
 }
 
+.slick-slide {
+  margin-left: 35px;
+}
+
 .desaturate {
   -webkit-filter: grayscale(60%);
   filter: grayscale(60%);
@@ -987,8 +991,8 @@ textarea {
 
 /* Custom, iPhone Retina */
 @media only screen and (min-width : 320px) {
-  .expert-db-card {
-    height: 160px;
+  .slick-slide {
+    margin-left: 0px;
   }
 
   .expert-db-logo img {
