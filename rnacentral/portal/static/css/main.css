@@ -941,6 +941,7 @@ textarea {
   transition-property: transform;
 }
 .expert-db-card:hover a,
+.homepage-callout-overlay:hover .btn,
 .hvr-grow:hover, .hvr-grow:focus, .hvr-grow:active {
   -webkit-transform: scale(1.1);
   transform: scale(1.1);
