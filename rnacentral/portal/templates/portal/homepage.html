@@ -92,20 +92,37 @@ RNAcentral
 
   <div class="row well">
 
-    <p class="lead text-center">
-      Bringing together 22 <a href="{% url 'expert-databases' %}">Expert Databases</a>
+    <p class="lead text-center margin-bottom-0px">
+      {{ context.databases|length }} participating ncRNA databases
     </p>
 
     <div id="expert-databases">
       {% for database in context.databases %}
-        <div>
-          <a class="help expert-db-logo" href="{% url 'expert-database' database.label %}" title="{{database.name}} Expert Database">
-            <img class="img-rounded hvr-grow desaturate" data-lazy="{% static 'img/expert-db-logos' %}/{{database.label}}.png" alt="{{database.name}} logo">
+        <div class="hvr-grow" style="margin-left:35px;">
+          <a class="help expert-db-logo" href="{% url 'expert-database' database.label %}" title="{{database.abbreviation}}">
+            <img class="img-rounded desaturate" data-lazy="{% static 'img/expert-db-logos' %}/{{database.label}}.png" alt="{{database.name}} logo">
           </a>
-          <a href="{% url 'unique-rna-sequence' database.examples|first %}" id="{{database.label}}-examples" class="small">Example</a>
+          <p class="margin-top-5px text-center">
+          <a href="" rel="nofollow" ng-click="meta_search('expert_db:%22{{database.name}}%22')">
+            <em>{{database.num_sequences|intword|intcomma}}</em>
+            sequences
+          </a>
+          <br>
+          <a href="{% url 'unique-rna-sequence' database.examples|first %}" id="{{database.label}}-examples">Example</a>
+          <br>
+          {% if database.status == 'new' %}
+            <span class="label label-info help" title="New Expert Database" data-placement="bottom">New</span>
+          {% elif database.status == 'updated' %}
+            <span class="label label-primary help" title="New data imported" data-placement="bottom">Updated</span>
+          {% endif %}
+          </p>
         </div>
       {% endfor %}
     </div>
+
+    <p class="text-center margin-top-5px">
+      <a href="{% url 'expert-databases' %}">View all Expert Databases &rarr;</a>
+    </p>
 
   </div>
 

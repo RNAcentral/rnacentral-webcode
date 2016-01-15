@@ -954,7 +954,15 @@ textarea {
 }
 
 .slick-dots li button::before {
-  font-size: 30px;
+  font-size: 25px;
+}
+
+.slick-track {
+  padding-top: 50px;
+}
+
+.slick-arrow {
+  z-index: 1000;
 }
 
 .desaturate {
@@ -965,6 +973,11 @@ textarea {
 .expert-db-logo img {
   margin-top: 3px;
   margin-right: 3px;
+}
+
+.slick-track img {
+  display: block;
+  margin: auto;
 }
 
 .expert-db-card h2 {
@@ -1038,7 +1051,6 @@ textarea {
 
 #expert-databases {
   visibility: hidden;
-  background-color: #f4f4f4;
 }
 
 #expert-databases.slick-initialized {
