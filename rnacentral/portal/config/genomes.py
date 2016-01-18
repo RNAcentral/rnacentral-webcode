@@ -24,9 +24,9 @@ genomes = [
         'taxid': 9606,
         'division': 'Ensembl',
         'example_location': {
-            'chromosome': 6,
-            'start': 28607120,
-            'end': 28607262,
+            'chromosome': 'X',
+            'start': 73792205,
+            'end': 73829231,
         },
     },
     {
