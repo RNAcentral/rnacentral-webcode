@@ -51,7 +51,7 @@ RNAcentral
   <div class="row">
 
     <div class="col-md-4 col-sm-4 col-xs-12">
-      <div class="panel panel-default expert-db-card">
+      <div class="panel panel-default homepage-card">
         <div class="panel-body text-center">
           <h2 class="text-center"><i class="fa fa-search"></i> Text search</h2>
           <p class="text-center">
@@ -63,7 +63,7 @@ RNAcentral
     </div>
 
     <div class="col-md-4 col-sm-4 col-xs-12">
-      <div class="panel panel-default expert-db-card">
+      <div class="panel panel-default homepage-card">
         <div class="panel-body text-center">
           <h2 class="text-center"><i class="fa fa-puzzle-piece"></i> Sequence search</h2>
           <p class="text-center">
@@ -77,7 +77,7 @@ RNAcentral
     </div>
 
     <div class="col-md-4 col-sm-4 col-xs-12">
-      <div class="panel panel-default expert-db-card">
+      <div class="panel panel-default homepage-card">
         <div class="panel-body text-center">
           <h2 class="text-center"><i class="fa fa-map-marker"></i> Genome browser</h2>
           <p class="text-center">
@@ -98,7 +98,7 @@ RNAcentral
 
     <div id="expert-databases">
       {% for database in context.databases %}
-        <div class="hvr-grow help expert-db-widget" title="{% if database.abbreviation %}{{ database.abbreviation }}{% else %}{{ database.name }}{% endif %}">
+        <div class="hvr-grow help expert-db-card" title="{% if database.abbreviation %}{{ database.abbreviation }}{% else %}{{ database.name }}{% endif %}">
           <a class="expert-db-logo" href="{% url 'expert-database' database.label %}">
             <img class="img-rounded desaturate" data-lazy="{% static 'img/expert-db-logos' %}/{{database.label}}.png" alt="{{database.name}} logo">
           </a>

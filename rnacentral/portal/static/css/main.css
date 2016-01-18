@@ -940,7 +940,7 @@ textarea {
   -webkit-transition-property: transform;
   transition-property: transform;
 }
-.expert-db-card:hover a,
+.homepage-card:hover a,
 .homepage-callout-overlay:hover .btn,
 .hvr-grow:hover, .hvr-grow:focus, .hvr-grow:active {
   -webkit-transform: scale(1.1);
@@ -985,12 +985,12 @@ textarea {
   margin: auto;
 }
 
-.expert-db-card h2 {
+.homepage-card h2 {
   margin-top: 5px;
 }
 
-.expert-db-widget {
-  padding-top:10px;
+.expert-db-card {
+  padding-top: 10px;
 }
 
 /* Custom, iPhone Retina */
@@ -1015,7 +1015,7 @@ textarea {
 
 /* Small Devices, Tablets */
 @media only screen and (min-width : 768px) {
-  .expert-db-card {
+  .homepage-card {
     height: 250px;
   }
 
@@ -1027,7 +1027,7 @@ textarea {
 
 /* Medium Devices, Desktops */
 @media only screen and (min-width : 992px) {
-  .expert-db-card {
+  .homepage-card {
     height: 180px;
   }
 
@@ -1044,7 +1044,7 @@ textarea {
 
 /* Large Devices, Wide Screens */
 @media only screen and (min-width : 1200px) {
-  .expert-db-card {
+  .homepage-card {
     height: 170px;
   }
 
@@ -1084,7 +1084,7 @@ textarea {
   display: inline;
 }
 
-.expert-db-card .panel-body {
+.homepage-card .panel-body {
   padding: 10px;
 }
 
