@@ -55,7 +55,8 @@ class RnaXmlExporter(OracleConnection):
                   t1.created = t4.id AND
                   t1.last = t5.id AND
                   t1.upi = t6.upi AND
-                  t1.upi = :upi
+                  t1.upi = :upi AND
+                  t1.taxid = :taxid
             """
             self.cursor.prepare(sql)
 
@@ -107,7 +108,7 @@ class RnaXmlExporter(OracleConnection):
         for field in self.redundant_fields + self.data_fields:
             self.data[field] = set()
 
-    def retrieve_data_from_database(self, upi):
+    def retrieve_data_from_database(self, upi, taxid):
         """
         Some data is retrieved directly from the database because
         django ORM creates too much overhead.
@@ -169,7 +170,7 @@ class RnaXmlExporter(OracleConnection):
                 rna_type = result['feature_name']
             self.data['rna_type'].add(rna_type.replace('_', ' '))
 
-        self.cursor.execute(None, {'upi': upi})
+        self.cursor.execute(None, {'upi': upi, 'taxid': taxid})
         for row in self.cursor:
             result = self.row_to_dict(row)
             store_redundant_fields()
@@ -267,7 +268,7 @@ class RnaXmlExporter(OracleConnection):
                                     distinct_species=distinct_species)
         return description_line
 
-    def store_literature_references(self, rna):
+    def store_literature_references(self, rna, taxid):
         """
         Store literature reference data.
         """
@@ -284,19 +285,18 @@ class RnaXmlExporter(OracleConnection):
                 if location:
                     self.data['journal'].add(location)
 
-        for xref in rna.xrefs.iterator():
-            for ref in xref.accession.refs.all():
-                self.data['pub_id'].add(ref.data.id)
-                if ref.data.authors:
-                    self.data['authors'].add(ref.data.authors)
-                if ref.data.title:
-                    self.data['pub_title'].add(saxutils.escape(ref.data.title))
-                if ref.data.pubmed:
-                    self.data['xrefs'].add(('PUBMED', ref.data.pubmed))
-                if ref.data.doi:
-                    self.data['xrefs'].add(('DOI', ref.data.doi))
-                if ref.data.location:
-                    process_location(saxutils.escape(ref.data.location))
+        for ref in rna.get_publications(taxid=taxid):
+            self.data['pub_id'].add(ref.id)
+            if ref.authors:
+                self.data['authors'].add(ref.authors)
+            if ref.title:
+                self.data['pub_title'].add(saxutils.escape(ref.title))
+            if ref.pubmed:
+                self.data['xrefs'].add(('PUBMED', ref.pubmed))
+            if ref.doi:
+                self.data['xrefs'].add(('DOI', ref.doi))
+            if ref.location:
+                process_location(saxutils.escape(ref.location))
 
     def store_popular_species(self):
         """
@@ -331,7 +331,7 @@ class RnaXmlExporter(OracleConnection):
         self.data['length'] = rna.length
         self.data['has_genomic_coordinates'] = rna.has_genomic_coordinates()
 
-    def format_xml_entry(self):
+    def format_xml_entry(self, taxid):
         """
         Format self.data as an xml entry.
         Using Django templates is slower than constructing the entry manually.
@@ -388,8 +388,8 @@ class RnaXmlExporter(OracleConnection):
             return re.sub('\n +', '\n', text) # delete whitespace at the beginning of lines
 
         text = """
-        <entry id="{upi}">
-            <name>Unique RNA Sequence {upi}</name>
+        <entry id="{upi}_{taxid}">
+            <name>Unique RNA Sequence {upi}_{taxid}</name>
             <description>{description}</description>
             <dates>
                 <date value="{first_seen}" type="first_seen" />
@@ -446,7 +446,8 @@ class RnaXmlExporter(OracleConnection):
                    pub_title=format_field('pub_title'),
                    pub_id=format_field('pub_id'),
                    popular_species=format_field('popular_species'),
-                   boost=wrap_in_field_tag('boost', self.data['boost']))
+                   boost=wrap_in_field_tag('boost', self.data['boost']),
+                   taxid=taxid)
         return format_whitespace(text)
 
     ##################
@@ -457,10 +458,14 @@ class RnaXmlExporter(OracleConnection):
         """
         Public method for outputting an xml dump entry for a given UPI.
         """
-        self.reset()
-        self.store_rna_properties(rna)
-        self.retrieve_data_from_database(rna.upi)
-        self.store_literature_references(rna)
-        self.store_popular_species()
-        self.compute_boost_value()
-        return self.format_xml_entry()
+        taxids = rna.xrefs.values_list('taxid', flat=True).distinct()
+        text = ''
+        for taxid in taxids:
+            self.reset()
+            self.store_rna_properties(rna)
+            self.retrieve_data_from_database(rna.upi, taxid)
+            self.store_literature_references(rna, taxid)
+            self.store_popular_species()
+            self.compute_boost_value()
+            text += self.format_xml_entry(taxid)
+        return text
