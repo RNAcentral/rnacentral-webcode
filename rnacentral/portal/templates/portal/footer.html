@@ -40,7 +40,7 @@ limitations under the License.
         <div class="col-md-3 col-sm-6 col-xs-6">
           <ul>
           {% for expert_db in expert_db_column %}
-              <li><a class="no-icon" href="{{ expert_db.url }}" target="_blank">{{ expert_db.name }}</a></li>
+              <li><a class="no-icon" href="{% if expert_db.imported %}{% url 'expert-database' expert_db.label %}{% else %}{{ expert_db.url }}{% endif %}">{{ expert_db.name }}</a></li>
           {% endfor %}
           </ul>
         </div>
