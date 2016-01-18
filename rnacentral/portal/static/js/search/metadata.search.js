@@ -135,6 +135,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
     this.search = function(query, start) {
         start = start || 0;
 
+        hopscotch.endTour(); // end guided tour when a search is launched
         display_search_interface();
         display_spinner();
         update_page_title();
