@@ -94,7 +94,7 @@ RNAcentral
 
     <div id="expert-databases">
       {% for database in context.databases %}
-        <div class="hvr-grow help expert-db-card" title="{% if database.abbreviation %}{{ database.abbreviation }}{% else %}{{ database.name }}{% endif %}">
+        <div class="hvr-grow help expert-db-card" data-container="body" title="{% if database.abbreviation %}{{ database.abbreviation }}{% else %}{{ database.name }}{% endif %}">
           <a class="expert-db-logo" href="{% url 'expert-database' database.label %}">
             <img class="img-rounded desaturate" data-lazy="{% static 'img/expert-db-logos' %}/{{database.label}}.png" alt="{{database.name}} logo">
           </a>

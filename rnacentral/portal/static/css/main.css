@@ -951,7 +951,7 @@ textarea {
 
 .slick-dots {
   position: inherit;
-  margin-top: 15px;
+  margin-top: 5px;
 }
 
 .slick-dots li button::before {
@@ -959,7 +959,7 @@ textarea {
 }
 
 .slick-track {
-  padding-top: 50px;
+  padding-top: 20px;
 }
 
 .slick-arrow {
