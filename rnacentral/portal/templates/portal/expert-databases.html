@@ -49,7 +49,7 @@ RNAcentral Expert Databases
         {% for expert_db in context.expert_dbs %}
           <tr>
             <td>
-              <a href="{{ expert_db.url }}" target="_blank">{{ expert_db.name}}</a>
+              <a href="{% if expert_db.imported %}{% url 'expert-database' expert_db.label %}{% else %}{{ expert_db.url }}{% endif %}">{{ expert_db.name}}</a>
             </td>
             <td style="text-align: center">
               {% if expert_db.imported %}
