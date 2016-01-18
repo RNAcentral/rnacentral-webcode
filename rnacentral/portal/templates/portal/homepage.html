@@ -30,20 +30,15 @@ RNAcentral
 
     <div class="homepage-callout-overlay">
       <h2 class="text-center">
-        Comprehensive database of non-coding RNA sequences
+        RNAcentral: The non-coding RNA sequence database
       </h2>
-
-      <p class="text-center">
-        <strong>Search and compare</strong> multiple ncRNA resources in one place.
-        Get <strong>unique accessions</strong> for RNA sequences.
-      </p>
 
       <p class="text-center">
         <a href="{% url 'about' %}">More about RNAcentral &rarr;</a>
       </p>
 
       <p class="text-center">
-        <a class="btn btn-success margin-left-5px" id="guided-tour">Take a tour</a>
+        <a class="btn btn-success" id="guided-tour">Take a tour</a>
       </p>
     </div>
 
@@ -91,7 +86,7 @@ RNAcentral
 
   </div>
 
-  <div class="row well">
+  <div class="row well well-sm">
 
     <p class="lead text-center margin-bottom-0px">
       {{ context.databases|length }} participating ncRNA databases
@@ -120,10 +115,6 @@ RNAcentral
         </div>
       {% endfor %}
     </div>
-
-    <p class="text-center margin-top-5px">
-      <a href="{% url 'expert-databases' %}">View all Expert Databases &rarr;</a>
-    </p>
 
   </div>
 
@@ -277,14 +268,14 @@ RNAcentral
   				placement: 'bottom',
   			},
         {
-  				title: 'Explore with facets',
-  				content: 'Use the Browse button to explore all RNAcentral sequences using <strong>faceted search</strong>',
+  				title: 'Use search facets to explore the data',
+  				content: 'Browse all RNAcentral sequences using <strong>faceted search</strong>',
   				target: 'btn-browse-sequences',
   				placement: 'top',
   			},
         {
   				title: 'Search for similar sequences across databases',
-  				content: 'For the first time ever, you can search data from multiple RNA databases in one go',
+  				content: 'For the first time, you can search data from multiple RNA databases in one go',
   				target: 'btn-sequence-search',
   				placement: 'top',
   			},
