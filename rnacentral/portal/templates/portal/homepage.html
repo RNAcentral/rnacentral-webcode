@@ -98,8 +98,8 @@ RNAcentral
 
     <div id="expert-databases">
       {% for database in context.databases %}
-        <div class="hvr-grow">
-          <a class="help expert-db-logo" href="{% url 'expert-database' database.label %}" title="{{database.abbreviation}}">
+        <div class="hvr-grow help expert-db-widget" title="{% if database.abbreviation %}{{ database.abbreviation }}{% else %}{{ database.name }}{% endif %}">
+          <a class="expert-db-logo" href="{% url 'expert-database' database.label %}">
             <img class="img-rounded desaturate" data-lazy="{% static 'img/expert-db-logos' %}/{{database.label}}.png" alt="{{database.name}} logo">
           </a>
           <p class="margin-top-5px text-center">
@@ -111,9 +111,9 @@ RNAcentral
           <a href="{% url 'unique-rna-sequence' database.examples|first %}" id="{{database.label}}-examples">Example</a>
           <br>
           {% if database.status == 'new' %}
-            <span class="label label-info help" title="New Expert Database" data-placement="bottom">New</span>
+            <span class="label label-info help" data-placement="bottom">New</span>
           {% elif database.status == 'updated' %}
-            <span class="label label-primary help" title="New data imported" data-placement="bottom">Updated</span>
+            <span class="label label-primary help" data-placement="bottom">Updated</span>
           {% endif %}
           </p>
         </div>
