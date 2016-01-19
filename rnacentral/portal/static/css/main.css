@@ -1089,7 +1089,8 @@ textarea {
 }
 
 .homepage-callout {
-  background-image: url('../img/dna-sequence.jpg');
+  background-image: url('../img/homepage-banner.png');
+  background-size: cover;
   font-size: 18px;
   padding: 30px;
 }
@@ -1102,7 +1103,7 @@ textarea {
 }
 
 .homepage-callout-overlay h2 {
-  color: black;
+  color: #008080; /* teal */
   font-weight: bolder;
   letter-spacing: 0.1em;
 }
