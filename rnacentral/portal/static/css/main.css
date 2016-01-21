@@ -34,6 +34,7 @@ Master Stylesheet for the RNAcentral Portal
 5.11 Genoverse styling
 5.12 Homepage
 5.13 D3 nhmmer dashboard graph
+5.14 Doorbell feedback
 
 -------------------------------------------------------------------*/
 
@@ -1132,4 +1133,11 @@ textarea {
     stroke: #808080; /*gray*/
     stroke-width: 1;
     shape-rendering: crispEdges;
+}
+
+/*------------------------------------------------------------------
+[5.14 Doorbell feedback]
+*/
+#doorbell-button {
+  background: #428bca;
 }
