@@ -33,9 +33,9 @@ Contact us
       {{ form.non_field_errors }}
       <div class="form-group {% if form.subject.errors %} has-error {% endif %}" >
         {% if form.subject.errors %}
-            <label class="control-label" for="emailSubject">Email subject ({{ form.subject.errors|striptags }})</label>
+            <label class="control-label" for="emailSubject">Subject ({{ form.subject.errors|striptags }})</label>
         {% else %}
-            <label for="emailSubject">Email subject</label>
+            <label for="emailSubject">Subject</label>
         {% endif %}
         <input type="text" autofocus class="form-control" name="subject" id="emailSubject" placeholder="" tabindex="1"
                {% if form.subject.errors %}value="{{ form.subject.value }}"{% endif %}>
@@ -43,9 +43,9 @@ Contact us
 
       <div class="form-group {% if form.message.errors %} has-error {% endif %}" >
         {% if form.message.errors %}
-            <label class="control-label" for="emailMessage">Your message ({{ form.message.errors|striptags }})</label>
+            <label class="control-label" for="emailMessage">Message ({{ form.message.errors|striptags }})</label>
         {% else %}
-            <label for="emailSubject">Your message</label>
+            <label for="emailSubject">Message</label>
         {% endif %}
         <textarea type="text" class="form-control" name="message" id="emailMessage" placeholder="" tabindex="2" rows="4">{% if form.message.errors %}{{ form.message.value }}{% endif %}</textarea>
         <p style="display: none;">
