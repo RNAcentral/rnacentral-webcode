@@ -21,35 +21,85 @@ About RNAcentral
 {% block content %}
 
 <div class="row">
-
   <div class="col-md-12">
     <h1><i class="fa fa-info-circle"></i> About RNAcentral <a name="about-rnacentral" href="#about-rnacentral" class="text-muted smaller"><i class="fa fa-link"></i></a></h1>
-  <p>
-      RNAcentral is an open resource that offers integrated access to a <strong>comprehensive and up-to-date</strong> set of ncRNA sequences. These sequences are provided by a collaborating group of <a href="/expert-databases">expert databases</a> and supplemented by sequences from the International Nucleotide Sequence Database archives (<a href="http://www.insdc.org/" target="_blank">INSDC</a>).
-      RNAcentral is described in a <em>Nucleic Acides Research</em> paper by <a href="http://nar.oxfordjournals.org/content/43/D1/D123.full" target="_blank">The RNAcentral Consortium, 2015</a>.
-  </p>
 
-  <p>
-      RNAcentral provides:
-      <ul>
-        <li>a set of non-coding RNA sequences with a <strong>consistent set of identifiers</strong></li>
-        <li>single entry point for <strong>searching multiple RNA databases</strong> at once</li>
-        <li>an integrated view of all types of non-coding RNAs for all species</li>
-      </ul>
-  </p>
+    <p>
+      RNAcentral is a public resource that offers integrated access to a <strong>comprehensive and up-to-date</strong> set of non-coding RNA sequences
+      provided by a collaborating group of <a href="/expert-databases">Expert Databases</a>.
+      The development of RNAcentral is coordinated by <a href="http://www.ebi.ac.uk" target="_blank">European Bioinformatics Institute</a>
+      and is funded by <a href="http://www.bbsrc.ac.uk/pa/grants/AwardDetails.aspx?FundingReference=BB/J019321/1">BBSRC</a>.
+    </p>
+  </div>
 
-  <p>
-      The development of RNAcentral is coordinated by <a href="http://www.ebi.ac.uk" target="_blank">European Bioinformatics Institute</a> and is funded by <a href="http://www.bbsrc.ac.uk/pa/grants/AwardDetails.aspx?FundingReference=BB/J019321/1">BBSRC</a>.
-  </p>
+</div>
 
-  <p>
-    <a href="http://www.ebi.ac.uk/" class="no-icon" target="_blank" title="European Bioinformatics Institute homepage">
-        <img src="{% static "img/logo/embl-ebi.jpg" %}" alt="EMBL-EBI logo" class="ebi-img">
-    </a>
-    <a href="http://www.bbsrc.ac.uk/" class="no-icon margin-left-5px" target="_blank" title="Biotechnology and Biological Sciences Research Council homepage">
-        <img src="{% static "img/logo/bbsrc.png" %}" alt="BBSRC logo" class="bbsrc-img">
-    </a>
-  </p>
+<div class="row">
+
+  <div class="col-md-12">
+    <div class="col-md-6">
+
+      <h3><i class="fa fa-exchange margin-right-5px"></i> Data integration</h3>
+
+      <p>
+        RNAcentral imports data from <strong>multiple RNA databases</strong> and enables integrated
+        <a href="{% url 'metadata-search' %}?q=RNA">text search</a>,
+        <a href="{% url 'nhmmer-sequence-search' %}">sequence similarity search</a>,
+        and <a href="{% url 'api-docs' %}">programmatic data access</a>.
+      </p>
+
+    </div>
+
+    <div class="col-md-6">
+      <h3><i class="fa fa-barcode margin-right-5px"></i> Stable identifiers</h3>
+
+      <p>
+        RNAcentral assigns <a href="{% url 'help' %}"#rnacentral-identifiers>unique identifiers</a> to every distinct sequence
+        and supports <strong>species-specific identifiers</strong> for referring to sequences in specific organisms.
+        <a href="http://blog.rnacentral.org/2015/02/rnacentral-release-2.html">More &rarr;</a>
+      </p>
+    </div>
+
+  </div>
+
+</div>
+
+<div class="row">
+
+  <div class="col-md-12">
+    <div class="col-md-6">
+
+      <h3><i class="fa fa-map-signs margin-right-5px"></i> Genomic mapping</h3>
+
+      <p>
+        Where possible, we map sequences to <strong>reference genomes</strong> from <a href="{% url 'help-genomic-mapping' %}">select species</a>.
+
+        You can use a <a href="{% url 'genome-browser' %}">genome browser</a> to browse all mapped sequences
+        or view individual sequences in their genomic context.
+      </p>
+
+      <p>
+        For example,
+        <button type="button" class="btn btn-primary btn-sm genoverse-xref help margin-right-5px" data-genomic-start="73792205" data-genomic-end="73829231" data-strand="1" data-chromosome="X" data-species="homo_sapiens" data-description="Homo sapiens TSIX transcript, XIST antisense RNA (TSIX), antisense RNA." data-species-label="Homo sapiens" title="" data-original-title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> view genomic location</button>
+        of human <a href="{% url 'unique-rna-sequence' 'URS000025784F'%}">TSIX lncRNA</a>
+      </p>
+
+    </div>
+
+    <div class="col-md-6">
+
+      <h3><i class="fa fa-file-text margin-right-5px"></i> Additinal annotations</h3>
+
+      <p>
+        Currently we import <strong>modified nucleotides</strong> from Modomics and PDB
+        (for example, <a href="{% url 'unique-rna-sequence' 'URS00001BBAFC' %}">this <em>E.coli</em> tRNA</a>
+        is annotated by both databases).
+      </p>
+
+      <p>
+        We aim to include intermolecular interactions and high-quality secondary structures soon.
+      </p>
+    </div>
 
   </div>
 
@@ -57,43 +107,49 @@ About RNAcentral
 
 <div class="row">
   <div class="col-md-12">
-    <h2><i class="fa fa-line-chart"></i> Number of sequences over time <a name="growth-chart" href="#growth-chart" class="text-muted smaller"><i class="fa fa-link"></i></a></h2>
-  </div>
-
-  <div class="col-md-7">
-    <div class="panel panel-default overflow-auto">
-      <div class="panel-body">
-        <div id="sequence-graph" class="nhmmer-dashboard-graph"></div>
+    <div>
+      <div class="wrap genoverse-wrap">
+        <div id="genoverse"></div>
       </div>
     </div>
-  </div>
-
-  <div class="col-md-4">
-    <p class="well">
-      <i class="fa fa-lightbulb-o fa-3x pull-left"></i>
-      Hover over the chart to see the number of sequences in each release
-    </p>
   </div>
 </div>
 
 <div class="row">
-  <div class="col-md-12">
-    <h2><i class="fa fa-database"></i> Imported databases over time <a name="databases-chart" href="#databases-chart" class="text-muted smaller"><i class="fa fa-link"></i></a></h2>
-  </div>
 
-  <div class="col-md-7">
-    <div class="panel panel-default overflow-auto">
-      <div class="panel-body">
-        <div id="database-graph" class="nhmmer-dashboard-graph"></div>
+  <div class="col-md-12">
+    <h2><i class="fa fa-line-chart"></i> Database growth <a name="growth-chart" href="#growth-chart" class="text-muted smaller"><i class="fa fa-link"></i></a></h2>
+
+    <ul class="nav nav-tabs" role="tablist">
+      <li role="presentation" class="active"><a href="" data-target="#sequences" aria-controls="sequences" role="tab" data-toggle="tab">Number of sequences over time</a></li>
+      <li role="presentation"><a href="" data-target="#databases" aria-controls="databases" role="tab" data-toggle="tab">Number of databases over time</a></li>
+    </ul>
+
+    <div class="tab-content col-md-7">
+      <div role="tabpanel" class="tab-pane active" id="sequences">
+        <div class="panel panel-default overflow-auto">
+          <div class="panel-body">
+            <div id="sequence-graph" class="nhmmer-dashboard-graph"></div>
+          </div>
+        </div>
+      </div>
+
+      <div role="tabpanel" class="tab-pane" id="databases">
+        <div class="panel panel-default overflow-auto">
+          <div class="panel-body">
+            <div id="database-graph" class="nhmmer-dashboard-graph"></div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="col-md-4">
-    <p class="well">
-      <i class="fa fa-lightbulb-o fa-3x pull-left"></i>
-      Hover over the chart to see the number of Expert Databases in each release.
-    </p>
+    <div class="col-md-4">
+      <p class="well">
+        <i class="fa fa-lightbulb-o fa-3x pull-left"></i>
+        Hover over the chart to see the number of sequences in each release
+      </p>
+    </div>
+
   </div>
 </div>
 
