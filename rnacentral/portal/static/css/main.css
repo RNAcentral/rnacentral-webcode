@@ -1138,6 +1138,10 @@ textarea {
 /*------------------------------------------------------------------
 [5.14 Doorbell feedback]
 */
-#doorbell-button {
-  background: #428bca;
+#doorbell-form legend {
+  background: #FFFFFF;
+}
+
+#doorbell-form textarea {
+  margin-top: 5px;
 }

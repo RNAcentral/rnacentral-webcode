@@ -194,11 +194,21 @@ limitations under the License.
         <!--Doorbell.io feedback-->
         <script type="text/javascript">
             window.doorbellOptions = {
-                appKey: 'iPUykwSlDQ7fuIHlRux5tNce109WQyyUYCAyksCG41X57V793oTm0w4VCx7nSlbC'
+                appKey: 'iPUykwSlDQ7fuIHlRux5tNce109WQyyUYCAyksCG41X57V793oTm0w4VCx7nSlbC',
+                hideButton: true,
+                hideEmail: true,
+                strings: {
+                  'intro-text': 'Add your email if you want to hear back <br>or use the <a href="{% url "contact-us" %}">contact form</a>.'
+                }
             };
             (function(d, t) {
                 var g = d.createElement(t);g.id = 'doorbellScript';g.type = 'text/javascript';g.async = true;g.src = 'https://embed.doorbell.io/button/2991?t='+(new Date().getTime());(d.getElementsByTagName('head')[0]||d.getElementsByTagName('body')[0]).appendChild(g);
             }(document, 'script'));
+            $(function(){
+              $('.doorbell-feedback').on('click', function(){
+                doorbell.show();
+              });
+            });
         </script>
         <!--Doorbell.io feedback-->
     </body>
