@@ -152,11 +152,14 @@ class Rna(CachingMixin, models.Model):
         else:
             return False
 
-    def has_genomic_coordinates(self):
+    def has_genomic_coordinates(self, taxid=None):
         """
         Return True if at least one cross-reference has genomic coordinates.
         """
-        for xref in self.xrefs.iterator():
+        xrefs = self.xrefs
+        if taxid:
+            xrefs = xrefs.filter(taxid=taxid)
+        for xref in xrefs.iterator():
             if xref.has_genomic_coordinates():
                 return True
         return False

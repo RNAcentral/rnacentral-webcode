@@ -329,7 +329,6 @@ class RnaXmlExporter(OracleConnection):
         self.data['upi'] = rna.upi
         self.data['md5'] = rna.md5
         self.data['length'] = rna.length
-        self.data['has_genomic_coordinates'] = rna.has_genomic_coordinates()
 
     def format_xml_entry(self, taxid):
         """
@@ -463,6 +462,7 @@ class RnaXmlExporter(OracleConnection):
         for taxid in taxids:
             self.reset()
             self.store_rna_properties(rna)
+            self.data['has_genomic_coordinates'] = rna.has_genomic_coordinates(taxid=taxid)
             self.retrieve_data_from_database(rna.upi, taxid)
             self.store_literature_references(rna, taxid)
             self.store_popular_species()
