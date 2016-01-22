@@ -17,7 +17,8 @@ limitations under the License.
 
 {% block meta_tags %}
     {{ block.super }}
-    <meta name="description" content="Unique RNA sequence {{ rna.upi }}, {{ context.description }}, {{ rna.length }} nucleotides"/>
+    <meta name="description" content="{{ context.description }} ({{ rna.length }} nucleotides)"/>
+    <meta name="twitter:description" content="{{ context.description }} ({{ rna.length }} nucleotides)">    
 {% endblock %}
 
 {% block title %}
