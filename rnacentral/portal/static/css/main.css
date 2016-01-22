@@ -162,9 +162,17 @@ div#local-search form fieldset, form#local-search fieldset {
   margin: 0px;
 }
 
+.nav li {
+  padding: 0px 4px;
+}
+
 /*
  Multicolumn dropdown adapted from: http://codepen.io/dustlilac/pen/Qwpxbp
 */
+.dropdown-menu {
+  margin: 0px 4px;
+}
+
 .dropdown-menu.columns-2 {
   min-width: 320px;
 }
