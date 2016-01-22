@@ -9,7 +9,7 @@ to a comprehensive and up-to-date set of ncRNA sequences.
 RNAcentral assigns identifiers to distinct ncRNA sequences
 and automatically updates links between sequences and identifiers
 maintained by [expert databases]({% url 'expert-databases' %}).
-More [about RNAcentral]({% url 'about' %}).
+[More about RNAcentral &rarr;]({% url 'about' %})
 
 ### What sequences are included in RNAcentral? <a name="included-sequences" href="#included-sequences" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
