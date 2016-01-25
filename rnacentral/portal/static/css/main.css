@@ -1126,6 +1126,11 @@ textarea {
   letter-spacing: 0.1em;
 }
 
+/* remove focus outline from Expert DB carousel items */
+.expert-db-card:focus {
+  outline: 0;
+}
+
 .twitter-follow-button-list {
   vertical-align: middle;
 }
