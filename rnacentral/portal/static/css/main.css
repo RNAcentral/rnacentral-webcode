@@ -209,6 +209,11 @@ div#local-search form fieldset, form#local-search fieldset {
   padding-right: 0px;
 }
 
+/* hide `Search` text on Search button on small screens */
+.rnacentral-masthead .hidden-xs-inline {
+    display: inline-block !important;
+}
+
 @media (min-width: 767px) {
   .dropdown-menu .col-sm-7 {
     padding-left: 0px;
@@ -235,6 +240,10 @@ div#local-search form fieldset, form#local-search fieldset {
   .dropdown-menu.multi-column {
     min-width: 240px !important;
     overflow-x: hidden;
+  }
+  /* hide `Search` text on Search button on small screens */
+  .rnacentral-masthead .hidden-xs-inline {
+    display: none !important;
   }
 }
 
