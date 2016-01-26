@@ -910,6 +910,7 @@ class Xref(models.Model):
         which share the same parent accession.
         """
         same_parent = Xref.objects.filter(accession__parent_ac=self.accession.parent_ac,
+                                          accession__ncrna_class='miRNA',
                                           deleted=self.deleted).\
                                    all()
         if len(same_parent) > 1:
@@ -925,9 +926,9 @@ class Xref(models.Model):
             rna = Xref.objects.filter(accession__parent_ac=self.accession.parent_ac,
                                       accession__feature_name='precursor_RNA').\
                                first()
-            return rna.upi
-        else:
-            return None
+            if rna:
+                return rna.upi
+        return None
 
     def get_refseq_mirna_mature_products(self):
         """
@@ -951,6 +952,7 @@ class Xref(models.Model):
         if gene_id:
             xrefs = Xref.objects.filter(db__display_name='RefSeq',
                                         deleted='N',
+                                        accession__ncrna_class=self.accession.ncrna_class,
                                         accession__db_xref__iregex='GeneId:'+gene_id).\
                                  exclude(accession=self.accession.accession).\
                                  all()
