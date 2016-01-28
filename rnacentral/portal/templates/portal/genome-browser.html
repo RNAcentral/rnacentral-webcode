@@ -179,6 +179,7 @@ Genome browser
      */
     function showGenome() {
       $('.genoverse-xref').remove();
+      delete window.browser;
       clearInterval(interval);
       $('<button class="genoverse-xref"></button>').
         hide().
