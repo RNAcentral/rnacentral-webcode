@@ -61,6 +61,7 @@ class RnaXmlExporter(OracleConnection):
             self.cursor.prepare(sql)
 
         self.data = dict()
+        self.descriptions = []
 
         # fields with redundant values; for example, a single sequence
         # can be associated with multiple taxids.
@@ -176,12 +177,26 @@ class RnaXmlExporter(OracleConnection):
             """
             self.data['rna_type'].add(get_rna_type())
 
+        def store_description():
+            """
+            Prepare data for generating entry description.
+            """
+            data = {
+                'expert_db': result['expert_db'],
+                'rna_type': get_rna_type(),
+                'product': result['product'],
+                'gene': result['gene'],
+                'deleted': result['deleted'],
+            }
+            self.descriptions.append(data)
+
         self.cursor.execute(None, {'upi': upi, 'taxid': taxid})
         for row in self.cursor:
             result = self.row_to_dict(row)
             store_redundant_fields()
             store_xrefs()
             store_rna_type()
+            store_description()
 
     def is_active(self):
         """
