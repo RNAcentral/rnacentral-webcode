@@ -252,6 +252,46 @@ class RnaXmlExporter(OracleConnection):
         has the following clearly redundant products:
         tRNA-Phe, transfer RNA-Phe, tRNA-Phe (GAA), tRNA-Phe-GAA etc
         """
+        db_scores = {
+            'MIRBASE': 100,
+            'REFSEQ': 90,
+            'LNCRNADB': 80,
+            'SGD': 70,
+            'DICTYBASE': 70,
+            'POMBASE': 70,
+            'WORMBASE': 70,
+            'GTRNADB': 60,
+            'VEGA': 60,
+            'RDP': 60,
+            'GREENGENES': 60,
+            'SILVA': 60,
+            'RFAM': 50,
+            'LNCIPEDIA': 50,
+            'NONCODE': 50,
+            'SRPDB': 50,
+            'SNOPY': 50,
+            'TMRNA_WEB': 50,
+            'TAIR': 40,
+            'ENA': 30,
+            'PDBE': 20,
+            'MODOMICS': 20,
+        }
+        for i, description in enumerate(self.descriptions):
+            if description['deleted'] or not description['product']:
+                score = 0
+            if description['expert_db'] in db_scores:
+                self.descriptions[i]['score'] = db_scores[description['expert_db']]
+            else:
+                self.descriptions[i]['score'] = 1
+
+        newlist = sorted(self.descriptions, key=lambda k: k['score'])
+        if newlist[-1]['product']:
+            result = next(iter(self.data['species'])) + ' ' + newlist[-1]['product']
+            if newlist[-1]['gene'] and newlist[-1]['gene'] not in desc:
+                result += ', ' + newlist[-1]['gene']
+        else:
+            result = next(iter(self.data['species'])) + ' ' + newlist[-1]['rna_type']
+        return result
 
         def count(source):
             """
