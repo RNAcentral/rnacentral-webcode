@@ -34,6 +34,7 @@ Master Stylesheet for the RNAcentral Portal
 5.11 Genoverse styling
 5.12 Homepage
 5.13 D3 nhmmer dashboard graph
+5.14 Doorbell feedback
 
 -------------------------------------------------------------------*/
 
@@ -50,7 +51,6 @@ body {
 
 .container-main {
   min-height: 500px;
-  padding-top: 10px;
 }
 
 @font-face {
@@ -85,7 +85,6 @@ body {
 }
 
 .rnacentral-masthead .help-block {
-  margin-top: 0;
   margin-bottom: 0;
 }
 
@@ -149,7 +148,6 @@ body {
 
 .rnacentral-header-logo {
 	margin-top: 15px;
-	width: 300px;
 }
 
 div#local-search form fieldset, form#local-search fieldset {
@@ -164,9 +162,17 @@ div#local-search form fieldset, form#local-search fieldset {
   margin: 0px;
 }
 
+.nav li {
+  padding: 0px 4px;
+}
+
 /*
  Multicolumn dropdown adapted from: http://codepen.io/dustlilac/pen/Qwpxbp
 */
+.dropdown-menu {
+  margin: 0px 4px;
+}
+
 .dropdown-menu.columns-2 {
   min-width: 320px;
 }
@@ -203,6 +209,11 @@ div#local-search form fieldset, form#local-search fieldset {
   padding-right: 0px;
 }
 
+/* hide `Search` text on Search button on small screens */
+.rnacentral-masthead .hidden-xs-inline {
+    display: inline-block !important;
+}
+
 @media (min-width: 767px) {
   .dropdown-menu .col-sm-7 {
     padding-left: 0px;
@@ -229,6 +240,10 @@ div#local-search form fieldset, form#local-search fieldset {
   .dropdown-menu.multi-column {
     min-width: 240px !important;
     overflow-x: hidden;
+  }
+  /* hide `Search` text on Search button on small screens */
+  .rnacentral-masthead .hidden-xs-inline {
+    display: none !important;
   }
 }
 
@@ -943,10 +958,39 @@ textarea {
   -webkit-transition-property: transform;
   transition-property: transform;
 }
-.expert-db-card:hover img,
+.homepage-card:hover a,
+.homepage-callout-overlay:hover .btn,
 .hvr-grow:hover, .hvr-grow:focus, .hvr-grow:active {
-  -webkit-transform: scale(1.05);
-  transform: scale(1.05);
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
+  -webkit-transition-duration: 0.5s;
+  transition-duration: 0.5s;
+}
+
+.slick-dots {
+  position: inherit;
+  margin-top: 5px;
+}
+
+.slick-dots li button::before {
+  font-size: 25px;
+}
+
+.slick-track {
+  padding-top: 20px;
+}
+
+.slick-arrow {
+  z-index: 1000;
+}
+
+.slick-slide {
+  margin-left: 35px;
+}
+
+.desaturate {
+  -webkit-filter: grayscale(60%);
+  filter: grayscale(60%);
 }
 
 .expert-db-logo img {
@@ -954,14 +998,23 @@ textarea {
   margin-right: 3px;
 }
 
-.sequences-label {
-  display: inline !important;
+.slick-track img {
+  display: block;
+  margin: auto;
+}
+
+.homepage-card h2 {
+  margin-top: 5px;
+}
+
+.expert-db-card {
+  padding-top: 10px;
 }
 
 /* Custom, iPhone Retina */
 @media only screen and (min-width : 320px) {
-  .expert-db-card .panel-body {
-    height: 150px;
+  .slick-slide {
+    margin-left: 0px;
   }
 
   .expert-db-logo img {
@@ -972,10 +1025,6 @@ textarea {
 
 /* Extra Small Devices, Phones */
 @media only screen and (min-width : 480px) {
-  .expert-db-card .panel-body {
-    height: 70px;
-  }
-
   .expert-db-logo img {
     max-width: 130px;
     max-height: 100px;
@@ -984,8 +1033,8 @@ textarea {
 
 /* Small Devices, Tablets */
 @media only screen and (min-width : 768px) {
-  .expert-db-card .panel-body {
-    height: 110px;
+  .homepage-card {
+    height: 250px;
   }
 
   .expert-db-logo img {
@@ -996,8 +1045,8 @@ textarea {
 
 /* Medium Devices, Desktops */
 @media only screen and (min-width : 992px) {
-  .expert-db-card .panel-body {
-    height: 130px;
+  .homepage-card {
+    height: 180px;
   }
 
   .sequences-label {
@@ -1009,62 +1058,22 @@ textarea {
     max-height: 70px;
   }
 
-  /* hide the links */
-  .expert-db-card a {
-    text-decoration: none;
-    color: inherit;
-  }
-
-  /* style links on hover */
-  .expert-db-card:hover a {
-    color: #428bca;
-    text-decoration: underline;
-  }
-
-  .expert-db-card:hover a:hover {
-    color: #2a6496;
-  }
-
-  /* make text less prominent */
-  .expert-db-card .panel-body {
-    color: #767676;
-  }
-
-  /* make text more prominent on hover */
-  .expert-db-card:hover .panel-body {
-    color: #333;
-  }
-
-  /* keep constant height for all carousel pages */
-  .slick-slider {
-    height: 450px;
-  }
 }
 
 /* Large Devices, Wide Screens */
 @media only screen and (min-width : 1200px) {
-  .expert-db-card .panel-body {
-    height: 120px;
+  .homepage-card {
+    height: 170px;
   }
 
   .expert-db-logo img {
     max-width: 130px;
     max-height: 100px;
   }
-
-  .sequences-label {
-    display: inline !important;
-  }
-
-  /* keep constant height for all carousel pages */
-  .slick-slider {
-    height: 450px;
-  }
 }
 
 #expert-databases {
   visibility: hidden;
-  background-color: #f4f4f4;
 }
 
 #expert-databases.slick-initialized {
@@ -1089,41 +1098,37 @@ textarea {
   margin-left: 0px;
 }
 
-.expert-db-card-header {
-  margin-left: 10px;
-  margin-top: 10px;
-  display: inline-block;
-}
-
-.expert-db-card-header a {
-  font-size: 18px;
-}
-
 .expert-db-card-logo {
   display: inline;
 }
 
-.expert-db-card .panel-body {
+.homepage-card .panel-body {
   padding: 10px;
 }
 
-.expert-db-card .panel-footer {
-  padding: 6px 0px 6px 10px;
-  font-size: 75%;
-}
-
-.homepage-panel .panel-body {
-  padding: 10px 5px;
-}
-
-.homepage-panel .panel {
-  margin-bottom: 10px;
-}
-
 .homepage-callout {
+  background-image: url('../img/homepage-banner.png');
+  background-size: cover;
   font-size: 18px;
-  padding-top: 10px;
-  padding-bottom: 10px;
+  padding: 30px;
+}
+
+.homepage-callout-overlay {
+  background: whitesmoke;
+  background-color: rgba(245, 245, 245, 0.7); /* whitesmoke */
+  color: black;
+  padding: 15px;
+}
+
+.homepage-callout-overlay h2 {
+  color: #3F3F3F;
+  font-weight: bolder;
+  letter-spacing: 0.1em;
+}
+
+/* remove focus outline from Expert DB carousel items */
+.expert-db-card:focus {
+  outline: 0;
 }
 
 .twitter-follow-button-list {
@@ -1150,4 +1155,15 @@ textarea {
     stroke: #808080; /*gray*/
     stroke-width: 1;
     shape-rendering: crispEdges;
+}
+
+/*------------------------------------------------------------------
+[5.14 Doorbell feedback]
+*/
+#doorbell-form legend {
+  background: #FFFFFF;
+}
+
+#doorbell-form textarea {
+  margin-top: 5px;
 }

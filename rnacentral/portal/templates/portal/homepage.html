@@ -17,7 +17,8 @@ limitations under the License.
 
 {% block meta_tags %}
     {{ block.super }}
-    <meta name="description" content="RNAcentral is a comprehensive and up-to-date database of accessioned ncRNA sequences that integrates information from an international consortium of RNA sequence databases"/>
+    <meta name="description" content="RNAcentral is a comprehensive and up-to-date database of accessioned ncRNA sequences"/>
+    <meta name="twitter:description" content="RNAcentral is a comprehensive and up-to-date database of accessioned ncRNA sequences"/>
 {% endblock %}
 
 {% block title %}
@@ -26,98 +27,107 @@ RNAcentral
 
 {% block content %}
 
-  <div class="row">
-    <div class="col-md-12 col-sm-12 col-xs-12">
+  <div class="row well well-sm homepage-callout" id="homepage-callout">
 
-      <div class="panel panel-default margin-bottom-10px">
-        <div class="panel-body homepage-callout">
-          <span class="text-info">RNAcentral provides unified access to the ncRNA sequence data supplied by the Expert Databases below</span>
-          <a class="text-muted small margin-left-5px" href="{% url 'about' %}">Learn more</a>
-        </div>
-      </div>
+    <div class="homepage-callout-overlay">
+      <h2 class="text-center">
+        RNAcentral: The non-coding RNA sequence database
+      </h2>
 
+      <p class="text-center">
+        <a href="{% url 'about' %}">More about RNAcentral &rarr;</a>
+      </p>
+
+      <p class="text-center">
+        <a class="btn btn-success" id="guided-tour">Take a tour</a>
+      </p>
     </div>
+
   </div>
 
-  <div id="expert-databases" class="well well-sm">
-    {% for database in context.databases %}
+  <div class="row">
 
-      {% if forloop.first or forloop.counter == 5 or forloop.counter == 9 or forloop.counter == 13 or forloop.counter == 17 %}<div class="row">{% endif %}
-
-      <div class="col-md-3 col-sm-6 col-xs-12">
-        <div class="panel panel-default expert-db-card">
-
-          <div class="expert-db-card-header">
-            <a href="{% url 'expert-database' database.label %}">{{database.name}}</a>
-          </div>
-
-          <div class="expert-db-card-logo">
-            <a class="pull-right expert-db-logo" href="{% url 'expert-database' database.label %}" title="{{database.name}} Expert Database">
-              <img class="img-rounded hvr-grow" data-lazy="{% static 'img/expert-db-logos' %}/{{database.label}}.png" alt="{{database.name}} logo">
-            </a>
-          </div>
-
-          <div class="panel-body small">
-            {{database.description|striptags}}
-          </div>
-
-          <div class="panel-footer small">
-            <a href="" rel="nofollow" ng-click="meta_search('expert_db:%22{{database.name}}%22')" title="View all sequences" class="help">
-              <em>{{database.num_sequences|intword|intcomma}}</em>
-              <span class="sequences-label">sequences</span>
-            </a> |
-            <a href="{% url 'unique-rna-sequence' database.examples|first %}" id="{{database.label}}-examples" class="help" title="View example sequence">Example</a>
-            {% if database.status == 'new' %}
-              <span class="label label-info help" title="New Expert Database">New</span>
-            {% elif database.status == 'updated' %}
-              <span class="label label-primary help" title="New data imported">Updated</span>
-            {% endif %}
-          </div>
-
+    <div class="col-md-4 col-sm-4 col-xs-12">
+      <div class="panel panel-default homepage-card">
+        <div class="panel-body text-center">
+          <h2 class="text-center"><i class="fa fa-search"></i> Text search</h2>
+          <p class="text-center">
+            Search by <em>gene, species, publication, author</em> or any other keyword
+          </p>
+          <a class="btn btn-primary" href="{% url 'metadata-search' %}?q=RNA" id="btn-browse-sequences">Browse sequences</a>
         </div>
       </div>
+    </div>
 
-      {% if forloop.counter == 4 or forloop.counter == 8 or forloop.counter == 12 or forloop.counter == 16 or forloop.last %}</div>{% endif %}
-    {% endfor %}
+    <div class="col-md-4 col-sm-4 col-xs-12">
+      <div class="panel panel-default homepage-card">
+        <div class="panel-body text-center">
+          <h2 class="text-center"><i class="fa fa-puzzle-piece"></i> Sequence search</h2>
+          <p class="text-center">
+            Search for similar sequences
+            <br>
+            or look up your sequence in RNAcentral
+          </p>
+          <a class="btn btn-primary" id="btn-sequence-search" href="{% url 'nhmmer-sequence-search' %}" role="button">Search by sequence</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4 col-sm-4 col-xs-12">
+      <div class="panel panel-default homepage-card">
+        <div class="panel-body text-center">
+          <h2 class="text-center"><i class="fa fa-map-marker"></i> Genome browser</h2>
+          <p class="text-center">
+            Explore RNAcentral sequences in your favorite genome locations
+          </p>
+          <a class="btn btn-primary" id="btn-genome-browser" href="{% url 'genome-browser' %}" role="button">Browse genomes</a>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <hr>
+  <div class="row well well-sm">
+
+    <p class="lead text-center margin-bottom-0px">
+      {{ context.databases|length }} participating ncRNA databases
+    </p>
+
+    <div id="expert-databases">
+      {% for database in context.databases %}
+        <div class="hvr-grow help expert-db-card" data-container="body" title="{% if database.abbreviation %}{{ database.abbreviation }}{% else %}{{ database.name }}{% endif %}">
+          <a class="expert-db-logo" href="{% url 'expert-database' database.label %}">
+            <img class="img-rounded desaturate" data-lazy="{% static 'img/expert-db-logos' %}/{{database.label}}.png" alt="{{database.name}} logo">
+          </a>
+          <p class="margin-top-5px text-center">
+          <a href="" rel="nofollow" ng-click="meta_search('expert_db:%22{{database.name}}%22')">
+            <em>{{database.num_sequences|intword|intcomma}}</em>
+            sequences
+          </a>
+          <br>
+          <a href="{% url 'unique-rna-sequence' database.examples|first %}" id="{{database.label}}-examples">Example</a>
+          <br>
+          {% if database.status == 'new' %}
+            <span class="label label-info help" data-placement="bottom">New</span>
+          {% elif database.status == 'updated' %}
+            <span class="label label-primary help" data-placement="bottom">Updated</span>
+          {% endif %}
+          </p>
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
 
   <div class="row">
 
       <div class="col-md-4">
-        <div class="panel panel-default homepage-panel">
-          <div class="panel-heading">
-            <h3 class="panel-title text-center"><i class="fa fa-bar-chart-o"></i> Statistics</h3>
-          </div>
-          <div class="panel-body small">
-            <ul class="fa-ul">
-              <li><i class="fa-li fa fa-angle-right"></i> Release <strong>4</strong> ({{ context.last_update.release_date }})</li>
-              <li><i class="fa-li fa fa-angle-right"></i> <em>{{ context.seq_count|intcomma }}</em> distinct sequences</li>
-              <li><i class="fa-li fa fa-angle-right"></i> <em>{{ context.databases|length }}</em> Expert Databases</li>
-              <li><i class="fa-li fa fa-angle-right"></i> <a href="{% url 'about' %}#growth-chart">Number of sequences over time</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4">
-        <div class="panel panel-default homepage-panel">
-          <div class="panel-heading">
-            <h3 class="panel-title text-center"><i class="fa fa-bullhorn"></i> News</h3>
-          </div>
-          <div class="panel-body small">
-            <ul class="fa-ul">
-              <li><i class="fa-li fa fa-angle-right" style="top:0.6em;"></i> <a href="http://blog.rnacentral.org/2015/11/rnacentral-release-4.html" class="font-size-large">RNAcentral release 4</a></li>
-              <li><i class="fa-li fa fa-angle-right"></i> <a href="http://blog.rnacentral.org/2015/10/watch-recording-of-rnacentral-webinar.html">Watch RNAcentral webinar video</a></li>
-              <li><i class="fa-li fa fa-angle-right"></i> <a href="http://blog.rnacentral.org/2015/06/rnacentral-release-3.html">RNAcentral release 3</a></li>
-              <li><i class="fa-li fa fa-angle-right"></i> <a href="http://blog.rnacentral.org/2015/02/rnacentral-release-2.html">RNAcentral release 2</a></li>
-            </ul>
-            <ul class="list-inline">
-              <li><a href="http://blog.rnacentral.org" target="_blank"><i class="fa fa-bookmark-o"></i> Blog</a></li>
-              <li><a href="http://blog.rnacentral.org/feeds/posts/default" target="_blank"><i class="fa fa-rss"></i> RSS feed</a></li>
+        <div class="panel panel-default">
+          <h3 class="text-center margin-bottom-0px"><i class="fa fa-twitter"></i> Tweets</h3>
+          <div class="panel-body">
+            <ul class="list-inline margin-top-5px">
               <li class="twitter-follow-button-list">
-                <a class="twitter-follow-button"
+                <a class="twitter-follow-button text-center"
                    href="https://twitter.com/rnacentral"
                    data-dnt="true"
                    data-show-count="true"
@@ -125,24 +135,63 @@ RNAcentral
                    data-lang="en">Follow</a>
                 <script>window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));</script>
               </li>
+              <li><a href="https://twitter.com/rnacentral">All tweets</a></li>
             </ul>
+
+            <a class="twitter-timeline"
+              data-widget-id="687988869359382529"
+              href="https://twitter.com/rnacentral"
+              data-chrome="noheader nofooter noborders"
+              data-tweet-limit="2">
+            Tweets by @RNAcentral
+            </a>
           </div>
         </div>
       </div>
 
       <div class="col-md-4">
-        <div class="panel panel-default homepage-panel">
-          <div class="panel-heading">
-            <h3 class="panel-title text-center"><i class="fa fa-graduation-cap"></i> Citing RNAcentral</h3>
-          </div>
-          <div class="panel-body small">
+        <div class="panel panel-default">
+          <h3 class="text-center margin-bottom-0px"><i class="fa fa-bullhorn"></i> News</h3>
+          <div class="panel-body">
+            <ul class="list-inline margin-top-5px">
+              <li><a href="http://blog.rnacentral.org" target="_blank"><i class="fa fa-bookmark-o"></i> RNAcentral Blog</a></li>
+              <li><a href="http://blog.rnacentral.org/feeds/posts/default" target="_blank"><i class="fa fa-rss"></i> RSS feed</a></li>
+            </ul>
+
+            <h4>Release 4</h4>
+
+            <ul>
+              <li>7 new databases, including SILVA, GreenGenes, and PomBase</li>
+              <li>modified nucleotides from PDBe and Modomics (<a href="http://rnacentral.org/rna/URS00001BBAFC" class="help" title="E.coli tRNA with modifications from PDBe and Modomics">example</a>)</li>
+              <li>more details in <a href="http://blog.rnacentral.org/2015/11/rnacentral-release-4.html">release announcement</a></li>
+            </ul>
+
+            <h4>RNAcentral Webinar</h4>
+
             <p>
-              If you use RNAcentral, please cite the following paper:
-              <blockquote class="small callout-info">
+              Learn how to navigate RNAcentral website by
+              <a href="http://blog.rnacentral.org/2015/10/watch-recording-of-rnacentral-webinar.html">watching the webinar</a>.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="panel panel-default">
+          <h3 class="text-center margin-bottom-0px"><i class="fa fa-pencil"></i> Citing RNAcentral</h3>
+          <div class="panel-body">
+            <p>
+              If you use RNAcentral,
+              please cite the following paper:
+              <blockquote class="callout-info">
                 <p>RNAcentral: an international database of ncRNA sequences</p>
-                <footer>The RNAcentral Consortium, 2014 (<a href="http://nar.oxfordjournals.org/content/43/D1/D123.full" target="_blank">NAR</a>)</footer>
+                <footer>The RNAcentral Consortium, 2015</footer>
+                <footer><em>Nucleic Acids Research (Database issue)</em></footer>
               </blockquote>
             </p>
+            <a href="http://nar.oxfordjournals.org/content/43/D1/D123.full" target="_blank">NAR</a> |
+            <a href="http://europepmc.org/articles/PMC4384043" target="_blank">EuropePMC</a> |
+            <a href="http://www.ncbi.nlm.nih.gov/pubmed/25352543" target="_blank">Pubmed</a>
           </div>
         </div>
       </div>
@@ -154,18 +203,104 @@ RNAcentral
 {% block extra_js_uncompressed %}
 <script>
   $(function() {
-    $('.help').tooltip();
     $('#expert-databases').slick({
       draggable: true,
-      rows: 2,
+      rows: 1,
       dots: true,
       adaptiveHeight: true,
-      autoplay: true,
       infinite: true,
-      autoplaySpeed: 7000,
       lazyLoad: 'ondemand',
+      slidesToShow: 5,
+      slidesToScroll: 5,
+      arrows: true,
+      responsive: [
+        {
+          breakpoint: 1024,
+          settings: {
+            slidesToShow: 5,
+            slidesToScroll: 5,
+          }
+        },
+        {
+          breakpoint: 992,
+          settings: {
+            slidesToShow: 4,
+            slidesToScroll: 4
+          }
+        },
+        {
+          breakpoint: 768,
+          settings: {
+            slidesToShow: 3,
+            slidesToScroll: 3
+          }
+        },
+        {
+          breakpoint: 480,
+          settings: {
+            slidesToShow: 2,
+            slidesToScroll: 2
+          }
+        },
+        {
+          breakpoint: 320,
+          settings: {
+            slidesToShow: 2,
+            slidesToScroll: 2
+          }
+        }
+      ],
     });
   });
+
+  /**
+   * Hopscotch guided tour.
+   */
+  $('#guided-tour').click(function(){
+    var Tour = {
+  		id: 'homepage-tour',
+  		showPrevButton: true,
+  		scrollDuration: 700,
+  		steps: [
+  			{
+  				title: 'Search by anything',
+  				content: "You can search by <em>gene name</em>, <em>species</em>, <em>accession</em> or any other keyword. <a href={% url 'help-metadata-search' %} target=&quot;_blank&quot;>Explore examples</a>",
+  				target: 'query-text',
+  				placement: 'bottom',
+  			},
+        {
+  				title: 'Use search facets to explore the data',
+  				content: 'Browse all RNAcentral sequences using <strong>faceted search</strong>',
+  				target: 'btn-browse-sequences',
+  				placement: 'top',
+  			},
+        {
+  				title: 'Search for similar sequences across databases',
+  				content: 'For the first time, you can search data from multiple RNA databases in one go',
+  				target: 'btn-sequence-search',
+  				placement: 'top',
+  			},
+        {
+  				title: 'Navigate to your favourite genome region',
+  				content: 'View RNAcentral sequences alongside genes and transcripts from <a href="http://ensembl.org">Ensembl</a> and <a href="http://ensemblgenomes.org">Ensembl Genomes</a>',
+  				target: 'btn-genome-browser',
+  				placement: 'top',
+          multipage: true,
+          onNext: function() {
+            window.location = '/rna/URS000025784F';
+          }
+  			},
+        {
+          title: '',
+          content: '',
+          target: '',
+          placement: ''
+        }
+      ]
+    }
+    hopscotch.startTour(Tour, 0);
+  });
+
 </script>
 
 <script type="application/ld+json">

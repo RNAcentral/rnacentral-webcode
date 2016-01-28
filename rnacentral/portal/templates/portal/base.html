@@ -20,6 +20,11 @@ limitations under the License.
           <meta charset="utf-8">
           <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
           <meta name="viewport" content="width=device-width">
+          <meta name="twitter:card" content="summary">
+          <meta name="twitter:site" content="@RNAcentral">
+          <meta name="twitter:creator" content="@RNAcentral">
+          <meta name="twitter:title" content="RNAcentral">
+          <meta name="twitter:image" content="http://rnacentral.org{% static "img/logo/RNAcentral_icon.png" %}">
         {% endblock meta_tags %}
         <base href="/"/>
 
@@ -30,7 +35,7 @@ limitations under the License.
         {% compress css %}
           {% block stylesheets %}
             <link rel="stylesheet" href="{% static "js/vendor/bootstrap/css/bootstrap.min.css" %}">
-            <link rel="stylesheet" href="{% static "fonts/font-awesome-4.3.0/css/font-awesome.min.css" %}">
+            <link rel="stylesheet" href="{% static "fonts/font-awesome/css/font-awesome.min.css" %}">
             <link rel="stylesheet" href="{% static "css/ebi-global.css" %}">
             <link rel="stylesheet" href="{% static "css/ebi-visual.css" %}">
             <link rel="stylesheet" href="{% static "js/vendor/slick/slick.css" %}"/>
@@ -159,6 +164,8 @@ limitations under the License.
                   window.onerror=function(msg){
                       $("body").attr("JSError",msg);
                   };
+                  // initialise bootstrap tooltips
+                  $('.help').tooltip();
                 });
                 if(!window.console){ window.console = {log: function(){} }; }
                 console.log('Welcome to the RNAcentral javascipt console!');
@@ -189,5 +196,24 @@ limitations under the License.
         </script>
         <!--Google Analytics-->
 
+        <!--Doorbell.io feedback-->
+        <script type="text/javascript">
+            window.doorbellOptions = {
+                appKey: 'iPUykwSlDQ7fuIHlRux5tNce109WQyyUYCAyksCG41X57V793oTm0w4VCx7nSlbC',
+                hideButton: true,
+                strings: {
+                  'email-input-placeholder': 'Your email (optional)',
+                }
+            };
+            (function(d, t) {
+                var g = d.createElement(t);g.id = 'doorbellScript';g.type = 'text/javascript';g.async = true;g.src = 'https://embed.doorbell.io/button/2991?t='+(new Date().getTime());(d.getElementsByTagName('head')[0]||d.getElementsByTagName('body')[0]).appendChild(g);
+            }(document, 'script'));
+            $(function(){
+              $('.doorbell-feedback').on('click', function(){
+                doorbell.show();
+              });
+            });
+        </script>
+        <!--Doorbell.io feedback-->
     </body>
 </html>

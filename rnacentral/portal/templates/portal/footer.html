@@ -40,7 +40,7 @@ limitations under the License.
         <div class="col-md-3 col-sm-6 col-xs-6">
           <ul>
           {% for expert_db in expert_db_column %}
-              <li><a class="no-icon" href="{{ expert_db.url }}" target="_blank">{{ expert_db.name }}</a></li>
+              <li><a class="no-icon" href="{% if expert_db.imported %}{% url 'expert-database' expert_db.label %}{% else %}{{ expert_db.url }}{% endif %}">{{ expert_db.name }}</a></li>
           {% endfor %}
           </ul>
         </div>
@@ -52,6 +52,7 @@ limitations under the License.
       <ul>
         <li><a href="{% url 'about' %}">About RNAcentral</a></li>
         <li><a href="{% url 'expert-databases' %}">Expert Databases</a></li>
+        <li><a href="http://blog.rnacentral.org">Blog</a></li>
         <li><a href="{% url 'help' %}">Help</a></li>
         <li><a href="{% url 'contact-us' %}">Contact us</a></li>
         <li><a href="{% url 'website-status' %}">Website status</a></li>

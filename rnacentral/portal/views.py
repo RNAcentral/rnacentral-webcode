@@ -92,7 +92,7 @@ def get_sequence_lineage(request, upi):
     return HttpResponse(json_lineage_tree, content_type="application/json")
 
 
-@cache_page(CACHE_TIMEOUT)
+@cache_page(60)
 def homepage(request):
     """
     RNAcentral homepage.
@@ -100,7 +100,7 @@ def homepage(request):
     context = {
         'seq_count': Rna.objects.count(),
         'last_update': Release.objects.order_by('-release_date').all()[0],
-        'databases': list(Database.objects.order_by('-num_sequences').all()),
+        'databases': list(Database.objects.order_by('?').all()),
     }
     return render(request, 'portal/homepage.html', {'context': context})
 

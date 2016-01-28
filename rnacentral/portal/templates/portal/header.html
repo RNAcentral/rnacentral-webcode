@@ -29,9 +29,8 @@ limitations under the License.
         <form novalidate name="queryForm" class="global-search" ng-submit="submit_query()">
           <fieldset>
           <div class="form-group" ng-class="(query.submitted && queryForm.$invalid) ? 'has-error' : ''">
-            <div class="input-group">
+            <div class="input-group input-group-lg">
               <input type="text"
-                     placeholder="organism, expert database, gene, ncRNA type, accession"
                      class="form-control"
                      id="query-text"
                      name="text"
@@ -40,25 +39,27 @@ limitations under the License.
                      ng-minlength="2"
                      ng-maxlength="1000"
                      autocomplete="off"
+                     placeholder="Search RNAcentral"
+                     autofocus
                      required>
               <div class="input-group-btn">
                 <button type="submit" class="btn btn-primary">
                   <i class="fa fa-search"></i>
+                  <span class="hidden-xs-inline">Search</span>
                 </button>
               </div><!-- /input-group-btn -->
             </div><!--input-group -->
             <span class="help-block example-searches">
-              <small>
+
                 <i>
                   Examples:
-                  <a href="" rel="nofollow" ng-click="meta_search('RNA')">RNA</a>,
-                  <a href="" rel="nofollow" ng-click="meta_search('TAXONOMY:&quot;9606&quot;')">Homo sapiens</a>,
-                  <a href="" rel="nofollow" ng-click="meta_search('mirbase')">miRBase</a>,
-                  <a href="" rel="nofollow" ng-click="meta_search('HOTAIR')">HOTAIR</a>,
-                  <a href="" rel="nofollow" ng-click="meta_search('rna_type:&quot;tRNA&quot;')">tRNA</a>,
-                  <a href="" rel="nofollow" ng-click="meta_search('4V4Q')">4V4Q</a>
+                  <a class="help" data-placement="bottom" title="Search by gene name" href="" rel="nofollow" ng-click="meta_search('&quot;HOTAIR&quot;%20AND%20TAXONOMY:&quot;9606&quot;%20and%20(rna_type:&quot;lncRNA&quot;%20or%20rna_type:&quot;antisense%20RNA&quot;)%20not%20expert_db:&quot;rfam&quot;')">human HOTAIR</a>,
+                  <a class="help" data-placement="bottom" title="Search by species name or NCBI taxonomy ID" href="" rel="nofollow" ng-click="meta_search('TAXONOMY:&quot;9606&quot;')">Homo sapiens</a>,
+                  <a class="help" data-placement="bottom" title="Search by RNA type" href="" rel="nofollow" ng-click="meta_search('rna_type:&quot;tRNA&quot;')">tRNA</a>,
+                  <a class="help" data-placement="bottom" title="Search by Expert Database" href="" rel="nofollow" ng-click="meta_search('expert_db:&quot;mirbase&quot;')">miRBase</a>,
+                  <a class="help" data-placement="bottom" title="Search by external identifiers" href="" rel="nofollow" ng-click="meta_search('4V4Q')">4V4Q</a>
                 </i>
-              </small>
+
             </span>
             <label class="control-label ng-cloak has-error"
                    for="query-text" ng-show="query.submitted && (queryForm.text.$error.required || queryForm.text.$error.minlength)"
@@ -97,7 +98,7 @@ limitations under the License.
       <ul class="nav navbar-nav navbar-left">
         {% get_expert_databases_list as expert_dbs %}
         <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Expert databases <b class="caret"></b></a>
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown">Databases <b class="caret"></b></a>
           <ul class="dropdown-menu multi-column columns-2">
             <div class="row">
               {% for expert_db in expert_dbs %}
@@ -122,10 +123,18 @@ limitations under the License.
               <div class="col-sm-12">
               <ul class="multi-column-dropdown">
                 <li class="divider"></li>
-                <li><a href="{% url 'expert-databases' %}">All Expert databases</a></li>
+                <li><a href="{% url 'expert-databases' %}">All databases</a></li>
               </ul>
               </div>
             </div>
+          </ul>
+        </li>
+
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" href="">Tools<b class="caret"></b></a>
+          <ul class="dropdown-menu">
+            <li><a href="{% url 'nhmmer-sequence-search' %}">Sequence search</a></li>
+            <li><a href="{% url 'genome-browser' %}">Genome browser</a></li>
           </ul>
         </li>
 
@@ -136,14 +145,18 @@ limitations under the License.
             <li><a href="{% url 'api-docs' %}">API Documentation</a></li>
           </ul>
         </li>
-        <li><a href="{% url 'nhmmer-sequence-search' %}">Sequence search</a></li>
+
+        <li><a href="{% url 'downloads' %}">Downloads</a></li>
+        <li><a href="/search?q=RNA">Browse</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li><a href="{% url 'downloads' %}">Downloads</a></li>
-        <li class="dropdown">
+        <li>
+          <a href="{% url 'about' %}">About</a>
+        </li>
+        <li>
           <a href="{% url 'help' %}">Help</a>
         </li>
-        <li><a href="{% url 'contact-us' %}">Contact</a></li>
+        <li><a href="" class="doorbell-feedback help" title="Send quick feedback without leaving the page">Feedback <i class="fa fa-comment"></i></a></li>
       </ul>
     </div><!--/.nav-collapse -->
   </div>
