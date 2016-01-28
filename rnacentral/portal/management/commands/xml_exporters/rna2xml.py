@@ -156,6 +156,16 @@ class RnaXmlExporter(OracleConnection):
                 for eco_term in re.findall('ECO\:\d+', result['note']):
                     self.data['xrefs'].add(('ECO', eco_term))
 
+        def get_rna_type():
+            """
+            Use either feature name or ncRNA class (when feature is 'ncRNA')
+            """
+            if result['ncrna_class']:
+                rna_type = result['ncrna_class']
+            else:
+                rna_type = result['feature_name']
+            return rna_type.replace('_', ' ')
+
         def store_rna_type():
             """
             Store distinct RNA type annotations in a set.
@@ -164,11 +174,7 @@ class RnaXmlExporter(OracleConnection):
             If an entry is any other RNA feature, use that feature_name
             as rna_type.
             """
-            if result['ncrna_class']:
-                rna_type = result['ncrna_class']
-            else:
-                rna_type = result['feature_name']
-            self.data['rna_type'].add(rna_type.replace('_', ' '))
+            self.data['rna_type'].add(get_rna_type())
 
         self.cursor.execute(None, {'upi': upi, 'taxid': taxid})
         for row in self.cursor:
