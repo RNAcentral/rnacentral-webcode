@@ -97,7 +97,6 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
             'TAXONOMY',
             'has_genomic_coordinates',
             'popular_species',
-            'active',
         ], // will be displayed in this order
         facetcount: 30,
         pagesize: 15,
@@ -105,7 +104,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
 
     var query_urls = {
         'ebeye_search': search_config.ebeye_base_url +
-                        '?query={QUERY}' +
+                        '?query={QUERY}' + '%20AND%20active:"Active"' +
                         '&format=json' +
                         '&fields=' + search_config.fields.join() +
                         '&facetcount=' + search_config.facetcount +
