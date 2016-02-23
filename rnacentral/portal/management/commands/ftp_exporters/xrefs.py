@@ -23,15 +23,9 @@ class XrefsExporter(FtpBase):
     Inspired by UniProt id mapping files.
 
     Output format:
-    RNAcentral_id\tDatabase_name\tExternal_id\tTax_id
+    RNAcentral_id\tDatabase_name\tExternal_id\tTax_id\tRNA_type\tGene_name
 
-    Example:
-    URS0000000161\tMIRBASE\tMIMAT0020957\t9606
-
-    Uses the database cursor directly to improve performance.
-    Django cursor seems to be ~10% slower than cx_Oracle cursor.
-
-    Total runtime ~10 min for ~10M id mappings.
+    Use cx_Oracle cursor instead of Django for faster performance.
     """
 
     def __init__(self, *args, **kwargs):
@@ -73,18 +67,24 @@ class XrefsExporter(FtpBase):
             """
             Get SQL command for id mappings.
             """
-            if self.test:
-                return """
-                SELECT t1.upi, t2.ac AS accession, t3.external_id, t3.optional_id, t4.descr, t2.taxid
-                FROM rna t1, xref t2, rnc_accessions t3, rnc_database t4
-                WHERE t1.upi=t2.upi AND t2.ac=t3.accession AND t2.dbid=t4.id AND t2.deleted='N'
-                """
-            return """
-            SELECT t1.upi, t2.ac AS accession, t3.external_id, t3.optional_id, t4.descr, t2.taxid
-            FROM rna t1, xref t2, rnc_accessions t3, rnc_database t4
-            WHERE t1.upi=t2.upi AND t2.ac=t3.accession AND t2.dbid=t4.id AND t2.deleted='N'
-            ORDER BY t1.upi
+            sql_command = """
+            SELECT t1.upi, t2.ac AS accession, t2.taxid, t3.external_id,
+                t3.optional_id, t3.feature_name, t3.ncrna_class,
+                t3.gene, t4.descr
+            FROM rna t1,
+                 xref t2,
+                 rnc_accessions t3,
+                 rnc_database t4
+            WHERE t1.upi=t2.upi
+                AND t2.ac=t3.accession
+                AND t2.dbid=t4.id
+                AND t2.deleted='N'
             """
+            if self.test:
+                sql_command += ' AND t2.dbid = 8' # small dataset for testing
+            else:
+                sql_command += ' ORDER BY t1.upi'
+            return sql_command
 
         def get_accession_source():
             """
@@ -100,8 +100,19 @@ class XrefsExporter(FtpBase):
             """
             Write output for each xref.
             """
-            counter = 0
+            def format_output(accession):
+                """
+                Format data into a string.
+                """
+                template = '{upi}\t{database}\t{accession}\t{taxid}\t{rna_type}\t{gene}\n'
+                return template.format(upi=upi,
+                                       database=database,
+                                       accession=accession,
+                                       taxid=taxid,
+                                       gene=gene,
+                                       rna_type=rna_type)
 
+            counter = 0
             for row in self.cursor:
                 if self.test and counter > self.test_entries:
                     return
@@ -110,31 +121,28 @@ class XrefsExporter(FtpBase):
                 upi = result['upi']
                 database = result['descr']
                 taxid = result['taxid']
+                gene = result['gene'] or ''
+                if result['feature_name'] == 'ncRNA':
+                    rna_type = result['ncrna_class'] or 'RNA'
+                else:
+                    rna_type = result['feature_name'] or 'RNA'
+                gene = gene.replace('\t', '')
 
                 # use PDB instead of PDB because PDB ids come from wwPDB
                 if database == 'PDBE':
                     database = 'PDB'
 
                 if database in accession_source['xref']:
-                    line = '{upi}\t{database}\t{accession}\t{taxid}\n'.format(upi=upi,
-                                                                              database=database,
-                                                                              accession=result['accession'],
-                                                                              taxid=taxid)
+                    line = format_output(result['accession'])
                 else:
-                    line = '{upi}\t{database}\t{accession}\t{taxid}\n'.format(upi=upi,
-                                                                              database=database,
-                                                                              accession=result['external_id'],
-                                                                              taxid=taxid)
+                    line = format_output(result['external_id'])
                 self.filehandles['xrefs'].write(line)
+                # write out optional ids, if necessary
+                if database in accession_source['optional_id']:
+                    line = format_output(result['optional_id'])
+                    self.filehandles['xrefs'].write(line)
                 if counter < self.examples:
                     self.filehandles['example'].write(line)
-                # write out optional ids too, if necessary
-                if database in accession_source['optional_id']:
-                    line = '{upi}\t{database}\t{accession}\t{taxid}\n'.format(upi=upi,
-                                                                              database=database,
-                                                                              accession=result['optional_id'],
-                                                                              taxid=taxid)
-                    self.filehandles['xrefs'].write(line)
                 counter += 1
 
         sql = get_xrefs_sql()
@@ -156,10 +164,15 @@ class XrefsExporter(FtpBase):
 
         * id_mapping.tsv.gz
         Tab-separated file with RNAcentral ids, corresponding external ids,
-        and NCBI taxon ids.
+        NCBI taxon ids, RNA types (according to INSDC classification), and gene names.
 
         * example.txt
         A small file showing the first few entries.
+
+        CHANGELOG:
+
+        * December 11, 2015
+        Added two new fields: RNA type and gene name.
         """
         text = self.create_readme.__doc__
         text = self.format_docstring(text)
