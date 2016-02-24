@@ -287,7 +287,7 @@ class RnaXmlExporter(OracleConnection):
         newlist = sorted(self.descriptions, key=lambda k: k['score'])
         if newlist[-1]['product']:
             result = next(iter(self.data['species'])) + ' ' + newlist[-1]['product']
-            if newlist[-1]['gene'] and newlist[-1]['gene'] not in desc:
+            if newlist[-1]['gene'] and newlist[-1]['gene'] not in description:
                 result += ', ' + newlist[-1]['gene']
         else:
             result = next(iter(self.data['species'])) + ' ' + newlist[-1]['rna_type']
