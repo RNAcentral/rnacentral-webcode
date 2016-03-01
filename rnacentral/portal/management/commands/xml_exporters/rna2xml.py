@@ -495,7 +495,7 @@ class RnaXmlExporter(OracleConnection):
                    common_name=format_field('common_name'),
                    function=format_field('function'),
                    gene=format_field('gene'),
-                   gene_synonym=format_field('gene_synonym'),
+                   gene_synonym=format_field('gene_synonym').replace(' ', ';'),
                    rna_type=format_field('rna_type'),
                    product=format_field('product'),
                    has_genomic_coordinates=wrap_in_field_tag('has_genomic_coordinates',
