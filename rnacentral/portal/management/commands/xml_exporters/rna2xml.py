@@ -384,12 +384,13 @@ class RnaXmlExporter(OracleConnection):
             boost = 1
         self.data['boost'] = boost
 
-    def store_rna_properties(self, rna):
+    def store_rna_properties(self, rna, taxid):
         """
         """
         self.data['upi'] = rna.upi
         self.data['md5'] = rna.md5
         self.data['length'] = rna.length
+        self.data['description_line'] = rna.get_description(taxid=taxid)
 
     def format_xml_entry(self, taxid):
         """
@@ -482,7 +483,7 @@ class RnaXmlExporter(OracleConnection):
             </additional_fields>
         </entry>
         """.format(upi=self.data['upi'],
-                   description=self.get_description(),
+                   description=self.data['description_line'],
                    first_seen=self.first_seen(),
                    last_seen=self.last_seen(),
                    cross_references=format_cross_references(),
@@ -522,7 +523,7 @@ class RnaXmlExporter(OracleConnection):
         text = ''
         for taxid in taxids:
             self.reset()
-            self.store_rna_properties(rna)
+            self.store_rna_properties(rna, taxid=taxid)
             self.data['has_genomic_coordinates'] = rna.has_genomic_coordinates(taxid=taxid)
             self.retrieve_data_from_database(rna.upi, taxid)
             self.store_literature_references(rna, taxid)

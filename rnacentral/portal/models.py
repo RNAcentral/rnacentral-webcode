@@ -315,11 +315,7 @@ class Rna(CachingMixin, models.Model):
         """
         Get entry description based on its xrefs.
         If taxid is provided, use only species-specific xrefs.
-
-        The xml dumping pipeline uses a separate logic, see:
-        portal/management/commands/xml_exporters/rna2xml.py
         """
-
         def count_distinct_descriptions():
             """
             Count distinct description lines.
@@ -378,29 +374,92 @@ class Rna(CachingMixin, models.Model):
                     rna_type = '/'.join(feature_names)
             return rna_type
 
+        def get_urs_description():
+            """
+            Get a description for a URS identifier, including multiple species.
+            """
+            if count_distinct_descriptions() == 1:
+                description_line = xrefs.first().accession.description
+                description_line = description_line[0].upper() + description_line[1:]
+            else:
+                rna_type = get_rna_type()
+                distinct_species = self.count_distinct_organisms
+                if taxid or distinct_species == 1:
+                    species = xrefs.first().accession.species
+                    description_line = '{species} {rna_type}'.format(
+                                        species=species, rna_type=rna_type)
+                else:
+                    description_line = ('{rna_type} from '
+                                        '{distinct_species} species').format(
+                                        rna_type=rna_type,
+                                        distinct_species=distinct_species)
+            return description_line
+
+        def get_xrefs_for_description(taxid):
+            """
+            Get cross-references for building a description line.
+            """
+            # try only active xrefs first
+            if taxid:
+                xrefs = self.xrefs.filter(deleted='N', taxid=taxid)
+            else:
+                xrefs = self.xrefs.filter(deleted='N')
+            # fall back onto all xrefs if no active ones are found
+            if not xrefs.exists():
+                if taxid:
+                    xrefs = self.xrefs.filter(taxid=taxid)
+                else:
+                    xrefs = self.xrefs.filter()
+            return xrefs.select_related('accession').\
+                         prefetch_related('accession__refs', 'accession__coordinates')
+
+        def score_xref(xref):
+            """
+            Return a score for a cross-reference based on its metadata.
+            """
+            paper_bonus = 0.2
+            genome_bonus = 0
+            gene_bonus = 0
+            note_bonus = 0
+            product_bonus = 0
+            rfam_full_alignment_penalty = 0
+            misc_rna_penalty = 0
+
+            if xref.has_genomic_coordinates():
+                genome_bonus = 1
+            if xref.accession.product:
+                product_bonus = 0.1
+            if xref.accession.gene:
+                gene_bonus = 0.1
+            if xref.db_id == 2 and not xref.is_rfam_seed():
+                rfam_full_alignment_penalty = -2
+            if xref.accession.feature_name == 'misc_RNA':
+                misc_rna_penalty = -2
+            if xref.accession.note:
+                note_bonus = 0.1
+
+            score = xref.accession.refs.count() * paper_bonus + \
+                genome_bonus + \
+                gene_bonus + \
+                product_bonus + \
+                note_bonus + \
+                rfam_full_alignment_penalty + \
+                misc_rna_penalty
+            return score
+
+        # get description
         if taxid and not self.xref_with_taxid_exists(taxid):
             taxid = None # ignore taxid
-
-        xrefs = self.xrefs
-        if taxid:
-            xrefs = xrefs.filter(taxid=taxid)
-
-        if count_distinct_descriptions() == 1:
-            description_line = xrefs.first().accession.description
-            description_line = description_line[0].upper() + description_line[1:]
+        xrefs = get_xrefs_for_description(taxid)
+        if not taxid:
+            return get_urs_description()
         else:
-            rna_type = get_rna_type()
-            distinct_species = self.count_distinct_organisms
-            if taxid or distinct_species == 1:
-                species = xrefs.first().accession.species
-                description_line = '{species} {rna_type}'.format(
-                                    species=species, rna_type=rna_type)
-            else:
-                description_line = ('{rna_type} from '
-                                    '{distinct_species} species').format(
-                                    rna_type=rna_type,
-                                    distinct_species=distinct_species)
-        return description_line
+            # pick one of expert database descriptions
+            scores = []
+            for xref in xrefs:
+                scores.append((score_xref(xref), xref.id))
+            scores.sort(key=lambda tup: tup[0], reverse=True)
+            return xrefs.filter(id=scores[0][1]).get().accession.description
 
 
 class DatabaseStats(models.Model):
