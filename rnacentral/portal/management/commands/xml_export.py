@@ -56,6 +56,7 @@ class Command(BaseCommand):
 
         make_option('--profile',
             default=False,
+            action='store_true',
             help='[Optional] Show cProfile information for profiling purposes'),
     )
     # shown with -h, --help
