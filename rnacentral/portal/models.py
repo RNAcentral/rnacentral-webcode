@@ -419,15 +419,25 @@ class Rna(CachingMixin, models.Model):
             Return a score for a cross-reference based on its metadata.
             """
             paper_bonus = 0.2
-            genome_bonus = 0
+            def get_genome_bonus():
+                """
+                Find if the xref has genome mapping.
+                Iterate over prefetched queryset to avoid hitting the database.
+                """
+                chromosomes = []
+                for coordinate in xref.accession.coordinates.all():
+                    chromosomes.append(coordinate.chromosome)
+                if not chromosomes:
+                    return 0
+                else:
+                    return 1
+            genome_bonus = get_genome_bonus()
             gene_bonus = 0
             note_bonus = 0
             product_bonus = 0
             rfam_full_alignment_penalty = 0
             misc_rna_penalty = 0
 
-            if xref.has_genomic_coordinates():
-                genome_bonus = 1
             if xref.accession.product:
                 product_bonus = 0.1
             if xref.accession.gene:
