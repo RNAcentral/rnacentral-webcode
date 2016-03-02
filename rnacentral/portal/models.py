@@ -124,7 +124,7 @@ class Rna(CachingMixin, models.Model):
         Use raw SQL query for better performance.
         """
         query = """
-        SELECT b.id, b.location, b.title, b.pmid as pubmed, b.doi
+        SELECT b.id, b.location, b.title, b.pmid as pubmed, b.doi, b.authors
         FROM
             (SELECT DISTINCT t3.id
             FROM xref t1, rnc_reference_map t2, RNC_REFERENCES t3
