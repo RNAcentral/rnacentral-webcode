@@ -457,9 +457,9 @@ class Rna(CachingMixin, models.Model):
             # pick one of expert database descriptions
             scores = []
             for xref in xrefs:
-                scores.append((score_xref(xref), xref.id))
+                scores.append((score_xref(xref), xref.accession.description))
             scores.sort(key=lambda tup: tup[0], reverse=True)
-            return xrefs.filter(id=scores[0][1]).get().accession.description
+            return scores[0][1]
 
 
 class DatabaseStats(models.Model):
