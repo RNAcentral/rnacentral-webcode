@@ -418,7 +418,6 @@ class Rna(CachingMixin, models.Model):
             """
             Return a score for a cross-reference based on its metadata.
             """
-            paper_bonus = 0.2
             def get_genome_bonus():
                 """
                 Find if the xref has genome mapping.
@@ -431,6 +430,8 @@ class Rna(CachingMixin, models.Model):
                     return 0
                 else:
                     return 1
+
+            paper_bonus = xref.accession.refs.count() * 0.2
             genome_bonus = get_genome_bonus()
             gene_bonus = 0
             note_bonus = 0
@@ -449,7 +450,7 @@ class Rna(CachingMixin, models.Model):
             if xref.accession.note:
                 note_bonus = 0.1
 
-            score = xref.accession.refs.count() * paper_bonus + \
+            score = paper_bonus + \
                 genome_bonus + \
                 gene_bonus + \
                 product_bonus + \
