@@ -159,8 +159,9 @@ class Rna(CachingMixin, models.Model):
         xrefs = self.xrefs
         if taxid:
             xrefs = xrefs.filter(taxid=taxid)
-        for xref in xrefs.iterator():
-            if xref.has_genomic_coordinates():
+        chromosomes = xrefs.all().values_list('accession__coordinates__chromosome', flat=True)
+        for chromosome in chromosomes:
+            if chromosome:
                 return True
         return False
 
