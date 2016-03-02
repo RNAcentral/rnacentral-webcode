@@ -1121,7 +1121,7 @@ class Xref(models.Model):
         Return true only if all exons are mapped to genomic coordinates.
         """
         chromosomes = self.accession.coordinates.values_list('chromosome', flat=True)
-        if not chromosomes or '' in chromosomes:
+        if not chromosomes:
             return False
         else:
             return True
