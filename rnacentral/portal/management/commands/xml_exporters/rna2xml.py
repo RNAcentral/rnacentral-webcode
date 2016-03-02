@@ -61,7 +61,6 @@ class RnaXmlExporter(OracleConnection):
             self.cursor.prepare(sql)
 
         self.data = dict()
-        self.descriptions = []
 
         # fields with redundant values; for example, a single sequence
         # can be associated with multiple taxids.
@@ -177,26 +176,12 @@ class RnaXmlExporter(OracleConnection):
             """
             self.data['rna_type'].add(get_rna_type())
 
-        def store_description():
-            """
-            Prepare data for generating entry description.
-            """
-            data = {
-                'expert_db': result['expert_db'],
-                'rna_type': get_rna_type(),
-                'product': result['product'],
-                'gene': result['gene'],
-                'deleted': result['deleted'],
-            }
-            self.descriptions.append(data)
-
         self.cursor.execute(None, {'upi': upi, 'taxid': taxid})
         for row in self.cursor:
             result = self.row_to_dict(row)
             store_redundant_fields()
             store_xrefs()
             store_rna_type()
-            store_description()
 
     def is_active(self):
         """
@@ -233,101 +218,6 @@ class RnaXmlExporter(OracleConnection):
         Return the latest release date.
         """
         return self.__first_or_last_seen('last')
-
-    def get_description(self):
-        """
-        if one ENA entry
-            use its description line
-        if more than one ENA entry:
-            if from 1 organism:
-                {species} {rna_type}
-                Example: Homo sapiens tRNA
-            if from multiple organisms:
-                {rna_type} from {x} species
-                Example: tRNA from 10 species
-                if multuple rna_types, join them by '/'
-
-        Using product or gene is tricky because the same entity can be
-        described in a number of ways, for example one sequence
-        has the following clearly redundant products:
-        tRNA-Phe, transfer RNA-Phe, tRNA-Phe (GAA), tRNA-Phe-GAA etc
-        """
-        db_scores = {
-            'MIRBASE': 100,
-            'REFSEQ': 90,
-            'LNCRNADB': 80,
-            'SGD': 70,
-            'DICTYBASE': 70,
-            'POMBASE': 70,
-            'WORMBASE': 70,
-            'GTRNADB': 60,
-            'VEGA': 60,
-            'RDP': 60,
-            'GREENGENES': 60,
-            'SILVA': 60,
-            'RFAM': 50,
-            'LNCIPEDIA': 50,
-            'NONCODE': 50,
-            'SRPDB': 50,
-            'SNOPY': 50,
-            'TMRNA_WEB': 50,
-            'TAIR': 40,
-            'ENA': 30,
-            'PDBE': 20,
-            'MODOMICS': 20,
-        }
-        for i, description in enumerate(self.descriptions):
-            if description['deleted'] or not description['product']:
-                score = 0
-            if description['expert_db'] in db_scores:
-                self.descriptions[i]['score'] = db_scores[description['expert_db']]
-            else:
-                self.descriptions[i]['score'] = 1
-
-        newlist = sorted(self.descriptions, key=lambda k: k['score'])
-        if newlist[-1]['product']:
-            result = next(iter(self.data['species'])) + ' ' + newlist[-1]['product']
-            if newlist[-1]['gene'] and newlist[-1]['gene'] not in description:
-                result += ', ' + newlist[-1]['gene']
-        else:
-            result = next(iter(self.data['species'])) + ' ' + newlist[-1]['rna_type']
-        return result
-
-        def count(source):
-            """
-            Convenience method for finding the number of distinct taxids, expert_dbs
-            and other arrays from self.data.
-            Example:
-            count('taxid')
-            """
-            if source in self.data:
-                return len(self.data[source])
-            else:
-                return None
-
-        num_descriptions = count('description')
-        if num_descriptions == 1:
-            description_line = next(iter(self.data['description']))
-            description_line = description_line[0].upper() + description_line[1:]
-        else:
-            if count('product') == 1:
-                rna_type = next(iter(self.data['product']))
-            elif count('gene') == 1:
-                rna_type = next(iter(self.data['gene']))
-            else:
-                rna_type = '/'.join(self.data['rna_type'])
-
-            distinct_species = count('species')
-            if distinct_species == 1:
-                species = next(iter(self.data['species']))
-                description_line = '{species} {rna_type}'.format(
-                                    species=species, rna_type=rna_type)
-            else:
-                description_line = ('{rna_type} from '
-                                    '{distinct_species} species').format(
-                                    rna_type=rna_type,
-                                    distinct_species=distinct_species)
-        return description_line
 
     def store_literature_references(self, rna, taxid):
         """
