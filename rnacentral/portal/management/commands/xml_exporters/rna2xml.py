@@ -280,7 +280,7 @@ class RnaXmlExporter(OracleConnection):
         self.data['upi'] = rna.upi
         self.data['md5'] = rna.md5
         self.data['length'] = rna.length
-        self.data['description_line'] = rna.get_description(taxid=taxid)
+        self.data['description_line'] = saxutils.escape(rna.get_description(taxid=taxid))
 
     def format_xml_entry(self, taxid):
         """
