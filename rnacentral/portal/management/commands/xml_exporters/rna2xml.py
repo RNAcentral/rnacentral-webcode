@@ -40,7 +40,7 @@ class RnaXmlExporter(OracleConnection):
             sql = """
             SELECT t1.taxid, t1.deleted,
                    t2.species, t2.organelle, t2.external_id,
-                   t2.description, t2.non_coding_id, t2.accession,
+                   t2.non_coding_id, t2.accession,
                    t2.function, t2.gene, t2.gene_synonym, t2.feature_name,
                    t2.ncrna_class, t2.product, t2.common_name, t2.note,
                    t2.parent_ac || '.' || t2.seq_version as parent_accession,
@@ -67,7 +67,7 @@ class RnaXmlExporter(OracleConnection):
         # these strings must match the SQL query return values
         # and will become keys in self.data
         self.redundant_fields = ['taxid', 'species', 'expert_db', 'organelle',
-                                 'created', 'last', 'deleted', 'description',
+                                 'created', 'last', 'deleted',
                                  'function', 'gene', 'gene_synonym', 'note',
                                  'product', 'common_name', 'parent_accession',]
         # other data fields for which the sets should be (re-)created
@@ -119,7 +119,7 @@ class RnaXmlExporter(OracleConnection):
             Store redundant data in sets in order to get distinct values.
             Escape '&', '<', and '>'.
             """
-            escape_fields = ['species', 'description', 'product', 'common_name',
+            escape_fields = ['species', 'product', 'common_name',
                              'function', 'gene', 'gene_synonym']
             for field in self.redundant_fields:
                 if result[field]:
