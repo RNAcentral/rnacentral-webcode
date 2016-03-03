@@ -306,6 +306,7 @@ class RnaXmlExporter(OracleConnection):
             text = []
             for value in self.data[field]:
                 if value: # organelle can be empty e.g.
+                    value = preprocess_data(field, value)
                     text.append(wrap_in_field_tag(field, value))
             return '\n'.join(text)
 
@@ -337,6 +338,14 @@ class RnaXmlExporter(OracleConnection):
             """
             text = re.sub('\n\s+\n', '\n', text) # delete empty lines (if gene_synonym is empty e.g. )
             return re.sub('\n +', '\n', text) # delete whitespace at the beginning of lines
+
+        def preprocess_data(field, value):
+            """
+            Final data clean up and reformatting.
+            """
+            if field == 'gene_synonym':
+                return value.replace(' ', ';') # EBI search team request
+            return value
 
         text = """
         <entry id="{upi}_{taxid}">
@@ -385,7 +394,7 @@ class RnaXmlExporter(OracleConnection):
                    common_name=format_field('common_name'),
                    function=format_field('function'),
                    gene=format_field('gene'),
-                   gene_synonym=format_field('gene_synonym').replace(' ', ';'),
+                   gene_synonym=format_field('gene_synonym'),
                    rna_type=format_field('rna_type'),
                    product=format_field('product'),
                    has_genomic_coordinates=wrap_in_field_tag('has_genomic_coordinates',
