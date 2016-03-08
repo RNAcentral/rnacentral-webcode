@@ -16,6 +16,7 @@ import django_rq
 import gzip
 import json
 import os
+import re
 import requests
 
 from django.conf import settings
@@ -59,7 +60,7 @@ def export_search_results(query, _format, hits):
                                               page_size=page_size)
         data = json.loads(requests.get(url).text)
         for entry in data['entries']:
-            rnacentral_ids.append(entry['id'])
+            rnacentral_ids.append(re.sub(r'_\d+$', '', entry['id']))
         return rnacentral_ids
 
     def format_output(rnacentral_ids):
