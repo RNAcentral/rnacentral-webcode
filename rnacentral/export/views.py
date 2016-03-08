@@ -17,7 +17,6 @@ import gzip
 import json
 import os
 import requests
-import socket
 
 from django.conf import settings
 from django.core.servers.basehttp import FileWrapper
