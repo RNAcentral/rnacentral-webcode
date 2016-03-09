@@ -113,7 +113,7 @@ def export_search_results(query, _format, hits):
         filename = os.path.join(settings.EXPORT_RESULTS_DIR,
                                 '%s.%s.gz' % (job.id, _format))
         start = 0
-        page_size = 100
+        page_size = 100 # max EBI search page size
 
         if _format in ['json', 'list']:
             archive = gzip.open(filename, 'wb')
