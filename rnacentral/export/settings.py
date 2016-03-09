@@ -20,6 +20,12 @@ EXPIRATION = 60*60*24*7 # seconds
 # maximum time to run the job
 MAX_RUN_TIME = 60*60*2 # seconds
 
+# path to esl-sfetch binary, part of Infernal package
+ESLSFETCH = ''
+
+# path to fasta database
+FASTA_DB = ''
+
 # override default parameters using local_settings.py
 try:
    from local_settings import *

@@ -18,6 +18,8 @@ import json
 import os
 import re
 import requests
+import subprocess as sub
+import tempfile
 
 from django.conf import settings
 from django.core.servers.basehttp import FileWrapper
@@ -29,8 +31,7 @@ from contextlib import closing
 from rq import get_current_job
 from rest_framework import renderers
 
-from apiv1.serializers import RnaFlatSerializer, RnaFastaSerializer
-from apiv1.views import RnaFastaRenderer
+from apiv1.serializers import RnaFlatSerializer
 from portal.models import Rna
 from settings import EBI_SEARCH_ENDPOINT, EXPIRATION, MAX_RUN_TIME, ESLSFETCH, \
                      FASTA_DB
@@ -68,13 +69,9 @@ def export_search_results(query, _format, hits):
         in the specified format.
         """
         if _format == 'list':
-            return '\n'.join(rnacentral_ids) + '\n'                
-        queryset = Rna.objects.filter(upi__in=rnacentral_ids).all()
-        if _format == 'fasta':
-            serializer = RnaFastaSerializer(queryset, many=True)
-            renderer = RnaFastaRenderer()
-            output = renderer.render(serializer.data)
+            return '\n'.join(rnacentral_ids) + '\n'
         elif _format == 'json':
+            queryset = Rna.objects.filter(upi__in=rnacentral_ids).all()
             serializer = RnaFlatSerializer(queryset, many=True)
             renderer = renderers.JSONRenderer()
             output = renderer.render(serializer.data)
@@ -84,6 +81,29 @@ def export_search_results(query, _format, hits):
             output = output.replace('"/api/v1/', '"http://rnacentral.org/api/v1/')
         return output
 
+    def run_easel(temp_file, filename):
+        """
+        Export RNAcentral ids saved in a temporary file using Easel esl-sfetch
+        for accessing the FASTA database.
+        """
+        # make sure that temporary file is saved to disk
+        temp_file.flush()
+        os.fsync(temp_file.fileno())
+        cmd = '{esl_binary} -f {fasta_db} {id_list} | gzip > {output}'.format(
+            esl_binary=ESLSFETCH,
+            fasta_db=FASTA_DB,
+            id_list=temp_file.name,
+            output=filename)
+        process = sub.Popen(cmd, stdout=sub.PIPE, stderr=sub.PIPE, shell=True)
+        output, errors = process.communicate()
+        return_code = process.returncode
+        temp_file.close()
+        if return_code != 0:
+            class EaselError(Exception):
+                """Raise when Easel exits with a non-zero status"""
+                pass
+            raise EaselError(errors, output + '\n' + cmd, return_code)
+
     def paginate_over_results():
         """
         Paginate over the results and write out the data to an archive.
@@ -92,26 +112,42 @@ def export_search_results(query, _format, hits):
         """
         filename = os.path.join(settings.EXPORT_RESULTS_DIR,
                                 '%s.%s.gz' % (job.id, _format))
-        archive = gzip.open(filename, 'wb')
         start = 0
         page_size = 100
+
+        if _format in ['json', 'list']:
+            archive = gzip.open(filename, 'wb')
         if _format == 'json':
             archive.write('[')
+        if _format == 'fasta':
+            f = tempfile.NamedTemporaryFile(delete=True,
+                dir=settings.EXPORT_RESULTS_DIR)
+
         while start < hits:
             max_end = start + page_size
             end = min(max_end, hits)
             rnacentral_ids = get_results_page(start, end)
-            text = format_output(rnacentral_ids)
-            archive.write(text)
+            if _format == 'fasta':
+                # write out RNAcentral ids to a temporary file
+                for _id in rnacentral_ids:
+                    f.write('{0}\n'.format(_id))
+            if _format in ['json', 'list']:
+                text = format_output(rnacentral_ids)
+                archive.write(text)
             if _format == 'json' and end != hits:
                 # join batches with commas except for the last iteration
                 archive.write(',\n')
             start = max_end
             job.meta['progress'] = round(float(start) * 100 / hits, 2)
             job.save()
+
         if _format == 'json':
             archive.write(']')
-        archive.close()
+            archive.close()
+        if _format == 'fasta':
+            run_easel(f, filename)
+        job.meta['progress'] = 100
+        job.save()
         return filename
 
     job = get_current_job()
