@@ -13,6 +13,7 @@ limitations under the License.
 
 {% load staticfiles %}
 {% load compress %}
+{% load portal_extras %}
 <!DOCTYPE html>
 <html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="rnacentralApp">
     <head>
@@ -215,5 +216,11 @@ limitations under the License.
             });
         </script>
         <!--Doorbell.io feedback-->
+
+        <script>
+          var global_settings = {
+            EBI_SEARCH_ENDPOINT: '{% get_ebi_search_endpoint %}',
+          };
+        </script>
     </body>
 </html>

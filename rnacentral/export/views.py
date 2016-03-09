@@ -33,8 +33,7 @@ from rest_framework import renderers
 
 from apiv1.serializers import RnaFlatSerializer
 from portal.models import Rna
-from settings import EBI_SEARCH_ENDPOINT, EXPIRATION, MAX_RUN_TIME, ESLSFETCH, \
-                     FASTA_DB
+from settings import EXPIRATION, MAX_RUN_TIME, ESLSFETCH, FASTA_DB
 
 
 def export_search_results(query, _format, hits):
@@ -52,7 +51,7 @@ def export_search_results(query, _format, hits):
         """
         rnacentral_ids = []
         page_size = end - start
-        url = ''.join([EBI_SEARCH_ENDPOINT,
+        url = ''.join([settings.EBI_SEARCH_ENDPOINT,
                       '?query={query}',
                       '&start={start}',
                       '&size={page_size}',
@@ -345,7 +344,7 @@ def submit_export_job(request):
         """
         Get the total number of results to be exported.
         """
-        url = ''.join([EBI_SEARCH_ENDPOINT,
+        url = ''.join([settings.EBI_SEARCH_ENDPOINT,
                       '?query={query}',
                       '&start=0',
                       '&size=0',

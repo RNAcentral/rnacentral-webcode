@@ -88,7 +88,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
     };
 
     var search_config = {
-        ebeye_base_url: 'http://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral',
+        ebeye_base_url: global_settings.EBI_SEARCH_ENDPOINT,
         rnacentral_base_url: get_base_url(),
         fields: ['description', 'active', 'length'],
         facetfields: [

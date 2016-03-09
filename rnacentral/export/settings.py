@@ -11,9 +11,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-# minimum query sequence length
-EBI_SEARCH_ENDPOINT = 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
-
 # Redis results expiration time
 EXPIRATION = 60*60*24*7 # seconds
 

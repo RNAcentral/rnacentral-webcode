@@ -12,6 +12,7 @@ limitations under the License.
 """
 
 from django import template
+from django.conf import settings
 from portal.config.expert_databases import expert_dbs
 
 register = template.Library()
@@ -37,3 +38,11 @@ def get_expert_databases_list():
     """
     imported_dbs = [x for x in expert_dbs if x['imported']]
     return sorted(imported_dbs, key=lambda x: x['name'].lower())
+
+@register.simple_tag
+def get_ebi_search_endpoint():
+    """
+    Get a settings value so that it can be added to the template and
+    passed to javascript.
+    """
+    return settings.EBI_SEARCH_ENDPOINT
