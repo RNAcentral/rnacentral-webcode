@@ -137,8 +137,8 @@ def export_search_results(query, _format, hits):
             if _format == 'json' and end != hits:
                 # join batches with commas except for the last iteration
                 archive.write(',\n')
-            start = max_end
             job.meta['progress'] = round(float(start) * 100 / hits, 2)
+            start = end
             job.save()
 
         if _format == 'json':
