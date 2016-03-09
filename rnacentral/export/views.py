@@ -32,9 +32,8 @@ from rest_framework import renderers
 from apiv1.serializers import RnaFlatSerializer, RnaFastaSerializer
 from apiv1.views import RnaFastaRenderer
 from portal.models import Rna
-
-
-EBI_SEARCH_ENDPOINT = 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
+from settings import EBI_SEARCH_ENDPOINT, EXPIRATION, MAX_RUN_TIME, ESLSFETCH, \
+                     FASTA_DB
 
 
 def export_search_results(query, _format, hits):
@@ -335,21 +334,19 @@ def submit_export_job(request):
         status = 404
         return JsonResponse(messages[status], status=status)
 
-    expiration = 60*60*24*7
-    max_run_time = 60*60
     try:
         queue = django_rq.get_queue()
         hits = get_hit_count(query)
         job = queue.enqueue_call(func=export_search_results,
                                  args=(query, _format, hits),
-                                 timeout=max_run_time,
-                                 result_ttl=expiration)
+                                 timeout=MAX_RUN_TIME,
+                                 result_ttl=EXPIRATION)
         job.meta['progress'] = 0
         job.meta['query'] = query
         job.meta['format'] = _format
         job.meta['hits'] = hits
         job.meta['expiration'] = datetime.datetime.now() + \
-                                 datetime.timedelta(seconds=expiration)
+                                 datetime.timedelta(seconds=EXPIRATION)
         job.save()
         return JsonResponse({'job_id': job.id})
     except:
