@@ -102,6 +102,7 @@ class RnaXmlExporter(OracleConnection):
             'md5': None,
             'boost': None,
             'length': 0,
+            'description_line': None,
         }
 
         # (re-)create sets for all data fields
