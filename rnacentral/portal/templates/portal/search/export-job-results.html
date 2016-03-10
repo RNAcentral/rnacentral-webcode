@@ -98,6 +98,18 @@ Exporting search results
       </div>
     </div>
 
+    <div class="row" ng-show="export.hits == 250000">
+      <div class="col-md-12">
+        <br>
+        <div class="alert alert-warning col-md-6" role="alert">
+          <p>
+            The maximum number of sequences that can be exported using the online interface is {{ export.hits | number }}.
+            Please <a href="" onclick="$('.doorbell-feedback').click()">let us know</a> if you need to export more data.
+          </p>
+        </div>
+      </div>
+    </div>
+
   </div> <!-- cloak -->
 
 </div>
