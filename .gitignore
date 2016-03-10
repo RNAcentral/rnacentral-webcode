@@ -107,7 +107,7 @@ rnacentral/rnacentral/django.log.1
 rnacentral/portal/management/commands/dev*
 
 # script for setting environment variables
-scripts/env.sh
+rnacentral/scripts/env.sh
 
 # supervisor
 supervisor/supervisord.pid

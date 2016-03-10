@@ -97,7 +97,7 @@ def collect_static_files():
     * move static files to the deployment location
     """
     with cd(env['rnacentral_site']), prefix(env['activate']), prefix(env['ld_library_path']), prefix(env['oracle_home']):
-        with prefix('source ../scripts/env.sh'):
+        with prefix('source scripts/env.sh'):
             run('python manage.py collectstatic --noinput')
 
 def flush_memcached():
@@ -111,7 +111,7 @@ def restart_django(restart_url):
     """
     Restart django process and visit the website.
     """
-    with cd(env['rnacentral_site']), prefix('source ../scripts/env.sh'):
+    with cd(env['rnacentral_site']), prefix('source scripts/env.sh'):
         run('touch rnacentral/wsgi.py')
         r = requests.get(restart_url)
         if r.status_code != 200:
