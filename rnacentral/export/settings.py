@@ -11,13 +11,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import os
+
+
 # Redis results expiration time
 EXPIRATION = 60*60*24*7 # seconds
 
 # maximum time to run the job
 MAX_RUN_TIME = 60*60*2 # seconds
 
-# maximum number of entries that can be paginated over in EBI search 
+# maximum number of entries that can be paginated over in EBI search
 MAX_OUTPUT = 250000
 
 # path to esl-sfetch binary, part of Infernal package
@@ -26,8 +29,15 @@ ESLSFETCH = ''
 # path to fasta database
 FASTA_DB = ''
 
+# path to export search results
+EXPORT_RESULTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'results')
+
 # override default parameters using local_settings.py
 try:
-   from local_settings import *
+    from local_settings import *
 except ImportError, e:
-   pass
+    pass
+
+# create destination for the search results files
+if not os.path.exists(EXPORT_RESULTS_DIR):
+    os.makedirs(EXPORT_RESULTS_DIR)

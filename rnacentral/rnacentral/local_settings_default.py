@@ -11,8 +11,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import os
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle',
@@ -69,8 +67,3 @@ RQ_QUEUES = {
         'REMOTE_SERVER': '',
     },
 }
-
-# destination for the search results files
-EXPORT_RESULTS_DIR = os.environ['RNACENTRAL_EXPORT_RESULTS_DIR']
-if not os.path.exists(EXPORT_RESULTS_DIR):
-    os.makedirs(EXPORT_RESULTS_DIR)

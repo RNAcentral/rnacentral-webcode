@@ -27,9 +27,6 @@ export RNACENTRAL_REDIS=
 # path to directory with memcached binary
 export RNACENTRAL_MEMCACHED=
 
-# path to directory where files with search results are stored
-export RNACENTRAL_EXPORT_RESULTS_DIR=
-
 # path to Oracle Instant Client libraries
 export ORACLE_HOME=
 export LD_LIBRARY_PATH=$ORACLE_HOME

@@ -33,7 +33,8 @@ from rest_framework import renderers
 
 from apiv1.serializers import RnaFlatSerializer
 from portal.models import Rna
-from settings import EXPIRATION, MAX_RUN_TIME, ESLSFETCH, FASTA_DB, MAX_OUTPUT
+from settings import EXPIRATION, MAX_RUN_TIME, ESLSFETCH, FASTA_DB, MAX_OUTPUT,\
+                     EXPORT_RESULTS_DIR
 
 
 def export_search_results(query, _format, hits):
@@ -109,7 +110,7 @@ def export_search_results(query, _format, hits):
         JSON requires special treatment in order to concatenate
         multiple batches
         """
-        filename = os.path.join(settings.EXPORT_RESULTS_DIR,
+        filename = os.path.join(EXPORT_RESULTS_DIR,
                                 '%s.%s.gz' % (job.id, _format))
         start = 0
         page_size = 100 # max EBI search page size
@@ -119,8 +120,7 @@ def export_search_results(query, _format, hits):
         if _format == 'json':
             archive.write('[')
         if _format == 'fasta':
-            f = tempfile.NamedTemporaryFile(delete=True,
-                dir=settings.EXPORT_RESULTS_DIR)
+            f = tempfile.NamedTemporaryFile(delete=True, dir=EXPORT_RESULTS_DIR)
 
         while start < hits:
             max_end = start + page_size
