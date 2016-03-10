@@ -33,7 +33,7 @@ from rest_framework import renderers
 
 from apiv1.serializers import RnaFlatSerializer
 from portal.models import Rna
-from settings import EXPIRATION, MAX_RUN_TIME, ESLSFETCH, FASTA_DB
+from settings import EXPIRATION, MAX_RUN_TIME, ESLSFETCH, FASTA_DB, MAX_OUTPUT
 
 
 def export_search_results(query, _format, hits):
@@ -349,8 +349,9 @@ def submit_export_job(request):
                       '&start=0',
                       '&size=0',
                       '&format=json']).format(query=query)
-        results = json.loads(requests.get(url).text)
-        return results['hitCount']
+        results = requests.get(url).json()
+        hits = min(results['hitCount'], MAX_OUTPUT)
+        return hits
 
     messages = {
         400: {'message': 'Query not specified'},

@@ -17,6 +17,9 @@ EXPIRATION = 60*60*24*7 # seconds
 # maximum time to run the job
 MAX_RUN_TIME = 60*60*2 # seconds
 
+# maximum number of entries that can be paginated over in EBI search 
+MAX_OUTPUT = 250000
+
 # path to esl-sfetch binary, part of Infernal package
 ESLSFETCH = ''
 
