@@ -169,12 +169,10 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
         }
 
         /**
-         * Create an RNAcentral proxy query url which includes EBeye query url.
+         * Create an EBeye query url.
          */
         function get_query_url() {
-            var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query).replace('{START}', start);
-            var url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url));
-            return url;
+            return query_urls.ebeye_search.replace('{QUERY}', query).replace('{START}', start);
         }
 
         /**

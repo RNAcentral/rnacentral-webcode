@@ -37,26 +37,6 @@ XREF_PAGE_SIZE = 1000
 # Function-based views #
 ########################
 
-def ebeye_proxy(request):
-    """
-    Internal API.
-    Get EBeye search URL from the client and send back the results.
-    Bypasses EBeye same-origin policy.
-    """
-    url = request.GET['url']
-    try:
-        ebeye_response = requests.get(url)
-        if ebeye_response.status_code == 200:
-            response = HttpResponse(ebeye_response.text)
-            patch_cache_control(response, no_cache=True, no_store=True,
-                                must_revalidate=True)
-            return response
-        else:
-            raise Http404
-    except:
-        raise Http404
-
-
 @never_cache
 def get_xrefs_data(request, upi, taxid=None):
     """
