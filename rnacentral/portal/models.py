@@ -11,6 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Min, Max
@@ -444,12 +445,14 @@ class Rna(CachingMixin, models.Model):
             return score
 
         if not recompute:
-            queryset = RnaPrecomputed.objects.filter(upi=self.upi)
             if taxid:
-                queryset = queryset.filter(taxid=taxid)
+                queryset = RnaPrecomputed.objects.filter(taxid=taxid)
             else:
-                queryset = queryset.filter(taxid__isnull=True)
-            obj = queryset.get()
+                queryset = RnaPrecomputed.objects.filter(taxid__isnull=True)
+            try:
+                obj = queryset.get(upi=self.upi)
+            except ObjectDoesNotExist:
+                obj = None
             if obj:
                 return obj.description
         # get description
