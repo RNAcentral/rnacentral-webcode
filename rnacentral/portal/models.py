@@ -82,19 +82,6 @@ class ChemicalComponent(CachingMixin, models.Model):
             return None
 
 
-class RnaPrecomputedData(models.Model):
-    id = models.AutoField(primary_key=True)
-    upi = models.OneToOneField('Rna', db_column='upi', to_field='upi', related_name='precomputed', unique=True, db_index=True)
-    description = models.CharField(max_length=250, db_index=True)
-    count_human_xrefs = models.PositiveIntegerField(db_index=True)
-    count_distinct_organisms = models.PositiveIntegerField(db_index=True)
-    has_human_genomic_coordinates = models.NullBooleanField(db_index=True)
-    N_symbols = models.PositiveSmallIntegerField(db_index=True)
-
-    class Meta:
-        db_table = 'rnc_rna_precomputed_data'
-
-
 class Rna(CachingMixin, models.Model):
     id = models.IntegerField(db_column='id')
     upi = models.CharField(max_length=13, db_index=True, primary_key=True)
