@@ -120,11 +120,11 @@ class FastaExporter(FtpBase):
                     self.filehandles['nhmmer_db_excluded'].write(fasta)
                 # species specific identifiers
                 sequence = re.sub(r'^>.+?\n', '', fasta) # delete first line
-                template = ">{upi}_{taxid}\n{sequence}"
+                template = ">{upi}_{taxid} {description}\n{sequence}"
                 queryset = rna.xrefs.filter(deleted='N')
                 for taxid in set(queryset.values_list('taxid', flat=True)):
                     species_specific_fasta = template.format(upi=result['upi'],
-                        taxid=taxid, sequence=sequence)
+                        taxid=taxid, sequence=sequence, description=rna.get_description(taxid=taxid))
                     self.filehandles['species_specific'].write(species_specific_fasta)
                 counter += 1
 
