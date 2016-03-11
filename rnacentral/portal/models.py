@@ -299,7 +299,7 @@ class Rna(CachingMixin, models.Model):
         else:
             return False
 
-    def get_description(self, taxid=None):
+    def get_description(self, taxid=None, recompute=False):
         """
         Get entry description based on its xrefs.
         If taxid is provided, use only species-specific xrefs.
@@ -446,6 +446,15 @@ class Rna(CachingMixin, models.Model):
                 misc_rna_penalty
             return score
 
+        if not recompute:
+            queryset = RnaPrecomputed.objects.filter(upi=self.upi)
+            if taxid:
+                queryset = queryset.filter(taxid=taxid)
+            else:
+                queryset = queryset.filter(taxid__isnull=True)
+            obj = queryset.get()
+            if obj:
+                return obj.description
         # get description
         if taxid and not self.xref_with_taxid_exists(taxid):
             taxid = None # ignore taxid
