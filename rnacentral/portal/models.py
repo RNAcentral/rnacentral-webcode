@@ -16,7 +16,6 @@ from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Min, Max
 from django.utils.functional import cached_property
-from django.template.defaultfilters import pluralize
 from caching.base import CachingManager, CachingMixin # django-cache-machine
 from portal.config.genomes import genomes as rnacentral_genomes
 from portal.config.expert_databases import expert_dbs as rnacentral_expert_dbs

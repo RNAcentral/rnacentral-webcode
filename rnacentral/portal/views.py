@@ -14,13 +14,11 @@ limitations under the License.
 import json
 import math
 import re
-import requests
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, render_to_response, redirect
 from django.template import TemplateDoesNotExist
-from django.utils.cache import patch_cache_control
 from django.views.decorators.cache import cache_page, never_cache
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
