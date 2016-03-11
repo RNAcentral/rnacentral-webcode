@@ -461,6 +461,18 @@ class Rna(CachingMixin, models.Model):
             return scores[0][1]
 
 
+class RnaPrecomputed(models.Model):
+    """
+    """
+    id = models.CharField(max_length=22, primary_key=True)
+    upi = models.ForeignKey('Rna', db_column='upi', to_field='upi', related_name='precomputed')
+    taxid = models.IntegerField(db_index=True, null=True)
+    description = models.CharField(max_length=250)
+
+    class Meta:
+        db_table = 'rnc_rna_precomputed'
+
+
 class DatabaseStats(models.Model):
     """
     These data are kept in a separate table because accessing CLOBs is slow,
