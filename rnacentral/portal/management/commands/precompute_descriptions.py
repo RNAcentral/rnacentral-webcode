@@ -119,7 +119,7 @@ class Command(BaseCommand):
             for taxid in set(rna.xrefs.values_list('taxid', flat=True)):
                 _id = '{0}_{1}'.format(rna.upi, taxid)
                 defaults = {
-                    'description': rna.get_description(recompute=True),
+                    'description': rna.get_description(recompute=True, taxid=taxid),
                     'upi_id': rna.upi,
                     'taxid': taxid,
                 }
