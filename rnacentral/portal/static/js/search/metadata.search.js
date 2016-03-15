@@ -205,8 +205,6 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
                         term = term.toUpperCase();
                     }
                     words[i] = term + ':';
-                } else if ( words[i].match(/\-/)) {
-                    // do not add wildcards to words with hyphens
                 } else if ( words[i].match(/\//)) {
                     // do not add wildcards to DOIs
                     words[i] = escape_search_term(words[i]);
