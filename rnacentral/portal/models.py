@@ -768,7 +768,7 @@ class Accession(models.Model):
             'DICTYBASE': 'http://dictybase.org/gene/{id}',
             'SILVA': 'http://www.arb-silva.de/browser/{lsu_ssu}/silva/{id}',
             'POMBASE': 'http://www.pombase.org/spombe/result/{id}',
-            'GREENGENES': 'http://www.ebi.ac.uk/ena/data/view/{id}',
+            'GREENGENES': 'http://www.ebi.ac.uk/ena/data/view/{id}.{version}',
             'NONCODE': 'http://www.bioinfo.org/NONCODEv4/show_rna.php?id={id}',
             'LNCIPEDIA': 'http://www.lncipedia.org/db/transcript/{id}',
             'MODOMICS': 'http://modomics.genesilico.pl/sequences/list/{id}',
@@ -788,7 +788,7 @@ class Accession(models.Model):
                 return urls[self.database].format(id=self.optional_id,
                     lsu_ssu='ssu' if 'small' in self.product else 'lsu')
             elif self.database == 'GREENGENES':
-                return urls[self.database].format(id='.'.join([self.parent_ac, str(self.seq_version)]))
+                return urls[self.database].format(id=self.parent_ac, version=self.seq_version)
             elif self.database == 'REFSEQ':
                 return urls[self.database].format(id=self.external_id, version=self.seq_version)
             return urls[self.database].format(id=self.external_id)
