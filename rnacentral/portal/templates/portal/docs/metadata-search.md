@@ -65,9 +65,9 @@ Please note that "field value" **must be enclosed in double quotes**.
 
 	*Example*: `description:"16S"`
 
-* **length**
+* **length** (supports range queries)
 
-	*Example*: `length:"1500"`
+	*Example*: `length:"1500"`, `length:[9000 to 10000]`
 
 * **author**
 

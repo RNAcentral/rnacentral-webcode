@@ -190,6 +190,14 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
 
             apply_species_specific_filtering();
 
+            // replace length query with a placeholder, example: length:[100 TO 200]
+            var length_clause = query.match(/length\:\[\d+\s+to\s+\d+\]/i);
+            var placeholder = 'length_clause';
+            if (length_clause) {
+              query = query.replace(length_clause[0], placeholder);
+              length_clause[0] = length_clause[0].replace(/to/i, 'TO');
+            }
+
             var words = query.match(/[^\s"]+|"[^"]*"/g);
             var array_length = words.length;
             for (var i = 0; i < array_length; i++) {
@@ -225,6 +233,10 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
             }
             query = words.join(' ');
             query = query.replace(/\: /g, ':'); // to avoid spaces after faceted search terms
+            // replace placeholder with the original search term
+            if (length_clause) {
+              query = query.replace(placeholder + '*', length_clause[0]);
+            }
             result._query = query;
             return query;
 
