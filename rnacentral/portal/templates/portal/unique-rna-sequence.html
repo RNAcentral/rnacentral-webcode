@@ -17,12 +17,12 @@ limitations under the License.
 
 {% block meta_tags %}
     {{ block.super }}
-    <meta name="description" content="{{ context.description }} ({{ rna.length }} nucleotides)"/>
-    <meta name="twitter:description" content="{{ context.description }} ({{ rna.length }} nucleotides)">    
+    <meta name="description" content="{{ context.description }} | {{ rna.upi }}"/>
+    <meta name="twitter:description" content="{{ context.description }} | {{ rna.upi }}">
 {% endblock %}
 
 {% block title %}
-{{ rna.upi }}
+  {{ context.description }} | {{ rna.upi }}
 {% endblock %}
 
 {% block content %}
