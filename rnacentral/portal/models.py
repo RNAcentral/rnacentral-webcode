@@ -756,7 +756,7 @@ class Accession(models.Model):
             'MIRBASE': 'http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc={id}',
             'TMRNA_WEB': 'http://bioinformatics.sandia.gov/tmrna/seqs/{id}',
             'LNCRNADB': 'http://www.lncrnadb.org/{id}',
-            'REFSEQ': 'http://www.ncbi.nlm.nih.gov/nuccore/{id}',
+            'REFSEQ': 'http://www.ncbi.nlm.nih.gov/nuccore/{id}.{version}',
             'RDP': 'http://rdp.cme.msu.edu/hierarchy/detail.jsp?seqid={id}',
             'SNOPY': 'http://snoopy.med.miyazaki-u.ac.jp/snorna_db.cgi?mode=sno_info&id={id}',
             'PDBE': 'http://www.ebi.ac.uk/pdbe-srv/view/entry/{id}',
@@ -789,6 +789,8 @@ class Accession(models.Model):
                     lsu_ssu='ssu' if 'small' in self.product else 'lsu')
             elif self.database == 'GREENGENES':
                 return urls[self.database].format(id='.'.join([self.parent_ac, str(self.seq_version)]))
+            elif self.database == 'REFSEQ':
+                return urls[self.database].format(id=self.external_id, version=self.seq_version)
             return urls[self.database].format(id=self.external_id)
         else:
             return ''
