@@ -321,6 +321,8 @@ class RnaXmlExporter(OracleConnection):
             """
             text = []
             for xref in self.data['xrefs']:
+                if not xref[1]:
+                    continue
                 text.append('<ref dbname="{0}" dbkey="{1}" />'.format(*xref))
             for taxid in self.data['taxid']:
                 text.append('<ref dbkey="{0}" dbname="ncbi_taxonomy_id" />'.format(taxid))
