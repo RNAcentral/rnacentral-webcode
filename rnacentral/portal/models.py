@@ -209,7 +209,11 @@ class Rna(CachingMixin, models.Model):
         """
         Count the number of distinct taxids referenced by the sequence.
         """
-        return self.xrefs.values('accession__species').distinct().count()
+        queryset = self.xrefs.values('accession__species')
+        results = queryset.filter(deleted='N').distinct().count()
+        if not results:
+            results = queryset.distinct().count()
+        return results
 
     def get_distinct_database_names(self, taxid=None):
         """
@@ -305,39 +309,54 @@ class Rna(CachingMixin, models.Model):
             """
             Count distinct description lines.
             """
-            results = xrefs.values_list('accession__description', flat=True)
-            return results.distinct().count()
+            queryset = xrefs.values_list('accession__description', flat=True)
+            results = queryset.filter(deleted='N').distinct().count()
+            if not results:
+                results = queryset.distinct().count()
+            return results
 
         def get_distinct_products():
             """
             Get distinct non-null product values as a list.
             """
-            results = xrefs.values_list('accession__product', flat=True).\
-                            filter(accession__product__isnull=False)
-            return results.distinct()
+            queryset = xrefs.values_list('accession__product', flat=True).\
+                             filter(accession__product__isnull=False)
+            results = queryset.filter(deleted='N').distinct()
+            if not results:
+                results = queryset.distinct()
+            return results
 
         def get_distinct_genes():
             """
             Get distinct non-null gene values as a list.
             """
-            results = xrefs.values_list('accession__gene', flat=True).\
-                            filter(accession__gene__isnull=False)
-            return results.distinct()
+            queryset = xrefs.values_list('accession__gene', flat=True).\
+                             filter(accession__gene__isnull=False)
+            results = queryset.filter(deleted='N').distinct()
+            if not results:
+                results = queryset.distinct()
+            return results
 
         def get_distinct_feature_names():
             """
             Get distinct feature names as a list.
             """
-            results = xrefs.values_list('accession__feature_name', flat=True)
-            return results.distinct()
+            queryset = xrefs.values_list('accession__feature_name', flat=True)
+            results = queryset.filter(deleted='N').distinct()
+            if not results:
+                results = queryset.distinct()
+            return results
 
         def get_distinct_ncrna_classes():
             """
             For ncRNA features, get distinct ncrna_class values as a list.
             """
-            results = xrefs.values_list('accession__ncrna_class', flat=True).\
-                            filter(accession__ncrna_class__isnull=False)
-            return results.distinct()
+            queryset = xrefs.values_list('accession__ncrna_class', flat=True).\
+                             filter(accession__ncrna_class__isnull=False)
+            results = queryset.filter(deleted='N').distinct()
+            if not results:
+                results = queryset.distinct()
+            return results
 
         def get_rna_type():
             """
