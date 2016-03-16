@@ -373,6 +373,8 @@ class Rna(CachingMixin, models.Model):
                 feature_names = get_distinct_feature_names()
                 if feature_names[0] == 'ncRNA' and len(feature_names) == 1:
                     ncrna_classes = get_distinct_ncrna_classes()
+                    if len(ncrna_classes) > 1 and 'misc_RNA' in ncrna_classes:
+                        ncrna_classes.remove('misc_RNA')
                     rna_type = '/'.join(ncrna_classes)
                 else:
                     rna_type = '/'.join(feature_names)
