@@ -39,7 +39,7 @@ class RnaXmlExporter(OracleConnection):
             """
             sql = """
             SELECT t1.taxid, t1.deleted,
-                   t2.species, t2.organelle, t2.external_id,
+                   t2.species, t2.organelle, t2.external_id, t2.optional_id,
                    t2.non_coding_id, t2.accession,
                    t2.function, t2.gene, t2.gene_synonym, t2.feature_name,
                    t2.ncrna_class, t2.product, t2.common_name, t2.note,
@@ -69,7 +69,8 @@ class RnaXmlExporter(OracleConnection):
         self.redundant_fields = ['taxid', 'species', 'expert_db', 'organelle',
                                  'created', 'last', 'deleted',
                                  'function', 'gene', 'gene_synonym', 'note',
-                                 'product', 'common_name', 'parent_accession',]
+                                 'product', 'common_name', 'parent_accession',
+                                 'optional_id']
         # other data fields for which the sets should be (re-)created
         self.data_fields = ['rna_type', 'authors', 'journal', 'popular_species',
                             'pub_title', 'pub_id', 'insdc_submission', 'xrefs',]
@@ -132,6 +133,12 @@ class RnaXmlExporter(OracleConnection):
             """
             Store xrefs as (database, accession) tuples in self.data['xrefs'].
             """
+            if result['deleted'] == 'Y':
+                return
+            # skip PDB and SILVA optional_ids because for PDB it's chain id
+            # and for SILVA it's INSDC accessions
+            if result['expert_db'] not in ['SILVA', 'PDB'] and result['optional_id']:
+                self.data['xrefs'].add((result['expert_db'], result['optional_id']))
             # expert_db should not contain spaces, EBeye requirement
             result['expert_db'] = result['expert_db'].replace(' ','_').upper()
             # an expert_db entry
