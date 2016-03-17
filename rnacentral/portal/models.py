@@ -789,13 +789,8 @@ class Accession(models.Model):
             'DICTYBASE': 'http://dictybase.org/gene/{id}',
             'SILVA': 'http://www.arb-silva.de/browser/{lsu_ssu}/silva/{id}',
             'POMBASE': 'http://www.pombase.org/spombe/result/{id}',
-<<<<<<< HEAD
-            'GREENGENES': 'http://www.ebi.ac.uk/ena/data/view/{id}',
-            'NONCODE': 'http://www.noncode.org/show_rna.php?id={id}',
-=======
             'GREENGENES': 'http://www.ebi.ac.uk/ena/data/view/{id}.{version}',
-            'NONCODE': 'http://www.bioinfo.org/NONCODEv4/show_rna.php?id={id}',
->>>>>>> search-update
+            'NONCODE': 'http://www.noncode.org/show_rna.php?id={id}',
             'LNCIPEDIA': 'http://www.lncipedia.org/db/transcript/{id}',
             'MODOMICS': 'http://modomics.genesilico.pl/sequences/list/{id}',
         }
