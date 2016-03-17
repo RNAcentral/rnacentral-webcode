@@ -16,8 +16,10 @@ import django_rq
 import gzip
 import json
 import os
+import re
 import requests
-import socket
+import subprocess as sub
+import tempfile
 
 from django.conf import settings
 from django.core.servers.basehttp import FileWrapper
@@ -29,12 +31,10 @@ from contextlib import closing
 from rq import get_current_job
 from rest_framework import renderers
 
-from apiv1.serializers import RnaFlatSerializer, RnaFastaSerializer
-from apiv1.views import RnaFastaRenderer
+from apiv1.serializers import RnaFlatSerializer
 from portal.models import Rna
-
-
-EBI_SEARCH_ENDPOINT = 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
+from settings import EXPIRATION, MAX_RUN_TIME, ESLSFETCH, FASTA_DB, MAX_OUTPUT,\
+                     EXPORT_RESULTS_DIR
 
 
 def export_search_results(query, _format, hits):
@@ -52,7 +52,7 @@ def export_search_results(query, _format, hits):
         """
         rnacentral_ids = []
         page_size = end - start
-        url = ''.join([EBI_SEARCH_ENDPOINT,
+        url = ''.join([settings.EBI_SEARCH_ENDPOINT,
                       '?query={query}',
                       '&start={start}',
                       '&size={page_size}',
@@ -60,7 +60,7 @@ def export_search_results(query, _format, hits):
                                               page_size=page_size)
         data = json.loads(requests.get(url).text)
         for entry in data['entries']:
-            rnacentral_ids.append(entry['id'])
+            rnacentral_ids.append(re.sub(r'_\d+$', '', entry['id']))
         return rnacentral_ids
 
     def format_output(rnacentral_ids):
@@ -69,13 +69,9 @@ def export_search_results(query, _format, hits):
         in the specified format.
         """
         if _format == 'list':
-            return '\n'.join(rnacentral_ids) + '\n'                
-        queryset = Rna.objects.filter(upi__in=rnacentral_ids).all()
-        if _format == 'fasta':
-            serializer = RnaFastaSerializer(queryset, many=True)
-            renderer = RnaFastaRenderer()
-            output = renderer.render(serializer.data)
+            return '\n'.join(rnacentral_ids) + '\n'
         elif _format == 'json':
+            queryset = Rna.objects.filter(upi__in=rnacentral_ids).all()
             serializer = RnaFlatSerializer(queryset, many=True)
             renderer = renderers.JSONRenderer()
             output = renderer.render(serializer.data)
@@ -85,34 +81,72 @@ def export_search_results(query, _format, hits):
             output = output.replace('"/api/v1/', '"http://rnacentral.org/api/v1/')
         return output
 
+    def run_easel(temp_file, filename):
+        """
+        Export RNAcentral ids saved in a temporary file using Easel esl-sfetch
+        for accessing the FASTA database.
+        """
+        # make sure that temporary file is saved to disk
+        temp_file.flush()
+        os.fsync(temp_file.fileno())
+        cmd = '{esl_binary} -f {fasta_db} {id_list} | gzip > {output}'.format(
+            esl_binary=ESLSFETCH,
+            fasta_db=FASTA_DB,
+            id_list=temp_file.name,
+            output=filename)
+        process = sub.Popen(cmd, stdout=sub.PIPE, stderr=sub.PIPE, shell=True)
+        output, errors = process.communicate()
+        return_code = process.returncode
+        temp_file.close()
+        if return_code != 0:
+            class EaselError(Exception):
+                """Raise when Easel exits with a non-zero status"""
+                pass
+            raise EaselError(errors, output + '\n' + cmd, return_code)
+
     def paginate_over_results():
         """
         Paginate over the results and write out the data to an archive.
         JSON requires special treatment in order to concatenate
         multiple batches
         """
-        filename = os.path.join(settings.EXPORT_RESULTS_DIR,
+        filename = os.path.join(EXPORT_RESULTS_DIR,
                                 '%s.%s.gz' % (job.id, _format))
-        archive = gzip.open(filename, 'wb')
         start = 0
-        page_size = 100
+        page_size = 100 # max EBI search page size
+
+        if _format in ['json', 'list']:
+            archive = gzip.open(filename, 'wb')
         if _format == 'json':
             archive.write('[')
+        if _format == 'fasta':
+            f = tempfile.NamedTemporaryFile(delete=True, dir=EXPORT_RESULTS_DIR)
+
         while start < hits:
             max_end = start + page_size
             end = min(max_end, hits)
             rnacentral_ids = get_results_page(start, end)
-            text = format_output(rnacentral_ids)
-            archive.write(text)
+            if _format == 'fasta':
+                # write out RNAcentral ids to a temporary file
+                for _id in rnacentral_ids:
+                    f.write('{0}\n'.format(_id))
+            if _format in ['json', 'list']:
+                text = format_output(rnacentral_ids)
+                archive.write(text)
             if _format == 'json' and end != hits:
                 # join batches with commas except for the last iteration
                 archive.write(',\n')
-            start = max_end
-            job.meta['progress'] = round(float(start) * 100 / hits, 2)
+            start = end
+            job.meta['progress'] = min(round(float(start) * 100 / hits, 2), 85)
             job.save()
+
         if _format == 'json':
             archive.write(']')
-        archive.close()
+            archive.close()
+        if _format == 'fasta':
+            run_easel(f, filename)
+        job.meta['progress'] = 100
+        job.save()
         return filename
 
     job = get_current_job()
@@ -310,13 +344,14 @@ def submit_export_job(request):
         """
         Get the total number of results to be exported.
         """
-        url = ''.join([EBI_SEARCH_ENDPOINT,
+        url = ''.join([settings.EBI_SEARCH_ENDPOINT,
                       '?query={query}',
                       '&start=0',
                       '&size=0',
                       '&format=json']).format(query=query)
-        results = json.loads(requests.get(url).text)
-        return results['hitCount']
+        results = requests.get(url).json()
+        hits = min(results['hitCount'], MAX_OUTPUT)
+        return hits
 
     messages = {
         400: {'message': 'Query not specified'},
@@ -335,21 +370,19 @@ def submit_export_job(request):
         status = 404
         return JsonResponse(messages[status], status=status)
 
-    expiration = 60*60*24*7
-    max_run_time = 60*60
     try:
         queue = django_rq.get_queue()
         hits = get_hit_count(query)
         job = queue.enqueue_call(func=export_search_results,
                                  args=(query, _format, hits),
-                                 timeout=max_run_time,
-                                 result_ttl=expiration)
+                                 timeout=MAX_RUN_TIME,
+                                 result_ttl=EXPIRATION)
         job.meta['progress'] = 0
         job.meta['query'] = query
         job.meta['format'] = _format
         job.meta['hits'] = hits
         job.meta['expiration'] = datetime.datetime.now() + \
-                                 datetime.timedelta(seconds=expiration)
+                                 datetime.timedelta(seconds=EXPIRATION)
         job.save()
         return JsonResponse({'job_id': job.id})
     except:

@@ -39,8 +39,8 @@ class RnaXmlExporter(OracleConnection):
             """
             sql = """
             SELECT t1.taxid, t1.deleted,
-                   t2.species, t2.organelle, t2.external_id,
-                   t2.description, t2.non_coding_id, t2.accession,
+                   t2.species, t2.organelle, t2.external_id, t2.optional_id,
+                   t2.non_coding_id, t2.accession,
                    t2.function, t2.gene, t2.gene_synonym, t2.feature_name,
                    t2.ncrna_class, t2.product, t2.common_name, t2.note,
                    t2.parent_ac || '.' || t2.seq_version as parent_accession,
@@ -55,7 +55,8 @@ class RnaXmlExporter(OracleConnection):
                   t1.created = t4.id AND
                   t1.last = t5.id AND
                   t1.upi = t6.upi AND
-                  t1.upi = :upi
+                  t1.upi = :upi AND
+                  t1.taxid = :taxid
             """
             self.cursor.prepare(sql)
 
@@ -66,9 +67,10 @@ class RnaXmlExporter(OracleConnection):
         # these strings must match the SQL query return values
         # and will become keys in self.data
         self.redundant_fields = ['taxid', 'species', 'expert_db', 'organelle',
-                                 'created', 'last', 'deleted', 'description',
+                                 'created', 'last', 'deleted',
                                  'function', 'gene', 'gene_synonym', 'note',
-                                 'product', 'common_name', 'parent_accession',]
+                                 'product', 'common_name', 'parent_accession',
+                                 'optional_id']
         # other data fields for which the sets should be (re-)created
         self.data_fields = ['rna_type', 'authors', 'journal', 'popular_species',
                             'pub_title', 'pub_id', 'insdc_submission', 'xrefs',]
@@ -101,13 +103,14 @@ class RnaXmlExporter(OracleConnection):
             'md5': None,
             'boost': None,
             'length': 0,
+            'description_line': None,
         }
 
         # (re-)create sets for all data fields
         for field in self.redundant_fields + self.data_fields:
             self.data[field] = set()
 
-    def retrieve_data_from_database(self, upi):
+    def retrieve_data_from_database(self, upi, taxid):
         """
         Some data is retrieved directly from the database because
         django ORM creates too much overhead.
@@ -118,7 +121,7 @@ class RnaXmlExporter(OracleConnection):
             Store redundant data in sets in order to get distinct values.
             Escape '&', '<', and '>'.
             """
-            escape_fields = ['species', 'description', 'product', 'common_name',
+            escape_fields = ['species', 'product', 'common_name',
                              'function', 'gene', 'gene_synonym']
             for field in self.redundant_fields:
                 if result[field]:
@@ -130,6 +133,12 @@ class RnaXmlExporter(OracleConnection):
             """
             Store xrefs as (database, accession) tuples in self.data['xrefs'].
             """
+            if result['deleted'] == 'Y':
+                return
+            # skip PDB and SILVA optional_ids because for PDB it's chain id
+            # and for SILVA it's INSDC accessions
+            if result['expert_db'] not in ['SILVA', 'PDB'] and result['optional_id']:
+                self.data['xrefs'].add((result['expert_db'], result['optional_id']))
             # expert_db should not contain spaces, EBeye requirement
             result['expert_db'] = result['expert_db'].replace(' ','_').upper()
             # an expert_db entry
@@ -155,6 +164,16 @@ class RnaXmlExporter(OracleConnection):
                 for eco_term in re.findall('ECO\:\d+', result['note']):
                     self.data['xrefs'].add(('ECO', eco_term))
 
+        def get_rna_type():
+            """
+            Use either feature name or ncRNA class (when feature is 'ncRNA')
+            """
+            if result['ncrna_class']:
+                rna_type = result['ncrna_class']
+            else:
+                rna_type = result['feature_name']
+            return rna_type.replace('_', ' ')
+
         def store_rna_type():
             """
             Store distinct RNA type annotations in a set.
@@ -163,13 +182,9 @@ class RnaXmlExporter(OracleConnection):
             If an entry is any other RNA feature, use that feature_name
             as rna_type.
             """
-            if result['ncrna_class']:
-                rna_type = result['ncrna_class']
-            else:
-                rna_type = result['feature_name']
-            self.data['rna_type'].add(rna_type.replace('_', ' '))
+            self.data['rna_type'].add(get_rna_type())
 
-        self.cursor.execute(None, {'upi': upi})
+        self.cursor.execute(None, {'upi': upi, 'taxid': taxid})
         for row in self.cursor:
             result = self.row_to_dict(row)
             store_redundant_fields()
@@ -212,62 +227,7 @@ class RnaXmlExporter(OracleConnection):
         """
         return self.__first_or_last_seen('last')
 
-    def get_description(self):
-        """
-        if one ENA entry
-            use its description line
-        if more than one ENA entry:
-            if from 1 organism:
-                {species} {rna_type}
-                Example: Homo sapiens tRNA
-            if from multiple organisms:
-                {rna_type} from {x} species
-                Example: tRNA from 10 species
-                if multuple rna_types, join them by '/'
-
-        Using product or gene is tricky because the same entity can be
-        described in a number of ways, for example one sequence
-        has the following clearly redundant products:
-        tRNA-Phe, transfer RNA-Phe, tRNA-Phe (GAA), tRNA-Phe-GAA etc
-        """
-
-        def count(source):
-            """
-            Convenience method for finding the number of distinct taxids, expert_dbs
-            and other arrays from self.data.
-            Example:
-            count('taxid')
-            """
-            if source in self.data:
-                return len(self.data[source])
-            else:
-                return None
-
-        num_descriptions = count('description')
-        if num_descriptions == 1:
-            description_line = next(iter(self.data['description']))
-            description_line = description_line[0].upper() + description_line[1:]
-        else:
-            if count('product') == 1:
-                rna_type = next(iter(self.data['product']))
-            elif count('gene') == 1:
-                rna_type = next(iter(self.data['gene']))
-            else:
-                rna_type = '/'.join(self.data['rna_type'])
-
-            distinct_species = count('species')
-            if distinct_species == 1:
-                species = next(iter(self.data['species']))
-                description_line = '{species} {rna_type}'.format(
-                                    species=species, rna_type=rna_type)
-            else:
-                description_line = ('{rna_type} from '
-                                    '{distinct_species} species').format(
-                                    rna_type=rna_type,
-                                    distinct_species=distinct_species)
-        return description_line
-
-    def store_literature_references(self, rna):
+    def store_literature_references(self, rna, taxid):
         """
         Store literature reference data.
         """
@@ -284,19 +244,18 @@ class RnaXmlExporter(OracleConnection):
                 if location:
                     self.data['journal'].add(location)
 
-        for xref in rna.xrefs.iterator():
-            for ref in xref.accession.refs.all():
-                self.data['pub_id'].add(ref.data.id)
-                if ref.data.authors:
-                    self.data['authors'].add(ref.data.authors)
-                if ref.data.title:
-                    self.data['pub_title'].add(saxutils.escape(ref.data.title))
-                if ref.data.pubmed:
-                    self.data['xrefs'].add(('PUBMED', ref.data.pubmed))
-                if ref.data.doi:
-                    self.data['xrefs'].add(('DOI', ref.data.doi))
-                if ref.data.location:
-                    process_location(saxutils.escape(ref.data.location))
+        for ref in rna.get_publications(taxid=taxid):
+            self.data['pub_id'].add(ref.id)
+            if ref.authors:
+                self.data['authors'].add(ref.authors)
+            if ref.title:
+                self.data['pub_title'].add(saxutils.escape(ref.title))
+            if ref.pubmed:
+                self.data['xrefs'].add(('PUBMED', ref.pubmed))
+            if ref.doi:
+                self.data['xrefs'].add(('DOI', ref.doi))
+            if ref.location:
+                process_location(saxutils.escape(ref.location))
 
     def store_popular_species(self):
         """
@@ -323,15 +282,18 @@ class RnaXmlExporter(OracleConnection):
             boost = 1
         self.data['boost'] = boost
 
-    def store_rna_properties(self, rna):
+    def store_rna_properties(self, rna, taxid):
         """
         """
         self.data['upi'] = rna.upi
         self.data['md5'] = rna.md5
         self.data['length'] = rna.length
-        self.data['has_genomic_coordinates'] = rna.has_genomic_coordinates()
+        if rna.upi in ['URS000065859A']: # an entry with > 200K xrefs, all from Rfam
+            self.data['description_line'] = 'uncultured Neocallimastigales 5.8S ribosomal RNA'
+        else:
+            self.data['description_line'] = saxutils.escape(rna.get_description(taxid=taxid))
 
-    def format_xml_entry(self):
+    def format_xml_entry(self, taxid):
         """
         Format self.data as an xml entry.
         Using Django templates is slower than constructing the entry manually.
@@ -355,6 +317,7 @@ class RnaXmlExporter(OracleConnection):
             text = []
             for value in self.data[field]:
                 if value: # organelle can be empty e.g.
+                    value = preprocess_data(field, value)
                     text.append(wrap_in_field_tag(field, value))
             return '\n'.join(text)
 
@@ -365,6 +328,8 @@ class RnaXmlExporter(OracleConnection):
             """
             text = []
             for xref in self.data['xrefs']:
+                if not xref[1]:
+                    continue
                 text.append('<ref dbname="{0}" dbkey="{1}" />'.format(*xref))
             for taxid in self.data['taxid']:
                 text.append('<ref dbkey="{0}" dbname="ncbi_taxonomy_id" />'.format(taxid))
@@ -387,9 +352,17 @@ class RnaXmlExporter(OracleConnection):
             text = re.sub('\n\s+\n', '\n', text) # delete empty lines (if gene_synonym is empty e.g. )
             return re.sub('\n +', '\n', text) # delete whitespace at the beginning of lines
 
+        def preprocess_data(field, value):
+            """
+            Final data clean up and reformatting.
+            """
+            if field == 'gene_synonym':
+                return value.replace(' ', ';') # EBI search team request
+            return value
+
         text = """
-        <entry id="{upi}">
-            <name>Unique RNA Sequence {upi}</name>
+        <entry id="{upi}_{taxid}">
+            <name>Unique RNA Sequence {upi}_{taxid}</name>
             <description>{description}</description>
             <dates>
                 <date value="{first_seen}" type="first_seen" />
@@ -422,7 +395,7 @@ class RnaXmlExporter(OracleConnection):
             </additional_fields>
         </entry>
         """.format(upi=self.data['upi'],
-                   description=self.get_description(),
+                   description=self.data['description_line'],
                    first_seen=self.first_seen(),
                    last_seen=self.last_seen(),
                    cross_references=format_cross_references(),
@@ -446,7 +419,8 @@ class RnaXmlExporter(OracleConnection):
                    pub_title=format_field('pub_title'),
                    pub_id=format_field('pub_id'),
                    popular_species=format_field('popular_species'),
-                   boost=wrap_in_field_tag('boost', self.data['boost']))
+                   boost=wrap_in_field_tag('boost', self.data['boost']),
+                   taxid=taxid)
         return format_whitespace(text)
 
     ##################
@@ -457,10 +431,15 @@ class RnaXmlExporter(OracleConnection):
         """
         Public method for outputting an xml dump entry for a given UPI.
         """
-        self.reset()
-        self.store_rna_properties(rna)
-        self.retrieve_data_from_database(rna.upi)
-        self.store_literature_references(rna)
-        self.store_popular_species()
-        self.compute_boost_value()
-        return self.format_xml_entry()
+        taxids = rna.xrefs.values_list('taxid', flat=True).distinct()
+        text = ''
+        for taxid in taxids:
+            self.reset()
+            self.store_rna_properties(rna, taxid=taxid)
+            self.data['has_genomic_coordinates'] = rna.has_genomic_coordinates(taxid=taxid)
+            self.retrieve_data_from_database(rna.upi, taxid)
+            self.store_literature_references(rna, taxid)
+            self.store_popular_species()
+            self.compute_boost_value()
+            text += self.format_xml_entry(taxid)
+        return text

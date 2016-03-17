@@ -11,11 +11,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Min, Max
 from django.utils.functional import cached_property
-from django.template.defaultfilters import pluralize
 from caching.base import CachingManager, CachingMixin # django-cache-machine
 from portal.config.genomes import genomes as rnacentral_genomes
 from portal.config.expert_databases import expert_dbs as rnacentral_expert_dbs
@@ -82,19 +82,6 @@ class ChemicalComponent(CachingMixin, models.Model):
             return None
 
 
-class RnaPrecomputedData(models.Model):
-    id = models.AutoField(primary_key=True)
-    upi = models.OneToOneField('Rna', db_column='upi', to_field='upi', related_name='precomputed', unique=True, db_index=True)
-    description = models.CharField(max_length=250, db_index=True)
-    count_human_xrefs = models.PositiveIntegerField(db_index=True)
-    count_distinct_organisms = models.PositiveIntegerField(db_index=True)
-    has_human_genomic_coordinates = models.NullBooleanField(db_index=True)
-    N_symbols = models.PositiveSmallIntegerField(db_index=True)
-
-    class Meta:
-        db_table = 'rnc_rna_precomputed_data'
-
-
 class Rna(CachingMixin, models.Model):
     id = models.IntegerField(db_column='id')
     upi = models.CharField(max_length=13, db_index=True, primary_key=True)
@@ -124,7 +111,7 @@ class Rna(CachingMixin, models.Model):
         Use raw SQL query for better performance.
         """
         query = """
-        SELECT b.id, b.location, b.title, b.pmid as pubmed, b.doi
+        SELECT b.id, b.location, b.title, b.pmid as pubmed, b.doi, b.authors
         FROM
             (SELECT DISTINCT t3.id
             FROM xref t1, rnc_reference_map t2, RNC_REFERENCES t3
@@ -152,12 +139,16 @@ class Rna(CachingMixin, models.Model):
         else:
             return False
 
-    def has_genomic_coordinates(self):
+    def has_genomic_coordinates(self, taxid=None):
         """
         Return True if at least one cross-reference has genomic coordinates.
         """
-        for xref in self.xrefs.iterator():
-            if xref.has_genomic_coordinates():
+        xrefs = self.xrefs
+        if taxid:
+            xrefs = xrefs.filter(taxid=taxid)
+        chromosomes = xrefs.all().values_list('accession__coordinates__chromosome', flat=True)
+        for chromosome in chromosomes:
+            if chromosome:
                 return True
         return False
 
@@ -218,7 +209,11 @@ class Rna(CachingMixin, models.Model):
         """
         Count the number of distinct taxids referenced by the sequence.
         """
-        return self.xrefs.values('accession__species').distinct().count()
+        queryset = self.xrefs.values('accession__species')
+        results = queryset.filter(deleted='N').distinct().count()
+        if not results:
+            results = queryset.distinct().count()
+        return results
 
     def get_distinct_database_names(self, taxid=None):
         """
@@ -258,10 +253,7 @@ class Rna(CachingMixin, models.Model):
         while i < len(seq):
             split_seq += seq[i:i+max_column] + "\n"
             i += max_column
-        # use a random description line (for faster performance)
-        description = self.xrefs.select_related('accession').\
-                                 only('upi', 'accession__description').\
-                                 first().accession.description
+        description = self.get_description()
         fasta = ">%s %s\n%s" % (self.upi, description, split_seq)
         return fasta
 
@@ -303,57 +295,68 @@ class Rna(CachingMixin, models.Model):
         """
         Return True if the Rna has xrefs with a given taxid.
         """
-        if self.xrefs.filter(taxid=taxid).count() > 0:
+        if self.xrefs.filter(taxid=taxid).exists():
             return True
         else:
             return False
 
-    def get_description(self, taxid=None):
+    def get_description(self, taxid=None, recompute=False):
         """
         Get entry description based on its xrefs.
         If taxid is provided, use only species-specific xrefs.
-
-        The xml dumping pipeline uses a separate logic, see:
-        portal/management/commands/xml_exporters/rna2xml.py
         """
-
         def count_distinct_descriptions():
             """
             Count distinct description lines.
             """
-            results = xrefs.values_list('accession__description', flat=True)
-            return results.distinct().count()
+            queryset = xrefs.values_list('accession__description', flat=True)
+            results = queryset.filter(deleted='N').distinct().count()
+            if not results:
+                results = queryset.distinct().count()
+            return results
 
         def get_distinct_products():
             """
             Get distinct non-null product values as a list.
             """
-            results = xrefs.values_list('accession__product', flat=True).\
-                            filter(accession__product__isnull=False)
-            return results.distinct()
+            queryset = xrefs.values_list('accession__product', flat=True).\
+                             filter(accession__product__isnull=False)
+            results = queryset.filter(deleted='N').distinct()
+            if not results:
+                results = queryset.distinct()
+            return results
 
         def get_distinct_genes():
             """
             Get distinct non-null gene values as a list.
             """
-            results = xrefs.values_list('accession__gene', flat=True).\
-                            filter(accession__gene__isnull=False)
-            return results.distinct()
+            queryset = xrefs.values_list('accession__gene', flat=True).\
+                             filter(accession__gene__isnull=False)
+            results = queryset.filter(deleted='N').distinct()
+            if not results:
+                results = queryset.distinct()
+            return results
 
         def get_distinct_feature_names():
             """
             Get distinct feature names as a list.
             """
-            results = xrefs.values_list('accession__feature_name', flat=True)
-            return results.distinct()
+            queryset = xrefs.values_list('accession__feature_name', flat=True)
+            results = queryset.filter(deleted='N').distinct()
+            if not results:
+                results = queryset.distinct()
+            return results
 
         def get_distinct_ncrna_classes():
             """
             For ncRNA features, get distinct ncrna_class values as a list.
             """
-            results = xrefs.values_list('accession__ncrna_class', flat=True).\
-                            filter(accession__ncrna_class__isnull=False)
-            return results.distinct()
+            queryset = xrefs.values_list('accession__ncrna_class', flat=True).\
+                             filter(accession__ncrna_class__isnull=False)
+            results = queryset.filter(deleted='N').distinct()
+            if not results:
+                results = queryset.distinct()
+            return results
 
         def get_rna_type():
             """
@@ -370,34 +373,133 @@ class Rna(CachingMixin, models.Model):
                 feature_names = get_distinct_feature_names()
                 if feature_names[0] == 'ncRNA' and len(feature_names) == 1:
                     ncrna_classes = get_distinct_ncrna_classes()
+                    if len(ncrna_classes) > 1 and 'misc_RNA' in ncrna_classes:
+                        ncrna_classes.remove('misc_RNA')
                     rna_type = '/'.join(ncrna_classes)
                 else:
                     rna_type = '/'.join(feature_names)
             return rna_type
 
+        def get_urs_description():
+            """
+            Get a description for a URS identifier, including multiple species.
+            """
+            if count_distinct_descriptions() == 1:
+                description_line = xrefs.first().accession.description
+                description_line = description_line[0].upper() + description_line[1:]
+            else:
+                rna_type = get_rna_type()
+                distinct_species = self.count_distinct_organisms
+                if taxid or distinct_species == 1:
+                    species = xrefs.first().accession.species
+                    description_line = '{species} {rna_type}'.format(
+                                        species=species, rna_type=rna_type)
+                else:
+                    description_line = ('{rna_type} from '
+                                        '{distinct_species} species').format(
+                                        rna_type=rna_type,
+                                        distinct_species=distinct_species)
+            return description_line
+
+        def get_xrefs_for_description(taxid):
+            """
+            Get cross-references for building a description line.
+            """
+            # try only active xrefs first
+            if taxid:
+                xrefs = self.xrefs.filter(deleted='N', taxid=taxid)
+            else:
+                xrefs = self.xrefs.filter(deleted='N')
+            # fall back onto all xrefs if no active ones are found
+            if not xrefs.exists():
+                if taxid:
+                    xrefs = self.xrefs.filter(taxid=taxid)
+                else:
+                    xrefs = self.xrefs.filter()
+            return xrefs.select_related('accession').\
+                         prefetch_related('accession__refs', 'accession__coordinates')
+
+        def score_xref(xref):
+            """
+            Return a score for a cross-reference based on its metadata.
+            """
+            def get_genome_bonus():
+                """
+                Find if the xref has genome mapping.
+                Iterate over prefetched queryset to avoid hitting the database.
+                """
+                chromosomes = []
+                for coordinate in xref.accession.coordinates.all():
+                    chromosomes.append(coordinate.chromosome)
+                if not chromosomes:
+                    return 0
+                else:
+                    return 1
+
+            paper_bonus = xref.accession.refs.count() * 0.2
+            genome_bonus = get_genome_bonus()
+            gene_bonus = 0
+            note_bonus = 0
+            product_bonus = 0
+            rfam_full_alignment_penalty = 0
+            misc_rna_penalty = 0
+
+            if xref.accession.product:
+                product_bonus = 0.1
+            if xref.accession.gene:
+                gene_bonus = 0.1
+            if xref.db_id == 2 and not xref.is_rfam_seed():
+                rfam_full_alignment_penalty = -2
+            if xref.accession.feature_name == 'misc_RNA':
+                misc_rna_penalty = -2
+            if xref.accession.note:
+                note_bonus = 0.1
+
+            score = paper_bonus + \
+                genome_bonus + \
+                gene_bonus + \
+                product_bonus + \
+                note_bonus + \
+                rfam_full_alignment_penalty + \
+                misc_rna_penalty
+            return score
+
+        if not recompute:
+            if taxid:
+                queryset = RnaPrecomputed.objects.filter(taxid=taxid)
+            else:
+                queryset = RnaPrecomputed.objects.filter(taxid__isnull=True)
+            try:
+                obj = queryset.get(upi=self.upi)
+            except ObjectDoesNotExist:
+                obj = None
+            if obj:
+                return obj.description
+        # get description
         if taxid and not self.xref_with_taxid_exists(taxid):
             taxid = None # ignore taxid
-
-        xrefs = self.xrefs
-        if taxid:
-            xrefs = xrefs.filter(taxid=taxid)
-
-        if count_distinct_descriptions() == 1:
-            description_line = xrefs.first().accession.description
-            description_line = description_line[0].upper() + description_line[1:]
+        xrefs = get_xrefs_for_description(taxid)
+        if not taxid:
+            return get_urs_description()
         else:
-            rna_type = get_rna_type()
-            distinct_species = self.count_distinct_organisms
-            if taxid or distinct_species == 1:
-                species = xrefs.first().accession.species
-                description_line = '{species} {rna_type}'.format(
-                                    species=species, rna_type=rna_type)
-            else:
-                description_line = ('{rna_type} from '
-                                    '{distinct_species} species').format(
-                                    rna_type=rna_type,
-                                    distinct_species=distinct_species)
-        return description_line
+            # pick one of expert database descriptions
+            scores = []
+            for xref in xrefs:
+                scores.append((score_xref(xref), xref.accession.description))
+            scores.sort(key=lambda tup: tup[0], reverse=True)
+            return scores[0][1]
+
+
+class RnaPrecomputed(models.Model):
+    """
+    """
+    id = models.CharField(max_length=22, primary_key=True)
+    upi = models.ForeignKey('Rna', db_column='upi', to_field='upi', related_name='precomputed')
+    taxid = models.IntegerField(db_index=True, null=True)
+    description = models.CharField(max_length=250)
+
+    class Meta:
+        db_table = 'rnc_rna_precomputed'
 
 
 class DatabaseStats(models.Model):
@@ -675,7 +777,7 @@ class Accession(models.Model):
             'MIRBASE': 'http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc={id}',
             'TMRNA_WEB': 'http://bioinformatics.sandia.gov/tmrna/seqs/{id}',
             'LNCRNADB': 'http://www.lncrnadb.org/{id}',
-            'REFSEQ': 'http://www.ncbi.nlm.nih.gov/nuccore/{id}',
+            'REFSEQ': 'http://www.ncbi.nlm.nih.gov/nuccore/{id}.{version}',
             'RDP': 'http://rdp.cme.msu.edu/hierarchy/detail.jsp?seqid={id}',
             'SNOPY': 'http://snoopy.med.miyazaki-u.ac.jp/snorna_db.cgi?mode=sno_info&id={id}',
             'PDBE': 'http://www.ebi.ac.uk/pdbe-srv/view/entry/{id}',
@@ -687,8 +789,13 @@ class Accession(models.Model):
             'DICTYBASE': 'http://dictybase.org/gene/{id}',
             'SILVA': 'http://www.arb-silva.de/browser/{lsu_ssu}/silva/{id}',
             'POMBASE': 'http://www.pombase.org/spombe/result/{id}',
+<<<<<<< HEAD
             'GREENGENES': 'http://www.ebi.ac.uk/ena/data/view/{id}',
             'NONCODE': 'http://www.noncode.org/show_rna.php?id={id}',
+=======
+            'GREENGENES': 'http://www.ebi.ac.uk/ena/data/view/{id}.{version}',
+            'NONCODE': 'http://www.bioinfo.org/NONCODEv4/show_rna.php?id={id}',
+>>>>>>> search-update
             'LNCIPEDIA': 'http://www.lncipedia.org/db/transcript/{id}',
             'MODOMICS': 'http://modomics.genesilico.pl/sequences/list/{id}',
         }
@@ -707,7 +814,9 @@ class Accession(models.Model):
                 return urls[self.database].format(id=self.optional_id,
                     lsu_ssu='ssu' if 'small' in self.product else 'lsu')
             elif self.database == 'GREENGENES':
-                return urls[self.database].format(id='.'.join([self.parent_ac, str(self.seq_version)]))
+                return urls[self.database].format(id=self.parent_ac, version=self.seq_version)
+            elif self.database == 'REFSEQ':
+                return urls[self.database].format(id=self.external_id, version=self.seq_version)
             return urls[self.database].format(id=self.external_id)
         else:
             return ''
@@ -1044,13 +1153,12 @@ class Xref(models.Model):
     def has_genomic_coordinates(self):
         """
         Determine whether an xref has genomic coordinates.
-        Return true only if all exons are mapped to genomic coordinates.
         """
         chromosomes = self.accession.coordinates.values_list('chromosome', flat=True)
-        if not chromosomes or '' in chromosomes:
-            return False
-        else:
-            return True
+        for chromosome in chromosomes:
+            if chromosome:
+                return True
+        return False
 
     def get_genomic_coordinates(self):
         """

@@ -307,6 +307,8 @@ RQ_QUEUES = {
     },
 }
 
+EBI_SEARCH_ENDPOINT = 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
+
 # use pymysql driver instead of the official one
 # because MySQLdb is harder to install
 try:
