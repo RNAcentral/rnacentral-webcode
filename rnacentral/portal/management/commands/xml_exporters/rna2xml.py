@@ -288,10 +288,7 @@ class RnaXmlExporter(OracleConnection):
         self.data['upi'] = rna.upi
         self.data['md5'] = rna.md5
         self.data['length'] = rna.length
-        if rna.upi in ['URS000065859A']: # an entry with > 200K xrefs, all from Rfam
-            self.data['description_line'] = 'uncultured Neocallimastigales 5.8S ribosomal RNA'
-        else:
-            self.data['description_line'] = saxutils.escape(rna.get_description(taxid=taxid))
+        self.data['description_line'] = saxutils.escape(rna.get_description(taxid=taxid))
 
     def format_xml_entry(self, taxid):
         """
