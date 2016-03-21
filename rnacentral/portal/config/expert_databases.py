@@ -38,7 +38,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'release r125 plus daily updates through October 6th, 2015',
+        'version': 'r126',
     },
     {
         'name': 'PDBe',
@@ -61,7 +61,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'as of October 5th, 2015',
+        'version': 'as of March 14th, 2016',
     },
     {
         'name': 'FlyBase',
@@ -97,8 +97,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
-        'version': 'Rfam 12.0 (pre-release)',
+        'status': 'updated',
+        'version': 'Rfam 12.0',
     },
     {
         'name': 'miRBase',
@@ -143,7 +143,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'release 61 (human), release 62 (mouse)',
+        'version': 'release 63 (human and mouse)',
     },
     {
         'name': 'tmRNA Website',
@@ -305,7 +305,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': '',
     },
     {
@@ -336,7 +336,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': '3.1',
     },
     {
@@ -355,7 +355,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': '',
     },
     {
@@ -367,15 +367,15 @@ expert_dbs = [
         'examples': ['URS000019B796', 'URS00008189E4', 'URS000058E3EB'],
         'references': [
             {
-                'title': 'NONCODEv4: exploring the world of long non-coding RNA genes',
-                'authors': 'Xie C, Yuan J, Li H, Li M, Zhao G, Bu D, Zhu W, Wu W, Chen R, Zhao Y',
-                'journal': 'Nucleic Acids Res. 2014 Jan;42(Database issue):D98-103',
-                'pubmed_id': '24285305',
+                'title': 'NONCODE 2016: an informative and valuable data source of long non-coding RNAs',
+                'authors': 'Zhao Y, Li H, Fang S, Kang Y, Wu W, Hao Y, Li Z, Bu D, Sun N, Zhang MQ, Chen R',
+                'journal': 'Nucleic Acids Res. 2016 Jan 4;44(D1):D203-8',
+                'pubmed_id': '26586799',
             },
         ],
         'imported': True,
-        'status': 'new',
-        'version': 'v4',
+        'status': 'updated',
+        'version': 'NONCODE2016',
     },
     {
         'name': 'NPInter',
@@ -434,8 +434,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
-        'version': 'as of September 6, 2015',
+        'status': '',
+        'version': '',
     },
     {
         'name': 'RNApathwaysDB',
@@ -465,7 +465,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': '122',
     },
     {
@@ -488,7 +488,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'updated',
+        'status': '',
         'version': '',
     },
     {
@@ -508,7 +508,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'updated',
+        'status': '',
         'version': '',
     },
     {
@@ -591,7 +591,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'updated',
+        'status': '',
         'version': 'WS245',
     },
     {
@@ -661,7 +661,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': '',
     },
     {
