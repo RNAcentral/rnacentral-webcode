@@ -137,7 +137,7 @@ genomes = [
         'species': 'Gallus gallus',
         'synonyms': ['chicken'],
         'assembly': 'Galgal4',
-        'assembly_ucsc': 'galgal4',
+        'assembly_ucsc': 'galGal4',
         'taxid': 9031,
         'division': 'Ensembl',
         'example_location': {
