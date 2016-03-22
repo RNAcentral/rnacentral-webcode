@@ -56,6 +56,7 @@ class RnaXmlExporter(OracleConnection):
                   t1.last = t5.id AND
                   t1.upi = t6.upi AND
                   t1.upi = :upi AND
+                  t1.deleted = 'N' AND
                   t1.taxid = :taxid
             """
             self.cursor.prepare(sql)
@@ -133,8 +134,6 @@ class RnaXmlExporter(OracleConnection):
             """
             Store xrefs as (database, accession) tuples in self.data['xrefs'].
             """
-            if result['deleted'] == 'Y':
-                return
             # skip PDB and SILVA optional_ids because for PDB it's chain id
             # and for SILVA it's INSDC accessions
             if result['expert_db'] not in ['SILVA', 'PDB'] and result['optional_id']:
@@ -435,6 +434,8 @@ class RnaXmlExporter(OracleConnection):
             self.store_rna_properties(rna, taxid=taxid)
             self.data['has_genomic_coordinates'] = rna.has_genomic_coordinates(taxid=taxid)
             self.retrieve_data_from_database(rna.upi, taxid)
+            if not self.data['xrefs']:
+                continue
             self.store_literature_references(rna, taxid)
             self.store_popular_species()
             self.compute_boost_value()
