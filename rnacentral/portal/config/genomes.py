@@ -37,9 +37,9 @@ genomes = [
         'taxid': 10090,
         'division': 'Ensembl',
         'example_location': {
-            'chromosome': 8,
-            'start': 90845834,
-            'end': 90845862,
+            'chromosome': 1,
+            'start': 86351981,
+            'end': 86352127,
         },
     },
     {
@@ -50,9 +50,9 @@ genomes = [
         'taxid': 7955,
         'division': 'Ensembl',
         'example_location': {
-            'chromosome': 4,
-            'start': 52102504,
-            'end': 52102612,
+            'chromosome': 9,
+            'start': 7633985,
+            'end': 7634135,
         },
     },
     {
@@ -209,8 +209,8 @@ genomes = [
         'division': 'Ensembl Metazoa',
         'example_location': {
             'chromosome': '3R',
-            'start': 16746069,
-            'end': 16746175,
+            'start': 7474553,
+            'end': 7474996,
         },
     },
     {
