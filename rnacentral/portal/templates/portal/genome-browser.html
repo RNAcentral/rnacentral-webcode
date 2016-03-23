@@ -181,6 +181,15 @@ Genome browser
       $('.genoverse-xref').remove();
       delete window.browser;
       clearInterval(interval);
+
+      var species_name;
+      if (species.val() == 'Canis familiaris') {
+        species_name = 'Canis lupus familiaris';
+      } else {
+        species_name = species.val();
+      }
+      species_name = species_name.replace(/ /g,'_').toLowerCase();
+      
       $('<button class="genoverse-xref"></button>').
         hide().
         appendTo('.genoverse-wrap').
@@ -188,7 +197,7 @@ Genome browser
         data('genomic-start', start.val().replace(/,\./g,'')).
         data('genomic-end', end.val().replace(/,\./g,'')).
         data('strand', 1).
-        data('species', species.val().replace(/ /g,'_').toLowerCase()).
+        data('species', species_name).
         data('description', '').
         data('species-label', species.val()).
         click();
