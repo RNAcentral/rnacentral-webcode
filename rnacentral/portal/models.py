@@ -545,7 +545,7 @@ class Database(CachingMixin, models.Model):
         """
         Count unique sequences associated with the database.
         """
-        return self.xrefs.values_list('upi', flat=True).distinct().count()
+        return self.xrefs.filter(deleted='N').values_list('upi', 'taxid').distinct().count()
 
     def count_organisms(self):
         """
