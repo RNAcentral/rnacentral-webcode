@@ -88,7 +88,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
     };
 
     var search_config = {
-        ebeye_base_url: 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral',
+        ebeye_base_url: global_settings.EBI_SEARCH_ENDPOINT,
         rnacentral_base_url: get_base_url(),
         fields: ['description', 'active', 'length'],
         facetfields: [
@@ -97,7 +97,6 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
             'TAXONOMY',
             'has_genomic_coordinates',
             'popular_species',
-            'active',
         ], // will be displayed in this order
         facetcount: 30,
         pagesize: 15,
@@ -105,13 +104,14 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
 
     var query_urls = {
         'ebeye_search': search_config.ebeye_base_url +
-                        '?query={QUERY}' +
+                        '?query={QUERY}' + '%20AND%20active:"Active"' +
                         '&format=json' +
                         '&fields=' + search_config.fields.join() +
                         '&facetcount=' + search_config.facetcount +
                         '&facetfields=' + search_config.facetfields.join() +
                         '&size=' + search_config.pagesize +
-                        '&start={START}',
+                        '&start={START}' +
+                        '&sort=boost:descending,length:descending',
         'proxy': search_config.rnacentral_base_url +
                  '/api/internal/ebeye?url={EBEYE_URL}',
     };
@@ -169,12 +169,10 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
         }
 
         /**
-         * Create an RNAcentral proxy query url which includes EBeye query url.
+         * Create an EBeye query url.
          */
         function get_query_url() {
-            var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query).replace('{START}', start);
-            var url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url));
-            return url;
+            return query_urls.ebeye_search.replace('{QUERY}', query).replace('{START}', start);
         }
 
         /**
@@ -192,6 +190,14 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
 
             apply_species_specific_filtering();
 
+            // replace length query with a placeholder, example: length:[100 TO 200]
+            var length_clause = query.match(/length\:\[\d+\s+to\s+\d+\]/i);
+            var placeholder = 'length_clause';
+            if (length_clause) {
+              query = query.replace(length_clause[0], placeholder);
+              length_clause[0] = length_clause[0].replace(/to/i, 'TO');
+            }
+
             var words = query.match(/[^\s"]+|"[^"]*"/g);
             var array_length = words.length;
             for (var i = 0; i < array_length; i++) {
@@ -207,8 +213,6 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
                         term = term.toUpperCase();
                     }
                     words[i] = term + ':';
-                } else if ( words[i].match(/\-/)) {
-                    // do not add wildcards to words with hyphens
                 } else if ( words[i].match(/\//)) {
                     // do not add wildcards to DOIs
                     words[i] = escape_search_term(words[i]);
@@ -229,6 +233,10 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
             }
             query = words.join(' ');
             query = query.replace(/\: /g, ':'); // to avoid spaces after faceted search terms
+            // replace placeholder with the original search term
+            if (length_clause) {
+              query = query.replace(placeholder + '*', length_clause[0]);
+            }
             result._query = query;
             return query;
 

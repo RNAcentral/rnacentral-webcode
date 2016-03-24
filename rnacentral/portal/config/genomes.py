@@ -37,9 +37,9 @@ genomes = [
         'taxid': 10090,
         'division': 'Ensembl',
         'example_location': {
-            'chromosome': 8,
-            'start': 90845834,
-            'end': 90845862,
+            'chromosome': 1,
+            'start': 86351981,
+            'end': 86352127,
         },
     },
     {
@@ -50,9 +50,9 @@ genomes = [
         'taxid': 7955,
         'division': 'Ensembl',
         'example_location': {
-            'chromosome': 4,
-            'start': 52102504,
-            'end': 52102612,
+            'chromosome': 9,
+            'start': 7633985,
+            'end': 7634135,
         },
     },
     {
@@ -76,37 +76,37 @@ genomes = [
         'taxid': 10116,
         'division': 'Ensembl',
         'example_location': {
-            'chromosome': 14,
-            'start': 18743981,
-            'end': 18744235,
-        },
-    },
-    {
-        'species': 'Felis catus',
-        'synonyms': ['cat'],
-        'assembly': 'Felis_catus_6.2',
-        'assembly_ucsc': 'felCat5',
-        'taxid': 9685,
-        'division': 'Ensembl',
-        'example_location': {
             'chromosome': 'X',
-            'start': 36933399,
-            'end': 36933503,
+            'start': 118277684,
+            'end': 118277795,
         },
     },
-    {
-        'species': 'Macaca mulatta',
-        'synonyms': ['macaque'],
-        'assembly': 'MMUL_1',
-        'assembly_ucsc': '', # no matching assembly
-        'taxid': 9544,
-        'division': 'Ensembl',
-        'example_location': {
-            'chromosome': 1,
-            'start': 146238837,
-            'end': 146238946,
-        },
-    },
+    # {
+    #     'species': 'Felis catus',
+    #     'synonyms': ['cat'],
+    #     'assembly': 'Felis_catus_6.2',
+    #     'assembly_ucsc': 'felCat5',
+    #     'taxid': 9685,
+    #     'division': 'Ensembl',
+    #     'example_location': {
+    #         'chromosome': 'X',
+    #         'start': 18058223,
+    #         'end': 18058546,
+    #     },
+    # },
+    # {
+    #     'species': 'Macaca mulatta',
+    #     'synonyms': ['macaque'],
+    #     'assembly': 'MMUL_1',
+    #     'assembly_ucsc': '', # no matching assembly
+    #     'taxid': 9544,
+    #     'division': 'Ensembl',
+    #     'example_location': {
+    #         'chromosome': 1,
+    #         'start': 146238837,
+    #         'end': 146238946,
+    #     },
+    # },
     {
         'species': 'Pan troglodytes',
         'synonyms': ['chimp'],
@@ -133,46 +133,46 @@ genomes = [
             'end': 22007066,
         },
     },
-    {
-        'species': 'Gallus gallus',
-        'synonyms': ['chicken'],
-        'assembly': 'Galgal4',
-        'assembly_ucsc': 'galgal4',
-        'taxid': 9031,
-        'division': 'Ensembl',
-        'example_location': {
-            'chromosome': 9,
-            'start': 15676031,
-            'end': 15676160,
-        },
-    },
-    {
-        'species': 'Xenopus tropicalis',
-        'synonyms': ['frog'],
-        'assembly': 'JGI_4.2',
-        'assembly_ucsc': 'xenTro3',
-        'taxid': 8364,
-        'division': 'Ensembl',
-        'example_location': {
-            'chromosome': 'NC_006839',
-            'start': 11649,
-            'end': 11717,
-        },
-    },
+    # {
+    #     'species': 'Gallus gallus',
+    #     'synonyms': ['chicken'],
+    #     'assembly': 'Galgal4',
+    #     'assembly_ucsc': 'galGal4',
+    #     'taxid': 9031,
+    #     'division': 'Ensembl',
+    #     'example_location': {
+    #         'chromosome': 9,
+    #         'start': 15676031,
+    #         'end': 15676160,
+    #     },
+    # },
+    # {
+    #     'species': 'Xenopus tropicalis',
+    #     'synonyms': ['frog'],
+    #     'assembly': 'JGI_4.2',
+    #     'assembly_ucsc': 'xenTro3',
+    #     'taxid': 8364,
+    #     'division': 'Ensembl',
+    #     'example_location': {
+    #         'chromosome': 'NC_006839',
+    #         'start': 11649,
+    #         'end': 11717,
+    #     },
+    # },
     # Ensembl Fungi
-    {
-        'species': 'Saccharomyces cerevisiae',
-        'synonyms': ['budding yeast', 'Saccharomyces cerevisiae S288c'],
-        'assembly': 'R64-1-1',
-        'assembly_ucsc': '',
-        'taxid': 559292,
-        'division': 'Ensembl Fungi',
-        'example_location': {
-            'chromosome': 'XII',
-            'start': 856709,
-            'end': 856919,
-        },
-    },
+    # {
+    #     'species': 'Saccharomyces cerevisiae',
+    #     'synonyms': ['budding yeast', 'Saccharomyces cerevisiae S288c'],
+    #     'assembly': 'R64-1-1',
+    #     'assembly_ucsc': '',
+    #     'taxid': 559292,
+    #     'division': 'Ensembl Fungi',
+    #     'example_location': {
+    #         'chromosome': 'XII',
+    #         'start': 856709,
+    #         'end': 856919,
+    #     },
+    # },
     {
         'species': 'Schizosaccharomyces pombe',
         'synonyms': ['fission yeast'],
@@ -209,8 +209,8 @@ genomes = [
         'division': 'Ensembl Metazoa',
         'example_location': {
             'chromosome': '3R',
-            'start': 16746069,
-            'end': 16746175,
+            'start': 7474553,
+            'end': 7474996,
         },
     },
     {
@@ -226,19 +226,19 @@ genomes = [
             'end': 6180321,
         },
     },
-    {
-        'species': 'Anopheles gambiae',
-        'synonyms': [],
-        'assembly': 'AgamP4',
-        'assembly_ucsc': '',
-        'taxid': 7165,
-        'division': 'Ensembl Metazoa',
-        'example_location': {
-            'chromosome': '2R',
-            'start': 34644956,
-            'end': 34645131,
-        },
-    },
+    # {
+    #     'species': 'Anopheles gambiae',
+    #     'synonyms': [],
+    #     'assembly': 'AgamP4',
+    #     'assembly_ucsc': '',
+    #     'taxid': 7165,
+    #     'division': 'Ensembl Metazoa',
+    #     'example_location': {
+    #         'chromosome': '2R',
+    #         'start': 34644956,
+    #         'end': 34645131,
+    #     },
+    # },
     # Ensembl Protists
     {
         'species': 'Dictyostelium discoideum',
@@ -253,19 +253,19 @@ genomes = [
             'end': 7877055,
         },
     },
-    {
-        'species': 'Plasmodium falciparum',
-        'synonyms': [],
-        'assembly': 'ASM276v1',
-        'assembly_ucsc': '',
-        'taxid': 5833,
-        'division': 'Ensembl Protists',
-        'example_location': {
-            'chromosome': 13,
-            'start': 2796339,
-            'end': 2798488,
-        },
-    },
+    # {
+    #     'species': 'Plasmodium falciparum',
+    #     'synonyms': [],
+    #     'assembly': 'ASM276v1',
+    #     'assembly_ucsc': '',
+    #     'taxid': 5833,
+    #     'division': 'Ensembl Protists',
+    #     'example_location': {
+    #         'chromosome': 13,
+    #         'start': 2796339,
+    #         'end': 2798488,
+    #     },
+    # },
     # Ensembl Plants
     {
         'species': 'Arabidopsis thaliana',

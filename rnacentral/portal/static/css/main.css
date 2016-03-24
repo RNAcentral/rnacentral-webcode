@@ -1135,6 +1135,11 @@ textarea {
   vertical-align: middle;
 }
 
+.twitter-timeline {
+  overflow: auto;
+  max-height: 250px;
+}
+
 .callout-info {
   border-left-color: #1B809E;
 }

@@ -56,6 +56,7 @@ class Command(BaseCommand):
 
         make_option('--profile',
             default=False,
+            action='store_true',
             help='[Optional] Show cProfile information for profiling purposes'),
     )
     # shown with -h, --help
@@ -177,13 +178,16 @@ class Command(BaseCommand):
             Run xmllint on the output file and print the resulting report.
             """
             schema_url = 'http://www.ebi.ac.uk/ebisearch/XML4dbDumps.xsd'
-            cmd = ('xmllint {filepath} --schema {schema_url} --noout --stream; '
-                   'exit 0').format(filepath=filepath, schema_url=schema_url)
-            output = subprocess.check_output(cmd, shell=True,
-                                             stderr=subprocess.STDOUT)
-            if 'validates' not in output:
+            cmd = ('xmllint {filepath} --schema {schema_url} --noout --stream')\
+                       .format(filepath=filepath, schema_url=schema_url)
+            try:
+                output = subprocess.check_output(cmd, shell=True,
+                                                 stderr=subprocess.STDOUT)
+            except subprocess.CalledProcessError as e:
                 print 'ERROR: xmllint validation failed'
-                print output
+                print e.output
+                print e.cmd
+                print 'Return code {0}'.format(e.returncode)
                 sys.exit(1)
 
         def gzip_file():

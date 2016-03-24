@@ -237,8 +237,8 @@ limitations under the License.
 
     {# Noncode #}
     {% elif xref.db.name == 'NONCODE' %}
-      {{ xref.db.name }} (v4): transcipt <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>,
-      gene <a href="http://www.bioinfo.org/NONCODEv4/show_gene.php?id={{ xref.accession.optional_id }}" target="_blank">{{ xref.accession.optional_id }}</a>
+      {{ xref.db.name }}: transcript <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>,
+      gene <a href="http://www.noncode.org/show_gene.php?id={{ xref.accession.optional_id }}" target="_blank">{{ xref.accession.optional_id }}</a>
 
     {# LNCipedia #}
     {% elif xref.db.name == 'LNCipedia' %}

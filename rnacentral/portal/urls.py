@@ -11,8 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from django.conf.urls import patterns, url, include
-from django.contrib import admin
+from django.conf.urls import patterns, url
 from portal import views
 from portal.models import get_ensembl_divisions, Rna, Database
 from portal.config.genomes import genomes as rnacentral_genomes
@@ -65,13 +64,10 @@ urlpatterns += patterns('',
     url(r'^rna/(?P<upi>\w+)/xrefs/(?P<taxid>\d+)/?$', 'portal.views.get_xrefs_data'),
     # get species tree
     url(r'^rna/(?P<upi>\w+)/lineage/?$', 'portal.views.get_sequence_lineage'),
-    # query EBeye
-    url(r'^api/internal/ebeye/?$', 'portal.views.ebeye_proxy', name='ebeye-proxy'),
 )
 
 # sitemaps
 from django.contrib.sitemaps import GenericSitemap, Sitemap
-from django.contrib.sitemaps.views import sitemap
 from django.core.urlresolvers import reverse
 
 

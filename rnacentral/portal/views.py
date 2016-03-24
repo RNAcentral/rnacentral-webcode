@@ -14,13 +14,11 @@ limitations under the License.
 import json
 import math
 import re
-import requests
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import Http404, HttpResponse
 from django.shortcuts import render, render_to_response, redirect
 from django.template import TemplateDoesNotExist
-from django.utils.cache import patch_cache_control
 from django.views.decorators.cache import cache_page, never_cache
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
@@ -36,26 +34,6 @@ XREF_PAGE_SIZE = 1000
 ########################
 # Function-based views #
 ########################
-
-def ebeye_proxy(request):
-    """
-    Internal API.
-    Get EBeye search URL from the client and send back the results.
-    Bypasses EBeye same-origin policy.
-    """
-    url = request.GET['url']
-    try:
-        ebeye_response = requests.get(url)
-        if ebeye_response.status_code == 200:
-            response = HttpResponse(ebeye_response.text)
-            patch_cache_control(response, no_cache=True, no_store=True,
-                                must_revalidate=True)
-            return response
-        else:
-            raise Http404
-    except:
-        raise Http404
-
 
 @never_cache
 def get_xrefs_data(request, upi, taxid=None):
@@ -85,8 +63,11 @@ def get_sequence_lineage(request, upi):
     classifications from all database cross-references.
     """
     try:
-        xrefs = Xref.objects.filter(upi=upi).select_related('accession').iterator()
-        json_lineage_tree = _get_json_lineage_tree(xrefs)
+        queryset = Xref.objects.filter(upi=upi).select_related('accession')
+        results = queryset.filter(deleted='N')
+        if not results.exists():
+            results = queryset
+        json_lineage_tree = _get_json_lineage_tree(results.iterator())
     except Rna.DoesNotExist:
         raise Http404
     return HttpResponse(json_lineage_tree, content_type="application/json")
@@ -185,7 +166,12 @@ def rna_view(request, upi, taxid=None):
             return get_species_name_from_taxid(taxid)
         else:
             if rna.count_distinct_organisms == 1:
-                return rna.xrefs.first().accession.species
+                queryset = rna.xrefs
+                results = queryset.filter(deleted='N')
+                if results.exists():
+                    return results.first().accession.species
+                else:
+                    return queryset.first().accession.species
             else:
                 return None
 

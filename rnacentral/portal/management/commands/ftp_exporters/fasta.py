@@ -49,6 +49,7 @@ class FastaExporter(FtpBase):
             'seq_inactive': 'rnacentral_inactive.fasta',
             'nhmmer_db': 'rnacentral_nhmmer.fasta',
             'nhmmer_db_excluded': 'rnacentral_nhmmer_excluded.fasta',
+            'species_specific': 'rnacentral_species_specific_ids.fasta',
             'seq_example': 'example.txt',
         }
         self.logger = logging.getLogger(__name__)
@@ -117,6 +118,14 @@ class FastaExporter(FtpBase):
                     self.filehandles['nhmmer_db'].write(fasta)
                 else:
                     self.filehandles['nhmmer_db_excluded'].write(fasta)
+                # species specific identifiers
+                sequence = re.sub(r'^>.+?\n', '', fasta) # delete first line
+                template = ">{upi}_{taxid} {description}\n{sequence}"
+                queryset = rna.xrefs.filter(deleted='N')
+                for taxid in set(queryset.values_list('taxid', flat=True)):
+                    species_specific_fasta = template.format(upi=result['upi'],
+                        taxid=taxid, sequence=sequence, description=rna.get_description(taxid=taxid))
+                    self.filehandles['species_specific'].write(species_specific_fasta)
                 counter += 1
 
         sql = get_active_sequences_sql()

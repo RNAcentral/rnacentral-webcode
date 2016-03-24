@@ -421,7 +421,13 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
      * This is helpful when the user accidentally types the sequence in 3' to 5' direction.
      */
     $scope.reverse_and_repeat_search = function() {
-        $scope.query.sequence = $scope.query.sequence.split("").reverse().join("");
+        var input = parse_input($scope.query.sequence);
+        var reversed_sequence = input.sequence.split("").reverse().join("");
+        var description_line = '';
+        if (input.description) {
+          description_line = '>' + input.description + '\n';
+        }
+        $scope.query.sequence = description_line + reversed_sequence;
         search($scope.query.sequence);
     };
 

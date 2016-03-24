@@ -1,26 +1,20 @@
 
-# <i class="fa fa-search"></i> Metadata search
-
-## Query syntax
-
-RNAcentral search supports several search operators that can be used to compose advanced queries.
+# <i class="fa fa-search"></i> Text search
 
 ### Exact matching <a name="exact-matching" href="#exact-matching" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Use double quotes (**""**) to search for exact matches.
 
-*Example*: `"precursor RNA"`
+*Example*: `"hsa-mir-21"` will find only *hsa-mir-21* and not *hsa-mir-212*
 
 ---
 
 ### Wildcards <a name="wildcards" href="#wildcards" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
-The wildcard character (<strong>*</strong>) can match any number of characters.
+A wildcard character (<strong>*</strong>) can match any number of characters. Wildcards are added automatically to all search terms that are not enclosed in double quotes.
 
-Wildcards are added automatically to all search terms that are not enclosed in double quotes.
-
-*Example*: a search for `HOTAIR` (no double quotes) will find both HOTAIR and HOTAIRM1 genes
-and a search for `"HOTAIR"` (with double quotes) will find only HOTAIR.
+*Example*: a search for `HOTAIR` (no double quotes) will find both *HOTAIR* and *HOTAIRM1* genes
+and a search for `"HOTAIR"` (with double quotes) will find only *HOTAIR*.
 
 ---
 
@@ -31,7 +25,7 @@ Please note that "field value" **must be enclosed in double quotes**.
 
 * **expert database**
 
-	Possible values: "ena", "gtrnadb", "lncrnadb", "mirbase", "refseq", "rfam", "srpdb", "tmRNA Website", "vega", "pdbe", "snopy"
+	Possible values: "ena", "gtrnadb", "lncrnadb", "mirbase", "refseq", "rfam", "srpdb", "tmRNA Website", "vega", "pdbe", "snopy" and other imported database names.
 
 	*Examples*: `expert_db:"tmrna website"`, `expert_db:"mirbase"`
 
@@ -65,9 +59,9 @@ Please note that "field value" **must be enclosed in double quotes**.
 
 	*Example*: `description:"16S"`
 
-* **length**
+* **length** (supports range queries)
 
-	*Example*: `length:"1500"`
+	*Example*: `length:"1500"`, `length:[9000 to 10000]`
 
 * **author**
 
@@ -130,4 +124,4 @@ Use parentheses to group and nest logical terms.
 ## About RNAcentral search <a name="ebi-search" href="#ebi-search" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 RNAcentral is powered by the [EBI search](http://www.ebi.ac.uk/ebisearch/),
-which provides publicly available REST and SOAP interfaces for querying the data.
+which provides a publicly available REST interface for querying the data.

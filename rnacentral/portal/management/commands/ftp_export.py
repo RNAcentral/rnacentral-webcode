@@ -190,6 +190,7 @@ class Command(BaseCommand):
             profiler = Profile()
             profiler.runcall(self.export, **options)
             profiler.print_stats()
+            profiler.dump_stats('profile.txt')            
         elif options['format'] == 'all':
             self.export_all(**options)
         else:

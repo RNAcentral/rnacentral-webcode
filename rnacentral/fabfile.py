@@ -20,7 +20,7 @@ Fabric deployment script
 
 Usage:
 
-fab -H user@server1,user@server2 -c /path/to/fab.cfg deploy:git_branch=my_git_branch:website_url=my_website_url
+fab -H user@server1,user@server2 -c /path/to/fab.cfg deploy:git_branch=my_git_branch,restart_url=my_restart_url
 
 where:
 
@@ -28,7 +28,7 @@ where:
 * -c - path to the configuration file
 * deploy - name of the task to run
 * git_branch - git branch to deploy (dev by default)
-* website_url - which url should be used to jumpstart the server
+* restart_url - which url should be used to jumpstart the server
 
 fab.cfg template:
 
@@ -97,7 +97,7 @@ def collect_static_files():
     * move static files to the deployment location
     """
     with cd(env['rnacentral_site']), prefix(env['activate']), prefix(env['ld_library_path']), prefix(env['oracle_home']):
-        with prefix('source ../scripts/env.sh'):
+        with prefix('source scripts/env.sh'):
             run('python manage.py collectstatic --noinput')
 
 def flush_memcached():
@@ -105,13 +105,13 @@ def flush_memcached():
     Delete all cached data.
     """
     with cd(env['rnacentral_site']), settings(warn_only=True):
-            run('echo flush_all | nc localhost 8052')
+        run('echo flush_all | nc localhost 8052')
 
 def restart_django(restart_url):
     """
     Restart django process and visit the website.
     """
-    with cd(env['rnacentral_site']), prefix('source ../scripts/env.sh'):
+    with cd(env['rnacentral_site']), prefix('source scripts/env.sh'):
         run('touch rnacentral/wsgi.py')
         r = requests.get(restart_url)
         if r.status_code != 200:
