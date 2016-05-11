@@ -771,12 +771,25 @@ ul.affix-bottom {
   padding-left: 0;
 }
 
+.metasearch-results h4 {
+  margin-bottom: 2px;
+}
+
+.metasearch-results .metasearch-result {
+  margin-bottom: 25px;
+}
+
 button.load-more {
   margin: 20px 0px;
 }
 
 .metasearch-facets hr {
   margin-bottom: 5px;
+}
+
+.metasearch-highlights {
+  font-weight: bold;
+  text-rendering: optimizeLegibility;
 }
 
 .hidden {

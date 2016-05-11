@@ -90,7 +90,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
     var search_config = {
         ebeye_base_url: global_settings.EBI_SEARCH_ENDPOINT,
         rnacentral_base_url: get_base_url(),
-        fields: ['description', 'active', 'length'],
+        fields: ['description', 'active', 'length', 'pub_title'],
         facetfields: [
             'expert_db',
             'rna_type',
@@ -106,12 +106,13 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
         'ebeye_search': search_config.ebeye_base_url +
                         '?query={QUERY}' + '%20AND%20active:"Active"' +
                         '&format=json' +
-                        '&fields=' + search_config.fields.join() +
+                        '&hlfields=' + search_config.fields.join() +
                         '&facetcount=' + search_config.facetcount +
                         '&facetfields=' + search_config.facetfields.join() +
                         '&size=' + search_config.pagesize +
                         '&start={START}' +
-                        '&sort=boost:descending,length:descending',
+                        '&sort=boost:descending,length:descending' +
+                        '&hlpretag=<span class="metasearch-highlights">&hlposttag=</span>',
         'proxy': search_config.rnacentral_base_url +
                  '/api/internal/ebeye?url={EBEYE_URL}',
     };
@@ -299,7 +300,17 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
 
                 merge_species_facets();
                 order_facets();
+                rename_hlfields();
                 return data;
+
+                /**
+                 * Use `hlfields` with highlighted matches instead of `fields`.
+                 */
+                function rename_hlfields() {
+                    for (var i=0; i < data.entries.length; i++) {
+                        data.entries[i].fields = data.entries[i].highlights;
+                    }                  
+                }
 
                 /**
                  * Order facets the same way as in the config.
@@ -660,6 +671,15 @@ angular.module('rnacentralApp').controller('QueryCtrl', ['$scope', '$location', 
 
 }]);
 
+/**
+ * Custom filter for inserting HTML code in templates.
+ * Used for processing search results highlighting.
+ */
+angular.module('rnacentralApp').filter("sanitize", ['$sce', function($sce) {
+  return function(htmlCode){
+    return $sce.trustAsHtml(htmlCode);
+  }
+}]);
 
 /**
  * Create a keyboard shortcut for quickly accessing the search box.
