@@ -726,24 +726,6 @@ ul.affix-bottom {
   display: none !important;
 }
 
-.animate-repeat.ng-move,
-.animate-repeat.ng-enter {
-  -webkit-transition: 0.75s ease-out all;
-  -moz-transition: 0.75s ease-out all;
-  -o-transition: 0.75s ease-out all;
-  transition: 0.75s ease-out all;
-}
-
-.animate-repeat.ng-move,
-.animate-repeat.ng-enter {
-    opacity: 0;
-}
-
-.animate-repeat.ng-move.ng-move-active,
-.animate-repeat.ng-enter.ng-enter-active {
-    opacity: 1;
-}
-
 /*------------------------------------------------------------------
 [5.7 Metadata search]
 */

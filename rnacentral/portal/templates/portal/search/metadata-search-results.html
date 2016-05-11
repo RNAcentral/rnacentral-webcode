@@ -139,7 +139,7 @@ limitations under the License.
 
     <div class="col-md-3 col-sm-4 hidden-xs metasearch-facets">
       <ul class="list-unstyled">
-        <li class="facet animate-repeat" ng-repeat="facet in result.facets">
+        <li class="facet" ng-repeat="facet in result.facets">
             <h3>{{facet.label}}</h3>
             <ul class="list-unstyled metasearch-facet-values" ng-class="{'metasearch-organism-facet force-scrollbars': facet.label=='Organisms' || facet.label=='RNA type'}">
                 <li ng-repeat="facet_value in facet.facetValues">
@@ -158,7 +158,7 @@ limitations under the License.
 
     <div class="col-md-9 col-sm-8 col-xs-12 metasearch-results">
       <ul class="list-unstyled">
-        <li class="result animate-repeat" ng-repeat="rna in result.entries">
+        <li class="result" ng-repeat="rna in result.entries">
           <div class="metasearch-result">
             <h4>
               <a href="/rna/{{rna.id}}" ng-if="!result.taxid" ng-bind-html="rna.fields.description[0] | sanitize"></a>
