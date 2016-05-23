@@ -592,7 +592,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': '',
-        'version': 'WS245',
+        'version': 'WS251',
     },
     {
         'name': 'MGI',
