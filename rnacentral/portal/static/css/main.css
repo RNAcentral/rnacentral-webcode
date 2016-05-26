@@ -726,24 +726,6 @@ ul.affix-bottom {
   display: none !important;
 }
 
-.animate-repeat.ng-move,
-.animate-repeat.ng-enter {
-  -webkit-transition: 0.75s ease-out all;
-  -moz-transition: 0.75s ease-out all;
-  -o-transition: 0.75s ease-out all;
-  transition: 0.75s ease-out all;
-}
-
-.animate-repeat.ng-move,
-.animate-repeat.ng-enter {
-    opacity: 0;
-}
-
-.animate-repeat.ng-move.ng-move-active,
-.animate-repeat.ng-enter.ng-enter-active {
-    opacity: 1;
-}
-
 /*------------------------------------------------------------------
 [5.7 Metadata search]
 */
@@ -771,12 +753,25 @@ ul.affix-bottom {
   padding-left: 0;
 }
 
+.metasearch-results h4 {
+  margin-bottom: 2px;
+}
+
+.metasearch-results .metasearch-result {
+  margin-bottom: 25px;
+}
+
 button.load-more {
   margin: 20px 0px;
 }
 
 .metasearch-facets hr {
   margin-bottom: 5px;
+}
+
+.metasearch-highlights {
+  font-weight: bold;
+  text-rendering: optimizeLegibility;
 }
 
 .hidden {
