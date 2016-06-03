@@ -86,8 +86,8 @@ STATICFILES_FINDERS = (
     'compressor.finders.CompressorFinder',
 )
 
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = os.environ.get('RNACENTRAL_SECRET_KEY', '')
+# Provide an initial value so that the site is functional with default settings
+SECRET_KEY = 'override this in local_settings.py'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
