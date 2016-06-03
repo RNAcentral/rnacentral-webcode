@@ -23,10 +23,6 @@ DATABASES = {
     }
 }
 
-TEMPLATE_DIRS = (
-	'',
-)
-
 STATIC_ROOT = ''
 
 EMAIL_PORT = None # leave None in production, configure in dev if necessary
