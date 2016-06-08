@@ -115,3 +115,9 @@ supervisor/logs/*.log
 
 # redis database disk dump
 dump.rdb
+
+# easel fasta database SSI index
+*.ssi
+
+# default location of search export results
+rnacentral/export/results

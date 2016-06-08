@@ -24,10 +24,10 @@ MAX_RUN_TIME = 60*60*2 # seconds
 MAX_OUTPUT = 250000
 
 # path to esl-sfetch binary, part of Infernal package
-ESLSFETCH = ''
+ESLSFETCH = os.path.join(os.environ.get('RNACENTRAL_LOCAL', ''), 'infernal-1.1.1', 'bin', 'esl-sfetch')
 
 # path to fasta database
-FASTA_DB = ''
+FASTA_DB = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'examples.fasta')
 
 # path to export search results
 EXPORT_RESULTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'results')
