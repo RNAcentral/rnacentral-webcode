@@ -203,10 +203,6 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
-        '': {
-            'handlers': ['console', 'logfile'],
-            'level': 'DEBUG',
-        },
     }
 }
 
