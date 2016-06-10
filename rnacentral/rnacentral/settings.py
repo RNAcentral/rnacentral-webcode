@@ -186,15 +186,7 @@ LOGGING = {
             'level':'DEBUG',
             'class':'django.utils.log.NullHandler',
         },
-        'logfile': {
-            'level':'DEBUG',
-            'class':'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(os.path.dirname(os.path.realpath(__file__)), "django.log"),
-            'maxBytes': 50000, # rollover to the next file
-            'backupCount': 1, # keep the previous full log named django.log.1 for backup
-            'formatter': 'standard',
-        },
-        'console':{
+    'console':{
             'level':'INFO',
             'class':'logging.StreamHandler', # writes to stderr
             'formatter': 'standard'
