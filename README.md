@@ -12,7 +12,39 @@ The development of RNAcentral is being coordinated by the
 [European Bioinformatics Institute](http://www.ebi.ac.uk) and is funded by the
 [BBSRC](http://www.bbsrc.ac.uk).
 
-# Technology overview
+## Installation
+
+1. Clone Git repository:
+
+  ```
+  git clone --recursive https://github.com/RNAcentral/rnacentral-webcode.git
+  ```
+
+2. Edit database connection parameters in `rnacentral/local_settings.py`
+
+3. Run the app using [Docker](https://www.docker.com):
+
+  ```
+  export RNACENTRAL_HOME=/path/to/rnacentral/code
+  cd $RNACENTRAL_HOME
+  docker-compose up --build
+  ```
+
+**Docker Cheat Sheet**
+
+```
+# start Docker machine
+docker-machine start default
+
+# initialize Docker environment
+eval $(docker-machine env)
+
+# connect to a running container
+docker-machine ls
+docker exec -it <container_id> bash 
+```
+
+## Technology overview
 
 ## Python
 
@@ -52,6 +84,7 @@ The development of RNAcentral is being coordinated by the
 * [Memcached](http://memcached.org/)
 * [Redis](http://redis.io/)
 * [Supervisor](http://supervisord.org/)
+* [Docker](https://www.docker.com)
 
 # Feedback
 
