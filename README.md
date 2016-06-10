@@ -1,14 +1,12 @@
-# RNAcentral Webcode
-
-> The Django project that powers RNAcentral
+# RNAcentral Website
 
 [![Build Status](https://travis-ci.org/RNAcentral/rnacentral-webcode.svg?branch=master)](https://travis-ci.org/RNAcentral/rnacentral-webcode)
 
-# About
+## About
 
-RNAcentral is an open public resource that offers integrated access to a comprehensive and up-to-date set of ncRNA sequences. For more information, please visit [http://rnacentral.org/about-us]()
+RNAcentral is an open public resource that offers integrated access to a comprehensive and up-to-date set of ncRNA sequences. For more information, please visit http://rnacentral.org/about-us.
 
-The development of RNAcentral is being coordinated by the
+The development of RNAcentral is coordinated by the
 [European Bioinformatics Institute](http://www.ebi.ac.uk) and is funded by the
 [BBSRC](http://www.bbsrc.ac.uk).
 
@@ -46,7 +44,7 @@ docker exec -it <container_id> bash
 
 ## Technology overview
 
-## Python
+### Python
 
 * [Django](https://www.djangoproject.com/)
 * [Django REST Framework](http://www.django-rest-framework.org/)
@@ -55,7 +53,7 @@ docker exec -it <container_id> bash
 * [Python RQ](http://python-rq.org/)
 * see [requirements.txt](rnacentral/requirements.txt) for the full list
 
-## Javascript
+### Javascript
 
 * [AngularJS](https://angularjs.org/)
 * [Twitter Bootstrap](http://getbootstrap.com/)
@@ -67,26 +65,26 @@ docker exec -it <container_id> bash
 * [Genoverse](http://genoverse.org)
 * see [LICENSE](LICENSE) for more details
 
-## CSS
+### CSS
 
 * [Twitter Bootstrap](http://getbootstrap.com/)
 * [Font Awesome](http://fontawesome.io/)
 * [Animate.css](https://daneden.github.io/animate.css/)
 * see [LICENSE](LICENSE) for more details
 
-## Testing
+### Testing
 * [Selenium](http://www.seleniumhq.org/)
 * [PhantomJS](http://phantomjs.org/)
 * [Travis](https://travis-ci.org/)
 * [BrowserStack](http://browserstack.com)
 
-## Other
+### Other
 * [Memcached](http://memcached.org/)
 * [Redis](http://redis.io/)
 * [Supervisor](http://supervisord.org/)
 * [Docker](https://www.docker.com)
 
-# Feedback
+## Feedback
 
 Feel free to give feedback using [GitHub issues](https://github.com/RNAcentral/rnacentral-webcode/issues)
 or get in touch using the [Contact form](http://rnacentral.org/contact) on our website.
