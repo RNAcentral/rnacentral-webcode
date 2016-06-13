@@ -317,6 +317,11 @@ RQ_QUEUES = {
 
 EBI_SEARCH_ENDPOINT = 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
 
+# django compressor
+COMPRESS_ENABLED = True
+COMPRESS_OFFLINE = True
+COMPRESS_ROOT = STATIC_ROOT
+
 try:
     from local_settings import * # pylint: disable=W0401, W0614
 except ImportError:

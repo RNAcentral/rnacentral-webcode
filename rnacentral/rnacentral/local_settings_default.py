@@ -13,6 +13,9 @@ limitations under the License.
 
 from utils import get_environment
 
+DEBUG = True
+COMPRESS_ENABLED = False
+
 SECRET_KEY = ''
 
 ORACLE_DBS = {
@@ -87,9 +90,6 @@ elif ENVIRONMENT == 'PG':
        'DEFAULT_TIMEOUT': 360,
        'REMOTE_SERVER': 'ves-oy-XX.ebi.ac.uk:8050',
     }
-
-DEBUG = True
-COMPRESS_ENABLED = False
 
 # django-debug-toolbar
 # print("IP Address for debug-toolbar: " + request.META['REMOTE_ADDR']) in views
