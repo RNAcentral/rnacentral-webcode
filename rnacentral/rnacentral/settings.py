@@ -28,7 +28,7 @@ PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(_
 STATIC_ROOT = os.path.dirname(os.path.join(PROJECT_PATH, 'static'))
 
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+    ('RNAcentral Team', ''.join(['rnacentral', '@', 'gmail.com'])),
 )
 
 MANAGERS = ADMINS
