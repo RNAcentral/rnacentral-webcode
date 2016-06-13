@@ -12,11 +12,8 @@ limitations under the License.
 """
 
 from django import forms
-try:
-    from rnacentral.local_settings import EMAIL_RNACENTRAL_HELPDESK, EMAIL_PORT
-except ImportError, e:
-    pass
 import smtplib
+from rnacentral.settings import ADMINS
 
 
 class ContactForm(forms.Form):
@@ -27,12 +24,13 @@ class ContactForm(forms.Form):
     phone = forms.CharField(required=False) # honeypot anti-spam hidden field
 
     def send_email(self):
+        print ADMINS[0][1]
         if self.cleaned_data['phone']:
             # this field would only be filled out by a spam bot
             return False
         subject = '[RNAcentral Contact Us] ' + self.cleaned_data['subject']
         sender = self.cleaned_data['sender']
-        recipients = [EMAIL_RNACENTRAL_HELPDESK]
+        recipients = [ADMINS[0][1]]
         if self.cleaned_data['cc_myself']:
             recipients.append(sender)
 
@@ -43,14 +41,11 @@ Content-type: text/html
 Subject: {subject}
 
 {message}
-""".format(sender=sender, helpdesk=EMAIL_RNACENTRAL_HELPDESK,
+""".format(sender=sender, helpdesk=ADMINS[0][1],
            subject=subject, message=self.cleaned_data['message'])
 
         try:
-            if EMAIL_PORT:
-                smtpObj = smtplib.SMTP('localhost', EMAIL_PORT)
-            else:
-                smtpObj = smtplib.SMTP('localhost')
+            smtpObj = smtplib.SMTP('localhost')
             smtpObj.sendmail(sender, recipients, message)
             return True
         except:
