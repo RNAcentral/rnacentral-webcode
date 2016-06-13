@@ -11,55 +11,86 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.oracle',
-        'NAME': '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=)(PORT=))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=)))',
-        'USER': '',
-        'PASSWORD': '',
-        'OPTIONS': {
-          'threaded': True,
-        },
-    }
-}
-
-STATIC_ROOT = ''
-
-EMAIL_PORT = None # leave None in production, configure in dev if necessary
-EMAIL_RNACENTRAL_HELPDESK = ''
+from utils import get_environment
 
 SECRET_KEY = ''
 
-ADMINS = (
-    ('', ''),
-)
-
-COMPRESS_ENABLED = False
-DEBUG = False
-ALLOWED_HOSTS = []
-
-# django-debug-toolbar
-INTERNAL_IPS = ('127.0.0.1',)
-
-# django-maintenance
-MAINTENANCE_MODE = False
-
-# Python-rq Redis queues used for exporting results
-RQ_QUEUES = {
-    'default': {
-        'HOST': 'localhost',
-        'PORT': 8051,
-        'DB': 0,
-        # 'PASSWORD': 'some-password',
-        'DEFAULT_TIMEOUT': 360,
-        'REMOTE_SERVER': None,
+ORACLE_DBS = {
+    'HX': {
+        'host': '',
+        'port': 0,
+        'user': '',
+        'service': '',
     },
-    'remote': {
-        'HOST': '',
-        'PORT': 8051,
-        'DB': 0,
-        # 'PASSWORD': 'some-password',
-        'DEFAULT_TIMEOUT': 360,
-        'REMOTE_SERVER': '',
+    'OY': {
+        'host': '',
+        'port': 0,
+        'user': '',
+        'service': '',
+    },
+    'PG': {
+        'host': '',
+        'port': 0,
+        'user': '',
+        'service': '',
+    },
+    'DEV': {
+        'host': '',
+        'port': 0,
+        'user': '',
+        'service': '',
     },
 }
+
+ENVIRONMENT = get_environment()
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.oracle',
+        'NAME': ('(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={host})'
+                 '(PORT={port}))(CONNECT_DATA=(SERVER=DEDICATED)'
+                 '(SERVICE_NAME={service})))').format(
+                     host=ORACLE_DBS[ENVIRONMENT]['host'],
+                     port=ORACLE_DBS[ENVIRONMENT]['port'],
+                     service=ORACLE_DBS[ENVIRONMENT]['service'],
+                     ),
+        'USER': ORACLE_DBS[ENVIRONMENT]['user'],
+        'PASSWORD': '',
+        'OPTIONS': {
+            'threaded': True,
+        }
+    },
+    'nhmmer_db': {
+        'NAME': 'nhmmer_results',
+        'ENGINE': 'django.db.backends.mysql',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': 0,
+    },
+}
+
+# Python-rq Redis queues used for exporting results
+if ENVIRONMENT == 'OY':
+    RQ_QUEUES['remote'] = {
+       'HOST': 'ves-pg-XX.ebi.ac.uk',
+       'PORT': 8051,
+       'DB': 0,
+       'DEFAULT_TIMEOUT': 360,
+       'REMOTE_SERVER': 'ves-pg-XX.ebi.ac.uk:8050',
+    }
+elif ENVIRONMENT == 'PG':
+    RQ_QUEUES['remote'] = {
+       'HOST': 'ves-oy-XX.ebi.ac.uk',
+       'PORT': 8051,
+       'DB': 0,
+       'DEFAULT_TIMEOUT': 360,
+       'REMOTE_SERVER': 'ves-oy-XX.ebi.ac.uk:8050',
+    }
+
+DEBUG = True
+COMPRESS_ENABLED = False
+
+# django-debug-toolbar
+# print("IP Address for debug-toolbar: " + request.META['REMOTE_ADDR']) in views
+INTERNAL_IPS = ('127.0.0.1', '192.168.99.1')
