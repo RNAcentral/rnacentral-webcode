@@ -274,10 +274,10 @@ MAINTENANCE_MODE = False
 
 # Memcached caching
 CACHES = {
-  'default': {
-    'BACKEND': 'caching.backends.memcached.MemcachedCache', # django-cache-machine
-    'LOCATION': 'localhost:11211',
-  }
+    'default': {
+        'BACKEND': 'caching.backends.memcached.MemcachedCache', # django-cache-machine
+        'LOCATION': 'localhost:8052',
+    }
 }
 
 # cache queries like Rna.objects.count()
