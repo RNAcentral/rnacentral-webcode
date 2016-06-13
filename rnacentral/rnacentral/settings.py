@@ -19,6 +19,7 @@ TEMPLATE_DEBUG = DEBUG
 
 # project root directory
 PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+STATIC_ROOT = os.path.dirname(os.path.join(PROJECT_PATH, 'static'))
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
