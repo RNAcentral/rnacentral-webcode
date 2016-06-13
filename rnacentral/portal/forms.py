@@ -13,9 +13,9 @@ limitations under the License.
 
 from django import forms
 try:
-   from rnacentral.local_settings import EMAIL_RNACENTRAL_HELPDESK, EMAIL_PORT
+    from rnacentral.local_settings import EMAIL_RNACENTRAL_HELPDESK, EMAIL_PORT
 except ImportError, e:
-   pass
+    pass
 import smtplib
 
 
