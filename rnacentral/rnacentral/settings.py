@@ -38,6 +38,7 @@ DATABASES = {
         'PORT': '',
     }
 }
+CONN_MAX_AGE = 300
 DATABASE_ROUTERS = ['nhmmer.db_router.NhmmerRouter']
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
