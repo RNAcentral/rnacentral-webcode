@@ -13,12 +13,18 @@ limitations under the License.
 
 import os
 
+try:
+    import pymysql
+    pymysql.install_as_MySQLdb()
+except ImportError:
+    pass
+
 
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 # project root directory
-PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # pylint: disable=C0301
 STATIC_ROOT = os.path.dirname(os.path.join(PROJECT_PATH, 'static'))
 
 ADMINS = (
@@ -138,7 +144,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "portal.context_processors.baseurl",
 )
 
-USE_ETAGS=True
+USE_ETAGS = True
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -149,7 +155,6 @@ WSGI_APPLICATION = 'rnacentral.wsgi.application'
 
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_PATH, 'rnacentral', 'templates'),
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
 )
@@ -189,7 +194,7 @@ LOGGING = {
     'disable_existing_loggers': True,
     'formatters': {
         'standard': {
-            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s", # pylint: disable=W0401, C0301
             'datefmt' : "%d/%b/%Y %H:%M:%S"
         },
     },
@@ -198,7 +203,7 @@ LOGGING = {
             'level':'DEBUG',
             'class':'django.utils.log.NullHandler',
         },
-    'console':{
+        'console': {
             'level':'INFO',
             'class':'logging.StreamHandler', # writes to stderr
             'formatter': 'standard'
@@ -274,10 +279,10 @@ DEBUG_TOOLBAR_PANELS = (
 # django-maintenance
 MAINTENANCE_MODE = False
 
-# Memcached caching
+# Memcached caching for django-cache-machine
 CACHES = {
     'default': {
-        'BACKEND': 'caching.backends.memcached.MemcachedCache', # django-cache-machine
+        'BACKEND': 'caching.backends.memcached.MemcachedCache',
         'LOCATION': 'localhost:8052',
     }
 }
@@ -313,15 +318,7 @@ RQ_QUEUES = {
 
 EBI_SEARCH_ENDPOINT = 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
 
-# use pymysql driver instead of the official one
-# because MySQLdb is harder to install
 try:
-    import pymysql
-    pymysql.install_as_MySQLdb()
+    from local_settings import * # pylint: disable=W0401, W0614
 except ImportError:
     pass
-
-try:
-   from local_settings import *
-except ImportError, e:
-   pass
