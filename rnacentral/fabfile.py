@@ -41,7 +41,7 @@ print settings # this is a lazy object and should be evaluated to be used
 
 COMMANDS = {
     'set_environment': 'source rnacentral/scripts/env.sh',
-    'activate_virtualenv': 'source {local}/virtualenvs/RNAcentral/bin/activate',
+    'activate_virtualenv': 'source ../local/virtualenvs/RNAcentral/bin/activate', # pylint: disable=C0301
 }
 
 # set default values in the shared environment
@@ -86,10 +86,8 @@ def install_django_requirements():
     """
     Run pip install.
     """
-    with env.cd(settings.PROJECT_PATH), prefix(COMMANDS['set_environment']):
-        cmd = COMMANDS['activate_virtualenv'].format(
-            local=os.environ['RNACENTRAL_LOCAL'])
-        env.run(cmd)
+    with env.cd(settings.PROJECT_PATH), prefix(COMMANDS['set_environment']), \
+         prefix(COMMANDS['activate_virtualenv']):
         env.run('pip install --upgrade -r rnacentral/requirements.txt')
 
 def rsync_static_files():
@@ -107,16 +105,16 @@ def collect_static_files():
     """
     Run django `collectstatic` command.
     """
-    with env.cd(settings.PROJECT_PATH), prefix(COMMANDS['set_environment']):
-        cmd = COMMANDS['activate_virtualenv'].format(local=os.environ['RNACENTRAL_LOCAL']) # pylint: disable=C0301
-        env.run(cmd)
+    with env.cd(settings.PROJECT_PATH), prefix(COMMANDS['set_environment']), \
+         prefix(COMMANDS['activate_virtualenv']):    
         env.run('python rnacentral/manage.py collectstatic --noinput')
 
 def compress_static_files():
     """
     Run django compressor.
     """
-    with env.cd(settings.PROJECT_PATH), prefix(COMMANDS['set_environment']):
+    with env.cd(settings.PROJECT_PATH), prefix(COMMANDS['set_environment']), \
+         prefix(COMMANDS['activate_virtualenv']):
         env.run('python rnacentral/manage.py compress')
 
 def flush_memcached():
