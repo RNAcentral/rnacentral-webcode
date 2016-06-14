@@ -127,6 +127,7 @@ def deploy(git_branch=None, restart_url='http://rnacentral.org', quick=False):
     """
     git_updates(git_branch)
     collect_static_files()
+    compress_static_files()
     if not quick:
         install_django_requirements()
     flush_memcached()
@@ -137,6 +138,7 @@ def deploy_remotely(restart_url='http://rnacentral.org'):
     Run deployment remotely.
     """
     install_django_requirements()
+    compress_static_files()
     rsync_local_binaries()
     flush_memcached()
     restart_django(restart_url)
