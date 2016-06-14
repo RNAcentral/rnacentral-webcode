@@ -11,33 +11,50 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import os.path
-import requests
-from fabric.api import *
-
 """
-Fabric deployment script
+RNAcentral deployment script using Fabric.
 
 Usage:
 
-fab -H user@server1,user@server2 -c /path/to/fab.cfg deploy:git_branch=my_git_branch,restart_url=my_restart_url
+To run locally:
+    fab localhost <task>
+Example:
+    fab localhost deploy
 
-where:
+To run remotely:
+    fab -H user@server1,user@server2 <task>
+Example:
+    fab -H user@server1,user@server2 deploy_remotely
 
-* -H - list of host names
-* -c - path to the configuration file
-* deploy - name of the task to run
-* git_branch - git branch to deploy (dev by default)
-* restart_url - which url should be used to jumpstart the server
-
-fab.cfg template:
-
-rnacentral_site=/path/to/manage.py
-activate=source /path/to/virtualenvs/RNAcentral/bin/activate
-ld_library_path=export LD_LIBRARY_PATH=/path/to/oracle/libraries/:$LD_LIBRARY_PATH
-oracle_home=export ORACLE_HOME=/path/to/oracle/libraries/
-static_files=/path/to/static/files
+For more options, run `fab help`.
 """
+
+import os
+import requests
+from fabric.api import cd, env, lcd, local, prefix, run
+from fabric.contrib import django
+
+# load Django settings
+django.settings_module('rnacentral.settings')
+from django.conf import settings
+print settings # this is a lazy object and should be evaluated to be used
+
+COMMANDS = {
+    'set_environment': 'source rnacentral/scripts/env.sh',
+    'activate_virtualenv': 'source {local}/virtualenvs/RNAcentral/bin/activate',
+}
+
+# set default values in the shared environment
+env.run = run
+env.cd = cd
+
+def localhost():
+    """
+    Enable local execution of tasks.
+    Load local versions of Fabric functions into the shared environment.
+    """
+    env.run = local
+    env.cd = lcd
 
 def rsync_git_repo():
     """
@@ -50,97 +67,100 @@ def rsync_git_repo():
         parent_parent_dir = os.path.abspath(os.path.join(parent_dir, os.pardir))
         cmd = ("rsync -av {src} --exclude 'rnacentral/local_settings.py' " + \
                "--exclude '*.log' --exclude '*.pyc' --exclude 'dump.rdb' " + \
-               "--exclude '*.pid' {host}:{dst}").format(host=env.host, src=parent_dir,
-            dst=parent_parent_dir)
+               "--exclude '*.pid' {host}:{dst}").format(host=env.host,
+                src=parent_dir, dst=parent_parent_dir)
         local(cmd)
 
-def git_updates(git_branch):
+def git_updates(git_branch=None):
     """
     Perform git updates, but only on the test server because the production
     servers must use rsync to preserve file modification time.
     """
-    with cd(env['rnacentral_site']):
-        # make sure we are on the right branch
-        run('git checkout %s' % git_branch)
-        # get latest changes
-        run('git pull')
-        # update git submodules
-        this_dir = os.path.dirname(os.path.realpath(__file__))
-        parent_dir = os.path.abspath(os.path.join(this_dir, os.pardir))
-        with cd(parent_dir):
-            run('git submodule update')
+    with env.cd(settings.PROJECT_PATH):
+        if git_branch:
+            env.run('git checkout {branch}'.format(branch=git_branch))
+        env.run('git pull')
+        env.run('git submodule update')
 
 def install_django_requirements():
     """
-    * activate virtual environment
-    * set Oracle variables
-    * install all python requirements
+    Run pip install.
     """
-    with cd(env['rnacentral_site']), prefix(env['activate']), prefix(env['ld_library_path']), prefix(env['oracle_home']):
-        run('pip install --upgrade -r requirements.txt')
+    with env.cd(settings.PROJECT_PATH), prefix(COMMANDS['set_environment']):
+        cmd = COMMANDS['activate_virtualenv'].format(
+            local=os.environ['RNACENTRAL_LOCAL'])
+        env.run(cmd)
+        env.run('pip install --upgrade -r rnacentral/requirements.txt')
 
 def rsync_static_files():
     """
-    Rsync static files from the test to production.
+    Rsync static files from test to production.
     This is done to synchronize modification times of css files.
     """
     with lcd(env['static_files']):
-        parent_dir = os.path.abspath(os.path.join(env['static_files'], os.pardir))
+        parent_dir = os.path.abspath(os.path.join(env['static_files'], os.pardir)) # pylint: disable=C0301
         cmd = 'rsync -av {src} {host}:{dst}'.format(host=env.host,
             src=env['static_files'], dst=parent_dir)
         local(cmd)
 
 def collect_static_files():
     """
-    * activate virtual environment
-    * set Oracle variables
-    * move static files to the deployment location
+    Run django `collectstatic` command.
     """
-    with cd(env['rnacentral_site']), prefix(env['activate']), prefix(env['ld_library_path']), prefix(env['oracle_home']):
-        with prefix('source scripts/env.sh'):
-            run('python manage.py collectstatic --noinput')
+    with env.cd(settings.PROJECT_PATH), prefix(COMMANDS['set_environment']):
+        cmd = COMMANDS['activate_virtualenv'].format(local=os.environ['RNACENTRAL_LOCAL']) # pylint: disable=C0301
+        env.run(cmd)
+        env.run('python rnacentral/manage.py collectstatic --noinput')
+
+def compress_static_files():
+    """
+    Run django compressor.
+    """
+    with env.cd(settings.PROJECT_PATH), prefix(COMMANDS['set_environment']):
+        env.run('python rnacentral/manage.py compress')
 
 def flush_memcached():
     """
     Delete all cached data.
     """
-    with cd(env['rnacentral_site']), settings(warn_only=True):
-        run('echo flush_all | nc localhost 8052')
+    (host, port) = settings.CACHES['default']['LOCATION'].split(':')
+    cmd = 'echo flush_all | nc {host} {port} -vv'.format(host=host, port=port)
+    env.run(cmd)
 
-def restart_django(restart_url):
+def restart_django(restart_url=None):
     """
     Restart django process and visit the website.
     """
-    with cd(env['rnacentral_site']), prefix('source scripts/env.sh'):
-        run('touch rnacentral/wsgi.py')
-        r = requests.get(restart_url)
-        if r.status_code != 200:
-            print 'Error: Website cannot be reached'
+    with env.cd(settings.PROJECT_PATH):
+        env.run('touch rnacentral/rnacentral/wsgi.py')
+        if restart_url:
+            requests.get(restart_url)
 
-def deploy(git_branch='dev', restart_url="http://rnacentral.org"):
+def deploy(git_branch=None, restart_url='http://rnacentral.org'):
     """
-    Deploy to a server.
+    Run deployment locally.
     """
-    if env.host == 'ves-hx-61':
-        # will run only when deploying to test servers
-        git_updates(git_branch)
-        collect_static_files()
-    else:
-        # will run only when deploying to production servers
-        rsync_git_repo()
-        rsync_static_files()
+    git_updates(git_branch)
+    collect_static_files()
     install_django_requirements()
     flush_memcached()
     restart_django(restart_url)
 
-def test(base_url="http://localhost:8000/"):
+def deploy_remotely(restart_url='http://rnacentral.org'):
+    """
+    Run deployment remotely.
+    """
+    rsync_git_repo()
+    rsync_static_files()
+    install_django_requirements()
+    flush_memcached()
+    restart_django(restart_url)
+
+def test(base_url='http://localhost:8000/'):
     """
     Single entry point for all tests.
-
-    Usage:
-    fab test # will test localhost
-    fab test:http://test.rnacentral.org
     """
-    local('python apiv1/tests.py --base_url=%s' % base_url)
-    local('python portal/tests/selenium_tests.py --base_url %s --driver=phantomjs' % base_url)
-    local('python apiv1/search/sequence/tests.py --base_url %s' % base_url)
+    with env.cd(settings.PROJECT_PATH):
+        env.run('python rnacentral/apiv1/tests.py --base_url=%s' % base_url)
+        env.run('python rnacentral/portal/tests/selenium_tests.py --base_url %s --driver=phantomjs' % base_url) # pylint: disable=C0301
+        env.run('python rnacentral/apiv1/search/sequence/tests.py --base_url %s' % base_url) # pylint: disable=C0301
