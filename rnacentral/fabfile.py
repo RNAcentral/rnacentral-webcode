@@ -56,21 +56,6 @@ def localhost():
     env.run = local
     env.cd = lcd
 
-def rsync_git_repo():
-    """
-    Use rsync to sync git repositories. This is required for django-compressor
-    to generate the same static files, which rely on file modification time.
-    """
-    with lcd(env['rnacentral_site']):
-        this_dir = os.path.dirname(os.path.realpath(__file__))
-        parent_dir = os.path.abspath(os.path.join(this_dir, os.pardir))
-        parent_parent_dir = os.path.abspath(os.path.join(parent_dir, os.pardir))
-        cmd = ("rsync -av {src} --exclude 'rnacentral/local_settings.py' " + \
-               "--exclude '*.log' --exclude '*.pyc' --exclude 'dump.rdb' " + \
-               "--exclude '*.pid' {host}:{dst}").format(host=env.host,
-                src=parent_dir, dst=parent_parent_dir)
-        local(cmd)
-
 def git_updates(git_branch=None):
     """
     Perform git updates, but only on the test server because the production
@@ -89,17 +74,6 @@ def install_django_requirements():
     with env.cd(settings.PROJECT_PATH), prefix(COMMANDS['set_environment']), \
          prefix(COMMANDS['activate_virtualenv']):
         env.run('pip install --upgrade -r rnacentral/requirements.txt')
-
-def rsync_static_files():
-    """
-    Rsync static files from test to production.
-    This is done to synchronize modification times of css files.
-    """
-    with lcd(env['static_files']):
-        parent_dir = os.path.abspath(os.path.join(env['static_files'], os.pardir)) # pylint: disable=C0301
-        cmd = 'rsync -av {src} {host}:{dst}'.format(host=env.host,
-            src=env['static_files'], dst=parent_dir)
-        local(cmd)
 
 def collect_static_files():
     """
@@ -162,8 +136,6 @@ def deploy_remotely(restart_url='http://rnacentral.org'):
     """
     Run deployment remotely.
     """
-    rsync_git_repo()
-    rsync_static_files()
     install_django_requirements()
     rsync_local_binaries()
     flush_memcached()
