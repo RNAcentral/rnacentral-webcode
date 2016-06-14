@@ -31,7 +31,7 @@ For more options, run `fab help`.
 
 import os
 import requests
-from fabric.api import cd, env, lcd, local, prefix, run
+from fabric.api import cd, env, lcd, local, prefix, run, warn_only
 from fabric.contrib import django
 
 # load Django settings
@@ -123,7 +123,8 @@ def flush_memcached():
     """
     (host, port) = settings.CACHES['default']['LOCATION'].split(':')
     cmd = 'echo flush_all | nc {host} {port} -vv'.format(host=host, port=port)
-    env.run(cmd)
+    with warn_only():
+        env.run(cmd)
 
 def restart_django(restart_url=None):
     """
