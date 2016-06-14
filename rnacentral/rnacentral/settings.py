@@ -321,6 +321,7 @@ EBI_SEARCH_ENDPOINT = 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
 COMPRESS_ENABLED = True
 COMPRESS_OFFLINE = True
 COMPRESS_ROOT = STATIC_ROOT
+COMPRESS_CSS_HASHING_METHOD = 'content'
 
 try:
     from local_settings import * # pylint: disable=W0401, W0614
