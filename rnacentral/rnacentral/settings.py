@@ -304,17 +304,6 @@ MARKDOWN_DEUX_STYLES = {
 
 SILENCED_SYSTEM_CHECKS = ['1_6.W001']
 
-RQ_QUEUES = {
-    'default': {
-        'HOST': 'localhost',
-        'PORT': 8051,
-        'DB': 0,
-        # 'PASSWORD': 'some-password',
-        'DEFAULT_TIMEOUT': 360,
-        'REMOTE_SERVER': None,
-    },
-}
-
 EBI_SEARCH_ENDPOINT = 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
 
 # django compressor
