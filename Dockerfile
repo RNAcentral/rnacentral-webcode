@@ -23,6 +23,7 @@ RUN yum install -y \
 
 RUN mkdir /rnacentral
 RUN mkdir /rnacentral/local
+RUN mkdir /rnacentral/static
 
 ENV LOC /rnacentral/local
 
