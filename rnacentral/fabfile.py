@@ -147,13 +147,14 @@ def rsync_local_binaries():
     )
     local(cmd)
 
-def deploy(git_branch=None, restart_url='http://rnacentral.org'):
+def deploy(git_branch=None, restart_url='http://rnacentral.org', quick=False):
     """
     Run deployment locally.
     """
     git_updates(git_branch)
     collect_static_files()
-    install_django_requirements()
+    if not quick:
+        install_django_requirements()
     flush_memcached()
     restart_django(restart_url)
 
