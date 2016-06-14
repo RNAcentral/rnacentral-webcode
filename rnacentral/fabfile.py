@@ -133,15 +133,16 @@ def deploy(git_branch=None, restart_url='http://rnacentral.org', quick=False):
     flush_memcached()
     restart_django(restart_url)
 
-def deploy_remotely(restart_url='http://rnacentral.org'):
+def deploy_remotely(git_branch=None, restart_url='http://rnacentral.org'):
     """
     Run deployment remotely.
     """
-    install_django_requirements()
+    git_updates(git_branch)
+    collect_static_files()
     compress_static_files()
-    rsync_local_binaries()
     flush_memcached()
     restart_django(restart_url)
+    rsync_local_binaries()
 
 def test(base_url='http://localhost:8000/'):
     """
