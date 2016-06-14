@@ -80,7 +80,7 @@ def collect_static_files():
     Run django `collectstatic` command.
     """
     with env.cd(settings.PROJECT_PATH), prefix(COMMANDS['set_environment']), \
-         prefix(COMMANDS['activate_virtualenv']):    
+         prefix(COMMANDS['activate_virtualenv']):
         env.run('python rnacentral/manage.py collectstatic --noinput')
 
 def compress_static_files():
