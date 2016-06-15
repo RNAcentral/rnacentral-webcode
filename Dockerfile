@@ -122,6 +122,7 @@ RUN \
     curl -OL https://modwsgi.googlecode.com/files/mod_wsgi-3.4.tar.gz && \
     tar -zxvf mod_wsgi-3.4.tar.gz && \
     cd mod_wsgi-3.4 && \
+    export LD_RUN_PATH=$LOC/python-2.7.11/lib && \
     export LD_LIBRARY_PATH=$LOC/python-2.7.11/lib/:$LD_LIBRARY_PATH && \
     ./configure --with-python=$LOC/python-2.7.11/bin/python && \
     make && \
