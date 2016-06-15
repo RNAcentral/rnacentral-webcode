@@ -30,17 +30,17 @@ ENV LOC /rnacentral/local
 # Install Python
 RUN \
     cd $LOC && \
-    curl -OL http://www.python.org/ftp/python/2.7.6/Python-2.7.6.tgz && \
-    tar -zxvf Python-2.7.6.tgz && \
-    cd Python-2.7.6 && \
-    PREFIX=$LOC/python-2.7.6/ && \
+    curl -OL http://www.python.org/ftp/python/2.7.11/Python-2.7.11.tgz && \
+    tar -zxvf Python-2.7.11.tgz && \
+    cd Python-2.7.11 && \
+    PREFIX=$LOC/python-2.7.11/ && \
     export LD_RUN_PATH=$PREFIX/lib && \
     ./configure --prefix=$PREFIX  --enable-shared && \
     make && \
     make install && \
     cd $LOC && \
-    rm -Rf Python-2.7.6 && \
-    rm Python-2.7.6.tgz
+    rm -Rf Python-2.7.11 && \
+    rm Python-2.7.11.tgz
 
 # Install virtualenv
 RUN \
@@ -48,7 +48,7 @@ RUN \
     curl -OL  https://pypi.python.org/packages/source/v/virtualenv/virtualenv-1.10.1.tar.gz && \
     tar -zxvf virtualenv-1.10.1.tar.gz && \
     cd virtualenv-1.10.1 && \
-    $LOC/python-2.7.6/bin/python setup.py install && \
+    $LOC/python-2.7.11/bin/python setup.py install && \
     cd $LOC && \
     rm -Rf virtualenv-1.10.1.tar.gz && \
     rm -Rf virtualenv-1.10.1
@@ -58,7 +58,7 @@ RUN \
     cd $LOC && \
     mkdir virtualenvs && \
     cd virtualenvs && \
-    $LOC/python-2.7.6/bin/virtualenv RNAcentral --python=$LOC/python-2.7.6/bin/python
+    $LOC/python-2.7.11/bin/virtualenv RNAcentral --python=$LOC/python-2.7.11/bin/python
 
 # Install Redis
 RUN \
@@ -122,8 +122,8 @@ RUN \
     curl -OL https://modwsgi.googlecode.com/files/mod_wsgi-3.4.tar.gz && \
     tar -zxvf mod_wsgi-3.4.tar.gz && \
     cd mod_wsgi-3.4 && \
-    export LD_LIBRARY_PATH=$LOC/python-2.7.6/lib/:$LD_LIBRARY_PATH && \
-    ./configure --with-python=$LOC/python-2.7.6/bin/python && \
+    export LD_LIBRARY_PATH=$LOC/python-2.7.11/lib/:$LD_LIBRARY_PATH && \
+    ./configure --with-python=$LOC/python-2.7.11/bin/python && \
     make && \
     mv .libs/mod_wsgi.so $LOC/httpd/modules && \
     cd $LOC && \
