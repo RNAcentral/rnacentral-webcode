@@ -109,15 +109,16 @@ def restart_django(restart_url=None):
         if restart_url:
             requests.get(restart_url)
 
-def rsync_local_files():
+def rsync_local_files(dry_run=None):
     """
     Rsync local files to production.
     """
     local_path = os.path.join(os.path.dirname(settings.PROJECT_PATH), 'local')
-    cmd = 'rsync -av {src}/ {host}:{dst}'.format(
+    cmd = 'rsync -av{dry_run} {src}/ {host}:{dst}'.format(
         src=local_path,
         host=env.host,
-        dst=local_path
+        dst=local_path,
+        dry_run='n' if dry_run else '',
     )
     local(cmd)
 
