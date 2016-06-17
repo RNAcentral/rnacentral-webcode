@@ -109,9 +109,9 @@ def restart_django(restart_url=None):
         if restart_url:
             requests.get(restart_url)
 
-def rsync_local_binaries():
+def rsync_local_files():
     """
-    Rsync local binaries to production.
+    Rsync local files to production.
     """
     local_path = os.path.join(os.path.dirname(settings.PROJECT_PATH), 'local')
     cmd = 'rsync -av {src}/ {host}:{dst}'.format(
@@ -142,7 +142,7 @@ def deploy_remotely(git_branch=None, restart_url='http://rnacentral.org'):
     compress_static_files()
     flush_memcached()
     restart_django(restart_url)
-    rsync_local_binaries()
+    rsync_local_files()
 
 def test(base_url='http://localhost:8000/'):
     """
