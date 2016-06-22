@@ -463,7 +463,7 @@ class Rna(CachingMixin, models.Model):
                 rfam_full_alignment_penalty + \
                 misc_rna_penalty
             return score
-        
+
         # blacklisted entries
         if self.upi in ['URS000065859A'] and not taxid: # an entry with > 200K xrefs, all from Rfam
             return 'uncultured Neocallimastigales 5.8S ribosomal RNA'

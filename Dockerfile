@@ -1,7 +1,7 @@
 #
 # Create a reproducible installation of the RNAcentral website.
 #
-# All local dependencies are installed manually to mirror the production setup 
+# All local dependencies are installed manually to mirror the production setup
 # where Docker or yum are not available.
 #
 
@@ -15,7 +15,7 @@ RUN yum install -y \
     httpd-devel \
     libaio \
     nc.x86_64 \
-    openssl \ 
+    openssl \
     openssl-devel \
     tar \
     unzip \
@@ -97,7 +97,7 @@ RUN \
     rm -Rf memcached-1.4.17 && \
     rm memcached-1.4.17.tar.gz
 
-# Create a user for memcached 
+# Create a user for memcached
 RUN adduser -g root xfm_adm
 
 # Install Infernal
@@ -163,5 +163,5 @@ EXPOSE 8000
 # Start up the app
 ENTRYPOINT \
     source $LOC/virtualenvs/RNAcentral/bin/activate && \
-    supervisord -c $RNACENTRAL_HOME/supervisor/supervisor.conf && \    
+    supervisord -c $RNACENTRAL_HOME/supervisor/supervisor.conf && \
     python $RNACENTRAL_HOME/rnacentral/manage.py runserver 0.0.0.0:8000
