@@ -58,8 +58,7 @@ def localhost():
 
 def git_updates(git_branch=None):
     """
-    Perform git updates, but only on the test server because the production
-    servers must use rsync to preserve file modification time.
+    Perform git updates.
     """
     with env.cd(settings.PROJECT_PATH):
         if git_branch:
