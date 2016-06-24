@@ -86,19 +86,19 @@ RQ_QUEUES = {
 # Python-rq Redis queues used for exporting results
 if ENVIRONMENT == 'OY':
     RQ_QUEUES['remote'] = {
-       'HOST': 'ves-pg-XX.ebi.ac.uk',
-       'PORT': 8051,
-       'DB': 0,
-       'DEFAULT_TIMEOUT': 360,
-       'REMOTE_SERVER': 'ves-pg-XX.ebi.ac.uk:8050',
+        'HOST': 'ves-pg-XX.ebi.ac.uk',
+        'PORT': 8051,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 360,
+        'REMOTE_SERVER': 'ves-pg-XX.ebi.ac.uk:8050',
     }
 elif ENVIRONMENT == 'PG':
     RQ_QUEUES['remote'] = {
-       'HOST': 'ves-oy-XX.ebi.ac.uk',
-       'PORT': 8051,
-       'DB': 0,
-       'DEFAULT_TIMEOUT': 360,
-       'REMOTE_SERVER': 'ves-oy-XX.ebi.ac.uk:8050',
+        'HOST': 'ves-oy-XX.ebi.ac.uk',
+        'PORT': 8051,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 360,
+        'REMOTE_SERVER': 'ves-oy-XX.ebi.ac.uk:8050',
     }
 
 # django-debug-toolbar
