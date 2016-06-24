@@ -20,28 +20,25 @@ SECRET_KEY = ''
 
 ORACLE_DBS = {
     'HX': {
-        'host': '',
-        'port': 0,
         'user': '',
-        'service': '',
+        'name': '',
     },
     'OY': {
-        'host': '',
-        'port': 0,
         'user': '',
-        'service': '',
+        'name': '',
     },
     'PG': {
-        'host': '',
-        'port': 0,
         'user': '',
-        'service': '',
+        'name': '',
     },
     'DEV': {
-        'host': '',
-        'port': 0,
         'user': '',
-        'service': '',
+        'name': ('(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={host})'
+                 '(PORT={port}))(CONNECT_DATA=(SERVER=DEDICATED)'
+                 '(SERVICE_NAME={service})))').format(
+                     host='host',
+                     port=0,
+                     service='service'),
     },
 }
 
@@ -50,13 +47,7 @@ ENVIRONMENT = get_environment()
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle',
-        'NAME': ('(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={host})'
-                 '(PORT={port}))(CONNECT_DATA=(SERVER=DEDICATED)'
-                 '(SERVICE_NAME={service})))').format(
-                     host=ORACLE_DBS[ENVIRONMENT]['host'],
-                     port=ORACLE_DBS[ENVIRONMENT]['port'],
-                     service=ORACLE_DBS[ENVIRONMENT]['service'],
-                     ),
+        'NAME': ORACLE_DBS[ENVIRONMENT]['name'],
         'USER': ORACLE_DBS[ENVIRONMENT]['user'],
         'PASSWORD': '',
         'OPTIONS': {
