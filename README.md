@@ -38,7 +38,7 @@ docker-machine start default
 eval $(docker-machine env)
 
 # connect to a running container
-docker-machine ls
+docker ps
 docker exec -it <container_id> bash 
 ```
 
