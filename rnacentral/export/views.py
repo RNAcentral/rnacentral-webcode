@@ -16,6 +16,7 @@ import django_rq
 import gzip
 import json
 import os
+import re
 import requests
 import subprocess as sub
 import tempfile
@@ -70,6 +71,7 @@ def export_search_results(query, _format, hits):
         if _format == 'list':
             return '\n'.join(rnacentral_ids) + '\n'
         elif _format == 'json':
+            rnacentral_ids = [re.sub(r'_\d+', '', x) for x in rnacentral_ids]
             queryset = Rna.objects.filter(upi__in=rnacentral_ids).all()
             serializer = RnaFlatSerializer(queryset, many=True)
             renderer = renderers.JSONRenderer()
