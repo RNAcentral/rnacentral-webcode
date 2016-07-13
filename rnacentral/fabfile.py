@@ -12,19 +12,15 @@ limitations under the License.
 """
 
 """
-RNAcentral deployment script using Fabric.
+RNAcentral deployment script.
 
 Usage:
 
 To run locally:
-    fab localhost <task>
-Example:
     fab localhost deploy
 
 To run remotely:
-    fab -H user@server1,user@server2 <task>
-Example:
-    fab -H user@server1,user@server2 deploy_remotely
+    fab -H server1,server2 production deploy
 
 For more options, run `fab help`.
 """
@@ -44,9 +40,15 @@ COMMANDS = {
     'activate_virtualenv': 'source ../local/virtualenvs/RNAcentral/bin/activate', # pylint: disable=C0301
 }
 
-# set default values in the shared environment
-env.run = run
-env.cd = cd
+env.deployment = None
+
+def production():
+    """
+    Enable remote execution of tasks.
+    """
+    env.run = run
+    env.cd = cd
+    env.deployment = 'remote'
 
 def localhost():
     """
@@ -55,6 +57,7 @@ def localhost():
     """
     env.run = local
     env.cd = lcd
+    env.deployment = 'local'
 
 def git_updates(git_branch=None):
     """
@@ -121,7 +124,7 @@ def rsync_local_files(dry_run=None):
     )
     local(cmd)
 
-def deploy(git_branch=None, restart_url='http://rnacentral.org', quick=False):
+def deploy_locally(git_branch=None, restart_url='http://rnacentral.org', quick=False):
     """
     Run deployment locally.
     """
@@ -133,7 +136,7 @@ def deploy(git_branch=None, restart_url='http://rnacentral.org', quick=False):
     flush_memcached()
     restart_django(restart_url)
 
-def deploy_remotely(git_branch=None, restart_url='http://rnacentral.org'):
+def deploy_remotely(git_branch=None, restart_url='http://rnacentral.org', quick=False):
     """
     Run deployment remotely.
     """
@@ -142,7 +145,20 @@ def deploy_remotely(git_branch=None, restart_url='http://rnacentral.org'):
     compress_static_files()
     flush_memcached()
     restart_django(restart_url)
-    rsync_local_files()
+    if not quick:
+        rsync_local_files()
+
+def deploy(git_branch=None, restart_url='http://rnacentral.org', quick=False):
+    """
+    Deployment function wrapper that launches local or remote deployment
+    based on the environment.
+    """
+    if env.deployment == 'remote':
+        deploy_remotely(git_branch, restart_url, quick)
+    elif env.deployment == 'local':
+        deploy_locally(git_branch, restart_url, quick)
+    else:
+        print 'Check usage'
 
 def test(base_url='http://localhost:8000/'):
     """
