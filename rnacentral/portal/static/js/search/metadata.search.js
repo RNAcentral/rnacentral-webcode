@@ -174,7 +174,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
         function get_query_url() {
             var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query).replace('{START}', start);
             var url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url));
-            return url;          
+            return url;
         }
 
         /**
@@ -306,7 +306,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
                 function rename_hlfields() {
                     for (var i=0; i < data.entries.length; i++) {
                         data.entries[i].fields = data.entries[i].highlights;
-                    }                  
+                    }
                 }
 
                 /**

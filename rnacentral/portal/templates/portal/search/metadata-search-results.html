@@ -165,7 +165,7 @@ limitations under the License.
               <small>{{rna.id}}</small>
             </h4>
             <div ng-show="rna.fields.description[0].indexOf('metasearch-highlights') === -1" style="margin-bottom: 3px;">
-              <ul ng-repeat="pub_title in rna.fields.pub_title | filter:'metasearch-highlights' | limitTo:1" class="small list-unstyled">                
+              <ul ng-repeat="pub_title in rna.fields.pub_title | filter:'metasearch-highlights' | limitTo:1" class="small list-unstyled">
                 <li ng-bind-html="pub_title | sanitize"></li>
               </ul>
             </div>
