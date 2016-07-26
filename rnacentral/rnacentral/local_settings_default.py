@@ -1,5 +1,5 @@
 """
-Copyright [2009-2015] EMBL-European Bioinformatics Institute
+Copyright [2009-2016] EMBL-European Bioinformatics Institute
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -11,59 +11,87 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.oracle',
-        'NAME': '(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST=)(PORT=))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=)))',
-        'USER': '',
-        'PASSWORD': '',
-        'OPTIONS': {
-          'threaded': True,
-        },
-    }
-}
+from utils import get_environment
 
-TEMPLATE_DIRS = (
-	'',
-)
-
-STATIC_ROOT = ''
-
-EMAIL_PORT = None # leave None in production, configure in dev if necessary
-EMAIL_RNACENTRAL_HELPDESK = ''
+DEBUG = True
+COMPRESS_ENABLED = False
 
 SECRET_KEY = ''
 
-ADMINS = (
-    ('', ''),
-)
+ORACLE_DBS = {
+    'HX': {
+        'user': '',
+        'name': '',
+    },
+    'OY': {
+        'user': '',
+        'name': '',
+    },
+    'PG': {
+        'user': '',
+        'name': '',
+    },
+    'DEV': {
+        'user': '',
+        'name': ('(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={host})'
+                 '(PORT={port}))(CONNECT_DATA=(SERVER=DEDICATED)'
+                 '(SERVICE_NAME={service})))').format(
+                     host='host',
+                     port=0,
+                     service='service'),
+    },
+}
 
-COMPRESS_ENABLED = False
-DEBUG = False
-ALLOWED_HOSTS = []
+ENVIRONMENT = get_environment()
 
-# django-debug-toolbar
-INTERNAL_IPS = ('127.0.0.1',)
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.oracle',
+        'NAME': ORACLE_DBS[ENVIRONMENT]['name'],
+        'USER': ORACLE_DBS[ENVIRONMENT]['user'],
+        'PASSWORD': '',
+        'OPTIONS': {
+            'threaded': True,
+        }
+    },
+    'nhmmer_db': {
+        'NAME': 'nhmmer_results',
+        'ENGINE': 'django.db.backends.mysql',
+        'USER': '',
+        'PASSWORD': '',
+        'HOST': '',
+        'PORT': 0,
+    },
+}
 
-# django-maintenance
-MAINTENANCE_MODE = False
-
-# Python-rq Redis queues used for exporting results
 RQ_QUEUES = {
     'default': {
         'HOST': 'localhost',
         'PORT': 8051,
         'DB': 0,
-        # 'PASSWORD': 'some-password',
         'DEFAULT_TIMEOUT': 360,
         'REMOTE_SERVER': None,
     },
-    'remote': {
-        'HOST': '',
+}
+
+# Python-rq Redis queues used for exporting results
+if ENVIRONMENT == 'OY':
+    RQ_QUEUES['remote'] = {
+        'HOST': 'ves-pg-XX.ebi.ac.uk',
         'PORT': 8051,
         'DB': 0,
-        # 'PASSWORD': 'some-password',
         'DEFAULT_TIMEOUT': 360,
-        'REMOTE_SERVER': '',
-    },
-}
+        'REMOTE_SERVER': 'ves-pg-XX.ebi.ac.uk:8050',
+    }
+elif ENVIRONMENT == 'PG':
+    RQ_QUEUES['remote'] = {
+        'HOST': 'ves-oy-XX.ebi.ac.uk',
+        'PORT': 8051,
+        'DB': 0,
+        'DEFAULT_TIMEOUT': 360,
+        'REMOTE_SERVER': 'ves-oy-XX.ebi.ac.uk:8050',
+    }
+
+# django-debug-toolbar
+# print("IP Address for debug-toolbar: " + request.META['REMOTE_ADDR']) in views
+INTERNAL_IPS = ('127.0.0.1', '192.168.99.1')

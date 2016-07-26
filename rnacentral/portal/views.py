@@ -1,5 +1,5 @@
 """
-Copyright [2009-2015] EMBL-European Bioinformatics Institute
+Copyright [2009-2016] EMBL-European Bioinformatics Institute
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -14,6 +14,7 @@ limitations under the License.
 import json
 import math
 import re
+import requests
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import Http404, HttpResponse
@@ -273,6 +274,25 @@ def website_status_view(request):
     context['is_search_up'] = _is_search_up()
     context['overall_status'] = context['is_database_up'] and context['is_api_up'] and context['is_search_up']
     return render_to_response('portal/website-status.html', {'context': context})
+
+
+@cache_page(60)
+def ebeye_proxy(request):
+    """
+    Internal API.
+    Get EBeye search URL from the client and send back the results.
+    Bypasses EBeye same-origin policy.
+    """
+    url = request.GET['url']
+    try:
+        ebeye_response = requests.get(url)
+        if ebeye_response.status_code == 200:
+            response = HttpResponse(ebeye_response.text)
+            return response
+        else:
+            raise Http404
+    except:
+        raise Http404
 
 #####################
 # Class-based views #

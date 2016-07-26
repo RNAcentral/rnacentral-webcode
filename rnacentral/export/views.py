@@ -1,5 +1,5 @@
 """
-Copyright [2009-2015] EMBL-European Bioinformatics Institute
+Copyright [2009-2016] EMBL-European Bioinformatics Institute
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -82,11 +82,34 @@ def export_search_results(query, _format, hits):
             output = output.replace('"/api/v1/', '"http://rnacentral.org/api/v1/')
         return output
 
+    def check_ssi_file():
+        """
+        Easel esl-sfetch can index the FASTA database for faster performance.
+        If SSI index does not exist, create it.
+        """
+        ssi_index = ESLSFETCH + '.ssi'
+        if os.path.exists(ssi_index):
+            return            
+        cmd = '{esl_binary} --index {fasta_db}'.format(
+            esl_binary=ESLSFETCH,
+            fasta_db=FASTA_DB
+        )
+        process = sub.Popen(cmd, stdout=sub.PIPE, stderr=sub.PIPE, shell=True)
+        output, errors = process.communicate()
+        return_code = process.returncode
+        if return_code != 0:
+            class EaselIndexError(Exception):
+                """Raise when Easel could not index the fasta database"""
+                pass
+            raise EaselIndexError(errors, output + '\n' + cmd, return_code)
+
     def run_easel(temp_file, filename):
         """
         Export RNAcentral ids saved in a temporary file using Easel esl-sfetch
         for accessing the FASTA database.
         """
+        # check that SSI index exists, create if necessary
+        check_ssi_file()
         # make sure that temporary file is saved to disk
         temp_file.flush()
         os.fsync(temp_file.fileno())

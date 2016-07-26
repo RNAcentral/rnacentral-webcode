@@ -1,5 +1,5 @@
 /*
-Copyright [2009-2015] EMBL-European Bioinformatics Institute
+Copyright [2009-2016] EMBL-European Bioinformatics Institute
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -173,7 +173,9 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
          * Create an EBeye query url.
          */
         function get_query_url() {
-            return query_urls.ebeye_search.replace('{QUERY}', query).replace('{START}', start);
+            var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query).replace('{START}', start);
+            var url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url));
+            return url;          
         }
 
         /**

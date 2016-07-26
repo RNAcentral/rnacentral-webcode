@@ -1,32 +1,54 @@
+"""
+Copyright [2009-2016] EMBL-European Bioinformatics Institute
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
 import os
 
-# Django settings for rnacentral project.
+try:
+    import pymysql
+    pymysql.install_as_MySQLdb()
+except ImportError:
+    pass
 
-DEBUG = True
+
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
+# project root directory
+PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # pylint: disable=C0301
+
 ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
+    ('RNAcentral Team', ''.join(['rnacentral', '@', 'gmail.com'])),
 )
 
 MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '',                      # Or path to database file if using sqlite3.
+        'ENGINE': 'django.db.backends.',
+        'NAME': '',
         # The following settings are not used with sqlite3:
         'USER': '',
         'PASSWORD': '',
-        'HOST': '',                      # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',                      # Set to empty string for default.
+        'HOST': '',
+        'PORT': '',
     }
 }
+CONN_MAX_AGE = 300
 DATABASE_ROUTERS = ['nhmmer.db_router.NhmmerRouter']
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -64,7 +86,7 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/var/www/example.com/static/"
-STATIC_ROOT = ''
+STATIC_ROOT = os.path.join(os.path.dirname(PROJECT_PATH), 'static')
 
 # URL prefix for static files.
 # Example: "http://example.com/static/", "http://static.example.com/"
@@ -82,18 +104,16 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
     'compressor.finders.CompressorFinder',
 )
 
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = os.environ.get('RNACENTRAL_SECRET_KEY', '')
+# Provide an initial value so that the site is functional with default settings
+SECRET_KEY = 'override this in local_settings.py'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -123,7 +143,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "portal.context_processors.baseurl",
 )
 
-USE_ETAGS=True
+USE_ETAGS = True
 
 CORS_ORIGIN_ALLOW_ALL = True
 
@@ -133,7 +153,7 @@ ROOT_URLCONF = 'rnacentral.urls'
 WSGI_APPLICATION = 'rnacentral.wsgi.application'
 
 TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+    os.path.join(PROJECT_PATH, 'rnacentral', 'templates'),
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
 )
@@ -173,7 +193,7 @@ LOGGING = {
     'disable_existing_loggers': True,
     'formatters': {
         'standard': {
-            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s", # pylint: disable=W0401, C0301
             'datefmt' : "%d/%b/%Y %H:%M:%S"
         },
     },
@@ -182,15 +202,7 @@ LOGGING = {
             'level':'DEBUG',
             'class':'django.utils.log.NullHandler',
         },
-        'logfile': {
-            'level':'DEBUG',
-            'class':'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(os.path.dirname(os.path.realpath(__file__)), "django.log"),
-            'maxBytes': 50000, # rollover to the next file
-            'backupCount': 1, # keep the previous full log named django.log.1 for backup
-            'formatter': 'standard',
-        },
-        'console':{
+        'console': {
             'level':'INFO',
             'class':'logging.StreamHandler', # writes to stderr
             'formatter': 'standard'
@@ -206,10 +218,6 @@ LOGGING = {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': False,
-        },
-        '': {
-            'handlers': ['console', 'logfile'],
-            'level': 'DEBUG',
         },
     }
 }
@@ -270,12 +278,12 @@ DEBUG_TOOLBAR_PANELS = (
 # django-maintenance
 MAINTENANCE_MODE = False
 
-# Memcached caching
+# Memcached caching for django-cache-machine
 CACHES = {
-  'default': {
-    'BACKEND': 'caching.backends.memcached.MemcachedCache', # django-cache-machine
-    'LOCATION': 'localhost:11211',
-  }
+    'default': {
+        'BACKEND': 'caching.backends.memcached.MemcachedCache',
+        'LOCATION': 'localhost:8052',
+    }
 }
 
 # cache queries like Rna.objects.count()
@@ -296,28 +304,19 @@ MARKDOWN_DEUX_STYLES = {
 
 SILENCED_SYSTEM_CHECKS = ['1_6.W001']
 
-RQ_QUEUES = {
-    'default': {
-        'HOST': 'localhost',
-        'PORT': 8051,
-        'DB': 0,
-        # 'PASSWORD': 'some-password',
-        'DEFAULT_TIMEOUT': 360,
-        'REMOTE_SERVER': None,
-    },
-}
-
 EBI_SEARCH_ENDPOINT = 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
 
-# use pymysql driver instead of the official one
-# because MySQLdb is harder to install
-try:
-    import pymysql
-    pymysql.install_as_MySQLdb()
-except ImportError:
-    pass
+# django compressor
+COMPRESS_ENABLED = True
+COMPRESS_OFFLINE = True
+COMPRESS_ROOT = STATIC_ROOT
+COMPRESS_CSS_HASHING_METHOD = 'content'
+COMPRESS_CSS_FILTERS = [
+    'compressor.filters.css_default.CssAbsoluteFilter',
+    'compressor.filters.cssmin.rCSSMinFilter',
+]
 
 try:
-   from local_settings import *
-except ImportError, e:
-   pass
+    from local_settings import * # pylint: disable=W0401, W0614
+except ImportError:
+    pass

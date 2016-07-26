@@ -1,5 +1,5 @@
 """
-Copyright [2009-2015] EMBL-European Bioinformatics Institute
+Copyright [2009-2016] EMBL-European Bioinformatics Institute
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -55,6 +55,8 @@ urlpatterns = patterns('',
     url(r'^status/?$', 'portal.views.website_status_view', name='website-status'),
     # genome browser
     url(r'^genome-browser/?$', views.StaticView.as_view(), {'page': 'genome-browser', 'genomes': sorted(rnacentral_genomes, key = lambda x: x['species'])}, name='genome-browser'),
+    # search proxy
+    url(r'^api/internal/ebeye/?$', 'portal.views.ebeye_proxy', name='ebeye-proxy'),
 )
 
 # internal API

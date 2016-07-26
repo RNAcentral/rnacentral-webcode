@@ -1,5 +1,5 @@
 """
-Copyright [2009-2015] EMBL-European Bioinformatics Institute
+Copyright [2009-2016] EMBL-European Bioinformatics Institute
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -24,10 +24,10 @@ MAX_RUN_TIME = 60*60*2 # seconds
 MAX_OUTPUT = 250000
 
 # path to esl-sfetch binary, part of Infernal package
-ESLSFETCH = ''
+ESLSFETCH = os.path.join(os.environ.get('RNACENTRAL_LOCAL', ''), 'infernal-1.1.1', 'bin', 'esl-sfetch')
 
 # path to fasta database
-FASTA_DB = ''
+FASTA_DB = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'examples.fasta')
 
 # path to export search results
 EXPORT_RESULTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'results')

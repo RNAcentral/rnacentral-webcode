@@ -21,11 +21,8 @@
 # path to /rnacentral
 export RNACENTRAL_HOME=
 
-# path to directory with the redis-server binary
-export RNACENTRAL_REDIS=
-
-# path to directory with memcached binary
-export RNACENTRAL_MEMCACHED=
+# path to local installations
+export RNACENTRAL_LOCAL=
 
 # path to Oracle Instant Client libraries
 export ORACLE_HOME=

@@ -12,4 +12,3 @@ script:
 branches:
   only:
     - master
-env: RNACENTRAL_SECRET_KEY='normally_set_in_local_settings.py'
