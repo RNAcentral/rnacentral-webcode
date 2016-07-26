@@ -683,4 +683,42 @@ expert_dbs = [
         'status': '',
         'version': '',
     },
+    {
+        'name': 'miRTarBase',
+        'label': 'mirtarbase',
+        'url': 'http://mirtarbase.mbc.nctu.edu.tw',
+        'description': 'is an experimentally validated microRNA-target interactions database',
+        'abbreviation': '',
+        'examples': [],
+        'references': [
+            {
+                'title': 'miRTarBase 2016: updates to the experimentally validated miRNA-target interactions database',
+                'authors': 'Chou et al',
+                'journal': 'Nucleic Acids Res. 2016 Jan 4;44(D1):D239-47',
+                'pubmed_id': 26590260,
+            },
+        ],
+        'imported': False,
+        'status': '',
+        'version': '',
+    },
+    {
+        'name': 'LncRNAWiki',
+        'label': 'lncrnawiki',
+        'url': 'http://lncrna.big.ac.cn',
+        'description': 'is a wiki-based, publicly editable platform for community curation of human long non-coding RNAs',
+        'abbreviation': '',
+        'examples': [],
+        'references': [
+            {
+                'title': 'LncRNAWiki: harnessing community knowledge in collaborative curation of human long non-coding RNAs',
+                'authors': 'Ma L, Li A, Zou D, Xu X, Xia L, Yu J, Bajic VB, Zhang Z',
+                'journal': 'Nucleic Acids Res. 2015 Jan;43(Database issue):D187-92',
+                'pubmed_id': 25399417,
+            },
+        ],
+        'imported': False,
+        'status': '',
+        'version': '',
+    },
 ]
