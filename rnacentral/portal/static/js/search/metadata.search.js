@@ -75,7 +75,6 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
      */
     var result = {
         hitCount: null,
-        taxid: null,
         entries: [],
         facets: [],
         _query: null, // query after preprocessing
@@ -252,10 +251,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
                 match = query.match(urs_taxid_regexp);
                 if (match) {
                     upi = match[1];
-                    result.taxid = match[3];
-                    query = upi + ' taxonomy:"' + result.taxid + '"';
-                } else {
-                    result.taxid = null;
+                    query = upi + ' taxonomy:"' + match[3] + '"';
                 }
             }
 
@@ -282,7 +278,6 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
                 data = preprocess_results(data);
                 overwrite_results = overwrite_results || false;
                 if (overwrite_results) {
-                    data.taxid = result.taxid;
                     data._query = result._query;
                     result = data; // replace
                 } else {

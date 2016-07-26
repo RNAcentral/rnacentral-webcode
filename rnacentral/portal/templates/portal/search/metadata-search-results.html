@@ -161,10 +161,8 @@ limitations under the License.
         <li class="result" ng-repeat="rna in result.entries">
           <div class="metasearch-result">
             <h4>
-              <a href="/rna/{{rna.id}}" ng-if="!result.taxid" ng-bind-html="rna.fields.description[0] | sanitize"></a>
-              <a href="/rna/{{rna.id}}/{{result.taxid}}" ng-if="result.taxid" ng-bind-html="rna.fields.description[0] | sanitize"></a>
-              <small ng-if="!result.taxid">{{rna.id}}</small>
-              <small ng-if="result.taxid">{{rna.id}}/{{result.taxid}}</small>
+              <a href="/rna/{{rna.id}}" ng-bind-html="rna.fields.description[0] | sanitize"></a>
+              <small>{{rna.id}}</small>
             </h4>
             <div ng-show="rna.fields.description[0].indexOf('metasearch-highlights') === -1" style="margin-bottom: 3px;">
               <ul ng-repeat="pub_title in rna.fields.pub_title | filter:'metasearch-highlights' | limitTo:1" class="small list-unstyled">                
