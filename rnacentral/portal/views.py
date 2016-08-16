@@ -276,7 +276,7 @@ def website_status_view(request):
     return render_to_response('portal/website-status.html', {'context': context})
 
 
-@cache_page(60)
+@cache_page(CACHE_TIMEOUT)
 def ebeye_proxy(request):
     """
     Internal API.
