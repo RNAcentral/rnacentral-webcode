@@ -72,3 +72,7 @@ and website functionality is continuously updated.
 Provisional release dates are available on the public [RNAcentral Events](https://www.google.com/calendar/embed?src=rnacentral%40gmail.com&ctz=Europe/London) calendar.
 
 <iframe src="https://www.google.com/calendar/embed?title=RNAcentral%20Events&amp;showPrint=0&amp;showTz=0&amp;mode=AGENDA&amp;height=300&amp;wkst=2&amp;bgcolor=%23FFFFFF&amp;src=rnacentral%40gmail.com&amp;color=%230F4B38&amp;ctz=Europe%2FLondon" width="600" height="200" frameborder="0" scrolling="no"></iframe>
+
+### Want to learn more? <a name="train-online" href="#train-online" class="text-muted smaller"><i class="fa fa-link"></i></a>
+
+Explore all RNAcentral [training materials]({% url 'training' %}) to find information about the project as well as exercises, tips, a quiz, and more.
