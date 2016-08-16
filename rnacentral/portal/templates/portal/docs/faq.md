@@ -9,6 +9,7 @@ to a comprehensive and up-to-date set of ncRNA sequences.
 RNAcentral assigns identifiers to distinct ncRNA sequences
 and automatically updates links between sequences and identifiers
 maintained by [expert databases]({% url 'expert-databases' %}).
+
 [More about RNAcentral &rarr;]({% url 'about' %})
 
 ### What sequences are included in RNAcentral? <a name="included-sequences" href="#included-sequences" class="text-muted smaller"><i class="fa fa-link"></i></a>
@@ -19,7 +20,7 @@ annotated with **non-coding features**.
 RNAcentral imports **all** non-coding features found on INSDC entries
 as individual sequences, including the data submitted to INSDC by the expert databases.
 
-In addition, RNAcentral contains sequences from RFAM seed and full alignments,
+In addition, RNAcentral contains sequences from Rfam seed and full alignments,
 which also refer to the INSDC accession space.
 
 ### What sequences are excluded from RNAcentral? <a name="excluded-sequences" href="#excluded-sequences" class="text-muted smaller"><i class="fa fa-link"></i></a>
@@ -72,3 +73,7 @@ and website functionality is continuously updated.
 Provisional release dates are available on the public [RNAcentral Events](https://www.google.com/calendar/embed?src=rnacentral%40gmail.com&ctz=Europe/London) calendar.
 
 <iframe src="https://www.google.com/calendar/embed?title=RNAcentral%20Events&amp;showPrint=0&amp;showTz=0&amp;mode=AGENDA&amp;height=300&amp;wkst=2&amp;bgcolor=%23FFFFFF&amp;src=rnacentral%40gmail.com&amp;color=%230F4B38&amp;ctz=Europe%2FLondon" width="600" height="200" frameborder="0" scrolling="no"></iframe>
+
+### Want to learn more? <a name="train-online" href="#train-online" class="text-muted smaller"><i class="fa fa-link"></i></a>
+
+Explore all RNAcentral [training materials]({% url 'training' %}) to find information about the project as well as exercises, tips, a quiz, and more.
