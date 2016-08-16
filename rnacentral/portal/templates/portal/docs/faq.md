@@ -9,6 +9,7 @@ to a comprehensive and up-to-date set of ncRNA sequences.
 RNAcentral assigns identifiers to distinct ncRNA sequences
 and automatically updates links between sequences and identifiers
 maintained by [expert databases]({% url 'expert-databases' %}).
+
 [More about RNAcentral &rarr;]({% url 'about' %})
 
 ### What sequences are included in RNAcentral? <a name="included-sequences" href="#included-sequences" class="text-muted smaller"><i class="fa fa-link"></i></a>
@@ -19,7 +20,7 @@ annotated with **non-coding features**.
 RNAcentral imports **all** non-coding features found on INSDC entries
 as individual sequences, including the data submitted to INSDC by the expert databases.
 
-In addition, RNAcentral contains sequences from RFAM seed and full alignments,
+In addition, RNAcentral contains sequences from Rfam seed and full alignments,
 which also refer to the INSDC accession space.
 
 ### What sequences are excluded from RNAcentral? <a name="excluded-sequences" href="#excluded-sequences" class="text-muted smaller"><i class="fa fa-link"></i></a>

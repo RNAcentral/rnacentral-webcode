@@ -31,15 +31,12 @@ The development of RNAcentral is coordinated by the
 **Docker Cheat Sheet**
 
 ```
-# start Docker machine
-docker-machine start default
-
-# initialize Docker environment
-eval $(docker-machine env)
+# get IP address
+docker ps
 
 # connect to a running container
 docker ps
-docker exec -it <container_id> bash 
+docker exec -it <container_id> bash
 ```
 
 ## Technology overview
