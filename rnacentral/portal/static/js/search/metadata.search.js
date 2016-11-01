@@ -91,9 +91,9 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
         rnacentral_base_url: get_base_url(),
         fields: ['description', 'active', 'length', 'pub_title'],
         facetfields: [
-            'expert_db',
             'rna_type',
             'TAXONOMY',
+            'expert_db',            
             'has_genomic_coordinates',
             'popular_species',
         ], // will be displayed in this order

@@ -740,9 +740,9 @@ ul.affix-bottom {
   margin: 3px 0px;
 }
 
-.metasearch-organism-facet {
+.metasearch-facet-overflow {
   overflow: auto;
-  max-height: 200px;
+  max-height: 250px;
 }
 
 .metasearch-results {
