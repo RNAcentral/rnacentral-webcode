@@ -86,13 +86,13 @@ limitations under the License.
         {% with mature_products=xref.get_mirbase_mature_products %}
           - precursor miRNA (mature product{{mature_products|length|pluralize}}
           {% for mature_product in mature_products %}
-            <a href="{% url  'portal.views.rna_view' upi=mature_product.upi %}">{{ mature_product.upi }}</a>{% if not forloop.last %},{% else %}){% endif %}
+            <a href="{% url  'portal.views.rna_view' upi=mature_product.upi %}/{{ xref.taxid }}">{{ mature_product.upi }}</a>{% if not forloop.last %},{% else %}){% endif %}
           {% endfor %}
         {% endwith %}
       {% else %}
         {% with mirna_precursor=xref.get_mirbase_precursor %}
           {% if mirna_precursor %}
-            - mature miRNA (precursor <a href="{% url  'portal.views.rna_view' upi=mirna_precursor %}">{{ mirna_precursor }}</a>)
+            - mature miRNA (precursor <a href="{% url  'portal.views.rna_view' upi=mirna_precursor %}/{{ xref.taxid }}">{{ mirna_precursor }}</a>)
           {% endif %}
         {% endwith %}
       {% endif %}
@@ -108,7 +108,7 @@ limitations under the License.
           {{splice_variants|length}} alternative transcript{{splice_variants|length|pluralize}}:
           <small>
             {% for splice_variant in splice_variants %}
-              <a href="{% url  'portal.views.rna_view' upi=splice_variant.upi %}">{{ splice_variant.upi }}</a>
+              <a href="{% url  'portal.views.rna_view' upi=splice_variant.upi %}/{{ xref.taxid }}">{{ splice_variant.upi }}</a>
               ({{ splice_variant.length|intcomma }} nts){% if not forloop.last %},{% else %}.{% endif %}
             {% endfor %}
           </small>
@@ -126,13 +126,13 @@ limitations under the License.
       {% if xref.is_active and xref.is_refseq_mirna %}
         {% with mirna_precursor=xref.get_refseq_mirna_precursor %}
             {% if mirna_precursor %}
-              - mature miRNA (precursor <a href="{% url  'portal.views.rna_view' upi=mirna_precursor.upi %}">{{ mirna_precursor.upi }}</a>)
+              - mature miRNA (precursor <a href="{% url  'portal.views.rna_view' upi=mirna_precursor.upi %}/{{ xref.taxid }}">{{ mirna_precursor.upi }}</a>)
             {% else %}
               {% with mature_products=xref.get_refseq_mirna_mature_products %}
                 {% if mature_products %}
                   - precursor miRNA (mature product{{mature_products|length|pluralize}}
                   {% for mature_product in mature_products %}
-                    <a href="{% url  'portal.views.rna_view' upi=mature_product.upi %}">{{ mature_product.upi }}</a>{% if not forloop.last %},{% else %}){% endif %}
+                    <a href="{% url  'portal.views.rna_view' upi=mature_product.upi %}/{{ xref.taxid }}">{{ mature_product.upi }}</a>{% if not forloop.last %},{% else %}){% endif %}
                   {% endfor %}
                 {% endif %}
               {% endwith %}
@@ -146,7 +146,7 @@ limitations under the License.
             {{splice_variants|length}} alternative transcript{{splice_variants|length|pluralize}}:
             <small>
               {% for splice_variant in splice_variants %}
-                <a href="{% url  'portal.views.rna_view' upi=splice_variant.upi %}">{{ splice_variant.upi }}</a>
+                <a href="{% url  'portal.views.rna_view' upi=splice_variant.upi %}/{{ xref.taxid }}">{{ splice_variant.upi }}</a>
                 ({{ splice_variant.length|intcomma }} nts){% if not forloop.last %},{% else %}.{% endif %}
               {% endfor %}
             </small>
