@@ -115,10 +115,12 @@ class RnaNestedSerializer(serializers.HyperlinkedModelSerializer):
     xrefs = serializers.HyperlinkedIdentityField(view_name='rna-xrefs')
     publications = serializers.HyperlinkedIdentityField(view_name='rna-publications')
     rnacentral_id = serializers.CharField(source='upi')
+    is_active = serializers.Field(source='is_active')
 
     class Meta:
         model = Rna
-        fields = ('url', 'rnacentral_id', 'md5', 'sequence', 'length', 'xrefs', 'publications')
+        fields = ('url', 'rnacentral_id', 'md5', 'sequence', 'length', 'xrefs',
+            'publications', 'is_active')
 
 
 class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
