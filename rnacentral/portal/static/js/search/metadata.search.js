@@ -93,7 +93,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
         facetfields: [
             'rna_type',
             'TAXONOMY',
-            'expert_db',            
+            'expert_db',
             'has_genomic_coordinates',
             'popular_species',
         ], // will be displayed in this order
@@ -306,6 +306,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
                 function rename_hlfields() {
                     for (var i=0; i < data.entries.length; i++) {
                         data.entries[i].fields = data.entries[i].highlights;
+                        data.entries[i].fields.length[0] = data.entries[i].fields.length[0].replace(/<[^>]+>/gm, '');
                     }
                 }
 
