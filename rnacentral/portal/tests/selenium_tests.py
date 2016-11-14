@@ -375,7 +375,7 @@ class MetaSearchPage(BasePage):
             """
             facet_link = WebDriverWait(self.browser, 5).until(
                 EC.element_to_be_clickable(
-                    (By.CLASS_NAME, "metasearch-facet-link")
+                    (By.CSS_SELECTOR, ".metasearch-facet-values input[type=checkbox]:not(:checked) ~ a") # pick a link next to an unchecked checkbox
                 )
             )
             # get the number of entries in the facet
