@@ -119,7 +119,7 @@ RUN \
     cd $LOC && \
     mkdir httpd && \
     mkdir httpd/modules && \
-    curl -OL https://modwsgi.googlecode.com/files/mod_wsgi-3.4.tar.gz && \
+    curl -L -o mod_wsgi-3.4.tar.gz https://github.com/GrahamDumpleton/mod_wsgi/archive/3.4.tar.gz && \
     tar -zxvf mod_wsgi-3.4.tar.gz && \
     cd mod_wsgi-3.4 && \
     export LD_RUN_PATH=$LOC/python-2.7.11/lib && \
