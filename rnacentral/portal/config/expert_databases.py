@@ -279,14 +279,25 @@ expert_dbs = [
     },
     {
         'name': 'HGNC',
-        'label': '',
+        'label': 'hgnc',
         'url': 'http://www.genenames.org/',
-        'description': 'HUGO Gene Nomenclature Committee',
-        'abbreviation': '',
-        'examples': '',
-        'references': [],
-        'imported': False,
-        'status': '',
+        'description': 'is the worldwide authority that assigns standardised nomenclature to human genes',
+        'abbreviation': 'HUGO Gene Nomenclature Committee',
+        'examples': [
+            'URS000075C808', # HOTAIR
+            'URS00004ACFCF', # SNORA1
+            'URS000075CF56', # MIRNA-1
+        ],
+        'references': [
+            {
+                'title': 'Genenames.org: the HGNC resources in 2015',
+                'authors': 'Gray KA, Yates B, Seal RL, Wright MW, Bruford EA',
+                'journal': 'Nucleic Acids Res. 2015 Jan;43(Database issue):D1079-85',
+                'pubmed_id': '25361968',
+            },
+        ],
+        'imported': True,
+        'status': 'new',
         'version': '',
     },
     {
