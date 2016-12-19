@@ -190,7 +190,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
          */
         function preprocess_query(query) {
 
-            apply_species_specific_filtering();
+            replace_slashes_with_underscore();
 
             // replace length query with a placeholder, example: length:[100 TO 200]
             var length_clause = query.match(/length\:\[\d+\s+to\s+\d+\]/i);
@@ -243,16 +243,10 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
             return query;
 
             /**
-             * If query contains URS/taxid or URS_taxid identifiers,
-             * perform species-specific search and show species-specific links.
+             * Replace URS/taxid with URS_taxid.
              */
-            function apply_species_specific_filtering() {
-                var urs_taxid_regexp = new RegExp('(URS[0-9A-F]{10})(\/|_)(\\d+)', 'i');
-                match = query.match(urs_taxid_regexp);
-                if (match) {
-                    upi = match[1];
-                    query = upi + ' taxonomy:"' + match[3] + '"';
-                }
+            function replace_slashes_with_underscore() {
+                query = query.replace(/(URS[0-9A-F]{10})\/(\d+)/ig, '$1_$2');
             }
 
             /**
