@@ -111,7 +111,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
                         '&size=' + search_config.pagesize +
                         '&start={START}' +
                         '&sort=boost:descending,length:descending' +
-                        '&hlpretag=<span class="metasearch-highlights">&hlposttag=</span>',
+                        '&hlpretag=<span class=metasearch-highlights>&hlposttag=</span>',
         'proxy': search_config.rnacentral_base_url +
                  '/api/internal/ebeye?url={EBEYE_URL}',
     };
