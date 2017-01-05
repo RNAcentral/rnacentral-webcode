@@ -166,7 +166,7 @@ About RNAcentral
 
     <div class="panel panel-default">
       <div class="panel-body">
-        <iframe src='http://cdn.knightlab.com/libs/timeline/latest/embed/index.html?source=0AlRoD7V_rQavdEx4MUVKcXBDbzBpSG1kYkhFTG8yUHc&font=Bevan-PotanoSans&maptype=HYBRID&start_at_end=true&lang=en&hash_bookmark=true&height=650#0' width='100%' height='650' frameborder='0'></iframe>
+          <div id='timeline-embed' style="width: 100%; height: 650px"></div>
       </div>
     </div>
 
@@ -187,6 +187,14 @@ About RNAcentral
 {% endblock content %}
 
 {% block extra_js_uncompressed %}
+    <script type="text/javascript">
+      // initialize the timeline plugin to take data from spreadsheet and display timeline in div#timeline-embed
+      timeline = new TL.Timeline(
+          'timeline-embed',
+          'https://docs.google.com/spreadsheets/d/1UCrvzAbSVi90s9EwjVk_Q8vqhc_IQ9ImAyI0sA-kmG8'
+      );
+    </script>
+
 <script src="{% static "js/d3/d3.sequencesOverTime.js" %}"></script>
 <script>
   var data = [
