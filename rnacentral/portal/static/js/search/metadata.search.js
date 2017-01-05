@@ -678,13 +678,3 @@ angular.module('rnacentralApp').filter("sanitize", ['$sce', function($sce) {
     return $sce.trustAsHtml(htmlCode);
   }
 }]);
-
-/**
- * Create a keyboard shortcut for quickly accessing the search box.
- */
-function keyboard_shortcuts(e) {
-    if (e.keyCode == 191) { // forward slash, "/"
-        $('#query-text').focus();
-    }
-}
-document.addEventListener('keyup', keyboard_shortcuts);
