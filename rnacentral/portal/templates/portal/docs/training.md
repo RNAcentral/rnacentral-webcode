@@ -23,7 +23,7 @@ RNAcentral has been described in several papers:
 
 <blockquote class="callout-info">
   <p>RNAcentral: a comprehensive database of non-coding RNA sequences</p>
-  <footer>The RNAcentral Consortium, 2016</footer>
+  <footer>The RNAcentral Consortium, 2017</footer>
   <footer><em>Nucleic Acids Research (Database issue)</em></footer>
   <a href="http://nar.oxfordjournals.org/content/early/2016/10/28/nar.gkw1008.long">NAR</a> |
   <a href="http://europepmc.org/abstract/MED/27794554">EuropePMC</a> |
