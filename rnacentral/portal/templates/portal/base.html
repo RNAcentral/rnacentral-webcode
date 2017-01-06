@@ -52,7 +52,7 @@ limitations under the License.
             <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/trackControls.css" %}">
             <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/tooltips.css" %}">
             <link rel="stylesheet" href="{% static "js/vendor/angular/loading-bar/loading-bar.css" %}">
-            <link title="timeline-styles" rel="stylesheet" href="https://cdn.knightlab.com/libs/timeline3/latest/css/timeline.css"> <!-- TODO: Save this locally -->
+            <link rel="stylesheet" href="{% static "css/timeline.css" %}">
           {% endblock stylesheets %}
         {% endcompress %}
 
@@ -158,7 +158,7 @@ limitations under the License.
             <script src="{% static "js/vendor/Genoverse/js/genomes/grch38.js" %}"></script>
             <script src="{% static "js/vendor/Genoverse/js/genoverse.combined.js" %}"></script>
             <script src="{% static "js/genoverse.RNAcentralTrack.js" %}"></script>
-            <script src="https://cdn.knightlab.com/libs/timeline3/latest/js/timeline.js"></script>  <!-- TODO: save this script locally -->
+            <script src="{% static "js/timeline.min.js" %}"></script>
 
             <script>
                 $(function() {
