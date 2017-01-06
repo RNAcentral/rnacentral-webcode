@@ -188,10 +188,20 @@ About RNAcentral
 
 {% block extra_js_uncompressed %}
     <script type="text/javascript">
+      var timelineOptions = {
+          font: "Bevan-PotanoSans",
+          maptype: "HYBRID",
+          start_at_end: "true",
+          lang: "en",
+          hash_bookmark: true,
+          height: 650
+      };
+
       // initialize the timeline plugin to take data from spreadsheet and display timeline in div#timeline-embed
       timeline = new TL.Timeline(
-          'timeline-embed',
-          'https://docs.google.com/spreadsheets/d/1UCrvzAbSVi90s9EwjVk_Q8vqhc_IQ9ImAyI0sA-kmG8'
+          "timeline-embed",
+          "https://docs.google.com/spreadsheets/d/1UCrvzAbSVi90s9EwjVk_Q8vqhc_IQ9ImAyI0sA-kmG8",
+          timelineOptions
       );
     </script>
 
