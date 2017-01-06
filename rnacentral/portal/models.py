@@ -712,6 +712,16 @@ class Accession(models.Model):
         note = json.loads(self.note)
         return note
 
+    def get_hgnc_ensembl_id(self):
+        """
+        Extract Ensembl Gene id (if available) from the note json field.
+        """
+        note = json.loads(self.note)
+        if 'ensembl_gene_id' in note:
+            return note['ensembl_gene_id']
+        else:
+            return None
+
     def get_hgnc_id(self):
         """
         Search db_xref field for an HGNC id.
@@ -797,6 +807,7 @@ class Accession(models.Model):
             'NONCODE': 'http://www.noncode.org/show_rna.php?id={id}',
             'LNCIPEDIA': 'http://www.lncipedia.org/db/transcript/{id}',
             'MODOMICS': 'http://modomics.genesilico.pl/sequences/list/{id}',
+            'HGNC': 'http://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id={id}',
         }
         if self.database in urls.keys():
             if self.database == 'GTRNADB':
@@ -816,6 +827,8 @@ class Accession(models.Model):
                 return urls[self.database].format(id=self.parent_ac, version=self.seq_version)
             elif self.database == 'REFSEQ':
                 return urls[self.database].format(id=self.external_id, version=self.seq_version)
+            elif self.database == 'HGNC':
+                return urls[self.database].format(id=self.accession)
             return urls[self.database].format(id=self.external_id)
         else:
             return ''
