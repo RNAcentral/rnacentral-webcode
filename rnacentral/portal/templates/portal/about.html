@@ -166,7 +166,7 @@ About RNAcentral
 
     <div class="panel panel-default">
       <div class="panel-body">
-        <iframe src='http://cdn.knightlab.com/libs/timeline/latest/embed/index.html?source=0AlRoD7V_rQavdEx4MUVKcXBDbzBpSG1kYkhFTG8yUHc&font=Bevan-PotanoSans&maptype=HYBRID&start_at_end=true&lang=en&hash_bookmark=true&height=650#0' width='100%' height='650' frameborder='0'></iframe>
+          <div id='timeline-embed' style="width: 100%; height: 650px"></div>
       </div>
     </div>
 
@@ -187,6 +187,323 @@ About RNAcentral
 {% endblock content %}
 
 {% block extra_js_uncompressed %}
+    <script type="text/javascript">
+        var timelineJSON = {
+            "events": [
+                {
+                    "media": {
+                        "url": "https://www.google.com/maps/place/Wellcome+Trust+Genome+Campus,+Hinxton,+Saffron+Walden,+Cambridgeshire+CB10+1SD/@52.080033,0.186338,17z/data=!3m1!4b1!4m2!3m1!1s0x47d87ccbfbe41b1d:0x4df1b533278b784a",
+                        "caption": "Wellcome Trust Genome Campus",
+                        "credit": "Google Maps"
+                    },
+                    "start_date": {
+                        "month": "7",
+                        "day": "1",
+                        "year": "2010"
+                    },
+                    "end_date": {
+                        "month": "7",
+                        "day": "2",
+                        "year": "2010"
+                    },
+                    "text": {
+                        "headline": "First RNAcentral workshop",
+                        "text": "<p>Held at the Wellcome Trust Genome Campus (Hinxton, UK) the workshop formed the vision for RNAcentral.</p>"
+                    }
+                },
+                {
+                    "media": {
+                        "url": "{% static "img/timeline/rna-vision-paper.png" %}",
+                        "caption": "Paper in RNA",
+                        "credit": "RNA Journal"
+                    },
+                    "start_date": {
+                        "month": "9",
+                        "day": "22",
+                        "year": "2011"
+                    },
+                    "end_date": {
+                        "month": "9",
+                        "day": "22",
+                        "year": "2011"
+                    },
+                    "text": {
+                        "headline": "Publication in RNA",
+                        "text": "The paper outlining the need for RNAcentral brought together researchers from around the world."
+                    }
+                },
+                {
+                    "media": {
+                        "url": "{% static "img/timeline/bbsrc-logo.png" %}",
+                        "caption": "BBSRC logo",
+                        "credit": "BBSRC"
+                    },
+                    "start_date": {
+                        "month": "10",
+                        "day": "1",
+                        "year": "2012"
+                    },
+                    "end_date": {
+                        "month": "4",
+                        "day": "1",
+                        "year": "2016"
+                    },
+                    "text": {
+                        "headline": "BBSRC grant",
+                        "text": "The development of RNAcentral is supported by a grant from Biotechnology and Biological Sciences Research Council (<a href='http://www.bbsrc.ac.uk/'>BBSRC</a>).<br> <a href='http://www.bbsrc.ac.uk/pa/grants/AwardDetails.aspx?FundingReference=BB/J019321/1'>Award details</a>"
+                    }
+                },
+                {
+                    "media": {
+                        "url": "{% static "img/timeline/first-data-announcement.png" %}",
+                        "caption": "Screenshot of the original announcement",
+                        "credit": "RNAcentral"
+                    },
+                    "start_date": {
+                        "month": "7",
+                        "day": "8",
+                        "year": "2013"
+                    },
+                    "end_date": {
+                        "month": "7",
+                        "day": "8",
+                        "year": "2013"
+                    },
+                    "text": {
+                        "headline": "First RNAcentral data hits public domain",
+                        "text": "The first RNAcentral <a href='http://www.ebi.ac.uk/ena/data/view/HG322958-HG323812'>dataset</a> was imported into the <a href='http://www.ebi.ac.uk/ena'>European Nucleotide Archive</a>.<br><a href='http://blog.rnacentral.org/2013/07/first-rnacentral-data-hits-public-domain.html'>Release announcement</a>"
+                    }
+                },
+                {
+                    "media": {
+                        "url": "{% static "img/timeline/first-data-announcement.png" %}",
+                        "caption": "Screenshot of the RNAcentral home page",
+                        "credit": "RNAcentral"
+                    },
+                    "start_date": {
+                        "month": "6",
+                        "day": "11",
+                        "year": "2014"
+                    },
+                    "end_date": {
+                        "month": "6",
+                        "day": "11",
+                        "year": "2014"
+                    },
+                    "text": {
+                        "headline": "Release 1.0beta",
+                        "text": "Release 1.0beta had 8 Expert Databases, including ENA, Rfam, miRBase, Vega, gtRNAdb, tmRNA Website, SRPDB, and lncRNAdb. <br><a href='http://blog.rnacentral.org/2014/06/rnacentral-beta-release-10.html'>Release announcement</a>"
+                    }
+                },
+                {
+                    "media": {
+                        "url": "{% static "img/timeline/release-v1.0.png" %}",
+                        "caption": "Screenshot of the RNAcentral home page",
+                        "credit": "RNAcentral"
+                    },
+                    "start_date": {
+                        "month": "9",
+                        "day": "10",
+                        "year": "2014"
+                    },
+                    "end_date": {
+                        "month": "9",
+                        "day": "10",
+                        "year": "2014"
+                    },
+                    "text": {
+                        "headline": "Release 1",
+                        "text": "The first public release saw RefSeq and RDP added to RNAcentral bringing the total number of Expert Databases to 10.<br><a href='http://blog.rnacentral.org/2014/09/rnacentral-release-10.html'>Release announcement</a>"
+                    }
+                },
+                {
+                    "media": {
+                        "url": "{% static "img/timeline/nar-database-2014.png" %}",
+                        "caption": "Paper in NAR",
+                        "credit": "NAR"
+                    },
+                    "start_date": {
+                        "month": "10",
+                        "day": "28",
+                        "year": "2014"
+                    },
+                    "end_date": {
+                        "month": "10",
+                        "day": "28",
+                        "year": "2014"
+                    },
+                    "text": {
+                        "headline": "NAR Database Issue paper published",
+                        "text": "A <a href='http://nar.oxfordjournals.org/content/early/2014/11/05/nar.gku991.full'>new paper</a> describing the first version of RNAcentral has been published in Nucleic Acids Research."
+                    }
+                },
+                {
+                    "media": {
+                        "url": "{% static "img/timeline/release-v2.png" %}",
+                        "caption": "Screenshot of the RNAcentral home page",
+                        "credit": "RNAcentral"
+                    },
+                    "start_date": {
+                        "month": "2",
+                        "day": "26",
+                        "year": "2015"
+                    },
+                    "end_date": {
+                        "month": "2",
+                        "day": "26",
+                        "year": "2015"
+                    },
+                    "text": {
+                        "headline": "Release 2",
+                        "text": "Release 2 brought in PDBe and snOPY as new Expert Databases and introduced a host of new website features (search results export, species-specific ids, and multiple search improvements) <br> <a href='http://blog.rnacentral.org/2015/02/rnacentral-release-2.html'>Release announcement</a>"
+                    }
+                },
+                {
+                    "media": {
+                        "url": "{% static "img/timeline/release-v3.png" %}",
+                        "caption": "Screenshot of the RNAcentral home page",
+                        "credit": "RNAcentral"
+                    },
+                    "start_date": {
+                        "month": "6",
+                        "day": "4",
+                        "year": "2015"
+                    },
+                    "end_date": {
+                        "month": "6",
+                        "day": "4",
+                        "year": "2015"
+                    },
+                    "text": {
+                        "headline": "Release 3",
+                        "text": "Three new expert databases were added to RNAcentral in release 3, including SGD, TAIR, and WormBase, as well as new sequence search powered by nhmmer <br> <a href='http://blog.rnacentral.org/2015/06/rnacentral-release-3.html'>Release announcement</a>"
+                    }
+                },
+                {
+                    "media": {
+                        "url": "{% static "img/timeline/release-v4.png" %}",
+                        "caption": "Screenshot of the RNAcentral home page",
+                        "credit": "RNAcentral"
+                    },
+                    "start_date": {
+                        "month": "11",
+                        "day": "27",
+                        "year": "2015"
+                    },
+                    "end_date": {
+                        "month": "11",
+                        "day": "27",
+                        "year": "2015"
+                    },
+                    "text": {
+                        "headline": "Release 4",
+                        "text": "Seven new expert databases were integrated into RNAcentral as well as nucleotide modifications from PDB and Modomics <br> <a href='http://blog.rnacentral.org/2015/11/rnacentral-release-4.html'>Release announcement</a>"
+                    }
+                },
+                {
+                    "media": {
+                        "url": "{% static "img/timeline/release-v5.png" %}",
+                        "caption": "Release 5 features",
+                        "credit": "RNAcentral"
+                    },
+                    "start_date": {
+                        "month": "3",
+                        "day": "24",
+                        "year": "2016"
+                    },
+                    "end_date": {
+                        "month": "3",
+                        "day": "24",
+                        "year": "2016"
+                    },
+                    "text": {
+                        "headline": "Release 5",
+                        "text": "Release 5 saw a closer integration with Rfam and major improvements to search results <br> <a href='http://blog.rnacentral.org/2016/03/rnacentral-release-5.html'>Release announcement</a>"
+                    }
+                },
+                {
+                    "media": {
+                        "url": "{% static "img/timeline/bbsrc-logo.png" %}",
+                        "caption": "BBSRC logo",
+                        "credit": "BBSRC"
+                    },
+                    "start_date": {
+                        "month": "7",
+                        "day": "1",
+                        "year": "2016"
+                    },
+                    "end_date": {
+                        "month": "1",
+                        "day": "1",
+                        "year": "2020"
+                    },
+                    "text": {
+                        "headline": "BBSRC grant",
+                        "text": "The development of RNAcentral is supported by a grant from Biotechnology and Biological Sciences Research Council (<a href='http://www.bbsrc.ac.uk/'>BBSRC</a>).<br> <a href='http://www.bbsrc.ac.uk/research/grants-search/AwardDetails/?FundingReference=BB/N019199/1'>Award details</a>"
+                    }
+                },
+                {
+                    "media": {
+                        "url": "{% static "img/timeline/nar-2016.png" %}",
+                        "caption": "Paper in NAR",
+                        "credit": "NAR"
+                    },
+                    "start_date": {
+                        "month": "10",
+                        "day": "28",
+                        "year": "2016"
+                    },
+                    "end_date": {
+                        "month": "10",
+                        "day": "28",
+                        "year": "2016"
+                    },
+                    "text": {
+                        "headline": "NAR paper published",
+                        "text": "Our latest <a href='http://nar.oxfordjournals.org/content/45/D1/D128.full'>RNAcentral paper</a> has been published in Nucleic Acids Research."
+                    }
+                },
+                {
+                    "media": {
+                        "url": "{% static "img/timeline/release-v6.png" %}",
+                        "caption": "Release 6 features",
+                        "credit": "RNAcentral"
+                    },
+                    "start_date": {
+                        "month": "1",
+                        "day": "6",
+                        "year": "2017"
+                    },
+                    "end_date": {
+                        "month": "1",
+                        "day": "6",
+                        "year": "2017"
+                    },
+                    "text": {
+                        "headline": "Release 6",
+                        "text": "RNAcentral started linking to human non-coding RNAs from the <a href='http://genenames.org'>HGNC</a> database <br> <a href='http://blog.rnacentral.org/2017/01/rnacentral-release-6.html'>Release announcement</a>"
+                    }
+                }
+            ]
+      };
+
+      var timelineOptions = {
+          font: "Bevan-PotanoSans",
+          maptype: "HYBRID",
+          start_at_end: "true",
+          lang: "en",
+          hash_bookmark: false,
+          height: 650
+      };
+
+      // initialize the timeline plugin to take data from spreadsheet and display timeline in div#timeline-embed
+      timeline = new TL.Timeline(
+          "timeline-embed",
+          timelineJSON,
+          timelineOptions
+      );
+    </script>
+
 <script src="{% static "js/d3/d3.sequencesOverTime.js" %}"></script>
 <script>
   var data = [
