@@ -213,7 +213,7 @@ About RNAcentral
                 },
                 {
                     "media": {
-                        "url": "http://rnacentral.org/static/img/timeline/rna-vision-paper.png",
+                        "url": "{% static "img/timeline/rna-vision-paper.png" %}",
                         "caption": "Paper in RNA",
                         "credit": "RNA Journal"
                     },
@@ -234,7 +234,7 @@ About RNAcentral
                 },
                 {
                     "media": {
-                        "url": "http://rnacentral.org/static/img/timeline/bbsrc-logo.png",
+                        "url": "{% static "img/timeline/bbsrc-logo.png" %}",
                         "caption": "BBSRC logo",
                         "credit": "BBSRC"
                     },
@@ -255,7 +255,7 @@ About RNAcentral
                 },
                 {
                     "media": {
-                        "url": "http://rnacentral.org/static/img/timeline/first-data-announcement.png",
+                        "url": "{% static "img/timeline/first-data-announcement.png" %}",
                         "caption": "Screenshot of the original announcement",
                         "credit": "RNAcentral"
                     },
@@ -276,7 +276,7 @@ About RNAcentral
                 },
                 {
                     "media": {
-                        "url": "http://rnacentral.org/static/img/timeline/release-v1.0beta.png",
+                        "url": "{% static "img/timeline/first-data-announcement.png" %}",
                         "caption": "Screenshot of the RNAcentral home page",
                         "credit": "RNAcentral"
                     },
@@ -297,7 +297,7 @@ About RNAcentral
                 },
                 {
                     "media": {
-                        "url": "http://rnacentral.org/static/img/timeline/release-v1.0.png",
+                        "url": "{% static "img/timeline/release-v1.0.png" %}",
                         "caption": "Screenshot of the RNAcentral home page",
                         "credit": "RNAcentral"
                     },
@@ -318,7 +318,7 @@ About RNAcentral
                 },
                 {
                     "media": {
-                        "url": "http://rnacentral.org/static/img/timeline/nar-database-2014.png",
+                        "url": "{% static "img/timeline/nar-database-2014.png" %}",
                         "caption": "Paper in NAR",
                         "credit": "NAR"
                     },
@@ -339,7 +339,7 @@ About RNAcentral
                 },
                 {
                     "media": {
-                        "url": "http://rnacentral.org/static/img/timeline/release-v2.png",
+                        "url": "{% static "img/timeline/release-v2.png" %}",
                         "caption": "Screenshot of the RNAcentral home page",
                         "credit": "RNAcentral"
                     },
@@ -360,7 +360,7 @@ About RNAcentral
                 },
                 {
                     "media": {
-                        "url": "http://rnacentral.org/static/img/timeline/release-v3.png",
+                        "url": "{% static "img/timeline/release-v3.png" %}",
                         "caption": "Screenshot of the RNAcentral home page",
                         "credit": "RNAcentral"
                     },
@@ -402,7 +402,7 @@ About RNAcentral
                 },
                 {
                     "media": {
-                        "url": "http://rnacentral.org/static/img/timeline/release-v5.png",
+                        "url": "{% static "img/timeline/release-v5.png" %}",
                         "caption": "Release 5 features",
                         "credit": "RNAcentral"
                     },
@@ -423,7 +423,7 @@ About RNAcentral
                 },
                 {
                     "media": {
-                        "url": "http://rnacentral.org/static/img/timeline/bbsrc-logo.png",
+                        "url": "{% static "img/timeline/bbsrc-logo.png" %}",
                         "caption": "BBSRC logo",
                         "credit": "BBSRC"
                     },
@@ -444,7 +444,28 @@ About RNAcentral
                 },
                 {
                     "media": {
-                        "url": "http://rnacentral.org/static/img/timeline/release-v6.png",
+                        "url": "{% static "img/timeline/nar-2016.png" %}",
+                        "caption": "Paper in NAR",
+                        "credit": "NAR"
+                    },
+                    "start_date": {
+                        "month": "10",
+                        "day": "28",
+                        "year": "2016"
+                    },
+                    "end_date": {
+                        "month": "10",
+                        "day": "28",
+                        "year": "2016"
+                    },
+                    "text": {
+                        "headline": "NAR paper published",
+                        "text": "Our latest <a href='http://nar.oxfordjournals.org/content/early/2016/10/28/nar.gkw1008.long'>RNAcentral paper</a> has been published in Nucleic Acids Research."
+                    }
+                },
+                {
+                    "media": {
+                        "url": "{% static "img/timeline/release-v6.png" %}",
                         "caption": "Release 6 features",
                         "credit": "RNAcentral"
                     },
@@ -460,7 +481,7 @@ About RNAcentral
                     },
                     "text": {
                         "headline": "Release 6",
-                        "text": "RNAcentral started linking to human non-coding RNAs from the <a href='http://genenames.org'>HGNC</a> database <br> <a href='http://blog.rnacentral.org/2016/12/rnacentral-release-6.html'>Release announcement</a>"
+                        "text": "RNAcentral started linking to human non-coding RNAs from the <a href='http://genenames.org'>HGNC</a> database <br> <a href='http://blog.rnacentral.org/2017/01/rnacentral-release-6.html'>Release announcement</a>"
                     }
                 }
             ]
@@ -471,7 +492,7 @@ About RNAcentral
           maptype: "HYBRID",
           start_at_end: "true",
           lang: "en",
-          hash_bookmark: true,
+          hash_bookmark: false,
           height: 650
       };
 
@@ -521,7 +542,7 @@ About RNAcentral
       'sequence_count': 10248515,
       'expert_databases': 22,
       'label': 'release 5',
-    },
+    }
   ];
 
   /**
