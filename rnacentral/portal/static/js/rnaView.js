@@ -331,6 +331,7 @@ rnaSequenceView.prototype.initialize = function() {
     toggle_tabs();
     enable_xref_pagination();
     activate_modified_nucleotides();
+    activate_copy_to_clipboard_buttons();
 
     /**
      * Update url parameter when tab is changed.
@@ -518,4 +519,35 @@ rnaSequenceView.prototype.initialize = function() {
             }
         });
     }
+
+    /**
+     * Copy to clipboard buttons allow the user to copy an RNA sequence as RNA or DNA into
+     * the clipboard by clicking on them. Buttons are located near the Sequence header.
+     */
+    function activate_copy_to_clipboard_buttons() {
+        /**
+         * Returns DNA sequence, corresponding to input RNA sequence.
+         */
+        function reverseTranscriptase(rna) {
+            // case-insensitive, global replacement of U's with T's
+            return rna.replace(/U/ig, 'T');
+        }
+
+        var rnaClipboard = new Clipboard('#copy-as-rna', {
+            "text": function() {
+                var rna = $('#rna-sequence').text();
+                rna = rna.replace(/\s/g, ''); // remove whitespace chars (arising due to colorer <spans> in sequence)
+                return rna;
+            }
+        });
+
+        var dnaClipbaord = new Clipboard('#copy-as-dna', {
+            "text": function() {
+                var rna = $('#rna-sequence').text();
+                rna = rna.replace(/\s/g, ''); // remove whitespace chars (arising due to colorer <spans> in sequence)
+                var dna = reverseTranscriptase(rna);
+                return dna;
+            }
+        });
+    };
 };

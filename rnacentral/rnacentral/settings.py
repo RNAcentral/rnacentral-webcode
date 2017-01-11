@@ -24,7 +24,7 @@ DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 # project root directory
-PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))) # pylint: disable=C0301
+PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # pylint: disable=C0301
 
 ADMINS = (
     ('RNAcentral Team', ''.join(['rnacentral', '@', 'gmail.com'])),
@@ -193,7 +193,7 @@ LOGGING = {
     'disable_existing_loggers': True,
     'formatters': {
         'standard': {
-            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s", # pylint: disable=W0401, C0301
+            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",  # pylint: disable=W0401, C0301
             'datefmt' : "%d/%b/%Y %H:%M:%S"
         },
     },
@@ -204,7 +204,7 @@ LOGGING = {
         },
         'console': {
             'level':'INFO',
-            'class':'logging.StreamHandler', # writes to stderr
+            'class':'logging.StreamHandler',  # writes to stderr
             'formatter': 'standard'
         },
     },
@@ -317,6 +317,6 @@ COMPRESS_CSS_FILTERS = [
 ]
 
 try:
-    from local_settings import * # pylint: disable=W0401, W0614
+    from local_settings import *  # pylint: disable=W0401, W0614
 except ImportError:
     pass
