@@ -164,12 +164,19 @@ class Rna(CachingMixin, models.Model):
             sequence = self.seq_long
         return sequence.replace('T', 'U').upper()
 
-    def count_symbols(self):
+    def count_bases(self):
+        """
+        Returns the number of occurrences of canonical bases in RNA,
+        aggregating all the non-canonical bases to a single category 'N'.
+        :return: dict {'A': 1, 'T': 2, 'C': 3, 'G':4, 'N': 5}
+        """
         seq = self.get_sequence()
+
         count_A = seq.count('A')
         count_C = seq.count('C')
         count_G = seq.count('G')
         count_U = seq.count('U')
+
         return {
             'A': count_A,
             'U': count_U,
@@ -177,6 +184,23 @@ class Rna(CachingMixin, models.Model):
             'G': count_G,
             'N': len(seq) - (count_A + count_C + count_G + count_U)
         }
+
+    def count_symbols(self):
+        """
+        Returns the number of occurrences of all symbols in RNA,
+        including non-canonical nucleotides and random garbage.
+        :return: dict {'A': 1, 'T': 2, 'C': 3, 'G': 4, 'N': 5, 'I': 6, '*': 7}
+        """
+        seq = self.get_sequence()
+
+        result = {}
+        for symbol in seq:
+            if symbol not in result:
+                result[symbol] = 1
+            else:
+                result[symbol] += 1
+
+        return result
 
     def get_xrefs(self, taxid=None):
         """

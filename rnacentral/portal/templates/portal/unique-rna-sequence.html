@@ -194,8 +194,8 @@ limitations under the License.
           <p>
             {{ rna.length|intcomma }} nucleotides
             <span class="small text-muted">
-              {% if context.counts.N %}
-                <i class="fa fa-warning"></i> Contains {{ context.counts.N }} non-AUGC
+              {% if context.non_canonical_base_counts %}
+                <i class="fa fa-warning"></i> Contains {% for symbol,count in context.non_canonical_base_counts.items %}{{ count|intcomma }} {{ symbol }}{% if not forloop.last %}, {% endif %}{% endfor %}
               {% endif %}
             </span>
             <a href="{% url 'nhmmer-sequence-search' %}?q={{ rna.upi }}" class="margin-left-5px">Search for similar sequences</a>

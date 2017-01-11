@@ -187,8 +187,12 @@ def rna_view(request, upi, taxid=None):
         response['Location'] += '?taxid-not-found={taxid}'.format(taxid=taxid)
         return response
 
+    symbol_counts = rna.count_symbols()
+    non_canonical_base_counts = {key: symbol_counts[key] for key in symbol_counts if key not in ['A', 'U', 'G', 'C']}
+
     context = {
-        'counts': rna.count_symbols(),
+        'symbol_counts': symbol_counts,
+        'non_canonical_base_counts': non_canonical_base_counts,
         'taxid': taxid,
         'taxid_filtering': taxid_filtering,
         'taxid_not_found': request.GET.get('taxid-not-found', ''),
