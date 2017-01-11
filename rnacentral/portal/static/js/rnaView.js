@@ -526,9 +526,7 @@ rnaSequenceView.prototype.initialize = function() {
      */
     function activate_copy_to_clipboard_buttons() {
         /**
-         * Returns DNA sequence, corresponding to input RNA sequence
-         *
-         * TODO: what do we do with chemical modifications?
+         * Returns DNA sequence, corresponding to input RNA sequence.
          */
         function reverseTranscriptase(rna) {
             // case-insensitive, global replacement of U's with T's
