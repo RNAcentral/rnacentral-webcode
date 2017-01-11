@@ -537,13 +537,16 @@ rnaSequenceView.prototype.initialize = function() {
 
         var rnaClipboard = new Clipboard('#copy-as-rna', {
             "text": function() {
-                return $('#rna-sequence').text();
+                var rna = $('#rna-sequence').text();
+                rna = rna.replace(/\s/g, ''); // remove whitespace chars (arising due to colorer <spans> in sequence)
+                return rna;
             }
         });
 
         var dnaClipbaord = new Clipboard('#copy-as-dna', {
             "text": function() {
                 var rna = $('#rna-sequence').text();
+                rna = rna.replace(/\s/g, ''); // remove whitespace chars (arising due to colorer <spans> in sequence)
                 var dna = reverseTranscriptase(rna);
                 return dna;
             }
