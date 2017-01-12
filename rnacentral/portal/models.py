@@ -11,19 +11,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import json
+import re
+from collections import Counter
+
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Min, Max
 from django.utils.functional import cached_property
-from caching.base import CachingManager, CachingMixin # django-cache-machine
-from portal.config.genomes import genomes as rnacentral_genomes
-from portal.config.expert_databases import expert_dbs as rnacentral_expert_dbs
-import json
-import re
 
+from caching.base import CachingManager, CachingMixin # django-cache-machine
 from rest_framework import serializers
 from rest_framework.renderers import JSONRenderer
+
+from portal.config.genomes import genomes as rnacentral_genomes
+from portal.config.expert_databases import expert_dbs as rnacentral_expert_dbs
+
 
 
 class Modification(CachingMixin, models.Model):
@@ -164,27 +168,6 @@ class Rna(CachingMixin, models.Model):
             sequence = self.seq_long
         return sequence.replace('T', 'U').upper()
 
-    def count_bases(self):
-        """
-        Returns the number of occurrences of canonical bases in RNA,
-        aggregating all the non-canonical bases to a single category 'N'.
-        :return: dict {'A': 1, 'T': 2, 'C': 3, 'G':4, 'N': 5}
-        """
-        seq = self.get_sequence()
-
-        count_A = seq.count('A')
-        count_C = seq.count('C')
-        count_G = seq.count('G')
-        count_U = seq.count('U')
-
-        return {
-            'A': count_A,
-            'U': count_U,
-            'C': count_C,
-            'G': count_G,
-            'N': len(seq) - (count_A + count_C + count_G + count_U)
-        }
-
     def count_symbols(self):
         """
         Returns the number of occurrences of all symbols in RNA,
@@ -192,15 +175,7 @@ class Rna(CachingMixin, models.Model):
         :return: dict {'A': 1, 'T': 2, 'C': 3, 'G': 4, 'N': 5, 'I': 6, '*': 7}
         """
         seq = self.get_sequence()
-
-        result = {}
-        for symbol in seq:
-            if symbol not in result:
-                result[symbol] = 1
-            else:
-                result[symbol] += 1
-
-        return result
+        return dict(Counter(seq).most_common())
 
     def get_xrefs(self, taxid=None):
         """
