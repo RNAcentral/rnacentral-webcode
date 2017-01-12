@@ -175,7 +175,7 @@ class Rna(CachingMixin, models.Model):
         :return: dict {'A': 1, 'T': 2, 'C': 3, 'G': 4, 'N': 5, 'I': 6, '*': 7}
         """
         seq = self.get_sequence()
-        return dict(Counter(seq).most_common())
+        return dict(Counter(seq))
 
     def get_xrefs(self, taxid=None):
         """

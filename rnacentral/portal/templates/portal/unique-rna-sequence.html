@@ -193,15 +193,15 @@ limitations under the License.
 
           <p>
             {{ rna.length|intcomma }} nucleotides
-            <span class="small text-muted">
-              {% if context.non_canonical_base_counts %}
-                <i class="fa fa-warning"></i> Contains {% for symbol,count in context.non_canonical_base_counts.items %}{{ count|intcomma }} {{ symbol }}{% if not forloop.last %}, {% endif %}{% endfor %}
-              {% endif %}
-            </span>
             <a href="{% url 'nhmmer-sequence-search' %}?q={{ rna.upi }}" class="margin-left-5px">Search for similar sequences</a>
           </p>
-          <pre class="pre-scrollable" id="rna-sequence">
-{{ rna.get_sequence }}</pre>
+          {% if context.non_canonical_base_counts %}
+          <p class="small text-warning">
+            <i class="fa fa-warning"></i> Contains: {% for symbol,count in context.non_canonical_base_counts.items %}{{ count|intcomma }} {{ symbol }}{% if not forloop.last %}, {% endif %}{% endfor %}
+            <a href="https://en.wikipedia.org/wiki/Nucleic_acid_notation#IUPAC_notation">&nbsp;IUPAC notation</a>
+          </p>
+          {% endif %}
+          <pre class="pre-scrollable" id="rna-sequence">{{ rna.get_sequence }}</pre>
 
 
         </div> <!-- .tab-pane .active -->
