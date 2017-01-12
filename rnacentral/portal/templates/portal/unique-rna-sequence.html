@@ -196,8 +196,8 @@ limitations under the License.
             <a href="{% url 'nhmmer-sequence-search' %}?q={{ rna.upi }}" class="margin-left-5px">Search for similar sequences</a>
           </p>
           {% if context.non_canonical_base_counts %}
-          <p class="small text-warning">
-            <i class="fa fa-warning"></i> Contains: {% for symbol,count in context.non_canonical_base_counts.items %}{{ count|intcomma }} {{ symbol }}{% if not forloop.last %}, {% endif %}{% endfor %}
+          <p class="small">
+            <span class="text-warning"><i class="fa fa-warning"></i> Contains ambiguity characters:</span> {% for symbol,count in context.non_canonical_base_counts.items %}{{ count|intcomma }} {{ symbol }}{% if not forloop.last %}, {% endif %}{% endfor %}
             <a href="https://en.wikipedia.org/wiki/Nucleic_acid_notation#IUPAC_notation">&nbsp;IUPAC notation</a>
           </p>
           {% endif %}
