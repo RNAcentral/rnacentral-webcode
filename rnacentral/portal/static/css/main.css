@@ -277,8 +277,12 @@ a[href^="http://"]:not([href^="http://rnacentral.org"]):hover, .gv_menu a:hover 
   color: #DD8621;
 }
 
+a[href^="https://"]:not([href^="https://rnacentral.org"]):hover, .gv_menu a:hover {
+  color: #DD8621;
+}
+
 /* append external link icon to all full links */
-a[href^="http://"]:after, .external-link:after {
+a[href^="http://"]:after, a[href^="https://"]:after, .external-link:after {
   content: "\f08e";
   font-family: FontAwesome;
   font-weight: normal;
@@ -291,7 +295,9 @@ a[href^="http://"]:after, .external-link:after {
 
 /* remove external link icon from links to own resources or with class no-icon */
 a[href^="http://rnacentral.org"]:after,
+a[href^="https://rnacentral.org"]:after,
 a[href^="http://blog.rnacentral.org"]:after,
+a[href^="https://blog.rnacentral.org"]:after,
 a.no-icon:after {
   content: "" !important;
   padding-left: 0;
