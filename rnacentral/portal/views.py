@@ -315,6 +315,31 @@ class StaticView(TemplateView):
             raise Http404()
 
 
+class GenomeBrowserView(TemplateView):
+    """
+    Render genome-browser, taking into account start/end locations
+    """
+    def get(self, request, *args, **kwargs):
+        self.template_name = 'portal/genome-browser.html'
+
+        if 'genome' in request.GET and 'chromosome' in request.GET and 'start' in request.GET and 'end' in request.GET:
+            # security-wise it doesn't make sense to validate start/end here
+            kwargs['genome'] = request.GET['genome']
+            kwargs['chromosome'] = request.GET['chromosome']
+            kwargs['start'] = request.GET['start']
+            kwargs['end'] = request.GET['end']
+        else:
+            kwargs['genome'] = "Homo sapiens"
+            kwargs['chromosome'] = "12"
+            kwargs['start'] = "53964085"
+            kwargs['end'] = "53968914"
+
+        response = super(GenomeBrowserView, self).get(request, *args, **kwargs)
+        try:
+            return response.render()
+        except TemplateDoesNotExist:
+            raise Http404()
+
 class ContactView(FormView):
     """
     Contact form view.

@@ -56,7 +56,7 @@ urlpatterns = patterns('',
     # status
     url(r'^status/?$', 'portal.views.website_status_view', name='website-status'),
     # genome browser
-    url(r'^genome-browser/?$', views.StaticView.as_view(), {'page': 'genome-browser', 'genomes': sorted(rnacentral_genomes, key = lambda x: x['species'])}, name='genome-browser'),
+    url(r'^genome-browser/?$', views.StaticView.as_view(), {'genomes': sorted(rnacentral_genomes, key = lambda x: x['species'])}, name='genome-browser'),
     # search proxy
     url(r'^api/internal/ebeye/?$', 'portal.views.ebeye_proxy', name='ebeye-proxy'),
 )
