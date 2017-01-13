@@ -166,6 +166,14 @@ Genome browser
      * `browser` is the global Genoverse object.
      */
     function updateCoordinates() {
+      // update the url in browser
+
+
+      // update form start/end inputs
+      start.val(browser.start);
+      end.val(browser.end);
+
+      // update location string right above genoverse
       text = '<em>' + species.val() + '</em>' + ' ' + browser.chr + ':' + browser.start + '-' + browser.end;
       if (location.html() != text) {
         location.html(text);
