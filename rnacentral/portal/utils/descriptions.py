@@ -1,62 +1,146 @@
-"""A module to help with selecting the descriptions of various RNA molecules.
+"""
+A module to help with selecting the descriptions of various RNA molecules.
+This module contains two methods, the previous one which assigns scores based
+upon various features in `score_method` and the new method which uses rules to
+select the best name in `rule_method`. The main entry point to selecting a
+description is in `description_of` which will determine which method is the
+best fit for the given sequence and taxon id.
 """
 
+import copy
+
 CHOICES = {
-    'miRNA': ['MIRBASE', 'RefSeq', 'Rfam', 'HGNC', 'ENA'],
-    'precusor_RNA': ['RefSeq', 'MIRBASE', 'Rfam', 'HGNC', 'ENA'],
+    'miRNA': ['miRBase', 'RefSeq', 'Rfam', 'HGNC', 'ENA'],
+    'precusor_RNA': ['RefSeq', 'miRBase', 'Rfam', 'HGNC', 'ENA'],
 }
+"""A dict that defines the ordered choices for each type of RNA. This is the
+basis of our name selection for the rule based approach.
+"""
 
 
-def can_apply_new_method(sequence):
-    return sequence.rna_type in CHOICES
+def can_apply_new_method(sequence, xrefs, taxid):
+    """
+    Detect if we can apply the new method for selecting names. This works to
+    see if we have an entries in our CHOICES dictonary.
+    """
+    rna_types = {xref.accession.get_rna_type() for xref in xrefs}
+    return bool(rna_types.intersection(CHOICES))
 
 
 def best_from(ordered_choices, possible, check, default=None):
+    """
+    Select the best choice from several ordered choices.
+
+    Parameters
+    ----------
+    ordered_choices : list
+        A list of several possible choices. These should be in the order in
+        which they are prefered.
+    possible : list
+        A list of objects to check.
+    check : callable
+        A callable object to see if given choice and possible match.
+    """
     for choice in ordered_choices:
-        if check(choice, possible):
-            return possible[choice]
+        for entry in possible:
+            if check(choice, entry):
+                return possible
     return default
 
 
-def generic_name(rna_type, sequence):
-    species_count = len({xref.taxid for xref in sequence.xrefs})
-    return '%s found in %i species' % (rna_type, species_count)
+def generic_name(rna_type, sequence, xrefs):
+    """Compute a generic name that works for sequences that have no specific
+    taxon id.
+
+    Parameters
+    ----------
+    rna_type : set
+        The set of known RNA types for the given sequence.
+    sequence : Rna
+        An Rna model that represents the sequence
+
+    Returns
+    -------
+    name : str
+        A string naming the sequence.
+    """
+
+    rna_type = '/'.join(sorted(rna_type))
+    species_count = sequence.count_distinct_organisms
+    if species_count == 1:
+        species = xrefs.first().accession.species
+        return 'A great {species} {rna_type}'.format(
+            species=species,
+            rna_type=rna_type
+        )
+
+    return '{rna_type} from {species_count} species'.format(
+        rna_type=rna_type,
+        species_count=species_count
+    )
 
 
-def default_species_name(sequence):
-    rna_type = '/'.join(sequence.rna_type)
-    return '%s found in %s' % (rna_type, sequence.species_name)
+def species_name(rna_type, sequence, xrefs):
+    def xref_agrees(name, xref):
+        return xref.db.display_name == name and \
+            xref.accession.get_rna_type() == rna_type
+
+    best = best_from(CHOICES[rna_type], xrefs, xref_agrees)
+    if not best:
+        return None
+
+    xrefs = sorted(best,
+                   key=lambda x: len(x.accession.description),
+                   reverse=True)
+    return xrefs[0].accession.description
 
 
-def species_name(sequence, taxid):
-    def is_good_xref(name, xref):
-        return xref.database == name
+def determine_rna_type_for(sequence, xrefs):
+    databases = {xref.db.name for xref in xrefs}
+    if 'miRBase' in databases:
+        return set(['miRNA'])
 
-    def xref_agrees(xref):
-        return xref.rna_type == sequence.rna_type
+    accessions = []
+    initial = set()
+    for xref in xrefs:
+        initial.add(xref.accession.get_rna_type())
+        accessions.append(xref.accession)
 
-    return best_from(CHOICES,
-                     sequence.xrefs,
-                     is_good_xref,
-                     xref_agrees,
-                     default=default_species_name(sequence))
+    current_type = copy.deepcopy(initial)
+    current_type.difference_update(set(['misc_RNA', 'other']))
+
+    if not current_type:
+        if 'other' in initial:
+            return set(['other'])
+        return set(['misc_RNA'])
+
+    if current_type == set(['miRNA', 'precusor_RNA']):
+        if 15 <= sequence.length <= 30:
+            return set(['miRNA'])
+        return set(['precusor_RNA'])
+    return current_type
 
 
-def determine_rna_type_for(sequence):
-    pass
+def rule_method(sequence, xrefs, taxid=None):
+    rna_type = determine_rna_type_for(sequence, xrefs)
+    if not rna_type or len(rna_type) > 1:
+        return None
+
+    if taxid is None:
+        return generic_name(rna_type, sequence, xrefs)
+    return species_name(rna_type.pop(), sequence, xrefs)
 
 
 def description_of(sequence, taxid=None):
-    if not can_apply_new_method(sequence, taxid):
-        return previous_method(sequence, taxid=taxid)
+    xrefs = sequence.xrefs.filter(deleted='N', taxid=taxid)
+    if not can_apply_new_method(sequence, xrefs, taxid):
+        return score_method(sequence, taxid=taxid)
 
-    rna_type = determine_rna_type_for(sequence)
-    if taxid is None:
-        return generic_name(rna_type, sequence)
-    return species_name(rna_type, sequence, taxid)
+    name = rule_method(sequence, xrefs, taxid=taxid)
+    return name or score_method(sequence, taxid=taxid)
 
 
-def previous_method(sequence, taxid=None, recompute=False):
+def score_method(sequence, taxid=None):
     """
     Get entry description based on its xrefs.
     If taxid is provided, use only species-specific xrefs.
