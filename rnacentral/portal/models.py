@@ -25,7 +25,7 @@ import re
 from rest_framework import serializers
 from rest_framework.renderers import JSONRenderer
 
-from rnacentral.utils import description as desc
+from portal.utils import descriptions as desc
 
 
 class Modification(CachingMixin, models.Model):
@@ -217,6 +217,7 @@ class Rna(CachingMixin, models.Model):
             results = queryset.distinct().count()
         return results
 
+
     def get_distinct_database_names(self, taxid=None):
         """
         Get a non-redundant list of databases referencing the sequence.
@@ -302,7 +303,7 @@ class Rna(CachingMixin, models.Model):
         else:
             return False
 
-    def get_description(self, taxid, recompute=False):
+    def get_description(self, taxid=None, recompute=True):
         if not recompute:
             if taxid:
                 queryset = RnaPrecomputed.objects.filter(taxid=taxid)
