@@ -152,6 +152,10 @@ class RnaXmlExporter(OracleConnection):
             # except for PDB entries which are not based on ENA accessions
             if result['expert_db'] != 'PDBE':
                 self.data['xrefs'].add(('ENA', result['parent_accession']))
+            # HGNC entry: store a special flag and index accession
+            if result['expert_db'] == 'HGNC':
+                self.data['hgnc'] = True
+                self.data['xrefs'].add(('HGNC', result['accession']))
             if result['note']:
                 # extract GO terms from `note`
                 for go_term in re.findall('GO\:\d+', result['note']):
@@ -267,7 +271,10 @@ class RnaXmlExporter(OracleConnection):
         """
         Determine ordering in search results.
         """
-        if self.is_active() == 'Active' and 9606 in self.data['taxid']:
+        if self.is_active() == 'Active' and 'hgnc' in self.data:
+            # highest priority for HGNC entries
+            boost = 4
+        elif self.is_active() == 'Active' and 9606 in self.data['taxid']:
             # human entries have max priority
             boost = 3
         elif self.is_active() == 'Active' and self.popular_species & self.data['taxid']:
