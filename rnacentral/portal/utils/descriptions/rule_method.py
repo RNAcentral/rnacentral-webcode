@@ -74,6 +74,7 @@ def generic_name(rna_type, sequence, xrefs):
     """
 
     rna_type = '/'.join(sorted(rna_type))
+    rna_type = rna_type.replace('_', ' ')
     species_count = sequence.count_distinct_organisms
     if species_count == 1:
         species = xrefs.first().accession.species
