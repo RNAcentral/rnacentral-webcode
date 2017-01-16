@@ -42,9 +42,11 @@ def best_from(ordered_choices, possible, check, default=None):
         A callable object to see if given choice and possible match.
     """
     for choice in ordered_choices:
+        found = []
         for entry in possible:
             if check(choice, entry):
-                return possible
+                found.append(choice)
+        return found
     return default
 
 
@@ -81,6 +83,30 @@ def generic_name(rna_type, sequence, xrefs):
 
 
 def species_name(rna_type, sequence, xrefs):
+    """Determine the name for the species specific sequence. This will examine
+    all descriptions in the xrefs and select one that is the 'best' name for
+    the molecule. If no xref can be selected as a name, then None is returned.
+    This can occur when no xref in the given iterable has a matching rna_type.
+
+    Parameters
+    ----------
+    rna_type : str
+        The type for the sequence
+
+    sequence : Rna
+        The sequence entry we are trying to select a name for
+
+    xrefs : iterable
+        An iterable of the Xref entries that are specific to a species for this
+        sequence.
+
+    Returns
+    -------
+    name : str, None
+        A string that is a description of the sequence, or None if no sequence
+        could be selected.
+    """
+
     def xref_agrees(name, xref):
         return xref.db.display_name == name and \
             xref.accession.get_rna_type() == rna_type
@@ -96,6 +122,25 @@ def species_name(rna_type, sequence, xrefs):
 
 
 def determine_rna_type_for(sequence, xrefs):
+    """Determine the rna_type for a given sequence and collection of xrefs. The
+    idea behind this is that not all databases are equally trustworthy, so some
+    annotations of rna_type should be ignored while others should be trusted.
+    The goal of this function then is to examine all annotated rna_types and
+    selected the annotation(s) that are most reliable for the given sequence.
+
+    Parameters
+    ----------
+    sequence : Rna
+        The sequence to examine.
+    xrefs : iterable
+        The collection of xrefs to use.
+
+    Returns
+    -------
+    rna_type : set
+        The set of rna_types that are trusted for this sequence and xrefs.
+    """
+
     databases = {xref.db.name for xref in xrefs}
     if 'miRBase' in databases:
         return set(['miRNA'])
@@ -122,6 +167,36 @@ def determine_rna_type_for(sequence, xrefs):
 
 
 def rule_method(sequence, xrefs, taxid=None):
+    """The entry point for using the rule based approach for descriptions. This
+    approach works in two stages, first it determines the rna_type of the
+    sequence and then it will select the description from all xrefs of the
+    sequence which match the given rna_type.
+
+    If a taxid is given then a species specific name is generated, otherwise a
+    more general cross species name is created.
+
+    If this method cannot determine a single rna_type for the sequence then it
+    will return None instead of a description. Additionally, it can return None
+    if no xref provides a suitable description for the computed rna_type.
+
+    Parameters
+    ----------
+    sequence : Rna
+        The sequence to create a description for.
+
+    xrefs : iterable
+        A list of xrefs to use for determining the rna_type as well as the
+        description.
+
+    taxid : int, None
+        The taxon id for the sequence.
+
+    Returns
+    -------
+    description : str, None
+        The description of the sequence
+    """
+
     rna_type = determine_rna_type_for(sequence, xrefs)
     if not rna_type or len(rna_type) > 1:
         return None
@@ -132,6 +207,27 @@ def rule_method(sequence, xrefs, taxid=None):
 
 
 def description_of(sequence, taxid=None):
+    """Compute a description for the given sequence and optional taxon id. This
+    function will use the rule scoring if possible, otherwise it will fall back
+    to the previous scoring method. In addition, if the rule method cannot
+    produce a name it also falls back to the previous method.
+
+    Providing a taxon id means to create a species name that is specific for
+    the sequence in the given organism, otherwise one is created that is
+    general for all species that this sequence is found in.
+
+    Parameters
+    ----------
+    sequence : Rna
+        The sequence to generate a name for.
+    taxid : int, None
+        The taxon id to use
+
+    Returns
+    -------
+    description : str
+        The description of this sequence.
+    """
     xrefs = sequence.xrefs.filter(deleted='N', taxid=taxid)
     if not can_apply_new_method(sequence, xrefs, taxid):
         return score_method(sequence, taxid=taxid)
@@ -142,8 +238,8 @@ def description_of(sequence, taxid=None):
 
 def score_method(sequence, taxid=None):
     """
-    Get entry description based on its xrefs.
-    If taxid is provided, use only species-specific xrefs.
+    Get entry description based on its xrefs. If taxid is provided, use only
+    species-specific xrefs.
     """
     def count_distinct_descriptions():
         """
