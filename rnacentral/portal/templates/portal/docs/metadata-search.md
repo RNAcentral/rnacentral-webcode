@@ -63,6 +63,10 @@ Please note that "field value" **must be enclosed in double quotes**.
 
 	*Example*: `length:"1500"`, `length:[9000 to 10000]`
 
+* **publication title**
+
+  *Example*: `pub_title:"Danish population"`
+
 * **author**
 
 	*Example*: `author:"Girard A."`
