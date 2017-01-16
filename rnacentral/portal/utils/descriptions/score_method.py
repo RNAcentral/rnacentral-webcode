@@ -81,7 +81,7 @@ def description_of(sequence, taxid=None):
                 rna_type = '/'.join(ncrna_classes)
             else:
                 rna_type = '/'.join(feature_names)
-        return rna_type
+        return rna_type.replace('_', ' ')
 
     def get_urs_description():
         """
