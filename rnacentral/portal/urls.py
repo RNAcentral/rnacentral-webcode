@@ -14,7 +14,6 @@ limitations under the License.
 from django.conf.urls import patterns, url
 from portal import views
 from portal.models import get_ensembl_divisions, Rna, Database
-from portal.config.genomes import genomes as rnacentral_genomes
 
 urlpatterns = patterns('',
     # homepage
@@ -56,7 +55,8 @@ urlpatterns = patterns('',
     # status
     url(r'^status/?$', 'portal.views.website_status_view', name='website-status'),
     # genome browser
-    url(r'^genome-browser/?$', views.StaticView.as_view(), {'genomes': sorted(rnacentral_genomes, key = lambda x: x['species'])}, name='genome-browser'),
+    url(r'^genome-browser/?$', views.GenomeBrowserView.as_view(), {}, name='genome-browser'),
+    url(r'^genome-browser/(?P<genome>[-\w]+)/?$', views.GenomeBrowserView.as_view(), {}, name='genome-browser'),
     # search proxy
     url(r'^api/internal/ebeye/?$', 'portal.views.ebeye_proxy', name='ebeye-proxy'),
 )

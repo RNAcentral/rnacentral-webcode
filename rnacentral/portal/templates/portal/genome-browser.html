@@ -39,13 +39,13 @@ Genome browser
       <div class="form-group col-md-3">
         <label for="genomic-species-select">Species</label>
         <select id="genomic-species-select" class="form-control">
-          {% for genome in genomes %}
-          <option {% if genome.taxid == 9606 %}selected="selected"{% endif %}
-            data-example-chromosome="{{genome.example_location.chromosome}}"
-            data-example-start="{{genome.example_location.start}}"
-            data-example-end="{{genome.example_location.end}}"
-            data-division="{{genome.division}}"
-            data-ucsc-db="{{genome.assembly_ucsc}}">{{ genome.species }}</option>
+          {% for option in genomes %}
+          <option {% if option.taxid == genome.taxid %}selected="selected"{% endif %}
+            data-example-chromosome="{{option.example_location.chromosome}}"
+            data-example-start="{{option.example_location.start}}"
+            data-example-end="{{option.example_location.end}}"
+            data-division="{{option.division}}"
+            data-ucsc-db="{{option.assembly_ucsc}}">{{ option.species }}</option>
           {% endfor %}
         </select>
       </div>
@@ -93,127 +93,164 @@ Genome browser
    * Display a genomic location using Genoverse.
    */
   (function(){
-    var interval,
-        start = $('#genomic-start-input'),
-        end = $('#genomic-end-input'),
-        chromosome = $('#chromosome-input'),
-        species = $('#genomic-species-select'),
-        show_genome_button = $('#genome-display'),
-        location = $('#genomic-location');
+      var interval,
+          start = $('#genomic-start-input'),
+          end = $('#genomic-end-input'),
+          chromosome = $('#chromosome-input'),
+          species = $('#genomic-species-select'),
+          show_genome_button = $('#genome-display'),
+          location = $('#genomic-location');
 
-    show_genome_button.on('click', showGenome).click();
+      show_genome_button.on('click', showGenome).click();
 
-    species.on('change', loadExampleLocation);
+      species.on('change', loadExampleLocation);
 
-    /**
-     * Display example genomic location when species are changed.
-     */
-     function loadExampleLocation(){
-       var option = this.options[this.selectedIndex];
-       chromosome.val(option.getAttribute("data-example-chromosome"));
-       start.val(option.getAttribute("data-example-start"));
-       end.val(option.getAttribute("data-example-end"));
-       show_genome_button.click();
-     }
+      /**
+       * Display example genomic location when species are changed.
+       */
+      function loadExampleLocation(){
+          var option = this.options[this.selectedIndex];
+          chromosome.val(option.getAttribute("data-example-chromosome"));
+          start.val(option.getAttribute("data-example-start"));
+          end.val(option.getAttribute("data-example-end"));
+          show_genome_button.click();
+      }
 
       /**
       * Show Ensembl and UCSC links for the currently displayed region.
       */
       function updateExternalLinks(){
-        var option = species.find('option:selected'),
-            division = option.data('division'),
-            ucsc_db = option.data('ucsc-db'),
-            ucsc = $('.ucsc-link'),
-            domain = '',
-            ucsc_chr = '',
-            url = '';
+          var option = species.find('option:selected'),
+              division = option.data('division'),
+              ucsc_db = option.data('ucsc-db'),
+              ucsc = $('.ucsc-link'),
+              domain = '',
+              ucsc_chr = '',
+              url = '';
 
-        if (division == 'Ensembl') {
-          domain = 'http://ensembl.org/';
-        } else if (division == 'Ensembl Plants') {
-          domain = 'http://plants.ensembl.org/';
-        } else if (division == 'Ensembl Metazoa') {
-          domain = 'http://metazoa.ensembl.org/';
-        } else if (division == 'Ensembl Bacteria') {
-          domain = 'http://bacteria.ensembl.org/';
-        } else if (division == 'Ensembl Fungi') {
-          domain = 'http://fungi.ensembl.org/';
-        } else if (division == 'Ensembl Protists') {
-          domain = 'http://protists.ensembl.org/';
-        }
-
-        // update Ensembl link
-        url = domain + species.val().replace(/ /g,'_') + '/Location/View?r=' + browser.chr + ':' + browser.start + '-' + browser.end;
-        $('#ensembl-link').attr('href', url).text(division);
-
-        // update UCSC link if UCSC assembly is available
-        if (ucsc_db) {
-          if (browser.chr.match(/^\d+$|^[XY]$/)) {
-            ucsc_chr = 'chr' + browser.chr;
-          } else {
-            ucsc_chr = browser.chr;
+          if (division == 'Ensembl') {
+              domain = 'http://ensembl.org/';
+          } else if (division == 'Ensembl Plants') {
+              domain = 'http://plants.ensembl.org/';
+          } else if (division == 'Ensembl Metazoa') {
+              domain = 'http://metazoa.ensembl.org/';
+          } else if (division == 'Ensembl Bacteria') {
+              domain = 'http://bacteria.ensembl.org/';
+          } else if (division == 'Ensembl Fungi') {
+              domain = 'http://fungi.ensembl.org/';
+          } else if (division == 'Ensembl Protists') {
+              domain = 'http://protists.ensembl.org/';
           }
-          url = 'http://genome.ucsc.edu/cgi-bin/hgTracks?db='+ ucsc_db +'&position=' + ucsc_chr + '%3A' + browser.start + '-' + browser.end;
-          ucsc.show().find('a').attr('href', url);
-        } else {
-          ucsc.hide();
-        }
+
+          // update Ensembl link
+          url = domain + species.val().replace(/ /g,'_') + '/Location/View?r=' + browser.chr + ':' + browser.start + '-' + browser.end;
+          $('#ensembl-link').attr('href', url).text(division);
+
+          // update UCSC link if UCSC assembly is available
+          if (ucsc_db) {
+              if (browser.chr.match(/^\d+$|^[XY]$/)) {
+                  ucsc_chr = 'chr' + browser.chr;
+              }
+              else {
+                  ucsc_chr = browser.chr;
+              }
+              url = 'http://genome.ucsc.edu/cgi-bin/hgTracks?db='+ ucsc_db +'&position=' + ucsc_chr + '%3A' + browser.start + '-' + browser.end;
+              ucsc.show().find('a').attr('href', url);
+          }
+          else {
+              ucsc.hide();
+          }
       }
 
-    /**
-     * Synchronize coordinates shown in the user interface with the actual
-     * genoverse coordinates.
-     * `browser` is the global Genoverse object.
-     */
-    function updateCoordinates() {
-      // update the url in browser
 
+      /**
+       * Synchronize coordinates shown in the user interface with the actual
+       * genoverse coordinates.
+       * `browser` is the global Genoverse object.
+       */
+      function updateCoordinates() {
+          // update form start/end inputs
+          start.val(browser.start);
+          end.val(browser.end);
 
-      // update form start/end inputs
-      start.val(browser.start);
-      end.val(browser.end);
+          // update location string right above genoverse
+          text = '<em>' + species.val() + '</em>' + ' ' + browser.chr + ':' + browser.start + '-' + browser.end;
+          if (location.html() != text) {
+              location.html(text);
+          }
 
-      // update location string right above genoverse
-      text = '<em>' + species.val() + '</em>' + ' ' + browser.chr + ':' + browser.start + '-' + browser.end;
-      if (location.html() != text) {
-        location.html(text);
+          // update get param in browser, if they changed
+          var get_params = "chromosome=" + browser.chr;
+          get_params = get_params.concat("&start=" + browser.start);
+          get_params = get_params.concat("&end=" + browser.end);
+
+          if (document.location.search != get_params) {
+              document.location.search = get_params;
+          }
+
+          // update url if species changed
+          var species = species.val().replace(/ /g,'-');
+
+          var pathname, hasTrailingSlash = false;
+          if (document.location.pathname.substr(-1) === '/') {
+              hasTrailingSlash = true;
+              pathname = document.location.pathname.substr(0, document.location.pathname.length - 1);
+          }
+
+          var pathElements = pathname.split("/");
+          var urlBeginning = pathElement.slice(0, pathElements.length-1);
+          var urlEnding = pathElements.slice(-1)[0];
+          if (urlEnding != species) {
+              var newPathElements = urlBeginning.push(species);
+              var newPathname = newPathElements.join("/");
+              if (hasTrailingSlash) { newPathname = newPathname + "/"; }
+              document.location.pathname = newPathname;
+          }
       }
-    }
 
-    /**
-     * Show genome location using Genoverse.
-     * Create a hidden button with data attributes and trigger the click event.
-     * Update coordinates in the user interface.
-     */
-    function showGenome() {
-      $('.genoverse-xref').remove();
-      delete window.browser;
-      clearInterval(interval);
+      /**
+       * Show genome location using Genoverse.
+       * Create a hidden button with data attributes and trigger the click event.
+       * Update coordinates in the user interface.
+       */
+      function showGenome() {
+          // delete previous instance of browser completely
+          $('.genoverse-xref').remove();
+          delete window.browser;
+          clearInterval(interval);
 
-      var species_name;
-      if (species.val() == 'Canis familiaris') {
-        species_name = 'Canis lupus familiaris';
-      } else {
-        species_name = species.val();
+          // get species name with whitespaces replaced with hyphens, handle dog as a special case
+          var species_name;
+          if (species.val() == 'Canis familiaris') {
+              species_name = 'Canis lupus familiaris';
+          }
+          else {
+              species_name = species.val();
+          }
+          species_name = species_name.replace(/ /g,'-').toLowerCase();
+
+          // set all data attributes
+          $('<button class="genoverse-xref"></button>').
+              hide().
+              appendTo('.genoverse-wrap').
+              data('chromosome', chromosome.val()).
+              data('genomic-start', start.val().replace(/,\./g,'')).
+              data('genomic-end', end.val().replace(/,\./g,'')).
+              data('strand', 1).
+              data('species', species_name).
+              data('description', '').
+              data('species-label', species.val()).
+              click();
+
+          // start observing Genoverse browser and browser window query form
+          interval = setInterval(
+              function() {
+                  updateCoordinates();
+                  updateExternalLinks();
+              },
+              800
+          );
       }
-      species_name = species_name.replace(/ /g,'_').toLowerCase();
-      
-      $('<button class="genoverse-xref"></button>').
-        hide().
-        appendTo('.genoverse-wrap').
-        data('chromosome', chromosome.val()).
-        data('genomic-start', start.val().replace(/,\./g,'')).
-        data('genomic-end', end.val().replace(/,\./g,'')).
-        data('strand', 1).
-        data('species', species_name).
-        data('description', '').
-        data('species-label', species.val()).
-        click();
-      interval = setInterval(function(){
-        updateCoordinates();
-        updateExternalLinks();
-      }, 800);
-    }
   })();
   </script>
 {% endblock %}

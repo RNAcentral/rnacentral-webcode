@@ -25,6 +25,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 
 from portal.config.expert_databases import expert_dbs
+from portal.config.genomes import genomes as rnacentral_genomes
 from portal.forms import ContactForm
 from portal.models import Rna, Database, Release, Xref, DatabaseStats
 
@@ -319,26 +320,37 @@ class GenomeBrowserView(TemplateView):
     """
     Render genome-browser, taking into account start/end locations
     """
-    def get(self, request, *args, **kwargs):
+    def get(self, request, genome='Homo-Sapiens', *args, **kwargs):
         self.template_name = 'portal/genome-browser.html'
 
-        if 'genome' in request.GET and 'chromosome' in request.GET and 'start' in request.GET and 'end' in request.GET:
-            # security-wise it doesn't make sense to validate start/end here
-            kwargs['genome'] = request.GET['genome']
+        # always add genomes to kwargs
+        genomes = sorted(rnacentral_genomes, key=lambda x: x['species'])
+        kwargs['genomes'] = genomes
+
+        # find our genome in taxonomy, replace genome with a dict with taxonomy data
+        genome = _get_taxonomy_info_by_genome_identifier(genome)
+        if genome is None:
+            raise Http404()
+        kwargs['genome'] = genome
+
+        # if current location is given in GET parameters - use it; otherwise, use defaults
+        if 'chromosome' in request.GET and 'start' in request.GET and 'end' in request.GET:
+            # security-wise it doesn't make sense to validate location:
+            # if user tinkers with it, she won't shoot anyone but herself
             kwargs['chromosome'] = request.GET['chromosome']
             kwargs['start'] = request.GET['start']
             kwargs['end'] = request.GET['end']
         else:
-            kwargs['genome'] = "Homo sapiens"
-            kwargs['chromosome'] = "12"
-            kwargs['start'] = "53964085"
-            kwargs['end'] = "53968914"
+            kwargs['chromosome'] = genome['example_location']['chromosome']
+            kwargs['start'] = genome['example_location']['start']
+            kwargs['end'] = genome['example_location']['end']
 
         response = super(GenomeBrowserView, self).get(request, *args, **kwargs)
         try:
             return response.render()
         except TemplateDoesNotExist:
             raise Http404()
+
 
 class ContactView(FormView):
     """
@@ -358,6 +370,46 @@ class ContactView(FormView):
 ####################
 # Helper functions #
 ####################
+
+def _get_taxonomy_info_by_genome_identifier(identifier):
+    """
+    Returns a valid taxonomy, given a taxon identifier.
+
+    :param identifier: this is what we receive from django named urlparam
+    This is either a scientific name, or synonym or taxId. Note: whitespaces
+    in it are replaced with hyphens to avoid having to urlencode them.
+
+    :return: e.g. {
+        'species': 'Homo sapiens',
+        'synonyms': ['human'],
+        'assembly': 'GRCh38',
+        'assembly_ucsc': 'hg38',
+        'taxid': 9606,
+        'division': 'Ensembl',
+        'example_location': {
+            'chromosome': 'X',
+            'start': 73792205,
+            'end': 73829231,
+        }
+    }
+    """
+    identifier = identifier.replace('-', ' ')  # we transform all hyphens back to whitespaces
+
+    for genome in rnacentral_genomes:
+        # check, if it's a scientific name or a trivial name
+        if (identifier.lower() == genome['species'].lower() or
+           identifier.lower() in genome['synonyms']):
+            return genome
+
+        # check, if it's a taxid
+        try:
+            if int(identifier) == genome['taxid']:
+                return genome
+        except ValueError:
+            pass
+
+        return None  # genome not found
+
 
 def _get_json_lineage_tree(xrefs):
     """
