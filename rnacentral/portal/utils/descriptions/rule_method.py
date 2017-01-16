@@ -160,6 +160,9 @@ def species_name(rna_type, sequence, xrefs):
         return xref.db.display_name == name and \
             xref.accession.get_rna_type() == rna_type
 
+    if rna_type not in CHOICES:
+        return None
+
     best = best_from(CHOICES[rna_type], xrefs, xref_agrees)
     if not best:
         return None
