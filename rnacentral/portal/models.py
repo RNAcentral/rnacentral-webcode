@@ -303,7 +303,32 @@ class Rna(CachingMixin, models.Model):
         else:
             return False
 
-    def get_description(self, taxid=None, recompute=True):
+    def get_description(self, taxid=None, recompute=False):
+        """
+        Compute the description of this sequence. The description is intented
+        to be a good description of the sequence and is based upon the xrefs
+        this sequence has. If given a taxid this will produce a description
+        that is specific to that species, otherwise it will return a
+        description that is general for all species this has been observed in.
+
+        Normally, this will simply lookup a stored description in
+        rna_precomputed, however, if recompute=True is given then this will
+        recompute the description.
+
+
+        Parameters
+        ----------
+        taxid : int, None
+            The taxon id to create a description for.
+
+        recompute : bool, False
+            If this should compute the description or simply look it up.
+
+        Returns
+        -------
+        description : str
+            The description of this sequence.
+        """
         if not recompute:
             if taxid:
                 queryset = RnaPrecomputed.objects.filter(taxid=taxid)
