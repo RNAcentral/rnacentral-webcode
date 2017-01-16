@@ -91,7 +91,7 @@ class XrefsExporter(FtpBase):
             Get a dictionary telling where to look for external database ids.
             """
             return {
-                'xref': ['ENA'], # output xref.ac
+                'xref': ['ENA', 'HGNC'], # output xref.ac
                 'optional_id': ['VEGA'], # output accession.optional_id
                 # for VEGA output both transcript and gene ids
             }
