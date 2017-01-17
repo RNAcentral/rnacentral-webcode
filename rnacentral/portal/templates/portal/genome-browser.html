@@ -93,13 +93,13 @@ Genome browser
    * Display a genomic location using Genoverse.
    */
   (function(){
-      var interval,
-          start = $('#genomic-start-input'),
-          end = $('#genomic-end-input'),
-          chromosome = $('#chromosome-input'),
-          species = $('#genomic-species-select'),
-          show_genome_button = $('#genome-display'),
-          location = $('#genomic-location');
+      var interval;
+      var start = $('#genomic-start-input');
+      var end = $('#genomic-end-input');
+      var chromosome = $('#chromosome-input');
+      var species = $('#genomic-species-select');
+      var show_genome_button = $('#genome-display');
+      var location = $('#genomic-location');
 
       show_genome_button.on('click', showGenome).click();
 
@@ -162,50 +162,62 @@ Genome browser
           }
       }
 
-
       /**
        * Synchronize coordinates shown in the user interface with the actual
        * genoverse coordinates.
        * `browser` is the global Genoverse object.
        */
       function updateCoordinates() {
+          console.log("Coordinates: chromosome = " + browser.chr + ", start = " + browser.start + ", end = " + browser.end);
           // update form start/end inputs
           start.val(browser.start);
           end.val(browser.end);
 
           // update location string right above genoverse
+          var species = $('#genomic-species-select');
           text = '<em>' + species.val() + '</em>' + ' ' + browser.chr + ':' + browser.start + '-' + browser.end;
           if (location.html() != text) {
               location.html(text);
           }
 
           // update get param in browser, if they changed
-          var get_params = "chromosome=" + browser.chr;
-          get_params = get_params.concat("&start=" + browser.start);
-          get_params = get_params.concat("&end=" + browser.end);
+          var searchParams = "chromosome=" + browser.chr;
+          searchParams = searchParams.concat("&start=" + browser.start);
+          searchParams = searchParams.concat("&end=" + browser.end);
 
-          if (document.location.search != get_params) {
-              document.location.search = get_params;
+          if (document.location.search != searchParams) {
+              history.pushState({}, document.title, document.location.pathname + "?" + searchParams);
           }
 
           // update url if species changed
           var species = species.val().replace(/ /g,'-');
 
-          var pathname, hasTrailingSlash = false;
+          var pathname = document.location.pathname;
+          var hasTrailingSlash = false;
           if (document.location.pathname.substr(-1) === '/') {
               hasTrailingSlash = true;
               pathname = document.location.pathname.substr(0, document.location.pathname.length - 1);
           }
 
-          var pathElements = pathname.split("/");
-          var urlBeginning = pathElement.slice(0, pathElements.length-1);
-          var urlEnding = pathElements.slice(-1)[0];
-          if (urlEnding != species) {
-              var newPathElements = urlBeginning.push(species);
-              var newPathname = newPathElements.join("/");
+
+          if (document.location.pathname.search(/genome-browser\/.+/) == -1) { // if url is like /genome-browser
+              var newPathname = pathname + "/" + species;
               if (hasTrailingSlash) { newPathname = newPathname + "/"; }
-              document.location.pathname = newPathname;
+              history.pushState({}, document.title, newPathname + "?" + searchParams);
           }
+          else { // if url is like /genome-browser/homo-sapiens
+              var pathElements = pathname.split("/");
+              var urlBeginning = pathElements.slice(0, pathElements.length-1);
+              var urlEnding = pathElements.slice(-1)[0];
+
+              if (urlEnding != species) {
+                  urlBeginning.push(species);
+                  var newPathname = urlBeginning.join("/");
+                  if (hasTrailingSlash) { newPathname = newPathname + "/"; }
+                  history.pushState({}, document.title, newPathname + "?" + searchParams);
+              }
+          }
+
       }
 
       /**
@@ -227,7 +239,7 @@ Genome browser
           else {
               species_name = species.val();
           }
-          species_name = species_name.replace(/ /g,'-').toLowerCase();
+          species_name = species_name.replace(/ /g,'_').toLowerCase();
 
           // set all data attributes
           $('<button class="genoverse-xref"></button>').
