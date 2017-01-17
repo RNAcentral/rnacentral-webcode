@@ -103,7 +103,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
 
     var query_urls = {
         'ebeye_search': search_config.ebeye_base_url +
-                        '?query={QUERY}' + '%20AND%20active:"Active"' +
+                        '?query={QUERY}' +
                         '&format=json' +
                         '&hlfields=' + search_config.fields.join() +
                         '&facetcount=' + search_config.facetcount +
