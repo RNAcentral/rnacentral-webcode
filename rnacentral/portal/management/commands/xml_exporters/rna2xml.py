@@ -279,6 +279,12 @@ class RnaXmlExporter(OracleConnection):
         else:
             # basic priority level
             boost = 1
+
+        generic_types = set(['misc_RNA', 'misc RNA', 'other'])
+        if len(self.data['rna_type']) == 1 and \
+                generic_types.intersection(self.data['rna_type']):
+            boost = boost - 0.5
+
         self.data['boost'] = boost
 
     def store_rna_properties(self, rna, taxid):
