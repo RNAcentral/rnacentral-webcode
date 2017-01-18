@@ -6,7 +6,7 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('portal', '0009_add_precomputed_rna_table'),
+        ('portal', '0007_add_precomputed_rna_table'),
     ]
 
     operations = [
