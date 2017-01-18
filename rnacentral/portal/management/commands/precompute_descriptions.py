@@ -1,5 +1,5 @@
 """
-Copyright [2009-2016] EMBL-European Bioinformatics Institute
+Copyright [2009-2017] EMBL-European Bioinformatics Institute
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -112,6 +112,7 @@ class Command(BaseCommand):
                                       id__lte=self.options['max']).iterator():
             defaults = {
                 'upi_id': rna.upi,
+                'rna_type': '/'.join(rna.get_rna_type(recompute=True)),
                 'description': rna.get_description(recompute=True),
             }
             RnaPrecomputed.objects.update_or_create(id=rna.upi, defaults=defaults)
@@ -119,8 +120,9 @@ class Command(BaseCommand):
             for taxid in set(rna.xrefs.values_list('taxid', flat=True)):
                 _id = '{0}_{1}'.format(rna.upi, taxid)
                 defaults = {
-                    'description': rna.get_description(recompute=True, taxid=taxid),
                     'upi_id': rna.upi,
                     'taxid': taxid,
+                    'rna_type': '/'.join(rna.get_rna_type(taxid=taxid, recompute=True)),
+                    'description': rna.get_description(recompute=True, taxid=taxid),
                 }
                 RnaPrecomputed.objects.update_or_create(id=_id, defaults=defaults)
