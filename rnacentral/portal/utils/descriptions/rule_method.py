@@ -1,3 +1,20 @@
+"""
+This module contains the implementation of the rule based method for finding
+the rna_type and description of a RNA molecule. The entry point for finding the
+description is ``description_of``, while the entry point for finding the
+rna_type is ``determine_rna_type_for``.
+
+Copyright [2009-2017] EMBL-European Bioinformatics Institute
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
 import math
 import string
 from collections import Counter
@@ -26,7 +43,7 @@ annotations from the database agree.
 def can_apply(sequence, xrefs, taxid):
     """
     Detect if we can apply the new method for selecting names. This works to
-    see if we have an entries in our CHOICES dictonary.
+    see if we have an entries in our CHOICES dictionary.
     """
 
     rna_types = {xref.accession.get_rna_type() for xref in xrefs}
@@ -94,7 +111,7 @@ def entropy(data):
     This computes an approximation of the entropy in the given string. This is
     used to select the 'best' name of several possible names. The reason we use
     this and not just length is that in some cases (like sequences from
-    structures) the name will be very long because it conatians the sequence
+    structures) the name will be very long because it contains the sequence
     itself. For example:
 
     RNA (5'-R(*GP*UP*GP*GP*UP*CP*UP*GP*AP*UP*GP*AP*GP*GP*CP*C)-3') from synthetic construct (PDB 3D0M, chain X)
@@ -116,6 +133,7 @@ def entropy(data):
     entropy : float
         The entropy of the string.
     """
+
     if len(data) <= 1:
         return 0
     allowed_characters = set(string.ascii_lowercase + string.digits)
@@ -179,6 +197,7 @@ def correct_by_length(rna_type, sequence):
     the length of the sequence as well as using the length to distinguish
     between the two.
     """
+
     if rna_type == set(['miRNA', 'precusor_RNA']) or \
             rna_type == set(['miRNA']):
         if 15 <= sequence.length <= 30:
