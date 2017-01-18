@@ -367,6 +367,7 @@ class ContactView(FormView):
         else:
             return redirect('error')
 
+
 ####################
 # Helper functions #
 ####################
@@ -408,7 +409,7 @@ def _get_taxonomy_info_by_genome_identifier(identifier):
         except ValueError:
             pass
 
-        return None  # genome not found
+    return None  # genome not found
 
 
 def _get_json_lineage_tree(xrefs):
