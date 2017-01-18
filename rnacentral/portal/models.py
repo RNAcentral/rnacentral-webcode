@@ -1,5 +1,5 @@
 """
-Copyright [2009-2016] EMBL-European Bioinformatics Institute
+Copyright [2009-2017] EMBL-European Bioinformatics Institute
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -302,6 +302,35 @@ class Rna(CachingMixin, models.Model):
             return True
         else:
             return False
+
+    def get_rna_type(self, taxid=None, recompute=False):
+        """Determine the rna type for the given sequence. This will use the
+        precomuted data if possible. If not asked to recompute it will do so.
+        Providing an taxid will compute the rna_type for the given taxon only.
+        This means it will determine the rna_type for only that organism.
+
+        Parameters
+        ----------
+        taxid : int, None
+            The taxon id, if any to use for finding the rna_type.
+        recompute : bool, False
+            Flag to indicate if this should use the already stored data, or
+            recompute it.
+
+        Returns
+        -------
+        rna_type : set
+            The set of rna types, computed for this sequence.
+        """
+
+        if not recompute:
+            queryset = RnaPrecomputed.objects.filter(taxid=taxid)
+            try:
+                return queryset.get(upi=self.upi).rna_type.split('/')
+            except ObjectDoesNotExist:
+                pass
+
+        return desc.rna_type(self, taxid=taxid)
 
     def get_description(self, taxid=None, recompute=False):
         """
