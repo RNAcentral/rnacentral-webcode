@@ -326,7 +326,10 @@ class Rna(CachingMixin, models.Model):
         if not recompute:
             queryset = RnaPrecomputed.objects.filter(taxid=taxid)
             try:
-                return queryset.get(upi=self.upi).rna_type.split('/')
+                rna_type = queryset.get(upi=self.upi).rna_type
+                if rna_type is None:
+                    return desc.rna_type(self, taxid=taxid)
+                return rna_type.split('/')
             except ObjectDoesNotExist:
                 pass
 
