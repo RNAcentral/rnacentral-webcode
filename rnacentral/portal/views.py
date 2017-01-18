@@ -334,10 +334,16 @@ class GenomeBrowserView(TemplateView):
         kwargs['genome'] = genome
 
         # if current location is given in GET parameters - use it; otherwise, use defaults
-        if 'chromosome' in request.GET and 'start' in request.GET and 'end' in request.GET:
+        if ('chromosome' in request.GET or 'chr' in request.GET) and 'start' in request.GET and 'end' in request.GET:
             # security-wise it doesn't make sense to validate location:
             # if user tinkers with it, she won't shoot anyone but herself
-            kwargs['chromosome'] = request.GET['chromosome']
+
+            # 'chromosome' takes precedence over 'chr'
+            if 'chromosome' in request.GET:
+                kwargs['chromosome'] = request.GET['chromosome']
+            else:
+                kwargs['chromosome'] = request.GET['chr']
+
             kwargs['start'] = request.GET['start']
             kwargs['end'] = request.GET['end']
         else:
