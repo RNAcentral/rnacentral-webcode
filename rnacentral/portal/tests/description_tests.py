@@ -1,0 +1,132 @@
+from django.test import TestCase
+from portal.models import Rna
+
+
+class GenericDescriptionTest(TestCase):
+    def description_of(self, upi, taxid=None):
+        return Rna.objects.\
+            get(upi=upi).\
+            get_description(taxid=taxid, recompute=True)
+
+    def assertDescriptionIs(self, description, upi, taxid=None):
+        self.assertEquals(description, self.description_of(upi, taxid=taxid))
+
+    def assertDescriptionIsContains(self, short, upi, taxid=None):
+        self.assertIn(short, self.description_of(upi, taxid=taxid))
+
+
+class SimpleDescriptionTests(GenericDescriptionTest):
+
+    def test_handles_bantam(self):
+        """
+        Descriptions should select a name with 'dme-bantam' in it for the
+        precursor and both products.
+        """
+        self.assertDescriptionIsContains('dme-bantam', 'URS00002F21DA', taxid=7227)
+        self.assertDescriptionIsContains('dme-bantam-3p', 'URS00004E9E38', taxid=7227)
+        self.assertDescriptionIsContains('dme-bantam-5p', 'URS000055786A', taxid=7227)
+
+    def test_handles_ribozymes(self):
+        """
+        We should pick a good, not repetitive name for ribozymes.
+        """
+        pass
+
+
+class HumanDescriptionTests(GenericDescriptionTest):
+    def test_likes_hgnc_for_human(self):
+        self.assertDescriptionIs(
+            'Homo sapiens DiGeorge syndrome critical region gene 9 (non-protein coding) (DGCR9), long non-coding RNA.',
+            'URS0000759BEC', taxid=9606)
+        self.assertDescriptionIs(
+            'Homo sapiens STARD4 antisense RNA 1 (STARD4-AS1), long non-coding RNA.',
+            'URS00003CE153',
+            taxid=9606)
+
+        # NOTE: This is a bit questionable, there are other names which may
+        # possibly be better
+        self.assertDescriptionIs(
+            'small Cajal body-specific RNA 10',
+            'URS0000569A4A',
+            taxid=9606)
+
+    def test_prefers_mirbase_for_mirna_precursor(self):
+        self.assertDescriptionIs(
+            'Homo sapiens (human) microRNA hsa-mir-3648-2 precursor',
+            'URS000075A546',
+            taxid=9606)
+
+        self.assertDescriptionIs(
+            'Homo sapiens (human) microRNA hsa-mir-1302-11 precursor',
+            'URS000075CC93',
+            taxid=9606)
+
+
+class ArabidopisDescriptionTests(GenericDescriptionTest):
+    def test_likes_lncrnadb_over_ena(self):
+        self.assertDescriptionIs(
+            'Arabidopsis thaliana (thale cress) Long non-coding antisense RNA COOLAIR',
+            'URS000018EB2E',
+            taxid=3702)
+
+    def test_uses_ena_if_only_source(self):
+        self.assertDescriptionIs(
+            'Arabidopsis thaliana (thale cress) tRNA-Met(CAT)',
+            'URS00005F4CAF',
+            taxid=3702)
+
+    def test_it_uses_most_common_ena_name(self):
+        self.assertDescriptionIs(
+            'Arabidopsis thaliana (thale cress) partial tRNA-Leu',
+            'URS000048B30C',
+            taxid=3702)
+
+    def test_uses_rfam_if_only_source(self):
+        self.assertDescriptionIs(
+            'Arabidopsis thaliana tRNA',
+            'URS00006A2469',
+            taxid=3702)
+
+    def test_it_uses_tair_over_refseq(self):
+        self.assertDescriptionIs(
+            'Arabidopsis thaliana (thale cress) TAS3 (trans-acting siRNA3); other RNA',
+            'URS00003AC4AA',
+            taxid=3702)
+
+
+class MouseDescriptionTests(GenericDescriptionTest):
+    def test_likes_refseq_over_noncode(self):
+        self.assertDescriptionIs(
+            'Mus musculus small Cajal body-specific RNA 1 (Scarna13), guide RNA.',
+            'URS00006550DA',
+            taxid=10090)
+
+    def test_likes_refseq_over_ena(self):
+        self.assertDescriptionIs(
+            'Mus musculus small nucleolar RNA, C/D box 17 (Snord17), small nucleolar RNA.',
+            'URS000051DCEC',
+            taxid=10090)
+
+        self.assertDescriptionIs(
+            'Mus musculus small nucleolar RNA, H/ACA box 3 (Snora3), small nucleolar RNA.',
+            'URS000060B496',
+            taxid=10090)
+
+    # NOTE: This is a questionable choice, not sure if this really is the best,
+    # it also contradicts other decisions so maybe we shouldn't use it.
+    def test_will_use_good_ena(self):
+        self.assertDescriptionIs(
+            'Mus musculus (house mouse) partial H/ACA box snoRNA; small non-messenger RNA (snmRNA)',
+            'URS00004E52D3',
+            taxid=10090)
+
+    def test_it_likes_rfam_over_noncode(self):
+        self.assertDescriptionIs(
+            'Mus musculus Small Cajal body-specific RNA 2',
+            'URS00006B3271', 
+            taxid=10090)
+
+        self.assertDescriptionIs(
+            'Mus musculus Small Cajal body-specific RNA 6',
+            'URS0000653D5F', 
+            taxid=10090)
