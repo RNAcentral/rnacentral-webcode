@@ -6,6 +6,17 @@ methods to create a description.
 
 The actual implementation of the two methods are in: rule_method and
 score_method.
+
+Copyright [2009-2017] EMBL-European Bioinformatics Institute
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 """
 
 from . import rule_method as _rm
@@ -43,4 +54,42 @@ def description_of(sequence, taxid=None):
     return name or _sm.description_of(sequence, taxid=taxid)
 
 
-__all__ = ['description_of']
+def rna_type_of(sequence, taxid=None):
+    """
+    Compute the rna_type of the given sequence. An rna_type is an entry like
+    'rRNA', or 'other'. Ideally these should all be part of a controlled
+    vocabulary as in INSDC:
+
+    https://www.insdc.org/documents/ncrna-vocabulary
+
+    However, not all things fall into the vocabulary and it takes longer to
+    update than to find new types of RNA. Thus we end up with entries that are
+    not part of that vocabulary. Determining the description and rna_type are
+    tightly related and so they end up in the same module.
+
+    If given a taxid this will determine the rna_type for only that organism.
+
+    It is possible that the sequence has more than one rna type. While this
+    will attempt to deal with known issues it is likely that not all issues are
+    caught yet. For this reason the function produces a set of rna_types. In
+    the ideal case it will have a single entry. It is also important to know
+    that the set could be empty because no rna_type could be found.
+
+    Parameters
+    ----------
+    sequence : Rna
+        The sequence to examine
+
+    taxid : int, None
+        The taxon id to limit this to, if any.
+
+    Returns
+    -------
+    rna_type : set
+        The set of rna types for this sequence.
+    """
+    xrefs = sequence.xrefs.filter(deleted='N', taxid=taxid)
+    return _rm.determine_rna_type_for(sequence, xrefs)
+
+
+__all__ = ['description_of', 'rna_type_of']
