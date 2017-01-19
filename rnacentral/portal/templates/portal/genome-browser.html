@@ -205,8 +205,7 @@ limitations under the License.
                 hasTrailingSlash = true;
                 pathname = document.location.pathname.substr(0, document.location.pathname.length - 1);
             }
-  
-  
+
             if (document.location.pathname.search(/genome-browser\/.+/) == -1) { // if url is like /genome-browser
                 var newPathname = pathname + "/" + species;
                 if (hasTrailingSlash) { newPathname = newPathname + "/"; }

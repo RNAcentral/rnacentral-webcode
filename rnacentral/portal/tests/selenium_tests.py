@@ -310,7 +310,7 @@ class ExpertDatabaseLandingPage(BasePage):
 
 
 class GenoverseTestPage(BasePage):
-    """A page with an embedded genome browser"""
+    """A sequence page with an embedded genome browser"""
     url = 'rna/'
 
     def __init__(self, browser, rnacentral_id):
@@ -325,6 +325,14 @@ class GenoverseTestPage(BasePage):
         except:
             return False
         return True
+
+
+class GenomeBrowserTestPage(BasePage):
+    """A standalone Genoverse genome browser page"""
+    url = 'genome-browser/'
+
+    def __init__(self, browser):
+        BasePage.__init__(self, browser, self.url)
 
 
 class MetaSearchPage(BasePage):
@@ -461,6 +469,9 @@ class RNAcentralTest(unittest.TestCase):
             self.assertIn(urllib.quote(item), urllib.quote(page.browser.current_url))
             page.browser.back()
 
+    # Metasearch
+    # ----------
+
     def test_metasearch_examples(self):
         """
         Test metasearch examples, can be done on any page.
@@ -525,6 +536,9 @@ class RNAcentralTest(unittest.TestCase):
         page = MetaSearchPage(self.browser, 'search?q=URS000047C79B_00000')
         page.navigate()
         self.assertTrue(page.warnings_present())
+
+    # Sequence pages for specific databases
+    # -------------------------------------
 
     def test_all_expert_database_page(self):
         page = ExpertDatabasesOverviewPage(self.browser)
@@ -603,10 +617,66 @@ class RNAcentralTest(unittest.TestCase):
         self.assertTrue(page.get_active_xref_page_num(), xref_page_num)
         self._sequence_view_checks(page)
 
+    # Genoverse-related tests
+    # -----------------------
+
     def test_genoverse_page(self):
         page = GenoverseTestPage(self.browser, 'URS00000B15DA')
         page.navigate()
         self.assertTrue(page.genoverse_ok())
+
+    def test_href_changed_on_location_changed(self):
+        """
+        In the top of genome-browser page we have a navigation form with
+        species, chromosome, start and end fields
+        and 'genome-display' button. On
+
+        $('#genome-display').click()
+
+        the href in browser's address bar should change.
+        """
+        page = GenomeBrowserTestPage(self.browser)
+        page.navigate()
+
+        self.browser.execute_script("document.getElementById('genomic-start-input').setAttribute('value', '2');")
+        self.browser.find_element_by_css_selector('#genome-display').click()
+
+        result = WebDriverWait(self.browser, 15).until(
+            lambda s: s.find_element(By.ID, "genoverse").is_displayed()
+        )
+        if not result:
+            self.fail("Genoverse was not re-loaded upon genome-display button click!")
+
+        print self.browser.current_url
+
+    def test_UCSD_and_Ensemble_links_changed_on_input_changed(self):
+        """
+        In the top of genome-browser page we have a navigation form with
+        species, chromosome, start and end fields
+        and 'genome-display' button. On
+
+        $('#genome-display').click()
+
+        the hyperlinks to UCSD and Ensemble genome browsers should change.
+        """
+        page = GenomeBrowserTestPage(self.browser)
+        page.navigate()
+
+    def test_genoverse_coordinates_changed_on_input_changed(self):
+        """
+        In the top of genome-browser page we have a navigation form with
+        species, chromosome, start and end fields and
+        'genome-display' button. On
+
+        $('#genome-display').click()
+
+        the coordinates of Genoverse genome browser should change.
+        """
+        page = GenomeBrowserTestPage(self.browser)
+        page.navigate()
+
+    # TaxId filtering
+    # ---------------
 
     def test_taxid_filtering_off(self):
         page = TaxidFilteringSequencePage(self.browser, 'URS000047C79B')
@@ -638,6 +708,9 @@ class RNAcentralTest(unittest.TestCase):
         page.navigate()
         self.assertEqual(page.get_page_subtitle(), 'Homo sapiens')
 
+    # Helper functions
+    # ----------------
+
     def _get_expert_db_example_ids(self, expert_db_id):
         """Retrieve example RNAcentral ids from the homepage"""
         self.homepage.navigate()
@@ -651,9 +724,11 @@ class RNAcentralTest(unittest.TestCase):
 
 if __name__ == '__main__':
     import logging
-    logging.basicConfig(filename='selenium_log.txt',
-                        level=logging.WARNING,
-                        filemode='w')
+    logging.basicConfig(
+        filename='selenium_log.txt',
+        level=logging.WARNING,
+        filemode='w'
+    )
 
     import argparse
     import sys
