@@ -4,16 +4,16 @@ from portal.models import Rna
 
 
 class GenericDescriptionTest(SimpleTestCase):
-    def description_of(self, upi, taxid=None):
+    def get_description(self, upi, taxid=None):
         return Rna.objects.\
             get(upi=upi).\
             get_description(taxid=taxid, recompute=True)
 
     def assertDescriptionIs(self, description, upi, taxid=None):
-        self.assertEquals(description, self.description_of(upi, taxid=taxid))
+        self.assertEquals(description, self.get_description(upi, taxid=taxid))
 
     def assertDescriptionIsContains(self, short, upi, taxid=None):
-        self.assertIn(short, self.description_of(upi, taxid=taxid))
+        self.assertIn(short, self.get_description(upi, taxid=taxid))
 
 
 class SimpleDescriptionTests(GenericDescriptionTest):
@@ -199,3 +199,8 @@ class WormTests(GenericDescriptionTest):
             'Caenorhabditis elegans tRNA-His',
             'URS000069D7FA',
             taxid=6239)
+
+
+class LargeDataTests(GenericDescriptionTest):
+    def test_can_compute_when_many_cross_ref(self):
+        self.assertDescriptionIs('tRNA from 3413 species' 'URS0000181AEC')
