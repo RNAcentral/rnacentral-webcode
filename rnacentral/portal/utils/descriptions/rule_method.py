@@ -50,7 +50,7 @@ def can_apply(sequence, xrefs, taxid):
     return bool(rna_types.intersection(CHOICES.keys()))
 
 
-def best_from(ordered_choices, possible, check, default=None):
+def choose_best_from(ordered_choices, possible, check, default=None):
     """
     Select the best choice from several ordered choices.
 
@@ -72,7 +72,7 @@ def best_from(ordered_choices, possible, check, default=None):
     return default
 
 
-def generic_name(rna_type, sequence, xrefs):
+def get_generic_name(rna_type, sequence, xrefs):
     """
     Compute a generic name that works for sequences that have no specific
     taxon id.
@@ -143,7 +143,7 @@ def entropy(data):
     return sum(-1 * p * math.log(p, 2) for p in probs)
 
 
-def species_name(rna_type, sequence, xrefs):
+def get_species_specific_name(rna_type, sequence, xrefs):
     """
     Determine the name for the species specific sequence. This will examine
     all descriptions in the xrefs and select one that is the 'best' name for
@@ -245,7 +245,7 @@ def remove_ribozyme_if_possible(rna_type, sequence):
     return rna_type
 
 
-def rna_types_from(xrefs, name):
+def get_rna_types_from(xrefs, name):
     """
     Determine the rna_types as annotated by some database.
 
@@ -294,7 +294,7 @@ def determine_rna_type_for(sequence, xrefs):
     trusted = databases.intersection(TRUSTED_DATABASES)
     if len(trusted) == 1:
         trusted = trusted.pop()
-        rna_types = rna_types_from(xrefs, trusted)
+        rna_types = get_rna_types_from(xrefs, trusted)
         if len(rna_types) == 1:
             return rna_types
 
@@ -312,10 +312,15 @@ def determine_rna_type_for(sequence, xrefs):
     ]
     for correction in corrections:
         rna_type = correction(rna_type, sequence)
-    return rna_type
+
+    if len(rna_type) == 1:
+        return rna_type.pop()
+
+    counts = Counter(x.accession.get_rna_type() for x in xrefs)
+    return counts.most_common(1)[0][0]
 
 
-def description_of(sequence, xrefs, taxid=None):
+def get_description(sequence, xrefs, taxid=None):
     """
     The entry point for using the rule based approach for descriptions. This
     approach works in two stages, first it determines the rna_type of the
@@ -352,5 +357,5 @@ def description_of(sequence, xrefs, taxid=None):
         return None
 
     if taxid is None:
-        return generic_name(rna_type, sequence, xrefs)
-    return species_name(rna_type.pop(), sequence, xrefs)
+        return get_generic_name(rna_type, sequence, xrefs)
+    return get_species_specific_name(rna_type.pop(), sequence, xrefs)

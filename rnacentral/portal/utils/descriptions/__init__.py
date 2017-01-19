@@ -19,11 +19,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import logging
+
 from . import rule_method as _rm
 from . import score_method as _sm
 
+logger = logging.getLogger(__name__)
 
-def valid_xrefs_of(sequence, taxid=None):
+
+def find_valid_xrefs(sequence, taxid=None):
     """Determine the valid xrefs for a given sequence and taxid. This will
     attempt to get all active (not deleted) xrefs for the given sequence and
     taxon id. If there are no active xrefs then this will switch to use the
@@ -55,7 +59,7 @@ def valid_xrefs_of(sequence, taxid=None):
     return xrefs
 
 
-def description_of(sequence, taxid=None):
+def get_description(sequence, taxid=None):
     """
     Compute a description for the given sequence and optional taxon id. This
     function will use the rule scoring if possible, otherwise it will fall back
@@ -79,18 +83,19 @@ def description_of(sequence, taxid=None):
         The description of this sequence.
     """
 
-    xrefs = valid_xrefs_of(sequence, taxid=taxid)
-    if taxid is not None:
-        xrefs = xrefs.filter(taxid=taxid)
-
+    logger.debug("Computing description_of for %s (%s)", sequence.upi, taxid)
+    xrefs = find_valid_xrefs(sequence, taxid=taxid)
     if not _rm.can_apply(sequence, xrefs, taxid):
-        return _sm.description_of(sequence, taxid=taxid)
+        logger.debug("Cannot apply rule style, using score")
+        return _sm.get_description(sequence, taxid=taxid)
 
-    name = _rm.description_of(sequence, xrefs, taxid=taxid)
-    return name or _sm.description_of(sequence, taxid=taxid)
+    name = _rm.get_description(sequence, xrefs, taxid=taxid)
+    if not name:
+        logger.debug("New style method failed, using score")
+    return name or _sm.get_description(sequence, taxid=taxid)
 
 
-def rna_type_of(sequence, taxid=None):
+def get_rna_type(sequence, taxid=None):
     """
     Compute the rna_type of the given sequence. An rna_type is an entry like
     'rRNA', or 'other'. Ideally these should all be part of a controlled
@@ -124,7 +129,7 @@ def rna_type_of(sequence, taxid=None):
     rna_type : set
         The set of rna types for this sequence.
     """
-    xrefs = valid_xrefs_of(sequence, taxid=taxid)
+    xrefs = find_valid_xrefs(sequence, taxid=taxid)
     return _rm.determine_rna_type_for(sequence, xrefs)
 
 

@@ -14,7 +14,7 @@ limitations under the License.
 """
 
 
-def description_of(sequence, taxid=None):
+def get_description(sequence, taxid=None):
     """
     Get entry description based on its xrefs. If taxid is provided, use only
     species-specific xrefs.
