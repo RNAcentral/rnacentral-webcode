@@ -23,6 +23,38 @@ from . import rule_method as _rm
 from . import score_method as _sm
 
 
+def valid_xrefs_of(sequence, taxid=None):
+    """Determine the valid xrefs for a given sequence and taxid. This will
+    attempt to get all active (not deleted) xrefs for the given sequence and
+    taxon id. If there are no active xrefs then this will switch to use the
+    deleted xrefs.
+
+    Parameters
+    ----------
+    sequence : Rna
+        The sequence to get xrefs for
+
+    taxid : int, None
+        The taxon id to use. None indicates no species constraint.
+
+    Returns
+    -------
+    xrefs : iterable
+        The collection of xrefs that are valid for the sequence and taxid.
+    """
+
+    xrefs = sequence.xrefs.filter(deleted='N')
+    if taxid is not None:
+        xrefs = xrefs.filter(taxid=taxid)
+
+    if not xrefs.exists():
+        xrefs = sequence.xrefs.filter()
+        if taxid is not None:
+            xrefs = xrefs.filter(taxid=taxid)
+
+    return xrefs
+
+
 def description_of(sequence, taxid=None):
     """
     Compute a description for the given sequence and optional taxon id. This
@@ -46,7 +78,11 @@ def description_of(sequence, taxid=None):
     description : str
         The description of this sequence.
     """
-    xrefs = sequence.xrefs.filter(deleted='N', taxid=taxid)
+
+    xrefs = valid_xrefs_of(sequence, taxid=taxid)
+    if taxid is not None:
+        xrefs = xrefs.filter(taxid=taxid)
+
     if not _rm.can_apply(sequence, xrefs, taxid):
         return _sm.description_of(sequence, taxid=taxid)
 
@@ -88,7 +124,7 @@ def rna_type_of(sequence, taxid=None):
     rna_type : set
         The set of rna types for this sequence.
     """
-    xrefs = sequence.xrefs.filter(deleted='N', taxid=taxid)
+    xrefs = valid_xrefs_of(sequence, taxid=taxid)
     return _rm.determine_rna_type_for(sequence, xrefs)
 
 
