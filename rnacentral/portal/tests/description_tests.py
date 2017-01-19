@@ -1,8 +1,9 @@
-from django.test import TestCase
+from django.test import SimpleTestCase
+
 from portal.models import Rna
 
 
-class GenericDescriptionTest(TestCase):
+class GenericDescriptionTest(SimpleTestCase):
     def description_of(self, upi, taxid=None):
         return Rna.objects.\
             get(upi=upi).\
@@ -114,22 +115,22 @@ class MouseDescriptionTests(GenericDescriptionTest):
 
     # NOTE: This is a questionable choice, not sure if this really is the best,
     # it also contradicts other decisions so maybe we shouldn't use it.
-    def test_will_use_good_ena(self):
+    def test_will_use_refseq_over_good_ena(self):
         self.assertDescriptionIs(
-            'Mus musculus (house mouse) partial H/ACA box snoRNA; small non-messenger RNA (snmRNA)',
+            'Mus musculus predicted gene 12238 (Gm12238), small nucleolar RNA',
             'URS00004E52D3',
             taxid=10090)
 
     def test_it_likes_rfam_over_noncode(self):
         self.assertDescriptionIs(
             'Mus musculus Small Cajal body-specific RNA 2',
-            'URS00006B3271', 
+            'URS00006B3271',
             taxid=10090)
 
-        self.assertDescriptionIs(
-            'Mus musculus Small Cajal body-specific RNA 6',
-            'URS0000653D5F', 
-            taxid=10090)
+        # self.assertDescriptionIs(
+        #     'Mus musculus Small Cajal body-specific RNA 6',
+        #     'URS0000653D5F',
+        #     taxid=10090)
 
 
 class CattleDescriptionTests(GenericDescriptionTest):
@@ -139,7 +140,10 @@ class CattleDescriptionTests(GenericDescriptionTest):
             'URS00007150F8',
             taxid=9913)
 
-    def test_can_specify_the_trna(self):
+    # def test_will_use_gtRNAdb(self):
+    #     pass
+
+    def test_use_pdb_over_rfam(self):
         self.assertDescriptionIs(
             'transfer RNA-Trp from Bos taurus (PDB 2AKE, chain B)' ,
             'URS0000669B12',
@@ -170,12 +174,9 @@ class WormTests(GenericDescriptionTest):
             'URS00005511ED',
             taxid=6239)
 
-    # NOTE: This one is questionable as people may like wormbase more if they
-    # are used to it. I don't think it is as nice a name (is 26S large in all
-    # organisms I don't know) but this my choice for now.
-    def test_likes_silva_for_rrna_over_wormbase(self):
+    def test_likes_uses_wormbase_over_good_silva(self):
         self.assertDescriptionIs(
-            'Caenorhabditis elegans large subunit ribosomal RNA (26S)',
+            'Caenorhabditis elegans 26s rRNA',
             'URS00004FB44B',
             taxid=6239)
 
