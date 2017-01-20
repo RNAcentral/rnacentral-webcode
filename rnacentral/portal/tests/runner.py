@@ -1,3 +1,5 @@
+import logging
+
 from django.test.runner import DiscoverRunner
 
 
@@ -21,5 +23,6 @@ class FixedRunner(DiscoverRunner):
         pass
 
     def run_tests(self, *args, **kwargs):
+        logging.disable(logging.CRITICAL)
         kwargs['keepdb'] = True
         return super(FixedRunner, self).run_tests(*args, **kwargs)
