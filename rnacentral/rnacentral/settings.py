@@ -177,6 +177,7 @@ INSTALLED_APPS = (
     'compressor',
     'markdown_deux',
     'django_rq',
+    'django_performance_testing',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )

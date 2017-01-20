@@ -2,21 +2,26 @@ import unittest
 
 from django.test import SimpleTestCase
 
+
+from django_performance_testing.queries import QueryBatchLimit
+from django_performance_testing.timing import TimeLimit
+
 from portal.models import Rna
 
 
 class GenericDescriptionTest(SimpleTestCase):
-    def get_description(self, upi, taxid=None):
-        return Rna.objects.\
-            get(upi=upi).\
-            get_description(taxid=taxid, recompute=True)
-
     def assertDescriptionIs(self, description, upi, taxid=None):
-        description = self.get_description(upi, taxid=taxid)
+        seq = Rna.objects.get(upi=upi)
+        with QueryBatchLimit(write=0, read=2, other=2):
+            with TimeLimit(total=2):
+                description = seq.get_description(taxid=taxid)
         self.assertEquals(description, description)
 
     def assertDescriptionIsContains(self, short, upi, taxid=None):
-        description = self.get_description(upi, taxid=taxid)
+        seq = Rna.objects.get(upi=upi)
+        with QueryBatchLimit(write=0, read=2, other=2):
+            with TimeLimit(total=2):
+                    description = seq.get_description(taxid=taxid)
         self.assertIn(short, description)
 
 
