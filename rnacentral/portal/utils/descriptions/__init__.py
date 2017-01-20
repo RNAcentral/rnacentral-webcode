@@ -112,9 +112,9 @@ def get_rna_type(sequence, taxid=None):
 
     It is possible that the sequence has more than one rna type. While this
     will attempt to deal with known issues it is likely that not all issues are
-    caught yet. For this reason the function produces a set of rna_types. In
-    the ideal case it will have a single entry. It is also important to know
-    that the set could be empty because no rna_type could be found.
+    caught yet. Right now it will fall back to taking the most common the
+    alphaebetically first rna_type if needed. It is also important to know that
+    the set could be empty because no rna_type could be found.
 
     Parameters
     ----------
@@ -126,8 +126,8 @@ def get_rna_type(sequence, taxid=None):
 
     Returns
     -------
-    rna_type : set
-        The set of rna types for this sequence.
+    rna_type : str
+        The rna_type for this sequence.
     """
     xrefs = find_valid_xrefs(sequence, taxid=taxid)
     return _rm.determine_rna_type_for(sequence, xrefs)

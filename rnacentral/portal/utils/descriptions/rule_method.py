@@ -1,9 +1,6 @@
-"""
-This module contains the implementation of the rule based method for finding
-the rna_type and description of a RNA molecule. The entry point for finding the
-description is ``description_of``, while the entry point for finding the
-rna_type is ``determine_rna_type_for``.
+from __future__ import unicode_literals
 
+"""
 Copyright [2009-2017] EMBL-European Bioinformatics Institute
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,20 +12,46 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+
+"""
+This module contains the implementation of the rule based method for finding
+the rna_type and description of a RNA molecule. The entry point for finding the
+description is ``get_description``, while the entry point for finding the
+rna_type is ``determine_rna_type_for``.
+"""
+
 import math
 import string
+import logging
 from collections import Counter
 
 CHOICES = {
     'miRNA': ['miRBase', 'RefSeq', 'Rfam', 'HGNC', 'PDBe', 'ENA'],
-    'precusor_RNA': ['RefSeq', 'miRBase', 'Rfam', 'HGNC', 'ENA'],
+    'precursor_RNA': ['miRBase', 'RefSeq', 'Rfam', 'HGNC', 'ENA'],
     'ribozyme': ['RefSeq', 'Rfam', 'HGNC', 'PDBe', 'ENA'],
     'hammerhead_ribozyme': ['RefSeq', 'Rfam', 'HGNC', 'PDBe', 'ENA'],
     'autocatalytically_spliced_intron': ['RefSeq', 'Rfam', 'HGNC', 'PDBe', 'ENA'],
+
+    '__generic__': [
+        'miRBase',
+        'WormBase',
+        'HGNC',
+        'TAIR',
+        'lncRNAdb',
+        'PDBe',
+        'RefSeq',
+        'Rfam',
+        'VEGA',
+        'SILVA',
+        'ENA',
+        'NONCODE',
+    ]
 }
 """
 A dict that defines the ordered choices for each type of RNA. This is the
-basis of our name selection for the rule based approach.
+basis of our name selection for the rule based approach. The fallback,
+__generic__ is a list of all database roughly ordered by how good the names
+from each one are.
 """
 
 TRUSTED_DATABASES = set([
@@ -39,6 +62,8 @@ annotations from one of these databases we will always use if, assuming all
 annotations from the database agree.
 """
 
+logger = logging.getLogger(__name__)
+
 
 def can_apply(sequence, xrefs, taxid):
     """
@@ -46,11 +71,12 @@ def can_apply(sequence, xrefs, taxid):
     see if we have an entries in our CHOICES dictionary.
     """
 
-    rna_types = {xref.accession.get_rna_type() for xref in xrefs}
-    return bool(rna_types.intersection(CHOICES.keys()))
+    return True
+    # rna_types = {xref.accession.get_rna_type() for xref in xrefs}
+    # return bool(rna_types.intersection(CHOICES.keys()))
 
 
-def choose_best_from(ordered_choices, possible, check, default=None):
+def choose_best(ordered_choices, possible, check, default=None):
     """
     Select the best choice from several ordered choices.
 
@@ -79,10 +105,10 @@ def get_generic_name(rna_type, sequence, xrefs):
 
     Parameters
     ----------
-    rna_type : set
-        The set of known RNA types for the given sequence.
+    rna_type : str
+        The current rna_type for the sequence.
     sequence : Rna
-        An Rna model that represents the sequence
+        An Rna model that represents the sequence.
 
     Returns
     -------
@@ -90,7 +116,6 @@ def get_generic_name(rna_type, sequence, xrefs):
         A string naming the sequence.
     """
 
-    rna_type = '/'.join(sorted(rna_type))
     rna_type = rna_type.replace('_', ' ')
     species_count = sequence.count_distinct_organisms
     if species_count == 1:
@@ -143,6 +168,26 @@ def entropy(data):
     return sum(-1 * p * math.log(p, 2) for p in probs)
 
 
+def suitable_xref(required_rna_type):
+    allowed_rna_types = set([required_rna_type])
+    if required_rna_type in set(['miRNA', 'precursor_RNA']):
+        allowed_rna_types = set(['miRNA', 'precursor_RNA'])
+
+    def fn(db_name, xref):
+        display_name = xref.db.display_name
+        if display_name != db_name:
+            return False
+
+        rna_type = xref.accession.get_rna_type()
+        # PDBe has lots of things called 'misc_RNA' that have a good
+        # description, so we allow this to use PDBe's misc_RNA descriptions
+        if display_name == 'PDBe' and rna_type == 'misc_RNA':
+            return True
+
+        return rna_type in allowed_rna_types
+    return fn
+
+
 def get_species_specific_name(rna_type, sequence, xrefs):
     """
     Determine the name for the species specific sequence. This will examine
@@ -175,18 +220,20 @@ def get_species_specific_name(rna_type, sequence, xrefs):
         could be selected.
     """
 
-    def xref_agrees(name, xref):
-        return xref.db.display_name == name and \
-            xref.accession.get_rna_type() == rna_type
-
     if rna_type not in CHOICES:
-        return None
+        logger.debug("Falling back to generic ordering for %s", rna_type)
 
-    best = best_from(CHOICES[rna_type], xrefs, xref_agrees)
+    ordering = CHOICES.get(rna_type, CHOICES['__generic__'])
+    best = choose_best(ordering, xrefs, suitable_xref(rna_type))
     if not best:
+        logger.debug("Ordered choice selection failed")
         return None
 
-    xref = max(best, key=lambda x: entropy(x.accession.description))
+    def description_order(xref):
+        return (round(entropy(xref.accession.description), 3),
+                xref.accession.description)
+
+    xref = max(best, key=description_order)
     return xref.accession.description
 
 
@@ -198,7 +245,7 @@ def correct_by_length(rna_type, sequence):
     between the two.
     """
 
-    if rna_type == set(['miRNA', 'precusor_RNA']) or \
+    if rna_type == set([u'precursor_RNA', u'miRNA']) or \
             rna_type == set(['miRNA']):
         if 15 <= sequence.length <= 30:
             return set(['miRNA'])
@@ -277,6 +324,10 @@ def determine_rna_type_for(sequence, xrefs):
     The goal of this function then is to examine all annotated rna_types and
     selected the annotation(s) that are most reliable for the given sequence.
 
+    Note that if this cannot use any of the normal rules to select a single
+    rna_type then it will use a simple method of taking the most common,
+    followed by alphabetically first rna_type.
+
     Parameters
     ----------
     sequence : Rna
@@ -286,23 +337,27 @@ def determine_rna_type_for(sequence, xrefs):
 
     Returns
     -------
-    rna_type : set
-        The set of rna_types that are trusted for this sequence and xrefs.
+    rna_type : str
+        The selected RNA type for this sequence.
     """
 
     databases = {xref.db.name for xref in xrefs}
     trusted = databases.intersection(TRUSTED_DATABASES)
+    logger.debug("Found %i trusted databases", len(trusted))
     if len(trusted) == 1:
         trusted = trusted.pop()
         rna_types = get_rna_types_from(xrefs, trusted)
+        logger.debug("Found %i rna_types from trusted dbs", len(rna_types))
         if len(rna_types) == 1:
-            return rna_types
+            return rna_types.pop()
 
     accessions = []
     rna_type = set()
     for xref in xrefs:
         rna_type.add(xref.accession.get_rna_type())
         accessions.append(xref.accession)
+
+    logger.debug("Initial rna_types: %s", rna_type)
 
     corrections = [
         correct_other_vs_misc,
@@ -313,8 +368,14 @@ def determine_rna_type_for(sequence, xrefs):
     for correction in corrections:
         rna_type = correction(rna_type, sequence)
 
+    logger.debug("Corrected to %s rna_types", rna_type)
     if len(rna_type) == 1:
+        logger.debug("Found rna_type of %s for %s", rna_type, sequence.upi)
         return rna_type.pop()
+
+    if not rna_type:
+        logger.debug("Corrections removed all rna_types")
+    logger.debug("Using fallback count method for %s", sequence.upi)
 
     counts = Counter(x.accession.get_rna_type() for x in xrefs)
     return counts.most_common(1)[0][0]
@@ -353,9 +414,9 @@ def get_description(sequence, xrefs, taxid=None):
     """
 
     rna_type = determine_rna_type_for(sequence, xrefs)
-    if not rna_type or len(rna_type) > 1:
+    if not rna_type:
         return None
 
     if taxid is None:
         return get_generic_name(rna_type, sequence, xrefs)
-    return get_species_specific_name(rna_type.pop(), sequence, xrefs)
+    return get_species_specific_name(rna_type, sequence, xrefs)
