@@ -10,18 +10,19 @@ from portal.models import Rna
 
 
 class GenericDescriptionTest(SimpleTestCase):
+
     def assertDescriptionIs(self, description, upi, taxid=None):
         seq = Rna.objects.get(upi=upi)
-        with QueryBatchLimit(write=0, read=2, other=2):
+        with QueryBatchLimit(write=0, read=5, other=2):
             with TimeLimit(total=2):
-                description = seq.get_description(taxid=taxid)
-        self.assertEquals(description, description)
+                computed = seq.get_description(taxid=taxid, recompute=True)
+        self.assertEquals(description, computed)
 
-    def assertDescriptionIsContains(self, short, upi, taxid=None):
+    def assertDescriptionContains(self, short, upi, taxid=None):
         seq = Rna.objects.get(upi=upi)
-        with QueryBatchLimit(write=0, read=2, other=2):
+        with QueryBatchLimit(write=0, read=5, other=2):
             with TimeLimit(total=2):
-                    description = seq.get_description(taxid=taxid)
+                description = seq.get_description(taxid=taxid, recompute=True)
         self.assertIn(short, description)
 
 
@@ -32,9 +33,9 @@ class SimpleDescriptionTests(GenericDescriptionTest):
         Descriptions should select a name with 'dme-bantam' in it for the
         precursor and both products.
         """
-        self.assertDescriptionIsContains('dme-bantam', 'URS00002F21DA', taxid=7227)
-        self.assertDescriptionIsContains('dme-bantam-3p', 'URS00004E9E38', taxid=7227)
-        self.assertDescriptionIsContains('dme-bantam-5p', 'URS000055786A', taxid=7227)
+        self.assertDescriptionContains('dme-bantam', 'URS00002F21DA', taxid=7227)
+        self.assertDescriptionContains('dme-bantam-3p', 'URS00004E9E38', taxid=7227)
+        self.assertDescriptionContains('dme-bantam-5p', 'URS000055786A', taxid=7227)
 
     def test_handles_ribozymes(self):
         """
@@ -114,7 +115,7 @@ class MouseDescriptionTests(GenericDescriptionTest):
         the rna_type. We end up using Rfam's because that is generally right,
         however, in this case we end up with worse name because of it. Though
         examining the data for the RefSeq annotation I am inclined to believe
-        Rfam over RefSeq in this case. 
+        Rfam over RefSeq in this case.
         """
         self.assertDescriptionIs(
             'Mus musculus small Cajal body-specific RNA 1 (Scarna13), guide RNA.',
@@ -157,8 +158,9 @@ class CattleDescriptionTests(GenericDescriptionTest):
             'URS00007150F8',
             taxid=9913)
 
-    # def test_will_use_gtRNAdb(self):
-    #     pass
+    @unittest.skip("No examples yet")
+    def test_will_use_gtRNAdb(self):
+        pass
 
     def test_use_pdb_over_rfam(self):
         self.assertDescriptionIs(
@@ -220,4 +222,7 @@ class WormTests(GenericDescriptionTest):
 
 class LargeDataTests(GenericDescriptionTest):
     def test_can_compute_when_many_cross_ref(self):
-        self.assertDescriptionIs('tRNA from 3413 species', 'URS0000181AEC')
+        """This is a stress test to see if this still performs quickly given a
+        sequence with many ~10k xrefs
+        """
+        self.assertDescriptionIs('tRNA from 3414 species', 'URS0000181AEC')
