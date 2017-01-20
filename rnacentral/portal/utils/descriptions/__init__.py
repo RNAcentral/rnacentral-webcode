@@ -27,39 +27,7 @@ from . import score_method as _sm
 logger = logging.getLogger(__name__)
 
 
-def find_valid_xrefs(sequence, taxid=None):
-    """Determine the valid xrefs for a given sequence and taxid. This will
-    attempt to get all active (not deleted) xrefs for the given sequence and
-    taxon id. If there are no active xrefs then this will switch to use the
-    deleted xrefs.
-
-    Parameters
-    ----------
-    sequence : Rna
-        The sequence to get xrefs for
-
-    taxid : int, None
-        The taxon id to use. None indicates no species constraint.
-
-    Returns
-    -------
-    xrefs : iterable
-        The collection of xrefs that are valid for the sequence and taxid.
-    """
-
-    xrefs = sequence.xrefs.filter(deleted='N')
-    if taxid is not None:
-        xrefs = xrefs.filter(taxid=taxid)
-
-    if not xrefs.exists():
-        xrefs = sequence.xrefs.filter()
-        if taxid is not None:
-            xrefs = xrefs.filter(taxid=taxid)
-
-    return xrefs
-
-
-def get_description(sequence, taxid=None):
+def get_description(sequence, xrefs, taxid=None):
     """
     Compute a description for the given sequence and optional taxon id. This
     function will use the rule scoring if possible, otherwise it will fall back
@@ -84,7 +52,6 @@ def get_description(sequence, taxid=None):
     """
 
     logger.debug("Computing description_of for %s (%s)", sequence.upi, taxid)
-    xrefs = find_valid_xrefs(sequence, taxid=taxid)
     if not _rm.can_apply(sequence, xrefs, taxid):
         logger.debug("Cannot apply rule style, using score")
         return _sm.get_description(sequence, taxid=taxid)
@@ -95,7 +62,7 @@ def get_description(sequence, taxid=None):
     return name or _sm.get_description(sequence, taxid=taxid)
 
 
-def get_rna_type(sequence, taxid=None):
+def get_rna_type(sequence, xrefs, taxid=None):
     """
     Compute the rna_type of the given sequence. An rna_type is an entry like
     'rRNA', or 'other'. Ideally these should all be part of a controlled
@@ -129,8 +96,7 @@ def get_rna_type(sequence, taxid=None):
     rna_type : str
         The rna_type for this sequence.
     """
-    xrefs = find_valid_xrefs(sequence, taxid=taxid)
     return _rm.determine_rna_type_for(sequence, xrefs)
 
 
-__all__ = ['description_of', 'rna_type_of']
+__all__ = [get_description.__name__, get_rna_type.__name__]

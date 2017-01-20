@@ -373,7 +373,37 @@ class Rna(CachingMixin, models.Model):
             except ObjectDoesNotExist:
                 pass
 
-        return desc.get_description(self, taxid=taxid)
+        xrefs = self.find_valid_xrefs(taxid=taxid)
+        return desc.get_description(self, xrefs, taxid=taxid)
+
+    def find_valid_xrefs(self, taxid=None):
+        """
+        Determine the valid xrefs for this sequence and taxid. This will
+        attempt to get all active (not deleted) xrefs for the given sequence
+        and taxon id. If there are no active xrefs then this will switch to use
+        the deleted xrefs.
+
+        taxid : int, None
+            The taxon id to use. None indicates no species constraint,
+            otherwise the taxid is the taxid of the xref to limit to.
+
+        Returns
+        -------
+        xrefs : queryset
+            The collection of xrefs that are valid for the sequence and taxid.
+        """
+
+        base = Xref.objects.filter(upi=self.upi)
+        xrefs = base.filter(deleted='N')
+        if taxid is not None:
+            xrefs = xrefs.filter(taxid=taxid)
+
+        if not xrefs.exists():
+            xrefs = base
+            if taxid is not None:
+                xrefs = xrefs.filter(taxid=taxid)
+
+        return xrefs.select_related('accession', 'db')
 
 
 class RnaPrecomputed(models.Model):

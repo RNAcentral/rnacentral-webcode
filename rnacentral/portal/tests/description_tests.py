@@ -13,15 +13,15 @@ class GenericDescriptionTest(SimpleTestCase):
 
     def assertDescriptionIs(self, description, upi, taxid=None):
         seq = Rna.objects.get(upi=upi)
-        with QueryBatchLimit(write=0, read=5, other=2):
-            with TimeLimit(total=2):
+        with QueryBatchLimit(write=0, read=10):
+            with TimeLimit(total=5):
                 computed = seq.get_description(taxid=taxid, recompute=True)
         self.assertEquals(description, computed)
 
     def assertDescriptionContains(self, short, upi, taxid=None):
         seq = Rna.objects.get(upi=upi)
-        with QueryBatchLimit(write=0, read=5, other=2):
-            with TimeLimit(total=2):
+        with QueryBatchLimit(write=0, read=10):
+            with TimeLimit(total=5):
                 description = seq.get_description(taxid=taxid, recompute=True)
         self.assertIn(short, description)
 
@@ -225,4 +225,4 @@ class LargeDataTests(GenericDescriptionTest):
         """This is a stress test to see if this still performs quickly given a
         sequence with many ~10k xrefs
         """
-        self.assertDescriptionIs('tRNA from 3414 species', 'URS0000181AEC')
+        self.assertDescriptionIs('tRNA from 3413 species', 'URS0000181AEC')
