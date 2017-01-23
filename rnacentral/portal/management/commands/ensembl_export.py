@@ -162,7 +162,7 @@ class Exporter(object):
             yield {
                 'rnacentral_id': '%s_%s' % (rna.upi, taxid),
                 'description': rna.get_description(taxid=taxid),
-                'sequence': rna.seq_short or rna.seq,
+                'sequence': rna.seq_short or rna.seq_long,
                 'md5': rna.md5,
                 'rna_type': rna.get_rna_type(taxid=taxid),
                 'taxon_id': taxid,
