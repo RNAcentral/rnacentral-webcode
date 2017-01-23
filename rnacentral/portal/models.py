@@ -329,7 +329,7 @@ class Rna(CachingMixin, models.Model):
                 rna_type = queryset.get(upi=self.upi).rna_type
                 if rna_type is None:
                     return desc.get_rna_type(self, taxid=taxid)
-                return rna_type.split('/')
+                return rna_type
             except ObjectDoesNotExist:
                 pass
 
