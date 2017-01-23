@@ -1,8 +1,31 @@
 angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', '$location', function($scope, $location) {
-    $scope.genome = genome;
-    $scope.chromosome = chromosome;
-    $scope.start = start;
-    $scope.end = end;
+
+    /* Constructor */
+
+    $scope.browser = {};
+    $scope.browser.genome = genome;
+    $scope.browser.chromosome = chromosome;
+    $scope.browser.start = start;
+    $scope.browser.end = end;
+
+    // handle form submit button
+    $('#genome-display').on('click', showGenome);
+
+    // handle copy to clipboard button
+    new Clipboard('#copy-genome-location', {
+        "text": function() {
+            return document.location.href;
+        }
+    });
+
+    showGenome();
+
+    // Listen to global browser object.
+    // Note: third argument (true) means that we require objectEquality, not just referentialEquality
+    $scope.$watch(browser, function(newValue, oldValue, scope) { scope.browser = newValue; }, true);
+
+
+    /* Method definitions */
 
     /**
      * Show genome location using Genoverse.
@@ -15,16 +38,11 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
         delete window.browser;
 
         // get species name with whitespaces replaced with hyphens, handle dog as a special case
-        var species_name;
-        if ($scope.genome.species == 'Canis familiaris') {
-            species_name = 'Canis lupus familiaris';
-        }
-        else {
-            species_name = species.val();
-        }
-        species_name = species_name.replace(/ /g,'_').toLowerCase();
+        var species = $scope.browser.genome.species;
+        if (species == 'Canis familiaris') { species = 'Canis lupus familiaris'; }
+        species = species.replace(/ /g,'_').toLowerCase();
 
-        // set all data attributes
+        // set all data attributes and initialize plugin by clicking invisible button
         $('<button class="genoverse-xref"></button>').
             hide().
             appendTo('.genoverse-wrap').
@@ -32,41 +50,10 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
             data('genomic-start', $scope.start).
             data('genomic-end', $scope.end).
             data('strand', 1).
-            data('species', species_name).
+            data('species', species).
             data('description', '').
-            data('species-label', $scope.genome.species).
-            click();
-    }
-
-    var show_genome_button = $('#genome-display');
-    var copy_genome_location_button = $('#copy_genome_location');
-    var location = $('#genomic-location');
-
-    show_genome_button.on('click', showGenome).click();
-    var locationClipboard = new Clipboard('#copy-genome-location', {
-        "text": function() {
-            return document.location.href;
-        }
-    });
-
-    species.on('change', loadExampleLocation);
-
-    observerCallback = function(newValue, oldValue, scope) {
-        scope.browser = newValue;
-    };
-
-    // note that third argument (true) requires objectEquality, not just referentialEquality
-    $scope.$watch(browser, observerCallback, true);
-
-    /**
-     * Display example genomic location when species are changed.
-     */
-    function loadExampleLocation(){
-        var option = this.options[this.selectedIndex];
-        chromosome.val();
-        start.val(option.getAttribute("data-example-start"));
-        end.val(option.getAttribute("data-example-end"));
-        show_genome_button.click();
+            data('species-label', $scope.browser.genome.species).
+            click(); // this initializes plugin
     }
 
     /**
@@ -130,8 +117,8 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
         // update location string right above genoverse
         var species = $('#genomic-species-select');
         text = '<em>' + species.val() + '</em>' + ' ' + browser.chr + ':' + browser.start + '-' + browser.end;
-        if (location.html() != text) {
-            location.html(text);
+        if ($('#genomic-location').html() != text) {
+            $('#genomic-location').html(text);
         }
 
         // update get param in browser, if they changed

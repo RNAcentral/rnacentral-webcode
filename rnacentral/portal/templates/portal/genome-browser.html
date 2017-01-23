@@ -47,7 +47,7 @@ limitations under the License.
         <div class="row">
             <div class="col-lg-3 col-md-3 col-sm-12">
                 <label for="genomic-species-select">Species</label>
-                <select id="genomic-species-select" class="form-control" ng-options="genome.species for genome in genomes" ng-model="genome">
+                <select id="genomic-species-select" class="form-control" ng-change="showGenome()" ng-options="genome.species for genome in genomes" ng-model="genome">
                 </select>
             </div>
             <div class="ol-lg-2 col-md-2 col-sm-4">
