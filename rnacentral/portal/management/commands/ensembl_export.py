@@ -12,17 +12,28 @@ limitations under the License.
 """
 
 import os
+import operator as op
+import itertools as it
 import simplejson as json
 
 from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 
-from portal.models import Rna
 from portal.models import Xref
 
 
-TRUSTED_DB = set()
+TRUSTED_DB = set([
+    'GTRNADB',
+    'MODOMICS',
+    'LNCRNADB',
+    'PDBE',
+    'TAIR',
+    'POMBASE',
+    'DICTYBASE',
+    'WORMBASE',
+    'SGD',
+])
 
 
 class Exporter(object):
@@ -50,8 +61,8 @@ class Exporter(object):
 
         return Xref.objects.\
             filter(upi=rna.upi).\
-            filter(deleted='N')
-            # filter(db_id__in=TRUSTED_DB)
+            filter(deleted='N').\
+            filter(db__descr__in=TRUSTED_DB)
 
     def find_xref_entries(self, taxid, xrefs):
         """
@@ -79,19 +90,56 @@ class Exporter(object):
                 continue
             data.append({
                 'id': xref.accession.external_id,
-                'database': xref.db.descr,
+                'database': xref.db.display_name,
+            })
+        return data
+
+    def format_xrefs(self, xrefs):
+        """
+        Find all xrefs that come from the given taxon id, and format them as
+        needed for export.
+
+        Parameters
+        ----------
+        taxid : int
+            The taxon id
+        xrefs : iterable
+            An iterable of Xref objects.
+
+        Yields
+        ------
+        entry : dict
+            A dictonary structured for export. This will contain an 'id' (the
+            external id for the entry) and 'database' (the name of the
+            database) keys.
+        """
+
+        data = []
+        for xref in xrefs:
+            data.append({
+                'id': xref.accession.external_id,
+                'database': xref.db.display_name,
             })
         return data
 
     def get_data(self):
         """Get all data. If this Exporter is running as a test it will fetch
-        the test data, otherwise it will fetch all Rna sequences.
+        the test data, otherwise it will fetch all Rna sequences. This will
+        return an iterable of iterable, where each iterable consists of all
+        xrefs that should be output for each sequence.
         """
 
-        all_rna = Rna.objects.all()
+        xrefs = Xref.objects.\
+            filter(db__descr__in=TRUSTED_DB, deleted='N').\
+            filter(accession__external_id__isnull=False).\
+            select_related('upi', 'accession').\
+            order_by('upi', 'taxid')
+
         if self.test:
-            all_rna = all_rna[0:100]
-        return all_rna
+            xrefs = xrefs[0:100]
+
+        grouped = it.groupby(xrefs, lambda x: (x.upi, x.taxid))
+        return it.imap(op.itemgetter(1), grouped)
 
     def structure_data(self, entries):
         """
@@ -107,23 +155,19 @@ class Exporter(object):
         This will yield dictonaries suitable for export. Each dict will have
         """
 
-        for rna in entries:
-            xrefs = self.get_high_quality_xrefs(rna)
-            taxids = {x.taxid for x in xrefs}
-            for taxid in taxids:
-                current_xrefs = self.find_xref_entries(taxid, xrefs)
-                if not current_xrefs:
-                    continue
-
-                yield {
-                    'rnacentral_id': '%s_%s' % (rna.upi, taxid),
-                    'description': rna.get_description(taxid=taxid),
-                    'sequence': rna.seq_short or rna.seq,
-                    'md5': rna.md5,
-                    'rna_type': rna.get_rna_type(taxid=taxid),
-                    'taxon_id': taxid,
-                    'xrefs': current_xrefs,
-                }
+        for xrefs in entries:
+            xrefs = list(xrefs)
+            rna = xrefs[0].upi
+            taxid = xrefs[0].taxid
+            yield {
+                'rnacentral_id': '%s_%s' % (rna.upi, taxid),
+                'description': rna.get_description(taxid=taxid),
+                'sequence': rna.seq_short or rna.seq,
+                'md5': rna.md5,
+                'rna_type': rna.get_rna_type(taxid=taxid),
+                'taxon_id': taxid,
+                'xrefs': self.format_xrefs(xrefs),
+            }
 
     def write(self, data, handle):
         """
@@ -137,6 +181,7 @@ class Exporter(object):
         The main entry point for export. This will fetch the requested data and
         export it as JSON to the specified directory.
         """
+
         data = self.get_data()
         structured = self.structure_data(data)
         with open(self.filepath, 'wb') as out:
