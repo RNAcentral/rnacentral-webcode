@@ -24,13 +24,13 @@ limitations under the License.
 
 {% block content %}
 
-<script type="javascript">
+<script type="text/javascript">
     // global variables, exported from django context
-    genomes = {{ genomes }};
-    genome = {{ genome }};
-    chromosome = {{ chromosome }};
-    start = {{ start }};
-    end = {{ end }};
+    genomes = {{ genomes | safe }}; // JSON
+    genome = {{ genome | safe }}; // JSON
+    chromosome = "{{ chromosome | safe }}"; // String
+    start = {{ start | safe }}; // Number
+    end = {{ end | safe }}; // Number
 </script>
 
 <div class="row" ng-controller="GenoverseGenomeBrowser">
