@@ -16,12 +16,10 @@ limitations under the License.
 angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', '$location', function ($scope, $location) {
 
     /* Constructor */
-
-    $scope.browser = {};
-    $scope.browser.genome = genome;
-    $scope.browser.chromosome = chromosome;
-    $scope.browser.start = start;
-    $scope.browser.end = end;
+    $scope.genome = genome;
+    $scope.chromosome = chromosome;
+    $scope.start = start;
+    $scope.end = end;
 
     // handle form submit button
     $('#genome-display').on('click', showGenome);
@@ -33,13 +31,6 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
         }
     });
 
-    showGenome();
-
-    // Listen to global browser object.
-    // Note: third argument (true) means that we require objectEquality, not just referentialEquality
-    $scope.$watch(browser, function (newValue, oldValue, scope) { scope.browser = newValue; }, true);
-
-
     /* Method definitions */
 
     /**
@@ -50,15 +41,24 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
     function showGenome() {
         // delete previous instance of browser completely
         $('.genoverse-xref').remove();
-        delete window.browser;
 
         // get species name with whitespaces replaced with hyphens, handle dog as a special case
-        var species = $scope.browser.genome.species;
+        var species = $scope.genome.species;
         if (species == 'Canis familiaris') { species = 'Canis lupus familiaris'; }
         species = species.replace(/ /g, '_').toLowerCase();
 
         // set all data attributes and initialize plugin by clicking invisible button
-        $('<button class="genoverse-xref"></button>').hide().appendTo('.genoverse-wrap').data('chromosome', $scope.chromosome).data('genomic-start', $scope.start).data('genomic-end', $scope.end).data('strand', 1).data('species', species).data('description', '').data('species-label', $scope.browser.genome.species).click(); // this initializes plugin
+        $('<button class="genoverse-xref"></button>')
+            .hide()
+            .appendTo('.genoverse-wrap')
+            .data('chromosome', $scope.chromosome)
+            .data('genomic-start', $scope.start)
+            .data('genomic-end', $scope.end)
+            .data('strand', 1)
+            .data('species', species)
+            .data('description', '')
+            .data('species-label', $scope.browser.genome.species)
+            .click(); // this initializes plugin
     }
 
     /**
