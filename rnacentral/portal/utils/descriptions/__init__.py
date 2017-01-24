@@ -1,12 +1,4 @@
 """
-A module to help with selecting the descriptions of various RNA molecules. The
-module exports a single function, description_of, which will determine the
-description of a given sequence. The method chooses from the two possible
-methods to create a description.
-
-The actual implementation of the two methods are in: rule_method and
-score_method.
-
 Copyright [2009-2017] EMBL-European Bioinformatics Institute
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,6 +15,16 @@ import logging
 
 from . import rule_method as _rm
 from . import score_method as _sm
+
+__doc__ = """
+A module to help with selecting the descriptions of various RNA molecules. The
+module exports a single function, description_of, which will determine the
+description of a given sequence. The method chooses from the two possible
+methods to create a description.
+
+The actual implementation of the two methods are in: rule_method and
+score_method.
+"""
 
 logger = logging.getLogger(__name__)
 
