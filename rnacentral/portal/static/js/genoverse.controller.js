@@ -1,4 +1,19 @@
-angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', '$location', function($scope, $location) {
+/*
+Copyright [2009-2017] EMBL-European Bioinformatics Institute
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+(function() {
+
+angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', '$location', function ($scope, $location) {
 
     /* Constructor */
 
@@ -13,7 +28,7 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
 
     // handle copy to clipboard button
     new Clipboard('#copy-genome-location', {
-        "text": function() {
+        "text": function () {
             return document.location.href;
         }
     });
@@ -22,7 +37,7 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
 
     // Listen to global browser object.
     // Note: third argument (true) means that we require objectEquality, not just referentialEquality
-    $scope.$watch(browser, function(newValue, oldValue, scope) { scope.browser = newValue; }, true);
+    $scope.$watch(browser, function (newValue, oldValue, scope) { scope.browser = newValue; }, true);
 
 
     /* Method definitions */
@@ -40,26 +55,16 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
         // get species name with whitespaces replaced with hyphens, handle dog as a special case
         var species = $scope.browser.genome.species;
         if (species == 'Canis familiaris') { species = 'Canis lupus familiaris'; }
-        species = species.replace(/ /g,'_').toLowerCase();
+        species = species.replace(/ /g, '_').toLowerCase();
 
         // set all data attributes and initialize plugin by clicking invisible button
-        $('<button class="genoverse-xref"></button>').
-            hide().
-            appendTo('.genoverse-wrap').
-            data('chromosome', $scope.chromosome).
-            data('genomic-start', $scope.start).
-            data('genomic-end', $scope.end).
-            data('strand', 1).
-            data('species', species).
-            data('description', '').
-            data('species-label', $scope.browser.genome.species).
-            click(); // this initializes plugin
+        $('<button class="genoverse-xref"></button>').hide().appendTo('.genoverse-wrap').data('chromosome', $scope.chromosome).data('genomic-start', $scope.start).data('genomic-end', $scope.end).data('strand', 1).data('species', species).data('description', '').data('species-label', $scope.browser.genome.species).click(); // this initializes plugin
     }
 
     /**
-    * Show Ensembl and UCSC links for the currently displayed region.
-    */
-    function updateExternalLinks(){
+     * Show Ensembl and UCSC links for the currently displayed region.
+     */
+    function updateExternalLinks() {
         var option = species.find('option:selected'),
             division = option.data('division'),
             ucsc_db = option.data('ucsc-db'),
@@ -83,7 +88,7 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
         }
 
         // update Ensembl link
-        url = domain + species.val().replace(/ /g,'_') + '/Location/View?r=' + browser.chr + ':' + browser.start + '-' + browser.end;
+        url = domain + species.val().replace(/ /g, '_') + '/Location/View?r=' + browser.chr + ':' + browser.start + '-' + browser.end;
         $('#ensembl-link').attr('href', url).text(division);
 
         // update UCSC link if UCSC assembly is available
@@ -94,7 +99,7 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
             else {
                 ucsc_chr = browser.chr;
             }
-            url = 'http://genome.ucsc.edu/cgi-bin/hgTracks?db='+ ucsc_db +'&position=' + ucsc_chr + '%3A' + browser.start + '-' + browser.end;
+            url = 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + ucsc_db + '&position=' + ucsc_chr + '%3A' + browser.start + '-' + browser.end;
             ucsc.show().find('a').attr('href', url);
         }
         else {
@@ -131,7 +136,7 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
         }
 
         // update url if species changed
-        var species = species.val().replace(/ /g,'-');
+        var species = species.val().replace(/ /g, '-');
 
         var pathname = document.location.pathname;
         var hasTrailingSlash = false;
@@ -147,15 +152,19 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
         }
         else { // if url is like /genome-browser/homo-sapiens
             var pathElements = pathname.split("/");
-            var urlBeginning = pathElements.slice(0, pathElements.length-1);
+            var urlBeginning = pathElements.slice(0, pathElements.length - 1);
             var urlEnding = pathElements.slice(-1)[0];
 
             if (urlEnding != species) {
                 urlBeginning.push(species);
                 var newPathname = urlBeginning.join("/");
-                if (hasTrailingSlash) { newPathname = newPathname + "/"; }
+                if (hasTrailingSlash) {
+                    newPathname = newPathname + "/";
+                }
                 history.pushState({}, document.title, newPathname + "?" + searchParams);
             }
         }
     }
 }]);
+
+})();
