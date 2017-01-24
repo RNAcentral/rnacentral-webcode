@@ -319,8 +319,8 @@ class Rna(CachingMixin, models.Model):
 
         Returns
         -------
-        rna_type : set
-            The set of rna types, computed for this sequence.
+        rna_type : str
+            The rna type computed for this sequence and possibly taxon id.
         """
 
         if not recompute:
