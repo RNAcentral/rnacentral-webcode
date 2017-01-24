@@ -14,13 +14,22 @@ limitations under the License.
 import os
 import operator as op
 import itertools as it
-import simplejson as json
+import collections as coll
 
 from optparse import make_option
+
+from rest_framework import serializers
+from rest_framework.renderers import JSONRenderer
 
 from django.core.management.base import BaseCommand, CommandError
 
 from portal.models import Xref
+
+__doc__ = """
+This will export all RNA sequences in the database and provide xref information
+for a few selected databases. The database are not already part of ENSEMBL. This
+will produce a simple JSON data structure for import into other databases.
+"""
 
 
 TRUSTED_DB = set([
@@ -34,6 +43,90 @@ TRUSTED_DB = set([
     'WORMBASE',
     'SGD',
 ])
+"""
+This is the set of descr names for databases that we will provide xref entries
+for.
+"""
+
+
+class SimpleXref(coll.namedtuple('SimpleXref',
+                                 ['external_id', 'optional_id', 'database'])):
+    """
+    Similar to SimpleSequence, this is just a basic container that is between
+    the model and the serializer for this data. It contains some minimal logic
+    for fields to write that are derived from the basic model.
+    """
+
+    @classmethod
+    def build(cls, xref):
+        return cls(
+            external_id=xref.accession.external_id,
+            optional_id=xref.accession.optional_id,
+            database=xref.db.display_name,
+        )
+
+    @property
+    def id(self):
+        if self.database == 'PDBe':
+            return '%s_%s' % (self.external_id, self.optional_id)
+        return self.external_id
+
+
+class SimpleSequence(coll.namedtuple('SimpleSequence',
+                                     ['upi', 'taxon_id', 'description',
+                                      'rna_type', 'seq_short', 'seq_long',
+                                      'md5', 'xrefs'])):
+    """
+    This class represents a species specific entry in the RNA table. It
+    serves to hold data that does not fit in the model (species specific
+    description and rna type) as well as contain the tiny bit of logic for
+    generating the needed fields for serializiation.
+    """
+
+    @classmethod
+    def build(cls, xrefs):
+        """
+        Create a SimpleSequence given a list of xrefs for the sequence. This
+        will create a SimpleSequence which may or may not have any xrefs. Only
+        xrefs that come from the databases described in TRUSTED_DB will be used
+        for the xrefs.
+        """
+
+        rna = xrefs[0].upi
+        taxid = xrefs[0].taxid
+        return cls(
+            upi=rna.upi,
+            taxon_id=taxid,
+            description=rna.get_description(taxid=taxid),
+            rna_type=rna.get_rna_type(taxid=taxid),
+            seq_short=rna.seq_short,
+            seq_long=rna.seq_long,
+            md5=rna.md5,
+            xrefs=[SimpleXref.build(x) for x in xrefs if x.db.descr in TRUSTED_DB],
+        )
+
+    @property
+    def rnacentral_id(self):
+        return '%s_%s' % (self.upi, self.taxon_id)
+
+    @property
+    def sequence(self):
+        return self.seq_short or self.seq_long
+
+
+class XrefSerializer(serializers.Serializer):
+    id = serializers.CharField()
+    database = serializers.CharField()
+
+
+class RnaSerializer(serializers.Serializer):
+    rnacentral_id = serializers.CharField()
+    description = serializers.CharField()
+    sequence = serializers.CharField()
+    md5 = serializers.CharField()
+    rna_type = serializers.CharField()
+    taxon_id = serializers.IntegerField()
+    xrefs = XrefSerializer(many=True)
 
 
 class Exporter(object):
@@ -43,138 +136,43 @@ class Exporter(object):
         self.filename = 'ensembl-xrefs.json'
         self.filepath = os.path.join(self.destination, self.filename)
 
-    def get_high_quality_xrefs(self, rna):
+    def get_data(self, **kwargs):
         """
-        Gets the high quality xrefs for the given sequence. A high quality
-        xref is one that comes from a database in TRUSTED_DB and is not
-        deleted.
-
-        Parameters
-        ----------
-        rna : Rna
-            The sequence to fetch the high quality xrefs for.
-
-        Returns
-        -------
-        A query set of all high quality xrefs.
-        """
-
-        return Xref.objects.\
-            filter(upi=rna.upi).\
-            filter(deleted='N').\
-            filter(db__descr__in=TRUSTED_DB)
-
-    def find_xref_entries(self, taxid, xrefs):
-        """
-        Find all xrefs that come from the given taxon id, and format them as
-        needed for export.
-
-        Parameters
-        ----------
-        taxid : int
-            The taxon id
-        xrefs : iterable
-            An iterable of Xref objects.
-
-        Yields
-        ------
-        entry : dict
-            A dictonary structured for export. This will contain an 'id' (the
-            external id for the entry) and 'database' (the name of the
-            database) keys.
-        """
-
-        data = []
-        for xref in xrefs:
-            if xref.taxid != taxid or not xref.accession.external_id:
-                continue
-            data.append({
-                'id': xref.accession.external_id,
-                'database': xref.db.display_name,
-            })
-        return data
-
-    def format_xrefs(self, xrefs):
-        """
-        Find all xrefs that come from the given taxon id, and format them as
-        needed for export.
-
-        Parameters
-        ----------
-        taxid : int
-            The taxon id
-        xrefs : iterable
-            An iterable of Xref objects.
-
-        Yields
-        ------
-        entry : dict
-            A dictonary structured for export. This will contain an 'id' (the
-            external id for the entry) and 'database' (the name of the
-            database) keys.
-        """
-
-        data = []
-        for xref in xrefs:
-            data.append({
-                'id': xref.accession.external_id,
-                'database': xref.db.display_name,
-            })
-        return data
-
-    def get_data(self):
-        """Get all data. If this Exporter is running as a test it will fetch
+        Get all data. If this Exporter is running as a test it will fetch
         the test data, otherwise it will fetch all Rna sequences. This will
         return an iterable of iterable, where each iterable consists of all
         xrefs that should be output for each sequence.
+
+        The given kwargs will be applied to the query and are generally useful
+        for testing.
         """
 
+        grouping = ('upi', 'taxid')
         xrefs = Xref.objects.\
-            filter(db__descr__in=TRUSTED_DB, deleted='N').\
-            filter(accession__external_id__isnull=False).\
+            filter(deleted='N').\
+            filter(accession__external_id__isnull=False)
+
+        if kwargs:
+            xrefs = xrefs.filter(**kwargs)
+
+        xrefs = xrefs.\
             select_related('upi', 'accession').\
-            order_by('upi', 'taxid')
+            order_by(*grouping)
 
         if self.test:
             xrefs = xrefs[0:100]
 
-        grouped = it.groupby(xrefs, lambda x: (x.upi, x.taxid))
+        fn = op.attrgetter(*grouping)
+        grouped = it.groupby(xrefs, fn)
         return it.imap(op.itemgetter(1), grouped)
 
-    def structure_data(self, entries):
+    def structure_data(self, xrefs):
         """
-        Structure the given data for export to ENSEMBL.
-
-        Parameters
-        ----------
-        entries : iterable
-            An iterable of Rna objects to export.
-
-        Yields
-        ------
-        This will yield dictonaries suitable for export. Each dict will have
+        This will restructure the data from `get_data` from an iterable of
+        iterables to an iterable of SimpleSequence objects.
         """
 
-        for xrefs in entries:
-            xrefs = list(xrefs)
-            rna = xrefs[0].upi
-            taxid = xrefs[0].taxid
-            yield {
-                'rnacentral_id': '%s_%s' % (rna.upi, taxid),
-                'description': rna.get_description(taxid=taxid),
-                'sequence': rna.seq_short or rna.seq_long,
-                'md5': rna.md5,
-                'rna_type': rna.get_rna_type(taxid=taxid),
-                'taxon_id': taxid,
-                'xrefs': self.format_xrefs(xrefs),
-            }
-
-    def write(self, data, handle):
-        """
-        Actually write JSON formatted data. This is just a call to json.dump
-        but setting the required flag so the iterable is treated as an array.
-        """
-        json.dump(data, handle, iterable_as_array=True)
+        return SimpleSequence.build(list(xrefs))
 
     def __call__(self):
         """
@@ -182,10 +180,11 @@ class Exporter(object):
         export it as JSON to the specified directory.
         """
 
-        data = self.get_data()
-        structured = self.structure_data(data)
+        structured = it.imap(self.structure_data, self.get_data())
+        serializer = RnaSerializer(structured, many=True)
         with open(self.filepath, 'wb') as out:
-            self.write(structured, out)
+            json = JSONRenderer().render(serializer.data)
+            out.write(json)
 
 
 class Command(BaseCommand):
