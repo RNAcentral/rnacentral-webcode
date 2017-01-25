@@ -130,9 +130,12 @@ class RnaSerializer(serializers.Serializer):
 
 
 class Exporter(object):
-    def __init__(self, destination=None, test=False, **kwargs):
+    def __init__(self, destination=None, test=False, min=None, max=None,
+                 **kwargs):
         self.destination = destination
         self.test = test
+        self.min = min
+        self.max = max
         self.filename = 'ensembl-xrefs.json'
         self.filepath = os.path.join(self.destination, self.filename)
 
@@ -154,6 +157,12 @@ class Exporter(object):
 
         if kwargs:
             xrefs = xrefs.filter(**kwargs)
+
+        if self.min is not None:
+            xrefs = xrefs.filter(upi__id__gt=self.min)
+
+        if self.max is not None:
+            xrefs = xrefs.filter(upi__id__lte=self.max)
 
         xrefs = xrefs.\
             select_related('upi', 'accession').\
@@ -194,6 +203,17 @@ class Command(BaseCommand):
                     dest='destination',
                     help='[Required] Full path to the output directory'),
 
+        make_option('--max',
+                    dest='max',
+                    type='int',
+                    help='[Required] Maximum RNA id to output'),
+
+        make_option('--min',
+                    dest='min',
+                    type='int',
+                    help='[Required] Minimum RNA id to output'),
+
+
         make_option('-t', '--test',
                     action='store_true',
                     dest='test',
@@ -205,4 +225,12 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if not options['destination']:
             raise CommandError('Please specify --destination')
+        if options['test']:
+            if options['min'] or options['max']:
+                raise CommandError("Cannot specify test with --min or --max")
+        else:
+            if not options['min']:
+                raise CommandError('Please specify --min')
+            if not options['max']:
+                raise CommandError('Please specify --max')
         Exporter(**options)()
