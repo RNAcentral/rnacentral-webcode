@@ -28,7 +28,7 @@ underscore.factory('_', function() {
 /**
  * Create RNAcentral app.
  */
-angular.module('rnacentralApp', ['chieffancypants.loadingBar', 'underscore']);
+angular.module('rnacentralApp', ['chieffancypants.loadingBar', 'underscore', 'Genoverse']);
 
 // hide spinning wheel
 angular.module('rnacentralApp').config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {

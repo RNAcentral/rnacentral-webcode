@@ -16,13 +16,14 @@ limitations under the License.
 angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', '$location', function ($scope, $location) {
 
     /* Constructor */
+
     $scope.genome = genome;
     $scope.chromosome = chromosome;
     $scope.start = start;
     $scope.end = end;
-
-    // handle form submit button
-    $('#genome-display').on('click', showGenome);
+    $scope.strand = 1;
+    $scope.description = '';
+    $scope.browser = null;
 
     // handle copy to clipboard button
     new Clipboard('#copy-genome-location', {
@@ -38,28 +39,28 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
      * Create a hidden button with data attributes and trigger the click event.
      * Update coordinates in the user interface.
      */
-    function showGenome() {
-        // delete previous instance of browser completely
-        $('.genoverse-xref').remove();
+     $scope.showGenome = function() {
+        // // delete previous instance of browser completely
+        // $('.genoverse-xref').remove();
 
         // get species name with whitespaces replaced with hyphens, handle dog as a special case
         var species = $scope.genome.species;
         if (species == 'Canis familiaris') { species = 'Canis lupus familiaris'; }
         species = species.replace(/ /g, '_').toLowerCase();
 
-        // set all data attributes and initialize plugin by clicking invisible button
-        $('<button class="genoverse-xref"></button>')
-            .hide()
-            .appendTo('.genoverse-wrap')
-            .data('chromosome', $scope.chromosome)
-            .data('genomic-start', $scope.start)
-            .data('genomic-end', $scope.end)
-            .data('strand', 1)
-            .data('species', species)
-            .data('description', '')
-            .data('species-label', $scope.browser.genome.species)
-            .click(); // this initializes plugin
-    }
+        // // set all data attributes and initialize plugin by clicking invisible button
+        // $('<button class="genoverse-xref"></button>')
+        //     .hide()
+        //     .appendTo('.genoverse-wrap')
+        //     .data('chromosome', $scope.chromosome)
+        //     .data('genomic-start', $scope.start)
+        //     .data('genomic-end', $scope.end)
+        //     .data('strand', 1)
+        //     .data('species', species)
+        //     .data('description', '')
+        //     .data('species-label', $scope.genome.species)
+        //     .click(); // this initializes plugin
+    };
 
     /**
      * Show Ensembl and UCSC links for the currently displayed region.
