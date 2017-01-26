@@ -263,6 +263,21 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                 }
 
                 /**
+                 * Karyotype is supported only for a limited number of species,
+                 * so a placeholder div is used to replace the karyotype div
+                 * to keep the display consistent.
+                 */
+                function addKaryotypePlaceholder() {
+                    if (!isKaryotypeAvailable(urlencodeSpecies(scope.genome.species))) {
+                        $(".gv_wrapper").prepend(
+                            "<div class='genoverse_karyotype_placeholder'>" +
+                            "  <p>Karyotype display is not available</p>" +
+                            "</div>"
+                        );
+                    }
+                }
+
+                /**
                  * Determine if karyotype information is available for this species.
                  */
                 function isKaryotypeAvailable(species) {
@@ -287,21 +302,6 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                         chromosomes.push(key);
                     }
                     return chromosomes.indexOf(scope.chromosome.toString())
-                }
-
-                /**
-                 * Karyotype is supported only for a limited number of species,
-                 * so a placeholder div is used to replace the karyotype div
-                 * to keep the display consistent.
-                 */
-                function addKaryotypePlaceholder() {
-                    if (!isKaryotypeAvailable(urlencodeSpecies(scope.genome.species))) {
-                        $(".gv_wrapper").prepend(
-                            "<div class='genoverse_karyotype_placeholder'>" +
-                            "  <p>Karyotype display is not available</p>" +
-                            "</div>"
-                        );
-                    }
                 }
 
                 /**
