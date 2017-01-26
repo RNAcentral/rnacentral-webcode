@@ -18,10 +18,37 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                 "<div id='genoverse'></div>" +
                 "</div>",
             link: function(scope, element, attrs) {
+                showGenoverseSectionHeader();
+                showGenoverseSectionInfo();
                 // (re-)create Genoverse object
                 scope.browser = new Genoverse(getGenoverseConfigObject());
                 addKaryotypePlaceholder();
                 registerGenoverseEvents();
+
+                /**
+                 * Display Genoverse section header.
+                 */
+                function showGenoverseSectionHeader() {
+                    element.find('.genoverse-wrap h2').show();
+                }
+
+                /**
+                 * Display xref description in Genoverse section.
+                 */
+                function showGenoverseSectionInfo() {
+                    // display xref coordinates
+                    var text = '<em>' +
+                        scope.genome.species + ' ' +
+                        scope.chromosome + ':' +
+                        numberWithCommas(scope.start) + '-' +
+                        numberWithCommas(scope.end) + ':' +
+                        scope.strand +
+                        '</em>';
+                    element.find('#genoverse-coordinates').html('').hide().html(text).fadeIn('slow');
+                    // display xref description
+                    text = '<p>' + scope.description + '</p>';
+                    element.find('#genoverse-description').html('').hide().html(text).fadeIn('slow');
+                }
 
                 /**
                  * Configure Genoverse initialization object.
@@ -226,7 +253,7 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                  * Determine whether karyotype should be displayed.
                  */
                 function configureKaryotypeDisplay(genoverseConfig) {
-                    if (is_karyotype_available()) {
+                    if (is_karyotype_available(scope.genome.species)) {
                         genoverseConfig.plugins.push('karyotype');
                         genoverseConfig.genome = 'grch38'; // determine dynamically when more karyotypes are available
                     } else {
@@ -243,6 +270,7 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                 }
 
                 function speciesSupported(species) {
+                    console.log("species = ", species);
                     var supportedSpecies = ["homo_sapiens"]; // TODO: support more species
                     return supportedSpecies.indexOf(species) !== -1;
                 }
@@ -284,35 +312,10 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                     scope.browser.on({
                         afterSetRange: function () {
                             setTimeout(function() {
-                                $('.genoverse-wrap .resizer').click();
+                                element.find('.genoverse-wrap .resizer').click();
                             }, 1000);
                         }
                     });
-                }
-
-                /**
-                 * Display Genoverse section header.
-                 */
-                function showGenoverseSectionHeader() {
-                    $('.genoverse-wrap h2').show();
-                }
-
-                /**
-                 * Display xref description in Genoverse section.
-                 */
-                function showGenoverseSectionInfo() {
-                    // display xref coordinates
-                    var text = '<em>' +
-                        scope.genome.species + ' ' +
-                        scope.chromosome + ':' +
-                        numberWithCommas(scope.start) + '-' +
-                        numberWithCommas(scope.end) + ':' +
-                        scope.strand +
-                        '</em>';
-                    $('#genoverse-coordinates').html('').hide().html(text).fadeIn('slow');
-                    // display xref description
-                    text = '<p>' + scope.description + '</p>';
-                    $('#genoverse-description').html('').hide().html(text).fadeIn('slow');
                 }
 
                 /**
