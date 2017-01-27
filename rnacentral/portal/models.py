@@ -328,12 +328,14 @@ class Rna(CachingMixin, models.Model):
             try:
                 rna_type = queryset.get(upi=self.upi).rna_type
                 if rna_type is None:
-                    return desc.get_rna_type(self, taxid=taxid)
+                    xrefs = self.find_valid_xrefs(taxid=taxid)
+                    return desc.get_rna_type(self, xrefs, taxid=taxid)
                 return rna_type
             except ObjectDoesNotExist:
                 pass
 
-        return desc.get_rna_type(self, taxid=taxid)
+        xrefs = self.find_valid_xrefs(taxid=taxid)
+        return desc.get_rna_type(self, xrefs, taxid=taxid)
 
     def get_description(self, taxid=None, recompute=False):
         """
