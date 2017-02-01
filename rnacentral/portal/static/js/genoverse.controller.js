@@ -23,7 +23,6 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
     $scope.end = end;
     $scope.strand = 1;
     $scope.description = '';
-    $scope.browser = null;
 
     // handle copy to clipboard button
     new Clipboard('#copy-genome-location', {

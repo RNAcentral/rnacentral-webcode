@@ -20,10 +20,18 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
             link: function(scope, element, attrs) {
                 showGenoverseSectionHeader();
                 showGenoverseSectionInfo();
-                // (re-)create Genoverse object
+
                 scope.browser = new Genoverse(getGenoverseConfigObject());
+                scope.$watch('browser', function(newValue, oldValue) {
+                    scope.genome = getGenomeBySpecies(newValue.species);
+                    scope.chromosome = newValue.chr;
+                    scope.start = newValue.start;
+                    scope.end = newValue.end;
+                }, true);
+
                 addKaryotypePlaceholder();
                 registerGenoverseEvents();
+                setGenoverseWidth();
 
                 /**
                  * Display Genoverse section header.
@@ -66,6 +74,7 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                                 name: 'Sequence',
                                 model: configureGenoverseModel('ensemblSequence'),
                                 view: Genoverse.Track.View.Sequence,
+                                controller: Genoverse.Track.Controller.Sequence,
                                 resizable: 'auto',
                                 100000: false,
                             }),
@@ -75,6 +84,7 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                                 labels: true,
                                 model: configureGenoverseModel('ensemblGene'),
                                 view: Genoverse.Track.View.Gene.Ensembl,
+                                controller: Genoverse.Track.Controller.Ensembl,
                             }),
                             Genoverse.Track.extend({
                                 name: 'Transcripts',
@@ -82,6 +92,7 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                                 labels: true,
                                 model: configureGenoverseModel('ensemblTranscript'),
                                 view: Genoverse.Track.View.Transcript.Ensembl,
+                                controller: Genoverse.Track.Controller.Ensembl,
                             }),
                             Genoverse.Track.extend({
                                 name: 'RNAcentral',
@@ -90,6 +101,7 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                                 labels: true,
                                 model: configureGenoverseModel('rnacentral'),
                                 view: Genoverse.Track.View.Transcript.Ensembl,
+                                controller: Genoverse.Track.Controller.Ensembl,
                             })
                         ]
                     };
@@ -285,7 +297,6 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                 }
 
                 function speciesSupported(species) {
-                    console.log("species = ", species);
                     var supportedSpecies = ["homo_sapiens"]; // TODO: support more species
                     return supportedSpecies.indexOf(species) !== -1;
                 }
@@ -315,6 +326,42 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                                 element.find('.genoverse-wrap .resizer').click();
                             }, 1000);
                         }
+                    });
+
+                    // resize genoverse on browser width changes
+                    window.onresize(setGenoverseWidth);
+                }
+
+                /**
+                 * Maximize Genoverse container width.
+                 */
+                function setGenoverseWidth() {
+                    var w = element.find('.container').width();
+                    element.find('.wrap').width(w);
+                    element.find('#genoverse').width(w);
+                }
+
+
+                /* Helper functions */
+
+
+                function getGenomeBySpecies(species) {
+                    species = species.replace(/_/g, ' ');
+                    genomes.forEach(function(genome) {
+                        if (species.toLowerCase() == genome.species.toLowerCase()) {
+                            return genome
+                        }
+
+                        var synonyms = [];
+                        genome.synonyms.forEach(function(synonym) {
+                            synonyms.push(synonym.toLowerCase());
+                        });
+
+                        if (synonyms.indexOf(species) > -1){
+                            return species;
+                        }
+
+                        return null;
                     });
                 }
 
