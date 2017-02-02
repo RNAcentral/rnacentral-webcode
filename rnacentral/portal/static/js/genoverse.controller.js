@@ -17,7 +17,10 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
 
     /* Constructor */
     $scope.genomes = genomes;
-    $scope.genome = genome;
+    // from JS standpoint, genome and genomes[i] == genome are different objects, but we want exactly the same, so:
+    $scope.genome = genomes.filter(function(element) {
+        return element.species.toLowerCase() == genome.species.toLowerCase();
+    })[0];
     $scope.chromosome = chromosome;
     $scope.start = start;
     $scope.end = end;

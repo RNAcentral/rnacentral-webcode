@@ -51,6 +51,7 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                     scope.browser.setRange(scope.start, newValue, true);
                 });
 
+
                 addKaryotypePlaceholder();
                 registerGenoverseEvents();
                 setGenoverseWidth();
