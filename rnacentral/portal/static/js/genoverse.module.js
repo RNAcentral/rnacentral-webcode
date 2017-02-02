@@ -22,12 +22,22 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                 showGenoverseSectionInfo();
 
                 scope.browser = new Genoverse(getGenoverseConfigObject());
-                scope.$watch('browser', function(newValue, oldValue) {
-                    scope.genome = getGenomeBySpecies(newValue.species);
-                    scope.chromosome = newValue.chr;
-                    scope.start = newValue.start;
-                    scope.end = newValue.end;
-                }, true);
+
+                scope.$watch('browser.species', function(newValue, oldValue) {
+                    scope.genome = getGenomeBySpecies(newValue);
+                });
+
+                scope.$watch('browser.chr', function(newValue, oldValue) {
+                    scope.chromosome = newValue;
+                });
+
+                scope.$watch('browser.start', function(newValue, oldValue) {
+                    scope.start = newValue;
+                });
+
+                scope.$watch('browser.end', function(newValue, oldValue) {
+                    scope.end = newValue;
+                });
 
                 addKaryotypePlaceholder();
                 registerGenoverseEvents();
@@ -321,7 +331,11 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                 function registerGenoverseEvents() {
                     // resize tracks after load
                     scope.browser.on({
+                        // this event is called, whenever the user updates the browser viewport location
                         afterSetRange: function () {
+                            // let angular update its model in response to coordinates change
+                            scope.$apply();
+                            // expand the tracks by programmatically clicking the resizer button
                             setTimeout(function() {
                                 element.find('.genoverse-wrap .resizer').click();
                             }, 1000);
