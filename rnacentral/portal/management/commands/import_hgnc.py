@@ -57,8 +57,8 @@ class HGNCImporter():
                 'ncrna_type': 'lncRNA',
             },
             'RNA, micro': {
-                'feature_name': 'ncRNA',
-                'ncrna_type': 'miRNA',
+                'feature_name': 'precursor_RNA',
+                'ncrna_type': '',
             },
             'RNA, misc': {
                 'feature_name': 'misc_RNA',
