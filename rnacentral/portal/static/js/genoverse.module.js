@@ -23,6 +23,8 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
 
                 scope.browser = new Genoverse(getGenoverseConfigObject());
 
+                // set Genoverse -> Angular data flow
+
                 scope.$watch('browser.species', function(newValue, oldValue) {
                     scope.genome = getGenomeBySpecies(newValue);
                 });
@@ -37,6 +39,16 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
 
                 scope.$watch('browser.end', function(newValue, oldValue) {
                     scope.end = newValue;
+                });
+
+                // set Angular -> Genoverse data flow
+
+                scope.$watch('start', function(newValue, oldValue) {
+                   scope.browser.setRange(newValue, scope.end, true);
+                });
+
+                scope.$watch('end', function(newValue, oldValue) {
+                    scope.browser.setRange(scope.start, newValue, true);
                 });
 
                 addKaryotypePlaceholder();
@@ -333,8 +345,10 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                     scope.browser.on({
                         // this event is called, whenever the user updates the browser viewport location
                         afterSetRange: function () {
+
                             // let angular update its model in response to coordinates change
-                            scope.$apply();
+                            if (!scope.$$phase) scope.$apply(); // anti-pattern, but no other way to use FRP in angular
+
                             // expand the tracks by programmatically clicking the resizer button
                             setTimeout(function() {
                                 element.find('.genoverse-wrap .resizer').click();

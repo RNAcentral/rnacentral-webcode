@@ -16,7 +16,7 @@ limitations under the License.
 angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', '$location', function ($scope, $location) {
 
     /* Constructor */
-
+    $scope.genomes = genomes;
     $scope.genome = genome;
     $scope.chromosome = chromosome;
     $scope.start = start;
