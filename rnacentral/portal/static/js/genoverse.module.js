@@ -38,6 +38,7 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                 // -----------------
 
                 function render() {
+                    console.log("scope.genome in render = ", scope.genome);
                     var genoverseConfig = {
                         container: element.find('#genoverse'),
                         chr: scope.chromosome,
@@ -91,13 +92,25 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                     }
 
                     scope.browser = new Genoverse(genoverseConfig);
-                    addKaryotypePlaceholder();
+
+                    // karyotype is available only for a limited number of species,
+                    // so a placeholder div is used to replace the karyotype div
+                    // to keep the display consistent
+                    if (!isKaryotypeAvailable(urlencodeSpecies(scope.genome.species))) {
+                        element.find(".gv_wrapper").prepend(
+                            "<div class='genoverse_karyotype_placeholder'>" +
+                            "  <p>Karyotype display is not available</p>" +
+                            "</div>"
+                        );
+                    }
+
                     setGenoverseWidth();
                 }
 
                 function setGenoverseToAngularWatches(scope) {
                     var speciesWatch = scope.$watch('browser.species', function(newValue, oldValue) {
                         scope.genome = getGenomeBySpecies(newValue);
+                        console.log("scope.genome in speciesWatch = ", scope.genome);
                     });
 
                     var chrWatch = scope.$watch('browser.chr', function(newValue, oldValue) {
@@ -296,21 +309,6 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                 }
 
                 /**
-                 * Karyotype is supported only for a limited number of species,
-                 * so a placeholder div is used to replace the karyotype div
-                 * to keep the display consistent.
-                 */
-                function addKaryotypePlaceholder() {
-                    if (!isKaryotypeAvailable(urlencodeSpecies(scope.genome.species))) {
-                        element.find(".gv_wrapper").prepend(
-                            "<div class='genoverse_karyotype_placeholder'>" +
-                            "  <p>Karyotype display is not available</p>" +
-                            "</div>"
-                        );
-                    }
-                }
-
-                /**
                  * Determine if karyotype information is available for this species.
                  */
                 function isKaryotypeAvailable(species) {
@@ -372,25 +370,30 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                 // Helper functions
                 // ----------------
 
-
+                /**
+                 * Returns an object from genomes Array by its species name or null, if not found.
+                 * @param species {string} e.g. "Homo sapiens" or "homo_sapiens" (like in url) or "human" (synonym)
+                 * @returns {Object or null} element of genomes Array
+                 */
                 function getGenomeBySpecies(species) {
-                    species = species.replace(/_/g, ' ');
-                    scope.genomes.forEach(function(genome) {
-                        if (species.toLowerCase() == genome.species.toLowerCase()) {
-                            return genome
+                    species = species.replace(/_/g, ' '); // if species was urlencoded, replace '_' with whitespaces
+
+                    for (var i = 0; i < genomes.length; i++) {
+                        if (species.toLowerCase() == genomes[i].species.toLowerCase()) { // test scientific name
+                            return genomes[i];
                         }
+                        else { // if species is not a scientific name, may be it's a synonym?
+                            var synonyms = []; // convert all synonyms to lower case to make case-insensitive comparison
 
-                        var synonyms = [];
-                        genome.synonyms.forEach(function(synonym) {
-                            synonyms.push(synonym.toLowerCase());
-                        });
+                            genomes[i].synonyms.forEach(function(synonym) {
+                                synonyms.push(synonym.toLowerCase());
+                            });
 
-                        if (synonyms.indexOf(species.toLowerCase()) > -1){
-                            return species;
+                            if (synonyms.indexOf(species.toLowerCase()) > -1) return genomes[i];
                         }
+                    }
 
-                        return null;
-                    });
+                    return null; // if no match found, return null
                 }
 
                 /**
