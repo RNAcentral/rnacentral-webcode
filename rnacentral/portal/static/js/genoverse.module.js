@@ -18,73 +18,26 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                 "<div id='genoverse'></div>" +
                 "</div>",
             link: function(scope, element, attrs) {
-                showGenoverseSectionHeader();
-                showGenoverseSectionInfo();
 
-                scope.browser = new Genoverse(getGenoverseConfigObject());
+                // Initialization
+                // --------------
+
+                render();
 
                 // set Genoverse -> Angular data flow
-
-                scope.$watch('browser.species', function(newValue, oldValue) {
-                    scope.genome = getGenomeBySpecies(newValue);
-                });
-
-                scope.$watch('browser.chr', function(newValue, oldValue) {
-                    scope.chromosome = newValue;
-                });
-
-                scope.$watch('browser.start', function(newValue, oldValue) {
-                    scope.start = newValue;
-                });
-
-                scope.$watch('browser.end', function(newValue, oldValue) {
-                    scope.end = newValue;
-                });
+                var genoverseToAngularWatches = setGenoverseToAngularWatches(scope);
 
                 // set Angular -> Genoverse data flow
+                setAngularToGenoverseWatches(scope, genoverseToAngularWatches);
 
-                scope.$watch('start', function(newValue, oldValue) {
-                   scope.browser.setRange(newValue, scope.end, true);
-                });
-
-                scope.$watch('end', function(newValue, oldValue) {
-                    scope.browser.setRange(scope.start, newValue, true);
-                });
-
-
-                addKaryotypePlaceholder();
+                // attach these events only once - we don't need to re-attach these events upon Genoverse reload
                 registerGenoverseEvents();
-                setGenoverseWidth();
 
-                /**
-                 * Display Genoverse section header.
-                 */
-                function showGenoverseSectionHeader() {
-                    element.find('.genoverse-wrap h2').show();
-                }
 
-                /**
-                 * Display xref description in Genoverse section.
-                 */
-                function showGenoverseSectionInfo() {
-                    // display xref coordinates
-                    var text = '<em>' +
-                        scope.genome.species + ' ' +
-                        scope.chromosome + ':' +
-                        numberWithCommas(scope.start) + '-' +
-                        numberWithCommas(scope.end) + ':' +
-                        scope.strand +
-                        '</em>';
-                    element.find('#genoverse-coordinates').html('').hide().html(text).fadeIn('slow');
-                    // display xref description
-                    text = '<p>' + scope.description + '</p>';
-                    element.find('#genoverse-description').html('').hide().html(text).fadeIn('slow');
-                }
+                // Functions/methods
+                // -----------------
 
-                /**
-                 * Configure Genoverse initialization object.
-                 */
-                function getGenoverseConfigObject() {
+                function render() {
                     var genoverseConfig = {
                         container: element.find('#genoverse'),
                         chr: scope.chromosome,
@@ -129,9 +82,67 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                         ]
                     };
 
-                    genoverseConfig = configureKaryotypeDisplay(genoverseConfig);
+                    // configure karyotype display
+                    if (isKaryotypeAvailable(scope.genome.species)) {
+                        genoverseConfig.plugins.push('karyotype');
+                        genoverseConfig.genome = 'grch38'; // determine dynamically when more karyotypes are available
+                    } else {
+                        genoverseConfig.chromosomeSize = Math.pow(10, 20); // should be greater than any chromosome size
+                    }
 
-                    return genoverseConfig;
+                    scope.browser = new Genoverse(genoverseConfig);
+                    addKaryotypePlaceholder();
+                    setGenoverseWidth();
+                }
+
+                function setGenoverseToAngularWatches(scope) {
+                    var speciesWatch = scope.$watch('browser.species', function(newValue, oldValue) {
+                        scope.genome = getGenomeBySpecies(newValue);
+                    });
+
+                    var chrWatch = scope.$watch('browser.chr', function(newValue, oldValue) {
+                        scope.chromosome = newValue;
+                    });
+
+                    var startWatch = scope.$watch('browser.start', function(newValue, oldValue) {
+                        scope.start = newValue;
+                    });
+
+                    var endWatch = scope.$watch('browser.end', function(newValue, oldValue) {
+                        scope.end = newValue;
+                    });
+
+                    return [speciesWatch, chrWatch, startWatch, endWatch];
+                }
+
+                function setAngularToGenoverseWatches(scope, genoverseToAngularWatches) {
+                    scope.$watch('start', function(newValue, oldValue) {
+                        scope.browser.setRange(newValue, scope.end, true);
+                    });
+
+                    scope.$watch('end', function(newValue, oldValue) {
+                        scope.browser.setRange(scope.start, newValue, true);
+                    });
+
+                    scope.$watch('genome', function(newValue, oldValue) {
+                        // clear the old instance of browser completely
+                        genoverseToAngularWatches.forEach(function (element) { element(); }); // unset the old watches
+                        element.find('#genoverse').html(''); // clear the innerHtml of directive
+                        delete scope.browser; // clear old instance of browser
+
+                        // create a new instance of browser and set the new watches for it
+                        render();
+                    });
+
+                    scope.$watch('chromosome', function(newValue, oldValue) {
+                        // clear the old instance of browser completely
+                        genoverseToAngularWatches.forEach(function (element) { element(); }); // unset the old watches
+                        element.find('#genoverse').html(''); // clear the innerHtml of directive
+                        delete scope.browser; // clear old instance of browser
+
+                        // create a new instance of browser and set the new watches for it
+                        render();
+                    })
                 }
 
                 /**
@@ -285,26 +296,13 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                 }
 
                 /**
-                 * Determine whether karyotype should be displayed.
-                 */
-                function configureKaryotypeDisplay(genoverseConfig) {
-                    if (is_karyotype_available(scope.genome.species)) {
-                        genoverseConfig.plugins.push('karyotype');
-                        genoverseConfig.genome = 'grch38'; // determine dynamically when more karyotypes are available
-                    } else {
-                        genoverseConfig.chromosomeSize = Math.pow(10, 20); // should be greater than any chromosome size
-                    }
-                    return genoverseConfig;
-                }
-
-                /**
                  * Karyotype is supported only for a limited number of species,
                  * so a placeholder div is used to replace the karyotype div
                  * to keep the display consistent.
                  */
                 function addKaryotypePlaceholder() {
                     if (!isKaryotypeAvailable(urlencodeSpecies(scope.genome.species))) {
-                        $(".gv_wrapper").prepend(
+                        element.find(".gv_wrapper").prepend(
                             "<div class='genoverse_karyotype_placeholder'>" +
                             "  <p>Karyotype display is not available</p>" +
                             "</div>"
@@ -371,12 +369,13 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                 }
 
 
-                /* Helper functions */
+                // Helper functions
+                // ----------------
 
 
                 function getGenomeBySpecies(species) {
                     species = species.replace(/_/g, ' ');
-                    genomes.forEach(function(genome) {
+                    scope.genomes.forEach(function(genome) {
                         if (species.toLowerCase() == genome.species.toLowerCase()) {
                             return genome
                         }
@@ -386,7 +385,7 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                             synonyms.push(synonym.toLowerCase());
                         });
 
-                        if (synonyms.indexOf(species) > -1){
+                        if (synonyms.indexOf(species.toLowerCase()) > -1){
                             return species;
                         }
 
