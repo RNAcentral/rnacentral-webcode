@@ -25,13 +25,16 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                 render();
 
                 // set Genoverse -> Angular data flow
-                var genoverseToAngularWatches = setGenoverseToAngularWatches(scope);
+                var genoverseToAngularWatches = setGenoverseToAngularWatches();
 
                 // set Angular -> Genoverse data flow
-                setAngularToGenoverseWatches(scope, genoverseToAngularWatches);
+                setAngularToGenoverseWatches(genoverseToAngularWatches);
 
-                // attach these events only once - we don't need to re-attach these events upon Genoverse reload
+                // these need to be re-attached on every re-creation of browser
                 registerGenoverseEvents();
+
+                // resize genoverse on browser width changes - attach once only
+                window.onresize(setGenoverseWidth);
 
 
                 // Functions/methods
@@ -107,10 +110,9 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                     setGenoverseWidth();
                 }
 
-                function setGenoverseToAngularWatches(scope) {
+                function setGenoverseToAngularWatches() {
                     var speciesWatch = scope.$watch('browser.species', function(newValue, oldValue) {
-                        scope.genome = getGenomeBySpecies(newValue);
-                        console.log("scope.genome in speciesWatch = ", scope.genome);
+                        scope.genome = getGenomeByName(newValue);
                     });
 
                     var chrWatch = scope.$watch('browser.chr', function(newValue, oldValue) {
@@ -128,7 +130,7 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                     return [speciesWatch, chrWatch, startWatch, endWatch];
                 }
 
-                function setAngularToGenoverseWatches(scope, genoverseToAngularWatches) {
+                function setAngularToGenoverseWatches(genoverseToAngularWatches) {
                     scope.$watch('start', function(newValue, oldValue) {
                         scope.browser.setRange(newValue, scope.end, true);
                     });
@@ -138,23 +140,27 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                     });
 
                     scope.$watch('genome', function(newValue, oldValue) {
-                        // clear the old instance of browser completely
-                        genoverseToAngularWatches.forEach(function (element) { element(); }); // unset the old watches
+                        // destroy the old instance of browser and callbacks/watches
+                        genoverseToAngularWatches.forEach(function (element) { element(); }); // clear the old watches
                         element.find('#genoverse').html(''); // clear the innerHtml of directive
                         delete scope.browser; // clear old instance of browser
 
                         // create a new instance of browser and set the new watches for it
                         render();
+                        registerGenoverseEvents();
+                        setGenoverseToAngularWatches();
                     });
 
                     scope.$watch('chromosome', function(newValue, oldValue) {
-                        // clear the old instance of browser completely
-                        genoverseToAngularWatches.forEach(function (element) { element(); }); // unset the old watches
+                        // destroy the old instance of browser and callback/watches
+                        genoverseToAngularWatches.forEach(function (element) { element(); }); // clear the old watches
                         element.find('#genoverse').html(''); // clear the innerHtml of directive
                         delete scope.browser; // clear old instance of browser
 
                         // create a new instance of browser and set the new watches for it
                         render();
+                        registerGenoverseEvents();
+                        setGenoverseToAngularWatches();
                     })
                 }
 
@@ -352,9 +358,6 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                             }, 1000);
                         }
                     });
-
-                    // resize genoverse on browser width changes
-                    window.onresize(setGenoverseWidth);
                 }
 
                 /**
@@ -372,24 +375,24 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
 
                 /**
                  * Returns an object from genomes Array by its species name or null, if not found.
-                 * @param species {string} e.g. "Homo sapiens" or "homo_sapiens" (like in url) or "human" (synonym)
+                 * @param name {string} e.g. "Homo sapiens" or "homo_sapiens" (like in url) or "human" (synonym)
                  * @returns {Object or null} element of genomes Array
                  */
-                function getGenomeBySpecies(species) {
-                    species = species.replace(/_/g, ' '); // if species was urlencoded, replace '_' with whitespaces
+                function getGenomeByName(name) {
+                    name = name.replace(/_/g, ' '); // if name was urlencoded, replace '_' with whitespaces
 
                     for (var i = 0; i < genomes.length; i++) {
-                        if (species.toLowerCase() == genomes[i].species.toLowerCase()) { // test scientific name
+                        if (name.toLowerCase() == genomes[i].name.toLowerCase()) { // test scientific name
                             return genomes[i];
                         }
-                        else { // if species is not a scientific name, may be it's a synonym?
+                        else { // if name is not a scientific name, may be it's a synonym?
                             var synonyms = []; // convert all synonyms to lower case to make case-insensitive comparison
 
                             genomes[i].synonyms.forEach(function(synonym) {
                                 synonyms.push(synonym.toLowerCase());
                             });
 
-                            if (synonyms.indexOf(species.toLowerCase()) > -1) return genomes[i];
+                            if (synonyms.indexOf(name.toLowerCase()) > -1) return genomes[i];
                         }
                     }
 
@@ -397,16 +400,8 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                 }
 
                 /**
-                 * Format the coordinates with commas as thousands separators.
-                 * http://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
-                 */
-                function numberWithCommas(x) {
-                    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                }
-
-                /**
                  * Replaces whitespaces with underscores in scientific names of species.
-                 * @param species (string} - scientific name of a speices with whitespaces, e.g. Homo Sapiens
+                 * @param species (string} - scientific name of a species with whitespaces, e.g. Homo Sapiens
                  * @returns {string} - scientific name of species with whitespaces replaces with underscores
                  */
                 function urlencodeSpecies(species) {
