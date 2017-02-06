@@ -1,8 +1,57 @@
 (function() {
 
-angular.module("Genoverse", []).directive("genoverse", genoverse);
+    angular.module("Genoverse", [])
+        .filter("urlencodeSpecies", urlencodeSpecies)
+        .filter("urldecodeSpecies", urldecodeSpecies)
+        .directive("genoverse", genoverse);
 
-    function genoverse() {
+
+    function urlencodeSpecies() {
+        /**
+         * Replaces whitespaces with underscores in input string (assumed to be a scientific name of species)
+         * and converts it to lower case.
+         *
+         * @param input (string} - capitalized scientific name of a species with whitespaces, e.g. Homo sapiens
+         * @returns {string} - scientific name of species with whitespaces replaces with underscores
+         */
+        return function(input) {
+            // Canis familiaris is a special case
+            if (input == 'Canis familiaris') {
+                input = 'Canis lupus familiaris';
+            }
+            return input.replace(/ /g, '_').toLowerCase();
+        }
+    }
+
+    function urldecodeSpecies() {
+        /**
+         * Replaces underscores with whitespaces in input string and capitalizes the first letter in it.
+         *
+         * @param input {string} - scientific name of a species in lower case with '_', e.g. homo_sapiens
+         * @returns {string} - capitalized scientific name of a species with whitespaces, e.g. Homo sapiens
+         */
+        return function(input) {
+            if (input == 'canis_lupus_familiaris') {
+                input = 'canis_familiaris';
+            }
+            var output = input.replace(/_/g, ' ');
+            output = output.charAt(0).toUpperCase() + output.slice(1);
+            return output;
+        }
+    }
+
+    function genoverse($filter) {
+        /**
+         * Returns the directive definition object for genoverse directive.
+         * It is meant to be used as follows:
+         *
+         * <genoverse genome={} chromosome="X" start="1" stop="1000000">
+         *     <genoverse-track id="" name="Sequence" info="" label="true"
+         *      url-template=":PROTOCOL//:ENDPOINT/overlap/region/:species/:chromosome::start-:end?feature=gene;content-type=application/json"
+         *      url-variables="{PROTOCOL: 'https', ENDPOINT: 'rest.ensembl.org'">
+         *     </genoverse-track>
+         * </genoverse>
+         */
         return {
             restrict: 'E',
             scope: false,
@@ -170,28 +219,28 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                  */
                 function configureGenoverseModel(modelType) {
                     var model, url;
-                    var endpoint = getEnsemblOrEnsemblgenomesEndpoint(urlencodeSpecies(scope.genome.species));
+                    var endpoint = getEnsemblOrEnsemblgenomesEndpoint(scope.genome.species);
 
                     if (modelType === 'ensemblGene') {
                         // Ensembl Gene track
-                        url = '//__ENDPOINT__/overlap/region/__SPECIES__/__CHR__:__START__-__END__?feature=gene;content-type=application/json'.replace('__ENDPOINT__', endpoint).replace('__SPECIES__', urlencodeSpecies(scope.genome.species));
+                        url = '//__ENDPOINT__/overlap/region/__SPECIES__/__CHR__:__START__-__END__?feature=gene;content-type=application/json'.replace('__ENDPOINT__', endpoint).replace('__SPECIES__', $filter('urlencodeSpecies')(scope.genome.species));
                         model = Genoverse.Track.Model.Gene.Ensembl.extend({ url: url });
                     }
                     else if (modelType === 'ensemblTranscript') {
                         // Ensembl Transcript track
-                        url = '//__ENDPOINT__/overlap/region/__SPECIES__/__CHR__:__START__-__END__?feature=transcript;feature=exon;feature=cds;content-type=application/json'.replace('__ENDPOINT__', endpoint).replace('__SPECIES__', urlencodeSpecies(scope.genome.species));
+                        url = '//__ENDPOINT__/overlap/region/__SPECIES__/__CHR__:__START__-__END__?feature=transcript;feature=exon;feature=cds;content-type=application/json'.replace('__ENDPOINT__', endpoint).replace('__SPECIES__', $filter('urlencodeSpecies')(scope.genome.species));
                         model = Genoverse.Track.Model.Transcript.Ensembl.extend({ url: url });
                     }
                     else if (modelType === 'ensemblSequence') {
                         // Ensembl sequence view
-                        url = '//__ENDPOINT__/sequence/region/__SPECIES__/__CHR__:__START__-__END__?content-type=text/plain'.replace('__ENDPOINT__', endpoint).replace('__SPECIES__', urlencodeSpecies(scope.genome.species));
+                        url = '//__ENDPOINT__/sequence/region/__SPECIES__/__CHR__:__START__-__END__?content-type=text/plain'.replace('__ENDPOINT__', endpoint).replace('__SPECIES__', $filter('urlencodeSpecies')(scope.genome.species));
                         model = Genoverse.Track.Model.Sequence.Ensembl.extend({ url: url });
                     }
                     else if (modelType === 'rnacentral') {
                         // custom RNAcentral track
                         if (!window.location.origin) { window.location.origin = window.location.protocol + "//" + window.location.host + '/'; }
 
-                        url = window.location.origin + '/api/v1/overlap/region/__SPECIES__/__CHR__:__START__-__END__'.replace('__SPECIES__', urlencodeSpecies(scope.genome.species));
+                        url = window.location.origin + '/api/v1/overlap/region/__SPECIES__/__CHR__:__START__-__END__'.replace('__SPECIES__', $filter('urlencodeSpecies')(scope.genome.species));
                         model = Genoverse.Track.Model.Gene.Ensembl.extend({
                             url: url,
                             parseData: function (data) {
@@ -311,7 +360,8 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                     // "saccharomyces_cerevisiae", "caenorhabditis_elegans"];
                     // "saccharomyces_cerevisiae", "caenorhabditis_elegans" could use either E! or EG
 
-                    return ensemblSpecies.indexOf(species) > -1 ? 'rest.ensembl.org' : 'rest.ensemblgenomes.org';
+                    var encoded = $filter('urlencodeSpecies')(species); // urlencoded species name
+                    return ensemblSpecies.indexOf(encoded) > -1 ? 'rest.ensembl.org' : 'rest.ensemblgenomes.org';
                 }
 
                 /**
@@ -396,17 +446,6 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                     }
 
                     return null; // if no match found, return null
-                }
-
-                /**
-                 * Replaces whitespaces with underscores in scientific names of species.
-                 * @param species (string} - scientific name of a species with whitespaces, e.g. Homo Sapiens
-                 * @returns {string} - scientific name of species with whitespaces replaces with underscores
-                 */
-                function urlencodeSpecies(species) {
-                    // Canis familiaris is a special case
-                    if (species == 'Canis familiaris') { species = 'Canis lupus familiaris'; }
-                    return species.replace(/ /g, '_').toLowerCase();
                 }
             }
         };
