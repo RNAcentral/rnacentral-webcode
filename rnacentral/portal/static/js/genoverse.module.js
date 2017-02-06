@@ -98,10 +98,10 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                     // karyotype is available only for a limited number of species,
                     // so a placeholder div is used to replace the karyotype div
                     // to keep the display consistent
-                    if (!isKaryotypeAvailable(urlencodeSpecies(scope.genome.species))) {
+                    if (!isKaryotypeAvailable(scope.genome.species)) {
                         element.find(".gv_wrapper").prepend(
                             "<div class='genoverse_karyotype_placeholder'>" +
-                            "  <p>Karyotype display is not available</p>" +
+                            "    <p>Karyotype display is not available</p>" +
                             "</div>"
                         );
                     }
@@ -142,7 +142,7 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                     scope.$watch('genome', function(newValue, oldValue) {
                         // destroy the old instance of browser and callbacks/watches
                         genoverseToAngularWatches.forEach(function (element) { element(); }); // clear the old watches
-                        element.find('#genoverse').html(''); // clear the innerHtml of directive
+                        element.find('#genoverse').html(''); // clear the innerHtml of genoverse plugin
                         delete scope.browser; // clear old instance of browser
 
                         // create a new instance of browser and set the new watches for it
@@ -154,7 +154,7 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                     scope.$watch('chromosome', function(newValue, oldValue) {
                         // destroy the old instance of browser and callback/watches
                         genoverseToAngularWatches.forEach(function (element) { element(); }); // clear the old watches
-                        element.find('#genoverse').html(''); // clear the innerHtml of directive
+                        element.find('#genoverse').html(''); // clear the innerHtml of genoverse plugin
                         delete scope.browser; // clear old instance of browser
 
                         // create a new instance of browser and set the new watches for it
@@ -322,7 +322,7 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                 }
 
                 function speciesSupported(species) {
-                    var supportedSpecies = ["homo_sapiens"]; // TODO: support more species
+                    var supportedSpecies = ["Homo sapiens"]; // TODO: support more species
                     return supportedSpecies.indexOf(species) !== -1;
                 }
 
