@@ -376,7 +376,7 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                 /**
                  * Returns an object from genomes Array by its species name or null, if not found.
                  * @param name {string} e.g. "Homo sapiens" or "homo_sapiens" (like in url) or "human" (synonym)
-                 * @returns {Object or null} element of genomes Array
+                 * @returns {Object || null} element of genomes Array
                  */
                 function getGenomeByName(name) {
                     name = name.replace(/_/g, ' '); // if name was urlencoded, replace '_' with whitespaces
