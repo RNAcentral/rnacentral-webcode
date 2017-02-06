@@ -36,12 +36,10 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                 // resize genoverse on browser width changes - attach once only
                 window.onresize(setGenoverseWidth);
 
-
                 // Functions/methods
                 // -----------------
 
                 function render() {
-                    console.log("scope.genome in render = ", scope.genome);
                     var genoverseConfig = {
                         container: element.find('#genoverse'),
                         chr: scope.chromosome,
@@ -94,6 +92,7 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                         genoverseConfig.chromosomeSize = Math.pow(10, 20); // should be greater than any chromosome size
                     }
 
+                    // create Genoverse browser
                     scope.browser = new Genoverse(genoverseConfig);
 
                     // karyotype is available only for a limited number of species,
@@ -107,6 +106,7 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                         );
                     }
 
+                    // imperatively set the initial width of Genoverse
                     setGenoverseWidth();
                 }
 
@@ -348,7 +348,6 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                     scope.browser.on({
                         // this event is called, whenever the user updates the browser viewport location
                         afterSetRange: function () {
-
                             // let angular update its model in response to coordinates change
                             if (!scope.$$phase) scope.$apply(); // anti-pattern, but no other way to use FRP in angular
 
@@ -382,7 +381,7 @@ angular.module("Genoverse", []).directive("genoverse", genoverse);
                     name = name.replace(/_/g, ' '); // if name was urlencoded, replace '_' with whitespaces
 
                     for (var i = 0; i < genomes.length; i++) {
-                        if (name.toLowerCase() == genomes[i].name.toLowerCase()) { // test scientific name
+                        if (name.toLowerCase() == genomes[i].species.toLowerCase()) { // test scientific name
                             return genomes[i];
                         }
                         else { // if name is not a scientific name, may be it's a synonym?
