@@ -400,7 +400,7 @@ def _get_taxonomy_info_by_genome_identifier(identifier):
         }
     }
     """
-    identifier = identifier.replace('-', ' ')  # we transform all hyphens back to whitespaces
+    identifier = identifier.replace('_', ' ')  # we transform all underscores back to whitespaces
 
     for genome in rnacentral_genomes:
         # check, if it's a scientific name or a trivial name
