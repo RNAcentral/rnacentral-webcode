@@ -217,10 +217,12 @@
                         element.find('#genoverse').html(''); // clear the innerHtml of genoverse plugin
                         delete scope.browser; // clear old instance of browser
 
-                        // set the default location for this genome
-                        scope.chromosome = newValue.example_location.chromosome;
-                        scope.start = newValue.example_location.start;
-                        scope.end = newValue.example_location.end;
+                        // if the genome has changed, set the default location for the browser
+                        if (newValue !== oldValue){
+                            scope.chromosome = newValue.example_location.chromosome;
+                            scope.start = newValue.example_location.start;
+                            scope.end = newValue.example_location.end;
+                        }
 
                         // create a new instance of browser and set the new watches for it
                         render();
