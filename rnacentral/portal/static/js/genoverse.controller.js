@@ -13,7 +13,7 @@ limitations under the License.
 
 (function() {
 
-angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', '$location', function ($scope, $location) {
+angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', '$location', '$filter', function ($scope, $location, $filter) {
 
     /* Constructor */
     $scope.genomes = genomes;
@@ -37,52 +37,23 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
     // initialize a tooltip on the share button
     $('#copy-genome-location').tooltip();
 
-    /* Method definitions */
+    // reflect any changes in genome/chromosome/start/end in address bar
+    $scope.$watch('genome', setUrl);
+    $scope.$watch('chromosome', setUrl);
+    $scope.$watch('start', setUrl);
+    $scope.$watch('end', setUrl);
+
+
+    // Method definitions
+    // ------------------
 
     /**
-     * Show Ensembl and UCSC links for the currently displayed region.
+     * Sets the url in address bar to reflect the changes in browser location
      */
-    function updateExternalLinks() {
-        var option = species.find('option:selected'),
-            division = option.data('division'),
-            ucsc_db = option.data('ucsc-db'),
-            ucsc = $('.ucsc-link'),
-            domain = '',
-            ucsc_chr = '',
-            url = '';
-
-        if (division == 'Ensembl') {
-            domain = 'http://ensembl.org/';
-        } else if (division == 'Ensembl Plants') {
-            domain = 'http://plants.ensembl.org/';
-        } else if (division == 'Ensembl Metazoa') {
-            domain = 'http://metazoa.ensembl.org/';
-        } else if (division == 'Ensembl Bacteria') {
-            domain = 'http://bacteria.ensembl.org/';
-        } else if (division == 'Ensembl Fungi') {
-            domain = 'http://fungi.ensembl.org/';
-        } else if (division == 'Ensembl Protists') {
-            domain = 'http://protists.ensembl.org/';
-        }
-
-        // update Ensembl link
-        url = domain + species.val().replace(/ /g, '_') + '/Location/View?r=' + browser.chr + ':' + browser.start + '-' + browser.end;
-        $('#ensembl-link').attr('href', url).text(division);
-
-        // update UCSC link if UCSC assembly is available
-        if (ucsc_db) {
-            if (browser.chr.match(/^\d+$|^[XY]$/)) {
-                ucsc_chr = 'chr' + browser.chr;
-            }
-            else {
-                ucsc_chr = browser.chr;
-            }
-            url = 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + ucsc_db + '&position=' + ucsc_chr + '%3A' + browser.start + '-' + browser.end;
-            ucsc.show().find('a').attr('href', url);
-        }
-        else {
-            ucsc.hide();
-        }
+    function setUrl(newValue, oldValue) {
+        // set the full url
+        $location.path("/genome-browser/" + $filter('urlencodeSpecies')($scope.genome.species));
+        $location.search({chromosome: $scope.chromosome, start: $scope.start, end: $scope.end});
     }
 
     /**

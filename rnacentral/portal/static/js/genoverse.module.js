@@ -486,7 +486,7 @@
                  * }
                  * @returns {String} domain name without protocol or slashes or trailing dots
                  */
-                function getEnsebmlSubdomainByDivision(genome){
+                function getEnsebmlSubdomainByDivision(genome) {
                     var subdomain;
 
                     if (genome.division == 'Ensembl') {
