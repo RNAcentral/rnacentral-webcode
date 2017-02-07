@@ -601,28 +601,39 @@ angular.module('rnacentralApp').controller('QueryCtrl', ['$scope', '$location', 
         // ignore url hash
         newUrl = newUrl.replace(/#.+$/, '');
         oldUrl = oldUrl.replace(/#.+$/, '');
+
         // url has changed
         if (newUrl !== oldUrl) {
             if (newUrl.indexOf('tab=') !== -1) {
                 // redirect only if the main part of url has changed
                 if (newUrl.split('?')[0] !== oldUrl.split('?')[0]) {
                     redirect(newUrl);
-                } else {
-                    // navigate page tabs using browser back button
+                }
+                else { // navigate page tabs using browser back button
                     matches = newUrl.match(/tab=(\w+)&?/);
                     $('#tabs a[data-target="#' + matches[1] + '"]').tab('show');
                 }
-            } else if (newUrl.indexOf('xref-filter') !== -1) {
+            }
+
+            else if (newUrl.indexOf('xref-filter') !== -1) {
                 if (newUrl.split('?')[0] !== oldUrl.split('?')[0]) {
                     redirect(newUrl);
                 }
-            } else if (oldUrl.indexOf('sequence-search') !== -1 && newUrl.indexOf('sequence-search') !== -1){
-                /* let the sequence search app handle it */
-            } else if (newUrl.indexOf('/search') == -1) {
-                // a non-search url, load that page
+            }
+
+            // let the sequence search app handle it
+            else if (oldUrl.indexOf('sequence-search') !== -1 && newUrl.indexOf('sequence-search') !== -1) {}
+
+            // let genome-browser handle its own transitions
+            else if (oldUrl.indexOf('genome-browser') !== -1 && newUrl.indexOf('genome-browser') !== -1) {}
+
+            // a non-search url, load that page
+            else if (newUrl.indexOf('/search') == -1) {
                 redirect(newUrl);
-            } else {
-                // the new url is a search result page, launch that search
+            }
+
+            // the new url is a search result page, launch that search
+            else {
                 $scope.query.text = $location.search().q;
                 results.search($location.search().q);
                 $scope.query.submitted = false;
