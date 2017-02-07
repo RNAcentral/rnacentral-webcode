@@ -109,6 +109,8 @@
                     var genoverseConfig = {
                         container: element.find('#genoverse'),
                         chr: scope.chromosome,
+                        start: scope.start,
+                        end: scope.end,
                         species: scope.genome.species,
                         showUrlCoords: false, // do not show genomic coordinates in the url
                         plugins: ['controlPanel', 'resizer', 'fileDrop'],
