@@ -183,12 +183,21 @@ class RnaXmlExporter(OracleConnection):
             """
             self.data['rna_type'].add(get_rna_type())
 
+        def store_computed_data():
+            product_pattern = re.compile('^\w{3}-')
+            if not result['gene'] and \
+                    re.match(product_pattern, result['product']) and \
+                    result['display_name'] == 'miRBase':
+                short_gene = re.sub(product_pattern, '', result['product'])
+                self.data['gene'].add(saxutils.escape(short_gene))
+
         self.cursor.execute(None, {'upi': upi, 'taxid': taxid})
         for row in self.cursor:
             result = self.row_to_dict(row)
             store_redundant_fields()
             store_xrefs()
             store_rna_type()
+            store_computed_data()
 
     def is_active(self):
         """
