@@ -187,7 +187,7 @@ class RnaXmlExporter(OracleConnection):
             product_pattern = re.compile('^\w{3}-')
             if not result['gene'] and \
                     re.match(product_pattern, result['product']) and \
-                    result['display_name'] == 'miRBase':
+                    result['expert_db'] == 'miRBase':
                 short_gene = re.sub(product_pattern, '', result['product'])
                 self.data['gene'].add(saxutils.escape(short_gene))
 
