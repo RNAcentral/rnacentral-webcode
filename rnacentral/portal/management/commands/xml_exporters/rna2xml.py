@@ -186,6 +186,7 @@ class RnaXmlExporter(OracleConnection):
         def store_computed_data():
             product_pattern = re.compile('^\w{3}-')
             if not result['gene'] and \
+                    result['product'] and \
                     re.match(product_pattern, result['product']) and \
                     result['expert_db'] == 'miRBase':
                 short_gene = re.sub(product_pattern, '', result['product'])
