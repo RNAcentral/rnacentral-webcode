@@ -239,9 +239,9 @@ def get_species_specific_name(rna_type, sequence, xrefs):
 
 def correct_by_length(rna_type, sequence):
     """
-    This will correct the miRNA/precusor_RNA conflict and ambiguitity. Some
-    databases like 'HGNC' will call a precusor_RNA miRNA. We correct this using
-    the length of the sequence as well as using the length to distinguish
+    This will correct the miRNA/precursor_RNA conflict and ambiguitity. Some
+    databases like 'HGNC' will call a precursor_RNA miRNA. We correct this
+    using the length of the sequence as well as using the length to distinguish
     between the two.
     """
 
@@ -249,7 +249,7 @@ def correct_by_length(rna_type, sequence):
             rna_type == set(['miRNA']):
         if 15 <= sequence.length <= 30:
             return set(['miRNA'])
-        return set(['precusor_RNA'])
+        return set(['precursor_RNA'])
     return rna_type
 
 
