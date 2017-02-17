@@ -47,14 +47,17 @@ class RnaXmlExporter(OracleConnection):
                    t3.display_name as expert_db,
                    t4.timestamp as created,
                    t5.timestamp as last,
-                   t6.len as length
+                   t6.len as length,
+                   t7.rna_type
             FROM xref t1, rnc_accessions t2, rnc_database t3, rnc_release t4,
-                 rnc_release t5, rna t6
+                 rnc_release t5, rna t6, rnc_rna_precomputed t7
             WHERE t1.ac = t2.accession AND
                   t1.dbid = t3.id AND
                   t1.created = t4.id AND
                   t1.last = t5.id AND
                   t1.upi = t6.upi AND
+                  t1.upi = t7.upi AND
+                  t1.taxid = t7.taxid AND
                   t1.upi = :upi AND
                   t1.deleted = 'N' AND
                   t1.taxid = :taxid
@@ -167,11 +170,7 @@ class RnaXmlExporter(OracleConnection):
             """
             Use either feature name or ncRNA class (when feature is 'ncRNA')
             """
-            if result['ncrna_class']:
-                rna_type = result['ncrna_class']
-            else:
-                rna_type = result['feature_name']
-            return rna_type.replace('_', ' ')
+            return result['rna_type'].replace('_', ' ')
 
         def store_rna_type():
             """
