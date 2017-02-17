@@ -170,8 +170,11 @@ class RnaXmlExporter(OracleConnection):
             """
             Use either feature name or ncRNA class (when feature is 'ncRNA')
             """
-            rna_types = [result['rna_type']]
-            if 'antisense' in result['rna_type']:
+            rna_types = []
+            precomputed = result['rna_type']
+            if precomputed:
+                rna_types.append(precomputed)
+            if not precomputed or 'antisense' in precomputed:
                 if result['ncrna_class']:
                     rna_types.append(result['ncrna_class'])
                 else:
