@@ -18,3 +18,11 @@ class WormTests(GenericRnaTypeTest):
             'miRNA',
             'URS0000016972',
             taxid=6239)
+
+
+class HumanTests(GenericRnaTypeTest):
+    def test_if_has_both_anti_and_lnc_likes_lnc(self):
+        self.assertRnaTypeIs(
+            'lncRNA',
+            'URS0000732D5D',
+            taxid=9606)
