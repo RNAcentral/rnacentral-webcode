@@ -91,7 +91,7 @@
                 render();
 
                 // resize genoverse on browser width changes - attach once only
-                $('window').resize(setGenoverseWidth);
+                $(window).on('resize', setGenoverseWidth);
 
                 // Functions/methods
                 // -----------------
@@ -395,9 +395,9 @@
                  * Maximize Genoverse container width.
                  */
                 function setGenoverseWidth() {
-                    var w = element.find('.container').width();
-                    element.find('.wrap').width(w);
-                    element.find('#genoverse').width(w);
+                    var w = $('.container').width();
+                    $('.wrap').width(w);
+                    $('#genoverse').width(w);
                 }
 
 

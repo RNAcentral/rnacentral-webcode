@@ -35,12 +35,11 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
     // initialize a tooltip on the share button
     $('#copy-genome-location').tooltip();
 
-    // reflect any changes in genome/chromosome/start/end in address bar
+    // reflect any changes in genome in address bar
     $scope.$watch('genome', setUrl);
     $scope.$watch('chromosome', setUrl);
     $scope.$watch('start', setUrl);
     $scope.$watch('end', setUrl);
-
 
     // Method definitions
     // ------------------
@@ -50,8 +49,9 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
      */
     function setUrl(newValue, oldValue) {
         // set the full url
-        $location.path("/genome-browser/" + $filter('urlencodeSpecies')($scope.genome.species));
+        $location.path("/genome-browser/" + $filter('urlencodeSpecies')($scope.genome.species)); // this filter's from Genoverse module
         $location.search({chromosome: $scope.chromosome, start: $scope.start, end: $scope.end});
+        $location.replace();
     }
 
 }]);

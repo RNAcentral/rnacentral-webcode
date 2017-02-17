@@ -44,13 +44,23 @@ limitations under the License.
             <link rel="stylesheet" href="{% static "css/main.css" %}">
             <link rel="stylesheet" href="{% static "css/animate/animate.min.css" %}">
             <link rel="stylesheet" href="{% static "js/vendor/hopscotch/css/hopscotch.css" %}">
-            <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/genoverse.css" %}">
-            <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/controlPanel.css" %}">
-            <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/fileDrop.css" %}">
-            <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/karyotype.css" %}">
-            <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/resizer.css" %}">
-            <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/trackControls.css" %}">
-            <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/tooltips.css" %}">
+            {% if request.resolver_match.url_name != 'genome-browser' %}
+                <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/genoverse.css" %}">
+                <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/controlPanel.css" %}">
+                <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/fileDrop.css" %}">
+                <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/karyotype.css" %}">
+                <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/resizer.css" %}">
+                <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/trackControls.css" %}">
+                <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/tooltips.css" %}">
+            {% else %}
+                <link rel="stylesheet" href="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/css/genoverse.css" %}">
+                <link rel="stylesheet" href="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/css/controlPanel.css" %}">
+                <link rel="stylesheet" href="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/css/fileDrop.css" %}">
+                <link rel="stylesheet" href="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/css/karyotype.css" %}">
+                <link rel="stylesheet" href="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/css/resizer.css" %}">
+                <link rel="stylesheet" href="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/css/trackControls.css" %}">
+                <link rel="stylesheet" href="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/css/tooltips.css" %}">
+            {% endif %}
             <link rel="stylesheet" href="{% static "js/vendor/angular/loading-bar/loading-bar.css" %}">
             <link rel="stylesheet" href="{% static "css/timeline/timeline.css" %}">
             <link rel="stylesheet" href="{% static "css/timeline/fonts/font.bevan-pontanosans.css" %}">
@@ -157,13 +167,18 @@ limitations under the License.
             <script src="{% static "js/vendor/clipboard.min.js" %}"></script>
             <script src="{% static "js/guidedTour.js" %}"></script>
             <script src="{% static "js/rnaView.js" %}"></script>
-            <script src="{% static "js/vendor/Genoverse/js/genoverse.combined.js" %}"></script>
-            <script src="{% static "js/vendor/Genoverse/js/genomes/grch38.js" %}"></script>
-            <script src="{% static "js/genoverse.RNAcentralTrack.js" %}"></script>
-            <script src="{% static "js/genoverse.controller.js" %}"></script>
-            <script src="{% static "js/genoverse.module.js" %}"></script>
             <script src="{% static "js/vendor/timeline-min.js" %}"></script>
 
+            <!-- Conditionally import genoverse plugin or angularjs-genoverse directive -->
+            {% if request.resolver_match.url_name != 'genome-browser' %}
+                <script src="{% static "js/vendor/Genoverse/js/genoverse.combined.js" %}"></script>
+                <script src="{% static "js/vendor/Genoverse/js/genomes/grch38.js" %}"></script>
+                <script src="{% static "js/genoverse.RNAcentralTrack.js" %}"></script>
+            {% else %}
+                <script src="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/js/genoverse.combined.js" %}"></script>
+                <script src="{% static "js/vendor/angularjs-genoverse/src/genoverse.module.js" %}"></script>
+                <script src="{% static "js/genoverse.controller.js" %}"></script>
+            {% endif %}
 
             <script>
                 $(function() {
