@@ -1,0 +1,47 @@
+{
+  "name": "angularjs-genoverse",
+  "version": "1.0.0",
+  "description": "An AngularJS (1.x) directive, wrapping the Genoverse genome browser.",
+  "main": "genoverse.module.js",
+  "scripts": {
+    "test:unit": "karma start --browsers Chrome --single-run",
+    "test:e2e": "protractor test/e2e/protractor.conf.js",
+    "clean": "rm -rf dist/*",
+    "concat": "cat src/*.js > dist/angularjs-genoverse.all.js",
+    "uglify": "uglifyjs --compress --mangle -o dist/angularjs-genoverse.min.js --source-map dist/angularjs-genoverse.min.js.map dist/angularjs-genoverse.all.js",
+    "build": "npm run clean && npm run concat && npm run uglify",
+    "start": "http-server -a localhost -p 8000 -c-1 ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BurkovBA/angularjs-genoverse.git"
+  },
+  "keywords": [
+    "bioinformatics",
+    "genome-browser",
+    "angularjs-directives"
+  ],
+  "author": "Boris A. Burkov",
+  "contributors": [
+    "Anton I. Petrov"
+  ],
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/BurkovBA/angularjs-genoverse/issues"
+  },
+  "homepage": "https://github.com/BurkovBA/angularjs-genoverse#readme",
+  "devDependencies": {
+    "angular": "^1.6.2",
+    "angular-mocks": "^1.6.2",
+    "bootstrap": "^3.3.7",
+    "font-awesome": "^4.7.0",
+    "http-server": "^0.9.0",
+    "jasmine-core": "^2.5.2",
+    "jquery": "^3.1.1",
+    "karma": "^1.4.1",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-firefox-launcher": "^1.0.0",
+    "karma-jasmine": "^1.1.0"
+  },
+  "dependencies": {}
+}

@@ -320,7 +320,7 @@ class GenomeBrowserView(TemplateView):
     """
     Render genome-browser, taking into account start/end locations
     """
-    def get(self, request, genome='Homo-Sapiens', *args, **kwargs):
+    def get(self, request, genome='homo_sapiens', *args, **kwargs):
         self.template_name = 'portal/genome-browser.html'
 
         # always add genomes to kwargs
