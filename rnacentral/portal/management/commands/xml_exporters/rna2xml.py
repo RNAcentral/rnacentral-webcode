@@ -170,7 +170,13 @@ class RnaXmlExporter(OracleConnection):
             """
             Use either feature name or ncRNA class (when feature is 'ncRNA')
             """
-            return result['rna_type'].replace('_', ' ')
+            rna_types = [result['rna_type']]
+            if 'antisense' in result['rna_type']:
+                if result['ncrna_class']:
+                    rna_types.append(result['ncrna_class'])
+                else:
+                    rna_types.append(result['feature_name'])
+            return [r.replace('_', ' ') for r in rna_types]
 
         def store_rna_type():
             """
@@ -180,7 +186,7 @@ class RnaXmlExporter(OracleConnection):
             If an entry is any other RNA feature, use that feature_name
             as rna_type.
             """
-            self.data['rna_type'].add(get_rna_type())
+            self.data['rna_type'].update(get_rna_type())
 
         def store_computed_data():
             product_pattern = re.compile('^\w{3}-')
