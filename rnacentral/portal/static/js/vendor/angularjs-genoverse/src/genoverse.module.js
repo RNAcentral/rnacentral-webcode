@@ -396,7 +396,7 @@
                  */
                 function setGenoverseWidth() {
                     var w = $('.container').width();
-                    $('.wrap').width(w);
+                    $('.genoverse-wrap').width(w);
                     $('#genoverse').width(w);
                 }
 
