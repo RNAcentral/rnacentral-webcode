@@ -1,3 +1,16 @@
+"""
+Copyright [2009-2017] EMBL-European Bioinformatics Institute
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
 import itertools as it
 
 from django.test import SimpleTestCase
@@ -14,26 +27,27 @@ class BasicTest(SimpleTestCase):
 
     @property
     def data(self):
-        exporter = Exporter(destination='test/files', test=True)
+        exporter = Exporter(destination='test/files', min=0, max=10)
         structured = it.imap(exporter.structure_data, exporter.get_data())
         return list(structured)
 
     def test_it_fetches_all_sequences(self):
-        assert len(self.data) == 32
+        assert len(self.data) == 7
 
     def test_it_builds_correct_entry(self):
-        with QueryBatchLimit(write=0, read=1):
-            with TimeLimit(total=1):
-                assert self.data[1] == SimpleSequence(
-                    upi='URS0000000004',
+        with QueryBatchLimit(write=0, read=10):
+            with TimeLimit(total=2):
+                assert self.data[0] == SimpleSequence(
+                    upi='URS0000000001',
                     taxon_id=77133,
                     description='uncultured bacterium partial 16S ribosomal RNA',
                     rna_type='',
-                    seq_short='CACGCAGGCGGTTCTGCGCGTTTCGAGTGACAGCGGGCGGCTTACCTGCCCGAGTATTCGAAAGACGGTAGGACTTGAGGGCCAGAGAGGGACACGGAATTCCGGGTGGAGTGGTGAAATGCGTAGAGATCCGGAGGAACACCGAAGGCGAAGGCAGTGTCCTGGCTGGTGACTGACGCTGAGGTGCGAAAGCCGAGGGGAGCGAACGGGATTAGATACCCCGGTAGTCCTGGCCGTAAACGATGACCACCAGGTGTGGGAGGTATCGACCCCTTCGTGCCGGAGTCAACACACTAAGTGGTCCGCCTGGGGATACGGTCGCAAGATTAAAA',
+                    seq_short='ATTGAACGCTGGCGGCAGGCCTAACACATGCAAGTCGAGCGGTAGAGAGAAGCTTGCTTCTCTTGAGAGCGGCGGACGGGTGAGTAATGCCTAGGAATCTGCCTGGTAGTGGGGGATAACGCTCGGAAACGGACGCTAATACCGCATACGTCCTACGGGAGAAAGCAGGGGACCTTCGGGCCTTGCGCTATCAGATGAGC',
                     seq_long='',
-                    md5='030c78be0f492872b95219d172e0c658',
+                    md5='6bba097c8c39ed9a0fdf02273ee1c79a',
                     xrefs=[]
                 )
+
 
 class PdbeTest(SimpleTestCase):
 
@@ -47,18 +61,21 @@ class PdbeTest(SimpleTestCase):
         return self.exporter.structure_data(next(raw))
 
     def test_it_sets_id_to_pdb_and_chain(self):
-        with QueryBatchLimit(write=0, read=1):
+        with QueryBatchLimit(write=0, read=10):
             with TimeLimit(total=1):
                 data = self.data
-                assert data == SimpleSequence(
+                print(data)
+                assert data ==  SimpleSequence(
                     upi='URS000080E226',
                     taxon_id=274,
-                    description=u'16S rRNA from Thermus thermophilus (PDB 4YZV, chain XA)',
+                    description='16S rRNA from Thermus thermophilus (PDB 4YZV, chain XA)',
                     rna_type='rRNA',
                     seq_short='TTTGTTGGAGAGTTTGATCCTGGCTCAGGGTGAACGCTGGCGGCGTGCCTAAGACATGCAAGTCGTGCGGGCCGCGGGGTTTTACTCCGTGGTCAGCGGCGGACGGGTGAGTAACGCGTGGGTGACCTACCCGGAAGAGGGGGACAACCCGGGGAAACTCGGGCTAATCCCCCATGTGGACCCGCCCCTTGGGGTGTGTCCAAAGGGCTTTGCCCGCTTCCGGATGGGCCCGCGTCCCATCAGCTAGTTGGTGGGGTAATGGCCCACCAAGGCGACGACGGGTAGCCGGTCTGAGAGGATGGCCGGCCACAGGGGCACTGAGACACGGGCCCCACTCCTACGGGAGGCAGCAGTTAGGAATCTTCCGCAATGGGCGCAAGCCTGACGGAGCGACGCCGCTTGGAGGAAGAAGCCCTTCGGGGTGTAAACTCCTGAACCCGGGACGAAACCCCCGACGAGGGGACTGACGGTACCGGGGTAATAGCGCCGGCCAACTCCGTGCCAGCAGCCGCGGTAATACGGAGGGCGCGAGCGTTACCCGGATTCACTGGGCGTAAAGGGCGTGTAGGCGGCCTGGGGCGTCCCATGTGAAAGACCACGGCTCAACCGTGGGGGAGCGTGGGATACGCTCAGGCTAGACGGTGGGAGAGGGTGGTGGAATTCCCGGAGTAGCGGTGAAATGCGCAGATACCGGGAGGAACGCCGATGGCGAAGGCAGCCACCTGGTCCACCCGTGACGCTGAGGCGCGAAAGCGTGGGGAGCAAACCGGATTAGATACCCGGGTAGTCCACGCCCTAAACGATGCGCGCTAGGTCTCTGGGTCTCCTGGGGGCCGAAGCTAACGCGTTAAGCGCGCCGCCTGGGGAGTACGGCCGCAAGGCTGAAACTCAAAGGAATTGACGGGGGCCCGCACAAGCGGTGGAGCATGTGGTTTAATTCGAAGCAACGCGAAGAACCTTACCAGGCCTTGACATGCTAGGGAACCCGGGTGAAAGCCTGGGGTGCCCCGCGAGGGGAGCCCTAGCACAGGTGCTGCATGGCCGTCGTCAGCTCGTGCCGTGAGGTGTTGGGTTAAGTCCCGCAACGAGCGCAACCCCCGCCGTTAGTTGCCAGCGGTTCGGCCGGGCACTCTAACGGGACTGCCCGCGAAAGCGGGAGGAAGGAGGGGACGACGTCTGGTCAGCATGGCCCTTACGGCCTGGGCGACACACGTGCTACAATGCCCACTACAAAGCGATGCCACCCGGCAACGGGGAGCTAATCGCAAAAAGGTGGGCCCAGTTCGGATTGGGGTCTGCAACCCGACCCCATGAAGCCGGAATCGCTAGTAATCGCGGATCAGCCATGCCGCGGTGAATACGTTCCCGGGCCTTGTACACACCGCCCGTCACGCCATGGGAGCGGGCTCTACCCGAAGTCGCCGGGAGCCTACGGGCAGGCGCCGAGGGTAGGGCCCGTGACTGGGGCGAAGTCGTAACAAGGTAGCTGTACCGGAAGGTGCGGCTGGATCACCTCCTTTCT',
                     seq_long='',
                     md5='8c29ac94fb1a187b14036d4f9cbc9d83',
-                    xrefs=[
-                        SimpleXref(external_id=u'1FJG', optional_id=u'A', database=u'PDBe'),
-                    ])
+                    xrefs=[SimpleXref(external_id='1FJG',
+                                      optional_id='A',
+                                      database='PDBe',
+                                      molecule_type='')]
+                )
                 assert data.xrefs[0].id == '1FJG_A'
