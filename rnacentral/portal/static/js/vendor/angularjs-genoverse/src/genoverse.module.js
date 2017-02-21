@@ -84,13 +84,13 @@
                 "<div id='genoverse'></div>" +
                 "</div>",
             link: function(scope, element, attrs) {
-
                 // Initialization
                 // --------------
 
                 render();
 
                 // resize genoverse on browser width changes - attach once only
+                var resizeTimeout; // this is for resizing Genoverse
                 $(window).on('resize', setGenoverseWidth);
 
                 // Functions/methods
@@ -396,8 +396,12 @@
                  */
                 function setGenoverseWidth() {
                     var w = $('.container').width();
-                    $('.genoverse-wrap').width(w);
-                    $('#genoverse').width(w);
+
+                    clearTimeout(resizeTimeout);
+
+                    resizeTimeout = setTimeout(function () {
+                        scope.browser.setWidth(w);
+                    }, 100);
                 }
 
 
