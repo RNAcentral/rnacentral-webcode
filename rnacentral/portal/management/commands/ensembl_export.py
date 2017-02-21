@@ -27,35 +27,45 @@ from portal.models import Xref
 
 __doc__ = """
 This will export all RNA sequences in the database and provide xref information
-for a few selected databases. The database are not already part of ENSEMBL. This
-will produce a simple JSON data structure for import into other databases.
+for a few selected databases. The database are not already part of ENSEMBL.
+This will produce a simple JSON data structure for import into other databases.
 """
 
 
 TRUSTED_DB = set([
-    'GTRNADB',
-    'MODOMICS',
-    'LNCRNADB',
-    'PDBE',
-    'TAIR',
-    'POMBASE',
-    'DICTYBASE',
-    'WORMBASE',
-    'SGD',
+    'gtrnadb',
+    'lncrnadb',
+    'mirbase',
+    'modomics',
+    'pdbe',
+    'snopy'
+    'srpdb',
+    'tmrna',
 ])
 """
 This is the set of descr names for databases that we will provide xref entries
 for.
 """
 
+MOD_URL = 'http://modomics.genesilico.pl/sequences/list/{id}'
+
 
 class SimpleXref(coll.namedtuple('SimpleXref',
-                                 ['external_id', 'optional_id', 'database'])):
+                                 ['external_id', 'optional_id', 'database',
+                                  'molecule_type'])):
     """
     Similar to SimpleSequence, this is just a basic container that is between
     the model and the serializer for this data. It contains some minimal logic
     for fields to write that are derived from the basic model.
     """
+
+    def is_high_quality(self):
+        name = self.database.lower()
+        if name in TRUSTED_DB:
+            return True
+        if name == 'rfam':
+            return self.molecule_type == 'seed'
+        return False
 
     @classmethod
     def build(cls, xref):
@@ -63,12 +73,15 @@ class SimpleXref(coll.namedtuple('SimpleXref',
             external_id=xref.accession.external_id,
             optional_id=xref.accession.optional_id,
             database=xref.db.display_name,
+            molecule_type=xref.accession.mol_type,
         )
 
     @property
     def id(self):
         if self.database == 'PDBe':
             return '%s_%s' % (self.external_id, self.optional_id)
+        if self.database == 'Modomics':
+            return MOD_URL.format(id=self.external_id)
         return self.external_id
 
 
@@ -94,15 +107,19 @@ class SimpleSequence(coll.namedtuple('SimpleSequence',
 
         rna = xrefs[0].upi
         taxid = xrefs[0].taxid
+        precomputed = rna.precomputed.get(taxid=taxid)
+        simple = [SimpleXref.build(x) for x in xrefs]
+        simple = [s for s in simple if s.is_high_quality()]
+
         return cls(
             upi=rna.upi,
-            taxon_id=taxid,
-            description=rna.get_description(taxid=taxid),
-            rna_type=rna.get_rna_type(taxid=taxid),
+            taxon_id=xrefs[0].taxid,
+            description=precomputed.description,
+            rna_type=precomputed.rna_type,
             seq_short=rna.seq_short,
             seq_long=rna.seq_long,
             md5=rna.md5,
-            xrefs=[SimpleXref.build(x) for x in xrefs if x.db.descr in TRUSTED_DB],
+            xrefs=simple,
         )
 
     @property
@@ -133,9 +150,11 @@ class Exporter(object):
     def __init__(self, destination=None, test=False, min=None, max=None,
                  **kwargs):
         self.destination = destination
-        self.test = test
         self.min = min
         self.max = max
+        if test:
+            self.min = 0
+            self.max = 10000
         self.filename = 'ensembl-xrefs.json'
         self.filepath = os.path.join(self.destination, self.filename)
 
@@ -150,26 +169,22 @@ class Exporter(object):
         for testing.
         """
 
-        grouping = ('upi', 'taxid')
-        xrefs = Xref.objects.\
-            filter(deleted='N').\
-            filter(accession__external_id__isnull=False)
+        xrefs = Xref.objects.filter(deleted='N')
 
         if kwargs:
             xrefs = xrefs.filter(**kwargs)
 
         if self.min is not None:
-            xrefs = xrefs.filter(upi__id__gt=self.min)
+            xrefs = xrefs.filter(upi__id__gte=self.min)
 
         if self.max is not None:
-            xrefs = xrefs.filter(upi__id__lte=self.max)
+            xrefs = xrefs.filter(upi__id__lt=self.max)
 
+        grouping = ('upi', 'taxid')
         xrefs = xrefs.\
-            select_related('upi', 'accession').\
+            select_related('upi', 'accession', 'db').\
+            prefetch_related('upi__precomputed').\
             order_by(*grouping)
-
-        if self.test:
-            xrefs = xrefs[0:100]
 
         fn = op.attrgetter(*grouping)
         grouped = it.groupby(xrefs, fn)
@@ -180,7 +195,6 @@ class Exporter(object):
         This will restructure the data from `get_data` from an iterable of
         iterables to an iterable of SimpleSequence objects.
         """
-
         return SimpleSequence.build(list(xrefs))
 
     def __call__(self):
@@ -218,7 +232,8 @@ class Command(BaseCommand):
                     action='store_true',
                     dest='test',
                     default=False,
-                    help='[Optional] Run in test mode, which retrieves only a small subset of all data.'),
+                    help=('[Optional] Run in test mode, which retrieves only a'
+                          ' small subset of all data.')),
     )
     help = ('Export rnacentral data as json for import ensembl import')
 
@@ -229,8 +244,8 @@ class Command(BaseCommand):
             if options['min'] or options['max']:
                 raise CommandError("Cannot specify test with --min or --max")
         else:
-            if not options['min']:
+            if 'min' not in options:
                 raise CommandError('Please specify --min')
-            if not options['max']:
+            if 'max' not in options:
                 raise CommandError('Please specify --max')
         Exporter(**options)()
