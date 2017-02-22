@@ -284,7 +284,7 @@ class Rna(CachingMixin, models.Model):
         Example:
         chr1    29554    31097    RNA000063C361    0    +   29554    31097    255,0,0    3    486,104,122    0,1009,1421
         """
-        xrefs = self.xrefs.filter(db__project_id__isnull=True).all()
+        xrefs = self.xrefs.filter(deleted='N').all()
         bed = ''
         for xref in xrefs:
             bed += _xref_to_bed_format(xref)
