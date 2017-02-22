@@ -1410,7 +1410,7 @@ def _xref_to_bed_format(xref):
         return bed
     # prepare fields
     chromosome = xref.get_feature_chromosome()
-    chrom_start = xref.get_feature_start()
+    chrom_start = xref.get_feature_start() - 1
     chrom_end = xref.get_feature_end()
     upi = xref.upi.upi
     score = 0
