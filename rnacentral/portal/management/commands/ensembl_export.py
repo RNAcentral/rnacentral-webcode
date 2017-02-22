@@ -40,7 +40,7 @@ TRUSTED_DB = set([
     'pdbe',
     'snopy'
     'srpdb',
-    'tmrna',
+    'tmrna website',
 ])
 """
 This is the set of descr names for databases that we will provide xref entries
