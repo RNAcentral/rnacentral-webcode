@@ -536,7 +536,7 @@ rnaSequenceView.prototype.initialize = function() {
         var rnaClipboard = new Clipboard('#copy-as-rna', {
             "text": function() {
                 var rna = $('#rna-sequence').text();
-                rna = rna.replace(/\s/g, ''); // remove whitespace chars (arising due to colorer <spans> in sequence)
+                rna = rna.replace(/\s/g, ''); // remove whitespace chars (arising due to colored <spans> in sequence)
                 return rna;
             }
         });
@@ -544,7 +544,7 @@ rnaSequenceView.prototype.initialize = function() {
         var dnaClipbaord = new Clipboard('#copy-as-dna', {
             "text": function() {
                 var rna = $('#rna-sequence').text();
-                rna = rna.replace(/\s/g, ''); // remove whitespace chars (arising due to colorer <spans> in sequence)
+                rna = rna.replace(/\s/g, ''); // remove whitespace chars (arising due to colored <spans> in sequence)
                 var dna = reverseTranscriptase(rna);
                 return dna;
             }
