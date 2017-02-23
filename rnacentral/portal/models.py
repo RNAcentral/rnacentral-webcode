@@ -1013,6 +1013,8 @@ class Xref(models.Model):
         miRBase mature products and precursors share
         the same external MI* identifier.
         """
+        if self.accession.database != 'mirbase'.upper():
+            return None
         precursor = Xref.objects.filter(accession__external_id=self.accession.external_id,
                                         accession__feature_name='precursor_RNA').\
                                  first()
