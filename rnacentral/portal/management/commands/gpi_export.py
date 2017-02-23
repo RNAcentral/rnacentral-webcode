@@ -64,17 +64,26 @@ class GPIExporter(object):
         self.filename = 'rnacentral.gpi'
         self.filepath = os.path.join(self.destination, self.filename)
 
+    def get_mirna_precursors(self, rna, taxid):
+        """
+        Get miRNA precursors from miRBase for mature miRNAs.
+        """
+        text = ''
+        query = rna.xrefs.filter(db__id=4, taxid=taxid, accession__ncrna_class='miRNA')
+        if query.exists():
+            precursors = []
+            for xref in query.all():
+                precursors.append(xref.get_mirbase_precursor())
+            if precursors:
+                precursors = ['{upi}_{taxid}'.format(upi=x, taxid=taxid) for x in precursors if x is not None]
+                precursors = set(precursors)
+                text = 'precursor_rna:' + ','.join(precursors)
+        return text
+
     def format_row(self, row):
         """
         Export a result row as a string in GPI format.
         """
-        def get_description():
-            """
-            Get species-specific entry description.
-            """
-            rna = Rna(upi=row['upi'])
-            return rna.get_description(taxid=row['taxid'])
-
         # the order of array elements defines the field order in the output
         keys = ['database', 'DB_Object_ID', 'DB_Object_Symbol',
                 'DB_Object_Name', 'DB_Object_Synonym', 'DB_Object_Type',
@@ -83,11 +92,13 @@ class GPIExporter(object):
         data = dict()
         for key in keys:
             data[key] = ''
+        rna = Rna(upi=row['upi'])
         data['database'] = 'RNAcentral'
-        data['DB_Object_Name'] = get_description()
+        data['DB_Object_Name'] = rna.get_description(taxid=row['taxid'])
         data['DB_Object_ID'] = '{upi}_{taxid}'.format(upi=row['upi'], taxid=row['taxid'])
         data['Taxon'] = 'taxon:{taxon}'.format(taxon=row['taxid'])
         data['DB_Object_Type'] = 'rna'
+        data['Gene_Product_Properties'] = self.get_mirna_precursors(taxid=row['taxid'], rna=rna)
 
         # safeguard against breaking tsv format
         for key in keys:
@@ -108,7 +119,7 @@ class GPIExporter(object):
             WHERE deleted = 'N'
             """
             if self.test:
-                sql_cmd += ' AND dbid = 5 AND taxid = 10090' # just Vega xrefs
+                sql_cmd += ' AND dbid = 4 AND taxid = 9606' # human miRBase
             return sql_cmd
 
         def test_unique_ids():
