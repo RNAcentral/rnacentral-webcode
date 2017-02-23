@@ -90,7 +90,7 @@
                 render();
 
                 // resize genoverse on browser width changes - attach once only
-                var resizeTimeout; // this is for resizing Genoverse
+                scope.setWidthLock = false; // lock to avoid calling setWidth(), while another setWidth() is running
                 $(window).on('resize', setGenoverseWidth);
 
                 // Functions/methods
@@ -99,6 +99,7 @@
                 function render() {
                     var genoverseConfig = {
                         container: element.find('#genoverse'),
+                        width: $('.container').width(),
                         // if we want Genoverse itself to update url on scroll, say:
                         urlParamTemplate: false, // or set to: "chromosome=__CHR__&start=__START__&end=__END__",
                         chr: scope.chromosome,
@@ -164,9 +165,6 @@
                             // set Angular -> Genoverse data flow
                             scope.angularToGenoverseWatches = setAngularToGenoverseWatches();
 
-                            // imperatively set the initial width of Genoverse
-                            setGenoverseWidth();
-
                             if (!scope.$$phase) scope.$apply();
                         },
 
@@ -175,7 +173,53 @@
                             // let angular update its model in response to coordinates change
                             // that's an anti-pattern, but no other way to use FRP in angular
                             if (!scope.$$phase) scope.$apply();
+                        },
+
+                        // we make Genoverse "responsive" by calling setWidth on window.resize
+                        beforeSetWidth: function() {
+                            // we can't call setWidth(), while another instance of setWidth() is running
+                            // thus, we acquire a lock to prevent
+                            //scope.setWidthLock = true;
+                            var date = new Date;
                         }
+                    });
+
+                    /**
+                     * Release the setWidthLock, when all the deferreds were resolved and genoverse was re-rendered.
+                     *
+                     * Upon call to browser.setWidth(), it invokes reset(), which makes each track re-draw its
+                     * content. In the course of that process, Genoverse.Track.Controller.makeImage() asks
+                     * Genoverse.Track.Model to getData(), which creates new deferreds, requesting data for
+                     * rendering. We need to chain a callback to each of those deferreds, so that when one of those
+                     * deferreds is resolved or rejected, we could check if it's the last unresolved, wait a bit
+                     * to let Genoverse render the content (by setting arbitrary Timeout) and release setWidthLock.
+                     */
+                    scope.browser.on("afterRender", "tracks", function() {
+                        /**
+                         * Given a list of deferreds, checks, if any of them are unresolved.
+                         * @param {Array} deferreds - array of deferreds
+                         * @returns {boolean} - true, if at lease one deferred is unresolved
+                         */
+                        function anyUnresolved(deferreds) {
+                            for (var i=0; i < deferreds.length; i++) {
+                                if (deferreds[i] && deferreds[i].state() === "pending") return true;
+                            }
+                            return false;
+                        }
+
+                        // aggregate all the deferreds from all tracks in one Array
+                        var deferreds = [];
+                        scope.browser.tracks.forEach(function(element) {
+                            deferreds = deferreds.concat(element.controller.deferreds);
+                        });
+
+                        if (!anyUnresolved(deferreds)) {
+                            setTimeout(function () {
+                                scope.setWidthLock = false;
+                                var date = new Date();
+                            }, 50);
+                        }
+
                     });
                 }
 
@@ -395,13 +439,13 @@
                  * Maximize Genoverse container width.
                  */
                 function setGenoverseWidth() {
-                    var w = $('.container').width();
-
-                    clearTimeout(resizeTimeout);
-
-                    resizeTimeout = setTimeout(function () {
+                    if (!scope.setWidthLock) { // call setWidth() only if lock is free
+                        var w = $('.container').width();
                         scope.browser.setWidth(w);
-                    }, 100);
+                    }
+
+                    // resize might change viewport location - digest these changes
+                    if (!scope.$$phase) scope.$apply();
                 }
 
 
