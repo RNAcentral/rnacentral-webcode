@@ -971,7 +971,7 @@ class Xref(models.Model):
         """
         Format genomic coordinates in BED format.
         """
-        return _xref_to_bed_format(self)
+        return _xref_to_bed_format(self, taxid=self.taxid)
 
     def get_gff(self):
         """
@@ -1394,7 +1394,7 @@ class GffFormatter(Gff3Formatter):
         return ';'.join('%s "%s"' % (key, attributes[key]) for key in order)
 
 
-def _xref_to_bed_format(xref):
+def _xref_to_bed_format(xref, taxid=None):
     """
     Return genome coordinates of an xref in BED format. Available in Rna and Xref models.
     """
@@ -1413,6 +1413,8 @@ def _xref_to_bed_format(xref):
     chrom_start = xref.get_feature_start() - 1
     chrom_end = xref.get_feature_end()
     upi = xref.upi.upi
+    if taxid is not None:
+        upi += '_%s' % str(taxid)
     score = 0
     strand = '+' if xref.get_feature_strand() > 0 else '-'
     thick_start = chrom_start
