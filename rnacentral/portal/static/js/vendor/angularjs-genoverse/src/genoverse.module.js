@@ -276,11 +276,13 @@
                                         feature.label = feature.external_name;
                                         feature.exons = [];
                                         feature.cds   = [];
+                                        feature.chr   = feature.seq_region_name;
 
                                         this.insertFeature(feature);
                                     }
                                     else if (feature.feature_type === 'exon' && this.featuresById[feature.Parent]) {
                                         feature.id = feature.ID;
+                                        feature.chr = feature.seq_region_name;
 
                                         if (!this.featuresById[feature.Parent].exons[feature.id]) {
                                             this.featuresById[feature.Parent].exons.push(feature);
