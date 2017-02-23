@@ -33,7 +33,7 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
     });
 
     // initialize a tooltip on the share button
-    $('#copy-genome-location').tooltip();
+    $('#copy-genome-location').tipsy();
 
     // reflect any changes in genome in address bar
     $scope.$watch('genome', setUrl);
