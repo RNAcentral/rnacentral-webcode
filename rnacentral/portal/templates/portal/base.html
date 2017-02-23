@@ -176,9 +176,10 @@ limitations under the License.
                 <script src="{% static "js/genoverse.RNAcentralTrack.js" %}"></script>
             {% else %}
                 <script src="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/js/genoverse.combined.js" %}"></script>
-                <script src="{% static "js/vendor/angularjs-genoverse/src/genoverse.module.js" %}"></script>
                 <script src="{% static "js/genoverse.controller.js" %}"></script>
             {% endif %}
+            <!-- always load genoverse module -->
+            <script src="{% static "js/vendor/angularjs-genoverse/src/genoverse.module.js" %}"></script>
 
             <script>
                 $(function() {
