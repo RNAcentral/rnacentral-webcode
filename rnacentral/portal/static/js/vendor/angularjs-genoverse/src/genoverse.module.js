@@ -144,7 +144,17 @@
                                 model: configureGenoverseModel('rnacentral'),
                                 view: Genoverse.Track.View.Transcript.Ensembl,
                                 controller: Genoverse.Track.Controller.Ensembl,
-                                autoHeight: true
+                                autoHeight: true,
+                                populateMenu: function(feature) {
+                                    return {
+                                        title: '<a target=_blank href="http://rnacentral.org/rna/' + feature.label +'">'+ feature.label + '</a>',
+                                        id: feature.id,
+                                        biotype: feature.biotype,
+                                        start: feature.start,
+                                        end: feature.end,
+                                        strand: feature.strand
+                                    };
+                                }
                             })
                         ]
                     };
