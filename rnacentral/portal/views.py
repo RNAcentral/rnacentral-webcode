@@ -404,8 +404,9 @@ def _get_taxonomy_info_by_genome_identifier(identifier):
 
     for genome in rnacentral_genomes:
         # check, if it's a scientific name or a trivial name
+        synonyms = [synonym.lower() for synonym in genome['synonyms']]
         if (identifier.lower() == genome['species'].lower() or
-           identifier.lower() in genome['synonyms']):
+           identifier.lower() in synonyms):
             return genome
 
         # check, if it's a taxid
