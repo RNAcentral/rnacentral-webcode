@@ -73,7 +73,7 @@
             restrict: 'E',
             scope: false,
             template:
-                "<div class='wrap genoverse-wrap' style='overflow-x:auto;'>" +
+                "<div class='wrap genoverse-wrap'>" +
                 "    <p class='text-muted'>" +
                 "        <span id='genomic-location' class='margin-right-5px'></span>" +
                 "        View in <a href='http://{{domain}}/{{genome.species | urlencodeSpecies}}/Location/View?r={{chromosome}}:{{start}}-{{end}}' id='ensembl-link' target='_blank'>Ensembl</a>" +
