@@ -74,10 +74,10 @@ class GPIExporter(object):
             precursors = []
             for xref in query.all():
                 precursors.append(xref.get_mirbase_precursor())
+            precursors = ['{upi}_{taxid}'.format(upi=x, taxid=taxid) for x in precursors if x is not None]
             if precursors:
-                precursors = ['{upi}_{taxid}'.format(upi=x, taxid=taxid) for x in precursors if x is not None]
                 precursors = set(precursors)
-                text = 'precursor_rna:' + ','.join(precursors)
+                text = 'precursor_rna=' + ','.join(precursors)
         return text
 
     def format_row(self, row):
