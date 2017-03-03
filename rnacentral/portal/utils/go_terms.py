@@ -24,5 +24,5 @@ MAPPING = {
     "tmRNA": None,
     "vault_RNA": None,
     'rRNA': 'GO:0005840',
-    'tRNA': None,
+    'tRNA': 'CHEBI:17843',
 }
