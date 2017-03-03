@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+
+  "type": "array",
+  "description": "This is a list of entries in RNAcentral to be imported by ensembl. This list should be kept small enough to easily fit in memory and thus not all entries at once.",
+  "uniqueItems": true,
+  "minItems": 1,
+
+  "items": {
+    "title": "RNAcentral Entry",
+    "description": "This is an entry in RNAcentral that is active (does at least 1 active xref)",
+    "type": "object",
+    "required": ["rnacentral_id", "description", "sequence", "md5", "rna_type", "taxon_id", "xrefs"],
+
+    "properties": {
+      "rnacentral_id": {
+        "type": "string",
+        "description": "The specific specific URS of the sequence in RNAcentral",
+        "pattern": "^URS[A-Z0-9]{10}_\d+$"
+      },
+
+      "description": {
+        "type": "string",
+        "description": "Human readable name of the sequence",
+        "minLength": 1
+      },
+
+      "sequence": {
+        "type": "string",
+        "description": "The sequence in uppercase with U's.",
+        "minLength": 10,
+        "pattern": "^[ACGU]+$"
+      },
+
+      "md5": {
+        "type": "string",
+        "description": "The MD5 hash of the sequence in lowercase",
+        "pattern": "^[a-f\d]{32}$"
+      },
+
+      "rna_type": {
+        "description": "The INSDC type of the sequence",
+        "enum": [
+          "antisense_RNA",
+          "autocatalytically_spliced_intron",
+          "ribozyme",
+          "hammerhead_ribozyme",
+          "lncRNA",
+          "RNase_P_RNA",
+          "RNase_MRP_RNA",
+          "telomerase_RNA",
+          "guide_RNA",
+          "rasiRNA",
+          "scRNA",
+          "siRNA",
+          "miRNA",
+          "piRNA",
+          "snoRNA",
+          "snRNA",
+          "SRP_RNA",
+          "vault_RNA",
+          "Y_RNA",
+          "other",
+          "misc_RNA"
+        ]
+      },
+
+      "taxon_id": {
+        "type": "int",
+        "description": "NCBI taxon id of the organism"
+      },
+
+      "xrefs": {
+        "type": "array",
+        "description": "A list of cross references that other databases can use. These will only be the 'high quality' references from RNAcentral.",
+        "uniqueItems": true,
+
+        "items": {
+          "title": "RNAcentral Cross-reference",
+          "description": "This represents a reference from this sequence to a different high quality database that RNAcentral can provide",
+          "type": "object",
+          "required": ["database", "id"],
+
+          "properties": {
+            "database": {
+              "description": "Human readable name of the database this Xref comes from",
+              "enum": [
+                "GtRNAdb",
+                "lncRNAdb",
+                "miRBase",
+                "Modomics",
+                "PDBe",
+                "SNOpy",
+                "srPDB",
+                "tmRNA Website",
+                "Rfam" 
+              ]
+            },
+
+            "id": {
+              "type": "string",
+              "description": "ID of this sequence in this database",
+              "minLength": 1
+            }
+          }
+        }
+      }
+    }
+  }
+}
