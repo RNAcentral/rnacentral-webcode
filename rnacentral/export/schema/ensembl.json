@@ -61,7 +61,9 @@
           "vault_RNA",
           "Y_RNA",
           "other",
-          "misc_RNA"
+          "misc_RNA",
+          "rRNA",
+          "tRNA"
         ]
       },
 
