@@ -68,7 +68,7 @@
       },
 
       "taxon_id": {
-        "type": "int",
+        "type": "number",
         "description": "NCBI taxon id of the organism"
       },
 
