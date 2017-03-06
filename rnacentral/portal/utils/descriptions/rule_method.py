@@ -68,17 +68,31 @@ logger = logging.getLogger(__name__)
 
 def choose_best(ordered_choices, possible, check, default=None):
     """
-    Select the best choice from several ordered choices.
+    Select the best xref from several possible xrefs given the ordered list of
+    xref database names. This function will iterate over each database name and
+    select all xrefs that come from the first (most preferred) database. This
+    uses the check function to see if the database contains the correct
+    information because this doesn't always just check based upon the database
+    names or xref, but also the rna_type (in some cases). Using a function
+    gives a lot of flexibility in how we select the accetable xrefs.
 
     Parameters
     ----------
     ordered_choices : list
-        A list of several possible choices. These should be in the order in
-        which they are prefered.
+        A list of several possible xref database names. These should be in the
+        order in which they are preferred.
     possible : list
-        A list of objects to check.
+        The list of xrefs to find the best for.
     check : callable
-        A callable object to see if given choice and possible match.
+        A callable object to see if given xref and database name match.
+    default : obj, None
+        The default value to return if we cannot find a good xref.
+
+    Returns
+    -------
+    selected : obj
+        The list of xrefs which are 'best' given the choices. If there is no
+        good xref the default value is returned.
     """
 
     for choice in ordered_choices:
