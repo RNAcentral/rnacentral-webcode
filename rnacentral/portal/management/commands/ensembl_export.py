@@ -27,7 +27,7 @@ from portal.models import Xref
 
 __doc__ = """
 This will export all RNA sequences in the database and provide xref information
-for a few selected databases. The database are not already part of ENSEMBL.
+for a few selected databases. The database are not already part of Ensembl.
 This will produce a simple JSON data structure for import into other databases.
 """
 
