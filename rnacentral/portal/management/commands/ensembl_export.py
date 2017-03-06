@@ -129,7 +129,7 @@ class SimpleSequence(coll.namedtuple('SimpleSequence',
 
     @property
     def sequence(self):
-        return (self.seq_short or self.seq_long).replace('T', 'U')
+        return self.seq_short or self.seq_long
 
 
 class XrefSerializer(serializers.Serializer):
