@@ -13,6 +13,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import math
+import string
+import logging
+from collections import Counter
+
 __doc__ = """
 This module contains the implementation of the rule based method for finding
 the rna_type and description of a RNA molecule. The entry point for finding the
@@ -20,17 +25,13 @@ description is ``get_description``, while the entry point for finding the
 rna_type is ``determine_rna_type_for``.
 """
 
-import math
-import string
-import logging
-from collections import Counter
-
 CHOICES = {
     'miRNA': ['miRBase', 'RefSeq', 'Rfam', 'HGNC', 'PDBe', 'ENA'],
     'precursor_RNA': ['miRBase', 'RefSeq', 'Rfam', 'HGNC', 'ENA'],
     'ribozyme': ['RefSeq', 'Rfam', 'HGNC', 'PDBe', 'ENA'],
     'hammerhead_ribozyme': ['RefSeq', 'Rfam', 'HGNC', 'PDBe', 'ENA'],
-    'autocatalytically_spliced_intron': ['RefSeq', 'Rfam', 'HGNC', 'PDBe', 'ENA'],
+    'autocatalytically_spliced_intron': ['RefSeq', 'Rfam', 'HGNC', 'PDBe',
+                                         'ENA'],
 
     '__generic__': [
         'miRBase',
