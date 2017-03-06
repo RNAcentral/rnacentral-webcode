@@ -187,9 +187,9 @@ def get_species_specific_name(rna_type, sequence, xrefs):
     The best description will be the one from the xref which agrees with the
     computed rna_type and has the maximum entropy as estimated by `entropy`.
     The reason this is used over length is that some descriptions which come
-    from PDBe import are highly reptative because they are for short sequences
+    from PDBe import are highly repetitive because they are for short sequences
     and they contain the sequence in the name. Using entropy basis away from
-    those seqeunces to things that are hopefully more informative.
+    those sequences to things that are hopefully more informative.
 
     Parameters
     ----------
