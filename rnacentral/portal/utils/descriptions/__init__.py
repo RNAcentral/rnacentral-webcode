@@ -54,10 +54,6 @@ def get_description(sequence, xrefs, taxid=None):
     """
 
     logger.debug("Computing description_of for %s (%s)", sequence.upi, taxid)
-    if not _rm.can_apply(sequence, xrefs, taxid):
-        logger.debug("Cannot apply rule style, using score")
-        return _sm.get_description(sequence, taxid=taxid)
-
     name = _rm.get_description(sequence, xrefs, taxid=taxid)
     if not name:
         logger.debug("New style method failed, using score")

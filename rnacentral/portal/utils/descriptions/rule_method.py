@@ -66,17 +66,6 @@ annotations from the database agree.
 logger = logging.getLogger(__name__)
 
 
-def can_apply(sequence, xrefs, taxid):
-    """
-    Detect if we can apply the new method for selecting names. This works to
-    see if we have an entries in our CHOICES dictionary.
-    """
-
-    return True
-    # rna_types = {xref.accession.get_rna_type() for xref in xrefs}
-    # return bool(rna_types.intersection(CHOICES.keys()))
-
-
 def choose_best(ordered_choices, possible, check, default=None):
     """
     Select the best choice from several ordered choices.
