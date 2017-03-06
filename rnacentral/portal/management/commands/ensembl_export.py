@@ -14,6 +14,7 @@ limitations under the License.
 import os
 import operator as op
 import itertools as it
+import subprocess as sp
 import collections as coll
 
 from optparse import make_option
@@ -157,6 +158,8 @@ class Exporter(object):
             self.max = 10000
         self.filename = 'ensembl-xrefs.json'
         self.filepath = os.path.join(self.destination, self.filename)
+        self.schema = os.path.join(os.path.dirname(__file__), '..', '..', '..',
+                                   'export', 'schema', 'ensembl.json')
 
     def get_data(self, **kwargs):
         """
@@ -212,6 +215,7 @@ class Exporter(object):
         with open(self.filepath, 'wb') as out:
             json = JSONRenderer().render(serializer.data)
             out.write(json)
+        sp.check_call(['jsonschema', '-i', self.filepath, self.schema])
 
 
 class Command(BaseCommand):
