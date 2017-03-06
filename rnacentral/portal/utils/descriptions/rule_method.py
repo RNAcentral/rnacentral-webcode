@@ -28,10 +28,9 @@ rna_type is ``determine_rna_type_for``.
 CHOICES = {
     'miRNA': ['miRBase', 'RefSeq', 'HGNC', 'Rfam', 'ENA'],
     'precursor_RNA': ['miRBase', 'RefSeq', 'Rfam', 'HGNC', 'ENA'],
-    'ribozyme': ['RefSeq', 'Rfam', 'HGNC', 'PDBe', 'ENA'],
-    'hammerhead_ribozyme': ['RefSeq', 'Rfam', 'HGNC', 'PDBe', 'ENA'],
-    'autocatalytically_spliced_intron': ['RefSeq', 'Rfam', 'HGNC', 'PDBe',
-                                         'ENA'],
+    'ribozyme': ['RefSeq', 'Rfam', 'PDBe', 'ENA'],
+    'hammerhead_ribozyme': ['RefSeq', 'Rfam', 'PDBe', 'ENA'],
+    'autocatalytically_spliced_intron': ['RefSeq', 'Rfam', 'PDBe', 'ENA'],
 
     '__generic__': [
         'miRBase',
