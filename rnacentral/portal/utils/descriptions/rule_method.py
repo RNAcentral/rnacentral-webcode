@@ -13,7 +13,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-"""
+__doc__ = """
 This module contains the implementation of the rule based method for finding
 the rna_type and description of a RNA molecule. The entry point for finding the
 description is ``get_description``, while the entry point for finding the
