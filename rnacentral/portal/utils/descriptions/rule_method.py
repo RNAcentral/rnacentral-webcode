@@ -26,7 +26,7 @@ rna_type is ``determine_rna_type_for``.
 """
 
 CHOICES = {
-    'miRNA': ['miRBase', 'RefSeq', 'Rfam', 'HGNC', 'PDBe', 'ENA'],
+    'miRNA': ['miRBase', 'RefSeq', 'HGNC', 'Rfam', 'ENA'],
     'precursor_RNA': ['miRBase', 'RefSeq', 'Rfam', 'HGNC', 'ENA'],
     'ribozyme': ['RefSeq', 'Rfam', 'HGNC', 'PDBe', 'ENA'],
     'hammerhead_ribozyme': ['RefSeq', 'Rfam', 'HGNC', 'PDBe', 'ENA'],
