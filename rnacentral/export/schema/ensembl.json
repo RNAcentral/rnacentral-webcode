@@ -16,7 +16,7 @@
       "rnacentral_id": {
         "type": "string",
         "description": "The specific specific URS of the sequence in RNAcentral",
-        "pattern": "^URS[A-Z0-9]{10}_\d+$"
+        "pattern": "^URS[A-Z0-9]{10}_\\d+$"
       },
 
       "description": {
@@ -35,7 +35,7 @@
       "md5": {
         "type": "string",
         "description": "The MD5 hash of the sequence in lowercase",
-        "pattern": "^[a-f\d]{32}$"
+        "pattern": "^[a-f\\d]{32}$"
       },
 
       "rna_type": {
