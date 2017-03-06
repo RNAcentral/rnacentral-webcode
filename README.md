@@ -91,7 +91,7 @@ Running with django's test runner can be done with:
 
 ```sh
 $ cd rnacentral
-$ python manage.py test portal/tests/description_tests.py
+$ python manage.py test portal.tests.description_tests
 ```
 
 Using py.test requires slightly more setup. It is useful to set this up because
@@ -126,7 +126,7 @@ Tests can then be run with:
 
 ```sh
 $ cd rnacentral
-$ py.test portal.tests.description_tests.py
+$ py.test portal/tests/description_tests.py
 ```
 
 ## Feedback

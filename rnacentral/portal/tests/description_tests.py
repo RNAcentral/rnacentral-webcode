@@ -24,7 +24,7 @@ from portal.models import Rna
 __doc__ = """
 To run these tests you can simply do:
 
-$ python manage.py test portal/tests/description-tests.py
+$ python manage.py test portal.tests.description_tests
 """
 
 
