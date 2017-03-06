@@ -29,7 +29,7 @@
         "type": "string",
         "description": "The sequence in uppercase with U's.",
         "minLength": 10,
-        "pattern": "^[ACGU]+$"
+        "pattern": "^[ACGUYRWSKMDVHBNX]+$"
       },
 
       "md5": {
