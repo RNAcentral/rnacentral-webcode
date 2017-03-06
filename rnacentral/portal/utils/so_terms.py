@@ -6,32 +6,32 @@ stored in the ``MAPPING`` dict.
 """
 
 MAPPING = {
-    "RNase_MRP_RNA": 'SO:0000385',
-    "RNase_P_RNA": 'SO:0000386',
-    "SRP_RNA": 'SO:0000590',
-    "Y_RNA": 'SO:0000405',
-    "antisense_RNA": 'SO:0000644',
-    "autocatalytically_spliced_intron": 'SO:0000588',
-    "guide_RNA": 'SO:0000602',
-    "hammerhead_ribozyme": 'SO:0000380',
-    "lncRNA": 'SO:0001877',
-    "miRNA": 'SO:0000276',
-    "ncRNA": 'SO:0000655',
-    "misc_RNA": 'SO:0000673',
-    "other": 'SO:0000655',
-    "precursor_RNA": 'SO:0001244',
-    "piRNA": 'SO:0001035',
-    "rasiRNA": 'SO:0000454',
-    "ribozyme": 'SO:0000374',
-    "scRNA": 'SO:0000013',
-    "siRNA": 'SO:0000646',
-    "snRNA": 'SO:0000274',
-    "snoRNA": 'SO:0000275',
-    "telomerase_RNA": 'SO:0000390',
-    "tmRNA": 'SO:0000584',
-    "vault_RNA": 'SO:0000404',
-    'rRNA': 'SO:0000252',
-    'tRNA': 'SO:0000253',
+    "RNase_MRP_RNA": ('SO:0000385', "RNase_MRP_RNA"),
+    "RNase_P_RNA": ('SO:0000386', "RNase_P_RNA"),
+    "SRP_RNA": ('SO:0000590', "SRP_RNA"),
+    "Y_RNA": ('SO:0000405', "Y_RNA"),
+    "antisense_RNA": ('SO:0000644', "antisense_RNA"),
+    "autocatalytically_spliced_intron": ('SO:0000588', "autocatalytically_spliced_intron"),
+    "guide_RNA": ('SO:0000602', "guide_RNA"),
+    "hammerhead_ribozyme": ('SO:0000380', "hammerhead_ribozyme"),
+    "lncRNA": ('SO:0001877', "lnc_RNA"),
+    "miRNA": ('SO:0000276', "miRNA"),
+    "ncRNA": ('SO:0000655', "ncRNA"),
+    "misc_RNA": ('SO:0000673', "transcript"),
+    "other": ('SO:0000655', "ncRNA"),
+    "precursor_RNA": ('SO:0001244', "pre_miRNA"),
+    "piRNA": ('SO:0001035', "piRNA"),
+    "rasiRNA": ('SO:0000454', "rasiRNA"),
+    "ribozyme": ('SO:0000374', "ribozyme"),
+    "scRNA": ('SO:0000013', "scRNA"),
+    "siRNA": ('SO:0000646', "siRNA"),
+    "snRNA": ('SO:0000274', "snRNA"),
+    "snoRNA": ('SO:0000275', "snoRNA"),
+    "telomerase_RNA": ('SO:0000390', "telomerase_RNA"),
+    "tmRNA": ('SO:0000584', "tmRNA"),
+    "vault_RNA": ('SO:0000404', "vault_RNA"),
+    'rRNA': ('SO:0000252', 'rRNA'),
+    'tRNA': ('SO:0000253', 'tRNA'),
 }
 """
 A dict to map from ISNDC rna types to SO terms. Most of this are a very simple
@@ -68,7 +68,7 @@ precursor_RNA: SO:0001244
     long as to be a whole transcript before any processing.
 """
 
-UNKNOWN = 'SO:0000655'
+UNKNOWN = ('SO:0000655', "ncRNA")
 """
 The fall back SO term for something that has no known mapping to SO terms.
 """
@@ -89,10 +89,21 @@ def assign_term(urs):
 
     Returns
     -------
-    so_term : str
-        The SO term for the rna.
+    so_term : (str, str)
+        A tuple where the first element is SO accession and the second is the
+        label for the rna.
     """
 
     if isinstance(urs, basestring):
         return MAPPING.get(urs, UNKNOWN)
     return assign_term(urs.get_rna_type())
+
+
+def get_label(urs):
+    """
+    Get only the SO label for the given URS. This can effectively cover the
+    label using by ISNDC to the one used by the SO. Most of them are the same,
+    but a few are different. In addition, some terms in ISNDC don't have a
+    clear correspondence to the SO terms.
+    """
+    return assign_term(urs)[1]
