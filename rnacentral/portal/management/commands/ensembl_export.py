@@ -186,9 +186,13 @@ class Exporter(object):
             prefetch_related('upi__precomputed').\
             order_by(*grouping)
 
-        fn = op.attrgetter(*grouping)
-        grouped = it.groupby(xrefs, fn)
-        return it.imap(op.itemgetter(1), grouped)
+        # This will group all xrefs by the tuple of values in their 'upi'
+        # and 'taxid' attributes and then produce a iterable of iterables of
+        # the grouped xrefs. This assumes the initial xrefs iterable is
+        # ordered.
+        fn = op.attrgetter(*grouping)  # A function to get the upi, taxid tuple
+        grouped = it.groupby(xrefs, fn)  # Group by the tuple
+        return it.imap(op.itemgetter(1), grouped)  # Create the iterables
 
     def structure_data(self, xrefs):
         """
