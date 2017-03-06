@@ -159,20 +159,30 @@ def entropy(data):
 
 
 def suitable_xref(required_rna_type):
-    """Create a function, based upon the given rna_type, which 
+    """
+    Create a function, based upon the given rna_type, which will test if the
+    database has assinged the  correct rna_type to the sequence. This is used
+    when selecting the description so we use the description from a database
+    that gets the rna_type correct. There are exceptions for
+    miRNA/precursor_RNA as well as PDBe's misc_RNA information.
 
     Parameters
     ----------
     required_rna_type : str
-        The rna_type that the
+        The rna_type to use to check the database.
 
     Returns
     -------
     fn : function
         A function to detect if the given xref has information about the
-        rna_type that can be used for 
+        rna_type that can be used for determining the rna_type and description.
     """
 
+    # allowed_rna_types is the set of rna_types which a database is allowed to
+    # call the sequence for this function to trust the database's opinion on
+    # the description/rna_type. We allow database to use one of
+    # miRNA/precursor_RNA since some databases (Rfam, HGNC) do not correctly
+    # distinguish the two but do have good descriptions otherwise.
     allowed_rna_types = set([required_rna_type])
     if required_rna_type in set(['miRNA', 'precursor_RNA']):
         allowed_rna_types = set(['miRNA', 'precursor_RNA'])
