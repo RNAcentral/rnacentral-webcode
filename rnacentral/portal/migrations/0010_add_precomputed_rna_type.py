@@ -12,5 +12,5 @@ class Migration(migrations.Migration):
     operations = [
         # rna_type is a / seperated field that represents the set of rna_types
         # for a given sequence.
-        migrations.AddField("RnaPrecomputed", "rna_type", models.CharField(max_length=250))
+        migrations.AddField("RnaPrecomputed", "rna_type", models.CharField(max_length=40))
     ]
