@@ -159,6 +159,20 @@ def entropy(data):
 
 
 def suitable_xref(required_rna_type):
+    """Create a function, based upon the given rna_type, which 
+
+    Parameters
+    ----------
+    required_rna_type : str
+        The rna_type that the
+
+    Returns
+    -------
+    fn : function
+        A function to detect if the given xref has information about the
+        rna_type that can be used for 
+    """
+
     allowed_rna_types = set([required_rna_type])
     if required_rna_type in set(['miRNA', 'precursor_RNA']):
         allowed_rna_types = set(['miRNA', 'precursor_RNA'])
@@ -380,10 +394,6 @@ def get_description(sequence, xrefs, taxid=None):
 
     If a taxid is given then a species specific name is generated, otherwise a
     more general cross species name is created.
-
-    If this method cannot determine a single rna_type for the sequence then it
-    will return None instead of a description. Additionally, it can return None
-    if no xref provides a suitable description for the computed rna_type.
 
     Parameters
     ----------
