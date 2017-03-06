@@ -74,7 +74,7 @@ def choose_best(ordered_choices, possible, check, default=None):
     uses the check function to see if the database contains the correct
     information because this doesn't always just check based upon the database
     names or xref, but also the rna_type (in some cases). Using a function
-    gives a lot of flexibility in how we select the accetable xrefs.
+    gives a lot of flexibility in how we select the acceptable xrefs.
 
     Parameters
     ----------

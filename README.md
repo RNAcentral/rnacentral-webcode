@@ -31,13 +31,56 @@ The development of RNAcentral is coordinated by the
 **Docker Cheat Sheet**
 
 ```
-# get IP address
-docker ps
-
 # connect to a running container
 docker ps
 docker exec -it <container_id> bash
 ```
+
+## Testing
+
+Using Django test runner:
+
+```sh
+cd rnacentral
+python manage.py test portal.tests.description_tests
+```
+
+Using [py.test](http://docs.pytest.org/en/latest/) requires creating a file `rnacentral/conftest.py`:
+
+```python
+import django
+import pytest
+
+django.setup()
+
+
+@pytest.fixture(scope='session')
+def django_db_setup():
+    """Avoid creating/setting up the test database"""
+    pass
+
+
+@pytest.fixture
+def db_access_without_rollback_and_truncate(request, django_db_setup,
+                                            django_db_blocker):
+    django_db_blocker.unblock()
+    request.addfinalizer(django_db_blocker.restore)
+$ cat pytest.ini
+[pytest]
+DJANGO_SETTINGS_MODULE = rnacentral.settings
+```
+
+Tests can then be run with:
+
+```sh
+cd rnacentral
+py.test portal/tests/description_tests.py
+```
+
+## Feedback
+
+Feel free to give feedback using [GitHub issues](https://github.com/RNAcentral/rnacentral-webcode/issues)
+or get in touch using the [Contact form](http://rnacentral.org/contact) on our website.
 
 ## Technology overview
 
@@ -80,56 +123,3 @@ docker exec -it <container_id> bash
 * [Redis](http://redis.io/)
 * [Supervisor](http://supervisord.org/)
 * [Docker](https://www.docker.com)
-
-## Testing
-
-Unit tests can be run using either [py.test](http://docs.pytest.org/en/latest/)
-or django's built in test runner. Note that you must have already filled out
-the settings module and be able to connect to the oracle database. 
-
-Running with django's test runner can be done with:
-
-```sh
-$ cd rnacentral
-$ python manage.py test portal.tests.description_tests
-```
-
-Using py.test requires slightly more setup. It is useful to set this up because
-it can integrate directly with some editors. Create the following:
-
-```sh
-$ cd rnacentral
-$ cat conftest.py
-import django
-import pytest
-
-django.setup()
-
-
-@pytest.fixture(scope='session')
-def django_db_setup():
-    """Avoid creating/setting up the test database"""
-    pass
-
-
-@pytest.fixture
-def db_access_without_rollback_and_truncate(request, django_db_setup,
-                                            django_db_blocker):
-    django_db_blocker.unblock()
-    request.addfinalizer(django_db_blocker.restore)
-$ cat pytest.ini
-[pytest]
-DJANGO_SETTINGS_MODULE = rnacentral.settings
-```
-
-Tests can then be run with:
-
-```sh
-$ cd rnacentral
-$ py.test portal/tests/description_tests.py
-```
-
-## Feedback
-
-Feel free to give feedback using [GitHub issues](https://github.com/RNAcentral/rnacentral-webcode/issues)
-or get in touch using the [Contact form](http://rnacentral.org/contact) on our website.
