@@ -18,7 +18,7 @@ from . import score_method as _sm
 
 __doc__ = """
 A module to help with selecting the descriptions of various RNA molecules. The
-module exports a single function, description_of, which will determine the
+module exports a single function, get_description, which will determine the
 description of a given sequence. The method chooses from the two possible
 methods to create a description.
 
@@ -53,7 +53,7 @@ def get_description(sequence, xrefs, taxid=None):
         The description of this sequence.
     """
 
-    logger.debug("Computing description_of for %s (%s)", sequence.upi, taxid)
+    logger.debug("Computing get_description for %s (%s)", sequence.upi, taxid)
     name = _rm.get_description(sequence, xrefs, taxid=taxid)
     if not name:
         logger.debug("New style method failed, using score")
