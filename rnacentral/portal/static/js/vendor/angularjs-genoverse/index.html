@@ -60,7 +60,7 @@ limitations under the License.
                         / <a href="http://ensemblgenomes.org/" class="text-muted">Ensembl Genomes</a>
                     </p>
 
-                    <div class="row">
+                    <div class="row" style="padding-left: 15px;">
                         <div class="col-lg-3 col-md-3 col-sm-12">
                             <label for="genomic-species-select">Species</label>
                             <select id="genomic-species-select" class="form-control" ng-options="genome as genome.species for genome in genomes" ng-model="genome">
@@ -84,7 +84,18 @@ limitations under the License.
 
             <br>
 
-            <genoverse></genoverse>
+            <p class='text-muted'>
+                <span id='genomic-location' class='margin-right-5px'></span>
+                View in <a href='http://{{domain}}/{{genome.species | urlencodeSpecies}}/Location/View?r={{chromosome}}:{{start}}-{{end}}' id='ensembl-link' target='_blank'>{{ genome.division }}</a>
+                <span ng-show='genome.assembly_ucsc' class='ucsc-link'>|
+                    <a href='http://genome.ucsc.edu/cgi-bin/hgTracks?db={{genome.assembly_ucsc}}&position={{chromosome | chrToUCSC}}%3A{{start}}-{{end}}' target='_blank'>UCSC</a>
+                </span>
+            </p>
+            <genoverse genome="genome" chromosome="chromosome" start="start" end="end">
+                <genoverse-track name="'Sequence'" model="Genoverse.Track.Model.Sequence.Ensembl" view="Genoverse.Track.View.Sequence" controller="Genoverse.Track.Controller.Sequence" url="urls.sequence" resizable="'auto'" auto-height="true" extra="{100000: false}"></genoverse-track>
+                <genoverse-track name="'Genes'" labels="true" info="'Ensembl API genes'" model="Genoverse.Track.Model.Gene.Ensembl" view="Genoverse.Track.View.Gene.Ensembl" url="urls.genes" resizable="'auto'" auto-height="true"></genoverse-track>
+                <genoverse-track name="'Transcripts'" labels="true" info="'Ensembl API transcripts'" model="Genoverse.Track.Model.Transcript.Ensembl" view="Genoverse.Track.View.Transcript.Ensembl" url="urls.transcripts" resizable="'auto'" auto-height="true"></genoverse-track>
+            </genoverse>
 
         </div>
 
@@ -100,6 +111,6 @@ limitations under the License.
         <!--<script src="lib/Genoverse/js/plugins/resizer.js"></script>-->
         <!--<script src="lib/Genoverse/js/plugins/karyotype.js"></script>-->
         <script src="app.js"></script>
-        <script src="src/genoverse.module.js"></script>
+        <script src="dist/angularjs-genoverse.all.js"></script>
     </body>
 </html>

@@ -33,8 +33,8 @@ angular.module('Example').controller('GenoverseGenomeBrowser', ['$scope', '$loca
             'division': 'Ensembl',
             'example_location': {
                 'chromosome': 'X',
-                'start': 73792205,
-                'end': 73829231
+                'start': 73819307,
+                'end': 73856333
             }
         },
         {
@@ -46,8 +46,8 @@ angular.module('Example').controller('GenoverseGenomeBrowser', ['$scope', '$loca
             'division': 'Ensembl',
             'example_location': {
                 'chromosome': 1,
-                'start': 86351981,
-                'end': 86352127
+                'start': 86351908,
+                'end': 86352200
             }
         },
         {
@@ -59,8 +59,8 @@ angular.module('Example').controller('GenoverseGenomeBrowser', ['$scope', '$loca
             'division': 'Ensembl',
             'example_location': {
                 'chromosome': 9,
-                'start': 7633985,
-                'end': 7634135
+                'start': 7633910,
+                'end': 7634210
             }
         },
         {
@@ -72,8 +72,8 @@ angular.module('Example').controller('GenoverseGenomeBrowser', ['$scope', '$loca
             'division': 'Ensembl',
             'example_location': {
                 'chromosome': 15,
-                'start': 82197714,
-                'end': 82197796
+                'start': 82197673,
+                'end': 82197837
             }
         },
         {
@@ -85,8 +85,8 @@ angular.module('Example').controller('GenoverseGenomeBrowser', ['$scope', '$loca
             'division': 'Ensembl',
             'example_location': {
                 'chromosome': 'X',
-                'start': 118277684,
-                'end': 118277795
+                'start': 118277628,
+                'end': 118277850
             }
         },
         // {
@@ -124,8 +124,8 @@ angular.module('Example').controller('GenoverseGenomeBrowser', ['$scope', '$loca
             'division': 'Ensembl',
             'example_location': {
                 'chromosome': 11,
-                'start': 78369057,
-                'end': 78369163
+                'start': 78369004,
+                'end': 78369219
             }
         },
         {
@@ -137,8 +137,8 @@ angular.module('Example').controller('GenoverseGenomeBrowser', ['$scope', '$loca
             'division': 'Ensembl',
             'example_location': {
                 'chromosome': 19,
-                'start': 22006963,
-                'end': 22007066
+                'start': 22006909,
+                'end': 22007119
             }
         },
         // {
@@ -190,8 +190,8 @@ angular.module('Example').controller('GenoverseGenomeBrowser', ['$scope', '$loca
             'division': 'Ensembl Fungi',
             'example_location': {
                 'chromosome': 'I',
-                'start': 541795,
-                'end': 543483
+                'start': 540951,
+                'end': 544327
             }
         },
         // Ensembl Metazoa
@@ -199,13 +199,13 @@ angular.module('Example').controller('GenoverseGenomeBrowser', ['$scope', '$loca
             'species': 'Caenorhabditis elegans',
             'synonyms': ['worm'],
             'assembly': 'WBcel235',
-            'assembly_ucsc': '',
+            'assembly_ucsc': 'ce11',
             'taxid': 6239,
             'division': 'Ensembl Metazoa',
             'example_location': {
                 'chromosome': 'III',
-                'start': 11467449,
-                'end': 11467620
+                'start': 11467363,
+                'end': 11467705
             }
         },
         {
@@ -217,8 +217,8 @@ angular.module('Example').controller('GenoverseGenomeBrowser', ['$scope', '$loca
             'division': 'Ensembl Metazoa',
             'example_location': {
                 'chromosome': '3R',
-                'start': 7474553,
-                'end': 7474996
+                'start': 7474331,
+                'end': 7475217
             }
         },
         {
@@ -230,8 +230,8 @@ angular.module('Example').controller('GenoverseGenomeBrowser', ['$scope', '$loca
             'division': 'Ensembl Metazoa',
             'example_location': {
                 'chromosome': 'scaf16',
-                'start': 6180119,
-                'end': 6180321
+                'start': 6180018,
+                'end': 6180422
             }
         },
         // {
@@ -257,8 +257,8 @@ angular.module('Example').controller('GenoverseGenomeBrowser', ['$scope', '$loca
             'division': 'Ensembl Protists',
             'example_location': {
                 'chromosome': 2,
-                'start': 7876933,
-                'end': 7877055
+                'start': 7874546,
+                'end': 7876498
             }
         },
         // {
@@ -284,24 +284,214 @@ angular.module('Example').controller('GenoverseGenomeBrowser', ['$scope', '$loca
             'division': 'Ensembl Plants',
             'example_location': {
                 'chromosome': 2,
-                'start': 18820691,
-                'end': 18822184
+                'start': 18819643,
+                'end': 18822629
             }
         }
     ];
 
+    /**
+     * Dynamically determine whether to use E! or EG REST API based on species.
+     * If species not in E!, use EG.
+     * Ensembl species list: http://www.ensembl.org/info/about/species.html
+     */
+    function getEndpoint(species) {
+        var ensemblSpecies = [
+            "ailuropoda_melanoleuca",
+            "anas_platyrhynchos",
+            "anolis_carolinensis",
+            "astyanax_mexicanus",
+            "bos_taurus",
+            "callithrix_jacchus",
+            "canis_lupus_familiaris",
+            "cavia_porcellus",
+            "ceratotherium_simum_simum",
+            "chlorocebus_sabaeus",
+            "choloepus_hoffmanni",
+            "chrysemys_picta_bellii",
+            "ciona_intestinalis",
+            "ciona_savignyi",
+            "cricetulus_griseus",
+            "danio_rerio",
+            "dasypus_novemcinctus",
+            "dipodomys_ordii",
+            "drosophila_melanogaster",
+            "echinops_telfairi",
+            "equus_caballus",
+            "erinaceus_europaeus",
+            "felis_catus",
+            "ficedula_albicollis",
+            "gadus_morhua",
+            "gallus_gallus",
+            "gasterosteus_aculeatus",
+            "gorilla_gorilla_gorilla",
+            "heterocephalus_glaber",
+            "homo_sapiens",
+            "ictidomys_tridecemlineatus",
+            "latimeria_chalumnae",
+            "lepisosteus_oculatus",
+            "loxodonta_africana",
+            "macaca_fascicularis",
+            "macaca_mulatta",
+            "macropus_eugenii",
+            "meleagris_gallopavo",
+            "melopsittacus_undulatus",
+            "microcebus_murinus",
+            "microtus_ochrogaster",
+            "monodelphis_domestica",
+            "mus_musculus",
+            "mustela_putorius_furo",
+            "myotis_lucifugus",
+            "nomascus_leucogenys",
+            "ochotona_princeps",
+            "oreochromis_niloticus",
+            "ornithorhynchus_anatinus",
+            "orycteropus_afer_afer",
+            "oryctolagus_cuniculus",
+            "oryzias_latipes",
+            "otolemur_garnettii",
+            "ovis_aries",
+            "pan_troglodytes",
+            "papio_anubis",
+            "papio_hamadryas",
+            "pelodiscus_sinensis",
+            "petromyzon_marinus",
+            "poecilia_formosa",
+            "pongo_abelii",
+            "procavia_capensis",
+            "pteropus_vampyrus",
+            "rattus_norvegicus",
+            "saimiri_boliviensis",
+            "sarcophilus_harrisii",
+            "sorex_araneus",
+            "sus_scrofa",
+            "sus_scrofa_map",
+            "taeniopygia_guttata",
+            "takifugu_rubripes",
+            "tarsius_syrichta",
+            "tetraodon_nigroviridis",
+            "tupaia_belangeri",
+            "tursiops_truncatus",
+            "vicugna_pacos",
+            "xenopus_tropicalis",
+            "xiphophorus_maculatus"
+        ];
+        // "saccharomyces_cerevisiae", "caenorhabditis_elegans"];
+        // "saccharomyces_cerevisiae", "caenorhabditis_elegans" could use either E! or EG
+
+        var encoded = $filter('urlencodeSpecies')(species); // urlencoded species name
+        return ensemblSpecies.indexOf(encoded) > -1 ? 'https://rest.ensembl.org' : 'https://rest.ensemblgenomes.org';
+    }
+
+    /**
+     * Takes a genome on input, looks into its division attribute and returns the corresponding Ensembl
+     * subdomain
+     *
+     * @param genome {Object} e.g.
+     * {
+     *     'species': 'Mus musculus', 'synonyms': ['mouse'], 'assembly': 'GRCm38', 'assembly_ucsc': 'mm10',
+     *     'taxid': 10090, 'division': 'Ensembl',
+     *     'example_location': {'chromosome': 1, 'start': 86351981, 'end': 86352127,}
+     * }
+     * @returns {String} domain name without protocol or slashes or trailing dots
+     */
+    function getEnsemblSubdomainByDivision(genome) {
+        var subdomain;
+
+        if (genome.division == 'Ensembl') {
+            subdomain = 'ensembl.org';
+        } else if (genome.division == 'Ensembl Plants') {
+            subdomain = 'plants.ensembl.org';
+        } else if (genome.division == 'Ensembl Metazoa') {
+            subdomain = 'metazoa.ensembl.org';
+        } else if (genome.division == 'Ensembl Bacteria') {
+            subdomain = 'bacteria.ensembl.org';
+        } else if (genome.division == 'Ensembl Fungi') {
+            subdomain = 'fungi.ensembl.org';
+        } else if (genome.division == 'Ensembl Protists') {
+            subdomain = 'protists.ensembl.org';
+        }
+
+        return subdomain;
+    }
+
+
     // from JS standpoint, genome and genomes[i] == genome are different objects, but we want exactly the same, so:
     $scope.genome = genomes[0];
 
+    // get domain for Ensembl links
+    $scope.domain = getEnsemblSubdomainByDivision($scope.genome);
+
     $scope.chromosome = "X";
-    $scope.start = 73792205;
-    $scope.end = 73829231;
+    $scope.start = 73819307;
+    $scope.end = 73856333;
+
+    $scope.Genoverse = Genoverse;
+
+    $scope.urls = {
+        sequence: function () { // Sequence track configuration
+            var species = $filter('urlencodeSpecies')($scope.genome.species);
+            var endpoint = getEndpoint(species);
+            return '__ENDPOINT__/sequence/region/__SPECIES__/__CHR__:__START__-__END__?content-type=text/plain'
+                .replace('__ENDPOINT__', endpoint)
+                .replace('__SPECIES__', species);
+        },
+        genes: function() { // Genes track configuration
+            var species = $filter('urlencodeSpecies')($scope.genome.species);
+            var endpoint = getEndpoint(species);
+            return '__ENDPOINT__/overlap/region/__SPECIES__/__CHR__:__START__-__END__?feature=gene;content-type=application/json'
+                .replace('__ENDPOINT__', endpoint)
+                .replace('__SPECIES__', species);
+        },
+        transcripts: function() { // Transcripts track configuration
+            var species = $filter('urlencodeSpecies')($scope.genome.species);
+            var endpoint = getEndpoint(species);
+            return '__ENDPOINT__/overlap/region/__SPECIES__/__CHR__:__START__-__END__?feature=transcript;feature=exon;feature=cds;content-type=application/json'
+                .replace('__ENDPOINT__', endpoint)
+                .replace('__SPECIES__', species);
+        }
+    };
+
+    // We want to achieve the following behavior declaratively:
+    //
+    // return Genoverse.Track.extend({
+    //     name: 'Sequence',
+    //     model: Genoverse.Track.Model.Sequence.Ensembl.extend({ url: url }),
+    //     view: Genoverse.Track.View.Sequence,
+    //     controller: Genoverse.Track.Controller.Sequence,
+    //     resizable: 'auto',
+    //     autoHeight: true,
+    //     100000: false
+    // });
+    //
+    // return Genoverse.Track.extend({
+    //     name: 'Genes',
+    //     info: 'Ensembl API genes',
+    //     labels: true,
+    //     model: Genoverse.Track.Model.Gene.Ensembl.extend({ url: url }),
+    //     view: Genoverse.Track.View.Gene.Ensembl,
+    //     controller: Genoverse.Track.Controller.Ensembl,
+    //     autoHeight: true
+    // });
+    //
+    // return Genoverse.Track.extend({
+    //     name: 'Transcripts',
+    //     info: 'Ensembl API transcripts',
+    //     labels: true,
+    //     model: Genoverse.Track.Model.Transcript.Ensembl.extend({ url: url }),
+    //     view: Genoverse.Track.View.Transcript.Ensembl,
+    //     controller: Genoverse.Track.Controller.Ensembl,
+    //     autoHeight: true
+    // });
+
 
     // reflect any changes in genome in address bar
     $scope.$watch('genome', setUrl);
     $scope.$watch('chromosome', setUrl);
     $scope.$watch('start', setUrl);
     $scope.$watch('stop', setUrl);
+
+    $scope.$watch('genome', setDomain);
 
     // Method definitions
     // ------------------
@@ -311,9 +501,17 @@ angular.module('Example').controller('GenoverseGenomeBrowser', ['$scope', '$loca
      */
     function setUrl(newValue, oldValue) {
         // set the full url
-        $location.path("/" + $filter('urlencodeSpecies')($scope.genome.species)); // this filter's from Genoverse module
-        $location.search({chromosome: $scope.chromosome, start: $scope.start, end: $scope.end});
+        $location.search({
+            species: $filter('urlencodeSpecies')($scope.genome.species),  // filter is from Genoverse module
+            chromosome: $scope.chromosome,
+            start: $scope.start,
+            end: $scope.end
+        });
         $location.replace();
+    }
+
+    function setDomain(newValue, oldValue) {
+        $scope.domain = getEnsemblSubdomainByDivision(newValue);
     }
 
 }]);

@@ -2,15 +2,16 @@
   "name": "angularjs-genoverse",
   "version": "1.0.0",
   "description": "An AngularJS (1.x) directive, wrapping the Genoverse genome browser.",
-  "main": "genoverse.module.js",
+  "main": "dist/angularjs-genoverse.min.js",
   "scripts": {
     "test:unit": "karma start --browsers Chrome --single-run",
     "test:e2e": "protractor test/e2e/protractor.conf.js",
+    "test:e2e:saucelabs": "protractor test/e2e/protractor.saucelabs.conf.js",
     "clean": "rm -rf dist/*",
-    "concat": "cat src/*.js > dist/angularjs-genoverse.all.js",
-    "uglify": "uglifyjs --compress --mangle -o dist/angularjs-genoverse.min.js --source-map dist/angularjs-genoverse.min.js.map dist/angularjs-genoverse.all.js",
+    "concat": "cat `find . -path './src/*.js' -not -path './src/*.spec.js'` > dist/angularjs-genoverse.all.js",
+    "uglify": "find . -path './src/*.js' -not -path './src/*.spec.js' | xargs uglifyjs --compress --mangle -o dist/angularjs-genoverse.min.js --source-map dist/angularjs-genoverse.min.js.map --source-map-url /dist/angularjs-genoverse.min.js.map --source-map-root /",
     "build": "npm run clean && npm run concat && npm run uglify",
-    "start": "http-server -a localhost -p 8000 -c-1 ."
+    "start": "npm run build && http-server -a localhost -p 8000 -c-1 ."
   },
   "repository": {
     "type": "git",
@@ -23,7 +24,8 @@
   ],
   "author": "Boris A. Burkov",
   "contributors": [
-    "Anton I. Petrov"
+    "Anton I. Petrov",
+    "Simon Brent"
   ],
   "license": "Apache-2.0",
   "bugs": {

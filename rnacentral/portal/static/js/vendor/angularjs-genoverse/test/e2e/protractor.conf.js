@@ -3,7 +3,7 @@
 
 exports.config = {
     specs: [
-        '*.js'
+        '*.spec.js'
     ],
 
     baseUrl: 'http://localhost:8000/',
@@ -22,4 +22,4 @@ exports.config = {
         isVerbose: true,
         includeStackTree: true
     }
-}
+};
