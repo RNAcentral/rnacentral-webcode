@@ -196,11 +196,13 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
                 feature.label = feature.external_name;
                 feature.exons = [];
                 feature.cds   = [];
+                feature.chr   = feature.seq_region_name;
 
                 this.insertFeature(feature);
             }
             else if (feature.feature_type === 'exon' && this.featuresById[feature.Parent]) {
-                feature.id = feature.ID;
+                feature.id  = feature.ID;
+                feature.chr = feature.seq_region_name;
 
                 if (!this.featuresById[feature.Parent].exons[feature.id]) {
                     this.featuresById[feature.Parent].exons.push(feature);
@@ -213,7 +215,6 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
     $scope.RNAcentralPopulateMenu = function(feature) {
         return {
             title: '<a target=_blank href="http://rnacentral.org/rna/' + feature.label +'">'+ feature.label + '</a>',
-            id: feature.id,
             biotype: feature.biotype,
             start: feature.start,
             end: feature.end,
