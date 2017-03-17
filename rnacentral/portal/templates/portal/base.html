@@ -181,6 +181,7 @@ limitations under the License.
             <script src="{% static "js/vendor/angularjs-genoverse/src/genoverse.module.js" %}"></script>
 
             <!-- bootstrap conflicts with jquery-ui tooltip, so it should go after datatables and genoverse -->
+            <script>$.widget.bridge('uitooltip', $.ui.tooltip);</script>
             <script src="{% static "js/vendor/bootstrap/js/bootstrap.min.js" %}"></script>
 
             <script>
