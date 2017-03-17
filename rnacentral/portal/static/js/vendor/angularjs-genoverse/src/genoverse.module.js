@@ -125,7 +125,6 @@
                 };
 
                 ctrl.parseTrackConfig = function(trackConfig) {
-                    console.log("parseTrackConfig trackConfig = ", trackConfig);
                     var parsedConfig = angular.element.extend({}, trackConfig); // clone trackConfig
 
                     // parse model-related part of trackConfig
@@ -302,7 +301,6 @@
                 'extra':           '=?'
             },
             link: function(scope, element, attrs, genoverseCtrl) {
-                console.log("genoverseTrack scope = ", scope);
                 var trackConfig = {};
 
                 trackConfig.name           = scope.name;
@@ -321,8 +319,6 @@
                 if (scope.viewExtra)       trackConfig.viewExtra = scope.viewExtra;
                 if (scope.controllerExtra) trackConfig.controllerExtra = scope.controllerExtra;
                 if (scope.extra)           trackConfig.extra = scope.extra;
-
-                console.log("genoverseTrack trackConfig = ", trackConfig);
 
                 genoverseCtrl.pushTrackConfig(trackConfig);
             }
