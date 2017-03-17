@@ -77,6 +77,21 @@ limitations under the License.
 
     <br>
 
-    <genoverse></genoverse>
+    {% verbatim %}
+    <p class='text-muted'>
+        <span id='genomic-location' class='margin-right-5px'></span>
+        View in <a href='http://{{domain}}/{{genome.species | urlencodeSpecies}}/Location/View?r={{chromosome}}:{{start}}-{{end}}' id='ensembl-link' target='_blank'>{{ genome.division }}</a>
+        <span ng-show='genome.assembly_ucsc' class='ucsc-link'>|
+            <a href='http://genome.ucsc.edu/cgi-bin/hgTracks?db={{genome.assembly_ucsc}}&position={{chromosome | chrToUCSC}}%3A{{start}}-{{end}}' target='_blank'>UCSC</a>
+        </span>
+    </p>
+    <genoverse genome="genome" chromosome="chromosome" start="start" end="end">
+        <genoverse-track name="'Sequence'" model="Genoverse.Track.Model.Sequence.Ensembl" view="Genoverse.Track.View.Sequence" controller="Genoverse.Track.Controller.Sequence" url="urls.sequence" resizable="'auto'" auto-height="true" extra="{100000: false}"></genoverse-track>
+        <genoverse-track name="'Genes'" labels="true" info="'Ensembl API genes'" model="Genoverse.Track.Model.Gene.Ensembl" view="Genoverse.Track.View.Gene.Ensembl" url="urls.genes" resizable="'auto'" auto-height="true"></genoverse-track>
+        <genoverse-track name="'Transcripts'" labels="true" info="'Ensembl API transcripts'" model="Genoverse.Track.Model.Transcript.Ensembl" view="Genoverse.Track.View.Transcript.Ensembl" url="urls.transcripts" resizable="'auto'" auto-height="true"></genoverse-track>
+        <genoverse-track name="'RNAcentral'" id="'RNAcentral'" info="'Unique RNAcentral Sequences'" model="Genoverse.Track.Model.Gene.Ensembl" url="urls.RNAcentral" model-extra="{parseData: RNAcentralParseData}" extra="{populateMenu: RNAcentralPopulateMenu}" resizable="'auto'" auto-height="true"></genoverse-track>
+    </genoverse>
+    {% endverbatim %}
+
 </div>
 {% endblock content %}

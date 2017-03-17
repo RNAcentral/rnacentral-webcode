@@ -320,23 +320,20 @@ class GenomeBrowserView(TemplateView):
     """
     Render genome-browser, taking into account start/end locations
     """
-    def get(self, request, genome='homo_sapiens', *args, **kwargs):
+    def get(self, request, *args, **kwargs):
         self.template_name = 'portal/genome-browser.html'
 
         # always add genomes to kwargs
         genomes = sorted(rnacentral_genomes, key=lambda x: x['species'])
         kwargs['genomes'] = genomes
 
-        # find our genome in taxonomy, replace genome with a dict with taxonomy data
-        genome = _get_taxonomy_info_by_genome_identifier(genome)
-        if genome is None:
-            raise Http404()
-        kwargs['genome'] = genome
-
         # if current location is given in GET parameters - use it; otherwise, use defaults
-        if ('chromosome' in request.GET or 'chr' in request.GET) and 'start' in request.GET and 'end' in request.GET:
+        if 'genome' in request.GET and ('chromosome' in request.GET or 'chr' in request.GET) and 'start' in request.GET and 'end' in request.GET:
             # security-wise it doesn't make sense to validate location:
             # if user tinkers with it, she won't shoot anyone but herself
+
+            # find our genome in taxonomy, replace genome with a dict with taxonomy data
+            kwargs['genome'] = _get_taxonomy_info_by_genome_identifier(request.GET['genome'])
 
             # 'chromosome' takes precedence over 'chr'
             if 'chromosome' in request.GET:
@@ -347,9 +344,10 @@ class GenomeBrowserView(TemplateView):
             kwargs['start'] = request.GET['start']
             kwargs['end'] = request.GET['end']
         else:
-            kwargs['chromosome'] = genome['example_location']['chromosome']
-            kwargs['start'] = genome['example_location']['start']
-            kwargs['end'] = genome['example_location']['end']
+            kwargs['genome'] = _get_taxonomy_info_by_genome_identifier('homo_sapiens')
+            kwargs['chromosome'] = kwargs['genome']['example_location']['chromosome']
+            kwargs['start'] = kwargs['genome']['example_location']['start']
+            kwargs['end'] = kwargs['genome']['example_location']['end']
 
         response = super(GenomeBrowserView, self).get(request, *args, **kwargs)
         try:
