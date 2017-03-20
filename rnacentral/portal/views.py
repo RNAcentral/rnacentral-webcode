@@ -328,12 +328,12 @@ class GenomeBrowserView(TemplateView):
         kwargs['genomes'] = genomes
 
         # if current location is given in GET parameters - use it; otherwise, use defaults
-        if 'genome' in request.GET and ('chromosome' in request.GET or 'chr' in request.GET) and 'start' in request.GET and 'end' in request.GET:
+        if 'species' in request.GET and ('chromosome' in request.GET or 'chr' in request.GET) and 'start' in request.GET and 'end' in request.GET:
             # security-wise it doesn't make sense to validate location:
             # if user tinkers with it, she won't shoot anyone but herself
 
             # find our genome in taxonomy, replace genome with a dict with taxonomy data
-            kwargs['genome'] = _get_taxonomy_info_by_genome_identifier(request.GET['genome'])
+            kwargs['genome'] = _get_taxonomy_info_by_genome_identifier(request.GET['species'])
 
             # 'chromosome' takes precedence over 'chr'
             if 'chromosome' in request.GET:
