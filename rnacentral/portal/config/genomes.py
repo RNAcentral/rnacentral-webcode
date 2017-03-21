@@ -240,19 +240,19 @@ genomes = [
     #     },
     # },
     # Ensembl Protists
-    {
-        'species': 'Dictyostelium discoideum',
-        'synonyms': [],
-        'assembly': 'dictybase.01',
-        'assembly_ucsc': '',
-        'taxid': 44689,
-        'division': 'Ensembl Protists',
-        'example_location': {
-            'chromosome': 2,
-            'start': 7874546,
-            'end': 7876498,
-        },
-    },
+    # {
+    #     'species': 'Dictyostelium discoideum',
+    #     'synonyms': [],
+    #     'assembly': 'dictybase.01',
+    #     'assembly_ucsc': '',
+    #     'taxid': 44689,
+    #     'division': 'Ensembl Protists',
+    #     'example_location': {
+    #         'chromosome': 2,
+    #         'start': 7874546,
+    #         'end': 7876498,
+    #     },
+    # },
     # {
     #     'species': 'Plasmodium falciparum',
     #     'synonyms': [],
