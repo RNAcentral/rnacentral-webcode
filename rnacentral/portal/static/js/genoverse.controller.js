@@ -215,11 +215,67 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
     $scope.RNAcentralPopulateMenu = function(feature) {
         return {
             title: '<a target=_blank href="http://rnacentral.org/rna/' + feature.label +'">'+ feature.label + '</a>',
-            biotype: feature.biotype,
-            start: feature.start,
-            end: feature.end,
-            strand: feature.strand
+            Biotype: feature.biotype,
+            Start: feature.start,
+            End: feature.end,
+            Strand: feature.strand
         };
+    };
+
+    $scope.genesPopulateMenu = function(feature) {
+        var chrStartEnd = feature.seq_region_name + ':' + feature.start + '-' + feature.end; // string e.g. 'X:1-100000'
+        var location = '<a href="http://' + $scope.domain + '/' + $filter('urlencodeSpecies')($scope.genome.species) + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
+
+        var result = {
+            title: '<a href="http://' + $scope.domain + '/' + $filter('urlencodeSpecies')($scope.genome.species) + '/Gene/Summary?g=' + feature.gene_id + '">' + feature.gene_id + '</a>',
+            "Assembly name": feature.assembly_name,
+            "Biotype": feature.biotype,
+            "Description": feature.description,
+            "Feature type": feature.feature_type,
+            "Gene id": feature.gene_id,
+            "Location": location,
+            "Source": feature.source,
+            "Strand": feature.strand,
+            "Version": feature.version
+        };
+
+        if (feature.havana_gene && feature.havana_version) {
+            result["Havana gene"] = feature.havana_gene;
+            result["Havana version"] = feature.havana_version;
+        }
+
+        return result;
+    };
+
+    $scope.transcriptsPopulateMenu = function(feature) {
+        console.log(feature);
+        var chrStartEnd = feature.seq_region_name + ':' + feature.start + '-' + feature.end; // string e.g. 'X:1-100000'
+        var location = '<a href="http://' + $scope.domain + '/' + $filter('urlencodeSpecies')($scope.genome.species) + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
+
+        var result = {
+            title: '<a href="http://' + $scope.domain + '/' + $filter('urlencodeSpecies')($scope.genome.species) + '/Transcript/Summary?db=core&t=' + feature.transcript_id + '">' + feature.transcript_id + '</a>',
+            "Assembly name": feature.assembly_name,
+            "Biotype": feature.biotype,
+            "Feature type": feature.feature_type,
+            "Location": location,
+            "Logic name": feature.logic_name,
+            "Parent": '<a href="http://' + $scope.domain + '/' + $filter('urlencodeSpecies')($scope.genome.species) + '/Gene/Summary?g=' + feature.Parent + '">' + feature.Parent + '</a>',
+            "Source": feature.source,
+            "Strand": feature.strand,
+            //"Tag": "",
+            "Transcript id": feature.transcript_id,
+            //"Transcript support level": "",
+            "Version": feature.version
+        };
+
+        if (feature.havana_transcript && feature.havana_version) {
+            result["Havana transcript"] = feature.havana_transcript;
+            result["Havana version"] = feature.havana_version;
+        }
+
+        if (feature.version) { result["Version"] = feature.version; }
+
+        return result;
     };
 
     $scope.$location = $location;
