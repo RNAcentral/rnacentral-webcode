@@ -86,10 +86,10 @@ limitations under the License.
         </span>
     </p>
     <genoverse genome="genome" chromosome="chromosome" start="start" end="end">
-        <genoverse-track name="'Sequence'" model="Genoverse.Track.Model.Sequence.Ensembl" view="Genoverse.Track.View.Sequence" controller="Genoverse.Track.Controller.Sequence" url="urls.sequence" resizable="'auto'" auto-height="true" extra="{100000: false}"></genoverse-track>
-        <genoverse-track name="'Genes'" labels="true" info="'Ensembl API genes'" model="Genoverse.Track.Model.Gene.Ensembl" view="Genoverse.Track.View.Gene.Ensembl" url="urls.genes" resizable="'auto'" auto-height="true" extra="{populateMenu: genesPopulateMenu}"></genoverse-track>
-        <genoverse-track name="'Transcripts'" labels="true" info="'Ensembl API transcripts'" model="Genoverse.Track.Model.Transcript.Ensembl" view="Genoverse.Track.View.Transcript.Ensembl" url="urls.transcripts" resizable="'auto'" auto-height="true" extra="{populateMenu: transcriptsPopulateMenu}"></genoverse-track>
-        <genoverse-track name="'RNAcentral'" id="'RNAcentral'" info="'Unique RNAcentral Sequences'" model="Genoverse.Track.Model.Gene.Ensembl" model-extra="{parseData: RNAcentralParseData}" view="Genoverse.Track.View.Transcript.Ensembl" url="urls.RNAcentral" extra="{populateMenu: RNAcentralPopulateMenu}" resizable="'auto'" auto-height="true"></genoverse-track>
+        <genoverse-track name="'Sequence'" model="Genoverse.Track.Model.Sequence.Ensembl" view="Genoverse.Track.View.Sequence" controller="Genoverse.Track.Controller.Sequence" url="urls.sequence" resizable="'auto'" auto-height="true" hide-empty="false" extra="{100000: false}"></genoverse-track>
+        <genoverse-track name="'Genes'" labels="true" info="'Ensembl API genes'" model="Genoverse.Track.Model.Gene.Ensembl" view="Genoverse.Track.View.Gene.Ensembl" url="urls.genes" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genesPopulateMenu}"></genoverse-track>
+        <genoverse-track name="'Transcripts'" labels="true" info="'Ensembl API transcripts'" model="Genoverse.Track.Model.Transcript.Ensembl" view="Genoverse.Track.View.Transcript.Ensembl" url="urls.transcripts" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: transcriptsPopulateMenu}"></genoverse-track>
+        <genoverse-track name="'RNAcentral'" id="'RNAcentral'" info="'Unique RNAcentral Sequences'" model="Genoverse.Track.Model.Gene.Ensembl" model-extra="{parseData: RNAcentralParseData}" view="Genoverse.Track.View.Transcript.Ensembl" url="urls.RNAcentral" extra="{populateMenu: RNAcentralPopulateMenu}" resizable="'auto'" auto-height="true" hide-empty="false"></genoverse-track>
     </genoverse>
     {% endverbatim %}
 

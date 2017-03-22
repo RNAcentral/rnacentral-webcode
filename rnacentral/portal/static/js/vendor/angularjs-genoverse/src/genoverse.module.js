@@ -70,15 +70,18 @@
             transclude: true,
             controller: ['$scope', '$element', '$attrs', function($scope, $element, $attrs) {
                 var ctrl = this;
+
+                // Variables
+                // ---------
                 ctrl.trackConfigs = [];
 
-                // Functions and methods
-                // ---------------------
+                // Methods
+                // -------
                 ctrl.render = function() {
                     // generate (updated) Genoverse config
+
                     var tracks = [ Genoverse.Track.Scalebar ];
                     ctrl.trackConfigs.forEach(function(trackConfig) {
-                        // Elements of $scope.tracks are functions. They result in new track configs with updated urls.
                         tracks.push(ctrl.parseTrackConfig(trackConfig));
                     });
 
@@ -120,10 +123,25 @@
                     });
                 };
 
+                /**
+                 * A function to be called by nested genoverseTrack directives - they should
+                 * push their configs into the list of controller's trackConfigs.
+                 *
+                 * @param trackConfig - object in our internal trackConfig format
+                 */
                 ctrl.pushTrackConfig = function(trackConfig) {
                     ctrl.trackConfigs.push(trackConfig)
                 };
 
+                /**
+                 * Creates a Genoverse.Track child (in terms of Base.js) from our internal trackConfig format.
+                 * Basically, conversion from our internal format includes:
+                 *  - check, if url is a function - then call it
+                 *  - apply '-extra' options
+                 *
+                 * @param trackConfig - our internal trackConfig format
+                 * @returns {Genoverse.Track}
+                 */
                 ctrl.parseTrackConfig = function(trackConfig) {
                     var parsedConfig = angular.element.extend({}, trackConfig); // clone trackConfig
 
@@ -162,6 +180,12 @@
                     return Genoverse.Track.extend(parsedConfig);
                 };
 
+                /**
+                 * Creates angular watches, observing Genoverse browser.
+                 * Upon any changes in Genoverse, these watches will update this directive's scope variables.
+                 *
+                 * @returns {Array} - watches as functions - call them to unbind them
+                 */
                 ctrl.setGenoverseToAngularWatches = function() {
                     var speciesWatch = $scope.$watch('browser.species', function(newValue, oldValue) {
                         $scope.genome = getGenomeByName(newValue);
@@ -182,6 +206,12 @@
                     return [speciesWatch, chrWatch, startWatch, endWatch];
                 };
 
+                /**
+                 * Creates angular watches, observing directive's scope variables.
+                 * Upon any changes to those scope variables, Genoverse browser coordinates will be updated.
+                 *
+                 * @returns {[*,*,*,*]} - watches as functions - call them to unbind them
+                 */
                 ctrl.setAngularToGenoverseWatches = function() {
                     var startWatch = $scope.$watch('start', function(newValue, oldValue) {
                         if (!angular.equals(newValue, oldValue)) {
@@ -223,7 +253,7 @@
                 };
 
                 /**
-                 * Maximize Genoverse container width.
+                 * Makes browser "responsive" - if container changes width, so does the browser.
                  */
                 ctrl.setGenoverseWidth = function() {
                     var w = $('.container').width();
@@ -238,6 +268,7 @@
 
                 /**
                  * Returns an object from genomes Array by its species name or null, if not found.
+                 *
                  * @param name {string} e.g. "Homo sapiens" or "homo_sapiens" (like in url) or "human" (synonym)
                  * @returns {Object || null} element of genomes Array
                  */
@@ -286,39 +317,109 @@
             require: "^genoverse",
             template: "",
             scope: {
-                'name':            '=',
-                'labels':          '=?',
-                'id':              '=?',
-                'model':           '=',
-                'modelExtra':      '=?',
-                'url':             '=',
-                'view':            '=',
-                'viewExtra':       '=?',
-                'controller':      '=?',
-                'controllerExtra': '=?',
-                'resizable':       '=?',
-                'autoHeight':      '=?',
-                'extra':           '=?'
+                'model':            '=',
+                'modelExtra':       '=?',
+                'view':             '=',
+                'viewExtra':        '=?',
+                'controller':       '=?',
+                'controllerExtra':  '=?',
+                'extra':            '=?',
+
+                'name':             '=',
+                'height':           '=?',
+                'resizable':        '=?',
+                'autoHeight':       '=?',
+                'hideEmpty':        '=?',
+                'margin':           '=?',
+                'border':           '=?',
+                'unsortable':       '=?',
+
+                'url':              '=',
+                'urlParams':        '=?',
+                'data':             '=?',
+                'allData':          '=?',
+                'dataRequestLimit': '=?',
+                'dataType':         '=?',
+                'xhrFields':        '=?',
+
+                'featureHeight':    '=?',
+                'featureMargin':    '=?',
+                'color':            '=?',
+                'fontColor':        '=?',
+                'fontWeight':       '=?',
+                'fontHeight':       '=?',
+                'fontFamily':       '=?',
+                'labels':           '=?',
+                'repeatLabel':      '=?',
+                'bump':             '=?',
+                'depth':            '=?',
+                'threshold':        '=?',
+
+                'clickTolerance':   '=?',
+
+                'id':               '=?',
             },
             link: function(scope, element, attrs, genoverseCtrl) {
                 var trackConfig = {};
 
-                trackConfig.name           = scope.name;
-                trackConfig.url            = scope.url;
+                // MVC-related settings and extras
+                // -------------------------------
+
                 trackConfig.model          = scope.model;
                 trackConfig.view           = scope.view;
-
                 if (scope.controller)      trackConfig.controller = scope.controller;
-
-                if (scope.labels)          trackConfig.labels = scope.labels;
-                if (scope.id)              trackConfig.id = scope.id;
-                if (scope.resizable)       trackConfig.resizable = scope.resizable;
-                if (scope.autoHeight)      trackConfig.autoHeight = scope.autoHeight;
 
                 if (scope.modelExtra)      trackConfig.modelExtra = scope.modelExtra;
                 if (scope.viewExtra)       trackConfig.viewExtra = scope.viewExtra;
                 if (scope.controllerExtra) trackConfig.controllerExtra = scope.controllerExtra;
+
                 if (scope.extra)           trackConfig.extra = scope.extra;
+
+                // Display, resizing and reordering
+                // --------------------------------
+
+                trackConfig.name             = scope.name;
+                trackConfig.height           = scope.height !== undefined           ? scope.height           : 12;
+                trackConfig.resizable        = scope.resizable !== undefined        ? scope.resizable        : true;
+                trackConfig.autoHeight       = scope.autoHeight !== undefined       ? scope.autoHeight       : undefined;
+                trackConfig.hideEmpty        = scope.hideEmpty !== undefined        ? scope.hideEmpty        : undefined;
+                trackConfig.margin           = scope.margin !== undefined           ? scope.margin           : 2;
+                trackConfig.border           = scope.border !== undefined           ? scope.border           : true;
+                trackConfig.unsortable       = scope.unsortable !== undefined       ? scope.unsortable       : false;
+
+                // Fetching data
+                // -------------
+
+                trackConfig.url              = scope.url;
+                trackConfig.urlParams        = scope.urlParams !== undefined        ? scope.urlParams        : undefined;
+                trackConfig.data             = scope.data !== undefined             ? scope.data             : undefined;
+                trackConfig.allData          = scope.allData !== undefined          ? scope.allData          : false;
+                trackConfig.dataRequestLimit = scope.dataRequestLimit !== undefined ? scope.dataRequestLimit : undefined;
+                trackConfig.dataType         = scope.dataType !== undefined         ? scope.dataType         : undefined; // in original Genoverse it is "json", but this breaks Sequence track;
+                trackConfig.xhrFields        = scope.xhrFields !== undefined        ? scope.xhrFields        : undefined;
+
+                // Drawing features
+                // ----------------
+
+                trackConfig.featureHeight    = scope.featureHeight !== undefined    ? scope.featureHeight    : undefined;
+                trackConfig.featureMargin    = scope.featureMargin !== undefined    ? scope.featureMargin    : { top: 3, right: 1, bottom: 1, left: 0 };
+                trackConfig.color            = scope.color !== undefined            ? scope.color            : "#000000";
+                trackConfig.fontColor        = scope.fontColor !== undefined        ? scope.fontColor        : undefined;
+                trackConfig.fontWeight       = scope.fontWeight !== undefined       ? scope.fontWeight       : "normal";
+                trackConfig.fontHeight       = scope.fontHeight !== undefined       ? scope.fontHeight       : 10;
+                trackConfig.fontFamily       = scope.fontFamily !== undefined       ? scope.fontFamily       : "sans-serif";
+                trackConfig.labels           = scope.labels !== undefined           ? scope.labels           : true;
+                trackConfig.repeatLabels     = scope.repeatLabels !== undefined     ? scope.repeatLabels     : false;
+                if (scope.bump != undefined)               trackConfig.bump         = scope.bump;
+                trackConfig.depth            = scope.depth !== undefined            ? scope.depth            : undefined;
+                if (scope.threshold !== undefined)         trackConfig.threshold    = scope.threshold;
+
+                // Interaction with features
+                // -------------------------
+                trackConfig.clickTolerance   = scope.clickTolerance !== undefined   ? scope.clickTolerance   : 0;
+
+                // TODO: remove this in 2.0.0
+                if (scope.id !== undefined)              trackConfig.id = scope.id;
 
                 genoverseCtrl.pushTrackConfig(trackConfig);
             }
