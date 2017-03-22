@@ -334,6 +334,8 @@ class GenomeBrowserView(TemplateView):
 
             # find our genome in taxonomy, replace genome with a dict with taxonomy data
             kwargs['genome'] = _get_taxonomy_info_by_genome_identifier(request.GET['species'])
+            if kwargs['genome'] is None:
+                raise Http404
 
             # 'chromosome' takes precedence over 'chr'
             if 'chromosome' in request.GET:
