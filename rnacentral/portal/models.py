@@ -694,7 +694,7 @@ class Accession(models.Model):
     note = models.CharField(max_length=1500)
     old_locus_tag = models.CharField(max_length=50)
     product = models.CharField(max_length=300)
-    db_xref = models.CharField(max_length=100)
+    db_xref = models.CharField(max_length=500)
     standard_name = models.CharField(max_length=100, default='')
 
     class Meta:
