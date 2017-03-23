@@ -212,19 +212,17 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
         }
     };
 
-    $scope.RNAcentralPopulateMenu = function(feature) {
-        return {
-            title: '<a target=_blank href="http://rnacentral.org/rna/' + feature.label +'">'+ feature.label + '</a>',
-            Biotype: feature.biotype,
-            Start: feature.start,
-            End: feature.end,
-            Strand: feature.strand
-        };
-    };
-
     $scope.genesPopulateMenu = function(feature) {
         var chrStartEnd = feature.seq_region_name + ':' + feature.start + '-' + feature.end; // string e.g. 'X:1-100000'
         var location = '<a href="http://' + $scope.domain + '/' + $filter('urlencodeSpecies')($scope.genome.species) + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
+
+        var strand;
+        if (feature.strand == 1) {
+            strand = "forward >";
+        }
+        else if (feature.strand == -1) {
+            strand = "< reverse";
+        }
 
         var result = {
             title: '<a href="http://' + $scope.domain + '/' + $filter('urlencodeSpecies')($scope.genome.species) + '/Gene/Summary?g=' + feature.gene_id + '">' + feature.gene_id + '</a>',
@@ -234,8 +232,9 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
             "Feature type": feature.feature_type,
             "Gene id": feature.gene_id,
             "Location": location,
+            "Logic name": feature.logic_name,
             "Source": feature.source,
-            "Strand": feature.strand,
+            "Strand": strand,
             "Version": feature.version
         };
 
@@ -244,13 +243,24 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
             result["Havana version"] = feature.havana_version;
         }
 
+        if (feature.external_name) {
+            result["HGNC symbol"] = feature.external_name;
+        }
+
         return result;
     };
 
     $scope.transcriptsPopulateMenu = function(feature) {
-        console.log(feature);
         var chrStartEnd = feature.seq_region_name + ':' + feature.start + '-' + feature.end; // string e.g. 'X:1-100000'
         var location = '<a href="http://' + $scope.domain + '/' + $filter('urlencodeSpecies')($scope.genome.species) + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
+
+        var strand;
+        if (feature.strand == 1) {
+            strand = "forward >";
+        }
+        else if (feature.strand == -1) {
+            strand = "< reverse";
+        }
 
         var result = {
             title: '<a href="http://' + $scope.domain + '/' + $filter('urlencodeSpecies')($scope.genome.species) + '/Transcript/Summary?db=core&t=' + feature.transcript_id + '">' + feature.transcript_id + '</a>',
@@ -261,10 +271,8 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
             "Logic name": feature.logic_name,
             "Parent": '<a href="http://' + $scope.domain + '/' + $filter('urlencodeSpecies')($scope.genome.species) + '/Gene/Summary?g=' + feature.Parent + '">' + feature.Parent + '</a>',
             "Source": feature.source,
-            "Strand": feature.strand,
-            //"Tag": "",
+            "Strand": strand,
             "Transcript id": feature.transcript_id,
-            //"Transcript support level": "",
             "Version": feature.version
         };
 
@@ -273,9 +281,43 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
             result["Havana version"] = feature.havana_version;
         }
 
+        if (feature.external_name) {
+            result["HGNC symbol"] = feature.external_name;
+        }
+
+        if (feature.transcript_support_level) {
+            result["Transcript support level"] = '<a href="http://www.ensembl.org/Help/Glossary?id=492">' + feature.transcript_support_level + '</a>';
+        }
+
+        if (feature.tag) {
+            result["Tag"] = feature.tag;
+        }
+
         if (feature.version) { result["Version"] = feature.version; }
 
         return result;
+    };
+
+    $scope.RNAcentralPopulateMenu = function(feature) {
+        var chrStartEnd = feature.seq_region_name + ':' + feature.start + '-' + feature.end; // string e.g. 'X:1-100000'
+        var location = '<a href="http://' + $scope.domain + '/' + $filter('urlencodeSpecies')($scope.genome.species) + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
+
+        var strand;
+        if (feature.strand == 1) {
+            strand = "forward >";
+        }
+        else if (feature.strand == -1) {
+            strand = "< reverse";
+        }
+
+        return {
+            title: '<a target=_blank href="http://rnacentral.org/rna/' + feature.label +'">'+ feature.label + '</a>',
+            "Biotype": feature.biotype,
+            "Feature type": feature.feature_type,
+            "Location": location,
+            "Logic name": feature.logic_name,
+            "Strand": strand
+        };
     };
 
     $scope.$location = $location;
