@@ -912,15 +912,6 @@ textarea {
 [5.11 Genoverse styling]
 */
 
-.wrap.genoverse-wrap {
-  width: 0;
-  margin: 0;
-}
-
-.genoverse-wrap h2 {
-  display: none;
-}
-
 .genoverse_karyotype_placeholder {
   height: 50px;
   background-color: #5F8CB0;
@@ -938,8 +929,6 @@ textarea {
   font-weight: bold;
   color: #F2F5F7;
 }
-
-
 
 /*------------------------------------------------------------------
 [5.12. Homepage]

@@ -1,0 +1,1 @@
+Genoverse.Genomes.takifugu_rubripes = {};

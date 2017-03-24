@@ -1,0 +1,1 @@
+Genoverse.Genomes.pteropus_vampyrus = {};
