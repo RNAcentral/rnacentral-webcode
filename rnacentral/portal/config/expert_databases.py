@@ -65,15 +65,72 @@ expert_dbs = [
     },
     {
         'name': 'FlyBase',
-        'label': '',
+        'label': 'flybase',
         'url': 'http://flybase.org/',
         'description': 'a database of Dropsophila genes and genomes',
         'abbreviation': '',
-        'examples': [],
-        'references': [],
-        'imported': False,
-        'status': '',
-        'version': '',
+        'examples': [
+            'URS0000061376',
+            'URS00007F7879',
+            'URS00007EBD0C',
+        ],
+        'references': [
+            {
+                'title': 'FlyBase at 25: looking to the future',
+                'authors': 'The FlyBase Consortium',
+                'journal': 'Nucleic Acids Res. 2017 Jan 4;45(D1):D663-D671',
+                'pubmed_id': 27799470,
+            },
+        ],
+        'imported': True,
+        'status': 'new',
+        'version': 'FB2017_01',
+    },
+    {
+        'name': 'Ensembl',
+        'label': 'ensembl',
+        'url': 'http://ensembl.org/',
+        'description': 'is a genome browser for vertebrate genomes that supports research in comparative genomics, evolution, sequence variation and transcriptional regulation',
+        'abbreviation': '',
+        'examples': [
+            'URS0000061376', # TODO
+            'URS00007F7879', # TODO
+            'URS00007EBD0C', # TODO
+        ],
+        'references': [
+            {
+                'title': 'Ensembl 2017',
+                'authors': 'Aken BL, Achuthan P, Akanni W, Amode MR, Bernsdorff F, Bhai J, Billis K, Carvalho-Silva D, Cummins C, Clapham P et al.',
+                'journal': 'Nucleic Acids Res. 2017 Jan 4;45(D1):D635-D642',
+                'pubmed_id': 27899575,
+            },
+        ],
+        'imported': True,
+        'status': 'new',
+        'version': '87',
+    },
+    {
+        'name': 'GENCODE',
+        'label': 'gencode',
+        'url': 'http://gencodegenes.org/',
+        'description': 'produces high quality reference gene annotation and experimental validation for human and mouse genomes',
+        'abbreviation': '',
+        'examples': [
+            'URS00000B15DA',
+            'URS00000A54A6',
+            'URS0000301B08'
+        ],
+        'references': [
+            {
+                'title': 'GENCODE: the reference human genome annotation for The ENCODE Project',
+                'authors': 'Harrow J, Frankish A, Gonzalez JM, Tapanari E, Diekhans M, Kokocinski F, Aken BL, Barrell D, Zadissa A et al.',
+                'journal': 'Genome research 2012;22;9;1760-74',
+                'pubmed_id': 22955987,
+            },
+        ],
+        'imported': True,
+        'status': 'new',
+        'version': 'human 25/mouse M12',
     },
     {
         'name': 'Rfam',
