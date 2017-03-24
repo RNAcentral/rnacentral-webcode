@@ -64,12 +64,7 @@ limitations under the License.
                     <input type="number" class="form-control" id="genomic-end-input" placeholder="Enter end" ng-model="end">
                 </div>
                 <div class="col-lg-3 col-md-3 col-sm-6">
-                    <div class="input-group" style="margin-top: 25px;">
-                        <input type="text" class="form-control" ng-value="$location.absUrl()" onclick="select()" readonly>
-                        <span class="input-group-btn">
-                            <button id="copy-genome-location" class="btn btn-default" data-toggle="tooltip" title="Copy URL to clipboard"><i class="fa fa-link"></i></button>
-                        </span>
-                    </div>
+                    <button id="copy-genome-location" class="btn btn-default" data-toggle="tooltip" title="Copy URL to clipboard" style="margin-top: 25px;"><i class="fa fa-share-alt"></i> Copy URL</button>
                 </div>
             </div>
         </div>
