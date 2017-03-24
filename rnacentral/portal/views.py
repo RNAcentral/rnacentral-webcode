@@ -18,6 +18,7 @@ import requests
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import Http404, HttpResponse
+from django.conf import settings
 from django.shortcuts import render, render_to_response, redirect
 from django.template import TemplateDoesNotExist
 from django.views.decorators.cache import cache_page, never_cache
@@ -81,6 +82,7 @@ def homepage(request):
     """
     context = {
         'databases': list(Database.objects.filter(alive='Y').order_by('?').all()),
+        'blog_url': settings.RELEASE_ANNOUNCEMENT_URL,
     }
     return render(request, 'portal/homepage.html', {'context': context})
 
