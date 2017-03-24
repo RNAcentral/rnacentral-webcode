@@ -80,7 +80,7 @@ def homepage(request):
     RNAcentral homepage.
     """
     context = {
-        'databases': list(Database.objects.order_by('?').all()),
+        'databases': list(Database.objects.filter(alive='Y').order_by('?').all()),
     }
     return render(request, 'portal/homepage.html', {'context': context})
 
