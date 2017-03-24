@@ -115,6 +115,28 @@ limitations under the License.
         {% endif %}
       {% endwith %}
 
+    {# GENCODE #}
+    {% elif xref.db.name == 'GENCODE' %}
+      {{ xref.db.name }} transcript <a href="{{ xref.accession.get_vega_transcript_url }}" target="_blank" title="View in Vega browser">{{ xref.accession.external_id }}</a>
+
+    {# Ensembl #}
+    {% elif xref.db.name == 'Ensembl' %}
+      {{ xref.db.name }} transcript <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank" title="View the transcript in {{ xref.db.name }}">{{ xref.accession.external_id }}</a>
+      ({{ xref.accession.gene }} gene <a href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g={{ xref.accession.optional_id }}">{{ xref.accession.optional_id }})</a>
+      {% with splice_variants=xref.get_vega_splice_variants %}
+        {% if splice_variants %}
+          <br>
+          <i class="fa fa-angle-right"></i>
+          {{splice_variants|length}} alternative transcript{{splice_variants|length|pluralize}}:
+          <small>
+            {% for splice_variant in splice_variants %}
+              <a href="{% url  'portal.views.rna_view' upi=splice_variant.upi %}/{{ xref.taxid }}">{{ splice_variant.upi }}</a>
+              ({{ splice_variant.length|intcomma }} nts){% if not forloop.last %},{% else %}.{% endif %}
+            {% endfor %}
+          </small>
+        {% endif %}
+      {% endwith %}
+
     {# tmRNA Website #}
     {% elif xref.db.name == 'tmRNA Website' %}
       tmRNA Website: <a href="{{ xref.accession.get_expert_db_external_url }}.html" target="_blank">{{ xref.accession.external_id }}</a>
@@ -252,13 +274,6 @@ limitations under the License.
     {# HGNC #}
     {% elif xref.db.name == 'HGNC' %}
       {{ xref.db.name }}: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.accession }})
-      {% with ensembl_gene_id=xref.accession.get_hgnc_ensembl_id %}
-        {% if ensembl_gene_id %}
-          <br>
-          <i class="fa fa-angle-right"></i>
-          Ensembl: <a href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g={{ ensembl_gene_id }}" target="_blank">{{ ensembl_gene_id }}</a>
-        {% endif %}
-      {% endwith %}
 
     {% else %}
       {{ xref.accession.external_id }} {{ xref.accession.optional_id }}

@@ -814,6 +814,7 @@ class Accession(models.Model):
             'LNCIPEDIA': 'http://www.lncipedia.org/db/transcript/{id}',
             'MODOMICS': 'http://modomics.genesilico.pl/sequences/list/{id}',
             'HGNC': 'http://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id={id}',
+            'ENSEMBL': 'http://www.ensembl.org/Homo_sapiens/Transcript/Summary?t={id}',
         }
         if self.database in urls.keys():
             if self.database == 'GTRNADB':
@@ -1097,7 +1098,7 @@ class Xref(models.Model):
         transcript names are stored in external_id.
         """
         splice_variants = []
-        if not re.match('vega', self.db.display_name, re.IGNORECASE):
+        if not re.match('(vega|ensembl)', self.db.display_name, re.IGNORECASE):
             return splice_variants
         for splice_variant in Accession.objects.filter(optional_id=self.accession.optional_id).\
                                                 exclude(accession=self.accession.accession).\
