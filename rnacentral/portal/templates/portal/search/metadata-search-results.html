@@ -173,6 +173,7 @@ limitations under the License.
               <li>
                 <strong>{{rna.fields.length[0] | number}}</strong> nucleotides
               </li>
+              <li ng-if="rna.fields.has_genomic_coordinates[0] == 'True'"><i class="fa fa-check text-success" aria-hidden="true"></i> reference genome<li>
               <li ng-if="rna.fields.active[0] == 'Obsolete'"><span class="label label-danger help" title="No active annotations">Obsolete</span></li>
             </ul>
           </div>

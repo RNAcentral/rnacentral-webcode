@@ -89,7 +89,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
     var search_config = {
         ebeye_base_url: global_settings.EBI_SEARCH_ENDPOINT,
         rnacentral_base_url: get_base_url(),
-        fields: ['description', 'active', 'length', 'pub_title'],
+        fields: ['description', 'active', 'length', 'pub_title', 'has_genomic_coordinates'],
         facetfields: [
             'rna_type',
             'TAXONOMY',
