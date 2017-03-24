@@ -39,6 +39,7 @@ limitations under the License.
     python selenium_tests.py --base_url http://test.rnacentral.org/ --driver=phantomjs
 """
 
+import urlparse
 import unittest
 import random
 import re
@@ -334,6 +335,30 @@ class GenomeBrowserTestPage(BasePage):
     def __init__(self, browser):
         BasePage.__init__(self, browser, self.url)
 
+    @property
+    def start_input(self):
+        return self.browser.find_element(By.ID, "genomic-start-input")
+
+    @property
+    def end_input(self):
+        return self.browser.find_element(By.ID, "genomic-end-input")
+
+    @property
+    def chromosome_input(self):
+        return self.browser.find_element(By.ID, "chromosome-input")
+
+    @property
+    def species_input(self):
+        return self.browser.find_element(By.ID, "genomic-species-select")
+
+    @property
+    def ensembl_link(self):
+        return self.browser.find_element(By.ID, "ensembl-link")
+
+    @property
+    def ucsc_link(self):
+        return self.browser.find_element(By.ID, "ucsc-link")
+
 
 class MetaSearchPage(BasePage):
     """
@@ -351,7 +376,7 @@ class MetaSearchPage(BasePage):
         Get results as an array of list elements.
         """
         return WebDriverWait(self.browser, 30).until(
-                lambda s: s.find_elements(By.CLASS_NAME, "result"))
+                lambda browser: browser.find_elements(By.CLASS_NAME, "result"))
 
     def test_example_searches(self):
         """
@@ -625,55 +650,41 @@ class RNAcentralTest(unittest.TestCase):
         page.navigate()
         self.assertTrue(page.genoverse_ok())
 
-    def test_href_changed_on_location_changed(self):
+    def test_url_changed_on_input_changed(self):
         """
         In the top of genome-browser page we have a navigation form with
-        species, chromosome, start and end fields
-        and 'genome-display' button. On
+        species, chromosome, start and end fields.
 
-        $('#genome-display').click()
-
-        the href in browser's address bar should change.
+        Upon change of location in one of the inputs,
+        href in browser's address bar should change.
         """
         page = GenomeBrowserTestPage(self.browser)
         page.navigate()
 
-        self.browser.execute_script("document.getElementById('genomic-start-input').setAttribute('value', '2');")
-        self.browser.find_element_by_css_selector('#genome-display').click()
+        page.start_input.clear()
+        page.start_input.send_keys('2')
 
-        result = WebDriverWait(self.browser, 15).until(
-            lambda s: s.find_element(By.ID, "genoverse").is_displayed()
-        )
-        if not result:
-            self.fail("Genoverse was not re-loaded upon genome-display button click!")
+        # Other possible implementation:
+        #  self.browser.execute_script("document.getElementById('genomic-start-input').setAttribute('value', '2');")
 
-        print self.browser.current_url
+        urlparams = urlparse.parse_qs(urlparse.urlparse(self.browser.current_url).query)
+        assert urlparams['start'] == ['2']
 
-    def test_UCSD_and_Ensemble_links_changed_on_input_changed(self):
+    def test_UCSD_and_Ensembl_links_changed_on_input_changed(self):
         """
         In the top of genome-browser page we have a navigation form with
         species, chromosome, start and end fields
-        and 'genome-display' button. On
-
-        $('#genome-display').click()
-
+        and 'genome-display' button. On change of inputs,
         the hyperlinks to UCSD and Ensemble genome browsers should change.
         """
         page = GenomeBrowserTestPage(self.browser)
         page.navigate()
 
-    def test_genoverse_coordinates_changed_on_input_changed(self):
-        """
-        In the top of genome-browser page we have a navigation form with
-        species, chromosome, start and end fields and
-        'genome-display' button. On
+        page.start_input.clear()
+        page.start_input.send_keys('2')
 
-        $('#genome-display').click()
-
-        the coordinates of Genoverse genome browser should change.
-        """
-        page = GenomeBrowserTestPage(self.browser)
-        page.navigate()
+        urlparams = urlparse.parse_qs(urlparse.urlparse(page.ucsc_link.get_attribute('href')).query)
+        assert urlparams['position'] == ['chrX:2-73856333']
 
     # TaxId filtering
     # ---------------
