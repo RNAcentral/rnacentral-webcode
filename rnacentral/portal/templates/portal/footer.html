@@ -40,7 +40,9 @@ limitations under the License.
         <div class="col-md-3 col-sm-6 col-xs-6">
           <ul>
           {% for expert_db in expert_db_column %}
+              {% if expert_db.status != 'archived' %}
               <li><a class="no-icon" href="{% if expert_db.imported %}{% url 'expert-database' expert_db.label %}{% else %}{{ expert_db.url }}{% endif %}">{{ expert_db.name }}</a></li>
+              {% endif %}
           {% endfor %}
           </ul>
         </div>

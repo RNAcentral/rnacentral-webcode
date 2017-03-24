@@ -31,8 +31,10 @@ limitations under the License.
     <img src="{% static 'img/expert-db-logos/' %}{{expert_db.label}}.png" alt="{{expert_db.name}} logo" class="img-rounded">
   </a>
   {{ expert_db.name }} Expert Database
-  {% if expert_db.status %}
+  {% if expert_db.status != 'archived' %}
     <small><label class="label label-primary">{{expert_db.status}}</label></small>
+  {% else %}
+    <small><label class="label label-danger">{{expert_db.status}}</label></small>
   {% endif %}
 </h1>
 

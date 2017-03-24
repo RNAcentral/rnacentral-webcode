@@ -141,8 +141,8 @@ expert_dbs = [
                 'pubmed_id': 22955987,
             },
         ],
-        'imported': True,
-        'status': '',
+        'imported': False,
+        'status': 'archived',
         'version': 'release 65',
     },
     {
