@@ -12,8 +12,9 @@ limitations under the License.
 """
 
 from django.conf.urls import patterns, url
+from django.db.models import Prefetch
 from portal import views
-from portal.models import get_ensembl_divisions, Rna, Database
+from portal.models import get_ensembl_divisions, Rna, Xref, Database
 
 urlpatterns = patterns('',
     # homepage
@@ -75,7 +76,6 @@ from django.core.urlresolvers import reverse
 
 
 class StaticViewSitemap(Sitemap):
-
     def items(self):
         return [
             'homepage', 'about', 'contact-us', 'downloads',
@@ -88,10 +88,39 @@ class StaticViewSitemap(Sitemap):
         return reverse(item)
 
 
+class RnaSitemap(Sitemap):
+    def items(self):
+        """
+        :return: a list of 2-tuples (rna, taxid)
+        """
+        rnas = Rna.objects.prefetch_related(Prefetch('xrefs', queryset=Xref.objects.only('taxid', 'timestamp').all())).all()
+
+        # result consists of pairs (upi, taxid)
+        result = []
+        for rna in rnas:
+            # find all the unique taxids for current rna
+            taxids = []
+            for xref in rna.xrefs:
+                if xref.taxid not in taxids:
+                    taxids.append(xref.taxid)
+
+            for taxid in taxids:
+                result.append((rna, taxid))
+
+        return items
+
+
+    def location(self, item):
+        return reverse('portal.views.get_xrefs_data', kwargs={'upi': item[0].upi, 'taxid': item[1]})
+
+    def lastmod(self, item):
+        return item[0].xrefs.filter(taxid=item[1]).latest('timestamp').timestamp
+
+
 sitemaps = {
     'expert-databases': GenericSitemap({'queryset': Database.objects.all()}),
     'static': StaticViewSitemap(),
-    'rna': GenericSitemap({'queryset': Rna.objects.all()}),
+    'rna': RnaSitemap(),
 }
 
 urlpatterns += patterns('django.contrib.sitemaps.views',

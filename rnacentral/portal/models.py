@@ -126,11 +126,14 @@ class Rna(CachingMixin, models.Model):
         JOIN
             rnc_references b
         ON a.id = b.id
-        ORDER BY b.title"""
+        ORDER BY b.title
+        """
+
         if taxid:
             query = query.format(taxid_clause='t1.taxid = %s AND' % taxid)
         else:
             query = query.format(taxid_clause='')
+
         return Reference.objects.raw(query, [self.upi])
 
     def is_active(self):
@@ -184,12 +187,14 @@ class Rna(CachingMixin, models.Model):
         For example, only fetch Vega xrefs and don't retrieve the ENA entries they are
         based on.
         """
-        expert_db_projects = Database.objects.exclude(project_id=None).\
-                                              values_list('project_id', flat=True)
-        xrefs = self.xrefs.filter(deleted='N', upi=self.upi).\
-                           exclude(db__id=1, accession__project__in=expert_db_projects).\
-                           order_by('-db__id').\
-                           select_related()
+        expert_db_projects = Database.objects.exclude(project_id=None)\
+                                             .values_list('project_id', flat=True)
+
+        xrefs = self.xrefs.filter(deleted='N', upi=self.upi)\
+                          .exclude(db__id=1, accession__project__in=expert_db_projects)\
+                          .order_by('-db__id')\
+                          .select_related()
+
         if taxid:
             xrefs = xrefs.filter(taxid=taxid)
         if xrefs.exists():
