@@ -28,7 +28,7 @@ underscore.factory('_', function() {
 /**
  * Create RNAcentral app.
  */
-angular.module('rnacentralApp', ['chieffancypants.loadingBar', 'underscore', 'Genoverse']);
+angular.module('rnacentralApp', ['ngAnimate', 'ui.bootstrap', 'chieffancypants.loadingBar', 'underscore', 'Genoverse']);
 
 // hide spinning wheel
 angular.module('rnacentralApp').config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
@@ -268,21 +268,24 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
             $http({
                 url: url,
                 method: 'GET'
-            }).success(function(data) {
-                data = preprocess_results(data);
-                overwrite_results = overwrite_results || false;
-                if (overwrite_results) {
-                    data._query = result._query;
-                    result = data; // replace
-                } else {
-                    // append new entries
-                    result.entries = result.entries.concat(data.entries);
+            }).then(
+                function(response) {
+                    data = preprocess_results(response.data);
+                    overwrite_results = overwrite_results || false;
+                    if (overwrite_results) {
+                        data._query = result._query;
+                        result = data; // replace
+                    } else {
+                        // append new entries
+                        result.entries = result.entries.concat(data.entries);
+                    }
+                    status.search_in_progress = false;
+                },
+                function(response) {
+                    status.search_in_progress = false;
+                    status.show_error = true;
                 }
-                status.search_in_progress = false;
-            }).error(function(){
-                status.search_in_progress = false;
-                status.show_error = true;
-            });
+            );
 
             /**
              * Preprocess data received from the server.
@@ -460,6 +463,10 @@ angular.module('rnacentralApp').controller('ResultsListCtrl', ['$scope', '$locat
 
     $scope.search_in_progress = results.get_search_in_progress();
     $scope.show_error = results.get_show_error();
+    $http({
+        url: '/api/internal/expert-dbs/',
+        method: 'GET'
+    }).then(function(response) { $scope.expertDbs = response.data; console.log($scope.expertDbs); });
 
     /**
      * Watch `result` changes.
@@ -567,13 +574,15 @@ angular.module('rnacentralApp').controller('ResultsListCtrl', ['$scope', '$locat
                  '?q=' + $scope.result._query +
                  '&format=' + format,
             method: 'GET'
-        }).success(function(data) {
-            window.location.href = results_page_url + '?job=' + data.job_id;
-        }).error(function(){
-            $scope.show_export_error = true;
-        });
+        }).then(
+            function(response) {
+                window.location.href = results_page_url + '?job=' + response.data.job_id;
+            },
+            function(response) {
+                $scope.show_export_error = true;
+            }
+        );
     };
-
 }]);
 
 /**

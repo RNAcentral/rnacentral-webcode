@@ -35,6 +35,7 @@ Master Stylesheet for the RNAcentral Portal
 5.12 Homepage
 5.13 D3 nhmmer dashboard graph
 5.14 Doorbell feedback
+5.15 Tooltip customization
 
 -------------------------------------------------------------------*/
 
@@ -1161,4 +1162,12 @@ textarea {
 
 #doorbell-form textarea {
   margin-top: 5px;
+}
+
+/*------------------------------------------------------------------
+[5.15 Tooltip customization]
+*/
+.tooltip-inner {
+  max-width: none;
+  white-space: pre-wrap;
 }
