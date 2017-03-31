@@ -1170,4 +1170,15 @@ textarea {
 .tooltip-inner {
   max-width: none;
   white-space: pre-wrap;
+  padding: 10px;
+  line-height: 1em;
+}
+
+.tooltip-inner span.rnacentral-tag {
+  font-size: 8px;
+  font-weight: bolder;
+}
+
+.tooltip i {
+  float: left;
 }
