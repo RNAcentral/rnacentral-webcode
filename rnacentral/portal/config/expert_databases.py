@@ -73,7 +73,7 @@ expert_dbs = [
         'url': 'http://flybase.org/',
         'description': 'a database of Dropsophila genes and genomes',
         'hint': 'FlyBase is a database of Drosophila genes and genomes',
-        'tags': ['curated', 'model organism', 'drosophila'],
+        'tags': ['curated', 'model organism', 'Drosophila'],
         'abbreviation': '',
         'examples': [],
         'references': [],
@@ -87,7 +87,7 @@ expert_dbs = [
         'url': 'http://rfam.xfam.org',
         'description': 'is a collection of non-coding RNA families represented by manually curated sequence alignments, consensus secondary structures and predicted homologues',
         'hint': 'Rfam is a collection of non-coding RNA families, represented by manually curated sequence alignments, consensus secondary structures and predicted homologues',
-        'tags': ['automatic', 'curated', 'alignments'],
+        'tags': ['curated', 'automatic', 'alignments'],
         'abbreviation': '',
         'examples': ['URS00000478B7', 'URS000066DAB6', 'URS000068EEC5'],
         'references': [
@@ -210,7 +210,7 @@ expert_dbs = [
         'url': 'http://lncrnadb.org/',
         'description': 'is a database providing comprehensive annotations of eukaryotic long non-coding RNAs (lncRNAs)',
         'hint': 'lncRNAdb is a database providing comprehensive annotations of eukaryotic long non-coding RNAs (lncRNAs)',
-        'tags': ['automatic', 'lncRNA'],
+        'tags': ['curated', 'lncRNA'],
         'abbreviation': '',
         'examples': ['URS00000478B7', 'URS00005E1511', 'URS0000147018'],
         'references': [
@@ -252,7 +252,7 @@ expert_dbs = [
         'url': 'http://www.ncbi.nlm.nih.gov/refseq/',
         'description': 'is a comprehensive, integrated, non-redundant, well-annotated set of reference sequences',
         'hint': 'RefSeq is a comprehensive, integrated, non-redundant, well-annotated set of reference sequences',
-        'tags': ['automatic'],
+        'tags': ['curated'],
         'abbreviation': 'NCBI Reference Sequence Database',
         'examples': ['URS000075A3E5', 'URS000075ADFF', 'URS00003A96B7'],
         'references': [
@@ -294,7 +294,7 @@ expert_dbs = [
         'url': 'http://www.rna.ccbb.utexas.edu/',
         'description': 'comparative sequence and structure information for ribosomal, intron, and other RNAs',
         'hint': 'CRW Site comparative sequence and structure information for ribosomal, intron, and other RNAs',
-        'tags': ['automatic'],
+        'tags': ['curated'],
         'abbreviation': 'Comparative RNA Website',
         'examples': '',
         'references': [],
@@ -534,7 +534,7 @@ expert_dbs = [
         'url': 'http://yeastgenome.org/',
         'description': 'provides comprehensive integrated biological information for the budding yeast',
         'hint': 'SGD provides comprehensive integrated biological information for the budding yeast',
-        'tags': ['model organism', 'yeast', 'Saccharomyces'],
+        'tags': ['curated', 'model organism', 'yeast', 'Saccharomyces'],
         'abbreviation': 'Saccharomyces Genome Database',
         'examples': [
             'URS0000224E47', # HRA1 gene

@@ -1168,17 +1168,36 @@ textarea {
 [5.15 Tooltip customization]
 */
 .tooltip-inner {
+  background-color: rgb(51,51,51);
+  border-radius: 0px;
+
   max-width: none;
   white-space: pre-wrap;
-  padding: 10px;
+  padding: 10px 6px;
   line-height: 1em;
+  font-size: 10px;
+}
+
+.tooltip-arrow {
+  border-top-color: rgb(51,51,51);
+}
+
+.tooltip-inner h5 {
+  margin-top: 0px !important;
+  margin-bottom: 0px !important;
+  padding: 0px 9px !important;
+}
+
+.tooltip-inner i {
+  color: yellow;
+}
+
+.tooltip-inner div {
+  padding: 0px 4px !important; /* label margins take 5px, offset is 9px, 4=9-5 */
 }
 
 .tooltip-inner span.rnacentral-tag {
-  font-size: 8px;
-  font-weight: bolder;
-}
-
-.tooltip i {
-  float: left;
+  font-weight: lighter;
+  font-size: 9px;
+  background-color: #777777;
 }

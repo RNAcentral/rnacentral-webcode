@@ -466,7 +466,7 @@ angular.module('rnacentralApp').controller('ResultsListCtrl', ['$scope', '$locat
     $http({
         url: '/api/internal/expert-dbs/',
         method: 'GET'
-    }).then(function(response) { $scope.expertDbs = response.data; });
+    }).then(function(response) { $scope.expertDbs = response.data; console.log($scope.expertDbs);});
 
     /**
      * Watch `result` changes.
