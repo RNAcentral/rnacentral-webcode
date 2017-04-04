@@ -1178,8 +1178,8 @@ textarea {
   font-size: 10px;
 }
 
-.tooltip-arrow {
-  border-top-color: rgb(51,51,51);
+.tooltip .tooltip-arrow {
+  border-top-color: rgb(51,51,51) !important;
 }
 
 .tooltip-inner h5 {
