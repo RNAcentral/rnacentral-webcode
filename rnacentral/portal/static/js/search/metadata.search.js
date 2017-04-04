@@ -482,7 +482,6 @@ angular.module('rnacentralApp').controller('ResultsListCtrl', ['$scope', '$locat
     $scope.$watch(function () { return results.get_result(); }, function (newValue, oldValue) {
         if (newValue !== null) {
             $scope.result = newValue;
-            console.log("facets = ", $scope.result.facets);
         }
     });
 
