@@ -259,15 +259,13 @@ def expert_database_view(request, expert_db_name):
 
 class ExpertDatabasesAPIView(APIView):
     """
-    Returns expert_dbs as a dict: {expert_dbs[i].name: expert_dbs[i]}
-
-    E.g.: {'ENA': {'name': 'ENA', 'label': 'ena', ...}}
+    Return a list of RNA expert databases, indexed in RNAcentral.
     """
     permission_classes = ()
     authentication_classes = ()
 
     def get(self, request, format=None):
-        return Response({db['name']: db for db in expert_dbs})
+        return Response(expert_dbs)
 
 
 @never_cache

@@ -466,7 +466,15 @@ angular.module('rnacentralApp').controller('ResultsListCtrl', ['$scope', '$locat
     $http({
         url: '/api/internal/expert-dbs/',
         method: 'GET'
-    }).then(function(response) { $scope.expertDbs = response.data; console.log($scope.expertDbs);});
+    }).then(function(response) {
+        $scope.expertDbs = response.data;
+
+        // expertDbsObject has lowerCase db names as keys
+        $scope.expertDbsObject = {};
+        for (var i=0; i < $scope.expertDbs.length; i++) {
+            $scope.expertDbsObject[$scope.expertDbs[i].name.toLowerCase()] = $scope.expertDbs[i];
+        }
+    });
 
     /**
      * Watch `result` changes.
@@ -474,6 +482,7 @@ angular.module('rnacentralApp').controller('ResultsListCtrl', ['$scope', '$locat
     $scope.$watch(function () { return results.get_result(); }, function (newValue, oldValue) {
         if (newValue !== null) {
             $scope.result = newValue;
+            console.log("facets = ", $scope.result.facets);
         }
     });
 
