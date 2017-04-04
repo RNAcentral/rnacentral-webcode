@@ -333,7 +333,7 @@ expert_dbs = [
         'url': 'http://greengenes.secondgenome.com/downloads',
         'description': 'is a full-length 16S rRNA gene database that provides a curated taxonomy based on de novo tree inference',
         'hint': 'Greengenes is a full-length 16S rRNA gene database that provides a curated taxonomy based on de novo tree inference',
-        'tags': ['curated', '16S', 'rRNA'],
+        'tags': ['automatic', '16S', 'rRNA'],
         'abbreviation': '',
         'examples': ['URS00003D0087', 'URS00006DE01B', 'URS00004DD3DC'],
         'references': [
