@@ -1,0 +1,268 @@
+<!--
+Copyright [2009-2017] EMBL-European Bioinformatics Institute
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+{% extends "portal/base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+
+{% block meta_tags %}
+    {{ block.super }}
+    <meta name="description" content="{{ context.description }} | {{ rna.upi }}"/>
+    <meta name="twitter:description" content="{{ context.description }} | {{ rna.upi }}">
+{% endblock %}
+
+{% block title %}
+  {{ context.description }} | {{ rna.upi }}
+{% endblock %}
+
+{% block content %}
+
+<h1>
+    Sequence {{ rna.upi }}
+
+    {% if context.single_species %}
+        <small><em>{{ context.single_species }}</em></small>
+    {% else %}
+        <small>{{ rna.count_distinct_organisms|intcomma }} species</small>
+    {% endif %}
+
+    <small class="pull-right hidden-xs">
+        <button type="button" class="btn btn-info tour help" title="Take an interactive tour to explore RNAcentral features" id="guided-tour">
+            <i class="fa fa-info-circle"></i> Interactive tour
+        </button>
+    </small>
+</h1>
+
+{% if context.taxid_not_found %}
+    <div class="alert alert-danger">
+        No annotations from taxid:{{context.taxid_not_found}}.
+    </div>
+{% elif context.taxid_filtering %}
+    <div class="well well-sm">
+        <i class="fa fa-filter"></i> Showing annotations from <strong><em>{{ context.single_species}}</em></strong>.
+
+        {% if rna.count_distinct_organisms > 1 %}
+          <a href="" class="show-species-tab">Switch species</a> or
+          <a href="{% url 'portal.views.rna_view' rna.upi %}">view all data</a> from {{ rna.count_distinct_organisms }} species.
+        {% endif %}
+    </div>
+{% elif rna.count_distinct_organisms > 1 %}
+    <div class="well well-sm">
+        <i class="fa fa-info-circle"></i> This unique sequence was observed in multiple species.
+        <a href="" class="show-species-tab">Filter annotations</a> by species.
+    </div>
+{% endif %}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="tabbable">
+
+        <uib-tabset active="0"><!-- TODO: animate: http://stackoverflow.com/questions/19503321/fade-effect-for-tabs-in-ui-bootstrap-angular-js -->
+
+            <uib-tab index="0" heading="Overview" id="overview">
+                <h2>
+                    Overview
+                </h2>
+
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <ul class="list-inline">
+                            <li class="lead">{{ context.description }}</li>
+                        </ul>
+                        <ul class="list-inline">
+                            <li><strong>{{ rna.length|intcomma }}</strong> nucleotides</li>
+                            <li>
+                                {% with dbs=context.distinct_databases %}
+                                <strong>{{ dbs|length|intcomma }}</strong> database{{ dbs|length|pluralize }}
+                                <small>
+                                    {% for db in dbs %}
+                                        {% if forloop.first %}({% endif %}{{db}}{% if not forloop.last %},{% else %}){% endif %}
+                                    {% endfor %}
+                                </small>
+                                {% endwith %}
+                            </li>
+                            <li>
+                                Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab">species</a>
+                            </li>
+                            <li class="small text-muted">imported <time datetime="{{ rna.first_seen|date:'Y-m-d' }}">{{ rna.first_seen|date:'d M Y' }}</time></li>
+                            <li class="small text-muted">last updated <time datetime="{{ rna.last_seen|date:'Y-m-d' }}">{{ rna.last_seen|date:'d M Y' }}</time></li>
+                        </ul>
+                    </div>
+                </div> <!-- .panel .panel-default -->
+
+                <div>
+                    <h2>
+                        Annotations
+                        <small id="xrefs-datatables-counter">{{ rna.count_xrefs|intcomma }} total</small>
+
+                        <div class="btn-group btn-group-xs margin-left-5px btn-group-xref-sort" style="display:none">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                            Sort by<span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a id="sort-by-first-seen">first seen</a></li>
+                            <li><a id="sort-by-last-seen">last seen</a></li>
+                        </ul>
+                        </div>
+
+                      <span id="xrefs-datatables-filter"></span>
+                    </h2>
+
+                    {% if rna.count_xrefs > context.xref_page_size %}
+                        <div class="alert alert-warning" role="alert">
+                            Showing {{ context.xref_page_size|intcomma }} entries out of {{ rna.count_xrefs|intcomma }}.
+                            Navigate between batches:
+                            <ul class="pagination pagination-sm">
+                                {% for xref_page in context.xref_pages %}
+                                    <li {% if context.xref_page_num == forloop.counter %}class="active"{% endif %}>
+                                        <a href="" data-xref-page="{{xref_page}}" class="xref-pagination">{{ xref_page }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+
+                    <div class="table-responsive force-scrollbars">
+
+                        <div class="panel panel-default" id="xrefs-loading">
+                            <div class="panel-body" id="xrefs-loading-msg">
+                                <i class="fa fa-spinner fa-spin fa-2x"></i>
+                                Loading database cross-references...
+                            </div>
+                        </div>
+
+                        <div id="xrefs-table-div"></div>
+
+                    </div> <!-- .table-responsive -->
+
+                    <div class="xref-datatables-controls"></div>
+                </div>
+
+                {# genoverse #}
+                <div>
+                    <div class="wrap genoverse-wrap">
+                        <h2 style="display:none;">
+                            Genome browser
+                            <small id="genoverse-coordinates"></small>
+                        </h2>
+                        <div id="genoverse-description"></div>
+                        <div id="genoverse"></div>
+                    </div>
+                </div>
+
+                <h2>
+                    Sequence
+                    <div class="btn-group pull-right">
+                        <button class="btn btn-default btn-sm" id="copy-as-rna">
+                          <i class="fa fa-copy" aria-hidden="true">&nbsp;as RNA</i>
+                        </button>
+                        <button class="btn btn-default btn-sm" id="copy-as-dna">
+                          <i class="fa fa-copy" aria-hidden="true">&nbsp;as DNA</i>
+                        </button>
+                    </div>
+                </h2>
+
+                <p>
+                    {{ rna.length|intcomma }} nucleotides
+                    <a href="{% url 'nhmmer-sequence-search' %}?q={{ rna.upi }}" class="margin-left-5px">Search for similar sequences</a>
+                </p>
+                {% if context.non_canonical_base_counts %}
+                <p class="small">
+                    <span class="text-warning"><i class="fa fa-warning"></i> Contains ambiguity characters:</span> {% for symbol,count in context.non_canonical_base_counts.items %}{{ count|intcomma }} {{ symbol }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                    <a href="https://en.wikipedia.org/wiki/Nucleic_acid_notation#IUPAC_notation">&nbsp;IUPAC notation</a>
+                </p>
+                {% endif %}
+                <pre class="pre-scrollable" id="rna-sequence">{{ rna.get_sequence }}</pre>
+            </uib-tab>
+
+            <uib-tab index="1" heading="Taxonomy">
+                <h2>Taxonomic Tree</h2>
+
+                <p>
+                    This sequence has been observed in <strong>{{ rna.count_distinct_organisms }}</strong> species.
+                    Get <strong>species-specific urls</strong> by clicking on <span class="text-primary"><strong>species names</strong></span>.
+                    <br>
+                    <small class="text-muted">
+                        <i class="fa fa-info-circle"></i>
+                        <strong>Scroll around</strong> to explore the entire tree.
+                        <strong>Click</strong> tree nodes to collapse or expand them.
+                        <strong>Hover</strong> over taxon names to display additional information.
+                    </small>
+                </p>
+
+                <div class="panel panel-default d3-species">
+                    <div class="tab-pane panel-body d3-species force-scrollbars d3-species-tree-tab">
+                        <div id="d3-species-tree">
+                            <i class="fa fa-spinner fa-spin fa-2x"></i>
+                            <span class="margin-left-5px">Loading taxonomic tree...</span>
+                        </div>
+                    </div>
+                </div>
+            </uib-tab>
+
+            <uib-tab index="2" heading="Publications">
+                <div id="publications">
+
+                    <h2>Publications</h2>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <i class="fa fa-spinner fa-spin fa-2x"></i>
+                            <span class="margin-left-5px">Loading publications...</span>
+                        </div>
+                    </div>
+                </div>
+            </uib-tab>
+
+            <uib-tab index="3" class="dropdown pull-right hidden-xs">
+                <uib-tab-heading>
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="">
+                        <i class="fa fa-download"></i> Download
+                        <b class="caret"></b>
+                    </a>
+                    <ul class="dropdown-menu" id="download-formats">
+                        <li><a href="/api/v1/rna/{{ rna.upi }}.fasta" download="{{ rna.upi }}.fasta">FASTA</a></li>
+                        <li><a href="/api/v1/rna/{{ rna.upi }}.json" download="{{ rna.upi }}.json">JSON</a></li>
+                        <li><a href="/api/v1/rna/{{ rna.upi }}.yaml" download="{{ rna.upi }}.yaml">YAML</a></li>
+                    </ul>
+                </uib-tab-heading>
+            </uib-tab>
+        </uib-tabset>
+
+        </div> <!-- .tabbable -->
+    </div> <!-- .col-md-12 -->
+</div> <!-- .row -->
+
+
+
+{% endblock content %}
+
+
+{% block extra_js_uncompressed %}
+  {{ block.super }}
+    <script type="text/javascript">
+    $(function() {
+      {% if context.taxid_filtering %}
+        rna_sequence_view = new rnaSequenceView('{{rna.upi}}', {{ context.taxid }});
+      {% else %}
+        rna_sequence_view = new rnaSequenceView('{{rna.upi}}');
+      {% endif %}
+      rna_sequence_view.initialize();
+      rna_sequence_view.load_xrefs({{ context.xref_page_num }});
+
+      // hopscotch guided tour
+      hopscotch_tour = new guidedTour;
+      hopscotch_tour.initialize();
+    });
+  </script>
+{% endblock %}

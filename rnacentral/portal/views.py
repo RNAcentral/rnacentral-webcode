@@ -210,7 +210,8 @@ def rna_view(request, upi, taxid=None):
         'xref_page_num': get_xref_page_num(),
     }
 
-    return render(request, 'portal/unique-rna-sequence.html', {'rna': rna, 'context': context})
+    # return render(request, 'portal/unique-rna-sequence.html', {'rna': rna, 'context': context})
+    return render(request, 'portal/sequence.html', {'rna': rna, 'context': context})
 
 
 @cache_page(CACHE_TIMEOUT)
