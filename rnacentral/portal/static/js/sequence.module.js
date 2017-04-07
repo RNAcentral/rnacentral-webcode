@@ -30,7 +30,11 @@ var xrefsComponent = {
     templateUrl: "/static/js/xrefs.html"
 };
 
-var rnaSequenceController = function($scope, xrefResource, DTOptionsBuilder, DTColumnDefBuilder) {
+var rnaSequenceController = function($scope, $location, xrefResource, DTOptionsBuilder, DTColumnBuilder) {
+    // Take upi and taxid from url. Note that $location.path() always starts with slash
+    $scope.upi = $location.path().split('/')[2];
+    $scope.taxid = $location.path().split('/')[3]; // TODO: this might not exist!
+
     $scope.xrefs = [{
         "id": 860,
         "firstName": "Superman",
@@ -48,20 +52,21 @@ var rnaSequenceController = function($scope, xrefResource, DTOptionsBuilder, DTC
         "firstName": "Luke",
         "lastName": "Kyle"
     }];
-
-    $scope.dtOptions = DTOptionsBuilder.newOptions()
+    
+    $scope.dtOptions = DTOptionsBuilder
+        .fromSource('/api/v1/rna/' + $scope.upi + '/xrefs/')
         .withPaginationType('full_numbers')
-        .withDisplayLength(2)
-        .withDOM('pitrfl');
+        .withDisplayLength(10)
+        .withDOM('ftpil');
 
-    $scope.dtColumnDefs = [
-        DTColumnDefBuilder.newColumnDef(0),
-        DTColumnDefBuilder.newColumnDef(1).notVisible(),
-        DTColumnDefBuilder.newColumnDef(2).notSortable()
+    $scope.dtColumns = [
+        DTColumnBuilder.newColumn('results.database').withTitle('Database'),
+        DTColumnBuilder.newColumn('results.description').withTitle('Description'),
+        DTColumnBuilder.newColumn('results.species').withTitle('Species')
     ];
 
 };
-rnaSequenceController.$inject = ['$scope', 'xrefResource', 'DTOptionsBuilder', 'DTColumnDefBuilder'];
+rnaSequenceController.$inject = ['$scope', '$location', 'xrefResource', 'DTOptionsBuilder', 'DTColumnBuilder'];
 
 
 angular.module("rnaSequence", ['datatables', 'ngResource'])

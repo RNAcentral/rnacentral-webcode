@@ -118,22 +118,7 @@ limitations under the License.
                       <span id="xrefs-datatables-filter"></span>
                     </h2>
 
-                    <table datatable="" class="row-border hover" dt-options="dtOptions" dt-column-defs="dtColumnDefs">
-                        <thead>
-                            <tr>
-                                <th>Database</th>
-                                <th>Description</th>
-                                <th>Species</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="xref in xrefs">
-                                <td>{{ xref.id }}static</td>
-                                <td>{{ xref.firstName }}static</td>
-                                <td>{{ xref.lastName }}static</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <table datatable="" class="row-border hover" dt-options="dtOptions" dt-columns="dtColumns"></table>
 
                     {% if rna.count_xrefs > context.xref_page_size %}
                         <div class="alert alert-warning" role="alert">
