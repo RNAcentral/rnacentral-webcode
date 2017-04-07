@@ -43,6 +43,7 @@ limitations under the License.
                 <link rel="stylesheet" href="{% static "js/vendor/slick/slick-theme.css" %}"/>
                 <link rel="stylesheet" href="{% static "css/main.css" %}">
                 <link rel="stylesheet" href="{% static "css/animate/animate.min.css" %}">
+                <link rel="stylesheet" href="{% static "js/vendor/DataTables-1.10.13/media/css/dataTables.bootstrap.min.css" %}">
                 <link rel="stylesheet" href="{% static "js/vendor/hopscotch/css/hopscotch.css" %}">
                 <link rel="stylesheet" href="{% static "js/vendor/loading-bar/loading-bar.css" %}">
                 <link rel="stylesheet" href="{% static "css/timeline/timeline.css" %}">
@@ -151,7 +152,13 @@ limitations under the License.
             <script src="{% static "js/vendor/hopscotch/js/hopscotch.js" %}"></script>
             <script src="{% static "js/vendor/angular/angular.js" %}"></script>
             <script src="{% static "js/vendor/angular-animate/angular-animate.js" %}"></script>
+            <script src="{% static "js/vendor/angular-resource/angular-resource.js" %}"></script>
             <script src="{% static "js/vendor/angular-bootstrap/ui-bootstrap-tpls.min.js" %}"></script>
+            <script src="{% static "js/vendor/angular-datatables/demo/src/archives/dist/angular-datatables.js" %}"></script>
+{#            <script src="{% static "js/vendor/DataTables-1.9.4/media/js/jquery.dataTables.min.js" %}"></script>#}
+{#            <script src="{% static "js/vendor/DataTables-plugins/integration/bootstrap/3/dataTables.bootstrap.js" %}"></script>#}
+            <script src="{% static "js/vendor/DataTables-1.10.13/media/js/jquery.dataTables.min.js" %}"></script>
+            <script src="{% static "js/vendor/DataTables-1.10.13/media/js/dataTables.bootstrap.js" %}"></script>
             <script src="{% static "js/vendor/loading-bar/loading-bar.js" %}"></script>
             <script src="{% static "js/vendor/underscore/underscore-min.js" %}"></script>
             <script src="{% static "js/vendor/moment.min.js" %}"></script>
@@ -165,13 +172,13 @@ limitations under the License.
             <script src="{% static "js/d3/d3.speciesSunburst.js" %}"></script>
             <script src="{% static "js/d3/d3.speciesTree.js" %}"></script>
             <script src="{% static "js/jquery.EuropePMCAbstracts.js" %}"></script>
-            <script src="{% static "js/vendor/DataTables-1.9.4/media/js/jquery.dataTables.min.js" %}"></script>
-            <script src="{% static "js/vendor/DataTables-plugins/integration/bootstrap/3/dataTables.bootstrap.js" %}"></script>
             <script src="{% static "js/vendor/handlebars-v1.1.2.js" %}"></script>
             <script src="{% static "js/vendor/clipboard.min.js" %}"></script>
             <script src="{% static "js/guidedTour.js" %}"></script>
-            <script src="{% static "js/rnaView.js" %}"></script>
+{#            <script src="{% static "js/rnaView.js" %}"></script>#}
             <script src="{% static "js/vendor/timeline-min.js" %}"></script>
+
+            <script src="{% static "js/sequence.module.js" %}"></script>
           {% endblock extra_js %}
         {% endcompress %}
 

@@ -63,7 +63,7 @@ limitations under the License.
     </div>
 {% endif %}
 
-<div class="row">
+<div class="row" ng-controller="rnaSequenceController">
     <div class="col-md-12">
         <div class="tabbable">
 
@@ -106,17 +106,34 @@ limitations under the License.
                         <small id="xrefs-datatables-counter">{{ rna.count_xrefs|intcomma }} total</small>
 
                         <div class="btn-group btn-group-xs margin-left-5px btn-group-xref-sort" style="display:none">
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                            Sort by<span class="caret"></span>
-                        </button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a id="sort-by-first-seen">first seen</a></li>
-                            <li><a id="sort-by-last-seen">last seen</a></li>
-                        </ul>
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                                Sort by<span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a id="sort-by-first-seen">first seen</a></li>
+                                <li><a id="sort-by-last-seen">last seen</a></li>
+                            </ul>
                         </div>
 
                       <span id="xrefs-datatables-filter"></span>
                     </h2>
+
+                    <table datatable="" class="row-border hover" dt-options="dtOptions" dt-column-defs="dtColumnDefs">
+                        <thead>
+                            <tr>
+                                <th>Database</th>
+                                <th>Description</th>
+                                <th>Species</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="xref in xrefs">
+                                <td>{{ xref.id }}static</td>
+                                <td>{{ xref.firstName }}static</td>
+                                <td>{{ xref.lastName }}static</td>
+                            </tr>
+                        </tbody>
+                    </table>
 
                     {% if rna.count_xrefs > context.xref_page_size %}
                         <div class="alert alert-warning" role="alert">
@@ -248,21 +265,21 @@ limitations under the License.
 {% endblock content %}
 
 
-{% block extra_js_uncompressed %}
-  {{ block.super }}
-    <script type="text/javascript">
-    $(function() {
-      {% if context.taxid_filtering %}
-        rna_sequence_view = new rnaSequenceView('{{rna.upi}}', {{ context.taxid }});
-      {% else %}
-        rna_sequence_view = new rnaSequenceView('{{rna.upi}}');
-      {% endif %}
-      rna_sequence_view.initialize();
-      rna_sequence_view.load_xrefs({{ context.xref_page_num }});
-
-      // hopscotch guided tour
-      hopscotch_tour = new guidedTour;
-      hopscotch_tour.initialize();
-    });
-  </script>
-{% endblock %}
+{#{% block extra_js_uncompressed %}#}
+{#  {{ block.super }}#}
+{#    <script type="text/javascript">#}
+{#    $(function() {#}
+{#      {% if context.taxid_filtering %}#}
+{#        rna_sequence_view = new rnaSequenceView('{{rna.upi}}', {{ context.taxid }});#}
+{#      {% else %}#}
+{#        rna_sequence_view = new rnaSequenceView('{{rna.upi}}');#}
+{#      {% endif %}#}
+{#      rna_sequence_view.initialize();#}
+{#      rna_sequence_view.load_xrefs({{ context.xref_page_num }});#}
+{##}
+{#      // hopscotch guided tour#}
+{#      hopscotch_tour = new guidedTour;#}
+{#      hopscotch_tour.initialize();#}
+{#    });#}
+{#  </script>#}
+{#{% endblock %}#}
