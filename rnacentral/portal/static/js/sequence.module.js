@@ -17,6 +17,8 @@ var xrefsComponent = {
         taxid: '@?'
     },
     controller: function() {
+        var ctrl = this;
+
         $scope.xrefs = xrefResource.get(
             {upi: this.upi, taxid: this.taxid},
             function (data) {
@@ -26,9 +28,62 @@ var xrefsComponent = {
                 // display error
             }
         );
+
+        xrefResource.get(
+            { upi: $scope.upi, taxid: $scope.taxid },
+            function(data) {
+                console.log($scope.xrefs);
+            }
+        );
+
     },
     templateUrl: "/static/js/xrefs.html"
 };
+
+var taxonomyComponent = {
+    bindings: {
+        upi: '<',
+        taxid: '<?'
+    },
+    controller: ['$http', '$interpolate',  function($http, $interpolate) {
+        var ctrl = this;
+
+        var d3_species_tree = $('#d3-species-tree');
+
+        if (!document.createElement('svg').getAttributeNS) {
+            d3_species_tree.html('Your browser does not support SVG');
+        }
+        else {
+            $http({
+                url: $interpolate("/rna/{{upi}}/lineage")({ upi: ctrl.upi }),
+                method: 'GET'
+            }).then(
+                function(response) {
+                    console.log(response);
+                    ctrl.response = response;
+                    d3SpeciesTree(response.data, ctrl.upi, '#d3-species-tree');
+                },
+                function(response) {
+                    console.log(response);
+                    ctrl.response = response;
+                }
+            )
+        }
+    }],
+    template: '<div id="d3-species-tree">' +
+              '    <div ng-hide="ctrl.response.status">' +
+              '        <i class="fa fa-spinner fa-spin fa-2x"></i><span class="margin-left-5px">Loading taxonomic tree...</span>' +
+              '    </div>' +
+              '    <div ng-show="ctrl.response.status" class="alert alert-danger fade">' +
+              '        <i class="fa fa-exclamation-triangle"></i>Sorry, there was a problem loading the data. Please try again and contact us if the problem persists.' +
+              '    </div>' +
+              '    <div ng-show="ctrl.response.status" class="alert alert-danger fade">' +
+              '        <i class="fa fa-exclamation-triangle"></i>Sorry, there was a problem loading the data. Please try again and contact us if the problem persists.' +
+              '    </div>' +
+              '</div>'
+};
+
+
 
 var rnaSequenceController = function($scope, $location, $http, $interpolate, xrefResource, DTOptionsBuilder, DTColumnBuilder) {
     // Take upi and taxid from url. Note that $location.path() always starts with slash
@@ -67,13 +122,6 @@ var rnaSequenceController = function($scope, $location, $http, $interpolate, xre
         }
     );
 
-        xrefResource.get(
-            { upi: $scope.upi, taxid: $scope.taxid },
-            function(data) {
-                console.log($scope.xrefs);
-            }
-        );
-
 };
 rnaSequenceController.$inject = ['$scope', '$location', '$http', '$interpolate', 'xrefResource', 'DTOptionsBuilder', 'DTColumnBuilder'];
 
@@ -81,6 +129,7 @@ rnaSequenceController.$inject = ['$scope', '$location', '$http', '$interpolate',
 angular.module("rnaSequence", ['datatables', 'ngResource'])
     .factory("xrefResource", xrefResourceFactory)
     .controller("rnaSequenceController", rnaSequenceController)
-    .component("xrefsComponent", xrefsComponent);
+    .component("xrefsComponent", xrefsComponent)
+    .component("taxonomyComponent", taxonomyComponent);
 
 })();

@@ -121,24 +121,7 @@ limitations under the License.
 {#                    <table datatable="" class="row-border hover" dt-options="dtOptions" dt-columns="dtColumns"></table>#}
 
                     {% verbatim %}
-                    <table id="annotations-table" class="table table-bordered table-condensed table-hover">
-                        <!--
-                        <thead>
-                            <tr>
-                                <th>Database</th>
-                                <th>Description</th>
-                                <th>Species</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="xref in xrefs.results">
-                                <td>{{ xref.database }}</td>
-                                <td>{{ xref.accession.description }}</td>
-                                <td>{{ xref.accession.species }}</td>
-                            </tr>
-                        </tbody>
-                        -->
-                    </table>
+                    <table id="annotations-table" class="table table-bordered table-condensed table-hover"></table>
                     {% endverbatim %}
 
                     {% if rna.count_xrefs > context.xref_page_size %}
@@ -225,10 +208,7 @@ limitations under the License.
 
                 <div class="panel panel-default d3-species">
                     <div class="tab-pane panel-body d3-species force-scrollbars d3-species-tree-tab">
-                        <div id="d3-species-tree">
-                            <i class="fa fa-spinner fa-spin fa-2x"></i>
-                            <span class="margin-left-5px">Loading taxonomic tree...</span>
-                        </div>
+                        <taxonomy-component upi="{{ upi }}" taxid="{{ taxid }}"></taxonomy-component>
                     </div>
                 </div>
             </uib-tab>
