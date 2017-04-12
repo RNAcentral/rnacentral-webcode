@@ -472,7 +472,7 @@ class RNAcentralTest(unittest.TestCase):
         self.homepage = Homepage(self.browser)
 
     def tearDown(self):
-        self.browser.close()
+        self.browser.quit()
 
     def test_homepage(self):
         page = Homepage(self.browser)
