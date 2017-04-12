@@ -208,7 +208,9 @@ limitations under the License.
 
                 <div class="panel panel-default d3-species">
                     <div class="tab-pane panel-body d3-species force-scrollbars d3-species-tree-tab">
-                        <taxonomy-component upi="{{ upi }}" taxid="{{ taxid }}"></taxonomy-component>
+                        {% verbatim %}
+                        <taxonomy-component upi="upi" taxid="taxid"></taxonomy-component>
+                        {% endverbatim %}
                     </div>
                 </div>
             </uib-tab>
