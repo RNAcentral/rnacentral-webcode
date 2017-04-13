@@ -92,64 +92,88 @@ var publicationResourceFactory = function($resource) {
 };
 publicationResourceFactory.$inject = ['$resource'];
 
+var abstractResourceFactory = function($resource) {
+    return $resource(
+        'http://www.ebi.ac.uk/europepmc/webservices/rest/search/query=ext_id\\::pubmed_id&format=json&resulttype=core&callback=callback',
+        {pubmed_id: '@pubmed_id'},
+        {
+            get: { method: 'JSONP', params: { callback: 'callback' } }
+        }
+    );
+};
+abstractResourceFactory.$inject = ['$resource'];
+
 var publicationsComponent = {
     bindings: {
         upi: '<',
         taxid: '<?'
     },
-    controller: ['publicationResource', function(publicationResource) {
+    controller: ['publicationResource', 'abstractResource', function(publicationResource, abstractResource) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
-            var obj = this,
-                target = $('#publications'),
-                load_more_btn_id = '#load-more-publications',
-                template_id = '#handlebars-publications',
-                url = '/api/v1/rna/__URS__/publications?page_size=__PAGE_SIZE__';
+            var pageSize = 25;
 
-            var page_size = 25;
+            ctrl.abstracts = {};
+            ctrl.publications = publicationResource.get(
+                { upi: this.upi, page_size: pageSize },
+                function(publications) {
+                    // retrieve corresponding abstracts
+                    for (var i=0; i < publications.results.length; i++) {
+                        var pubmed_id = publications.results[i].pubmed_id;
+                        ctrl.abstracts[pubmed_id] = abstractResource.get(pubmed_id);
+                    }
 
-            $.get(url.replace('__URS__', ctrl.upi).replace('__PAGE_SIZE__', page_size), function(data) {
-                insert_content(data);
-                obj.activate_abstract_buttons(target.find('.abstract-btn'));
-            });
+                    console.log("ctrl.publications = ", ctrl.publications);
+                    console.log("ctrl.abstracts = ", ctrl.abstracts);
+                }
+            );
+        };
 
-            // attach event to the load more button
-            target.off('click').on('click', load_more_btn_id, function(){
-                new_page_size = target.find('li').length + page_size;
-                obj.load_publications(new_page_size);
-            });
-
-            function insert_content(data) {
-                var source = $(template_id).html();
-                var template = Handlebars.compile(source);
-                data.total = data.count;
-                data.count = data.results.length;
-                var wrapper = {
-                    data: data,
-                };
-                target.html(template(wrapper));
-            }
+        ctrl.loadMore = function() {
+            var newPageSize = ctrl.publications.data.length + pageSize;
+            ctrl.publications = publicationResource.get(
+                { upi: this.upi, page_size: newPageSize },
+                function(publications) {
+                    // retrieve corresponding abstracts
+                    for (var i=0; i < publications.results.length; i++) {
+                        var pubmed_id = publications.results[i].pubmed_id;
+                        ctrl.abstracts[pubmed_id] = abstractResource.get(pubmed_id);
+                    }
+                }
+            );
         };
     }],
     template: '<div id="publications">' +
               '    <h2>Publications <small>{{ $ctrl.publications.count }}</small></h2>' +
-              '    <ol ng-repeat="publication in $ctrl.publications"></ol>' +
-              '        <div class="col-md-8">' +
+              '    <ol>' +
+              '        <div ng-repeat="publication in $ctrl.publications.results" class="col-md-8">' +
               '            <li class="margin-bottom-10px">' +
-              '                {{ publication }}' +
+              '                <strong ng-if="publication.title">{{ publication.title }}</strong>' +
+              '                <br ng-if="publication.title">' +
+              '                <small>' +
+              '                    <span ng-repeat="author in publication.authors track by $index"><a href="/search?q=author:&#34;{{ author }}&#34;">{{ author }}</a>{{ $last ? "" : ", " }}</span>' +
+              '                    <br ng-if="publication.authors && publication.authors.length">' +
+              '                    <em ng-if="publication.publication">{{ publication.publication }}</em>' +
+              '                    <span ng-if="publication.pubmed_id">' +
+              '                        <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ publication.pubmed_id }}" class="margin-left-5px">Pubmed</a>' +
+              '                        <a ng-if="publication.doi" href="http://dx.doi.org/{{ publication.doi }}" target="_blank" class="abstract-control">Full text</a>' +
+              '                        <button class="btn btn-xs btn-default abstract-btn abstract-control" ng-click="abstractVisible = !abstractVisible"><span ng-if="abstractVisible">Show abstract</span><span ng-if="!abstractVisible">Hide abstract</span></button>' +
+              '                        <div ng-if="abstractVisible" class="abstract-text">{{ $ctrl.abstracts[publication.pubmed_id] }}</div>' +
+              '                    </span>' +
+              '                  <br>' +
+              '                  <a href="/search?q=pub_id:&#34;{{ publication.pubmed_id }}&#34;" class="margin-left-5px"><i class="fa fa-search"></i> Find other sequences from this reference</a>' +
+              '                </small>' +
               '            </li>' +
               '        </div>' +
               '    </ol>' +
-              '    <div class="col-md-8">' +
-              '        {{#ifCond count '<' total}}' +
-              '        <small class="text-muted">Displaying {{count}} of {{total}} publications</small>' +
+              '    <div ng-if="$ctrl.publications.count < $ctrl.publications.total" class="col-md-8">' +
+              '        <small class="text-muted">Displaying {{ $ctrl.publication.count }} of {{ $ctrl.publications.total }} publications</small>' +
               '        <br>' +
               '        <button class="btn btn-default btn-large" id="load-more-publications">Load more</button>' +
-              '        {{/ifCond}}' +
               '    </div>' +
               '    <div class="row">' +
-              '        <div ng-if="!$ctrl.response" class="col-md-12">' +
+              '        <div ng-if="!$ctrl.publications" class="col-md-12">' +
               '            <i class="fa fa-spinner fa-spin fa-2x"></i>' +
               '            <span class="margin-left-5px">Loading publications...</span>' +
               '        </div>' +
@@ -203,6 +227,7 @@ rnaSequenceController.$inject = ['$scope', '$location', '$http', '$interpolate',
 angular.module("rnaSequence", ['datatables', 'ngResource'])
     .factory("xrefResource", xrefResourceFactory)
     .factory("publicationResource", publicationResourceFactory)
+    .factory("abstractResource", abstractResourceFactory)
     .controller("rnaSequenceController", rnaSequenceController)
     .component("xrefsComponent", xrefsComponent)
     .component("taxonomyComponent", taxonomyComponent)
