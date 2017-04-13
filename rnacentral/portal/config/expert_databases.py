@@ -48,7 +48,7 @@ expert_dbs = [
         'url': 'http://www.ebi.ac.uk/pdbe/',
         'description': 'is the European repository of information about the 3D structures of large biological molecules. PDBe is a member of the Worldwide Protein Data Bank',
         'hint': 'PDBe is the European repository of information about the 3D structures of large biological molecules. PDBe is a member of the Worldwide Protein Data Bank',
-        'tags': ['curated', '3D structures'],
+        'tags': ['curated', '3D structure'],
         'abbreviation': 'Protein Data Bank in Europe',
         'examples': [
             'URS00000ABFE9', # E.coli SSU, 4V4Q chain AA
@@ -114,7 +114,7 @@ expert_dbs = [
         'url': 'http://www.mirbase.org/',
         'description': 'is a database of published miRNA sequences and annotations that provides a centralised system for assigning names to miRNA genes',
         'hint': 'miRBase contains high-quality miRNA annotations; miRBase is responsible for assigning official miRNA gene names',
-        'tags': ['curated', 'miRNA', 'nomenclature'],
+        'tags': ['curated', 'miRNA'],
         'abbreviation': '',
         'examples': ['URS000075A685', 'URS00003B7674', 'URS000016FD1A'],
         'references': [
@@ -162,7 +162,7 @@ expert_dbs = [
         'url': 'http://bioinformatics.sandia.gov/tmrna/',
         'description': 'contains predicted tmRNA sequences from RefSeq prokaryotic genomes, plasmids and phages',
         'hint': 'tmRNA Website contains predicted tmRNA sequences from RefSeq prokaryotic genomes, plasmids and phages',
-        'tags': ['automatic', 'predicted', 'prokaryotic', 'tmRNA'],
+        'tags': ['automatic', 'predicted', 'tmRNA'],
         'abbreviation': '',
         'examples': ['URS000060F5B3', 'URS000058C344', 'URS000048A91D'],
         'references': [
@@ -183,7 +183,7 @@ expert_dbs = [
         'url': 'http://rnp.uthscsa.edu/rnp/SRPDB/SRPDB.html',
         'description': 'provides aligned, annotated and phylogenetically ordered sequences related to structure and function of SRP',
         'hint': 'SRPDB provides aligned, annotated and phylogenetically ordered sequences related to structure and function of SRP',
-        'tags': ['curated', 'SRP'],
+        'tags': ['curated', 'signal recognition particle'],
         'abbreviation': 'Signal Recognition Particle Database',
         'examples': ['URS00000478B7', 'URS00001C03DC', 'URS00005C64FE'],
         'references': [
@@ -294,7 +294,7 @@ expert_dbs = [
         'url': 'http://www.rna.ccbb.utexas.edu/',
         'description': 'comparative sequence and structure information for ribosomal, intron, and other RNAs',
         'hint': 'CRW Site comparative sequence and structure information for ribosomal, intron, and other RNAs',
-        'tags': ['curated'],
+        'tags': ['curated', 'rRNA'],
         'abbreviation': 'Comparative RNA Website',
         'examples': '',
         'references': [],
@@ -333,7 +333,7 @@ expert_dbs = [
         'url': 'http://greengenes.secondgenome.com/downloads',
         'description': 'is a full-length 16S rRNA gene database that provides a curated taxonomy based on de novo tree inference',
         'hint': 'Greengenes is a database of full-length 16S rRNA gene that provides a curated taxonomy based on de novo tree inference',
-        'tags': ['automatic', '16S', 'rRNA'],
+        'tags': ['automatic', 'SSU rRNA'],
         'abbreviation': '',
         'examples': ['URS00003D0087', 'URS00006DE01B', 'URS00004DD3DC'],
         'references': [
@@ -368,7 +368,7 @@ expert_dbs = [
         'url': 'http://www.lncipedia.org/',
         'description': 'is a comprehensive compendium of human long non-coding RNAs',
         'hint': 'LNCipedia is a comprehensive compendium of human long non-coding RNAs',
-        'tags': ['automatic', 'curated', 'human', 'lncRNA'],
+        'tags': ['automatic', 'human', 'lncRNA'],
         'abbreviation': '',
         'examples': ['URS000081175C', 'URS0000812103', 'URS00001F1863'],
         'references': [
@@ -389,7 +389,7 @@ expert_dbs = [
         'url': 'http://modomics.genesilico.pl/',
         'description': 'is a comprehensive database of RNA modifications',
         'hint': 'Modomics is a comprehensive database of RNA modifications',
-        'tags': ['curated', 'RNA modifications'],
+        'tags': ['curated', 'RNA modifications', 'tRNA', 'rRNA'],
         'abbreviation': '',
         'examples': ['URS00001BBAFC', 'URS000019192F', 'URS000026426D'],
         'references': [
@@ -431,7 +431,7 @@ expert_dbs = [
         'url': 'http://bioinfo.ibp.ac.cn/NPInter/',
         'description': 'experimentally determined functional interactions between ncRNAs and proteins, mRNAs or genomic DNA',
         'hint': 'NPInter contains data on experimentally determined functional interactions between ncRNAs and proteins, mRNAs or genomic DNA',
-        'tags': ['automatic', 'curated', 'experimentally determined', 'interactions'],
+        'tags': ['automatic', 'curated'],
         'abbreviation': '',
         'examples': '',
         'references': [],
@@ -457,7 +457,7 @@ expert_dbs = [
         'url': 'http://chualab.rockefeller.edu/gbrowse2/homepage.html',
         'description': 'provides comprehensive genomic view of Arabidopsis lncRNAs',
         'hint': 'PLncDB provides comprehensive genomic view of Arabidopsis lncRNAs',
-        'tags': ['curated', 'model organism', 'Arabidopsis thaliana'],
+        'tags': ['curated', 'Arabidopsis thaliana'],
         'abbreviation': 'Plant Long Non-Coding DataBase',
         'examples': [''],
         'references': [
@@ -513,7 +513,7 @@ expert_dbs = [
         'url': 'http://www.arb-silva.de/',
         'description': 'is a comprehensive resource for quality checked and aligned ribosomal RNA sequence data',
         'hint': 'SILVA is a comprehensive resource for quality checked and aligned ribosomal RNA sequence data',
-        'tags': ['automatic', 'curated', '16S/18S', '23S/28S' 'rRNA', 'alignments'],
+        'tags': ['automatic', 'SSU rRNA', 'LSU rRNA'],
         'abbreviation': '',
         'examples': ['URS00005A14E2', 'URS00004DD3DC', 'URS0000224E47'],
         'references': [
@@ -559,7 +559,7 @@ expert_dbs = [
         'url': 'http://snoopy.med.miyazaki-u.ac.jp',
         'description': "provides comprehensive information about snoRNAs, snoRNA gene loci, and target RNAs as well as information about snoRNA orthologues",
         'hint': 'snOPY provides comprehensive information about snoRNAs, their gene loci, orthologues and their target RNAs',
-        'tags': ['curated', 'snoRNA', 'orthologues', 'genes', 'targets'],
+        'tags': ['curated', 'snoRNA'],
         'abbreviation': 'snoRNA Orthological Gene Database',
         'examples': ['URS00004B0879', 'URS0000600DF1', 'URS000015A509'],
         'references': [
@@ -636,7 +636,7 @@ expert_dbs = [
         'url': 'http://trna.bioinf.uni-leipzig.de/DataOutput/',
         'description': 'compilation of tRNA sequences and tRNA genes',
         'hint': 'tRNAdb is a compilation of tRNA sequences and tRNA genes.',
-        'tags': ['curated', 'tRNA', 'genes', 'sequences'],
+        'tags': ['curated', 'tRNA'],
         'description': 'compilation of tRNA sequences and tRNA genes',
         'abbreviation': '',
         'examples': '',
@@ -755,7 +755,7 @@ expert_dbs = [
         'url': 'http://combio.pl/rrna/',
         'description': 'is an information resource for 5S ribosomal RNAs',
         'hint': '5SrRNAdb is an information resource for 5S ribosomal RNAs',
-        'tags': ['curated', '5S', 'rRNA', '3D structures', 'alignments'],
+        'tags': ['curated', '5S', 'rRNA'],
         'abbreviation': '',
         'examples': [],
         'references': [
