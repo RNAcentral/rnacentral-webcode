@@ -94,10 +94,10 @@ publicationResourceFactory.$inject = ['$resource'];
 
 var abstractResourceFactory = function($resource) {
     return $resource(
-        'http://www.ebi.ac.uk/europepmc/webservices/rest/search/query=ext_id\\::pubmed_id&format=json&resulttype=core&callback=callback',
+        'http://www.ebi.ac.uk/europepmc/webservices/rest/search/query=ext_id\\::pubmed_id&format=json&resulttype=core',
         {pubmed_id: '@pubmed_id'},
         {
-            get: { method: 'JSONP', params: { callback: 'callback' } }
+            jsonp: { method: 'JSONP', params: {callback : 'JSON_CALLBACK'} }
         }
     );
 };
@@ -108,7 +108,7 @@ var publicationsComponent = {
         upi: '<',
         taxid: '<?'
     },
-    controller: ['publicationResource', 'abstractResource', function(publicationResource, abstractResource) {
+    controller: ['publicationResource', 'abstractResource', '$http', '$interpolate', function(publicationResource, abstractResource, $http, $interpolate) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
@@ -121,11 +121,38 @@ var publicationsComponent = {
                     // retrieve corresponding abstracts
                     for (var i=0; i < publications.results.length; i++) {
                         var pubmed_id = publications.results[i].pubmed_id;
-                        ctrl.abstracts[pubmed_id] = abstractResource.get(pubmed_id);
-                    }
+                        // $http.jsonp(
+                        //     $interpolate('http://www.ebi.ac.uk/europepmc/webservices/rest/search/query=ext_id:{{pubmed_id}}&format=json&resulttype=core')({pubmed_id: pubmed_id})
+                        // ).then(
+                        //     function(response) {
+                        //         console.log(response);
+                        //     },
+                        //     function(response) {
+                        //         console.log(response);
+                        //     }
+                        // );
 
-                    console.log("ctrl.publications = ", ctrl.publications);
-                    console.log("ctrl.abstracts = ", ctrl.abstracts);
+                        // abstractResource.jsonp(
+                        //     { pubmed_id: pubmed_id },
+                        //     function(abstract) {
+                        //         ctrl.abstracts[pubmed_id] = abstract;
+                        //         console.log("ctrl.publications = ", ctrl.publications);
+                        //         console.log("ctrl.abstracts = ", ctrl.abstracts);
+                        //     }
+                        // );
+
+                        $.ajax({
+                            url: 'http://www.ebi.ac.uk/europepmc/webservices/rest/search/query=ext_id:' + pubmed_id + '&format=json&resulttype=core',
+                            dataType: "jsonp",
+                            jsonp: false, // prevent jQuery from modifying the callback bit in the url
+                            jsonpCallback: "callback", // tell what callback function to use
+                        }).done(function(data){
+                            console.log(data);
+                            ctrl.abstracts[pubmed_id] = data;
+                        }).fail(function(response){
+                            console.log(response);
+                        });
+                    }
                 }
             );
         };
@@ -224,7 +251,24 @@ var rnaSequenceController = function($scope, $location, $http, $interpolate, xre
 rnaSequenceController.$inject = ['$scope', '$location', '$http', '$interpolate', 'xrefResource', 'DTOptionsBuilder', 'DTColumnBuilder'];
 
 
+/**
+ * Configuration function that allows this module to load data
+ * from white-listed domains.
+ * @param $sceDelegateProvider
+ */
+var sceWhitelist = function($sceDelegateProvider) {
+    $sceDelegateProvider.resourceUrlWhitelist([
+        // Allow same origin resource loads.
+        'self',
+        // Allow loading from EBI
+        'http://www.ebi.ac.uk/**'
+    ]);
+};
+sceWhitelist.$inject = ['$sceDelegateProvider'];
+
+
 angular.module("rnaSequence", ['datatables', 'ngResource'])
+    .config(sceWhitelist)
     .factory("xrefResource", xrefResourceFactory)
     .factory("publicationResource", publicationResourceFactory)
     .factory("abstractResource", abstractResourceFactory)
