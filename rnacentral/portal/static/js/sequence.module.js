@@ -11,6 +11,7 @@ var xrefResourceFactory = function($resource) {
 };
 xrefResourceFactory.$inject = ['$resource'];
 
+
 var xrefsComponent = {
     bindings: {
         upi: '@',
@@ -39,6 +40,7 @@ var xrefsComponent = {
     },
     templateUrl: "/static/js/xrefs.html"
 };
+
 
 var taxonomyComponent = {
     bindings: {
@@ -92,83 +94,69 @@ var publicationResourceFactory = function($resource) {
 };
 publicationResourceFactory.$inject = ['$resource'];
 
-var abstractResourceFactory = function($resource) {
-    return $resource(
-        'http://www.ebi.ac.uk/europepmc/webservices/rest/search/query=ext_id\\::pubmed_id&format=json&resulttype=core',
-        {pubmed_id: '@pubmed_id'},
-        {
-            jsonp: { method: 'JSONP', params: {callback : 'JSON_CALLBACK'} }
-        }
-    );
-};
-abstractResourceFactory.$inject = ['$resource'];
 
 var publicationsComponent = {
     bindings: {
         upi: '<',
         taxid: '<?'
     },
-    controller: ['publicationResource', 'abstractResource', '$http', '$interpolate', function(publicationResource, abstractResource, $http, $interpolate) {
+    controller: ['publicationResource', '$http', '$interpolate', '$timeout', function(publicationResource, $http, $interpolate, $timeout) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
-            var pageSize = 25;
-
             ctrl.abstracts = {};
-            ctrl.publications = publicationResource.get(
+            ctrl.publications = ctrl.fetchPublications(25);
+        };
+
+        /**
+         * Asynchronously downloads <pageSize> (e.g. 25) publications
+         * on this sequences and stores in ctrl.publications.
+         *
+         * @param {int} [25] pageSize - how many publications to load
+         * @returns {publicationResource promise} - Array-like of publications
+         */
+        ctrl.fetchPublications = function(pageSize) {
+            pageSize = pageSize || 25;
+
+            return publicationResource.get(
                 { upi: this.upi, page_size: pageSize },
                 function(publications) {
                     // retrieve corresponding abstracts
                     for (var i=0; i < publications.results.length; i++) {
                         var pubmed_id = publications.results[i].pubmed_id;
-                        // $http.jsonp(
-                        //     $interpolate('http://www.ebi.ac.uk/europepmc/webservices/rest/search/query=ext_id:{{pubmed_id}}&format=json&resulttype=core')({pubmed_id: pubmed_id})
-                        // ).then(
-                        //     function(response) {
-                        //         console.log(response);
-                        //     },
-                        //     function(response) {
-                        //         console.log(response);
-                        //     }
-                        // );
-
-                        // abstractResource.jsonp(
-                        //     { pubmed_id: pubmed_id },
-                        //     function(abstract) {
-                        //         ctrl.abstracts[pubmed_id] = abstract;
-                        //         console.log("ctrl.publications = ", ctrl.publications);
-                        //         console.log("ctrl.abstracts = ", ctrl.abstracts);
-                        //     }
-                        // );
-
-                        $.ajax({
-                            url: 'http://www.ebi.ac.uk/europepmc/webservices/rest/search/query=ext_id:' + pubmed_id + '&format=json&resulttype=core',
-                            dataType: "jsonp",
-                            jsonp: false, // prevent jQuery from modifying the callback bit in the url
-                            jsonpCallback: "callback", // tell what callback function to use
-                        }).done(function(data){
-                            console.log(data);
-                            ctrl.abstracts[pubmed_id] = data;
-                        }).fail(function(response){
-                            console.log(response);
-                        });
+                        ctrl.fetchAbstract(pubmed_id);
                     }
                 }
             );
         };
 
-        ctrl.loadMore = function() {
+        /**
+         * Asynchronously downloads abstract for paper with given
+         * pubmed_id (if available) and adds it to ctrl.abstracts.
+         * Due to ugly JSONP syntax, we use raw $http instead of
+         * resources here.
+         *
+         * @param {int|null|undefined} pubmed_id - paper's PubMed id
+         * @return {HttpPromise|null}
+         */
+        ctrl.fetchAbstract = function(pubmed_id) {
+            if (pubmed_id) {
+                return $http.jsonp(
+                    $interpolate('http://www.ebi.ac.uk/europepmc/webservices/rest/search?query=ext_id:{{ pubmed_id }}&format=json&resulttype=core')({pubmed_id: pubmed_id})
+                ).then(function(response) {
+                    ctrl.abstracts[pubmed_id] = response.data.resultList.result[0].abstractText;
+                });
+            }
+            else {
+                ctrl.abstracts[pubmed_id] = "Failed to download abstract";
+                return null;
+            }
+        };
+
+        ctrl.loadMore = function(pageSize) {
+            pageSize = pageSize || 25;
             var newPageSize = ctrl.publications.data.length + pageSize;
-            ctrl.publications = publicationResource.get(
-                { upi: this.upi, page_size: newPageSize },
-                function(publications) {
-                    // retrieve corresponding abstracts
-                    for (var i=0; i < publications.results.length; i++) {
-                        var pubmed_id = publications.results[i].pubmed_id;
-                        ctrl.abstracts[pubmed_id] = abstractResource.get(pubmed_id);
-                    }
-                }
-            );
+            ctrl.publications = fetchPublications(newPageSize);
         };
     }],
     template: '<div id="publications">' +
@@ -185,7 +173,7 @@ var publicationsComponent = {
               '                    <span ng-if="publication.pubmed_id">' +
               '                        <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ publication.pubmed_id }}" class="margin-left-5px">Pubmed</a>' +
               '                        <a ng-if="publication.doi" href="http://dx.doi.org/{{ publication.doi }}" target="_blank" class="abstract-control">Full text</a>' +
-              '                        <button class="btn btn-xs btn-default abstract-btn abstract-control" ng-click="abstractVisible = !abstractVisible"><span ng-if="abstractVisible">Show abstract</span><span ng-if="!abstractVisible">Hide abstract</span></button>' +
+              '                        <button class="btn btn-xs btn-default abstract-btn abstract-control" ng-click="abstractVisible = !abstractVisible"><span ng-if="abstractVisible">Hide abstract</span><span ng-if="!abstractVisible">Show abstract</span></button>' +
               '                        <div ng-if="abstractVisible" class="abstract-text">{{ $ctrl.abstracts[publication.pubmed_id] }}</div>' +
               '                    </span>' +
               '                  <br>' +
@@ -197,7 +185,7 @@ var publicationsComponent = {
               '    <div ng-if="$ctrl.publications.count < $ctrl.publications.total" class="col-md-8">' +
               '        <small class="text-muted">Displaying {{ $ctrl.publication.count }} of {{ $ctrl.publications.total }} publications</small>' +
               '        <br>' +
-              '        <button class="btn btn-default btn-large" id="load-more-publications">Load more</button>' +
+              '        <button class="btn btn-default btn-large" id="load-more-publications" ng-click="$ctrl.loadMore">Load more</button>' +
               '    </div>' +
               '    <div class="row">' +
               '        <div ng-if="!$ctrl.publications" class="col-md-12">' +
@@ -271,7 +259,6 @@ angular.module("rnaSequence", ['datatables', 'ngResource'])
     .config(sceWhitelist)
     .factory("xrefResource", xrefResourceFactory)
     .factory("publicationResource", publicationResourceFactory)
-    .factory("abstractResource", abstractResourceFactory)
     .controller("rnaSequenceController", rnaSequenceController)
     .component("xrefsComponent", xrefsComponent)
     .component("taxonomyComponent", taxonomyComponent)
