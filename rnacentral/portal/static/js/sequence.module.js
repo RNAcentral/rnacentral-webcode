@@ -57,10 +57,7 @@ var taxonomyComponent = {
                 d3_species_tree.html('Your browser does not support SVG');
             }
             else {
-                $http({
-                    url: $interpolate("/rna/{{upi}}/lineage")({ upi: ctrl.upi }),
-                    method: 'GET'
-                }).then(
+                $http.get($interpolate("/rna/{{upi}}/lineage")({ upi: ctrl.upi })).then(
                     function(response) {
                         ctrl.response = response;
                         d3SpeciesTree(response.data, ctrl.upi, '#d3-species-tree');
@@ -100,7 +97,7 @@ var publicationsComponent = {
         upi: '<',
         taxid: '<?'
     },
-    controller: ['publicationResource', '$http', '$interpolate', '$timeout', function(publicationResource, $http, $interpolate, $timeout) {
+    controller: ['publicationResource', '$http', '$interpolate', function(publicationResource, $http, $interpolate) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
@@ -143,12 +140,17 @@ var publicationsComponent = {
             if (pubmed_id) {
                 return $http.jsonp(
                     $interpolate('http://www.ebi.ac.uk/europepmc/webservices/rest/search?query=ext_id:{{ pubmed_id }}&format=json&resulttype=core')({pubmed_id: pubmed_id})
-                ).then(function(response) {
-                    ctrl.abstracts[pubmed_id] = response.data.resultList.result[0].abstractText;
-                });
+                ).then(
+                    function(response) {
+                        ctrl.abstracts[pubmed_id] = response.data.resultList.result[0].abstractText;
+                    },
+                    function(response) {
+                        ctrl.abstracts[pubmed_id] = "Failed to download abstract";
+                    }
+                );
             }
             else {
-                ctrl.abstracts[pubmed_id] = "Failed to download abstract";
+                ctrl.abstracts[pubmed_id] = "Abstract is not available";
                 return null;
             }
         };
@@ -160,7 +162,7 @@ var publicationsComponent = {
         };
     }],
     template: '<div id="publications">' +
-              '    <h2>Publications <small>{{ $ctrl.publications.count }}</small></h2>' +
+              '    <h2>Publications <small>{{ $ctrl.publications.count }} total</small></h2>' +
               '    <ol>' +
               '        <div ng-repeat="publication in $ctrl.publications.results" class="col-md-8">' +
               '            <li class="margin-bottom-10px">' +
@@ -203,10 +205,14 @@ var rnaSequenceController = function($scope, $location, $http, $interpolate, xre
     $scope.upi = $location.path().split('/')[2];
     $scope.taxid = $location.path().split('/')[3]; // TODO: this might not exist!
 
-    $scope.xrefs = $http({
-        url: $interpolate('/rna/{{upi}}/xrefs/{{taxid}}', false, null, true)({ upi: $scope.upi, taxid: $scope.taxid }),
-        method: 'GET'
-    }).then(
+    var xrefsUrl;
+    if ($scope.taxid !== undefined) {
+        xrefsUrl = $interpolate('/rna/{{upi}}/xrefs/{{taxid}}')({ upi: $scope.upi, taxid: $scope.taxid });
+    } else {
+        xrefsUrl = $interpolate('/rna/{{upi}}/xrefs')({ upi: $scope.upi});
+    }
+
+    $scope.xrefs = $http.get(xrefsUrl).then(
         function(response) {
             $("#annotations-table").html(response.data);
             $("#annotations-table").DataTable({
@@ -241,7 +247,7 @@ rnaSequenceController.$inject = ['$scope', '$location', '$http', '$interpolate',
 
 /**
  * Configuration function that allows this module to load data
- * from white-listed domains.
+ * from white-listed domains (required for JSONP from ebi.ac.uk).
  * @param $sceDelegateProvider
  */
 var sceWhitelist = function($sceDelegateProvider) {
