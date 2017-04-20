@@ -878,6 +878,17 @@ textarea {
   opacity: 0;
 }
 
+/* Transitions for abstract-text */
+
+.abstract-text.slide-down-enter {
+  transition: 0.2s linear all;
+  opacity: 0;
+}
+
+.abstract-text.slide-down-enter-active {
+  opacity: 1;
+}
+
 
 /*------------------------------------------------------------------
 [5.9 D3 expert database treemap]
