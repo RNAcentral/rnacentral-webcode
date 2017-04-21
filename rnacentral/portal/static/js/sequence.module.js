@@ -235,6 +235,7 @@ var rnaSequenceController = function($scope, $location, $http, $interpolate, xre
                     console.log("init complete");
                 }
             });
+            $scope.enableGenomicFeatures = response.data.indexOf('View genomic location') > 0;
         },
         function(response) {
             // handle error

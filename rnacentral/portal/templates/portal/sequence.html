@@ -227,6 +227,9 @@ limitations under the License.
                         <li><a href="/api/v1/rna/{{ rna.upi }}.fasta" download="{{ rna.upi }}.fasta">FASTA</a></li>
                         <li><a href="/api/v1/rna/{{ rna.upi }}.json" download="{{ rna.upi }}.json">JSON</a></li>
                         <li><a href="/api/v1/rna/{{ rna.upi }}.yaml" download="{{ rna.upi }}.yaml">YAML</a></li>
+                        <li ng-if="enableGenomicFeatures"><a href="/api/v1/rna/{{ rna.upi }}.bed"  download="{{ rna.upi }}.bed">BED</a></li>
+                        <li ng-if="enableGenomicFeatures"><a href="/api/v1/rna/{{ rna.upi }}.gff"  download="{{ rna.upi }}.gff">GFF</a></li>
+                        <li ng-if="enableGenomicFeatures"><a href="/api/v1/rna/{{ rna.upi }}.gff3" download="{{ rna.upi }}.gff3">GFF3</a></li>
                     </ul>
                 </uib-tab-heading>
             </uib-tab>
