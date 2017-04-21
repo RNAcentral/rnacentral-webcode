@@ -176,7 +176,7 @@ var publicationsComponent = {
               '                        <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ publication.pubmed_id }}" class="margin-left-5px">Pubmed</a>' +
               '                        <a ng-if="publication.doi" href="http://dx.doi.org/{{ publication.doi }}" target="_blank" class="abstract-control">Full text</a>' +
               '                        <button class="btn btn-xs btn-default abstract-btn abstract-control" ng-click="abstractVisible = !abstractVisible"><span ng-if="abstractVisible">Hide abstract</span><span ng-if="!abstractVisible">Show abstract</span></button>' +
-              '                        <div ng-if="abstractVisible" class="abstract-text" ng-animate="\'slide-down\'">{{ $ctrl.abstracts[publication.pubmed_id] }}</div>' +
+              '                        <div ng-if="abstractVisible" class="abstract-text slide-down">{{ $ctrl.abstracts[publication.pubmed_id] }}</div>' +
               '                    </span>' +
               '                  <br>' +
               '                  <a href="/search?q=pub_id:&#34;{{ publication.pubmed_id }}&#34;" class="margin-left-5px"><i class="fa fa-search"></i> Find other sequences from this reference</a>' +
@@ -261,7 +261,7 @@ var sceWhitelist = function($sceDelegateProvider) {
 sceWhitelist.$inject = ['$sceDelegateProvider'];
 
 
-angular.module("rnaSequence", ['datatables', 'ngResource'])
+angular.module("rnaSequence", ['datatables', 'ngResource', 'ngAnimate'])
     .config(sceWhitelist)
     .factory("xrefResource", xrefResourceFactory)
     .factory("publicationResource", publicationResourceFactory)

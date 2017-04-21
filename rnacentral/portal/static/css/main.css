@@ -880,13 +880,14 @@ textarea {
 
 /* Transitions for abstract-text */
 
-.abstract-text.slide-down-enter {
-  transition: 0.2s linear all;
-  opacity: 0;
+.abstract-text.slide-down.ng-enter {
+  overflow: hidden;
+  transition: max-height 1s ease-in;
+  max-height: 0px;
 }
 
-.abstract-text.slide-down-enter-active {
-  opacity: 1;
+.abstract-text.slide-down.ng-enter-active {
+  max-height: 2000px;
 }
 
 
