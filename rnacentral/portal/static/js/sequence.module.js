@@ -1,44 +1,31 @@
 (function() {
 
-var xrefResourceFactory = function($resource) {
-    return $resource(
-        '/api/v1/rna/:upi/xrefs/',
-        {upi: '@upi', taxid: '@taxid', page: '@page'},
-        {
-            get: {timeout: 5000, isArray: false}
-        }
-    );
-};
-xrefResourceFactory.$inject = ['$resource'];
-
-
 var xrefsComponent = {
     bindings: {
         upi: '@',
         taxid: '@?'
     },
-    controller: function() {
+    controller: ['$http', '$interpolate', function($http, $interpolate) {
         var ctrl = this;
 
-        $scope.xrefs = xrefResource.get(
-            {upi: this.upi, taxid: this.taxid},
-            function (data) {
-                // hide loading spinner
+        $http.get($interpolate('/api/v1/rna/{{upi}}')({upi: ctrl.upi}), {timeout: 5000}).then(
+            function(response) {
+                // set ctrl.xrefs (filtering by taxid, if given)
+                if (ctrl.taxid) {
+                    ctrl.xrefs = response.data.results;
+                }
+                else {
+                    ctrl.xrefs = _.filter(response.data.results, function(result) {
+                        return result.taxid == ctrl.taxid;
+                    });
+                }
             },
-            function () {
-                // display error
+            function() {
+
             }
         );
-
-        xrefResource.get(
-            { upi: $scope.upi, taxid: $scope.taxid },
-            function(data) {
-                console.log($scope.xrefs);
-            }
-        );
-
-    },
-    templateUrl: "/static/js/xrefs.html"
+    }],
+    template: ''
 };
 
 
@@ -200,7 +187,7 @@ var publicationsComponent = {
 };
 
 
-var rnaSequenceController = function($scope, $location, $http, $interpolate, xrefResource, DTOptionsBuilder, DTColumnBuilder) {
+var rnaSequenceController = function($scope, $location, $http, $interpolate, DTOptionsBuilder, DTColumnBuilder) {
     // Take upi and taxid from url. Note that $location.path() always starts with slash
     $scope.upi = $location.path().split('/')[2];
     $scope.taxid = $location.path().split('/')[3]; // TODO: this might not exist!
@@ -236,14 +223,53 @@ var rnaSequenceController = function($scope, $location, $http, $interpolate, xre
                 }
             });
             $scope.enableGenomicFeatures = response.data.indexOf('View genomic location') > 0;
+            activateLiteratureReferences();
         },
         function(response) {
             // handle error
         }
     );
 
+    function activateLiteratureReferences() {
+        $(document).on('click', '.literature-refs-retrieve', function() {
+            var $this = $(this);
+            var accession = $this.data('accession');
+            var target = $this.siblings('.literature-refs-content');
+
+            toggle_slider_icon();
+            if (target.html().length > 0) {
+                target.slideToggle();
+            } else {
+                $.get('/api/v1/accession/' + accession + '/citations', function(data) {
+                    insert_content(data);
+                    obj.activate_abstract_buttons($this.siblings().find('.abstract-btn'));
+                    target.slideDown();
+                });
+            }
+
+            function toggle_slider_icon() {
+                var up = '<i class="fa fa-caret-up"></i>';
+                var down = '<i class="fa fa-caret-down"></i>';
+                if ($this.html() === up) {
+                    $this.html(down);
+                } else {
+                    $this.html(up);
+                }
+            }
+
+            function insert_content(data) {
+                var source = $("#handlebars-literature-reference-tmpl").html();
+                var template = Handlebars.compile(source);
+                var wrapper = {
+                    refs: data
+                };
+                target.html(template(wrapper));
+            }
+        });
+    }
+
 };
-rnaSequenceController.$inject = ['$scope', '$location', '$http', '$interpolate', 'xrefResource', 'DTOptionsBuilder', 'DTColumnBuilder'];
+rnaSequenceController.$inject = ['$scope', '$location', '$http', '$interpolate', 'DTOptionsBuilder', 'DTColumnBuilder'];
 
 
 /**
@@ -264,7 +290,6 @@ sceWhitelist.$inject = ['$sceDelegateProvider'];
 
 angular.module("rnaSequence", ['datatables', 'ngResource', 'ngAnimate'])
     .config(sceWhitelist)
-    .factory("xrefResource", xrefResourceFactory)
     .factory("publicationResource", publicationResourceFactory)
     .controller("rnaSequenceController", rnaSequenceController)
     .component("xrefsComponent", xrefsComponent)
