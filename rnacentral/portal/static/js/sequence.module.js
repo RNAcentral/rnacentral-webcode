@@ -19,13 +19,10 @@ var xrefsComponent = {
                         return result.taxid == ctrl.taxid;
                     });
                 }
-            },
-            function() {
-
             }
         );
     }],
-    template: ''
+    templateUrl: '/static/js/sequence-xrefs.html'
 };
 
 
