@@ -535,23 +535,23 @@ table.table thead .sorting_desc_disabled {
 }
 
 table.table thead .sorting {
-  background: url('../js/vendor/DataTables-1.9.4/media/images/sort_both.png') no-repeat center right;
+  background: url('../js/vendor/DataTables-1.10.13/media/images/sort_both.png') no-repeat center right;
 }
 
 table.table thead .sorting_asc {
-  background: url('../js/vendor/DataTables-1.9.4/media/images/sort_asc.png') no-repeat center right;
+  background: url('../js/vendor/DataTables-1.10.13/media/images/sort_asc.png') no-repeat center right;
 }
 
 table.table thead .sorting_desc {
-  background: url('../js/vendor/DataTables-1.9.4/media/images/sort_desc.png') no-repeat center right;
+  background: url('../js/vendor/DataTables-1.10.13/media/images/sort_desc.png') no-repeat center right;
 }
 
 table.table thead .sorting_asc_disabled {
-  background: url('../js/vendor/DataTables-1.9.4/media/images/sort_asc_disabled.png') no-repeat center right;
+  background: url('../js/vendor/DataTables-1.10.13/media/images/sort_asc_disabled.png') no-repeat center right;
 }
 
 table.table thead .sorting_desc_disabled {
-  background: url('../js/vendor/DataTables-1.9.4/media/images/sort_desc_disabled.png') no-repeat center right;
+  background: url('../js/vendor/DataTables-1.10.13/media/images/sort_desc_disabled.png') no-repeat center right;
 }
 
 .dataTables_info {

@@ -2,25 +2,51 @@
 
 var xrefsComponent = {
     bindings: {
-        upi: '@',
-        taxid: '@?'
+        upi: '<',
+        taxid: '<?'
     },
     controller: ['$http', '$interpolate', function($http, $interpolate) {
         var ctrl = this;
 
-        $http.get($interpolate('/api/v1/rna/{{upi}}')({upi: ctrl.upi}), {timeout: 5000}).then(
-            function(response) {
-                // set ctrl.xrefs (filtering by taxid, if given)
-                if (ctrl.taxid) {
-                    ctrl.xrefs = response.data.results;
-                }
-                else {
-                    ctrl.xrefs = _.filter(response.data.results, function(result) {
-                        return result.taxid == ctrl.taxid;
+        ctrl.$onInit = function() {
+            $http.get($interpolate('/api/v1/rna/{{upi}}/xrefs')({upi: ctrl.upi}), {timeout: 5000}).then(
+                function(response) {
+                    // set ctrl.xrefs (filtering by taxid, if given)
+                    if (ctrl.taxid) {
+                        ctrl.xrefs = response.data.results;
+                    }
+                    else {
+                        ctrl.xrefs = _.filter(response.data.results, function(result) {
+                            return result.taxid == ctrl.taxid;
+                        });
+                    }
+
+                    $("#annotations-table").DataTable({
+                        "columns": [null, null, null, {"bVisible": false}, {"bVisible": false}, {"bVisible": false}], // hide columns, but keep them sortable
+                        "autoWidth": true, // pre-recalculate column widths
+                        "dom": "ftpil", // filter, table, pagination, information, length
+                        //"paginationType": "bootstrap", // requires dataTables.bootstrap.js
+                        "deferRender": true, // defer rendering until necessary
+                        "language": {
+                            "search": "", // don't display the "Search:" bit
+                            "info": "_START_-_END_ of _TOTAL_", // change the informational text
+                            "paginate": {
+                                "next": "",
+                                "previous": "",
+                            }
+                        },
+                        "order": [[ 5, "desc" ]], // prioritize entries with genomic coordinates
+                        "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+                        "initComplete": function(settings, json) {
+                            console.log("init complete");
+                        }
                     });
+                },
+                function(response) {
+                    // TODO: display an error message in template!
                 }
-            }
-        );
+            );
+        }
     }],
     templateUrl: '/static/js/sequence-xrefs.html'
 };
@@ -189,81 +215,81 @@ var rnaSequenceController = function($scope, $location, $http, $interpolate, DTO
     $scope.upi = $location.path().split('/')[2];
     $scope.taxid = $location.path().split('/')[3]; // TODO: this might not exist!
 
-    var xrefsUrl;
-    if ($scope.taxid !== undefined) {
-        xrefsUrl = $interpolate('/rna/{{upi}}/xrefs/{{taxid}}')({ upi: $scope.upi, taxid: $scope.taxid });
-    } else {
-        xrefsUrl = $interpolate('/rna/{{upi}}/xrefs')({ upi: $scope.upi});
-    }
+    // var xrefsUrl;
+    // if ($scope.taxid !== undefined) {
+    //     xrefsUrl = $interpolate('/rna/{{upi}}/xrefs/{{taxid}}')({ upi: $scope.upi, taxid: $scope.taxid });
+    // } else {
+    //     xrefsUrl = $interpolate('/rna/{{upi}}/xrefs')({ upi: $scope.upi});
+    // }
+    //
+    // $scope.xrefs = $http.get(xrefsUrl).then(
+    //     function(response) {
+    //         $("#annotations-table").html(response.data);
+    //         $("#annotations-table").DataTable({
+    //             "columns": [null, null, null, {"bVisible": false}, {"bVisible": false}, {"bVisible": false}], // hide columns, but keep them sortable
+    //             "autoWidth": true, // pre-recalculate column widths
+    //             "dom": "ftpil", // filter, table, pagination, information, length
+    //             //"paginationType": "bootstrap", // requires dataTables.bootstrap.js
+    //             "deferRender": true, // defer rendering until necessary
+    //             "language": {
+    //                 "search": "", // don't display the "Search:" bit
+    //                 "info": "_START_-_END_ of _TOTAL_", // change the informational text
+    //                 "paginate": {
+    //                     "next": "",
+    //                     "previous": "",
+    //                 }
+    //             },
+    //             "order": [[ 5, "desc" ]], // prioritize entries with genomic coordinates
+    //             "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+    //             "initComplete": function(settings, json) {
+    //                 console.log("init complete");
+    //             }
+    //         });
+    //         $scope.enableGenomicFeatures = response.data.indexOf('View genomic location') > 0;
+    //         activateLiteratureReferences();
+    //     },
+    //     function(response) {
+    //         // handle error
+    //     }
+    // );
 
-    $scope.xrefs = $http.get(xrefsUrl).then(
-        function(response) {
-            $("#annotations-table").html(response.data);
-            $("#annotations-table").DataTable({
-                "columns": [null, null, null, {"bVisible": false}, {"bVisible": false}, {"bVisible": false}], // hide columns, but keep them sortable
-                "autoWidth": true, // pre-recalculate column widths
-                "dom": "ftpil", // filter, table, pagination, information, length
-                //"paginationType": "bootstrap", // requires dataTables.bootstrap.js
-                "deferRender": true, // defer rendering until necessary
-                "language": {
-                    "search": "", // don't display the "Search:" bit
-                    "info": "_START_-_END_ of _TOTAL_", // change the informational text
-                    "paginate": {
-                        "next": "",
-                        "previous": "",
-                    }
-                },
-                "order": [[ 5, "desc" ]], // prioritize entries with genomic coordinates
-                "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
-                "initComplete": function(settings, json) {
-                    console.log("init complete");
-                }
-            });
-            $scope.enableGenomicFeatures = response.data.indexOf('View genomic location') > 0;
-            activateLiteratureReferences();
-        },
-        function(response) {
-            // handle error
-        }
-    );
-
-    function activateLiteratureReferences() {
-        $(document).on('click', '.literature-refs-retrieve', function() {
-            var $this = $(this);
-            var accession = $this.data('accession');
-            var target = $this.siblings('.literature-refs-content');
-
-            toggle_slider_icon();
-            if (target.html().length > 0) {
-                target.slideToggle();
-            } else {
-                $.get('/api/v1/accession/' + accession + '/citations', function(data) {
-                    insert_content(data);
-                    obj.activate_abstract_buttons($this.siblings().find('.abstract-btn'));
-                    target.slideDown();
-                });
-            }
-
-            function toggle_slider_icon() {
-                var up = '<i class="fa fa-caret-up"></i>';
-                var down = '<i class="fa fa-caret-down"></i>';
-                if ($this.html() === up) {
-                    $this.html(down);
-                } else {
-                    $this.html(up);
-                }
-            }
-
-            function insert_content(data) {
-                var source = $("#handlebars-literature-reference-tmpl").html();
-                var template = Handlebars.compile(source);
-                var wrapper = {
-                    refs: data
-                };
-                target.html(template(wrapper));
-            }
-        });
-    }
+    // function activateLiteratureReferences() {
+    //     $(document).on('click', '.literature-refs-retrieve', function() {
+    //         var $this = $(this);
+    //         var accession = $this.data('accession');
+    //         var target = $this.siblings('.literature-refs-content');
+    //
+    //         toggle_slider_icon();
+    //         if (target.html().length > 0) {
+    //             target.slideToggle();
+    //         } else {
+    //             $.get('/api/v1/accession/' + accession + '/citations', function(data) {
+    //                 insert_content(data);
+    //                 obj.activate_abstract_buttons($this.siblings().find('.abstract-btn'));
+    //                 target.slideDown();
+    //             });
+    //         }
+    //
+    //         function toggle_slider_icon() {
+    //             var up = '<i class="fa fa-caret-up"></i>';
+    //             var down = '<i class="fa fa-caret-down"></i>';
+    //             if ($this.html() === up) {
+    //                 $this.html(down);
+    //             } else {
+    //                 $this.html(up);
+    //             }
+    //         }
+    //
+    //         function insert_content(data) {
+    //             var source = $("#handlebars-literature-reference-tmpl").html();
+    //             var template = Handlebars.compile(source);
+    //             var wrapper = {
+    //                 refs: data
+    //             };
+    //             target.html(template(wrapper));
+    //         }
+    //     });
+    // }
 
 };
 rnaSequenceController.$inject = ['$scope', '$location', '$http', '$interpolate', 'DTOptionsBuilder', 'DTColumnBuilder'];
