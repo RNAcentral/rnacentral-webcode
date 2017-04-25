@@ -5,7 +5,7 @@ var xrefsComponent = {
         upi: '<',
         taxid: '<?'
     },
-    controller: ['$http', '$interpolate', function($http, $interpolate) {
+    controller: ['$http', '$interpolate', '$timeout', function($http, $interpolate, $timeout) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
@@ -21,26 +21,34 @@ var xrefsComponent = {
                         });
                     }
 
-                    $("#annotations-table").DataTable({
-                        "columns": [null, null, null, {"bVisible": false}, {"bVisible": false}, {"bVisible": false}], // hide columns, but keep them sortable
-                        "autoWidth": true, // pre-recalculate column widths
-                        "dom": "ftpil", // filter, table, pagination, information, length
-                        //"paginationType": "bootstrap", // requires dataTables.bootstrap.js
-                        "deferRender": true, // defer rendering until necessary
-                        "language": {
-                            "search": "", // don't display the "Search:" bit
-                            "info": "_START_-_END_ of _TOTAL_", // change the informational text
-                            "paginate": {
-                                "next": "",
-                                "previous": "",
+                    // ensure that xrefs data is rendered into the DOM
+                    // before initializing DataTables
+                    $timeout(function() {
+                        var table = $("#annotations-table").DataTable({
+                            "columnDefs": [
+                                { targets: [0, 1, 2], visible: true },
+                                { targets: [3, 4, 5], visible: false}
+                            ], // hide columns, but keep them sortable
+                            "autoWidth": true, // pre-recalculate column widths
+                            "dom": "ftpil", // filter, table, pagination, information, length
+                            //"paginationType": "bootstrap", // requires dataTables.bootstrap.js
+                            "deferRender": false, // defer rendering until necessary
+                            "language": {
+                                "search": "", // don't display the "Search:" bit
+                                "info": "_START_-_END_ of _TOTAL_", // change the informational text
+                                "paginate": {
+                                    "next": "",
+                                    "previous": "",
+                                }
+                            },
+                            "order": [[ 5, "desc" ]], // prioritize entries with genomic coordinates
+                            "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
+                            "initComplete": function(settings, json) {
+                                console.log("init complete");
                             }
-                        },
-                        "order": [[ 5, "desc" ]], // prioritize entries with genomic coordinates
-                        "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
-                        "initComplete": function(settings, json) {
-                            console.log("init complete");
-                        }
+                        });
                     });
+
                 },
                 function(response) {
                     // TODO: display an error message in template!

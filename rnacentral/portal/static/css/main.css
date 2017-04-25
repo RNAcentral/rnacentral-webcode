@@ -525,7 +525,8 @@ code a:hover {
 /*------------------------------------------------------------------
 [5.1 Datatables integration]
 */
-table.table thead .sorting,
+
+/*table.table thead .sorting,
 table.table thead .sorting_asc,
 table.table thead .sorting_desc,
 table.table thead .sorting_asc_disabled,
@@ -576,7 +577,7 @@ table.table thead .sorting_desc_disabled {
 
 .btn-group {
   margin-right: 5px;
-}
+}*/
 
 /*------------------------------------------------------------------
 [5.2 Force scrollbars on Macs]
