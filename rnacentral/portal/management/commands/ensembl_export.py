@@ -149,7 +149,7 @@ class RnaSerializer(serializers.Serializer):
 
 class Exporter(object):
     def __init__(self, destination=None, test=False, min=None, max=None,
-                 **kwargs):
+                 validator='jsonschema', **kwargs):
         self.destination = destination
         self.min = min
         self.max = max
@@ -158,8 +158,10 @@ class Exporter(object):
             self.max = 10000
         self.filename = 'ensembl-xrefs.json'
         self.filepath = os.path.join(self.destination, self.filename)
-        self.schema = os.path.join(os.path.dirname(__file__), '..', '..', '..',
-                                   'export', 'schema', 'ensembl.json')
+        self.validator = validator
+        self.schema = os.path.realpath(
+            os.path.join(os.path.dirname(__file__), '..', '..', '..',
+                         'export', 'schema', 'ensembl.json'))
 
     def get_data(self, **kwargs):
         """
@@ -235,6 +237,11 @@ class Command(BaseCommand):
                     type='int',
                     help='[Required] Minimum RNA id to output'),
 
+        make_option('--validator',
+                    dest='validator',
+                    type='str',
+                    default='jsonschema',
+                    help='Path to validator to use'),
 
         make_option('-t', '--test',
                     action='store_true',
