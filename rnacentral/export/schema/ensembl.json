@@ -63,7 +63,9 @@
           "other",
           "misc_RNA",
           "rRNA",
-          "tRNA"
+          "tRNA",
+          "tmRNA",
+          "precursor_RNA"
         ]
       },
 
