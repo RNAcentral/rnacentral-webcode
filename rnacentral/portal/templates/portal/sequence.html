@@ -100,55 +100,7 @@ limitations under the License.
                     </div>
                 </div> <!-- .panel .panel-default -->
 
-                <div>
-                    <h2>
-                        Annotations
-                        <small id="xrefs-datatables-counter">{{ rna.count_xrefs|intcomma }} total</small>
-
-                        <div class="btn-group btn-group-xs margin-left-5px btn-group-xref-sort" style="display:none">
-                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                                Sort by<span class="caret"></span>
-                            </button>
-                            <ul class="dropdown-menu" role="menu">
-                                <li><a id="sort-by-first-seen">first seen</a></li>
-                                <li><a id="sort-by-last-seen">last seen</a></li>
-                            </ul>
-                        </div>
-
-                      <span id="xrefs-datatables-filter"></span>
-                    </h2>
-
-                    <xrefs-component upi="upi" taxid="taxid"></xrefs-component>
-
-                    {% if rna.count_xrefs > context.xref_page_size %}
-                        <div class="alert alert-warning" role="alert">
-                            Showing {{ context.xref_page_size|intcomma }} entries out of {{ rna.count_xrefs|intcomma }}.
-                            Navigate between batches:
-                            <ul class="pagination pagination-sm">
-                                {% for xref_page in context.xref_pages %}
-                                    <li {% if context.xref_page_num == forloop.counter %}class="active"{% endif %}>
-                                        <a href="" data-xref-page="{{xref_page}}" class="xref-pagination">{{ xref_page }}</a>
-                                    </li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    {% endif %}
-
-                    <div class="table-responsive force-scrollbars">
-
-                        <div class="panel panel-default" id="xrefs-loading">
-                            <div class="panel-body" id="xrefs-loading-msg">
-                                <i class="fa fa-spinner fa-spin fa-2x"></i>
-                                Loading database cross-references...
-                            </div>
-                        </div>
-
-                        <div id="xrefs-table-div"></div>
-
-                    </div> <!-- .table-responsive -->
-
-                    <div class="xref-datatables-controls"></div>
-                </div>
+                <xrefs-component upi="upi" taxid="taxid"></xrefs-component>
 
                 {# genoverse #}
                 <div>
