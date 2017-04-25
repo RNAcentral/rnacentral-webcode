@@ -85,6 +85,14 @@ class SimpleXref(coll.namedtuple('SimpleXref',
             return MOD_URL.format(id=self.external_id)
         return self.external_id
 
+    def __hash__(self):
+        return hash((self.id, self.database))
+
+    def __eq__(self, other):
+        if not isinstance(other, SimpleXref):
+            return False
+        return (self.id, self.database) == (other.id, other.database)
+
 
 class SimpleSequence(coll.namedtuple('SimpleSequence',
                                      ['upi', 'taxon_id', 'description',
@@ -108,9 +116,12 @@ class SimpleSequence(coll.namedtuple('SimpleSequence',
 
         rna = xrefs[0].upi
         taxid = xrefs[0].taxid
-        precomputed = rna.precomputed.get(taxid=taxid)
-        simple = [SimpleXref.build(x) for x in xrefs]
-        simple = [s for s in simple if s.is_high_quality()]
+        try:
+            precomputed = rna.precomputed.get(taxid=int(taxid))
+        except:
+           return None
+        simple = (SimpleXref.build(x) for x in xrefs)
+        simple = sorted(set(s for s in simple if s.is_high_quality()))
 
         return cls(
             upi=rna.upi,
@@ -213,11 +224,13 @@ class Exporter(object):
         """
 
         structured = it.imap(self.structure_data, self.get_data())
+        structured = it.ifilter(None, structured)
+        structured = it.ifilter(lambda s: s.rna_type, structured)
         serializer = RnaSerializer(structured, many=True)
         with open(self.filepath, 'wb') as out:
             json = JSONRenderer().render(serializer.data)
             out.write(json)
-        sp.check_call(['jsonschema', '-i', self.filepath, self.schema])
+        sp.check_call([self.validator, '-i', self.filepath, self.schema])
 
 
 class Command(BaseCommand):
