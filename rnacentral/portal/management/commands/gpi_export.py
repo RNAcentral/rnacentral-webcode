@@ -98,7 +98,7 @@ class GPIExporter(object):
         data['DB_Object_Name'] = rna.get_description(taxid=row['taxid'])
         data['DB_Object_ID'] = '{upi}_{taxid}'.format(upi=row['upi'], taxid=row['taxid'])
         data['Taxon'] = 'taxon:{taxon}'.format(taxon=row['taxid'])
-        data['DB_Object_Type'] = so_terms.get_label(rna),
+        data['DB_Object_Type'] = so_terms.get_label(rna)
         data['Gene_Product_Properties'] = self.get_mirna_precursors(taxid=row['taxid'], rna=rna)
 
         # safeguard against breaking tsv format
