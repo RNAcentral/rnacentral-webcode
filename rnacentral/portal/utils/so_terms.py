@@ -19,7 +19,7 @@ MAPPING = {
     "ncRNA": ('SO:0000655', "ncRNA"),
     "misc_RNA": ('SO:0000673', "transcript"),
     "other": ('SO:0000655', "ncRNA"),
-    "precursor_RNA": ('SO:0001244', "pre_miRNA"),
+    "precursor_RNA": ('SO:0000185 ', "primary_transcript"),
     "piRNA": ('SO:0001035', "piRNA"),
     "rasiRNA": ('SO:0000454', "rasiRNA"),
     "ribozyme": ('SO:0000374', "ribozyme"),
