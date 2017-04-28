@@ -106,7 +106,7 @@ RNAcentral
             sequences
           </a>
           <br>
-          <a href="{% url 'unique-rna-sequence' database.examples|first %}" id="{{database.label}}-examples">Example</a>
+          <a href="{% url 'unique-rna-sequence' upi=database.examples.0.upi taxid=database.examples.0.taxid %}" id="{{database.label}}-examples">Example</a>
           <br>
           {% if database.status == 'new' %}
             <span class="label label-info help" data-placement="bottom">New</span>

@@ -21,7 +21,11 @@ expert_dbs = [
         'url': 'http://www.ebi.ac.uk/ena/',
         'description': "provides a comprehensive record of the world's nucleotide sequencing information",
         'abbreviation': 'European Nucleotide Archive',
-        'examples': ['URS00002D0E0C', 'URS000035EE7E', 'URS0000000001'],
+        'examples': [
+            {'upi': 'URS00002D0E0C', 'taxid': 10090},
+            {'upi': 'URS000035EE7E', 'taxid': 9606},
+            {'upi': 'URS0000000001', 'taxid': 77133},
+        ],
         'references': [
             {
                 'title': 'Facing growth in the European Nucleotide Archive',
@@ -47,9 +51,9 @@ expert_dbs = [
         'description': 'is the European repository of information about the 3D structures of large biological molecules. PDBe is a member of the Worldwide Protein Data Bank',
         'abbreviation': 'Protein Data Bank in Europe',
         'examples': [
-            'URS00000ABFE9', # E.coli SSU, 4V4Q chain AA
-            'URS00005A14E2', # Human SSU, 4V6X chain B2
-            'URS000032B6B6', # Human U1 snRNA, PDB 3PGW chain N
+            {'upi': 'URS00000ABFE9', 'taxid': 562}, # E.coli SSU, 4V4Q chain AA
+            {'upi': 'URS00005A14E2', 'taxid': 9606}, # Human SSU, 4V6X chain B2
+            {'upi': 'URS000032B6B6', 'taxid': 9606}, # Human U1 snRNA, PDB 3PGW chain N
         ],
         'references': [
             {
@@ -70,9 +74,9 @@ expert_dbs = [
         'description': 'a database of Dropsophila genes and genomes',
         'abbreviation': '',
         'examples': [
-            'URS0000061376',
-            'URS00007F7879',
-            'URS00007EBD0C',
+            {'upi': 'URS0000061376', 'taxid': 7238},
+            {'upi': 'URS00007F7879', 'taxid': 7227},
+            {'upi': 'URS00007EBD0C', 'taxid': 7227},
         ],
         'references': [
             {
@@ -93,9 +97,9 @@ expert_dbs = [
         'description': 'is a genome browser for vertebrate genomes that supports research in comparative genomics, evolution, sequence variation and transcriptional regulation',
         'abbreviation': '',
         'examples': [
-            'URS0000061376', # TODO
-            'URS00007F7879', # TODO
-            'URS00007EBD0C', # TODO
+            {'upi': 'URS0000061376', 'taxid': 9606}, #TODO
+            {'upi': 'URS00007F7879', 'taxid': 9606}, #TODO
+            {'upi': 'URS00007EBD0C', 'taxid': 9606}, #TODO
         ],
         'references': [
             {
@@ -116,9 +120,9 @@ expert_dbs = [
         'description': 'produces high quality reference gene annotation and experimental validation for human and mouse genomes',
         'abbreviation': '',
         'examples': [
-            'URS00000B15DA',
-            'URS00000A54A6',
-            'URS0000301B08'
+            {'upi': 'URS00000B15DA', 'taxid': 9606},
+            {'upi': 'URS00000A54A6', 'taxid': 9606},
+            {'upi': 'URS000078452D', 'taxid': 10090},
         ],
         'references': [
             {
@@ -138,7 +142,11 @@ expert_dbs = [
         'url': 'http://rfam.xfam.org',
         'description': 'is a collection of non-coding RNA families represented by manually curated sequence alignments, consensus secondary structures, and predicted homologues',
         'abbreviation': '',
-        'examples': ['URS00000478B7', 'URS000066DAB6', 'URS000068EEC5'],
+        'examples': [
+            {'upi': 'URS00000478B7', 'taxid': 9606},
+            {'upi': 'URS000023DE4C', 'taxid': 9606},
+            {'upi': 'URS000068EEC5', 'taxid': 8752},
+        ],
         'references': [
             {
                 'title': 'Rfam 12.0: updates to the RNA families database',
@@ -163,7 +171,11 @@ expert_dbs = [
         'url': 'http://www.mirbase.org/',
         'description': 'is a database of published miRNA sequences and annotations that provides a centralised system for assigning names to miRNA genes',
         'abbreviation': '',
-        'examples': ['URS000075A685', 'URS00003B7674', 'URS000016FD1A'],
+        'examples': [
+            {'upi': 'URS000075A685', 'taxid': 9606},
+            {'upi': 'URS00003B7674', 'taxid': 10090},
+            {'upi': 'URS000016FD1A', 'taxid': 9598},
+        ],
         'references': [
             {
                 'title': 'miRBase: integrating microRNA annotation and deep-sequencing data',
@@ -183,7 +195,11 @@ expert_dbs = [
         'description': """is a repository for high-quality gene models produced by the manual annotation of vertebrate genomes.
                           Human and mouse data from Vega are merged into <a href="http://www.gencodegenes.org/" target="_blank">GENCODE</a>""",
         'abbreviation': 'Vertebrate Genome Annotation',
-        'examples': ['URS00000B15DA', 'URS00000A54A6', 'URS0000301B08'],
+        'examples': [
+            {'upi': 'URS00000B15DA', 'taxid': 9606},
+            {'upi': 'URS00000A54A6', 'taxid': 9606},
+            {'upi': 'URS0000301B08', 'taxid': 9606},
+        ],
         'references': [
             {
                 'title': 'The GENCODE v7 catalog of human long noncoding RNAs: analysis of their gene structure, evolution, and expression.',
@@ -208,7 +224,11 @@ expert_dbs = [
         'url': 'http://bioinformatics.sandia.gov/tmrna/',
         'description': 'contains predicted tmRNA sequences from RefSeq prokaryotic genomes, plasmids and phages',
         'abbreviation': '',
-        'examples': ['URS000060F5B3', 'URS000058C344', 'URS000048A91D'],
+        'examples': [
+            {'upi': 'URS000060F5B3', 'taxid': 398580},
+            {'upi': 'URS000058C344', 'taxid': 1291358},
+            {'upi': 'URS000048A91D', 'taxid': 224911},
+        ],
         'references': [
             {
                 'title': 'The tmRNA website: reductive evolution of tmRNA in plastids and other endosymbionts',
@@ -227,7 +247,11 @@ expert_dbs = [
         'url': 'http://rnp.uthscsa.edu/rnp/SRPDB/SRPDB.html',
         'description': 'provides aligned, annotated and phylogenetically ordered sequences related to structure and function of SRP',
         'abbreviation': 'Signal Recognition Particle Database',
-        'examples': ['URS00000478B7', 'URS00001C03DC', 'URS00005C64FE'],
+        'examples': [
+            {'upi': 'URS00000478B7', 'taxid': 9606},
+            {'upi': 'URS00001C03DC', 'taxid': 1423},
+            {'upi': 'URS00005C64FE', 'taxid': 216594},
+        ],
         'references': [
             {
                 'title': 'Kinship in the SRP RNA family',
@@ -252,7 +276,11 @@ expert_dbs = [
         'url': 'http://lncrnadb.org/',
         'description': 'is a database providing comprehensive annotations of eukaryotic long non-coding RNAs (lncRNAs)',
         'abbreviation': '',
-        'examples': ['URS00000478B7', 'URS00005E1511', 'URS0000147018'],
+        'examples': [
+            {'upi': 'URS00000478B7', 'taxid': 9606},
+            {'upi': 'URS00005E1511', 'taxid': 9606},
+            {'upi': 'URS0000147018', 'taxid': 10090},
+        ],
         'references': [
             {
                 'title': 'lncRNAdb: a reference database for long noncoding RNAs',
@@ -271,7 +299,11 @@ expert_dbs = [
         'url': 'http://gtrnadb.ucsc.edu/',
         'description': 'contains tRNA gene predictions on complete or nearly complete genomes',
         'abbreviation': '',
-        'examples': ['URS000047C79B', 'URS00006725C9', 'URS00001F9D54'],
+        'examples': [
+            {'upi': 'URS000047C79B', 'taxid': 9606},
+            {'upi': 'URS000074448D', 'taxid': 10090},
+            {'upi': 'URS00001F9D54', 'taxid': 10116},
+        ],
         'references': [
             {
                 'title': 'GtRNAdb: a database of transfer RNA genes detected in genomic sequence',
@@ -290,7 +322,11 @@ expert_dbs = [
         'url': 'http://www.ncbi.nlm.nih.gov/refseq/',
         'description': 'is a comprehensive, integrated, non-redundant, well-annotated set of reference sequences',
         'abbreviation': 'NCBI Reference Sequence Database',
-        'examples': ['URS000075A3E5', 'URS000075ADFF', 'URS00003A96B7'],
+        'examples': [
+            {'upi': 'URS000075A3E5', 'taxid': 10090},
+            {'upi': 'URS000075ADFF', 'taxid': 9606},
+            {'upi': 'URS00003A96B7', 'taxid': 192222},
+        ],
         'references': [
             {
                 'title': 'RefSeq: an update on mammalian reference sequences.',
@@ -309,7 +345,11 @@ expert_dbs = [
         'url': 'http://rdp.cme.msu.edu/',
         'description': 'provides quality-controlled, aligned and annotated rRNA sequences and a suite of analysis tools',
         'abbreviation': 'Ribosomal Database Project',
-        'examples': ['URS000064300F', 'URS00006FBF68', 'URS000070C439'],
+        'examples': [
+            {'upi': 'URS0000434740', 'taxid': 338963},
+            {'upi': 'URS000071C755', 'taxid': 224308},
+            {'upi': 'URS0000090853', 'taxid': 637905},
+        ],
         'references': [
             {
                 'title': 'Ribosomal Database Project: data and tools for high throughput rRNA analysis',
@@ -341,9 +381,9 @@ expert_dbs = [
         'description': 'is the worldwide authority that assigns standardised nomenclature to human genes',
         'abbreviation': 'HUGO Gene Nomenclature Committee',
         'examples': [
-            'URS000075C808', # HOTAIR
-            'URS00004ACFCF', # SNORA1
-            'URS000075CF56', # MIRNA-1
+            {'upi': 'URS000075C808', 'taxid': 9606}, # HOTAIR
+            {'upi': 'URS00004ACFCF', 'taxid': 9606}, # SNORA1
+            {'upi': 'URS000075CF56', 'taxid': 9606}, # MIRNA-1
         ],
         'references': [
             {
@@ -363,7 +403,11 @@ expert_dbs = [
         'url': 'http://greengenes.secondgenome.com/downloads',
         'description': 'is a full-length 16S rRNA gene database that provides a curated taxonomy based on de novo tree inference',
         'abbreviation': '',
-        'examples': ['URS00003D0087', 'URS00006DE01B', 'URS00004DD3DC'],
+        'examples': [
+            {'upi': 'URS000080E226', 'taxid': 274},
+            {'upi': 'URS00006DE01B', 'taxid': 575788},
+            {'upi': 'URS00004DD3DC', 'taxid': 511145},
+        ],
         'references': [
             {
                 'title': 'An improved Greengenes taxonomy with explicit ranks for ecological and evolutionary analyses of bacteria and archaea',
@@ -394,7 +438,11 @@ expert_dbs = [
         'url': 'http://www.lncipedia.org/',
         'description': 'is a comprehensive compendium of human long non-coding RNAs',
         'abbreviation': '',
-        'examples': ['URS000081175C', 'URS0000812103', 'URS00001F1863'],
+        'examples': [
+            {'upi': 'URS000081175C', 'taxid': 9606},
+            {'upi': 'URS0000812103', 'taxid': 9606},
+            {'upi': 'URS00001F1863', 'taxid': 9606},
+        ],
         'references': [
             {
                 'title': 'An update on LNCipedia: a database for annotated human lncRNA sequences',
@@ -413,7 +461,11 @@ expert_dbs = [
         'url': 'http://modomics.genesilico.pl/',
         'description': 'is a comprehensive database of RNA modifications',
         'abbreviation': '',
-        'examples': ['URS00001BBAFC', 'URS000019192F', 'URS000026426D'],
+        'examples': [
+            {'upi': 'URS00001BBAFC', 'taxid': 562},
+            {'upi': 'URS000019192F', 'taxid': 2102},
+            {'upi': 'URS000026426D', 'taxid': 9031},
+        ],
         'references': [
             {
                 'title': 'MODOMICS: a database of RNA modification pathways--2013 update',
@@ -432,7 +484,11 @@ expert_dbs = [
         'url': 'http://www.noncode.org/',
         'description': 'is an integrated knowledge database dedicated to non-coding RNAs (excluding tRNAs and rRNAs)',
         'abbreviation': '',
-        'examples': ['URS000019B796', 'URS00008189E4', 'URS000058E3EB'],
+        'examples': [
+            {'upi': 'URS000019B796', 'taxid': 9606},
+            {'upi': 'URS00008189E4', 'taxid': 9606},
+            {'upi': 'URS000058E3EB', 'taxid': 9606},
+        ],
         'references': [
             {
                 'title': 'NONCODE 2016: an informative and valuable data source of long non-coding RNAs',
@@ -492,7 +548,11 @@ expert_dbs = [
         'url': 'http://www.pombase.org/',
         'description': 'is a comprehensive database for the fission yeast Schizosaccharomyces pombe',
         'abbreviation': '',
-        'examples': ['URS000044FEB9', 'URS00003F73E3', 'URS00002743E8'],
+        'examples': [
+            {'upi': 'URS000044FEB9', 'taxid': 4896},
+            {'upi': 'URS00003F73E3', 'taxid': 4896},
+            {'upi': 'URS00002743E8', 'taxid': 4896},
+        ],
         'references': [
             {
                 'title': 'PomBase: a comprehensive online resource for fission yeast',
@@ -523,7 +583,11 @@ expert_dbs = [
         'url': 'http://www.arb-silva.de/',
         'description': 'is a comprehensive resource for quality checked and aligned ribosomal RNA sequence data',
         'abbreviation': '',
-        'examples': ['URS00005A14E2', 'URS00004DD3DC', 'URS0000224E47'],
+        'examples': [
+            {'upi': 'URS00005A14E2', 'taxid': 9606},
+            {'upi': 'URS00004DD3DC', 'taxid': 511145},
+            {'upi': 'URS0000224E47', 'taxid': 10090},
+        ],
         'references': [
             {
                 'title': 'The SILVA ribosomal RNA gene database project: improved data processing and web-based tools',
@@ -543,9 +607,9 @@ expert_dbs = [
         'description': 'provides comprehensive integrated biological information for the budding yeast',
         'abbreviation': 'Saccharomyces Genome Database',
         'examples': [
-            'URS0000224E47', # HRA1 gene
-            'URS00001CAAE9', # SRP
-            'URS0000077671', # snoRNA
+            {'upi': 'URS0000224E47', 'taxid': 559292}, # HRA1 gene
+            {'upi': 'URS00001CAAE9', 'taxid': 559292}, # SRP
+            {'upi': 'URS0000077671', 'taxid': 559292}, # snoRNA
         ],
         'references': [
             {
@@ -566,7 +630,11 @@ expert_dbs = [
         'description': """provides comprehensive information about snoRNAs, snoRNA gene loci, and target RNAs
                           as well as information about snoRNA orthologues""",
         'abbreviation': 'snoRNA Orthological Gene Database',
-        'examples': ['URS00004B0879', 'URS0000600DF1', 'URS000015A509'],
+        'examples': [
+            {'upi': 'URS00004B0879', 'taxid': 3702},
+            {'upi': 'URS0000600DF1', 'taxid': 7227},
+            {'upi': 'URS000015A509', 'taxid': 7227},
+        ],
         'references': [
             {
                 'title': 'snOPY: a small nucleolar RNA orthological gene database',
@@ -646,9 +714,9 @@ expert_dbs = [
         'description': "curates, stores and displays genomic and genetic data about nematodes with primary emphasis on <em>C. elegans</em> and related nematodes",
         'abbreviation': '',
         'examples': [
-            'URS000022A09E', # miRNA
-            'URS00001218EE', # rRNA
-            'URS00003E1CE3', # snoRNA
+            {'upi': 'URS000022A09E', 'taxid': 6239}, # miRNA
+            {'upi': 'URS00001218EE', 'taxid': 6239}, # rRNA
+            {'upi': 'URS00003E1CE3', 'taxid': 6239}, # snoRNA
         ],
         'references': [
             {
@@ -693,9 +761,9 @@ expert_dbs = [
         'description': 'is a database of genetic and molecular biology data for the model higher plant Arabidopsis thaliana',
         'abbreviation': 'The Arabidopsis Information Resource',
         'examples': [
-            'URS0000591E4F', # tRNA
-            'URS000008172F', # rRNA
-            'URS000035F1B7', # snoRNA
+            {'upi': 'URS0000591E4F', 'taxid': 3702}, # tRNA
+            {'upi': 'URS000008172F', 'taxid': 3702}, # rRNA
+            {'upi': 'URS000035F1B7', 'taxid': 3702}, # snoRNA
         ],
         'references': [
             {
@@ -716,9 +784,9 @@ expert_dbs = [
         'description': 'is the model organism database for the social amoeba Dictyostelium discoideum',
         'abbreviation': '',
         'examples': [
-            'URS00003BBB9E',
-            'URS0000235EB0',
-            'URS00004A9A20',
+            {'upi': 'URS00003BBB9E', 'taxid': 352472},
+            {'upi': 'URS0000235EB0', 'taxid': 352472},
+            {'upi': 'URS00004A9A20', 'taxid': 352472},
         ],
         'references': [
             {
