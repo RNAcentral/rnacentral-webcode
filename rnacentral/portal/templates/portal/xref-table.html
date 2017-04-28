@@ -122,7 +122,7 @@ limitations under the License.
     {# Ensembl #}
     {% elif xref.db.name == 'Ensembl' %}
       {{ xref.db.name }} transcript <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank" title="View the transcript in {{ xref.db.name }}">{{ xref.accession.external_id }}</a>
-      ({{ xref.accession.gene }} gene <a href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g={{ xref.accession.optional_id }}">{{ xref.accession.optional_id }})</a>
+      (gene {{ xref.accession.locus_tag }} <a href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g={{ xref.accession.optional_id }}">{{ xref.accession.optional_id }})</a>
       {% with splice_variants=xref.get_vega_splice_variants %}
         {% if splice_variants %}
           <br>
