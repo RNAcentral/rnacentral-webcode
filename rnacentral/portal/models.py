@@ -691,7 +691,7 @@ class Accession(models.Model):
     genome_position = models.CharField(max_length=200, db_column='map')
     mol_type = models.CharField(max_length=50)
     ncrna_class = models.CharField(max_length=50)
-    note = models.CharField(max_length=1500)
+    note = models.CharField(max_length=1600)
     old_locus_tag = models.CharField(max_length=50)
     product = models.CharField(max_length=300)
     db_xref = models.CharField(max_length=500)
