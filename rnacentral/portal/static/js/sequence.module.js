@@ -103,14 +103,14 @@ var abstractComponent = {
         pubmed_id: '<'
     },
     require: {
-        parent: '^publicationsComponent'
+        parent: '^publicationComponent'
     },
     controller: ['$http', '$interpolate', function($http, $interpolate) {
         var ctrl = this;
 
         ctrl.$onChanges = function(changes) {
-            console.log(changes);
-            ctrl.fetchAbstract(changes.pubmed_id);
+            ctrl.pubmed_id = changes.pubmed_id.currentValue;
+            ctrl.fetchAbstract(ctrl.pubmed_id);
         };
 
         /**
@@ -159,6 +159,36 @@ var publicationResourceFactory = function($resource) {
 publicationResourceFactory.$inject = ['$resource'];
 
 
+var publicationComponent = {
+    bindings: {
+        publication: '<'
+    },
+    require: '^publicationsComponent',
+    controller: [function() {
+        var ctrl = this;
+
+        ctrl.$onChanges = function(changes) {
+            ctrl.publication = changes.publication.currentValue;
+        }
+    }],
+    template: '<li class="margin-bottom-10px">' +
+              '    <strong ng-if="$ctrl.publication.title">{{ $ctrl.publication.title }}</strong>' +
+              '    <br ng-if="$ctrl.publication.title">' +
+              '    <small>' +
+              '        <span ng-repeat="author in $ctrl.publication.authors track by $index"><a href="/search?q=author:&#34;{{ author }}&#34;">{{ author }}</a>{{ $last ? "" : ", " }}</span>' +
+              '        <br ng-if="$ctrl.publication.authors && $ctrl.publication.authors.length">' +
+              '        <em ng-if="$ctrl.publication.publication">{{ $ctrl.publication.publication }}</em>' +
+              '        <span ng-if="$ctrl.publication.pubmed_id">' +
+              '            <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ $ctrl.publication.pubmed_id }}" class="margin-left-5px">Pubmed</a>' +
+              '            <a ng-if="publication.doi" href="http://dx.doi.org/{{ publication.doi }}" target="_blank" class="abstract-control">Full text</a>' +
+              '            <abstract-component pubmed_id="$ctrl.publication.pubmed_id"></abstract-component>' +
+              '        </span>' +
+              '      <br>' +
+              '      <a href="/search?q=pub_id:&#34;{{ $ctrl.publication.pubmed_id }}&#34;" class="margin-left-5px"><i class="fa fa-search"></i> Find other sequences from this reference</a>' +
+              '    </small>' +
+              '</li>'
+};
+
 var publicationsComponent = {
     bindings: {
         upi: '<',
@@ -194,22 +224,7 @@ var publicationsComponent = {
               '    <h2>Publications <small>{{ $ctrl.publications.count }} total</small></h2>' +
               '    <ol>' +
               '        <div ng-repeat="publication in $ctrl.publications.results" class="col-md-8">' +
-              '            <li class="margin-bottom-10px">' +
-              '                <strong ng-if="publication.title">{{ publication.title }}</strong>' +
-              '                <br ng-if="publication.title">' +
-              '                <small>' +
-              '                    <span ng-repeat="author in publication.authors track by $index"><a href="/search?q=author:&#34;{{ author }}&#34;">{{ author }}</a>{{ $last ? "" : ", " }}</span>' +
-              '                    <br ng-if="publication.authors && publication.authors.length">' +
-              '                    <em ng-if="publication.publication">{{ publication.publication }}</em>' +
-              '                    <span ng-if="publication.pubmed_id">' +
-              '                        <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ publication.pubmed_id }}" class="margin-left-5px">Pubmed</a>' +
-              '                        <a ng-if="publication.doi" href="http://dx.doi.org/{{ publication.doi }}" target="_blank" class="abstract-control">Full text</a>' +
-              '                        <abstract-component pubmed_id="publication.pubmed_id"></abstract-component>' +
-              '                    </span>' +
-              '                  <br>' +
-              '                  <a href="/search?q=pub_id:&#34;{{ publication.pubmed_id }}&#34;" class="margin-left-5px"><i class="fa fa-search"></i> Find other sequences from this reference</a>' +
-              '                </small>' +
-              '            </li>' +
+              '            <publication-component publication="publication"></publication-component> ' +
               '        </div>' +
               '    </ol>' +
               '    <div ng-if="$ctrl.publications.count < $ctrl.publications.total" class="col-md-8">' +
@@ -336,6 +351,7 @@ angular.module("rnaSequence", ['datatables', 'ngResource', 'ngAnimate'])
     .component("xrefsComponent", xrefsComponent)
     .component("taxonomyComponent", taxonomyComponent)
     .component("publicationsComponent", publicationsComponent)
+    .component("publicationComponent", publicationComponent)
     .component("abstractComponent", abstractComponent);
 
 })();
