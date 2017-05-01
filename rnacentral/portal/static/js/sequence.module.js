@@ -98,97 +98,6 @@ var taxonomyComponent = {
 };
 
 
-var abstractComponent = {
-    bindings: {
-        pubmed_id: '<'
-    },
-    require: {
-        parent: '^publicationComponent'
-    },
-    controller: ['$http', '$interpolate', function($http, $interpolate) {
-        var ctrl = this;
-
-        ctrl.$onChanges = function(changes) {
-            ctrl.pubmed_id = changes.pubmed_id.currentValue;
-            ctrl.fetchAbstract(ctrl.pubmed_id);
-        };
-
-        /**
-         * Asynchronously downloads abstract for paper with given
-         * pubmed_id (if available) and adds it to ctrl.abstracts.
-         * Due to ugly JSONP syntax, we use raw $http instead of
-         * resources here.
-         *
-         * @param {int|null|undefined} pubmed_id - paper's PubMed id
-         * @return {HttpPromise|null}
-         */
-        ctrl.fetchAbstract = function(pubmed_id) {
-            if (pubmed_id) {
-                return $http.jsonp(
-                    $interpolate('http://www.ebi.ac.uk/europepmc/webservices/rest/search?query=ext_id:{{ pubmed_id }}&format=json&resulttype=core')({pubmed_id: pubmed_id})
-                ).then(
-                    function(response) {
-                        ctrl.abstract = response.data.resultList.result[0].abstractText;
-                    },
-                    function(response) {
-                        ctrl.abstract = "Failed to download abstract";
-                    }
-                );
-            }
-            else {
-                ctrl.abstract = "Abstract is not available";
-                return null;
-            }
-        };
-
-    }],
-    template: '<button class="btn btn-xs btn-default abstract-btn abstract-control" ng-click="abstractVisible = !abstractVisible"><span ng-if="abstractVisible">Hide abstract</span><span ng-if="!abstractVisible">Show abstract</span></button>' +
-              '<div ng-if="abstractVisible" class="abstract-text slide-down">{{ $ctrl.abstracts[publication.pubmed_id] }}</div>'
-};
-
-
-var publicationResourceFactory = function($resource) {
-    return $resource(
-        '/api/v1/rna/:upi/publications?page_size=:page',
-        {upi: '@upi', page: '@page'},
-        {
-            get: {timeout: 5000, isArray: false}
-        }
-    );
-};
-publicationResourceFactory.$inject = ['$resource'];
-
-
-var publicationComponent = {
-    bindings: {
-        publication: '<'
-    },
-    require: '^publicationsComponent',
-    controller: [function() {
-        var ctrl = this;
-
-        ctrl.$onChanges = function(changes) {
-            ctrl.publication = changes.publication.currentValue;
-        }
-    }],
-    template: '<li class="margin-bottom-10px">' +
-              '    <strong ng-if="$ctrl.publication.title">{{ $ctrl.publication.title }}</strong>' +
-              '    <br ng-if="$ctrl.publication.title">' +
-              '    <small>' +
-              '        <span ng-repeat="author in $ctrl.publication.authors track by $index"><a href="/search?q=author:&#34;{{ author }}&#34;">{{ author }}</a>{{ $last ? "" : ", " }}</span>' +
-              '        <br ng-if="$ctrl.publication.authors && $ctrl.publication.authors.length">' +
-              '        <em ng-if="$ctrl.publication.publication">{{ $ctrl.publication.publication }}</em>' +
-              '        <span ng-if="$ctrl.publication.pubmed_id">' +
-              '            <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ $ctrl.publication.pubmed_id }}" class="margin-left-5px">Pubmed</a>' +
-              '            <a ng-if="publication.doi" href="http://dx.doi.org/{{ publication.doi }}" target="_blank" class="abstract-control">Full text</a>' +
-              '            <abstract-component pubmed_id="$ctrl.publication.pubmed_id"></abstract-component>' +
-              '        </span>' +
-              '      <br>' +
-              '      <a href="/search?q=pub_id:&#34;{{ $ctrl.publication.pubmed_id }}&#34;" class="margin-left-5px"><i class="fa fa-search"></i> Find other sequences from this reference</a>' +
-              '    </small>' +
-              '</li>'
-};
-
 var publicationsComponent = {
     bindings: {
         upi: '<',
@@ -240,6 +149,98 @@ var publicationsComponent = {
               '    ' +
               '    </div>' +
               '</div>'
+};
+
+
+var publicationResourceFactory = function($resource) {
+    return $resource(
+        '/api/v1/rna/:upi/publications?page_size=:page',
+        {upi: '@upi', page: '@page'},
+        {
+            get: {timeout: 5000, isArray: false}
+        }
+    );
+};
+publicationResourceFactory.$inject = ['$resource'];
+
+
+var publicationComponent = {
+    bindings: {
+        publication: '<'
+    },
+    require: '^publicationsComponent',
+    controller: [function() {
+        var ctrl = this;
+
+        ctrl.$onChanges = function(changes) {
+            ctrl.publication = changes.publication.currentValue;
+        }
+    }],
+    template: '<li class="margin-bottom-10px">' +
+              '    <strong ng-if="$ctrl.publication.title">{{ $ctrl.publication.title }}</strong>' +
+              '    <br ng-if="$ctrl.publication.title">' +
+              '    <small>' +
+              '        <span ng-repeat="author in $ctrl.publication.authors track by $index"><a href="/search?q=author:&#34;{{ author }}&#34;">{{ author }}</a>{{ $last ? "" : ", " }}</span>' +
+              '        <br ng-if="$ctrl.publication.authors && $ctrl.publication.authors.length">' +
+              '        <em ng-if="$ctrl.publication.publication">{{ $ctrl.publication.publication }}</em>' +
+              '        <span ng-if="$ctrl.publication.pubmed_id">' +
+              '            <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ $ctrl.publication.pubmed_id }}" class="margin-left-5px">Pubmed</a>' +
+              '            <a ng-if="$ctrl.publication.doi" href="http://dx.doi.org/{{ $ctrl.publication.doi }}" target="_blank" class="abstract-control">Full text</a>' +
+              '            <abstract-component publication="$ctrl.publication"></abstract-component>' +
+              '        </span>' +
+              '      <br>' +
+              '      <a href="/search?q=pub_id:&#34;{{ $ctrl.publication.pubmed_id }}&#34;" class="margin-left-5px"><i class="fa fa-search"></i> Find other sequences from this reference</a>' +
+              '    </small>' +
+              '</li>'
+};
+
+
+var abstractComponent = {
+    bindings: {
+        publication: '<'
+    },
+    require: {
+        parent: '^publicationComponent'
+    },
+    controller: ['$http', '$interpolate', function($http, $interpolate) {
+        var ctrl = this;
+
+        ctrl.$onChanges = function(changes) {
+            ctrl.publication = changes.publication.currentValue;
+            ctrl.fetchAbstract(ctrl.publication.pubmed_id);
+        };
+
+        /**
+         * Asynchronously downloads abstract for paper with given
+         * pubmed_id (if available) and adds it to ctrl.abstracts.
+         * Due to ugly JSONP syntax, we use raw $http instead of
+         * resources here.
+         *
+         * @param {int|null|undefined} pubmed_id - paper's PubMed id
+         * @return {HttpPromise|null}
+         */
+        ctrl.fetchAbstract = function(pubmed_id) {
+            if (pubmed_id) {
+                return $http.jsonp(
+                    $interpolate('http://www.ebi.ac.uk/europepmc/webservices/rest/search?query=ext_id:{{ pubmed_id }}&format=json&resulttype=core')({pubmed_id: pubmed_id})
+                ).then(
+                    function(response) {
+                        ctrl.abstract = response.data.resultList.result[0].abstractText;
+                    },
+                    function(response) {
+                        ctrl.abstract = "Failed to download abstract";
+                    }
+                );
+            }
+            else {
+                ctrl.abstract = "Abstract is not available";
+                return null;
+            }
+        };
+
+    }],
+    template: '<button class="btn btn-xs btn-default abstract-btn abstract-control" ng-click="abstractVisible = !abstractVisible"><span ng-if="abstractVisible">Hide abstract</span><span ng-if="!abstractVisible">Show abstract</span></button>' +
+              '<div ng-if="abstractVisible" class="abstract-text slide-down">{{ $ctrl.abstract }}</div>'
 };
 
 
