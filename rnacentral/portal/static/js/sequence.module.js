@@ -81,7 +81,11 @@ var citationsComponent = {
               '  <button ng-click="citationsVisible = !citationsVisible" class="literature-refs-retrieve btn btn-default btn-xs pull-right help" title="Literature citations">' +
               '    <i ng-if="citationsVisible" class="fa fa-caret-up"></i><i ng-if="!citationsVisible" class="fa fa-caret-down"></i>' +
               '  </button>' +
-              '  <div ng-if="citationsVisible" class="literature-refs-content">{{ $ctrl.citations }}</div>' +
+              '  <div ng-if="citationsVisible" class="literature-refs-content">' +
+              '    <blockquote ng-repeat="citation in $ctrl.citations">' +
+              '      <publication-component publication="citation"></publication-component>' +
+              '    </blockquote>' +
+              '  </div>' +
               '</span>'
 };
 
@@ -159,7 +163,9 @@ var publicationsComponent = {
               '    <h2>Publications <small>{{ $ctrl.publications.count }} total</small></h2>' +
               '    <ol>' +
               '        <div ng-repeat="publication in $ctrl.publications.results" class="col-md-8">' +
-              '            <publication-component publication="publication"></publication-component> ' +
+              '            <li class="margin-bottom-10px">' +
+              '                <publication-component publication="publication"></publication-component>' +
+              '            </li>' +
               '        </div>' +
               '    </ol>' +
               '    <div ng-if="$ctrl.publications.count < $ctrl.publications.total" class="col-md-8">' +
@@ -194,7 +200,6 @@ var publicationComponent = {
     bindings: {
         publication: '<'
     },
-    require: '^publicationsComponent',
     controller: [function() {
         var ctrl = this;
 
@@ -202,22 +207,20 @@ var publicationComponent = {
             ctrl.publication = changes.publication.currentValue;
         }
     }],
-    template: '<li class="margin-bottom-10px">' +
-              '    <strong ng-if="$ctrl.publication.title">{{ $ctrl.publication.title }}</strong>' +
-              '    <br ng-if="$ctrl.publication.title">' +
-              '    <small>' +
-              '        <span ng-repeat="author in $ctrl.publication.authors track by $index"><a href="/search?q=author:&#34;{{ author }}&#34;">{{ author }}</a>{{ $last ? "" : ", " }}</span>' +
-              '        <br ng-if="$ctrl.publication.authors && $ctrl.publication.authors.length">' +
-              '        <em ng-if="$ctrl.publication.publication">{{ $ctrl.publication.publication }}</em>' +
-              '        <span ng-if="$ctrl.publication.pubmed_id">' +
-              '            <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ $ctrl.publication.pubmed_id }}" class="margin-left-5px">Pubmed</a>' +
-              '            <a ng-if="$ctrl.publication.doi" href="http://dx.doi.org/{{ $ctrl.publication.doi }}" target="_blank" class="abstract-control">Full text</a>' +
-              '            <abstract-component publication="$ctrl.publication"></abstract-component>' +
-              '        </span>' +
-              '      <br>' +
-              '      <a href="/search?q=pub_id:&#34;{{ $ctrl.publication.pubmed_id }}&#34;" class="margin-left-5px"><i class="fa fa-search"></i> Find other sequences from this reference</a>' +
-              '    </small>' +
-              '</li>'
+    template: '<strong ng-if="$ctrl.publication.title">{{ $ctrl.publication.title }}</strong>' +
+              '<br ng-if="$ctrl.publication.title">' +
+              '<small>' +
+              '    <span ng-repeat="author in $ctrl.publication.authors track by $index"><a href="/search?q=author:&#34;{{ author }}&#34;">{{ author }}</a>{{ $last ? "" : ", " }}</span>' +
+              '    <br ng-if="$ctrl.publication.authors && $ctrl.publication.authors.length">' +
+              '    <em ng-if="$ctrl.publication.publication">{{ $ctrl.publication.publication }}</em>' +
+              '    <span ng-if="$ctrl.publication.pubmed_id">' +
+              '        <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ $ctrl.publication.pubmed_id }}" class="margin-left-5px">Pubmed</a>' +
+              '        <a ng-if="$ctrl.publication.doi" href="http://dx.doi.org/{{ $ctrl.publication.doi }}" target="_blank" class="abstract-control">Full text</a>' +
+              '        <abstract-component publication="$ctrl.publication"></abstract-component>' +
+              '    </span>' +
+              '  <br>' +
+              '  <a href="/search?q=pub_id:&#34;{{ $ctrl.publication.pubmed_id }}&#34;" class="margin-left-5px"><i class="fa fa-search"></i> Find other sequences from this reference</a>' +
+              '</small>'
 };
 
 
