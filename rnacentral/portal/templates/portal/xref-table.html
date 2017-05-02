@@ -137,6 +137,10 @@ limitations under the License.
         {% endif %}
       {% endwith %}
 
+    {# FlyBase #}
+    {% elif xref.db.name == 'FlyBase' %}
+      FlyBase gene <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>, {{ xref.accession.accession }}
+
     {# tmRNA Website #}
     {% elif xref.db.name == 'tmRNA Website' %}
       tmRNA Website: <a href="{{ xref.accession.get_expert_db_external_url }}.html" target="_blank">{{ xref.accession.external_id }}</a>

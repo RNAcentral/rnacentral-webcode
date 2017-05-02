@@ -730,6 +730,7 @@ class Accession(models.Model):
             'MODOMICS': 'http://modomics.genesilico.pl/sequences/list/{id}',
             'HGNC': 'http://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id={id}',
             'ENSEMBL': 'http://www.ensembl.org/Homo_sapiens/Transcript/Summary?t={id}',
+            'FLYBASE': 'http://flybase.org/reports/{id}.html',
         }
         if self.database in urls.keys():
             if self.database == 'GTRNADB':
