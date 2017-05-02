@@ -772,6 +772,7 @@ class GenomicCoordinates(models.Model):
 
 
 class Xref(models.Model):
+    id = models.AutoField(primary_key=True)
     db = models.ForeignKey(Database, db_column='dbid', related_name='xrefs')
     accession = models.ForeignKey(Accession, db_column='ac', to_field='accession', related_name='xrefs', unique=True)
     created = models.ForeignKey(Release, db_column='created', related_name='release_created')
