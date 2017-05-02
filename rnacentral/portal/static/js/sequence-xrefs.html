@@ -361,10 +361,7 @@
           </span>
 
           <!-- literature references -->
-          <span class="literature-refs">
-            <button class="literature-refs-retrieve btn btn-default btn-xs pull-right help" data-accession="{{ xref.accession.accession }}" title="Literature citations"><i class="fa fa-caret-down"></i></button>
-            <div class="literature-refs-content"></div>
-          </span>
+          <citations-component xref="xref"></citations-component>
 
           <span ng-if="xref.deleted == 'Y'">
             <br>

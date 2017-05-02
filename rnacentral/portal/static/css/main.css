@@ -484,12 +484,7 @@ h3.panel-title {
 }
 
 .literature-refs-content {
-  display: none;
   width: 98%;
-}
-
-#xrefs-table {
-  display: none;
 }
 
 #seq-length .panel {
