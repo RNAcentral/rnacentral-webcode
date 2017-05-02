@@ -11,7 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from django.conf.urls import patterns, url
+from django.conf.urls import patterns, url, static
+from django.conf import settings
 from portal import views
 from portal.models import get_ensembl_divisions, RnaPrecomputed, Database
 
@@ -105,6 +106,11 @@ sitemaps = {
 }
 
 urlpatterns += patterns('django.contrib.sitemaps.views',
-    (r'^sitemap\.xml$', 'index', {'sitemaps': sitemaps}),
-    (r'^sitemap-(?P<section>.+)\.xml$', 'sitemap', {'sitemaps': sitemaps}),
+    url(r'^sitemap\.xml$', 'index', {'sitemaps': sitemaps}, name="sitemap-index"),
+    url(r'^sitemap-(?P<section>.+)\.xml$', 'sitemap', {'sitemaps': sitemaps}, name="sitemap-section"),
 )
+
+# in development serve sitemaps from media files
+if settings.DEBUG:
+    # we don't use URL prefix for sitemaps and serve them from a subfolder of MEDIA_ROOT
+    urlpatterns += static.static(settings.SITEMAPS_URL, document_root=settings.SITEMAPS_ROOT)
