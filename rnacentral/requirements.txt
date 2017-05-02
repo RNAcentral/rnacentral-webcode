@@ -49,3 +49,6 @@ rjsmin==1.0.12
 
 # django cache machine
 django-cache-machine==0.9.1
+
+# django_performance_testing
+django-performance-testing==0.5.0

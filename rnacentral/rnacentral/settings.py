@@ -177,6 +177,7 @@ INSTALLED_APPS = (
     'compressor',
     'markdown_deux',
     'django_rq',
+    'django_performance_testing',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
@@ -317,6 +318,10 @@ COMPRESS_CSS_FILTERS = [
     'compressor.filters.css_default.CssAbsoluteFilter',
     'compressor.filters.cssmin.rCSSMinFilter',
 ]
+
+
+# Use a simplified runner to prevent any modifications to the database.
+TEST_RUNNER = 'portal.tests.runner.FixedRunner'
 
 try:
     from local_settings import *  # pylint: disable=W0401, W0614
