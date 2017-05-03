@@ -361,7 +361,7 @@
           </span>
 
           <!-- literature references -->
-          <citations-component xref="xref"></citations-component>
+          <citations-component xref="xref" on-activate-publications="$ctrl.onActivatePublications()"></citations-component>
 
           <span ng-if="xref.deleted == 'Y'">
             <br>

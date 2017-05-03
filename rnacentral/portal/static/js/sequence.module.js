@@ -3,7 +3,8 @@
 var xrefsComponent = {
     bindings: {
         upi: '<',
-        taxid: '<?'
+        taxid: '<?',
+        onActivatePublications: '&'
     },
     controller: ['$http', '$interpolate', '$timeout', function($http, $interpolate, $timeout) {
         var ctrl = this;
@@ -63,7 +64,8 @@ var xrefsComponent = {
 
 var citationsComponent = {
     bindings: {
-        xref: '<'
+        xref: '<',
+        onActivatePublications: '&'
     },
     controller: ['$http', '$interpolate', function($http, $interpolate) {
         var ctrl = this;
@@ -85,6 +87,7 @@ var citationsComponent = {
               '    <blockquote ng-repeat="citation in $ctrl.citations">' +
               '      <publication-component publication="citation"></publication-component>' +
               '    </blockquote>' +
+              '    <button ng-click="$ctrl.onActivatePublications()" class="btn btn-default btn-sm show-publications-tab"><i class="fa fa-book"></i> All publications</button>' +
               '  </div>' +
               '</span>'
 };
@@ -273,12 +276,18 @@ var abstractComponent = {
 };
 
 
-var rnaSequenceController = function($scope, $location, $http, $interpolate, DTOptionsBuilder, DTColumnBuilder) {
+var rnaSequenceController = function($scope, $location) {
     // Take upi and taxid from url. Note that $location.path() always starts with slash
     $scope.upi = $location.path().split('/')[2];
     $scope.taxid = $location.path().split('/')[3]; // TODO: this might not exist!
+
+    $scope.activeTab = 0;
+    $scope.activatePublicationsTab = function() {
+        console.log("calling activatePublicationsTab");
+        $scope.activeTab = 2;
+    }
 };
-rnaSequenceController.$inject = ['$scope', '$location', '$http', '$interpolate', 'DTOptionsBuilder', 'DTColumnBuilder'];
+rnaSequenceController.$inject = ['$scope', '$location'];
 
 
 /**
