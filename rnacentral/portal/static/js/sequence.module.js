@@ -282,9 +282,8 @@ var rnaSequenceController = function($scope, $location) {
     $scope.taxid = $location.path().split('/')[3]; // TODO: this might not exist!
 
     $scope.activeTab = 0;
-    $scope.activatePublicationsTab = function() {
-        console.log("calling activatePublicationsTab");
-        $scope.activeTab = 2;
+    $scope.activateTab = function(index) {
+        $scope.activeTab = parseInt(index); // have to convery index to string
     }
 };
 rnaSequenceController.$inject = ['$scope', '$location'];
