@@ -26,7 +26,7 @@ var xrefsComponent = {
                     // ensure that xrefs data is rendered into the DOM
                     // before initializing DataTables
                     $timeout(function() {
-                        var table = $("#annotations-table").DataTable({
+                        $("#annotations-table").DataTable({
                             "columnDefs": [
                                 { targets: [0, 1, 2], visible: true },
                                 { targets: [3, 4, 5], visible: false}
@@ -46,7 +46,38 @@ var xrefsComponent = {
                             "order": [[ 5, "desc" ]], // prioritize entries with genomic coordinates
                             "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
                             "initComplete": function(settings, json) {
-                                console.log("init complete");
+
+                                // some weird scripts sets width smaller than it should be
+                                $("#annotations-table").css("width",  "100%");
+
+                                // modify filter field and move it up
+                                $('.dataTables_filter input').attr('placeholder', 'Filter table')
+                                                             .attr("tabindex", 2)
+                                                             .attr('type', 'search')
+                                                             .addClass('form-control input-sm');
+
+                                $('#annotations-table_filter').appendTo('#annotations-datatables-filter')
+                                                              .addClass('pull-right hidden-xs');
+
+                                // replace angular row counter with datatables one
+                                $('#annotations-datatables-counter').html('');
+                                $('#annotations-table_info').appendTo('#annotations-datatables-counter');
+
+                                // tweak pagination controls
+                                if ( $('.dataTables_paginate').find('li').length == 3 ) { // 3 elements: <-, 1, ->
+                                    // hide pagination controls for tables with one page
+                                    $('.dataTables_paginate').hide();
+                                    $('#annotations-table_length').hide();
+                                }
+                                else {
+                                    // move pagination
+                                    $('.dataTables_paginate').addClass('pull-left')
+                                                             .appendTo('.annotations-datatables-controls');
+                                    $('#annotations-table_length').addClass('pull-right text-muted small')
+                                                                  .appendTo('.annotations-datatables-controls');
+                                }
+
+                                $('.table th').css('padding-right','1.5em');
                             }
                         });
                     });
