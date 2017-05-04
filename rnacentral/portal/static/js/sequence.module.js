@@ -74,6 +74,10 @@ var citationsComponent = {
             $http.get($interpolate('{{accession}}')({accession: ctrl.xref.accession.citations})).then(
                 function(response) {
                     ctrl.citations = response.data;
+                    ctrl.status = response.status;
+                },
+                function(response) {
+                    ctrl.status = response.status;
                 }
             );
         };
@@ -83,11 +87,14 @@ var citationsComponent = {
               '  <button ng-click="citationsVisible = !citationsVisible" class="literature-refs-retrieve btn btn-default btn-xs pull-right help" title="Literature citations">' +
               '    <i ng-if="citationsVisible" class="fa fa-caret-up"></i><i ng-if="!citationsVisible" class="fa fa-caret-down"></i>' +
               '  </button>' +
-              '  <div ng-if="citationsVisible" class="literature-refs-content">' +
+              '  <div ng-if="citationsVisible && $ctrl.status >= 200 && $ctrl.status <= 299" class="literature-refs-content">' +
               '    <blockquote ng-repeat="citation in $ctrl.citations">' +
               '      <publication-component publication="citation"></publication-component>' +
               '    </blockquote>' +
               '    <button ng-click="$ctrl.onActivatePublications()" class="btn btn-default btn-sm show-publications-tab"><i class="fa fa-book"></i> All publications</button>' +
+              '  </div>' +
+              '  <div ng-if="citationsVisible && ($ctrl.status < 200 || $ctrl.status > 299)">' +
+              '    Failed to load citations from server.' +
               '  </div>' +
               '</span>'
 };
