@@ -59,6 +59,8 @@ urlpatterns = patterns('',
     url(r'^genome-browser/?$', views.GenomeBrowserView.as_view(), {}, name='genome-browser'),
     # search proxy
     url(r'^api/internal/ebeye/?$', 'portal.views.ebeye_proxy', name='ebeye-proxy'),
+    # expert databases
+    url(r'^api/internal/expert-dbs/$', views.ExpertDatabasesAPIView.as_view(), {}, name='expert-dbs-api')
 )
 
 # internal API

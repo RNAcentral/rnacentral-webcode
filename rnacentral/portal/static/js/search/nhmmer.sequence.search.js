@@ -117,26 +117,28 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
                 ordering: $scope.params.selectedOrdering.sort_field + ',result_id',
                 page_size: $scope.params.initial_page_size || 10,
             },
-        }).success(function(data){
-            $scope.results.count = data.count;
-            if (next_page) {
-                $scope.results.alignments = $scope.results.alignments.concat(data.results);
-            } else {
-                $scope.results.alignments = data.results;
-            }
-            if ($scope.params.initial_page_size) {
-                $scope.params.initial_page_size = null;
-            }
-            $scope.results.next_page = data.next;
-            $scope.params.search_in_progress = false;
-            $scope.params.status_message = $scope.defaults.messages.done;
-            update_page_size();
-            update_page_title();
-        }).error(function(){
-            $scope.params.search_in_progress = false;
-            $scope.params.status_message = $scope.defaults.messages.failed;
-            $scope.params.error_message = $scope.defaults.messages.results_failed;
-            update_page_title();
+        }).then(
+            function(response) {
+                $scope.results.count = response.data.count;
+                if (next_page) {
+                    $scope.results.alignments = $scope.results.alignments.concat(response.data.results);
+                } else {
+                    $scope.results.alignments = response.data.results;
+                }
+                if ($scope.params.initial_page_size) {
+                    $scope.params.initial_page_size = null;
+                }
+                $scope.results.next_page = response.data.next;
+                $scope.params.search_in_progress = false;
+                $scope.params.status_message = $scope.defaults.messages.done;
+                update_page_size();
+                update_page_title();
+            },
+            function() {
+                $scope.params.search_in_progress = false;
+                $scope.params.status_message = $scope.defaults.messages.failed;
+                $scope.params.error_message = $scope.defaults.messages.results_failed;
+                update_page_title();
         });
     };
 
@@ -151,7 +153,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             params: {
                 id: $location.search().id,
             },
-        }).success(function(){
+        }).then(function(response) {
             $scope.params.search_in_progress = false;
             $scope.params.status_message = $scope.defaults.messages.cancelled;
             update_page_title();
@@ -169,34 +171,40 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
                 id: id,
             },
             ignoreLoadingBar: true,
-        }).success(function(data){
-            $scope.query.ended_at = moment(data.ended_at).utc();
-            $scope.query.enqueued_at = moment(data.enqueued_at).utc();
-            if (data.status === 'finished') {
-                $scope.get_results(data.id);
-            } else if (data.status === 'failed') {
-                $scope.params.search_in_progress = false;
-                $scope.params.status_message = $scope.defaults.messages.failed;
-                $scope.params.error_message = $scope.defaults.messages.job_failed;
-                update_page_title();
-            } else {
-                $scope.params.search_in_progress = true;
-                if (data.status === 'queued') {
-                    $scope.params.status_message = $scope.defaults.messages.queued;
-                } else if (data.status === 'started') {
-                    $scope.params.status_message = $scope.defaults.messages.started;
-                } else {
-                    $scope.params.status_message = '';
+        }).then(
+            function(response) {
+                $scope.query.ended_at = moment(response.data.ended_at).utc();
+                $scope.query.enqueued_at = moment(response.data.enqueued_at).utc();
+
+                if (response.data.status === 'finished') {
+                    $scope.get_results(response.data.id);
                 }
-                timeout = setTimeout(function() {
-                    check_job_status(id);
+                else if (response.data.status === 'failed') {
+                    $scope.params.search_in_progress = false;
+                    $scope.params.status_message = $scope.defaults.messages.failed;
+                    $scope.params.error_message = $scope.defaults.messages.job_failed;
                     update_page_title();
-                }, $scope.defaults.polling_interval);
+                }
+                else {
+                    $scope.params.search_in_progress = true;
+                    if (response.data.status === 'queued') {
+                        $scope.params.status_message = $scope.defaults.messages.queued;
+                    } else if (response.data.status === 'started') {
+                        $scope.params.status_message = $scope.defaults.messages.started;
+                    } else {
+                        $scope.params.status_message = '';
+                    }
+                    timeout = setTimeout(function() {
+                        check_job_status(id);
+                        update_page_title();
+                    }, $scope.defaults.polling_interval);
+                }
+            },
+            function(response) {
+                $scope.params.status_message = $scope.defaults.messages.failed;
+                $scope.params.error_message = $scope.defaults.messages.results_failed;
             }
-        }).error(function(){
-            $scope.params.status_message = $scope.defaults.messages.failed;
-            $scope.params.error_message = $scope.defaults.messages.results_failed;
-        });
+        );
     };
 
     /**
@@ -225,8 +233,8 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             if (sequence.match(/^URS[A-Fa-f0-9]{10}$/i)) {
                 $http({
                     url: $scope.defaults.md5_endpoint + '/' + sequence,
-                }).success(function(data){
-                    $scope.query.sequence = '>' + data.rnacentral_id + '\n' + data.sequence;
+                }).then(function(response){
+                    $scope.query.sequence = '>' + response.data.rnacentral_id + '\n' + response.data.sequence;
                     deferred.resolve($scope.query.sequence);
                 });
             } else {
@@ -261,20 +269,23 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-            }).success(function(data) {
-                // save query id
-                $scope.results.id = data.id;
-                // update url
-                $location.search({'id': data.id});
-                // begin polling for results
-                check_job_status(data.id);
-                update_page_title();
-            }).error(function(data, status) {
-                $scope.params.error_message = $scope.defaults.messages.submit_failed;
-                $scope.params.status_message = $scope.defaults.messages.failed;
-                $scope.params.search_in_progress = false;
-                update_page_title();
-            });
+            }).then(
+                function(response) {
+                    // save query id
+                    $scope.results.id = response.data.id;
+                    // update url
+                    $location.search({'id': response.data.id});
+                    // begin polling for results
+                    check_job_status(response.data.id);
+                    update_page_title();
+                },
+                function(response) {
+                    $scope.params.error_message = $scope.defaults.messages.submit_failed;
+                    $scope.params.status_message = $scope.defaults.messages.failed;
+                    $scope.params.search_in_progress = false;
+                    update_page_title();
+                }
+            );
         }
 
         /**
@@ -356,9 +367,9 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             params: {
                 md5: md5_hash,
             }
-        }).success(function(data) {
-            if (data.count > 0) {
-                $scope.results.exact_match = data.results[0].rnacentral_id;
+        }).then(function(response) {
+            if (response.data.count > 0) {
+                $scope.results.exact_match = response.data.results[0].rnacentral_id;
             }
         });
     }
@@ -460,19 +471,22 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
             params: {
                 id: query_id,
             },
-        }).success(function(data) {
-            if (data.description) {
-                $scope.query.sequence = '>' + data.description + '\n' + data.sequence;
-            } else {
-                $scope.query.sequence = data.sequence;
+        }).then(
+            function(response) {
+                if (response.data.description) {
+                    $scope.query.sequence = '>' + response.data.description + '\n' + response.data.sequence;
+                } else {
+                    $scope.query.sequence = response.data.sequence;
+                }
+                $scope.query.enqueued_at = moment(response.data.enqueued_at).utc();
+                $scope.query.ended_at = moment(response.data.ended_at).utc();
+                retrieve_exact_match(response.data.sequence);
+            },
+            function(response) {
+                $scope.params.status_message = $scope.defaults.messages.failed;
+                $scope.params.error_message = $scope.defaults.messages.results_failed;
             }
-            $scope.query.enqueued_at = moment(data.enqueued_at).utc();
-            $scope.query.ended_at = moment(data.ended_at).utc();
-            retrieve_exact_match(data.sequence);
-        }).error(function(){
-            $scope.params.status_message = $scope.defaults.messages.failed;
-            $scope.params.error_message = $scope.defaults.messages.results_failed;
-        });
+        );
     }
 
     /**

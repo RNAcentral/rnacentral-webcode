@@ -44,7 +44,7 @@ limitations under the License.
                 <link rel="stylesheet" href="{% static "css/main.css" %}">
                 <link rel="stylesheet" href="{% static "css/animate/animate.min.css" %}">
                 <link rel="stylesheet" href="{% static "js/vendor/hopscotch/css/hopscotch.css" %}">
-                <link rel="stylesheet" href="{% static "js/vendor/angular/loading-bar/loading-bar.css" %}">
+                <link rel="stylesheet" href="{% static "js/vendor/loading-bar/loading-bar.css" %}">
                 <link rel="stylesheet" href="{% static "css/timeline/timeline.css" %}">
                 <link rel="stylesheet" href="{% static "css/timeline/fonts/font.bevan-pontanosans.css" %}">
             {% endblock stylesheets %}
@@ -75,7 +75,7 @@ limitations under the License.
           {% endblock javascript %}
           <!-- polyfill JSON.stringify for Angular.js -->
           <!--[if lte IE 7]>
-            <script src="{% static "js/vendor/angular/json3/json3.min.js" %}"></script>
+            <script src="{% static "js/vendor/json3/json3.min.js" %}"></script>
           <![endif]-->
           <!-- create Angular.js custom element tags -->
           <!--[if lte IE 8]>
@@ -149,8 +149,10 @@ limitations under the License.
             <script src="{% static "js/vendor/jquery-1.10.1.min.js" %}"></script>
             <script src="{% static "js/vendor/slick//slick.min.js" %}"></script>
             <script src="{% static "js/vendor/hopscotch/js/hopscotch.js" %}"></script>
-            <script src="{% static "js/vendor/angular/angular.min.js" %}"></script>
-            <script src="{% static "js/vendor/angular/loading-bar/loading-bar.js" %}"></script>
+            <script src="{% static "js/vendor/angular/angular.js" %}"></script>
+            <script src="{% static "js/vendor/angular-animate/angular-animate.js" %}"></script>
+            <script src="{% static "js/vendor/angular-bootstrap/ui-bootstrap-tpls.min.js" %}"></script>
+            <script src="{% static "js/vendor/loading-bar/loading-bar.js" %}"></script>
             <script src="{% static "js/vendor/underscore/underscore-min.js" %}"></script>
             <script src="{% static "js/vendor/moment.min.js" %}"></script>
             <script src="{% static "js/search/metadata.search.js" %}"></script>

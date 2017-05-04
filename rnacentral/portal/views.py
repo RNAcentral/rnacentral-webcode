@@ -24,6 +24,9 @@ from django.views.decorators.cache import cache_page, never_cache
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from portal.config.expert_databases import expert_dbs
 from portal.config.genomes import genomes as rnacentral_genomes
 from portal.forms import ContactForm
@@ -252,6 +255,17 @@ def expert_database_view(request, expert_db_name):
         return render_to_response('portal/coming-soon.html')
     else:
         raise Http404()
+
+
+class ExpertDatabasesAPIView(APIView):
+    """
+    Return a list of RNA expert databases, indexed in RNAcentral.
+    """
+    permission_classes = ()
+    authentication_classes = ()
+
+    def get(self, request, format=None):
+        return Response(expert_dbs)
 
 
 @never_cache
