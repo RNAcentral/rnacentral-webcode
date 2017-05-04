@@ -21,7 +21,7 @@ expert_dbs = [
         'url': 'http://www.ebi.ac.uk/ena/',
         'description': "provides a comprehensive record of the world's nucleotide sequencing information",
         'hint': "ENA is a comprehensive record of the world's nucleotide sequencing information",
-        'tags': ['automatic'],
+        'tags': ['all ncRNA types', 'sequence archive'],
         'abbreviation': 'European Nucleotide Archive',
         'examples': ['URS00002D0E0C', 'URS000035EE7E', 'URS0000000001'],
         'references': [
@@ -135,7 +135,7 @@ expert_dbs = [
         'url': 'http://vega.sanger.ac.uk/',
         'description': 'is a repository for high-quality gene models produced by the manual annotation of vertebrate genomes. Human and mouse data from Vega are merged into <a href="http://www.gencodegenes.org/" target="_blank">GENCODE</a>',
         'hint': 'Vega will be replaced by GENCODE in the next release of RNAcentral',
-        'tags': ['curated'],
+        'tags': ['curated', 'lncRNA'],
         'abbreviation': 'Vertebrate Genome Annotation',
         'examples': ['URS00000B15DA', 'URS00000A54A6', 'URS0000301B08'],
         'references': [
@@ -252,7 +252,7 @@ expert_dbs = [
         'url': 'http://www.ncbi.nlm.nih.gov/refseq/',
         'description': 'is a comprehensive, integrated, non-redundant, well-annotated set of reference sequences',
         'hint': 'RefSeq is a comprehensive, integrated, non-redundant, well-annotated set of reference sequences',
-        'tags': ['curated'],
+        'tags': ['curated', 'all ncRNA types'],
         'abbreviation': 'NCBI Reference Sequence Database',
         'examples': ['URS000075A3E5', 'URS000075ADFF', 'URS00003A96B7'],
         'references': [
@@ -273,7 +273,7 @@ expert_dbs = [
         'url': 'http://rdp.cme.msu.edu/',
         'description': 'provides quality-controlled, aligned and annotated rRNA sequences and a suite of analysis tools',
         'hint': 'RDP provides quality-controlled, aligned and annotated rRNA sequences and a suite of analysis tools',
-        'tags': ['automatic', 'rRNA'],
+        'tags': ['automatic', 'SSU rRNA'],
         'abbreviation': 'Ribosomal Database Project',
         'examples': ['URS000064300F', 'URS00006FBF68', 'URS000070C439'],
         'references': [
@@ -308,7 +308,7 @@ expert_dbs = [
         'url': 'http://www.genenames.org/',
         'description': 'is the worldwide authority that assigns standardised nomenclature to human genes',
         'hint': 'HGNC is the worldwide authority that assigns standardised nomenclature to human genes',
-        'tags': ['curated', 'human', 'genes', 'nomenclature'],
+        'tags': ['curated', 'human', 'gene nomenclature'],
         'abbreviation': 'HUGO Gene Nomenclature Committee',
         'examples': [
             'URS000075C808', # HOTAIR
@@ -408,9 +408,9 @@ expert_dbs = [
         'name': 'NONCODE',
         'label': 'noncode',
         'url': 'http://www.noncode.org/',
-        'description': 'is an integrated knowledge database dedicated to non-coding RNAs (excluding tRNAs and rRNAs)',
-        'hint': 'NONCODE is an integrated knowledge database dedicated to non-coding RNAs (excluding tRNAs and rRNAs)',
-        'tags': ['automatic', 'curated'],
+        'description': 'is an integrated knowledge database dedicated to non-coding RNAs',
+        'hint': 'NONCODE is an integrated knowledge database dedicated to non-coding RNAs',
+        'tags': ['automatic', 'curated', 'lncRNA'],
         'abbreviation': '',
         'examples': ['URS000019B796', 'URS00008189E4', 'URS000058E3EB'],
         'references': [
