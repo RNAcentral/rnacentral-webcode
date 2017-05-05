@@ -97,9 +97,9 @@ expert_dbs = [
         'description': 'is a genome browser for vertebrate genomes that supports research in comparative genomics, evolution, sequence variation and transcriptional regulation',
         'abbreviation': '',
         'examples': [
-            {'upi': 'URS0000061376', 'taxid': 9606}, #TODO
-            {'upi': 'URS00007F7879', 'taxid': 9606}, #TODO
-            {'upi': 'URS00007EBD0C', 'taxid': 9606}, #TODO
+            {'upi': 'URS000025784F', 'taxid': 9606},
+            {'upi': 'URS000075A546', 'taxid': 9606},
+            {'upi': 'URS00005CF03F', 'taxid': 9606},
         ],
         'references': [
             {
