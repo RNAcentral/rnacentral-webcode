@@ -48,7 +48,9 @@ class RnaXmlExporter(OracleConnection):
                    t4.timestamp as created,
                    t5.timestamp as last,
                    t6.len as length,
-                   t7.rna_type
+                   t7.rna_type,
+                   t2.locus_tag,
+                   t2.standard_name
             FROM xref t1, rnc_accessions t2, rnc_database t3, rnc_release t4,
                  rnc_release t5, rna t6, rnc_rna_precomputed t7
             WHERE t1.ac = t2.accession AND
@@ -74,7 +76,7 @@ class RnaXmlExporter(OracleConnection):
                                  'created', 'last', 'deleted',
                                  'function', 'gene', 'gene_synonym', 'note',
                                  'product', 'common_name', 'parent_accession',
-                                 'optional_id']
+                                 'optional_id', 'locus_tag', 'standard_name']
         # other data fields for which the sets should be (re-)created
         self.data_fields = ['rna_type', 'authors', 'journal', 'popular_species',
                             'pub_title', 'pub_id', 'insdc_submission', 'xrefs',]
