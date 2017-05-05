@@ -421,6 +421,8 @@ class RnaXmlExporter(OracleConnection):
                 {pub_id}
                 {popular_species}
                 {boost}
+                {locus_tag}
+                {standard_name}
             </additional_fields>
         </entry>
         """.format(upi=self.data['upi'],
@@ -449,6 +451,8 @@ class RnaXmlExporter(OracleConnection):
                    pub_id=format_field('pub_id'),
                    popular_species=format_field('popular_species'),
                    boost=wrap_in_field_tag('boost', self.data['boost']),
+                   locus_tag=format_field('locus_tag'),
+                   standard_name=format_field('standard_name'),
                    taxid=taxid)
         return format_whitespace(text)
 
