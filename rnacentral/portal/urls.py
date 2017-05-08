@@ -72,7 +72,10 @@ urlpatterns += patterns('',
 
 # sitemaps
 from django.contrib.sitemaps import GenericSitemap, Sitemap
+from django.contrib.sitemaps.views import index as sitemap_index
+from django.contrib.sitemaps.views import sitemap as sitemap_sitemap
 from django.core.urlresolvers import reverse
+from django.views.decorators.cache import cache_page
 
 
 class StaticViewSitemap(Sitemap):
@@ -105,9 +108,9 @@ sitemaps = {
     'rna': RnaSitemap(),
 }
 
-urlpatterns += patterns('django.contrib.sitemaps.views',
-    url(r'^sitemap\.xml$', 'index', {'sitemaps': sitemaps}, name="sitemap-index"),
-    url(r'^sitemap-(?P<section>.+)\.xml$', 'sitemap', {'sitemaps': sitemaps}, name="sitemap-section"),
+urlpatterns += patterns('',
+    url(r'^sitemap\.xml$', cache_page(2592000, cache='sitemaps')(sitemap_index), {'sitemaps': sitemaps, 'sitemap_url_name': 'sitemap-section'}, name="sitemap-index"),
+    url(r'^sitemap-(?P<section>.+)\.xml$', cache_page(2592000, cache='sitemaps')(sitemap_sitemap), {'sitemaps': sitemaps}, name="sitemap-section")
 )
 
 # in development serve sitemaps from media files

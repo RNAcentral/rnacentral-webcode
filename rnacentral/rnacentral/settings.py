@@ -289,6 +289,10 @@ CACHES = {
     'default': {
         'BACKEND': 'caching.backends.memcached.MemcachedCache',
         'LOCATION': 'localhost:8052',
+    },
+    'sitemaps': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': SITEMAPS_ROOT
     }
 }
 
