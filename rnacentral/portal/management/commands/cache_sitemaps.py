@@ -15,7 +15,6 @@ import os
 from django.core.management.base import BaseCommand
 from django.core.urlresolvers import reverse, resolve
 from django.conf import settings
-from django.contrib.sitemaps import views
 from django.http import HttpRequest
 
 from portal.urls import sitemaps
@@ -29,24 +28,24 @@ class Command(BaseCommand):
     help = "Generate sitemaps and save them to media directory"
 
     def handle(self, *args, **options):
-        self.cache_index()
+        # self.cache_index()
         self.cache_sections()
 
     def cache_index(self):
         request = HttpRequest()
         request.META['SERVER_NAME'] = '1.0.0.127.in-addr.arpa'  # important black magic
         request.META['SERVER_PORT'] = '8000'  # important black magic
-        response = views.index(request, sitemaps)  # or resolve(reverse("sitemap-index")).func(request, sitemaps)
+        response = resolve(reverse("sitemap-index")).func(request, sitemaps)  # this is a cached version of django.contrib.sitemaps.views.index(request, sitemaps)
         response.render()
-
-        with open(os.path.join(settings.SITEMAPS_ROOT, 'sitemap.xml'), 'w') as index_file:
-            index_file.write(response.content)
+        # with open(os.path.join(settings.SITEMAPS_ROOT, 'sitemap.xml'), 'w') as index_file:
+        #     index_file.write(response.content)
 
     def cache_sections(self):
         request = HttpRequest()
         request.META['SERVER_NAME'] = '1.0.0.127.in-addr.arpa'  # important black magic
         request.META['SERVER_PORT'] = '8000'  # important black magic
-        response = views.sitemap(request, sitemaps, section="rna")
+        request.GET['p'] = 100
+        response = resolve(reverse("sitemap-section", kwargs={"section": "rna"})).func(request, sitemaps, section="rna")  # views.sitemap(request, sitemaps, section="rna")
         response.render()
 
         # with open(os.path.join(settings.SITEMAPS_ROOT, reverse("sitemap-section")), 'w') as index_file:

@@ -97,20 +97,20 @@ class RnaSitemap(Sitemap):
 
     def location(self, item):
         if item.taxid is not None:
-            return reverse('portal.views.get_xrefs_data', kwargs={'upi': item.upi.upi, 'taxid': item.taxid})
+            return reverse('portal.views.get_xrefs_data', kwargs={'upi': item.upi_id, 'taxid': item.taxid})
         else:
-            return reverse('portal.views.get_xrefs_data', kwargs={'upi': item.upi.upi})
+            return reverse('portal.views.get_xrefs_data', kwargs={'upi': item.upi_id})
 
 
 sitemaps = {
-    'expert-databases': GenericSitemap({'queryset': Database.objects.all()}),
+    # 'expert-databases': GenericSitemap({'queryset': Database.objects.all()}),
     'static': StaticViewSitemap(),
     'rna': RnaSitemap(),
 }
 
 urlpatterns += patterns('',
-    url(r'^sitemap\.xml$', cache_page(2592000, cache='sitemaps')(sitemap_index), {'sitemaps': sitemaps, 'sitemap_url_name': 'sitemap-section'}, name="sitemap-index"),
-    url(r'^sitemap-(?P<section>.+)\.xml$', cache_page(2592000, cache='sitemaps')(sitemap_sitemap), {'sitemaps': sitemaps}, name="sitemap-section")
+    url(r'^sitemap\.xml$', cache_page(60*60*355*9, cache='sitemaps')(sitemap_index), {'sitemaps': sitemaps, 'sitemap_url_name': 'sitemap-section'}, name="sitemap-index"),
+    url(r'^sitemap-(?P<section>.+)\.xml$', cache_page(60*60*355*9, cache='sitemaps')(sitemap_sitemap), {'sitemaps': sitemaps}, name="sitemap-section")
 )
 
 # in development serve sitemaps from media files
