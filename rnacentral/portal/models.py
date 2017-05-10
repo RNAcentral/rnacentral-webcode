@@ -706,9 +706,11 @@ class Accession(models.Model):
         Get species name in a format that can be used in Ensembl urls.
         """
         species = self.species
+        if self.database != 'ENSEMBL':
+            return species
         if species == 'Dictyostelium discoideum':
             species = 'Dictyostelium discoideum AX4'
-        elif species == 'Mus musculus':
+        elif species.startswith('Mus musculus'):
             if self.accession.startswith('MGP'): # Ensembl mouse strain
                 parts = self.accession.split('_')
                 if len(parts) == 3:
