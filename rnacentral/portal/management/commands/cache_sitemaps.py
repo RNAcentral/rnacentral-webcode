@@ -29,15 +29,49 @@ class Command(BaseCommand):
 
     help = "Generate sitemaps and save them to media directory"
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--section',
+            type=str,
+            help='a section of sitemaps (e.g. rna or static), if you want only it to be processed'
+        )
+
+        parser.add_argument(
+            '--page',
+            type=int,
+            help='a particular page of section to be cached'
+        )
+
+        parser.add_argument(
+            '--cache_alias',
+            type=str,
+            default='sitemaps',
+            help='a cache to use - pick one from your settings.CACHES'
+
+        )
+
+        parser.add_argument(
+            '--timeout',
+            type=int,
+            default=60 * 60 * 355 * 9,
+            help='how long to keep sitemaps cached'
+        )
+
     def handle(self, *args, **kwargs):
-        self.cache = caches['sitemaps']
-        self.timeout = 60 * 60 * 355 * 9
+        self.cache = caches[kwargs['cache_alias']]
+        self.timeout = kwargs['timeout']
         self.key_prefix = settings.CACHE_MIDDLEWARE_KEY_PREFIX
 
         # self.cache_index()
         self.cache_sections()
 
     def cache_index(self):
+        print "-" * 80
+        print
+        print "    Processing index page"
+        print
+        print "-" * 80
+
         request = HttpRequest()
         request.META['SERVER_NAME'] = '1.0.0.127.in-addr.arpa'  # important black magic
         request.META['SERVER_PORT'] = '8000'  # important black magic
@@ -46,11 +80,9 @@ class Command(BaseCommand):
         response = view(request, sitemaps)  # view is django.contrib.sitemaps.views.index(request, sitemaps) with cache
         response.render()
 
-        # request._cache_update_cache = True
-        cache = caches['sitemaps']
-        timeout = 60*60*355*9
-        cache_key = learn_cache_key(request, response, timeout, self.key_prefix, cache=cache)
-        cache.set(cache_key, response, timeout)
+        request._cache_update_cache = True  # required for CacheMiddleware to cache this response
+        cache_key = learn_cache_key(request, response, self.timeout, self.key_prefix, cache=self.cache)
+        self.cache.set(cache_key, response, self.timeout)
 
         # with open(os.path.join(settings.SITEMAPS_ROOT, 'sitemap.xml'), 'w') as index_file:
         #     index_file.write(response.content)
@@ -83,7 +115,10 @@ class Command(BaseCommand):
                 response.render()
 
                 # cache response in file system
+                request._cache_update_cache = True  # required for CacheMiddleware to cache this response
                 cache_key = learn_cache_key(request, response, self.timeout, self.key_prefix, cache=self.cache)
+                import pdb
+                pdb.set_trace()
                 self.cache.set(cache_key, response, self.timeout)
 
                 # request._cache_update_cache = True  # required for CacheMiddleware to cache this response
