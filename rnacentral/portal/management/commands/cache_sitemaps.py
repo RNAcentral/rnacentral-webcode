@@ -31,6 +31,20 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
+            '--server_name',
+            type=str,
+            default='rnacentral.org',
+            help='domain name of the machine, that we generate sitemaps for e.g. rnacentral.org'
+        )
+
+        parser.add_argument(
+            '--server_port',
+            type=str,
+            default='80',
+            help='port number of the machine, e.g. 80'
+        )
+
+        parser.add_argument(
             '--section',
             type=str,
             help='a section of sitemaps (e.g. rna or static), if you want only it to be processed'
@@ -58,6 +72,9 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **kwargs):
+        self.server_name = kwargs['server_name']
+        self.server_port = kwargs['server_port']
+
         self.cache = caches[kwargs['cache_alias']]
         self.timeout = kwargs['timeout']
         self.key_prefix = settings.CACHE_MIDDLEWARE_KEY_PREFIX
@@ -73,8 +90,8 @@ class Command(BaseCommand):
         print "-" * 80
 
         request = HttpRequest()
-        request.META['SERVER_NAME'] = '1.0.0.127.in-addr.arpa'  # important black magic
-        request.META['SERVER_PORT'] = '8000'  # important black magic
+        request.META['SERVER_NAME'] = self.server_name  # important black magic
+        request.META['SERVER_PORT'] = self.server_port  # important black magic
 
         view = resolve(reverse('sitemap-index')).func
         response = view(request, sitemaps)  # view is django.contrib.sitemaps.views.index(request, sitemaps) with cache
@@ -104,8 +121,8 @@ class Command(BaseCommand):
 
                 # prepare http request
                 request = HttpRequest()
-                request.META['SERVER_NAME'] = '1.0.0.127.in-addr.arpa'  # important black magic
-                request.META['SERVER_PORT'] = '8000'  # important black magic
+                request.META['SERVER_NAME'] = self.server_name  # important black magic
+                request.META['SERVER_PORT'] = self.server_port  # important black magic
                 if page > 1:
                     request.GET['p'] = page  # paginate response, if required
 
@@ -117,8 +134,6 @@ class Command(BaseCommand):
                 # cache response in file system
                 request._cache_update_cache = True  # required for CacheMiddleware to cache this response
                 cache_key = learn_cache_key(request, response, self.timeout, self.key_prefix, cache=self.cache)
-                import pdb
-                pdb.set_trace()
                 self.cache.set(cache_key, response, self.timeout)
 
                 # request._cache_update_cache = True  # required for CacheMiddleware to cache this response
