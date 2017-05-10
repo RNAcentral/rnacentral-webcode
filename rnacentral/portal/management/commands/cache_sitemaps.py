@@ -19,7 +19,6 @@ from django.core.cache import caches
 
 from portal.urls import sitemaps
 
-from django.contrib.sitemaps.views import index
 
 class Command(BaseCommand):
     """
@@ -79,8 +78,14 @@ class Command(BaseCommand):
         self.timeout = kwargs['timeout']
         self.key_prefix = settings.CACHE_MIDDLEWARE_KEY_PREFIX
 
-        # self.cache_index()
-        self.cache_sections()
+        if 'section' in kwargs:
+            if 'page' in kwargs:
+                self.cache_section(kwargs['section'], site, kwargs['page'])
+            else:
+                self.cache_section(kwargs['section'], site)
+        else:
+            # self.cache_index()
+            self.cache_sections()
 
     def cache_index(self):
         print "-" * 80
@@ -90,27 +95,36 @@ class Command(BaseCommand):
         print "-" * 80
 
         view = resolve(reverse('sitemap-index')).func  # django.contrib.sitemaps.views.index(request, sitemaps) with cache
-        self.cache_page(view, sitemaps)
+        self.cache_view(view, sitemaps)
 
     def cache_sections(self):
         for section, site in sitemaps.items():
-
-            print "-" * 80
-            print
-            print "    Processing section %s" % section
-            print
-            print "-" * 80
-
             if callable(site):
                 site = site()
 
+            self.cache_section(section, site)
+
+    def cache_section(self, section, site, page=None):
+        print "-" * 80
+        print
+        print "    Processing section %s" % section
+        print
+        print "-" * 80
+
+        if page:
+            self.cache_page(self, section, page)
+        else:
             for page in range(1, site.paginator.num_pages + 1):
-                print "Processing page %s of section %s" % (page, section)
+                self.cache_page(self, section, page)
 
-                view = resolve(reverse('sitemap-section', kwargs={"section": section})).func  # django.contrib.sitemaps.views.sitemap(request, sitemaps, section="rna")
-                self.cache_page(view, sitemaps, section, page)
+    def cache_page(self, section, page):
+        print "Processing page %s of section %s" % (page, section)
 
-    def cache_page(self, view, sitemaps, section=None, page=1):
+        view = resolve(reverse('sitemap-section', kwargs={
+            "section": section})).func  # django.contrib.sitemaps.views.sitemap(request, sitemaps, section="rna")
+        self.cache_view(view, sitemaps, section, page)
+
+    def cache_view(self, view, sitemaps, section=None, page=1):
         # prepare http request
         request = HttpRequest()
         request.META['SERVER_NAME'] = self.server_name  # important
