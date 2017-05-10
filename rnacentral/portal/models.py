@@ -706,8 +706,6 @@ class Accession(models.Model):
         Get species name in a format that can be used in Ensembl urls.
         """
         species = self.species
-        if self.database != 'ENSEMBL':
-            return species
         if species == 'Dictyostelium discoideum':
             species = 'Dictyostelium discoideum AX4'
         elif species.startswith('Mus musculus'):
