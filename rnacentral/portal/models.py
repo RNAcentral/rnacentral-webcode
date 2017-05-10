@@ -191,7 +191,7 @@ class Rna(CachingMixin, models.Model):
         xrefs = self.xrefs.filter(deleted='N', upi=self.upi).\
                            exclude(db__id=1, accession__project__in=expert_db_projects).\
                            order_by('-db__id').\
-                           select_related()
+                           select_related('accession', 'db')
         if taxid:
             xrefs = xrefs.filter(taxid=taxid)
         if xrefs.exists():
