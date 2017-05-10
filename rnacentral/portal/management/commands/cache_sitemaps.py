@@ -89,20 +89,8 @@ class Command(BaseCommand):
         print
         print "-" * 80
 
-        request = HttpRequest()
-        request.META['SERVER_NAME'] = self.server_name  # important black magic
-        request.META['SERVER_PORT'] = self.server_port  # important black magic
-
-        view = resolve(reverse('sitemap-index')).func
-        response = view(request, sitemaps)  # view is django.contrib.sitemaps.views.index(request, sitemaps) with cache
-        response.render()
-
-        request._cache_update_cache = True  # required for CacheMiddleware to cache this response
-        cache_key = learn_cache_key(request, response, self.timeout, self.key_prefix, cache=self.cache)
-        self.cache.set(cache_key, response, self.timeout)
-
-        # with open(os.path.join(settings.SITEMAPS_ROOT, 'sitemap.xml'), 'w') as index_file:
-        #     index_file.write(response.content)
+        view = resolve(reverse('sitemap-index')).func  # django.contrib.sitemaps.views.index(request, sitemaps) with cache
+        self.cache_page(view, sitemaps)
 
     def cache_sections(self):
         for section, site in sitemaps.items():
@@ -119,25 +107,26 @@ class Command(BaseCommand):
             for page in range(1, site.paginator.num_pages + 1):
                 print "Processing page %s of section %s" % (page, section)
 
-                # prepare http request
-                request = HttpRequest()
-                request.META['SERVER_NAME'] = self.server_name  # important black magic
-                request.META['SERVER_PORT'] = self.server_port  # important black magic
-                if page > 1:
-                    request.GET['p'] = page  # paginate response, if required
+                view = resolve(reverse('sitemap-section', kwargs={"section": section})).func  # django.contrib.sitemaps.views.sitemap(request, sitemaps, section="rna")
+                self.cache_page(view, sitemaps, section, page)
 
-                # get response from sitemaps view and render it
-                view = resolve(reverse('sitemap-section', kwargs={"section": section})).func
-                response = view(request, sitemaps, section=section)  # views.sitemap(request, sitemaps, section="rna")
-                response.render()
+    def cache_page(self, view, sitemaps, section=None, page=1):
+        # prepare http request
+        request = HttpRequest()
+        request.META['SERVER_NAME'] = self.server_name  # important
+        request.META['SERVER_PORT'] = self.server_port  # important
 
-                # cache response in file system
-                request._cache_update_cache = True  # required for CacheMiddleware to cache this response
-                cache_key = learn_cache_key(request, response, self.timeout, self.key_prefix, cache=self.cache)
-                self.cache.set(cache_key, response, self.timeout)
+        # if this is first page, or no pagination is required, don't set GET['p']
+        if page > 1:
+            request.GET['p'] = page  # paginate response, if required
 
-                # request._cache_update_cache = True  # required for CacheMiddleware to cache this response
-                # CacheMiddleware(cache_alias='sitemaps', cache_timeout=60*60*355*9).process_response(request, response)
+        # get response from sitemaps view and render it
+        if section:
+            response = view(request, sitemaps, section=section)
+        else:
+            response = view(request, sitemaps)
+        response.render()
 
-                # with open(os.path.join(settings.SITEMAPS_ROOT, reverse("sitemap-section")), 'w') as index_file:
-                #     index_file.write(response.content)
+        # cache rendered response in file system
+        cache_key = learn_cache_key(request, response, self.timeout, self.key_prefix, cache=self.cache)
+        self.cache.set(cache_key, response, self.timeout)
