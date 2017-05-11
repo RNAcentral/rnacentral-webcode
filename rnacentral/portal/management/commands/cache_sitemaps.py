@@ -147,8 +147,10 @@ class Command(BaseCommand):
     def cache_path(self, path, sitemaps, section=None, page=1):
         # prepare http request
         request = HttpRequest()
-        request.META['SERVER_NAME'] = self.server_name  # important
-        request.META['SERVER_PORT'] = self.server_port  # important
+        request.META['SERVER_NAME'] = self.server_name
+        request.META['SERVER_PORT'] = self.server_port
+        request.META['REQUEST_METHOD'] = 'GET'
+        request.method = 'GET'
         request.path = path
         if page > 1:  # if this is first page, or no pagination is required, don't set GET['p']
             request.META['QUERY_STRING'] = 'p=' + str(page)
