@@ -10,6 +10,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+import warnings
+
 from django.core.management.base import BaseCommand
 from django.core.urlresolvers import reverse, resolve
 from django.conf import settings
@@ -50,9 +52,17 @@ class Command(BaseCommand):
         )
 
         parser.add_argument(
-            '--page',
+            '--first_page',
             type=int,
-            help='a particular page of section to be cached'
+            default=1,
+            help='cache a range of pages in a section, starting from this one; requires section'
+        )
+
+        parser.add_argument(
+            '--last_page',
+            type=int,
+            default=-1,
+            help='cache a range of pages, ending with this (e.g. if --last_page 2, pages = [1, 2]); requires section'
         )
 
         parser.add_argument(
@@ -78,11 +88,24 @@ class Command(BaseCommand):
         self.timeout = kwargs['timeout']
         self.key_prefix = settings.CACHE_MIDDLEWARE_KEY_PREFIX
 
+        if ('first_page' in kwargs or 'last_page' in kwargs) and 'section' not in kwargs:
+            warnings.warn("You must specify '--section' option, to use '--first_page/last_page")
+            return
+
         if 'section' in kwargs:
-            if 'page' in kwargs:
-                self.cache_section(kwargs['section'], site, kwargs['page'])
-            else:
-                self.cache_section(kwargs['section'], site)
+            site = sitemaps[kwargs['section']]
+            if callable(site):
+                site = site()
+
+            # determine range of pages to be cached
+            if kwargs['last_page'] == -1:  # last page is not specified
+                last_page = site.paginator.num_pages + 1
+            else:  # last page is specified
+                last_page = kwargs['last_page'] + 1
+
+            pages = range(kwargs['first_page'], last_page)
+
+            self.cache_section(kwargs['section'], pages)
         else:
             # self.cache_index()
             self.cache_sections()
@@ -102,22 +125,20 @@ class Command(BaseCommand):
             if callable(site):
                 site = site()
 
-            self.cache_section(section, site)
+            pages = range(1, site.paginator.num_pages + 1)
+            self.cache_section(section, pages)
 
-    def cache_section(self, section, site, page=None):
+    def cache_section(self, section, pages):
         print "-" * 80
         print
         print "    Processing section %s" % section
         print
         print "-" * 80
 
-        if page:
-            self.cache_page(self, section, page)
-        else:
-            for page in range(1, site.paginator.num_pages + 1):
-                self.cache_page(self, section, page)
+        for page in pages:
+            self.cache_section_page(section, page)
 
-    def cache_page(self, section, page):
+    def cache_section_page(self, section, page):
         print "Processing page %s of section %s" % (page, section)
 
         view = resolve(reverse('sitemap-section', kwargs={
