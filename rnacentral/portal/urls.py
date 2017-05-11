@@ -71,10 +71,14 @@ urlpatterns += patterns('',
 )
 
 # sitemaps
+import hashlib
+from functools import wraps
+
 from django.contrib.sitemaps import GenericSitemap, Sitemap
 from django.contrib.sitemaps.views import index as sitemap_index
 from django.contrib.sitemaps.views import sitemap as sitemap_sitemap
 from django.core.urlresolvers import reverse
+from django.core.cache import caches
 from django.views.decorators.cache import cache_page
 
 
@@ -108,9 +112,23 @@ sitemaps = {
     'rna': RnaSitemap(),
 }
 
+
+def sitemaps_cache(view, cache_alias='sitemaps'):
+    def wrapped_view(request, *args, **kwargs):
+        cache = caches[cache_alias]
+        cache_key = hashlib.md5(request.build_absolute_uri())
+        response = cache.get(cache_key)
+        if response is not None:
+            return response
+
+        return view(request, *args, **kwargs)
+
+    return wrapped_view
+
+
 urlpatterns += patterns('',
-    url(r'^sitemap\.xml$', cache_page(60*60*355*9, cache='sitemaps')(sitemap_index), {'sitemaps': sitemaps, 'sitemap_url_name': 'sitemap-section'}, name="sitemap-index"),
-    url(r'^sitemap-(?P<section>.+)\.xml$', cache_page(60*60*355*9, cache='sitemaps')(sitemap_sitemap), {'sitemaps': sitemaps}, name="sitemap-section")
+    url(r'^sitemap\.xml$', sitemaps_cache(sitemap_index), {'sitemaps': sitemaps, 'sitemap_url_name': 'sitemap-section'}, name="sitemap-index"),
+    url(r'^sitemap-(?P<section>.+)\.xml$', sitemaps_cache(sitemap_sitemap), {'sitemaps': sitemaps}, name="sitemap-section")
 )
 
 # in development serve sitemaps from media files

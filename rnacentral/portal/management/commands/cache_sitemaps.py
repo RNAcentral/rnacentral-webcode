@@ -11,12 +11,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 import warnings
+import hashlib
 
 from django.core.management.base import BaseCommand
 from django.core.urlresolvers import reverse, resolve
 from django.conf import settings
 from django.http import HttpRequest
-from django.utils.cache import learn_cache_key
 from django.core.cache import caches
 
 from portal.urls import sitemaps
@@ -117,7 +117,7 @@ class Command(BaseCommand):
         print
         print "-" * 80
 
-        path = reverse('sitemap-index')  # django.contrib.sitemaps.views.index(request, sitemaps) with cache
+        path = reverse('sitemap-index')  # django.contrib.sitemaps.views.index(request, sitemaps)
         self.cache_path(path, sitemaps)
 
     def cache_sections(self):
@@ -167,5 +167,5 @@ class Command(BaseCommand):
         response.render()
 
         # cache rendered response in file system
-        cache_key = learn_cache_key(request, response, self.timeout, self.key_prefix, cache=self.cache)
+        cache_key = hashlib.md5(request.build_absolute_uri())  # learn_cache_key(request, response, self.timeout, self.key_prefix, cache=self.cache)
         self.cache.set(cache_key, response, self.timeout)
