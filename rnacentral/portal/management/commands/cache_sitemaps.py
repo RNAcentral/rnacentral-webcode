@@ -150,10 +150,8 @@ class Command(BaseCommand):
         request.META['SERVER_NAME'] = self.server_name  # important
         request.META['SERVER_PORT'] = self.server_port  # important
         request.path = path
-
-        # if this is first page, or no pagination is required, don't set GET['p']
-        if page > 1:
-            request.META['QUERY_STRING'] = '?p=' + str(page)
+        if page > 1:  # if this is first page, or no pagination is required, don't set GET['p']
+            request.META['QUERY_STRING'] = 'p=' + str(page)
             request.GET['p'] = page  # paginate response, if required
 
         # resolve path to view function
