@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 import warnings
-import hashlib
+import re
 
 from django.core.management.base import BaseCommand
 from django.core.urlresolvers import reverse, resolve
@@ -167,5 +167,5 @@ class Command(BaseCommand):
         response.render()
 
         # cache rendered response (in file system by defult)
-        cache_key = hashlib.sha256(request.get_full_path()).hexdigest()  # learn_cache_key(request, response, self.timeout, self.key_prefix, cache=self.cache)
+        cache_key = re.sub('[:/#?&=+%]', '_', request.get_full_path())  # learn_cache_key(request, response, self.timeout, self.key_prefix, cache=self.cache)
         self.cache.set(cache_key, response, self.timeout)

@@ -71,15 +71,13 @@ urlpatterns += patterns('',
 )
 
 # sitemaps
-import hashlib
-from functools import wraps
+import re
 
 from django.contrib.sitemaps import GenericSitemap, Sitemap
 from django.contrib.sitemaps.views import index as sitemap_index
 from django.contrib.sitemaps.views import sitemap as sitemap_sitemap
 from django.core.urlresolvers import reverse
 from django.core.cache import caches
-from django.views.decorators.cache import cache_page
 
 
 class StaticViewSitemap(Sitemap):
@@ -116,7 +114,7 @@ sitemaps = {
 def sitemaps_cache(view, cache_alias='sitemaps'):
     def wrapped_view(request, *args, **kwargs):
         cache = caches[cache_alias]
-        cache_key = hashlib.sha256(request.get_full_path()).hexdigest()
+        cache_key = re.sub('[:/#?&=+%]', '_', request.get_full_path())
         response = cache.get(cache_key)
         if response is not None:
             return response
