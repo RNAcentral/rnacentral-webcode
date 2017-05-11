@@ -92,7 +92,7 @@ class Command(BaseCommand):
             warnings.warn("You must specify '--section' option, to use '--first_page/last_page")
             return
 
-        if 'section' in kwargs:
+        if kwargs['section'] is not None:
             site = sitemaps[kwargs['section']]
             if callable(site):
                 site = site()
