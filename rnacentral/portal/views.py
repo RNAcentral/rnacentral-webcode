@@ -27,7 +27,7 @@ from django.views.generic.edit import FormView
 
 from portal.config.expert_databases import expert_dbs
 from portal.forms import ContactForm
-from portal.models import Rna, Database, Release, Xref, DatabaseStats
+from portal.models import Rna, Database, Release, Xref, DatabaseStats, RnaPrecomputed
 
 
 CACHE_TIMEOUT = 60 * 60 * 24 * 1 # per-view cache timeout in seconds
@@ -206,6 +206,7 @@ def rna_view(request, upi, taxid=None):
         'xref_pages': get_xrefs_pages(),
         'xref_page_size': XREF_PAGE_SIZE,
         'xref_page_num': get_xref_page_num(),
+        'precomputed': RnaPrecomputed.objects.filter(upi=upi, taxid=taxid).first(),
     }
 
     return render(request, 'portal/unique-rna-sequence.html', {'rna': rna, 'context': context})

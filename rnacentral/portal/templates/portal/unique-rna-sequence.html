@@ -107,6 +107,7 @@ limitations under the License.
               </ul>
               <ul class="list-inline">
                 <li><strong>{{ rna.length|intcomma }}</strong> nucleotides</li>
+                <li>{{ context.precomputed.rna_type }}</li>
                 <li>
                   {% with dbs=context.distinct_databases %}
                     <strong>{{ dbs|length|intcomma }}</strong> database{{ dbs|length|pluralize }}
@@ -120,8 +121,6 @@ limitations under the License.
                 <li>
                   Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab">species</a>
                 </li>
-                <li class="small text-muted">imported <time datetime="{{ rna.first_seen|date:'Y-m-d' }}">{{ rna.first_seen|date:'d M Y' }}</time></li>
-                <li class="small text-muted">last updated <time datetime="{{ rna.last_seen|date:'Y-m-d' }}">{{ rna.last_seen|date:'d M Y' }}</time></li>
               </ul>
             </div>
           </div> <!-- .panel .panel-default -->

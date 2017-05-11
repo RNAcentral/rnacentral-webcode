@@ -191,7 +191,7 @@ class Rna(CachingMixin, models.Model):
         xrefs = self.xrefs.filter(deleted='N', upi=self.upi).\
                            exclude(db__id=1, accession__project__in=expert_db_projects).\
                            order_by('-db__id').\
-                           select_related()
+                           select_related('accession', 'db')
         if taxid:
             xrefs = xrefs.filter(taxid=taxid)
         if xrefs.exists():
@@ -701,6 +701,21 @@ class Accession(models.Model):
             id=self.external_id, species=self.species.replace(' ', '_'))
         return url
 
+    def get_ensembl_species_url(self):
+        """
+        Get species name in a format that can be used in Ensembl urls.
+        """
+        species = self.species
+        if species == 'Dictyostelium discoideum':
+            species = 'Dictyostelium discoideum AX4'
+        elif species.startswith('Mus musculus'):
+            if self.accession.startswith('MGP'): # Ensembl mouse strain
+                parts = self.accession.split('_')
+                if len(parts) == 3:
+                    species = 'Mus musculus ' + parts[1]
+        species = species.replace(' ', '_').lower()
+        return species
+
     def get_expert_db_external_url(self):
         """
         Get external url to expert database.
@@ -729,7 +744,7 @@ class Accession(models.Model):
             'LNCIPEDIA': 'http://www.lncipedia.org/db/transcript/{id}',
             'MODOMICS': 'http://modomics.genesilico.pl/sequences/list/{id}',
             'HGNC': 'http://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id={id}',
-            'ENSEMBL': 'http://www.ensembl.org/Homo_sapiens/Transcript/Summary?t={id}',
+            'ENSEMBL': 'http://www.ensembl.org/{species}/Transcript/Summary?t={id}',
             'FLYBASE': 'http://flybase.org/reports/{id}.html',
         }
         if self.database in urls.keys():
@@ -752,6 +767,8 @@ class Accession(models.Model):
                 return urls[self.database].format(id=self.external_id, version=self.seq_version)
             elif self.database == 'HGNC':
                 return urls[self.database].format(id=self.accession)
+            elif self.database == 'ENSEMBL':
+                return urls[self.database].format(id=self.external_id, species=self.get_ensembl_species_url())
             return urls[self.database].format(id=self.external_id)
         else:
             return ''
@@ -1054,19 +1071,11 @@ class Xref(models.Model):
             tmrna_type = 2 # two-piece tmRNA
         return tmrna_type
 
-    def get_ensembl_species_name(self):
-        """
-        Get a species name that can be used in Ensembl urls.
-        """
-        if self.accession.species == 'Dictyostelium discoideum AX4':
-            self.accession.species = 'Dictyostelium discoideum'
-        return self.accession.species.replace(' ', '_').lower()
-
     def get_ensembl_division(self):
         """
         Get Ensembl or Ensembl Genomes division for the cross-reference.
         """
-        species = self.get_ensembl_species_name()
+        species = self.accession.get_ensembl_species_url()
         species = species.replace('_', ' ').capitalize()
 
         ensembl_divisions = get_ensembl_divisions()

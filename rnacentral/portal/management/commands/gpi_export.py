@@ -17,6 +17,7 @@ import subprocess
 from django.core.management.base import BaseCommand, CommandError
 from common_exporters.oracle_connection import OracleConnection
 from portal.models import Rna
+from portal.utils import so_terms
 
 """
 Export RNAcentral species-specific ids in GPI format.
@@ -97,7 +98,7 @@ class GPIExporter(object):
         data['DB_Object_Name'] = rna.get_description(taxid=row['taxid'])
         data['DB_Object_ID'] = '{upi}_{taxid}'.format(upi=row['upi'], taxid=row['taxid'])
         data['Taxon'] = 'taxon:{taxon}'.format(taxon=row['taxid'])
-        data['DB_Object_Type'] = 'rna'
+        data['DB_Object_Type'] = so_terms.get_label(rna)
         data['Gene_Product_Properties'] = self.get_mirna_precursors(taxid=row['taxid'], rna=rna)
 
         # safeguard against breaking tsv format
