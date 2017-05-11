@@ -139,8 +139,6 @@ class Command(BaseCommand):
             self.cache_section_page(section, page)
 
     def cache_section_page(self, section, page):
-        print "Processing page %s of section %s" % (page, section)
-
         path = reverse('sitemap-section', kwargs={"section": section})  # django.contrib.sitemaps.views.sitemap(request, sitemaps, section="rna")
         self.cache_path(path, sitemaps, section, page)
 
@@ -156,6 +154,8 @@ class Command(BaseCommand):
             request.META['QUERY_STRING'] = 'p=' + str(page)
             request.GET['p'] = page  # paginate response, if required
 
+        print "Processing %s" % request.get_full_path()
+
         # resolve path to view function
         view = resolve(path).func
 
@@ -166,6 +166,6 @@ class Command(BaseCommand):
             response = view(request, sitemaps)
         response.render()
 
-        # cache rendered response in file system
-        cache_key = hashlib.md5(request.build_absolute_uri())  # learn_cache_key(request, response, self.timeout, self.key_prefix, cache=self.cache)
+        # cache rendered response (in file system by defult)
+        cache_key = hashlib.sha256(request.get_full_path()).hexdigest()  # learn_cache_key(request, response, self.timeout, self.key_prefix, cache=self.cache)
         self.cache.set(cache_key, response, self.timeout)

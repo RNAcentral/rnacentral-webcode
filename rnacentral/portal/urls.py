@@ -116,7 +116,7 @@ sitemaps = {
 def sitemaps_cache(view, cache_alias='sitemaps'):
     def wrapped_view(request, *args, **kwargs):
         cache = caches[cache_alias]
-        cache_key = hashlib.md5(request.build_absolute_uri())
+        cache_key = hashlib.sha256(request.get_full_path()).hexdigest()
         response = cache.get(cache_key)
         if response is not None:
             return response
