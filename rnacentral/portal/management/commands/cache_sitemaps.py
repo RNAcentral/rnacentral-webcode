@@ -117,8 +117,8 @@ class Command(BaseCommand):
         print
         print "-" * 80
 
-        view = resolve(reverse('sitemap-index')).func  # django.contrib.sitemaps.views.index(request, sitemaps) with cache
-        self.cache_view(view, sitemaps)
+        path = reverse('sitemap-index')  # django.contrib.sitemaps.views.index(request, sitemaps) with cache
+        self.cache_path(path, sitemaps)
 
     def cache_sections(self):
         for section, site in sitemaps.items():
@@ -141,19 +141,23 @@ class Command(BaseCommand):
     def cache_section_page(self, section, page):
         print "Processing page %s of section %s" % (page, section)
 
-        view = resolve(reverse('sitemap-section', kwargs={
-            "section": section})).func  # django.contrib.sitemaps.views.sitemap(request, sitemaps, section="rna")
-        self.cache_view(view, sitemaps, section, page)
+        path = reverse('sitemap-section', kwargs={"section": section})  # django.contrib.sitemaps.views.sitemap(request, sitemaps, section="rna")
+        self.cache_path(path, sitemaps, section, page)
 
-    def cache_view(self, view, sitemaps, section=None, page=1):
+    def cache_path(self, path, sitemaps, section=None, page=1):
         # prepare http request
         request = HttpRequest()
         request.META['SERVER_NAME'] = self.server_name  # important
         request.META['SERVER_PORT'] = self.server_port  # important
+        request.path = path
 
         # if this is first page, or no pagination is required, don't set GET['p']
         if page > 1:
+            request.META['QUERY_STRING'] = '?p=' + str(page)
             request.GET['p'] = page  # paginate response, if required
+
+        # resolve path to view function
+        view = resolve(path).func
 
         # get response from sitemaps view and render it
         if section:
