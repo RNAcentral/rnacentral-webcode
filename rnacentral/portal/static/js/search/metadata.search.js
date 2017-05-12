@@ -301,6 +301,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
                     for (var i=0; i < data.entries.length; i++) {
                         data.entries[i].fields = data.entries[i].highlights;
                         data.entries[i].fields.length[0] = data.entries[i].fields.length[0].replace(/<[^>]+>/gm, '');
+                        data.entries[i].id_with_slash = data.entries[i].id.replace('_', '/');
                     }
                 }
 
