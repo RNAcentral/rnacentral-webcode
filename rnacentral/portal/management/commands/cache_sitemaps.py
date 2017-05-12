@@ -11,7 +11,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 import warnings
-import re
 
 from django.core.management.base import BaseCommand
 from django.core.urlresolvers import reverse, resolve
@@ -107,7 +106,7 @@ class Command(BaseCommand):
 
             self.cache_section(kwargs['section'], pages)
         else:
-            # self.cache_index()
+            self.cache_index()
             self.cache_sections()
 
     def cache_index(self):
@@ -163,7 +162,7 @@ class Command(BaseCommand):
         if section:
             response = view(request, sitemaps, section=section)
         else:
-            response = view(request, sitemaps)
+            response = view(request, **{'sitemaps': sitemaps, 'sitemap_url_name': 'sitemap-section'})
         response.render()
 
         # cache rendered response (in file system by defult)

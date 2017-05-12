@@ -84,9 +84,8 @@ class StaticViewSitemap(Sitemap):
     def items(self):
         return [
             'homepage', 'about', 'contact-us', 'downloads',
-            'expert-databases', 'sequence-search', 'api-docs',
-            'help', 'help-sequence-search', 'help-metadata-search',
-            'help-genomic-mapping', 'help-genomic-mapping',
+            'expert-databases', 'nhmmer-sequence-search', 'api-docs',
+            'help', 'help-metadata-search', 'help-genomic-mapping', 'help-genomic-mapping',
         ]
 
     def location(self, item):
@@ -118,15 +117,14 @@ def sitemaps_cache(view, cache_alias='sitemaps'):
         response = cache.get(cache_key)
         if response is not None:
             return response
-
         return view(request, *args, **kwargs)
 
     return wrapped_view
 
 
 urlpatterns += patterns('',
-    url(r'^sitemap\.xml$', sitemaps_cache(sitemap_index), {'sitemaps': sitemaps, 'sitemap_url_name': 'sitemap-section'}, name="sitemap-index"),
-    url(r'^sitemap-(?P<section>.+)\.xml$', sitemaps_cache(sitemap_sitemap), {'sitemaps': sitemaps}, name="sitemap-section")
+    url(r'^sitemap\.xml$', sitemaps_cache(sitemap_index), kwargs={'sitemaps': sitemaps, 'sitemap_url_name': 'sitemap-section'}, name='sitemap-index'),
+    url(r'^sitemap-(?P<section>.+)\.xml$', sitemaps_cache(sitemap_sitemap), kwargs={'sitemaps': sitemaps}, name='sitemap-section')
 )
 
 # in development serve sitemaps from media files
