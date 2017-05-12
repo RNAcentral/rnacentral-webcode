@@ -291,7 +291,7 @@ CACHES = {
         'LOCATION': 'localhost:8052',
     },
     'sitemaps': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'BACKEND': 'rnacentral.utils.cache.SitemapsCache',
         'LOCATION': SITEMAPS_ROOT
     }
 }

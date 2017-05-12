@@ -167,5 +167,5 @@ class Command(BaseCommand):
         response.render()
 
         # cache rendered response (in file system by defult)
-        cache_key = re.sub('[:/#?&=+%]', '_', request.get_full_path())  # learn_cache_key(request, response, self.timeout, self.key_prefix, cache=self.cache)
+        cache_key = request.get_full_path()  # learn_cache_key(request, response, self.timeout, self.key_prefix, cache=self.cache)
         self.cache.set(cache_key, response, self.timeout)
