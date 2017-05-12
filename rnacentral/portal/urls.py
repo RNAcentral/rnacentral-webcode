@@ -103,8 +103,15 @@ class RnaSitemap(Sitemap):
             return reverse('portal.views.get_xrefs_data', kwargs={'upi': item.upi_id})
 
 
+class ExpertDatabasesSitemap(Sitemap):
+    def items(self):
+        return Database.objects.all()
+
+    def location(self, item):
+        return reverse('expert-database', kwargs={'expert_db_name': item.descr})
+
 sitemaps = {
-    # 'expert-databases': GenericSitemap({'queryset': Database.objects.all()}),
+    'expert-databases': ExpertDatabasesSitemap,  # GenericSitemap({'queryset': Database.objects.all()}),
     'static': StaticViewSitemap(),
     'rna': RnaSitemap(),
 }
