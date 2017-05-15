@@ -701,6 +701,27 @@ class Accession(models.Model):
             id=self.external_id, species=self.species.replace(' ', '_'))
         return url
 
+    def get_gencode_transcript_id(self):
+        """
+        GENCODE entries have their corresponding Ensembl transcript ids stored
+        in Accession.note. Example:
+        {"transcript_id": ["ENSMUST00000160979.8"]}
+        """
+        note = json.loads(self.note)
+        ensembl_transcript_id = ''
+        if 'transcript_id' in note and len(note['transcript_id']) > 0:
+            ensembl_transcript_id = note['transcript_id'][0]
+        return ensembl_transcript_id
+
+    def get_gencode_ensembl_url(self):
+        """
+        Get Ensembl URL for GENCODE transcripts.
+        """
+        ensembl_transcript_id = self.get_gencode_transcript_id()
+        url = 'http://ensembl.org/{species}/Transcript/Summary?db=core;t={id}'.format(
+            id=ensembl_transcript_id, species=self.species.replace(' ', '_'))
+        return url
+
     def get_ensembl_species_url(self):
         """
         Get species name in a format that can be used in Ensembl urls.

@@ -32,10 +32,6 @@ limitations under the License.
     <td>
       {% if xref.db.name == 'PDBe' %}
         PDB
-      {% elif xref.db.name == 'Vega' %}
-        Vega
-        <br>
-        (GENCODE)
       {% else %}
         {{ xref.db.name }}
       {% endif %}
@@ -117,8 +113,8 @@ limitations under the License.
 
     {# GENCODE #}
     {% elif xref.db.name == 'GENCODE' %}
-      {{ xref.db.name }} transcript <a href="{{ xref.accession.get_vega_transcript_url }}" target="_blank" title="View in Vega browser">{{ xref.accession.external_id }}</a>
-
+      transcript <a href="{{ xref.accession.get_gencode_ensembl_url }}" target="_blank" title="View in Ensembl">{{ xref.accession.get_gencode_transcript_id }}</a>
+      (Havana id {{ xref.accession.external_id }})
     {# Ensembl #}
     {% elif xref.db.name == 'Ensembl' %}
       transcript <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank" title="View the transcript in {{ xref.db.name }}">{{ xref.accession.external_id }}</a> from
