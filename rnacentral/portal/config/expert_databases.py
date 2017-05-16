@@ -101,6 +101,8 @@ expert_dbs = [
         'label': 'ensembl',
         'url': 'http://ensembl.org/',
         'description': 'is a genome browser for vertebrate genomes that supports research in comparative genomics, evolution, sequence variation and transcriptional regulation',
+        'hint': 'Ensembl is a genome browser for vertebrate genomes that supports research in comparative genomics, evolution, sequence variation and transcriptional regulation',
+        'tags': ['curated', 'reference genomes'],
         'abbreviation': '',
         'examples': [
             {'upi': 'URS000025784F', 'taxid': 9606},
@@ -124,6 +126,8 @@ expert_dbs = [
         'label': 'gencode',
         'url': 'http://gencodegenes.org/',
         'description': 'produces high quality reference gene annotation and experimental validation for human and mouse genomes',
+        'hint': 'GENCODE produces high quality reference gene annotation and experimental validation for human and mouse genomes',
+        'tags': ['curated', 'human', 'mouse', 'gene annotation'],
         'abbreviation': '',
         'examples': [
             {'upi': 'URS00000B15DA', 'taxid': 9606},
