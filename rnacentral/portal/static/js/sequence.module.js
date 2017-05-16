@@ -270,12 +270,12 @@ var abstractComponent = {
 };
 
 
-var rnaSequenceController = function($scope, $location, $http, $interpolate, DTOptionsBuilder, DTColumnBuilder) {
+var rnaSequenceController = function($scope, $location, $http, $interpolate) {
     // Take upi and taxid from url. Note that $location.path() always starts with slash
     $scope.upi = $location.path().split('/')[2];
     $scope.taxid = $location.path().split('/')[3]; // TODO: this might not exist!
 };
-rnaSequenceController.$inject = ['$scope', '$location', '$http', '$interpolate', 'DTOptionsBuilder', 'DTColumnBuilder'];
+rnaSequenceController.$inject = ['$scope', '$location', '$http', '$interpolate'];
 
 
 /**
@@ -294,7 +294,7 @@ var sceWhitelist = function($sceDelegateProvider) {
 sceWhitelist.$inject = ['$sceDelegateProvider'];
 
 
-angular.module("rnaSequence", ['datatables', 'ngResource', 'ngAnimate'])
+angular.module("rnaSequence", ['ngResource', 'ngAnimate'])
     .config(sceWhitelist)
     .factory("publicationResource", publicationResourceFactory)
     .controller("rnaSequenceController", rnaSequenceController)

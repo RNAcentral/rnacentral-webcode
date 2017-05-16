@@ -35,19 +35,19 @@ limitations under the License.
 
         {% compress css %}
             {% block stylesheets %}
-                <link rel="stylesheet" href="{% static "js/vendor/bootstrap/css/bootstrap.min.css" %}">
-                <link rel="stylesheet" href="{% static "fonts/font-awesome/css/font-awesome.min.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/bootstrap/dist/css/bootstrap.min.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/font-awesome/css/font-awesome.min.css" %}">
                 <link rel="stylesheet" href="{% static "css/ebi-global.css" %}">
                 <link rel="stylesheet" href="{% static "css/ebi-visual.css" %}">
-                <link rel="stylesheet" href="{% static "js/vendor/slick/slick.css" %}"/>
-                <link rel="stylesheet" href="{% static "js/vendor/slick/slick-theme.css" %}"/>
+                <link rel="stylesheet" href="{% static "node_modules/slick-carousel/slick/slick.css" %}"/>
+                <link rel="stylesheet" href="{% static "node_modules/slick-carousel/slick/slick-theme.css" %}"/>
                 <link rel="stylesheet" href="{% static "css/main.css" %}">
-                <link rel="stylesheet" href="{% static "css/animate/animate.min.css" %}">
-                <link rel="stylesheet" href="{% static "js/vendor/DataTables-1.10.13/media/css/dataTables.bootstrap.min.css" %}">
-                <link rel="stylesheet" href="{% static "js/vendor/hopscotch/css/hopscotch.css" %}">
-                <link rel="stylesheet" href="{% static "js/vendor/angular-loading-bar/build/loading-bar.css" %}">
-                <link rel="stylesheet" href="{% static "css/timeline/timeline.css" %}">
-                <link rel="stylesheet" href="{% static "css/timeline/fonts/font.bevan-pontanosans.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/animate.css/animate.min.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/drmonty-datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/hopscotch/dist/css/hopscotch.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/angular-loading-bar/build/loading-bar.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/timelinejs/build/css/timeline.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/timelinejs/build/css/themes/font/Bevan-PotanoSans.css" %}">
             {% endblock stylesheets %}
         {% endcompress %}
 
@@ -61,13 +61,13 @@ limitations under the License.
             <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/trackControls.css" %}">
             <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/tooltips.css" %}">
         {% else %}
-            <link rel="stylesheet" href="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/css/genoverse.css" %}">
-            <link rel="stylesheet" href="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/css/controlPanel.css" %}">
-            <link rel="stylesheet" href="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/css/fileDrop.css" %}">
-            <link rel="stylesheet" href="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/css/karyotype.css" %}">
-            <link rel="stylesheet" href="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/css/resizer.css" %}">
-            <link rel="stylesheet" href="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/css/trackControls.css" %}">
-            <link rel="stylesheet" href="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/css/tooltips.css" %}">
+            <link rel="stylesheet" href="{% static "node_modules/angularjs-genoverse/lib/Genoverse/css/genoverse.css" %}">
+            <link rel="stylesheet" href="{% static "node_modules/angularjs-genoverse/lib/Genoverse/css/controlPanel.css" %}">
+            <link rel="stylesheet" href="{% static "node_modules/angularjs-genoverse/lib/Genoverse/css/fileDrop.css" %}">
+            <link rel="stylesheet" href="{% static "node_modules/angularjs-genoverse/lib/Genoverse/css/karyotype.css" %}">
+            <link rel="stylesheet" href="{% static "node_modules/angularjs-genoverse/lib/Genoverse/css/resizer.css" %}">
+            <link rel="stylesheet" href="{% static "node_modules/angularjs-genoverse/lib/Genoverse/css/trackControls.css" %}">
+            <link rel="stylesheet" href="{% static "node_modules/angularjs-genoverse/lib/Genoverse/css/tooltips.css" %}">
         {% endif %}
 
 
@@ -76,7 +76,7 @@ limitations under the License.
           {% endblock javascript %}
           <!-- polyfill JSON.stringify for Angular.js -->
           <!--[if lte IE 7]>
-            <script src="{% static "js/vendor/json3/json3.min.js" %}"></script>
+            <script src="{% static "node_modules/json3/lib/json3.min.js" %}"></script>
           <![endif]-->
           <!-- create Angular.js custom element tags -->
           <!--[if lte IE 8]>
@@ -147,36 +147,32 @@ limitations under the License.
         {% compress js %}
           {% block extra_js %}
             <script src="{% static "js/vendor/modernizr-2.6.2-respond-1.1.0.min.js" %}"></script>
-            <script src="{% static "js/vendor/jquery-3.2.1.min.js" %}"></script>
-            <script src="{% static "js/vendor/slick//slick.min.js" %}"></script>
-            <script src="{% static "js/vendor/hopscotch/js/hopscotch.js" %}"></script>
-            <script src="{% static "js/vendor/angular/angular.js" %}"></script>
-            <script src="{% static "js/vendor/angular-animate/angular-animate.js" %}"></script>
-            <script src="{% static "js/vendor/angular-resource/angular-resource.js" %}"></script>
-            <script src="{% static "js/vendor/angular-bootstrap/ui-bootstrap-tpls.min.js" %}"></script>
-            <script src="{% static "js/vendor/angular-datatables/demo/src/archives/dist/angular-datatables.js" %}"></script>
-            <!-- <script src="{% static "js/vendor/DataTables-1.9.4/media/js/jquery.dataTables.min.js" %}"></script> -->
-            <!-- <script src="{% static "js/vendor/DataTables-plugins/integration/bootstrap/3/dataTables.bootstrap.js" %}"></script> -->
-            <script src="{% static "js/vendor/DataTables-1.10.13/media/js/jquery.dataTables.min.js" %}"></script>
-            <script src="{% static "js/vendor/DataTables-1.10.13/media/js/dataTables.bootstrap.js" %}"></script>
-            <script src="{% static "js/vendor/angular-loading-bar/build/loading-bar.js" %}"></script>
-            <script src="{% static "js/vendor/underscore/underscore-min.js" %}"></script>
-            <script src="{% static "js/vendor/moment.min.js" %}"></script>
+            <script src="{% static "node_modules/jquery/dist/jquery.min.js" %}"></script>
+            <script src="{% static "node_modules/slick-carousel/slick/slick.min.js" %}"></script>
+            <script src="{% static "node_modules/hopscotch/dist/js/hopscotch.js" %}"></script>
+            <script src="{% static "node_modules/angular/angular.js" %}"></script>
+            <script src="{% static "node_modules/angular-animate/angular-animate.js" %}"></script>
+            <script src="{% static "node_modules/angular-resource/angular-resource.js" %}"></script>
+            <script src="{% static "node_modules/angular-bootstrap/ui-bootstrap-tpls.min.js" %}"></script>
+            <script src="{% static "node_modules/datatables/media/js/jquery.dataTables.min.js" %}"></script>
+            <script src="{% static "node_modules/drmonty-datatables-plugins/integration/bootstrap/3/dataTables.bootstrap.js" %}"></script>
+            <script src="{% static "node_modules/angular-loading-bar/build/loading-bar.js" %}"></script>
+            <script src="{% static "node_modules/underscore/underscore-min.js" %}"></script>
+            <script src="{% static "node_modules/moment/min/moment.min.js" %}"></script>
+
             <script src="{% static "js/search/metadata.search.js" %}"></script>
-            <script src="{% static "js/vendor/md5.min.js" %}"></script>
+            <script src="{% static "node_modules/js-md5/build/md5.min.js" %}"></script>
             <script src="{% static "js/search/nhmmer.sequence.search.js" %}"></script>
             <script src="{% static "js/search/export-results.search.js" %}"></script>
-            <script src="{% static "js/vendor/d3/d3.min.js" %}"></script>
+            <script src="{% static "node_modules/d3/build/d3.min.js" %}"></script>
+            <script src="{% static "node_modules/d3/build/d3.min.js" %}"></script>
             <script src="{% static "js/vendor/query-string.js" %}"></script>
             <script src="{% static "js/d3/d3.ExpertDatabaseSequenceDistribution.js" %}"></script>
             <script src="{% static "js/d3/d3.speciesSunburst.js" %}"></script>
             <script src="{% static "js/d3/d3.speciesTree.js" %}"></script>
-            <script src="{% static "js/jquery.EuropePMCAbstracts.js" %}"></script>
-            <script src="{% static "js/vendor/handlebars-v1.1.2.js" %}"></script>
-            <script src="{% static "js/vendor/clipboard.min.js" %}"></script>
+            <script src="{% static "node_modules/clipboard/dist/clipboard.min.js" %}"></script>
             <script src="{% static "js/guidedTour.js" %}"></script>
-            <!-- <script src="{% static "js/rnaView.js" %}"></script> -->
-            <script src="{% static "js/vendor/timeline-min.js" %}"></script>
+            <script src="{% static "node_modules/timelinejs/build/js/timeline-min.js" %}"></script>
 
             <script src="{% static "js/sequence.module.js" %}"></script>
           {% endblock extra_js %}
@@ -188,16 +184,16 @@ limitations under the License.
             <script src="{% static "js/vendor/Genoverse/js/genomes/grch38.js" %}"></script>
             <script src="{% static "js/genoverse.RNAcentralTrack.js" %}"></script>
         {% else %}
-            <script src="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/js/genoverse.combined.js" %}"></script>
+            <script src="{% static "node_modules/angularjs-genoverse/lib/Genoverse/js/genoverse.combined.js" %}"></script>
             <script src="{% static "js/genoverse.controller.js" %}"></script>
             <!-- New genoverse contains tooltip from jquery ui, it conflicts with bootstrap - bridge it! -->
             <script>$.widget.bridge('uitooltip', $.ui.tooltip);</script>
         {% endif %}
         <!-- always load genoverse module -->
-        <script src="{% static "js/vendor/angularjs-genoverse/src/genoverse.module.js" %}"></script>
+        <script src="{% static "node_modules/angularjs-genoverse/src/genoverse.module.js" %}"></script>
 
         <!-- bootstrap conflicts with jquery-ui tooltip, so it should go after datatables and genoverse -->
-        <script src="{% static "js/vendor/bootstrap/js/bootstrap.min.js" %}"></script>
+        <script src="{% static "node_modules/bootstrap/dist/js/bootstrap.min.js" %}"></script>
 
         <script>
             $(function() {
