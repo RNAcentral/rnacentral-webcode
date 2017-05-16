@@ -29,7 +29,7 @@
     "animate.css": "^3.5.2",
     "bootstrap": "^3.3.7",
     "clipboard": "^1.6.1",
-    "d3": "^4.8.0",
+    "d3": "^3",
     "datatables": "^1.10.13",
     "drmonty-datatables-plugins": "^1.10.12",
     "font-awesome": "^4.7.0",
