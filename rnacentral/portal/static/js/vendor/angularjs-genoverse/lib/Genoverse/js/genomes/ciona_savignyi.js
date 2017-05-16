@@ -1,1 +1,0 @@
-Genoverse.Genomes.ciona_savignyi = {};

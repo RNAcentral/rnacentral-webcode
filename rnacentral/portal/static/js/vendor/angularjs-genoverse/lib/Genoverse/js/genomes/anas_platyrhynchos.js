@@ -1,1 +1,0 @@
-Genoverse.Genomes.anas_platyrhynchos = {};

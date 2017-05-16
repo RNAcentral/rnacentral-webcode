@@ -1,1 +1,0 @@
-Genoverse.Genomes.tarsius_syrichta = {};
