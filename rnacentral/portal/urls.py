@@ -83,7 +83,7 @@ from django.core.cache import caches
 class StaticViewSitemap(Sitemap):
     def items(self):
         return [
-            'homepage', 'about', 'contact-us', 'downloads',
+            'homepage', 'about', 'contact-us', 'downloads', 'training',
             'expert-databases', 'nhmmer-sequence-search', 'api-docs',
             'help', 'help-metadata-search', 'help-genomic-mapping', 'help-genomic-mapping',
         ]
