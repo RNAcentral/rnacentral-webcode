@@ -105,7 +105,7 @@ class RnaSitemap(Sitemap):
 
 class ExpertDatabasesSitemap(Sitemap):
     def items(self):
-        return Database.objects.all()
+        return Database.objects.filter(alive='Y').all()
 
     def location(self, item):
         return reverse('expert-database', kwargs={'expert_db_name': item.descr})
