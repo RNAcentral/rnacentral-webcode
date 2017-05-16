@@ -137,7 +137,7 @@ class HGNCImporter():
             )
             Accession.objects.update_or_create(
                 accession=entry['hgnc_id'],
-                description=entry['name'],
+                description='Homo sapiens ' + entry['name'],
                 division='HUM',
                 species='Homo sapiens',
                 is_composite='N',

@@ -29,6 +29,8 @@ from portal.config.genomes import genomes as rnacentral_genomes
 from portal.config.expert_databases import expert_dbs as rnacentral_expert_dbs
 
 
+from portal.utils import descriptions as desc
+
 
 class Modification(CachingMixin, models.Model):
     """
@@ -219,6 +221,7 @@ class Rna(CachingMixin, models.Model):
             results = queryset.distinct().count()
         return results
 
+
     def get_distinct_database_names(self, taxid=None):
         """
         Get a non-redundant list of databases referencing the sequence.
@@ -304,198 +307,109 @@ class Rna(CachingMixin, models.Model):
         else:
             return False
 
+    def get_rna_type(self, taxid=None, recompute=False):
+        """Determine the rna type for the given sequence. This will use the
+        precomuted data if possible. If not asked to recompute it will do so.
+        Providing an taxid will compute the rna_type for the given taxon only.
+        This means it will determine the rna_type for only that organism.
+
+        Parameters
+        ----------
+        taxid : int, None
+            The taxon id, if any to use for finding the rna_type.
+        recompute : bool, False
+            Flag to indicate if this should use the already stored data, or
+            recompute it.
+
+        Returns
+        -------
+        rna_type : str
+            The rna type computed for this sequence and possibly taxon id.
+        """
+
+        if not recompute:
+            queryset = RnaPrecomputed.objects.filter(taxid=taxid)
+            try:
+                rna_type = queryset.get(upi=self.upi).rna_type
+                if rna_type is None:
+                    xrefs = self.find_valid_xrefs(taxid=taxid)
+                    return desc.get_rna_type(self, xrefs, taxid=taxid)
+                return rna_type
+            except ObjectDoesNotExist:
+                pass
+
+        xrefs = self.find_valid_xrefs(taxid=taxid)
+        return desc.get_rna_type(self, xrefs, taxid=taxid)
+
     def get_description(self, taxid=None, recompute=False):
         """
-        Get entry description based on its xrefs.
-        If taxid is provided, use only species-specific xrefs.
+        Compute the description of this sequence. The description is intented
+        to be a good description of the sequence and is based upon the xrefs
+        this sequence has. If given a taxid this will produce a description
+        that is specific to that species, otherwise it will return a
+        description that is general for all species this has been observed in.
+
+        Normally, this will simply lookup a stored description in
+        rna_precomputed, however, if recompute=True is given then this will
+        recompute the description.
+
+
+        Parameters
+        ----------
+        taxid : int, None
+            The taxon id to create a description for.
+
+        recompute : bool, False
+            If this should compute the description or simply look it up.
+
+        Returns
+        -------
+        description : str
+            The description of this sequence.
         """
-        def count_distinct_descriptions():
-            """
-            Count distinct description lines.
-            """
-            queryset = xrefs.values_list('accession__description', flat=True)
-            results = queryset.filter(deleted='N').distinct().count()
-            if not results:
-                results = queryset.distinct().count()
-            return results
-
-        def get_distinct_products():
-            """
-            Get distinct non-null product values as a list.
-            """
-            queryset = xrefs.values_list('accession__product', flat=True).\
-                             filter(accession__product__isnull=False)
-            results = queryset.filter(deleted='N').distinct()
-            if not results:
-                results = queryset.distinct()
-            return results
-
-        def get_distinct_genes():
-            """
-            Get distinct non-null gene values as a list.
-            """
-            queryset = xrefs.values_list('accession__gene', flat=True).\
-                             filter(accession__gene__isnull=False)
-            results = queryset.filter(deleted='N').distinct()
-            if not results:
-                results = queryset.distinct()
-            return results
-
-        def get_distinct_feature_names():
-            """
-            Get distinct feature names as a list.
-            """
-            queryset = xrefs.values_list('accession__feature_name', flat=True)
-            results = queryset.filter(deleted='N').distinct()
-            if not results:
-                results = queryset.distinct()
-            return results
-
-        def get_distinct_ncrna_classes():
-            """
-            For ncRNA features, get distinct ncrna_class values as a list.
-            """
-            queryset = xrefs.values_list('accession__ncrna_class', flat=True).\
-                             filter(accession__ncrna_class__isnull=False)
-            results = queryset.filter(deleted='N').distinct()
-            if not results:
-                results = queryset.distinct()
-            return results
-
-        def get_rna_type():
-            """
-            product > gene > feature name
-            For ncRNA features, use ncrna_class annotations.
-            """
-            products = get_distinct_products()
-            genes = get_distinct_genes()
-            if len(products) == 1:
-                rna_type = products[0]
-            elif len(genes) == 1:
-                rna_type = genes[0]
-            else:
-                feature_names = get_distinct_feature_names()
-                if feature_names[0] == 'ncRNA' and len(feature_names) == 1:
-                    ncrna_classes = get_distinct_ncrna_classes()
-                    if len(ncrna_classes) > 1 and 'misc_RNA' in ncrna_classes:
-                        ncrna_classes.remove('misc_RNA')
-                    rna_type = '/'.join(ncrna_classes)
-                else:
-                    rna_type = '/'.join(feature_names)
-            return rna_type
-
-        def get_urs_description():
-            """
-            Get a description for a URS identifier, including multiple species.
-            """
-            if count_distinct_descriptions() == 1:
-                description_line = xrefs.first().accession.description
-                description_line = description_line[0].upper() + description_line[1:]
-            else:
-                rna_type = get_rna_type()
-                distinct_species = self.count_distinct_organisms
-                if taxid or distinct_species == 1:
-                    species = xrefs.first().accession.species
-                    description_line = '{species} {rna_type}'.format(
-                                        species=species, rna_type=rna_type)
-                else:
-                    description_line = ('{rna_type} from '
-                                        '{distinct_species} species').format(
-                                        rna_type=rna_type,
-                                        distinct_species=distinct_species)
-            return description_line
-
-        def get_xrefs_for_description(taxid):
-            """
-            Get cross-references for building a description line.
-            """
-            # try only active xrefs first
-            if taxid:
-                xrefs = self.xrefs.filter(deleted='N', taxid=taxid)
-            else:
-                xrefs = self.xrefs.filter(deleted='N')
-            # fall back onto all xrefs if no active ones are found
-            if not xrefs.exists():
-                if taxid:
-                    xrefs = self.xrefs.filter(taxid=taxid)
-                else:
-                    xrefs = self.xrefs.filter()
-            return xrefs.select_related('accession').\
-                         prefetch_related('accession__refs', 'accession__coordinates')
-
-        def score_xref(xref):
-            """
-            Return a score for a cross-reference based on its metadata.
-            """
-            def get_genome_bonus():
-                """
-                Find if the xref has genome mapping.
-                Iterate over prefetched queryset to avoid hitting the database.
-                """
-                chromosomes = []
-                for coordinate in xref.accession.coordinates.all():
-                    chromosomes.append(coordinate.chromosome)
-                if not chromosomes:
-                    return 0
-                else:
-                    return 1
-
-            paper_bonus = xref.accession.refs.count() * 0.2
-            genome_bonus = get_genome_bonus()
-            gene_bonus = 0
-            note_bonus = 0
-            product_bonus = 0
-            rfam_full_alignment_penalty = 0
-            misc_rna_penalty = 0
-
-            if xref.accession.product:
-                product_bonus = 0.1
-            if xref.accession.gene:
-                gene_bonus = 0.1
-            if xref.db_id == 2 and not xref.is_rfam_seed():
-                rfam_full_alignment_penalty = -2
-            if xref.accession.feature_name == 'misc_RNA':
-                misc_rna_penalty = -2
-            if xref.accession.note:
-                note_bonus = 0.1
-
-            score = paper_bonus + \
-                genome_bonus + \
-                gene_bonus + \
-                product_bonus + \
-                note_bonus + \
-                rfam_full_alignment_penalty + \
-                misc_rna_penalty
-            return score
-
-        # blacklisted entries
-        if self.upi in ['URS000065859A'] and not taxid: # an entry with > 200K xrefs, all from Rfam
-            return 'uncultured Neocallimastigales 5.8S ribosomal RNA'
-
         if not recompute:
             if taxid:
                 queryset = RnaPrecomputed.objects.filter(taxid=taxid)
             else:
                 queryset = RnaPrecomputed.objects.filter(taxid__isnull=True)
+
             try:
                 obj = queryset.get(upi=self.upi)
-            except ObjectDoesNotExist:
-                obj = None
-            if obj:
                 return obj.description
-        # get description
-        if taxid and not self.xref_with_taxid_exists(taxid):
-            taxid = None # ignore taxid
-        xrefs = get_xrefs_for_description(taxid)
-        if not taxid:
-            return get_urs_description()
-        else:
-            # pick one of expert database descriptions
-            scores = []
-            for xref in xrefs:
-                scores.append((score_xref(xref), xref.accession.description))
-            scores.sort(key=lambda tup: tup[0], reverse=True)
-            return scores[0][1]
+            except ObjectDoesNotExist:
+                pass
+
+        xrefs = self.find_valid_xrefs(taxid=taxid)
+        return desc.get_description(self, xrefs, taxid=taxid)
+
+    def find_valid_xrefs(self, taxid=None):
+        """
+        Determine the valid xrefs for this sequence and taxid. This will
+        attempt to get all active (not deleted) xrefs for the given sequence
+        and taxon id. If there are no active xrefs then this will switch to use
+        the deleted xrefs.
+
+        taxid : int, None
+            The taxon id to use. None indicates no species constraint,
+            otherwise the taxid is the taxid of the xref to limit to.
+
+        Returns
+        -------
+        xrefs : queryset
+            The collection of xrefs that are valid for the sequence and taxid.
+        """
+
+        base = Xref.objects.filter(upi=self.upi)
+        xrefs = base.filter(deleted='N')
+        if taxid is not None:
+            xrefs = xrefs.filter(taxid=taxid)
+
+        if not xrefs.exists():
+            xrefs = base
+            if taxid is not None:
+                xrefs = xrefs.filter(taxid=taxid)
+
+        return xrefs.select_related('accession', 'db')
 
 
 class RnaPrecomputed(models.Model):
@@ -505,6 +419,7 @@ class RnaPrecomputed(models.Model):
     upi = models.ForeignKey('Rna', db_column='upi', to_field='upi', related_name='precomputed')
     taxid = models.IntegerField(db_index=True, null=True)
     description = models.CharField(max_length=250)
+    rna_type = models.CharField(max_length=250)
 
     class Meta:
         db_table = 'rnc_rna_precomputed'
@@ -696,7 +611,7 @@ class Accession(models.Model):
     genome_position = models.CharField(max_length=200, db_column='map')
     mol_type = models.CharField(max_length=50)
     ncrna_class = models.CharField(max_length=50)
-    note = models.CharField(max_length=1500)
+    note = models.CharField(max_length=1600)
     old_locus_tag = models.CharField(max_length=50)
     product = models.CharField(max_length=300)
     db_xref = models.CharField(max_length=800)
@@ -791,6 +706,42 @@ class Accession(models.Model):
             id=self.external_id, species=self.species.replace(' ', '_'))
         return url
 
+    def get_gencode_transcript_id(self):
+        """
+        GENCODE entries have their corresponding Ensembl transcript ids stored
+        in Accession.note. Example:
+        {"transcript_id": ["ENSMUST00000160979.8"]}
+        """
+        note = json.loads(self.note)
+        ensembl_transcript_id = ''
+        if 'transcript_id' in note and len(note['transcript_id']) > 0:
+            ensembl_transcript_id = note['transcript_id'][0]
+        return ensembl_transcript_id
+
+    def get_gencode_ensembl_url(self):
+        """
+        Get Ensembl URL for GENCODE transcripts.
+        """
+        ensembl_transcript_id = self.get_gencode_transcript_id()
+        url = 'http://ensembl.org/{species}/Transcript/Summary?db=core;t={id}'.format(
+            id=ensembl_transcript_id, species=self.species.replace(' ', '_'))
+        return url
+
+    def get_ensembl_species_url(self):
+        """
+        Get species name in a format that can be used in Ensembl urls.
+        """
+        species = self.species
+        if species == 'Dictyostelium discoideum':
+            species = 'Dictyostelium discoideum AX4'
+        elif species.startswith('Mus musculus'):
+            if self.accession.startswith('MGP'): # Ensembl mouse strain
+                parts = self.accession.split('_')
+                if len(parts) == 3:
+                    species = 'Mus musculus ' + parts[1]
+        species = species.replace(' ', '_').lower()
+        return species
+
     def get_expert_db_external_url(self):
         """
         Get external url to expert database.
@@ -819,6 +770,8 @@ class Accession(models.Model):
             'LNCIPEDIA': 'http://www.lncipedia.org/db/transcript/{id}',
             'MODOMICS': 'http://modomics.genesilico.pl/sequences/list/{id}',
             'HGNC': 'http://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id={id}',
+            'ENSEMBL': 'http://www.ensembl.org/{species}/Transcript/Summary?t={id}',
+            'FLYBASE': 'http://flybase.org/reports/{id}.html',
         }
         if self.database in urls.keys():
             if self.database == 'GTRNADB':
@@ -840,6 +793,8 @@ class Accession(models.Model):
                 return urls[self.database].format(id=self.external_id, version=self.seq_version)
             elif self.database == 'HGNC':
                 return urls[self.database].format(id=self.accession)
+            elif self.database == 'ENSEMBL':
+                return urls[self.database].format(id=self.external_id, species=self.get_ensembl_species_url())
             return urls[self.database].format(id=self.external_id)
         else:
             return ''
@@ -860,6 +815,7 @@ class GenomicCoordinates(models.Model):
 
 
 class Xref(models.Model):
+    id = models.AutoField(primary_key=True)
     db = models.ForeignKey(Database, db_column='dbid', related_name='xrefs')
     accession = models.ForeignKey(Accession, db_column='ac', to_field='accession', related_name='xrefs', unique=True)
     created = models.ForeignKey(Release, db_column='created', related_name='release_created')
@@ -1102,7 +1058,7 @@ class Xref(models.Model):
         transcript names are stored in external_id.
         """
         splice_variants = []
-        if not re.match('vega', self.db.display_name, re.IGNORECASE):
+        if not re.match('(vega|ensembl)', self.db.display_name, re.IGNORECASE):
             return splice_variants
         for splice_variant in Accession.objects.filter(optional_id=self.accession.optional_id).\
                                                 exclude(accession=self.accession.accession).\
@@ -1141,19 +1097,11 @@ class Xref(models.Model):
             tmrna_type = 2 # two-piece tmRNA
         return tmrna_type
 
-    def get_ensembl_species_name(self):
-        """
-        Get a species name that can be used in Ensembl urls.
-        """
-        if self.accession.species == 'Dictyostelium discoideum AX4':
-            self.accession.species = 'Dictyostelium discoideum'
-        return self.accession.species.replace(' ', '_').lower()
-
     def get_ensembl_division(self):
         """
         Get Ensembl or Ensembl Genomes division for the cross-reference.
         """
-        species = self.get_ensembl_species_name()
+        species = self.accession.get_ensembl_species_url()
         species = species.replace('_', ' ').capitalize()
 
         ensembl_divisions = get_ensembl_divisions()

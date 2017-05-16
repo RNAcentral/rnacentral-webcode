@@ -201,16 +201,16 @@ class TaxidFilteringSequencePage(SequencePage):
         return set(species)
 
 
-class VegaSequencePage(SequencePage):
-    """Sequence page with VEGA xrefs."""
+class GencodeSequencePage(SequencePage):
+    """Sequence page with GENCODE xrefs."""
 
     def gene_and_transcript_is_ok(self):
         """
-            Find transcipt and gene info, e.g.:
-            Transcript OTTHUMT00000047033 from gene OTTHUMG00000017746
+            Find transcipt info, e.g.:
+            transcript ENST00000626826.1 (Havana id OTTHUMT00000479989)
         """
         xrefs_table = self.get_xrefs_table_html()
-        match = re.search(r'transcript OTTHUMT\d+ from gene OTTHUMG\d+', xrefs_table)
+        match = re.search(r'transcript ENST\d+', xrefs_table)
         return True if match else False
 
     def alternative_transcripts_is_ok(self):
@@ -580,9 +580,9 @@ class RNAcentralTest(unittest.TestCase):
             self.assertTrue(page.test_two_piece_tmrna())
             self.assertTrue(page.test_precursor_tmrna())
 
-    def test_vega_example_pages(self):
-        for example_id in self._get_expert_db_example_ids('vega-examples'):
-            page = VegaSequencePage(self.browser, example_id)
+    def test_gencode_example_pages(self):
+        for example_id in self._get_expert_db_example_ids('gencode-examples'):
+            page = GencodeSequencePage(self.browser, example_id)
             page.navigate()
             self._sequence_view_checks(page)
             self.assertTrue(page.gene_and_transcript_is_ok())
@@ -615,7 +615,7 @@ class RNAcentralTest(unittest.TestCase):
             self.assertTrue(page.external_urls_exist('srpdb'))
 
     def test_expert_database_landing_pages(self):
-        expert_dbs = ['tmrna-website', 'srpdb', 'mirbase', 'vega',
+        expert_dbs = ['tmrna-website', 'srpdb', 'mirbase', 'gencode',
                       'ena', 'rfam', 'lncrnadb', 'gtrnadb', 'refseq', 'rdp']
         for expert_db in expert_dbs:
             page = ExpertDatabaseLandingPage(self.browser, expert_db)

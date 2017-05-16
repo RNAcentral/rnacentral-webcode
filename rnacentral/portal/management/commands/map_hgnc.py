@@ -184,9 +184,9 @@ class HGNCMapper():
                     Q(xrefs__accession__optional_id=accession)). \
                 filter(xrefs__taxid=9606, xrefs__deleted='N').\
                 order_by('-length').\
-                all()
+                first()
         if rna:
-            return rna[0].upi
+            return rna.upi
         else:
             return None
 
