@@ -1,0 +1,1 @@
+Genoverse.Genomes.sorex_araneus = {};

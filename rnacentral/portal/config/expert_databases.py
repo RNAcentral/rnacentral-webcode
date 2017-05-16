@@ -20,6 +20,8 @@ expert_dbs = [
         'label': 'ena',
         'url': 'http://www.ebi.ac.uk/ena/',
         'description': "provides a comprehensive record of the world's nucleotide sequencing information",
+        'hint': "ENA is a comprehensive record of the world's nucleotide sequencing information",
+        'tags': ['all ncRNA types', 'sequence archive'],
         'abbreviation': 'European Nucleotide Archive',
         'examples': [
             {'upi': 'URS00002D0E0C', 'taxid': 10090},
@@ -49,6 +51,8 @@ expert_dbs = [
         'label': 'pdbe',
         'url': 'http://www.ebi.ac.uk/pdbe/',
         'description': 'is the European repository of information about the 3D structures of large biological molecules. PDBe is a member of the Worldwide Protein Data Bank',
+        'hint': 'PDBe is the European repository of information about the 3D structures of large biological molecules. PDBe is a member of the Worldwide Protein Data Bank',
+        'tags': ['curated', '3D structure'],
         'abbreviation': 'Protein Data Bank in Europe',
         'examples': [
             {'upi': 'URS00000ABFE9', 'taxid': 562}, # E.coli SSU, 4V4Q chain AA
@@ -71,7 +75,9 @@ expert_dbs = [
         'name': 'FlyBase',
         'label': 'flybase',
         'url': 'http://flybase.org/',
-        'description': 'a database of Drosophila genes and genomes',
+        'description': 'a database of Dropsophila genes and genomes',
+        'hint': 'FlyBase is a database of Drosophila genes and genomes',
+        'tags': ['curated', 'model organism', 'Drosophila'],
         'abbreviation': '',
         'examples': [
             {'upi': 'URS0000061376', 'taxid': 7238},
@@ -140,7 +146,9 @@ expert_dbs = [
         'name': 'Rfam',
         'label': 'rfam',
         'url': 'http://rfam.xfam.org',
-        'description': 'is a collection of non-coding RNA families represented by manually curated sequence alignments, consensus secondary structures, and predicted homologues',
+        'description': 'is a collection of non-coding RNA families represented by manually curated sequence alignments, consensus secondary structures and predicted homologues',
+        'hint': 'Rfam is a collection of non-coding RNA families, represented by manually curated sequence alignments, consensus secondary structures and predicted homologues',
+        'tags': ['curated', 'automatic', 'alignments'],
         'abbreviation': '',
         'examples': [
             {'upi': 'URS00000478B7', 'taxid': 9606},
@@ -170,6 +178,8 @@ expert_dbs = [
         'label': 'mirbase',
         'url': 'http://www.mirbase.org/',
         'description': 'is a database of published miRNA sequences and annotations that provides a centralised system for assigning names to miRNA genes',
+        'hint': 'miRBase contains high-quality miRNA annotations; miRBase is responsible for assigning official miRNA gene names',
+        'tags': ['curated', 'miRNA'],
         'abbreviation': '',
         'examples': [
             {'upi': 'URS000075A685', 'taxid': 9606},
@@ -192,8 +202,9 @@ expert_dbs = [
         'name': 'Vega',
         'label': 'vega',
         'url': 'http://vega.sanger.ac.uk/',
-        'description': """is a repository for high-quality gene models produced by the manual annotation of vertebrate genomes.
-                          Human and mouse data from Vega are merged into <a href="http://www.gencodegenes.org/" target="_blank">GENCODE</a>""",
+        'description': 'is a repository for high-quality gene models produced by the manual annotation of vertebrate genomes. Human and mouse data from Vega are merged into <a href="http://www.gencodegenes.org/" target="_blank">GENCODE</a>',
+        'hint': 'Vega will be replaced by GENCODE in the next release of RNAcentral',
+        'tags': ['curated', 'lncRNA'],
         'abbreviation': 'Vertebrate Genome Annotation',
         'examples': [
             {'upi': 'URS00000B15DA', 'taxid': 9606},
@@ -223,6 +234,8 @@ expert_dbs = [
         'label': 'tmrna-website',
         'url': 'http://bioinformatics.sandia.gov/tmrna/',
         'description': 'contains predicted tmRNA sequences from RefSeq prokaryotic genomes, plasmids and phages',
+        'hint': 'tmRNA Website contains predicted tmRNA sequences from RefSeq prokaryotic genomes, plasmids and phages',
+        'tags': ['automatic', 'tmRNA'],
         'abbreviation': '',
         'examples': [
             {'upi': 'URS000060F5B3', 'taxid': 398580},
@@ -246,6 +259,8 @@ expert_dbs = [
         'label': 'srpdb',
         'url': 'http://rnp.uthscsa.edu/rnp/SRPDB/SRPDB.html',
         'description': 'provides aligned, annotated and phylogenetically ordered sequences related to structure and function of SRP',
+        'hint': 'SRPDB provides aligned, annotated and phylogenetically ordered sequences related to structure and function of SRP',
+        'tags': ['curated', 'signal recognition particle'],
         'abbreviation': 'Signal Recognition Particle Database',
         'examples': [
             {'upi': 'URS00000478B7', 'taxid': 9606},
@@ -275,6 +290,8 @@ expert_dbs = [
         'label': 'lncrnadb',
         'url': 'http://lncrnadb.org/',
         'description': 'is a database providing comprehensive annotations of eukaryotic long non-coding RNAs (lncRNAs)',
+        'hint': 'lncRNAdb is a database providing comprehensive annotations of eukaryotic long non-coding RNAs (lncRNAs)',
+        'tags': ['curated', 'lncRNA'],
         'abbreviation': '',
         'examples': [
             {'upi': 'URS00000478B7', 'taxid': 9606},
@@ -298,6 +315,8 @@ expert_dbs = [
         'label': 'gtrnadb',
         'url': 'http://gtrnadb.ucsc.edu/',
         'description': 'contains tRNA gene predictions on complete or nearly complete genomes',
+        'hint': 'GtRNAdb contains tRNA gene predictions on complete or nearly complete genomes',
+        'tags': ['automatic', 'tRNA'],
         'abbreviation': '',
         'examples': [
             {'upi': 'URS000047C79B', 'taxid': 9606},
@@ -321,6 +340,8 @@ expert_dbs = [
         'label': 'refseq',
         'url': 'http://www.ncbi.nlm.nih.gov/refseq/',
         'description': 'is a comprehensive, integrated, non-redundant, well-annotated set of reference sequences',
+        'hint': 'RefSeq is a comprehensive, integrated, non-redundant, well-annotated set of reference sequences',
+        'tags': ['curated', 'all ncRNA types'],
         'abbreviation': 'NCBI Reference Sequence Database',
         'examples': [
             {'upi': 'URS000075A3E5', 'taxid': 10090},
@@ -344,6 +365,8 @@ expert_dbs = [
         'label': 'rdp',
         'url': 'http://rdp.cme.msu.edu/',
         'description': 'provides quality-controlled, aligned and annotated rRNA sequences and a suite of analysis tools',
+        'hint': 'RDP provides quality-controlled, aligned and annotated rRNA sequences and a suite of analysis tools',
+        'tags': ['automatic', 'SSU rRNA'],
         'abbreviation': 'Ribosomal Database Project',
         'examples': [
             {'upi': 'URS0000434740', 'taxid': 338963},
@@ -367,6 +390,8 @@ expert_dbs = [
         'label': '',
         'url': 'http://www.rna.ccbb.utexas.edu/',
         'description': 'comparative sequence and structure information for ribosomal, intron, and other RNAs',
+        'hint': 'CRW Site comparative sequence and structure information for ribosomal, intron, and other RNAs',
+        'tags': ['curated', 'rRNA'],
         'abbreviation': 'Comparative RNA Website',
         'examples': '',
         'references': [],
@@ -379,6 +404,8 @@ expert_dbs = [
         'label': 'hgnc',
         'url': 'http://www.genenames.org/',
         'description': 'is the worldwide authority that assigns standardised nomenclature to human genes',
+        'hint': 'HGNC is the worldwide authority that assigns standardised nomenclature to human genes',
+        'tags': ['curated', 'human', 'gene nomenclature'],
         'abbreviation': 'HUGO Gene Nomenclature Committee',
         'examples': [
             {'upi': 'URS000075C808', 'taxid': 9606}, # HOTAIR
@@ -402,6 +429,8 @@ expert_dbs = [
         'label': 'greengenes',
         'url': 'http://greengenes.secondgenome.com/downloads',
         'description': 'is a full-length 16S rRNA gene database that provides a curated taxonomy based on de novo tree inference',
+        'hint': 'Greengenes is a database of full-length 16S rRNA gene that provides a curated taxonomy based on de novo tree inference',
+        'tags': ['automatic', 'SSU rRNA'],
         'abbreviation': '',
         'examples': [
             {'upi': 'URS000080E226', 'taxid': 274},
@@ -425,6 +454,8 @@ expert_dbs = [
         'label': '',
         'url': 'http://www.microrna.gr/LncBase',
         'description': 'experimentally verified and computationally predicted microRNA targets on long non-coding RNAs',
+        'hint': 'LncBase provides experimentally verified and computationally predicted microRNA targets on long non-coding RNAs',
+        'tags': ['automatic', 'curated', 'experimentally determined', 'miRNA', 'lncRNA'],
         'abbreviation': '',
         'examples': '',
         'references': [],
@@ -437,6 +468,8 @@ expert_dbs = [
         'label': 'lncipedia',
         'url': 'http://www.lncipedia.org/',
         'description': 'is a comprehensive compendium of human long non-coding RNAs',
+        'hint': 'LNCipedia is a comprehensive compendium of human long non-coding RNAs',
+        'tags': ['automatic', 'human', 'lncRNA'],
         'abbreviation': '',
         'examples': [
             {'upi': 'URS000081175C', 'taxid': 9606},
@@ -460,6 +493,8 @@ expert_dbs = [
         'label': 'modomics',
         'url': 'http://modomics.genesilico.pl/',
         'description': 'is a comprehensive database of RNA modifications',
+        'hint': 'Modomics is a comprehensive database of RNA modifications',
+        'tags': ['curated', 'RNA modifications', 'tRNA', 'rRNA'],
         'abbreviation': '',
         'examples': [
             {'upi': 'URS00001BBAFC', 'taxid': 562},
@@ -482,7 +517,9 @@ expert_dbs = [
         'name': 'NONCODE',
         'label': 'noncode',
         'url': 'http://www.noncode.org/',
-        'description': 'is an integrated knowledge database dedicated to non-coding RNAs (excluding tRNAs and rRNAs)',
+        'description': 'is an integrated knowledge database dedicated to non-coding RNAs',
+        'hint': 'NONCODE is an integrated knowledge database dedicated to non-coding RNAs',
+        'tags': ['automatic', 'curated', 'lncRNA'],
         'abbreviation': '',
         'examples': [
             {'upi': 'URS000019B796', 'taxid': 9606},
@@ -506,6 +543,8 @@ expert_dbs = [
         'label': '',
         'url': 'http://bioinfo.ibp.ac.cn/NPInter/',
         'description': 'experimentally determined functional interactions between ncRNAs and proteins, mRNAs or genomic DNA',
+        'hint': 'NPInter contains data on experimentally determined functional interactions between ncRNAs and proteins, mRNAs or genomic DNA',
+        'tags': ['automatic', 'curated'],
         'abbreviation': '',
         'examples': '',
         'references': [],
@@ -518,6 +557,8 @@ expert_dbs = [
         'label': '',
         'url': 'http://www.regulatoryrna.org/database/piRNA/',
         'description': 'a web resource assisting piRNA functional study',
+        'hint': 'piRBase is a web resource assisting piRNA functional study',
+        'tags': ['automatic', 'curated', 'piRNA'],
         'abbreviation': '',
         'examples': '',
         'references': [],
@@ -528,6 +569,8 @@ expert_dbs = [
         'label': 'plncdb',
         'url': 'http://chualab.rockefeller.edu/gbrowse2/homepage.html',
         'description': 'provides comprehensive genomic view of Arabidopsis lncRNAs',
+        'hint': 'PLncDB provides comprehensive genomic view of Arabidopsis lncRNAs',
+        'tags': ['curated', 'Arabidopsis thaliana'],
         'abbreviation': 'Plant Long Non-Coding DataBase',
         'examples': [''],
         'references': [
@@ -547,6 +590,8 @@ expert_dbs = [
         'label': 'pombase',
         'url': 'http://www.pombase.org/',
         'description': 'is a comprehensive database for the fission yeast Schizosaccharomyces pombe',
+        'hint': 'PomBase is a comprehensive database for the fission yeast Schizosaccharomyces pombe',
+        'tags': ['curated', 'model organism', 'yeast', 'Schizosaccharomyces pombe'],
         'abbreviation': '',
         'examples': [
             {'upi': 'URS000044FEB9', 'taxid': 4896},
@@ -570,6 +615,8 @@ expert_dbs = [
         'label': '',
         'url': 'http://genesilico.pl/rnapathwaysdb',
         'description': 'RNA maturation and decay pathways',
+        'hint': 'RNApathwaysDB contains RNA maturation and decay pathways',
+        'tags': ['curated', 'pathways'],
         'abbreviation': '',
         'examples': '',
         'references': [],
@@ -582,6 +629,8 @@ expert_dbs = [
         'label': 'silva',
         'url': 'http://www.arb-silva.de/',
         'description': 'is a comprehensive resource for quality checked and aligned ribosomal RNA sequence data',
+        'hint': 'SILVA is a comprehensive resource for quality checked and aligned ribosomal RNA sequence data',
+        'tags': ['automatic', 'SSU rRNA', 'LSU rRNA'],
         'abbreviation': '',
         'examples': [
             {'upi': 'URS00005A14E2', 'taxid': 9606},
@@ -605,6 +654,8 @@ expert_dbs = [
         'label': 'sgd',
         'url': 'http://yeastgenome.org/',
         'description': 'provides comprehensive integrated biological information for the budding yeast',
+        'hint': 'SGD provides comprehensive integrated biological information for the budding yeast',
+        'tags': ['curated', 'model organism', 'yeast', 'Saccharomyces'],
         'abbreviation': 'Saccharomyces Genome Database',
         'examples': [
             {'upi': 'URS0000224E47', 'taxid': 559292}, # HRA1 gene
@@ -627,8 +678,9 @@ expert_dbs = [
         'name': 'snOPY',
         'label': 'snopy',
         'url': 'http://snoopy.med.miyazaki-u.ac.jp',
-        'description': """provides comprehensive information about snoRNAs, snoRNA gene loci, and target RNAs
-                          as well as information about snoRNA orthologues""",
+        'description': "provides comprehensive information about snoRNAs, snoRNA gene loci, and target RNAs as well as information about snoRNA orthologues",
+        'hint': 'snOPY provides comprehensive information about snoRNAs, their gene loci, orthologues and their target RNAs',
+        'tags': ['curated', 'snoRNA'],
         'abbreviation': 'snoRNA Orthological Gene Database',
         'examples': [
             {'upi': 'URS00004B0879', 'taxid': 3702},
@@ -652,6 +704,8 @@ expert_dbs = [
         'label': '',
         'url': 'http://lowelab.ucsc.edu/snoRNAdb/',
         'description': 'predicted snoRNA genes',
+        'hint': 'snoRNA database contains predicted snoRNA genes',
+        'tags': ['automatic', 'curated', 'snoRNA'],
         'abbreviation': '',
         'examples': '',
         'references': [],
@@ -664,6 +718,8 @@ expert_dbs = [
         'label': '',
         'url': 'http://srnamap.mbc.nctu.edu.tw/',
         'description': 'a collection of sRNA sequences and interactions',
+        'hint': 'sRNAmap is a collection of sRNA sequences and interactions',
+        'tags': ['curated', 'sRNA'],
         'abbreviation': '',
         'examples': '',
         'references': [],
@@ -676,6 +732,8 @@ expert_dbs = [
         'label': '',
         'url': 'http://www.microrna.gr/tarbase',
         'description': 'a collection of manually curated experimentally validated miRNA-gene interactions',
+        'hint': 'TarBase is a collection of manually curated experimentally validated miRNA-gene interactions',
+        'tags': ['curated', 'experimentally determined', 'miRNA', 'gene', 'interactions'],
         'abbreviation': '',
         'examples': '',
         'references': [],
@@ -688,6 +746,8 @@ expert_dbs = [
         'label': '',
         'url': 'http://rth.dk/resources/rnp/tmRDB/',
         'description': 'aligned, annotated and phylogenetically ordered sequences related to structure and function of tmRNA',
+        'hint': 'tmRDB is a collection of aligned, annotated and phylogenetically ordered sequences related to structure and function of tmRNA',
+        'tags': ['curated', 'tmRNA'],
         'abbreviation': '',
         'examples': '',
         'references': [],
@@ -699,6 +759,9 @@ expert_dbs = [
         'name': 'tRNAdb',
         'label': '',
         'url': 'http://trna.bioinf.uni-leipzig.de/DataOutput/',
+        'description': 'compilation of tRNA sequences and tRNA genes',
+        'hint': 'tRNAdb is a compilation of tRNA sequences and tRNA genes.',
+        'tags': ['curated', 'tRNA'],
         'description': 'compilation of tRNA sequences and tRNA genes',
         'abbreviation': '',
         'examples': '',
@@ -712,6 +775,8 @@ expert_dbs = [
         'label': 'wormbase',
         'url': 'http://www.wormbase.org/',
         'description': "curates, stores and displays genomic and genetic data about nematodes with primary emphasis on <em>C. elegans</em> and related nematodes",
+        'hint': 'WormBase curates, stores and displays genomic and genetic data about nematodes with primary emphasis on C. elegans and related nematodes',
+        'tags': ['curated', 'model organism', 'nematode', 'Caenorhabditis elegans'],
         'abbreviation': '',
         'examples': [
             {'upi': 'URS000022A09E', 'taxid': 6239}, # miRNA
@@ -735,6 +800,8 @@ expert_dbs = [
         'label': 'mgi',
         'url': 'http://www.informatics.jax.org/',
         'description': 'is the international database resource for the laboratory mouse',
+        'hint': 'MGI is the international database resource for the laboratory mouse',
+        'tags': ['curated', 'model organism', 'mouse', 'Mus musculus'],
         'abbreviation': '',
         'examples': [],
         'references': [],
@@ -747,6 +814,9 @@ expert_dbs = [
         'label': '',
         'url': 'http://rgd.mcw.edu/',
         'description': 'a collaborative effort between leading research institutions involved in rat genetic and genomic research',
+        'hint': 'RGD is a rat genetic and genomic research resource',
+        'tags': ['curated', 'model organism', 'rat', 'Rattus norvegicus'],
+        'tags': [],
         'abbreviation': 'Rat Genome Database',
         'examples': [],
         'references': [],
@@ -759,6 +829,8 @@ expert_dbs = [
         'label': 'tair',
         'url': 'http://www.arabidopsis.org/',
         'description': 'is a database of genetic and molecular biology data for the model higher plant Arabidopsis thaliana',
+        'hint': 'TAIR is a database of genetic and molecular biology data for the model higher plant Arabidopsis thaliana',
+        'tags': ['curated', 'model organism', 'Arabidopsis thaliana'],
         'abbreviation': 'The Arabidopsis Information Resource',
         'examples': [
             {'upi': 'URS0000591E4F', 'taxid': 3702}, # tRNA
@@ -782,6 +854,8 @@ expert_dbs = [
         'label': 'dictybase',
         'url': 'http://dictybase.org/',
         'description': 'is the model organism database for the social amoeba Dictyostelium discoideum',
+        'hint': 'dictyBase is the model organism database for the social amoeba Dictyostelium discoideum',
+        'tags': ['curated', 'model organism', 'Dicytostelium discoideum'],
         'abbreviation': '',
         'examples': [
             {'upi': 'URS00003BBB9E', 'taxid': 352472},
@@ -805,6 +879,8 @@ expert_dbs = [
         'label': '5srrnadb',
         'url': 'http://combio.pl/rrna/',
         'description': 'is an information resource for 5S ribosomal RNAs',
+        'hint': '5SrRNAdb is an information resource for 5S ribosomal RNAs',
+        'tags': ['curated', '5S', 'rRNA'],
         'abbreviation': '',
         'examples': [],
         'references': [
@@ -824,11 +900,13 @@ expert_dbs = [
         'label': 'mirtarbase',
         'url': 'http://mirtarbase.mbc.nctu.edu.tw',
         'description': 'is an experimentally validated microRNA-target interactions database',
+        'hint': 'miRTarBawse is an experimentally validated microRNA-target interactions database',
+        'tags': ['curated', 'experimentally determined', 'miRNA', 'interactions'],
         'abbreviation': '',
         'examples': [],
         'references': [
             {
-                'title': 'miRTarBase 2016: updates to the experimentally validated miRNA-target interactions database',
+                'title': 'miRTarBase 2016: updates to the eimentally validated miRNA-target interactions database',
                 'authors': 'Chou et al',
                 'journal': 'Nucleic Acids Res. 2016 Jan 4;44(D1):D239-47',
                 'pubmed_id': 26590260,
@@ -843,6 +921,8 @@ expert_dbs = [
         'label': 'lncrnawiki',
         'url': 'http://lncrna.big.ac.cn',
         'description': 'is a wiki-based, publicly editable platform for community curation of human long non-coding RNAs',
+        'hint': 'LncRNAWiki is a wiki-based, publicly editable platform for community curation of human long non-coding RNAs',
+        'tags': ['community curated', 'human', 'lncRNA'],
         'abbreviation': '',
         'examples': [],
         'references': [

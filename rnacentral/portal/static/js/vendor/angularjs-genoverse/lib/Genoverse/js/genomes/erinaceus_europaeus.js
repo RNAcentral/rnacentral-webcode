@@ -1,0 +1,1 @@
+Genoverse.Genomes.erinaceus_europaeus = {};

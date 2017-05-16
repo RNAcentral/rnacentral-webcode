@@ -39,6 +39,7 @@ limitations under the License.
     python selenium_tests.py --base_url http://test.rnacentral.org/ --driver=phantomjs
 """
 
+import urlparse
 import unittest
 import random
 import re
@@ -310,7 +311,7 @@ class ExpertDatabaseLandingPage(BasePage):
 
 
 class GenoverseTestPage(BasePage):
-    """A page with an embedded genome browser"""
+    """A sequence page with an embedded genome browser"""
     url = 'rna/'
 
     def __init__(self, browser, rnacentral_id):
@@ -325,6 +326,38 @@ class GenoverseTestPage(BasePage):
         except:
             return False
         return True
+
+
+class GenomeBrowserTestPage(BasePage):
+    """A standalone Genoverse genome browser page"""
+    url = 'genome-browser/'
+
+    def __init__(self, browser):
+        BasePage.__init__(self, browser, self.url)
+
+    @property
+    def start_input(self):
+        return self.browser.find_element(By.ID, "genomic-start-input")
+
+    @property
+    def end_input(self):
+        return self.browser.find_element(By.ID, "genomic-end-input")
+
+    @property
+    def chromosome_input(self):
+        return self.browser.find_element(By.ID, "chromosome-input")
+
+    @property
+    def species_input(self):
+        return self.browser.find_element(By.ID, "genomic-species-select")
+
+    @property
+    def ensembl_link(self):
+        return self.browser.find_element(By.ID, "ensembl-link")
+
+    @property
+    def ucsc_link(self):
+        return self.browser.find_element(By.ID, "ucsc-link")
 
 
 class MetaSearchPage(BasePage):
@@ -343,7 +376,7 @@ class MetaSearchPage(BasePage):
         Get results as an array of list elements.
         """
         return WebDriverWait(self.browser, 30).until(
-                lambda s: s.find_elements(By.CLASS_NAME, "result"))
+                lambda browser: browser.find_elements(By.CLASS_NAME, "result"))
 
     def test_example_searches(self):
         """
@@ -439,7 +472,7 @@ class RNAcentralTest(unittest.TestCase):
         self.homepage = Homepage(self.browser)
 
     def tearDown(self):
-        self.browser.close()
+        self.browser.quit()
 
     def test_homepage(self):
         page = Homepage(self.browser)
@@ -460,6 +493,9 @@ class RNAcentralTest(unittest.TestCase):
         for item in reversed(history):
             self.assertIn(urllib.quote(item), urllib.quote(page.browser.current_url))
             page.browser.back()
+
+    # Metasearch
+    # ----------
 
     def test_metasearch_examples(self):
         """
@@ -525,6 +561,9 @@ class RNAcentralTest(unittest.TestCase):
         page = MetaSearchPage(self.browser, 'search?q=URS000047C79B_00000')
         page.navigate()
         self.assertTrue(page.warnings_present())
+
+    # Sequence pages for specific databases
+    # -------------------------------------
 
     def test_all_expert_database_page(self):
         page = ExpertDatabasesOverviewPage(self.browser)
@@ -603,10 +642,52 @@ class RNAcentralTest(unittest.TestCase):
         self.assertTrue(page.get_active_xref_page_num(), xref_page_num)
         self._sequence_view_checks(page)
 
+    # Genoverse-related tests
+    # -----------------------
+
     def test_genoverse_page(self):
         page = GenoverseTestPage(self.browser, 'URS00000B15DA')
         page.navigate()
         self.assertTrue(page.genoverse_ok())
+
+    def test_url_changed_on_input_changed(self):
+        """
+        In the top of genome-browser page we have a navigation form with
+        species, chromosome, start and end fields.
+
+        Upon change of location in one of the inputs,
+        href in browser's address bar should change.
+        """
+        page = GenomeBrowserTestPage(self.browser)
+        page.navigate()
+
+        page.start_input.clear()
+        page.start_input.send_keys('2')
+
+        # Other possible implementation:
+        #  self.browser.execute_script("document.getElementById('genomic-start-input').setAttribute('value', '2');")
+
+        urlparams = urlparse.parse_qs(urlparse.urlparse(self.browser.current_url).query)
+        assert urlparams['start'] == ['2']
+
+    def test_UCSD_and_Ensembl_links_changed_on_input_changed(self):
+        """
+        In the top of genome-browser page we have a navigation form with
+        species, chromosome, start and end fields
+        and 'genome-display' button. On change of inputs,
+        the hyperlinks to UCSD and Ensemble genome browsers should change.
+        """
+        page = GenomeBrowserTestPage(self.browser)
+        page.navigate()
+
+        page.start_input.clear()
+        page.start_input.send_keys('2')
+
+        urlparams = urlparse.parse_qs(urlparse.urlparse(page.ucsc_link.get_attribute('href')).query)
+        assert urlparams['position'] == ['chrX:2-73856333']
+
+    # TaxId filtering
+    # ---------------
 
     def test_taxid_filtering_off(self):
         page = TaxidFilteringSequencePage(self.browser, 'URS000047C79B')
@@ -638,6 +719,9 @@ class RNAcentralTest(unittest.TestCase):
         page.navigate()
         self.assertEqual(page.get_page_subtitle(), 'Homo sapiens')
 
+    # Helper functions
+    # ----------------
+
     def _get_expert_db_example_ids(self, expert_db_id):
         """Retrieve example RNAcentral ids from the homepage"""
         self.homepage.navigate()
@@ -651,9 +735,11 @@ class RNAcentralTest(unittest.TestCase):
 
 if __name__ == '__main__':
     import logging
-    logging.basicConfig(filename='selenium_log.txt',
-                        level=logging.WARNING,
-                        filemode='w')
+    logging.basicConfig(
+        filename='selenium_log.txt',
+        level=logging.WARNING,
+        filemode='w'
+    )
 
     import argparse
     import sys

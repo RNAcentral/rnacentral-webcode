@@ -37,22 +37,25 @@ limitations under the License.
         return $http({
             url: '/export/job-status?job=' + $scope.export.job_id,
             method: 'GET'
-        }).success(function(data) {
-            $scope.export = _.extend($scope.export, data);
-            $scope.export.expiration = new Date($scope.export.expiration);
-            if (data.status === 'finished' || data.status === 'failed') {
+        }).then(
+            function(response) {
+                $scope.export = _.extend($scope.export, response.data);
+                $scope.export.expiration = new Date($scope.export.expiration);
+                if (response.data.status === 'finished' || response.data.status === 'failed') {
+                    $interval.cancel(interval);
+                }
+                update_page_title();
+            },
+            function(response) {
+                if ( response.status === 404 ) {
+                    $scope.export.error_message = 'Job not found';
+                } else {
+                    $scope.export.error_message = 'Unknown error';
+                }
                 $interval.cancel(interval);
+                update_page_title();
             }
-            update_page_title();
-        }).error(function(data, status){
-            if ( status === 404 ) {
-                $scope.export.error_message = 'Job not found';
-            } else {
-                $scope.export.error_message = 'Unknown error';
-            }
-            $interval.cancel(interval);
-            update_page_title();
-        });
+        );
      }
 
     /**

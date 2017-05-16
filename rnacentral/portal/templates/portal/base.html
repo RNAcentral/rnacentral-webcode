@@ -18,14 +18,14 @@ limitations under the License.
 <html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="rnacentralApp">
     <head>
         {% block meta_tags %}
-          <meta charset="utf-8">
-          <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-          <meta name="viewport" content="width=device-width">
-          <meta name="twitter:card" content="summary">
-          <meta name="twitter:site" content="@RNAcentral">
-          <meta name="twitter:creator" content="@RNAcentral">
-          <meta name="twitter:title" content="RNAcentral">
-          <meta name="twitter:image" content="http://rnacentral.org{% static "img/logo/RNAcentral_icon.png" %}">
+            <meta charset="utf-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+            <meta name="viewport" content="width=device-width">
+            <meta name="twitter:card" content="summary">
+            <meta name="twitter:site" content="@RNAcentral">
+            <meta name="twitter:creator" content="@RNAcentral">
+            <meta name="twitter:title" content="RNAcentral">
+            <meta name="twitter:image" content="http://rnacentral.org{% static "img/logo/RNAcentral_icon.png" %}">
         {% endblock meta_tags %}
         <base href="/"/>
 
@@ -34,16 +34,24 @@ limitations under the License.
         </title>
 
         {% compress css %}
-          {% block stylesheets %}
-            <link rel="stylesheet" href="{% static "js/vendor/bootstrap/css/bootstrap.min.css" %}">
-            <link rel="stylesheet" href="{% static "fonts/font-awesome/css/font-awesome.min.css" %}">
-            <link rel="stylesheet" href="{% static "css/ebi-global.css" %}">
-            <link rel="stylesheet" href="{% static "css/ebi-visual.css" %}">
-            <link rel="stylesheet" href="{% static "js/vendor/slick/slick.css" %}"/>
-            <link rel="stylesheet" href="{% static "js/vendor/slick/slick-theme.css" %}"/>
-            <link rel="stylesheet" href="{% static "css/main.css" %}">
-            <link rel="stylesheet" href="{% static "css/animate/animate.min.css" %}">
-            <link rel="stylesheet" href="{% static "js/vendor/hopscotch/css/hopscotch.css" %}">
+            {% block stylesheets %}
+                <link rel="stylesheet" href="{% static "js/vendor/bootstrap/css/bootstrap.min.css" %}">
+                <link rel="stylesheet" href="{% static "fonts/font-awesome/css/font-awesome.min.css" %}">
+                <link rel="stylesheet" href="{% static "css/ebi-global.css" %}">
+                <link rel="stylesheet" href="{% static "css/ebi-visual.css" %}">
+                <link rel="stylesheet" href="{% static "js/vendor/slick/slick.css" %}"/>
+                <link rel="stylesheet" href="{% static "js/vendor/slick/slick-theme.css" %}"/>
+                <link rel="stylesheet" href="{% static "css/main.css" %}">
+                <link rel="stylesheet" href="{% static "css/animate/animate.min.css" %}">
+                <link rel="stylesheet" href="{% static "js/vendor/hopscotch/css/hopscotch.css" %}">
+                <link rel="stylesheet" href="{% static "js/vendor/loading-bar/loading-bar.css" %}">
+                <link rel="stylesheet" href="{% static "css/timeline/timeline.css" %}">
+                <link rel="stylesheet" href="{% static "css/timeline/fonts/font.bevan-pontanosans.css" %}">
+            {% endblock stylesheets %}
+        {% endcompress %}
+
+        <!-- Django compressor doesn't play well with conditional links, so they're out of the block -->
+        {% if request.resolver_match.url_name != 'genome-browser' %}
             <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/genoverse.css" %}">
             <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/controlPanel.css" %}">
             <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/fileDrop.css" %}">
@@ -51,18 +59,23 @@ limitations under the License.
             <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/resizer.css" %}">
             <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/trackControls.css" %}">
             <link rel="stylesheet" href="{% static "js/vendor/Genoverse/css/tooltips.css" %}">
-            <link rel="stylesheet" href="{% static "js/vendor/angular/loading-bar/loading-bar.css" %}">
-            <link rel="stylesheet" href="{% static "css/timeline/timeline.css" %}">
-            <link rel="stylesheet" href="{% static "css/timeline/fonts/font.bevan-pontanosans.css" %}">
-          {% endblock stylesheets %}
-        {% endcompress %}
+        {% else %}
+            <link rel="stylesheet" href="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/css/genoverse.css" %}">
+            <link rel="stylesheet" href="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/css/controlPanel.css" %}">
+            <link rel="stylesheet" href="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/css/fileDrop.css" %}">
+            <link rel="stylesheet" href="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/css/karyotype.css" %}">
+            <link rel="stylesheet" href="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/css/resizer.css" %}">
+            <link rel="stylesheet" href="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/css/trackControls.css" %}">
+            <link rel="stylesheet" href="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/css/tooltips.css" %}">
+        {% endif %}
+
 
         {% compress js %}
           {% block javascript %}
           {% endblock javascript %}
           <!-- polyfill JSON.stringify for Angular.js -->
           <!--[if lte IE 7]>
-            <script src="{% static "js/vendor/angular/json3/json3.min.js" %}"></script>
+            <script src="{% static "js/vendor/json3/json3.min.js" %}"></script>
           <![endif]-->
           <!-- create Angular.js custom element tags -->
           <!--[if lte IE 8]>
@@ -110,7 +123,7 @@ limitations under the License.
 
             <noscript>
               <div class="alert alert-danger">
-                Javasript is currently disabled or is not supported by this browser. Please enable JavaScript for full functionality.
+                Javascript is currently disabled or is not supported by this browser. Please enable JavaScript for full functionality.
               </div>
             </noscript>
 
@@ -135,10 +148,11 @@ limitations under the License.
             <script src="{% static "js/vendor/modernizr-2.6.2-respond-1.1.0.min.js" %}"></script>
             <script src="{% static "js/vendor/jquery-1.10.1.min.js" %}"></script>
             <script src="{% static "js/vendor/slick//slick.min.js" %}"></script>
-            <script src="{% static "js/vendor/bootstrap/js/bootstrap.min.js" %}"></script>
             <script src="{% static "js/vendor/hopscotch/js/hopscotch.js" %}"></script>
-            <script src="{% static "js/vendor/angular/angular.min.js" %}"></script>
-            <script src="{% static "js/vendor/angular/loading-bar/loading-bar.js" %}"></script>
+            <script src="{% static "js/vendor/angular/angular.js" %}"></script>
+            <script src="{% static "js/vendor/angular-animate/angular-animate.js" %}"></script>
+            <script src="{% static "js/vendor/angular-bootstrap/ui-bootstrap-tpls.min.js" %}"></script>
+            <script src="{% static "js/vendor/loading-bar/loading-bar.js" %}"></script>
             <script src="{% static "js/vendor/underscore/underscore-min.js" %}"></script>
             <script src="{% static "js/vendor/moment.min.js" %}"></script>
             <script src="{% static "js/search/metadata.search.js" %}"></script>
@@ -157,35 +171,48 @@ limitations under the License.
             <script src="{% static "js/vendor/clipboard.min.js" %}"></script>
             <script src="{% static "js/guidedTour.js" %}"></script>
             <script src="{% static "js/rnaView.js" %}"></script>
-            <script src="{% static "js/vendor/Genoverse/js/genomes/grch38.js" %}"></script>
-            <script src="{% static "js/vendor/Genoverse/js/genoverse.combined.js" %}"></script>
-            <script src="{% static "js/genoverse.RNAcentralTrack.js" %}"></script>
             <script src="{% static "js/vendor/timeline-min.js" %}"></script>
-
-
-            <script>
-                $(function() {
-                  // record javascript errors for selenium
-                  window.onerror=function(msg){
-                      $("body").attr("JSError",msg);
-                  };
-                  // initialise bootstrap tooltips
-                  $('.help').tooltip();
-                });
-                if(!window.console){ window.console = {log: function(){} }; }
-                console.log('Welcome to the RNAcentral javascipt console!');
-            </script>
           {% endblock extra_js %}
-
-          <!--[if lte IE 8]>
-          <script type="text/javascript">
-              // bootstrap angular.js manually on IE < 8
-              $(document).ready(function() {
-                  angular.bootstrap(document);
-              });
-          </script>
-          <![endif]-->
         {% endcompress %}
+
+        <!-- Conditionally import genoverse plugin or angularjs-genoverse directive OUTSIDE (!) compress block -->
+        {% if request.resolver_match.url_name != 'genome-browser' %}
+            <script src="{% static "js/vendor/Genoverse/js/genoverse.combined.js" %}"></script>
+            <script src="{% static "js/vendor/Genoverse/js/genomes/grch38.js" %}"></script>
+            <script src="{% static "js/genoverse.RNAcentralTrack.js" %}"></script>
+        {% else %}
+            <script src="{% static "js/vendor/angularjs-genoverse/lib/Genoverse/js/genoverse.combined.js" %}"></script>
+            <script src="{% static "js/genoverse.controller.js" %}"></script>
+            <!-- New genoverse contains tooltip from jquery ui, it conflicts with bootstrap - bridge it! -->
+            <script>$.widget.bridge('uitooltip', $.ui.tooltip);</script>
+        {% endif %}
+        <!-- always load genoverse module -->
+        <script src="{% static "js/vendor/angularjs-genoverse/src/genoverse.module.js" %}"></script>
+
+        <!-- bootstrap conflicts with jquery-ui tooltip, so it should go after datatables and genoverse -->
+        <script src="{% static "js/vendor/bootstrap/js/bootstrap.min.js" %}"></script>
+
+        <script>
+            $(function() {
+              // record javascript errors for selenium
+              window.onerror=function(msg){
+                  $("body").attr("JSError",msg);
+              };
+              // initialise bootstrap tooltips
+              $('.help').tooltip();
+            });
+            if(!window.console){ window.console = {log: function(){} }; }
+            console.log('Welcome to the RNAcentral javascipt console!');
+        </script>
+
+      <!--[if lte IE 8]>
+      <script type="text/javascript">
+          // bootstrap angular.js manually on IE < 8
+          $(document).ready(function() {
+              angular.bootstrap(document);
+          });
+      </script>
+      <![endif]-->
 
         {% block extra_js_uncompressed %}
         {% endblock %}

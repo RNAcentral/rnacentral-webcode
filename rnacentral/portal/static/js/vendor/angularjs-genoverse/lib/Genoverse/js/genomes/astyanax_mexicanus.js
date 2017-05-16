@@ -1,0 +1,1 @@
+Genoverse.Genomes.astyanax_mexicanus = {};

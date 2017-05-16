@@ -1,0 +1,1 @@
+Genoverse.Genomes.myotis_lucifugus = {};

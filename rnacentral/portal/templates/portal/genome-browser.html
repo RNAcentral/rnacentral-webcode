@@ -19,193 +19,74 @@ limitations under the License.
 {% endblock %}
 
 {% block title %}
-Genome browser
+    Genome browser
 {% endblock %}
 
 {% block content %}
 
-<div class="row">
-  <div class="col-md-12" role="main">
+<script type="text/javascript">
+    // global variables, exported from django context
+    genomes = {{ genomes | safe }}; // JSON
+    genome = {{ genome | safe }}; // JSON
+    chromosome = "{{ chromosome | safe }}"; // String
+    start = {{ start | safe }}; // Number
+    end = {{ end | safe }}; // Number
+</script>
 
-    <h1><i class="fa fa-map-marker"></i> Genome browser</h1>
+<div ng-controller="GenoverseGenomeBrowser" ng-cloak>
+    <div class="row">
+        <div class="col-md-12" role="main">
 
-    <p class="text-muted col-md-12">
-      <i class="fa fa-info-circle"></i> Explore RNAcentral sequences
-      alongside genes and transcripts from <a href="http://ensembl.org" class="text-muted">Ensembl</a>
-      / <a href="http://ensemblgenomes.org/" class="text-muted">Ensembl Genomes</a>
-    </p>
+            <h1><i class="fa fa-map-marker"></i> Genome browser</h1>
 
-    <div class="form-inline">
-      <div class="form-group col-md-3">
-        <label for="genomic-species-select">Species</label>
-        <select id="genomic-species-select" class="form-control">
-          {% for genome in genomes %}
-          <option {% if genome.taxid == 9606 %}selected="selected"{% endif %}
-            data-example-chromosome="{{genome.example_location.chromosome}}"
-            data-example-start="{{genome.example_location.start}}"
-            data-example-end="{{genome.example_location.end}}"
-            data-division="{{genome.division}}"
-            data-ucsc-db="{{genome.assembly_ucsc}}">{{ genome.species }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="form-group col-md-2 col-sm-2 col-xs-4">
-        <label for="chromosome-input">Chromosome</label>
-        <input type="text" class="form-control" id="chromosome-input" placeholder="Enter chromosome" value="12">
-      </div>
-      <div class="form-group col-md-2 col-sm-2 col-xs-4">
-        <label for="genomic-start-input">Start</label>
-        <input type="number" class="form-control" id="genomic-start-input" placeholder="Enter start" value="53964085">
-      </div>
-      <div class="form-group col-md-2 col-sm-2 col-xs-4">
-        <label for="genomic-end-input">End</label>
-        <input type="number" class="form-control" id="genomic-end-input" placeholder="Enter end" value="53968914">
-      </div>
-      <div class="form-group col-md-2 col-sm-2 col-xs-4">
-        <button id="genome-display" class="btn btn-primary" style="margin-top:25px;" autofocus>Show genomic location</button>
-      </div>
+            <p class="text-muted col-md-12">
+                <i class="fa fa-info-circle"></i> Explore RNAcentral sequences
+                alongside genes and transcripts from <a href="http://ensembl.org" class="text-muted">Ensembl</a>
+                / <a href="http://ensemblgenomes.org/" class="text-muted">Ensembl Genomes</a>
+            </p>
+
+            <div class="row" style="padding-left: 15px;">
+                <div class="col-lg-3 col-md-3 col-sm-12">
+                    <label for="genomic-species-select">Species</label>
+                    <select id="genomic-species-select" class="form-control" ng-options="genome as genome.species for genome in genomes" ng-model="genome">
+                    </select>
+                </div>
+                <div class="ol-lg-2 col-md-2 col-sm-4">
+                    <label for="chromosome-input">Chromosome</label>
+                    <input type="text" class="form-control" id="chromosome-input" placeholder="Enter chromosome" ng-model="chromosome">
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-4">
+                    <label for="genomic-start-input">Start</label>
+                    <input type="number" class="form-control" id="genomic-start-input" placeholder="Enter start" ng-model="start">
+                </div>
+                <div class="col-lg-2 col-md-2 col-sm-4">
+                    <label for="genomic-end-input">End</label>
+                    <input type="number" class="form-control" id="genomic-end-input" placeholder="Enter end" ng-model="end">
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-6">
+                    <button id="copy-genome-location" class="btn btn-default" data-toggle="tooltip" title="Copy URL to clipboard" style="margin-top: 25px;"><i class="fa fa-share-alt"></i> Copy URL</button>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 
-</div>
+    <br>
 
-<br>
-
-<div>
-  <div class="wrap genoverse-wrap" style="overflow-x:auto;">
-    <p class="text-muted">
-      <span id="genomic-location" class="margin-right-5px"></span>
-      View in <a href="" id="ensembl-link" target="_blank">Ensembl</a>
-      <span class="ucsc-link">|
-        <a href="" target="_blank">UCSC</a>
-      </span>
+    {% verbatim %}
+    <p class='text-muted'>
+        <span id='genomic-location' class='margin-right-5px'></span>
+        View in <a href='http://{{domain}}/{{genome.species | urlencodeSpecies}}/Location/View?r={{chromosome}}:{{start}}-{{end}}' id="ensembl-link" target='_blank'>{{ genome.division }}</a>
+        <span ng-show='genome.assembly_ucsc' class='ucsc-link'>|
+            <a href='http://genome.ucsc.edu/cgi-bin/hgTracks?db={{genome.assembly_ucsc}}&position={{chromosome | chrToUCSC}}%3A{{start}}-{{end}}' id="ucsc-link" target='_blank'>UCSC</a>
+        </span>
     </p>
-    <div id="genoverse"></div>
-  </div>
+    <genoverse genome="genome" chromosome="chromosome" start="start" end="end">
+        <genoverse-track name="'Sequence'" model="Genoverse.Track.Model.Sequence.Ensembl" view="Genoverse.Track.View.Sequence" controller="Genoverse.Track.Controller.Sequence" url="urls.sequence" resizable="'auto'" auto-height="true" hide-empty="false" extra="{100000: false}"></genoverse-track>
+        <genoverse-track name="'Genes'" labels="true" info="'Ensembl API genes'" model="Genoverse.Track.Model.Gene.Ensembl" view="Genoverse.Track.View.Gene.Ensembl" url="urls.genes" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genesPopulateMenu}"></genoverse-track>
+        <genoverse-track name="'Transcripts'" labels="true" info="'Ensembl API transcripts'" model="Genoverse.Track.Model.Transcript.Ensembl" view="Genoverse.Track.View.Transcript.Ensembl" url="urls.transcripts" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: transcriptsPopulateMenu}"></genoverse-track>
+        <genoverse-track name="'RNAcentral'" id="'RNAcentral'" info="'Unique RNAcentral Sequences'" model="Genoverse.Track.Model.Gene.Ensembl" model-extra="{parseData: RNAcentralParseData}" view="Genoverse.Track.View.Transcript.Ensembl" url="urls.RNAcentral" extra="{populateMenu: RNAcentralPopulateMenu}" resizable="'auto'" auto-height="true" hide-empty="false"></genoverse-track>
+    </genoverse>
+    {% endverbatim %}
+
 </div>
-
 {% endblock content %}
-
-{% block extra_js_uncompressed %}
-  {{ block.super }}
-  <script>
-  /**
-   * Display a genomic location using Genoverse.
-   */
-  (function(){
-    var interval,
-        start = $('#genomic-start-input'),
-        end = $('#genomic-end-input'),
-        chromosome = $('#chromosome-input'),
-        species = $('#genomic-species-select'),
-        show_genome_button = $('#genome-display'),
-        location = $('#genomic-location');
-
-    show_genome_button.on('click', showGenome).click();
-
-    species.on('change', loadExampleLocation);
-
-    /**
-     * Display example genomic location when species are changed.
-     */
-     function loadExampleLocation(){
-       var option = this.options[this.selectedIndex];
-       chromosome.val(option.getAttribute("data-example-chromosome"));
-       start.val(option.getAttribute("data-example-start"));
-       end.val(option.getAttribute("data-example-end"));
-       show_genome_button.click();
-     }
-
-      /**
-      * Show Ensembl and UCSC links for the currently displayed region.
-      */
-      function updateExternalLinks(){
-        var option = species.find('option:selected'),
-            division = option.data('division'),
-            ucsc_db = option.data('ucsc-db'),
-            ucsc = $('.ucsc-link'),
-            domain = '',
-            ucsc_chr = '',
-            url = '';
-
-        if (division == 'Ensembl') {
-          domain = 'http://ensembl.org/';
-        } else if (division == 'Ensembl Plants') {
-          domain = 'http://plants.ensembl.org/';
-        } else if (division == 'Ensembl Metazoa') {
-          domain = 'http://metazoa.ensembl.org/';
-        } else if (division == 'Ensembl Bacteria') {
-          domain = 'http://bacteria.ensembl.org/';
-        } else if (division == 'Ensembl Fungi') {
-          domain = 'http://fungi.ensembl.org/';
-        } else if (division == 'Ensembl Protists') {
-          domain = 'http://protists.ensembl.org/';
-        }
-
-        // update Ensembl link
-        url = domain + species.val().replace(/ /g,'_') + '/Location/View?r=' + browser.chr + ':' + browser.start + '-' + browser.end;
-        $('#ensembl-link').attr('href', url).text(division);
-
-        // update UCSC link if UCSC assembly is available
-        if (ucsc_db) {
-          if (browser.chr.match(/^\d+$|^[XY]$/)) {
-            ucsc_chr = 'chr' + browser.chr;
-          } else {
-            ucsc_chr = browser.chr;
-          }
-          url = 'http://genome.ucsc.edu/cgi-bin/hgTracks?db='+ ucsc_db +'&position=' + ucsc_chr + '%3A' + browser.start + '-' + browser.end;
-          ucsc.show().find('a').attr('href', url);
-        } else {
-          ucsc.hide();
-        }
-      }
-
-    /**
-     * Synchronize coordinates shown in the user interface with the actual
-     * genoverse coordinates.
-     * `browser` is the global Genoverse object.
-     */
-    function updateCoordinates() {
-      text = '<em>' + species.val() + '</em>' + ' ' + browser.chr + ':' + browser.start + '-' + browser.end;
-      if (location.html() != text) {
-        location.html(text);
-      }
-    }
-
-    /**
-     * Show genome location using Genoverse.
-     * Create a hidden button with data attributes and trigger the click event.
-     * Update coordinates in the user interface.
-     */
-    function showGenome() {
-      $('.genoverse-xref').remove();
-      delete window.browser;
-      clearInterval(interval);
-
-      var species_name;
-      if (species.val() == 'Canis familiaris') {
-        species_name = 'Canis lupus familiaris';
-      } else {
-        species_name = species.val();
-      }
-      species_name = species_name.replace(/ /g,'_').toLowerCase();
-      
-      $('<button class="genoverse-xref"></button>').
-        hide().
-        appendTo('.genoverse-wrap').
-        data('chromosome', chromosome.val()).
-        data('genomic-start', start.val().replace(/,\./g,'')).
-        data('genomic-end', end.val().replace(/,\./g,'')).
-        data('strand', 1).
-        data('species', species_name).
-        data('description', '').
-        data('species-label', species.val()).
-        click();
-      interval = setInterval(function(){
-        updateCoordinates();
-        updateExternalLinks();
-      }, 800);
-    }
-  })();
-  </script>
-{% endblock %}
