@@ -39,7 +39,7 @@
     "moment": "^2.18.1",
     "query": "^0.2.0",
     "slick-carousel": "^1.6.0",
-    "timelinejs": "^2.35.6",
+    "timelinejs3": "^3.4.0",
     "underscore": "^1.8.3"
   }
 }
