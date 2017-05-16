@@ -133,8 +133,3 @@ urlpatterns += patterns('',
     url(r'^sitemap\.xml$', sitemaps_cache(sitemap_index), kwargs={'sitemaps': sitemaps, 'sitemap_url_name': 'sitemap-section'}, name='sitemap-index'),
     url(r'^sitemap-(?P<section>.+)\.xml$', sitemaps_cache(sitemap_sitemap), kwargs={'sitemaps': sitemaps}, name='sitemap-section')
 )
-
-# in development serve sitemaps from media files
-if settings.DEBUG:
-    # we don't use URL prefix for sitemaps and serve them from a subfolder of MEDIA_ROOT
-    urlpatterns += static.static(settings.SITEMAPS_URL, document_root=settings.SITEMAPS_ROOT)
