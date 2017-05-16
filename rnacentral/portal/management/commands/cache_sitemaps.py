@@ -25,6 +25,9 @@ class Command(BaseCommand):
     """
     Usage:
     python manage.py cache_sitemaps
+    python manage.py cache_sitemaps --section rna --first_page 1 --last_page 21
+    python manage.py cache_sitemaps --section rna --first_page 20  --last_page 41
+    python manage.py cache_sitemaps --section rna --first_page 41
     """
 
     help = "Generate sitemaps and save them to media directory"
@@ -47,21 +50,21 @@ class Command(BaseCommand):
         parser.add_argument(
             '--section',
             type=str,
-            help='a section of sitemaps (e.g. rna or static), if you want only it to be processed'
+            help='sitemaps consist of sections (e.g. `rna` or `static`); this option allows to process a single section'
         )
 
         parser.add_argument(
             '--first_page',
             type=int,
             default=1,
-            help='cache a range of pages in a section, starting from this one; requires section'
+            help='cache a range of section pages, starting from this one (numeration of pages starts with 1); requires section option'
         )
 
         parser.add_argument(
             '--last_page',
             type=int,
             default=-1,
-            help='cache a range of pages, ending with this (e.g. if --last_page 2, pages = [1, 2]); requires section'
+            help='cache a range of section pages, ending with this (e.g. if --last_page 2, pages = [1, 2]); requires section option'
         )
 
         parser.add_argument(
