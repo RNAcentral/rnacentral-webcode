@@ -28,7 +28,7 @@ underscore.factory('_', function() {
 /**
  * Create RNAcentral app.
  */
-angular.module('rnacentralApp', ['chieffancypants.loadingBar', 'underscore', 'Genoverse']);
+angular.module('rnacentralApp', ['ngAnimate', 'ui.bootstrap', 'chieffancypants.loadingBar', 'underscore', 'Genoverse']);
 
 // hide spinning wheel
 angular.module('rnacentralApp').config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
@@ -89,7 +89,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
     var search_config = {
         ebeye_base_url: global_settings.EBI_SEARCH_ENDPOINT,
         rnacentral_base_url: get_base_url(),
-        fields: ['description', 'active', 'length', 'pub_title'],
+        fields: ['description', 'active', 'length', 'pub_title', 'has_genomic_coordinates'],
         facetfields: [
             'rna_type',
             'TAXONOMY',
@@ -268,21 +268,24 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
             $http({
                 url: url,
                 method: 'GET'
-            }).success(function(data) {
-                data = preprocess_results(data);
-                overwrite_results = overwrite_results || false;
-                if (overwrite_results) {
-                    data._query = result._query;
-                    result = data; // replace
-                } else {
-                    // append new entries
-                    result.entries = result.entries.concat(data.entries);
+            }).then(
+                function(response) {
+                    data = preprocess_results(response.data);
+                    overwrite_results = overwrite_results || false;
+                    if (overwrite_results) {
+                        data._query = result._query;
+                        result = data; // replace
+                    } else {
+                        // append new entries
+                        result.entries = result.entries.concat(data.entries);
+                    }
+                    status.search_in_progress = false;
+                },
+                function(response) {
+                    status.search_in_progress = false;
+                    status.show_error = true;
                 }
-                status.search_in_progress = false;
-            }).error(function(){
-                status.search_in_progress = false;
-                status.show_error = true;
-            });
+            );
 
             /**
              * Preprocess data received from the server.
@@ -301,6 +304,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
                     for (var i=0; i < data.entries.length; i++) {
                         data.entries[i].fields = data.entries[i].highlights;
                         data.entries[i].fields.length[0] = data.entries[i].fields.length[0].replace(/<[^>]+>/gm, '');
+                        data.entries[i].id_with_slash = data.entries[i].id.replace('_', '/');
                     }
                 }
 
@@ -460,6 +464,18 @@ angular.module('rnacentralApp').controller('ResultsListCtrl', ['$scope', '$locat
 
     $scope.search_in_progress = results.get_search_in_progress();
     $scope.show_error = results.get_show_error();
+    $http({
+        url: '/api/internal/expert-dbs/',
+        method: 'GET'
+    }).then(function(response) {
+        $scope.expertDbs = response.data;
+
+        // expertDbsObject has lowerCase db names as keys
+        $scope.expertDbsObject = {};
+        for (var i=0; i < $scope.expertDbs.length; i++) {
+            $scope.expertDbsObject[$scope.expertDbs[i].name.toLowerCase()] = $scope.expertDbs[i];
+        }
+    });
 
     /**
      * Watch `result` changes.
@@ -567,13 +583,15 @@ angular.module('rnacentralApp').controller('ResultsListCtrl', ['$scope', '$locat
                  '?q=' + $scope.result._query +
                  '&format=' + format,
             method: 'GET'
-        }).success(function(data) {
-            window.location.href = results_page_url + '?job=' + data.job_id;
-        }).error(function(){
-            $scope.show_export_error = true;
-        });
+        }).then(
+            function(response) {
+                window.location.href = results_page_url + '?job=' + response.data.job_id;
+            },
+            function(response) {
+                $scope.show_export_error = true;
+            }
+        );
     };
-
 }]);
 
 /**

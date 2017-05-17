@@ -47,14 +47,19 @@ class RnaXmlExporter(OracleConnection):
                    t3.display_name as expert_db,
                    t4.timestamp as created,
                    t5.timestamp as last,
-                   t6.len as length
+                   t6.len as length,
+                   t7.rna_type,
+                   t2.locus_tag,
+                   t2.standard_name
             FROM xref t1, rnc_accessions t2, rnc_database t3, rnc_release t4,
-                 rnc_release t5, rna t6
+                 rnc_release t5, rna t6, rnc_rna_precomputed t7
             WHERE t1.ac = t2.accession AND
                   t1.dbid = t3.id AND
                   t1.created = t4.id AND
                   t1.last = t5.id AND
                   t1.upi = t6.upi AND
+                  t1.upi = t7.upi AND
+                  t1.taxid = t7.taxid AND
                   t1.upi = :upi AND
                   t1.deleted = 'N' AND
                   t1.taxid = :taxid
@@ -71,7 +76,7 @@ class RnaXmlExporter(OracleConnection):
                                  'created', 'last', 'deleted',
                                  'function', 'gene', 'gene_synonym', 'note',
                                  'product', 'common_name', 'parent_accession',
-                                 'optional_id']
+                                 'optional_id', 'locus_tag', 'standard_name']
         # other data fields for which the sets should be (re-)created
         self.data_fields = ['rna_type', 'authors', 'journal', 'popular_species',
                             'pub_title', 'pub_id', 'insdc_submission', 'xrefs',]
@@ -171,11 +176,16 @@ class RnaXmlExporter(OracleConnection):
             """
             Use either feature name or ncRNA class (when feature is 'ncRNA')
             """
-            if result['ncrna_class']:
-                rna_type = result['ncrna_class']
-            else:
-                rna_type = result['feature_name']
-            return rna_type.replace('_', ' ')
+            rna_types = []
+            precomputed = result['rna_type']
+            if precomputed:
+                rna_types.append(precomputed)
+            if not precomputed or 'antisense' in precomputed:
+                if result['ncrna_class']:
+                    rna_types.append(result['ncrna_class'])
+                else:
+                    rna_types.append(result['feature_name'])
+            return [r.replace('_', ' ') for r in rna_types]
 
         def store_rna_type():
             """
@@ -185,7 +195,16 @@ class RnaXmlExporter(OracleConnection):
             If an entry is any other RNA feature, use that feature_name
             as rna_type.
             """
-            self.data['rna_type'].add(get_rna_type())
+            self.data['rna_type'].update(get_rna_type())
+
+        def store_computed_data():
+            product_pattern = re.compile('^\w{3}-')
+            if not result['gene'] and \
+                    result['product'] and \
+                    re.match(product_pattern, result['product']) and \
+                    result['expert_db'] == 'miRBase':
+                short_gene = re.sub(product_pattern, '', result['product'])
+                self.data['gene'].add(saxutils.escape(short_gene))
 
         self.cursor.execute(None, {'upi': upi, 'taxid': taxid})
         for row in self.cursor:
@@ -193,6 +212,7 @@ class RnaXmlExporter(OracleConnection):
             store_redundant_fields()
             store_xrefs()
             store_rna_type()
+            store_computed_data()
 
     def is_active(self):
         """
@@ -401,6 +421,8 @@ class RnaXmlExporter(OracleConnection):
                 {pub_id}
                 {popular_species}
                 {boost}
+                {locus_tag}
+                {standard_name}
             </additional_fields>
         </entry>
         """.format(upi=self.data['upi'],
@@ -429,6 +451,8 @@ class RnaXmlExporter(OracleConnection):
                    pub_id=format_field('pub_id'),
                    popular_species=format_field('popular_species'),
                    boost=wrap_in_field_tag('boost', self.data['boost']),
+                   locus_tag=format_field('locus_tag'),
+                   standard_name=format_field('standard_name'),
                    taxid=taxid)
         return format_whitespace(text)
 

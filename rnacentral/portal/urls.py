@@ -11,8 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from django.conf.urls import patterns, url, static
-from django.conf import settings
+from django.conf.urls import patterns, url
+
 from portal import views
 from portal.models import get_ensembl_divisions, RnaPrecomputed, Database
 
@@ -43,7 +43,7 @@ urlpatterns = patterns('',
     # training
     url(r'^training/?$', views.StaticView.as_view(), {'page': 'training'}, name='training'),
     # about us
-    url(r'^about-us/?$', views.StaticView.as_view(), {'page': 'about'}, name='about'),
+    url(r'^about-us/?$', views.StaticView.as_view(), {'page': 'about', 'blog_url': settings.RELEASE_ANNOUNCEMENT_URL}, name='about'),
     # API documentation
     url(r'^api/?$', views.StaticView.as_view(), {'page': 'help/api-v1'}, name='api-docs'),
     url(r'^api/v2/?$', views.StaticView.as_view(), {'page': 'coming-soon'}, name='api-v2'),
@@ -59,6 +59,8 @@ urlpatterns = patterns('',
     url(r'^genome-browser/?$', views.GenomeBrowserView.as_view(), {}, name='genome-browser'),
     # search proxy
     url(r'^api/internal/ebeye/?$', 'portal.views.ebeye_proxy', name='ebeye-proxy'),
+    # expert databases
+    url(r'^api/internal/expert-dbs/$', views.ExpertDatabasesAPIView.as_view(), {}, name='expert-dbs-api')
 )
 
 # internal API

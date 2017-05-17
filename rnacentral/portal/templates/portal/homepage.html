@@ -95,6 +95,7 @@ RNAcentral
 
     <div id="expert-databases">
       {% for database in context.databases %}
+        {% if database and database.imported %}
         <div class="hvr-grow help expert-db-card" data-container="body" title="{% if database.abbreviation %}{{ database.abbreviation }}{% else %}{{ database.name }}{% endif %}">
           <a class="expert-db-logo" href="{% url 'expert-database' database.label %}">
             <img class="img-rounded desaturate" data-lazy="{% static 'img/expert-db-logos' %}/{{database.label}}.png" alt="{{database.name}} logo">
@@ -105,7 +106,7 @@ RNAcentral
             sequences
           </a>
           <br>
-          <a href="{% url 'unique-rna-sequence' database.examples|first %}" id="{{database.label}}-examples">Example</a>
+          <a href="{% url 'unique-rna-sequence' upi=database.examples.0.upi taxid=database.examples.0.taxid %}" id="{{database.label}}-examples">Example</a>
           <br>
           {% if database.status == 'new' %}
             <span class="label label-info help" data-placement="bottom">New</span>
@@ -114,6 +115,7 @@ RNAcentral
           {% endif %}
           </p>
         </div>
+        {% endif %}
       {% endfor %}
     </div>
 
@@ -157,23 +159,17 @@ RNAcentral
             </ul>
 
             <p class="margin-top-5px">
-              <span class="label label-success">New</span>
-              Our latest <a href="http://nar.oxfordjournals.org/content/early/2016/10/28/nar.gkw1008.long">RNAcentral paper</a>
-              has been published in <em>Nucleic Acids Research</em>.
-            </p>
-
-            <p class="margin-top-5px">
-              <a href="http://blog.rnacentral.org/2017/01/rnacentral-release-6.html" class="thumbnail">
-                <img src="{% static "img/timeline/release-v6.png" %}" alt="Release 6 announcement">
+              <a href="{{ context.blog_url }}" class="thumbnail">
+                <img src="{% static "img/timeline/release-v7.png" %}" alt="Release 7 announcement">
               </a>
             </p>
 
             <p>
-              <a href="http://blog.rnacentral.org/2016/10/rnacentral-release-6.html">Release 6 announcement &rarr;</a>
+              <a href="{{ context.blog_url }}">Release 7 announcement &rarr;</a>
             </p>
 
             <p class="margin-top-5px">
-              Explore new <a href="http://www.ebi.ac.uk/training/online/course/rnacentral-exploring-non-coding-rna-sequences">Train Online course</a>
+              Explore the <a href="http://www.ebi.ac.uk/training/online/course/rnacentral-exploring-non-coding-rna-sequences">Train Online course</a>
               to find more information about RNAcentral as well as exercises, tips, a quiz, and more.
             </p>
 

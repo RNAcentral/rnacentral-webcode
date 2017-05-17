@@ -142,7 +142,12 @@ limitations under the License.
         <li class="facet" ng-repeat="facet in result.facets">
             <h3>{{facet.label}}</h3>
             <ul class="list-unstyled metasearch-facet-values metasearch-facet-overflow force-scrollbars" style="overflow-x: hidden;">
-                <li ng-repeat="facet_value in facet.facetValues">
+                <li ng-repeat="facet_value in facet.facetValues" ng-if="facet.id == 'expert_db'">
+                  <!-- This is expert_dbs facet -->
+                  <input type="checkbox" name="facet.label" ng-checked="is_facet_applied(facet.id, facet_value.value)" ng-click="facet_search(facet.id, facet_value.value)">
+                  <a href="" ng-click="facet_search(facet.id, facet_value.value)" class="metasearch-facet-link" uib-tooltip-template="'/static/js/search/expert-database-tooltip-template.html'" tooltip-placement="bottom-left">{{facet_value.label}} <small>({{facet_value.count | number}})</small></a>
+                </li>
+                <li ng-repeat="facet_value in facet.facetValues" ng-if="facet.id != 'expert_db'">
                   <input type="checkbox" name="facet.label" ng-checked="is_facet_applied(facet.id, facet_value.value)" ng-click="facet_search(facet.id, facet_value.value)">
                   <a href="" ng-click="facet_search(facet.id, facet_value.value)" class="metasearch-facet-link">{{facet_value.label}} <small>({{facet_value.count | number}})</small></a>
                 </li>
@@ -161,7 +166,7 @@ limitations under the License.
         <li class="result" ng-repeat="rna in result.entries">
           <div class="metasearch-result">
             <h4>
-              <a href="/rna/{{rna.id}}" ng-bind-html="rna.fields.description[0] | sanitize"></a>
+              <a href="/rna/{{rna.id_with_slash}}" ng-bind-html="rna.fields.description[0] | sanitize"></a>
               <small>{{rna.id}}</small>
             </h4>
             <div ng-show="rna.fields.description[0].indexOf('metasearch-highlights') === -1" style="margin-bottom: 3px;">
@@ -173,6 +178,7 @@ limitations under the License.
               <li>
                 <strong>{{rna.fields.length[0] | number}}</strong> nucleotides
               </li>
+              <li ng-if="rna.fields.has_genomic_coordinates[0] == 'True'"><i class="fa fa-check text-success" aria-hidden="true"></i> reference genome<li>
               <li ng-if="rna.fields.active[0] == 'Obsolete'"><span class="label label-danger help" title="No active annotations">Obsolete</span></li>
             </ul>
           </div>
