@@ -97,7 +97,7 @@ class StaticViewSitemap(Sitemap):
 
 class RnaSitemap(Sitemap):
     def items(self):
-        return RnaPrecomputed.objects.all()
+        return RnaPrecomputed.objects.filter(taxid__isnull=False).all()
 
     def location(self, item):
         if item.taxid is not None:
