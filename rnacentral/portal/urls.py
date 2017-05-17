@@ -100,10 +100,7 @@ class RnaSitemap(Sitemap):
         return RnaPrecomputed.objects.filter(taxid__isnull=False).all()
 
     def location(self, item):
-        if item.taxid is not None:
-            return reverse('unique-rna-sequence', kwargs={'upi': item.upi_id, 'taxid': item.taxid})
-        else:
-            return reverse('unique-rna-sequence', kwargs={'upi': item.upi_id})
+        return reverse('unique-rna-sequence', kwargs={'upi': item.upi_id, 'taxid': item.taxid})
 
 
 class ExpertDatabasesSitemap(Sitemap):
