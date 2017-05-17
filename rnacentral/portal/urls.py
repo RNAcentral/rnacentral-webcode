@@ -98,9 +98,9 @@ class RnaSitemap(Sitemap):
 
     def location(self, item):
         if item.taxid is not None:
-            return reverse('portal.views.get_xrefs_data', kwargs={'upi': item.upi_id, 'taxid': item.taxid})
+            return reverse('unique-rna-sequence', kwargs={'upi': item.upi_id, 'taxid': item.taxid})
         else:
-            return reverse('portal.views.get_xrefs_data', kwargs={'upi': item.upi_id})
+            return reverse('unique-rna-sequence', kwargs={'upi': item.upi_id})
 
 
 class ExpertDatabasesSitemap(Sitemap):
