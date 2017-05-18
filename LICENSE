@@ -196,15 +196,14 @@ limitations under the License.
 RNACENTRAL CORE PROJECT SUBCOMPONENTS
 
 The RNAcentral Core Project includes a number of subcomponents with
-separate copyright notices and license terms. Your use of the source
-code for the these subcomponents is subject to the terms and
+separate copyright notices and license terms.
+
+Your use of the source code for the these subcomponents is subject to the terms and
 conditions of the following licenses.
 
-COMPONENT: rnacentral/portal/static/js/vendor/modernizr-2.6.2-respond-1.1.0.min.js
-
-Modernizr 2.6.2 (Custom Build) | MIT & BSD
-matchMedia() polyfill - Test a CSS media type/query in JS. Authors & copyright (c) 2012: Scott Jehl, Paul Irish, Nicholas Zakas. Dual MIT/BSD license
-Respond.js v1.1.0: min/max-width media query polyfill. (c) Scott Jehl. MIT/GPLv2 Lic. j.mp/respondjs
+For subcomponents that are frontend packages, you can find their licenses
+in /node_modules folder - if they are managed with NPM - or here - if they
+are directly distributed with our code in /vendor folder.
 
 COMPONENT: rnacentral/portal/static/js/vendor/Genoverse/*
 
