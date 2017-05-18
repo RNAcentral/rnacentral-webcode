@@ -87,9 +87,9 @@ def export_search_results(query, _format, hits):
         Easel esl-sfetch can index the FASTA database for faster performance.
         If SSI index does not exist, create it.
         """
-        ssi_index = ESLSFETCH + '.ssi'
+        ssi_index = FASTA_DB + '.ssi'
         if os.path.exists(ssi_index):
-            return            
+            return
         cmd = '{esl_binary} --index {fasta_db}'.format(
             esl_binary=ESLSFETCH,
             fasta_db=FASTA_DB
