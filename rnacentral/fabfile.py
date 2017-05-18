@@ -101,15 +101,16 @@ def cache_sitemaps():
          prefix(COMMANDS['activate_virtualenv'])):
         env.run('python rnacentral/manage.py cache_sitemaps')
 
-def rsync_sitemaps():
+def rsync_sitemaps(dry_run=None):
     """
-    Copy cached sitemaps from local installation to
+    Copy cached sitemaps from local folder to remote one.
     """
-    local_path = os.path.join(os.path.dirname(settings.PROJECT_PATH), 'local')
+    sitemaps_path = os.path.join(settings.PROJECT_PATH, 'rnacentral', 'sitemaps')
+
     cmd = 'rsync -av{dry_run} {src}/ {host}:{dst}'.format(
-        src=local_path,
+        src=sitemaps_path,
         host=env.host,
-        dst=local_path,
+        dst=sitemaps_path,
         dry_run='n' if dry_run else '',
     )
     local(cmd)
@@ -136,13 +137,11 @@ def rsync_local_files(dry_run=None):
     """
     Rsync local files to production.
     """
-    sitemaps_path = os.path.join(settings.PROJECT_PATH, 'rnacentral', 'sitemaps')
-
-    remote_sitemaps_path = os.path.join(settings.PROJECT_PATH)
+    local_path = os.path.join(os.path.dirname(settings.PROJECT_PATH), 'local')
     cmd = 'rsync -av{dry_run} {src}/ {host}:{dst}'.format(
-        src=sitemaps_path,
+        src=local_path,
         host=env.host,
-        dst=remote_sitemaps_path,
+        dst=local_path,
         dry_run='n' if dry_run else '',
     )
     local(cmd)
@@ -156,7 +155,6 @@ def deploy_locally(git_branch=None, restart_url='http://rnacentral.org', quick=F
     compress_static_files()
     if not quick:
         install_django_requirements()
-        cache_sitemaps()
     flush_memcached()
     restart_django(restart_url)
 
@@ -171,7 +169,6 @@ def deploy_remotely(git_branch=None, restart_url='http://rnacentral.org', quick=
     restart_django(restart_url)
     if not quick:
         rsync_local_files()
-        rsync_sitemaps()
 
 def deploy(git_branch=None, restart_url='http://rnacentral.org', quick=False):
     """
