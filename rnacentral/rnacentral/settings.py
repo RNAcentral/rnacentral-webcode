@@ -82,6 +82,11 @@ MEDIA_ROOT = ''
 # Examples: "http://example.com/media/", "http://media.example.com/"
 MEDIA_URL = ''
 
+# We cache sitemaps as static files into a specific folder on hard drive
+SITEMAPS_ROOT = os.path.join(PROJECT_PATH, 'rnacentral', 'sitemaps')
+# We use empty prefix for sitemaps, cause they should cover the whole site
+SITEMAPS_URL = '/'
+
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
@@ -285,6 +290,10 @@ CACHES = {
     'default': {
         'BACKEND': 'caching.backends.memcached.MemcachedCache',
         'LOCATION': 'localhost:8052',
+    },
+    'sitemaps': {
+        'BACKEND': 'rnacentral.utils.cache.SitemapsCache',
+        'LOCATION': SITEMAPS_ROOT
     }
 }
 
