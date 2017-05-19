@@ -478,10 +478,6 @@ h3.panel-title {
   margin: 5px 0;
 }
 
-.literature-refs-content {
-  width: 98%;
-}
-
 #seq-length .panel {
   max-height: 380px;
   overflow-y: auto;
@@ -855,9 +851,26 @@ textarea {
 }
 
 .abstract-text.slide-down.ng-enter-active {
-  max-height: 2000px;
+  overflow: hidden;
+  max-height: 20000px;
 }
 
+/* Similar transitions for citations */
+
+.literature-refs-content {
+  width: 98%;
+}
+
+.literature-refs-content.slide-down.ng-enter{
+  oveflow: hidden;
+  transition: max-height 1s ease-in;
+  max-height: 0px;
+}
+
+.literature-refs-content.slide-down.ng-enter-active {
+  overflow: hidden;
+  max-height: 20000px;
+}
 
 /*------------------------------------------------------------------
 [5.9 D3 expert database treemap]

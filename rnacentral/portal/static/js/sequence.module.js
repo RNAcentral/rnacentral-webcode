@@ -118,7 +118,7 @@ var citationsComponent = {
               '  <button ng-click="citationsVisible = !citationsVisible; $ctrl.onClick()" class="literature-refs-retrieve btn btn-default btn-xs pull-right help" title="Literature citations">' +
               '    <i ng-if="citationsVisible" class="fa fa-caret-up"></i><i ng-if="!citationsVisible" class="fa fa-caret-down"></i>' +
               '  </button>' +
-              '  <div ng-if="citationsVisible && $ctrl.status >= 200 && $ctrl.status <= 299" class="literature-refs-content">' +
+              '  <div ng-if="citationsVisible && $ctrl.status >= 200 && $ctrl.status <= 299" class="literature-refs-content slide-down">' +
               '    <blockquote ng-repeat="citation in $ctrl.citations">' +
               '      <publication-component publication="citation"></publication-component>' +
               '    </blockquote>' +
