@@ -101,8 +101,8 @@ var citationsComponent = {
     controller: ['$http', '$interpolate', function($http, $interpolate) {
         var ctrl = this;
 
-        ctrl.$onChanges = function(changes) {
-            $http.get($interpolate('{{accession}}')({accession: ctrl.xref.accession.citations})).then(
+        ctrl.onClick = function() {
+            $http.get($interpolate('{{citations}}')({citations: ctrl.xref.accession.citations}), {cache: true}).then(
                 function(response) {
                     ctrl.citations = response.data;
                     ctrl.status = response.status;
@@ -111,11 +111,11 @@ var citationsComponent = {
                     ctrl.status = response.status;
                 }
             );
-        };
+        }
 
     }],
     template: '<span class="literature-refs">' +
-              '  <button ng-click="citationsVisible = !citationsVisible" class="literature-refs-retrieve btn btn-default btn-xs pull-right help" title="Literature citations">' +
+              '  <button ng-click="citationsVisible = !citationsVisible; $ctrl.onClick()" class="literature-refs-retrieve btn btn-default btn-xs pull-right help" title="Literature citations">' +
               '    <i ng-if="citationsVisible" class="fa fa-caret-up"></i><i ng-if="!citationsVisible" class="fa fa-caret-down"></i>' +
               '  </button>' +
               '  <div ng-if="citationsVisible && $ctrl.status >= 200 && $ctrl.status <= 299" class="literature-refs-content">' +
