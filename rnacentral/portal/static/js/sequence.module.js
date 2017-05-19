@@ -23,7 +23,7 @@ var xrefsComponent = {
                         });
                     }
 
-                    // ensure that xrefs data is rendered into the DOM
+                    // $timeout is to ensure that xrefs data is rendered into the DOM
                     // before initializing DataTables
                     $timeout(function() {
                         $("#annotations-table").DataTable({
@@ -322,7 +322,7 @@ var rnaSequenceController = function($scope, $location) {
     // programmatically switch tabs
     $scope.activeTab = 0;
     $scope.activateTab = function(index) {
-        $scope.activeTab = parseInt(index); // have to convery index to string
+        $scope.activeTab = parseInt(index); // have to convert index to string
     };
 
     activateCopyToClipboardButtons();
