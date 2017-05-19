@@ -14,13 +14,13 @@ var xrefsComponent = {
                 function(response) {
                     // set ctrl.xrefs (filtering by taxid, if given)
                     if (ctrl.taxid) {
-                        ctrl.xrefs = response.data.results;
-                        console.log(ctrl.xrefs);
-                    }
-                    else {
                         ctrl.xrefs = _.filter(response.data.results, function(result) {
                             return result.taxid == ctrl.taxid;
                         });
+                        console.log(ctrl.xrefs);
+                    }
+                    else {
+                        ctrl.xrefs = response.data.results;
                     }
 
                     // $timeout is to ensure that xrefs data is rendered into the DOM
