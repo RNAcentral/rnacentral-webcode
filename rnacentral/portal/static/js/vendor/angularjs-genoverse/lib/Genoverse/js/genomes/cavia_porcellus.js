@@ -1,1 +1,0 @@
-Genoverse.Genomes.cavia_porcellus = {};

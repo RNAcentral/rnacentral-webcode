@@ -1,1 +1,0 @@
-Genoverse.Genomes.mustela_putorius_furo = {};

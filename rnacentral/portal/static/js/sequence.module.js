@@ -412,7 +412,9 @@ var rnaSequenceController = function($scope, $location) {
         });
     };
 };
+
 rnaSequenceController.$inject = ['$scope', '$location'];
+
 
 
 /**
@@ -431,7 +433,7 @@ var sceWhitelist = function($sceDelegateProvider) {
 sceWhitelist.$inject = ['$sceDelegateProvider'];
 
 
-angular.module("rnaSequence", ['datatables', 'ngResource', 'ngAnimate'])
+angular.module("rnaSequence", ['ngResource', 'ngAnimate', 'ui.bootstrap'])
     .config(sceWhitelist)
     .factory("publicationResource", publicationResourceFactory)
     .controller("rnaSequenceController", rnaSequenceController)

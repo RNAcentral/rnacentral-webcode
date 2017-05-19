@@ -1,1 +1,0 @@
-Genoverse.Genomes.ailuropoda_melanoleuca = {};

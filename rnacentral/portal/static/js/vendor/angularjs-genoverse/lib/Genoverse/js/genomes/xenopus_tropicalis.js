@@ -1,1 +1,0 @@
-Genoverse.Genomes.xenopus_tropicalis = {};
