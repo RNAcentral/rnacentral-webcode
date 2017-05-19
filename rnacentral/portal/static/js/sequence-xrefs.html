@@ -1,7 +1,7 @@
 <div>
   <h2>
     Annotations
-    <small id="xrefs-datatables-counter">{{ $ctrl.xrefs.length | number }} total</small>
+    <small id="annotations-datatables-counter">{{ $ctrl.xrefs.length | number }} total</small>
 
     <div class="btn-group btn-group-xs margin-left-5px btn-group-xref-sort" style="display:none">
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -13,7 +13,7 @@
       </ul>
     </div>
 
-    <span id="xrefs-datatables-filter"></span>
+    <span id="annotations-datatables-filter"></span>
   </h2>
 
   <table class="table table-hover table-condensed table-bordered" id="annotations-table">
@@ -38,7 +38,7 @@
         </td>
 
         <!-- accession -->
-        <td ng-switch="xref.database">
+        <td ng-switch on="xref.database">
           <strong>{{ xref.accession.description }}</strong>
           <br>
           <i class="fa fa-angle-right"></i>
@@ -179,7 +179,6 @@
             <a href="http://www.pdb.org/pdb/pdb/explore/explore.do?structureId={{ xref.accession.external_id }}" target="_blank" title="Protein Data Bank USA" class="help">RCSB PDB</a> |
             <a href="http://pdbj.org/mine/summary/{{ xref.accession.external_id }}" target="_blank" title="Protein Data Bank Japan" class="help">PDBj</a> |
             <a href="{{ xref.get_ndb_external_url }}" target="_blank" title="Nucleic Acids Database" class="help">NDB</a>
-            </span>
             <br>
             <i class="fa fa-angle-right"></i>
             <small>Structure title:</small> {{ xref.accession.get_pdb_structured_note.structureTitle }}
@@ -361,7 +360,7 @@
           </span>
 
           <!-- literature references -->
-          <citations-component xref="xref"></citations-component>
+          <citations-component xref="xref" on-activate-publications="$ctrl.onActivatePublications()"></citations-component>
 
           <span ng-if="xref.deleted == 'Y'">
             <br>
@@ -427,5 +426,5 @@
 
   </div> <!-- .table-responsive -->
 
-  <div class="xref-datatables-controls"></div>
+  <div class="annotations-datatables-controls"></div>
 </div>
