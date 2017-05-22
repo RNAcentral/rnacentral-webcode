@@ -174,45 +174,59 @@ var publicationsComponent = {
         upi: '<',
         taxid: '<?'
     },
-    controller: ['publicationResource', function(publicationResource) {
+    controller: ['$http', '$interpolate', function($http, $interpolate) {
         var ctrl = this;
+
+        ctrl.defaultPageSize = 25;
 
         ctrl.$onInit = function() {
             ctrl.abstracts = {};
-            ctrl.publications = ctrl.fetchPublications(25);
+            // this is slightly error-prone, cause we assign promise to a variable - make sure we don't use it before
+
+            ctrl.fetchPublications(ctrl.defaultPageSize, 1).then(
+                function(response) {
+                    ctrl.publicationCount = response.data.count;
+                    ctrl.publications = response.data.results;
+                },
+                function(response) {
+                    ctrl.error = "Failed to download publications";
+                }
+            );
         };
 
-        /**
-         * Asynchronously downloads <pageSize> (e.g. 25) publications
-         * on this sequences and stores in ctrl.publications.
-         *
-         * @param {int} [25] pageSize - how many publications to load
-         * @returns {publicationResource promise} - Array-like of publications
-         */
-        ctrl.fetchPublications = function(pageSize) {
-            pageSize = pageSize || 25;
-            return publicationResource.get({ upi: this.upi, page_size: pageSize });
+        ctrl.fetchPublications = function(pageSize, page) {
+            return $http.get(
+                $interpolate('/api/v1/rna/{{ upi }}/publications')({ upi: ctrl.upi }),
+                { timeout: 5000, params: { page_size: pageSize, page: page } }
+            )
         };
 
         ctrl.loadMore = function(pageSize) {
-            pageSize = pageSize || 25;
-            var newPageSize = ctrl.publications.data.length + pageSize;
-            ctrl.publications = fetchPublications(newPageSize);
+            var page = Math.ceil(ctrl.publications.length / pageSize);
+
+            ctrl.fetchPublications(pageSize, page).then(
+                function(response) {
+                    ctrl.publications = ctrl.publications.concat(response.data.results);
+                },
+                function(response) {
+                    ctrl.error = "Failed to download publications";
+                }
+            );
         };
     }],
     template: '<div id="publications">' +
-              '    <h2>Publications <small>{{ $ctrl.publications.count }} total</small></h2>' +
+              '    <h2>Publications <small>{{ $ctrl.publicationCount }} total</small></h2>' +
               '    <ol>' +
-              '        <div ng-repeat="publication in $ctrl.publications.results" class="col-md-8">' +
+              '        <div ng-repeat="publication in $ctrl.publications" class="col-md-8">' +
               '            <li class="margin-bottom-10px">' +
               '                <publication-component publication="publication"></publication-component>' +
               '            </li>' +
               '        </div>' +
               '    </ol>' +
-              '    <div ng-if="$ctrl.publications.count < $ctrl.publications.total" class="col-md-8">' +
-              '        <small class="text-muted">Displaying {{ $ctrl.publication.count }} of {{ $ctrl.publications.total }} publications</small>' +
+              '    <div ng-if="$ctrl.publications.length < $ctrl.publicationCount" class="col-md-8">' +
+              '        <small class="text-muted">Displaying {{ $ctrl.publications.length }} of {{ $ctrl.publicationCount }} publications</small>' +
               '        <br>' +
-              '        <button class="btn btn-default btn-large" id="load-more-publications" ng-click="$ctrl.loadMore">Load more</button>' +
+              '        <button class="btn btn-default btn-large" id="load-more-publications" ng-click="$ctrl.loadMore($ctrl.defaultPageSize)">Load more</button>' +
               '    </div>' +
               '    <div class="row">' +
               '        <div ng-if="!$ctrl.publications" class="col-md-12">' +
@@ -223,18 +237,6 @@ var publicationsComponent = {
               '    </div>' +
               '</div>'
 };
-
-
-var publicationResourceFactory = function($resource) {
-    return $resource(
-        '/api/v1/rna/:upi/publications?page_size=:page',
-        {upi: '@upi', page: '@page'},
-        {
-            get: {timeout: 5000, isArray: false}
-        }
-    );
-};
-publicationResourceFactory.$inject = ['$resource'];
 
 
 var publicationComponent = {
@@ -435,7 +437,6 @@ sceWhitelist.$inject = ['$sceDelegateProvider'];
 
 angular.module("rnaSequence", ['ngResource', 'ngAnimate', 'ui.bootstrap'])
     .config(sceWhitelist)
-    .factory("publicationResource", publicationResourceFactory)
     .controller("rnaSequenceController", rnaSequenceController)
     .component("xrefsComponent", xrefsComponent)
     .component("citationsComponent", citationsComponent)
