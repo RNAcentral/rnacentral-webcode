@@ -1222,6 +1222,122 @@ class Reference_map(models.Model):
     class Meta:
         db_table = 'rnc_reference_map'
 
+
+class RfamClan(models.Model):
+    """
+    A simple container to store information about Rfam clans. This is just to
+    contain some useful meta data about clans for display in RNAcentral.
+    """
+    rfam_clan_id = models.CharField(max_length=20, primary_key=True)
+    name = models.CharField(max_length=40)
+    description = models.CharField(max_length=100)
+    family_count = models.PositiveIntegerField()
+
+
+class RfamModel(models.Model):
+    """
+    A simple container about Rfam families. This table contains just enough
+    data to make it easy to display Rfam family data in RNAcentral.
+    """
+    rfam_model_id = models.CharField(max_length=20, primary_key=True)
+    name = models.CharField(max_length=40)
+    description = models.CharField(max_length=100)
+    rfam_clan_id = models.ForeignKey(RfamClan,
+                                     db_column='rfam_clan_id',
+                                     to_field='rfam_clan_id')
+
+    seed_count = models.PositiveIntegerField()
+    full_count = models.PositiveIntegerField()
+    length = models.PositiveIntegerField()
+
+    class Meta:
+        db_table = 'rnc_rfam_models'
+
+
+class RfamModelRegion(models.Model):
+    """
+    This model represents a continuous part of a model that has been found in
+    some search. All or just part of a model may match to some sequence. This
+    table represents the part that matches. This helps in selecting which hits
+    to use for display and analysis.
+    """
+    rfam_model_region_id = models.AutoField(primary_key=True)
+    rfam_model_id = models.ForeignKey(RfamModel,
+                                      db_column='rfam_model_id',
+                                      to_field='rfam_model_id')
+    start = models.PositiveIntegerField()
+    stop = models.PositiveIntegerField()
+    completeness = models.FloatField()
+
+    class Meta:
+        db_table = 'rnc_rfam_model_regions'
+        unique_together = ('rfam_model_id', 'start', 'stop')
+
+
+class SequenceRegion(models.Model):
+    """
+    This is intended to represent an continuous part of a URS that is matched
+    by some Rfam model. As all or just part of the sequence may match a model,
+    we store information about what part does for both display and analysis.
+    """
+    sequence_region_id = models.AutoField(primary_key=True)
+    upi = models.ForeignKey(Rna, db_column='upi', to_column='id')
+    start = models.PositiveIntegerField()
+    stop = models.PositiveIntegerField()
+    completeness = models.FloatField()
+
+    class Meta:
+        db_table = 'rnc_sequence_regions'
+        unique_together = ('upi', 'start', 'stop')
+
+
+class RfamSearch(models.Model):
+    """
+    This represents the methodology used in searching Rfam models against
+    RNAcentral sequences. This is meant to help us track which models were run
+    with what options. I assume that we will always want to run all models for
+    a search. This design does not deal with assign families to Rfam versions,
+    changes in Rfam models, or assignments of models to particular search
+    strategies. Ideally, using this table and some simple code it is possible
+    to reproduce the searches we used.
+    """
+    rfam_search_id = models.AutoField(primary_key=True)
+    rfam_release_version = models.CharField(max_length=4)
+    program = models.CharField(max_length=10)
+    program_version = models.CharField(max_length=10)
+    program_options = models.JSONField()
+
+    class Meta:
+        db_table = 'rnc_rfam_searches'
+
+
+class RfamHit(models.Model):
+    """
+    This represents a hit of an Rfam model against a particular sequence. I
+    have stripped out the overlap and inclusion fields as they are handled when
+    parsing and loading the data.
+    """
+    rfam_hit_id = models.AutoField(primary_key=True)
+    rfam_search = models.ForeignKey(RfamSearch,
+                                    db_column='rfam_search_id',
+                                    to_field='rfam_search_id',
+                                    related_name='hits')
+    sequence_region = models.ForeignKey(SequenceRegion,
+                                        db_column='sequence_region_id',
+                                        to_field='sequence_region_id',
+                                        related_name='hits')
+    rfam_model_region = models.ForeignKey(RfamModelRegion,
+                                          db_column='rfam_model_region_id',
+                                          to_field='rfam_model_region_id',
+                                          related_name='hits')
+    e_value = models.FloatField()
+
+    class Meta:
+        db_table = 'rnc_rfam_model_hits'
+        unique_together = ('rfam_search', 'sequence_region',
+                           'rfam_model_region')
+
+
 """
 Common auxiliary functions.
 """
