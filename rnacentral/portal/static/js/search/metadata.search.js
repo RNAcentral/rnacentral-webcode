@@ -667,6 +667,12 @@ angular.module('rnacentralApp').controller('QueryCtrl', ['$scope', '$location', 
 
     });
 
+    $scope.get_autocomplete_suggestions = function(input) {
+        return $http.get(
+            $interpolate('http://www.ebi.ac.uk/ebisearch/ws/RNAcentral/autocomplete?term={{ input }}&format=json')(input)
+        );
+    };
+
     /**
      * Called when the form is submitted.
      */
