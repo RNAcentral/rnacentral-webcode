@@ -136,46 +136,23 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
         start = start || 0;
 
         hopscotch.endTour(); // end guided tour when a search is launched
-        display_search_interface();
-        display_spinner();
-        update_page_title();
+
+        // setting display_search_interface to true hides non-search-related content and shows search results
+        status.display_search_interface = true;
+
+        // display search spinner if not a "load more" request
+        if (start === 0) result.hitCount = null;
+
+        // change page title, which is also used in browser tabs
+        $window.document.title = 'Search: ' + query;
 
         query = preprocess_query(query);
-        query_url = get_query_url(query, start);
+
+        // get query_url ready
+        var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query).replace('{START}', start);
+        var query_url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url));
+
         execute_ebeye_search(query_url, start === 0);
-
-        /**
-         * Display search spinner if not a "load more" request.
-         */
-        function display_spinner() {
-            if (start === 0) {
-                result.hitCount = null; // display spinner
-            }
-        }
-
-        /**
-         * Change page title, which is also used in browser tabs.
-         */
-        function update_page_title() {
-            $window.document.title = 'Search: ' + query;
-        }
-
-        /**
-         * Setting `display_search_interface` value to true hides all non-search page content
-         * and begins displaying search results interface.
-         */
-        function display_search_interface() {
-            status.display_search_interface = true;
-        }
-
-        /**
-         * Create an EBeye query url.
-         */
-        function get_query_url() {
-            var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query).replace('{START}', start);
-            var url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url));
-            return url;
-        }
 
         /**
          * Split query into words and then:
@@ -190,7 +167,8 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
          */
         function preprocess_query(query) {
 
-            replace_slashes_with_underscore();
+            // replace URS/taxid with URS_taxid - replace slashes with underscore
+            query = query.replace(/(URS[0-9A-F]{10})\/(\d+)/ig, '$1_$2');
 
             // replace length query with a placeholder, example: length:[100 TO 200]
             var length_clause = query.match(/length\:\[\d+\s+to\s+\d+\]/i);
@@ -241,13 +219,6 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
             }
             result._query = query;
             return query;
-
-            /**
-             * Replace URS/taxid with URS_taxid.
-             */
-            function replace_slashes_with_underscore() {
-                query = query.replace(/(URS[0-9A-F]{10})\/(\d+)/ig, '$1_$2');
-            }
 
             /**
              * Escape special symbols used by Lucene
