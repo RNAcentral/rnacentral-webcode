@@ -1,0 +1,49 @@
+<div>
+  <form novalidate name="$ctrl.queryForm" class="global-search" ng-submit="$ctrl.submit_query()">
+    <fieldset>
+    <div class="form-group" ng-class="($ctrl.query.submitted && $ctrl.queryForm.$invalid) ? 'has-error' : ''">
+      <div class="input-group input-group-lg">
+        <input type="text"
+               class="form-control"
+               id="query-text"
+               name="text"
+               tabindex="1"
+               ng-model="query.text"
+               ng-minlength="2"
+               ng-maxlength="1000"
+               ng-change="$ctrl.autocomplete()"
+               autocomplete="off"
+               placeholder="Search RNAcentral"
+               autofocus
+               required>
+        <div class="input-group-btn">
+          <button type="submit" class="btn btn-primary">
+            <i class="fa fa-search"></i>
+            <span class="hidden-xs-inline">Search</span>
+          </button>
+        </div><!-- /input-group-btn -->
+      </div><!--input-group -->
+      <span class="help-block example-searches">
+          <i>
+            Examples:
+            <a tooltip-placement="bottom" uib-tooltip="Search by gene name" href="" rel="nofollow" ng-click="$ctrl.meta_search('&#40;&quot;HOTAIR&quot; OR &quot;HOX&quot;&#41; AND TAXONOMY:&quot;9606&quot; AND rna_type:&quot;lncRNA&quot; AND length:[500 to 3000]')">human HOTAIR</a>,
+            <a tooltip-placement="bottom" uib-tooltip="Search by species name or NCBI taxonomy ID" href="" rel="nofollow" ng-click="$ctrl.meta_search('TAXONOMY:&quot;9606&quot;')">Homo sapiens</a>,
+            <a tooltip-placement="bottom" uib-tooltip="Search by RNA type" href="" rel="nofollow" ng-click="$ctrl.meta_search('rna_type:&quot;tRNA&quot;')">tRNA</a>,
+            <a tooltip-placement="bottom" uib-tooltip="Search by Expert Database" href="" rel="nofollow" ng-click="$ctrl.meta_search('expert_db:&quot;mirbase&quot;')">miRBase</a>,
+            <a tooltip-placement="bottom" uib-tooltip="Search by external identifiers" href="" rel="nofollow" ng-click="$ctrl.meta_search('4V4Q')">4V4Q</a>
+          </i>
+      </span>
+      <label class="control-label ng-cloak has-error"
+             for="query-text" ng-show="$ctrl.query.submitted && ($ctrl.queryForm.text.$error.required || $ctrl.queryForm.text.$error.minlength)"
+             ng-cloak>
+        Your query is too short
+      </label>
+      <label class="control-label ng-cloak"
+             for="query-text" ng-show="$ctrl.query.submitted && ($ctrl.queryForm.text.$error.maxlength)"
+             ng-cloak>
+        Your query is too long
+      </label>
+    </div><!-- /form-group -->
+    </fieldset>
+  </form><!-- /form -->
+</div><!-- /ng-controller -->

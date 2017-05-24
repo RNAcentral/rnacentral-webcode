@@ -522,111 +522,112 @@ var ResultsListCtrl = function($scope, $location, $http, results) {
     };
 };
 
-/**
- * Query controller
- * Responsible for the search box in the header.
- */
-var QueryCtrl = function($scope, $location, $window, $timeout, results, search) {
+var queryComponent = {
+    bindings: {},
+    templateUrl: '/static/js/search/metadata-query.html',
+    controller: ['$interpolate', '$location', '$window', '$timeout', 'results', 'search', function($interpolate, $location, $window, $timeout, results, search) {
+        var ctrl = this;
 
-    $scope.query = {
-        text: '',
-        submitted: false
-    };
+        ctrl.$onInit = function() {
+            ctrl.query = {
+                text: '',
+                submitted: false
+            };
 
-    /**
-     * Launch a metadata search using the service.
-     */
-    $scope.meta_search = function(query) {
-        search.meta_search(query);
-    };
-
-    /**
-     * Control browser navigation buttons.
-     */
-    $scope.$watch(function () { return $location.url(); }, function (newUrl, oldUrl) {
-        // ignore url hash
-        newUrl = newUrl.replace(/#.+$/, '');
-        oldUrl = oldUrl.replace(/#.+$/, '');
-
-        // url has changed
-        if (newUrl !== oldUrl) {
-            if (newUrl.indexOf('tab=') !== -1) {
-                // redirect only if the main part of url has changed
-                if (newUrl.split('?')[0] !== oldUrl.split('?')[0]) {
-                    redirect(newUrl);
-                }
-                else { // navigate page tabs using browser back button
-                    matches = newUrl.match(/tab=(\w+)&?/);
-                    $('#tabs a[data-target="#' + matches[1] + '"]').tab('show');
-                }
-            }
-
-            else if (newUrl.indexOf('xref-filter') !== -1) {
-                if (newUrl.split('?')[0] !== oldUrl.split('?')[0]) {
-                    redirect(newUrl);
-                }
-            }
-
-            // let the sequence search app handle it
-            else if (oldUrl.indexOf('sequence-search') !== -1 && newUrl.indexOf('sequence-search') !== -1) {}
-
-            // let genome-browser handle its own transitions
-            else if (oldUrl.indexOf('genome-browser') !== -1 && newUrl.indexOf('genome-browser') !== -1) {}
-
-            // a non-search url, load that page
-            else if (newUrl.indexOf('/search') == -1) {
-                redirect(newUrl);
-            }
-
-            // the new url is a search result page, launch that search
-            else {
-                $scope.query.text = $location.search().q;
+            // Check if the url contains a query when the controller is first created and initiate a search if necessary.
+            if ($location.url().indexOf("/search?q=") > -1) {
+                // a search result page, launch a new search
+                ctrl.query.text = $location.search().q;
                 results.search($location.search().q);
-                $scope.query.submitted = false;
             }
-        }
+        };
 
-        function redirect(newUrl) {
-            $timeout(function() {
-                // wrapping in $timeout to avoid "digest in progress" errors
-                $window.location = newUrl;
-            });
-        }
+        /**
+         * Launch a metadata search using the service.
+         */
+        ctrl.meta_search = function(query) {
+            search.meta_search(query);
+        };
 
-    });
+        /**
+         * Called when user changes the value in query string
+         */
+        ctrl.autocomplete = function(input) {
+            // get query_url ready
+            var ebeye_url = $interpolate(query_urls.ebeye_autocomplete)({input: input});
+            var query_url = $interpolate(query_urls.proxy)({ebeye_url: encodeURIComponent(ebeye_url)});
 
-    $scope.get_autocomplete_suggestions = function(input) {
-        // get query_url ready
-        var ebeye_url = $interpolate(query_urls.ebeye_autocomplete)({input: input});
-        var query_url = $interpolate(query_urls.proxy)({ebeye_url: encodeURIComponent(ebeye_url)});
+            return $http.get($interpolate(query_url)(input));
+        };
 
-        return $http.get($interpolate(query_url)(input));
-    };
+        /**
+         * Called when the form is submitted.
+         */
+        ctrl.submit_query = function() {
+            ctrl.query.submitted = true;
+            if (ctrl.queryForm.text.$invalid) {
+                return;
+            }
+            ctrl.meta_search(ctrl.query.text);
+        };
 
-    /**
-     * Called when the form is submitted.
-     */
-    $scope.submit_query = function() {
-        $scope.query.submitted = true;
-        if ($scope.queryForm.text.$invalid) {
-            return;
-        }
-        $scope.meta_search($scope.query.text);
-    };
-
-    /**
-     * Check if the url contains a query when the controller is first created
-     * and initiate a search if necessary.
-     */
-    (function () {
-        if ($location.url().indexOf("/search?q=") > -1) {
-            // a search result page, launch a new search
-            $scope.query.text = $location.search().q;
-            results.search($location.search().q);
-        }
-    })();
-
+        // /**
+        //  * Control browser navigation buttons.
+        //  */
+        // $scope.$watch($location.url, function (newUrl, oldUrl) {
+        //     // ignore url hash
+        //     newUrl = newUrl.replace(/#.+$/, '');
+        //     oldUrl = oldUrl.replace(/#.+$/, '');
+        //
+        //     // url has changed
+        //     if (newUrl !== oldUrl) {
+        //         if (newUrl.indexOf('tab=') !== -1) {
+        //             // redirect only if the main part of url has changed
+        //             if (newUrl.split('?')[0] !== oldUrl.split('?')[0]) {
+        //                 redirect(newUrl);
+        //             }
+        //             else { // navigate page tabs using browser back button
+        //                 matches = newUrl.match(/tab=(\w+)&?/);
+        //                 $('#tabs a[data-target="#' + matches[1] + '"]').tab('show');
+        //             }
+        //         }
+        //
+        //         else if (newUrl.indexOf('xref-filter') !== -1) {
+        //             if (newUrl.split('?')[0] !== oldUrl.split('?')[0]) {
+        //                 redirect(newUrl);
+        //             }
+        //         }
+        //
+        //         // let the sequence search app handle it
+        //         else if (oldUrl.indexOf('sequence-search') !== -1 && newUrl.indexOf('sequence-search') !== -1) {}
+        //
+        //         // let genome-browser handle its own transitions
+        //         else if (oldUrl.indexOf('genome-browser') !== -1 && newUrl.indexOf('genome-browser') !== -1) {}
+        //
+        //         // a non-search url, load that page
+        //         else if (newUrl.indexOf('/search') == -1) {
+        //             redirect(newUrl);
+        //         }
+        //
+        //         // the new url is a search result page, launch that search
+        //         else {
+        //             $scope.query.text = $location.search().q;
+        //             results.search($location.search().q);
+        //             $scope.query.submitted = false;
+        //         }
+        //     }
+        //
+        //     function redirect(newUrl) {
+        //         $timeout(function() {
+        //             // wrapping in $timeout to avoid "digest in progress" errors
+        //             $window.location = newUrl;
+        //         });
+        //     }
+        //
+        // });
+    }]
 };
+
 
 /**
  * Custom filter for inserting HTML code in templates.
@@ -646,7 +647,7 @@ angular.module('rnacentralApp', ['ngAnimate', 'ui.bootstrap', 'chieffancypants.l
     .service('results', ['_', '$http', '$interpolate', '$location', '$window', results])
     .controller('MainContent', ['$scope', '$anchorScroll', '$location', 'results', 'search', MainContent])
     .controller('ResultsListCtrl', ['$scope', '$location', '$http', 'results', ResultsListCtrl])
-    .controller('QueryCtrl', ['$scope', '$location', '$window', '$timeout', 'results', 'search', QueryCtrl])
+    .component('queryComponent', queryComponent)
     .filter("sanitize", ['$sce', sanitize])
     .config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
         // hide spinning wheel
