@@ -382,144 +382,147 @@ var MainContent = function($scope, $anchorScroll, $location, results, search) {
  * Results display controller
  * Responsible for visualising search results.
  */
-var ResultsListCtrl = function($scope, $location, $http, results) {
+var resultsList = {
+    bindings: {},
+    templateUrl: '/static/js/search/metadata-search-results.html',
+    controller: ['$location', '$http', 'results', function($location, $http, results) {
+        var ctrl = this;
 
-    $scope.result = {
-        entries: [],
-    };
-    $scope.show_export_error = false;
+        ctrl.$onInit = function() {
+            ctrl.result = { entries: [] };
+            ctrl.show_export_error = false;
+            ctrl.search_in_progress = results.get_search_in_progress();
+            ctrl.show_error = results.get_show_error();
 
-    $scope.search_in_progress = results.get_search_in_progress();
-    $scope.show_error = results.get_show_error();
-    $http({
-        url: '/api/internal/expert-dbs/',
-        method: 'GET'
-    }).then(function(response) {
-        $scope.expertDbs = response.data;
+            $http({
+                url: '/api/internal/expert-dbs/',
+                method: 'GET'
+            }).then(function(response) {
+                ctrl.expertDbs = response.data;
 
-        // expertDbsObject has lowerCase db names as keys
-        $scope.expertDbsObject = {};
-        for (var i=0; i < $scope.expertDbs.length; i++) {
-            $scope.expertDbsObject[$scope.expertDbs[i].name.toLowerCase()] = $scope.expertDbs[i];
-        }
-    });
+                // expertDbsObject has lowerCase db names as keys
+                ctrl.expertDbsObject = {};
+                for (var i=0; i < ctrl.expertDbs.length; i++) {
+                    ctrl.expertDbsObject[ctrl.expertDbs[i].name.toLowerCase()] = ctrl.expertDbs[i];
+                }
+            });
+        };
 
-    /**
-     * Watch `result` changes.
-     */
-    $scope.$watch(function () { return results.get_result(); }, function (newValue, oldValue) {
-        if (newValue !== null) {
-            $scope.result = newValue;
-        }
-    });
+        /**
+         * Fired when "Load more" button is clicked.
+         */
+        ctrl.load_more_results = function() {
+            results.load_more_results();
+        };
 
-    /**
-     * Watch `display_search_interface` changes.
-     */
-    $scope.$watch(function () { return results.get_status(); }, function (newValue, oldValue) {
-        if (newValue !== null) {
-            $scope.display_search_interface = newValue;
-        }
-    });
+        /**
+         * Determine if the facet has already been applied.
+         */
+        ctrl.is_facet_applied = function(facet_id, facet_value) {
+            var query = $location.search().q || '';
+            var facet_query = new RegExp(facet_id + '\\:"' + facet_value + '"', 'i');
+            return !!query.match(facet_query);
+        };
 
-    /**
-     * Watch `search_in_progress` changes.
-     */
-    $scope.$watch(function () { return results.get_search_in_progress(); }, function (newValue, oldValue) {
-        if (newValue != oldValue) {
-            $scope.search_in_progress = newValue;
-        }
-    });
+        /**
+         * Run a search with a facet enabled.
+         * The facet will be toggled on and off in the repeated calls with the same
+         * parameters.
+         */
+        ctrl.facet_search = function(facet_id, facet_value) {
+            var query = $location.search().q || '',
+                facet = facet_id + ':"' + facet_value + '"',
+                new_query;
 
-    /**
-     * Watch `show_error` changes.
-     */
-    $scope.$watch(function () { return results.get_show_error(); }, function (newValue, oldValue) {
-        if (newValue != oldValue) {
-            $scope.show_error = newValue;
-        }
-    });
-
-    /**
-     * Fired when "Load more" button is clicked.
-     */
-    $scope.load_more_results = function() {
-        results.load_more_results();
-    };
-
-    /**
-     * Determine if the facet has already been applied.
-     */
-    $scope.is_facet_applied = function(facet_id, facet_value) {
-        var query = $location.search().q || '';
-        var facet_query = new RegExp(facet_id + '\\:"' + facet_value + '"', 'i');
-        if (query.match(facet_query)) {
-            return true;
-        } else {
-            return false;
-        }
-    };
-
-    /**
-     * Run a search with a facet enabled.
-     * The facet will be toggled on and off in the repeated calls with the same
-     * parameters.
-     */
-    $scope.facet_search = function(facet_id, facet_value) {
-        var query = $location.search().q || '',
-            facet = facet_id + ':"' + facet_value + '"',
-            new_query;
-
-        if ($scope.is_facet_applied(facet_id, facet_value)) {
-            new_query = query;
-            // remove facet in different contexts
-            new_query = new_query.replace(' AND ' + facet + ' AND ', ' AND ', 'i');
-            new_query = new_query.replace(facet + ' AND ', '', 'i');
-            new_query = new_query.replace(' AND ' + facet, '', 'i');
-            new_query = new_query.replace(facet, '', 'i') || 'RNA';
-        } else {
-            new_query = query + ' AND ' + facet; // add new facet
-        }
-        $location.search('q', new_query);
-    };
-
-    /**
-     * Show/hide search facets to save screen space.
-     * Uses jQuery for simplicity.
-     * Activated only on mobile devices.
-     */
-    $scope.toggle_facets = function() {
-        var facets = $('.metasearch-facets');
-        facets.toggleClass('hidden-xs', !facets.hasClass('hidden-xs'));
-        $('#toggle-facets').text(function(i, text){
-          return text === "Show facets" ? "Hide facets" : "Show facets";
-        });
-    };
-
-    /**
-     * Launch results export.
-     * - submit export job
-     * - open the results page in a new window.
-     */
-    $scope.export_results = function(format) {
-        var submit_query_url = '/export/submit-query',
-            results_page_url = '/export/results';
-        $scope.show_export_error = false;
-        $http({
-            url: submit_query_url +
-                 '?q=' + $scope.result._query +
-                 '&format=' + format,
-            method: 'GET'
-        }).then(
-            function(response) {
-                window.location.href = results_page_url + '?job=' + response.data.job_id;
-            },
-            function(response) {
-                $scope.show_export_error = true;
+            if (ctrl.is_facet_applied(facet_id, facet_value)) {
+                new_query = query;
+                // remove facet in different contexts
+                new_query = new_query.replace(' AND ' + facet + ' AND ', ' AND ', 'i');
+                new_query = new_query.replace(facet + ' AND ', '', 'i');
+                new_query = new_query.replace(' AND ' + facet, '', 'i');
+                new_query = new_query.replace(facet, '', 'i') || 'RNA';
+            } else {
+                new_query = query + ' AND ' + facet; // add new facet
             }
-        );
-    };
+            $location.search('q', new_query);
+        };
+
+        /**
+         * Show/hide search facets to save screen space.
+         * Uses jQuery for simplicity.
+         * Activated only on mobile devices.
+         */
+        ctrl.toggle_facets = function() {
+            var facets = $('.metasearch-facets');
+            facets.toggleClass('hidden-xs', !facets.hasClass('hidden-xs'));
+            $('#toggle-facets').text(function(i, text){
+              return text === "Show facets" ? "Hide facets" : "Show facets";
+            });
+        };
+
+        /**
+         * Launch results export.
+         * - submit export job
+         * - open the results page in a new window.
+         */
+        ctrl.export_results = function(format) {
+            var submit_query_url = '/export/submit-query',
+                results_page_url = '/export/results';
+            ctrl.show_export_error = false;
+            $http({
+                url: submit_query_url +
+                     '?q=' + ctrl.result._query +
+                     '&format=' + format,
+                method: 'GET'
+            }).then(
+                function(response) {
+                    window.location.href = results_page_url + '?job=' + response.data.job_id;
+                },
+                function(response) {
+                    ctrl.show_export_error = true;
+                }
+            );
+        };
+
+        // /**
+        //  * Watch `result` changes.
+        //  */
+        // ctrl.$watch(function () { return results.get_result(); }, function (newValue, oldValue) {
+        //     if (newValue !== null) {
+        //         ctrl.result = newValue;
+        //     }
+        // });
+        //
+        // /**
+        //  * Watch `display_search_interface` changes.
+        //  */
+        // ctrl.$watch(function () { return results.get_status(); }, function (newValue, oldValue) {
+        //     if (newValue !== null) {
+        //         ctrl.display_search_interface = newValue;
+        //     }
+        // });
+        //
+        // /**
+        //  * Watch `search_in_progress` changes.
+        //  */
+        // ctrl.$watch(function () { return results.get_search_in_progress(); }, function (newValue, oldValue) {
+        //     if (newValue != oldValue) {
+        //         ctrl.search_in_progress = newValue;
+        //     }
+        // });
+        //
+        // /**
+        //  * Watch `show_error` changes.
+        //  */
+        // ctrl.$watch(function () { return results.get_show_error(); }, function (newValue, oldValue) {
+        //     if (newValue != oldValue) {
+        //         ctrl.show_error = newValue;
+        //     }
+        // });
+    }]
 };
+
+
 
 var metadataSearchBar = {
     bindings: {},
@@ -645,7 +648,7 @@ angular.module('rnacentralApp', ['ngAnimate', 'ui.bootstrap', 'chieffancypants.l
     .service('search', ['$location', search])
     .service('results', ['_', '$http', '$interpolate', '$location', '$window', results])
     .controller('MainContent', ['$scope', '$anchorScroll', '$location', 'results', 'search', MainContent])
-    .controller('ResultsListCtrl', ['$scope', '$location', '$http', 'results', ResultsListCtrl])
+    .component('resultsList', resultsList)
     .component('metadataSearchBar', metadataSearchBar)
     .filter("sanitize", ['$sce', sanitize])
     .config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
