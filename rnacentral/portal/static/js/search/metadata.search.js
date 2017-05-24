@@ -376,7 +376,6 @@ var MainContent = function($scope, $anchorScroll, $location, results, search) {
     $scope.meta_search = function(query) {
         search.meta_search(query);
     };
-
 };
 
 /**
@@ -522,9 +521,9 @@ var ResultsListCtrl = function($scope, $location, $http, results) {
     };
 };
 
-var queryComponent = {
+var metadataSearchBar = {
     bindings: {},
-    templateUrl: '/static/js/search/metadata-query.html',
+    templateUrl: '/static/js/search/metadataSearchBar.html',
     controller: ['$interpolate', '$location', '$window', '$timeout', 'results', 'search', function($interpolate, $location, $window, $timeout, results, search) {
         var ctrl = this;
 
@@ -647,7 +646,7 @@ angular.module('rnacentralApp', ['ngAnimate', 'ui.bootstrap', 'chieffancypants.l
     .service('results', ['_', '$http', '$interpolate', '$location', '$window', results])
     .controller('MainContent', ['$scope', '$anchorScroll', '$location', 'results', 'search', MainContent])
     .controller('ResultsListCtrl', ['$scope', '$location', '$http', 'results', ResultsListCtrl])
-    .component('queryComponent', queryComponent)
+    .component('metadataSearchBar', metadataSearchBar)
     .filter("sanitize", ['$sce', sanitize])
     .config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
         // hide spinning wheel
