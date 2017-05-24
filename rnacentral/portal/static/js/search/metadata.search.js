@@ -26,39 +26,9 @@ underscore.factory('_', function() {
 });
 
 /**
- * Create RNAcentral app.
- */
-angular.module('rnacentralApp', ['ngAnimate', 'ui.bootstrap', 'chieffancypants.loadingBar', 'underscore', 'Genoverse']);
-
-// hide spinning wheel
-angular.module('rnacentralApp').config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
-    cfpLoadingBarProvider.includeSpinner = false;
-}]);
-
-/**
- * Turn on html5mode only in modern browsers because
- * in the older ones html5mode rewrites urls with Hangbangs
- * which break normal Django pages.
- * With html5mode off IE lt 10 will be able to navigate the site
- * but won't be able to open deep links to Angular pages
- * (for example, a link to a search result won't load in IE 9).
- */
-angular.module('rnacentralApp').config(['$locationProvider', function($locationProvider) {
-    if (window.history && window.history.pushState) {
-        $locationProvider.html5Mode(true);
-    }
-
-    // IE10- don't have window.location.origin, let's shim it
-    if (!window.location.origin) {
-         window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
-    }
-}]);
-
-/**
  * Service for launching a metadata search.
  */
-angular.module('rnacentralApp').service('search', ['$location', function($location) {
-
+var search = function($location) {
     /**
      * To launch a new search, change browser url,
      * which will automatically trigger a new search
@@ -68,12 +38,12 @@ angular.module('rnacentralApp').service('search', ['$location', function($locati
         $location.url('/search' + '?q=' + query);
     };
 
-}]);
+};
 
 /**
  * Service for passing data between controllers.
  */
-angular.module('rnacentralApp').service('results', ['_', '$http', '$interpolate', '$location', '$window', function(_, $http, $interpolate, $location, $window) {
+var results = function(_, $http, $interpolate, $location, $window) {
 
     /**
      * Service initialization.
@@ -378,9 +348,9 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$interpolate'
         return status.show_error;
     };
 
-}]);
+};
 
-angular.module('rnacentralApp').controller('MainContent', ['$scope', '$anchorScroll', '$location', 'results', 'search', function($scope, $anchorScroll, $location, results, search) {
+var MainContent = function($scope, $anchorScroll, $location, results, search) {
     /**
      * Enables scrolling to anchor tags.
      * <a ng-click="scrollTo('anchor')">Title</a>
@@ -407,13 +377,13 @@ angular.module('rnacentralApp').controller('MainContent', ['$scope', '$anchorScr
         search.meta_search(query);
     };
 
-}]);
+};
 
 /**
  * Results display controller
  * Responsible for visualising search results.
  */
-angular.module('rnacentralApp').controller('ResultsListCtrl', ['$scope', '$location', '$http', 'results', function($scope, $location, $http, results) {
+var ResultsListCtrl = function($scope, $location, $http, results) {
 
     $scope.result = {
         entries: [],
@@ -550,13 +520,13 @@ angular.module('rnacentralApp').controller('ResultsListCtrl', ['$scope', '$locat
             }
         );
     };
-}]);
+};
 
 /**
  * Query controller
  * Responsible for the search box in the header.
  */
-angular.module('rnacentralApp').controller('QueryCtrl', ['$scope', '$location', '$window', '$timeout', 'results', 'search', function($scope, $location, $window, $timeout, results, search) {
+var QueryCtrl = function($scope, $location, $window, $timeout, results, search) {
 
     $scope.query = {
         text: '',
@@ -656,14 +626,47 @@ angular.module('rnacentralApp').controller('QueryCtrl', ['$scope', '$location', 
         }
     })();
 
-}]);
+};
 
 /**
  * Custom filter for inserting HTML code in templates.
  * Used for processing search results highlighting.
  */
-angular.module('rnacentralApp').filter("sanitize", ['$sce', function($sce) {
+var sanitize = function($sce) {
   return function(htmlCode){
     return $sce.trustAsHtml(htmlCode);
   }
-}]);
+};
+
+/**
+ * Create RNAcentral app.
+ */
+angular.module('rnacentralApp', ['ngAnimate', 'ui.bootstrap', 'chieffancypants.loadingBar', 'underscore', 'Genoverse'])
+    .service('search', ['$location', search])
+    .service('results', ['_', '$http', '$interpolate', '$location', '$window', results])
+    .controller('MainContent', ['$scope', '$anchorScroll', '$location', 'results', 'search', MainContent])
+    .controller('ResultsListCtrl', ['$scope', '$location', '$http', 'results', ResultsListCtrl])
+    .controller('QueryCtrl', ['$scope', '$location', '$window', '$timeout', 'results', 'search', QueryCtrl])
+    .filter("sanitize", ['$sce', sanitize])
+    .config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
+        // hide spinning wheel
+        cfpLoadingBarProvider.includeSpinner = false;
+    }])
+    .config(['$locationProvider', function($locationProvider) {
+        /**
+         * Turn on html5mode only in modern browsers because
+         * in the older ones html5mode rewrites urls with Hangbangs
+         * which break normal Django pages.
+         * With html5mode off IE lt 10 will be able to navigate the site
+         * but won't be able to open deep links to Angular pages
+         * (for example, a link to a search result won't load in IE 9).
+         */
+        if (window.history && window.history.pushState) {
+            $locationProvider.html5Mode(true);
+        }
+
+        // IE10- don't have window.location.origin, let's shim it
+        if (!window.location.origin) {
+             window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
+        }
+    }]);
