@@ -526,7 +526,7 @@ var resultsList = {
 
 var metadataSearchBar = {
     bindings: {},
-    templateUrl: '/static/js/search/metadataSearchBar.html',
+    templateUrl: '/static/js/search/metadata-search-bar.html',
     controller: ['$interpolate', '$location', '$window', '$timeout', 'results', 'search', function($interpolate, $location, $window, $timeout, results, search) {
         var ctrl = this;
 
