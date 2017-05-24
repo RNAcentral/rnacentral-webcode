@@ -111,6 +111,9 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$interpolate'
                         '&start={{ start }}' +
                         '&sort=boost:descending,length:descending' +
                         '&hlpretag=<span class=metasearch-highlights>&hlposttag=</span>',
+        'ebeye_autocomplete': 'http://www.ebi.ac.uk/ebisearch/ws/RNAcentral/autocomplete' +
+                              '?term={{ input }}' +
+                              '&format=json',
         'proxy': search_config.rnacentral_base_url +
                  '/api/internal/ebeye?url={{ ebeye_url }}',
     };
@@ -623,9 +626,11 @@ angular.module('rnacentralApp').controller('QueryCtrl', ['$scope', '$location', 
     });
 
     $scope.get_autocomplete_suggestions = function(input) {
-        return $http.get(
-            $interpolate('http://www.ebi.ac.uk/ebisearch/ws/RNAcentral/autocomplete?term={{ input }}&format=json')(input)
-        );
+        // get query_url ready
+        var ebeye_url = $interpolate(query_urls.ebeye_autocomplete)({input: input});
+        var query_url = $interpolate(query_urls.proxy)({ebeye_url: encodeURIComponent(ebeye_url)});
+
+        return $http.get($interpolate(query_url)(input));
     };
 
     /**
