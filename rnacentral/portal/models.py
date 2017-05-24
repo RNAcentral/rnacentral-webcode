@@ -1230,8 +1230,11 @@ class RfamClan(models.Model):
     """
     rfam_clan_id = models.CharField(max_length=20, primary_key=True)
     name = models.CharField(max_length=40)
-    description = models.CharField(max_length=100)
+    description = models.CharField(max_length=500)
     family_count = models.PositiveIntegerField()
+
+    class Meta:
+        db_table = 'rnc_rfam_clans'
 
 
 class RfamModel(models.Model):
@@ -1241,10 +1244,11 @@ class RfamModel(models.Model):
     """
     rfam_model_id = models.CharField(max_length=20, primary_key=True)
     name = models.CharField(max_length=40)
-    description = models.CharField(max_length=100)
+    description = models.CharField(max_length=500)
     rfam_clan_id = models.ForeignKey(RfamClan,
                                      db_column='rfam_clan_id',
-                                     to_field='rfam_clan_id')
+                                     to_field='rfam_clan_id', 
+                                     null=True)
 
     seed_count = models.PositiveIntegerField()
     full_count = models.PositiveIntegerField()
@@ -1281,7 +1285,7 @@ class SequenceRegion(models.Model):
     we store information about what part does for both display and analysis.
     """
     sequence_region_id = models.AutoField(primary_key=True)
-    upi = models.ForeignKey(Rna, db_column='upi', to_column='id')
+    upi = models.ForeignKey(Rna, db_column='upi_id', to_field='upi')
     start = models.PositiveIntegerField()
     stop = models.PositiveIntegerField()
     completeness = models.FloatField()
@@ -1305,7 +1309,7 @@ class RfamSearch(models.Model):
     rfam_release_version = models.CharField(max_length=4)
     program = models.CharField(max_length=10)
     program_version = models.CharField(max_length=10)
-    program_options = models.JSONField()
+    program_options = models.CharField(max_length=500)
 
     class Meta:
         db_table = 'rnc_rfam_searches'
@@ -1331,6 +1335,7 @@ class RfamHit(models.Model):
                                           to_field='rfam_model_region_id',
                                           related_name='hits')
     e_value = models.FloatField()
+    score = models.FloatField()
 
     class Meta:
         db_table = 'rnc_rfam_model_hits'
