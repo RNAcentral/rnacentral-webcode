@@ -394,10 +394,7 @@ var resultsList = {
             ctrl.search_in_progress = results.get_search_in_progress();
             ctrl.show_error = results.get_show_error();
 
-            $http({
-                url: '/api/internal/expert-dbs/',
-                method: 'GET'
-            }).then(function(response) {
+            $http.get('/api/internal/expert-dbs/').then(function(response) {
                 ctrl.expertDbs = response.data;
 
                 // expertDbsObject has lowerCase db names as keys
@@ -436,6 +433,7 @@ var resultsList = {
 
             if (ctrl.is_facet_applied(facet_id, facet_value)) {
                 new_query = query;
+
                 // remove facet in different contexts
                 new_query = new_query.replace(' AND ' + facet + ' AND ', ' AND ', 'i');
                 new_query = new_query.replace(facet + ' AND ', '', 'i');
@@ -455,8 +453,8 @@ var resultsList = {
         ctrl.toggle_facets = function() {
             var facets = $('.metasearch-facets');
             facets.toggleClass('hidden-xs', !facets.hasClass('hidden-xs'));
-            $('#toggle-facets').text(function(i, text){
-              return text === "Show facets" ? "Hide facets" : "Show facets";
+            $('#toggle-facets').text(function(i, text) {
+                 return text === "Show facets" ? "Hide facets" : "Show facets";
             });
         };
 
@@ -468,13 +466,10 @@ var resultsList = {
         ctrl.export_results = function(format) {
             var submit_query_url = '/export/submit-query',
                 results_page_url = '/export/results';
+
             ctrl.show_export_error = false;
-            $http({
-                url: submit_query_url +
-                     '?q=' + ctrl.result._query +
-                     '&format=' + format,
-                method: 'GET'
-            }).then(
+
+            $http.get(submit_query_url + '?q=' + ctrl.result._query + '&format=' + format).then(
                 function(response) {
                     window.location.href = results_page_url + '?job=' + response.data.job_id;
                 },
