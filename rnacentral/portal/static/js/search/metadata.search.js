@@ -47,6 +47,11 @@ angular.module('rnacentralApp').config(['$locationProvider', function($locationP
     if (window.history && window.history.pushState) {
         $locationProvider.html5Mode(true);
     }
+
+    // IE10- don't have window.location.origin, let's shim it
+    if (!window.location.origin) {
+         window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
+    }
 }]);
 
 /**
@@ -68,7 +73,7 @@ angular.module('rnacentralApp').service('search', ['$location', function($locati
 /**
  * Service for passing data between controllers.
  */
-angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '$window', function(_, $http, $location, $window) {
+angular.module('rnacentralApp').service('results', ['_', '$http', '$interpolate', '$location', '$window', function(_, $http, $interpolate, $location, $window) {
 
     /**
      * Service initialization.
@@ -88,45 +93,27 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
 
     var search_config = {
         ebeye_base_url: global_settings.EBI_SEARCH_ENDPOINT,
-        rnacentral_base_url: get_base_url(),
+        rnacentral_base_url: window.location.origin, // e.g. http://localhost:8000 or http://rnacentral.org
         fields: ['description', 'active', 'length', 'pub_title', 'has_genomic_coordinates'],
-        facetfields: [
-            'rna_type',
-            'TAXONOMY',
-            'expert_db',
-            'has_genomic_coordinates',
-            'popular_species',
-        ], // will be displayed in this order
+        facetfields: ['rna_type', 'TAXONOMY', 'expert_db', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
         facetcount: 30,
         pagesize: 15,
     };
 
     var query_urls = {
         'ebeye_search': search_config.ebeye_base_url +
-                        '?query={QUERY}' +
+                        '?query={{ query }}' +
                         '&format=json' +
                         '&hlfields=' + search_config.fields.join() +
                         '&facetcount=' + search_config.facetcount +
                         '&facetfields=' + search_config.facetfields.join() +
                         '&size=' + search_config.pagesize +
-                        '&start={START}' +
+                        '&start={{ start }}' +
                         '&sort=boost:descending,length:descending' +
                         '&hlpretag=<span class=metasearch-highlights>&hlposttag=</span>',
         'proxy': search_config.rnacentral_base_url +
-                 '/api/internal/ebeye?url={EBEYE_URL}',
+                 '/api/internal/ebeye?url={{ ebeye_url }}',
     };
-
-    /**
-     * Calculate base url for production and development environments.
-     */
-    function get_base_url() {
-        var base_url = $location.protocol() + '://' + $location.host();
-        var port = $location.port();
-        if (port !== '') {
-            base_url += ':' + port;
-        }
-        return base_url;
-    }
 
     /**
      * Launch EBeye search.
@@ -149,8 +136,8 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
         query = preprocess_query(query);
 
         // get query_url ready
-        var ebeye_url = query_urls.ebeye_search.replace('{QUERY}', query).replace('{START}', start);
-        var query_url = query_urls.proxy.replace('{EBEYE_URL}', encodeURIComponent(ebeye_url));
+        var ebeye_url = $interpolate(query_urls.ebeye_search)({query: query, start: start});
+        var query_url = $interpolate(query_urls.proxy)({ebeye_url: encodeURIComponent(ebeye_url)});
 
         execute_ebeye_search(query_url, start === 0);
 
@@ -236,10 +223,7 @@ angular.module('rnacentralApp').service('results', ['_', '$http', '$location', '
         function execute_ebeye_search(url, overwrite_results) {
             status.search_in_progress = true;
             status.show_error = false;
-            $http({
-                url: url,
-                method: 'GET'
-            }).then(
+            $http.get(url, params).then(
                 function(response) {
                     data = preprocess_results(response.data);
                     overwrite_results = overwrite_results || false;
