@@ -382,7 +382,7 @@ var MainContent = function($scope, $anchorScroll, $location, results, search) {
  * Results display controller
  * Responsible for visualising search results.
  */
-var resultsList = {
+var metadataSearchResults = {
     bindings: {},
     templateUrl: '/static/js/search/metadata-search-results.html',
     controller: ['$location', '$http', 'results', function($location, $http, results) {
@@ -643,7 +643,7 @@ angular.module('rnacentralApp', ['ngAnimate', 'ui.bootstrap', 'chieffancypants.l
     .service('search', ['$location', search])
     .service('results', ['_', '$http', '$interpolate', '$location', '$window', results])
     .controller('MainContent', ['$scope', '$anchorScroll', '$location', 'results', 'search', MainContent])
-    .component('resultsList', resultsList)
+    .component('metadataSearchResults', metadataSearchResults)
     .component('metadataSearchBar', metadataSearchBar)
     .filter("sanitize", ['$sce', sanitize])
     .config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
