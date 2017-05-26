@@ -389,11 +389,17 @@ var metadataSearchResults = {
         var ctrl = this;
 
         ctrl.$onInit = function() {
+            // variables that control UI state
             ctrl.result = { entries: [] };
             ctrl.show_export_error = false;
             ctrl.search_in_progress = results.get_search_in_progress();
             ctrl.show_error = results.get_show_error();
 
+            // urls used in template (hardcoded)
+            ctrl.helpMetadataSearchUrl = '/help/metadata-search/';
+            ctrl.contactUsUrl = '/contact';
+
+            // retrieve expert_dbs json for display in tooltips
             $http.get('/api/internal/expert-dbs/').then(function(response) {
                 ctrl.expertDbs = response.data;
 
