@@ -44,24 +44,25 @@ var search = function($location) {
  * Service for passing data between controllers.
  */
 var results = function(_, $http, $interpolate, $location, $window) {
+    var self = this; // in case some event handler or constructor overrides "this"
 
     /**
      * Service initialization.
      */
-    var result = {
+    this.result = {
         hitCount: null,
         entries: [],
         facets: [],
         _query: null, // query after preprocessing
     };
 
-    var status = {
+    this.status = {
         display_search_interface: false, // hide results section at first
         search_in_progress: false, // display spinning wheel while searching
         show_error: false, // display error message
     };
 
-    var search_config = {
+    this.search_config = {
         ebeye_base_url: global_settings.EBI_SEARCH_ENDPOINT,
         rnacentral_base_url: window.location.origin, // e.g. http://localhost:8000 or http://rnacentral.org
         fields: ['description', 'active', 'length', 'pub_title', 'has_genomic_coordinates'],
@@ -70,21 +71,21 @@ var results = function(_, $http, $interpolate, $location, $window) {
         pagesize: 15,
     };
 
-    var query_urls = {
-        'ebeye_search': search_config.ebeye_base_url +
+    this.query_urls = {
+        'ebeye_search': self.search_config.ebeye_base_url +
                         '?query={{ query }}' +
                         '&format=json' +
-                        '&hlfields=' + search_config.fields.join() +
-                        '&facetcount=' + search_config.facetcount +
-                        '&facetfields=' + search_config.facetfields.join() +
-                        '&size=' + search_config.pagesize +
+                        '&hlfields=' + self.search_config.fields.join() +
+                        '&facetcount=' + self.search_config.facetcount +
+                        '&facetfields=' + self.search_config.facetfields.join() +
+                        '&size=' + self.search_config.pagesize +
                         '&start={{ start }}' +
                         '&sort=boost:descending,length:descending' +
                         '&hlpretag=<span class=metasearch-highlights>&hlposttag=</span>',
         'ebeye_autocomplete': 'http://www.ebi.ac.uk/ebisearch/ws/RNAcentral/autocomplete' +
                               '?term={{ input }}' +
                               '&format=json',
-        'proxy': search_config.rnacentral_base_url +
+        'proxy': self.search_config.rnacentral_base_url +
                  '/api/internal/ebeye?url={{ ebeye_url }}',
     };
 
@@ -98,10 +99,10 @@ var results = function(_, $http, $interpolate, $location, $window) {
         hopscotch.endTour(); // end guided tour when a search is launched
 
         // setting display_search_interface to true hides non-search-related content and shows search results
-        status.display_search_interface = true;
+        self.status.display_search_interface = true;
 
         // display search spinner if not a "load more" request
-        if (start === 0) result.hitCount = null;
+        if (start === 0) self.result.hitCount = null;
 
         // change page title, which is also used in browser tabs
         $window.document.title = 'Search: ' + query;
@@ -109,8 +110,8 @@ var results = function(_, $http, $interpolate, $location, $window) {
         query = preprocess_query(query);
 
         // get query_url ready
-        var ebeye_url = $interpolate(query_urls.ebeye_search)({query: query, start: start});
-        var query_url = $interpolate(query_urls.proxy)({ebeye_url: encodeURIComponent(ebeye_url)});
+        var ebeye_url = $interpolate(self.query_urls.ebeye_search)({query: query, start: start});
+        var query_url = $interpolate(self.query_urls.proxy)({ebeye_url: encodeURIComponent(ebeye_url)});
 
         execute_ebeye_search(query_url, start === 0);
 
@@ -177,7 +178,7 @@ var results = function(_, $http, $interpolate, $location, $window) {
             if (length_clause) {
               query = query.replace(placeholder + '*', length_clause[0]);
             }
-            result._query = query;
+            self.result._query = query;
             return query;
 
             /**
@@ -194,24 +195,25 @@ var results = function(_, $http, $interpolate, $location, $window) {
          * Execute remote request.
          */
         function execute_ebeye_search(url, overwrite_results) {
-            status.search_in_progress = true;
-            status.show_error = false;
+            console.log("Called execute_ebeye_search");
+            self.status.search_in_progress = true;
+            self.status.show_error = false;
             $http.get(url, params).then(
                 function(response) {
                     data = preprocess_results(response.data);
                     overwrite_results = overwrite_results || false;
                     if (overwrite_results) {
-                        data._query = result._query;
-                        result = data; // replace
+                        data._query = self.result._query;
+                        self.result = data; // replace
                     } else {
                         // append new entries
-                        result.entries = result.entries.concat(data.entries);
+                        self.result.entries = self.result.entries.concat(data.entries);
                     }
-                    status.search_in_progress = false;
+                    self.status.search_in_progress = false;
                 },
                 function(response) {
-                    status.search_in_progress = false;
-                    status.show_error = true;
+                    self.status.search_in_progress = false;
+                    self.status.show_error = true;
                 }
             );
 
@@ -241,7 +243,7 @@ var results = function(_, $http, $interpolate, $location, $window) {
                  */
                 function order_facets() {
                     data.facets = _.sortBy(data.facets, function(facet){
-                        return _.indexOf(search_config.facetfields, facet.id);
+                        return _.indexOf(self.search_config.facetfields, facet.id);
                     });
                 }
 
@@ -317,37 +319,15 @@ var results = function(_, $http, $interpolate, $location, $window) {
      */
     this.load_more_results = function() {
         query = $location.search().q;
-        this.search(query, result.entries.length);
+        this.search(query, self.result.entries.length);
     };
 
     /**
-     * Broadcast whether search interface should be displayed.
+     * Stupid function wrapper just to keep $watch in MainContent happy
      */
-    this.get_status = function() {
-        return status.display_search_interface;
+    this.getDisplaySearchInterface = function() {
+        return self.status.display_search_interface;
     };
-
-    /**
-     * Broadcast search results changes.
-     */
-    this.get_result = function() {
-        return result;
-    };
-
-    /**
-     * Broadcast whether search is in progress.
-     */
-    this.get_search_in_progress = function() {
-        return status.search_in_progress;
-    };
-
-    /**
-     * Broadcast whether an error has occurred.
-     */
-    this.get_show_error = function() {
-        return status.show_error;
-    };
-
 };
 
 var MainContent = function($scope, $anchorScroll, $location, results, search) {
@@ -364,8 +344,10 @@ var MainContent = function($scope, $anchorScroll, $location, results, search) {
      * Watch `display_search_interface` in order to hide non-search-related content
      * when a search is initiated.
      */
-    $scope.$watch(function () { return results.get_status(); }, function (newValue, oldValue) {
+    $scope.$watch(results.getDisplaySearchInterface, function (newValue, oldValue) {
+        console.log("watched results.status.display_search_interface = ", newValue);
         if (newValue !== null) {
+            console.log("display_search_interface watch called");
             $scope.display_search_interface = newValue;
         }
     });
@@ -392,8 +374,8 @@ var metadataSearchResults = {
             // variables that control UI state
             ctrl.result = { entries: [] };
             ctrl.show_export_error = false;
-            ctrl.search_in_progress = results.get_search_in_progress();
-            ctrl.show_error = results.get_show_error();
+            ctrl.search_in_progress = results.search_in_progress;
+            ctrl.show_error = results.show_error;
 
             // urls used in template (hardcoded)
             ctrl.helpMetadataSearchUrl = '/help/metadata-search/';
@@ -409,13 +391,15 @@ var metadataSearchResults = {
                     ctrl.expertDbsObject[ctrl.expertDbs[i].name.toLowerCase()] = ctrl.expertDbs[i];
                 }
             });
+
+            // TODO: handle rejection!!!!!!!!!!!!
         };
 
         ctrl.$doCheck = function() {
-            if (results.get_result() !== null) ctrl.result = results.get_result();
-            if (results.get_status() !== null) ctrl.display_search_interface = results.get_status();
-            if (results.get_search_in_progress() !== ctrl.search_in_progress) ctrl.search_in_progress = results.get_search_in_progress();
-            if (results.get_show_error() !== ctrl.show_error) ctrl.show_error = results.get_show_error();
+            if (results.result !== null) ctrl.result = results.result;
+            if (results.status.display_search_interface !== null) ctrl.display_search_interface = results.status.display_search_interface;
+            if (results.status.search_in_progress !== ctrl.search_in_progress) ctrl.search_in_progress = results.status.search_in_progress;
+            if (results.status.show_error !== ctrl.show_error) ctrl.show_error = results.status.show_error;
         };
 
         /**
@@ -523,6 +507,8 @@ var metadataSearchBar = {
          */
         ctrl.$doCheck = function() {
             newUrl = $location.url().replace(/#.+$/, ''); // ignore url hash
+            console.log("newUrl = ", newUrl);
+            console.log("ctrl.oldUrl = ", ctrl.oldUrl);
 
             // url has changed
             if (newUrl !== ctrl.oldUrl) {
@@ -584,8 +570,8 @@ var metadataSearchBar = {
          */
         ctrl.autocomplete = function(input) {
             // get query_url ready
-            var ebeye_url = $interpolate(query_urls.ebeye_autocomplete)({input: input});
-            var query_url = $interpolate(query_urls.proxy)({ebeye_url: encodeURIComponent(ebeye_url)});
+            var ebeye_url = $interpolate(results.query_urls.ebeye_autocomplete)({input: input});
+            var query_url = $interpolate(results.query_urls.proxy)({ebeye_url: encodeURIComponent(ebeye_url)});
 
             return $http.get($interpolate(query_url)(input));
         };
