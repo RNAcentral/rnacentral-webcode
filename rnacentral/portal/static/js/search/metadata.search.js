@@ -69,10 +69,18 @@ var search = function(_, $http, $interpolate, $location, $window) {
                         '&sort=boost:descending,length:descending' +
                         '&hlpretag=<span class=metasearch-highlights>&hlposttag=</span>',
         'ebeye_autocomplete': 'http://www.ebi.ac.uk/ebisearch/ws/RNAcentral/autocomplete' +
-                              '?term={{ input }}' +
+                              '?term={{ query }}' +
                               '&format=json',
         'proxy': self.search_config.rnacentral_base_url +
                  '/api/internal/ebeye?url={{ ebeye_url }}',
+    };
+
+    this.autocomplete = function(query) {
+        // get query_url ready
+        var ebeye_url = $interpolate(self.query_urls.ebeye_autocomplete)({query: query});
+        var query_url = $interpolate(self.query_urls.proxy)({ebeye_url: encodeURIComponent(ebeye_url)});
+
+        return $http.get($interpolate(query_url)(query));
     };
 
     /**
@@ -562,14 +570,9 @@ var metadataSearchBar = {
         /**
          * Called when user changes the value in query string
          */
-        ctrl.autocomplete = function(input) {
-            search(autocomplete(query));
-
-            // get query_url ready
-            var ebeye_url = $interpolate(search.query_urls.ebeye_autocomplete)({input: input});
-            var query_url = $interpolate(search.query_urls.proxy)({ebeye_url: encodeURIComponent(ebeye_url)});
-
-            return $http.get($interpolate(query_url)(input));
+        ctrl.autocomplete = function() {
+            var query = ctrl.queryForm.text;
+            search.autocomplete(query);
         };
 
         /**
