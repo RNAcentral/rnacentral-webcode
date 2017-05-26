@@ -379,17 +379,21 @@ var metadataSearchResults = {
             ctrl.contactUsUrl = '/contact';
 
             // retrieve expert_dbs json for display in tooltips
-            $http.get('/api/internal/expert-dbs/').then(function(response) {
-                ctrl.expertDbs = response.data;
+            $http.get('/api/internal/expert-dbs/').then(
+                function(response) {
+                    ctrl.expertDbs = response.data;
 
-                // expertDbsObject has lowerCase db names as keys
-                ctrl.expertDbsObject = {};
-                for (var i=0; i < ctrl.expertDbs.length; i++) {
-                    ctrl.expertDbsObject[ctrl.expertDbs[i].name.toLowerCase()] = ctrl.expertDbs[i];
+                    // expertDbsObject has lowerCase db names as keys
+                    ctrl.expertDbsObject = {};
+                    for (var i=0; i < ctrl.expertDbs.length; i++) {
+                        ctrl.expertDbsObject[ctrl.expertDbs[i].name.toLowerCase()] = ctrl.expertDbs[i];
+                    }
+                },
+                function(response) {
+                    results.status.show_error = true;
                 }
-            });
+            );
 
-            // TODO: handle rejection!!!!!!!!!!!!
         };
 
         ctrl.$doCheck = function() {
