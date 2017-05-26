@@ -406,47 +406,11 @@ var metadataSearchResults = {
         };
 
         ctrl.$doCheck = function() {
-            if (results.get_result() !== null) ctrl.results = results.get_result();
+            if (results.get_result() !== null) ctrl.result = results.get_result();
             if (results.get_status() !== null) ctrl.display_search_interface = results.get_status();
             if (results.get_search_in_progress() !== ctrl.search_in_progress) ctrl.search_in_progress = results.get_search_in_progress();
             if (results.get_show_error() !== ctrl.show_error) ctrl.show_error = results.get_show_error();
         };
-
-        // /**
-        //  * Watch `result` changes.
-        //  */
-        // ctrl.$watch(function () { return results.get_result(); }, function (newValue, oldValue) {
-        //     if (newValue !== null) {
-        //         ctrl.result = newValue;
-        //     }
-        // });
-        //
-        // /**
-        //  * Watch `display_search_interface` changes.
-        //  */
-        // ctrl.$watch(function () { return results.get_status(); }, function (newValue, oldValue) {
-        //     if (newValue !== null) {
-        //         ctrl.display_search_interface = newValue;
-        //     }
-        // });
-        //
-        // /**
-        //  * Watch `search_in_progress` changes.
-        //  */
-        // ctrl.$watch(function () { return results.get_search_in_progress(); }, function (newValue, oldValue) {
-        //     if (newValue != oldValue) {
-        //         ctrl.search_in_progress = newValue;
-        //     }
-        // });
-        //
-        // /**
-        //  * Watch `show_error` changes.
-        //  */
-        // ctrl.$watch(function () { return results.get_show_error(); }, function (newValue, oldValue) {
-        //     if (newValue != oldValue) {
-        //         ctrl.show_error = newValue;
-        //     }
-        // });
 
         /**
          * Fired when "Load more" button is clicked.
