@@ -28,22 +28,8 @@ underscore.factory('_', function() {
 /**
  * Service for launching a metadata search.
  */
-var search = function($location) {
-    /**
-     * To launch a new search, change browser url,
-     * which will automatically trigger a new search
-     * since the url changes are watched in the query controller.
-     */
-    this.meta_search = function(query) {
-        $location.url('/search' + '?q=' + query);
-    };
 
-};
-
-/**
- * Service for passing data between controllers.
- */
-var results = function(_, $http, $interpolate, $location, $window) {
+var search = function(_, $http, $interpolate, $location, $window) {
     var self = this; // in case some event handler or constructor overrides "this"
 
     /**
@@ -87,6 +73,15 @@ var results = function(_, $http, $interpolate, $location, $window) {
                               '&format=json',
         'proxy': self.search_config.rnacentral_base_url +
                  '/api/internal/ebeye?url={{ ebeye_url }}',
+    };
+
+    /**
+     * To launch a new search, change browser url,
+     * which will automatically trigger a new search
+     * since the url changes are watched in the query controller.
+     */
+    this.meta_search = function(query) {
+        $location.url('/search' + '?q=' + query);
     };
 
     /**
@@ -329,7 +324,7 @@ var results = function(_, $http, $interpolate, $location, $window) {
     };
 };
 
-var MainContent = function($scope, $anchorScroll, $location, results, search) {
+var MainContent = function($scope, $anchorScroll, $location, search) {
     /**
      * Enables scrolling to anchor tags.
      * <a ng-click="scrollTo('anchor')">Title</a>
@@ -343,7 +338,7 @@ var MainContent = function($scope, $anchorScroll, $location, results, search) {
      * Watch `display_search_interface` in order to hide non-search-related content
      * when a search is initiated.
      */
-    $scope.$watch(results.getDisplaySearchInterface, function (newValue, oldValue) {
+    $scope.$watch(search.getDisplaySearchInterface, function (newValue, oldValue) {
         if (newValue !== null) {
             $scope.display_search_interface = newValue;
         }
@@ -364,15 +359,15 @@ var MainContent = function($scope, $anchorScroll, $location, results, search) {
 var metadataSearchResults = {
     bindings: {},
     templateUrl: '/static/js/search/metadata-search-results.html',
-    controller: ['$location', '$http', 'results', function($location, $http, results) {
+    controller: ['$location', '$http', 'search', function($location, $http, search) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
             // variables that control UI state
             ctrl.result = { entries: [] };
             ctrl.show_export_error = false;
-            ctrl.search_in_progress = results.search_in_progress;
-            ctrl.show_error = results.show_error;
+            ctrl.search_in_progress = search.search_in_progress;
+            ctrl.show_error = search.show_error;
 
             // urls used in template (hardcoded)
             ctrl.helpMetadataSearchUrl = '/help/metadata-search/';
@@ -390,24 +385,24 @@ var metadataSearchResults = {
                     }
                 },
                 function(response) {
-                    results.status.show_error = true;
+                    search.status.show_error = true;
                 }
             );
 
         };
 
         ctrl.$doCheck = function() {
-            if (results.result !== null) ctrl.result = results.result;
-            if (results.status.display_search_interface !== null) ctrl.display_search_interface = results.status.display_search_interface;
-            if (results.status.search_in_progress !== ctrl.search_in_progress) ctrl.search_in_progress = results.status.search_in_progress;
-            if (results.status.show_error !== ctrl.show_error) ctrl.show_error = results.status.show_error;
+            if (search.result !== null) ctrl.result = search.result;
+            if (search.status.display_search_interface !== null) ctrl.display_search_interface = search.status.display_search_interface;
+            if (search.status.search_in_progress !== ctrl.search_in_progress) ctrl.search_in_progress = search.status.search_in_progress;
+            if (search.status.show_error !== ctrl.show_error) ctrl.show_error = search.status.show_error;
         };
 
         /**
          * Fired when "Load more" button is clicked.
          */
         ctrl.load_more_results = function() {
-            results.load_more_results();
+            search.load_more_results();
         };
 
         /**
@@ -484,7 +479,7 @@ var metadataSearchResults = {
 var metadataSearchBar = {
     bindings: {},
     templateUrl: '/static/js/search/metadata-search-bar.html',
-    controller: ['$interpolate', '$location', '$window', '$timeout', 'results', 'search', function($interpolate, $location, $window, $timeout, results, search) {
+    controller: ['$interpolate', '$location', '$window', '$timeout', 'search', function($interpolate, $location, $window, $timeout, search) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
@@ -499,7 +494,7 @@ var metadataSearchBar = {
             if ($location.url().indexOf("/search?q=") > -1) {
                 // a search result page, launch a new search
                 ctrl.query.text = $location.search().q;
-                results.search($location.search().q);
+                search.search($location.search().q);
             }
         };
 
@@ -543,7 +538,7 @@ var metadataSearchBar = {
                 else {
                     ctrl.oldUrl = newUrl;
                     ctrl.query.text = $location.search().q;
-                    results.search($location.search().q);
+                    search.search($location.search().q);
                     ctrl.query.submitted = false;
                 }
             }
@@ -568,9 +563,11 @@ var metadataSearchBar = {
          * Called when user changes the value in query string
          */
         ctrl.autocomplete = function(input) {
+            search(autocomplete(query));
+
             // get query_url ready
-            var ebeye_url = $interpolate(results.query_urls.ebeye_autocomplete)({input: input});
-            var query_url = $interpolate(results.query_urls.proxy)({ebeye_url: encodeURIComponent(ebeye_url)});
+            var ebeye_url = $interpolate(search.query_urls.ebeye_autocomplete)({input: input});
+            var query_url = $interpolate(search.query_urls.proxy)({ebeye_url: encodeURIComponent(ebeye_url)});
 
             return $http.get($interpolate(query_url)(input));
         };
@@ -603,9 +600,8 @@ var sanitize = function($sce) {
  * Create RNAcentral app.
  */
 angular.module('rnacentralApp', ['ngAnimate', 'ui.bootstrap', 'chieffancypants.loadingBar', 'underscore', 'Genoverse'])
-    .service('search', ['$location', search])
-    .service('results', ['_', '$http', '$interpolate', '$location', '$window', results])
-    .controller('MainContent', ['$scope', '$anchorScroll', '$location', 'results', 'search', MainContent])
+    .service('search', ['_', '$http', '$interpolate', '$location', '$window', search])
+    .controller('MainContent', ['$scope', '$anchorScroll', '$location', 'search', MainContent])
     .component('metadataSearchResults', metadataSearchResults)
     .component('metadataSearchBar', metadataSearchBar)
     .filter("sanitize", ['$sce', sanitize])
