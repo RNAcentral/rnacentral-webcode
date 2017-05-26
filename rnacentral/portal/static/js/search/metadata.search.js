@@ -195,7 +195,6 @@ var results = function(_, $http, $interpolate, $location, $window) {
          * Execute remote request.
          */
         function execute_ebeye_search(url, overwrite_results) {
-            console.log("Called execute_ebeye_search");
             self.status.search_in_progress = true;
             self.status.show_error = false;
             $http.get(url, params).then(
@@ -345,9 +344,7 @@ var MainContent = function($scope, $anchorScroll, $location, results, search) {
      * when a search is initiated.
      */
     $scope.$watch(results.getDisplaySearchInterface, function (newValue, oldValue) {
-        console.log("watched results.status.display_search_interface = ", newValue);
         if (newValue !== null) {
-            console.log("display_search_interface watch called");
             $scope.display_search_interface = newValue;
         }
     });
@@ -507,8 +504,6 @@ var metadataSearchBar = {
          */
         ctrl.$doCheck = function() {
             newUrl = $location.url().replace(/#.+$/, ''); // ignore url hash
-            console.log("newUrl = ", newUrl);
-            console.log("ctrl.oldUrl = ", ctrl.oldUrl);
 
             // url has changed
             if (newUrl !== ctrl.oldUrl) {
