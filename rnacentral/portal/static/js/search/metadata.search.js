@@ -43,44 +43,44 @@ var search = function(_, $http, $interpolate, $location, $window) {
     };
 
     this.status = {
-        display_search_interface: false, // hide results section at first
-        search_in_progress: false, // display spinning wheel while searching
+        displaySearchInterface: false, // hide results section at first
+        searchInProgress: false, // display spinning wheel while searching
         show_error: false, // display error message
     };
 
-    this.search_config = {
-        ebeye_base_url: global_settings.EBI_SEARCH_ENDPOINT,
-        rnacentral_base_url: window.location.origin, // e.g. http://localhost:8000 or http://rnacentral.org
+    this.searchConfig = {
+        ebeyeBaseUrl: global_settings.EBI_SEARCH_ENDPOINT,
+        rnacentralBaseUrl: window.location.origin, // e.g. http://localhost:8000 or http://rnacentral.org
         fields: ['description', 'active', 'length', 'pub_title', 'has_genomic_coordinates'],
         facetfields: ['rna_type', 'TAXONOMY', 'expert_db', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
         facetcount: 30,
         pagesize: 15,
     };
 
-    this.query_urls = {
-        'ebeye_search': self.search_config.ebeye_base_url +
+    this.queryUrls = {
+        'ebeyeSearch': self.searchConfig.ebeyeBaseUrl +
                         '?query={{ query }}' +
                         '&format=json' +
-                        '&hlfields=' + self.search_config.fields.join() +
-                        '&facetcount=' + self.search_config.facetcount +
-                        '&facetfields=' + self.search_config.facetfields.join() +
-                        '&size=' + self.search_config.pagesize +
+                        '&hlfields=' + self.searchConfig.fields.join() +
+                        '&facetcount=' + self.searchConfig.facetcount +
+                        '&facetfields=' + self.searchConfig.facetfields.join() +
+                        '&size=' + self.searchConfig.pagesize +
                         '&start={{ start }}' +
                         '&sort=boost:descending,length:descending' +
                         '&hlpretag=<span class=metasearch-highlights>&hlposttag=</span>',
-        'ebeye_autocomplete': 'http://www.ebi.ac.uk/ebisearch/ws/rest/RNAcentral/autocomplete' +
+        'ebeyeAutocomplete': 'http://www.ebi.ac.uk/ebisearch/ws/rest/RNAcentral/autocomplete' +
                               '?term={{ query }}' +
                               '&format=json',
-        'proxy': self.search_config.rnacentral_base_url +
-                 '/api/internal/ebeye?url={{ ebeye_url }}',
+        'proxy': self.searchConfig.rnacentralBaseUrl +
+                 '/api/internal/ebeye?url={{ ebeyeUrl }}',
     };
 
     this.autocomplete = function(query) {
-        // get query_url ready
-        var ebeye_url = $interpolate(self.query_urls.ebeye_autocomplete)({query: query});
-        var query_url = $interpolate(self.query_urls.proxy)({ebeye_url: encodeURIComponent(ebeye_url)});
+        // get queryUrl ready
+        var ebeyeUrl = $interpolate(self.queryUrls.ebeyeAutocomplete)({query: query});
+        var queryUrl = $interpolate(self.queryUrls.proxy)({ebeyeUrl: encodeURIComponent(ebeyeUrl)});
 
-        return $http.get(query_url);
+        return $http.get(queryUrl);
     };
 
     /**
@@ -88,7 +88,7 @@ var search = function(_, $http, $interpolate, $location, $window) {
      * which will automatically trigger a new search
      * since the url changes are watched in the query controller.
      */
-    this.meta_search = function(query) {
+    this.metaSearch = function(query) {
         $location.url('/search' + '?q=' + query);
     };
 
@@ -101,8 +101,8 @@ var search = function(_, $http, $interpolate, $location, $window) {
 
         hopscotch.endTour(); // end guided tour when a search is launched
 
-        // setting display_search_interface to true hides non-search-related content and shows search results
-        self.status.display_search_interface = true;
+        // setting displaySearchInterface to true hides non-search-related content and shows search results
+        self.status.displaySearchInterface = true;
 
         // display search spinner if not a "load more" request
         if (start === 0) self.result.hitCount = null;
@@ -110,13 +110,13 @@ var search = function(_, $http, $interpolate, $location, $window) {
         // change page title, which is also used in browser tabs
         $window.document.title = 'Search: ' + query;
 
-        query = preprocess_query(query);
+        query = preprocessQuery(query);
 
-        // get query_url ready
-        var ebeye_url = $interpolate(self.query_urls.ebeye_search)({query: query, start: start});
-        var query_url = $interpolate(self.query_urls.proxy)({ebeye_url: encodeURIComponent(ebeye_url)});
+        // get queryUrl ready
+        var ebeyeUrl = $interpolate(self.queryUrls.ebeyeSearch)({query: query, start: start});
+        var queryUrl = $interpolate(self.queryUrls.proxy)({ebeyeUrl: encodeURIComponent(ebeyeUrl)});
 
-        execute_ebeye_search(query_url, start === 0);
+        executeEbeyeSearch(queryUrl, start === 0);
 
         /**
          * Split query into words and then:
@@ -129,17 +129,17 @@ var search = function(_, $http, $interpolate, $location, $window) {
          * Each "word" is a sequence of characters that aren't spaces or quotes,
          * or a sequence of characters that begin and end with a quote, with no quotes in between.
          */
-        function preprocess_query(query) {
+        function preprocessQuery(query) {
 
             // replace URS/taxid with URS_taxid - replace slashes with underscore
             query = query.replace(/(URS[0-9A-F]{10})\/(\d+)/ig, '$1_$2');
 
             // replace length query with a placeholder, example: length:[100 TO 200]
-            var length_clause = query.match(/length\:\[\d+\s+to\s+\d+\]/i);
+            var lengthClause = query.match(/length\:\[\d+\s+to\s+\d+\]/i);
             var placeholder = 'length_clause';
-            if (length_clause) {
-              query = query.replace(length_clause[0], placeholder);
-              length_clause[0] = length_clause[0].replace(/to/i, 'TO');
+            if (lengthClause) {
+              query = query.replace(lengthClause[0], placeholder);
+              lengthClause[0] = lengthClause[0].replace(/to/i, 'TO');
             }
 
             var words = query.match(/[^\s"]+|"[^"]*"/g);
@@ -159,12 +159,12 @@ var search = function(_, $http, $interpolate, $location, $window) {
                     words[i] = term + ':';
                 } else if ( words[i].match(/\//)) {
                     // do not add wildcards to DOIs
-                    words[i] = escape_search_term(words[i]);
+                    words[i] = escapeSearchTerm(words[i]);
                 } else if ( words[i].match(/^".+?"$/) ) {
                     // double quotes, do nothing
                 } else if ( words[i].match(/\*$/) ) {
                     // wildcard, escape term
-                    words[i] = escape_search_term(words[i]);
+                    words[i] = escapeSearchTerm(words[i]);
                 } else if ( words[i].match(/\)$/) ) {
                     // right closing grouping parenthesis, don't add a wildcard
                 } else if ( words[i].length < 3 ) {
@@ -172,14 +172,14 @@ var search = function(_, $http, $interpolate, $location, $window) {
                 } else {
                     // all other words
                     // escape term, add wildcard
-                    words[i] = escape_search_term(words[i]) + '*';
+                    words[i] = escapeSearchTerm(words[i]) + '*';
                 }
             }
             query = words.join(' ');
             query = query.replace(/\: /g, ':'); // to avoid spaces after faceted search terms
             // replace placeholder with the original search term
-            if (length_clause) {
-              query = query.replace(placeholder + '*', length_clause[0]);
+            if (lengthClause) {
+              query = query.replace(placeholder + '*', lengthClause[0]);
             }
             self.result._query = query;
             return query;
@@ -189,7 +189,7 @@ var search = function(_, $http, $interpolate, $location, $window) {
              * Escaped: + - && || ! { } [ ] ^ ~ ? : \ /
              * Not escaped: * " ( ) because they may be used deliberately by the user
              */
-            function escape_search_term(search_term) {
+            function escapeSearchTerm(search_term) {
                 return search_term.replace(/[\+\-&|!\{\}\[\]\^~\?\:\\\/]/g, "\\$&");
             }
         }
@@ -197,12 +197,12 @@ var search = function(_, $http, $interpolate, $location, $window) {
         /**
          * Execute remote request.
          */
-        function execute_ebeye_search(url, overwrite_results) {
-            self.status.search_in_progress = true;
+        function executeEbeyeSearch(url, overwrite_results) {
+            self.status.searchInProgress = true;
             self.status.show_error = false;
             $http.get(url, params).then(
                 function(response) {
-                    data = preprocess_results(response.data);
+                    data = preprocessResults(response.data);
                     overwrite_results = overwrite_results || false;
                     if (overwrite_results) {
                         data._query = self.result._query;
@@ -211,10 +211,10 @@ var search = function(_, $http, $interpolate, $location, $window) {
                         // append new entries
                         self.result.entries = self.result.entries.concat(data.entries);
                     }
-                    self.status.search_in_progress = false;
+                    self.status.searchInProgress = false;
                 },
                 function(response) {
-                    self.status.search_in_progress = false;
+                    self.status.searchInProgress = false;
                     self.status.show_error = true;
                 }
             );
@@ -222,17 +222,17 @@ var search = function(_, $http, $interpolate, $location, $window) {
             /**
              * Preprocess data received from the server.
              */
-            function preprocess_results(data) {
+            function preprocessResults(data) {
 
-                merge_species_facets();
-                order_facets();
-                rename_hlfields();
+                mergeSpeciesFacets();
+                orderFacets();
+                renameHlfields();
                 return data;
 
                 /**
                  * Use `hlfields` with highlighted matches instead of `fields`.
                  */
-                function rename_hlfields() {
+                function renameHlfields() {
                     for (var i=0; i < data.entries.length; i++) {
                         data.entries[i].fields = data.entries[i].highlights;
                         data.entries[i].fields.length[0] = data.entries[i].fields.length[0].replace(/<[^>]+>/gm, '');
@@ -243,9 +243,9 @@ var search = function(_, $http, $interpolate, $location, $window) {
                 /**
                  * Order facets the same way as in the config.
                  */
-                function order_facets() {
+                function orderFacets() {
                     data.facets = _.sortBy(data.facets, function(facet){
-                        return _.indexOf(self.search_config.facetfields, facet.id);
+                        return _.indexOf(self.searchConfig.facetfields, facet.id);
                     });
                 }
 
@@ -256,26 +256,26 @@ var search = function(_, $http, $interpolate, $location, $window) {
                  * - TAXONOMY (all species)
                  * - popular_species (manually curated set of top organisms).
                  */
-                function merge_species_facets() {
+                function mergeSpeciesFacets() {
 
                     // find the popular species facet
-                    var top_species_facet_id = find_facet_id('popular_species');
+                    var topSpeciesFacetId = findFacetId('popular_species');
 
-                    if (top_species_facet_id) {
+                    if (topSpeciesFacetId) {
                         // get top species names
-                        var popular_species = _.pluck(data.facets[top_species_facet_id].facetValues, 'label');
+                        var popular_species = _.pluck(data.facets[topSpeciesFacetId].facetValues, 'label');
 
                         // find the taxonomy facet
-                        var taxonomy_facet_id = find_facet_id('TAXONOMY');
+                        var taxonomy_facet_id = findFacetId('TAXONOMY');
 
                         // extract other species from the taxonomy facet
                         var other_species = get_other_species();
 
                         // merge popular_species with other_species
-                        data.facets[taxonomy_facet_id].facetValues = data.facets[top_species_facet_id].facetValues.concat(other_species);
+                        data.facets[taxonomy_facet_id].facetValues = data.facets[topSpeciesFacetId].facetValues.concat(other_species);
 
                         // remove the Popular species facet
-                        delete data.facets[top_species_facet_id];
+                        delete data.facets[topSpeciesFacetId];
                         data.facets = _.compact(data.facets);
                     }
 
@@ -299,7 +299,7 @@ var search = function(_, $http, $interpolate, $location, $window) {
                      * [{'id': 'a'}, {'id': 'b'}, {'id': 'c'}]
                      * find_facet_id('b') -> 1
                      */
-                    function find_facet_id(facet_label) {
+                    function findFacetId(facet_label) {
                         var index;
                         _.find(data.facets, function(facet, i){
                             if (facet.id === facet_label) {
@@ -328,7 +328,7 @@ var search = function(_, $http, $interpolate, $location, $window) {
      * Stupid function wrapper just to keep $watch in MainContent happy
      */
     this.getDisplaySearchInterface = function() {
-        return self.status.display_search_interface;
+        return self.status.displaySearchInterface;
     };
 };
 
@@ -343,20 +343,20 @@ var MainContent = function($scope, $anchorScroll, $location, search) {
     };
 
     /**
-     * Watch `display_search_interface` in order to hide non-search-related content
+     * Watch `displaySearchInterface` in order to hide non-search-related content
      * when a search is initiated.
      */
     $scope.$watch(search.getDisplaySearchInterface, function (newValue, oldValue) {
         if (newValue !== null) {
-            $scope.display_search_interface = newValue;
+            $scope.displaySearchInterface = newValue;
         }
     });
 
     /**
      * Launch a metadata search from a web page.
      */
-    $scope.meta_search = function(query) {
-        search.meta_search(query);
+    $scope.metaSearch = function(query) {
+        search.metaSearch(query);
     };
 };
 
@@ -374,7 +374,7 @@ var metadataSearchResults = {
             // variables that control UI state
             ctrl.result = { entries: [] };
             ctrl.show_export_error = false;
-            ctrl.search_in_progress = search.search_in_progress;
+            ctrl.searchInProgress = search.searchInProgress;
             ctrl.show_error = search.show_error;
 
             // urls used in template (hardcoded)
@@ -401,8 +401,8 @@ var metadataSearchResults = {
 
         ctrl.$doCheck = function() {
             if (search.result !== null) ctrl.result = search.result;
-            if (search.status.display_search_interface !== null) ctrl.display_search_interface = search.status.display_search_interface;
-            if (search.status.search_in_progress !== ctrl.search_in_progress) ctrl.search_in_progress = search.status.search_in_progress;
+            if (search.status.displaySearchInterface !== null) ctrl.displaySearchInterface = search.status.displaySearchInterface;
+            if (search.status.searchInProgress !== ctrl.searchInProgress) ctrl.searchInProgress = search.status.searchInProgress;
             if (search.status.show_error !== ctrl.show_error) ctrl.show_error = search.status.show_error;
         };
 
@@ -563,8 +563,8 @@ var metadataSearchBar = {
         /**
          * Launch a metadata search using the service.
          */
-        ctrl.meta_search = function(query) {
-            search.meta_search(query);
+        ctrl.metaSearch = function(query) {
+            search.metaSearch(query);
         };
 
         /**
@@ -589,7 +589,7 @@ var metadataSearchBar = {
             if (ctrl.queryForm.text.$invalid) {
                 return;
             }
-            ctrl.meta_search(ctrl.query.text);
+            ctrl.metaSearch(ctrl.query.text);
         };
     }]
 };

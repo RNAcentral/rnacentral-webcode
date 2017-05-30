@@ -40,7 +40,7 @@ Help: Genomic mapping
           <ol>
           {% for species in division.species %}
             <li>
-              <a href="" ng-click="meta_search('TAXONOMY:%22{{ species.taxid }}%22 AND has_genomic_coordinates:%22True%22')">{{ species.name }}</a>
+              <a href="" ng-click="metaSearch('TAXONOMY:%22{{ species.taxid }}%22 AND has_genomic_coordinates:%22True%22')">{{ species.name }}</a>
             </li>
           {% endfor %}
           </ol>
