@@ -15,6 +15,7 @@
                autocomplete="off"
                placeholder="Search RNAcentral"
                uib-typeahead="suggestion.suggestion for suggestion in $ctrl.autocomplete($ctrl.query.text)"
+               typeahead-on-select="$ctrl.submit_query()"
                typeahead-loading="loadingLocations"
                typeahead-no-results="noResults"
                autofocus
