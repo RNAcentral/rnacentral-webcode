@@ -45,7 +45,7 @@ var search = function(_, $http, $interpolate, $location, $window) {
     this.status = {
         displaySearchInterface: false, // hide results section at first
         searchInProgress: false, // display spinning wheel while searching
-        show_error: false, // display error message
+        showError: false, // display error message
     };
 
     this.searchConfig = {
@@ -143,8 +143,8 @@ var search = function(_, $http, $interpolate, $location, $window) {
             }
 
             var words = query.match(/[^\s"]+|"[^"]*"/g);
-            var array_length = words.length;
-            for (var i = 0; i < array_length; i++) {
+            var arrayLength = words.length;
+            for (var i = 0; i < arrayLength; i++) {
                 if ( words[i].match(/^(and|or|not)$/gi) ) {
                     // capitalize logical operators
                     words[i] = words[i].toUpperCase();
@@ -189,22 +189,22 @@ var search = function(_, $http, $interpolate, $location, $window) {
              * Escaped: + - && || ! { } [ ] ^ ~ ? : \ /
              * Not escaped: * " ( ) because they may be used deliberately by the user
              */
-            function escapeSearchTerm(search_term) {
-                return search_term.replace(/[\+\-&|!\{\}\[\]\^~\?\:\\\/]/g, "\\$&");
+            function escapeSearchTerm(searchTerm) {
+                return searchTerm.replace(/[\+\-&|!\{\}\[\]\^~\?\:\\\/]/g, "\\$&");
             }
         }
 
         /**
          * Execute remote request.
          */
-        function executeEbeyeSearch(url, overwrite_results) {
+        function executeEbeyeSearch(url, overwriteResults) {
             self.status.searchInProgress = true;
-            self.status.show_error = false;
+            self.status.showError = false;
             $http.get(url, params).then(
                 function(response) {
                     data = preprocessResults(response.data);
-                    overwrite_results = overwrite_results || false;
-                    if (overwrite_results) {
+                    overwriteResults = overwriteResults || false;
+                    if (overwriteResults) {
                         data._query = self.result._query;
                         self.result = data; // replace
                     } else {
@@ -215,7 +215,7 @@ var search = function(_, $http, $interpolate, $location, $window) {
                 },
                 function(response) {
                     self.status.searchInProgress = false;
-                    self.status.show_error = true;
+                    self.status.showError = true;
                 }
             );
 
@@ -375,7 +375,7 @@ var metadataSearchResults = {
             ctrl.result = { entries: [] };
             ctrl.show_export_error = false;
             ctrl.searchInProgress = search.searchInProgress;
-            ctrl.show_error = search.show_error;
+            ctrl.showError = search.showError;
 
             // urls used in template (hardcoded)
             ctrl.helpMetadataSearchUrl = '/help/metadata-search/';
@@ -393,7 +393,7 @@ var metadataSearchResults = {
                     }
                 },
                 function(response) {
-                    search.status.show_error = true;
+                    search.status.showError = true;
                 }
             );
 
@@ -403,7 +403,7 @@ var metadataSearchResults = {
             if (search.result !== null) ctrl.result = search.result;
             if (search.status.displaySearchInterface !== null) ctrl.displaySearchInterface = search.status.displaySearchInterface;
             if (search.status.searchInProgress !== ctrl.searchInProgress) ctrl.searchInProgress = search.status.searchInProgress;
-            if (search.status.show_error !== ctrl.show_error) ctrl.show_error = search.status.show_error;
+            if (search.status.showError !== ctrl.showError) ctrl.showError = search.status.showError;
         };
 
         /**
