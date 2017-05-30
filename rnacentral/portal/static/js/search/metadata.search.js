@@ -68,7 +68,7 @@ var search = function(_, $http, $interpolate, $location, $window) {
                         '&start={{ start }}' +
                         '&sort=boost:descending,length:descending' +
                         '&hlpretag=<span class=metasearch-highlights>&hlposttag=</span>',
-        'ebeye_autocomplete': 'http://www.ebi.ac.uk/ebisearch/ws/RNAcentral/autocomplete' +
+        'ebeye_autocomplete': 'http://www.ebi.ac.uk/ebisearch/ws/rest/RNAcentral/autocomplete' +
                               '?term={{ query }}' +
                               '&format=json',
         'proxy': self.search_config.rnacentral_base_url +
@@ -80,7 +80,7 @@ var search = function(_, $http, $interpolate, $location, $window) {
         var ebeye_url = $interpolate(self.query_urls.ebeye_autocomplete)({query: query});
         var query_url = $interpolate(self.query_urls.proxy)({ebeye_url: encodeURIComponent(ebeye_url)});
 
-        return $http.get($interpolate(query_url)(query));
+        return $http.get(query_url);
     };
 
     /**
@@ -571,8 +571,16 @@ var metadataSearchBar = {
          * Called when user changes the value in query string
          */
         ctrl.autocomplete = function() {
-            var query = ctrl.queryForm.text;
-            search.autocomplete(query);
+            if (ctrl.query.text) {
+                search.autocomplete(ctrl.query.text).then(
+                    function(response) {
+                        ctrl.suggestions = response.data.suggestions;
+                    },
+                    function(response) {
+
+                    }
+                );
+            }
         };
 
         /**
