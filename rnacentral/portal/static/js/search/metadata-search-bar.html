@@ -14,6 +14,7 @@
                ng-change="$ctrl.autocomplete()"
                autocomplete="off"
                placeholder="Search RNAcentral"
+               uib-typeahead="suggestion.suggestion for suggestion in $ctrl.autocomplete($ctrl.query.text)"
                autofocus
                required>
         <div class="input-group-btn">

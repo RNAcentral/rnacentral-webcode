@@ -571,16 +571,14 @@ var metadataSearchBar = {
          * Called when user changes the value in query string
          */
         ctrl.autocomplete = function() {
-            if (ctrl.query.text) {
-                search.autocomplete(ctrl.query.text).then(
-                    function(response) {
-                        ctrl.suggestions = response.data.suggestions;
-                    },
-                    function(response) {
-
-                    }
-                );
-            }
+            return search.autocomplete(ctrl.query.text).then(
+                function(response) {
+                    return response.data.suggestions;
+                },
+                function(response) {
+                    return [];
+                }
+            );
         };
 
         /**
