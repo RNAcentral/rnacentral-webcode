@@ -1,5 +1,5 @@
 <div>
-  <form novalidate name="$ctrl.queryForm" class="global-search" ng-submit="$ctrl.submit_query()">
+  <form novalidate name="$ctrl.queryForm" class="global-search" ng-submit="$ctrl.submitQuery()">
     <fieldset>
     <div class="form-group" ng-class="($ctrl.query.submitted && $ctrl.queryForm.$invalid) ? 'has-error' : ''">
       <div class="input-group input-group-lg">
@@ -15,7 +15,7 @@
                autocomplete="off"
                placeholder="Search RNAcentral"
                uib-typeahead="suggestion.suggestion for suggestion in $ctrl.autocomplete($ctrl.query.text)"
-               typeahead-on-select="$ctrl.submit_query()"
+               typeahead-on-select="$ctrl.submitQuery()"
                typeahead-loading="loadingLocations"
                typeahead-no-results="noResults"
                autofocus

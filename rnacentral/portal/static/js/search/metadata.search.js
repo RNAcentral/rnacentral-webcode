@@ -250,11 +250,11 @@ var search = function(_, $http, $interpolate, $location, $window) {
                 }
 
                 /**
-                 * Merge the two species facets putting popular_species
+                 * Merge the two species facets putting popularSpecies
                  * at the top of the list.
                  * Species facets:
                  * - TAXONOMY (all species)
-                 * - popular_species (manually curated set of top organisms).
+                 * - popularSpecies (manually curated set of top organisms).
                  */
                 function mergeSpeciesFacets() {
 
@@ -263,16 +263,16 @@ var search = function(_, $http, $interpolate, $location, $window) {
 
                     if (topSpeciesFacetId) {
                         // get top species names
-                        var popular_species = _.pluck(data.facets[topSpeciesFacetId].facetValues, 'label');
+                        var popularSpecies = _.pluck(data.facets[topSpeciesFacetId].facetValues, 'label');
 
                         // find the taxonomy facet
-                        var taxonomy_facet_id = findFacetId('TAXONOMY');
+                        var taxonomyFacetId = findFacetId('TAXONOMY');
 
                         // extract other species from the taxonomy facet
-                        var other_species = get_other_species();
+                        var otherSpecies = getOtherSpecies();
 
-                        // merge popular_species with other_species
-                        data.facets[taxonomy_facet_id].facetValues = data.facets[topSpeciesFacetId].facetValues.concat(other_species);
+                        // merge popularSpecies with otherSpecies
+                        data.facets[taxonomyFacetId].facetValues = data.facets[topSpeciesFacetId].facetValues.concat(otherSpecies);
 
                         // remove the Popular species facet
                         delete data.facets[topSpeciesFacetId];
@@ -280,29 +280,29 @@ var search = function(_, $http, $interpolate, $location, $window) {
                     }
 
                     /**
-                     * Get Taxonomy facet values that are not also in popular_species.
+                     * Get Taxonomy facet values that are not also in popularSpecies.
                      */
-                    function get_other_species() {
-                        var taxonomy_facet = data.facets[taxonomy_facet_id].facetValues,
-                            other_species = [];
-                        for (var i=0; i<taxonomy_facet.length; i++) {
-                            if (_.indexOf(popular_species, taxonomy_facet[i].label) === -1) {
-                                other_species.push(taxonomy_facet[i]);
+                    function getOtherSpecies() {
+                        var taxonomyFacet = data.facets[taxonomyFacetId].facetValues,
+                            otherSpecies = [];
+                        for (var i=0; i<taxonomyFacet.length; i++) {
+                            if (_.indexOf(popularSpecies, taxonomyFacet[i].label) === -1) {
+                                otherSpecies.push(taxonomyFacet[i]);
                             }
                         }
-                        return other_species;
+                        return otherSpecies;
                     }
 
                     /**
                      * Find objects in array by attribute value.
                      * Given an array like:
                      * [{'id': 'a'}, {'id': 'b'}, {'id': 'c'}]
-                     * find_facet_id('b') -> 1
+                     * findFacetId('b') -> 1
                      */
-                    function findFacetId(facet_label) {
+                    function findFacetId(facetLabel) {
                         var index;
                         _.find(data.facets, function(facet, i){
-                            if (facet.id === facet_label) {
+                            if (facet.id === facetLabel) {
                                 index = i;
                                 return true;
                             }
@@ -319,7 +319,7 @@ var search = function(_, $http, $interpolate, $location, $window) {
     /**
      * Load more results starting from the last loaded index.
      */
-    this.load_more_results = function() {
+    this.loadMoreResults = function() {
         query = $location.search().q;
         this.search(query, self.result.entries.length);
     };
@@ -373,7 +373,7 @@ var metadataSearchResults = {
         ctrl.$onInit = function() {
             // variables that control UI state
             ctrl.result = { entries: [] };
-            ctrl.show_export_error = false;
+            ctrl.showExportError = false;
             ctrl.searchInProgress = search.searchInProgress;
             ctrl.showError = search.showError;
 
@@ -409,17 +409,17 @@ var metadataSearchResults = {
         /**
          * Fired when "Load more" button is clicked.
          */
-        ctrl.load_more_results = function() {
-            search.load_more_results();
+        ctrl.loadMoreResults = function() {
+            search.loadMoreResults();
         };
 
         /**
          * Determine if the facet has already been applied.
          */
-        ctrl.is_facet_applied = function(facet_id, facet_value) {
+        ctrl.isFacetApplied = function(facetId, facetValue) {
             var query = $location.search().q || '';
-            var facet_query = new RegExp(facet_id + '\\:"' + facet_value + '"', 'i');
-            return !!query.match(facet_query);
+            var facetQuery = new RegExp(facetId + '\\:"' + facetValue + '"', 'i');
+            return !!query.match(facetQuery);
         };
 
         /**
@@ -427,23 +427,23 @@ var metadataSearchResults = {
          * The facet will be toggled on and off in the repeated calls with the same
          * parameters.
          */
-        ctrl.facet_search = function(facet_id, facet_value) {
+        ctrl.facetSearch = function(facetId, facetValue) {
             var query = $location.search().q || '',
-                facet = facet_id + ':"' + facet_value + '"',
-                new_query;
+                facet = facetId + ':"' + facetValue + '"',
+                newQuery;
 
-            if (ctrl.is_facet_applied(facet_id, facet_value)) {
-                new_query = query;
+            if (ctrl.isFacetApplied(facetId, facetValue)) {
+                newQuery = query;
 
                 // remove facet in different contexts
-                new_query = new_query.replace(' AND ' + facet + ' AND ', ' AND ', 'i');
-                new_query = new_query.replace(facet + ' AND ', '', 'i');
-                new_query = new_query.replace(' AND ' + facet, '', 'i');
-                new_query = new_query.replace(facet, '', 'i') || 'RNA';
+                newQuery = newQuery.replace(' AND ' + facet + ' AND ', ' AND ', 'i');
+                newQuery = newQuery.replace(facet + ' AND ', '', 'i');
+                newQuery = newQuery.replace(' AND ' + facet, '', 'i');
+                newQuery = newQuery.replace(facet, '', 'i') || 'RNA';
             } else {
-                new_query = query + ' AND ' + facet; // add new facet
+                newQuery = query + ' AND ' + facet; // add new facet
             }
-            $location.search('q', new_query);
+            $location.search('q', newQuery);
         };
 
         /**
@@ -451,7 +451,7 @@ var metadataSearchResults = {
          * Uses jQuery for simplicity.
          * Activated only on mobile devices.
          */
-        ctrl.toggle_facets = function() {
+        ctrl.toggleFacets = function() {
             var facets = $('.metasearch-facets');
             facets.toggleClass('hidden-xs', !facets.hasClass('hidden-xs'));
             $('#toggle-facets').text(function(i, text) {
@@ -464,18 +464,18 @@ var metadataSearchResults = {
          * - submit export job
          * - open the results page in a new window.
          */
-        ctrl.export_results = function(format) {
-            var submit_query_url = '/export/submit-query',
-                results_page_url = '/export/results';
+        ctrl.exportResults = function(format) {
+            var submitQueryUrl = '/export/submit-query',
+                resultsPageUrl = '/export/results';
 
-            ctrl.show_export_error = false;
+            ctrl.showExportError = false;
 
-            $http.get(submit_query_url + '?q=' + ctrl.result._query + '&format=' + format).then(
+            $http.get(submitQueryUrl + '?q=' + ctrl.result._query + '&format=' + format).then(
                 function(response) {
-                    window.location.href = results_page_url + '?job=' + response.data.job_id;
+                    window.location.href = resultsPageUrl + '?job=' + response.data.job_id;
                 },
                 function(response) {
-                    ctrl.show_export_error = true;
+                    ctrl.showExportError = true;
                 }
             );
         };
@@ -584,7 +584,7 @@ var metadataSearchBar = {
         /**
          * Called when the form is submitted.
          */
-        ctrl.submit_query = function() {
+        ctrl.submitQuery = function() {
             ctrl.query.submitted = true;
             if (ctrl.queryForm.text.$invalid) {
                 return;
