@@ -381,11 +381,6 @@ var metadataSearchResults = {
 
                 ctrl.status = search.status = 'in progress';
             }
-
-            // if (search.result !== null) ctrl.result = search.result;
-            // if (search.status.displaySearchInterface !== null) ctrl.displaySearchInterface = search.status.displaySearchInterface;
-            // if (search.status.searchInProgress !== ctrl.searchInProgress) ctrl.searchInProgress = search.status.searchInProgress;
-            // if (search.status.showError !== ctrl.showError) ctrl.showError = search.status.showError;
         };
 
         /**
