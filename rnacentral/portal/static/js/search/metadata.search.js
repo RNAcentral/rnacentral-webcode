@@ -42,13 +42,9 @@ var search = function(_, $http, $interpolate, $location, $window) {
         _query: null, // query after preprocessing
     };
 
-    this.status = {
-        displaySearchInterface: false, // hide results section at first
-        searchInProgress: false, // display spinning wheel while searching
-        showError: false, // display error message
-    };
+    this.status = 'off'; // possible values: 'off', 'initiating', 'in progress', 'success', 'error'
 
-    this.searchConfig = {
+    this.config = {
         ebeyeBaseUrl: global_settings.EBI_SEARCH_ENDPOINT,
         rnacentralBaseUrl: window.location.origin, // e.g. http://localhost:8000 or http://rnacentral.org
         fields: ['description', 'active', 'length', 'pub_title', 'has_genomic_coordinates'],
@@ -58,20 +54,20 @@ var search = function(_, $http, $interpolate, $location, $window) {
     };
 
     this.queryUrls = {
-        'ebeyeSearch': self.searchConfig.ebeyeBaseUrl +
+        'ebeyeSearch': self.config.ebeyeBaseUrl +
                         '?query={{ query }}' +
                         '&format=json' +
-                        '&hlfields=' + self.searchConfig.fields.join() +
-                        '&facetcount=' + self.searchConfig.facetcount +
-                        '&facetfields=' + self.searchConfig.facetfields.join() +
-                        '&size=' + self.searchConfig.pagesize +
+                        '&hlfields=' + self.config.fields.join() +
+                        '&facetcount=' + self.config.facetcount +
+                        '&facetfields=' + self.config.facetfields.join() +
+                        '&size=' + self.config.pagesize +
                         '&start={{ start }}' +
                         '&sort=boost:descending,length:descending' +
                         '&hlpretag=<span class=metasearch-highlights>&hlposttag=</span>',
         'ebeyeAutocomplete': 'http://www.ebi.ac.uk/ebisearch/ws/rest/RNAcentral/autocomplete' +
                               '?term={{ query }}' +
                               '&format=json',
-        'proxy': self.searchConfig.rnacentralBaseUrl +
+        'proxy': self.config.rnacentralBaseUrl +
                  '/api/internal/ebeye?url={{ ebeyeUrl }}',
     };
 
@@ -101,8 +97,7 @@ var search = function(_, $http, $interpolate, $location, $window) {
 
         hopscotch.endTour(); // end guided tour when a search is launched
 
-        // setting displaySearchInterface to true hides non-search-related content and shows search results
-        self.status.displaySearchInterface = true;
+        self.status = 'initiating';
 
         // display search spinner if not a "load more" request
         if (start === 0) self.result.hitCount = null;
@@ -118,25 +113,23 @@ var search = function(_, $http, $interpolate, $location, $window) {
 
         // perform search
         var overwriteResults = (start === 0);
-        self.status.searchInProgress = true;
-        self.status.showError = false;
 
-        return $http.get(queryUrl).then(
+        self.promise = $http.get(queryUrl).then(
             function(response) {
                 var data = self.preprocessResults(response.data);
+
                 overwriteResults = overwriteResults || false;
                 if (overwriteResults) {
                     data._query = self.result._query;
                     self.result = data; // replace
                 } else {
-                    // append new entries
-                    self.result.entries = self.result.entries.concat(data.entries);
+                    self.result.entries = self.result.entries.concat(data.entries); // append new entries
                 }
-                self.status.searchInProgress = false;
+
+                self.status = 'success';
             },
             function(response) {
-                self.status.searchInProgress = false;
-                self.status.showError = true;
+                self.status = 'error';
             }
         );
     };
@@ -226,7 +219,7 @@ var search = function(_, $http, $interpolate, $location, $window) {
 
         // order facets the same way as in the config
         data.facets = _.sortBy(data.facets, function(facet){
-            return _.indexOf(self.searchConfig.facetfields, facet.id);
+            return _.indexOf(self.config.facetfields, facet.id);
         });
 
          // Use `hlfields` with highlighted matches instead of `fields`.
@@ -324,9 +317,9 @@ var MainContent = function($scope, $anchorScroll, $location, search) {
      * Watch `displaySearchInterface` in order to hide non-search-related content
      * when a search is initiated.
      */
-    $scope.$watch(function() { return search.status.displaySearchInterface; }, function (newValue, oldValue) {
+    $scope.$watch(function() { return search.status; }, function (newValue, oldValue) {
         if (newValue !== null) {
-            $scope.displaySearchInterface = newValue;
+            $scope.displaySearchInterface = !(newValue === 'off');
         }
     });
 
@@ -349,8 +342,7 @@ var metadataSearchResults = {
             // variables that control UI state
             ctrl.result = { entries: [] };
             ctrl.showExportError = false;
-            ctrl.searchInProgress = search.searchInProgress;
-            ctrl.showError = search.showError;
+            ctrl.status = search.status;
 
             // urls used in template (hardcoded)
             ctrl.helpMetadataSearchUrl = '/help/metadata-search/';
@@ -368,17 +360,32 @@ var metadataSearchResults = {
                     }
                 },
                 function(response) {
-                    search.status.showError = true;
+                    ctrl.status = 'error';
                 }
             );
 
         };
 
         ctrl.$doCheck = function() {
-            if (search.result !== null) ctrl.result = search.result;
-            if (search.status.displaySearchInterface !== null) ctrl.displaySearchInterface = search.status.displaySearchInterface;
-            if (search.status.searchInProgress !== ctrl.searchInProgress) ctrl.searchInProgress = search.status.searchInProgress;
-            if (search.status.showError !== ctrl.showError) ctrl.showError = search.status.showError;
+            if (search.status === 'initiating') {
+                search.promise.then(
+                    function() {
+                        ctrl.result = search.result;
+                        ctrl.status = search.status;
+                    },
+                    function() {
+                        ctrl.result = search.result;
+                        ctrl.status = search.status;
+                    }
+                );
+
+                ctrl.status = search.status = 'in progress';
+            }
+
+            // if (search.result !== null) ctrl.result = search.result;
+            // if (search.status.displaySearchInterface !== null) ctrl.displaySearchInterface = search.status.displaySearchInterface;
+            // if (search.status.searchInProgress !== ctrl.searchInProgress) ctrl.searchInProgress = search.status.searchInProgress;
+            // if (search.status.showError !== ctrl.showError) ctrl.showError = search.status.showError;
         };
 
         /**

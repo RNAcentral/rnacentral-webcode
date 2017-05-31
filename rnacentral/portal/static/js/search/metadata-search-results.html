@@ -1,11 +1,11 @@
-<div ng-show="$ctrl.displaySearchInterface" class="ng-cloak" ng-cloak>
+<div ng-show="$ctrl.status !== 'off'" class="ng-cloak" ng-cloak>
 
   <h1>
     <i class="fa fa-search"></i> Results
-    <small ng-show="$ctrl.searchInProgress">
+    <small ng-show="$ctrl.status === 'in progress'">
       <i class="fa fa-spinner fa-spin"></i>
     </small>
-    <small id="metadata-search-status" ng-show="$ctrl.searchInProgress">
+    <small id="metadata-search-status" ng-show="$ctrl.status === 'in progress'">
       Searching...
     </small>
     <small ng-show="$ctrl.result.hitCount > 0">
@@ -18,7 +18,7 @@
       <a class="text-muted margin-right-10px" ng-href="{{ $ctrl.helpMetadataSearchUrl }}">Search help</a>
 
       <div class="btn-group">
-        <button type="button" ng-class="$ctrl.searchInProgress ? 'disabled' : ''" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+        <button type="button" ng-class="$ctrl.status === 'in progress' ? 'disabled' : ''" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
           Download
           <span class="caret"></span>
         </button>
@@ -38,7 +38,7 @@
     </div>
   </div> <!-- .visible-xs -->
 
-  <div class="row" ng-if="$ctrl.showError">
+  <div class="row" ng-if="$ctrl.status === 'error'">
     <div class="col-md-12">
       <div class="alert alert-danger col-md-12">
         There was an error while processing your query
@@ -171,7 +171,7 @@
       <small ng-if="$ctrl.result.hitCount > result.entries.length" class="text-muted">Displaying {{ $ctrl.result.entries.length }} out of {{ $ctrl.result.hitCount | number }} sequences</small>
       <br>
 
-      <button class="btn btn-default load-more col-md-3" ng-click="$ctrl.loadMoreResults()" ng-show="$ctrl.result.hitCount > $ctrl.result.entries.length"><i ng-class="searchInProgress ? 'fa fa-spinner fa-spin' : 'hidden'"></i> Load more</button>
+      <button class="btn btn-default load-more col-md-3" ng-click="$ctrl.loadMoreResults()" ng-show="$ctrl.result.hitCount > $ctrl.result.entries.length"><i ng-class="$ctrl.status === 'in progress' ? 'fa fa-spinner fa-spin' : 'hidden'"></i> Load more</button>
     </div>
 
   </div><!--/row-->
