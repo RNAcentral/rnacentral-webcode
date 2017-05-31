@@ -321,13 +321,6 @@ var search = function(_, $http, $interpolate, $location, $window) {
         query = $location.search().q;
         this.search(query, self.result.entries.length);
     };
-
-    /**
-     * Stupid function wrapper just to keep $watch in MainContent happy
-     */
-    this.getDisplaySearchInterface = function() {
-        return self.status.displaySearchInterface;
-    };
 };
 
 var MainContent = function($scope, $anchorScroll, $location, search) {
@@ -344,7 +337,7 @@ var MainContent = function($scope, $anchorScroll, $location, search) {
      * Watch `displaySearchInterface` in order to hide non-search-related content
      * when a search is initiated.
      */
-    $scope.$watch(search.getDisplaySearchInterface, function (newValue, oldValue) {
+    $scope.$watch(function() { return search.status.displaySearchInterface; }, function (newValue, oldValue) {
         if (newValue !== null) {
             $scope.displaySearchInterface = newValue;
         }
