@@ -110,210 +110,208 @@ var search = function(_, $http, $interpolate, $location, $window) {
         // change page title, which is also used in browser tabs
         $window.document.title = 'Search: ' + query;
 
-        query = preprocessQuery(query);
+        query = self.preprocessQuery(query);
 
         // get queryUrl ready
         var ebeyeUrl = $interpolate(self.queryUrls.ebeyeSearch)({query: query, start: start});
         var queryUrl = $interpolate(self.queryUrls.proxy)({ebeyeUrl: encodeURIComponent(ebeyeUrl)});
 
-        executeEbeyeSearch(queryUrl, start === 0);
+        self.executeEbeyeSearch(queryUrl, start === 0);
+    };
+
+    /**
+     * Split query into words and then:
+     *  - append wildcards to all terms without double quotes and not ending with wildcards
+     *  - escape special symbols
+     *  - capitalize logical operators
+     *
+     *  Splitting into words is based on this SO question:
+     *  http://stackoverflow.com/questions/366202/regex-for-splitting-a-string-using-space-when-not-surrounded-by-single-or-double
+     * Each "word" is a sequence of characters that aren't spaces or quotes,
+     * or a sequence of characters that begin and end with a quote, with no quotes in between.
+     */
+    this.preprocessQuery = function(query) {
+
+        // replace URS/taxid with URS_taxid - replace slashes with underscore
+        query = query.replace(/(URS[0-9A-F]{10})\/(\d+)/ig, '$1_$2');
+
+        // replace length query with a placeholder, example: length:[100 TO 200]
+        var lengthClause = query.match(/length\:\[\d+\s+to\s+\d+\]/i);
+        var placeholder = 'length_clause';
+        if (lengthClause) {
+          query = query.replace(lengthClause[0], placeholder);
+          lengthClause[0] = lengthClause[0].replace(/to/i, 'TO');
+        }
+
+        var words = query.match(/[^\s"]+|"[^"]*"/g);
+        var arrayLength = words.length;
+        for (var i = 0; i < arrayLength; i++) {
+            if ( words[i].match(/^(and|or|not)$/gi) ) {
+                // capitalize logical operators
+                words[i] = words[i].toUpperCase();
+            } else if ( words[i].match(/\:$/gi) ) {
+                // faceted search term + a colon, e.g. expert_db:
+                var term = words[i].replace(':','');
+                var xrefs = ['pubmed', 'doi', 'taxonomy'];
+                if ( term.match(new RegExp('^(' + xrefs.join('|') + ')$', 'i') ) ) {
+                    // xref fields must be capitalized
+                    term = term.toUpperCase();
+                }
+                words[i] = term + ':';
+            } else if ( words[i].match(/\//)) {
+                // do not add wildcards to DOIs
+                words[i] = escapeSearchTerm(words[i]);
+            } else if ( words[i].match(/^".+?"$/) ) {
+                // double quotes, do nothing
+            } else if ( words[i].match(/\*$/) ) {
+                // wildcard, escape term
+                words[i] = escapeSearchTerm(words[i]);
+            } else if ( words[i].match(/\)$/) ) {
+                // right closing grouping parenthesis, don't add a wildcard
+            } else if ( words[i].length < 3 ) {
+                // the word is too short for wildcards, do nothing
+            } else {
+                // all other words
+                // escape term, add wildcard
+                words[i] = escapeSearchTerm(words[i]) + '*';
+            }
+        }
+        query = words.join(' ');
+        query = query.replace(/\: /g, ':'); // to avoid spaces after faceted search terms
+        // replace placeholder with the original search term
+        if (lengthClause) {
+          query = query.replace(placeholder + '*', lengthClause[0]);
+        }
+        self.result._query = query;
+        return query;
 
         /**
-         * Split query into words and then:
-         *  - append wildcards to all terms without double quotes and not ending with wildcards
-         *  - escape special symbols
-         *  - capitalize logical operators
-         *
-         *  Splitting into words is based on this SO question:
-         *  http://stackoverflow.com/questions/366202/regex-for-splitting-a-string-using-space-when-not-surrounded-by-single-or-double
-         * Each "word" is a sequence of characters that aren't spaces or quotes,
-         * or a sequence of characters that begin and end with a quote, with no quotes in between.
+         * Escape special symbols used by Lucene
+         * Escaped: + - && || ! { } [ ] ^ ~ ? : \ /
+         * Not escaped: * " ( ) because they may be used deliberately by the user
          */
-        function preprocessQuery(query) {
+        function escapeSearchTerm(searchTerm) {
+            return searchTerm.replace(/[\+\-&|!\{\}\[\]\^~\?\:\\\/]/g, "\\$&");
+        }
+    };
 
-            // replace URS/taxid with URS_taxid - replace slashes with underscore
-            query = query.replace(/(URS[0-9A-F]{10})\/(\d+)/ig, '$1_$2');
-
-            // replace length query with a placeholder, example: length:[100 TO 200]
-            var lengthClause = query.match(/length\:\[\d+\s+to\s+\d+\]/i);
-            var placeholder = 'length_clause';
-            if (lengthClause) {
-              query = query.replace(lengthClause[0], placeholder);
-              lengthClause[0] = lengthClause[0].replace(/to/i, 'TO');
-            }
-
-            var words = query.match(/[^\s"]+|"[^"]*"/g);
-            var arrayLength = words.length;
-            for (var i = 0; i < arrayLength; i++) {
-                if ( words[i].match(/^(and|or|not)$/gi) ) {
-                    // capitalize logical operators
-                    words[i] = words[i].toUpperCase();
-                } else if ( words[i].match(/\:$/gi) ) {
-                    // faceted search term + a colon, e.g. expert_db:
-                    var term = words[i].replace(':','');
-                    var xrefs = ['pubmed', 'doi', 'taxonomy'];
-                    if ( term.match(new RegExp('^(' + xrefs.join('|') + ')$', 'i') ) ) {
-                        // xref fields must be capitalized
-                        term = term.toUpperCase();
-                    }
-                    words[i] = term + ':';
-                } else if ( words[i].match(/\//)) {
-                    // do not add wildcards to DOIs
-                    words[i] = escapeSearchTerm(words[i]);
-                } else if ( words[i].match(/^".+?"$/) ) {
-                    // double quotes, do nothing
-                } else if ( words[i].match(/\*$/) ) {
-                    // wildcard, escape term
-                    words[i] = escapeSearchTerm(words[i]);
-                } else if ( words[i].match(/\)$/) ) {
-                    // right closing grouping parenthesis, don't add a wildcard
-                } else if ( words[i].length < 3 ) {
-                    // the word is too short for wildcards, do nothing
+    /**
+     * Execute remote request.
+     */
+    this.executeEbeyeSearch = function(url, overwriteResults) {
+        self.status.searchInProgress = true;
+        self.status.showError = false;
+        $http.get(url, params).then(
+            function(response) {
+                data = self.preprocessResults(response.data);
+                overwriteResults = overwriteResults || false;
+                if (overwriteResults) {
+                    data._query = self.result._query;
+                    self.result = data; // replace
                 } else {
-                    // all other words
-                    // escape term, add wildcard
-                    words[i] = escapeSearchTerm(words[i]) + '*';
+                    // append new entries
+                    self.result.entries = self.result.entries.concat(data.entries);
                 }
+                self.status.searchInProgress = false;
+            },
+            function(response) {
+                self.status.searchInProgress = false;
+                self.status.showError = true;
             }
-            query = words.join(' ');
-            query = query.replace(/\: /g, ':'); // to avoid spaces after faceted search terms
-            // replace placeholder with the original search term
-            if (lengthClause) {
-              query = query.replace(placeholder + '*', lengthClause[0]);
+        );
+    };
+
+    /**
+     * Preprocess data received from the server.
+     */
+    this.preprocessResults = function(data) {
+
+        mergeSpeciesFacets();
+        orderFacets();
+        renameHlfields();
+        return data;
+
+        /**
+         * Merge the two species facets putting popularSpecies
+         * at the top of the list.
+         * Species facets:
+         * - TAXONOMY (all species)
+         * - popularSpecies (manually curated set of top organisms).
+         */
+        function mergeSpeciesFacets() {
+
+            // find the popular species facet
+            var topSpeciesFacetId = findFacetId('popular_species');
+
+            if (topSpeciesFacetId) {
+                // get top species names
+                var popularSpecies = _.pluck(data.facets[topSpeciesFacetId].facetValues, 'label');
+
+                // find the taxonomy facet
+                var taxonomyFacetId = findFacetId('TAXONOMY');
+
+                // extract other species from the taxonomy facet
+                var otherSpecies = getOtherSpecies();
+
+                // merge popularSpecies with otherSpecies
+                data.facets[taxonomyFacetId].facetValues = data.facets[topSpeciesFacetId].facetValues.concat(otherSpecies);
+
+                // remove the Popular species facet
+                delete data.facets[topSpeciesFacetId];
+                data.facets = _.compact(data.facets);
             }
-            self.result._query = query;
-            return query;
 
             /**
-             * Escape special symbols used by Lucene
-             * Escaped: + - && || ! { } [ ] ^ ~ ? : \ /
-             * Not escaped: * " ( ) because they may be used deliberately by the user
+             * Find objects in array by attribute value.
+             * Given an array like:
+             * [{'id': 'a'}, {'id': 'b'}, {'id': 'c'}]
+             * findFacetId('b') -> 1
              */
-            function escapeSearchTerm(searchTerm) {
-                return searchTerm.replace(/[\+\-&|!\{\}\[\]\^~\?\:\\\/]/g, "\\$&");
+            function findFacetId(facetLabel) {
+                var index;
+                _.find(data.facets, function(facet, i){
+                    if (facet.id === facetLabel) {
+                        index = i;
+                        return true;
+                    }
+                });
+                return index;
+            }
+
+            /**
+             * Get Taxonomy facet values that are not also in popularSpecies.
+             */
+            function getOtherSpecies() {
+                var taxonomyFacet = data.facets[taxonomyFacetId].facetValues,
+                    otherSpecies = [];
+                for (var i=0; i<taxonomyFacet.length; i++) {
+                    if (_.indexOf(popularSpecies, taxonomyFacet[i].label) === -1) {
+                        otherSpecies.push(taxonomyFacet[i]);
+                    }
+                }
+                return otherSpecies;
             }
         }
 
         /**
-         * Execute remote request.
+         * Use `hlfields` with highlighted matches instead of `fields`.
          */
-        function executeEbeyeSearch(url, overwriteResults) {
-            self.status.searchInProgress = true;
-            self.status.showError = false;
-            $http.get(url, params).then(
-                function(response) {
-                    data = preprocessResults(response.data);
-                    overwriteResults = overwriteResults || false;
-                    if (overwriteResults) {
-                        data._query = self.result._query;
-                        self.result = data; // replace
-                    } else {
-                        // append new entries
-                        self.result.entries = self.result.entries.concat(data.entries);
-                    }
-                    self.status.searchInProgress = false;
-                },
-                function(response) {
-                    self.status.searchInProgress = false;
-                    self.status.showError = true;
-                }
-            );
-
-            /**
-             * Preprocess data received from the server.
-             */
-            function preprocessResults(data) {
-
-                mergeSpeciesFacets();
-                orderFacets();
-                renameHlfields();
-                return data;
-
-                /**
-                 * Use `hlfields` with highlighted matches instead of `fields`.
-                 */
-                function renameHlfields() {
-                    for (var i=0; i < data.entries.length; i++) {
-                        data.entries[i].fields = data.entries[i].highlights;
-                        data.entries[i].fields.length[0] = data.entries[i].fields.length[0].replace(/<[^>]+>/gm, '');
-                        data.entries[i].id_with_slash = data.entries[i].id.replace('_', '/');
-                    }
-                }
-
-                /**
-                 * Order facets the same way as in the config.
-                 */
-                function orderFacets() {
-                    data.facets = _.sortBy(data.facets, function(facet){
-                        return _.indexOf(self.searchConfig.facetfields, facet.id);
-                    });
-                }
-
-                /**
-                 * Merge the two species facets putting popularSpecies
-                 * at the top of the list.
-                 * Species facets:
-                 * - TAXONOMY (all species)
-                 * - popularSpecies (manually curated set of top organisms).
-                 */
-                function mergeSpeciesFacets() {
-
-                    // find the popular species facet
-                    var topSpeciesFacetId = findFacetId('popular_species');
-
-                    if (topSpeciesFacetId) {
-                        // get top species names
-                        var popularSpecies = _.pluck(data.facets[topSpeciesFacetId].facetValues, 'label');
-
-                        // find the taxonomy facet
-                        var taxonomyFacetId = findFacetId('TAXONOMY');
-
-                        // extract other species from the taxonomy facet
-                        var otherSpecies = getOtherSpecies();
-
-                        // merge popularSpecies with otherSpecies
-                        data.facets[taxonomyFacetId].facetValues = data.facets[topSpeciesFacetId].facetValues.concat(otherSpecies);
-
-                        // remove the Popular species facet
-                        delete data.facets[topSpeciesFacetId];
-                        data.facets = _.compact(data.facets);
-                    }
-
-                    /**
-                     * Get Taxonomy facet values that are not also in popularSpecies.
-                     */
-                    function getOtherSpecies() {
-                        var taxonomyFacet = data.facets[taxonomyFacetId].facetValues,
-                            otherSpecies = [];
-                        for (var i=0; i<taxonomyFacet.length; i++) {
-                            if (_.indexOf(popularSpecies, taxonomyFacet[i].label) === -1) {
-                                otherSpecies.push(taxonomyFacet[i]);
-                            }
-                        }
-                        return otherSpecies;
-                    }
-
-                    /**
-                     * Find objects in array by attribute value.
-                     * Given an array like:
-                     * [{'id': 'a'}, {'id': 'b'}, {'id': 'c'}]
-                     * findFacetId('b') -> 1
-                     */
-                    function findFacetId(facetLabel) {
-                        var index;
-                        _.find(data.facets, function(facet, i){
-                            if (facet.id === facetLabel) {
-                                index = i;
-                                return true;
-                            }
-                        });
-                        return index;
-                    }
-                }
-
+        function renameHlfields() {
+            for (var i=0; i < data.entries.length; i++) {
+                data.entries[i].fields = data.entries[i].highlights;
+                data.entries[i].fields.length[0] = data.entries[i].fields.length[0].replace(/<[^>]+>/gm, '');
+                data.entries[i].id_with_slash = data.entries[i].id.replace('_', '/');
             }
         }
 
+        /**
+         * Order facets the same way as in the config.
+         */
+        function orderFacets() {
+            data.facets = _.sortBy(data.facets, function(facet){
+                return _.indexOf(self.searchConfig.facetfields, facet.id);
+            });
+        }
     };
 
     /**
