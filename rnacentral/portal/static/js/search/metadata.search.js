@@ -116,7 +116,29 @@ var search = function(_, $http, $interpolate, $location, $window) {
         var ebeyeUrl = $interpolate(self.queryUrls.ebeyeSearch)({query: query, start: start});
         var queryUrl = $interpolate(self.queryUrls.proxy)({ebeyeUrl: encodeURIComponent(ebeyeUrl)});
 
-        self.executeEbeyeSearch(queryUrl, start === 0);
+        // perform search
+        var overwriteResults = (start === 0);
+        self.status.searchInProgress = true;
+        self.status.showError = false;
+
+        return $http.get(queryUrl).then(
+            function(response) {
+                var data = self.preprocessResults(response.data);
+                overwriteResults = overwriteResults || false;
+                if (overwriteResults) {
+                    data._query = self.result._query;
+                    self.result = data; // replace
+                } else {
+                    // append new entries
+                    self.result.entries = self.result.entries.concat(data.entries);
+                }
+                self.status.searchInProgress = false;
+            },
+            function(response) {
+                self.status.searchInProgress = false;
+                self.status.showError = true;
+            }
+        );
     };
 
     /**
@@ -196,39 +218,24 @@ var search = function(_, $http, $interpolate, $location, $window) {
     };
 
     /**
-     * Execute remote request.
-     */
-    this.executeEbeyeSearch = function(url, overwriteResults) {
-        self.status.searchInProgress = true;
-        self.status.showError = false;
-        $http.get(url, params).then(
-            function(response) {
-                data = self.preprocessResults(response.data);
-                overwriteResults = overwriteResults || false;
-                if (overwriteResults) {
-                    data._query = self.result._query;
-                    self.result = data; // replace
-                } else {
-                    // append new entries
-                    self.result.entries = self.result.entries.concat(data.entries);
-                }
-                self.status.searchInProgress = false;
-            },
-            function(response) {
-                self.status.searchInProgress = false;
-                self.status.showError = true;
-            }
-        );
-    };
-
-    /**
      * Preprocess data received from the server.
      */
     this.preprocessResults = function(data) {
 
-        mergeSpeciesFacets();
-        orderFacets();
-        renameHlfields();
+        _mergeSpeciesFacets(data);
+
+        // order facets the same way as in the config
+        data.facets = _.sortBy(data.facets, function(facet){
+            return _.indexOf(self.searchConfig.facetfields, facet.id);
+        });
+
+         // Use `hlfields` with highlighted matches instead of `fields`.
+        for (var i=0; i < data.entries.length; i++) {
+            data.entries[i].fields = data.entries[i].highlights;
+            data.entries[i].fields.length[0] = data.entries[i].fields.length[0].replace(/<[^>]+>/gm, '');
+            data.entries[i].id_with_slash = data.entries[i].id.replace('_', '/');
+        }
+
         return data;
 
         /**
@@ -238,20 +245,20 @@ var search = function(_, $http, $interpolate, $location, $window) {
          * - TAXONOMY (all species)
          * - popularSpecies (manually curated set of top organisms).
          */
-        function mergeSpeciesFacets() {
+        function _mergeSpeciesFacets(data) {
 
             // find the popular species facet
-            var topSpeciesFacetId = findFacetId('popular_species');
+            var topSpeciesFacetId = _findFacetId('popular_species', data);
 
             if (topSpeciesFacetId) {
                 // get top species names
                 var popularSpecies = _.pluck(data.facets[topSpeciesFacetId].facetValues, 'label');
 
                 // find the taxonomy facet
-                var taxonomyFacetId = findFacetId('TAXONOMY');
+                var taxonomyFacetId = _findFacetId('TAXONOMY', data);
 
                 // extract other species from the taxonomy facet
-                var otherSpecies = getOtherSpecies();
+                var otherSpecies = _getOtherSpecies(data);
 
                 // merge popularSpecies with otherSpecies
                 data.facets[taxonomyFacetId].facetValues = data.facets[topSpeciesFacetId].facetValues.concat(otherSpecies);
@@ -267,9 +274,9 @@ var search = function(_, $http, $interpolate, $location, $window) {
              * [{'id': 'a'}, {'id': 'b'}, {'id': 'c'}]
              * findFacetId('b') -> 1
              */
-            function findFacetId(facetLabel) {
+            function _findFacetId(facetLabel, data) {
                 var index;
-                _.find(data.facets, function(facet, i){
+                _.find(data.facets, function(facet, i) {
                     if (facet.id === facetLabel) {
                         index = i;
                         return true;
@@ -281,9 +288,9 @@ var search = function(_, $http, $interpolate, $location, $window) {
             /**
              * Get Taxonomy facet values that are not also in popularSpecies.
              */
-            function getOtherSpecies() {
-                var taxonomyFacet = data.facets[taxonomyFacetId].facetValues,
-                    otherSpecies = [];
+            function _getOtherSpecies(data) {
+                var taxonomyFacet = data.facets[taxonomyFacetId].facetValues;
+                var otherSpecies = [];
                 for (var i=0; i<taxonomyFacet.length; i++) {
                     if (_.indexOf(popularSpecies, taxonomyFacet[i].label) === -1) {
                         otherSpecies.push(taxonomyFacet[i]);
@@ -291,26 +298,6 @@ var search = function(_, $http, $interpolate, $location, $window) {
                 }
                 return otherSpecies;
             }
-        }
-
-        /**
-         * Use `hlfields` with highlighted matches instead of `fields`.
-         */
-        function renameHlfields() {
-            for (var i=0; i < data.entries.length; i++) {
-                data.entries[i].fields = data.entries[i].highlights;
-                data.entries[i].fields.length[0] = data.entries[i].fields.length[0].replace(/<[^>]+>/gm, '');
-                data.entries[i].id_with_slash = data.entries[i].id.replace('_', '/');
-            }
-        }
-
-        /**
-         * Order facets the same way as in the config.
-         */
-        function orderFacets() {
-            data.facets = _.sortBy(data.facets, function(facet){
-                return _.indexOf(self.searchConfig.facetfields, facet.id);
-            });
         }
     };
 
@@ -351,10 +338,7 @@ var MainContent = function($scope, $anchorScroll, $location, search) {
     };
 };
 
-/**
- * Results display controller
- * Responsible for visualising search results.
- */
+
 var metadataSearchResults = {
     bindings: {},
     templateUrl: '/static/js/search/metadata-search-results.html',
@@ -472,7 +456,6 @@ var metadataSearchResults = {
         };
     }]
 };
-
 
 
 var metadataSearchBar = {
