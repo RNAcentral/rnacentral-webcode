@@ -295,6 +295,8 @@ var search = function(_, $http, $interpolate, $location, $window) {
 };
 
 var MainContent = function($scope, $anchorScroll, $location, search) {
+    $scope.displaySearchInterface = false;
+
     /**
      * Enables scrolling to anchor tags.
      * <a ng-click="scrollTo('anchor')">Title</a>
@@ -313,13 +315,6 @@ var MainContent = function($scope, $anchorScroll, $location, search) {
             $scope.displaySearchInterface = !(newValue === 'off');
         }
     });
-
-    /**
-     * Launch a metadata search from a web page.
-     */
-    $scope.metaSearch = function(query) {
-        search.metaSearch(query);
-    };
 };
 
 
@@ -599,7 +594,7 @@ angular.module('rnacentralApp', ['ngAnimate', 'ui.bootstrap', 'chieffancypants.l
          * (for example, a link to a search result won't load in IE 9).
          */
         if (window.history && window.history.pushState) {
-            $locationProvider.html5Mode(true);
+            $locationProvider.html5Mode({enabled: true, rewriteLinks: false});
         }
 
         // IE10- don't have window.location.origin, let's shim it
