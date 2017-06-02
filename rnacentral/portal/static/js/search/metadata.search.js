@@ -459,8 +459,6 @@ var metadataSearchBar = {
                 submitted: false
             };
 
-            ctrl.oldUrl = $location.url().replace(/#.+$/, ''); // cache oldUrl for $doCheck, ignore url hash
-
             // Check if the url contains a query when the controller is first created and initiate a search if necessary.
             if ($location.url().indexOf("/search?q=") > -1) {
                 // a search result page, launch a new search
@@ -468,60 +466,6 @@ var metadataSearchBar = {
                 search.search($location.search().q);
             }
         };
-
-        /**
-         * Control browser navigation buttons.
-         */
-        // ctrl.$doCheck = function() {
-        //     newUrl = $location.url().replace(/#.+$/, ''); // ignore url hash
-        //
-        //     // url has changed
-        //     if (newUrl !== ctrl.oldUrl) {
-        //         if (newUrl.indexOf('tab=') !== -1) {
-        //             // redirect only if the main part of url has changed
-        //             if (newUrl.split('?')[0] !== ctrl.oldUrl.split('?')[0]) {
-        //                 ctrl.redirect(newUrl);
-        //             }
-        //             else { // navigate page tabs using browser back button
-        //                 matches = newUrl.match(/tab=(\w+)&?/);
-        //                 $('#tabs a[data-target="#' + matches[1] + '"]').tab('show');
-        //             }
-        //         }
-        //
-        //         else if (newUrl.indexOf('xref-filter') !== -1) {
-        //             if (newUrl.split('?')[0] !== oldUrl.split('?')[0]) {
-        //                 ctrl.redirect(newUrl);
-        //             }
-        //         }
-        //
-        //         // let the sequence search app handle it
-        //         else if (ctrl.oldUrl.indexOf('sequence-search') !== -1 && newUrl.indexOf('sequence-search') !== -1) {}
-        //
-        //         // let genome-browser handle its own transitions
-        //         else if (ctrl.oldUrl.indexOf('genome-browser') !== -1 && newUrl.indexOf('genome-browser') !== -1) {}
-        //
-        //         // a non-search url, load that page
-        //         else if (newUrl.indexOf('/search') == -1) {
-        //             ctrl.redirect(newUrl);
-        //         }
-        //
-        //         // the new url is a search result page, launch that search
-        //         else {
-        //             ctrl.oldUrl = newUrl;
-        //             ctrl.query.text = $location.search().q;
-        //             search.search($location.search().q);
-        //             ctrl.query.submitted = false;
-        //         }
-        //     }
-        // };
-        //
-        // ctrl.redirect = function(newUrl) {
-        //     ctrl.oldUrl = newUrl;
-        //     $timeout(function() {
-        //         // wrapping in $timeout to avoid "digest in progress" errors
-        //         $window.location = newUrl;
-        //     });
-        // };
 
         /**
          * Called when user changes the value in query string
@@ -589,9 +533,13 @@ angular.module('rnacentralApp', ['ngAnimate', 'ui.bootstrap', 'chieffancypants.l
          * Turn on html5mode only in modern browsers because
          * in the older ones html5mode rewrites urls with Hangbangs
          * which break normal Django pages.
+         *
          * With html5mode off IE lt 10 will be able to navigate the site
          * but won't be able to open deep links to Angular pages
          * (for example, a link to a search result won't load in IE 9).
+         *
+         * Even in newer browsers we shall disable rewriteLinks, unless
+         * we want to create a client-side router.
          */
         if (window.history && window.history.pushState) {
             $locationProvider.html5Mode({enabled: true, rewriteLinks: false});
