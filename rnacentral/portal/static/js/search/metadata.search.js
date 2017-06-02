@@ -80,15 +80,6 @@ var search = function(_, $http, $interpolate, $location, $window) {
     };
 
     /**
-     * To launch a new search, change browser url,
-     * which will automatically trigger a new search
-     * since the url changes are watched in the query controller.
-     */
-    this.metaSearch = function(query) {
-        $location.url('/search' + '?q=' + query);
-    };
-
-    /**
      * Launch EBeye search.
      * `start` determines the range of the results to be returned.
      */
@@ -465,6 +456,7 @@ var metadataSearchBar = {
     templateUrl: '/static/js/search/metadata-search-bar.html',
     controller: ['$interpolate', '$location', '$window', '$timeout', 'search', function($interpolate, $location, $window, $timeout, search) {
         var ctrl = this;
+        ctrl.search = search;
 
         ctrl.$onInit = function() {
             ctrl.query = {
@@ -485,63 +477,56 @@ var metadataSearchBar = {
         /**
          * Control browser navigation buttons.
          */
-        ctrl.$doCheck = function() {
-            newUrl = $location.url().replace(/#.+$/, ''); // ignore url hash
-
-            // url has changed
-            if (newUrl !== ctrl.oldUrl) {
-                if (newUrl.indexOf('tab=') !== -1) {
-                    // redirect only if the main part of url has changed
-                    if (newUrl.split('?')[0] !== ctrl.oldUrl.split('?')[0]) {
-                        ctrl.redirect(newUrl);
-                    }
-                    else { // navigate page tabs using browser back button
-                        matches = newUrl.match(/tab=(\w+)&?/);
-                        $('#tabs a[data-target="#' + matches[1] + '"]').tab('show');
-                    }
-                }
-
-                else if (newUrl.indexOf('xref-filter') !== -1) {
-                    if (newUrl.split('?')[0] !== oldUrl.split('?')[0]) {
-                        ctrl.redirect(newUrl);
-                    }
-                }
-
-                // let the sequence search app handle it
-                else if (ctrl.oldUrl.indexOf('sequence-search') !== -1 && newUrl.indexOf('sequence-search') !== -1) {}
-
-                // let genome-browser handle its own transitions
-                else if (ctrl.oldUrl.indexOf('genome-browser') !== -1 && newUrl.indexOf('genome-browser') !== -1) {}
-
-                // a non-search url, load that page
-                else if (newUrl.indexOf('/search') == -1) {
-                    ctrl.redirect(newUrl);
-                }
-
-                // the new url is a search result page, launch that search
-                else {
-                    ctrl.oldUrl = newUrl;
-                    ctrl.query.text = $location.search().q;
-                    search.search($location.search().q);
-                    ctrl.query.submitted = false;
-                }
-            }
-        };
-
-        ctrl.redirect = function(newUrl) {
-            ctrl.oldUrl = newUrl;
-            $timeout(function() {
-                // wrapping in $timeout to avoid "digest in progress" errors
-                $window.location = newUrl;
-            });
-        };
-
-        /**
-         * Launch a metadata search using the service.
-         */
-        ctrl.metaSearch = function(query) {
-            search.metaSearch(query);
-        };
+        // ctrl.$doCheck = function() {
+        //     newUrl = $location.url().replace(/#.+$/, ''); // ignore url hash
+        //
+        //     // url has changed
+        //     if (newUrl !== ctrl.oldUrl) {
+        //         if (newUrl.indexOf('tab=') !== -1) {
+        //             // redirect only if the main part of url has changed
+        //             if (newUrl.split('?')[0] !== ctrl.oldUrl.split('?')[0]) {
+        //                 ctrl.redirect(newUrl);
+        //             }
+        //             else { // navigate page tabs using browser back button
+        //                 matches = newUrl.match(/tab=(\w+)&?/);
+        //                 $('#tabs a[data-target="#' + matches[1] + '"]').tab('show');
+        //             }
+        //         }
+        //
+        //         else if (newUrl.indexOf('xref-filter') !== -1) {
+        //             if (newUrl.split('?')[0] !== oldUrl.split('?')[0]) {
+        //                 ctrl.redirect(newUrl);
+        //             }
+        //         }
+        //
+        //         // let the sequence search app handle it
+        //         else if (ctrl.oldUrl.indexOf('sequence-search') !== -1 && newUrl.indexOf('sequence-search') !== -1) {}
+        //
+        //         // let genome-browser handle its own transitions
+        //         else if (ctrl.oldUrl.indexOf('genome-browser') !== -1 && newUrl.indexOf('genome-browser') !== -1) {}
+        //
+        //         // a non-search url, load that page
+        //         else if (newUrl.indexOf('/search') == -1) {
+        //             ctrl.redirect(newUrl);
+        //         }
+        //
+        //         // the new url is a search result page, launch that search
+        //         else {
+        //             ctrl.oldUrl = newUrl;
+        //             ctrl.query.text = $location.search().q;
+        //             search.search($location.search().q);
+        //             ctrl.query.submitted = false;
+        //         }
+        //     }
+        // };
+        //
+        // ctrl.redirect = function(newUrl) {
+        //     ctrl.oldUrl = newUrl;
+        //     $timeout(function() {
+        //         // wrapping in $timeout to avoid "digest in progress" errors
+        //         $window.location = newUrl;
+        //     });
+        // };
 
         /**
          * Called when user changes the value in query string
@@ -558,14 +543,24 @@ var metadataSearchBar = {
         };
 
         /**
-         * Called when the form is submitted.
+         * Called when the form is submitted, or when a link is pressed.
+         *
+         * @param {String} query - you can pass a query string, otherwise query string is taken from form input
          */
-        ctrl.submitQuery = function() {
-            ctrl.query.submitted = true;
-            if (ctrl.queryForm.text.$invalid) {
-                return;
+        ctrl.submitQuery = function(query) {
+            // if query is not given and form value is invalid, die
+            if (!query && ctrl.queryForm.text.$invalid) return;
+
+            if (!query) {
+                query = ctrl.query.text;
+            } else {
+                ctrl.query.text = query;
             }
-            ctrl.metaSearch(ctrl.query.text);
+
+            // set query status and location in url bar
+            ctrl.query.submitted = true;
+            $location.url('/search' + '?q=' + query);
+            search.search(query);
         };
     }]
 };
