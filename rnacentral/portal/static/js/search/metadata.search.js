@@ -406,7 +406,9 @@ var metadataSearchResults = {
             } else {
                 newQuery = query + ' AND ' + facet; // add new facet
             }
+
             $location.search('q', newQuery);
+            search.search(newQuery);
         };
 
         /**
