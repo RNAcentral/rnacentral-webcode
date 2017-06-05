@@ -76,7 +76,7 @@ var search = function(_, $http, $interpolate, $location, $window) {
         var ebeyeUrl = $interpolate(self.queryUrls.ebeyeAutocomplete)({query: query});
         var queryUrl = $interpolate(self.queryUrls.proxy)({ebeyeUrl: encodeURIComponent(ebeyeUrl)});
 
-        return $http.get(queryUrl);
+        return $http.get(queryUrl, {ignoreLoadingBar: true});
     };
 
     /**
