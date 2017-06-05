@@ -315,6 +315,11 @@ var MainContent = function($scope, $anchorScroll, $location, search) {
             $scope.displaySearchInterface = !(newValue === 'off');
         }
     });
+
+    $scope.metaSearch = function(query) {
+        $location.url('/search' + '?q=' + query);
+        search.search(query);
+    }
 };
 
 
@@ -407,7 +412,7 @@ var metadataSearchResults = {
                 newQuery = query + ' AND ' + facet; // add new facet
             }
 
-            $location.search('q', newQuery);
+            $location.url('/search' + '?q=' + query);
             search.search(newQuery);
         };
 
