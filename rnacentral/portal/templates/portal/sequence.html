@@ -69,7 +69,7 @@ limitations under the License.
 
         <uib-tabset class="tab-animation" active="activeTab">
 
-            <uib-tab index="0" heading="Overview" id="overview">
+            <uib-tab index="0" heading="Overview" id="overview" deselect="checkTab($event, $selectedIndex)">
                 <h2>
                     Overview
                 </h2>
@@ -139,7 +139,7 @@ limitations under the License.
                 <pre class="pre-scrollable" id="rna-sequence">{{ rna.get_sequence }}</pre>
             </uib-tab>
 
-            <uib-tab index="1" heading="Taxonomy">
+            <uib-tab index="1" heading="Taxonomy" deselect="checkTab($event, $selectedIndex)">
                 <h2>Taxonomic Tree</h2>
 
                 <p>
@@ -161,7 +161,7 @@ limitations under the License.
                 </div>
             </uib-tab>
 
-            <uib-tab index="2" heading="Publications">
+            <uib-tab index="2" heading="Publications" deselect="checkTab($event, $selectedIndex)">
                     <publications-component upi="upi"></publications-component>
             </uib-tab>
 
