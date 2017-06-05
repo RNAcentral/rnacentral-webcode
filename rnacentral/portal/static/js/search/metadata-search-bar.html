@@ -16,8 +16,6 @@
                placeholder="Search RNAcentral"
                uib-typeahead="suggestion.suggestion for suggestion in $ctrl.autocomplete($ctrl.query.text)"
                typeahead-on-select="$ctrl.submitQuery()"
-               typeahead-loading="loadingLocations"
-               typeahead-no-results="noResults"
                autofocus
                required>
         <div class="input-group-btn">
@@ -27,11 +25,6 @@
           </button>
         </div><!-- /input-group-btn -->
       </div><!--input-group -->
-
-      <i ng-show="loadingLocations" class="glyphicon glyphicon-refresh"></i>
-      <div ng-show="noResults">
-        <i class="glyphicon glyphicon-remove"></i> No Suggestions
-      </div>
 
       <span class="help-block example-searches">
           <i>
