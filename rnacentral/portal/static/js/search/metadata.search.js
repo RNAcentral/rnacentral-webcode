@@ -412,7 +412,7 @@ var metadataSearchResults = {
                 newQuery = query + ' AND ' + facet; // add new facet
             }
 
-            $location.url('/search' + '?q=' + query);
+            $location.url('/search' + '?q=' + newQuery);
             search.search(newQuery);
         };
 
