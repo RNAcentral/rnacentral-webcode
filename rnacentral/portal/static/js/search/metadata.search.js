@@ -125,6 +125,14 @@ var search = function(_, $http, $interpolate, $location, $window) {
         );
     };
 
+    /*
+     * Runs the search AND changes url.
+     */
+    this.metaSearch = function(query, start) {
+        $location.url('/search' + '?q=' + query);
+        self.search(query);
+    };
+
     /**
      * Split query into words and then:
      *  - append wildcards to all terms without double quotes and not ending with wildcards
@@ -317,8 +325,7 @@ var MainContent = function($scope, $anchorScroll, $location, search) {
     });
 
     $scope.metaSearch = function(query) {
-        $location.url('/search' + '?q=' + query);
-        search.search(query);
+        search.metaSearch(query);
     }
 };
 
@@ -412,8 +419,7 @@ var metadataSearchResults = {
                 newQuery = query + ' AND ' + facet; // add new facet
             }
 
-            $location.url('/search' + '?q=' + newQuery);
-            search.search(newQuery);
+            search.metaSearch(newQuery);
         };
 
         /**
@@ -492,17 +498,13 @@ var metadataSearchBar = {
          * @param {String} query - you can pass a query string, otherwise query string is taken from form input
          */
         ctrl.submitQuery = function(query) {
-            // if query is not given and form value is invalid, display error and die
             if (!query && ctrl.queryForm.text.$invalid) {
+                // if request comes from form input and it is invalid, just display error and die
                 ctrl.submitted = true;
-                return;
+            } else {
+                if (query) ctrl.query = query;
+                search.metaSearch(ctrl.query);
             }
-
-            query ? ctrl.query = query : query = ctrl.query;
-
-            // set query status and location in url bar
-            $location.url('/search' + '?q=' + query);
-            search.search(query);
         };
 
         /**
