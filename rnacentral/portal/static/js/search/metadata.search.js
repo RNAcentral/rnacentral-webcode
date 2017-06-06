@@ -461,15 +461,13 @@ var metadataSearchBar = {
         ctrl.search = search;
 
         ctrl.$onInit = function() {
-            ctrl.query = {
-                text: '',
-                submitted: false
-            };
+            ctrl.query = '';
+            ctrl.submitted = false; // flag set when form is submitted and cleared, when its content is edited
 
             // Check if the url contains a query when the controller is first created and initiate a search if necessary.
             if ($location.url().indexOf("/search?q=") > -1) {
                 // a search result page, launch a new search
-                ctrl.query.text = $location.search().q;
+                ctrl.query = $location.search().q;
                 search.search($location.search().q);
             }
         };
@@ -478,7 +476,7 @@ var metadataSearchBar = {
          * Called when user changes the value in query string
          */
         ctrl.autocomplete = function() {
-            return search.autocomplete(ctrl.query.text).then(
+            return search.autocomplete(ctrl.query).then(
                 function(response) {
                     return response.data.suggestions;
                 },
@@ -494,20 +492,25 @@ var metadataSearchBar = {
          * @param {String} query - you can pass a query string, otherwise query string is taken from form input
          */
         ctrl.submitQuery = function(query) {
-            // if query is not given and form value is invalid, die
-            if (!query && ctrl.queryForm.text.$invalid) return;
-
-            if (!query) {
-                query = ctrl.query.text;
-            } else {
-                ctrl.query.text = query;
+            // if query is not given and form value is invalid, display error and die
+            if (!query && ctrl.queryForm.text.$invalid) {
+                ctrl.submitted = true;
+                return;
             }
 
+            query ? ctrl.query = query : query = ctrl.query;
+
             // set query status and location in url bar
-            ctrl.query.submitted = true;
             $location.url('/search' + '?q=' + query);
             search.search(query);
         };
+
+        /**
+         * clear submitted flag to remove error messages, if form input is edited after failed submission
+         */
+        ctrl.hideErrors = function() {
+            ctrl.submitted = false;
+        }
     }]
 };
 

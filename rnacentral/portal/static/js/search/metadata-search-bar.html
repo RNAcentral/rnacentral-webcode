@@ -1,20 +1,20 @@
 <div>
   <form novalidate name="$ctrl.queryForm" class="global-search" ng-submit="$ctrl.submitQuery()">
     <fieldset>
-    <div class="form-group" ng-class="($ctrl.query.submitted && $ctrl.queryForm.$invalid) ? 'has-error' : ''">
+    <div class="form-group" ng-class="($ctrl.submitted && $ctrl.queryForm.$invalid) ? 'has-error' : ''">
       <div class="input-group input-group-lg">
         <input type="text"
                class="form-control"
                id="query-text"
                name="text"
                tabindex="1"
-               ng-model="$ctrl.query.text"
+               ng-model="$ctrl.query"
                ng-minlength="2"
                ng-maxlength="1000"
-               ng-change="$ctrl.autocomplete()"
+               ng-change="$ctrl.hideErrors()"
                autocomplete="off"
                placeholder="Search RNAcentral"
-               uib-typeahead="suggestion.suggestion for suggestion in $ctrl.autocomplete($ctrl.query.text)"
+               uib-typeahead="suggestion.suggestion for suggestion in $ctrl.autocomplete($ctrl.query)"
                typeahead-on-select="$ctrl.submitQuery()"
                typeahead-loading="loadingLocations"
                typeahead-no-results="noResults"
@@ -39,12 +39,12 @@
           </i>
       </span>
       <label class="control-label ng-cloak has-error"
-             for="query-text" ng-show="$ctrl.query.submitted && ($ctrl.queryForm.text.$error.required || $ctrl.queryForm.text.$error.minlength)"
+             for="query-text" ng-show="$ctrl.submitted && ($ctrl.queryForm.text.$error.required || $ctrl.queryForm.text.$error.minlength)"
              ng-cloak>
         Your query is too short
       </label>
       <label class="control-label ng-cloak"
-             for="query-text" ng-show="$ctrl.query.submitted && ($ctrl.queryForm.text.$error.maxlength)"
+             for="query-text" ng-show="$ctrl.submitted && ($ctrl.queryForm.text.$error.maxlength)"
              ng-cloak>
         Your query is too long
       </label>
