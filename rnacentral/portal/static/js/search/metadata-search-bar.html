@@ -16,11 +16,13 @@
                placeholder="Search RNAcentral"
                uib-typeahead="suggestion.suggestion for suggestion in $ctrl.autocomplete($ctrl.query.text)"
                typeahead-on-select="$ctrl.submitQuery()"
+               typeahead-loading="loadingLocations"
+               typeahead-no-results="noResults"
                autofocus
                required>
         <div class="input-group-btn">
           <button type="submit" class="btn btn-primary">
-            <i class="fa fa-search"></i>
+            <i ng-class="['fa', {'fa-spinner fa-spin': loadingLocations, 'fa-search': !loadingLocations}]"></i>
             <span class="hidden-xs-inline">Search</span>
           </button>
         </div><!-- /input-group-btn -->
