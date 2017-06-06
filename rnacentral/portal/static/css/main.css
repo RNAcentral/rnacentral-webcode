@@ -736,6 +736,24 @@ ul.affix-bottom {
 /*------------------------------------------------------------------
 [5.7 Metadata search]
 */
+
+/*#metasearch-icon.fa-spinner-add,*/
+/*#metasearch-icon.fa-spinner-remove {*/
+  /*transition-delay: 1s !important;*/
+  /*transition: 1s linear all !important;*/
+  /*background: red !important;*/
+/*};*/
+
+/*#metasearch-icon.fa-spinner {*/
+  /*background: white !important;*/
+/*};*/
+
+/*#metasearch-icon.fa-spinner-add-active,*/
+/*#metasearch-icon.fa-spinner-remove-active {*/
+  /*background: yellow !important;*/
+/*};*/
+
+
 .metasearch-facets {
   font-size: smaller;
   padding-left: 20px;
