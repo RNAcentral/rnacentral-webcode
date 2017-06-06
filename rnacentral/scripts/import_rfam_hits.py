@@ -32,7 +32,10 @@ def sequence_region(data):
     query = SequenceRegion.objects.filter(**data)
     if query:
         return query.get()
-    return SequenceRegion.objects.create(completeness=0, **data)
+    size = data['stop'] - data['start']
+    length = Rna.get(urs=data['upi_id']).length
+    completeness = float(size) / length
+    return SequenceRegion.objects.create(completeness=completeness, **data)
 
 
 def model_region(data):
@@ -44,7 +47,23 @@ def model_region(data):
     query = RfamModelRegion.objects.filter(**data)
     if query:
         return query.get()
-    return RfamModelRegion.objects.create(completeness=0, **data)
+    size = data['stop'] - data['start']
+    length = RfamModel.get(rfam_model_id=data['rfam_model_id']).length
+    completeness = float(size) / length
+    return RfamModelRegion.objects.create(completeness=completeness, **data)
+
+
+def search(filename):
+    data = {
+        'rfam_release_version': '12.0',
+        'program': 'cmscan',
+        'program_version': '',
+        'program_options': '',
+    }
+    query = RfamSearch.objects.filter(**data)
+    if query:
+        return query.get()
+    return RfamSearch.objects.create(**data)
 
 
 @click.group()
@@ -90,26 +109,14 @@ def metadata(version=None):
         rfam.save()
 
 
-def search():
-    data = {
-        'rfam_release_version': '12.0',
-        'program': 'cmscan',
-        'program_version': '',
-        'program_options': '',
-    }
-    query = RfamSearch.objects.filter(**data)
-    if query:
-        return query.get()
-    return RfamSearch.objects.create(**data)
-
-
 @main.command('hits')
+@click.option('--search-file', type=click.Path(readable=True))
 @click.argument('filename', type=click.Path(readable=True))
-def hits(filename):
+def hits(filename, search_file=None):
     with open(filename, 'rb') as raw:
         for row in csv.DictReader(raw, delimiter='\t'):
             hit = RfamHit()
-            hit.rfam_search_id = search().rfam_search_id
+            hit.rfam_search_id = search(search_file).rfam_search_id
             hit.sequence_region = sequence_region(row)
             hit.rfam_model_region = model_region(row)
             hit.e_value = float(row['e_value'])
