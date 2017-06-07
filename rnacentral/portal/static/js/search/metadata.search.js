@@ -290,7 +290,7 @@ var search = function(_, $http, $interpolate, $location, $window) {
      */
     this.loadMoreResults = function() {
         query = $location.search().q;
-        this.search(query, self.result.entries.length);
+        self.search(query, self.result.entries.length);
     };
 };
 
@@ -457,7 +457,7 @@ var metadataSearchBar = {
         };
 
         /**
-         * Called when user changes the value in query string
+         * Called when user changes the value in query string.
          */
         ctrl.autocomplete = function() {
             return search.autocomplete(ctrl.query).then(
@@ -484,7 +484,7 @@ var metadataSearchBar = {
             ctrl.query = query;
             ctrl.submitted = false;
             search.search(query);
-        }
+        };
     }]
 };
 
