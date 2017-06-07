@@ -44,6 +44,8 @@ var search = function(_, $http, $interpolate, $location, $window) {
 
     this.status = 'off'; // possible values: 'off', 'in progress', 'success', 'error'
 
+    this.query = ''; // the query will be observed by watches
+
     this.config = {
         ebeyeBaseUrl: global_settings.EBI_SEARCH_ENDPOINT,
         rnacentralBaseUrl: window.location.origin, // e.g. http://localhost:8000 or http://rnacentral.org
@@ -88,6 +90,8 @@ var search = function(_, $http, $interpolate, $location, $window) {
 
         hopscotch.endTour(); // end guided tour when a search is launched
 
+        self.oldQuery = self.query;
+        self.query = query;
         self.status = 'in progress';
 
         // display search spinner if not a "load more" request
@@ -320,18 +324,16 @@ var MainContent = function($scope, $anchorScroll, $location, search) {
     /**
      * Watch query and if it changes, modify url accordingly.
      */
-    $scope.$watch(function() { return $scope.query }, function(newValue, oldValue) {
+    $scope.$watch(function() { return search.query }, function(newValue, oldValue) {
         if (newValue != oldValue && newValue) {
-            $location.url('/search' + '?q=' + $scope.query);
+            $location.url('/search' + '?q=' + search.query);
         }
     });
 };
 
 
 var metadataSearchResults = {
-    bindings: {
-        query: '='
-    },
+    bindings: {},
     templateUrl: '/static/js/search/metadata-search-results.html',
     controller: ['$location', '$http', 'search', function($location, $http, search) {
         var ctrl = this;
@@ -374,7 +376,7 @@ var metadataSearchResults = {
          */
         ctrl.isFacetApplied = function(facetId, facetValue) {
             var facetQuery = new RegExp(facetId + '\\:"' + facetValue + '"', 'i');
-            return !!ctrl.query.match(facetQuery);
+            return !!search.query.match(facetQuery);
         };
 
         /**
@@ -387,7 +389,7 @@ var metadataSearchResults = {
 
             var facet = facetId + ':"' + facetValue + '"';
             if (ctrl.isFacetApplied(facetId, facetValue)) {
-                newQuery = ctrl.query;
+                newQuery = search.query;
 
                 // remove facet in different contexts
                 newQuery = newQuery.replace(' AND ' + facet + ' AND ', ' AND ', 'i');
@@ -395,11 +397,10 @@ var metadataSearchResults = {
                 newQuery = newQuery.replace(' AND ' + facet, '', 'i');
                 newQuery = newQuery.replace(facet, '', 'i') || 'RNA';
             } else {
-                newQuery = ctrl.query + ' AND ' + facet; // add new facet
+                newQuery = search.query + ' AND ' + facet; // add new facet
             }
 
-            ctrl.query = newQuery;
-            search.search(ctrl.query);
+            search.search(newQuery);
         };
 
         /**
@@ -436,9 +437,7 @@ var metadataSearchResults = {
 
 
 var metadataSearchBar = {
-    bindings: {
-        query: '='
-    },
+    bindings: {},
     templateUrl: '/static/js/search/metadata-search-bar.html',
     controller: ['$interpolate', '$location', '$window', '$timeout', 'search', function($interpolate, $location, $window, $timeout, search) {
         var ctrl = this;
@@ -450,9 +449,14 @@ var metadataSearchBar = {
 
             // check if the url contains a query when the controller is first created and initiate a search if necessary
             if ($location.url().indexOf("/search?q=") > -1) {
-                // a search result page, launch a new search
-                ctrl.query = $location.search().q;
-                search.search($location.search().q);
+                search.search($location.search().q); // a search result page, launch a new search
+            }
+        };
+
+        ctrl.$doCheck = function() {
+            if (search.query != search.oldQuery) {
+                ctrl.query = search.query;
+                ctrl.submitted = false;
             }
         };
 
@@ -475,15 +479,6 @@ var metadataSearchBar = {
          */
         ctrl.submitQuery = function() {
             ctrl.queryForm.text.$invalid ? ctrl.submitted = true : search.search(ctrl.query);
-        };
-
-        /**
-         * Called when user clicks on a link with query example under the search query form.
-         */
-        ctrl.queryExampleClicked = function(query) {
-            ctrl.query = query;
-            ctrl.submitted = false;
-            search.search(query);
         };
     }]
 };
