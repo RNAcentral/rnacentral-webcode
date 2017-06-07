@@ -75,6 +75,20 @@
 
   </div> <!-- ng-if="showExportError" -->
 
+  <div class="row" ng-if="$ctrl.showExpertDbError">
+
+    <div class="col-md-12">
+      <div class="alert alert-danger alert-dismissible">
+        <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <i class="fa fa-warning fa-3x pull-left"></i>
+        There was an error while loading expert databases list.
+        <br>
+        Please try again or <a ng-href="{{ $ctrl.contactUsUrl }}">contact us</a> if the problem persists.
+      </div>
+    </div>
+
+  </div> <!-- ng-if="showExpertDbError" -->
+
   <div class="row" ng-if="$ctrl.search.result.hitCount == 0">
 
     <div class="col-md-12">
