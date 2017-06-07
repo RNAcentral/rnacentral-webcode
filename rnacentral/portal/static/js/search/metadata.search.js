@@ -324,7 +324,7 @@ var MainContent = function($scope, $anchorScroll, $location, search) {
     /**
      * Watch query and if it changes, modify url accordingly.
      */
-    $scope.$watch(function() { return search.query }, function(newValue, oldValue) {
+    $scope.$watch(function() { return search.query; }, function(newValue, oldValue) {
         if (newValue != oldValue && newValue) {
             $location.url('/search' + '?q=' + search.query);
         }
@@ -422,7 +422,7 @@ var metadataSearchResults = {
          * - open the results page in a new window.
          */
         ctrl.exportResults = function(format) {
-            $http.get(ctrl.routes.submitQueryUrl + '?q=' + ctrl.result._query + '&format=' + format).then(
+            $http.get(ctrl.routes.submitQueryUrl + '?q=' + ctrl.search.result._query + '&format=' + format).then(
                 function(response) {
                     ctrl.showExportError = false;
                     window.location.href = ctrl.routes.resultsPageUrl + '?job=' + response.data.job_id;
