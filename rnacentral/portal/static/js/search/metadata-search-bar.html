@@ -14,7 +14,7 @@
                ng-change="$ctrl.inputChanged = true; $ctrl.submitted = false;"
                autocomplete="off"
                placeholder="Search RNAcentral"
-               uib-typeahead="suggestion.suggestion for suggestion in $ctrl.autocomplete($ctrl.query)"
+               uib-typeahead="suggestion for suggestion in $ctrl.autocomplete($ctrl.query)"
                typeahead-focus-first="false"
                typeahead-on-select="$ctrl.submitQuery()"
                typeahead-loading="loadingLocations"

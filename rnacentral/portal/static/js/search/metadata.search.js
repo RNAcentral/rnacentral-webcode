@@ -292,8 +292,7 @@ var search = function(_, $http, $interpolate, $location, $window) {
      * Load more results starting from the last loaded index.
      */
     this.loadMoreResults = function() {
-        query = $location.search().q;
-        self.search(query, self.result.entries.length);
+        self.search(self.query, self.result.entries.length);
     };
 };
 
@@ -471,7 +470,15 @@ var metadataSearchBar = {
         ctrl.autocomplete = function() {
             return search.autocomplete(ctrl.query).then(
                 function(response) {
-                    return response.data.suggestions;
+                    // make exact matches appear in the top of the list
+                    var exactMatches = [], fuzzyMatches = [];
+                    for (var i=0; i < response.data.suggestions.length; i++) {
+                        var suggestion = response.data.suggestions[i].suggestion;
+                        if (suggestion.indexOf(ctrl.query) === 0) exactMatches.push(suggestion);
+                        else fuzzyMatches.push(suggestion);
+                    }
+
+                    return exactMatches.concat(fuzzyMatches);
                 },
                 function(response) {
                     return [];
