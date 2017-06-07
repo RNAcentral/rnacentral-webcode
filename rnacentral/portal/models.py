@@ -1253,94 +1253,74 @@ class RfamModel(models.Model):
     seed_count = models.PositiveIntegerField()
     full_count = models.PositiveIntegerField()
     length = models.PositiveIntegerField()
+    is_supressed = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'rnc_rfam_models'
 
 
-class RfamModelRegion(models.Model):
-    """
-    This model represents a continuous part of a model that has been found in
-    some search. All or just part of a model may match to some sequence. This
-    table represents the part that matches. This helps in selecting which hits
-    to use for display and analysis.
-    """
-    rfam_model_region_id = models.AutoField(primary_key=True)
-    rfam_model_id = models.ForeignKey(RfamModel,
-                                      db_column='rfam_model_id',
-                                      to_field='rfam_model_id')
-    start = models.PositiveIntegerField()
-    stop = models.PositiveIntegerField()
-    completeness = models.FloatField()
-
-    class Meta:
-        db_table = 'rnc_rfam_model_regions'
-        unique_together = ('rfam_model_id', 'start', 'stop')
-
-
-class SequenceRegion(models.Model):
-    """
-    This is intended to represent an continuous part of a URS that is matched
-    by some Rfam model. As all or just part of the sequence may match a model,
-    we store information about what part does for both display and analysis.
-    """
-    sequence_region_id = models.AutoField(primary_key=True)
-    upi = models.ForeignKey(Rna, db_column='upi_id', to_field='upi')
-    start = models.PositiveIntegerField()
-    stop = models.PositiveIntegerField()
-    completeness = models.FloatField()
-
-    class Meta:
-        db_table = 'rnc_sequence_regions'
-        unique_together = ('upi', 'start', 'stop')
-
-
-class RfamSearch(models.Model):
-    """
-    This represents the methodology used in searching Rfam models against
-    RNAcentral sequences. This is meant to help us track which models were run
-    with what options. I assume that we will always want to run all models for
-    a search. This design does not deal with assign families to Rfam versions,
-    changes in Rfam models, or assignments of models to particular search
-    strategies. Ideally, using this table and some simple code it is possible
-    to reproduce the searches we used.
-    """
-    rfam_search_id = models.AutoField(primary_key=True)
-    rfam_release_version = models.CharField(max_length=4)
-    program = models.CharField(max_length=10)
-    program_version = models.CharField(max_length=10)
-    program_options = models.CharField(max_length=500)
-
-    class Meta:
-        db_table = 'rnc_rfam_searches'
-
-
 class RfamHit(models.Model):
     """
-    This represents a hit of an Rfam model against a particular sequence. I
-    have stripped out the overlap and inclusion fields as they are handled when
-    parsing and loading the data.
+    This represents a hit of an Rfam model against a particular sequence. The
+    idea is that we represent the regions of the sequence and model that are
+    matched.
     """
+
     rfam_hit_id = models.AutoField(primary_key=True)
-    rfam_search = models.ForeignKey(RfamSearch,
-                                    db_column='rfam_search_id',
-                                    to_field='rfam_search_id',
-                                    related_name='hits')
-    sequence_region = models.ForeignKey(SequenceRegion,
-                                        db_column='sequence_region_id',
-                                        to_field='sequence_region_id',
-                                        related_name='hits')
-    rfam_model_region = models.ForeignKey(RfamModelRegion,
-                                          db_column='rfam_model_region_id',
-                                          to_field='rfam_model_region_id',
-                                          related_name='hits')
+
+    upi = models.ForeignKey(Rna, db_column='upi', to_field='upi')
+    sequence_start = models.PositiveIntegerField()
+    sequence_stop = models.PositiveIntegerField()
+    sequence_completness = models.FloatField()
+
+    rfam_model = models.ForeignKey(RfamModel,
+                                   db_column='rfam_model_id',
+                                   to_field='rfam_model_id')
+    model_start = models.PositiveIntegerField()
+    model_stop = models.PositiveIntegerField()
+    model_completeness = models.FloatField()
+
+    overlap = models.CharField(max_length=30)
     e_value = models.FloatField()
     score = models.FloatField()
 
     class Meta:
         db_table = 'rnc_rfam_model_hits'
-        unique_together = ('rfam_search', 'sequence_region',
-                           'rfam_model_region')
+
+
+class RfamInitialAnnotations(models.Model):
+    """
+    This table represents the given Rfam annotations for a sequence. For
+    example when we take sequences from Rfam we already know what the
+    'correct' family is. In addition, we get sequences from people who have
+    performed their own Rfam scans. We keep track of this to decide if things
+    should be suppressed or handled differently here.
+    """
+
+    rfam_initial_annotation_id = models.AutoField(primary_key=True)
+    upi = models.ForeignKey(Rna, db_column='upi', to_field='upi')
+    rfam_model = models.ForeignKey(RfamModel,
+                                   db_column='rfam_model_id',
+                                   to_field='rfam_model_id')
+
+    class Meta:
+        db_table = 'rfam_initial_annotations'
+
+
+class RfamAnalyzedSequences(model.Model):
+    """
+    This table keeps track of all sequences which have been analyzed for Rfam
+    families. This is useful for finding sequences which have no annotations
+    (they will not have entries in rfam_hits, but will have entries here), or
+    sequences that have not yet been run (will not show up here).
+    """
+
+    upi = models.ForeignKey(Rna, db_column='upi', to_field='upi',
+                            primary_key=True)
+    date = models.DateField()
+
+    class Meta:
+        db_table = 'rfam_analyzed_sequences'
 
 
 """
