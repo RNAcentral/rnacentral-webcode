@@ -90,7 +90,6 @@ var search = function(_, $http, $interpolate, $location, $window) {
 
         hopscotch.endTour(); // end guided tour when a search is launched
 
-        self.oldQuery = self.query;
         self.query = query;
         self.status = 'in progress';
 
@@ -446,6 +445,7 @@ var metadataSearchBar = {
         ctrl.$onInit = function() {
             ctrl.query = '';
             ctrl.submitted = false; // when form is submitted this flag is set; when its content is edited it is cleared
+            ctrl.inputChanged = false; // when ctrl.query != search.query, this indicates, if it's us changed, not form
 
             // check if the url contains a query when the controller is first created and initiate a search if necessary
             if ($location.url().indexOf("/search?q=") > -1) {
@@ -453,10 +453,15 @@ var metadataSearchBar = {
             }
         };
 
+        /**
+         * Watch search.query and if it's different from ctrl.query, check, who changed and sync if necessary
+         */
         ctrl.$doCheck = function() {
-            if (search.query != search.oldQuery) {
-                ctrl.query = search.query;
-                ctrl.submitted = false;
+            if (search.query != ctrl.query) {
+                if (!ctrl.inputChanged) { // if it's not us editing input, but a change in search.query, sync with it
+                    ctrl.query = search.query;
+                    ctrl.inputChanged = false;
+                }
             }
         };
 
