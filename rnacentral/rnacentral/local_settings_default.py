@@ -18,7 +18,7 @@ COMPRESS_ENABLED = False
 
 SECRET_KEY = ''
 
-ORACLE_DBS = {
+DBS = {
     'HX': {
         'user': '',
         'name': '',
@@ -33,12 +33,9 @@ ORACLE_DBS = {
     },
     'DEV': {
         'user': '',
-        'name': ('(DESCRIPTION=(ADDRESS=(PROTOCOL=TCP)(HOST={host})'
-                 '(PORT={port}))(CONNECT_DATA=(SERVER=DEDICATED)'
-                 '(SERVICE_NAME={service})))').format(
-                     host='host',
-                     port=0,
-                     service='service'),
+        'name': '',
+        'host': '',
+        'port': 5432,
     },
 }
 
@@ -46,12 +43,13 @@ ENVIRONMENT = get_environment()
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.oracle',
-        'NAME': ORACLE_DBS[ENVIRONMENT]['name'],
-        'USER': ORACLE_DBS[ENVIRONMENT]['user'],
+        'ENGINE': 'django.db.backends.postgresql_psycopg2,',
+        'NAME': DBS[ENVIRONMENT]['name'],
+        'USER': DBS[ENVIRONMENT]['user'],
         'PASSWORD': '',
+        'HOST': DBS[ENVIRONMENT]['host'],
+        'port': DBS[ENVIRONMENT]['port'],
         'OPTIONS': {
-            'threaded': True,
         }
     },
     'nhmmer_db': {
