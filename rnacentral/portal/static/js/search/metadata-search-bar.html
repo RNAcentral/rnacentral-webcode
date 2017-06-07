@@ -11,7 +11,7 @@
                ng-model="$ctrl.query"
                ng-minlength="2"
                ng-maxlength="1000"
-               ng-change="$ctrl.inputChanged = true; $ctrl.submitted = false;"
+               ng-change="$ctrl.submitted = false;"
                autocomplete="off"
                placeholder="Search RNAcentral"
                uib-typeahead="suggestion for suggestion in $ctrl.autocomplete($ctrl.query)"

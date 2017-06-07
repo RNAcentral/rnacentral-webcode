@@ -444,7 +444,6 @@ var metadataSearchBar = {
         ctrl.$onInit = function() {
             ctrl.query = '';
             ctrl.submitted = false; // when form is submitted this flag is set; when its content is edited it is cleared
-            ctrl.inputChanged = false; // when ctrl.query != search.query, this indicates, if it's us changed, not form
 
             // check if the url contains a query when the controller is first created and initiate a search if necessary
             if ($location.url().indexOf("/search?q=") > -1) {
@@ -457,9 +456,9 @@ var metadataSearchBar = {
          */
         ctrl.$doCheck = function() {
             if (search.query != ctrl.query) {
-                if (!ctrl.inputChanged) { // if it's not us editing input, but a change in search.query, sync with it
+                if (search.status == 'in progress') {
+                    // this is a result of search.search() call => sync form input with search.query
                     ctrl.query = search.query;
-                    ctrl.inputChanged = false;
                 }
             }
         };
