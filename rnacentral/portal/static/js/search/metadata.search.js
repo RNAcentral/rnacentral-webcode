@@ -446,9 +446,9 @@ var metadataSearchBar = {
 
         ctrl.$onInit = function() {
             ctrl.query = '';
-            ctrl.submitted = false; // flag set when form is submitted and cleared, when its content is edited
+            ctrl.submitted = false; // when form is submitted this flag is set; when its content is edited it is cleared
 
-            // Check if the url contains a query when the controller is first created and initiate a search if necessary.
+            // check if the url contains a query when the controller is first created and initiate a search if necessary
             if ($location.url().indexOf("/search?q=") > -1) {
                 // a search result page, launch a new search
                 ctrl.query = $location.search().q;
@@ -476,6 +476,15 @@ var metadataSearchBar = {
         ctrl.submitQuery = function() {
             ctrl.queryForm.text.$invalid ? ctrl.submitted = true : search.search(ctrl.query);
         };
+
+        /**
+         * Called when user clicks on a link with query example under the search query form.
+         */
+        ctrl.queryExampleClicked = function(query) {
+            ctrl.query = query;
+            ctrl.submitted = false;
+            search.search(query);
+        }
     }]
 };
 
