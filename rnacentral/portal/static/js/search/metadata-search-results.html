@@ -1,16 +1,16 @@
-<div ng-show="$ctrl.status !== 'off'" class="ng-cloak" ng-cloak>
+<div ng-show="$ctrl.search.status !== 'off'" class="ng-cloak" ng-cloak>
 
   <h1>
     <i class="fa fa-search"></i> Results
-    <small ng-show="$ctrl.status === 'in progress'">
+    <small ng-show="$ctrl.search.status === 'in progress'">
       <i class="fa fa-spinner fa-spin"></i>
     </small>
-    <small id="metadata-search-status" ng-show="$ctrl.status === 'in progress'">
+    <small id="metadata-search-status" ng-show="$ctrl.search.status === 'in progress'">
       Searching...
     </small>
-    <small ng-show="$ctrl.result.hitCount > 0">
-      <span ng-if="$ctrl.result.hitCount == 1">1 sequence</span>
-      <span ng-if="$ctrl.result.hitCount > 1" id="metasearch-results-count">{{ $ctrl.result.entries.length }} out of {{ $ctrl.result.hitCount | number }} sequences</span>
+    <small ng-show="$ctrl.search.result.hitCount > 0">
+      <span ng-if="$ctrl.search.result.hitCount == 1">1 sequence</span>
+      <span ng-if="$ctrl.search.result.hitCount > 1" id="metasearch-results-count">{{ $ctrl.search.result.entries.length }} out of {{ $ctrl.search.result.hitCount | number }} sequences</span>
     </small>
 
     <small class="pull-right font-size-14-px hidden-xs">
@@ -18,7 +18,7 @@
       <a class="text-muted margin-right-10px" ng-href="{{ $ctrl.helpMetadataSearchUrl }}">Search help</a>
 
       <div class="btn-group">
-        <button type="button" ng-class="$ctrl.status === 'in progress' ? 'disabled' : ''" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+        <button type="button" ng-class="$ctrl.search.status === 'in progress' ? 'disabled' : ''" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
           Download
           <span class="caret"></span>
         </button>
@@ -38,7 +38,7 @@
     </div>
   </div> <!-- .visible-xs -->
 
-  <div class="row" ng-if="$ctrl.status === 'error'">
+  <div class="row" ng-if="$ctrl.search.status === 'error'">
     <div class="col-md-12">
       <div class="alert alert-danger col-md-12">
         There was an error while processing your query
@@ -75,7 +75,7 @@
 
   </div> <!-- ng-if="showExportError" -->
 
-  <div class="row" ng-if="$ctrl.result.hitCount == 0">
+  <div class="row" ng-if="$ctrl.search.result.hitCount == 0">
 
     <div class="col-md-12">
       <div class="alert alert-warning col-md-12 metasearch-no-results">
@@ -117,11 +117,11 @@
 
   </div>
 
-  <div class="row" ng-show="$ctrl.result.hitCount > 0">
+  <div class="row" ng-show="$ctrl.search.result.hitCount > 0">
 
     <div class="col-md-3 col-sm-4 hidden-xs metasearch-facets">
       <ul class="list-unstyled">
-        <li class="facet" ng-repeat="facet in $ctrl.result.facets">
+        <li class="facet" ng-repeat="facet in $ctrl.search.result.facets">
             <h3>{{ facet.label }}</h3>
             <ul class="list-unstyled metasearch-facet-values metasearch-facet-overflow force-scrollbars" style="overflow-x: hidden;">
                 <li ng-repeat="facetValue in facet.facetValues" ng-if="facet.id == 'expert_db'">
@@ -145,7 +145,7 @@
 
     <div class="col-md-9 col-sm-8 col-xs-12 metasearch-results">
       <ul class="list-unstyled">
-        <li class="result" ng-repeat="rna in $ctrl.result.entries">
+        <li class="result" ng-repeat="rna in $ctrl.search.result.entries">
           <div class="metasearch-result">
             <h4>
               <a href="/rna/{{rna.id_with_slash}}" ng-bind-html="rna.fields.description[0] | sanitize"></a>
@@ -168,10 +168,10 @@
       </ul>
 
       <br>
-      <small ng-if="$ctrl.result.hitCount > result.entries.length" class="text-muted">Displaying {{ $ctrl.result.entries.length }} out of {{ $ctrl.result.hitCount | number }} sequences</small>
+      <small ng-if="$ctrl.search.result.hitCount > result.entries.length" class="text-muted">Displaying {{ $ctrl.search.result.entries.length }} out of {{ $ctrl.search.result.hitCount | number }} sequences</small>
       <br>
 
-      <button class="btn btn-default load-more col-md-3" ng-click="$ctrl.loadMoreResults()" ng-show="$ctrl.result.hitCount > $ctrl.result.entries.length"><i ng-class="$ctrl.status === 'in progress' ? 'fa fa-spinner fa-spin' : 'hidden'"></i> Load more</button>
+      <button class="btn btn-default load-more col-md-3" ng-click="$ctrl.search.loadMoreResults()" ng-show="$ctrl.search.result.hitCount > $ctrl.search.result.entries.length"><i ng-class="$ctrl.search.status === 'in progress' ? 'fa fa-spinner fa-spin' : 'hidden'"></i> Load more</button>
     </div>
 
   </div><!--/row-->

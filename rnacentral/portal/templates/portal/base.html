@@ -107,7 +107,7 @@ limitations under the License.
         {% block extra_head %}{% endblock %}
     </head>
 
-    <body class="level2">
+    <body class="level2" ng-controller="MainContent">
         <header>
         {% include "portal/header.html" %}
         </header>
@@ -127,10 +127,10 @@ limitations under the License.
               </div>
             </noscript>
 
-            <div ng-show="!displaySearchInterface" ng-controller="MainContent">
+            <div ng-show="!displaySearchInterface">
               {% block content %}{% endblock %}
             </div>
-            <metadata-search-results></metadata-search-results>
+            <metadata-search-results query="query"></metadata-search-results>
           </div>
 
           <footer>

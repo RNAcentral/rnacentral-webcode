@@ -42,7 +42,7 @@ var search = function(_, $http, $interpolate, $location, $window) {
         _query: null, // query after preprocessing
     };
 
-    this.status = 'off'; // possible values: 'off', 'initiating', 'in progress', 'success', 'error'
+    this.status = 'off'; // possible values: 'off', 'in progress', 'success', 'error'
 
     this.config = {
         ebeyeBaseUrl: global_settings.EBI_SEARCH_ENDPOINT,
@@ -88,7 +88,7 @@ var search = function(_, $http, $interpolate, $location, $window) {
 
         hopscotch.endTour(); // end guided tour when a search is launched
 
-        self.status = 'initiating';
+        self.status = 'in progress';
 
         // display search spinner if not a "load more" request
         if (start === 0) self.result.hitCount = null;
@@ -123,14 +123,6 @@ var search = function(_, $http, $interpolate, $location, $window) {
                 self.status = 'error';
             }
         );
-    };
-
-    /*
-     * Runs the search AND changes url.
-     */
-    this.metaSearch = function(query, start) {
-        $location.url('/search' + '?q=' + query);
-        self.search(query);
     };
 
     /**
@@ -304,6 +296,7 @@ var search = function(_, $http, $interpolate, $location, $window) {
 
 var MainContent = function($scope, $anchorScroll, $location, search) {
     $scope.displaySearchInterface = false;
+    $scope.search = search; // expose search service to templates
 
     /**
      * Enables scrolling to anchor tags.
@@ -324,27 +317,40 @@ var MainContent = function($scope, $anchorScroll, $location, search) {
         }
     });
 
-    $scope.metaSearch = function(query) {
-        search.metaSearch(query);
-    }
+    /**
+     * Watch query and if it changes, modify url accordingly.
+     */
+    $scope.$watch(function() { return $scope.query }, function(newValue, oldValue) {
+        if (newValue != oldValue && newValue) {
+            $location.url('/search' + '?q=' + $scope.query);
+        }
+    });
 };
 
 
 var metadataSearchResults = {
-    bindings: {},
+    bindings: {
+        query: '='
+    },
     templateUrl: '/static/js/search/metadata-search-results.html',
     controller: ['$location', '$http', 'search', function($location, $http, search) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
-            // variables that control UI state
-            ctrl.result = { entries: [] };
+            // expose search service in template
+            ctrl.search = search;
+
+            // error flags for UI state
             ctrl.showExportError = false;
-            ctrl.status = search.status;
+            ctrl.showExpertDbError = false;
 
             // urls used in template (hardcoded)
-            ctrl.helpMetadataSearchUrl = '/help/metadata-search/';
-            ctrl.contactUsUrl = '/contact';
+            ctrl.routes = {
+                helpMetadataSearchUrl: '/help/metadata-search/',
+                contactUsUrl: '/contact',
+                submitQueryUrl: '/export/submit-query',
+                resultsPageUrl: '/export/results'
+            };
 
             // retrieve expert_dbs json for display in tooltips
             $http.get('/api/internal/expert-dbs/').then(
@@ -358,43 +364,17 @@ var metadataSearchResults = {
                     }
                 },
                 function(response) {
-                    ctrl.status = 'error';
+                    ctrl.showExpertDbError = true;
                 }
             );
-
-        };
-
-        ctrl.$doCheck = function() {
-            if (search.status === 'initiating') {
-                search.promise.then(
-                    function() {
-                        ctrl.result = search.result;
-                        ctrl.status = search.status;
-                    },
-                    function() {
-                        ctrl.result = search.result;
-                        ctrl.status = search.status;
-                    }
-                );
-
-                ctrl.status = search.status = 'in progress';
-            }
-        };
-
-        /**
-         * Fired when "Load more" button is clicked.
-         */
-        ctrl.loadMoreResults = function() {
-            search.loadMoreResults();
         };
 
         /**
          * Determine if the facet has already been applied.
          */
         ctrl.isFacetApplied = function(facetId, facetValue) {
-            var query = $location.search().q || '';
             var facetQuery = new RegExp(facetId + '\\:"' + facetValue + '"', 'i');
-            return !!query.match(facetQuery);
+            return !!ctrl.query.match(facetQuery);
         };
 
         /**
@@ -403,12 +383,11 @@ var metadataSearchResults = {
          * parameters.
          */
         ctrl.facetSearch = function(facetId, facetValue) {
-            var query = $location.search().q || '',
-                facet = facetId + ':"' + facetValue + '"',
-                newQuery;
+            var newQuery;
 
+            var facet = facetId + ':"' + facetValue + '"';
             if (ctrl.isFacetApplied(facetId, facetValue)) {
-                newQuery = query;
+                newQuery = ctrl.query;
 
                 // remove facet in different contexts
                 newQuery = newQuery.replace(' AND ' + facet + ' AND ', ' AND ', 'i');
@@ -416,10 +395,11 @@ var metadataSearchResults = {
                 newQuery = newQuery.replace(' AND ' + facet, '', 'i');
                 newQuery = newQuery.replace(facet, '', 'i') || 'RNA';
             } else {
-                newQuery = query + ' AND ' + facet; // add new facet
+                newQuery = ctrl.query + ' AND ' + facet; // add new facet
             }
 
-            search.metaSearch(newQuery);
+            ctrl.query = newQuery;
+            search.search(ctrl.query);
         };
 
         /**
@@ -441,14 +421,10 @@ var metadataSearchResults = {
          * - open the results page in a new window.
          */
         ctrl.exportResults = function(format) {
-            var submitQueryUrl = '/export/submit-query',
-                resultsPageUrl = '/export/results';
-
-            ctrl.showExportError = false;
-
-            $http.get(submitQueryUrl + '?q=' + ctrl.result._query + '&format=' + format).then(
+            $http.get(ctrl.routes.submitQueryUrl + '?q=' + ctrl.result._query + '&format=' + format).then(
                 function(response) {
-                    window.location.href = resultsPageUrl + '?job=' + response.data.job_id;
+                    ctrl.showExportError = false;
+                    window.location.href = ctrl.routes.resultsPageUrl + '?job=' + response.data.job_id;
                 },
                 function(response) {
                     ctrl.showExportError = true;
@@ -460,7 +436,9 @@ var metadataSearchResults = {
 
 
 var metadataSearchBar = {
-    bindings: {},
+    bindings: {
+        query: '='
+    },
     templateUrl: '/static/js/search/metadata-search-bar.html',
     controller: ['$interpolate', '$location', '$window', '$timeout', 'search', function($interpolate, $location, $window, $timeout, search) {
         var ctrl = this;
@@ -493,26 +471,11 @@ var metadataSearchBar = {
         };
 
         /**
-         * Called when the form is submitted, or when a link is pressed.
-         *
-         * @param {String} query - you can pass a query string, otherwise query string is taken from form input
+         * Called when the form is submitted. If request is invalid, just display error and die, else run search.
          */
-        ctrl.submitQuery = function(query) {
-            if (!query && ctrl.queryForm.text.$invalid) {
-                // if request comes from form input and it is invalid, just display error and die
-                ctrl.submitted = true;
-            } else {
-                if (query) ctrl.query = query;
-                search.metaSearch(ctrl.query);
-            }
+        ctrl.submitQuery = function() {
+            ctrl.queryForm.text.$invalid ? ctrl.submitted = true : search.search(ctrl.query);
         };
-
-        /**
-         * clear submitted flag to remove error messages, if form input is edited after failed submission
-         */
-        ctrl.hideErrors = function() {
-            ctrl.submitted = false;
-        }
     }]
 };
 
