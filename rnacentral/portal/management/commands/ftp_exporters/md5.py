@@ -12,7 +12,6 @@ limitations under the License.
 """
 
 from portal.management.commands.ftp_exporters.ftp_base import FtpBase
-import cx_Oracle
 import logging
 import sys
 
@@ -89,7 +88,7 @@ class Md5Exporter(FtpBase):
         try:
             self.cursor.execute(sql)
             process_md5_entries()
-        except cx_Oracle.DatabaseError, exc:
+        except Exception as exc:
             self.log_oracle_error(exc)
             sys.exit(1)
 
