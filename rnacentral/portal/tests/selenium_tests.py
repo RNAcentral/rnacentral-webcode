@@ -365,18 +365,56 @@ class MetaSearchPage(BasePage):
     Can be any page because the search box is in the site-wide header.
     """
     url = ''
+    timeout = 5  # seconds to wait for element to appear
 
     def __init__(self, browser, query_url=''):
         BasePage.__init__(self, browser, self.url)
         self.url += query_url
         self.page_size = 15
 
-    def get_metasearch_results(self):
+    # DOM elements as properties
+
+    @property
+    def search_input(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, '.rnacentral-masthead input'))
+        )
+
+    @property
+    def search_submit_button(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, '.rnacentral-masthead input'))
+        )
+
+    @property
+    def unchecked_facet_link(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            # pick a link next to an unchecked checkbox
+            EC.element_to_be_clickable(
+                (By.CSS_SELECTOR, ".metasearch-facet-values input[type=checkbox]:not(:checked) ~ a")
+            )
+        )
+
+    @property
+    def load_more_button(self):
+        return WebDriverWait(self.browser, 30).until(
+            EC.element_to_be_clickable((By.CLASS_NAME, 'load-more'))
+        )
+
+    @property
+    def metasearch_results_count(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.text_to_be_present_in_element((By.ID, "metasearch-results-count"))
+        )
+
+    @property
+    def metasearch_results(self):
         """
         Get results as an array of list elements.
         """
         return WebDriverWait(self.browser, 30).until(
-                lambda browser: browser.find_elements(By.CLASS_NAME, "result"))
+                lambda browser: browser.find_elements(By.CLASS_NAME, "result")
+        )
 
     def test_example_searches(self):
         """
@@ -387,14 +425,9 @@ class MetaSearchPage(BasePage):
             """
             Click the Load more button and verify the number of results.
             """
-            load_more = WebDriverWait(self.browser, 30).until(
-                EC.element_to_be_clickable(
-                    (By.CLASS_NAME, 'load-more')
-                )
-            )
             for i in [2, 3, 4]:
-                load_more.click()
-                WebDriverWait(self.browser, 5).until(
+                self.load_more_button.click()
+                WebDriverWait(self.browser, self.timeout).until(
                     EC.text_to_be_present_in_element(
                         (By.ID, "metasearch-results-count"),
                         '%i out of ' % (i * self.page_size)
@@ -406,15 +439,10 @@ class MetaSearchPage(BasePage):
             Select a facet at random and enable it. Make sure that the results
             are filtered correctly.
             """
-            facet_link = WebDriverWait(self.browser, 5).until(
-                EC.element_to_be_clickable(
-                    (By.CSS_SELECTOR, ".metasearch-facet-values input[type=checkbox]:not(:checked) ~ a") # pick a link next to an unchecked checkbox
-                )
-            )
             # get the number of entries in the facet
-            facet_count = re.search(r'\((.+?)\)$', facet_link.text)
-            facet_link.click()
-            WebDriverWait(self.browser, 5).until(
+            facet_count = re.search(r'\((.+?)\)$', self.unchecked_facet_link.text)
+            self.unchecked_facet_link.click()
+            WebDriverWait(self.browser, self.timeout).until(
                 EC.text_to_be_present_in_element(
                     (By.ID, "metasearch-results-count"),
                     'out of %s' % facet_count.group(1)
@@ -422,12 +450,12 @@ class MetaSearchPage(BasePage):
             )
 
         success = []
-        self.browser.maximize_window() # sometimes phantomjs cannot find elements without this
+        self.browser.maximize_window()  # sometimes phantomjs cannot find elements without this
         examples = self.browser.find_elements_by_css_selector('.example-searches a')
         for example in examples:
             results = []
             example.click()
-            results = self.get_metasearch_results()
+            results = self.metasearch_results
             if len(results) > self.page_size:
                 click_load_more()
             enable_facet()
@@ -436,14 +464,13 @@ class MetaSearchPage(BasePage):
         return len(success) == len(examples)
 
     def _submit_search(self, query):
-        search_box = self.browser.find_element_by_css_selector('.rnacentral-masthead input')
-        search_box.send_keys(query)
-        search_button = self.browser.find_element_by_css_selector('.rnacentral-masthead button')
+        self.search_input.send_keys(query)
+
         # submit either by hitting Enter or clicking Submit
         if random.randint(1, 2) == 1:
-            search_button.click()
+            self.search_submit_button.click()
         else:
-            search_box.send_keys(Keys.RETURN)
+            self.search_input.send_keys(Keys.RETURN)
 
     def warnings_present(self):
         """
@@ -452,7 +479,7 @@ class MetaSearchPage(BasePage):
         displayed.
         """
         try:
-            warning = WebDriverWait(self.browser, 5).until(lambda s: s.find_element(By.CLASS_NAME, "metasearch-no-results"))
+            warning = WebDriverWait(self.browser, self.timeout).until(lambda s: s.find_element(By.CLASS_NAME, "metasearch-no-results"))
             return warning.is_displayed()
         except:
             return False
@@ -535,7 +562,7 @@ class RNAcentralTest(unittest.TestCase):
         page.navigate()
         query = '(expert_db:"mirbase" OR expert_db:"lncrnadb") NOT expert_db:"rfam"'
         page._submit_search(query)
-        self.assertTrue(len(page.get_metasearch_results()) > 0)
+        self.assertTrue(len(page.metasearch_results) > 0)
 
     def test_metasearch_load_search_url(self):
         """
@@ -543,7 +570,7 @@ class RNAcentralTest(unittest.TestCase):
         """
         page = MetaSearchPage(self.browser, 'search?q=mirbase')
         page.navigate()
-        self.assertTrue(len(page.get_metasearch_results()) > 0)
+        self.assertTrue(len(page.metasearch_results) > 0)
 
     def test_metasearch_species_specific_filtering(self):
         """
@@ -552,11 +579,11 @@ class RNAcentralTest(unittest.TestCase):
         # forward slash
         page = MetaSearchPage(self.browser, 'search?q=URS000047C79B/9606')
         page.navigate()
-        self.assertEqual(len(page.get_metasearch_results()), 1)
+        self.assertEqual(len(page.metasearch_results), 1)
         # underscore
         page = MetaSearchPage(self.browser, 'search?q=URS000047C79B_9606')
         page.navigate()
-        self.assertEqual(len(page.get_metasearch_results()), 1)
+        self.assertEqual(len(page.metasearch_results), 1)
         # non-existing taxid
         page = MetaSearchPage(self.browser, 'search?q=URS000047C79B_00000')
         page.navigate()
