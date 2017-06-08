@@ -365,7 +365,7 @@ class MetaSearchPage(BasePage):
     Can be any page because the search box is in the site-wide header.
     """
     url = ''
-    timeout = 10  # seconds to wait for element to appear
+    timeout = 5  # seconds to wait for element to appear
 
     def __init__(self, browser, query_url=''):
         BasePage.__init__(self, browser, self.url)
@@ -385,6 +385,12 @@ class MetaSearchPage(BasePage):
     def submit_button(self):
         return WebDriverWait(self.browser, self.timeout).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, '.global-search button'))
+        )
+
+    @property
+    def examples(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.example-searches a'))
         )
 
     @property
@@ -436,13 +442,18 @@ class MetaSearchPage(BasePage):
             Click the Load more button and verify the number of results.
             """
             for i in [2, 3, 4]:
-                self.load_more_button.click()
-                WebDriverWait(self.browser, self.timeout).until(
-                    EC.text_to_be_present_in_element(
-                        (By.ID, "metasearch-results-count"),
-                        '%i out of ' % (i * self.page_size)
+                try:  # load_more_button might be available or might not
+                    button = self.load_more_button
+                except:  # there's no load_more_button - ok, just return
+                    return
+                else:  # load_more_button exists - click it and expect more results
+                    button.click()
+                    WebDriverWait(self.browser, self.timeout).until(
+                        EC.text_to_be_present_in_element(
+                            (By.ID, "metasearch-results-count"),
+                            '%i out of ' % (i * self.page_size)
+                        )
                     )
-                )
 
         def enable_facet():
             """
@@ -461,8 +472,7 @@ class MetaSearchPage(BasePage):
 
         success = []
         self.browser.maximize_window()  # sometimes phantomjs cannot find elements without this
-        examples = self.browser.find_elements_by_css_selector('.example-searches a')
-        for example in examples:
+        for example in self.examples:
             results = []
             example.click()
             results = self.metasearch_results
@@ -471,7 +481,7 @@ class MetaSearchPage(BasePage):
             enable_facet()
             if len(results) > 0:
                 success.append(1)
-        return len(success) == len(examples)
+        return len(success) == len(self.examples)
 
     def _submit_search_by_return_key(self, query):
         self.input.send_keys(query)
@@ -488,7 +498,9 @@ class MetaSearchPage(BasePage):
         displayed.
         """
         try:
-            WebDriverWait(self.browser, self.timeout).until(lambda s: s.find_element(By.CLASS_NAME, "metasearch-no-results"))
+            WebDriverWait(self.browser, self.timeout).until(
+                EC.visibility_of_element_located((By.CLASS_NAME, "metasearch-no-results"))
+            )
             return True  # was: warning.is_displayed()
         except:
             return False
