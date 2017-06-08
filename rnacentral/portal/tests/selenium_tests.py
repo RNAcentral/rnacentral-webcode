@@ -41,11 +41,11 @@ limitations under the License.
 
 import urlparse
 import unittest
-import random
 import re
 import sys
 import time
 import urllib
+
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
@@ -365,7 +365,7 @@ class MetaSearchPage(BasePage):
     Can be any page because the search box is in the site-wide header.
     """
     url = ''
-    timeout = 5  # seconds to wait for element to appear
+    timeout = 10  # seconds to wait for element to appear
 
     def __init__(self, browser, query_url=''):
         BasePage.__init__(self, browser, self.url)
@@ -373,17 +373,18 @@ class MetaSearchPage(BasePage):
         self.page_size = 15
 
     # DOM elements as properties
+    # --------------------------
 
     @property
-    def search_input(self):
+    def input(self):
         return WebDriverWait(self.browser, self.timeout).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, '.rnacentral-masthead input'))
+            EC.presence_of_element_located((By.CSS_SELECTOR, '.global-search input'))
         )
 
     @property
-    def search_submit_button(self):
+    def submit_button(self):
         return WebDriverWait(self.browser, self.timeout).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, '.rnacentral-masthead input'))
+            EC.presence_of_element_located((By.CSS_SELECTOR, '.global-search button'))
         )
 
     @property
@@ -397,14 +398,14 @@ class MetaSearchPage(BasePage):
 
     @property
     def load_more_button(self):
-        return WebDriverWait(self.browser, 30).until(
+        return WebDriverWait(self.browser, self.timeout).until(
             EC.element_to_be_clickable((By.CLASS_NAME, 'load-more'))
         )
 
     @property
     def metasearch_results_count(self):
         return WebDriverWait(self.browser, self.timeout).until(
-            EC.text_to_be_present_in_element((By.ID, "metasearch-results-count"))
+            EC.visibility_of_element_located((By.ID, "metasearch-results-count"))
         )
 
     @property
@@ -412,9 +413,18 @@ class MetaSearchPage(BasePage):
         """
         Get results as an array of list elements.
         """
-        return WebDriverWait(self.browser, 30).until(
-                lambda browser: browser.find_elements(By.CLASS_NAME, "result")
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".result"))  # was: lambda browser: browser.find_elements(By.CLASS_NAME, "result")
         )
+
+    @property
+    def warnings(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.visibility_of_element_located((By.CLASS_NAME, "metasearch-no-results"))  # was: lambda s: s.find_element(By.CLASS_NAME, "metasearch-no-results"
+        )
+
+    # functions
+    # ---------
 
     def test_example_searches(self):
         """
@@ -463,14 +473,13 @@ class MetaSearchPage(BasePage):
                 success.append(1)
         return len(success) == len(examples)
 
-    def _submit_search(self, query):
-        self.search_input.send_keys(query)
+    def _submit_search_by_return_key(self, query):
+        self.input.send_keys(query)
+        self.input.send_keys(Keys.RETURN)
 
-        # submit either by hitting Enter or clicking Submit
-        if random.randint(1, 2) == 1:
-            self.search_submit_button.click()
-        else:
-            self.search_input.send_keys(Keys.RETURN)
+    def _submit_search_by_submit_button(self, query):
+        self.input.send_keys(query)
+        self.submit_button.click()
 
     def warnings_present(self):
         """
@@ -479,8 +488,8 @@ class MetaSearchPage(BasePage):
         displayed.
         """
         try:
-            warning = WebDriverWait(self.browser, self.timeout).until(lambda s: s.find_element(By.CLASS_NAME, "metasearch-no-results"))
-            return warning.is_displayed()
+            WebDriverWait(self.browser, self.timeout).until(lambda s: s.find_element(By.CLASS_NAME, "metasearch-no-results"))
+            return True  # was: warning.is_displayed()
         except:
             return False
 
@@ -540,7 +549,7 @@ class RNAcentralTest(unittest.TestCase):
         page = MetaSearchPage(self.browser)
         page.navigate()
         query = 'foobarbaz'
-        page._submit_search(query)
+        page._submit_search_by_submit_button(query)
         self.assertTrue(page.warnings_present())
 
     def test_metasearch_no_warnings(self):
@@ -551,7 +560,7 @@ class RNAcentralTest(unittest.TestCase):
         page = MetaSearchPage(self.browser)
         page.navigate()
         query = 'RNA'
-        page._submit_search(query)
+        page._submit_search_by_submit_button(query)
         self.assertFalse(page.warnings_present())
 
     def test_metasearch_grouping_operators(self):
@@ -561,7 +570,7 @@ class RNAcentralTest(unittest.TestCase):
         page = MetaSearchPage(self.browser)
         page.navigate()
         query = '(expert_db:"mirbase" OR expert_db:"lncrnadb") NOT expert_db:"rfam"'
-        page._submit_search(query)
+        page._submit_search_by_submit_button(query)
         self.assertTrue(len(page.metasearch_results) > 0)
 
     def test_metasearch_load_search_url(self):
