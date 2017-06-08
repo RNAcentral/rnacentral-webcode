@@ -610,6 +610,85 @@ class RNAcentralTest(unittest.TestCase):
         page.navigate()
         self.assertTrue(page.warnings_present())
 
+    def test_metasearch_test_suite(self):
+        """
+        A collection of interesting queries, obtained as a feedback from SAB
+         + our own assumptions about what queries could be useful.
+        """
+        test_suite = {
+            'bantam': [],
+            'U12': [],
+            'rhyB': [],
+            'coolair': [],
+            'tRNA-Phe': []
+        }
+
+        for key, value in test_suite.items():
+            page = MetaSearchPage(self.browser, 'search?q=%s' % key)
+            page.navigate()
+
+    def test_autocomlete_test_suite(self):
+        """A collection of interesting queries to check correctness of
+        autocomplete suggestions.
+        """
+        test_suite = {
+            'mir-12': [],
+            'lncrna': [],
+            'mitochondial': [],  # sic! - typo is intentional
+            'kcnq1ot1': [],
+
+            # full list of expert databases
+            'dictyBase': [],
+            'ENA': [],
+            'Ensembl': [],
+            'FlyBase': [],
+            'GENCODE': [],
+            'Greengenes': [],
+            'GtRNAdb': [],
+            'HGNC': [],
+            'LNCipedia': [],
+            'lncRNAdb': [],
+            'miRBase': [],
+            'Modomics': [],
+            'NONCODE': [],
+            'PDBe': [],
+            'PomBase': [],
+            'RDP': [],
+            'RefSeq': [],
+            'Rfam': [],
+            'SGD': [],
+            'SILVA': [],
+            'snOPY': [],
+            'SRPDB': [],
+            'TAIR': [],
+            'tmRNA Website': [],
+            'WormBase': [],
+
+            # key species
+            'Arabidopsis thaliana': [],
+            'Bombyx mori': [],
+            'Bos taurus': [],
+            'Caenorhabditis elegans': [],
+            'Canis familiaris': [],
+            'Danio rerio': [],
+            'Drosophila melanogaster': [],
+            'Homo sapiens': [],
+            'Mus musculus': [],
+            'Pan troglodytes': [],
+            'Rattus norvegicus': [],
+            'Schizosaccharomyces pombe': [],
+            'mosquito': [],
+            'cow': [],
+            'nematode': [],
+            'dog': [],
+            'fish': [],
+            'fly': [],
+            'human': [],
+            'mouse': [],
+            'chimp': [],
+            'rat': [],
+        }
+
     # Sequence pages for specific databases
     # -------------------------------------
 
