@@ -15,7 +15,7 @@
 
     <small class="pull-right font-size-14-px hidden-xs">
 
-      <a class="text-muted margin-right-10px" ng-href="{{ $ctrl.helpMetadataSearchUrl }}">Search help</a>
+      <a class="text-muted margin-right-10px" ng-href="{{ $ctrl.routes.helpMetadataSearchUrl }}">Search help</a>
 
       <div class="btn-group">
         <button type="button" ng-class="$ctrl.search.status === 'in progress' ? 'disabled' : ''" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
@@ -34,7 +34,7 @@
   <div class="row visible-xs">
     <div class="col-xs-12">
       <button class="btn btn-default" ng-click="$ctrl.toggleFacets()" id="toggle-facets">Show facets</button>
-      <a class="btn btn-default" ng-href="{{ $ctrl.helpMetadataSearchUrl }}">Search help</a>
+      <a class="btn btn-default" ng-href="{{ $ctrl.routes.helpMetadataSearchUrl }}">Search help</a>
     </div>
   </div> <!-- .visible-xs -->
 
@@ -69,7 +69,7 @@
         <i class="fa fa-warning fa-3x pull-left"></i>
         There was an error while exporting search results.
         <br>
-        Please try again or <a ng-href="{{ $ctrl.contactUsUrl }}">contact us</a> if the problem persists.
+        Please try again or <a ng-href="{{ $ctrl.routes.contactUsUrl }}">contact us</a> if the problem persists.
       </div>
     </div>
 
@@ -83,7 +83,7 @@
         <i class="fa fa-warning fa-3x pull-left"></i>
         There was an error while loading expert databases list.
         <br>
-        Please try again or <a ng-href="{{ $ctrl.contactUsUrl }}">contact us</a> if the problem persists.
+        Please try again or <a ng-href="{{ $ctrl.routes.contactUsUrl }}">contact us</a> if the problem persists.
       </div>
     </div>
 
