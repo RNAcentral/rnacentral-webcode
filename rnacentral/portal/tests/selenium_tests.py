@@ -370,7 +370,7 @@ class MetaSearchPage(BasePage):
     Can be any page because the search box is in the site-wide header.
     """
     url = ''
-    timeout = 5  # seconds to wait for element to appear
+    timeout = 10  # seconds to wait for element to appear
 
     def __init__(self, browser, query_url=''):
         BasePage.__init__(self, browser, self.url)
@@ -427,9 +427,7 @@ class MetaSearchPage(BasePage):
 
     @property
     def metasearch_results(self):
-        """
-        Get results as an array of list elements.
-        """
+        """Get results as an array of list elements."""
         return WebDriverWait(self.browser, self.timeout).until(
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".result"))  # was: lambda browser: browser.find_elements(By.CLASS_NAME, "result")
         )
@@ -626,6 +624,8 @@ class RNAcentralTest(unittest.TestCase):
         A collection of queries, obtained as a feedback from SAB
          + our own assumptions about what queries could be useful.
         """
+        # the dict has the following structure
+        # {query: [hits that are expected to appear in results list]}
         test_suite = OrderedDict([
             ('bantam', []),
             ('U12', []),
@@ -634,16 +634,22 @@ class RNAcentralTest(unittest.TestCase):
             ('tRNA-Phe', [])
         ])
 
-        for key, value in test_suite.items():
-            page = MetaSearchPage(self.browser, 'search?q=%s' % key)
-            page.navigate()
-            page.metasearch_results
+        page = MetaSearchPage(self.browser)
+        page.navigate()
+
+        for query, expected_results in test_suite.items():
+            page.input.clear()
+            page._submit_search_by_submit_button(query)
+            assert page.metasearch_results_count
+            # results = [result for result in page.metasearch_results]
+            # print results
+
 
     def test_autocomplete_test_suite(self):
-        """A collection of queries to check correctness of autocomplete suggestions.
-        """
+        """A collection of queries to check correctness of autocomplete suggestions."""
 
-        # the dict has the following structure: { expectation: [queries, resulting in this expectation] }
+        # the dict has the following structure:
+        # {expectation: [queries, for which expectation should appear in autocomplete suggestions]}
         test_suite = OrderedDict([
             ('mir 12', ['mir-12']),
             ('lncrna', ['lncrna']),
