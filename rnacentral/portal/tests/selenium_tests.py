@@ -43,8 +43,10 @@ import urlparse
 import unittest
 import re
 import sys
+import os
 import time
 import urllib
+from collections import OrderedDict
 
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
@@ -52,6 +54,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from config import expert_databases
 
 
 class BasePage(object):
@@ -388,6 +393,12 @@ class MetaSearchPage(BasePage):
         )
 
     @property
+    def autocomplete_suggestions(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.visibility_of_any_elements_located((By.CSS_SELECTOR, ".global-search li.uib-typeahead-match"))
+        )
+
+    @property
     def examples(self):
         return WebDriverWait(self.browser, self.timeout).until(
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.example-searches a'))
@@ -612,82 +623,83 @@ class RNAcentralTest(unittest.TestCase):
 
     def test_metasearch_test_suite(self):
         """
-        A collection of interesting queries, obtained as a feedback from SAB
+        A collection of queries, obtained as a feedback from SAB
          + our own assumptions about what queries could be useful.
         """
-        test_suite = {
-            'bantam': [],
-            'U12': [],
-            'rhyB': [],
-            'coolair': [],
-            'tRNA-Phe': []
-        }
+        test_suite = OrderedDict([
+            ('bantam', []),
+            ('U12', []),
+            ('rhyB', []),
+            ('coolair', []),
+            ('tRNA-Phe', [])
+        ])
 
         for key, value in test_suite.items():
             page = MetaSearchPage(self.browser, 'search?q=%s' % key)
             page.navigate()
+            page.metasearch_results
 
-    def test_autocomlete_test_suite(self):
-        """A collection of interesting queries to check correctness of
-        autocomplete suggestions.
+    def test_autocomplete_test_suite(self):
+        """A collection of queries to check correctness of autocomplete suggestions.
         """
-        test_suite = {
-            'mir-12': [],
-            'lncrna': [],
-            'mitochondial': [],  # sic! - typo is intentional
-            'kcnq1ot1': [],
 
-            # full list of expert databases
-            'dictyBase': [],
-            'ENA': [],
-            'Ensembl': [],
-            'FlyBase': [],
-            'GENCODE': [],
-            'Greengenes': [],
-            'GtRNAdb': [],
-            'HGNC': [],
-            'LNCipedia': [],
-            'lncRNAdb': [],
-            'miRBase': [],
-            'Modomics': [],
-            'NONCODE': [],
-            'PDBe': [],
-            'PomBase': [],
-            'RDP': [],
-            'RefSeq': [],
-            'Rfam': [],
-            'SGD': [],
-            'SILVA': [],
-            'snOPY': [],
-            'SRPDB': [],
-            'TAIR': [],
-            'tmRNA Website': [],
-            'WormBase': [],
+        # the dict has the following structure: { expectation: [queries, resulting in this expectation] }
+        test_suite = OrderedDict([
+            ('mir 12', ['mir-12']),
+            ('lncrna', ['lncrna']),
+            ('mitochondrial', ['mitochondial']),  # sic! - typo is intentional
+            ('kcnq1ot1', ['kcnq1ot1']),
 
             # key species
-            'Arabidopsis thaliana': [],
-            'Bombyx mori': [],
-            'Bos taurus': [],
-            'Caenorhabditis elegans': [],
-            'Canis familiaris': [],
-            'Danio rerio': [],
-            'Drosophila melanogaster': [],
-            'Homo sapiens': [],
-            'Mus musculus': [],
-            'Pan troglodytes': [],
-            'Rattus norvegicus': [],
-            'Schizosaccharomyces pombe': [],
-            'mosquito': [],
-            'cow': [],
-            'nematode': [],
-            'dog': [],
-            'fish': [],
-            'fly': [],
-            'human': [],
-            'mouse': [],
-            'chimp': [],
-            'rat': [],
-        }
+            ('Arabidopsis thaliana', ['Arabidopsis thaliana']),
+            ('Bombyx mori', ['Bombyx mori']),
+            ('Bos taurus', ['Bos taurus']),
+            ('Caenorhabditis elegans', ['Caenorhabditis elegans']),
+            ('Canis familiaris', ['Canis familiaris']),
+            ('Danio rerio', ['Danio rerio']),
+            ('Drosophila melanogaster', ['Drosophila melanogaster']),
+            ('Homo sapiens', ['Homo sapiens']),
+            ('Mus musculus', ['Mus musculus']),
+            ('Pan troglodytes', ['Pan troglodytes']),
+            ('Rattus norvegicus', ['Rattus norvegicus']),
+            ('Schizosaccharomyces pombe', ['Schizosaccharomyces pombe']),
+            ('arabidopsis', ['Arabidopsis']),
+            ('mosquito', ['mosquito']),
+            ('bombyx', ['Bombyx']),
+            ('caenorhabditis', ['Caenorhabditis']),
+            ('nematode', ['nematode']),
+            ('fish', ['fish']),
+            ('drosophilidae', ['Drosophila']),  # won't find just 'drosophila'
+            ('human', ['human']),
+            ('homo', ['Homo']),
+            ('mouse', ['mouse']),
+            ('chimpanzee', ['chimp']),  # won't find just 'chimp'
+            ('rattus', ['Rattus'])
+        ])
+
+        # add expert databases names to test_suites - their names should be suggested by autocomplete
+        expert_dbs = {db['name']: [db['name']] for db in expert_databases.expert_dbs}
+        test_suite.update(expert_dbs)
+
+        page = MetaSearchPage(self.browser)
+        page.navigate()
+
+        for expectation, queries in test_suite.items():
+            print "expectation = %s, queries = %s" % (expectation, queries)
+            for query in queries:
+                page.input.clear()
+                page.input.send_keys(query)
+                try:
+                    page.autocomplete_suggestions
+                except:
+                    print "Failed: query %s has no suggestions" % query
+                    continue
+                suggestions = [suggestion.text.lower() for suggestion in page.autocomplete_suggestions]
+                if not expectation.lower() in suggestions:
+                    print "Failed: query = %s not found in suggestions = %s" % (query, suggestions)
+                else:
+                    print "Ok"
+
 
     # Sequence pages for specific databases
     # -------------------------------------
