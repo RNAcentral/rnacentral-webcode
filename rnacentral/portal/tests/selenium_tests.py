@@ -41,17 +41,22 @@ limitations under the License.
 
 import urlparse
 import unittest
-import random
 import re
 import sys
+import os
 import time
 import urllib
+from collections import OrderedDict
+
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from config import expert_databases
 
 
 class BasePage(object):
@@ -360,23 +365,81 @@ class GenomeBrowserTestPage(BasePage):
         return self.browser.find_element(By.ID, "ucsc-link")
 
 
-class MetaSearchPage(BasePage):
+class TextSearchPage(BasePage):
     """
     Can be any page because the search box is in the site-wide header.
     """
     url = ''
+    timeout = 10  # seconds to wait for element to appear
 
     def __init__(self, browser, query_url=''):
         BasePage.__init__(self, browser, self.url)
         self.url += query_url
         self.page_size = 15
 
-    def get_metasearch_results(self):
-        """
-        Get results as an array of list elements.
-        """
-        return WebDriverWait(self.browser, 30).until(
-                lambda browser: browser.find_elements(By.CLASS_NAME, "result"))
+    # DOM elements as properties
+    # --------------------------
+
+    @property
+    def input(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, '.global-search input'))
+        )
+
+    @property
+    def submit_button(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, '.global-search button'))
+        )
+
+    @property
+    def autocomplete_suggestions(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.visibility_of_any_elements_located((By.CSS_SELECTOR, ".global-search li.uib-typeahead-match"))
+        )
+
+    @property
+    def examples(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.example-searches a'))
+        )
+
+    @property
+    def unchecked_facet_link(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            # pick a link next to an unchecked checkbox
+            EC.element_to_be_clickable(
+                (By.CSS_SELECTOR, ".text-search-facet-values input[type=checkbox]:not(:checked) ~ a")
+            )
+        )
+
+    @property
+    def load_more_button(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.element_to_be_clickable((By.CLASS_NAME, 'load-more'))
+        )
+
+    @property
+    def text_search_results_count(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.visibility_of_element_located((By.ID, "text-search-results-count"))
+        )
+
+    @property
+    def text_search_results(self):
+        """Get results as an array of list elements."""
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".result"))  # was: lambda browser: browser.find_elements(By.CLASS_NAME, "result")
+        )
+
+    @property
+    def warnings(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.visibility_of_element_located((By.CLASS_NAME, "text-search-no-results"))  # was: lambda s: s.find_element(By.CLASS_NAME, "text-search-no-results"
+        )
+
+    # functions
+    # ---------
 
     def test_example_searches(self):
         """
@@ -387,73 +450,67 @@ class MetaSearchPage(BasePage):
             """
             Click the Load more button and verify the number of results.
             """
-            load_more = WebDriverWait(self.browser, 30).until(
-                EC.element_to_be_clickable(
-                    (By.CLASS_NAME, 'load-more')
-                )
-            )
             for i in [2, 3, 4]:
-                load_more.click()
-                WebDriverWait(self.browser, 5).until(
-                    EC.text_to_be_present_in_element(
-                        (By.ID, "metasearch-results-count"),
-                        '%i out of ' % (i * self.page_size)
+                try:  # load_more_button might be available or might not
+                    button = self.load_more_button
+                except:  # there's no load_more_button - ok, just return
+                    return
+                else:  # load_more_button exists - click it and expect more results
+                    button.click()
+                    WebDriverWait(self.browser, self.timeout).until(
+                        EC.text_to_be_present_in_element(
+                            (By.ID, "text-search-results-count"),
+                            '%i out of ' % (i * self.page_size)
+                        )
                     )
-                )
 
         def enable_facet():
             """
             Select a facet at random and enable it. Make sure that the results
             are filtered correctly.
             """
-            facet_link = WebDriverWait(self.browser, 5).until(
-                EC.element_to_be_clickable(
-                    (By.CSS_SELECTOR, ".metasearch-facet-values input[type=checkbox]:not(:checked) ~ a") # pick a link next to an unchecked checkbox
-                )
-            )
             # get the number of entries in the facet
-            facet_count = re.search(r'\((.+?)\)$', facet_link.text)
-            facet_link.click()
-            WebDriverWait(self.browser, 5).until(
+            facet_count = re.search(r'\((.+?)\)$', self.unchecked_facet_link.text)
+            self.unchecked_facet_link.click()
+            WebDriverWait(self.browser, self.timeout).until(
                 EC.text_to_be_present_in_element(
-                    (By.ID, "metasearch-results-count"),
+                    (By.ID, "text-search-results-count"),
                     'out of %s' % facet_count.group(1)
                 )
             )
 
         success = []
-        self.browser.maximize_window() # sometimes phantomjs cannot find elements without this
-        examples = self.browser.find_elements_by_css_selector('.example-searches a')
-        for example in examples:
+        self.browser.maximize_window()  # sometimes phantomjs cannot find elements without this
+        for example in self.examples:
             results = []
             example.click()
-            results = self.get_metasearch_results()
+            results = self.text_search_results
             if len(results) > self.page_size:
                 click_load_more()
             enable_facet()
             if len(results) > 0:
                 success.append(1)
-        return len(success) == len(examples)
+        return len(success) == len(self.examples)
 
-    def _submit_search(self, query):
-        search_box = self.browser.find_element_by_css_selector('.rnacentral-masthead input')
-        search_box.send_keys(query)
-        search_button = self.browser.find_element_by_css_selector('.rnacentral-masthead button')
-        # submit either by hitting Enter or clicking Submit
-        if random.randint(1, 2) == 1:
-            search_button.click()
-        else:
-            search_box.send_keys(Keys.RETURN)
+    def _submit_search_by_return_key(self, query):
+        self.input.send_keys(query)
+        self.input.send_keys(Keys.RETURN)
+
+    def _submit_search_by_submit_button(self, query):
+        self.input.send_keys(query)
+        self.submit_button.click()
 
     def warnings_present(self):
         """
-        div.metasearch-no-results is only generated when a search returns
+        div.text-search-no-results is only generated when a search returns
         zero results. This test makes sure that the element is present and
         displayed.
         """
         try:
-            warning = WebDriverWait(self.browser, 5).until(lambda s: s.find_element(By.CLASS_NAME, "metasearch-no-results"))
-            return warning.is_displayed()
+            WebDriverWait(self.browser, self.timeout).until(
+                EC.visibility_of_element_located((By.CLASS_NAME, "text-search-no-results"))
+            )
+            return True  # was: warning.is_displayed()
         except:
             return False
 
@@ -486,7 +543,7 @@ class RNAcentralTest(unittest.TestCase):
         """
         history = ['contact', 'downloads', 'search?q=mirbase',
                    'search?q=foobar']
-        page = MetaSearchPage(self.browser)
+        page = TextSearchPage(self.browser)
         for item in history:
             page.browser.get(page.base_url + item)
             time.sleep(2)
@@ -494,73 +551,136 @@ class RNAcentralTest(unittest.TestCase):
             self.assertIn(urllib.quote(item), urllib.quote(page.browser.current_url))
             page.browser.back()
 
-    # Metasearch
-    # ----------
+    # Text search
+    # -----------
 
-    def test_metasearch_examples(self):
+    def test_text_search_examples(self):
         """
-        Test metasearch examples, can be done on any page.
+        Test text search examples, can be done on any page.
         """
-        page = MetaSearchPage(self.browser)
+        page = TextSearchPage(self.browser)
         page.navigate()
         self.assertTrue(page.test_example_searches())
 
-    def test_metasearch_no_results(self):
+    def test_text_search_no_results(self):
         """
-        Run a metasearch query that won't find any results, make sure that
+        Run a text search query that won't find any results, make sure that
         no results are displayed.
         """
-        page = MetaSearchPage(self.browser)
+        page = TextSearchPage(self.browser)
         page.navigate()
         query = 'foobarbaz'
-        page._submit_search(query)
+        page._submit_search_by_submit_button(query)
         self.assertTrue(page.warnings_present())
 
-    def test_metasearch_no_warnings(self):
+    def test_text_search_no_warnings(self):
         """
-        Run a metasearch query that will find results, make sure that some
-        results are displyaed. The opposite of `test_metasearch_no_results`.
+        Run a text search query that will find results, make sure that some
+        results are displyaed. The opposite of `test_text_search_no_results`.
         """
-        page = MetaSearchPage(self.browser)
+        page = TextSearchPage(self.browser)
         page.navigate()
         query = 'RNA'
-        page._submit_search(query)
+        page._submit_search_by_submit_button(query)
         self.assertFalse(page.warnings_present())
 
-    def test_metasearch_grouping_operators(self):
+    def test_text_search_grouping_operators(self):
         """
         Test a query with logical operators and query grouping.
         """
-        page = MetaSearchPage(self.browser)
+        page = TextSearchPage(self.browser)
         page.navigate()
         query = '(expert_db:"mirbase" OR expert_db:"lncrnadb") NOT expert_db:"rfam"'
-        page._submit_search(query)
-        self.assertTrue(len(page.get_metasearch_results()) > 0)
+        page._submit_search_by_submit_button(query)
+        self.assertTrue(len(page.text_search_results) > 0)
 
-    def test_metasearch_load_search_url(self):
+    def test_text_search_load_search_url(self):
         """
-        Load a metadata search using a search url.
+        Load a text search using a search url.
         """
-        page = MetaSearchPage(self.browser, 'search?q=mirbase')
+        page = TextSearchPage(self.browser, 'search?q=mirbase')
         page.navigate()
-        self.assertTrue(len(page.get_metasearch_results()) > 0)
+        self.assertTrue(len(page.text_search_results) > 0)
 
-    def test_metasearch_species_specific_filtering(self):
+    def test_text_search_species_specific_filtering(self):
         """
-        Make sure that URS/taxid and URS_taxid are found in metadata search.
+        Make sure that URS/taxid and URS_taxid are found in text search.
         """
         # forward slash
-        page = MetaSearchPage(self.browser, 'search?q=URS000047C79B/9606')
+        page = TextSearchPage(self.browser, 'search?q=URS000047C79B/9606')
         page.navigate()
-        self.assertEqual(len(page.get_metasearch_results()), 1)
+        self.assertEqual(len(page.text_search_results), 1)
         # underscore
-        page = MetaSearchPage(self.browser, 'search?q=URS000047C79B_9606')
+        page = TextSearchPage(self.browser, 'search?q=URS000047C79B_9606')
         page.navigate()
-        self.assertEqual(len(page.get_metasearch_results()), 1)
+        self.assertEqual(len(page.text_search_results), 1)
         # non-existing taxid
-        page = MetaSearchPage(self.browser, 'search?q=URS000047C79B_00000')
+        page = TextSearchPage(self.browser, 'search?q=URS000047C79B_00000')
         page.navigate()
         self.assertTrue(page.warnings_present())
+
+
+    def test_autocomplete_test_suite(self):
+        """A collection of queries to check correctness of autocomplete suggestions."""
+
+        # the dict has the following structure:
+        # {expectation: [queries, for which expectation should appear in autocomplete suggestions]}
+        test_suite = OrderedDict([
+            ('mir 12', ['mir-12']),
+            ('lncrna', ['lncrna']),
+            ('mitochondrial', ['mitochondial']),  # sic! - typo is intentional
+            ('kcnq1ot1', ['kcnq1ot1']),
+
+            # key species
+            ('Arabidopsis thaliana', ['Arabidopsis thaliana']),
+            ('Bombyx mori', ['Bombyx mori']),
+            ('Bos taurus', ['Bos taurus']),
+            ('Caenorhabditis elegans', ['Caenorhabditis elegans']),
+            ('Canis familiaris', ['Canis familiaris']),
+            ('Danio rerio', ['Danio rerio']),
+            ('Drosophila melanogaster', ['Drosophila melanogaster']),
+            ('Homo sapiens', ['Homo sapiens']),
+            ('Mus musculus', ['Mus musculus']),
+            ('Pan troglodytes', ['Pan troglodytes']),
+            ('Rattus norvegicus', ['Rattus norvegicus']),
+            ('Schizosaccharomyces pombe', ['Schizosaccharomyces pombe']),
+            ('arabidopsis', ['Arabidopsis']),
+            ('mosquito', ['mosquito']),
+            ('bombyx', ['Bombyx']),
+            ('caenorhabditis', ['Caenorhabditis']),
+            ('nematode', ['nematode']),
+            ('fish', ['fish']),
+            ('drosophilidae', ['Drosophila']),  # won't find just 'drosophila'
+            ('human', ['human']),
+            ('homo', ['Homo']),
+            ('mouse', ['mouse']),
+            ('chimpanzee', ['chimp']),  # won't find just 'chimp'
+            ('rattus', ['Rattus'])
+        ])
+
+        # add expert databases names to test_suites - their names should be suggested by autocomplete
+        expert_dbs = {db['name']: [db['name']] for db in expert_databases.expert_dbs}
+        test_suite.update(expert_dbs)
+
+        page = TextSearchPage(self.browser)
+        page.navigate()
+
+        for expectation, queries in test_suite.items():
+            print "expectation = %s, queries = %s" % (expectation, queries)
+            for query in queries:
+                page.input.clear()
+                page.input.send_keys(query)
+                try:
+                    page.autocomplete_suggestions
+                except:
+                    print "Failed: query %s has no suggestions" % query
+                    continue
+                suggestions = [suggestion.text.lower() for suggestion in page.autocomplete_suggestions]
+                if not expectation.lower() in suggestions:
+                    print "Failed: query = %s not found in suggestions = %s" % (query, suggestions)
+                else:
+                    print "Ok"
+
 
     # Sequence pages for specific databases
     # -------------------------------------

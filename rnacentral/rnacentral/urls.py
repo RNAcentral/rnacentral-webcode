@@ -23,7 +23,7 @@ urlpatterns = patterns('',
     url(r'^api/v1/', include('apiv1.urls')),
     # robots.txt
     url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
-    # export metadata search results
+    # export text search results
     url(r'^export/', include('export.urls')),
     # sequence search
     url(r'^sequence-search/', include('nhmmer.urls')),
