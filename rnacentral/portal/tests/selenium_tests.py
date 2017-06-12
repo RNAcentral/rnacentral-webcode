@@ -619,31 +619,6 @@ class RNAcentralTest(unittest.TestCase):
         page.navigate()
         self.assertTrue(page.warnings_present())
 
-    def test_text_search_test_suite(self):
-        """
-        A collection of queries, obtained as a feedback from SAB
-         + our own assumptions about what queries could be useful.
-        """
-        # the dict has the following structure
-        # {query: [hits that are expected to appear in results list]}
-        test_suite = OrderedDict([
-            ('bantam', []),
-            ('U12', []),
-            ('rhyB', []),
-            ('coolair', []),
-            ('tRNA-Phe', [])
-        ])
-
-        page = TextSearchPage(self.browser)
-        page.navigate()
-
-        for query, expected_results in test_suite.items():
-            page.input.clear()
-            page._submit_search_by_submit_button(query)
-            assert page.text_search_results_count
-            # results = [result for result in page.text_search_results]
-            # print results
-
 
     def test_autocomplete_test_suite(self):
         """A collection of queries to check correctness of autocomplete suggestions."""
