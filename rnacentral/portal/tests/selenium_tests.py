@@ -336,33 +336,46 @@ class GenoverseTestPage(BasePage):
 class GenomeBrowserTestPage(BasePage):
     """A standalone Genoverse genome browser page"""
     url = 'genome-browser/'
+    timeout = 10
 
     def __init__(self, browser):
         BasePage.__init__(self, browser, self.url)
 
     @property
     def start_input(self):
-        return self.browser.find_element(By.ID, "genomic-start-input")
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.presence_of_element_located((By.ID, "genomic-start-input"))
+        )
 
     @property
     def end_input(self):
-        return self.browser.find_element(By.ID, "genomic-end-input")
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.presence_of_element_located((By.ID, "genomic-end-input"))
+        )
 
     @property
     def chromosome_input(self):
-        return self.browser.find_element(By.ID, "chromosome-input")
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.presence_of_element_located((By.ID, "chromosome-input"))
+        )
 
     @property
     def species_input(self):
-        return self.browser.find_element(By.ID, "genomic-species-select")
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.presence_of_element_located((By.ID, "genomic-species-select"))
+        )
 
     @property
     def ensembl_link(self):
-        return self.browser.find_element(By.ID, "ensembl-link")
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.presence_of_element_located((By.ID, "ensembl-link"))
+        )
 
     @property
     def ucsc_link(self):
-        return self.browser.find_element(By.ID, "ucsc-link")
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.presence_of_element_located((By.ID, "ucsc-link"))
+        )
 
 
 class TextSearchPage(BasePage):
@@ -618,7 +631,6 @@ class RNAcentralTest(unittest.TestCase):
         page = TextSearchPage(self.browser, 'search?q=URS000047C79B_00000')
         page.navigate()
         self.assertTrue(page.warnings_present())
-
 
     def test_autocomplete_test_suite(self):
         """A collection of queries to check correctness of autocomplete suggestions."""
