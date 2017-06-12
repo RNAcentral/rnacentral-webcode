@@ -5,17 +5,17 @@
     <small ng-show="$ctrl.search.status === 'in progress'">
       <i class="fa fa-spinner fa-spin"></i>
     </small>
-    <small id="metadata-search-status" ng-show="$ctrl.search.status === 'in progress'">
+    <small id="text-search-status" ng-show="$ctrl.search.status === 'in progress'">
       Searching...
     </small>
     <small ng-show="$ctrl.search.result.hitCount > 0">
       <span ng-if="$ctrl.search.result.hitCount == 1">1 sequence</span>
-      <span ng-if="$ctrl.search.result.hitCount > 1" id="metasearch-results-count">{{ $ctrl.search.result.entries.length }} out of {{ $ctrl.search.result.hitCount | number }} sequences</span>
+      <span ng-if="$ctrl.search.result.hitCount > 1" id="text-search-results-count">{{ $ctrl.search.result.entries.length }} out of {{ $ctrl.search.result.hitCount | number }} sequences</span>
     </small>
 
     <small class="pull-right font-size-14-px hidden-xs">
 
-      <a class="text-muted margin-right-10px" ng-href="{{ $ctrl.routes.helpMetadataSearchUrl }}">Search help</a>
+      <a class="text-muted margin-right-10px" ng-href="{{ $ctrl.routes.helpTextSearchUrl }}">Search help</a>
 
       <div class="btn-group">
         <button type="button" ng-class="$ctrl.search.status === 'in progress' ? 'disabled' : ''" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
@@ -34,7 +34,7 @@
   <div class="row visible-xs">
     <div class="col-xs-12">
       <button class="btn btn-default" ng-click="$ctrl.toggleFacets()" id="toggle-facets">Show facets</button>
-      <a class="btn btn-default" ng-href="{{ $ctrl.routes.helpMetadataSearchUrl }}">Search help</a>
+      <a class="btn btn-default" ng-href="{{ $ctrl.routes.helpTextSearchUrl }}">Search help</a>
     </div>
   </div> <!-- .visible-xs -->
 
@@ -92,7 +92,7 @@
   <div class="row" ng-if="$ctrl.search.result.hitCount == 0">
 
     <div class="col-md-12">
-      <div class="alert alert-warning col-md-12 metasearch-no-results">
+      <div class="alert alert-warning col-md-12 text-search-no-results">
         <strong>No results</strong>
       </div>
     </div>
@@ -123,7 +123,7 @@
         </li>
         <li>
           <p>
-            Read more about <a href="/help/metadata-search">query syntax</a>
+            Read more about <a href="/help/text-search">query syntax</a>
           </p>
         </li>
       </ul>
@@ -133,19 +133,19 @@
 
   <div class="row" ng-show="$ctrl.search.result.hitCount > 0">
 
-    <div class="col-md-3 col-sm-4 hidden-xs metasearch-facets">
+    <div class="col-md-3 col-sm-4 hidden-xs text-search-facets">
       <ul class="list-unstyled">
         <li class="facet" ng-repeat="facet in $ctrl.search.result.facets">
             <h3>{{ facet.label }}</h3>
-            <ul class="list-unstyled metasearch-facet-values metasearch-facet-overflow force-scrollbars" style="overflow-x: hidden;">
+            <ul class="list-unstyled text-search-facet-values text-search-facet-overflow force-scrollbars" style="overflow-x: hidden;">
                 <li ng-repeat="facetValue in facet.facetValues" ng-if="facet.id == 'expert_db'">
                   <!-- This is expert_dbs facet -->
                   <input type="checkbox" name="facet.label" ng-checked="$ctrl.isFacetApplied(facet.id, facetValue.value)" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)">
-                  <a href="" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)" class="metasearch-facet-link" uib-tooltip-template="'/static/js/search/expert-database-tooltip-template.html'" tooltip-placement="bottom-left">{{ facetValue.label }} <small>({{ facetValue.count | number }})</small></a>
+                  <a href="" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)" class="text-search-facet-link" uib-tooltip-template="'/static/js/search/expert-database-tooltip-template.html'" tooltip-placement="bottom-left">{{ facetValue.label }} <small>({{ facetValue.count | number }})</small></a>
                 </li>
                 <li ng-repeat="facetValue in facet.facetValues" ng-if="facet.id != 'expert_db'">
                   <input type="checkbox" name="facet.label" ng-checked="$ctrl.isFacetApplied(facet.id, facetValue.value)" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)">
-                  <a href="" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)" class="metasearch-facet-link">{{ facetValue.label }} <small>({{ facetValue.count | number }})</small></a>
+                  <a href="" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)" class="text-search-facet-link">{{ facetValue.label }} <small>({{ facetValue.count | number }})</small></a>
                 </li>
                 <small ng-if="facet.label == 'Organisms' && facet.facetValues.length > 10" class="text-muted">Showing top {{ facet.facetValues.length }} organisms</small>
             </ul>
@@ -157,16 +157,16 @@
       </small>
     </div>
 
-    <div class="col-md-9 col-sm-8 col-xs-12 metasearch-results">
+    <div class="col-md-9 col-sm-8 col-xs-12 text-search-results">
       <ul class="list-unstyled">
         <li class="result" ng-repeat="rna in $ctrl.search.result.entries">
-          <div class="metasearch-result">
+          <div class="text-search-result">
             <h4>
               <a href="/rna/{{rna.id_with_slash}}" ng-bind-html="rna.fields.description[0] | sanitize"></a>
               <small>{{rna.id}}</small>
             </h4>
-            <div ng-show="rna.fields.description[0].indexOf('metasearch-highlights') === -1" style="margin-bottom: 3px;">
-              <ul ng-repeat="pub_title in rna.fields.pub_title | filter:'metasearch-highlights' | limitTo:1" class="small list-unstyled">
+            <div ng-show="rna.fields.description[0].indexOf('text-search-highlights') === -1" style="margin-bottom: 3px;">
+              <ul ng-repeat="pub_title in rna.fields.pub_title | filter:'text-search-highlights' | limitTo:1" class="small list-unstyled">
                 <li ng-bind-html="pub_title | sanitize"></li>
               </ul>
             </div>

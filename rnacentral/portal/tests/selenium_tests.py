@@ -365,7 +365,7 @@ class GenomeBrowserTestPage(BasePage):
         return self.browser.find_element(By.ID, "ucsc-link")
 
 
-class MetaSearchPage(BasePage):
+class TextSearchPage(BasePage):
     """
     Can be any page because the search box is in the site-wide header.
     """
@@ -409,7 +409,7 @@ class MetaSearchPage(BasePage):
         return WebDriverWait(self.browser, self.timeout).until(
             # pick a link next to an unchecked checkbox
             EC.element_to_be_clickable(
-                (By.CSS_SELECTOR, ".metasearch-facet-values input[type=checkbox]:not(:checked) ~ a")
+                (By.CSS_SELECTOR, ".text-search-facet-values input[type=checkbox]:not(:checked) ~ a")
             )
         )
 
@@ -420,13 +420,13 @@ class MetaSearchPage(BasePage):
         )
 
     @property
-    def metasearch_results_count(self):
+    def text_search_results_count(self):
         return WebDriverWait(self.browser, self.timeout).until(
-            EC.visibility_of_element_located((By.ID, "metasearch-results-count"))
+            EC.visibility_of_element_located((By.ID, "text-search-results-count"))
         )
 
     @property
-    def metasearch_results(self):
+    def text_search_results(self):
         """Get results as an array of list elements."""
         return WebDriverWait(self.browser, self.timeout).until(
             EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".result"))  # was: lambda browser: browser.find_elements(By.CLASS_NAME, "result")
@@ -435,7 +435,7 @@ class MetaSearchPage(BasePage):
     @property
     def warnings(self):
         return WebDriverWait(self.browser, self.timeout).until(
-            EC.visibility_of_element_located((By.CLASS_NAME, "metasearch-no-results"))  # was: lambda s: s.find_element(By.CLASS_NAME, "metasearch-no-results"
+            EC.visibility_of_element_located((By.CLASS_NAME, "text-search-no-results"))  # was: lambda s: s.find_element(By.CLASS_NAME, "text-search-no-results"
         )
 
     # functions

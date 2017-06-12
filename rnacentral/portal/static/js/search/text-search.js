@@ -12,7 +12,7 @@ limitations under the License.
 */
 
 /**
- * RNAcentral metadata search Angular.js app.
+ * RNAcentral text search Angular.js app.
  */
 
 ; // concatenation safeguard
@@ -26,7 +26,7 @@ underscore.factory('_', function() {
 });
 
 /**
- * Service for launching a metadata search.
+ * Service for launching a text search.
  */
 
 var search = function(_, $http, $interpolate, $location, $window) {
@@ -65,7 +65,7 @@ var search = function(_, $http, $interpolate, $location, $window) {
                         '&size=' + self.config.pagesize +
                         '&start={{ start }}' +
                         '&sort=boost:descending,length:descending' +
-                        '&hlpretag=<span class=metasearch-highlights>&hlposttag=</span>',
+                        '&hlpretag=<span class=text-search-highlights>&hlposttag=</span>',
         'ebeyeAutocomplete': 'http://www.ebi.ac.uk/ebisearch/ws/rest/RNAcentral/autocomplete' +
                               '?term={{ query }}' +
                               '&format=json',
@@ -330,9 +330,9 @@ var MainContent = function($scope, $anchorScroll, $location, search) {
 };
 
 
-var metadataSearchResults = {
+var textSearchResults = {
     bindings: {},
-    templateUrl: '/static/js/search/metadata-search-results.html',
+    templateUrl: '/static/js/search/text-search-results.html',
     controller: ['$location', '$http', 'search', function($location, $http, search) {
         var ctrl = this;
 
@@ -346,7 +346,7 @@ var metadataSearchResults = {
 
             // urls used in template (hardcoded)
             ctrl.routes = {
-                helpMetadataSearchUrl: '/help/metadata-search/',
+                helpTextSearchUrl: '/help/text-search/',
                 contactUsUrl: '/contact',
                 submitQueryUrl: '/export/submit-query',
                 resultsPageUrl: '/export/results'
@@ -407,7 +407,7 @@ var metadataSearchResults = {
          * Activated only on mobile devices.
          */
         ctrl.toggleFacets = function() {
-            var facets = $('.metasearch-facets');
+            var facets = $('.text-search-facets');
             facets.toggleClass('hidden-xs', !facets.hasClass('hidden-xs'));
             $('#toggle-facets').text(function(i, text) {
                  return text === "Show facets" ? "Hide facets" : "Show facets";
@@ -434,9 +434,9 @@ var metadataSearchResults = {
 };
 
 
-var metadataSearchBar = {
+var textSearchBar = {
     bindings: {},
-    templateUrl: '/static/js/search/metadata-search-bar.html',
+    templateUrl: '/static/js/search/text-search-bar.html',
     controller: ['$interpolate', '$location', '$window', '$timeout', 'search', function($interpolate, $location, $window, $timeout, search) {
         var ctrl = this;
         ctrl.search = search;
@@ -511,8 +511,8 @@ var sanitize = function($sce) {
 angular.module('rnacentralApp', ['ngAnimate', 'ui.bootstrap', 'chieffancypants.loadingBar', 'underscore', 'Genoverse'])
     .service('search', ['_', '$http', '$interpolate', '$location', '$window', search])
     .controller('MainContent', ['$scope', '$anchorScroll', '$location', 'search', MainContent])
-    .component('metadataSearchResults', metadataSearchResults)
-    .component('metadataSearchBar', metadataSearchBar)
+    .component('textSearchResults', textSearchResults)
+    .component('textSearchBar', textSearchBar)
     .filter("sanitize", ['$sce', sanitize])
     .config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
         // hide spinning wheel

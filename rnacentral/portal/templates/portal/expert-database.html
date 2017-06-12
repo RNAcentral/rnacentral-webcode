@@ -209,7 +209,7 @@ limitations under the License.
         $(function(){
             {% if expert_db.descr != 'LNCRNADB' %}
               var data = {% autoescape off %}{{expert_db_stats.length_counts}}{% endautoescape %};
-              var search_url = '{% url "metadata-search" %}';
+              var search_url = '{% url "text-search" %}';
               ExpertDatabaseSequenceDistribution("#d3-seq-length-distribution", data, 500, 300, search_url);
             {% endif %}
             {% if expert_db.descr not in no_sunburst %}

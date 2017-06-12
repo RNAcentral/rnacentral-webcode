@@ -54,7 +54,7 @@ RNAcentral
           <p class="text-center">
             Search by <em>gene, species, publication, author</em> or any other keyword
           </p>
-          <a class="btn btn-primary" href="{% url 'metadata-search' %}?q=RNA" id="btn-browse-sequences">Browse sequences</a>
+          <a class="btn btn-primary" href="{% url 'text-search' %}?q=RNA" id="btn-browse-sequences">Browse sequences</a>
         </div>
       </div>
     </div>
@@ -265,7 +265,7 @@ RNAcentral
   		steps: [
   			{
   				title: 'Search by anything',
-  				content: "You can search by <em>gene name</em>, <em>species</em>, <em>accession</em> or any other keyword. <a href={% url 'help-metadata-search' %} target=&quot;_blank&quot;>Explore examples</a>",
+  				content: "You can search by <em>gene name</em>, <em>species</em>, <em>accession</em> or any other keyword. <a href={% url 'help-text-search' %} target=&quot;_blank&quot;>Explore examples</a>",
   				target: 'query-text',
   				placement: 'bottom',
   			},
