@@ -466,8 +466,8 @@ var textSearchBar = {
         /**
          * Called when user changes the value in query string.
          */
-        ctrl.autocomplete = function() {
-            return search.autocomplete(ctrl.query).then(
+        ctrl.autocomplete = function(query) {
+            return search.autocomplete(query).then(
                 function(response) {
                     // make exact matches appear in the top of the list
                     var exactMatches = [], fuzzyMatches = [];

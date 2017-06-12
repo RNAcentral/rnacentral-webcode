@@ -14,16 +14,16 @@
                ng-change="$ctrl.submitted = false;"
                autocomplete="off"
                placeholder="Search RNAcentral"
-               uib-typeahead="suggestion for suggestion in $ctrl.autocomplete($ctrl.query)"
+               uib-typeahead="suggestion for suggestion in $ctrl.autocomplete($viewValue)"
                typeahead-focus-first="false"
                typeahead-on-select="$ctrl.submitQuery()"
-               typeahead-loading="loadingLocations"
-               typeahead-no-results="noResults"
+               typeahead-loading="loadingSuggestions"
+               typeahead-no-results="noSuggestions"
                autofocus
                required>
         <div class="input-group-btn">
           <button type="submit" class="btn btn-primary">
-            <i id="text-search-icon" style="width: 15px;" ng-class="['fa', {'fa-spinner fa-pulse': loadingLocations, 'fa-search': !loadingLocations}]"></i>
+            <i id="text-search-icon" style="width: 15px;" ng-class="['fa', {'fa-spinner fa-pulse': loadingSuggestions, 'fa-search': !loadingSuggestions}]"></i>
             <span class="hidden-xs-inline">Search</span>
           </button>
         </div><!-- /input-group-btn -->
