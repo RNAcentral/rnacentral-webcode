@@ -459,7 +459,7 @@ class TextSearchPage(BasePage):
                     button.click()
                     WebDriverWait(self.browser, self.timeout).until(
                         EC.text_to_be_present_in_element(
-                            (By.ID, "metasearch-results-count"),
+                            (By.ID, "text-search-results-count"),
                             '%i out of ' % (i * self.page_size)
                         )
                     )
@@ -474,7 +474,7 @@ class TextSearchPage(BasePage):
             self.unchecked_facet_link.click()
             WebDriverWait(self.browser, self.timeout).until(
                 EC.text_to_be_present_in_element(
-                    (By.ID, "metasearch-results-count"),
+                    (By.ID, "text-search-results-count"),
                     'out of %s' % facet_count.group(1)
                 )
             )
@@ -484,7 +484,7 @@ class TextSearchPage(BasePage):
         for example in self.examples:
             results = []
             example.click()
-            results = self.metasearch_results
+            results = self.text_search_results
             if len(results) > self.page_size:
                 click_load_more()
             enable_facet()
@@ -502,13 +502,13 @@ class TextSearchPage(BasePage):
 
     def warnings_present(self):
         """
-        div.metasearch-no-results is only generated when a search returns
+        div.text-search-no-results is only generated when a search returns
         zero results. This test makes sure that the element is present and
         displayed.
         """
         try:
             WebDriverWait(self.browser, self.timeout).until(
-                EC.visibility_of_element_located((By.CLASS_NAME, "metasearch-no-results"))
+                EC.visibility_of_element_located((By.CLASS_NAME, "text-search-no-results"))
             )
             return True  # was: warning.is_displayed()
         except:
@@ -543,7 +543,7 @@ class RNAcentralTest(unittest.TestCase):
         """
         history = ['contact', 'downloads', 'search?q=mirbase',
                    'search?q=foobar']
-        page = MetaSearchPage(self.browser)
+        page = TextSearchPage(self.browser)
         for item in history:
             page.browser.get(page.base_url + item)
             time.sleep(2)
@@ -551,75 +551,75 @@ class RNAcentralTest(unittest.TestCase):
             self.assertIn(urllib.quote(item), urllib.quote(page.browser.current_url))
             page.browser.back()
 
-    # Metasearch
-    # ----------
+    # Text search
+    # -----------
 
-    def test_metasearch_examples(self):
+    def test_text_search_examples(self):
         """
-        Test metasearch examples, can be done on any page.
+        Test text search examples, can be done on any page.
         """
-        page = MetaSearchPage(self.browser)
+        page = TextSearchPage(self.browser)
         page.navigate()
         self.assertTrue(page.test_example_searches())
 
-    def test_metasearch_no_results(self):
+    def test_text_search_no_results(self):
         """
-        Run a metasearch query that won't find any results, make sure that
+        Run a text search query that won't find any results, make sure that
         no results are displayed.
         """
-        page = MetaSearchPage(self.browser)
+        page = TextSearchPage(self.browser)
         page.navigate()
         query = 'foobarbaz'
         page._submit_search_by_submit_button(query)
         self.assertTrue(page.warnings_present())
 
-    def test_metasearch_no_warnings(self):
+    def test_text_search_no_warnings(self):
         """
-        Run a metasearch query that will find results, make sure that some
-        results are displyaed. The opposite of `test_metasearch_no_results`.
+        Run a text search query that will find results, make sure that some
+        results are displyaed. The opposite of `test_text_search_no_results`.
         """
-        page = MetaSearchPage(self.browser)
+        page = TextSearchPage(self.browser)
         page.navigate()
         query = 'RNA'
         page._submit_search_by_submit_button(query)
         self.assertFalse(page.warnings_present())
 
-    def test_metasearch_grouping_operators(self):
+    def test_text_search_grouping_operators(self):
         """
         Test a query with logical operators and query grouping.
         """
-        page = MetaSearchPage(self.browser)
+        page = TextSearchPage(self.browser)
         page.navigate()
         query = '(expert_db:"mirbase" OR expert_db:"lncrnadb") NOT expert_db:"rfam"'
         page._submit_search_by_submit_button(query)
-        self.assertTrue(len(page.metasearch_results) > 0)
+        self.assertTrue(len(page.text_search_results) > 0)
 
-    def test_metasearch_load_search_url(self):
+    def test_text_search_load_search_url(self):
         """
-        Load a metadata search using a search url.
+        Load a text search using a search url.
         """
-        page = MetaSearchPage(self.browser, 'search?q=mirbase')
+        page = TextSearchPage(self.browser, 'search?q=mirbase')
         page.navigate()
-        self.assertTrue(len(page.metasearch_results) > 0)
+        self.assertTrue(len(page.text_search_results) > 0)
 
-    def test_metasearch_species_specific_filtering(self):
+    def test_text_search_species_specific_filtering(self):
         """
-        Make sure that URS/taxid and URS_taxid are found in metadata search.
+        Make sure that URS/taxid and URS_taxid are found in text search.
         """
         # forward slash
-        page = MetaSearchPage(self.browser, 'search?q=URS000047C79B/9606')
+        page = TextSearchPage(self.browser, 'search?q=URS000047C79B/9606')
         page.navigate()
-        self.assertEqual(len(page.metasearch_results), 1)
+        self.assertEqual(len(page.text_search_results), 1)
         # underscore
-        page = MetaSearchPage(self.browser, 'search?q=URS000047C79B_9606')
+        page = TextSearchPage(self.browser, 'search?q=URS000047C79B_9606')
         page.navigate()
-        self.assertEqual(len(page.metasearch_results), 1)
+        self.assertEqual(len(page.text_search_results), 1)
         # non-existing taxid
-        page = MetaSearchPage(self.browser, 'search?q=URS000047C79B_00000')
+        page = TextSearchPage(self.browser, 'search?q=URS000047C79B_00000')
         page.navigate()
         self.assertTrue(page.warnings_present())
 
-    def test_metasearch_test_suite(self):
+    def test_text_search_test_suite(self):
         """
         A collection of queries, obtained as a feedback from SAB
          + our own assumptions about what queries could be useful.
@@ -634,14 +634,14 @@ class RNAcentralTest(unittest.TestCase):
             ('tRNA-Phe', [])
         ])
 
-        page = MetaSearchPage(self.browser)
+        page = TextSearchPage(self.browser)
         page.navigate()
 
         for query, expected_results in test_suite.items():
             page.input.clear()
             page._submit_search_by_submit_button(query)
-            assert page.metasearch_results_count
-            # results = [result for result in page.metasearch_results]
+            assert page.text_search_results_count
+            # results = [result for result in page.text_search_results]
             # print results
 
 
@@ -687,7 +687,7 @@ class RNAcentralTest(unittest.TestCase):
         expert_dbs = {db['name']: [db['name']] for db in expert_databases.expert_dbs}
         test_suite.update(expert_dbs)
 
-        page = MetaSearchPage(self.browser)
+        page = TextSearchPage(self.browser)
         page.navigate()
 
         for expectation, queries in test_suite.items():
