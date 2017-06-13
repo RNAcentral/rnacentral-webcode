@@ -37,6 +37,10 @@ limitations under the License.
 
     # test an RNAcentral instance using PhantomJS
     python selenium_tests.py --base_url http://test.rnacentral.org/ --driver=phantomjs
+
+    # test a specific method in a specific test case
+    python selenium_tests.py RNAcentralTest.test_url_changed_on_input_changed --driver=phantomjs
+
 """
 
 import urlparse
@@ -86,7 +90,7 @@ class BasePage(object):
             return False
 
     def get_svg_diagrams(self):
-        """Check whether all svg diagrams have been generated"""
+        """Check whether all svg diagrams have been generated."""
         svg = self.browser.find_elements_by_tag_name("svg")
         return len(svg)
 
@@ -112,7 +116,7 @@ class Homepage(BasePage):
 
 
 class SequencePage(BasePage):
-    """Prototipe object for all types of sequence pages"""
+    """Prototipe object for all types of sequence pages."""
     url = "rna/"
 
     def __init__(self, browser, unique_id):
@@ -125,7 +129,7 @@ class SequencePage(BasePage):
         WebDriverWait(self.browser, 120).until(lambda s: s.find_element_by_css_selector("#d3-species-tree svg"))
 
     def get_xrefs_table_html(self):
-        """Retrieve text of the database cross-reference table"""
+        """Retrieve text of the database cross-reference table."""
         return self.browser.find_element_by_id("xrefs-table").text
 
     def get_own_rnacentral_id(self):
@@ -224,14 +228,14 @@ class GencodeSequencePage(SequencePage):
 
 
 class TmRNASequencePage(SequencePage):
-    """Sequence page with tmRNA Website xrefs"""
+    """Sequence page with tmRNA Website xrefs."""
 
     def test_one_piece_tmrna(self):
         # to do
         return True
 
     def test_two_piece_tmrna(self):
-        """Make sure partner tmRNAs link to each other"""
+        """Make sure partner tmRNAs link to each other."""
         xrefs_table = self.get_xrefs_table_html()
         match = re.search(r'Two-piece tmRNA partner: ' + self.rnacentral_id_regex, xrefs_table)
         if match:
@@ -272,25 +276,25 @@ class RdpSequencePage(SequencePage):
 
 
 class ExpertDatabasesOverviewPage(BasePage):
-    """An overview page for all expert databases"""
+    """An overview page for all expert databases."""
     url = 'expert-databases/'
 
     def __init__(self, browser):
         BasePage.__init__(self, browser, self.url)
 
     def get_expert_tr_count(self):
-        """get the number of rows representing expert databases"""
+        """get the number of rows representing expert databases."""
         expert_dbs = self.browser.find_elements_by_tag_name("tr")
         return len(expert_dbs)
 
     def get_footer_expert_db_count(self):
-        """get the number of expert database links in the footer"""
+        """get the number of expert database links in the footer."""
         expert_dbs = self.browser.find_elements_by_css_selector('#global-footer .col-md-8 li>a')
         return len(expert_dbs)
 
 
 class ExpertDatabaseLandingPage(BasePage):
-    """An expert database landing page"""
+    """An expert database landing page."""
     url = 'expert-database/'
 
     def __init__(self, browser, expert_db_id):
@@ -316,7 +320,7 @@ class ExpertDatabaseLandingPage(BasePage):
 
 
 class GenoverseTestPage(BasePage):
-    """A sequence page with an embedded genome browser"""
+    """A sequence page with an embedded genome browser."""
     url = 'rna/'
 
     def __init__(self, browser, rnacentral_id):
@@ -333,8 +337,8 @@ class GenoverseTestPage(BasePage):
         return True
 
 
-class GenomeBrowserTestPage(BasePage):
-    """A standalone Genoverse genome browser page"""
+class GenomeBrowserPage(BasePage):
+    """A standalone Genoverse genome browser page."""
     url = 'genome-browser/'
     timeout = 10
 
@@ -379,9 +383,7 @@ class GenomeBrowserTestPage(BasePage):
 
 
 class TextSearchPage(BasePage):
-    """
-    Can be any page because the search box is in the site-wide header.
-    """
+    """Can be any page because the search box is in the site-wide header."""
     url = ''
     timeout = 10  # seconds to wait for element to appear
 
@@ -455,14 +457,10 @@ class TextSearchPage(BasePage):
     # ---------
 
     def test_example_searches(self):
-        """
-        Click on example searches in the header and make sure there are results.
-        """
+        """Click on example searches in the header and make sure there are results."""
 
         def click_load_more():
-            """
-            Click the Load more button and verify the number of results.
-            """
+            """Click the Load more button and verify the number of results."""
             for i in [2, 3, 4]:
                 try:  # load_more_button might be available or might not
                     button = self.load_more_button
@@ -529,7 +527,7 @@ class TextSearchPage(BasePage):
 
 
 class RNAcentralTest(unittest.TestCase):
-    """Unit tests entry point"""
+    """Unit tests entry point."""
     driver = 'firefox'
 
     def setUp(self):
@@ -539,10 +537,26 @@ class RNAcentralTest(unittest.TestCase):
             self.browser = webdriver.PhantomJS()
         else:
             sys.exit('Driver not found')
-        self.homepage = Homepage(self.browser)
 
     def tearDown(self):
         self.browser.quit()
+
+    # Helper functions
+    # ----------------
+
+    def _get_expert_db_example_ids(self, expert_db_id):
+        """Retrieve example RNAcentral ids from the homepage."""
+        homepage = Homepage(self.browser)
+        homepage.navigate()
+        return homepage.get_expert_db_example_ids(expert_db_id)
+
+    def _sequence_view_checks(self, page):
+        self.assertTrue(page.citations_retrieved())
+        self.assertFalse(page.js_errors_found())
+        self.assertEqual(page.get_svg_diagrams(), 1)
+
+    # Basic tests
+    # -----------
 
     def test_homepage(self):
         page = Homepage(self.browser)
@@ -551,9 +565,7 @@ class RNAcentralTest(unittest.TestCase):
         self.assertIn("RNAcentral", page.get_title())
 
     def test_browser_back_button(self):
-        """
-        Make sure browser history is recorded correctly.
-        """
+        """Make sure browser history is recorded correctly."""
         history = ['contact', 'downloads', 'search?q=mirbase',
                    'search?q=foobar']
         page = TextSearchPage(self.browser)
@@ -568,9 +580,7 @@ class RNAcentralTest(unittest.TestCase):
     # -----------
 
     def test_text_search_examples(self):
-        """
-        Test text search examples, can be done on any page.
-        """
+        """Test text search examples, can be done on any page."""
         page = TextSearchPage(self.browser)
         page.navigate()
         self.assertTrue(page.test_example_searches())
@@ -598,9 +608,7 @@ class RNAcentralTest(unittest.TestCase):
         self.assertFalse(page.warnings_present())
 
     def test_text_search_grouping_operators(self):
-        """
-        Test a query with logical operators and query grouping.
-        """
+        """Test a query with logical operators and query grouping."""
         page = TextSearchPage(self.browser)
         page.navigate()
         query = '(expert_db:"mirbase" OR expert_db:"lncrnadb") NOT expert_db:"rfam"'
@@ -608,17 +616,13 @@ class RNAcentralTest(unittest.TestCase):
         self.assertTrue(len(page.text_search_results) > 0)
 
     def test_text_search_load_search_url(self):
-        """
-        Load a text search using a search url.
-        """
+        """Load a text search using a search url."""
         page = TextSearchPage(self.browser, 'search?q=mirbase')
         page.navigate()
         self.assertTrue(len(page.text_search_results) > 0)
 
     def test_text_search_species_specific_filtering(self):
-        """
-        Make sure that URS/taxid and URS_taxid are found in text search.
-        """
+        """Make sure that URS/taxid and URS_taxid are found in text search."""
         # forward slash
         page = TextSearchPage(self.browser, 'search?q=URS000047C79B/9606')
         page.navigate()
@@ -634,7 +638,6 @@ class RNAcentralTest(unittest.TestCase):
 
     def test_autocomplete_test_suite(self):
         """A collection of queries to check correctness of autocomplete suggestions."""
-
         # the dict has the following structure:
         # {expectation: [queries, for which expectation should appear in autocomplete suggestions]}
         test_suite = OrderedDict([
@@ -692,7 +695,6 @@ class RNAcentralTest(unittest.TestCase):
                     print "Failed: query = %s not found in suggestions = %s" % (query, suggestions)
                 else:
                     print "Ok"
-
 
     # Sequence pages for specific databases
     # -------------------------------------
@@ -756,13 +758,10 @@ class RNAcentralTest(unittest.TestCase):
             self.assertTrue(page.get_svg_diagrams())
 
     def test_xref_pagination(self):
-        """
-        Test xref table pagination.
-        """
+        """Test xref table pagination."""
+
         class XrefPaginationPage(SequencePage):
-            """
-            Get the active xref page number.
-            """
+            """Get the active xref page number."""
             def get_active_xref_page_num(self):
                 active_button = self.browser.find_element_by_css_selector('li.active>a.xref-pagination')
                 return active_button.text
@@ -790,17 +789,19 @@ class RNAcentralTest(unittest.TestCase):
         Upon change of location in one of the inputs,
         href in browser's address bar should change.
         """
-        page = GenomeBrowserTestPage(self.browser)
+        page = GenomeBrowserPage(self.browser)
         page.navigate()
 
         page.start_input.clear()
-        page.start_input.send_keys('2')
+        page.start_input.send_keys('2')  # on PhantomJS fails due to a known bug: https://github.com/ariya/phantomjs/issues/14211#issuecomment-279742472, https://github.com/SeleniumHQ/selenium/issues/2214
 
         # Other possible implementation:
         #  self.browser.execute_script("document.getElementById('genomic-start-input').setAttribute('value', '2');")
 
         urlparams = urlparse.parse_qs(urlparse.urlparse(self.browser.current_url).query)
         assert urlparams['start'] == ['2']
+
+
 
     def test_UCSD_and_Ensembl_links_changed_on_input_changed(self):
         """
@@ -809,11 +810,11 @@ class RNAcentralTest(unittest.TestCase):
         and 'genome-display' button. On change of inputs,
         the hyperlinks to UCSD and Ensemble genome browsers should change.
         """
-        page = GenomeBrowserTestPage(self.browser)
+        page = GenomeBrowserPage(self.browser)
         page.navigate()
 
         page.start_input.clear()
-        page.start_input.send_keys('2')
+        page.start_input.send_keys('2')  # on PhantomJS fails due to a known bug: https://github.com/ariya/phantomjs/issues/14211#issuecomment-279742472, https://github.com/SeleniumHQ/selenium/issues/2214
 
         urlparams = urlparse.parse_qs(urlparse.urlparse(page.ucsc_link.get_attribute('href')).query)
         assert urlparams['position'] == ['chrX:2-73856333']
@@ -850,19 +851,6 @@ class RNAcentralTest(unittest.TestCase):
         page = TaxidFilteringSequencePage(self.browser, 'URS00000B15DA_9606')
         page.navigate()
         self.assertEqual(page.get_page_subtitle(), 'Homo sapiens')
-
-    # Helper functions
-    # ----------------
-
-    def _get_expert_db_example_ids(self, expert_db_id):
-        """Retrieve example RNAcentral ids from the homepage"""
-        self.homepage.navigate()
-        return self.homepage.get_expert_db_example_ids(expert_db_id)
-
-    def _sequence_view_checks(self, page):
-        self.assertTrue(page.citations_retrieved())
-        self.assertFalse(page.js_errors_found())
-        self.assertEqual(page.get_svg_diagrams(), 1)
 
 
 if __name__ == '__main__':
