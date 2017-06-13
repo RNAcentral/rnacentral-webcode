@@ -640,61 +640,61 @@ class RNAcentralTest(unittest.TestCase):
         """A collection of queries to check correctness of autocomplete suggestions."""
         # the dict has the following structure:
         # {expectation: [queries, for which expectation should appear in autocomplete suggestions]}
-        test_suite = OrderedDict([
-            ('mir 12', ['mir-12']),
-            ('lncrna', ['lncrna']),
-            ('mitochondrial', ['mitochondial']),  # sic! - typo is intentional
-            ('kcnq1ot1', ['kcnq1ot1']),
+        test_suite = [
+            'mir 12',
+            'lncrna',
+            'mitochondrial',  # sic! - typo is intentional
+            'kcnq1ot1',
 
             # key species
-            ('Arabidopsis thaliana', ['Arabidopsis thaliana']),
-            ('Bombyx mori', ['Bombyx mori']),
-            ('Bos taurus', ['Bos taurus']),
-            ('Caenorhabditis elegans', ['Caenorhabditis elegans']),
-            ('Canis familiaris', ['Canis familiaris']),
-            ('Danio rerio', ['Danio rerio']),
-            ('Drosophila melanogaster', ['Drosophila melanogaster']),
-            ('Homo sapiens', ['Homo sapiens']),
-            ('Mus musculus', ['Mus musculus']),
-            ('Pan troglodytes', ['Pan troglodytes']),
-            ('Rattus norvegicus', ['Rattus norvegicus']),
-            ('Schizosaccharomyces pombe', ['Schizosaccharomyces pombe']),
-            ('arabidopsis', ['Arabidopsis']),
-            ('mosquito', ['mosquito']),
-            ('bombyx', ['Bombyx']),
-            ('caenorhabditis', ['Caenorhabditis']),
-            ('nematode', ['nematode']),
-            ('fish', ['fish']),
-            ('drosophilidae', ['Drosophila']),  # won't find just 'drosophila'
-            ('human', ['human']),
-            ('homo', ['Homo']),
-            ('mouse', ['mouse']),
-            ('chimpanzee', ['chimp']),  # won't find just 'chimp'
-            ('rattus', ['Rattus'])
-        ])
+            'Arabidopsis thaliana',
+            'Bombyx mori',
+            'Bos taurus',
+            'Caenorhabditis elegans',
+            'Canis familiaris',
+            'Danio rerio',
+            'Drosophila melanogaster',
+            'Homo sapiens',
+            'Mus musculus',
+            'Pan troglodytes',
+            'Rattus norvegicus',
+            'Schizosaccharomyces pombe',
+            'arabidopsis',
+            'mosquito',
+            'bombyx',
+            'caenorhabditis',
+            'nematode',
+            'fish',
+            'drosophila',
+            'human',
+            'homo',
+            'mouse',
+            'chimpanzee',
+            'chimp',
+            'rattus',
+        ]
 
         # add expert databases names to test_suites - their names should be suggested by autocomplete
-        expert_dbs = {db['name']: [db['name']] for db in expert_databases.expert_dbs}
-        test_suite.update(expert_dbs)
+        expert_dbs = [db['name'] for db in expert_databases.expert_dbs]
+        test_suite += expert_dbs
 
         page = TextSearchPage(self.browser)
         page.navigate()
 
-        for expectation, queries in test_suite.items():
-            print "expectation = %s, queries = %s" % (expectation, queries)
-            for query in queries:
-                page.input.clear()
-                page.input.send_keys(query)
-                try:
-                    page.autocomplete_suggestions
-                except:
-                    print "Failed: query %s has no suggestions" % query
-                    continue
-                suggestions = [suggestion.text.lower() for suggestion in page.autocomplete_suggestions]
-                if not expectation.lower() in suggestions:
-                    print "Failed: query = %s not found in suggestions = %s" % (query, suggestions)
-                else:
-                    print "Ok"
+        for query in test_suite:
+            print "query = %s" % query
+            page.input.clear()
+            page.input.send_keys(query)
+            try:
+                page.autocomplete_suggestions
+            except:
+                print "Failed: query %s has no suggestions" % query
+                continue
+            suggestions = [suggestion.text.lower() for suggestion in page.autocomplete_suggestions]
+            if not query.lower() in suggestions:
+                print "Failed: query = %s not found in suggestions = %s" % (query, suggestions)
+            else:
+                print "Ok"
 
     # Sequence pages for specific databases
     # -------------------------------------
