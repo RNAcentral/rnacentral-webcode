@@ -309,10 +309,9 @@ var abstractComponent = {
                 return null;
             }
         };
-
     }],
     template: '<button class="btn btn-xs btn-default abstract-btn abstract-control" ng-click="abstractVisible = !abstractVisible"><span ng-if="abstractVisible">Hide abstract</span><span ng-if="!abstractVisible">Show abstract</span></button>' +
-              '<div ng-if="abstractVisible" class="abstract-text slide-down">{{ $ctrl.abstract }}</div>'
+              '<div ng-if="abstractVisible" class="abstract-text slide-down"><span ng-bind-html="$ctrl.abstract | linky"></span></div>'
 };
 
 
@@ -444,7 +443,7 @@ var sceWhitelist = function($sceDelegateProvider) {
 sceWhitelist.$inject = ['$sceDelegateProvider'];
 
 
-angular.module("rnaSequence", ['ngResource', 'ngAnimate', 'ui.bootstrap'])
+angular.module("rnaSequence", ['ngResource', 'ngAnimate', 'ngSanitize', 'ui.bootstrap'])
     .config(sceWhitelist)
     .controller("rnaSequenceController", rnaSequenceController)
     .component("xrefsComponent", xrefsComponent)
