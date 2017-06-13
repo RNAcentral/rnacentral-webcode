@@ -1,4 +1,4 @@
-<h5><i ng-if="expertDbsObject[facet_value.value.toLowerCase()].tags.indexOf('curated') != -1 && expertDbsObject[facet_value.value.toLowerCase()].tags.indexOf('automatic') == -1" class="fa fa-star">  </i>{{ expertDbsObject[facet_value.value.toLowerCase()].name }}</h5>
-<p>{{ expertDbsObject[facet_value.value.toLowerCase()].hint }}</p>
-<div><span ng-repeat="tag in expertDbsObject[facet_value.value.toLowerCase()].tags" class="rnacentral-tag label label-default">{{ tag.split(" ").join("&nbsp;") }}</span></div>
+<h5><i ng-if="$ctrl.expertDbsObject[facetValue.value.toLowerCase()].tags.indexOf('curated') != -1 && $ctrl.expertDbsObject[facetValue.value.toLowerCase()].tags.indexOf('automatic') == -1" class="fa fa-star">  </i>{{ $ctrl.expertDbsObject[facetValue.value.toLowerCase()].name }}</h5>
+<p>{{ $ctrl.expertDbsObject[facetValue.value.toLowerCase()].hint }}</p>
+<div><span ng-repeat="tag in $ctrl.expertDbsObject[facetValue.value.toLowerCase()].tags" class="rnacentral-tag label label-default">{{ tag.split(" ").join("&nbsp;") }}</span></div>
 <!-- <i ng-if="tag == 'curated'" class="fa fa-users"></i><i ng-if="tag == 'automatic'" class="fa fa-desktop"></i><i ng-if="tag == 'community curated'" class="fa fa-wikipedia-w"></i> -->

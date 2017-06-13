@@ -11,10 +11,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from django.conf import settings
 from django.conf.urls import patterns, url
-from django.db.models import Prefetch
+
 from portal import views
-from portal.models import get_ensembl_divisions, Rna, Xref, Database
+from portal.models import get_ensembl_divisions, RnaPrecomputed, Database
 
 urlpatterns = patterns('',
     # homepage
@@ -29,8 +30,8 @@ urlpatterns = patterns('',
     url(r'^expert-database/(?P<expert_db_name>[-\w]+)/?$', 'portal.views.expert_database_view', name='expert-database'),
     # expert databases
     url(r'^expert-databases/?$', 'portal.views.expert_databases_view', name='expert-databases'),
-    # metadata search can route to any page because it will be taken over by Angular
-    url(r'^search/?$', views.TemplateView.as_view(template_name='portal/base.html'), name='metadata-search'),
+    # text search can route to any page because it will be taken over by Angular
+    url(r'^search/?$', views.TemplateView.as_view(template_name='portal/base.html'), name='text-search'),
     # coming soon
     url(r'^(?P<page>coming-soon)/?$', views.StaticView.as_view(), name='coming-soon'),
     # downloads
@@ -38,12 +39,12 @@ urlpatterns = patterns('',
     # help centre
     url(r'^help/?$', views.StaticView.as_view(), {'page': 'help/faq'}, name='help'),
     url(r'^help/browser-compatibility/?$', views.StaticView.as_view(), {'page': 'help/browser-compatibility'}, name='help-browser-compatibility'),
-    url(r'^help/metadata-search/?$', views.StaticView.as_view(), {'page': 'help/metadata-search'}, name='help-metadata-search'),
+    url(r'^help/text-search/?$', views.StaticView.as_view(), {'page': 'help/text-search'}, name='help-text-search'),
     url(r'^help/genomic-mapping/?$', views.StaticView.as_view(), {'page': 'help/genomic-mapping', 'divisions': get_ensembl_divisions()}, name='help-genomic-mapping'),
     # training
     url(r'^training/?$', views.StaticView.as_view(), {'page': 'training'}, name='training'),
     # about us
-    url(r'^about-us/?$', views.StaticView.as_view(), {'page': 'about'}, name='about'),
+    url(r'^about-us/?$', views.StaticView.as_view(), {'page': 'about', 'blog_url': settings.RELEASE_ANNOUNCEMENT_URL}, name='about'),
     # API documentation
     url(r'^api/?$', views.StaticView.as_view(), {'page': 'help/api-v1'}, name='api-docs'),
     url(r'^api/v2/?$', views.StaticView.as_view(), {'page': 'coming-soon'}, name='api-v2'),
@@ -73,17 +74,21 @@ urlpatterns += patterns('',
 )
 
 # sitemaps
+import re
+
 from django.contrib.sitemaps import GenericSitemap, Sitemap
+from django.contrib.sitemaps.views import index as sitemap_index
+from django.contrib.sitemaps.views import sitemap as sitemap_sitemap
 from django.core.urlresolvers import reverse
+from django.core.cache import caches
 
 
 class StaticViewSitemap(Sitemap):
     def items(self):
         return [
-            'homepage', 'about', 'contact-us', 'downloads',
-            'expert-databases', 'sequence-search', 'api-docs',
-            'help', 'help-sequence-search', 'help-metadata-search',
-            'help-genomic-mapping', 'help-genomic-mapping',
+            'homepage', 'about', 'contact-us', 'downloads', 'training',
+            'expert-databases', 'nhmmer-sequence-search', 'api-docs',
+            'help', 'help-text-search', 'help-genomic-mapping', 'help-genomic-mapping',
         ]
 
     def location(self, item):
@@ -92,40 +97,39 @@ class StaticViewSitemap(Sitemap):
 
 class RnaSitemap(Sitemap):
     def items(self):
-        """
-        :return: a list of 2-tuples (rna, taxid)
-        """
-        rnas = Rna.objects.prefetch_related(Prefetch('xrefs', queryset=Xref.objects.only('taxid', 'timestamp').all())).all()
-
-        # result consists of pairs (upi, taxid)
-        result = []
-        for rna in rnas:
-            # find all the unique taxids for current rna
-            taxids = []
-            for xref in rna.xrefs:
-                if xref.taxid not in taxids:
-                    taxids.append(xref.taxid)
-
-            for taxid in taxids:
-                result.append((rna, taxid))
-
-        return items
-
+        return RnaPrecomputed.objects.filter(taxid__isnull=False).all()
 
     def location(self, item):
-        return reverse('portal.views.get_xrefs_data', kwargs={'upi': item[0].upi, 'taxid': item[1]})
+        return reverse('unique-rna-sequence', kwargs={'upi': item.upi_id, 'taxid': item.taxid})
 
-    def lastmod(self, item):
-        return item[0].xrefs.filter(taxid=item[1]).latest('timestamp').timestamp
 
+class ExpertDatabasesSitemap(Sitemap):
+    def items(self):
+        return Database.objects.filter(alive='Y').all()
+
+    def location(self, item):
+        return reverse('expert-database', kwargs={'expert_db_name': item.descr})
 
 sitemaps = {
-    'expert-databases': GenericSitemap({'queryset': Database.objects.all()}),
+    'expert-databases': ExpertDatabasesSitemap,  # GenericSitemap({'queryset': Database.objects.all()}),
     'static': StaticViewSitemap(),
     'rna': RnaSitemap(),
 }
 
-urlpatterns += patterns('django.contrib.sitemaps.views',
-    (r'^sitemap\.xml$', 'index', {'sitemaps': sitemaps}),
-    (r'^sitemap-(?P<section>.+)\.xml$', 'sitemap', {'sitemaps': sitemaps}),
+
+def sitemaps_cache(view, cache_alias='sitemaps'):
+    def wrapped_view(request, *args, **kwargs):
+        cache = caches[cache_alias]
+        cache_key = re.sub('[:/#?&=+%]', '_', request.get_full_path())
+        response = cache.get(cache_key)
+        if response is not None:
+            return response
+        return view(request, *args, **kwargs)
+
+    return wrapped_view
+
+
+urlpatterns += patterns('',
+    url(r'^sitemap\.xml$', sitemaps_cache(sitemap_index), kwargs={'sitemaps': sitemaps, 'sitemap_url_name': 'sitemap-section'}, name='sitemap-index'),
+    url(r'^sitemap-(?P<section>.+)\.xml$', sitemaps_cache(sitemap_sitemap), kwargs={'sitemaps': sitemaps}, name='sitemap-section')
 )

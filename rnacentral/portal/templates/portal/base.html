@@ -108,7 +108,7 @@ limitations under the License.
         {% block extra_head %}{% endblock %}
     </head>
 
-    <body class="level2">
+    <body class="level2" ng-controller="MainContent">
         <header>
         {% include "portal/header.html" %}
         </header>
@@ -128,10 +128,10 @@ limitations under the License.
               </div>
             </noscript>
 
-            <div ng-show="!display_search_interface" ng-controller="MainContent">
+            <div ng-show="!displaySearchInterface">
               {% block content %}{% endblock %}
             </div>
-            {% include "portal/search/metadata-search-results.html" %}
+            <text-search-results></text-search-results>
           </div>
 
           <footer>
@@ -158,8 +158,7 @@ limitations under the License.
             <script src="{% static "node_modules/angular-loading-bar/build/loading-bar.js" %}"></script>
             <script src="{% static "node_modules/underscore/underscore-min.js" %}"></script>
             <script src="{% static "node_modules/moment/min/moment.min.js" %}"></script>
-
-            <script src="{% static "js/search/metadata.search.js" %}"></script>
+            <script src="{% static "js/search/text-search.js" %}"></script>
             <script src="{% static "node_modules/js-md5/build/md5.min.js" %}"></script>
             <script src="{% static "js/search/nhmmer.sequence.search.js" %}"></script>
             <script src="{% static "js/search/export-results.search.js" %}"></script>

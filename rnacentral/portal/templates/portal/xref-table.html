@@ -32,10 +32,6 @@ limitations under the License.
     <td>
       {% if xref.db.name == 'PDBe' %}
         PDB
-      {% elif xref.db.name == 'Vega' %}
-        Vega
-        <br>
-        (GENCODE)
       {% else %}
         {{ xref.db.name }}
       {% endif %}
@@ -115,6 +111,32 @@ limitations under the License.
         {% endif %}
       {% endwith %}
 
+    {# GENCODE #}
+    {% elif xref.db.name == 'GENCODE' %}
+      transcript <a href="{{ xref.accession.get_gencode_ensembl_url }}" target="_blank" title="View in Ensembl">{{ xref.accession.get_gencode_transcript_id }}</a>
+      (Havana id {{ xref.accession.external_id }})
+    {# Ensembl #}
+    {% elif xref.db.name == 'Ensembl' %}
+      transcript <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank" title="View the transcript in {{ xref.db.name }}">{{ xref.accession.external_id }}</a> from
+      {{ xref.accession.locus_tag }} gene <a href="http://www.ensembl.org/{{ xref.accession.get_ensembl_species_url }}/Gene/Summary?g={{ xref.accession.optional_id }}" target="_blank">{{ xref.accession.optional_id }}</a>
+      {% with splice_variants=xref.get_vega_splice_variants %}
+        {% if splice_variants %}
+          <br>
+          <i class="fa fa-angle-right"></i>
+          {{splice_variants|length}} alternative transcript{{splice_variants|length|pluralize}}:
+          <small>
+            {% for splice_variant in splice_variants %}
+              <a href="{% url  'portal.views.rna_view' upi=splice_variant.upi %}/{{ xref.taxid }}">{{ splice_variant.upi }}</a>
+              ({{ splice_variant.length|intcomma }} nts){% if not forloop.last %},{% else %}.{% endif %}
+            {% endfor %}
+          </small>
+        {% endif %}
+      {% endwith %}
+
+    {# FlyBase #}
+    {% elif xref.db.name == 'FlyBase' %}
+      FlyBase gene <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a>, {{ xref.accession.accession }}
+
     {# tmRNA Website #}
     {% elif xref.db.name == 'tmRNA Website' %}
       tmRNA Website: <a href="{{ xref.accession.get_expert_db_external_url }}.html" target="_blank">{{ xref.accession.external_id }}</a>
@@ -139,19 +161,6 @@ limitations under the License.
             {% endif %}
         {% endwith %}
       {% elif xref.is_active %}
-        {% with splice_variants=xref.get_refseq_splice_variants  %}
-          {% if splice_variants %}
-            <br>
-            <i class="fa fa-angle-right"></i>
-            {{splice_variants|length}} alternative transcript{{splice_variants|length|pluralize}}:
-            <small>
-              {% for splice_variant in splice_variants %}
-                <a href="{% url  'portal.views.rna_view' upi=splice_variant.upi %}/{{ xref.taxid }}">{{ splice_variant.upi }}</a>
-                ({{ splice_variant.length|intcomma }} nts){% if not forloop.last %},{% else %}.{% endif %}
-              {% endfor %}
-            </small>
-          {% endif %}
-        {% endwith %}
       {% endif %} {# is_refseq_mirna #}
 
       {% with gene_id=xref.get_ncbi_gene_id %}
@@ -203,7 +212,7 @@ limitations under the License.
     {# WormBase #}
     {% elif xref.db.name == 'WormBase' %}
       {{ xref.db.name }}: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a> <span class="small text-muted">(gene)</span> |
-      <a href="http://www.wormbase.org/species/c_elegans/transcript/{{ xref.accession.optional_id }}" target="_blank">{{ xref.accession.optional_id }}</a> <span class="small text-muted">(transcript)</span>
+      <a href="http://www.wormbase.org/species/c_elegans/transcript/{{ xref.accession.standard_name }}" target="_blank">{{ xref.accession.standard_name }}</a> <span class="small text-muted">(transcript)</span>
 
     {# PLncDB #}
     {% elif xref.db.name == 'PLncDB' %}
@@ -252,13 +261,6 @@ limitations under the License.
     {# HGNC #}
     {% elif xref.db.name == 'HGNC' %}
       {{ xref.db.name }}: <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.accession }})
-      {% with ensembl_gene_id=xref.accession.get_hgnc_ensembl_id %}
-        {% if ensembl_gene_id %}
-          <br>
-          <i class="fa fa-angle-right"></i>
-          Ensembl: <a href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g={{ ensembl_gene_id }}" target="_blank">{{ ensembl_gene_id }}</a>
-        {% endif %}
-      {% endwith %}
 
     {% else %}
       {{ xref.accession.external_id }} {{ xref.accession.optional_id }}
@@ -307,7 +309,7 @@ limitations under the License.
       found in {{ xref.accession.organelle|lower }}
     {% endif %}
 
-    {% if xref.accession.is_composite == 'Y' %}
+    {% if xref.accession.is_composite == 'Y' and xref.db.name != 'WormBase' %}
       <br>
       <i class="fa fa-angle-right"></i>
       Source ENA entry: <a href="{{ xref.accession.get_ena_url }}" target="_blank" title="{{ xref.accession.non_coding_id }} at ENA">{{ xref.accession.non_coding_id }}</a>
@@ -318,12 +320,12 @@ limitations under the License.
       <br>
       <i class="fa fa-angle-right"></i>
       {% with genomic_coordinates=xref.get_genomic_coordinates %}
-        <button type="button" class="btn btn-primary btn-xs genoverse-xref help margin-right-5px" data-genomic-start="{{ genomic_coordinates.start }}" data-genomic-end="{{ genomic_coordinates.end }}" data-strand="{{ genomic_coordinates.strand }}" data-chromosome="{{ genomic_coordinates.chromosome }}" data-species="{{xref.get_ensembl_species_name}}" data-description="{{ xref.accession.description }}" data-species-label="{{ xref.accession.species }}" title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> View genomic location</button>
+        <button type="button" class="btn btn-primary btn-xs genoverse-xref help margin-right-5px" data-genomic-start="{{ genomic_coordinates.start }}" data-genomic-end="{{ genomic_coordinates.end }}" data-strand="{{ genomic_coordinates.strand }}" data-chromosome="{{ genomic_coordinates.chromosome }}" data-species="{{xref.accession.get_ensembl_species_url}}" data-description="{{ xref.accession.description }}" data-species-label="{{ xref.accession.species }}" title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> View genomic location</button>
         <small>
           <span class="margin-right-5px">{{ genomic_coordinates.chromosome }}:{{ genomic_coordinates.start|intcomma }}-{{ genomic_coordinates.end|intcomma }}:{{ genomic_coordinates.strand }}</span>
           {# Ensembl url #}
           <span class="margin-right-5px ensembl-link">
-            {% with ensembl_species_name=xref.get_ensembl_species_name %}
+            {% with ensembl_species_name=xref.accession.get_ensembl_species_url %}
               {% with ensembl_division=xref.get_ensembl_division %}
                 <a href="{{ ensembl_division.url }}/{{ensembl_species_name}}/Location/View?r={{ genomic_coordinates.chromosome }}%3A{{ genomic_coordinates.start }}-{{ genomic_coordinates.end }}" target="_blank">{{ ensembl_division.name }}</a>
               {% endwith %}

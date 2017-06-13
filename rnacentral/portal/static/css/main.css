@@ -27,7 +27,7 @@ Master Stylesheet for the RNAcentral Portal
 5.4 API docs affix
 5.5 Hopscotch walkthrough tour
 5.6 Angular.js
-5.7 Metadata search
+5.7 Text search
 5.8 Sequence search
 5.9 D3 expert database treemap
 5.10 D3 expert database sequence length
@@ -694,37 +694,55 @@ ul.affix-bottom {
 }
 
 /*------------------------------------------------------------------
-[5.7 Metadata search]
+[5.7 Text search]
 */
-.metasearch-facets {
+
+/*#text-search-icon.fa-spinner-add,*/
+/*#text-search-icon.fa-spinner-remove {*/
+  /*transition-delay: 1s !important;*/
+  /*transition: 1s linear all !important;*/
+  /*background: red !important;*/
+/*};*/
+
+/*#text-search-icon.fa-spinner {*/
+  /*background: white !important;*/
+/*};*/
+
+/*#text-search-icon.fa-spinner-add-active,*/
+/*#text-search-icon.fa-spinner-remove-active {*/
+  /*background: yellow !important;*/
+/*};*/
+
+
+.text-search-facets {
   font-size: smaller;
   padding-left: 20px;
   white-space: nowrap;
   margin-bottom: 5px;
 }
 
-.metasearch-facet-values li {
+.text-search-facet-values li {
   margin: 3px 0px;
 }
 
-.metasearch-facet-overflow {
+.text-search-facet-overflow {
   overflow: auto;
   max-height: 250px;
 }
 
-.metasearch-results {
+.text-search-results {
   border-left: 1px solid #eeeeee;
 }
 
-.metasearch-results h4, .metasearch-results ul li ul li, .metasearch-facets h3 {
+.text-search-results h4, .text-search-results ul li ul li, .text-search-facets h3 {
   padding-left: 0;
 }
 
-.metasearch-results h4 {
+.text-search-results h4 {
   margin-bottom: 2px;
 }
 
-.metasearch-results .metasearch-result {
+.text-search-results .text-search-result {
   margin-bottom: 25px;
 }
 
@@ -732,11 +750,11 @@ button.load-more {
   margin: 20px 0px;
 }
 
-.metasearch-facets hr {
+.text-search-facets hr {
   margin-bottom: 5px;
 }
 
-.metasearch-highlights {
+.text-search-highlights {
   font-weight: bold;
   text-rendering: optimizeLegibility;
 }
@@ -781,7 +799,7 @@ textarea {
   margin-left: 5px;
 }
 
-#sequence-search-status, #metadata-search-status {
+#sequence-search-status, #text-search-status {
   -webkit-animation-duration: 3.5s;
   animation-duration: 3.5s;
 }

@@ -82,6 +82,11 @@ MEDIA_ROOT = ''
 # Examples: "http://example.com/media/", "http://media.example.com/"
 MEDIA_URL = ''
 
+# We cache sitemaps as static files into a specific folder on hard drive
+SITEMAPS_ROOT = os.path.join(PROJECT_PATH, 'rnacentral', 'sitemaps')
+# We use empty prefix for sitemaps, cause they should cover the whole site
+SITEMAPS_URL = '/'
+
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
@@ -178,6 +183,7 @@ INSTALLED_APPS = (
     'compressor',
     'markdown_deux',
     'django_rq',
+    'django_performance_testing',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
@@ -284,6 +290,10 @@ CACHES = {
     'default': {
         'BACKEND': 'caching.backends.memcached.MemcachedCache',
         'LOCATION': 'localhost:8052',
+    },
+    'sitemaps': {
+        'BACKEND': 'rnacentral.utils.cache.SitemapsCache',
+        'LOCATION': SITEMAPS_ROOT
     }
 }
 
@@ -307,6 +317,8 @@ SILENCED_SYSTEM_CHECKS = ['1_6.W001']
 
 EBI_SEARCH_ENDPOINT = 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
 
+RELEASE_ANNOUNCEMENT_URL = 'http://blog.rnacentral.org/2017/05/rnacentral-release-7.html'
+
 # django compressor
 COMPRESS_ENABLED = True
 COMPRESS_OFFLINE = True
@@ -316,6 +328,10 @@ COMPRESS_CSS_FILTERS = [
     'compressor.filters.css_default.CssAbsoluteFilter',
     'compressor.filters.cssmin.rCSSMinFilter',
 ]
+
+
+# Use a simplified runner to prevent any modifications to the database.
+TEST_RUNNER = 'portal.tests.runner.FixedRunner'
 
 try:
     from local_settings import *  # pylint: disable=W0401, W0614

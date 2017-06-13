@@ -23,59 +23,7 @@ limitations under the License.
       <div class="col-md-4">
         <a href="/"><img src="{% static "img/logo/RNAcentral_logo_ltgrey.png" %}" alt="RNAcentral logo" class="rnacentral-header-logo"></a>
       </div>
-
-      <div class="col-md-8" ng-controller="QueryCtrl">
-
-        <form novalidate name="queryForm" class="global-search" ng-submit="submit_query()">
-          <fieldset>
-          <div class="form-group" ng-class="(query.submitted && queryForm.$invalid) ? 'has-error' : ''">
-            <div class="input-group input-group-lg">
-              <input type="text"
-                     class="form-control"
-                     id="query-text"
-                     name="text"
-                     tabindex="1"
-                     ng-model="query.text"
-                     ng-minlength="2"
-                     ng-maxlength="1000"
-                     autocomplete="off"
-                     placeholder="Search RNAcentral"
-                     autofocus
-                     required>
-              <div class="input-group-btn">
-                <button type="submit" class="btn btn-primary">
-                  <i class="fa fa-search"></i>
-                  <span class="hidden-xs-inline">Search</span>
-                </button>
-              </div><!-- /input-group-btn -->
-            </div><!--input-group -->
-            <span class="help-block example-searches">
-
-                <i>
-                  Examples:
-                  <a class="help" data-placement="bottom" title="Search by gene name" href="" rel="nofollow" ng-click="meta_search('&quot;HOTAIR&quot; AND TAXONOMY:&quot;9606&quot; AND rna_type:&quot;lncRNA&quot;')">human HOTAIR</a>,
-                  <a class="help" data-placement="bottom" title="Search by species name or NCBI taxonomy ID" href="" rel="nofollow" ng-click="meta_search('TAXONOMY:&quot;9606&quot;')">Homo sapiens</a>,
-                  <a class="help" data-placement="bottom" title="Search by RNA type" href="" rel="nofollow" ng-click="meta_search('rna_type:&quot;tRNA&quot;')">tRNA</a>,
-                  <a class="help" data-placement="bottom" title="Search by Expert Database" href="" rel="nofollow" ng-click="meta_search('expert_db:&quot;mirbase&quot;')">miRBase</a>,
-                  <a class="help" data-placement="bottom" title="Search by external identifiers" href="" rel="nofollow" ng-click="meta_search('4V4Q')">4V4Q</a>
-                </i>
-
-            </span>
-            <label class="control-label ng-cloak has-error"
-                   for="query-text" ng-show="query.submitted && (queryForm.text.$error.required || queryForm.text.$error.minlength)"
-                   ng-cloak>
-              Your query is too short
-            </label>
-            <label class="control-label ng-cloak"
-                   for="query-text" ng-show="query.submitted && (queryForm.text.$error.maxlength)"
-                   ng-cloak>
-              Your query is too long
-            </label>
-          </div><!-- /form-group -->
-          </fieldset>
-        </form><!-- /form -->
-
-      </div><!-- /ng-controller -->
+      <text-search-bar class="col-md-8"></text-search-bar>
     </div><!-- /row -->
     <!-- /global-search -->
 
@@ -89,9 +37,7 @@ limitations under the License.
         <span class="icon-bar"></span>
       </button>
       <p class="navbar-text">
-        <span class="badge release-number">
-          <a href="http://blog.rnacentral.org/2017/01/rnacentral-release-6.html">v6</a>
-        </span>
+        <span class="badge release-number">v7</span>
       </p>
     </div>
     <div class="navbar-collapse collapse">
@@ -105,14 +51,14 @@ limitations under the License.
                 {% if forloop.first %}
                   <div class="col-sm-5">
                     <ul class="multi-column-dropdown">
-                {% elif forloop.counter0 == 11 %}
+                {% elif forloop.counter0 == 13 %}
                   <div class="col-sm-7">
                     <ul class="multi-column-dropdown">
                 {% endif %}
                 <li>
                   <a href="{% url 'portal.views.expert_database_view' expert_db_name=expert_db.label %}">{{ expert_db.name }}</a>
                 </li>
-                {% if forloop.counter0 == 10 or forloop.last %}
+                {% if forloop.counter0 == 12 or forloop.last %}
                     </ul>
                   </div>
                 {% endif %}

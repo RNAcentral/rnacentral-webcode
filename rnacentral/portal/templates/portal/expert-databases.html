@@ -47,6 +47,7 @@ RNAcentral Expert Databases
           </tr>
         </thead>
         {% for expert_db in context.expert_dbs %}
+          {% if expert_db.status != 'archived'%}
           <tr>
             <td>
               <a href="{% if expert_db.imported %}{% url 'expert-database' expert_db.label %}{% else %}{{ expert_db.url }}{% endif %}">{{ expert_db.name}}</a>
@@ -62,6 +63,7 @@ RNAcentral Expert Databases
               {{ expert_db.description|safe }}
             </td>
           </tr>
+          {% endif %}
         {% endfor %}
       </table>
     </div>

@@ -18,6 +18,7 @@ import requests
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import Http404, HttpResponse
+from django.conf import settings
 from django.shortcuts import render, render_to_response, redirect
 from django.template import TemplateDoesNotExist
 from django.views.decorators.cache import cache_page, never_cache
@@ -30,7 +31,7 @@ from rest_framework.views import APIView
 from portal.config.expert_databases import expert_dbs
 from portal.config.genomes import genomes as rnacentral_genomes
 from portal.forms import ContactForm
-from portal.models import Rna, Database, Release, Xref, DatabaseStats
+from portal.models import Rna, Database, Release, Xref, DatabaseStats, RnaPrecomputed
 
 
 CACHE_TIMEOUT = 60 * 60 * 24 * 1 # per-view cache timeout in seconds
@@ -84,7 +85,8 @@ def homepage(request):
     RNAcentral homepage.
     """
     context = {
-        'databases': list(Database.objects.order_by('?').all()),
+        'databases': list(Database.objects.filter(alive='Y').order_by('?').all()),
+        'blog_url': settings.RELEASE_ANNOUNCEMENT_URL,
     }
     return render(request, 'portal/homepage.html', {'context': context})
 
@@ -208,6 +210,7 @@ def rna_view(request, upi, taxid=None):
         'xref_pages': get_xrefs_pages(),
         'xref_page_size': XREF_PAGE_SIZE,
         'xref_page_num': get_xref_page_num(),
+        'precomputed': RnaPrecomputed.objects.filter(upi=upi, taxid=taxid).first(),
     }
 
     # return render(request, 'portal/unique-rna-sequence.html', {'rna': rna, 'context': context})

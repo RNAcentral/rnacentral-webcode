@@ -93,6 +93,28 @@ def compress_static_files():
          prefix(COMMANDS['activate_virtualenv']):
         env.run('python rnacentral/manage.py compress')
 
+def cache_sitemaps():
+    """
+    Create sitemaps cache in sitemaps folder.
+    """
+    with env.cd(settings.PROJECT_PATH), prefix(COMMANDS['set_environment'], \
+         prefix(COMMANDS['activate_virtualenv'])):
+        env.run('python rnacentral/manage.py cache_sitemaps')
+
+def rsync_sitemaps(dry_run=None):
+    """
+    Copy cached sitemaps from local folder to remote one.
+    """
+    sitemaps_path = os.path.join(settings.PROJECT_PATH, 'rnacentral', 'sitemaps')
+
+    cmd = 'rsync -av{dry_run} {src}/ {host}:{dst}'.format(
+        src=sitemaps_path,
+        host=env.host,
+        dst=sitemaps_path,
+        dry_run='n' if dry_run else '',
+    )
+    local(cmd)
+
 def flush_memcached():
     """
     Delete all cached data.
