@@ -6,7 +6,7 @@ var xrefsComponent = {
         taxid: '<?',
         onActivatePublications: '&'
     },
-    controller: ['$http', '$interpolate', '$timeout', function($http, $interpolate, $timeout) {
+    controller: ['$http', '$interpolate', function($http, $interpolate) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
@@ -315,7 +315,7 @@ var abstractComponent = {
 };
 
 
-var rnaSequenceController = function($scope, $location) {
+var rnaSequenceController = function($scope, $location, $window, $timeout) {
     // Take upi and taxid from url. Note that $location.path() always starts with slash
     $scope.upi = $location.path().split('/')[2];
     $scope.taxid = $location.path().split('/')[3]; // TODO: this might not exist!
@@ -332,7 +332,20 @@ var rnaSequenceController = function($scope, $location) {
             // don't call $event.stopPropagation() - we need the link on the tab to open a dropdown;
             $event.preventDefault();
         }
+    };
 
+    // This is terribly annoying quirk of ui-bootstrap that costed me a whole day of debugging.
+    // When it transcludes uib-tab-heading, it creates the following link:
+    //
+    // <a href ng-click="select($event)" class="nav-link ng-binding" uib-tab-heading-transclude>.
+    //
+    // Unfortunately, htmlAnchorDirective.compile attaches an event handler to links with empty
+    // href attribute: if (!element.attr(href)) {event.preventDefault();}, which intercepts
+    // the default action of our download links in Download tab.
+    //
+    // Thus we have to manually open files for download by ng-click.
+    $scope.download = function(format) {
+        $window.open('/api/v1/rna/' + $scope.upi + '.' + format, '_blank');
     };
 
     activateCopyToClipboardButtons();
@@ -423,7 +436,7 @@ var rnaSequenceController = function($scope, $location) {
     };
 };
 
-rnaSequenceController.$inject = ['$scope', '$location'];
+rnaSequenceController.$inject = ['$scope', '$location', '$window'];
 
 
 

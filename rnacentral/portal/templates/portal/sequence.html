@@ -168,22 +168,24 @@ limitations under the License.
             <uib-tab index="3" class="dropdown pull-right hidden-xs">
                 <uib-tab-heading>
                     <span uib-dropdown>
-                        <a uib-dropdown-toggle href="">
+                        <a uib-dropdown-toggle>
                             <i class="fa fa-download"></i> Download
                             <b class="caret"></b>
                         </a>
                         <ul class="dropdown-menu" uib-dropdown-menu id="download-formats">
-                            <li><a href="/api/v1/rna/{{ rna.upi }}.fasta" download="{{ rna.upi }}.json">FASTA</a></li>
-                            <li><a href="/api/v1/rna/{{ rna.upi }}.json" download="{{ rna.upi }}.json">JSON</a></li>
-                            <li><a href="/api/v1/rna/{{ rna.upi }}.yaml" download="{{ rna.upi }}.yaml">YAML</a></li>
-                            <li ng-if="enableGenomicFeatures"><a href="/api/v1/rna/{{ rna.upi }}.bed"  download="{{ rna.upi }}.bed">BED</a></li>
-                            <li ng-if="enableGenomicFeatures"><a href="/api/v1/rna/{{ rna.upi }}.gff"  download="{{ rna.upi }}.gff">GFF</a></li>
-                            <li ng-if="enableGenomicFeatures"><a href="/api/v1/rna/{{ rna.upi }}.gff3" download="{{ rna.upi }}.gff3">GFF3</a></li>
+                            <li><a ng-click="download('fasta')">FASTA</a></li>
+                            <li><a ng-click="download('json')">JSON</a></li>
+                            <li><a ng-click="download('yaml')">YAML</a></li>
+                            <li ng-if="enableGenomicFeatures"><a ng-click="download('bed')">BED</a></li>
+                            <li ng-if="enableGenomicFeatures"><a ng-click="download('gff')">GFF</a></li>
+                            <li ng-if="enableGenomicFeatures"><a ng-click="download('gff3')">GFF3</a></li>
                         </ul>
                     </span>
                 </uib-tab-heading>
             </uib-tab>
         </uib-tabset>
+
+        <a href="/api/v1/rna/{{ rna.upi }}.fasta" download="{{ rna.upi }}.json">FASTA</a>
 
         </div> <!-- .tabbable -->
     </div> <!-- .col-md-12 -->
