@@ -315,7 +315,7 @@ var abstractComponent = {
 };
 
 
-var rnaSequenceController = function($scope, $location, $window) {
+var rnaSequenceController = function($scope, $location, $window, $rootScope) {
     // Take upi and taxid from url. Note that $location.path() always starts with slash
     $scope.upi = $location.path().split('/')[2];
     $scope.taxid = $location.path().split('/')[3]; // TODO: this might not exist!
@@ -350,7 +350,6 @@ var rnaSequenceController = function($scope, $location, $window) {
 
     // hopscotch guided tour
     $scope.activateTour = function () {
-        console.log("activateTour");
         hopscotch.startTour($rootScope.tour, 4); // start from step 4
     };
 
@@ -442,7 +441,7 @@ var rnaSequenceController = function($scope, $location, $window) {
     };
 };
 
-rnaSequenceController.$inject = ['$scope', '$location', '$window'];
+rnaSequenceController.$inject = ['$scope', '$location', '$window', '$rootScope'];
 
 
 

@@ -93,7 +93,7 @@ RNAcentral
       {{ context.databases|length }} ncRNA databases
     </p>
 
-    <div id="expert-databases" ng-controller="homepageController">
+    <div id="expert-databases" ng-controller="HomepageController">
       {% for database in context.databases %}
         {% if database and database.imported %}
         <div class="hvr-grow help expert-db-card" data-container="body" title="{% if database.abbreviation %}{{ database.abbreviation }}{% else %}{{ database.name }}{% endif %}">
