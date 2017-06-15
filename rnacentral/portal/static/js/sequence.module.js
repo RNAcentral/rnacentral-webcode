@@ -6,7 +6,7 @@ var xrefsComponent = {
         taxid: '<?',
         onActivatePublications: '&'
     },
-    controller: ['$http', '$interpolate', function($http, $interpolate) {
+    controller: ['$http', '$interpolate', '$timeout', function($http, $interpolate, $timeout) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
@@ -315,7 +315,7 @@ var abstractComponent = {
 };
 
 
-var rnaSequenceController = function($scope, $location, $window, $timeout) {
+var rnaSequenceController = function($scope, $location, $window) {
     // Take upi and taxid from url. Note that $location.path() always starts with slash
     $scope.upi = $location.path().split('/')[2];
     $scope.taxid = $location.path().split('/')[3]; // TODO: this might not exist!
@@ -346,6 +346,12 @@ var rnaSequenceController = function($scope, $location, $window, $timeout) {
     // Thus we have to manually open files for download by ng-click.
     $scope.download = function(format) {
         $window.open('/api/v1/rna/' + $scope.upi + '.' + format, '_blank');
+    };
+
+    // hopscotch guided tour
+    $scope.activateTour = function () {
+        console.log("activateTour");
+        hopscotch.startTour($rootScope.tour, 4); // start from step 4
     };
 
     activateCopyToClipboardButtons();

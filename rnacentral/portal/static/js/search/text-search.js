@@ -25,6 +25,19 @@ underscore.factory('_', function() {
     return window._;
 });
 
+
+/**
+ * Service for resolving urls from backend, instead of hard
+ */
+var routes = function() {
+    return {
+        helpTextSearch: '/help/text-search/',
+        contactUs: '/contact',
+        submitQuery: '/export/submit-query',
+        resultsPage: '/export/results'
+    };
+};
+
 /**
  * Service for launching a text search.
  */
@@ -333,7 +346,7 @@ var MainContent = function($scope, $anchorScroll, $location, search) {
 var textSearchResults = {
     bindings: {},
     templateUrl: '/static/js/search/text-search-results.html',
-    controller: ['$location', '$http', 'search', function($location, $http, search) {
+    controller: ['$location', '$http', 'search', 'routes', function($location, $http, search, routes) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
@@ -345,12 +358,7 @@ var textSearchResults = {
             ctrl.showExpertDbError = false;
 
             // urls used in template (hardcoded)
-            ctrl.routes = {
-                helpTextSearchUrl: '/help/text-search/',
-                contactUsUrl: '/contact',
-                submitQueryUrl: '/export/submit-query',
-                resultsPageUrl: '/export/results'
-            };
+            ctrl.routes = routes;
 
             // retrieve expert_dbs json for display in tooltips
             $http.get('/api/internal/expert-dbs/').then(
@@ -420,10 +428,10 @@ var textSearchResults = {
          * - open the results page in a new window.
          */
         ctrl.exportResults = function(format) {
-            $http.get(ctrl.routes.submitQueryUrl + '?q=' + ctrl.search.result._query + '&format=' + format).then(
+            $http.get(ctrl.routes.submitQuery + '?q=' + ctrl.search.result._query + '&format=' + format).then(
                 function(response) {
                     ctrl.showExportError = false;
-                    window.location.href = ctrl.routes.resultsPageUrl + '?job=' + response.data.job_id;
+                    window.location.href = ctrl.routes.resultsPage + '?job=' + response.data.job_id;
                 },
                 function(response) {
                     ctrl.showExportError = true;
@@ -508,7 +516,8 @@ var sanitize = function($sce) {
 /**
  * Create RNAcentral app.
  */
-angular.module('rnacentralApp', ['ngAnimate', 'ui.bootstrap', 'chieffancypants.loadingBar', 'underscore', 'Genoverse', 'rnaSequence'])
+angular.module('rnacentralApp', ['ngAnimate', 'ui.bootstrap', 'chieffancypants.loadingBar', 'underscore', 'Genoverse', 'rnaSequence', 'homepage'])
+    .service('routes', [routes])
     .service('search', ['_', '$http', '$interpolate', '$location', '$window', search])
     .controller('MainContent', ['$scope', '$anchorScroll', '$location', 'search', MainContent])
     .component('textSearchResults', textSearchResults)
@@ -561,5 +570,5 @@ angular.module('rnacentralApp', ['ngAnimate', 'ui.bootstrap', 'chieffancypants.l
             if($rootScope.actualLocation === newLocation) {
                 $window.location.reload();
             }
-        });
+        })
     }]);

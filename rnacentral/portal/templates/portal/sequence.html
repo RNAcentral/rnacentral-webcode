@@ -26,45 +26,44 @@ limitations under the License.
 {% endblock %}
 
 {% block content %}
-
-<h1>
-    Sequence {{ rna.upi }}
-
-    {% if context.single_species %}
-        <small><em>{{ context.single_species }}</em></small>
-    {% else %}
-        <small>{{ rna.count_distinct_organisms|intcomma }} species</small>
-    {% endif %}
-
-    <small class="pull-right hidden-xs">
-        <button type="button" class="btn btn-info tour help" title="Take an interactive tour to explore RNAcentral features" id="guided-tour">
-            <i class="fa fa-info-circle"></i> Interactive tour
-        </button>
-    </small>
-</h1>
-
-{% if context.taxid_not_found %}
-    <div class="alert alert-danger">
-        No annotations from taxid:{{context.taxid_not_found}}.
-    </div>
-{% elif context.taxid_filtering %}
-    <div class="well well-sm">
-        <i class="fa fa-filter"></i> Showing annotations from <strong><em>{{ context.single_species}}</em></strong>.
-
-        {% if rna.count_distinct_organisms > 1 %}
-          <a href="" class="show-species-tab">Switch species</a> or
-          <a href="{% url 'portal.views.rna_view' rna.upi %}">view all data</a> from {{ rna.count_distinct_organisms }} species.
-        {% endif %}
-    </div>
-{% elif rna.count_distinct_organisms > 1 %}
-    <div class="well well-sm">
-        <i class="fa fa-info-circle"></i> This unique sequence was observed in multiple species.
-        <a href="" class="show-species-tab">Filter annotations</a> by species.
-    </div>
-{% endif %}
-
 <div class="row" ng-controller="rnaSequenceController">
     <div class="col-md-12">
+        <h1>
+            Sequence {{ rna.upi }}
+
+            {% if context.single_species %}
+                <small><em>{{ context.single_species }}</em></small>
+            {% else %}
+                <small>{{ rna.count_distinct_organisms|intcomma }} species</small>
+            {% endif %}
+
+            <small class="pull-right hidden-xs">
+                <button type="button" class="btn btn-info tour help" title="Take an interactive tour to explore RNAcentral features" id="guided-tour" ng-click="activateTour()">
+                    <i class="fa fa-info-circle"></i> Interactive tour
+                </button>
+            </small>
+        </h1>
+
+        {% if context.taxid_not_found %}
+            <div class="alert alert-danger">
+                No annotations from taxid:{{context.taxid_not_found}}.
+            </div>
+        {% elif context.taxid_filtering %}
+            <div class="well well-sm">
+                <i class="fa fa-filter"></i> Showing annotations from <strong><em>{{ context.single_species}}</em></strong>.
+
+                {% if rna.count_distinct_organisms > 1 %}
+                  <a href="" class="show-species-tab">Switch species</a> or
+                  <a href="{% url 'portal.views.rna_view' rna.upi %}">view all data</a> from {{ rna.count_distinct_organisms }} species.
+                {% endif %}
+            </div>
+        {% elif rna.count_distinct_organisms > 1 %}
+            <div class="well well-sm">
+                <i class="fa fa-info-circle"></i> This unique sequence was observed in multiple species.
+                <a href="" class="show-species-tab">Filter annotations</a> by species.
+            </div>
+        {% endif %}
+
         <div class="tabbable">
 
         <uib-tabset class="tab-animation" active="activeTab">
