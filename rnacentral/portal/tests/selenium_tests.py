@@ -638,8 +638,6 @@ class RNAcentralTest(unittest.TestCase):
 
     def test_autocomplete_test_suite(self):
         """A collection of queries to check correctness of autocomplete suggestions."""
-        # the dict has the following structure:
-        # {expectation: [queries, for which expectation should appear in autocomplete suggestions]}
         test_suite = [
             'mir 12',
             'lncrna',
@@ -695,6 +693,33 @@ class RNAcentralTest(unittest.TestCase):
                 print "Failed: query = %s not found in suggestions = %s" % (query, suggestions)
             else:
                 print "Ok"
+
+
+    def test_text_search_test_suite(self):
+        """
+        A collection of queries, obtained as a feedback from SAB
+        and our own assumptions about what queries could be useful.
+        """
+        # the dict has the following structure
+        # {query: [hits that are expected to appear in results list]}
+        test_suite = OrderedDict([
+            ('bantam', []),
+            ('U12', []),
+            ('rhyB', []),
+            ('coolair', []),
+            ('tRNA-Phe', [])
+        ])
+
+        page = TextSearchPage(self.browser)
+        page.navigate()
+
+        for query, expected_results in test_suite.items():
+            page.input.clear()
+            page._submit_search_by_submit_button(query)
+
+        assert page.text_search_results_count
+        # results = [result for result in page.text_search_results]
+        #  print results
 
     # Sequence pages for specific databases
     # -------------------------------------
