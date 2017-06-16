@@ -42,5 +42,8 @@
     "slick-carousel": "^1.6.0",
     "timelinejs3": "^3.4.0",
     "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "phantomjs": "^2.1.7"
   }
 }
