@@ -703,11 +703,11 @@ class RNAcentralTest(unittest.TestCase):
         # the dict has the following structure
         # {query: [hits that are expected to appear in results list]}
         test_suite = OrderedDict([
-            ('bantam', []),
-            ('U12', []),
-            ('rhyB', []),
-            ('coolair', []),
-            ('tRNA-Phe', [])
+            ('bantam AND Taxonomy:"7227"', ['URS000055786A_7227', 'URS00004E9E38_7227', 'URS00002F21DA_7227']),
+            ('U12', ['URS000075EF5D_9606']),
+            ('ryhB', ['URS00003CF5BC_511145']),
+            ('coolair', ['URS000018EB2E_3702']),
+            ('tRNA-Phe', ['URS00003A0C47_9606'])
         ])
 
         page = TextSearchPage(self.browser)
@@ -717,9 +717,14 @@ class RNAcentralTest(unittest.TestCase):
             page.input.clear()
             page._submit_search_by_submit_button(query)
 
-        assert page.text_search_results_count
-        # results = [result for result in page.text_search_results]
-        #  print results
+            assert page.text_search_results_count
+            for expected_result in expected_results:
+                for result in page.text_search_results:
+                    if expected_result in result.text:
+                        break  # ok, result found, move on to the next expected_result
+                # if we managed to get here, expected_result is not found in results - fail
+                raise AssertionError("Expected result %s not found for query %s" % (expected_result, query))
+
 
     # Sequence pages for specific databases
     # -------------------------------------
