@@ -1,64 +1,4 @@
-var HomepageController = function($scope) {
-    // detect if a multi-page tour is already in progress
-    if (hopscotch.getState() === "homepage-tour:4") {
-        hopscotch.startTour(obj.tour, 0);
-    }
-
-    $('#expert-databases').slick({
-        draggable: true,
-        rows: 1,
-        dots: true,
-        adaptiveHeight: true,
-        infinite: true,
-        lazyLoad: 'ondemand',
-        slidesToShow: 5,
-        slidesToScroll: 5,
-        arrows: true,
-        responsive: [
-            {
-                breakpoint: 1024,
-                settings: {
-                    slidesToShow: 5,
-                    slidesToScroll: 5,
-                }
-            },
-            {
-                breakpoint: 992,
-                settings: {
-                    slidesToShow: 4,
-                    slidesToScroll: 4
-                }
-            },
-            {
-                breakpoint: 768,
-                settings: {
-                    slidesToShow: 3,
-                    slidesToScroll: 3
-                }
-            },
-            {
-                breakpoint: 480,
-                settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 2
-                }
-            },
-            {
-                breakpoint: 320,
-                settings: {
-                    slidesToShow: 2,
-                    slidesToScroll: 2
-                }
-            }
-        ],
-    });
-};
-HomepageController.$inject = ['$scope'];
-
-
-angular.module("homepage", ['ngResource', 'ngAnimate', 'ngSanitize', 'ui.bootstrap'])
-    .controller("HomepageController", HomepageController)
-    .run(['$rootScope', '$window', 'routes', function($rootScope, $window, routes) {
+angular.module("rnacentralApp").service(['$window', 'routes', function($window, routes) {
 
     	// facilitates skipping steps using step names instead of indexes
         var steps = {
@@ -75,7 +15,7 @@ angular.module("homepage", ['ngResource', 'ngAnimate', 'ngSanitize', 'ui.bootstr
         /**
         * Hopscotch guided tour.
         */
-        $rootScope.tour = {
+        var tour = {
             id: 'homepage-tour',
             showPrevButton: true,
             scrollDuration: 700,
@@ -105,7 +45,7 @@ angular.module("homepage", ['ngResource', 'ngAnimate', 'ngSanitize', 'ui.bootstr
                     placement: 'top',
                     multipage: true,
                     onNext: function() {
-                        window.location = '/rna/URS000025784F';
+                        $window.location = '/rna/URS000025784F';
                     }
                 },
                 {
@@ -228,4 +168,6 @@ angular.module("homepage", ['ngResource', 'ngAnimate', 'ngSanitize', 'ui.bootstr
                 }
 		    ]
 	    };
+
+	    return tour;
     }]);

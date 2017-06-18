@@ -516,7 +516,7 @@ var sanitize = function($sce) {
 /**
  * Create RNAcentral app.
  */
-angular.module('rnacentralApp', ['ngAnimate', 'ui.bootstrap', 'chieffancypants.loadingBar', 'underscore', 'Genoverse', 'rnaSequence', 'homepage'])
+angular.module('rnacentralApp', ['ngAnimate', 'ui.bootstrap', 'chieffancypants.loadingBar', 'underscore', 'Genoverse', 'rnaSequence'])
     .service('routes', [routes])
     .service('search', ['_', '$http', '$interpolate', '$location', '$window', search])
     .controller('MainContent', ['$scope', '$anchorScroll', '$location', 'search', MainContent])
