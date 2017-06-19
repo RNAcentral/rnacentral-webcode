@@ -95,3 +95,30 @@ elif ENVIRONMENT == 'PG':
 # django-debug-toolbar
 # print("IP Address for debug-toolbar: " + request.META['REMOTE_ADDR']) in views
 INTERNAL_IPS = ('127.0.0.1', '192.168.99.1')
+
+# Note that this is basically the same as the standard settings tuple, but with
+# the addition of the django_performance_testing app. This app is required so
+# that the performance tests will pass.
+INSTALLED_APPS = (
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.sites',
+    'django.contrib.sitemaps',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'django.contrib.humanize',
+    'corsheaders',
+    'portal',
+    'nhmmer',
+    'apiv1',
+    'rest_framework',
+    'debug_toolbar',
+    'compressor',
+    'markdown_deux',
+    'django_rq',
+    'django_performance_testing',
+    # Uncomment the next line to enable admin documentation:
+    # 'django.contrib.admindocs',
+)
