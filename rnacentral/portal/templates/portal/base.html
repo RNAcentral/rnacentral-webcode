@@ -159,19 +159,31 @@ limitations under the License.
             <script src="{% static "node_modules/angular-loading-bar/build/loading-bar.js" %}"></script>
             <script src="{% static "node_modules/underscore/underscore.js" %}"></script>
             <script src="{% static "node_modules/moment/moment.js" %}"></script>
-            <script src="{% static "js/search/text-search.js" %}"></script>
             <script src="{% static "node_modules/js-md5/build/md5.min.js" %}"></script>
-            <script src="{% static "js/search/nhmmer.sequence.search.js" %}"></script>
-            <script src="{% static "js/search/export-results.search.js" %}"></script>
             <script src="{% static "node_modules/d3/d3.js" %}"></script>
+            <script src="{% static "node_modules/clipboard/dist/clipboard.js" %}"></script>
+            <script src="{% static "node_modules/timelinejs3/compiled/js/timeline.js" %}"></script>
             <script src="{% static "js/vendor/query-string.js" %}"></script>
             <script src="{% static "js/d3/d3.ExpertDatabaseSequenceDistribution.js" %}"></script>
             <script src="{% static "js/d3/d3.speciesSunburst.js" %}"></script>
             <script src="{% static "js/d3/d3.speciesTree.js" %}"></script>
-            <script src="{% static "node_modules/clipboard/dist/clipboard.js" %}"></script>
-            <script src="{% static "node_modules/timelinejs3/compiled/js/timeline.js" %}"></script>
 
-            <script src="{% static "js/sequence.module.js" %}"></script>
+            <script src="{% static "js/components/sequence/abstract/abstract.component.js" %}"></script>
+            <script src="{% static "js/components/sequence/citations/citations.component.js" %}"></script>
+            <script src="{% static "js/components/sequence/publications/publication.component.js" %}"></script>
+            <script src="{% static "js/components/sequence/publications/publications.component.js" %}"></script>
+            <script src="{% static "js/components/sequence/taxonomy/taxonomy.component.js" %}"></script>
+            <script src="{% static "js/components/sequence/xrefs/xrefs.component.js" %}"></script>
+            <script src="{% static "js/components/sequence/sequence.module.js" %}"></script>
+
+            <script src="{% static "js/components/sequence-search/nhmmer.sequence.search.js" %}"></script>
+
+            <script src="{% static "js/components/text-search/text-search.module.js" %}"></script>
+            <script src="{% static "js/components/text-search/text-search.service.js" %}"></script>
+            <script src="{% static "js/components/text-search/export-results.search.js" %}"></script>
+            <script src="{% static "js/components/text-search/text-search-bar/text-search-bar.component.js" %}"></script>
+            <script src="{% static "js/components/text-search/text-search-results/text-search-results.component.js" %}"></script>
+
           {% endblock extra_js %}
         {% endcompress %}
 
@@ -182,7 +194,7 @@ limitations under the License.
             <script src="{% static "js/genoverse.RNAcentralTrack.js" %}"></script>
         {% else %}
             <script src="{% static "node_modules/angularjs-genoverse/lib/Genoverse/js/genoverse.combined.js" %}"></script>
-            <script src="{% static "js/genoverse.controller.js" %}"></script>
+            <script src="{% static "js/components/genome-browser/genoverse.controller.js" %}"></script>
             <!-- New genoverse contains tooltip from jquery ui, it conflicts with bootstrap - bridge it! -->
             <script>$.widget.bridge('uitooltip', $.ui.tooltip);</script>
         {% endif %}
