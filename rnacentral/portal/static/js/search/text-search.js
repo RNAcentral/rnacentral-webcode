@@ -49,7 +49,7 @@ var search = function(_, $http, $interpolate, $location, $window, $q) {
     this.config = {
         ebeyeBaseUrl: global_settings.EBI_SEARCH_ENDPOINT,
         rnacentralBaseUrl: window.location.origin, // e.g. http://localhost:8000 or http://rnacentral.org
-        fields: ['description', 'active', 'length', 'pub_title', 'has_genomic_coordinates'],
+        fields: ['description', 'active', 'expert_db', 'length', 'pub_title', 'has_genomic_coordinates'],
         facetfields: ['rna_type', 'TAXONOMY', 'expert_db', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
         facetcount: 30,
         pagesize: 15,
@@ -351,7 +351,7 @@ var MainContent = function($scope, $anchorScroll, $location, search) {
 var textSearchResults = {
     bindings: {},
     templateUrl: '/static/js/search/text-search-results.html',
-    controller: ['$location', '$http', 'search', function($location, $http, search) {
+    controller: ['$location', '$http', '$filter', 'search', function($location, $http, $filter, search) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
@@ -448,6 +448,13 @@ var textSearchResults = {
                 }
             );
         };
+
+        ctrl.expert_db_logo = function(expert_db) {
+            // expert_db can contain some html markup - strip it off, replace whitespaces with hyphens
+            expert_db = $filter('plaintext')(expert_db).replace(/\s/g, '-').toLowerCase();
+
+            return '/static/img/expert-db-logos/' + expert_db + '.png';
+        }
     }]
 };
 
@@ -518,9 +525,19 @@ var textSearchBar = {
  * Used for processing search results highlighting.
  */
 var sanitize = function($sce) {
-  return function(htmlCode){
+  return function(htmlCode) {
     return $sce.trustAsHtml(htmlCode);
   }
+};
+
+/**
+ * Given a string with html markup in it, strips all the markup
+ * and leaves only the text.
+ */
+var plaintext = function() {
+    return function(stringWithHtml) {
+        return String(stringWithHtml).replace(/<[^>]+>/gm, '');
+    }
 };
 
 /**
@@ -532,6 +549,7 @@ angular.module('rnacentralApp', ['ngAnimate', 'ui.bootstrap', 'chieffancypants.l
     .component('textSearchResults', textSearchResults)
     .component('textSearchBar', textSearchBar)
     .filter("sanitize", ['$sce', sanitize])
+    .filter("plaintext", [plaintext])
     .config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
         // hide spinning wheel
         cfpLoadingBarProvider.includeSpinner = false;
