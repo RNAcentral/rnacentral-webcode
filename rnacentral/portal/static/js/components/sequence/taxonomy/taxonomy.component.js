@@ -34,3 +34,5 @@ var taxonomy = {
               '    </div>' +
               '</div>'
 };
+
+angular.module("rnaSequence").component("taxonomy", taxonomy);

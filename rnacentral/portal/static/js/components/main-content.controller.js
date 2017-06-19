@@ -30,3 +30,5 @@ var MainContent = function($scope, $anchorScroll, $location, search) {
         }
     });
 };
+
+angular.module('rnacentralApp').controller('MainContent', ['$scope', '$anchorScroll', '$location', 'search', MainContent]);

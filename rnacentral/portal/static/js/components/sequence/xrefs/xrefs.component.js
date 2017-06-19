@@ -87,5 +87,7 @@ var xrefs = {
             );
         }
     }],
-    templateUrl: '/static/js/components/xrefs/xrefs.html'
+    templateUrl: '/static/js/components/sequence/xrefs/xrefs.html'
 };
+
+angular.module("rnaSequence").component("xrefs", xrefs);

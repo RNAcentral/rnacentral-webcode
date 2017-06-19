@@ -48,7 +48,7 @@ var publications = {
               '    <ol>' +
               '        <div ng-repeat="publication in $ctrl.publications" class="col-md-8">' +
               '            <li class="margin-bottom-10px">' +
-              '                <publication-component publication="publication"></publication-component>' +
+              '                <publication publication="publication"></publication>' +
               '            </li>' +
               '        </div>' +
               '    </ol>' +
@@ -66,3 +66,5 @@ var publications = {
               '    </div>' +
               '</div>'
 };
+
+angular.module("rnaSequence").component("publications", publications);

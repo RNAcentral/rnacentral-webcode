@@ -95,3 +95,5 @@ var textSearchResults = {
         };
     }]
 };
+
+angular.module('rnacentralApp').component('textSearchResults', textSearchResults);

@@ -268,3 +268,5 @@ var search = function(_, $http, $interpolate, $location, $window) {
         self.search(self.query, self.result.entries.length);
     };
 };
+
+angular.module('rnacentralApp').service('search', ['_', '$http', '$interpolate', '$location', '$window', search]);

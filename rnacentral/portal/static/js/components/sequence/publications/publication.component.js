@@ -18,9 +18,11 @@ var publication = {
               '    <span ng-if="$ctrl.publication.pubmed_id">' +
               '        <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ $ctrl.publication.pubmed_id }}" class="margin-left-5px">Pubmed</a>' +
               '        <a ng-if="$ctrl.publication.doi" href="http://dx.doi.org/{{ $ctrl.publication.doi }}" target="_blank" class="abstract-control">Full text</a>' +
-              '        <abstract-component publication="$ctrl.publication"></abstract-component>' +
+              '        <abstract publication="$ctrl.publication"></abstract>' +
               '    </span>' +
               '  <br>' +
               '  <a href="/search?q=pub_id:&#34;{{ $ctrl.publication.pubmed_id }}&#34;" class="margin-left-5px"><i class="fa fa-search"></i> Find other sequences from this reference</a>' +
               '</small>'
 };
+
+angular.module("rnaSequence").component("publication", publication);

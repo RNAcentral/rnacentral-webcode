@@ -57,3 +57,5 @@ var textSearchBar = {
         };
     }]
 };
+
+angular.module('rnacentralApp').component('textSearchBar', textSearchBar);

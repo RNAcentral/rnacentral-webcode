@@ -99,7 +99,7 @@ limitations under the License.
                     </div>
                 </div> <!-- .panel .panel-default -->
 
-                <xrefs-component upi="upi" taxid="taxid" on-activate-publications="activateTab('2')"></xrefs-component>
+                <xrefs upi="upi" taxid="taxid" on-activate-publications="activateTab('2')"></xrefs>
 
                 {# genoverse #}
                 <div>
@@ -155,13 +155,13 @@ limitations under the License.
 
                 <div class="panel panel-default d3-species">
                     <div class="tab-pane panel-body d3-species force-scrollbars d3-species-tree-tab">
-                        <taxonomy-component upi="upi" taxid="taxid"></taxonomy-component>
+                        <taxonomy upi="upi" taxid="taxid"></taxonomy>
                     </div>
                 </div>
             </uib-tab>
 
             <uib-tab index="2" heading="Publications" deselect="checkTab($event, $selectedIndex)">
-                    <publications-component upi="upi"></publications-component>
+                    <publications upi="upi"></publications>
             </uib-tab>
 
             <uib-tab index="3" class="dropdown pull-right hidden-xs">

@@ -146,10 +146,4 @@ sceWhitelist.$inject = ['$sceDelegateProvider'];
 
 angular.module("rnaSequence", ['ngResource', 'ngAnimate', 'ngSanitize', 'ui.bootstrap'])
     .config(sceWhitelist)
-    .controller("rnaSequenceController", rnaSequenceController)
-    .component("xrefs", xrefs)
-    .component("citations", citations)
-    .component("taxonomy", taxonomy)
-    .component("publications", publications)
-    .component("publication", publication)
-    .component("abstract", abstract);
+    .controller("rnaSequenceController", rnaSequenceController);

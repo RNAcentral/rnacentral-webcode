@@ -25,7 +25,7 @@ var citations = {
               '  </button>' +
               '  <div ng-if="citationsVisible && $ctrl.status >= 200 && $ctrl.status <= 299" class="literature-refs-content slide-down">' +
               '    <blockquote ng-repeat="citation in $ctrl.citations">' +
-              '      <publication-component publication="citation"></publication-component>' +
+              '      <publication publication="citation"></publication>' +
               '    </blockquote>' +
               '    <button ng-click="$ctrl.onActivatePublications()" class="btn btn-default btn-sm show-publications-tab"><i class="fa fa-book"></i> All publications</button>' +
               '  </div>' +
@@ -34,3 +34,5 @@ var citations = {
               '  </div>' +
               '</span>'
 };
+
+angular.module("rnaSequence").component("citations", citations);

@@ -1,9 +1,9 @@
-var abstractComponent = {
+var abstract = {
     bindings: {
         publication: '<'
     },
     require: {
-        parent: '^publicationComponent'
+        parent: '^publication'
     },
     controller: ['$http', '$interpolate', function($http, $interpolate) {
         var ctrl = this;
@@ -44,3 +44,5 @@ var abstractComponent = {
     template: '<button class="btn btn-xs btn-default abstract-btn abstract-control" ng-click="abstractVisible = !abstractVisible"><span ng-if="abstractVisible">Hide abstract</span><span ng-if="!abstractVisible">Show abstract</span></button>' +
               '<div ng-if="abstractVisible" class="abstract-text slide-down"><span ng-bind-html="$ctrl.abstract | linky"></span></div>'
 };
+
+angular.module("rnaSequence").component("abstract", abstract);
