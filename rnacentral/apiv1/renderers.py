@@ -1,18 +1,6 @@
 from rest_framework import renderers
 
 
-class BrowsableAPIRenderer(renderers.BrowsableAPIRenderer):
-    """
-    Use this renderer instead of the original one to customize context variables.
-    """
-
-    def get_context(self, data, accepted_media_type, renderer_context):
-        """
-        """
-        context = super(BrowsableAPIRenderer, self).get_context(data, accepted_media_type, renderer_context)
-        return context
-
-
 class RnaFastaRenderer(renderers.BaseRenderer):
     """
     Render the fasta data received from RnaFastaSerializer.
