@@ -433,7 +433,7 @@ var textSearchResults = {
 
         ctrl.expert_db_logo = function(expert_db) {
             // expert_db can contain some html markup - strip it off, replace whitespaces with hyphens
-            expert_db = $filter('plaintext')(expert_db).replace(/\s/g, '-').toLowerCase();
+            expert_db = expert_db.replace(/\s/g, '-').toLowerCase();
 
             return '/static/img/expert-db-logos/' + expert_db + '.png';
         }
@@ -513,13 +513,19 @@ var sanitize = function($sce) {
 };
 
 /**
- * Given a string with html markup in it, strips all the markup
- * and leaves only the text.
+ * Given an array of strings with html markup, strips
+ * all the markup from those strings and leaves only the text.
  */
 var plaintext = function() {
-    return function(stringWithHtml) {
-        return String(stringWithHtml).replace(/<[^>]+>/gm, '');
-    }
+    return function(items) {
+        var result = [];
+
+        angular.forEach(items, function(stringWithHtml) {
+            result.push(String(stringWithHtml).replace(/<[^>]+>/gm, ''));
+        });
+
+        return result;
+    };
 };
 
 /**

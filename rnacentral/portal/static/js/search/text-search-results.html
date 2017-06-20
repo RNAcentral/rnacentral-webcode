@@ -176,10 +176,7 @@
               </li>
               <li ng-if="rna.fields.has_genomic_coordinates[0] == 'True'"><i class="fa fa-check text-success" aria-hidden="true"></i> reference genome<li>
               <li ng-if="rna.fields.active[0] == 'Obsolete'"><span class="label label-danger help" title="No active annotations">Obsolete</span></li>
-              <li ng-repeat="expert_db in rna.fields.expert_db"><img style="height: 15px;" ng-src="{{ $ctrl.expert_db_logo(expert_db) }}" ng-attr-title="{{ expert_db | plaintext }}">&nbsp;&nbsp; <!--<span ng-bind-html="expert_db | sanitize"></span> --></li>
-            </ul>
-            <ul class="list-inline small">
-
+              <li ng-repeat="expert_db in rna.fields.expert_db | plaintext"><img style="height: 15px;" uib-tooltip-template="'/static/js/search/expert-database-tooltip-on-image.html'" tooltip-placement="bottom" ng-src="{{ $ctrl.expert_db_logo(expert_db) }}">&nbsp;&nbsp; <!--<span ng-bind-html="expert_db | sanitize" ng-attr-title="{{ expert_db }}"></span> --></li>
             </ul>
           </div>
           <hr>
