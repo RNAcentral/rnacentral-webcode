@@ -1254,6 +1254,7 @@ class RfamModel(models.Model):
     full_count = models.PositiveIntegerField()
     length = models.PositiveIntegerField()
     is_supressed = models.BooleanField(default=False)
+    domain = models.CharField(max_length=50)
 
     class Meta:
         db_table = 'rnc_rfam_models'
