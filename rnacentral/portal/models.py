@@ -1307,7 +1307,7 @@ class RfamInitialAnnotations(models.Model):
         db_table = 'rfam_initial_annotations'
 
 
-class RfamAnalyzedSequences(model.Model):
+class RfamAnalyzedSequences(models.Model):
     """
     This table keeps track of all sequences which have been analyzed for Rfam
     families. This is useful for finding sequences which have no annotations
