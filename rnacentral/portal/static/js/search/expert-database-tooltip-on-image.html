@@ -1,5 +1,5 @@
 <div style="max-width: 250px;">
-<h5><i ng-if="$ctrl.expertDbsObject[expert_db.toLowerCase()].tags.indexOf('curated') != -1 && $ctrl.expertDbsObject[expert_db.toLowerCase()].tags.indexOf('automatic') == -1" class="fa fa-star">  </i>{{ expert_db.toLowerCase() }} <img style="width: 50px; float: right;" ng-src="{{ $ctrl.expert_db_logo(expert_db) }}"></h5>
+<h5><i ng-if="$ctrl.expertDbsObject[expert_db.toLowerCase()].tags.indexOf('curated') != -1 && $ctrl.expertDbsObject[expert_db.toLowerCase()].tags.indexOf('automatic') == -1" class="fa fa-star">  </i>{{ expert_db }} <img style="width: 50px; float: right;" ng-src="{{ $ctrl.expert_db_logo(expert_db) }}"></h5>
 <p>{{ $ctrl.expertDbsObject[expert_db.toLowerCase()].hint }}</p>
 <div><span ng-repeat="tag in $ctrl.expertDbsObject[expert_db.toLowerCase()].tags" class="rnacentral-tag label label-default">{{ tag.split(" ").join("&nbsp;") }}</span></div>
 </div>
