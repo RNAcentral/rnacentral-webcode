@@ -441,17 +441,16 @@ var textSearchResults = {
 
         ctrl.anyHighlights = function(fields) {
             for (var fieldName in fields) {
-                if (fields.hasOwnProperty(fieldName) && ctrl.anyHightlightsInField(fields[fieldName])) {
-                    console.log("true, fields have description");
+                if (fields.hasOwnProperty(fieldName) && ctrl.anyHighlightsInField(fields[fieldName])) {
                     return true;
                 }
             }
             return false;
         };
 
-        ctrl.anyHightlightsInField = function(field) {
+        ctrl.anyHighlightsInField = function(field) {
             for (var i=0; i < field.length; i++) {
-                if (field[i].indexOf('text-search-highlights') === -1) {
+                if (field[i].indexOf('text-search-highlights') !== -1) {
                     return true;
                 }
             }
