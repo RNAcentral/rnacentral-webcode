@@ -65,7 +65,8 @@ var search = function(_, $http, $interpolate, $location, $window, $q) {
                         '&size=' + self.config.pagesize +
                         '&start={{ start }}' +
                         '&sort=boost:descending,length:descending' +
-                        '&hlpretag=<span class=text-search-highlights>&hlposttag=</span>',
+                        '&hlpretag=<span class=text-search-highlights>' +
+                        '&hlposttag=</span>',
         'ebeyeAutocomplete': 'http://www.ebi.ac.uk/ebisearch/ws/rest/RNAcentral/autocomplete' +
                               '?term={{ query }}' +
                               '&format=json',
@@ -454,7 +455,26 @@ var textSearchResults = {
             expert_db = expert_db.replace(/\s/g, '-').toLowerCase();
 
             return '/static/img/expert-db-logos/' + expert_db + '.png';
-        }
+        };
+
+        ctrl.anyHighlights = function(fields) {
+            for (var fieldName in fields) {
+                if (fields.hasOwnProperty(fieldName) && ctrl.anyHightlightsInField(fields[fieldName])) {
+                    console.log("true, fields have description");
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        ctrl.anyHightlightsInField = function(field) {
+            for (var i=0; i < field.length; i++) {
+                if (field[i].indexOf('text-search-highlights') === -1) {
+                    return true;
+                }
+            }
+            return false;
+        };
     }]
 };
 

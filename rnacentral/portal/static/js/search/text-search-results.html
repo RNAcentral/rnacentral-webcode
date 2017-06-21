@@ -165,10 +165,13 @@
               <a href="/rna/{{rna.id_with_slash}}" ng-bind-html="rna.fields.description[0] | sanitize"></a>
               <small>{{rna.id}}</small>
             </h4>
-            <div ng-show="rna.fields.description[0].indexOf('text-search-highlights') === -1" style="margin-bottom: 3px;">
-              <ul ng-repeat="pub_title in rna.fields.pub_title | filter:'text-search-highlights' | limitTo:1" class="small list-unstyled">
-                <li ng-bind-html="pub_title | sanitize"></li>
-              </ul>
+            {{ rna.fields }}
+            <div ng-show="$ctrl.anyHighlights(rna.fields)" style="margin-bottom: 3px;">
+              <div ng-repeat="(fieldName, field) in rna.fields" ng-show="$ctrl.anyHighlightsInField(field)">
+                <ul ng-repeat="highlight in field | filter:'text-search-highlights' | limitTo:1" class="small list-unstyled">
+                  <li ng-bind-html="highlight | sanitize"></li>
+                </ul>
+              </div>
             </div>
             <ul class="list-inline small">
               <li>
