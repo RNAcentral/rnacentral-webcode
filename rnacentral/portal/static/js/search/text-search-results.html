@@ -158,7 +158,7 @@
     </div>
 
     <div class="col-md-9 col-sm-8 col-xs-12 text-search-results">
-      <ul class="list-unstyled">
+      <ol>
         <li class="result" ng-repeat="rna in $ctrl.search.result.entries">
           <div class="text-search-result">
             <h4>
@@ -181,7 +181,7 @@
           </div>
           <hr>
         </li>
-      </ul>
+      </ol>
 
       <br>
       <small ng-if="$ctrl.search.result.hitCount > result.entries.length" class="text-muted">Displaying {{ $ctrl.search.result.entries.length }} out of {{ $ctrl.search.result.hitCount | number }} sequences</small>
