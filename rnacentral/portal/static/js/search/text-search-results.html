@@ -187,9 +187,11 @@
         </li>
       </ol>
 
-      <br>
-      <small ng-if="$ctrl.search.result.hitCount > result.entries.length" class="text-muted">Displaying {{ $ctrl.search.result.entries.length }} out of {{ $ctrl.search.result.hitCount | number }} sequences</small>
-      <br>
+      <div ng-if="$ctrl.search.result.hitCount > result.entries.length">
+        <br>
+          <small class="text-muted">Displaying {{ $ctrl.search.result.entries.length }} out of {{ $ctrl.search.result.hitCount | number }} sequences</small>
+        <br>
+      </div>
 
       <button class="btn btn-default load-more col-md-3" ng-click="$ctrl.search.loadMoreResults()" ng-show="$ctrl.search.result.hitCount > $ctrl.search.result.entries.length"><i ng-class="$ctrl.search.status === 'in progress' ? 'fa fa-spinner fa-spin' : 'hidden'"></i> Load more</button>
     </div>
