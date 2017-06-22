@@ -49,19 +49,50 @@ var search = function(_, $http, $interpolate, $location, $window) {
     this.config = {
         ebeyeBaseUrl: global_settings.EBI_SEARCH_ENDPOINT,
         rnacentralBaseUrl: window.location.origin, // e.g. http://localhost:8000 or http://rnacentral.org
-        fields: ['description', 'active', 'expert_db', 'length', 'pub_title', 'has_genomic_coordinates', 'gene', 'gene_synonym', 'product', 'common_name', 'locus_tag', 'standard_name'],
-        fieldWeights: {'description': 1, 'active': 0, 'expert_db': 4, 'pub_title': 2, 'has_genomic_coordinates': 0, 'gene': 4, 'gene_synonym': 3, 'common_name': 3, 'locus_tag': 2, 'standard_name': 2},
+        fields: [
+            'active',
+            'common_name',
+            'description',
+            'expert_db',
+            'gene',
+            'gene_synonym',
+            'has_genomic_coordinates',
+            'length',
+            'locus_tag',
+            'pub_title',
+            'product',
+            'rna_type',
+            'standard_name'
+        ],
+        fieldWeights: {
+            'description': 2,
+            'active': 0,
+            'expert_db': 4,
+            'length': 0,
+            'pub_title': 2,
+            'has_genomic_coordinates': 0,
+            'gene': 4,
+            'gene_synonym': 3,
+            'product': 1,
+            'rna_type': 2,
+            'common_name': 3,
+            'locus_tag': 2,
+            'standard_name': 2
+        },
         fieldVerboseNames: {
             'description': 'Description',
             'active': 'Active',
-            'expert_db': 'Expert Database',
-            'pub_title': 'Publication Title',
-            'has_genomic_coordinates': 'Has Genomic Coordinates',
+            'expert_db': 'Expert database',
+            'length': 'Length',
+            'pub_title': 'Publication title',
+            'has_genomic_coordinates': 'Genomic coordinates',
             'gene': 'Gene',
-            'gene_synonym': 'Gene Synonym',
-            'common_name': 'Common Name',
-            'locus_tag': 'Locus Tag',
-            'standard_name': 'Standard Name'
+            'gene_synonym': 'Gene synonym',
+            'product': 'Product',
+            'rna_type': 'RNA type',
+            'common_name': 'Common name',
+            'locus_tag': 'Locus tag',
+            'standard_name': 'Standard name'
         },
         facetfields: ['rna_type', 'TAXONOMY', 'expert_db', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
         facetcount: 30,
@@ -485,7 +516,7 @@ var textSearchResults = {
 
         ctrl.anyHighlights = function(fields) {
             for (var fieldName in fields) {
-                if (fields.hasOwnProperty(fieldName) && ctrl.anyHighlightsInField(fields[fieldName]) && fieldName !== 'description') {
+                if (fields.hasOwnProperty(fieldName) && ctrl.anyHighlightsInField(fields[fieldName])) {
                     return true;
                 }
             }
