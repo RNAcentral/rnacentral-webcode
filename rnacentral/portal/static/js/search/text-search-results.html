@@ -165,22 +165,20 @@
               <a href="/rna/{{rna.id_with_slash}}" ng-bind-html="$index+1 + '. ' + rna.fields.description[0] | sanitize"></a>
               <small>{{rna.id}}</small>
             </h4>
-            <div ng-show="$ctrl.anyHighlights(rna.fields)" style="margin-bottom: 10px; margin-top: 3px;" class="small">
-              <span ng-if="$ctrl.highlight(rna.fields).fieldName && $ctrl.highlight(rna.fields).fieldName !== 'Description'">
-                  <b>{{ $ctrl.highlight(rna.fields).fieldName }}:</b> &quot;<span ng-bind-html="$ctrl.highlight(rna.fields).highlight | sanitize"></span>&quot;
+            <div ng-show="$ctrl.anyHighlights(rna.fields)" style="margin-bottom: 3px; margin-top: 1px;" class="small">
+              <span ng-if="$ctrl.highlight(rna.fields).fieldName">
+                  <b>{{ $ctrl.highlight(rna.fields).fieldName }}:</b> <span ng-bind-html="$ctrl.highlight(rna.fields).highlight | sanitize"></span>
               </span>
             </div>
             <ul class="list-inline small">
-              <li>
+              <li style="padding-right: 20px;">
                 <strong>{{rna.fields.length[0] | number}}</strong> nucleotides
               </li>
-              <li ng-if="rna.fields.has_genomic_coordinates[0] == 'True'"><i class="fa fa-check text-success" aria-hidden="true"></i> reference genome<li>
-              <li ng-if="rna.fields.active[0] == 'Obsolete'"><span class="label label-danger help" title="No active annotations">Obsolete</span></li>
-              <li style="margin-right: 10px;"></li>
-              <li ng-repeat="expert_db in rna.fields.expert_db | plaintext | orderBy:expert_db"><img style="height: 15px;" uib-tooltip-template="'/static/js/search/expert-database-tooltip-on-image.html'" tooltip-placement="bottom" ng-src="{{ $ctrl.expert_db_logo(expert_db) }}">&nbsp;&nbsp; <!--<span ng-bind-html="expert_db | sanitize" ng-attr-title="{{ expert_db }}"></span> --></li>
+              <li style="padding-right: 20px;" ng-show="rna.fields.has_genomic_coordinates[0] == 'True'"><i class="fa fa-check text-success" aria-hidden="true"></i> reference genome<li>
+              <li style="padding-right: 20px;" ng-show="rna.fields.active[0] == 'Obsolete'"><span class="label label-danger help" title="No active annotations">Obsolete</span></li>
+              <li ng-repeat="expert_db in rna.fields.expert_db | plaintext | orderBy:expert_db"><img style="height: 15px;" class="desaturate" uib-tooltip-template="'/static/js/search/expert-database-tooltip-on-image.html'" tooltip-placement="bottom" ng-src="{{ $ctrl.expert_db_logo(expert_db) }}">&nbsp;&nbsp; <!--<span ng-bind-html="expert_db | sanitize" ng-attr-title="{{ expert_db }}"></span> --></li>
             </ul>
           </div>
-          <hr>
         </li>
       </ul>
 
