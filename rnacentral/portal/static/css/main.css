@@ -795,7 +795,7 @@ button.load-more {
 }
 
 .text-search-highlights {
-  text-decoration: underline;
+  font-weight: bold;
   text-rendering: optimizeLegibility;
 }
 
