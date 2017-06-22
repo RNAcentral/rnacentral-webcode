@@ -169,7 +169,7 @@
               <div ng-repeat="(fieldName, field) in rna.fields">
                 <span ng-show="$ctrl.anyHighlightsInField(field) && fieldName !== 'description'">
                   <ul ng-repeat="highlight in field | filter:'text-search-highlights' | limitTo:1" class="small list-unstyled">
-                    <li style="margin-top: 3px;"><b>{{ fieldName | capitalizeFirst | underscoresToSpaces }}:</b> &quot;<i ng-bind-html="highlight | sanitize"></i>&quot;</li>
+                    <li style="margin-top: 3px;"><b>{{ fieldName | capitalizeFirst | underscoresToSpaces }}:</b> &quot;<span ng-bind-html="highlight | sanitize"></span>&quot;</li>
                   </ul>
                 </span>
               </div>

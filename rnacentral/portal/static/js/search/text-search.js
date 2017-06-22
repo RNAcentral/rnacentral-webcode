@@ -69,6 +69,8 @@ var search = function(_, $http, $interpolate, $location, $window, $q) {
                         '&hlposttag=</span>',
         'ebeyeAutocomplete': 'http://www.ebi.ac.uk/ebisearch/ws/rest/RNAcentral/autocomplete' +
                               '?term={{ query }}' +
+
+
                               '&format=json',
         'proxy': self.config.rnacentralBaseUrl +
                  '/api/internal/ebeye?url={{ ebeyeUrl }}',
