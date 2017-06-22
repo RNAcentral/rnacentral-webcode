@@ -50,6 +50,19 @@ var search = function(_, $http, $interpolate, $location, $window) {
         ebeyeBaseUrl: global_settings.EBI_SEARCH_ENDPOINT,
         rnacentralBaseUrl: window.location.origin, // e.g. http://localhost:8000 or http://rnacentral.org
         fields: ['description', 'active', 'expert_db', 'length', 'pub_title', 'has_genomic_coordinates', 'gene', 'gene_synonym', 'product', 'common_name', 'locus_tag', 'standard_name'],
+        fieldWeights: {'description': 1, 'active': 0, 'expert_db': 4, 'pub_title': 2, 'has_genomic_coordinates': 0, 'gene': 4, 'gene_synonym': 3, 'common_name': 3, 'locus_tag': 2, 'standard_name': 2},
+        fieldVerboseNames: {
+            'description': 'Description',
+            'active': 'Active',
+            'expert_db': 'Expert Database',
+            'pub_title': 'Publication Title',
+            'has_genomic_coordinates': 'Has Genomic Coordinates',
+            'gene': 'Gene',
+            'gene_synonym': 'Gene Synonym',
+            'common_name': 'Common Name',
+            'locus_tag': 'Locus Tag',
+            'standard_name': 'Standard Name'
+        },
         facetfields: ['rna_type', 'TAXONOMY', 'expert_db', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
         facetcount: 30,
         pagesize: 15,
@@ -441,9 +454,38 @@ var textSearchResults = {
             return '/static/img/expert-db-logos/' + expert_db + '.png';
         };
 
+        ctrl.highlight = function(fields) {
+            var highlight;
+            var verboseFieldName;
+            var maxWeight = -1; // multiple fields can have highlights - pick the field with highest weight
+
+            for (var fieldName in fields) {
+                if (fields.hasOwnProperty(fieldName) && ctrl.anyHighlightsInField(fields[fieldName])) { // description is quoted in hit's header, ignore it
+                    if (search.config.fieldWeights[fieldName] > maxWeight) {
+
+                        // get highlight string with match
+                        var field = fields[fieldName];
+                        for (var i = 0; i < fields.length; i++) {
+                            if (field[i].indexOf('text-search-highlights') !== -1) {
+                                highlight = field[i];
+                                break;
+                            }
+                        }
+
+                        // assign the new weight and verboseFieldName
+                        maxWeight = search.config.fieldWeights[fieldName];
+                        verboseFieldName = search.config.fieldVerboseNames[fieldName];
+                    }
+                }
+            }
+
+            // use human-readable fieldName
+            return {highlight: highlight, fieldName: verboseFieldName};
+        };
+
         ctrl.anyHighlights = function(fields) {
             for (var fieldName in fields) {
-                if (fields.hasOwnProperty(fieldName) && ctrl.anyHighlightsInField(fields[fieldName])) {
+                if (fields.hasOwnProperty(fieldName) && ctrl.anyHighlightsInField(fields[fieldName]) && fieldName !== 'description') {
                     return true;
                 }
             }
