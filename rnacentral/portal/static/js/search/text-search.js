@@ -49,7 +49,7 @@ var search = function(_, $http, $interpolate, $location, $window, $q) {
     this.config = {
         ebeyeBaseUrl: global_settings.EBI_SEARCH_ENDPOINT,
         rnacentralBaseUrl: window.location.origin, // e.g. http://localhost:8000 or http://rnacentral.org
-        fields: ['description', 'active', 'expert_db', 'length', 'pub_title', 'has_genomic_coordinates'],
+        fields: ['description', 'active', 'expert_db', 'length', 'pub_title', 'has_genomic_coordinates', 'gene', 'gene_synonym', 'product', 'common_name', 'locus_tag', 'standard_name'],
         facetfields: ['rna_type', 'TAXONOMY', 'expert_db', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
         facetcount: 30,
         pagesize: 15,
@@ -564,6 +564,24 @@ var plaintext = function() {
         return result;
     };
 };
+/**
+ * Makes first letter of the input string captial.
+ */
+var capitalizeFirst = function() {
+    return function(item) {
+        return item.charAt(0).toUpperCase() + item.slice(1);
+    };
+};
+
+/**
+ * Replaced all the occurrences of underscore in the input string with period (dot) and whitespace.
+ * E.g. pub_title -> pub. title.
+ */
+var underscoresToSpaces = function() {
+    return function(item) {
+        return item.replace(/_/g, ' ');
+    }
+}
 
 /**
  * Create RNAcentral app.
@@ -575,6 +593,8 @@ angular.module('rnacentralApp', ['ngAnimate', 'ui.bootstrap', 'chieffancypants.l
     .component('textSearchBar', textSearchBar)
     .filter("sanitize", ['$sce', sanitize])
     .filter("plaintext", [plaintext])
+    .filter("capitalizeFirst", [capitalizeFirst])
+    .filter("underscoresToSpaces", [underscoresToSpaces])
     .config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
         // hide spinning wheel
         cfpLoadingBarProvider.includeSpinner = false;

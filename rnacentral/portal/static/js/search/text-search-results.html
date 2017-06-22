@@ -158,23 +158,23 @@
     </div>
 
     <div class="col-md-9 col-sm-8 col-xs-12 text-search-results">
-      <ol>
+      <ul class="list-unstyled">
         <li class="result" ng-repeat="rna in $ctrl.search.result.entries">
           <div class="text-search-result">
             <h4>
-              <a href="/rna/{{rna.id_with_slash}}" ng-bind-html="rna.fields.description[0] | sanitize"></a>
+              <a href="/rna/{{rna.id_with_slash}}" ng-bind-html="$index+1 + '. ' + rna.fields.description[0] | sanitize"></a>
               <small>{{rna.id}}</small>
             </h4>
             <div ng-show="$ctrl.anyHighlights(rna.fields)" style="margin-bottom: 3px;">
               <div ng-repeat="(fieldName, field) in rna.fields">
-                <span ng-show="$ctrl.anyHighlightsInField(field)">
+                <span ng-show="$ctrl.anyHighlightsInField(field) && fieldName !== 'description'">
                   <ul ng-repeat="highlight in field | filter:'text-search-highlights' | limitTo:1" class="small list-unstyled">
-                    <li ng-bind-html="highlight | sanitize"></li>
+                    <li style="margin-top: 3px;"><b>{{ fieldName | capitalizeFirst | underscoresToSpaces }}:</b> &quot;<i ng-bind-html="highlight | sanitize"></i>&quot;</li>
                   </ul>
                 </span>
               </div>
             </div>
-            <ul class="list-inline small">
+            <ul sytle="margin-top: 3px;" class="list-inline small">
               <li>
                 <strong>{{rna.fields.length[0] | number}}</strong> nucleotides
               </li>
@@ -185,7 +185,7 @@
           </div>
           <hr>
         </li>
-      </ol>
+      </ul>
 
       <div ng-if="$ctrl.search.result.hitCount > result.entries.length">
         <br>
