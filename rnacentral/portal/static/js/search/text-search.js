@@ -491,6 +491,19 @@ var textSearchResults = {
             return '/static/img/expert-db-logos/' + expert_db + '.png';
         };
 
+        ctrl.expertDbHasStarComparator = function(v1, v2) {
+            return ctrl.expertDbHasStar(v1.value.toLowerCase()) && !ctrl.expertDbHasStar(v2.value.toLowerCase()) ? 1 : -1;
+        };
+
+        /**
+         * We assign a star only to those expert_dbs that have a curated tag and don't have automatic tag at the same time.
+         * @param db {String} - name of expert_db as a key in expertDbsObject
+         * @returns {boolean}
+         */
+        ctrl.expertDbHasStar = function(db) {
+            return ctrl.expertDbsObject[db].tags.indexOf('curated') != -1 && ctrl.expertDbsObject[db].tags.indexOf('automatic') == -1;
+        };
+
         ctrl.highlight = function(fields) {
             var highlight;
             var verboseFieldName;
