@@ -74,18 +74,28 @@ var search = function(_, $http, $interpolate, $location, $window, $q) {
     };
 
     this.autocomplete = function(query) {
+        self = this;
+        self.autocompleteDeferred = $q.defer();
+
         if (query.length < 3) {
-            var deferred = $q.defer();
-            deferred.reject("query too short!");
-            return deferred.promise;
+            self.autocompleteDeferred.reject("query too short!");
         }
         else {
             // get queryUrl ready
             var ebeyeUrl = $interpolate(self.queryUrls.ebeyeAutocomplete)({query: query});
             var queryUrl = $interpolate(self.queryUrls.proxy)({ebeyeUrl: encodeURIComponent(ebeyeUrl)});
 
-            return $http.get(queryUrl, {ignoreLoadingBar: true});
+            $http.get(queryUrl, {ignoreLoadingBar: true}).then(
+                function(response) {
+                    self.autocompleteDeferred.resolve(response);
+                },
+                function(response) {
+                    self.autocompleteDeferred.reject(response);
+                }
+            );
         }
+
+        return self.autocompleteDeferred.promise;
     };
 
     /**
@@ -96,6 +106,7 @@ var search = function(_, $http, $interpolate, $location, $window, $q) {
         start = start || 0;
 
         hopscotch.endTour(); // end guided tour when a search is launched
+        self.autocompleteDeferred && self.autocompleteDeferred.reject(); // if autocompletion was launched - reject it
 
         self.query = query;
         self.status = 'in progress';
