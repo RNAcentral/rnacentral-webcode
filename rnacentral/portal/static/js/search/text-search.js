@@ -29,7 +29,7 @@ underscore.factory('_', function() {
  * Service for launching a text search.
  */
 
-var search = function(_, $http, $interpolate, $location, $window) {
+var search = function(_, $http, $interpolate, $location, $window, $q) {
     var self = this; // in case some event handler or constructor overrides "this"
 
     /**
@@ -74,11 +74,18 @@ var search = function(_, $http, $interpolate, $location, $window) {
     };
 
     this.autocomplete = function(query) {
-        // get queryUrl ready
-        var ebeyeUrl = $interpolate(self.queryUrls.ebeyeAutocomplete)({query: query});
-        var queryUrl = $interpolate(self.queryUrls.proxy)({ebeyeUrl: encodeURIComponent(ebeyeUrl)});
+        if (query.length < 3) {
+            var deferred = $q.defer();
+            deferred.reject("query too short!");
+            return deferred.promise;
+        }
+        else {
+            // get queryUrl ready
+            var ebeyeUrl = $interpolate(self.queryUrls.ebeyeAutocomplete)({query: query});
+            var queryUrl = $interpolate(self.queryUrls.proxy)({ebeyeUrl: encodeURIComponent(ebeyeUrl)});
 
-        return $http.get(queryUrl, {ignoreLoadingBar: true});
+            return $http.get(queryUrl, {ignoreLoadingBar: true});
+        }
     };
 
     /**
@@ -509,7 +516,7 @@ var sanitize = function($sce) {
  * Create RNAcentral app.
  */
 angular.module('rnacentralApp', ['ngAnimate', 'ui.bootstrap', 'chieffancypants.loadingBar', 'underscore', 'Genoverse'])
-    .service('search', ['_', '$http', '$interpolate', '$location', '$window', search])
+    .service('search', ['_', '$http', '$interpolate', '$location', '$window', '$q', search])
     .controller('MainContent', ['$scope', '$anchorScroll', '$location', 'search', MainContent])
     .component('textSearchResults', textSearchResults)
     .component('textSearchBar', textSearchBar)
