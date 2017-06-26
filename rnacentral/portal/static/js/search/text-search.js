@@ -509,8 +509,17 @@ var textSearchResults = {
             return '/static/img/expert-db-logos/' + expert_db + '.png';
         };
 
+        /**
+         * Sorts expertDbs so that starred dbs have priority over non-starred, otherwise, keeping lexicographical order.
+         * @param v1 - plaintext db name
+         * @param v2 - plaintext db name
+         * @returns {number} - (-1 if v1 before v2) or (1 if v1 after v2)
+         */
         ctrl.expertDbHasStarComparator = function(v1, v2) {
-            return ctrl.expertDbHasStar(v1.value.toLowerCase()) && !ctrl.expertDbHasStar(v2.value.toLowerCase()) ? 1 : -1;
+            if (ctrl.expertDbHasStar(v1.value.toLowerCase()) && !ctrl.expertDbHasStar(v2.value.toLowerCase())) return -1;
+            else if (!ctrl.expertDbHasStar(v1.value.toLowerCase()) && ctrl.expertDbHasStar(v2.value.toLowerCase())) return 1;
+            else
+                return v1.value.toLowerCase() < v2.value.toLowerCase() ? -1 : 1;
         };
 
         /**
