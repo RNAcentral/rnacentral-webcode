@@ -429,6 +429,36 @@ class TextSearchPage(BasePage):
         )
 
     @property
+    def facet_links(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.visibility_of_any_elements_located((By.CSS_SELECTOR, 'a.text-search-facet-link'))
+        )
+
+    @property
+    def rna_types_facet(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.visibility_of_any_elements_located((By.CSS_SELECTOR, '.text-search-facet-values'))
+        )[0]
+
+    @property
+    def organisms_facet(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.visibility_of_any_elements_located((By.CSS_SELECTOR, '.text-search-facet-values'))
+        )[1]
+
+    @property
+    def expert_databases_facet(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.visibility_of_any_elements_located((By.CSS_SELECTOR, '.text-search-facet-values'))
+        )[2]
+
+    @property
+    def genomic_mapping_facet(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.visibility_of_any_elements_located((By.CSS_SELECTOR, '.text-search-facet-values'))
+        )[3]
+
+    @property
     def load_more_button(self):
         return WebDriverWait(self.browser, self.timeout).until(
             EC.element_to_be_clickable((By.CLASS_NAME, 'load-more'))
@@ -726,6 +756,26 @@ class RNAcentralTest(unittest.TestCase):
                         break  # ok, result found, move on to the next expected_result
                 if not is_found:  # if we managed to get here, expected_result is not found in results - fail
                     print "Expected result %s not found for query %s" % (expected_result, query)  # or raise AssertionError
+
+        # Ad-hoc tests to check some expectations
+
+        # mirbase
+        page.input.clear()
+        page._submit_search_by_submit_button("mirbase")
+        for element in page.rna_types_facet.find_elements_by_css_selector('li > a'):
+            assert re.match('miRNA', element.text) or re.match('precursor RNA', element.text)
+
+        # hgnc
+        page.input.clear()
+        page._submit_search_by_submit_button("hgnc")
+        for element in page.organisms_facet.find_elements_by_css_selector('li > a'):
+            assert re.match('Homo sapiens', element.text)
+
+        # ena
+        page.input.clear()
+        page._submit_search_by_submit_button("ena")
+        for element in page.rna_types_facet.find_elements_by_css_selector('li > a'):
+            print element.text
 
 
     # Sequence pages for specific databases
