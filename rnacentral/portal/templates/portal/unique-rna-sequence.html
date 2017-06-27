@@ -122,6 +122,17 @@ limitations under the License.
                 </li>
                 <li>{{ context.precomputed.rna_type }}</li>                
               </ul>
+
+              <ul class="list-inline">
+                {% if not rna.was_rfam_analyzed %}
+                  <li>Not analyzed with Rfam</li>
+                {% else %}
+                  <li><strong>{{ rna.get_rfam_hits|length|intcomma }}</strong> matches to Rfam Families</li>
+                  {% for hit in rna.get_rfam_hits %}
+                    <li><a href="{{ hit.rfam_model.url }}">{{ hit.rfam_model.name }}</a></li>
+                  {% endfor %}
+                {% endif %}
+              </ul>
             </div>
           </div> <!-- .panel .panel-default -->
 
@@ -185,7 +196,6 @@ limitations under the License.
             </div>
           </div>
 
-
           <h2>
               Sequence
               <div class="btn-group pull-right">
@@ -196,7 +206,7 @@ limitations under the License.
                       <i class="fa fa-copy" aria-hidden="true">&nbsp;as DNA</i>
                   </button>
               </div>
-          </h2>
+            </h2>
 
           <p>
             {{ rna.length|intcomma }} nucleotides

@@ -411,6 +411,12 @@ class Rna(CachingMixin, models.Model):
 
         return xrefs.select_related('accession', 'db')
 
+    def has_rfam_hits(self):
+        return self.get_rfam_hits().exists()
+
+    def get_rfam_hits(self):
+        return RfamHit.objects.filter(upi=self.upi)
+
 
 class RnaPrecomputed(models.Model):
     """
@@ -1236,6 +1242,9 @@ class RfamClan(models.Model):
     class Meta:
         db_table = 'rnc_rfam_clans'
 
+    def url(self):
+        return 'http://rfam.xfam.org/clan/' + self.rfam_clan_id
+
 
 class RfamModel(models.Model):
     """
@@ -1247,17 +1256,22 @@ class RfamModel(models.Model):
     description = models.CharField(max_length=500)
     rfam_clan_id = models.ForeignKey(RfamClan,
                                      db_column='rfam_clan_id',
-                                     to_field='rfam_clan_id', 
+                                     to_field='rfam_clan_id',
                                      null=True)
 
     seed_count = models.PositiveIntegerField()
     full_count = models.PositiveIntegerField()
     length = models.PositiveIntegerField()
-    is_supressed = models.BooleanField(default=False)
-    domain = models.CharField(max_length=50)
+    is_suppressed = models.BooleanField(default=False)
+    domain = models.CharField(max_length=50, null=True)
+    rna_type = models.CharField(max_length=250)
 
     class Meta:
         db_table = 'rnc_rfam_models'
+
+    @property
+    def url(self):
+        return 'http://rfam.xfam.org/family/' + self.rfam_model_id
 
 
 class RfamHit(models.Model):
