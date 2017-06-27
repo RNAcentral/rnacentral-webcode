@@ -167,7 +167,7 @@
             </h4>
             <div ng-show="$ctrl.anyHighlights(rna.fields)" style="margin-bottom: 3px; margin-top: 1px;" class="small">
               <span ng-if="$ctrl.highlight(rna.fields).fieldName">
-                  <b>{{ $ctrl.highlight(rna.fields).fieldName }}:</b> <span ng-bind-html="$ctrl.highlight(rna.fields).highlight | sanitize"></span>
+                  <span>{{ $ctrl.highlight(rna.fields).fieldName }}:</span> <span ng-bind-html="$ctrl.highlight(rna.fields).highlight | sanitize"></span>
               </span>
             </div>
             <ul class="list-inline small" ng-if="$ctrl.expertDbsObject">
