@@ -34,6 +34,7 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RawCitationSerializer, RnaSpeciesSpecificSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, Accession, Xref, Reference, Database
+from portal.config.genomes import genomes
 
 # maximum number of xrefs to use with prefetch_related
 MAX_XREFS_TO_PREFETCH = 1000
@@ -53,6 +54,19 @@ def _get_xrefs_from_genomic_coordinates(species, chromosome, start, end):
         return xrefs
     except:
         return []
+
+
+class SpeciesNotInGenomes(Exception):
+    pass
+
+
+def _get_taxid_from_species(species):
+    species = species.replace('_', ' ').capitalize()
+    for genome in genomes:
+        if species == genome['species']:
+            return genome['taxid']
+
+    raise SpeciesNotInGenomes(species)
 
 
 class DasSources(APIView):
@@ -258,6 +272,11 @@ class GenomeAnnotations(APIView):
 
         xrefs = _get_xrefs_from_genomic_coordinates(species, chromosome, start, end)
 
+        try:
+            taxid = _get_taxid_from_species(species)
+        except SpeciesNotInGenomes as e:
+            return Http404(e.message)
+
         rnacentral_ids = []
         data = []
         for i, xref in enumerate(xrefs):
@@ -271,8 +290,8 @@ class GenomeAnnotations(APIView):
 
             coordinates = xref.get_genomic_coordinates()
             transcript_id = rnacentral_id + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
-            biotype = xref.upi.precomputed.all()[0].rna_type  # xref.accession.get_biotype()
-            description = xref.upi.precomputed.all()[0].description
+            biotype = xref.upi.precomputed.filter(taxid=taxid)[0].rna_type  # used to be biotype = xref.accession.get_biotype()
+            description = xref.upi.precomputed.filter(taxid=taxid)[0].description
 
             data.append({
                 'ID': transcript_id,
