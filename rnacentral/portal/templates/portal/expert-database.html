@@ -17,11 +17,12 @@ limitations under the License.
 
 {% block meta_tags %}
     {{ block.super }}
-    <meta name="description" content="Summary for the {{expert_db.name}} expert database"/>
+    <meta name="description" content="{{expert_db.description|safe}}"/>
+    <meta name="twitter:description" content="{{expert_db.description|safe}}"/>
 {% endblock %}
 
 {% block title %}
-  {{ expert_db.name }} Expert Database
+  Explore {{expert_db.name}} data in RNAcentral
 {% endblock %}
 
 {% block content %}
