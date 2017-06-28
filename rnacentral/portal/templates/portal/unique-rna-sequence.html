@@ -19,6 +19,10 @@ limitations under the License.
     {{ block.super }}
     <meta name="description" content="{{ context.description }} | {{ rna.upi }}"/>
     <meta name="twitter:description" content="{{ context.description }} | {{ rna.upi }}">
+
+    {% if not context.single_species %}
+      <meta name="robots" content="noindex">
+    {% endif %}
 {% endblock %}
 
 {% block title %}
