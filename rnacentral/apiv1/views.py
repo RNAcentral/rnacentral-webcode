@@ -262,25 +262,31 @@ class GenomeAnnotations(APIView):
         data = []
         for i, xref in enumerate(xrefs):
             rnacentral_id = xref.upi.upi
+
             # transcript object
             if rnacentral_id not in rnacentral_ids:
                 rnacentral_ids.append(rnacentral_id)
             else:
                 continue
+
             coordinates = xref.get_genomic_coordinates()
             transcript_id = rnacentral_id + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
-            biotype = xref.accession.get_biotype()
+            biotype = xref.upi.precomputed.all()[0].rna_type  # xref.accession.get_biotype()
+            description = xref.upi.precomputed.all()[0].description
+
             data.append({
                 'ID': transcript_id,
                 'external_name': rnacentral_id,
                 'feature_type': 'transcript',
                 'logic_name': 'RNAcentral',  # required by Genoverse
                 'biotype': biotype,  # required by Genoverse
+                'description': description,
                 'seq_region_name': chromosome,
                 'strand': coordinates['strand'],
                 'start': coordinates['start'],
                 'end': coordinates['end'],
             })
+
             # exons
             exons = xref.accession.coordinates.all()
             for i, exon in enumerate(exons):
