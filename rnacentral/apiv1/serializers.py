@@ -116,11 +116,13 @@ class RnaNestedSerializer(serializers.HyperlinkedModelSerializer):
     publications = serializers.HyperlinkedIdentityField(view_name='rna-publications')
     rnacentral_id = serializers.CharField(source='upi')
     is_active = serializers.Field(source='is_active')
+    description = serializers.Field(source='get_description')
+    rna_type = serializers.Field(source='get_rna_type')
 
     class Meta:
         model = Rna
         fields = ('url', 'rnacentral_id', 'md5', 'sequence', 'length', 'xrefs',
-            'publications', 'is_active')
+            'publications', 'is_active', 'description', 'rna_type')
 
 
 class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
@@ -137,6 +139,8 @@ class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
     ncrna_types = serializers.SerializerMethodField('get_ncrna_types')
     taxid = serializers.SerializerMethodField('get_taxid')
     is_active = serializers.SerializerMethodField('is_active_id')
+    description = serializers.Field(source='get_description')
+    rna_type = serializers.Field(source='get_rna_type')
 
     def is_active_id(self, obj):
         """
