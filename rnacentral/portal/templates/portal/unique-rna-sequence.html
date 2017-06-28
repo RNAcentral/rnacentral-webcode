@@ -17,12 +17,18 @@ limitations under the License.
 
 {% block meta_tags %}
     {{ block.super }}
-    <meta name="description" content="{{ context.description }} | {{ rna.upi }}"/>
-    <meta name="twitter:description" content="{{ context.description }} | {{ rna.upi }}">
+    {% with dbs=context.distinct_databases %}
+      <meta name="description" content="{{context.precomputed.rna_type}} sequence found in {{ dbs|length|intcomma }} database{{ dbs|length|pluralize }} {% for db in dbs %}{% if forloop.first %}({% endif %}{{db}}{% if not forloop.last %},{% else %}){% endif %}{% endfor %}"/>
+    {% endwith %}
+    <meta name="twitter:description" content="{{ context.description }}">
+
+    {% if not context.single_species %}
+      <meta name="robots" content="noindex">
+    {% endif %}
 {% endblock %}
 
 {% block title %}
-  {{ context.description }} | {{ rna.upi }}
+  {{ context.description }}
 {% endblock %}
 
 {% block content %}
@@ -120,7 +126,7 @@ limitations under the License.
                 <li>
                   Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab">species</a>
                 </li>
-                <li>{{ context.precomputed.rna_type }}</li>                
+                <li>{{ context.precomputed.rna_type }}</li>
               </ul>
             </div>
           </div> <!-- .panel .panel-default -->
