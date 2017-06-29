@@ -26,6 +26,7 @@ For more options, run `fab help`.
 """
 
 import os
+import json
 import requests
 from fabric.api import cd, env, lcd, local, prefix, run, warn_only
 from fabric.contrib import django
@@ -146,6 +147,12 @@ def rsync_local_files(dry_run=None):
     )
     local(cmd)
 
+def slack(message):
+    slack_hook = 'https://hooks.slack.com/services/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'
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    requests.post(slack_hook, json.dumps({'text': message}), headers=headers)
+
+
 def deploy_locally(git_branch=None, restart_url='http://rnacentral.org', quick=False):
     """
     Run deployment locally.
@@ -157,6 +164,7 @@ def deploy_locally(git_branch=None, restart_url='http://rnacentral.org', quick=F
         install_django_requirements()
     flush_memcached()
     restart_django(restart_url)
+    slack('local deployment complete')
 
 def deploy_remotely(git_branch=None, restart_url='http://rnacentral.org', quick=False):
     """
@@ -169,6 +177,7 @@ def deploy_remotely(git_branch=None, restart_url='http://rnacentral.org', quick=
     restart_django(restart_url)
     if not quick:
         rsync_local_files()
+    slack('remote deployment at %s complete' % env.host)
 
 def deploy(git_branch=None, restart_url='http://rnacentral.org', quick=False):
     """
