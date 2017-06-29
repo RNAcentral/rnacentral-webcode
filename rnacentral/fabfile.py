@@ -180,7 +180,10 @@ def deploy_locally(git_branch=None, restart_url='http://rnacentral.org', quick=F
         install_django_requirements()
     flush_memcached()
     restart_django(restart_url)
-    slack('Local deployment complete: <http://test.rnacentral.org|test.rnacentral.org>')
+
+    if not git_branch:
+        git_branch = 'master'
+    slack("Deployed '%s' at ves-hx-a4: <http://test.rnacentral.org|test.rnacentral.org>" % git_branch)
 
 
 def deploy_remotely(git_branch=None, restart_url='http://rnacentral.org', quick=False):
@@ -194,7 +197,10 @@ def deploy_remotely(git_branch=None, restart_url='http://rnacentral.org', quick=
     restart_django(restart_url)
     if not quick:
         rsync_local_files()
-    slack('Remote deployment at %s complete: <http://rnacentral.org|rnacentral.org>' % env.host)
+
+    if not git_branch:
+        git_branch = 'master'
+    slack("Deployed '%s' at %s: <http://rnacentral.org|rnacentral.org>" % (git_branch, env.host))
 
 
 def deploy(git_branch=None, restart_url='http://rnacentral.org', quick=False):
