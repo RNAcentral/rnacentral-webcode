@@ -139,8 +139,6 @@ class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
     ncrna_types = serializers.SerializerMethodField('get_ncrna_types')
     taxid = serializers.SerializerMethodField('get_taxid')
     is_active = serializers.SerializerMethodField('is_active_id')
-    description = serializers.Field(source='get_description')
-    rna_type = serializers.Field(source='get_rna_type')
 
     def is_active_id(self, obj):
         """
