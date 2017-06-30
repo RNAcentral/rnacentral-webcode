@@ -424,12 +424,11 @@ class RandomEntriesTestCase(ApiV1BaseClass):
         for _ in xrange(num_tests):
             rna = Rna.objects.only('upi').get(id=randint(1, rna_count))
             url = self._get_api_url('rna/%s?flat=true' % rna.upi)
-            start = time.time()
-            r = requests.get(url)
-            end = time.time()
+            with Timer() as timer:
+                r = requests.get(url)
             msg = 'Failed on %s' % url
             self.assertEqual(r.status_code, 200, msg)
-            self.assertTrue(end - start < self.timeout, msg)
+            self.assertTrue(timer.timeout < self.timeout, msg)
 
     def test_random_api_pages(self):
         """
@@ -443,12 +442,11 @@ class RandomEntriesTestCase(ApiV1BaseClass):
             page = randint(1, num_pages)
             url = self._get_api_url('rna?flat=true&page_size={page_size}&page={page}'.format(
                 page_size=page_size, page=page))
-            start = time.time()
-            r = requests.get(url)
-            end = time.time()
+            with Timer() as timer:
+                r = requests.get(url)
             msg = 'Failed on %s' % url
             self.assertEqual(r.status_code, 200, msg)
-            self.assertTrue(end - start < self.timeout, msg)
+            self.assertTrue(timer.timeout < self.timeout, msg)
 
 
 class DasTestCase(ApiV1BaseClass):
