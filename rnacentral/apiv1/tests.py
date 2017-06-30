@@ -10,6 +10,17 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+import argparse
+import django
+import math
+import os
+import requests
+import sys
+import time
+import xml.dom.minidom
+from random import randint
+
+from rest_framework.test import APITestCase
 
 """
 API v1 tests
@@ -24,17 +35,15 @@ python apiv1/tests.py --base_url http://test.rnacentral.org/
 python apiv1/tests.py --base_url http://rnacentral.org/
 """
 
-import argparse
-import django
-import math
-import os
-import requests
-import sys
-import time
-import xml.dom.minidom
-from random import randint
 
-from rest_framework.test import APITestCase
+class Timer(object):
+    def __enter__(self):
+        self.start = time.clock()
+        return self
+
+    def __exit__(self, *args):
+        self.end = time.clock()
+        self.timeout = self.end - self.start
 
 
 class ApiV1BaseClass(APITestCase):
@@ -60,15 +69,13 @@ class ApiV1BaseClass(APITestCase):
         """
         Auxiliary function for testing the API with and without trailing slash.
         """
-        # remove the trailing slash if present
-        if url[-1] == '/':
-            url = url[:-1]
-        # test without the slash
-        start = time.time()
-        r = requests.get(url)
-        end = time.time()
-        self.assertTrue(end - start < self.timeout)
+        url = url.strip('/')  # remove the trailing slash if present, test without slash
+
+        with Timer() as timer:
+            r = requests.get(url)
+        self.assertTrue(timer.timeout < self.timeout)
         self.assertEqual(r.status_code, 200)
+
         # add the slash back if there are no url parameters
         if '?' not in url:
             url += '/'
