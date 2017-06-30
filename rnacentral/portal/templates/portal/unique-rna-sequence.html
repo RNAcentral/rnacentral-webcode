@@ -123,16 +123,45 @@ limitations under the License.
                 <li>{{ context.precomputed.rna_type }}</li>                
               </ul>
 
-              <ul class="list-inline">
-                {% if not rna.was_rfam_analyzed %}
-                  <li>Not analyzed with Rfam</li>
-                {% else %}
-                  <li><strong>{{ rna.get_rfam_hits|length|intcomma }}</strong> matches to Rfam Families</li>
-                  {% for hit in rna.get_rfam_hits %}
-                    <li><a href="{{ hit.rfam_model.url }}">{{ hit.rfam_model.name }}</a></li>
-                  {% endfor %}
-                {% endif %}
-              </ul>
+              {% if rna.was_rfam_analyzed %}
+                <ul class="list-inline" style="margin-top: 5px;">
+                  {% if not rna.expects_rfam_hits %}
+                    {% if not rna.has_rfam_hits %}
+                      <li>
+                        <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+                        No possible matches
+                      </li>
+                    {% else %}
+                      <li>
+                        <span class="glyphicon glyphicon-warning-sign text-warning" aria-hidden="true"></span>
+                        {{ rna.get_rfam_hits|length|intcomma }} Unexpected matches:
+                      </li>
+                      {% for hit in rna.get_rfam_hits %}
+                        <li>
+                          <a href="{{ hit.rfam_model.url }}">{{ hit.rfam_model.short_name }}</a>
+                          {{ hit.rfam_model.long_name }}
+                        </li>
+                      {% endfor %}
+                    {% endif %}
+                  {% else %}
+                    <li>
+                      {% if rna.any_valid_match %}
+                        <span class="glyphicon glyphicon-warning-sign text-warning" aria-hidden="true"></span>
+                      {% else %}
+                        <span class="glyphicon glyphicon-warning-sign text-warning" aria-hidden="true"></span>
+                      {% endif %}
+                      {{ rna.get_rfam_hits|length|intcomma }} Rfam Famil{{ rna.get_rfam_hits|length|pluralize:"y,ies" }}{% if rna.get_rfam_hits|length %}:{% endif %}
+                    </li>
+                    {% for hit in rna.get_rfam_hits %}
+                      <li>
+                        <a href="{{ hit.rfam_model.url }}">{{ hit.rfam_model.short_name }}</a>
+                        {{ hit.rfam_model.long_name }}
+                      </li>
+                    {% endfor %}
+                  {% endif %}
+                </ul>
+              {% endif %}
+
             </div>
           </div> <!-- .panel .panel-default -->
 

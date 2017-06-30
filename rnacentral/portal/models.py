@@ -411,11 +411,34 @@ class Rna(CachingMixin, models.Model):
 
         return xrefs.select_related('accession', 'db')
 
+    def expects_rfam_hits(self):
+        return self.get_rna_type() not in set(['lncRNA', 'piRNA'])
+
     def has_rfam_hits(self):
-        return self.get_rfam_hits().exists()
+        return bool(self.get_rfam_hits().count())
 
     def get_rfam_hits(self):
-        return RfamHit.objects.filter(upi=self.upi)
+        hits = RfamHit.objects.filter(
+            upi=self.upi,
+            rfam_model__is_suppressed=False,
+        ).order_by('-e_value')
+        return hits
+
+    def any_valid_match(self):
+        if not self.expects_rfam_hits:
+            return False
+        rna_types = {hit.rfam_model.rna_type for hit in self.get_rfam_hits()}
+        return self.get_rna_type() in rna_types
+
+    def all_valid_rfam_matches(self):
+        if not self.expects_rfam_hits:
+            return False
+        rna_types = {hit.rfam_model.rna_type for hit in self.get_rfam_hits()}
+        return set([self.get_rna_type()]) == rna_types
+
+    def was_rfam_analyzed(self):
+        has = bool(RfamAnalyzedSequences.objects.get(upi=self.upi))
+        return has
 
 
 class RnaPrecomputed(models.Model):
@@ -1252,7 +1275,8 @@ class RfamModel(models.Model):
     data to make it easy to display Rfam family data in RNAcentral.
     """
     rfam_model_id = models.CharField(max_length=20, primary_key=True)
-    name = models.CharField(max_length=40)
+    short_name = models.CharField(max_length=50)
+    long_name = models.CharField(max_length=200)
     description = models.CharField(max_length=500)
     rfam_clan_id = models.ForeignKey(RfamClan,
                                      db_column='rfam_clan_id',
