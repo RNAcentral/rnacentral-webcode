@@ -452,64 +452,6 @@ class RandomEntriesTestCase(ApiV1BaseClass):
             self.assertTrue(timer.timeout < self.timeout, msg)
 
 
-class DasTestCase(ApiV1BaseClass):
-    """
-    Tests for DAS endpoints.
-    """
-    def test_valid_das_annotation_request(self):
-        """
-        Test DAS `feature` method response.
-        """
-        target = 'das/RNAcentral_GRCh38/features?segment=Y:25183643,25184773'
-        url = self._get_api_url(target)
-        r = requests.get(url)
-        self.assertEqual(r.status_code, 200)
-        self.assertIn(self.upi_with_genomic_coordinates, r.text)
-        self._validate_xml(r.text)
-
-    def test_das_request_no_annotation(self):
-        """
-        Test DAS `feature` method response with no annotations.
-        """
-        target = 'das/RNAcentral_GRCh38/features?segment=Y:100,120'
-        url = self._get_api_url(target)
-        r = requests.get(url)
-        self.assertEqual(r.status_code, 200)
-        self.assertNotIn('FEATURE', r.text)
-        self._validate_xml(r.text)
-
-    def test_das_source(self):
-        """
-        Test DAS `sources` method.
-        """
-        target = 'das/sources'
-        url = self._get_api_url(target)
-        r = requests.get(url)
-        self.assertEqual(r.status_code, 200)
-        self.assertIn('RNAcentral_GRCh38', r.text)
-        self._validate_xml(r.text)
-
-    def test_das_stylesheet(self):
-        """
-        Test DAS `stylesheet` method.
-        """
-        target = 'das/RNAcentral_GRCh38/stylesheet'
-        url = self._get_api_url(target)
-        r = requests.get(url)
-        self.assertEqual(r.status_code, 200)
-        self.assertIn('exon:non_coding:rnacentral', r.text)
-        self._validate_xml(r.text)
-
-    def _validate_xml(self, text):
-        """
-        Validate xml input.
-        """
-        try:
-            xml.dom.minidom.parseString(text)
-        except xml.parsers.expat.ExpatError:
-            self.assertEqual(0, 1, "Invalid XML")
-
-
 class SpeciesSpecificIdsTestCase(ApiV1BaseClass):
     """
     Tests for the species-specific endpoints.
@@ -580,7 +522,6 @@ def run_tests():
     suites = [
         unittest.TestLoader().loadTestsFromTestCase(BasicEndpointsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(SpeciesSpecificIdsTestCase),
-        unittest.TestLoader().loadTestsFromTestCase(DasTestCase),
         unittest.TestLoader().loadTestsFromTestCase(RandomEntriesTestCase),  # slow
         unittest.TestLoader().loadTestsFromTestCase(FiltersTestCase),  # slow
         unittest.TestLoader().loadTestsFromTestCase(OutputFormatsTestCase),
