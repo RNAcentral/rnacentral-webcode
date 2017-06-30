@@ -11,11 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-"""
-Docstrings of the classes exposed in urlpatterns support markdown.
-"""
 import re
 import django_filters
+import warnings
 from itertools import chain
 
 from django.core.paginator import Paginator
@@ -35,6 +33,10 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, Accession, Xref, Reference, Database
 from portal.config.genomes import genomes
+
+"""
+Docstrings of the classes exposed in urlpatterns support markdown.
+"""
 
 # maximum number of xrefs to use with prefetch_related
 MAX_XREFS_TO_PREFETCH = 1000
