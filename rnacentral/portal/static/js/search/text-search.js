@@ -85,9 +85,9 @@ var search = function(_, $http, $interpolate, $location, $window) {
         },
         fieldVerboseNames: {
             'active': 'Active',
-            'common_name': 'Common name',
+            'common_name': 'Species',
             'description': 'Description',
-            'expert_db': 'Expert database',
+            'expert_db': 'Source',
             'function': 'Function',
             'gene': 'Gene',
             'gene_synonym': 'Gene synonym',
