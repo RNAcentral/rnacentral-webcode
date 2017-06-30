@@ -10,16 +10,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+from random import randint
 import argparse
-import django
 import math
 import os
-import requests
 import sys
 import time
 import unittest
-import xml.dom.minidom
-from random import randint
+
+import django
+import requests
 
 """
 API v1 tests
@@ -36,6 +36,9 @@ python apiv1/tests.py --base_url http://rnacentral.org/
 
 
 class Timer(object):
+    """
+    Helper class for detecting long-running requests.
+    """
     def __enter__(self):
         self.start = time.clock()
         return self
@@ -71,16 +74,16 @@ class ApiV1BaseClass(unittest.TestCase):
         url = url.strip('/')  # remove the trailing slash if present, test without slash
 
         with Timer() as timer:
-            r = requests.get(url)
+            request = requests.get(url)
         self.assertTrue(timer.timeout < self.timeout)
-        self.assertEqual(r.status_code, 200)
+        self.assertEqual(request.status_code, 200)
 
         # add the slash back if there are no url parameters
         if '?' not in url:
             url += '/'
-            r = requests.get(url)
-            self.assertEqual(r.status_code, 200)
-        return r.json()
+            request = requests.get(url)
+            self.assertEqual(request.status_code, 200)
+        return request.json()
 
 
 class BasicEndpointsTestCase(ApiV1BaseClass):
@@ -262,11 +265,11 @@ class OutputFormatsTestCase(ApiV1BaseClass):
         # test response status codes
         self._output_format_tester(formats, targets)
         # further check the gff text output
-        r = requests.get(self._get_api_url(targets[0]+'.gff'))
-        self.assertIn('exon', r.text)
+        request = requests.get(self._get_api_url(targets[0]+'.gff'))
+        self.assertIn('exon', request.text)
         # test a sequence without genomic coordinates
-        r = requests.get(self._get_api_url('rna/%s.gff' % self.upi))
-        self.assertIn('# Genomic coordinates not available', r.text)
+        request = requests.get(self._get_api_url('rna/%s.gff' % self.upi))
+        self.assertIn('# Genomic coordinates not available', request.text)
 
     def test_gff3_output(self):
         """
@@ -277,11 +280,11 @@ class OutputFormatsTestCase(ApiV1BaseClass):
         # test response status codes
         self._output_format_tester(formats, targets)
         # further check the gff text output
-        r = requests.get(self._get_api_url(targets[0]+'.gff3'))
-        self.assertIn('noncoding_exon', r.text)
+        request = requests.get(self._get_api_url(targets[0]+'.gff3'))
+        self.assertIn('noncoding_exon', request.text)
         # test a sequence without genomic coordinates
-        r = requests.get(self._get_api_url('rna/%s.gff3' % self.upi))
-        self.assertIn('# Genomic coordinates not available', r.text)
+        request = requests.get(self._get_api_url('rna/%s.gff3' % self.upi))
+        self.assertIn('# Genomic coordinates not available', request.text)
 
     def test_bed_output(self):
         """
@@ -292,11 +295,11 @@ class OutputFormatsTestCase(ApiV1BaseClass):
         # test response status codes
         self._output_format_tester(formats, targets)
         # further check the gff text output
-        r = requests.get(self._get_api_url(targets[0]+'.bed'))
-        self.assertIn(self.upi_with_genomic_coordinates, r.text)
+        request = requests.get(self._get_api_url(targets[0]+'.bed'))
+        self.assertIn(self.upi_with_genomic_coordinates, request.text)
         # test a sequence without genomic coordinates
-        r = requests.get(self._get_api_url('rna/%s.bed' % self.upi))
-        self.assertIn('# Genomic coordinates not available', r.text)
+        request = requests.get(self._get_api_url('rna/%s.bed' % self.upi))
+        self.assertIn('# Genomic coordinates not available', request.text)
 
     def _output_format_tester(self, formats, targets):
         """
@@ -308,12 +311,12 @@ class OutputFormatsTestCase(ApiV1BaseClass):
         urls = [self._get_api_url(x) for x in targets]
         for url in urls:
             for suffix, headers in formats.iteritems():
-                r = requests.get(url + '.%s' % suffix) # format suffix
-                self.assertEqual(r.status_code, 200, url)
-                r = requests.get(url + '?format=%s' % suffix) # url notation
-                self.assertEqual(r.status_code, 200, url)
-                r = requests.get(url, headers={"Accept": headers}) # accept headers
-                self.assertEqual(r.status_code, 200, url)
+                request = requests.get(url + '.%s' % suffix) # format suffix
+                self.assertEqual(request.status_code, 200, url)
+                request = requests.get(url + '?format=%s' % suffix) # url notation
+                self.assertEqual(request.status_code, 200, url)
+                request = requests.get(url, headers={"Accept": headers}) # accept headers
+                self.assertEqual(request.status_code, 200, url)
 
     def test_genome_annotations(self):
         """
@@ -384,7 +387,7 @@ class FiltersTestCase(ApiV1BaseClass):
             data = self._test_url(url)
             self.assertNotEqual(data['count'], 0)
 
-    def test_non_existing_database_filter(self):
+    def test_bad_database_filter(self):
         """
         Test filtering by database name when the database
         name does not exist.
@@ -425,9 +428,9 @@ class RandomEntriesTestCase(ApiV1BaseClass):
             rna = Rna.objects.only('upi').get(id=randint(1, rna_count))
             url = self._get_api_url('rna/%s?flat=true' % rna.upi)
             with Timer() as timer:
-                r = requests.get(url)
+                request = requests.get(url)
             msg = 'Failed on %s' % url
-            self.assertEqual(r.status_code, 200, msg)
+            self.assertEqual(request.status_code, 200, msg)
             self.assertTrue(timer.timeout < self.timeout, msg)
 
     def test_random_api_pages(self):
@@ -443,9 +446,9 @@ class RandomEntriesTestCase(ApiV1BaseClass):
             url = self._get_api_url('rna?flat=true&page_size={page_size}&page={page}'.format(
                 page_size=page_size, page=page))
             with Timer() as timer:
-                r = requests.get(url)
+                request = requests.get(url)
             msg = 'Failed on %s' % url
-            self.assertEqual(r.status_code, 200, msg)
+            self.assertEqual(request.status_code, 200, msg)
             self.assertTrue(timer.timeout < self.timeout, msg)
 
 
@@ -519,10 +522,10 @@ class SpeciesSpecificIdsTestCase(ApiV1BaseClass):
         Get an existing upi and taxid.
         """
         url = self._get_api_url('rna/%s/%i' % (self.upi, self.taxid))
-        r = requests.get(url)
-        self.assertEqual(r.status_code, 200)
-        self.assertEqual(r.json()['rnacentral_id'], '%s_%i' % (self.upi, self.taxid))
-        self.assertEqual(r.json()['is_active'], True)
+        request = requests.get(url)
+        self.assertEqual(request.status_code, 200)
+        self.assertEqual(request.json()['rnacentral_id'], '%s_%i' % (self.upi, self.taxid))
+        self.assertEqual(request.json()['is_active'], True)
 
     def test_nonexistent_taxid(self):
         """
@@ -530,8 +533,8 @@ class SpeciesSpecificIdsTestCase(ApiV1BaseClass):
         """
         taxid = 00000
         url = self._get_api_url('rna/%s/%i' % (self.upi, taxid))
-        r = requests.get(url)
-        self.assertEqual(r.status_code, 404)
+        request = requests.get(url)
+        self.assertEqual(request.status_code, 404)
 
     def test_inactive_entry(self):
         """
@@ -540,8 +543,8 @@ class SpeciesSpecificIdsTestCase(ApiV1BaseClass):
         """
         upi = 'URS0000516D2D'
         url = self._get_api_url('rna/%s' % upi)
-        r = requests.get(url)
-        self.assertEqual(r.json()['is_active'], False)
+        request = requests.get(url)
+        self.assertEqual(request.json()['is_active'], False)
 
 
 def setup_django_environment():
@@ -549,9 +552,7 @@ def setup_django_environment():
     Setup Django environment in order for the imports to work.
     """
     os.environ['DJANGO_SETTINGS_MODULE'] = 'rnacentral.settings'
-    project_dir = os.path.dirname(
-                    os.path.dirname(
-                        os.path.realpath(__file__)))
+    project_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
     sys.path.append(project_dir)
     django.setup()
 
