@@ -161,7 +161,7 @@
       <ul class="list-unstyled">
         <li class="result" ng-repeat="rna in $ctrl.search.result.entries">
           <div class="text-search-result">
-            <h4>
+            <h4 style="margin-bottom: 0">
               <a href="/rna/{{rna.id_with_slash}}" ng-bind-html="rna.fields.description[0] | sanitize"></a>
             </h4>
             <div ng-show="$ctrl.anyHighlights(rna.fields)" style="margin-bottom: 3px; margin-top: 1px;" class="small">
@@ -169,7 +169,7 @@
                   <em>{{ $ctrl.highlight(rna.fields).fieldName }}:</em> <span ng-bind-html="$ctrl.highlight(rna.fields).highlight | sanitize"></span>
               </span>
             </div>
-            <ul class="list-inline small" ng-if="$ctrl.expertDbsObject" style="margin-top: 7px;">
+            <ul class="list-inline small" ng-if="$ctrl.expertDbsObject">
               <li style="padding-right: 20px;">
                 {{rna.fields.length[0] | number}} nucleotides
               </li>
