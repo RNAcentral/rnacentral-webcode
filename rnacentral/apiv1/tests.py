@@ -540,9 +540,8 @@ class SpeciesSpecificIdsTestCase(ApiV1BaseClass):
         When there are no active xrefs for a taxid,
         the `is_active` field should be `False`.
         """
-        upi = 'URS000017C633'
-        taxid = 9606
-        url = self._get_api_url('rna/%s/%i' % (upi, taxid))
+        upi = 'URS0000516D2D'
+        url = self._get_api_url('rna/%s' % upi)
         r = requests.get(url)
         self.assertEqual(r.json()['is_active'], False)
 
@@ -582,13 +581,13 @@ def run_tests():
     suites = [
         unittest.TestLoader().loadTestsFromTestCase(BasicEndpointsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(SpeciesSpecificIdsTestCase),
-        # unittest.TestLoader().loadTestsFromTestCase(DasTestCase),
-        # unittest.TestLoader().loadTestsFromTestCase(RandomEntriesTestCase),
-        # unittest.TestLoader().loadTestsFromTestCase(FiltersTestCase),
-        # unittest.TestLoader().loadTestsFromTestCase(OutputFormatsTestCase),
-        # unittest.TestLoader().loadTestsFromTestCase(NestedXrefsTestCase),
-        # unittest.TestLoader().loadTestsFromTestCase(RnaEndpointsTestCase),
-        # unittest.TestLoader().loadTestsFromTestCase(AccessionEndpointsTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(DasTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(RandomEntriesTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(FiltersTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(OutputFormatsTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(NestedXrefsTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(RnaEndpointsTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(AccessionEndpointsTestCase),
     ]
     unittest.TextTestRunner().run(unittest.TestSuite(suites))
 
