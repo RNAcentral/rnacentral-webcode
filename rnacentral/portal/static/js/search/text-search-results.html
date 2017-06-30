@@ -162,8 +162,7 @@
         <li class="result" ng-repeat="rna in $ctrl.search.result.entries">
           <div class="text-search-result">
             <h4>
-              <a href="/rna/{{rna.id_with_slash}}" ng-bind-html="$index+1 + '. ' + rna.fields.description[0] | sanitize"></a>
-              <small>{{rna.id}}</small>
+              <a href="/rna/{{rna.id_with_slash}}" ng-bind-html="rna.fields.description[0] | sanitize"></a>
             </h4>
             <div ng-show="$ctrl.anyHighlights(rna.fields)" style="margin-bottom: 3px; margin-top: 1px;" class="small">
               <span ng-if="$ctrl.highlight(rna.fields).fieldName">
