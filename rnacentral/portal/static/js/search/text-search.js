@@ -49,7 +49,57 @@ var search = function(_, $http, $interpolate, $location, $window, $q) {
     this.config = {
         ebeyeBaseUrl: global_settings.EBI_SEARCH_ENDPOINT,
         rnacentralBaseUrl: window.location.origin, // e.g. http://localhost:8000 or http://rnacentral.org
-        fields: ['description', 'active', 'length', 'pub_title', 'has_genomic_coordinates'],
+        fields: [
+            'active',
+            'common_name',
+            'description',
+            'expert_db',
+            'function',
+            'gene',
+            'gene_synonym',
+            'has_genomic_coordinates',
+            'length',
+            'locus_tag',
+            'organelle',
+            'pub_title',
+            'product',
+            'rna_type',
+            'standard_name'
+        ],
+        fieldWeights: {
+            'active': 0,
+            'common_name': 3,
+            'description': 2,
+            'expert_db': 4,
+            'function': 4,
+            'gene': 4,
+            'gene_synonym': 3,
+            'has_genomic_coordinates': 0,
+            'length': 0,
+            'locus_tag': 2,
+            'organelle': 3,
+            'pub_title': 2,
+            'product': 1,
+            'rna_type': 2,
+            'standard_name': 2
+        },
+        fieldVerboseNames: {
+            'active': 'Active',
+            'common_name': 'Species',
+            'description': 'Description',
+            'expert_db': 'Source',
+            'function': 'Function',
+            'gene': 'Gene',
+            'gene_synonym': 'Gene synonym',
+            'has_genomic_coordinates': 'Genomic coordinates',
+            'locus_tag': 'Locus tag',
+            'length': 'Length',
+            'organelle': 'Organelle',
+            'pub_title': 'Publication title',
+            'product': 'Product',
+            'rna_type': 'RNA type',
+            'standard_name': 'Standard name'
+        },
         facetfields: ['rna_type', 'TAXONOMY', 'expert_db', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
         facetcount: 30,
         pagesize: 15,
@@ -65,9 +115,12 @@ var search = function(_, $http, $interpolate, $location, $window, $q) {
                         '&size=' + self.config.pagesize +
                         '&start={{ start }}' +
                         '&sort=boost:descending,length:descending' +
-                        '&hlpretag=<span class=text-search-highlights>&hlposttag=</span>',
+                        '&hlpretag=<span class=text-search-highlights>' +
+                        '&hlposttag=</span>',
         'ebeyeAutocomplete': 'http://www.ebi.ac.uk/ebisearch/ws/rest/RNAcentral/autocomplete' +
                               '?term={{ query }}' +
+
+
                               '&format=json',
         'proxy': self.config.rnacentralBaseUrl +
                  '/api/internal/ebeye?url={{ ebeyeUrl }}',
@@ -351,7 +404,7 @@ var MainContent = function($scope, $anchorScroll, $location, search) {
 var textSearchResults = {
     bindings: {},
     templateUrl: '/static/js/search/text-search-results.html',
-    controller: ['$location', '$http', 'search', function($location, $http, search) {
+    controller: ['$location', '$http', '$filter', 'search', function($location, $http, $filter, search) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
@@ -448,6 +501,82 @@ var textSearchResults = {
                 }
             );
         };
+
+        ctrl.expert_db_logo = function(expert_db) {
+            // expert_db can contain some html markup - strip it off, replace whitespaces with hyphens
+            expert_db = expert_db.replace(/\s/g, '-').toLowerCase();
+
+            return '/static/img/expert-db-logos/' + expert_db + '.png';
+        };
+
+        /**
+         * Sorts expertDbs so that starred dbs have priority over non-starred, otherwise, keeping lexicographical order.
+         * @param v1 - plaintext db name
+         * @param v2 - plaintext db name
+         * @returns {number} - (-1 if v1 before v2) or (1 if v1 after v2)
+         */
+        ctrl.expertDbHasStarComparator = function(v1, v2) {
+            if (ctrl.expertDbHasStar(v1.value.toLowerCase()) && !ctrl.expertDbHasStar(v2.value.toLowerCase())) return -1;
+            else if (!ctrl.expertDbHasStar(v1.value.toLowerCase()) && ctrl.expertDbHasStar(v2.value.toLowerCase())) return 1;
+            else
+                return v1.value.toLowerCase() < v2.value.toLowerCase() ? -1 : 1;
+        };
+
+        /**
+         * We assign a star only to those expert_dbs that have a curated tag and don't have automatic tag at the same time.
+         * @param db {String} - name of expert_db as a key in expertDbsObject
+         * @returns {boolean}
+         */
+        ctrl.expertDbHasStar = function(db) {
+            return ctrl.expertDbsObject[db].tags.indexOf('curated') != -1 && ctrl.expertDbsObject[db].tags.indexOf('automatic') == -1;
+        };
+
+        ctrl.highlight = function(fields) {
+            var highlight;
+            var verboseFieldName;
+            var maxWeight = -1; // multiple fields can have highlights - pick the field with highest weight
+
+            for (var fieldName in fields) {
+                if (fields.hasOwnProperty(fieldName) && ctrl.anyHighlightsInField(fields[fieldName])) { // description is quoted in hit's header, ignore it
+                    if (search.config.fieldWeights[fieldName] > maxWeight) {
+
+                        // get highlight string with match
+                        var field = fields[fieldName];
+                        for (var i = 0; i < fields.length; i++) {
+                            if (field[i].indexOf('text-search-highlights') !== -1) {
+                                highlight = field[i];
+                                break;
+                            }
+                        }
+
+                        // assign the new weight and verboseFieldName
+                        maxWeight = search.config.fieldWeights[fieldName];
+                        verboseFieldName = search.config.fieldVerboseNames[fieldName];
+                    }
+                }
+            }
+
+            // use human-readable fieldName
+            return {highlight: highlight, fieldName: verboseFieldName};
+        };
+
+        ctrl.anyHighlights = function(fields) {
+            for (var fieldName in fields) {
+                if (fields.hasOwnProperty(fieldName) && ctrl.anyHighlightsInField(fields[fieldName])) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        ctrl.anyHighlightsInField = function(field) {
+            for (var i=0; i < field.length; i++) {
+                if (field[i].indexOf('text-search-highlights') !== -1) {
+                    return true;
+                }
+            }
+            return false;
+        };
     }]
 };
 
@@ -518,10 +647,44 @@ var textSearchBar = {
  * Used for processing search results highlighting.
  */
 var sanitize = function($sce) {
-  return function(htmlCode){
+  return function(htmlCode) {
     return $sce.trustAsHtml(htmlCode);
   }
 };
+
+/**
+ * Given an array of strings with html markup, strips
+ * all the markup from those strings and leaves only the text.
+ */
+var plaintext = function() {
+    return function(items) {
+        var result = [];
+
+        angular.forEach(items, function(stringWithHtml) {
+            result.push(String(stringWithHtml).replace(/<[^>]+>/gm, ''));
+        });
+
+        return result;
+    };
+};
+/**
+ * Makes first letter of the input string captial.
+ */
+var capitalizeFirst = function() {
+    return function(item) {
+        return item.charAt(0).toUpperCase() + item.slice(1);
+    };
+};
+
+/**
+ * Replaced all the occurrences of underscore in the input string with period (dot) and whitespace.
+ * E.g. pub_title -> pub. title.
+ */
+var underscoresToSpaces = function() {
+    return function(item) {
+        return item.replace(/_/g, ' ');
+    }
+}
 
 /**
  * Create RNAcentral app.
@@ -532,6 +695,9 @@ angular.module('rnacentralApp', ['ngAnimate', 'ui.bootstrap', 'chieffancypants.l
     .component('textSearchResults', textSearchResults)
     .component('textSearchBar', textSearchBar)
     .filter("sanitize", ['$sce', sanitize])
+    .filter("plaintext", [plaintext])
+    .filter("capitalizeFirst", [capitalizeFirst])
+    .filter("underscoresToSpaces", [underscoresToSpaces])
     .config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
         // hide spinning wheel
         cfpLoadingBarProvider.includeSpinner = false;
