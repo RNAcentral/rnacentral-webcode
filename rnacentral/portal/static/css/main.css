@@ -1002,6 +1002,11 @@ textarea {
   filter: grayscale(60%);
 }
 
+.greyscale {
+  -webkit-filter: grayscale(100%);
+  filter: grayscale(100%);
+}
+
 .expert-db-logo img {
   margin-top: 3px;
   margin-right: 3px;
