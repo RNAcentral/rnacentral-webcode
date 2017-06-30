@@ -165,6 +165,7 @@
               <a href="/rna/{{rna.id_with_slash}}" ng-bind-html="rna.fields.description[0] | sanitize"></a>
             </h4>
             <div ng-show="$ctrl.anyHighlights(rna.fields)" style="margin-bottom: 3px; margin-top: 1px;" class="small">
+            <small class="text-muted">{{rna.id}}</small>
               <span ng-if="$ctrl.highlight(rna.fields).fieldName">
                   <em>{{ $ctrl.highlight(rna.fields).fieldName }}:</em> <span ng-bind-html="$ctrl.highlight(rna.fields).highlight | sanitize"></span>
               </span>
