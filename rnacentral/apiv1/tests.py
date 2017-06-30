@@ -580,8 +580,8 @@ def run_tests():
         unittest.TestLoader().loadTestsFromTestCase(BasicEndpointsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(SpeciesSpecificIdsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(DasTestCase),
-        unittest.TestLoader().loadTestsFromTestCase(RandomEntriesTestCase),
-        unittest.TestLoader().loadTestsFromTestCase(FiltersTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(RandomEntriesTestCase),  # slow
+        unittest.TestLoader().loadTestsFromTestCase(FiltersTestCase),  # slow
         unittest.TestLoader().loadTestsFromTestCase(OutputFormatsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(NestedXrefsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(RnaEndpointsTestCase),
