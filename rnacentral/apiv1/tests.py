@@ -28,15 +28,16 @@ import argparse
 import django
 import math
 import os
-import unittest
 import requests
 import sys
 import time
 import xml.dom.minidom
 from random import randint
 
+from rest_framework.test import APITestCase
 
-class ApiV1BaseClass(unittest.TestCase):
+
+class ApiV1BaseClass(APITestCase):
     """
     Base class for API tests.
     """
