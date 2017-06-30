@@ -171,7 +171,7 @@
             </div>
             <ul class="list-inline small" ng-if="$ctrl.expertDbsObject" style="margin-top: 7px;">
               <li style="padding-right: 20px;">
-                <strong>{{rna.fields.length[0] | number}}</strong> nucleotides
+                {{rna.fields.length[0] | number}} nucleotides
               </li>
               <li style="padding-right: 20px;" ng-show="rna.fields.has_genomic_coordinates[0] == 'True'"><i class="fa fa-check text-success" aria-hidden="true"></i> reference genome<li>
               <li style="padding-right: 20px;" ng-show="rna.fields.active[0] == 'Obsolete'"><span class="label label-danger help" title="No active annotations">Obsolete</span></li>
