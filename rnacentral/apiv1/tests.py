@@ -522,7 +522,6 @@ def run_tests():
     suites = [
         unittest.TestLoader().loadTestsFromTestCase(BasicEndpointsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(SpeciesSpecificIdsTestCase),
-        unittest.TestLoader().loadTestsFromTestCase(RandomEntriesTestCase),  # slow
         unittest.TestLoader().loadTestsFromTestCase(FiltersTestCase),  # slow
         unittest.TestLoader().loadTestsFromTestCase(OutputFormatsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(NestedXrefsTestCase),
