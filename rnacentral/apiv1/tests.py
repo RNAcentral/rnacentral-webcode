@@ -380,10 +380,8 @@ class FiltersTestCase(ApiV1BaseClass):
         """
         Test filtering by database name.
         """
-        for database in Database.objects.all():
-            if database.name in ['ENA', 'Rfam']:
-                continue # skip large databases
-            url = self._get_api_url('rna/?database=%s' % database.label)
+        for database in ['gtrnadb', 'srpdb', 'snopy']:
+            url = self._get_api_url('rna/?database=%s' % database)
             data = self._test_url(url)
             self.assertNotEqual(data['count'], 0)
 
@@ -522,7 +520,7 @@ def run_tests():
     suites = [
         unittest.TestLoader().loadTestsFromTestCase(BasicEndpointsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(SpeciesSpecificIdsTestCase),
-        unittest.TestLoader().loadTestsFromTestCase(FiltersTestCase),  # slow
+        unittest.TestLoader().loadTestsFromTestCase(FiltersTestCase),
         unittest.TestLoader().loadTestsFromTestCase(OutputFormatsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(NestedXrefsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(RnaEndpointsTestCase),
