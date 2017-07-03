@@ -120,7 +120,7 @@ limitations under the License.
                 <li>
                   Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab">species</a>
                 </li>
-                <li>{{ context.precomputed.rna_type }}</li>                
+                <li>{{ rna.get_rna_type }}</li>
               </ul>
 
               {% if rna.was_rfam_analyzed %}
@@ -128,13 +128,17 @@ limitations under the License.
                   {% if not rna.expects_rfam_hits %}
                     {% if not rna.has_rfam_hits %}
                       <li>
-                        <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
-                        No possible matches
+                        <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"
+                          uib-tooltip="This sequence is not expected to match any Rfam families, because Rfam does not model whole lncRNA's or piRNA's."
+                          tooltip-placement="top-left">
+                        </span>
+                        No expected matches
                       </li>
                     {% else %}
                       <li>
                         <span class="glyphicon glyphicon-warning-sign text-warning" aria-hidden="true"></span>
-                        {{ rna.get_rfam_hits|length|intcomma }} Unexpected matches:
+                        {{ rna.get_rfam_hits|length|intcomma }} Unexpected match{{ rna.get_rfam_hits|length|pluralize:"es"}}
+                        {% if rna.get_rfam_hits|length > 0 %}: {% endif %}
                       </li>
                       {% for hit in rna.get_rfam_hits %}
                         <li>
@@ -146,16 +150,26 @@ limitations under the License.
                   {% else %}
                     <li>
                       {% if rna.any_valid_match %}
-                        <span class="glyphicon glyphicon-warning-sign text-warning" aria-hidden="true"></span>
+                        <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"
+                          uib-tooltip="This sequence correctly matches a {{ rna.get_rna_type }} Rfam family"
+                          tooltip-placement="top-left">
+                        </span>
                       {% else %}
-                        <span class="glyphicon glyphicon-warning-sign text-warning" aria-hidden="true"></span>
+                        <span class="glyphicon glyphicon-warning-sign text-warning" aria-hidden="true"
+                          {% if rna.get_rfam_hits|length > 0 %}
+                          uib-tooltip="This sequence is expected to match a {{ rna.get_rna_type }} Rfam family but matches {{ rna.get_rfam_rna_types|join:", " }} instead"
+                          {% else %}
+                          uib-tooltip="This sequence is expected to match a {{ rna.get_rna_type }} Rfam family but has no matches"
+                          {% endif %}
+                          tooltip-placement="top-left">
+                        </span>
                       {% endif %}
                       {{ rna.get_rfam_hits|length|intcomma }} Rfam Famil{{ rna.get_rfam_hits|length|pluralize:"y,ies" }}{% if rna.get_rfam_hits|length %}:{% endif %}
                     </li>
                     {% for hit in rna.get_rfam_hits %}
                       <li>
                         <a href="{{ hit.rfam_model.url }}">{{ hit.rfam_model.short_name }}</a>
-                        {{ hit.rfam_model.long_name }}
+                        {# {{ hit.rfam_model.long_name }} #}
                       </li>
                     {% endfor %}
                   {% endif %}

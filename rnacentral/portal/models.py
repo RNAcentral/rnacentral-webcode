@@ -13,6 +13,8 @@ limitations under the License.
 
 import json
 import re
+import operator as op
+import itertools as it
 from collections import Counter
 
 from django.core.exceptions import ObjectDoesNotExist
@@ -415,14 +417,21 @@ class Rna(CachingMixin, models.Model):
         return self.get_rna_type() not in set(['lncRNA', 'piRNA'])
 
     def has_rfam_hits(self):
-        return bool(self.get_rfam_hits().count())
+        return bool(self.get_rfam_hits())
 
     def get_rfam_hits(self):
-        hits = RfamHit.objects.filter(
+        all_hits = RfamHit.objects.filter(
             upi=self.upi,
-            rfam_model__is_suppressed=False,
-        ).order_by('-e_value')
+        ).order_by('rfam_model__rfam_clan_id', 'e_value', '-score')
+
+        hits = []
+        clan_of = op.attrgetter('rfam_clan_id')
+        for clan_id, clan_hits in it.groupby(all_hits, clan_of):
+            hits.append(next(clan_hits))
         return hits
+
+    def get_rfam_rna_types(self):
+        return sorted(h.rfam_model.rna_type for h in self.get_rfam_hits())
 
     def any_valid_match(self):
         if not self.expects_rfam_hits:
@@ -1325,6 +1334,10 @@ class RfamHit(models.Model):
 
     class Meta:
         db_table = 'rnc_rfam_model_hits'
+
+    @property
+    def rfam_clan_id(self):
+        return self.rfam_model.rfam_clan_id
 
 
 class RfamInitialAnnotations(models.Model):
