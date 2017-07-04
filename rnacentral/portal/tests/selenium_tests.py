@@ -703,7 +703,7 @@ class RNAcentralTest(unittest.TestCase):
         ]
 
         # add expert databases names to test_suites - their names should be suggested by autocomplete
-        expert_dbs = [db['name'] for db in expert_databases.expert_dbs]
+        expert_dbs = [db['name'] for db in expert_databases.expert_dbs if db['imported']]
         test_suite += expert_dbs
 
         page = TextSearchPage(self.browser)
