@@ -710,7 +710,6 @@ class RNAcentralTest(unittest.TestCase):
         page.navigate()
 
         for query in test_suite:
-            print "query = %s" % query
             page.input.clear()
             page.input.send_keys(query)
             try:
@@ -721,8 +720,6 @@ class RNAcentralTest(unittest.TestCase):
             suggestions = [suggestion.text.lower() for suggestion in page.autocomplete_suggestions]
             if not query.lower() in suggestions:
                 print "Failed: query = %s not found in suggestions = %s" % (query, suggestions)
-            else:
-                print "Ok"
 
 
     def test_text_search_test_suite(self):
