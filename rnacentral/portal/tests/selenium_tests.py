@@ -768,12 +768,6 @@ class RNAcentralTest(unittest.TestCase):
         for element in page.organisms_facet.find_elements_by_css_selector('li > a'):
             assert re.match('Homo sapiens', element.text)
 
-        # ena
-        page.input.clear()
-        page._submit_search_by_submit_button("ena")
-        for element in page.rna_types_facet.find_elements_by_css_selector('li > a'):
-            print element.text
-
 
     # Sequence pages for specific databases
     # -------------------------------------
