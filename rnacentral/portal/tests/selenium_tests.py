@@ -937,7 +937,7 @@ if __name__ == '__main__':
     import argparse
     import sys
     parser = argparse.ArgumentParser()
-    parser.add_argument('--base_url', default='http://127.0.0.1:8000/')
+    parser.add_argument('--base_url', default='http://0.0.0.0:8000/')
     parser.add_argument('--driver', default='firefox',
                         choices=['firefox', 'phantomjs'])
     parser.add_argument('unittest_args', nargs='*')
