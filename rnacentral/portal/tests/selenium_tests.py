@@ -629,7 +629,7 @@ class RNAcentralTest(unittest.TestCase):
     def test_text_search_no_warnings(self):
         """
         Run a text search query that will find results, make sure that some
-        results are displyaed. The opposite of `test_text_search_no_results`.
+        results are displayed. The opposite of `test_text_search_no_results`.
         """
         page = TextSearchPage(self.browser)
         page.navigate()
@@ -720,7 +720,6 @@ class RNAcentralTest(unittest.TestCase):
             suggestions = [suggestion.text.lower() for suggestion in page.autocomplete_suggestions]
             if not query.lower() in suggestions:
                 print "Failed: query = %s not found in suggestions = %s" % (query, suggestions)
-
 
     def test_text_search_test_suite(self):
         """
