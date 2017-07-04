@@ -864,12 +864,12 @@ class RNAcentralTest(unittest.TestCase):
         """
         page = GenomeBrowserPage(self.browser)
         page.navigate()
-
+        time.sleep(15)
         page.start_input.clear()
         page.start_input.send_keys('2')  # on PhantomJS fails due to a known bug: https://github.com/ariya/phantomjs/issues/14211#issuecomment-279742472, https://github.com/SeleniumHQ/selenium/issues/2214
-
+        time.sleep(5)
         urlparams = urlparse.parse_qs(urlparse.urlparse(self.browser.current_url).query)
-        # assert urlparams['start'] == ['2']  # TODO: fix failing tests
+        assert urlparams['start'] == ['2']
 
     def test_UCSD_and_Ensembl_links_changed_on_input_changed(self):
         """
@@ -880,12 +880,12 @@ class RNAcentralTest(unittest.TestCase):
         """
         page = GenomeBrowserPage(self.browser)
         page.navigate()
-
+        time.sleep(15)
         page.start_input.clear()
-        page.start_input.send_keys('2')  # on PhantomJS fails due to a known bug: https://github.com/ariya/phantomjs/issues/14211#issuecomment-279742472, https://github.com/SeleniumHQ/selenium/issues/2214
-
+        page.start_input.send_keys('2')
+        time.sleep(5)
         urlparams = urlparse.parse_qs(urlparse.urlparse(page.ucsc_link.get_attribute('href')).query)
-        # assert urlparams['position'] == ['chrX:2-73856333']  # TODO: fix failing tests
+        assert urlparams['position'] == ['chrX:2-73856333']  # TODO: fix failing tests
 
     # TaxId filtering
     # ---------------
