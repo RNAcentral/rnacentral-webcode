@@ -868,9 +868,6 @@ class RNAcentralTest(unittest.TestCase):
         page.start_input.clear()
         page.start_input.send_keys('2')  # on PhantomJS fails due to a known bug: https://github.com/ariya/phantomjs/issues/14211#issuecomment-279742472, https://github.com/SeleniumHQ/selenium/issues/2214
 
-        # Other possible implementation:
-        #  self.browser.execute_script("document.getElementById('genomic-start-input').setAttribute('value', '2');")
-
         urlparams = urlparse.parse_qs(urlparse.urlparse(self.browser.current_url).query)
         assert urlparams['start'] == ['2']
 
