@@ -754,7 +754,12 @@ class RNAcentralTest(unittest.TestCase):
                 if not is_found:  # if we managed to get here, expected_result is not found in results - fail
                     print "Expected result %s not found for query %s" % (expected_result, query)  # or raise AssertionError
 
-        # Ad-hoc tests to check some expectations
+    def test_text_search_facets(self):
+        """
+        Check that facet values make sense.
+        """
+        page = TextSearchPage(self.browser)
+        page.navigate()
 
         # mirbase
         page.input.clear()
@@ -767,6 +772,12 @@ class RNAcentralTest(unittest.TestCase):
         page._submit_search_by_submit_button("hgnc")
         for element in page.organisms_facet.find_elements_by_css_selector('li > a'):
             assert re.match('Homo sapiens', element.text)
+
+        # dictyBase
+        page.input.clear()
+        page._submit_search_by_submit_button('expert_db:"dictyBase"')
+        for element in page.organisms_facet.find_elements_by_css_selector('li > a'):
+            assert re.match('Dictyostelium discoideum AX4', element.text)
 
 
     # Sequence pages for specific databases
