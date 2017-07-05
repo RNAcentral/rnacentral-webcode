@@ -210,6 +210,7 @@ def rna_view(request, upi, taxid=None):
         'xref_pages': get_xrefs_pages(),
         'xref_page_size': XREF_PAGE_SIZE,
         'xref_page_num': get_xref_page_num(),
+        'xrefs_count': rna.count_xrefs(taxid) if taxid_filtering else rna.count_xrefs(),
         'precomputed': RnaPrecomputed.objects.filter(upi=upi, taxid=taxid).first(),
     }
 

@@ -134,7 +134,7 @@ limitations under the License.
           <div>
             <h2>
               Annotations
-              <small id="xrefs-datatables-counter">{{ rna.count_xrefs|intcomma }} total</small>
+              <small id="xrefs-datatables-counter">{{ context.xrefs_count|intcomma }} total</small>
 
               <div class="btn-group btn-group-xs margin-left-5px btn-group-xref-sort" style="display:none">
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -149,9 +149,9 @@ limitations under the License.
               <span id="xrefs-datatables-filter"></span>
             </h2>
 
-            {% if rna.count_xrefs > context.xref_page_size %}
+            {% if context.xrefs_count > context.xref_page_size %}
               <div class="alert alert-warning" role="alert">
-                Showing {{ context.xref_page_size|intcomma }} entries out of {{ rna.count_xrefs|intcomma }}.
+                Showing {{ context.xref_page_size|intcomma }} entries out of {{ context.xrefs_count|intcomma }}.
                 Navigate between batches:
                 <ul class="pagination pagination-sm">
                   {% for xref_page in context.xref_pages %}
