@@ -204,11 +204,14 @@ class Rna(CachingMixin, models.Model):
         else:
             return self.xrefs.filter(deleted='Y').select_related()
 
-    def count_xrefs(self):
+    def count_xrefs(self, taxid=None):
         """
         Count the number of cross-references associated with the sequence.
         """
-        return self.xrefs.filter(db__project_id__isnull=True, deleted='N').count()
+        xrefs = self.xrefs.filter(db__project_id__isnull=True, deleted='N')
+        if taxid:
+            xrefs = xrefs.filter(taxid=taxid)
+        return xrefs.count()        
 
     @cached_property
     def count_distinct_organisms(self):
