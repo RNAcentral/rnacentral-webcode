@@ -1,0 +1,29 @@
+node {
+    deploy()
+    runUnitTests()
+}
+
+private void deploy() {
+    stage("Deploy") {
+        sh '''
+            cd /nfs/public/rw/xfam/rnacentral/test
+            source local/virtualenvs/RNAcentral/bin/activate
+            cd rnacentral-webcode/rnacentral
+            source scripts/env.sh
+            fab localhost deploy
+        '''
+    }
+}
+
+private void runUnitTests() {
+    stage("Run unit-tests") {
+        sh '''
+            cd /nfs/public/rw/xfam/rnacentral/test
+            source local/virtualenvs/RNAcentral/bin/activate
+            cd rnacentral-webcode/rnacentral
+            source scripts/env.sh
+            python apiv1/tests.py
+        '''
+
+    }
+}
