@@ -15,8 +15,8 @@ pycrypto==2.6.1
 pylint==1.1.0
 python-dateutil==2.1
 python-memcached==1.53
-requests==2.2.1
-selenium==2.39.0
+requests==2.18.1
+selenium==3.4.3
 six==1.8.0
 sqlparse==0.1.15
 versiontools==1.9.1
