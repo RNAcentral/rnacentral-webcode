@@ -60,7 +60,7 @@ docker exec -it <container_id> bash
 
   ```sh
   cd $RNACENTRAL_HOME
-  python rnacentral/portal/selenium_tests.py
+  python rnacentral/portal/tests/selenium_tests.py
   ```
 
 These tests run automatically using [Travis](https://travis-ci.org/RNAcentral/rnacentral-webcode).
