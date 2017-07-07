@@ -7,30 +7,26 @@ node {
 private void build() {
     stage("Build for testing") {
         checkout scm
-        dir("rnacentral-webcode") {
-            withCredentials([file(credentialsId: 'local_settings_testing', variable: 'LOCAL_SETTINGS')]) {
-                sh 'cat $LOCAL_SETTINGS > rnacentral/rnacentral/local_settings.py'
-            }
-            sh '''
+        withCredentials([file(credentialsId: 'local_settings_testing', variable: 'LOCAL_SETTINGS')]) {
+            sh 'cat $LOCAL_SETTINGS > rnacentral/rnacentral/local_settings.py'
+        }
+        sh '''
             virtualenv ENV
             source ENV/bin/activate
             pip install --upgrade -r rnacentral/requirements.txt
-            '''
-        }
+        '''
     }
 }
 
 private void runUnitTests() {
     stage("Run unit-tests") {
-        dir("rnacentral-webcode") {
-            sh '''
-                source ENV/bin/activate
-                source rnacenral/scripts/env.sh
-                python manage.py runserver --nothreading &
-                python apiv1/tests.py
-                kill $!
-            '''
-        }
+        sh '''
+            source ENV/bin/activate
+            source rnacenral/scripts/env.sh
+            python manage.py runserver --nothreading &
+            python apiv1/tests.py
+            kill $!
+        '''
     }
 }
 
