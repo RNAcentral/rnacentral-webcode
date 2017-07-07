@@ -7,10 +7,11 @@ node {
 private void build() {
     stage("Build for testing") {
         checkout scm
-        LOCAL_SETTINGS = `cat $local_settings_testing`
         dir(rnacentral-webcode) {
+            withCredentials([file(credentialsId: 'local_settings_testing', variable: 'LOCAL_SETTINGS')]) {
+                sh 'cat $LOCAL_SETTINGS > rnacentral/rnacentral/local_settings.py'
+            }
             sh '''
-            cat $LOCAL_SETTINGS > rnacentral/rnacentral/local_settings.py
             virtualenv ENV
             source ENV/bin/activate
             pip install --upgrade -r rnacentral/requirements.txt
