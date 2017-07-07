@@ -7,7 +7,7 @@ node {
 private void build() {
     stage("Build for testing") {
         checkout scm
-        dir(rnacentral-webcode) {
+        dir("rnacentral-webcode") {
             withCredentials([file(credentialsId: 'local_settings_testing', variable: 'LOCAL_SETTINGS')]) {
                 sh 'cat $LOCAL_SETTINGS > rnacentral/rnacentral/local_settings.py'
             }
@@ -22,7 +22,7 @@ private void build() {
 
 private void runUnitTests() {
     stage("Run unit-tests") {
-        dir(rnacentral-webcode) {
+        dir("rnacentral-webcode") {
             sh '''
                 source ENV/bin/activate
                 source rnacenral/scripts/env.sh
