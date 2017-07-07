@@ -7,8 +7,9 @@ node {
 private void build() {
     stage("Build for testing") {
         checkout scm
-        withCredentials([file(credentialsId: 'local_settings_testing', variable: 'LOCAL_SETTINGS')]) {
+        withCredentials([file(credentialsId: 'local_settings_testing', variable: 'LOCAL_SETTINGS'), file(credentialsId: 'env_sh', variable: 'ENV_SH')]) {
             sh 'cat $LOCAL_SETTINGS > rnacentral/rnacentral/local_settings.py'
+            sh 'cat $ENV_SH > rnacentral/scripts/env.sh'
         }
         sh '''
             virtualenv ENV --python=/usr/bin/python2
