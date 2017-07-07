@@ -1,6 +1,36 @@
 node {
-    deploy()
+    build()
     runUnitTests()
+    deploy()
+}
+
+private void build() {
+    stage("Build for testing") {
+        checkout scm
+        LOCAL_SETTINGS = `cat $local_settings_testing`
+        dir(rnacentral-webcode) {
+            sh '''
+            cat $LOCAL_SETTINGS > rnacentral/rnacentral/local_settings.py
+            virtualenv ENV
+            source ENV/bin/activate
+            pip install --upgrade -r rnacentral/requirements.txt
+            '''
+        }
+    }
+}
+
+private void runUnitTests() {
+    stage("Run unit-tests") {
+        dir(rnacentral-webcode) {
+            sh '''
+                source ENV/bin/activate
+                source rnacenral/scripts/env.sh
+                python manage.py runserver --nothreading &
+                python apiv1/tests.py
+                kill $!
+            '''
+        }
+    }
 }
 
 private void deploy() {
@@ -12,18 +42,5 @@ private void deploy() {
             source scripts/env.sh
             fab localhost deploy
         '''
-    }
-}
-
-private void runUnitTests() {
-    stage("Run unit-tests") {
-        sh '''
-            cd /nfs/public/rw/xfam/rnacentral/test
-            source local/virtualenvs/RNAcentral/bin/activate
-            cd rnacentral-webcode/rnacentral
-            source scripts/env.sh
-            python apiv1/tests.py
-        '''
-
     }
 }
