@@ -733,7 +733,19 @@ class RNAcentralTest(unittest.TestCase):
             ('U12', ['URS000075EF5D_9606']),
             ('ryhB', ['URS00003CF5BC_511145']),
             ('coolair', ['URS000018EB2E_3702']),
-            ('tRNA-Phe', ['URS00003A0C47_9606'])
+            ('tRNA-Phe', ['URS00003A0C47_9606']),
+            ('("HOTAIR" OR "HOX") AND TAXONOMY:"9606" AND rna_type:"lncRNA" AND length:[500 to 3000]', [
+                'URS000075C808_9606',  # HGNC HOTAIR Gene
+                'URS0000301B08_9606',  # GENCODE/Ensembl Gene
+                'URS0000759B00_9606',  # RefSeq transcript variant
+                'URS000075EF05_9606',  # RefSeq transcript variant
+                'URS00001A335C_9606',  # GENCODE/Ensembl transcript
+            ]),
+            ('4V4Q', [
+                'URS00004B0F34_562',  # LSU
+                'URS00000ABFE9_562',  # SSU
+                'URS0000049E57_562',  # 5S
+            ]),
         ])
 
         page = TextSearchPage(self.browser)
