@@ -11,7 +11,19 @@ private void build() {
             sh 'cat $LOCAL_SETTINGS > rnacentral/rnacentral/local_settings.py'
         }
         sh '''
-            virtualenv ENV
+            curl -OL http://www.python.org/ftp/python/2.7.11/Python-2.7.11.tgz
+            tar -zxvf Python-2.7.11.tgz
+
+            cd Python-2.7.11
+            export LD_RUN_PATH=$PREFIX/lib
+            ./configure --prefix=`pwd`/python/ --enable-shared
+            make
+            make install
+
+            cd ..
+            rm -Rf Python-2.7.11 Python-2.7.11.tgz
+
+            virtualenv ENV --python=python/bin/python
             source ENV/bin/activate
             pip install --upgrade -r rnacentral/requirements.txt
         '''
