@@ -14,7 +14,7 @@ private void build() {
         sh '''
             virtualenv ENV --python=/usr/bin/python2
             source ENV/bin/activate
-            source rnacenral/scripts/env.sh
+            source rnacentral/scripts/env.sh
             pip install --upgrade -r rnacentral/requirements.txt
         '''
     }
