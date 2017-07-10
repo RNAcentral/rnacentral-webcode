@@ -221,9 +221,9 @@ xrefLoader.prototype.load_xrefs = function(page) {
             function append_download_links() {
                 var url = '/api/v1/rna/' + obj.upi;
                 if ( obj.enable_genomic_features ) {
-                    $(obj.config.dom.downloads).append('<li><a href="' + url + '.bed"  download="'  + obj.upi + '.bed">BED</a></li>')
-                                               .append('<li><a href="' + url + '.gff"  download="'  + obj.upi + '.gff">GFF</a></li>')
-                                               .append('<li><a href="' + url + '.gff3" download="'  + obj.upi + '.gff3">GFF3</a></li>');
+                    $(obj.config.dom.downloads).append('<li><a href="' + url + '.bed"  download="'  + obj.upi + '.bed" rel="nofollow">BED</a></li>')
+                                               .append('<li><a href="' + url + '.gff"  download="'  + obj.upi + '.gff" rel="nofollow">GFF</a></li>')
+                                               .append('<li><a href="' + url + '.gff3" download="'  + obj.upi + '.gff3" rel="nofollow">GFF3</a></li>');
                 }
             }
     }
