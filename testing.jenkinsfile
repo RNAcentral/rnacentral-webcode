@@ -12,19 +12,7 @@ private void build() {
             sh 'cat $ENV_SH > rnacentral/scripts/env.sh'
         }
         sh '''
-            curl -OL https://github.com/python/cpython/archive/v2.7.13.tar.gz
-            tar -zxvf v2.7.13.tar.gz
-
-            cd cpython-2.7.13
-            export LD_RUN_PATH=$PREFIX/lib
-            ./configure --prefix=`pwd`/python/ --enable-shared
-            make
-            make install
-
-            cd ..
-            rm -Rf cpython-2.7.13 v2.7.13.tar.gz
-
-            virtualenv ENV --python=python/bin/python
+            virtualenv ENV --python=/net/isilonP/public/rw/homes/xfm_adm/src/python/bin/python
             source ENV/bin/activate
             source rnacentral/scripts/env.sh
             pip install --upgrade -r rnacentral/requirements.txt
