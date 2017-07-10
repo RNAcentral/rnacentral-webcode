@@ -1,0 +1,57 @@
+node {
+    build()
+    runUnitTests()
+    deploy()
+}
+
+private void build() {
+    stage("Build for testing") {
+        checkout scm
+        withCredentials([file(credentialsId: 'local_settings_testing', variable: 'LOCAL_SETTINGS'), file(credentialsId: 'env_sh', variable: 'ENV_SH')]) {
+            sh 'cat $LOCAL_SETTINGS > rnacentral/rnacentral/local_settings.py'
+            sh 'cat $ENV_SH > rnacentral/scripts/env.sh'
+        }
+        sh '''
+            curl -OL https://github.com/python/cpython/archive/v2.7.13.tar.gz
+            tar -zxvf v2.7.13.tar.gz
+
+            cd cpython-2.7.13
+            export LD_RUN_PATH=$PREFIX/lib
+            ./configure --prefix=`pwd`/python/ --enable-shared
+            make
+            make install
+
+            cd ..
+            rm -Rf cpython-2.7.13 v2.7.13.tar.gz
+
+            virtualenv ENV --python=python/bin/python
+            source ENV/bin/activate
+            source rnacentral/scripts/env.sh
+            pip install --upgrade -r rnacentral/requirements.txt
+        '''
+    }
+}
+
+private void runUnitTests() {
+    stage("Run unit-tests") {
+        sh '''
+            source ENV/bin/activate
+            source rnacenral/scripts/env.sh
+            python manage.py runserver --nothreading &
+            python apiv1/tests.py
+            kill $!
+        '''
+    }
+}
+
+private void deploy() {
+    stage("Deploy") {
+        sh '''
+            cd /nfs/public/rw/xfam/rnacentral/test
+            source local/virtualenvs/RNAcentral/bin/activate
+            cd rnacentral-webcode/rnacentral
+            source scripts/env.sh
+            fab localhost deploy
+        '''
+    }
+}

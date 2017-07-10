@@ -926,7 +926,6 @@ class RNAcentralTest(unittest.TestCase):
         self.assertEqual(len(species), 1)
         self.assertEqual(species.pop(), taxid['species'])
         self.assertEqual(page.get_page_subtitle(), taxid['species'])
-        self.assertIn('Showing annotations from ' + taxid['species'], page.get_info_text())
 
     def test_taxid_filtering_spurious_taxid(self):
         """

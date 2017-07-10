@@ -783,7 +783,7 @@ ul.affix-bottom {
 }
 
 .text-search-results .text-search-result {
-  margin-bottom: 25px;
+  margin-bottom: 30px;
 }
 
 button.load-more {
@@ -1000,6 +1000,11 @@ textarea {
 .desaturate {
   -webkit-filter: grayscale(60%);
   filter: grayscale(60%);
+}
+
+.greyscale {
+  -webkit-filter: grayscale(100%);
+  filter: grayscale(100%);
 }
 
 .expert-db-logo img {
