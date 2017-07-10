@@ -24,7 +24,7 @@ private void runUnitTests() {
     stage("Run unit-tests") {
         sh '''
             source ENV/bin/activate
-            source rnacenral/scripts/env.sh
+            source rnacentral/scripts/env.sh
             python manage.py runserver --nothreading &
             python apiv1/tests.py
             kill $!
