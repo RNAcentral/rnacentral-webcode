@@ -25,9 +25,8 @@ private void runUnitTests() {
         sh '''
             source ENV/bin/activate
             source rnacentral/scripts/env.sh
-            python manage.py runserver --nothreading &
+            cd rnacentral
             python apiv1/tests.py
-            kill $!
         '''
     }
 }
