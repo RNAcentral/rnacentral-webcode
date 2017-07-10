@@ -12,17 +12,17 @@ private void build() {
             sh 'cat $ENV_SH > rnacentral/scripts/env.sh'
         }
         sh '''
-            curl -OL http://www.python.org/ftp/python/2.7.11/Python-2.7.11.tgz
-            tar -zxvf Python-2.7.11.tgz
+            curl -OL https://github.com/python/cpython/archive/v2.7.13.tar.gz
+            tar -zxvf cpython-2.7.13.tar.gz
 
-            cd Python-2.7.11
+            cd cpython-2.7.13
             export LD_RUN_PATH=$PREFIX/lib
             ./configure --prefix=`pwd`/python/ --enable-shared
             make
             make install
 
             cd ..
-            rm -Rf Python-2.7.11 Python-2.7.11.tgz
+            rm -Rf cpython-2.7.13 cpython-2.7.13.tar.gz
 
             virtualenv ENV --python=python/bin/python
             source ENV/bin/activate
