@@ -11,6 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import socket
+
 from django.conf.urls import patterns, url, include
 from django.views.generic import TemplateView
 
@@ -21,10 +23,19 @@ urlpatterns = patterns('',
     # REST API (use trailing slashes)
     url(r'^api/current/', include('apiv1.urls')),
     url(r'^api/v1/', include('apiv1.urls')),
-    # robots.txt
-    url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
     # export text search results
     url(r'^export/', include('export.urls')),
     # sequence search
     url(r'^sequence-search/', include('nhmmer.urls')),
 )
+
+if 'hx' in socket.gethostname():
+    additional_settings = patterns('',
+      url(r'^robots\.txt$', TemplateView.as_view(template_name='robots-test.txt', content_type='text/plain')),
+    )
+else:
+    additional_settings = patterns('',
+      url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
+    )
+
+urlpatterns += additional_settings
