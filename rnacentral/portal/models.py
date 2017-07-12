@@ -1287,10 +1287,12 @@ class RfamModel(models.Model):
     short_name = models.CharField(max_length=50)
     long_name = models.CharField(max_length=200)
     description = models.CharField(max_length=500)
-    rfam_clan_id = models.ForeignKey(RfamClan,
-                                     db_column='rfam_clan_id',
-                                     to_field='rfam_clan_id',
-                                     null=True)
+    rfam_clan_id = models.ForeignKey(
+        RfamClan,
+        db_column='rfam_clan_id',
+        to_field='rfam_clan_id',
+        null=True,
+    )
 
     seed_count = models.PositiveIntegerField()
     full_count = models.PositiveIntegerField()
@@ -1321,9 +1323,11 @@ class RfamHit(models.Model):
     sequence_stop = models.PositiveIntegerField()
     sequence_completness = models.FloatField()
 
-    rfam_model = models.ForeignKey(RfamModel,
-                                   db_column='rfam_model_id',
-                                   to_field='rfam_model_id')
+    rfam_model = models.ForeignKey(
+        RfamModel,
+        db_column='rfam_model_id',
+        to_field='rfam_model_id',
+    )
     model_start = models.PositiveIntegerField()
     model_stop = models.PositiveIntegerField()
     model_completeness = models.FloatField()
@@ -1351,9 +1355,11 @@ class RfamInitialAnnotations(models.Model):
 
     rfam_initial_annotation_id = models.AutoField(primary_key=True)
     upi = models.ForeignKey(Rna, db_column='upi', to_field='upi')
-    rfam_model = models.ForeignKey(RfamModel,
-                                   db_column='rfam_model_id',
-                                   to_field='rfam_model_id')
+    rfam_model = models.ForeignKey(
+        RfamModel,
+        db_column='rfam_model_id',
+        to_field='rfam_model_id',
+    )
 
     class Meta:
         db_table = 'rfam_initial_annotations'
@@ -1367,8 +1373,12 @@ class RfamAnalyzedSequences(models.Model):
     sequences that have not yet been run (will not show up here).
     """
 
-    upi = models.ForeignKey(Rna, db_column='upi', to_field='upi',
-                            primary_key=True)
+    upi = models.ForeignKey(
+        Rna,
+        db_column='upi',
+        to_field='upi',
+        primary_key=True,
+    )
     date = models.DateField()
 
     class Meta:
