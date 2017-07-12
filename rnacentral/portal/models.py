@@ -1272,7 +1272,7 @@ class RfamClan(models.Model):
     family_count = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'rnc_rfam_clans'
+        db_table = 'rfam_clans'
 
     def url(self):
         return 'http://rfam.xfam.org/clan/' + self.rfam_clan_id
@@ -1300,7 +1300,7 @@ class RfamModel(models.Model):
     rna_type = models.CharField(max_length=250)
 
     class Meta:
-        db_table = 'rnc_rfam_models'
+        db_table = 'rfam_models'
 
     @property
     def url(self):
@@ -1333,7 +1333,7 @@ class RfamHit(models.Model):
     score = models.FloatField()
 
     class Meta:
-        db_table = 'rnc_rfam_model_hits'
+        db_table = 'rfam_model_hits'
 
     @property
     def rfam_clan_id(self):
