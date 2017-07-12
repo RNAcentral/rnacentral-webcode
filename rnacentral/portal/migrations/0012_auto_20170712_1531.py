@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
                 ('family_count', models.PositiveIntegerField()),
             ],
             options={
-                'db_table': 'rnc_rfam_clans',
+                'db_table': 'rfam_clans',
             },
         ),
         migrations.CreateModel(
@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
                 ('score', models.FloatField()),
             ],
             options={
-                'db_table': 'rnc_rfam_model_hits',
+                'db_table': 'rfam_model_hits',
             },
         ),
         migrations.CreateModel(
@@ -64,16 +64,19 @@ class Migration(migrations.Migration):
             name='RfamModel',
             fields=[
                 ('rfam_model_id', models.CharField(max_length=20, serialize=False, primary_key=True)),
-                ('name', models.CharField(max_length=40)),
+                ('short_name', models.CharField(max_length=50)),
+                ('long_name', models.CharField(max_length=200)),
                 ('description', models.CharField(max_length=500)),
                 ('seed_count', models.PositiveIntegerField()),
                 ('full_count', models.PositiveIntegerField()),
                 ('length', models.PositiveIntegerField()),
-                ('is_supressed', models.BooleanField(default=False)),
+                ('is_suppressed', models.BooleanField(default=False)),
+                ('domain', models.CharField(max_length=50, null=True)),
+                ('rna_type', models.CharField(max_length=250)),
                 ('rfam_clan_id', models.ForeignKey(db_column=b'rfam_clan_id', to='portal.RfamClan', null=True)),
             ],
             options={
-                'db_table': 'rnc_rfam_models',
+                'db_table': 'rfam_models',
             },
         ),
         migrations.AddField(
