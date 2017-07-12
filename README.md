@@ -162,6 +162,7 @@ or get in touch using the [Contact form](http://rnacentral.org/contact) on our w
 * [Selenium](http://www.seleniumhq.org/)
 * [PhantomJS](http://phantomjs.org/)
 * [Travis](https://travis-ci.org/)
+* [Jenkins](http://rnacentral.org)
 * [BrowserStack](http://browserstack.com)
 
 ### Other
