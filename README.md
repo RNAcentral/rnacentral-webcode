@@ -1,7 +1,7 @@
 # RNAcentral Website
 
 [![Build Status](https://travis-ci.org/RNAcentral/rnacentral-webcode.svg?branch=master)](https://travis-ci.org/RNAcentral/rnacentral-webcode)
-[![Build Status](http://ves-hx-a4:8080/job/rnacentral_testing/badge/icon)](http://jenkins.rnacentral.org/job/rnacentral_testing/)
+[![Build Status](http://jenkins.rnacentral.org/buildStatus/icon?job=rnacentral_testing)](http://jenkins.rnacentral.org/job/rnacentral_testing/)
 
 ## About
 
