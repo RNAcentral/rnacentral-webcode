@@ -93,7 +93,7 @@
 
     <div class="col-md-12">
       <div class="alert alert-warning col-md-12 text-search-no-results">
-        <strong>No results</strong><span ng-if="!$ctrl.search.luceneSyntaxUsed($ctrl.search.query)">, try <a ng-href='/search?q={{ $ctrl.search.query }}%20OR%20author:%22{{ $ctrl.search.query }}%22%20OR%20pub_title:%22{{ $ctrl.search.query }}%22'>{{ $ctrl.search.query }} OR author:"{{ $ctrl.search.query }}" OR pub_title:"{{ $ctrl.search.query }}"</a></span>
+        <strong>No results</strong><span ng-if="!$ctrl.search.luceneSyntaxUsed($ctrl.search.query)">, do you want to <a ng-href='/search?q={{ $ctrl.search.query }}%20OR%20author:%22{{ $ctrl.search.query }}%22%20OR%20pub_title:%22{{ $ctrl.search.query }}%22'>add ignored "author" and "pub_title" fields to your search</a>?</span>
       </div>
     </div>
 
@@ -102,7 +102,7 @@
       <ul>
         <li>
           <p>
-            Make sure your spelling is correct
+            Check the spelling
           </p>
           <p>
             <em>Example</em>: misspelled terms like <code>Esherichia</code> (missing "c") won't find any results
@@ -118,12 +118,12 @@
         </li>
         <li>
           <p>
-            Make sure to include double quotes in field-specific search using the <code>field:"field value"</code> format
+            Use double quotes in field-specific search: <code>field:"field value"</code>
           </p>
         </li>
         <li>
             <p>
-              Try searching by author name or publication title
+              Try searching by author name or publication title. They are ignored, unless explicitly added
             </p>
             <p>
               <em>Example</em>: <code>author:"Gelfand"</code> instead of just <code>Gelfand</code><br>
