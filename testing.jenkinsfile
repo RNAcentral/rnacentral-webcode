@@ -12,7 +12,7 @@ private void build() {
             sh 'cat $ENV_SH > rnacentral/scripts/env.sh'
         }
         sh '''
-            curl http://www.python.org/ftp/python/2.7.11/Python-2.7.11.tgz
+            curl -OL http://www.python.org/ftp/python/2.7.11/Python-2.7.11.tgz
             virtualenv ENV --python=/net/isilonP/public/rw/homes/xfm_adm/src/python/bin/python
             source ENV/bin/activate
             source rnacentral/scripts/env.sh
