@@ -93,7 +93,7 @@
 
     <div class="col-md-12">
       <div class="alert alert-warning col-md-12 text-search-no-results">
-        <strong>No results</strong>
+        <strong>No results</strong><span ng-if="!$ctrl.search.luceneSyntaxUsed($ctrl.search.query)">, try <a ng-href='/search?q={{ $ctrl.search.query }}%20OR%20author:%22{{ $ctrl.search.query }}%22%20OR%20pub_title:%22{{ $ctrl.search.query }}%22'>{{ $ctrl.search.query }} OR author:"{{ $ctrl.search.query }}" OR pub_title:"{{ $ctrl.search.query }}"</a></span>
       </div>
     </div>
 

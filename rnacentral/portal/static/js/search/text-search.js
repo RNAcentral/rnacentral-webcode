@@ -368,6 +368,16 @@ var search = function(_, $http, $interpolate, $location, $window, $q) {
     this.loadMoreResults = function() {
         self.search(self.query, self.result.entries.length);
     };
+
+    /**
+     * Checks, if search query contains any lucene-specific syntax, or if it's a plain text
+     */
+    this.luceneSyntaxUsed = function(query) {
+        if (/[\+\-\&\|\!\{\}\[\]\^~\?\:\\\/\*\"\(]/.test(query)) return true;
+        if (/[\s\"]OR[\s\"]/.test(query)) return true;
+        if (/[\s\"]AND[\s\"]/.test(query)) return true;
+        return false;
+    }
 };
 
 var MainContent = function($scope, $anchorScroll, $location, search) {
@@ -582,7 +592,7 @@ var textSearchResults = {
         };
 
         /**
-         * Does the given field contain any highlighted text snippet?
+         * Does the given field contain any highlighted text snippets?
          */
         ctrl.anyHighlightsInField = function(field) {
             for (var i=0; i < field.length; i++) {
