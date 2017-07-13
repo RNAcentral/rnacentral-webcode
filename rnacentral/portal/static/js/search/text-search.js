@@ -51,6 +51,7 @@ var search = function(_, $http, $interpolate, $location, $window, $q) {
         rnacentralBaseUrl: window.location.origin, // e.g. http://localhost:8000 or http://rnacentral.org
         fields: [
             'active',
+            'author',
             'common_name',
             'description',
             'expert_db',
@@ -68,6 +69,7 @@ var search = function(_, $http, $interpolate, $location, $window, $q) {
         ],
         fieldWeights: {
             'active': 0,
+            'author': 2,
             'common_name': 3,
             'description': 2,
             'expert_db': 4,
@@ -85,6 +87,7 @@ var search = function(_, $http, $interpolate, $location, $window, $q) {
         },
         fieldVerboseNames: {
             'active': 'Active',
+            'author': 'Author',
             'common_name': 'Species',
             'description': 'Description',
             'expert_db': 'Source',
