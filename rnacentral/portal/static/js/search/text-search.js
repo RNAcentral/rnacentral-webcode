@@ -534,6 +534,12 @@ var textSearchResults = {
             return ctrl.expertDbsObject[db].tags.indexOf('curated') != -1 && ctrl.expertDbsObject[db].tags.indexOf('automatic') == -1;
         };
 
+        /**
+         * Given EBIsearch results, returns a field name and a highlighted text snippet, matching the query. This
+         * helps explain the user, why this result was included into the results list.
+         * @param fields {Object} - object of field as returned by search.search()
+         * @returns {{highlight: String, fieldName: String}}
+         */
         ctrl.highlight = function(fields) {
             var highlight;
             var verboseFieldName;
@@ -563,6 +569,9 @@ var textSearchResults = {
             return {highlight: highlight, fieldName: verboseFieldName};
         };
 
+        /**
+         * Are there any highlighted snippets in search results at all?
+         */
         ctrl.anyHighlights = function(fields) {
             for (var fieldName in fields) {
                 if (fields.hasOwnProperty(fieldName) && ctrl.anyHighlightsInField(fields[fieldName])) {
@@ -572,6 +581,9 @@ var textSearchResults = {
             return false;
         };
 
+        /**
+         * Does the given field contain any highlighted text snippet?
+         */
         ctrl.anyHighlightsInField = function(field) {
             for (var i=0; i < field.length; i++) {
                 if (field[i].indexOf('text-search-highlights') !== -1) {
