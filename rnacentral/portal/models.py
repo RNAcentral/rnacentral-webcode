@@ -1315,7 +1315,7 @@ class RfamClan(models.Model):
     """
     rfam_clan_id = models.CharField(max_length=20, primary_key=True)
     name = models.CharField(max_length=40)
-    description = models.CharField(max_length=500)
+    description = models.CharField(max_length=1000)
     family_count = models.PositiveIntegerField()
 
     class Meta:
@@ -1333,7 +1333,7 @@ class RfamModel(models.Model):
     rfam_model_id = models.CharField(max_length=20, primary_key=True)
     short_name = models.CharField(max_length=50)
     long_name = models.CharField(max_length=200)
-    description = models.CharField(max_length=500)
+    description = models.CharField(max_length=2000, null=True)
     rfam_clan_id = models.ForeignKey(
         RfamClan,
         db_column='rfam_clan_id',

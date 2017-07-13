@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('rfam_clan_id', models.CharField(max_length=20, serialize=False, primary_key=True)),
                 ('name', models.CharField(max_length=40)),
-                ('description', models.CharField(max_length=500)),
+                ('description', models.CharField(max_length=1000)),
                 ('family_count', models.PositiveIntegerField()),
             ],
             options={
@@ -66,7 +66,7 @@ class Migration(migrations.Migration):
                 ('rfam_model_id', models.CharField(max_length=20, serialize=False, primary_key=True)),
                 ('short_name', models.CharField(max_length=50)),
                 ('long_name', models.CharField(max_length=200)),
-                ('description', models.CharField(max_length=500)),
+                ('description', models.CharField(max_length=2000), null=True),
                 ('seed_count', models.PositiveIntegerField()),
                 ('full_count', models.PositiveIntegerField()),
                 ('length', models.PositiveIntegerField()),
