@@ -93,7 +93,7 @@
 
     <div class="col-md-12">
       <div class="alert alert-warning col-md-12 text-search-no-results">
-        <strong>No results</strong><span ng-if="!$ctrl.search.luceneSyntaxUsed($ctrl.search.query)">, do you want to <a ng-href='/search?q={{ $ctrl.search.query }}%20OR%20author:%22{{ $ctrl.search.query }}%22%20OR%20pub_title:%22{{ $ctrl.search.query }}%22'>add ignored "author" and "pub_title" fields to your search</a>?</span>
+        <strong>No results</strong><span ng-if="!$ctrl.search.luceneSyntaxUsed($ctrl.search.query)">. <a ng-href='/search?q={{ $ctrl.search.query }}%20OR%20author:%22{{ $ctrl.search.query }}%22%20OR%20pub_title:%22{{ $ctrl.search.query }}%22'>Search again in author names and paper titles</a> (omitted by default)</span>
       </div>
     </div>
 
@@ -105,7 +105,7 @@
             Check the spelling
           </p>
           <p>
-            <em>Example</em>: misspelled terms like <code>Esherichia</code> (missing "c") won't find any results
+            <em>Example</em>: misspelled terms like <em>Esherichia</em> (missing "c") may not find any results
           </p>
         </li>
         <li>
@@ -113,7 +113,7 @@
             Use full species names
           </p>
           <p>
-            <em>Example</em>: use <code>Escherichia coli</code> and not <code>E. coli</code> as your search terms
+            <em>Example</em>: use <code>Escherichia coli</code> and not <em>E. coli</em> as your search terms
           </p>
         </li>
         <li>
@@ -123,16 +123,16 @@
         </li>
         <li>
             <p>
-              Try searching by author name or publication title. They are ignored, unless explicitly added
+              Try searching by author name or publication title which are not searched by default
             </p>
             <p>
-              <em>Example</em>: <code>author:"Gelfand"</code> instead of just <code>Gelfand</code><br>
-              <em>Example</em>: <code>pub_title:"Binding interactions between long noncoding RNA HOTAIR and PRC2 proteins"</code>
+              <em>Example</em>: <code>author:"Gelfand"</code> instead of <code>Gelfand</code><br>
+              <em>Example</em>: <code>pub_title:"lymphoma"</code>
             </p>
         </li>
         <li>
           <p>
-            Read more about <a href="/help/text-search">query syntax</a>
+            Read more about <a href="/help/text-search">query syntax &rarr;</a>
           </p>
         </li>
       </ul>
