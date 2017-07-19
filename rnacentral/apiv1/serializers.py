@@ -19,9 +19,10 @@ HyperlinkedIdentityField - link to a view
 """
 
 from django.core.paginator import Paginator
-from portal.models import Rna, Xref, Reference, Database, Accession, Release, Reference, Reference_map
 from rest_framework import serializers
 from rest_framework import pagination
+
+from portal.models import Rna, Xref, Reference, Database, Accession, Release, Reference, Reference_map, Modification, ChemicalComponent
 
 
 class RawCitationSerializer(serializers.ModelSerializer):
@@ -74,6 +75,35 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
                   'citations', 'source_url', 'expert_db_url')
 
 
+class ChemicalComponentSerializer(serializers.ModelSerializer):
+    """
+    Django Rest Framework serializer class for chemical components.
+    """
+    id = serializers.CharField()
+    description = serializers.CharField()
+    one_letter_code = serializers.CharField()
+    ccd_id = serializers.CharField()
+    source = serializers.CharField()
+    modomics_short_name = serializers.CharField()
+    pdb_url = serializers.Field(source='get_pdb_url')
+    modomics_url = serializers.Field(source='get_modomics_url')
+
+    class Meta:
+        model = ChemicalComponent
+
+
+class ModificationSerializer(serializers.ModelSerializer):
+    """
+    Django Rest Framework serializer class for modified positions.
+    """
+    position = serializers.IntegerField()
+    author_assigned_position = serializers.IntegerField()
+    chem_comp = ChemicalComponentSerializer(source='modification_id')
+
+    class Meta:
+        model = Modification
+
+
 class XrefSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer class for all cross-references associated with an RNAcentral id.
@@ -86,7 +116,7 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
     accession = AccessionSerializer()
 
     # database-specific fields
-    modifications = serializers.Field(source='get_modifications_as_json')
+    modifications = ModificationSerializer(many=True)
     is_rfam_seed = serializers.Field(source='is_rfam_seed')
     ncbi_gene_id = serializers.Field(source='get_ncbi_gene_id')
     ndb_external_url = serializers.Field(source='get_ndb_external_url')

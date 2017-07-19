@@ -27,8 +27,6 @@ from rest_framework.renderers import JSONRenderer
 
 from portal.config.genomes import genomes as rnacentral_genomes
 from portal.config.expert_databases import expert_dbs as rnacentral_expert_dbs
-
-
 from portal.utils import descriptions as desc
 
 
@@ -863,34 +861,8 @@ class Xref(models.Model):
         components. This object is used for visualising modified nucleotides
         in the UI.
         """
-        class ChemicalComponentSerializer(serializers.ModelSerializer):
-            """
-            Django Rest Framework serializer class for chemical components.
-            """
-            id = serializers.CharField()
-            description = serializers.CharField()
-            one_letter_code = serializers.CharField()
-            ccd_id = serializers.CharField()
-            source = serializers.CharField()
-            modomics_short_name = serializers.CharField()
-            pdb_url = serializers.Field(source='get_pdb_url')
-            modomics_url = serializers.Field(source='get_modomics_url')
-
-            class Meta:
-                model = ChemicalComponent
-
-        class ModificationSerializer(serializers.ModelSerializer):
-            """
-            Django Rest Framework serializer class for modified positions.
-            """
-            position = serializers.IntegerField()
-            author_assigned_position = serializers.IntegerField()
-            chem_comp = ChemicalComponentSerializer(source='modification_id')
-
-            class Meta:
-                model = Modification
-
-        serializer = ModificationSerializer(self.modifications.all(), many=True)
+        import apiv1.serializers
+        serializer = apiv1.serializers.ModificationSerializer(self.modifications.all(), many=True)
         return JSONRenderer().render(serializer.data)
 
     def is_active(self):
