@@ -80,23 +80,41 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
     """
     database = serializers.CharField(source='db.display_name')
     is_expert_db = serializers.SerializerMethodField('is_expert_xref')
-    is_active = serializers.SerializerMethodField('is_xref_active')
+    is_active = serializers.Field('is_active')
     first_seen = serializers.CharField(source='created.release_date')
     last_seen = serializers.CharField(source='last.release_date')
     accession = AccessionSerializer()
 
+    # database-specific fields
+    modifications = serializers.Field(source='get_modifications_as_json')
+    is_rfam_seed = serializers.Field(source='is_rfam_seed')
+    ncbi_gene_id = serializers.Field(source='get_ncbi_gene_id')
+    ndb_external_url = serializers.Field(source='get_ndb_external_url')
+    mirbase_mature_products = serializers.Field(source='get_mirbase_mature_products_if_any')
+    mirbase_precursor = serializers.Field(source='get_mirbase_precursor')
+    refseq_mirna_mature_products = serializers.Field(source='get_refseq_mirna_mature_products_if_any')
+    refseq_mirna_precursor = serializers.Field(source='get_refseq_mirna_precursor')
+    refseq_splice_variants = serializers.Field(source='get_refseq_splice_variants')
+    vega_splice_variants = serializers.Field(source='get_vega_splice_variants')
+    tmrna_mate_upi = serializers.Field(source='get_tmrna_mate_upi')
+    tmrna_type = serializers.Field(source='get_tmrna_type')
+    ensembl_division = serializers.Field(source='get_ensembl_division')
+    ucsc_db_id = serializers.Field(source='get_ucsc_db_id')
+    genomic_coordinates = serializers.Field(source='get_genomic_coordinates_if_any')
+
     def is_expert_xref(self, obj):
         return True if obj.accession.non_coding_id else False
 
-    def is_xref_active(self, obj):
-        """
-        Return boolean instead of string.
-        """
-        return True if obj.deleted == 'N' else False
-
     class Meta:
         model = Xref
-        fields = ('database', 'is_expert_db', 'is_active', 'first_seen', 'last_seen', 'taxid', 'accession')
+        fields = ('database', 'is_expert_db', 'is_active', 'first_seen', 'last_seen', 'taxid', 'accession',
+                  'modifications', 'is_rfam_seed', 'ncbi_gene_id', 'ndb_external_url',
+                  'mirbase_mature_products', 'mirbase_precursor',
+                  'refseq_mirna_mature_products', 'refseq_mirna_precursor',
+                  'refseq_splice_variants', 'vega_splice_variants',
+                  'tmrna_mate_upi', 'tmrna_type',
+                  'ensembl_division', 'ucsc_db_id',
+                  'genomic_coordinates')
 
 
 class PaginatedXrefSerializer(pagination.PaginationSerializer):

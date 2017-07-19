@@ -21,7 +21,7 @@ from django.db import models
 from django.db.models import Min, Max
 from django.utils.functional import cached_property
 
-from caching.base import CachingManager, CachingMixin # django-cache-machine
+from caching.base import CachingManager, CachingMixin  # django-cache-machine
 from rest_framework import serializers
 from rest_framework.renderers import JSONRenderer
 
@@ -39,8 +39,8 @@ class Modification(CachingMixin, models.Model):
     id = models.AutoField(primary_key=True)
     upi = models.ForeignKey('Rna', db_column='upi', related_name='modifications')
     xref = models.ForeignKey('Xref', db_column='accession', to_field='accession', related_name='modifications')
-    position = models.PositiveIntegerField() # absolute sequence position, always > 0
-    author_assigned_position = models.IntegerField() # can be negative, e.g. 3I2S chain A
+    position = models.PositiveIntegerField()  # absolute sequence position, always > 0
+    author_assigned_position = models.IntegerField()  # can be negative, e.g. 3I2S chain A
     modification_id = models.ForeignKey('ChemicalComponent', db_column='modification_id')
 
     objects = CachingManager()
@@ -56,9 +56,9 @@ class ChemicalComponent(CachingMixin, models.Model):
     id = models.CharField(max_length=8, primary_key=True)
     description = models.CharField(max_length=500)
     one_letter_code = models.CharField(max_length=1)
-    ccd_id = models.CharField(max_length=3, default='') # Chemical Component Dictionary id
-    source = models.CharField(max_length=10, default='') # Modomics, PDBe, others
-    modomics_short_name = models.CharField(max_length=20, default='') # m2A for 2A
+    ccd_id = models.CharField(max_length=3, default='')  # Chemical Component Dictionary id
+    source = models.CharField(max_length=10, default='')  # Modomics, PDBe, others
+    modomics_short_name = models.CharField(max_length=20, default='')  # m2A for 2A
 
     objects = CachingManager()
 
@@ -233,7 +233,7 @@ class Rna(CachingMixin, models.Model):
         if taxid:
             databases = databases.filter(taxid=taxid)
         databases = list(databases.values_list('db__display_name', flat=True).distinct())
-        databases = sorted(databases, key=lambda s: s.lower()) # case-insensitive
+        databases = sorted(databases, key=lambda s: s.lower())  # case-insensitive
         return databases
 
     @cached_property
@@ -668,7 +668,7 @@ class Accession(models.Model):
         Biotype is used to color entries in Genoverse.
         If biotype contains the word "RNA" it is given a predefined color.
         """
-        biotype = 'ncRNA' # default biotype
+        biotype = 'ncRNA'  # default biotype
         match = re.search(r'biotype\:(\w+)', self.note)
         if match:
             biotype = match.group(1)
@@ -694,7 +694,7 @@ class Accession(models.Model):
         the Non-coding product containing the cross-reference.
         """
         if self.database in ['RFAM', 'PDBE', 'REFSEQ', 'RDP']:
-            return '' # no ENA source links for these entries
+            return ''  # no ENA source links for these entries
         ena_base_url = "http://www.ebi.ac.uk/ena/data/view/Non-coding:"
         if self.is_composite == 'Y':
             return ena_base_url + self.non_coding_id
@@ -738,7 +738,7 @@ class Accession(models.Model):
         if species == 'Dictyostelium discoideum':
             species = 'Dictyostelium discoideum AX4'
         elif species.startswith('Mus musculus'):
-            if self.accession.startswith('MGP'): # Ensembl mouse strain
+            if self.accession.startswith('MGP'):  # Ensembl mouse strain
                 parts = self.accession.split('_')
                 if len(parts) == 3:
                     species = 'Mus musculus ' + parts[1]
@@ -933,9 +933,9 @@ class Xref(models.Model):
         ndb_url = 'http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget={structure_id}'
         match = re.search('NDB\:(\w+)', self.accession.db_xref, re.IGNORECASE)
         if match:
-            structure_id = match.group(1) # NDB id
+            structure_id = match.group(1)  # NDB id
         else:
-            structure_id = self.accession.external_id # default to PDB id
+            structure_id = self.accession.external_id  # default to PDB id
         return ndb_url.format(structure_id=structure_id)
 
     def get_ucsc_bed(self):
@@ -965,6 +965,9 @@ class Xref(models.Model):
             return True
         else:
             return False
+
+    def get_mirbase_mature_products_if_any(self):
+        return self.get_mirbase_mature_products() if self.is_mirbase_mirna_precursor() else []
 
     def get_mirbase_mature_products(self):
         """
@@ -1011,17 +1014,8 @@ class Xref(models.Model):
         else:
             return False
 
-    def get_refseq_mirna_precursor(self):
-        """
-        Given a 5-prime or 3-prime mature product, retrieve its precursor miRNA.
-        """
-        if self.accession.feature_name != 'precursor_RNA':
-            rna = Xref.objects.filter(accession__parent_ac=self.accession.parent_ac,
-                                      accession__feature_name='precursor_RNA').\
-                               first()
-            if rna:
-                return rna.upi
-        return None
+    def get_refseq_mirna_mature_products_if_any(self):
+        return self.get_refseq_mirna_mature_products() if self.is_refseq_mirna() else []
 
     def get_refseq_mirna_mature_products(self):
         """
@@ -1034,6 +1028,19 @@ class Xref(models.Model):
         for mature_product in mature_products:
             upis.append(mature_product.upi)
         return upis
+
+    def get_refseq_mirna_precursor(self):
+        """
+        Given a 5-prime or 3-prime mature product, retrieve its precursor miRNA.
+        """
+        if self.accession.feature_name != 'precursor_RNA':
+            rna = Xref.objects.filter(accession__parent_ac=self.accession.parent_ac,
+                                      accession__feature_name='precursor_RNA').\
+                               first()
+            if rna:
+                return rna.upi
+        return None
+
 
     def get_refseq_splice_variants(self):
         """
@@ -1080,7 +1087,11 @@ class Xref(models.Model):
             tmrna_mate_upi = False
         if not self.accession.optional_id:  # no mate info
             tmrna_mate_upi = False
-        mate = Accession.objects.filter(parent_ac=self.accession.optional_id, is_composite='Y').get()
+        try:
+            mate = Accession.objects.filter(parent_ac=self.accession.optional_id, is_composite='Y').get()
+        except Accession.DoesNotExist:
+            return False
+
         tmrna_mate_upi = mate.xrefs.get().upi.upi
         return tmrna_mate_upi
 
@@ -1093,11 +1104,11 @@ class Xref(models.Model):
         """
         tmrna_type = 0
         if self.db.display_name != 'tmRNA Website':
-            tmrna_type = 0 # not tmRNA
+            tmrna_type = 0  # not tmRNA
         if not self.accession.optional_id:
-            tmrna_type = 1 # one-piece or precursor
+            tmrna_type = 1  # one-piece or precursor
         else:
-            tmrna_type = 2 # two-piece tmRNA
+            tmrna_type = 2  # two-piece tmRNA
         return tmrna_type
 
     def get_ensembl_division(self):
@@ -1111,7 +1122,7 @@ class Xref(models.Model):
         for division in ensembl_divisions:
             if species in [x['name'] for x in division['species']]:
                 return division
-        return { # fall back to ensembl.org
+        return {  # fall back to ensembl.org
             'name': 'Ensembl',
             'url': 'http://ensembl.org',
         }
@@ -1135,6 +1146,9 @@ class Xref(models.Model):
             if chromosome:
                 return True
         return False
+
+    def get_genomic_coordinates_if_any(self):
+        return self.get_genomic_coordinates() if self.has_genomic_coordinates() else None
 
     def get_genomic_coordinates(self):
         """
@@ -1387,7 +1401,7 @@ def _xref_to_bed_format(xref):
     block_sizes = []
     block_starts = []
     for i, exon in enumerate(exons):
-        block_sizes.append(exon.primary_end - exon.primary_start or 1) # equals 1 if start == end
+        block_sizes.append(exon.primary_end - exon.primary_start or 1)  # equals 1 if start == end
         if i == 0:
             block_starts.append(0)
         else:
