@@ -506,7 +506,7 @@ class RnaDetail(RnaMixin, generics.RetrieveAPIView):
 
         flat = self.request.QUERY_PARAMS.get('flat', None)
         if flat and rna.xrefs.count() <= MAX_XREFS_TO_PREFETCH:
-            queryset = queryset.prefetch_related('xrefs','xrefs__accession')
+            queryset = queryset.prefetch_related('xrefs', 'xrefs__accession')
             return get_object_or_404(queryset, **filter_kwargs)
         else:
             return rna

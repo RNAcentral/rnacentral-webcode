@@ -186,7 +186,7 @@ def get_description(sequence, taxid=None):
         return 'uncultured Neocallimastigales 5.8S ribosomal RNA'
 
     # get description
-    if taxid and not sequence.xref_with_taxid_exists(taxid):
+    if taxid and not sequence.xrefs.filter(taxid=taxid).exists():
         taxid = None  # ignore taxid
 
     xrefs = get_xrefs_for_description(taxid)

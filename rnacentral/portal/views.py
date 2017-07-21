@@ -117,81 +117,20 @@ def rna_view(request, upi, taxid=None):
     Unique RNAcentral Sequence view.
     Display all annotations or customize the page using the taxid (optional).
     """
-    def get_xref_page_num():
-        """
-        For pages with many xrefs, get the xref page number.
-        Return it as a number because it is used in numerical comparisons
-        in the template.
-        """
-        xref_page_num = request.GET.get('xref-page')
-        if xref_page_num:
-            xref_page_num = int(xref_page_num)
-        else:
-            xref_page_num = 1
-        return xref_page_num
-
-    def get_xrefs_pages():
-        """
-        When the number of xrefs is large, calculate the number of xref batches.
-        Example:
-        count_xrefs = 3095
-        Return [1, 2, 3, 4] for 4 pages.
-        """
-        return xrange(1, int(math.ceil(rna.count_xrefs()/float(XREF_PAGE_SIZE))) + 1)
-
-    def is_taxid_filtering_possible():
-        """
-        Determine if the page should be customized using the taxid.
-        """
-        if taxid:
-            if rna.xref_with_taxid_exists(taxid):
-                return True
-            else:
-                return False
-        else:
-            return False
-
-    def get_single_species():
-        """
-        Determine if the sequence has only one species or get the taxid species.
-        """
-
-        def get_species_name_from_taxid(taxid):
-            """
-            Get a species name given an NCBI taxid.
-            """
-            species_name = ''
-            if taxid:
-                xref = Xref.objects.filter(taxid=taxid).select_related('accession')[:1].get()
-                if xref:
-                    species_name = xref.accession.species
-            return species_name
-
-        if taxid_filtering:
-            return get_species_name_from_taxid(taxid)
-        else:
-            if rna.count_distinct_organisms == 1:
-                queryset = rna.xrefs
-                results = queryset.filter(deleted='N')
-                if results.exists():
-                    return results.first().accession.species
-                else:
-                    return queryset.first().accession.species
-            else:
-                return None
-
+    # get Rna or die
     upi = upi.upper()
     try:
         rna = Rna.objects.get(upi=upi)
     except Rna.DoesNotExist:
         raise Http404
 
-    taxid_filtering = is_taxid_filtering_possible()
-
-    if taxid and not taxid_filtering:
+    # if taxid is given, but xrefs for it don't exist - redirect to non-taxon-filtered page with header
+    if taxid and not rna.xrefs.filter(taxid=taxid).exists():
         response = redirect('unique-rna-sequence', upi=upi)
         response['Location'] += '?taxid-not-found={taxid}'.format(taxid=taxid)
         return response
+
+    taxid_filtering = True if taxid else False
 
     symbol_counts = rna.count_symbols()
     non_canonical_base_counts = {key: symbol_counts[key] for key in symbol_counts if key not in ['A', 'U', 'G', 'C']}
@@ -202,19 +141,41 @@ def rna_view(request, upi, taxid=None):
         'taxid': taxid,
         'taxid_filtering': taxid_filtering,
         'taxid_not_found': request.GET.get('taxid-not-found', ''),
-        'single_species': get_single_species(),
+        'single_species': get_single_species(rna, taxid, taxid_filtering),
         'description': rna.get_description(taxid) if taxid_filtering else rna.get_description(),
         'distinct_databases': rna.get_distinct_database_names(taxid),
         'publications': rna.get_publications(taxid) if taxid_filtering else rna.get_publications(),
         'tab': request.GET.get('tab', ''),
-        'xref_pages': get_xrefs_pages(),
+        'xref_pages': xrange(1, int(math.ceil(rna.count_xrefs()/float(XREF_PAGE_SIZE))) + 1),
         'xref_page_size': XREF_PAGE_SIZE,
-        'xref_page_num': get_xref_page_num(),
+        'xref_page_num': int(request.GET.get('xref-page')) if request.GET.get('xref-page') else 1,
         'xrefs_count': rna.count_xrefs(taxid) if taxid_filtering else rna.count_xrefs(),
         'precomputed': RnaPrecomputed.objects.filter(upi=upi, taxid=taxid).first(),
     }
 
     return render(request, 'portal/unique-rna-sequence.html', {'rna': rna, 'context': context})
+
+
+def get_single_species(rna, taxid, taxid_filtering):
+    """
+    Determine if the sequence has only one species or get the taxid species.
+    """
+    if taxid_filtering:
+        if taxid:  # get a species name given an NCBI taxid, if supplied
+            xref = Xref.objects.filter(taxid=taxid).select_related('accession')[:1].get()
+            return xref.accession.species if xref else ''  # if not available for this species, return ''
+        else:
+            return ''
+    else:
+        if rna.count_distinct_organisms == 1:
+            queryset = rna.xrefs
+            results = queryset.filter(deleted='N')
+            if results.exists():
+                return results.first().accession.species
+            else:
+                return queryset.first().accession.species
+        else:
+            return None
 
 
 @cache_page(CACHE_TIMEOUT)

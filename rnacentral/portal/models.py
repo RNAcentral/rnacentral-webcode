@@ -299,15 +299,6 @@ class Rna(CachingMixin, models.Model):
             bed += _xref_to_bed_format(xref)
         return bed
 
-    def xref_with_taxid_exists(self, taxid):
-        """
-        Return True if the Rna has xrefs with a given taxid.
-        """
-        if self.xrefs.filter(taxid=taxid).exists():
-            return True
-        else:
-            return False
-
     def get_rna_type(self, taxid=None, recompute=False):
         """Determine the rna type for the given sequence. This will use the
         precomuted data if possible. If not asked to recompute it will do so.
