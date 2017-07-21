@@ -160,13 +160,10 @@ def get_single_species(rna, taxid, taxid_filtering):
     """
     Determine if the sequence has only one species or get the taxid species.
     """
-    if taxid_filtering:
-        if taxid:  # get a species name given an NCBI taxid, if supplied
-            xref = Xref.objects.filter(taxid=taxid).select_related('accession')[:1].get()
-            return xref.accession.species if xref else ''  # if not available for this species, return ''
-        else:
-            return ''
-    else:
+    if taxid_filtering:  # if taxid_filtering, taxid should be supplied - get a species name given that NCBI taxid
+        xref = Xref.objects.filter(taxid=taxid).select_related('accession')[:1].get()
+        return xref.accession.species if xref else None  # if not available for this species, return None
+    else:  # if filtering is not enabled, still, there might be only one species in references
         if rna.count_distinct_organisms == 1:
             queryset = rna.xrefs
             results = queryset.filter(deleted='N')

@@ -222,7 +222,6 @@ class Rna(CachingMixin, models.Model):
             results = queryset.distinct().count()
         return results
 
-
     def get_distinct_database_names(self, taxid=None):
         """
         Get a non-redundant list of databases referencing the sequence.
