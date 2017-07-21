@@ -81,9 +81,7 @@ def get_sequence_lineage(request, upi):
 
 @cache_page(60)
 def homepage(request):
-    """
-    RNAcentral homepage.
-    """
+    """RNAcentral homepage."""
     context = {
         'databases': list(Database.objects.filter(alive='Y').order_by('?').all()),
         'blog_url': settings.RELEASE_ANNOUNCEMENT_URL,
@@ -93,9 +91,7 @@ def homepage(request):
 
 @cache_page(CACHE_TIMEOUT)
 def expert_databases_view(request):
-    """
-    List of RNAcentral expert databases.
-    """
+    """List of RNAcentral expert databases."""
     context = {
         'expert_dbs': sorted(expert_dbs, key=lambda x: x['name'].lower()),
         'num_imported': len([x for x in expert_dbs if x['imported']]),
@@ -105,9 +101,7 @@ def expert_databases_view(request):
 
 @cache_page(CACHE_TIMEOUT)
 def rna_view_redirect(request, upi, taxid):
-    """
-    Redirect from urs_taxid to urs/taxid.
-    """
+    """Redirect from urs_taxid to urs/taxid."""
     return redirect('unique-rna-sequence', upi=upi, taxid=taxid)
 
 
@@ -177,13 +171,9 @@ def get_single_species(rna, taxid, taxid_filtering):
 
 @cache_page(CACHE_TIMEOUT)
 def expert_database_view(request, expert_db_name):
-    """
-    Expert database view.
-    """
+    """Expert database view."""
     def _normalize_expert_db_name(expert_db_name):
-        """
-        Expert_db_name should match RNACEN.RNC_DATABASE.DESCR
-        """
+        """Expert_db_name should match RNACEN.RNC_DATABASE.DESCR."""
         dbs = Database.objects.values_list('descr', flat=True)
         dbs_coming_soon = ()
         if re.match('tmrna-website', expert_db_name, flags=re.IGNORECASE):
