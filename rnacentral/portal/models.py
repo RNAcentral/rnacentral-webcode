@@ -77,13 +77,8 @@ class ChemicalComponent(CachingMixin, models.Model):
             return None
 
     def get_modomics_url(self):
-        """
-        Get a link to Modomics modifications.
-        """
-        if self.source == 'Modomics':
-            return 'http://modomics.genesilico.pl/modifications/{id}'.format(id=self.modomics_short_name)
-        else:
-            return None
+        """Get a link to Modomics modifications."""
+        return 'http://modomics.genesilico.pl/modifications/%s' % self.modomics_short_name if self.source == 'Modomics' else None
 
 
 class Rna(CachingMixin, models.Model):
@@ -103,10 +98,7 @@ class Rna(CachingMixin, models.Model):
         db_table = 'rna'
 
     def get_absolute_url(self):
-        """
-        Get a URL for an RNA object.
-        Used for generating sitemaps.
-        """
+        """Get a URL for an RNA object. Used for generating sitemaps."""
         return reverse('unique-rna-sequence', kwargs={'upi': self.upi})
 
     def get_publications(self, taxid=None):
@@ -129,22 +121,13 @@ class Rna(CachingMixin, models.Model):
         ORDER BY b.title
         """
 
-        if taxid:
-            query = query.format(taxid_clause='t1.taxid = %s AND' % taxid)
-        else:
-            query = query.format(taxid_clause='')
+        query = query.format(taxid_clause='t1.taxid = %s AND' % taxid) if taxid else query.format(taxid_clause='')
 
         return Reference.objects.raw(query, [self.upi])
 
     def is_active(self):
-        """
-        A sequence is considered active if it has at least one active cross_reference.
-        """
-        deleted = self.xrefs.values_list('deleted', flat=True).distinct()
-        if 'N' in deleted:
-            return True
-        else:
-            return False
+        """A sequence is considered active if it has at least one active cross_reference."""
+        return 'N' in self.xrefs.values_list('deleted', flat=True).distinct()  # deleted xrefs are marked with N
 
     def has_genomic_coordinates(self, taxid=None):
         """
@@ -177,8 +160,7 @@ class Rna(CachingMixin, models.Model):
         including non-canonical nucleotides and random garbage.
         :return: dict {'A': 1, 'T': 2, 'C': 3, 'G': 4, 'N': 5, 'I': 6, '*': 7}
         """
-        seq = self.get_sequence()
-        return dict(Counter(seq))
+        return dict(Counter(self.get_sequence()))
 
     def get_xrefs(self, taxid=None):
         """
@@ -197,10 +179,8 @@ class Rna(CachingMixin, models.Model):
 
         if taxid:
             xrefs = xrefs.filter(taxid=taxid)
-        if xrefs.exists():
-            return xrefs
-        else:
-            return self.xrefs.filter(deleted='Y').select_related()
+
+        return xrefs if xrefs.exists() else self.xrefs.filter(deleted='Y').select_related()
 
     def count_xrefs(self, taxid=None):
         """
@@ -213,9 +193,7 @@ class Rna(CachingMixin, models.Model):
 
     @cached_property
     def count_distinct_organisms(self):
-        """
-        Count the number of distinct taxids referenced by the sequence.
-        """
+        """Count the number of distinct taxids referenced by the sequence."""
         queryset = self.xrefs.values('accession__species')
         results = queryset.filter(deleted='N').distinct().count()
         if not results:
@@ -223,9 +201,7 @@ class Rna(CachingMixin, models.Model):
         return results
 
     def get_distinct_database_names(self, taxid=None):
-        """
-        Get a non-redundant list of databases referencing the sequence.
-        """
+        """Get a non-redundant list of databases referencing the sequence."""
         databases = self.xrefs.filter(deleted='N')
         if taxid:
             databases = databases.filter(taxid=taxid)
@@ -235,24 +211,18 @@ class Rna(CachingMixin, models.Model):
 
     @cached_property
     def first_seen(self):
-        """
-        Return the earliest release the sequence is referenced in.
-        """
+        """Return the earliest release the sequence is referenced in."""
         data = self.xrefs.aggregate(first_seen=Min('created__release_date'))
         return data['first_seen']
 
     @cached_property
     def last_seen(self):
-        """
-        Like `first_seen` but with reversed order.
-        """
+        """Like `first_seen` but with reversed order."""
         data = self.xrefs.aggregate(last_seen=Max('last__release_date'))
         return data['last_seen']
 
     def get_sequence_fasta(self):
-        """
-        Split long sequences by a fixed number of characters per line.
-        """
+        """Split long sequences by a fixed number of characters per line."""
         max_column = 80
         seq = self.get_sequence()
         split_seq = ''
@@ -277,9 +247,7 @@ class Rna(CachingMixin, models.Model):
         return gff
 
     def get_gff3(self):
-        """
-        Format genomic coordinates from all xrefs into a single file in GFF3 format.
-        """
+        """Format genomic coordinates from all xrefs into a single file in GFF3 format."""
         xrefs = self.xrefs.filter(deleted='N').all()
         gff = '##gff-version 3\n'
         for xref in xrefs:
@@ -404,8 +372,6 @@ class Rna(CachingMixin, models.Model):
 
 
 class RnaPrecomputed(models.Model):
-    """
-    """
     id = models.CharField(max_length=22, primary_key=True)
     upi = models.ForeignKey('Rna', db_column='upi', to_field='upi', related_name='precomputed')
     taxid = models.IntegerField(db_index=True, null=True)
@@ -452,62 +418,44 @@ class Database(CachingMixin, models.Model):
         db_table = 'rnc_database'
 
     def count_sequences(self):
-        """
-        Count unique sequences associated with the database.
-        """
+        """Count unique sequences associated with the database."""
         return self.xrefs.filter(deleted='N').values_list('upi', 'taxid').distinct().count()
 
     def count_organisms(self):
-        """
-        Count distinct taxids associated with the database.
-        """
+        """Count distinct taxids associated with the database."""
         return self.xrefs.values_list('taxid', flat=True).distinct().count()
 
     def first_imported(self):
-        """
-        Get the earliest imported date.
-        """
+        """Get the earliest imported date."""
         return self.xrefs.order_by('timestamp').first().timestamp
 
     @cached_property
     def description(self):
-        """
-        Get database description.
-        """
+        """Get database description."""
         return self.__get_database_attribute(self.display_name, 'description')
 
     @cached_property
     def label(self):
-        """
-        Get database slugified label.
-        """
+        """Get database slugified label."""
         return self.__get_database_attribute(self.display_name, 'label')
 
     @cached_property
     def examples(self):
-        """
-        Get database examples.
-        """
+        """Get database examples."""
         return self.__get_database_attribute(self.display_name, 'examples')
 
     def references(self):
-        """
-        Get literature references.
-        """
+        """Get literature references."""
         return self.__get_database_attribute(self.display_name, 'references')
 
     @cached_property
     def url(self):
-        """
-        Get database url.
-        """
+        """Get database url."""
         return self.__get_database_attribute(self.display_name, 'url')
 
     @cached_property
     def abbreviation(self):
-        """
-        Get database name abbreviation.
-        """
+        """Get database name abbreviation."""
         return self.__get_database_attribute(self.display_name, 'abbreviation')
 
     @cached_property
@@ -520,36 +468,25 @@ class Database(CachingMixin, models.Model):
 
     @cached_property
     def status(self):
-        """
-        Get the status of the database (new/updated/etc).
-        """
+        """Get the status of the database (new/updated/etc)."""
         return self.__get_database_attribute(self.display_name, 'status')
 
     @cached_property
     def imported(self):
-        """
-        Get the status of the database (new/updated/etc).
-        """
+        """Get the status of the database (new/updated/etc)."""
         return self.__get_database_attribute(self.display_name, 'imported')
 
     @cached_property
     def version(self):
-        """
-        Get database version (Rfam 12, PDB as of date etc).
-        """
+        """Get database version (Rfam 12, PDB as of date etc)."""
         return self.__get_database_attribute(self.display_name, 'version')
 
     def __get_database_attribute(self, db_name, attribute):
-        """
-        An accessor method for retrieving attributes from a list.
-        """
+        """An accessor method for retrieving attributes from a list."""
         return [x[attribute] for x in rnacentral_expert_dbs if x['name'].lower() == db_name.lower()].pop()
 
     def get_absolute_url(self):
-        """
-        Get a URL for a Database object.
-        Used for generating sitemaps.
-        """
+        """Get a URL for a Database object. Used for generating sitemaps."""
         return reverse('expert-database', kwargs={'expert_db_name': self.label})
 
 
@@ -612,12 +549,8 @@ class Accession(models.Model):
         db_table = 'rnc_accessions'
 
     def get_pdb_entity_id(self):
-        """
-        Example PDB accession: 1J5E_A_1 (PDB id, chain, entity id)
-        """
-        if self.database == 'PDBE':
-            return self.accession.split('_')[-1]
-        return None
+        """Example PDB accession: 1J5E_A_1 (PDB id, chain, entity id)"""
+        return self.accession.split('_')[-1] if self.database == 'PDBE' else None
 
     def get_pdb_structured_note(self):
         """
@@ -626,23 +559,15 @@ class Accession(models.Model):
         * PDB structure title
         * release date
         """
-        note = json.loads(self.note)
-        return note
+        return json.loads(self.note)
 
     def get_hgnc_ensembl_id(self):
-        """
-        Extract Ensembl Gene id (if available) from the note json field.
-        """
+        """Extract Ensembl Gene id (if available) from the note json field."""
         note = json.loads(self.note)
-        if 'ensembl_gene_id' in note:
-            return note['ensembl_gene_id']
-        else:
-            return None
+        return note['ensembl_gene_id'] if 'ensembl_gene_id' in note else None
 
     def get_hgnc_id(self):
-        """
-        Search db_xref field for an HGNC id.
-        """
+        """Search db_xref field for an HGNC id."""
         hgnc_id = ''
         match = re.search(r'HGNC\:HGNC\:(\d+)', self.db_xref)
         if match:
@@ -668,10 +593,8 @@ class Accession(models.Model):
         feature table in the Non-coding product, or for `ncRNA` features,
         it's one of the ncRNA classes defined by INSDC.
         """
-        if self.feature_name == 'ncRNA':
-            return self.ncrna_class
-        else:
-            return self.feature_name
+
+        return self.ncrna_class if self.feature_name == 'ncRNA' else self.feature_name
 
     def get_srpdb_id(self):
         return re.sub('\.\d+$', '', self.external_id)
@@ -690,9 +613,7 @@ class Accession(models.Model):
             return ena_base_url + self.accession
 
     def get_vega_transcript_url(self):
-        """
-        Get external url for Vega transcripts.
-        """
+        """Get external url for Vega transcripts."""
         url = 'http://vega.sanger.ac.uk/{species}/Transcript/Summary?db=core;t={id}'.format(
             id=self.external_id, species=self.species.replace(' ', '_'))
         return url
@@ -710,18 +631,16 @@ class Accession(models.Model):
         return ensembl_transcript_id
 
     def get_gencode_ensembl_url(self):
-        """
-        Get Ensembl URL for GENCODE transcripts.
-        """
+        """Get Ensembl URL for GENCODE transcripts."""
         ensembl_transcript_id = self.get_gencode_transcript_id()
         url = 'http://ensembl.org/{species}/Transcript/Summary?db=core;t={id}'.format(
-            id=ensembl_transcript_id, species=self.species.replace(' ', '_'))
+            id=ensembl_transcript_id,
+            species=self.species.replace(' ', '_')
+        )
         return url
 
     def get_ensembl_species_url(self):
-        """
-        Get species name in a format that can be used in Ensembl urls.
-        """
+        """Get species name in a format that can be used in Ensembl urls."""
         species = self.species
         if species == 'Dictyostelium discoideum':
             species = 'Dictyostelium discoideum AX4'
@@ -734,9 +653,7 @@ class Accession(models.Model):
         return species
 
     def get_expert_db_external_url(self):
-        """
-        Get external url to expert database.
-        """
+        """Get external url to expert database."""
         urls = {
             'RFAM': 'http://rfam.xfam.org/family/{id}',
             'SRPDB': 'http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/{id}',
@@ -823,13 +740,8 @@ class Xref(models.Model):
         db_table = 'xref'
 
     def has_modified_nucleotides(self):
-        """
-        Determine whether an xref has modified nucleotides.
-        """
-        if self.modifications.count() > 0:
-            return True
-        else:
-            return False
+        """Determine whether an xref has modified nucleotides."""
+        return self.modifications.count() > 0
 
     def get_distinct_modifications(self):
         """
@@ -856,34 +768,17 @@ class Xref(models.Model):
         return JSONRenderer().render(serializer.data)
 
     def is_active(self):
-        """
-        Convenience method for determining whether
-        an xref is current or obsolete.
-        """
-        if self.deleted == 'N':
-            return True
-        else:
-            return False
+        """Convenience method for determining whether an xref is current or obsolete."""
+        return self.deleted == 'N'
 
     def is_rfam_seed(self):
-        """
-        Determine whether an xref is part of a manually curated
-        RFAM seed alignment.
-        """
-        if re.search('alignment\:seed', self.accession.note, re.IGNORECASE) is not None:
-            return True
-        else:
-            return False
+        """Determine whether an xref is part of a manually curated RFAM seed alignment."""
+        return re.search('alignment\:seed', self.accession.note, re.IGNORECASE) is not None
 
     def get_ncbi_gene_id(self):
-        """
-        GeneID links are stored in the db_xref field.
-        """
+        """GeneID links are stored in the db_xref field."""
         match = re.search('GeneID\:(\d+)', self.accession.db_xref, re.IGNORECASE)
-        if match:
-            return match.group(1)
-        else:
-            return None
+        return match.group(1) if match else None
 
     def get_ndb_external_url(self):
         """
@@ -901,63 +796,49 @@ class Xref(models.Model):
         return ndb_url.format(structure_id=structure_id)
 
     def get_ucsc_bed(self):
-        """
-        Format genomic coordinates in BED format.
-        """
+        """Format genomic coordinates in BED format."""
         return _xref_to_bed_format(self)
 
     def get_gff(self):
-        """
-        Format genomic coordinates in GFF format.
-        """
+        """Format genomic coordinates in GFF format."""
         return GffFormatter(self)()
 
     def get_gff3(self):
-        """
-        Format genomic coordinates in GFF3 format.
-        """
+        """Format genomic coordinates in GFF3 format."""
         return Gff3Formatter(self)()
 
     def is_mirbase_mirna_precursor(self):
-        """
-        True if the accession is a miRBase precursor miRNA.
-        """
-        if self.accession.feature_name == 'precursor_RNA' and \
-           self.accession.database == 'MIRBASE':
-            return True
-        else:
-            return False
+        """True if the accession is a miRBase precursor miRNA."""
+        return self.accession.feature_name == 'precursor_RNA' and self.accession.database == 'MIRBASE'
 
     def get_mirbase_mature_products_if_any(self):
         return self.get_mirbase_mature_products() if self.is_mirbase_mirna_precursor() else []
 
     def get_mirbase_mature_products(self):
-        """
-        miRBase mature products and precursors share
-        the same external MI* identifier.
-        """
-        mature_products = Xref.objects.filter(accession__external_id=self.accession.external_id,
-                                              accession__feature_name='ncRNA').\
-                                       all()
+        """miRBase mature products and precursors share the same external MI* identifier."""
+        mature_products = Xref.objects.filter(
+            accession__external_id=self.accession.external_id,
+            accession__feature_name='ncRNA'
+        ).all()
+
         upis = []
         for mature_product in mature_products:
             upis.append(mature_product.upi)
+
         return upis
 
     def get_mirbase_precursor(self):
-        """
-        miRBase mature products and precursors share
-        the same external MI* identifier.
-        """
+        """miRBase mature products and precursors share the same external MI* identifier."""
         if self.accession.database != 'mirbase'.upper():
             return None
-        precursor = Xref.objects.filter(accession__external_id=self.accession.external_id,
-                                        accession__feature_name='precursor_RNA').\
-                                 first()
-        if precursor:
-            return precursor.upi.upi
         else:
-            return None
+            precursor = Xref.objects.filter(
+                accession__external_id=self.accession.external_id,
+                accession__feature_name='precursor_RNA'
+            ).first()
+
+            return precursor.upi.upi if precursor else None
+
 
     def is_refseq_mirna(self):
         """
@@ -967,38 +848,37 @@ class Xref(models.Model):
             * 3-prime ncRNA
         which share the same parent accession.
         """
-        same_parent = Xref.objects.filter(accession__parent_ac=self.accession.parent_ac,
-                                          accession__ncrna_class='miRNA',
-                                          deleted=self.deleted).\
-                                   all()
-        if len(same_parent) > 1:
-            return True
-        else:
-            return False
+        same_parent = Xref.objects.filter(
+            accession__parent_ac=self.accession.parent_ac,
+            accession__ncrna_class='miRNA',
+            deleted=self.deleted
+        ).all()
+
+        return len(same_parent) > 1
 
     def get_refseq_mirna_mature_products_if_any(self):
         return self.get_refseq_mirna_mature_products() if self.is_refseq_mirna() else []
 
     def get_refseq_mirna_mature_products(self):
-        """
-        Given a precursor miRNA, retrieve its mature products.
-        """
-        mature_products = Xref.objects.filter(accession__parent_ac=self.accession.parent_ac,
-                                              accession__feature_name='ncRNA').\
-                                       all()
+        """Given a precursor miRNA, retrieve its mature products."""
+        mature_products = Xref.objects.filter(
+            accession__parent_ac=self.accession.parent_ac,
+            accession__feature_name='ncRNA'
+        ).all()
+
         upis = []
         for mature_product in mature_products:
             upis.append(mature_product.upi)
         return upis
 
     def get_refseq_mirna_precursor(self):
-        """
-        Given a 5-prime or 3-prime mature product, retrieve its precursor miRNA.
-        """
+        """Given a 5-prime or 3-prime mature product, retrieve its precursor miRNA."""
         if self.accession.feature_name != 'precursor_RNA':
-            rna = Xref.objects.filter(accession__parent_ac=self.accession.parent_ac,
-                                      accession__feature_name='precursor_RNA').\
-                               first()
+            rna = Xref.objects.filter(
+                accession__parent_ac=self.accession.parent_ac,
+                accession__feature_name='precursor_RNA'
+            ).first()
+
             if rna:
                 return rna.upi
         return None
@@ -1042,9 +922,7 @@ class Xref(models.Model):
         return splice_variants
 
     def get_tmrna_mate_upi(self):
-        """
-        Get the mate of the 2-piece tmRNA
-        """
+        """Get the mate of the 2-piece tmRNA"""
         if self.db.display_name != 'tmRNA Website':
             tmrna_mate_upi = False
         if not self.accession.optional_id:  # no mate info
@@ -1074,9 +952,7 @@ class Xref(models.Model):
         return tmrna_type
 
     def get_ensembl_division(self):
-        """
-        Get Ensembl or Ensembl Genomes division for the cross-reference.
-        """
+        """Get Ensembl or Ensembl Genomes division for the cross-reference."""
         species = self.accession.get_ensembl_species_url()
         species = species.replace('_', ' ').capitalize()
 
@@ -1090,19 +966,14 @@ class Xref(models.Model):
         }
 
     def get_ucsc_db_id(self):
-        """
-        Get UCSC id for the genome assembly.
-        http://genome.ucsc.edu/FAQ/FAQreleases.html
-        """
+        """Get UCSC id for the genome assembly. http://genome.ucsc.edu/FAQ/FAQreleases.html"""
         for genome in rnacentral_genomes:
             if self.taxid == genome['taxid']:
                 return genome['assembly_ucsc']
         return None
 
     def has_genomic_coordinates(self):
-        """
-        Determine whether an xref has genomic coordinates.
-        """
+        """Determine whether an xref has genomic coordinates."""
         chromosomes = self.accession.coordinates.values_list('chromosome', flat=True)
         for chromosome in chromosomes:
             if chromosome:
@@ -1113,9 +984,7 @@ class Xref(models.Model):
         return self.get_genomic_coordinates() if self.has_genomic_coordinates() else None
 
     def get_genomic_coordinates(self):
-        """
-        Mirror the existing API while using the new GenomicCoordinates model.
-        """
+        """Mirror the existing API while using the new GenomicCoordinates model."""
         data = {
             'chromosome': self.get_feature_chromosome(),
             'strand': self.get_feature_strand(),
@@ -1135,33 +1004,27 @@ class Xref(models.Model):
         The name represents a toplevel accession as defined
         by the Ensembl API and can include patch/scaffold names etc.
         """
-        return GenomicCoordinates.objects.\
-                                  filter(accession=self.accession.accession,
-                                         chromosome__isnull=False).\
-                                  first().\
-                                  chromosome
+        return GenomicCoordinates.objects\
+                                 .filter(accession=self.accession.accession,
+                                         chromosome__isnull=False)\
+                                 .first()\
+                                 .chromosome
 
     def get_feature_strand(self):
-        """
-        Return 1 or -1 to indicate the forward and reverse strands respectively.
-        """
-        return GenomicCoordinates.objects.\
-                                  filter(accession=self.accession.accession,
-                                         chromosome__isnull=False, ).\
-                                  first().\
-                                  strand
+        """Return 1 or -1 to indicate the forward and reverse strands respectively."""
+        return GenomicCoordinates.objects\
+                                 .filter(accession=self.accession.accession,
+                                         chromosome__isnull=False, )\
+                                 .first()\
+                                 .strand
 
     def get_feature_start(self):
-        """
-        Get the `start` coordinates of the genomic feature.
-        """
+        """Get the `start` coordinates of the genomic feature."""
         data = self.accession.coordinates.aggregate(min_feature_start = Min('primary_start'))
         return data['min_feature_start']
 
     def get_feature_end(self):
-        """
-        Get the `end` coordinates of the genomic feature.
-        """
+        """Get the `end` coordinates of the genomic feature."""
         data = self.accession.coordinates.aggregate(max_feature_end = Max('primary_end'))
         return data['max_feature_end']
 
@@ -1182,13 +1045,8 @@ class Reference(models.Model):
         return title
 
     def get_authors_list(self):
-        """
-        Get publication authors as a list.
-        """
-        if self.authors:
-            return self.authors.split(', ')
-        else:
-            return []
+        """Get publication authors as a list."""
+        return self.authors.split(', ') if self.authors else []
 
     class Meta:
         db_table = 'rnc_references'
@@ -1227,22 +1085,17 @@ class Gff3Formatter(object):
         that are associated with a cross-reference.
         """
         accession = self.xref.accession.accession
-        self.exons = GenomicCoordinates.objects.\
-                                        filter(accession=accession,
-                                               chromosome__isnull=False).\
-                                        all()
+        self.exons = GenomicCoordinates.objects.filter(
+            accession=accession,
+            chromosome__isnull=False
+        ).all()
 
     def format_attributes(self, attributes, order):
-        """
-        Format the `attributes` field.
-        """
+        """Format the `attributes` field."""
         return ';'.join("%s=%s" % (key, attributes[key]) for key in order)
 
     def format_transcript(self):
-        """
-        Format transcipt description.
-        Transcipt ID is the Parent of exons.
-        """
+        """Format transcipt description. Transcipt ID is the Parent of exons."""
         attributes = {
             'ID': self.xref.accession.accession,
             'Name': self.xref.upi.upi,
@@ -1263,10 +1116,7 @@ class Gff3Formatter(object):
         self.gff += self.template.format(**data)
 
     def format_exons(self):
-        """
-        Format a list of non-coding exons.
-        Transcipt ID is the Parent of exons.
-        """
+        """Format a list of non-coding exons. Transcipt ID is the Parent of exons."""
         for i, exon in enumerate(self.exons):
             if not exon.chromosome:
                 continue
@@ -1304,9 +1154,7 @@ class Gff3Formatter(object):
         return True
 
     def __call__(self):
-        """
-        Main entry point for the class.
-        """
+        """Main entry point for the class."""
         # skip TPAs to avoid duplication with the corresponding ENA records
         if self.xref.accession.non_coding_id:
             return self.gff
@@ -1329,16 +1177,12 @@ class GffFormatter(Gff3Formatter):
     but format the attributes field differently.
     """
     def format_attributes(self, attributes, order):
-        """
-        Format the `attributes` field.
-        """
+        """Format the `attributes` field."""
         return ';'.join('%s "%s"' % (key, attributes[key]) for key in order)
 
 
 def _xref_to_bed_format(xref):
-    """
-    Return genome coordinates of an xref in BED format. Available in Rna and Xref models.
-    """
+    """Return genome coordinates of an xref in BED format. Available in Rna and Xref models."""
     bed = ''
     exons_all = xref.accession.coordinates.order_by('primary_start').all()
     exons = []
