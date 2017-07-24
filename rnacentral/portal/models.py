@@ -593,7 +593,6 @@ class Accession(models.Model):
         feature table in the Non-coding product, or for `ncRNA` features,
         it's one of the ncRNA classes defined by INSDC.
         """
-
         return self.ncrna_class if self.feature_name == 'ncRNA' else self.feature_name
 
     def get_srpdb_id(self):
@@ -910,9 +909,9 @@ class Xref(models.Model):
         splice_variants = []
         if not re.match('(vega|ensembl)', self.db.display_name, re.IGNORECASE):
             return splice_variants
-        for splice_variant in Accession.objects.filter(optional_id=self.accession.optional_id).\
-                                                exclude(accession=self.accession.accession).\
-                                                all():
+        for splice_variant in Accession.objects.filter(optional_id=self.accession.optional_id)\
+                                               .exclude(accession=self.accession.accession)\
+                                               .all():
             for splice_xref in splice_variant.xrefs.all():
                 if splice_xref.deleted == 'N':
                     splice_variants.append(splice_xref.upi)
@@ -1018,12 +1017,12 @@ class Xref(models.Model):
 
     def get_feature_start(self):
         """Get the `start` coordinates of the genomic feature."""
-        data = self.accession.coordinates.aggregate(min_feature_start = Min('primary_start'))
+        data = self.accession.coordinates.aggregate(min_feature_start=Min('primary_start'))
         return data['min_feature_start']
 
     def get_feature_end(self):
         """Get the `end` coordinates of the genomic feature."""
-        data = self.accession.coordinates.aggregate(max_feature_end = Max('primary_end'))
+        data = self.accession.coordinates.aggregate(max_feature_end=Max('primary_end'))
         return data['max_feature_end']
 
 

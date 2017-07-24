@@ -61,11 +61,31 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
     rna_type = serializers.Field(source='get_rna_type')
     expert_db_url = serializers.Field(source='get_expert_db_external_url')
 
+    # database-specific fields
+    pdb_entity_id = serializers.Field(source='get_pdb_entity_id')
+    pdb_structured_note = serializers.Field(source='get_pdb_structured_note')
+    hgnc_enembl_id = serializers.Field(source='get_hgnc_ensembl_id')
+    hgnc_id = serializers.Field(source='get_hgnc_id')
+    biotype = serializers.Field(source='get_biotype')
+    rna_type = serializers.Field(source='get_rna_type')
+    srpdb_id = serializers.Field(source='get_srpdb_id')
+    ena_url = serializers.Field(source='get_ena_url')
+    vega_transcript_url = serializers.Field(source='get_vega_transcript_url')
+    gencode_transcript_id = serializers.Field(source='get_gencode_transcript_id')
+    gencode_ensembl_url = serializers.Field(source='get_gencode_ensembl_url')
+    ensembl_species_url = serializers.Field(source='get_ensembl_species_url')
+
     class Meta:
         model = Accession
-        fields = ('url', 'id', 'description', 'external_id', 'optional_id',
-                  'species', 'rna_type', 'gene', 'product', 'organelle',
-                  'citations', 'source_url', 'expert_db_url')
+        fields = (
+            'url', 'id', 'parent_ac', 'seq_version', 'description', 'external_id', 'optional_id',
+            'species', 'rna_type', 'gene', 'product', 'organelle',
+            'citations', 'source_url', 'expert_db_url',
+            'pdb_entity_id', 'pdb_structured_note', 'hgnc_enembl_id', 'hgnc_id',
+            'biotype', 'rna_type', 'srpdb_id', 'ena_url',
+            'vega_transcript_url', 'gencode_transcript_id',
+            'gencode_ensembl_url', 'ensembl_species_url'
+        )
 
 
 class ChemicalComponentSerializer(serializers.ModelSerializer):
