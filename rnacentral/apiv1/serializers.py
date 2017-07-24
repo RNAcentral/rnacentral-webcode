@@ -26,10 +26,7 @@ from portal.models import Rna, Xref, Reference, Database, Accession, Release, Re
 
 
 class RawCitationSerializer(serializers.ModelSerializer):
-    """
-    Serializer class for literature citations.
-    Used in conjunction with raw querysets.
-    """
+    """Serializer class for literature citations. Used in conjunction with raw querysets."""
     authors = serializers.CharField(source='get_authors_list')
     publication = serializers.CharField(source='location')
     pubmed_id = serializers.CharField(source='pubmed')
@@ -43,9 +40,7 @@ class RawCitationSerializer(serializers.ModelSerializer):
 
 
 class CitationSerializer(serializers.HyperlinkedModelSerializer):
-    """
-    Serializer class for literature citations.
-    """
+    """Serializer class for literature citations."""
     authors = serializers.CharField(source='data.get_authors_list')
     publication = serializers.CharField(source='data.location')
     pubmed_id = serializers.CharField(source='data.pubmed')
@@ -59,9 +54,7 @@ class CitationSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class AccessionSerializer(serializers.HyperlinkedModelSerializer):
-    """
-    Serializer class for individual cross-references.
-    """
+    """Serializer class for individual cross-references."""
     id = serializers.CharField(source='accession')
     citations = serializers.HyperlinkedIdentityField(view_name='accession-citations')
     source_url = serializers.Field(source='get_ena_url')
@@ -76,9 +69,7 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ChemicalComponentSerializer(serializers.ModelSerializer):
-    """
-    Django Rest Framework serializer class for chemical components.
-    """
+    """Django Rest Framework serializer class for chemical components."""
     id = serializers.CharField()
     description = serializers.CharField()
     one_letter_code = serializers.CharField()
@@ -93,9 +84,7 @@ class ChemicalComponentSerializer(serializers.ModelSerializer):
 
 
 class ModificationSerializer(serializers.ModelSerializer):
-    """
-    Django Rest Framework serializer class for modified positions.
-    """
+    """Django Rest Framework serializer class for modified positions."""
     position = serializers.IntegerField()
     author_assigned_position = serializers.IntegerField()
     chem_comp = ChemicalComponentSerializer(source='modification_id')
@@ -105,9 +94,7 @@ class ModificationSerializer(serializers.ModelSerializer):
 
 
 class XrefSerializer(serializers.HyperlinkedModelSerializer):
-    """
-    Serializer class for all cross-references associated with an RNAcentral id.
-    """
+    """Serializer class for all cross-references associated with an RNAcentral id."""
     database = serializers.CharField(source='db.display_name')
     is_expert_db = serializers.SerializerMethodField('is_expert_xref')
     is_active = serializers.Field('is_active')
@@ -137,28 +124,26 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Xref
-        fields = ('database', 'is_expert_db', 'is_active', 'first_seen', 'last_seen', 'taxid', 'accession',
-                  'modifications', 'is_rfam_seed', 'ncbi_gene_id', 'ndb_external_url',
-                  'mirbase_mature_products', 'mirbase_precursor',
-                  'refseq_mirna_mature_products', 'refseq_mirna_precursor',
-                  'refseq_splice_variants', 'vega_splice_variants',
-                  'tmrna_mate_upi', 'tmrna_type',
-                  'ensembl_division', 'ucsc_db_id',
-                  'genomic_coordinates')
+        fields = (
+            'database', 'is_expert_db', 'is_active', 'first_seen', 'last_seen', 'taxid', 'accession',
+            'modifications', 'is_rfam_seed', 'ncbi_gene_id', 'ndb_external_url',
+            'mirbase_mature_products', 'mirbase_precursor',
+            'refseq_mirna_mature_products', 'refseq_mirna_precursor',
+            'refseq_splice_variants', 'vega_splice_variants',
+            'tmrna_mate_upi', 'tmrna_type',
+            'ensembl_division', 'ucsc_db_id',
+            'genomic_coordinates'
+        )
 
 
 class PaginatedXrefSerializer(pagination.PaginationSerializer):
-    """
-    Paginated version of XrefSerializer.
-    """
+    """Paginated version of XrefSerializer."""
     class Meta:
         object_serializer_class = XrefSerializer
 
 
 class RnaNestedSerializer(serializers.HyperlinkedModelSerializer):
-    """
-    Serializer class for a unique RNAcentral sequence.
-    """
+    """Serializer class for a unique RNAcentral sequence."""
     sequence = serializers.Field(source='get_sequence')
     xrefs = serializers.HyperlinkedIdentityField(view_name='rna-xrefs')
     publications = serializers.HyperlinkedIdentityField(view_name='rna-publications')
@@ -169,8 +154,10 @@ class RnaNestedSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Rna
-        fields = ('url', 'rnacentral_id', 'md5', 'sequence', 'length', 'xrefs',
-            'publications', 'is_active', 'description', 'rna_type')
+        fields = (
+            'url', 'rnacentral_id', 'md5', 'sequence', 'length', 'xrefs',
+            'publications', 'is_active', 'description', 'rna_type'
+        )
 
 
 class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
@@ -189,41 +176,26 @@ class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
     is_active = serializers.SerializerMethodField('is_active_id')
 
     def is_active_id(self, obj):
-        """
-        Return false if all xrefs with this taxid are inactive.
-        """
-        active_xrefs = self.context['xrefs'].filter(deleted='N').count()
-        if active_xrefs == 0:
-            return False
-        else:
-            return True
+        """Return false if all xrefs with this taxid are inactive."""
+        return bool(self.context['xrefs'].filter(deleted='N').count())
 
     def get_species_specific_id(self, obj):
-        """
-        Return a species-specific id using the underscore (used by Protein2GO).
-        """
+        """Return a species-specific id using the underscore (used by Protein2GO)."""
         return obj.upi + '_' + self.context['taxid']
 
     def get_species_specific_description(self, obj):
-        """
-        Get species-specific description of the RNA sequence.
-        """
+        """Get species-specific description of the RNA sequence."""
         return obj.get_description(self.context['taxid'])
 
     def get_species_name(self, obj):
-        """
-        Get the name of the species based on taxid.
-        """
+        """Get the name of the species based on taxid."""
         return self.context['xrefs'].first().accession.species
 
     def get_genes(self, obj):
-        """
-        Get a species-specific list of genes associated with the sequence
-        in this particular sequence.
-        """
-        return self.context['xrefs'].values_list('accession__gene', flat=True).\
-                                     filter(accession__gene__isnull=False).\
-                                     distinct()
+        """Get a species-specific list of genes associated with the sequence in this particular sequence."""
+        return self.context['xrefs'].values_list('accession__gene', flat=True)\
+                                    .filter(accession__gene__isnull=False)\
+                                    .distinct()
 
     def get_ncrna_types(self, obj):
         """
@@ -231,12 +203,12 @@ class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
         and expand ncRNA feature type using ncRNA class info.
         """
         xrefs = self.context['xrefs']
-        feature_names = xrefs.values_list('accession__feature_name', flat=True).\
-                              distinct()
+        feature_names = xrefs.values_list('accession__feature_name', flat=True).distinct()
+
         if 'ncRNA' in feature_names:
-            ncrna_classes = xrefs.values_list('accession__ncrna_class', flat=True).\
-                                  filter(accession__ncrna_class__isnull=False).\
-                                  distinct()
+            ncrna_classes = xrefs.values_list('accession__ncrna_class', flat=True)\
+                                 .filter(accession__ncrna_class__isnull=False)\
+                                 .distinct()
             ncrna_types = set(list(feature_names) + list(ncrna_classes))
             ncrna_types.discard('ncRNA')
         else:
@@ -253,16 +225,11 @@ class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class RnaFlatSerializer(RnaNestedSerializer):
-    """
-    Override the xrefs field in the default nested serializer
-    to provide a flat representation.
-    """
+    """Override the xrefs field in the default nested serializer to provide a flat representation."""
     xrefs = serializers.SerializerMethodField('paginated_xrefs')
 
     def paginated_xrefs(self, obj):
-        """
-        Include paginated xrefs.
-        """
+        """Include paginated xrefs."""
         queryset = obj.xrefs.all()
         page = self.context.get('page', 1)
         page_size = self.context.get('page_size', 100)
@@ -273,9 +240,7 @@ class RnaFlatSerializer(RnaNestedSerializer):
 
 
 class RnaFastaSerializer(serializers.ModelSerializer):
-    """
-    Serializer for presenting RNA sequences in FASTA format
-    """
+    """Serializer for presenting RNA sequences in FASTA format"""
     fasta = serializers.Field(source='get_sequence_fasta')
 
     class Meta:
@@ -284,9 +249,7 @@ class RnaFastaSerializer(serializers.ModelSerializer):
 
 
 class RnaGffSerializer(serializers.ModelSerializer):
-    """
-    Serializer for presenting genomic coordinates in GFF format
-    """
+    """Serializer for presenting genomic coordinates in GFF format"""
     gff = serializers.Field(source='get_gff')
 
     class Meta:
@@ -295,9 +258,7 @@ class RnaGffSerializer(serializers.ModelSerializer):
 
 
 class RnaGff3Serializer(serializers.ModelSerializer):
-    """
-    Serializer for presenting genomic coordinates in GFF format
-    """
+    """Serializer for presenting genomic coordinates in GFF format"""
     gff3 = serializers.Field(source='get_gff3')
 
     class Meta:
@@ -306,9 +267,7 @@ class RnaGff3Serializer(serializers.ModelSerializer):
 
 
 class RnaBedSerializer(serializers.ModelSerializer):
-    """
-    Serializer for presenting genomic coordinates in UCSC BED format
-    """
+    """Serializer for presenting genomic coordinates in UCSC BED format"""
     bed = serializers.Field(source='get_ucsc_bed')
 
     class Meta:

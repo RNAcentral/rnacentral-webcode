@@ -43,9 +43,7 @@ MAX_XREFS_TO_PREFETCH = 1000
 
 
 def _get_xrefs_from_genomic_coordinates(species, chromosome, start, end):
-    """
-    Common function for retrieving xrefs based on genomic coordinates.
-    """
+    """Common function for retrieving xrefs based on genomic coordinates."""
     try:
         xrefs = Xref.objects.filter(accession__coordinates__chromosome=chromosome,
                                     accession__coordinates__primary_start__gte=start,
@@ -107,9 +105,7 @@ class DasSources(APIView):
 
 
 class DasStylesheet(APIView):
-    """
-    Das stylesheet for controlling the appearance of the RNAcentral Ensembl track.
-    """
+    """Das stylesheet for controlling the appearance of the RNAcentral Ensembl track."""
 
     permission_classes = (AllowAny,)
     renderer_classes = (renderers.StaticHTMLRenderer,)  # return the string unchanged
@@ -152,9 +148,7 @@ class DasStylesheet(APIView):
 
 
 class DasFeatures(APIView):
-    """
-    DAS `features` method for retrieving genome annotations.
-    """
+    """DAS `features` method for retrieving genome annotations."""
 
     permission_classes = (AllowAny,)
     renderer_classes = (renderers.StaticHTMLRenderer, )  # return as an unmodified string
@@ -187,9 +181,7 @@ class DasFeatures(APIView):
             return (chromosome, start, end)
 
         def _format_segment():
-            """
-            Return a segment object containing exon features.
-            """
+            """Return a segment object containing exon features."""
             rnacentral_ids = []
             features = ''
             feature_types = { # defined in DasStylesheet
@@ -267,8 +259,6 @@ class GenomeAnnotations(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request, species, chromosome, start, end, format=None):
-        """
-        """
         start = start.replace(',','')
         end = end.replace(',','')
 
@@ -345,9 +335,7 @@ class APIRoot(APIView):
 
 
 class RnaFilter(django_filters.FilterSet):
-    """
-    Declare what fields can be filtered using django-filters
-    """
+    """Declare what fields can be filtered using django-filters"""
     min_length = django_filters.NumberFilter(name="length", lookup_type='gte')
     max_length = django_filters.NumberFilter(name="length", lookup_type='lte')
     external_id = django_filters.CharFilter(name="xrefs__accession__external_id", distinct=True)
@@ -358,13 +346,9 @@ class RnaFilter(django_filters.FilterSet):
 
 
 class RnaMixin(object):
-    """
-    Mixin for additional functionality specific to Rna views.
-    """
+    """Mixin for additional functionality specific to Rna views."""
     def get_serializer_class(self):
-        """
-        Determine a serializer for RnaSequences and RnaDetail views.
-        """
+        """Determine a serializer for RnaSequences and RnaDetail views."""
         if self.request.accepted_renderer.format == 'fasta':
             return RnaFastaSerializer
         elif self.request.accepted_renderer.format == 'gff':
@@ -453,9 +437,7 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
         # end DRF base code
 
     def _get_database_id(self, db_name):
-        """
-        Map the `database` parameter from the url to internal database ids
-        """
+        """Map the `database` parameter from the url to internal database ids"""
         for expert_database in Database.objects.all():
             if re.match(expert_database.label, db_name, re.IGNORECASE):
                 return expert_database.id
@@ -528,9 +510,6 @@ class RnaSpeciesSpecificView(generics.RetrieveAPIView):
     queryset = Rna.objects.all()
 
     def get(self, request, pk, taxid, format=None):
-        """
-        Respond to Get requests.
-        """
         rna = self.get_object()
         xrefs = rna.xrefs.filter(taxid=taxid)
         if not xrefs:
@@ -552,9 +531,7 @@ class XrefList(generics.ListAPIView):
     queryset = Rna.objects.select_related().all()
 
     def get(self, request, pk=None, format=None):
-        """
-        Get a paginated list of cross-references.
-        """
+        """Get a paginated list of cross-references."""
         page = request.QUERY_PARAMS.get('page', 1)
         page_size = request.QUERY_PARAMS.get('page_size', 100)
 
@@ -576,9 +553,7 @@ class AccessionView(generics.RetrieveAPIView):
     queryset = Accession.objects.select_related().all()
 
     def get(self, request, pk, format=None):
-        """
-        Retrive individual accessions.
-        """
+        """Retrive individual accessions."""
         accession = self.get_object()
         serializer = AccessionSerializer(accession, context={'request': request})
         return Response(serializer.data)

@@ -744,9 +744,7 @@ class Xref(models.Model):
         return self.modifications.count() > 0
 
     def get_distinct_modifications(self):
-        """
-        Get a list of distinct modified nucleotides described in this xref.
-        """
+        """Get a list of distinct modified nucleotides described in this xref."""
         modifications = []
         seen = None
         for modification in self.modifications.order_by('modification_id').all():
@@ -839,7 +837,6 @@ class Xref(models.Model):
 
             return precursor.upi.upi if precursor else None
 
-
     def is_refseq_mirna(self):
         """
         RefSeq miRNAs are stored in 3 xrefs:
@@ -892,12 +889,13 @@ class Xref(models.Model):
         splice_variants = []
         gene_id = self.get_ncbi_gene_id()
         if gene_id:
-            xrefs = Xref.objects.filter(db__display_name='RefSeq',
-                                        deleted='N',
-                                        accession__ncrna_class=self.accession.ncrna_class,
-                                        accession__db_xref__iregex='GeneId:'+gene_id).\
-                                 exclude(accession=self.accession.accession).\
-                                 all()
+            xrefs = Xref.objects.filter(
+                db__display_name='RefSeq',
+                deleted='N',
+                accession__ncrna_class=self.accession.ncrna_class,
+                accession__db_xref__iregex='GeneId:'+gene_id
+            ).exclude(accession=self.accession.accession).all()
+
             for splice_variant in xrefs:
                 splice_variants.append(splice_variant.upi)
             splice_variants.sort(key=lambda x: x.length)

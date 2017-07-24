@@ -151,9 +151,7 @@ def rna_view(request, upi, taxid=None):
 
 
 def get_single_species(rna, taxid, taxid_filtering):
-    """
-    Determine if the sequence has only one species or get the taxid species.
-    """
+    """Determine if the sequence has only one species or get the taxid species."""
     if taxid_filtering:  # if taxid_filtering, taxid should be supplied - get a species name given that NCBI taxid
         xref = Xref.objects.filter(taxid=taxid).select_related('accession')[:1].get()
         return xref.accession.species if xref else None  # if not available for this species, return None
@@ -210,9 +208,7 @@ def expert_database_view(request, expert_db_name):
 
 
 class ExpertDatabasesAPIView(APIView):
-    """
-    Return a list of RNA expert databases, indexed in RNAcentral.
-    """
+    """Return a list of RNA expert databases, indexed in RNAcentral."""
     permission_classes = ()
     authentication_classes = ()
 
@@ -270,9 +266,7 @@ def ebeye_proxy(request):
 #####################
 
 class StaticView(TemplateView):
-    """
-    Render flat pages.
-    """
+    """Render flat pages."""
     def get(self, request, page, *args, **kwargs):
         self.template_name = 'portal/' + page + '.html'
         response = super(StaticView, self).get(request, *args, **kwargs)
@@ -283,9 +277,7 @@ class StaticView(TemplateView):
 
 
 class GenomeBrowserView(TemplateView):
-    """
-    Render genome-browser, taking into account start/end locations
-    """
+    """Render genome-browser, taking into account start/end locations."""
     def get(self, request, *args, **kwargs):
         self.template_name = 'portal/genome-browser.html'
 
@@ -325,9 +317,7 @@ class GenomeBrowserView(TemplateView):
 
 
 class ContactView(FormView):
-    """
-    Contact form view.
-    """
+    """Contact form view."""
     template_name = 'portal/contact.html'
     form_class = ContactForm
 
@@ -392,17 +382,13 @@ def _get_json_lineage_tree(xrefs):
     """
 
     def get_lineages_and_taxids():
-        """
-        Combine the lineages from all accessions in a single list.
-        """
+        """Combine the lineages from all accessions in a single list."""
         for xref in xrefs:
             lineages.append(xref.accession.classification)
             taxids[xref.accession.classification.split('; ')[-1]] = xref.taxid
 
     def build_nested_dict_helper(path, text, container):
-        """
-        Recursive function that builds the nested dictionary.
-        """
+        """Recursive function that builds the nested dictionary."""
         segs = path.split('; ')
         head = segs[0]
         tail = segs[1:]
