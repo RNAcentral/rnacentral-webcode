@@ -50,9 +50,11 @@ class RnaXmlExporter(DbConnection):
                    t6.len as length,
                    t7.rna_type,
                    t2.locus_tag,
-                   t2.standard_name
+                   t2.standard_name,
+                   t9.short_name as rfam_family_name
             FROM xref t1, rnc_accessions t2, rnc_database t3, rnc_release t4,
-                 rnc_release t5, rna t6, rnc_rna_precomputed t7
+                 rnc_release t5, rna t6, rnc_rna_precomputed t7,
+                 rfam_model_hits t8, rfam_models t9
             WHERE t1.ac = t2.accession AND
                   t1.dbid = t3.id AND
                   t1.created = t4.id AND
@@ -60,6 +62,8 @@ class RnaXmlExporter(DbConnection):
                   t1.upi = t6.upi AND
                   t1.upi = t7.upi AND
                   t1.taxid = t7.taxid AND
+                  t1.upi = t8.upi AND
+                  t8.rfam_family_id = t9.rfam_family_id AND
                   t1.upi = :upi AND
                   t1.deleted = 'N' AND
                   t1.taxid = :taxid
@@ -76,7 +80,9 @@ class RnaXmlExporter(DbConnection):
                                  'created', 'last', 'deleted',
                                  'function', 'gene', 'gene_synonym', 'note',
                                  'product', 'common_name', 'parent_accession',
-                                 'optional_id', 'locus_tag', 'standard_name']
+                                 'optional_id', 'locus_tag', 'standard_name',
+                                 'rfam_family_name',
+                                 ]
         # other data fields for which the sets should be (re-)created
         self.data_fields = ['rna_type', 'authors', 'journal', 'popular_species',
                             'pub_title', 'pub_id', 'insdc_submission', 'xrefs',]
@@ -206,6 +212,9 @@ class RnaXmlExporter(DbConnection):
                 short_gene = re.sub(product_pattern, '', result['product'])
                 self.data['gene'].add(saxutils.escape(short_gene))
 
+        def store_rfam_data():
+            self.data['rfam_family_name'].add(result['rfam_fmaily_name'])
+
         self.cursor.execute(None, {'upi': upi, 'taxid': taxid})
         for row in self.cursor:
             result = self.row_to_dict(row)
@@ -213,6 +222,7 @@ class RnaXmlExporter(DbConnection):
             store_xrefs()
             store_rna_type()
             store_computed_data()
+            store_rfam_data()
 
     def is_active(self):
         """
@@ -423,6 +433,7 @@ class RnaXmlExporter(DbConnection):
                 {boost}
                 {locus_tag}
                 {standard_name}
+                {rfam_family_name}
             </additional_fields>
         </entry>
         """.format(upi=self.data['upi'],
@@ -442,7 +453,7 @@ class RnaXmlExporter(DbConnection):
                    rna_type=format_field('rna_type'),
                    product=format_field('product'),
                    has_genomic_coordinates=wrap_in_field_tag('has_genomic_coordinates',
-                                            str(self.data['has_genomic_coordinates'])),
+                                                             str(self.data['has_genomic_coordinates'])),
                    md5=wrap_in_field_tag('md5', self.data['md5']),
                    authors=format_author_fields(),
                    journal=format_field('journal'),
@@ -453,7 +464,9 @@ class RnaXmlExporter(DbConnection):
                    boost=wrap_in_field_tag('boost', self.data['boost']),
                    locus_tag=format_field('locus_tag'),
                    standard_name=format_field('standard_name'),
-                   taxid=taxid)
+                   taxid=taxid,
+                   rfam_family_name=format_field('rfam_family'),
+                   )
         return format_whitespace(text)
 
     ##################
