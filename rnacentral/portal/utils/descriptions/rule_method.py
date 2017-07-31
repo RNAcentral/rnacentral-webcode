@@ -371,6 +371,11 @@ def determine_rna_type_for(sequence, xrefs):
     """
 
     databases = {xref.db.name for xref in xrefs}
+    if not databases:
+        logger.error("Could not find any database this sequence is from: %s",
+                     sequence)
+        return None
+
     trusted = databases.intersection(TRUSTED_DATABASES)
     logger.debug("Found %i trusted databases", len(trusted))
     if len(trusted) == 1:

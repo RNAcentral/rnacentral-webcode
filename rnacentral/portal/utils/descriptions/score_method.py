@@ -62,6 +62,8 @@ def get_description(sequence, taxid=None):
         results = queryset.filter(deleted='N').distinct()
         if not results:
             results = queryset.distinct()
+        if not results:
+            raise Exception("Impossible state, no xrefs for: %s" % sequence.upi)
         return results
 
     def get_distinct_ncrna_classes():
