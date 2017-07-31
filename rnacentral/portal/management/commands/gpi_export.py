@@ -15,7 +15,7 @@ from optparse import make_option
 import os
 import subprocess
 from django.core.management.base import BaseCommand, CommandError
-from common_exporters.oracle_connection import OracleConnection
+from common_exporters.db_connection import DbConnection
 from portal.models import Rna
 from portal.utils import so_terms
 
@@ -145,7 +145,7 @@ class GPIExporter(object):
             assert(int(none_taxids) == 0)
 
         counter = 0
-        db = OracleConnection()
+        db = DbConnection()
         db.get_cursor()
         db.cursor.execute(get_sql_command())
 

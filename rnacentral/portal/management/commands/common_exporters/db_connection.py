@@ -11,13 +11,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import cx_Oracle
 from django.conf import settings
 
+import psycopg2
 
-class OracleConnection(object):
+
+class DbConnection(object):
     """
-    Manually connect to the Oracle database using cx_Oracle and Django settings.
+    Manually connect to the Postrges database using pyscopg2 and Django
+    settings.
     """
 
     def __init__(self):
@@ -27,20 +29,23 @@ class OracleConnection(object):
         self.connection = None
         self.cursor = None
 
-    def get_connection(self, db_url=None):
+    def get_connection(self, db_params=None):
         """
-        Get Oracle connection using database details from Django settings.
+        Get Postgres connection using database details from Django settings.
         """
-        if not db_url:
-            db_url = '{username}/{password}@{db_name}'.format(
-                username=settings.DATABASES['default']['USER'],
-                password=settings.DATABASES['default']['PASSWORD'],
-                db_name=settings.DATABASES['default']['NAME'])
-        self.connection = cx_Oracle.Connection(db_url)
+        if not db_params:
+            db_params = {
+                'username': settings.DATABASES['default']['USER'],
+                'password': settings.DATABASES['default']['PASSWORD'],
+                'dbname': settings.DATABASES['default']['NAME'],
+                'host': settings.DATABASES['default']['HOST'],
+                'port': settings.DATABASES['default']['PORT'],
+            }
+        self.connection = psycopg2.connect(**db_params)
 
     def get_cursor(self):
         """
-        Get Oracle cursor.
+        Get postgres cursor.
         """
         if not self.connection:
             self.get_connection()

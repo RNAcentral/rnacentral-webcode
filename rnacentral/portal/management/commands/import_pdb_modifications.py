@@ -13,7 +13,7 @@ limitations under the License.
 
 from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
-from common_exporters.oracle_connection import OracleConnection
+from common_exporters.db_connection import DbConnection
 from portal.models import Xref, ChemicalComponent, Modification
 
 """
@@ -28,7 +28,7 @@ To run in test mode:
 python manage.py -t -d <database_url>
 """
 
-class PBDModificationsImporter(OracleConnection):
+class PBDModificationsImporter(DbConnection):
     """
     Class for importing chemical modifications information from PDBe.
     """

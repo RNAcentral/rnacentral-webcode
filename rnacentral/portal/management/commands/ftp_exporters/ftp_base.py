@@ -14,8 +14,8 @@ limitations under the License.
 from django.conf import settings
 from portal.models import Rna, Database, Xref
 from django.contrib.humanize.templatetags.humanize import intcomma
-from portal.management.commands.common_exporters.oracle_connection \
-    import OracleConnection
+from portal.management.commands.common_exporters.db_connection \
+    import DbConnection
 import logging
 import os
 import re
@@ -23,7 +23,7 @@ import subprocess
 import time
 
 
-class FtpBase(OracleConnection):
+class FtpBase(DbConnection):
     """
     Base class for FTP export helper classes.
     """

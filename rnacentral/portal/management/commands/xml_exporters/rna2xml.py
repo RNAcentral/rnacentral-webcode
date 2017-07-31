@@ -13,11 +13,11 @@ limitations under the License.
 
 import re
 from xml.sax import saxutils
-from portal.management.commands.common_exporters.oracle_connection \
-    import OracleConnection
+from portal.management.commands.common_exporters.db_connection \
+    import DbConnection
 
 
-class RnaXmlExporter(OracleConnection):
+class RnaXmlExporter(DbConnection):
     """
     A class for outputting data about unique RNA sequences in xml dump format
     used for metadata indexing.
