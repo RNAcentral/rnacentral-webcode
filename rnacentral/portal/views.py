@@ -211,6 +211,7 @@ def rna_view(request, upi, taxid=None):
         'xref_page_size': XREF_PAGE_SIZE,
         'xref_page_num': get_xref_page_num(),
         'precomputed': RnaPrecomputed.objects.filter(upi=upi, taxid=taxid).first(),
+        'rfam_status': rna.get_rfam_status(taxid=taxid),
     }
 
     return render(request, 'portal/unique-rna-sequence.html', {'rna': rna, 'context': context})

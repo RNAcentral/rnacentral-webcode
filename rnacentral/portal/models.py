@@ -30,7 +30,7 @@ from rest_framework.renderers import JSONRenderer
 from portal.config.genomes import genomes as rnacentral_genomes
 from portal.config.expert_databases import expert_dbs as rnacentral_expert_dbs
 
-
+from portal.rfam_matches import check_issues
 from portal.utils import descriptions as desc
 
 
@@ -413,16 +413,6 @@ class Rna(CachingMixin, models.Model):
 
         return xrefs.select_related('accession', 'db')
 
-    def expects_rfam_hits(self):
-        """
-        Check if this Rna object should match at least one match to an Rfam
-        family. This is done by seeing if it is not an lncRNA or piRNA as those
-        are not modeled by Rfam.
-
-        :returns bool: True if this Rna should have an Rfam match.
-        """
-        return self.get_rna_type() not in set(['lncRNA', 'piRNA'])
-
     def has_rfam_hits(self):
         """
         Check if this has any Rfam hits.
@@ -443,13 +433,17 @@ class Rna(CachingMixin, models.Model):
 
         all_hits = RfamHit.objects.filter(
             upi=self.upi,
+            rfam_model__is_suppressed=False,
         ).order_by('rfam_model__rfam_clan_id', 'e_value', '-score')
 
         hits = []
         clan_of = op.attrgetter('rfam_clan_id')
-        for clan_id, clan_hits in it.groupby(all_hits, clan_of):
+        for _, clan_hits in it.groupby(all_hits, clan_of):
             hits.append(next(clan_hits))
         return hits
+
+    def get_rfam_status(self, taxid=None):
+        return check_issues(self, taxid=taxid)
 
     def get_rfam_rna_types(self):
         """
@@ -459,30 +453,6 @@ class Rna(CachingMixin, models.Model):
         :returns list: A list of all RNA types from Rfamm hits to this Rna.
         """
         return sorted(h.rfam_model.rna_type for h in self.get_rfam_hits())
-
-    def any_valid_match(self):
-        """
-        Check if any hit from Rfam model has the same RNA type as this Rna.
-
-        :return bool: True if any family that matches this sequence has the
-        same RNA type as this Rna.
-        """
-        if not self.expects_rfam_hits:
-            return False
-        rna_types = {hit.rfam_model.rna_type for hit in self.get_rfam_hits()}
-        return self.get_rna_type() in rna_types
-
-    def all_valid_rfam_matches(self):
-        """
-        Check if all hits from Rfam model has the same RNA type as this Rna.
-
-        :return bool: True if all families that match this sequence have the
-        same RNA type as this Rna.
-        """
-        if not self.expects_rfam_hits:
-            return False
-        rna_types = {hit.rfam_model.rna_type for hit in self.get_rfam_hits()}
-        return set([self.get_rna_type()]) == rna_types
 
     def was_rfam_analyzed(self):
         """
