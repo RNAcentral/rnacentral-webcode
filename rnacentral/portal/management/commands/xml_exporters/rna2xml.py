@@ -51,7 +51,8 @@ class RnaXmlExporter(DbConnection):
                    t7.rna_type,
                    t2.locus_tag,
                    t2.standard_name,
-                   t9.short_name as rfam_family_name
+                   t9.short_name as rfam_family_name,
+                   t9.rfam_family_id as rfam_id
             FROM xref t1, rnc_accessions t2, rnc_database t3, rnc_release t4,
                  rnc_release t5, rna t6, rnc_rna_precomputed t7,
                  rfam_model_hits t8, rfam_models t9
@@ -81,8 +82,7 @@ class RnaXmlExporter(DbConnection):
                                  'function', 'gene', 'gene_synonym', 'note',
                                  'product', 'common_name', 'parent_accession',
                                  'optional_id', 'locus_tag', 'standard_name',
-                                 'rfam_family_name',
-                                 ]
+                                 'rfam_family_name', 'rfam_id']
         # other data fields for which the sets should be (re-)created
         self.data_fields = ['rna_type', 'authors', 'journal', 'popular_species',
                             'pub_title', 'pub_id', 'insdc_submission', 'xrefs',]
@@ -213,7 +213,8 @@ class RnaXmlExporter(DbConnection):
                 self.data['gene'].add(saxutils.escape(short_gene))
 
         def store_rfam_data():
-            self.data['rfam_family_name'].add(result['rfam_fmaily_name'])
+            self.data['rfam_family_name'].add(result['rfam_family_name'])
+            self.data['rfam_id'].add(result['rfam_id'])
 
         self.cursor.execute(None, {'upi': upi, 'taxid': taxid})
         for row in self.cursor:
@@ -434,6 +435,7 @@ class RnaXmlExporter(DbConnection):
                 {locus_tag}
                 {standard_name}
                 {rfam_family_name}
+                {rfam_id}
             </additional_fields>
         </entry>
         """.format(upi=self.data['upi'],
@@ -466,6 +468,7 @@ class RnaXmlExporter(DbConnection):
                    standard_name=format_field('standard_name'),
                    taxid=taxid,
                    rfam_family_name=format_field('rfam_family'),
+                   rfam_id=format_field('rfam_id'),
                    )
         return format_whitespace(text)
 
