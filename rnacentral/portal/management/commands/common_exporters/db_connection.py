@@ -35,7 +35,7 @@ class DbConnection(object):
         """
         if not db_params:
             db_params = {
-                'username': settings.DATABASES['default']['USER'],
+                'user': settings.DATABASES['default']['USER'],
                 'password': settings.DATABASES['default']['PASSWORD'],
                 'dbname': settings.DATABASES['default']['NAME'],
                 'host': settings.DATABASES['default']['HOST'],
