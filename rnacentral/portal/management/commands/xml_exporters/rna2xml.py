@@ -252,6 +252,9 @@ class RnaXmlExporter(DbConnection):
             store_computed_data()
             store_rfam_data()
 
+        if not self.data['rfam_problems']:
+            self.data['rfam_problems'].add('none')
+
     def is_active(self):
         """
         Return 'Active' if a sequence has at least one active cross_reference,
