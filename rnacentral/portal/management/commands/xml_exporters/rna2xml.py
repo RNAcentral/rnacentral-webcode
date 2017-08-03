@@ -12,6 +12,7 @@ limitations under the License.
 """
 
 import re
+import json
 from xml.sax import saxutils
 from portal.management.commands.common_exporters.db_connection \
     import DbConnection
@@ -37,22 +38,36 @@ class RnaXmlExporter(DbConnection):
             in one database request. The query is precompiled
             with a UPI placeholder for better performance.
             """
-            sql = """
-            SELECT t1.taxid, t1.deleted,
-                   t2.species, t2.organelle, t2.external_id, t2.optional_id,
-                   t2.non_coding_id, t2.accession,
-                   t2.function, t2.gene, t2.gene_synonym, t2.feature_name,
-                   t2.ncrna_class, t2.product, t2.common_name, t2.note,
-                   t2.parent_ac || '.' || t2.seq_version as parent_accession,
-                   t3.display_name as expert_db,
-                   t4.timestamp as created,
-                   t5.timestamp as last,
-                   t6.len as length,
-                   t7.rna_type,
-                   t2.locus_tag,
-                   t2.standard_name,
-                   t9.short_name as rfam_family_name,
-                   t9.rfam_family_id as rfam_id
+            self.sql = """
+            SELECT
+                t1.taxid,
+                t1.deleted,
+                t2.species,
+                t2.organelle,
+                t2.external_id,
+                t2.optional_id,
+                t2.non_coding_id,
+                t2.accession,
+                t2.function,
+                t2.gene,
+                t2.gene_synonym,
+                t2.feature_name,
+                t2.ncrna_class,
+                t2.product,
+                t2.common_name,
+                t2.note,
+                t2.parent_ac || '.' || t2.seq_version as parent_accession,
+                t3.display_name as expert_db,
+                t4.timestamp as created,
+                t5.timestamp as last,
+                t6.len as length,
+                t7.rna_type,
+                t2.locus_tag,
+                t2.standard_name,
+                t9.short_name as rfam_family_name,
+                t9.rfam_model_id as rfam_id,
+                t9.rfam_clan_id as rfam_clan,
+                t7.rfam_problems
             FROM xref t1, rnc_accessions t2, rnc_database t3, rnc_release t4,
                  rnc_release t5, rna t6, rnc_rna_precomputed t7,
                  rfam_model_hits t8, rfam_models t9
@@ -64,12 +79,11 @@ class RnaXmlExporter(DbConnection):
                   t1.upi = t7.upi AND
                   t1.taxid = t7.taxid AND
                   t1.upi = t8.upi AND
-                  t8.rfam_family_id = t9.rfam_family_id AND
-                  t1.upi = :upi AND
+                  t8.rfam_model_id = t9.rfam_model_id AND
+                  t1.upi = %(upi)s AND
                   t1.deleted = 'N' AND
-                  t1.taxid = :taxid
+                  t1.taxid = %(taxid)s
             """
-            self.cursor.prepare(sql)
 
         self.data = dict()
 
@@ -82,22 +96,23 @@ class RnaXmlExporter(DbConnection):
                                  'function', 'gene', 'gene_synonym', 'note',
                                  'product', 'common_name', 'parent_accession',
                                  'optional_id', 'locus_tag', 'standard_name',
-                                 'rfam_family_name', 'rfam_id']
+                                 'rfam_family_name', 'rfam_id', 'rfam_clan']
         # other data fields for which the sets should be (re-)created
         self.data_fields = ['rna_type', 'authors', 'journal', 'popular_species',
-                            'pub_title', 'pub_id', 'insdc_submission', 'xrefs',]
+                            'pub_title', 'pub_id', 'insdc_submission', 'xrefs',
+                            'rfam_problem_found', 'rfam_problems']
 
         self.popular_species = set([
-            9606,   # human
-            10090,  # mouse
-            7955,   # zebrafish
-            3702,   # Arabidopsis thaliana
-            6239,   # Caenorhabditis elegans
-            7227,   # Drosophila melanogaster
-            559292, # Saccharomyces cerevisiae S288c
-            4896,   # Schizosaccharomyces pombe
-            511145, # Escherichia coli str. K-12 substr. MG1655
-            224308, # Bacillus subtilis subsp. subtilis str. 168
+            9606,    # human
+            10090,   # mouse
+            7955,    # zebrafish
+            3702,    # Arabidopsis thaliana
+            6239,    # Caenorhabditis elegans
+            7227,    # Drosophila melanogaster
+            559292,  # Saccharomyces cerevisiae S288c
+            4896,    # Schizosaccharomyces pombe
+            511145,  # Escherichia coli str. K-12 substr. MG1655
+            224308,  # Bacillus subtilis subsp. subtilis str. 168
         ])
 
         self.reset()
@@ -215,8 +230,20 @@ class RnaXmlExporter(DbConnection):
         def store_rfam_data():
             self.data['rfam_family_name'].add(result['rfam_family_name'])
             self.data['rfam_id'].add(result['rfam_id'])
+            self.data['rfam_clan'].add(result['rfam_clan'])
 
-        self.cursor.execute(None, {'upi': upi, 'taxid': taxid})
+            problems = json.loads(result['rfam_problems'])
+            for problem in problems['problems']:
+                self.data['rfam_problems'].add(problem['name'])
+
+            if not 'rfam_problem_found' not in self.data or \
+                    not self.data['rfam_problem_found']:
+                self.data['rfam_problem_found'] = ['no']
+
+            if problems['has_issue']:
+                self.data['rfam_problem_found'] = ['yes']
+
+        self.cursor.execute(self.sql, {'upi': upi, 'taxid': taxid})
         for row in self.cursor:
             result = self.row_to_dict(row)
             store_redundant_fields()
@@ -436,40 +463,47 @@ class RnaXmlExporter(DbConnection):
                 {standard_name}
                 {rfam_family_name}
                 {rfam_id}
+                {rfam_clan}
+                {rfam_problem}
+                {rfam_problem_found}
             </additional_fields>
         </entry>
-        """.format(upi=self.data['upi'],
-                   description=self.data['description_line'],
-                   first_seen=self.first_seen(),
-                   last_seen=self.last_seen(),
-                   cross_references=format_cross_references(),
-                   is_active=wrap_in_field_tag('active', self.is_active()),
-                   length=wrap_in_field_tag('length', self.data['length']),
-                   species=format_field('species'),
-                   organelles=format_field('organelle'),
-                   expert_dbs=format_field('expert_db'),
-                   common_name=format_field('common_name'),
-                   function=format_field('function'),
-                   gene=format_field('gene'),
-                   gene_synonym=format_field('gene_synonym'),
-                   rna_type=format_field('rna_type'),
-                   product=format_field('product'),
-                   has_genomic_coordinates=wrap_in_field_tag('has_genomic_coordinates',
-                                                             str(self.data['has_genomic_coordinates'])),
-                   md5=wrap_in_field_tag('md5', self.data['md5']),
-                   authors=format_author_fields(),
-                   journal=format_field('journal'),
-                   insdc_submission = format_field('insdc_submission'),
-                   pub_title=format_field('pub_title'),
-                   pub_id=format_field('pub_id'),
-                   popular_species=format_field('popular_species'),
-                   boost=wrap_in_field_tag('boost', self.data['boost']),
-                   locus_tag=format_field('locus_tag'),
-                   standard_name=format_field('standard_name'),
-                   taxid=taxid,
-                   rfam_family_name=format_field('rfam_family'),
-                   rfam_id=format_field('rfam_id'),
-                   )
+        """.format(
+            upi=self.data['upi'],
+            description=self.data['description_line'],
+            first_seen=self.first_seen(),
+            last_seen=self.last_seen(),
+            cross_references=format_cross_references(),
+            is_active=wrap_in_field_tag('active', self.is_active()),
+            length=wrap_in_field_tag('length', self.data['length']),
+            species=format_field('species'),
+            organelles=format_field('organelle'),
+            expert_dbs=format_field('expert_db'),
+            common_name=format_field('common_name'),
+            function=format_field('function'),
+            gene=format_field('gene'),
+            gene_synonym=format_field('gene_synonym'),
+            rna_type=format_field('rna_type'),
+            product=format_field('product'),
+            has_genomic_coordinates=wrap_in_field_tag('has_genomic_coordinates',
+                                                      str(self.data['has_genomic_coordinates'])),
+            md5=wrap_in_field_tag('md5', self.data['md5']),
+            authors=format_author_fields(),
+            journal=format_field('journal'),
+            insdc_submission = format_field('insdc_submission'),
+            pub_title=format_field('pub_title'),
+            pub_id=format_field('pub_id'),
+            popular_species=format_field('popular_species'),
+            boost=wrap_in_field_tag('boost', self.data['boost']),
+            locus_tag=format_field('locus_tag'),
+            standard_name=format_field('standard_name'),
+            taxid=taxid,
+            rfam_family_name=format_field('rfam_family_name'),
+            rfam_id=format_field('rfam_id'),
+            rfam_clan=format_field('rfam_clan'),
+            rfam_problem=format_field('rfam_problems'),
+            rfam_problem_found=format_field('rfam_problem_found'),
+        )
         return format_whitespace(text)
 
     ##################

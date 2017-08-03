@@ -11,6 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import sys
+
 from django.core.management.base import BaseCommand, CommandError
 from optparse import make_option
 from cProfile import Profile
@@ -34,24 +36,30 @@ class Command(BaseCommand):
     ########################
 
     option_list = BaseCommand.option_list + (
-        make_option('--min',
+        make_option(
+            '--min',
             dest='min',
             type='int',
-            help='Minimum RNA id to output'),
+            help='Minimum RNA id to output'
+        ),
 
-        make_option('--max',
+        make_option(
+            '--max',
             dest='max',
             type='int',
-            help='Maximum RNA id to output'),
+            help='Maximum RNA id to output'
+        ),
 
-        make_option('--profile',
+        make_option(
+            '--profile',
             default=False,
             action='store_true',
-            help='[Optional] Show cProfile information for profiling purposes'),
+            help='[Optional] Show cProfile information for profiling purposes'
+        ),
     )
     # shown with -h, --help
-    help = ('Precompute entry descriptions. '
-            'Run `python manage.py precompute_descriptions -h` for more information.')
+    help = ('Precompute entry data. '
+            'Run `python manage.py precompute_data -h` for more information.')
 
     ######################
     # Django entry point #
@@ -106,14 +114,13 @@ class Command(BaseCommand):
             _handle(self, *args, **options)
 
     def run(self):
-        """
-        """
         for rna in Rna.objects.filter(id__gt=self.options['min'],
                                       id__lte=self.options['max']).iterator():
             defaults = {
                 'upi_id': rna.upi,
                 'rna_type': rna.get_rna_type(recompute=True),
                 'description': rna.get_description(recompute=True),
+                'rfam_problems': rna.get_rfam_status().as_json()
             }
             RnaPrecomputed.objects.update_or_create(id=rna.upi, defaults=defaults)
 
@@ -124,5 +131,6 @@ class Command(BaseCommand):
                     'taxid': taxid,
                     'rna_type': rna.get_rna_type(taxid=taxid, recompute=True),
                     'description': rna.get_description(recompute=True, taxid=taxid),
+                    'rfam_problems': rna.get_rfam_status(taxid=taxid).as_json()
                 }
                 RnaPrecomputed.objects.update_or_create(id=_id, defaults=defaults)
