@@ -67,7 +67,7 @@ class RfamMatchStatus(object):
         if status.upi != self.upi and self.taxid == status.taxid:
             raise ValueError("Can only merge MatchStatus from the same RNA.")
 
-        self.finders.extend(self.finders)
+        self.finders.extend(status.finders)
         self.messages.extend(status.messages)
         self.has_issue = (self.has_issue or status.has_issue)
         return self
