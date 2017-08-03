@@ -466,6 +466,20 @@ class Rna(CachingMixin, models.Model):
         has = bool(RfamAnalyzedSequences.objects.get(upi=self.upi))
         return has
 
+    def get_domains(self, taxid=None):
+        """
+        Get all domains this sequence has been found in.
+        """
+
+        domains = set()
+        accessions = Accession.objects.filter(xrefs__upi=self.upi)
+        if taxid:
+            accessions = accessions.filter(xrefs__taxid=taxid)
+        for accession in accessions:
+            classification = accession.classification
+            domains.add(classification.split(';')[0])
+        return domains
+
 
 class RnaPrecomputed(models.Model):
     """
@@ -475,6 +489,7 @@ class RnaPrecomputed(models.Model):
     taxid = models.IntegerField(db_index=True, null=True)
     description = models.CharField(max_length=250)
     rna_type = models.CharField(max_length=250)
+    # rfam_problems = models.TextField()
 
     class Meta:
         db_table = 'rnc_rna_precomputed'
