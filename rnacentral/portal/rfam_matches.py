@@ -112,14 +112,14 @@ class DomainProblem(object):
 
     def __call__(self, rna, taxid=None):
         hits = rna.get_rfam_hits()
-        if len(hits) > 1:
+        if not hits or len(hits) > 1:
             return RfamMatchStatus.no_issues(rna.upi, taxid)
 
         model = hits[0].rfam_model
         found = model.domain
         if not found:
             return RfamMatchStatus.no_issues(rna.upi, taxid)
-        if set([found]) != rna.get_domains():
+        if set([found]) != rna.get_domains(taxid=taxid):
             msg = self.message(model, rna)
             return RfamMatchStatus.with_issue(rna.upi, taxid, self, msg)
         return RfamMatchStatus.no_issues(rna.upi, taxid)
