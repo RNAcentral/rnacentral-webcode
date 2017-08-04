@@ -1353,7 +1353,7 @@ class RfamHit(models.Model):
     upi = models.ForeignKey(Rna, db_column='upi', to_field='upi')
     sequence_start = models.PositiveIntegerField()
     sequence_stop = models.PositiveIntegerField()
-    sequence_completness = models.FloatField()
+    sequence_completeness = models.FloatField()
 
     rfam_model = models.ForeignKey(
         RfamModel,

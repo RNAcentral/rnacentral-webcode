@@ -174,7 +174,7 @@ class IncompleteSequence(object):
             return RfamMatchStatus.no_issues(rna.upi, taxid)
 
         if hits[0].model_completeness <= 0.5 and \
-                hits[0].sequence_completness >= 0.9:
+                hits[0].sequence_completeness >= 0.9:
             msg = self.message(hits[0])
             return RfamMatchStatus.with_issue(rna.upi, taxid, self, msg)
         return RfamMatchStatus.no_issues(rna.upi, taxid)

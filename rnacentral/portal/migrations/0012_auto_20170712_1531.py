@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
                 ('rfam_hit_id', models.AutoField(serialize=False, primary_key=True)),
                 ('sequence_start', models.PositiveIntegerField()),
                 ('sequence_stop', models.PositiveIntegerField()),
-                ('sequence_completness', models.FloatField()),
+                ('sequence_completeness', models.FloatField()),
                 ('model_start', models.PositiveIntegerField()),
                 ('model_stop', models.PositiveIntegerField()),
                 ('model_completeness', models.FloatField()),
