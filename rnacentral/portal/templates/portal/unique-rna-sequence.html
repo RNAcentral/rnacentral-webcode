@@ -127,12 +127,12 @@ limitations under the License.
                 <ul class="list-inline" style="margin-top: 5px;">
                 <li>
                   <div class="alert alert-warning" style="margin-bottom: 0px">
-                    <i class="fa fa-warning" aria-hidden="true"></i>
+                    <i class="fa fa-warning fa-2x pull-left" aria-hidden="true"></i>
                     {% for message in context.rfam_status.messages %}
-                      <span>{{ message }}</span>
-                    {% endfor %}
-                    {% for hit in rna.get_rfam_hits %}
-                    <a href="{{ hit.rfam_model.url }}">{{ hit.rfam_model.short_name }}</a>
+                      {% autoescape off %}
+                        <span>{{ message }}</span>
+                      {% endautoescape %}
+                      <br />
                     {% endfor %}
                   </div>
                 </li>

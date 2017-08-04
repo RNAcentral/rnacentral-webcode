@@ -119,7 +119,7 @@ class DomainProblem(object):
         found = model.domain
         if not found:
             return RfamMatchStatus.no_issues(rna.upi, taxid)
-        if set([found]) != rna.get_domains(taxid=taxid):
+        if found not in rna.get_domains(taxid=taxid):
             msg = self.message(model, rna)
             return RfamMatchStatus.with_issue(rna.upi, taxid, self, msg)
         return RfamMatchStatus.no_issues(rna.upi, taxid)
@@ -140,9 +140,10 @@ class IncompleteSequence(object):
         Get a message that indicates a problem.
         """
 
-        return ('This sequence appears to be an incomplete instance of the %s'
-                ' model' %
-                hit.rfam_model.long_name)
+        return 'Potential <a href="{url}">{name}</a> fragment'.format(
+            name=hit.rfam_model.long_name,
+            url=hit.rfam_model.url
+        )
 
     def allowed_families(self):
         """
@@ -216,12 +217,11 @@ class UnmodelledRnaType(object):
         """
         if rna.get_rna_type() == 'lncRNA':
             return ("This sequence is not expected to match an Rfam model "
-                    "because Rfam does not model full length lncRNA's, but"
-                    " matches:")
+                    "because Rfam does not model full length lncRNA's")
 
         if rna.get_rna_type == 'piRNA':
             return ("This sequence is not expected to match an Rfam match a "
-                    "model because Rfam does not model piRNA's, but matches:")
+                    "model because Rfam does not model piRNA's")
 
         raise ValueError("Impossible state")
 
