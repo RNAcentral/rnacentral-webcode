@@ -105,9 +105,11 @@ class DomainProblem(object):
 
         differing = rna.get_domains() - set([model.domain])
         differing = ', '.join(sorted(differing))
-        return 'This %s sequence matches a %s Rfam model' % (
+        return 'This %s sequence matches a %s Rfam model (<a href="%s">%s</a>)' % (
             differing,
-            model.domain
+            model.domain,
+            model.url,
+            model.short_name,
         )
 
     def __call__(self, rna, taxid=None):
