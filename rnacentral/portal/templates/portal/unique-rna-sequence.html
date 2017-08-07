@@ -250,7 +250,7 @@ limitations under the License.
                         {#<a href="http://amigo.geneontology.org/amigo/term/GO:0005730">GO:0005730</a> (<strong>nucleolus</strong>)#}
                       </li>
                       <li>Matches at:
-                        <strong>{{ hit.sequence_start }}-{{ hit.sequence_stop }}</strong>
+                        <strong>{{ hit.sequence_start|add:"1" }}-{{ hit.sequence_stop}}</strong>
                         ({% widthratio hit.model_completeness 1 100 %}% of the model)
                       </li>
                     </ul>
