@@ -353,6 +353,9 @@ class RnaXmlExporter(DbConnection):
                 generic_types.intersection(self.data['rna_type']):
             boost = boost - 0.5
 
+        if 'incomplete_sequence' in self.data['rfam_problems']:
+            boost = boost - 0.5
+
         self.data['boost'] = boost
 
     def store_rna_properties(self, rna, taxid):
