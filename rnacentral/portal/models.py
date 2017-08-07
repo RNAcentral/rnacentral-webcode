@@ -466,9 +466,13 @@ class Rna(CachingMixin, models.Model):
         has = bool(RfamAnalyzedSequences.objects.get(upi=self.upi))
         return has
 
-    def get_domains(self, taxid=None):
+    def get_domains(self, taxid=None, ignore_unclassified=False):
         """
-        Get all domains this sequence has been found in.
+        Get all domains this sequence has been found in. If taxid is given then
+        only the domain for all accessions from the given taxid will be
+        returned. If ignore_unclassified is given then this will exclude any
+        domains where the organism comes from an enviromental sample or is
+        uncultured.
         """
 
         domains = set()
@@ -477,6 +481,10 @@ class Rna(CachingMixin, models.Model):
             accessions = accessions.filter(xrefs__taxid=taxid)
         for accession in accessions:
             classification = accession.classification
+            if ignore_unclassified:
+                if 'uncultured' in classification or \
+                        'environmental' in classification:
+                    continue
             domains.add(classification.split(';')[0])
         return domains
 

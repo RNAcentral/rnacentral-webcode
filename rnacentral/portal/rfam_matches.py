@@ -119,7 +119,12 @@ class DomainProblem(object):
         found = model.domain
         if not found:
             return RfamMatchStatus.no_issues(rna.upi, taxid)
-        if found not in rna.get_domains(taxid=taxid):
+
+        rna_domains = rna.get_domains(taxid=taxid, ignore_unclassified=True)
+        if not rna_domains:
+            return RfamMatchStatus.no_issues(rna.upi, taxid)
+
+        if found not in rna_domains:
             msg = self.message(model, rna)
             return RfamMatchStatus.with_issue(rna.upi, taxid, self, msg)
         return RfamMatchStatus.no_issues(rna.upi, taxid)
