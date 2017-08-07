@@ -235,7 +235,7 @@ class UnmodelledRnaType(object):
 
 def check_issues(rna, taxid=None):
     finders = [
-            UnmodelledRnaType(),
+            # UnmodelledRnaType(),
             DomainProblem(),
             IncompleteSequence(),
             RnaTypeConflict(),
