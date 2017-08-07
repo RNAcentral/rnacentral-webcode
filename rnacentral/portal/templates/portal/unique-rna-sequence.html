@@ -120,7 +120,7 @@ limitations under the License.
                 <li>
                   Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab">species</a>
                 </li>
-                <li>{{ rna.get_rna_type }}</li>
+                <li><span class="badge">{{ rna.get_rna_type }}</span></li>
               </ul>
 
               {% if context.rfam_status.has_issue %}
@@ -200,6 +200,70 @@ limitations under the License.
               <div id="genoverse-description"></div>
               <div id="genoverse"></div>
             </div>
+          </div>
+
+          <div>
+            <h2>
+              Rfam hits
+              <small>
+                {% if rna.get_rfam_hits|length > 1 %}{{ rna.get_rfam_hits|length|intcomma }} total {% endif %}
+                <a href="#"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
+              </small>
+            </h2>
+
+            <div class="panel panel-default">
+              <div class="panel-body">
+                {% if rna.get_rfam_hits|length > 0 %}
+                {% for hit in rna.get_rfam_hits %}
+                <div class="media">
+                  <div class="media-left media-top col-md-2">
+                    <a href='#'>
+                      <img
+                      class="media-object thumbnail"
+                      src="{{ hit.rfam_model.thumbnail_url }}"
+                      style="max-width: 120px; max-height: 120px;"
+                      alt="{{ hit.rfam_model_id }} secondary structure">
+                    </a>
+                  </div>
+
+                  <div class="media-body">
+                    <h4 class="media-heading" style='padding-left: 0px;'>
+                      <a href="{{ hit.rfam_model.url }}">
+                        {{ hit.rfam_model.long_name }}
+                      </a>
+                    </h4>
+
+                    <ul class="list-unstyled">
+                      <li>
+                        {{ hit.rfam_model_id }} |
+                        {% if hit.rfam_model.domain != None %}
+                          {{ hit.rfam_model.domain }}
+                        {% endif %}
+                        <span class="badge">{{ hit.rfam_model.rna_type }}</span>
+                      </li>
+                      {#<li><strong>{{ hit.rfam_model.length }}</strong> Positions</li>#}
+                      <li>
+                        <a>GO:000661</a>7 (<strong>SRP-dependent cotranslational protein targeting to membrane, signal sequence recognition</strong>) |
+                        <a>GO:0005786</a> (<strong>signal recognition particle, endoplasmic reticulum targeting</strong>) |
+                        <a>GO:0048501</a> (<strong>signal recognition particle, plasma membrane targeting</strong>)
+                        {#<a href="http://amigo.geneontology.org/amigo/term/GO:0006396">GO:0006396</a> (<strong>RNA processing</strong>) |#}
+                        {#<a href="http://amigo.geneontology.org/amigo/term/GO:0005730">GO:0005730</a> (<strong>nucleolus</strong>)#}
+                      </li>
+                      <li>Matches at:
+                        <strong>{{ hit.sequence_start }}-{{ hit.sequence_stop }}</strong>
+                        ({% widthratio hit.model_completeness 1 100 %}% of the model)
+                      </li>
+                    </ul>
+
+                  </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                  <p>No Hits found</p>
+                {% endif %}
+              </div>
+            </div>
+
           </div>
 
           <h2>

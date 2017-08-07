@@ -1348,6 +1348,10 @@ class RfamModel(models.Model):
     def url(self):
         return 'http://rfam.xfam.org/family/' + self.rfam_model_id
 
+    @property
+    def thumbnail_url(self):
+        return 'http://rfam.xfam.org/family/%s/thumbnail' % self.rfam_model_id
+
 
 class RfamHit(models.Model):
     """
