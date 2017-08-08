@@ -1429,6 +1429,40 @@ class RfamAnalyzedSequences(models.Model):
         db_table = 'rfam_analyzed_sequences'
 
 
+class GoTerm(models.Model):
+    # A GO term id is of the form: GO:0006617
+    go_term_id = models.CharField(
+        max_length=10,
+        db_index=True,
+        primary_key=True
+    )
+    name = models.TextField()
+
+    class Meta:
+        db_table = 'go_terms'
+
+    def url(self):
+        return 'http://amigo.geneontology.org/amigo/term/%s' % self.go_term_id
+
+
+class RfamGoTerm(models.Model):
+    rfam_go_term_id = models.AutoField(primary_key=True)
+    go_term = models.ForeignKey(
+        GoTerm,
+        db_column='go_term_id',
+        to_field='go_term_id',
+    )
+    rfam_model = models.ForeignKey(
+        RfamModel,
+        db_column='rfam_model_id',
+        to_field='rfam_model_id',
+    )
+
+    class Meta:
+        db_table = 'rfam_go_terms'
+        unique_together = (('rfam_model', 'go_term'),)
+
+
 """
 Common auxiliary functions.
 """
