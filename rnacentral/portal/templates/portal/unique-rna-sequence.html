@@ -207,15 +207,19 @@ limitations under the License.
               Rfam hits
               <small>
                 {% if rna.get_rfam_hits|length > 1 %}{{ rna.get_rfam_hits|length|intcomma }} total {% endif %}
-                <a href="#"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
+                <a href="#" uib-tooltip="This sequence was scanend using Infernal with all Rfam families.
+                  Shown below are the families which matched">
+                  <i class="fa fa-question-circle" aria-hidden="true"></i>
+                </a>
               </small>
             </h2>
 
             <div class="panel panel-default">
-              <div class="panel-body">
-                {% if rna.get_rfam_hits|length > 0 %}
-                {% for hit in rna.get_rfam_hits %}
-                <div class="media">
+              <div class="panel-body" style="padding-bottom: 0px;">
+                {% if rna.grouped_rfam_hits|length > 0 %}
+                <ul class="media-list">
+                {% for hit in rna.grouped_rfam_hits %}
+                <li class="media" style="margin-bottom: 1.5em;">
                   <div class="media-left media-top col-md-2">
                     <a href='#'>
                       <img
@@ -235,30 +239,59 @@ limitations under the License.
 
                     <ul class="list-unstyled">
                       <li>
-                        {{ hit.rfam_model_id }} |
+                        {{ hit.rfam_model_id }}
+                        | {{ hit.rfam_model.rfam_rna_type }}
                         {% if hit.rfam_model.domain != None %}
-                          {{ hit.rfam_model.domain }}
+                          | {{ hit.rfam_model.domain }}
                         {% endif %}
-                        <span class="badge">{{ hit.rfam_model.rna_type }}</span>
+                        | <span class="badge">{{ hit.rfam_model.rna_type }}</span>
                       </li>
-                      {#<li><strong>{{ hit.rfam_model.length }}</strong> Positions</li>#}
                       <li>
-                        {% for go_term in hit.rfam_model.go_terms %}
-                          <a href="{{ go_term.url }}">{{ go_term.go_term_id }}</a>
-                          (<strong>{{ go_term.name }}</strong>)
-                        {% endfor %}
+                        {% if hit.rfam_model.go_terms|length > 1 %}
+                        <ul class="list-unstyled">
+                          {% for go_term in hit.rfam_model.go_terms %}
+                          <li>
+                            <a href="{{ go_term.quickgo_url }}">{{ go_term.go_term_id }}</a>
+                            <small>{{ go_term.name }}</small>
+                          </li>
+                          {% endfor %}
+                        </ul>
+                        {% else %}
+                          {% with hit.rfam_model.go_terms.0 as go_term %}
+                            <a href="{{ go_term.url }}">{{ go_term.go_term_id }}</a>
+                            <small>{{ go_term.name }}</small>
+                          {% endwith %}
+                        {% endif %}
                       </li>
-                      <li>Matches at:
-                        <strong>{{ hit.sequence_start|add:"1"|intcomma }}-{{ hit.sequence_stop|intcomma }}</strong>
-                        ({% widthratio hit.model_completeness 1 100 %}% of the model)
-                      </li>
+                      {% with hit.ranges as ranges %}
+                        <li>Matches at{% if ranges|length == 1 %}:
+                              <strong>{{ ranges.0.0|add:"1"|intcomma }}-{{ ranges.0.1|intcomma }}</strong>
+                              ({% widthratio ranges.0.2 1 100 %}% of the model)
+                          {% else %}<a data-toggle="collapse"
+                                       href="#matchPositionsList"
+                                       aria-expanded="false"
+                                       aria-controls="matchPositionsList">
+                            <i class="fa fa-list" aria-hidden="true"></i> {{ ranges|length }} locations
+                          </a>
+                            <ul class='collapse list-unstyled' id='matchPositionsList'>
+                            {% for seq_start, seq_stop, ratio in hit.ranges %}
+                              <li style='padding-left: 1em;'>
+                                <strong>{{ seq_start|add:"1"|intcomma }}-{{ seq_stop|intcomma }}</strong>
+                                ({% widthratio ratio 1 100 %}% of the model)
+                              </li>
+                            {% endfor %}
+                            </ul>
+                          {% endif %}
+                        </li>
+                      {% endwith %}
                     </ul>
 
                   </div>
-                </div>
+                </li>
                 {% endfor %}
+                </ul>
                 {% else %}
-                  <p>No Hits found</p>
+                  <p>No hits found</p>
                 {% endif %}
               </div>
             </div>

@@ -431,13 +431,34 @@ class Rna(CachingMixin, models.Model):
         :returns list: A list of all Rfam hits to this sequence.
         """
 
-        query = RfamHit.objects.filter(
-            upi=self.upi,
-        )
+        query = RfamHit.objects.filter(upi=self.upi)
         if not allow_suppressed:
             query = query.filter(rfam_model__is_suppressed=False)
+        return query.order_by('rfam_model_id', 'sequence_start')
 
-        return query.order_by('rfam_model__rfam_clan_id', 'sequence_start')
+    def grouped_rfam_hits(self, allow_suppressed=True):
+        hits = it.groupby(
+            self.get_rfam_hits(allow_suppressed=allow_suppressed),
+            op.attrgetter('rfam_model_id')
+        )
+        results = []
+        for _, hits in hits:
+            hits = list(hits)
+            ranges = []
+            for hit in hits:
+                ranges.append((
+                    hit.sequence_start,
+                    hit.sequence_stop,
+                    hit.model_completeness,
+                ))
+
+            results.append({
+                'raw': hits,
+                'ranges': ranges,
+                'rfam_model': hits[0].rfam_model,
+                'rfam_model_id': hits[0].rfam_model_id,
+            })
+        return sorted(results, key=lambda h: h['ranges'][0][0])
 
     def get_rfam_status(self, taxid=None):
         return check_issues(self, taxid=taxid)
@@ -1328,6 +1349,7 @@ class RfamModel(models.Model):
     is_suppressed = models.BooleanField(default=False)
     domain = models.CharField(max_length=50, null=True)
     rna_type = models.CharField(max_length=250)
+    rfam_rna_type = models.TextField()
 
     class Meta:
         db_table = 'rfam_models'
