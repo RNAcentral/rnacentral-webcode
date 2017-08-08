@@ -1352,6 +1352,14 @@ class RfamModel(models.Model):
     def thumbnail_url(self):
         return 'http://rfam.xfam.org/family/%s/thumbnail' % self.rfam_model_id
 
+    def go_terms(self):
+        terms = []
+        mapping = RfamGoTerm.objects.filter(rfam_model_id=self.rfam_model_id)
+        for result in mapping:
+            terms.append(result.go_term)
+        return terms
+
+
 
 class RfamHit(models.Model):
     """

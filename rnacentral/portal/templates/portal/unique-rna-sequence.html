@@ -243,11 +243,10 @@ limitations under the License.
                       </li>
                       {#<li><strong>{{ hit.rfam_model.length }}</strong> Positions</li>#}
                       <li>
-                        <a>GO:000661</a>7 (<strong>SRP-dependent cotranslational protein targeting to membrane, signal sequence recognition</strong>) |
-                        <a>GO:0005786</a> (<strong>signal recognition particle, endoplasmic reticulum targeting</strong>) |
-                        <a>GO:0048501</a> (<strong>signal recognition particle, plasma membrane targeting</strong>)
-                        {#<a href="http://amigo.geneontology.org/amigo/term/GO:0006396">GO:0006396</a> (<strong>RNA processing</strong>) |#}
-                        {#<a href="http://amigo.geneontology.org/amigo/term/GO:0005730">GO:0005730</a> (<strong>nucleolus</strong>)#}
+                        {% for go_term in hit.rfam_model.go_terms %}
+                          <a href="{{ go_term.url }}">{{ go_term.go_term_id }}</a>
+                          (<strong>{{ go_term.name }}</strong>)
+                        {% endfor %}
                       </li>
                       <li>Matches at:
                         <strong>{{ hit.sequence_start|add:"1"|intcomma }}-{{ hit.sequence_stop|intcomma }}</strong>
