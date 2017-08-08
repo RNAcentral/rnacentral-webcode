@@ -421,7 +421,7 @@ class Rna(CachingMixin, models.Model):
         """
         return bool(self.get_rfam_hits())
 
-    def get_rfam_hits(self):
+    def get_rfam_hits(self, allow_suppressed=True):
         """
         This gets all matches of this Rna to any Rfam hit. Note that this does
         not exclude any families which are supressed. If two families from the
@@ -431,28 +431,16 @@ class Rna(CachingMixin, models.Model):
         :returns list: A list of all Rfam hits to this sequence.
         """
 
-        all_hits = RfamHit.objects.filter(
+        query = RfamHit.objects.filter(
             upi=self.upi,
-            rfam_model__is_suppressed=False,
-        ).order_by('rfam_model__rfam_clan_id', 'e_value', '-score')
+        )
+        if not allow_suppressed:
+            query = query.filter(rfam_model__is_suppressed=False)
 
-        hits = []
-        clan_of = op.attrgetter('rfam_clan_id')
-        for _, clan_hits in it.groupby(all_hits, clan_of):
-            hits.append(next(clan_hits))
-        return hits
+        return query.order_by('rfam_model__rfam_clan_id', 'sequence_start')
 
     def get_rfam_status(self, taxid=None):
         return check_issues(self, taxid=taxid)
-
-    def get_rfam_rna_types(self):
-        """
-        Gets the computed RNA types of all Rfam models that this Rna matches.
-        This does not select only the valid matches, or only invalid matches.
-
-        :returns list: A list of all RNA types from Rfamm hits to this Rna.
-        """
-        return sorted(h.rfam_model.rna_type for h in self.get_rfam_hits())
 
     def was_rfam_analyzed(self):
         """
