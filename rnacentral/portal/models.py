@@ -1440,6 +1440,9 @@ class GoTerm(models.Model):
     def url(self):
         return 'http://amigo.geneontology.org/amigo/term/%s' % self.go_term_id
 
+    def quickgo_url(self):
+        return 'https://www.ebi.ac.uk/QuickGO/term/%s' % self.go_term_id
+
 
 class RfamGoTerm(models.Model):
     rfam_go_term_id = models.AutoField(primary_key=True)
