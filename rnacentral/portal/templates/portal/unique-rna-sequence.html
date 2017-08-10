@@ -207,8 +207,7 @@ limitations under the License.
               Rfam hits
               <small>
                 {% if rna.get_rfam_hits|length > 1 %}{{ rna.get_rfam_hits|length|intcomma }} total {% endif %}
-                <a href="#" uib-tooltip="This sequence was scanend using Infernal with all Rfam families.
-                  Shown below are the families which matched">
+                <a href="#" uib-tooltip="Inferred from infernal scan. Click for details.">
                   <i class="fa fa-question-circle" aria-hidden="true"></i>
                 </a>
               </small>
