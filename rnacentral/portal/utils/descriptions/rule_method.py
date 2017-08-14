@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 """
 Copyright [2009-2017] EMBL-European Bioinformatics Institute
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,6 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from __future__ import unicode_literals
+
+import re
 import math
 import string
 import logging
@@ -263,7 +264,10 @@ def get_species_specific_name(rna_type, sequence, xrefs):
                 xref.accession.description)
 
     xref = max(best, key=description_order)
-    return xref.accession.description
+    description = xref.accession.description.strip()
+    if xref.accession.database == 'HGNC' and xref.accession.gene:
+        description = '%s (%s)' % (description, xref.accession.gene)
+    return description
 
 
 def correct_by_length(rna_type, sequence):
