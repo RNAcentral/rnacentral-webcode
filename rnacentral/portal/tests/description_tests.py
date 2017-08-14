@@ -66,7 +66,7 @@ class SimpleDescriptionTests(GenericDescriptionTest):
 class HumanDescriptionTests(GenericDescriptionTest):
     def test_likes_hgnc_for_human(self):
         self.assertDescriptionIs(
-            'DiGeorge syndrome critical region gene 9 (non-protein coding) (DGCR9)',
+            'DiGeorge syndrome critical region gene 9 (DGCR9)',
             'URS0000759BEC',
             taxid=9606)
 
