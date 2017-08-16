@@ -31,9 +31,7 @@ from portal.utils import descriptions as desc
 
 
 class Modification(CachingMixin, models.Model):
-    """
-    Describe modified nucleotides at certain sequence positions reported in xrefs.
-    """
+    """Describe modified nucleotides at certain sequence positions reported in xrefs."""
     id = models.AutoField(primary_key=True)
     upi = models.ForeignKey('Rna', db_column='upi', related_name='modifications')
     xref = models.ForeignKey('Xref', db_column='accession', to_field='accession', related_name='modifications')
@@ -48,9 +46,7 @@ class Modification(CachingMixin, models.Model):
 
 
 class ChemicalComponent(CachingMixin, models.Model):
-    """
-    List of all possible nucleotide modifications.
-    """
+    """List of all possible nucleotide modifications."""
     id = models.CharField(max_length=8, primary_key=True)
     description = models.CharField(max_length=500)
     one_letter_code = models.CharField(max_length=1)
@@ -130,9 +126,7 @@ class Rna(CachingMixin, models.Model):
         return 'N' in self.xrefs.values_list('deleted', flat=True).distinct()  # deleted xrefs are marked with N
 
     def has_genomic_coordinates(self, taxid=None):
-        """
-        Return True if at least one cross-reference has genomic coordinates.
-        """
+        """Return True if at least one cross-reference has genomic coordinates."""
         xrefs = self.xrefs
         if taxid:
             xrefs = xrefs.filter(taxid=taxid)
@@ -183,9 +177,7 @@ class Rna(CachingMixin, models.Model):
         return xrefs if xrefs.exists() else self.xrefs.filter(deleted='Y').select_related()
 
     def count_xrefs(self, taxid=None):
-        """
-        Count the number of cross-references associated with the sequence.
-        """
+        """Count the number of cross-references associated with the sequence."""
         xrefs = self.xrefs.filter(db__project_id__isnull=True, deleted='N')
         if taxid:
             xrefs = xrefs.filter(taxid=taxid)
@@ -559,12 +551,18 @@ class Accession(models.Model):
         * PDB structure title
         * release date
         """
-        return json.loads(self.note)
+        if self.database == "PDB" and self.note:
+            return json.loads(self.note)
+        else:
+            return None
 
     def get_hgnc_ensembl_id(self):
         """Extract Ensembl Gene id (if available) from the note json field."""
-        note = json.loads(self.note)
-        return note['ensembl_gene_id'] if 'ensembl_gene_id' in note else None
+        if self.database == "HGNC" and self.note:
+            note = json.loads(self.note)
+            return note['ensembl_gene_id'] if 'ensembl_gene_id' in note else None
+        else:
+            return None
 
     def get_hgnc_id(self):
         """Search db_xref field for an HGNC id."""
@@ -623,11 +621,14 @@ class Accession(models.Model):
         in Accession.note. Example:
         {"transcript_id": ["ENSMUST00000160979.8"]}
         """
-        note = json.loads(self.note)
-        ensembl_transcript_id = ''
-        if 'transcript_id' in note and len(note['transcript_id']) > 0:
-            ensembl_transcript_id = note['transcript_id'][0]
-        return ensembl_transcript_id
+        if self.database == 'GENCODE' and self.note:
+            note = json.loads(self.note)
+            ensembl_transcript_id = ''
+            if 'transcript_id' in note and len(note['transcript_id']) > 0:
+                ensembl_transcript_id = note['transcript_id'][0]
+            return ensembl_transcript_id
+        else:
+            return None
 
     def get_gencode_ensembl_url(self):
         """Get Ensembl URL for GENCODE transcripts."""
@@ -1066,9 +1067,7 @@ class Gff3Formatter(object):
     http://gmod.org/wiki/GFF3#GFF3_Format
     """
     def __init__(self, xref):
-        """
-        Take Xref object instance as an argument.
-        """
+        """Take Xref object instance as an argument."""
         self.xref = xref
         self.gff = ''
         self.exons = None
@@ -1077,10 +1076,7 @@ class Gff3Formatter(object):
         self.template =  '\t'.join(['{' + x + '}' for x in fields])  + '\n'
 
     def get_exons(self):
-        """
-        Get all exons with genome mapping
-        that are associated with a cross-reference.
-        """
+        """Get all exons with genome mapping that are associated with a cross-reference."""
         accession = self.xref.accession.accession
         self.exons = GenomicCoordinates.objects.filter(
             accession=accession,
