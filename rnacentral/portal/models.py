@@ -566,11 +566,11 @@ class Accession(models.Model):
 
     def get_hgnc_id(self):
         """Search db_xref field for an HGNC id."""
-        hgnc_id = ''
-        match = re.search(r'HGNC\:HGNC\:(\d+)', self.db_xref)
-        if match:
-            hgnc_id = match.group(1)
-        return hgnc_id
+        if self.db_xref:
+            match = re.search(r'HGNC\:HGNC\:(\d+)', self.db_xref)
+            return match.group(1) if match else None
+        else:
+            return None
 
     def get_biotype(self):
         """
@@ -580,9 +580,10 @@ class Accession(models.Model):
         If biotype contains the word "RNA" it is given a predefined color.
         """
         biotype = 'ncRNA'  # default biotype
-        match = re.search(r'biotype\:(\w+)', self.note)
-        if match:
-            biotype = match.group(1)
+        if self.note:
+            match = re.search(r'biotype\:(\w+)', self.note)
+            if match:
+                biotype = match.group(1)
         return biotype
 
     def get_rna_type(self):
@@ -594,7 +595,7 @@ class Accession(models.Model):
         return self.ncrna_class if self.feature_name == 'ncRNA' else self.feature_name
 
     def get_srpdb_id(self):
-        return re.sub('\.\d+$', '', self.external_id)
+        return re.sub('\.\d+$', '', self.external_id) if self.external_id else None
 
     def get_ena_url(self):
         """
@@ -771,12 +772,18 @@ class Xref(models.Model):
 
     def is_rfam_seed(self):
         """Determine whether an xref is part of a manually curated RFAM seed alignment."""
-        return re.search('alignment\:seed', self.accession.note, re.IGNORECASE) is not None
+        if self.accession.note:
+            return re.search('alignment\:seed', self.accession.note, re.IGNORECASE) is not None
+        else:
+            return False
 
     def get_ncbi_gene_id(self):
         """GeneID links are stored in the db_xref field."""
-        match = re.search('GeneID\:(\d+)', self.accession.db_xref, re.IGNORECASE)
-        return match.group(1) if match else None
+        if self.accession.db_xref:
+            match = re.search('GeneID\:(\d+)', self.accession.db_xref, re.IGNORECASE)
+            return match.group(1) if match else None
+        else:
+            return None
 
     def get_ndb_external_url(self):
         """
@@ -786,12 +793,15 @@ class Xref(models.Model):
         with PDB ids used as a fallback.
         """
         ndb_url = 'http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget={structure_id}'
-        match = re.search('NDB\:(\w+)', self.accession.db_xref, re.IGNORECASE)
-        if match:
-            structure_id = match.group(1)  # NDB id
+        if self.accession.db_xref:
+            match = re.search('NDB\:(\w+)', self.accession.db_xref, re.IGNORECASE)
+            if match:
+                structure_id = match.group(1)  # NDB id
+            else:
+                structure_id = self.accession.external_id  # default to PDB id
+            return ndb_url.format(structure_id=structure_id)
         else:
-            structure_id = self.accession.external_id  # default to PDB id
-        return ndb_url.format(structure_id=structure_id)
+            return None
 
     def get_ucsc_bed(self):
         """Format genomic coordinates in BED format."""
