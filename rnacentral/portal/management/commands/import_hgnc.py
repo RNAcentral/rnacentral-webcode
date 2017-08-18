@@ -135,9 +135,14 @@ class HGNCImporter():
                 version=1,
                 taxid=9606
             )
+
+            gene_description = ''
+            if entry['symbol']:
+                gene_description = ' (%s)' % entry['symbol']
+
             Accession.objects.update_or_create(
                 accession=entry['hgnc_id'],
-                description='Homo sapiens ' + entry['name'],
+                description='Homo sapiens ' + entry['name'] + gene_description,
                 division='HUM',
                 species='Homo sapiens',
                 is_composite='N',
