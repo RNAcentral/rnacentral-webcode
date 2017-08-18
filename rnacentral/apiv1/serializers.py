@@ -17,8 +17,10 @@ SerializerMethodField - serializer method call
 HyperlinkedIdentityField - link to a view
 
 """
+import re
 
 from django.core.paginator import Paginator
+from django.db.models import Min, Max
 from rest_framework import serializers
 from rest_framework import pagination
 
@@ -129,7 +131,7 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
     ndb_external_url = serializers.Field(source='get_ndb_external_url')
     mirbase_mature_products = serializers.Field(source='get_mirbase_mature_products_if_any')
     mirbase_precursor = serializers.Field(source='get_mirbase_precursor')
-    refseq_mirna_mature_products = serializers.Field(source='get_refseq_mirna_mature_products_if_any')
+    refseq_mirna_mature_products = serializers.SerializerMethodField('get_refseq_mirna_mature_products_if_any')
     refseq_mirna_precursor = serializers.Field(source='get_refseq_mirna_precursor')
     refseq_splice_variants = serializers.Field(source='get_refseq_splice_variants')
     vega_splice_variants = serializers.Field(source='get_vega_splice_variants')
@@ -137,23 +139,44 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
     tmrna_type = serializers.Field(source='get_tmrna_type')
     ensembl_division = serializers.Field(source='get_ensembl_division')
     ucsc_db_id = serializers.Field(source='get_ucsc_db_id')
-    genomic_coordinates = serializers.Field(source='get_genomic_coordinates_if_any')
-
-    def is_expert_xref(self, obj):
-        return True if obj.accession.non_coding_id else False
+    genomic_coordinates = serializers.SerializerMethodField('get_genomic_coordinates')
 
     class Meta:
         model = Xref
         fields = (
             'database', 'is_expert_db', 'is_active', 'first_seen', 'last_seen', 'taxid', 'accession',
-            'modifications', 'is_rfam_seed', 'ncbi_gene_id', 'ndb_external_url',
-            'mirbase_mature_products', 'mirbase_precursor',
-            'refseq_mirna_mature_products', 'refseq_mirna_precursor',
-            'refseq_splice_variants', 'vega_splice_variants',
-            'tmrna_mate_upi', 'tmrna_type',
-            'ensembl_division', 'ucsc_db_id',
-            'genomic_coordinates'
+            'modifications',
+            'is_rfam_seed', 'ncbi_gene_id', 'ndb_external_url',
+#            'mirbase_mature_products', 'mirbase_precursor',  # no requests - null
+#            'refseq_mirna_mature_products', 'refseq_mirna_precursor',
+#            'refseq_splice_variants', 'vega_splice_variants',  # no requests -null
+#            'tmrna_mate_upi',  # sends ~ 100 requests
+            'tmrna_type',
+            'ensembl_division', 'ucsc_db_id',  # 200-400 ms, no requests
+            'genomic_coordinates'  # sends ~100 requests
         )
+
+    def is_expert_xref(self, obj):
+        return True if obj.accession.non_coding_id else False
+
+    def get_refseq_mirna_mature_products_if_any(self, obj):
+        return obj.refseq_mirna_mature_products
+
+    def get_genomic_coordinates(self, obj):
+        """Mirror the existing API while using the new GenomicCoordinates model."""
+        return {'chromosome': obj.accession.coordinates.first()}
+        # data = {
+        #     'chromosome': obj.accession.coordinates.first().chromosome,
+        #     'strand': obj.accession.coordinates.first().strand,
+        #     'start': obj.accession.coordinates.aggregate(min_feature_start=Min('primary_start'))['min_feature_start'],
+        #     'end': obj.accession.coordinates.aggregate(max_feature_end=Max('primary_end'))['max_feature_end']
+        # }
+        # exceptions = ['X', 'Y']
+        # if re.match(r'\d+', data['chromosome']) or data['chromosome'] in exceptions:
+        #     data['ucsc_chromosome'] = 'chr' + data['chromosome']
+        # else:
+        #     data['ucsc_chromosome'] = data['chromosome']
+        # return data
 
 
 class PaginatedXrefSerializer(pagination.PaginationSerializer):

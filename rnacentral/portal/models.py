@@ -18,7 +18,7 @@ from collections import Counter
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.db.models import Min, Max
+from django.db.models import Min, Max, Prefetch, F, Func
 from django.utils.functional import cached_property
 
 from caching.base import CachingManager, CachingMixin  # django-cache-machine
@@ -169,7 +169,27 @@ class Rna(CachingMixin, models.Model):
         xrefs = self.xrefs.filter(deleted='N', upi=self.upi)\
                           .exclude(db__id=1, accession__project__in=expert_db_projects)\
                           .order_by('-db__id')\
-                          .select_related()
+                          .select_related()\
+                          .prefetch_related(
+                              Prefetch(
+                                  'modifications',
+                                  queryset=Modification.objects.select_related('modification_id')
+                              )
+                          )\
+                          .prefetch_related(
+                              Prefetch(
+                                  'accession__coordinates',
+                                  queryset=GenomicCoordinates.objects.filter(chromosome__isnull=False)
+                              )
+                          )\
+                          .all()
+
+        # .annotate(
+        #     refseq_mirna_mature_products=Xref.objects.filter(
+        #         accession__parent_ac=Accession.objects.get(pk=F('accession')).parent_ac,
+        #         accession__feature_name='ncRNA'
+        #     )
+        # )
 
         if taxid:
             xrefs = xrefs.filter(taxid=taxid)
