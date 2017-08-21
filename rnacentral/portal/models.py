@@ -180,6 +180,8 @@ class Rna(CachingMixin, models.Model):
                               Prefetch(
                                   'accession__coordinates',
                                   queryset=GenomicCoordinates.objects.filter(chromosome__isnull=False)
+                                                                     .annotate(min_feature_start=Min('primary_start'))
+                                                                     .annotate(max_feature_end=Max('primary_end'))
                               )
                           )\
                           .all()

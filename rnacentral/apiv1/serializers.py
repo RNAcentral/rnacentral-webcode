@@ -164,13 +164,30 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_genomic_coordinates(self, obj):
         """Mirror the existing API while using the new GenomicCoordinates model."""
-        return {'chromosome': obj.accession.coordinates.first()}
-        # data = {
-        #     'chromosome': obj.accession.coordinates.first().chromosome,
-        #     'strand': obj.accession.coordinates.first().strand,
-        #     'start': obj.accession.coordinates.aggregate(min_feature_start=Min('primary_start'))['min_feature_start'],
-        #     'end': obj.accession.coordinates.aggregate(max_feature_end=Max('primary_end'))['max_feature_end']
-        # }
+
+        # In Django1.9+ we could try removing obj.accession.coordinates.exists() check and
+        # replace obj.accession.coordinates.all()[0] with obj.accession.coordinates.first(),
+        # but currently this prevents re-use of related queryset and created N+1 requests:
+        #
+        #  first_coordinate = obj.accession.coordinates.all().first()
+        #  if first_coordinate:
+        #      data = {
+        #          'chromosome': first_coordinate.chromosome,
+        #          'strand': first_coordinate.strand
+        #      }
+        #      return data
+
+        # TODO: bring back all() -> filter(chromosome__isnull=False), when postgres is fully populated
+
+        if obj.accession.coordinates.exists():
+            data = {
+                'chromosome': obj.accession.coordinates.all()[0].chromosome,
+                'strand': obj.accession.coordinates.all()[0].strand,
+                'start': obj.accession.coordinates.all()[0].min_feature_start,
+                'end': obj.accession.coordinates.all()[0].max_feature_end
+            }
+            return data
+
         # exceptions = ['X', 'Y']
         # if re.match(r'\d+', data['chromosome']) or data['chromosome'] in exceptions:
         #     data['ucsc_chromosome'] = 'chr' + data['chromosome']
