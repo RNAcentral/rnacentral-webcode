@@ -186,14 +186,13 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
                 'start': obj.accession.coordinates.all()[0].min_feature_start,
                 'end': obj.accession.coordinates.all()[0].max_feature_end
             }
-            return data
 
-        # exceptions = ['X', 'Y']
-        # if re.match(r'\d+', data['chromosome']) or data['chromosome'] in exceptions:
-        #     data['ucsc_chromosome'] = 'chr' + data['chromosome']
-        # else:
-        #     data['ucsc_chromosome'] = data['chromosome']
-        # return data
+            exceptions = ['X', 'Y']
+            if re.match(r'\d+', data['chromosome']) or data['chromosome'] in exceptions:
+                data['ucsc_chromosome'] = 'chr' + data['chromosome']
+            else:
+                data['ucsc_chromosome'] = data['chromosome']
+            return data
 
 
 class PaginatedXrefSerializer(pagination.PaginationSerializer):
