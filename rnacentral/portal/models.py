@@ -1006,10 +1006,7 @@ class Xref(models.Model):
                                           accession__ncrna_class='miRNA',
                                           deleted=self.deleted).\
                                    all()
-        if len(same_parent) > 1:
-            return True
-        else:
-            return False
+        return len(same_parent) > 0
 
     def get_refseq_mirna_precursor(self):
         """
