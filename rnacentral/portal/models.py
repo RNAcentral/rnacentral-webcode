@@ -215,6 +215,28 @@ class Rna(CachingMixin, models.Model):
             WHERE  rnc_accessions.feature_name = 'ncRNA'
         """.format(upi=self.upi))
 
+    def get_mirbase_precursor(self):
+        return Xref.objects.raw("""
+            SELECT xref.*,
+                   rnc_accessions.accession,
+                   rnc_accessions.external_id,
+                   rnc_accessions.feature_name,
+                   x.external_id
+            FROM xref
+            JOIN rnc_accessions
+            ON xref.ac = rnc_accessions.accession
+            JOIN (
+              SELECT xref.*, rnc_accessions.external_id
+              FROM xref, rnc_accessions
+              WHERE xref.ac = rnc_accessions.accession
+                AND xref.upi = '{upi}'
+            ) x
+            ON rnc_accessions.external_id = x.external_id
+            WHERE  rnc_accessions.feature_name = 'precursor_RNA'
+            ORDER BY xref.id
+            LIMIT 1
+        """.format(upi=self.upi))
+
     # def self_joins_for_xrefs(self, xrefs):
     #     # get mirbase_mature_products
     #     mirbase_mature_products = Xref.objects.filter(
