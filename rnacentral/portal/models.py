@@ -186,17 +186,115 @@ class Rna(CachingMixin, models.Model):
                           )\
                           .all()
 
-        # .annotate(
-        #     refseq_mirna_mature_products=Xref.objects.filter(
-        #         accession__parent_ac=Accession.objects.get(pk=F('accession')).parent_ac,
-        #         accession__feature_name='ncRNA'
-        #     )
-        # )
+        # additional queries to the database fetch data with self-joins
+        # self.self_joins_for_xrefs(xrefs)
+
 
         if taxid:
             xrefs = xrefs.filter(taxid=taxid)
 
         return xrefs if xrefs.exists() else self.xrefs.filter(deleted='Y').select_related()
+
+    def get_mirbase_mature_products(self):
+        return Xref.objects.raw("""
+            SELECT xref.*,
+                   rnc_accessions.accession,
+                   rnc_accessions.external_id,
+                   rnc_accessions.feature_name,
+                   x.external_id
+            FROM xref
+            JOIN rnc_accessions
+            ON xref.ac = rnc_accessions.accession
+            JOIN (
+              SELECT xref.*, rnc_accessions.external_id
+              FROM xref, rnc_accessions
+              WHERE xref.ac = rnc_accessions.accession
+                AND xref.upi = '{upi}'
+            ) x
+            ON rnc_accessions.external_id = x.external_id
+            WHERE  rnc_accessions.feature_name = 'ncRNA'
+        """.format(upi=self.upi))
+
+    # def self_joins_for_xrefs(self, xrefs):
+    #     # get mirbase_mature_products
+    #     mirbase_mature_products = Xref.objects.filter(
+    #         accession__external_id=self.accession.external_id,
+    #         accession__feature_name='ncRNA'
+    #     ).all()
+    #
+    #     upis = []
+    #     for mature_product in mirbase_mature_products:
+    #         upis.append(mature_product.upi)
+    #
+    #     # get mirbase_precursor
+    #     if self.accession.database != 'mirbase'.upper():
+    #         return None
+    #     else:
+    #         precursor = Xref.objects.filter(
+    #             accession__external_id=self.accession.external_id,
+    #             accession__feature_name='precursor_RNA'
+    #         ).first()
+    #
+    #         return precursor.upi.upi if precursor else None
+    #
+    #     # get refseq_mirna_mature_products
+    #     refseq_mirna_mature_products = Xref.objects.filter(
+    #         accession__parent_ac=Accession.objects.get(pk=F('accession')).parent_ac,
+    #         accession__feature_name='ncRNA'
+    #     )
+    #
+    #     # get refseq_mirna_precursor
+    #     if self.accession.feature_name != 'precursor_RNA':
+    #         rna = Xref.objects.filter(
+    #             accession__parent_ac=self.accession.parent_ac,
+    #             accession__feature_name='precursor_RNA'
+    #         ).first()
+    #
+    #         if rna:
+    #             return rna.upi
+    #     return None
+    #
+    #     # get refseq_splice_variants
+    #     splice_variants = []
+    #     gene_id = self.get_ncbi_gene_id()
+    #     if gene_id:
+    #         xrefs = Xref.objects.filter(
+    #             db__display_name='RefSeq',
+    #             deleted='N',
+    #             accession__ncrna_class=self.accession.ncrna_class,
+    #             accession__db_xref__iregex='GeneId:' + gene_id
+    #         ).exclude(accession=self.accession.accession).all()
+    #
+    #         for splice_variant in xrefs:
+    #             splice_variants.append(splice_variant.upi)
+    #         splice_variants.sort(key=lambda x: x.length)
+    #     return splice_variants
+    #
+    #     # get vega_splice_variants
+    #     splice_variants = []
+    #     if not re.match('(vega|ensembl)', self.db.display_name, re.IGNORECASE):
+    #         return splice_variants
+    #     for splice_variant in Accession.objects.filter(optional_id=self.accession.optional_id) \
+    #             .exclude(accession=self.accession.accession) \
+    #             .all():
+    #         for splice_xref in splice_variant.xrefs.all():
+    #             if splice_xref.deleted == 'N':
+    #                 splice_variants.append(splice_xref.upi)
+    #         splice_variants.sort(key=lambda x: x.length)
+    #     return splice_variants
+    #
+    #     # get tmrna_mate_upi
+    #     if self.db.display_name != 'tmRNA Website':
+    #         tmrna_mate_upi = False
+    #     if not self.accession.optional_id:  # no mate info
+    #         tmrna_mate_upi = False
+    #     try:
+    #         mate = Accession.objects.filter(parent_ac=self.accession.optional_id, is_composite='Y').get()
+    #     except Accession.DoesNotExist:
+    #         return False
+    #
+    #     tmrna_mate_upi = mate.xrefs.get().upi.upi
+    #     return tmrna_mate_upi
 
     def count_xrefs(self, taxid=None):
         """Count the number of cross-references associated with the sequence."""

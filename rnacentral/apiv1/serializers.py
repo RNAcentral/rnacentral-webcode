@@ -145,15 +145,15 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
         model = Xref
         fields = (
             'database', 'is_expert_db', 'is_active', 'first_seen', 'last_seen', 'taxid', 'accession',
-            'modifications',
+            'modifications',  # used to send ~100 queries, optimized to 1
             'is_rfam_seed', 'ncbi_gene_id', 'ndb_external_url',
 #            'mirbase_mature_products', 'mirbase_precursor',  # no requests - null
 #            'refseq_mirna_mature_products', 'refseq_mirna_precursor',
-#            'refseq_splice_variants', 'vega_splice_variants',  # no requests -null
+#            'refseq_splice_variants', 'vega_splice_variants',  # no requests - null
 #            'tmrna_mate_upi',  # sends ~ 100 requests
             'tmrna_type',
             'ensembl_division', 'ucsc_db_id',  # 200-400 ms, no requests
-            'genomic_coordinates'  # sends ~100 requests
+            'genomic_coordinates'  # used to send ~100 queries, optimized down to 1
         )
 
     def is_expert_xref(self, obj):
