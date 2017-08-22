@@ -264,7 +264,15 @@ def get_species_specific_name(rna_type, sequence, xrefs):
                 xref.accession.description)
 
     xref = max(best, key=description_order)
-    return xref.accession.description.strip()
+
+    description = xref.accession.description
+    description = re.sub(r'\(\s*non-protein\s+coding\s*\)', '', description)
+    description = description.strip()
+
+    if xref.accession.database == 'HGNC' and xref.accession.gene:
+        description = '%s (%s)' % (description, xref.accession.gene)
+
+    return description
 
 
 def correct_by_length(rna_type, sequence):
