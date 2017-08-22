@@ -1227,7 +1227,7 @@ class Reference_map(models.Model):
 
 
 class SecondaryStructure(models.Model):
-    ss_id = models.AutoField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     accession = models.ForeignKey(
         Accession,
         db_column='rnc_accession_id',

@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SecondaryStructure',
             fields=[
-                ('ss_id', models.AutoField(serialize=False, primary_key=True)),
+                ('id', models.AutoField(serialize=False, primary_key=True)),
                 ('secondary_structure', models.TextField()),
                 ('md5', models.CharField(max_length=32, db_index=True)),
             ],
