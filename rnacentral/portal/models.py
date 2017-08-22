@@ -211,7 +211,7 @@ class Rna(CachingMixin, models.Model):
         xrefs = self.xrefs.filter(db__project_id__isnull=True, deleted='N')
         if taxid:
             xrefs = xrefs.filter(taxid=taxid)
-        return xrefs.count()        
+        return xrefs.count()
 
     @cached_property
     def count_distinct_organisms(self):
@@ -1224,6 +1224,22 @@ class Reference_map(models.Model):
 
     class Meta:
         db_table = 'rnc_reference_map'
+
+
+class SecondaryStructure(models.Model):
+    id = models.AutoField(primary_key=True)
+    accession = models.ForeignKey(
+        Accession,
+        db_column='rnc_accession_id',
+        to_field='accession',
+        related_name='secondary_structure',
+    )
+    secondary_structure = models.TextField()
+    md5 = models.CharField(max_length=32, db_index=True)
+
+    class Meta:
+        db_table = 'rnc_secondary_structure'
+
 
 """
 Common auxiliary functions.
