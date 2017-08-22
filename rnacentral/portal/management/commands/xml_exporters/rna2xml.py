@@ -176,16 +176,15 @@ class RnaXmlExporter(OracleConnection):
             """
             Use either feature name or ncRNA class (when feature is 'ncRNA')
             """
-            rna_types = []
-            precomputed = result['rna_type']
-            if precomputed:
-                rna_types.append(precomputed)
-            if not precomputed or 'antisense' in precomputed:
+            rna_type = None
+            if result['rna_type']:
+                rna_type = result['rna_type']
+            else:
                 if result['ncrna_class']:
-                    rna_types.append(result['ncrna_class'])
+                    rna_type = result['ncrna_class']
                 else:
-                    rna_types.append(result['feature_name'])
-            return [r.replace('_', ' ') for r in rna_types]
+                    rna_type = result['feature_name']
+            return [rna_type.replace('_', ' ')]
 
         def store_rna_type():
             """
