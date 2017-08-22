@@ -198,10 +198,10 @@ class Rna(CachingMixin, models.Model):
     def get_mirbase_mature_products(self):
         return Xref.objects.raw("""
             SELECT xref.*,
-                   rnc_accessions.accession,
-                   rnc_accessions.external_id,
-                   rnc_accessions.feature_name,
-                   x.external_id
+              rnc_accessions.accession,
+              rnc_accessions.external_id,
+              rnc_accessions.feature_name,
+              x.external_id
             FROM xref
             JOIN rnc_accessions
             ON xref.ac = rnc_accessions.accession
@@ -218,10 +218,10 @@ class Rna(CachingMixin, models.Model):
     def get_mirbase_precursor(self):
         return Xref.objects.raw("""
             SELECT xref.*,
-                   rnc_accessions.accession,
-                   rnc_accessions.external_id,
-                   rnc_accessions.feature_name,
-                   x.external_id
+              rnc_accessions.accession,
+              rnc_accessions.external_id,
+              rnc_accessions.feature_name,
+              x.external_id
             FROM xref
             JOIN rnc_accessions
             ON xref.ac = rnc_accessions.accession
@@ -237,28 +237,30 @@ class Rna(CachingMixin, models.Model):
             LIMIT 1
         """.format(upi=self.upi))
 
+    def get_refseq_mirna_mature_products(self):
+        return Xref.objects.raw("""
+            SELECT xref.*,
+              rnc_accessions.accession,
+              rnc_accessions.external_id,
+              rnc_accessions.feature_name,
+              x.external_id
+            FROM xref
+            JOIN rnc_accessions
+            ON xref.ac = rnc_accessions.accession
+            JOIN (
+              SELECT xref.*, rnc_accessions.external_id
+              FROM xref, rnc_accessions
+              WHERE xref.ac = rnc_accessions.accession
+                AND xref.upi = '{upi}'
+            ) x
+            ON rnc_accessions.external_id = x.external_id
+            WHERE  rnc_accessions.feature_name = 'ncRNA'
+            ORDER BY xref.id
+            LIMIT 1
+        """.format(upi=self.upi))
+
+
     # def self_joins_for_xrefs(self, xrefs):
-    #     # get mirbase_mature_products
-    #     mirbase_mature_products = Xref.objects.filter(
-    #         accession__external_id=self.accession.external_id,
-    #         accession__feature_name='ncRNA'
-    #     ).all()
-    #
-    #     upis = []
-    #     for mature_product in mirbase_mature_products:
-    #         upis.append(mature_product.upi)
-    #
-    #     # get mirbase_precursor
-    #     if self.accession.database != 'mirbase'.upper():
-    #         return None
-    #     else:
-    #         precursor = Xref.objects.filter(
-    #             accession__external_id=self.accession.external_id,
-    #             accession__feature_name='precursor_RNA'
-    #         ).first()
-    #
-    #         return precursor.upi.upi if precursor else None
-    #
     #     # get refseq_mirna_mature_products
     #     refseq_mirna_mature_products = Xref.objects.filter(
     #         accession__parent_ac=Accession.objects.get(pk=F('accession')).parent_ac,
@@ -1003,7 +1005,7 @@ class Xref(models.Model):
             deleted=self.deleted
         ).all()
 
-        return len(same_parent) > 1
+        return len(same_parent) > 0
 
     def get_refseq_mirna_mature_products_if_any(self):
         return self.get_refseq_mirna_mature_products() if self.is_refseq_mirna() else []
