@@ -264,6 +264,7 @@ def get_species_specific_name(rna_type, sequence, xrefs):
                 xref.accession.description)
 
     xref = max(best, key=description_order)
+
     description = xref.accession.description
     description = re.sub(r'\(\s*non-protein\s+coding\s*\)', '', description)
     description = description.strip()
