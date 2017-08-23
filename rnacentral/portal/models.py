@@ -290,7 +290,6 @@ class Rna(CachingMixin, models.Model):
     def get_refseq_splice_variants(self):
         # WARNING: REGEX syntax is not database-compatible, I used Postgres version here,
         # which will break on other vendors.
-
         return Xref.objects.raw("""
             SELECT xref.*, rnc_accessions.*
             FROM xref
@@ -310,73 +309,24 @@ class Rna(CachingMixin, models.Model):
               AND rnc_accessions.accession != x.ac;
         """).format(upi=self.upi)
 
-    def get_vega_splice_variants(self):
-        splice_variants = []
-        if gene_id:
-            return Xref.objects.raw("""
-                SELECT xref.*,
-                  rnc_accessions.accession,
-                FROM xref
-                JOIN rnc_accessions
-                ON xref.ac = rnc_accessions.accession
-                JOIN (
-                  SELECT xref.*, rnc_accessions.optional_id
-                  FROM xref, rnc_accessions
-                  WHERE xref.ac = rnc_accessions.accession
-                    AND xref.upi = '{upi}'
-                ) x
-                ON rnc_accessions.optional_id = x.optional_id
-                WHERE (rnc_accessions.database = 'VEGA' OR rnc_accessions.database = 'ENSEMBL')
-                  AND xref.deleted = 'N'
-                  AND rnc_accessions.ncrna_class = x.ncrna_class
-                  AND rnc_accessions.db_xref ~* x.db_xref
-                  AND rnc_accessions.accession != x.accession
-            """).format(upi=self.upi, gene_id=gene_id)
+    def get_tmrna_mate_upi(self):
+        return Xref.objects.raw("""
+            SELECT xref.*, rnc_accessions.*
+            FROM xref
+            JOIN rnc_accessions
+            ON xref.ac = rnc_accessions.accession
+            JOIN (
+              SELECT xref.*, rnc_accessions.optional_id, rnc_accessions.database
+              FROM xref, rnc_accessions
+              WHERE xref.ac = rnc_accessions.accession
+                AND xref.upi = '{upi}'
+                AND rnc_accessions.database = 'TMRNA_WEB'
+                AND rnc_accessions.optional_id IS NOT NULL
+            ) x
+            ON rnc_accessions.parent_ac = x.optional_id
+            WHERE rnc_accessions.is_composite = 'Y'
+        """).format(upi=self.upi)
 
-    # # get vega_splice_variants
-    #     splice_variants = []
-    #     if not re.match('(vega|ensembl)', self.db.display_name, re.IGNORECASE):
-    #         return splice_variants
-    #     for splice_variant in Accession.objects.filter(optional_id=self.accession.optional_id) \
-    #             .exclude(accession=self.accession.accession) \
-    #             .all():
-    #         for splice_xref in splice_variant.xrefs.all():
-    #             if splice_xref.deleted == 'N':
-    #                 splice_variants.append(splice_xref.upi)
-    #         splice_variants.sort(key=lambda x: x.length)
-    #     return splice_variants
-
-
-    # def self_joins_for_xrefs(self, xrefs):
-    #     # get refseq_splice_variants
-    #     splice_variants = []
-    #     gene_id = self.get_ncbi_gene_id()
-    #     if gene_id:
-    #         xrefs = Xref.objects.filter(
-    #             db__display_name='RefSeq',
-    #             deleted='N',
-    #             accession__ncrna_class=self.accession.ncrna_class,
-    #             accession__db_xref__iregex='GeneId:' + gene_id
-    #         ).exclude(accession=self.accession.accession).all()
-    #
-    #         for splice_variant in xrefs:
-    #             splice_variants.append(splice_variant.upi)
-    #         splice_variants.sort(key=lambda x: x.length)
-    #     return splice_variants
-    #
-    #     # get vega_splice_variants
-    #     splice_variants = []
-    #     if not re.match('(vega|ensembl)', self.db.display_name, re.IGNORECASE):
-    #         return splice_variants
-    #     for splice_variant in Accession.objects.filter(optional_id=self.accession.optional_id) \
-    #             .exclude(accession=self.accession.accession) \
-    #             .all():
-    #         for splice_xref in splice_variant.xrefs.all():
-    #             if splice_xref.deleted == 'N':
-    #                 splice_variants.append(splice_xref.upi)
-    #         splice_variants.sort(key=lambda x: x.length)
-    #     return splice_variants
-    #
     #     # get tmrna_mate_upi
     #     if self.db.display_name != 'tmRNA Website':
     #         tmrna_mate_upi = False
