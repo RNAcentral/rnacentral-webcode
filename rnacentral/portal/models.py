@@ -210,9 +210,11 @@ class Rna(CachingMixin, models.Model):
               FROM xref, rnc_accessions
               WHERE xref.ac = rnc_accessions.accession
                 AND xref.upi = '{upi}'
+                AND rnc_accessions.database = 'MIRBASE'
             ) x
             ON rnc_accessions.external_id = x.external_id
-            WHERE  rnc_accessions.feature_name = 'ncRNA'
+            WHERE rnc_accessions.feature_name = 'ncRNA'
+              AND rnc_accessions.database = 'MIRBASE'
         """.format(upi=self.upi))
 
     def get_mirbase_precursor(self):
@@ -230,9 +232,11 @@ class Rna(CachingMixin, models.Model):
               FROM xref, rnc_accessions
               WHERE xref.ac = rnc_accessions.accession
                 AND xref.upi = '{upi}'
+                AND rnc_accessions.database = 'MIRBASE'
             ) x
             ON rnc_accessions.external_id = x.external_id
-            WHERE  rnc_accessions.feature_name = 'precursor_RNA'
+            WHERE rnc_accessions.feature_name = 'precursor_RNA'
+              AND rnc_accessions.databse = 'MIRBASE'
             ORDER BY xref.id
             LIMIT 1
         """.format(upi=self.upi))
@@ -241,7 +245,7 @@ class Rna(CachingMixin, models.Model):
         return Xref.objects.raw("""
             SELECT xref.*,
               rnc_accessions.accession,
-              rnc_accessions.external_id,
+              rnc_accessions.parent_ac,
               rnc_accessions.feature_name,
               x.external_id
             FROM xref
@@ -252,32 +256,98 @@ class Rna(CachingMixin, models.Model):
               FROM xref, rnc_accessions
               WHERE xref.ac = rnc_accessions.accession
                 AND xref.upi = '{upi}'
+                AND rnc_accessions.database = 'REFSEQ'
             ) x
-            ON rnc_accessions.external_id = x.external_id
+            ON rnc_accessions.parent_ac = x.parent_ac
             WHERE  rnc_accessions.feature_name = 'ncRNA'
+              AND rnc_accessions.database = 'REFSEQ'
+        """.format(upi=self.upi))
+
+    def get_refseq_mirna_precursor(self):
+        return Xref.objects.raw("""
+            SELECT xref.*,
+              rnc_accessions.accession,
+              rnc_accessions.parent_ac,
+              rnc_accessions.feature_name,
+              x.external_id
+            FROM xref
+            JOIN rnc_accessions
+            ON xref.ac = rnc_accessions.accession
+            JOIN (
+              SELECT xref.*, rnc_accessions.external_id
+              FROM xref, rnc_accessions
+              WHERE xref.ac = rnc_accessions.accession
+                AND xref.upi = '{upi}'
+                AND rnc_accessions.database = 'REFSEQ'
+            ) x
+            ON rnc_accessions.parent_ac = x.parent_ac
+            WHERE rnc_accessions.feature_name = 'precursor_RNA'
+              AND rnc_accessions.database = 'REFSEQ'
             ORDER BY xref.id
             LIMIT 1
         """.format(upi=self.upi))
 
+    def get_refseq_splice_variants(self):
+        # WARNING: REGEX syntax is not database-compatible, I used Postgres version here,
+        # which will break on other vendors.
+
+        return Xref.objects.raw("""
+            SELECT xref.*, rnc_accessions.*
+            FROM xref
+            JOIN rnc_accessions
+            ON xref.ac = rnc_accessions.accession
+            JOIN (
+              SELECT xref.*,
+                rnc_accessions.ncrna_class, rnc_accessions.db_xref, SUBSTRING(rnc_accessions.db_xref, '(GeneID:[0-9]+)\s') as geneid
+              FROM xref, rnc_accessions
+              WHERE xref.ac = rnc_accessions.accession
+                AND xref.upi = '{upi}'
+            ) x
+            ON rnc_accessions.db_xref ILIKE (x.geneid || '%')
+            WHERE rnc_accessions.database = 'REFSEQ'
+              AND xref.deleted = 'N'
+              AND rnc_accessions.ncrna_class = x.ncrna_class
+              AND rnc_accessions.accession != x.ac;
+        """).format(upi=self.upi)
+
+    def get_vega_splice_variants(self):
+        splice_variants = []
+        if gene_id:
+            return Xref.objects.raw("""
+                SELECT xref.*,
+                  rnc_accessions.accession,
+                FROM xref
+                JOIN rnc_accessions
+                ON xref.ac = rnc_accessions.accession
+                JOIN (
+                  SELECT xref.*, rnc_accessions.optional_id
+                  FROM xref, rnc_accessions
+                  WHERE xref.ac = rnc_accessions.accession
+                    AND xref.upi = '{upi}'
+                ) x
+                ON rnc_accessions.optional_id = x.optional_id
+                WHERE (rnc_accessions.database = 'VEGA' OR rnc_accessions.database = 'ENSEMBL')
+                  AND xref.deleted = 'N'
+                  AND rnc_accessions.ncrna_class = x.ncrna_class
+                  AND rnc_accessions.db_xref ~* x.db_xref
+                  AND rnc_accessions.accession != x.accession
+            """).format(upi=self.upi, gene_id=gene_id)
+
+    # # get vega_splice_variants
+    #     splice_variants = []
+    #     if not re.match('(vega|ensembl)', self.db.display_name, re.IGNORECASE):
+    #         return splice_variants
+    #     for splice_variant in Accession.objects.filter(optional_id=self.accession.optional_id) \
+    #             .exclude(accession=self.accession.accession) \
+    #             .all():
+    #         for splice_xref in splice_variant.xrefs.all():
+    #             if splice_xref.deleted == 'N':
+    #                 splice_variants.append(splice_xref.upi)
+    #         splice_variants.sort(key=lambda x: x.length)
+    #     return splice_variants
+
 
     # def self_joins_for_xrefs(self, xrefs):
-    #     # get refseq_mirna_mature_products
-    #     refseq_mirna_mature_products = Xref.objects.filter(
-    #         accession__parent_ac=Accession.objects.get(pk=F('accession')).parent_ac,
-    #         accession__feature_name='ncRNA'
-    #     )
-    #
-    #     # get refseq_mirna_precursor
-    #     if self.accession.feature_name != 'precursor_RNA':
-    #         rna = Xref.objects.filter(
-    #             accession__parent_ac=self.accession.parent_ac,
-    #             accession__feature_name='precursor_RNA'
-    #         ).first()
-    #
-    #         if rna:
-    #             return rna.upi
-    #     return None
-    #
     #     # get refseq_splice_variants
     #     splice_variants = []
     #     gene_id = self.get_ncbi_gene_id()
