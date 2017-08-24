@@ -327,19 +327,6 @@ class Rna(CachingMixin, models.Model):
             WHERE rnc_accessions.is_composite = 'Y'
         """).format(upi=self.upi)
 
-    #     # get tmrna_mate_upi
-    #     if self.db.display_name != 'tmRNA Website':
-    #         tmrna_mate_upi = False
-    #     if not self.accession.optional_id:  # no mate info
-    #         tmrna_mate_upi = False
-    #     try:
-    #         mate = Accession.objects.filter(parent_ac=self.accession.optional_id, is_composite='Y').get()
-    #     except Accession.DoesNotExist:
-    #         return False
-    #
-    #     tmrna_mate_upi = mate.xrefs.get().upi.upi
-    #     return tmrna_mate_upi
-
     def count_xrefs(self, taxid=None):
         """Count the number of cross-references associated with the sequence."""
         xrefs = self.xrefs.filter(db__project_id__isnull=True, deleted='N')
@@ -1081,6 +1068,7 @@ class Xref(models.Model):
         Vega gene names are stored in optional_id while
         transcript names are stored in external_id.
         """
+        # TODO: vega is a dead database and should be removed
         splice_variants = []
         if not re.match('(vega|ensembl)', self.db.display_name, re.IGNORECASE):
             return splice_variants
@@ -1095,6 +1083,9 @@ class Xref(models.Model):
 
     def get_tmrna_mate_upi(self):
         """Get the mate of the 2-piece tmRNA"""
+        # TODO: Currently this function is not used anywhere in the code.
+        # TODO: Moreover, it doesn't work, because self.accession.optional_id
+        # TODO: is always None for all the records from rmRNA Website.
         if self.db.display_name != 'tmRNA Website':
             tmrna_mate_upi = False
         if not self.accession.optional_id:  # no mate info
