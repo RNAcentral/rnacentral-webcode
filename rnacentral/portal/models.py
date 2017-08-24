@@ -187,7 +187,27 @@ class Rna(CachingMixin, models.Model):
                           .all()
 
         # additional queries to the database fetch data with self-joins
-        # self.self_joins_for_xrefs(xrefs)
+        mirbase_mature_products = self.get_mirbase_mature_products()
+        mirbase_precursor = self.get_mirbase_precursor()
+        refseq_mirna_mature_products = self.get_refseq_mirna_mature_products()
+        refseq_mirna_precursor = self.get_refseq_mirna_precursor()
+        refseq_splice_variants = self.get_refseq_splice_variants()
+        tmrna_mate = self.get_tmrna_mate()
+
+        for product in mirbase_mature_products:
+            print product
+
+        for precursor in mirbase_precursor:
+            print precursor
+
+        for product in refseq_mirna_mature_products:
+            print product
+
+        for precursor in refseq_mirna_precursor:
+            print precursor
+
+        for variant in refseq_splice_variants:
+            print variant
 
 
         if taxid:
@@ -196,6 +216,7 @@ class Rna(CachingMixin, models.Model):
         return xrefs if xrefs.exists() else self.xrefs.filter(deleted='Y').select_related()
 
     def get_mirbase_mature_products(self):
+        # test with xref.upi = 'URS000075A546'
         return Xref.objects.raw("""
             SELECT xref.*,
               rnc_accessions.accession,
@@ -218,6 +239,7 @@ class Rna(CachingMixin, models.Model):
         """.format(upi=self.upi))
 
     def get_mirbase_precursor(self):
+        # test with xref.upi = 'URS000075A546'
         return Xref.objects.raw("""
             SELECT xref.*,
               rnc_accessions.accession,
@@ -236,45 +258,45 @@ class Rna(CachingMixin, models.Model):
             ) x
             ON rnc_accessions.external_id = x.external_id
             WHERE rnc_accessions.feature_name = 'precursor_RNA'
-              AND rnc_accessions.databse = 'MIRBASE'
+              AND rnc_accessions.database = 'MIRBASE'
             ORDER BY xref.id
             LIMIT 1
         """.format(upi=self.upi))
 
     def get_refseq_mirna_mature_products(self):
+        # test with xref.upi = 'URS000075A546'
         return Xref.objects.raw("""
             SELECT xref.*,
               rnc_accessions.accession,
               rnc_accessions.parent_ac,
-              rnc_accessions.feature_name,
-              x.external_id
+              rnc_accessions.feature_name
             FROM xref
             JOIN rnc_accessions
             ON xref.ac = rnc_accessions.accession
             JOIN (
-              SELECT xref.*, rnc_accessions.external_id
+              SELECT xref.*, rnc_accessions.parent_ac
               FROM xref, rnc_accessions
               WHERE xref.ac = rnc_accessions.accession
                 AND xref.upi = '{upi}'
                 AND rnc_accessions.database = 'REFSEQ'
             ) x
             ON rnc_accessions.parent_ac = x.parent_ac
-            WHERE  rnc_accessions.feature_name = 'ncRNA'
+            WHERE rnc_accessions.feature_name = 'ncRNA'
               AND rnc_accessions.database = 'REFSEQ'
         """.format(upi=self.upi))
 
     def get_refseq_mirna_precursor(self):
+        # test with xref.upi = 'URS000075A546'
         return Xref.objects.raw("""
             SELECT xref.*,
               rnc_accessions.accession,
               rnc_accessions.parent_ac,
-              rnc_accessions.feature_name,
-              x.external_id
+              rnc_accessions.feature_name
             FROM xref
             JOIN rnc_accessions
             ON xref.ac = rnc_accessions.accession
             JOIN (
-              SELECT xref.*, rnc_accessions.external_id
+              SELECT xref.*, rnc_accessions.parent_ac
               FROM xref, rnc_accessions
               WHERE xref.ac = rnc_accessions.accession
                 AND xref.upi = '{upi}'
@@ -283,13 +305,12 @@ class Rna(CachingMixin, models.Model):
             ON rnc_accessions.parent_ac = x.parent_ac
             WHERE rnc_accessions.feature_name = 'precursor_RNA'
               AND rnc_accessions.database = 'REFSEQ'
-            ORDER BY xref.id
-            LIMIT 1
         """.format(upi=self.upi))
 
     def get_refseq_splice_variants(self):
         # WARNING: REGEX syntax is not database-compatible, I used Postgres version here,
         # which will break on other vendors.
+        # test on: xref.upi = 'URS000075C808'
         return Xref.objects.raw("""
             SELECT xref.*, rnc_accessions.*
             FROM xref
@@ -302,14 +323,14 @@ class Rna(CachingMixin, models.Model):
               WHERE xref.ac = rnc_accessions.accession
                 AND xref.upi = '{upi}'
             ) x
-            ON rnc_accessions.db_xref ILIKE (x.geneid || '%')
+            ON rnc_accessions.db_xref ILIKE (x.geneid || '%%')
             WHERE rnc_accessions.database = 'REFSEQ'
               AND xref.deleted = 'N'
               AND rnc_accessions.ncrna_class = x.ncrna_class
               AND rnc_accessions.accession != x.ac;
-        """).format(upi=self.upi)
+        """.format(upi=self.upi))
 
-    def get_tmrna_mate_upi(self):
+    def get_tmrna_mate(self):
         return Xref.objects.raw("""
             SELECT xref.*, rnc_accessions.*
             FROM xref
@@ -325,7 +346,7 @@ class Rna(CachingMixin, models.Model):
             ) x
             ON rnc_accessions.parent_ac = x.optional_id
             WHERE rnc_accessions.is_composite = 'Y'
-        """).format(upi=self.upi)
+        """.format(upi=self.upi))
 
     def count_xrefs(self, taxid=None):
         """Count the number of cross-references associated with the sequence."""
