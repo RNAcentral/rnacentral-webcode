@@ -186,43 +186,58 @@ class Rna(CachingMixin, models.Model):
                           )\
                           .all()
 
-        # additional queries to the database fetch data with self-joins
+        # there are raw SQL queries to fetch database-specific data with self-joins, impossible in Django ORM
         mirbase_mature_products = self.get_mirbase_mature_products()
-        mirbase_precursor = self.get_mirbase_precursor()
+        mirbase_precursors = self.get_mirbase_precursor()
         refseq_mirna_mature_products = self.get_refseq_mirna_mature_products()
-        refseq_mirna_precursor = self.get_refseq_mirna_precursor()
+        refseq_mirna_precursors = self.get_refseq_mirna_precursor()
         refseq_splice_variants = self.get_refseq_splice_variants()
-        tmrna_mate = self.get_tmrna_mate()
+        tmrna_mates = self.get_tmrna_mate()
 
-        for product in mirbase_mature_products:
-            print product
-
-        for precursor in mirbase_precursor:
-            print precursor
-
-        for product in refseq_mirna_mature_products:
-            print product
-
-        for precursor in refseq_mirna_precursor:
-            print precursor
-
-        for variant in refseq_splice_variants:
-            print variant
-
+        # "annotate" xrefs queryset with additional attributes, retrieved by raw SQL queries
+        for xref in xrefs:
+            if xref.id in mirbase_mature_products:
+                xref.mirbase_mature_products = [ mature_product.upi.upi for mature_product in mirbase_mature_products[xref.id] ]
+                # print "mirbase_mature_products = %s" % xref.mirbase_mature_products
+            if xref.id in mirbase_precursors:
+                xref.mirbase_precursor = [ precursor.upi.upi for precursor in mirbase_precursors[xref.id] ]
+                # print "mirbase_precursor = %s" % xref.mirbase_precursor
+            if xref.id in refseq_mirna_mature_products:
+                xref.refseq_mirna_mature_products = [ mature_product.upi.upi for mature_product in refseq_mirna_mature_products[xref.id] ]
+                # print "refseq_mirna_mature_products = %s" % xref.refseq_mirna_mature_products
+            if xref.id in refseq_mirna_precursors:
+                xref.refseq_mirna_precursor = [ precursor.upi.upi for precursor in refseq_mirna_precursors[xref.id] ]
+                # print "refseq_mirna_precursor = %s" % xref.refseq_mirna_precursor
+            if xref.id in refseq_splice_variants:
+                xref.refseq_splice_variants = [ splice_variant.upi.upi for splice_variant in refseq_splice_variants[xref.id] ]
+                # print "refseq_splice_variants = %s" % xref.refseq_splice_variants
+            if xref.id in tmrna_mates:
+                xref.tmrna_mates = [ tmrna_mate.upi for tmrna_mate.upi.upi in tmrna_mates[xref.id] ]
+                # print "xref.tmrna_mates = %s" % xref.tmrna_mates
 
         if taxid:
             xrefs = xrefs.filter(taxid=taxid)
 
         return xrefs if xrefs.exists() else self.xrefs.filter(deleted='Y').select_related()
 
+    def _xrefs_raw_queryset_to_dict(self, raw_queryset):
+        """
+        We covert it into a single dict, aggregate those iterables into a
+        :param raw_queryset: iterable of dicts, returned by Xref.object.raw()
+        :return: dict { Xref.pk: Xref (a single item of raw queryset) }
+        """
+        output_dict = {}
+        for xref in raw_queryset:
+            if xref.pk not in output_dict:
+                output_dict[xref.pk] = [xref]
+            else:
+                output_dict[xref.pk].append(xref)
+        return output_dict
+
     def get_mirbase_mature_products(self):
         # test with xref.upi = 'URS000075A546'
-        return Xref.objects.raw("""
-            SELECT xref.*,
-              rnc_accessions.accession,
-              rnc_accessions.external_id,
-              rnc_accessions.feature_name,
-              x.external_id
+        raw_queryset = Xref.objects.raw("""
+            SELECT xref.*
             FROM xref
             JOIN rnc_accessions
             ON xref.ac = rnc_accessions.accession
@@ -237,15 +252,12 @@ class Rna(CachingMixin, models.Model):
             WHERE rnc_accessions.feature_name = 'ncRNA'
               AND rnc_accessions.database = 'MIRBASE'
         """.format(upi=self.upi))
+        return self._xrefs_raw_queryset_to_dict(raw_queryset)
 
     def get_mirbase_precursor(self):
         # test with xref.upi = 'URS000075A546'
-        return Xref.objects.raw("""
-            SELECT xref.*,
-              rnc_accessions.accession,
-              rnc_accessions.external_id,
-              rnc_accessions.feature_name,
-              x.external_id
+        raw_queryset = Xref.objects.raw("""
+            SELECT xref.*
             FROM xref
             JOIN rnc_accessions
             ON xref.ac = rnc_accessions.accession
@@ -262,14 +274,12 @@ class Rna(CachingMixin, models.Model):
             ORDER BY xref.id
             LIMIT 1
         """.format(upi=self.upi))
+        return self._xrefs_raw_queryset_to_dict(raw_queryset)
 
     def get_refseq_mirna_mature_products(self):
         # test with xref.upi = 'URS000075A546'
-        return Xref.objects.raw("""
-            SELECT xref.*,
-              rnc_accessions.accession,
-              rnc_accessions.parent_ac,
-              rnc_accessions.feature_name
+        raw_queryset = Xref.objects.raw("""
+            SELECT xref.*
             FROM xref
             JOIN rnc_accessions
             ON xref.ac = rnc_accessions.accession
@@ -284,14 +294,12 @@ class Rna(CachingMixin, models.Model):
             WHERE rnc_accessions.feature_name = 'ncRNA'
               AND rnc_accessions.database = 'REFSEQ'
         """.format(upi=self.upi))
+        return self._xrefs_raw_queryset_to_dict(raw_queryset)
 
     def get_refseq_mirna_precursor(self):
         # test with xref.upi = 'URS000075A546'
-        return Xref.objects.raw("""
-            SELECT xref.*,
-              rnc_accessions.accession,
-              rnc_accessions.parent_ac,
-              rnc_accessions.feature_name
+        raw_queryset = Xref.objects.raw("""
+            SELECT xref.*
             FROM xref
             JOIN rnc_accessions
             ON xref.ac = rnc_accessions.accession
@@ -306,13 +314,14 @@ class Rna(CachingMixin, models.Model):
             WHERE rnc_accessions.feature_name = 'precursor_RNA'
               AND rnc_accessions.database = 'REFSEQ'
         """.format(upi=self.upi))
+        return self._xrefs_raw_queryset_to_dict(raw_queryset)
 
     def get_refseq_splice_variants(self):
         # WARNING: REGEX syntax is not database-compatible, I used Postgres version here,
         # which will break on other vendors.
         # test on: xref.upi = 'URS000075C808'
-        return Xref.objects.raw("""
-            SELECT xref.*, rnc_accessions.*
+        raw_queryset = Xref.objects.raw("""
+            SELECT xref.*
             FROM xref
             JOIN rnc_accessions
             ON xref.ac = rnc_accessions.accession
@@ -329,10 +338,11 @@ class Rna(CachingMixin, models.Model):
               AND rnc_accessions.ncrna_class = x.ncrna_class
               AND rnc_accessions.accession != x.ac;
         """.format(upi=self.upi))
+        return self._xrefs_raw_queryset_to_dict(raw_queryset)
 
     def get_tmrna_mate(self):
-        return Xref.objects.raw("""
-            SELECT xref.*, rnc_accessions.*
+        raw_queryset = Xref.objects.raw("""
+            SELECT xref.*
             FROM xref
             JOIN rnc_accessions
             ON xref.ac = rnc_accessions.accession
@@ -347,6 +357,7 @@ class Rna(CachingMixin, models.Model):
             ON rnc_accessions.parent_ac = x.optional_id
             WHERE rnc_accessions.is_composite = 'Y'
         """.format(upi=self.upi))
+        return self._xrefs_raw_queryset_to_dict(raw_queryset)
 
     def count_xrefs(self, taxid=None):
         """Count the number of cross-references associated with the sequence."""

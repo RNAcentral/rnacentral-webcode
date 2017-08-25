@@ -129,13 +129,13 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
     is_rfam_seed = serializers.Field(source='is_rfam_seed')
     ncbi_gene_id = serializers.Field(source='get_ncbi_gene_id')
     ndb_external_url = serializers.Field(source='get_ndb_external_url')
-    mirbase_mature_products = serializers.Field(source='get_mirbase_mature_products_if_any')
-    mirbase_precursor = serializers.Field(source='get_mirbase_precursor')
-    refseq_mirna_mature_products = serializers.SerializerMethodField('get_refseq_mirna_mature_products_if_any')
-    refseq_mirna_precursor = serializers.Field(source='get_refseq_mirna_precursor')
-    refseq_splice_variants = serializers.Field(source='get_refseq_splice_variants')
-    vega_splice_variants = serializers.Field(source='get_vega_splice_variants')
-    tmrna_mate_upi = serializers.Field(source='get_tmrna_mate_upi')
+    mirbase_mature_products = serializers.SerializerMethodField('get_mirbase_mature_products')
+    mirbase_precursor = serializers.SerializerMethodField('get_mirbase_precursor')
+    refseq_mirna_mature_products = serializers.SerializerMethodField('get_refseq_mirna_mature_products')
+    refseq_mirna_precursor = serializers.SerializerMethodField('get_refseq_mirna_precursor')
+    refseq_splice_variants = serializers.SerializerMethodField('get_refseq_splice_variants')
+    # vega_splice_variants = serializers.Field(source='get_vega_splice_variants') - DEAD
+    tmrna_mate_upi = serializers.SerializerMethodField('get_tmrna_mate_upi')
     tmrna_type = serializers.Field(source='get_tmrna_type')
     ensembl_division = serializers.Field(source='get_ensembl_division')
     ucsc_db_id = serializers.Field(source='get_ucsc_db_id')
@@ -147,10 +147,10 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
             'database', 'is_expert_db', 'is_active', 'first_seen', 'last_seen', 'taxid', 'accession',
             'modifications',  # used to send ~100 queries, optimized to 1
             'is_rfam_seed', 'ncbi_gene_id', 'ndb_external_url',
-#            'mirbase_mature_products', 'mirbase_precursor',  # no requests - null
-#            'refseq_mirna_mature_products', 'refseq_mirna_precursor',
-#            'refseq_splice_variants', 'vega_splice_variants',  # no requests - null
-#            'tmrna_mate_upi',  # sends ~ 100 requests
+           'mirbase_mature_products', 'mirbase_precursor',
+           'refseq_mirna_mature_products', 'refseq_mirna_precursor',
+           'refseq_splice_variants', # 'vega_splice_variants', - deprecated
+           'tmrna_mate_upi',
             'tmrna_type',
             'ensembl_division', 'ucsc_db_id',  # 200-400 ms, no requests
             'genomic_coordinates'  # used to send ~100 queries, optimized down to 1
@@ -159,8 +159,23 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
     def is_expert_xref(self, obj):
         return True if obj.accession.non_coding_id else False
 
-    def get_refseq_mirna_mature_products_if_any(self, obj):
-        return obj.refseq_mirna_mature_products
+    def get_mirbase_mature_products(self, obj):
+        return obj.mirbase_mature_products if hasattr(obj, "mirbase_mature_products") else None
+
+    def get_mirbase_precursor(self, obj):
+        return obj.mirbase_precursor if hasattr(obj, "mirbase_precursor") else None
+
+    def get_refseq_mirna_mature_products(self, obj):
+        return obj.refseq_mirna_mature_products if hasattr(obj, "refseq_mirna_mature_products") else None
+
+    def get_refseq_mirna_precursor(self, obj):
+        return obj.refseq_mirna_precursor if hasattr(obj, "refseq_mirna_precursor") else None
+
+    def get_refseq_splice_variants(self, obj):
+        return obj.refseq_splice_variants if hasattr(obj, "refseq_splice_variants") else None
+
+    def get_tmrna_mate_upi(self, obj):
+        return obj.tmrna_mate_upi if hasattr(obj, "tmrna_mate_upi") else None
 
     def get_genomic_coordinates(self, obj):
         """Mirror the existing API while using the new GenomicCoordinates model."""
