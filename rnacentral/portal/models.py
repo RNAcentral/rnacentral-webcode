@@ -212,7 +212,7 @@ class Rna(CachingMixin, models.Model):
                 xref.refseq_splice_variants = [ splice_variant.upi.upi for splice_variant in refseq_splice_variants[xref.id] ]
                 # print "refseq_splice_variants = %s" % xref.refseq_splice_variants
             if xref.id in tmrna_mates:
-                xref.tmrna_mates = [ tmrna_mate.upi for tmrna_mate.upi.upi in tmrna_mates[xref.id] ]
+                xref.tmrna_mates = [ tmrna_mate.upi.upi for tmrna_mate in tmrna_mates[xref.id] ]
                 # print "xref.tmrna_mates = %s" % xref.tmrna_mates
 
         if taxid:

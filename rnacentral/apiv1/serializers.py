@@ -20,6 +20,7 @@ HyperlinkedIdentityField - link to a view
 import re
 
 from django.core.paginator import Paginator
+from django.core.urlresolvers import reverse
 from django.db.models import Min, Max
 from rest_framework import serializers
 from rest_framework import pagination
@@ -147,10 +148,10 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
             'database', 'is_expert_db', 'is_active', 'first_seen', 'last_seen', 'taxid', 'accession',
             'modifications',  # used to send ~100 queries, optimized to 1
             'is_rfam_seed', 'ncbi_gene_id', 'ndb_external_url',
-           'mirbase_mature_products', 'mirbase_precursor',
-           'refseq_mirna_mature_products', 'refseq_mirna_precursor',
-           'refseq_splice_variants', # 'vega_splice_variants', - deprecated
-           'tmrna_mate_upi',
+            'mirbase_mature_products', 'mirbase_precursor',
+            'refseq_mirna_mature_products', 'refseq_mirna_precursor',
+            'refseq_splice_variants', # 'vega_splice_variants', - deprecated
+            'tmrna_mate_upi',
             'tmrna_type',
             'ensembl_division', 'ucsc_db_id',  # 200-400 ms, no requests
             'genomic_coordinates'  # used to send ~100 queries, optimized down to 1
@@ -159,23 +160,28 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
     def is_expert_xref(self, obj):
         return True if obj.accession.non_coding_id else False
 
+    def upis_to_hrefs(self, upis):
+        protocol = 'https://' if self.context['request'].is_secure() else 'http://'
+        hostport = self.context['request'].get_host()
+        return [protocol + hostport + reverse('unique-rna-sequence', kwargs={'upi': upi}) for upi in upis]
+
     def get_mirbase_mature_products(self, obj):
-        return obj.mirbase_mature_products if hasattr(obj, "mirbase_mature_products") else None
+        return self.upis_to_hrefs(obj.mirbase_mature_products) if hasattr(obj, "mirbase_mature_products") else None
 
     def get_mirbase_precursor(self, obj):
-        return obj.mirbase_precursor if hasattr(obj, "mirbase_precursor") else None
+        return self.upis_to_hrefs(obj.mirbase_precursor) if hasattr(obj, "mirbase_precursor") else None
 
     def get_refseq_mirna_mature_products(self, obj):
-        return obj.refseq_mirna_mature_products if hasattr(obj, "refseq_mirna_mature_products") else None
+        return self.upis_to_hrefs(obj.refseq_mirna_mature_products) if hasattr(obj, "refseq_mirna_mature_products") else None
 
     def get_refseq_mirna_precursor(self, obj):
-        return obj.refseq_mirna_precursor if hasattr(obj, "refseq_mirna_precursor") else None
+        return self.upis_to_hrefs(obj.refseq_mirna_precursor) if hasattr(obj, "refseq_mirna_precursor") else None
 
     def get_refseq_splice_variants(self, obj):
-        return obj.refseq_splice_variants if hasattr(obj, "refseq_splice_variants") else None
+        return self.upis_to_hrefs(obj.refseq_splice_variants) if hasattr(obj, "refseq_splice_variants") else None
 
     def get_tmrna_mate_upi(self, obj):
-        return obj.tmrna_mate_upi if hasattr(obj, "tmrna_mate_upi") else None
+        return self.upis_to_hrefs(obj.tmrna_mate_upi) if hasattr(obj, "tmrna_mate_upi") else None
 
     def get_genomic_coordinates(self, obj):
         """Mirror the existing API while using the new GenomicCoordinates model."""
