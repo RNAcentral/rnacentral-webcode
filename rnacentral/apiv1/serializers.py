@@ -160,28 +160,28 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
     def is_expert_xref(self, obj):
         return True if obj.accession.non_coding_id else False
 
-    def upis_to_hrefs(self, upis):
+    def upis_to_urls(self, upis):
         protocol = 'https://' if self.context['request'].is_secure() else 'http://'
         hostport = self.context['request'].get_host()
         return [protocol + hostport + reverse('unique-rna-sequence', kwargs={'upi': upi}) for upi in upis]
 
     def get_mirbase_mature_products(self, obj):
-        return self.upis_to_hrefs(obj.mirbase_mature_products) if hasattr(obj, "mirbase_mature_products") else None
+        return self.upis_to_urls(obj.mirbase_mature_products) if hasattr(obj, "mirbase_mature_products") else None
 
     def get_mirbase_precursor(self, obj):
-        return self.upis_to_hrefs(obj.mirbase_precursor) if hasattr(obj, "mirbase_precursor") else None
+        return self.upis_to_urls(obj.mirbase_precursor) if hasattr(obj, "mirbase_precursor") else None
 
     def get_refseq_mirna_mature_products(self, obj):
-        return self.upis_to_hrefs(obj.refseq_mirna_mature_products) if hasattr(obj, "refseq_mirna_mature_products") else None
+        return self.upis_to_urls(obj.refseq_mirna_mature_products) if hasattr(obj, "refseq_mirna_mature_products") else None
 
     def get_refseq_mirna_precursor(self, obj):
-        return self.upis_to_hrefs(obj.refseq_mirna_precursor) if hasattr(obj, "refseq_mirna_precursor") else None
+        return self.upis_to_urls(obj.refseq_mirna_precursor) if hasattr(obj, "refseq_mirna_precursor") else None
 
     def get_refseq_splice_variants(self, obj):
-        return self.upis_to_hrefs(obj.refseq_splice_variants) if hasattr(obj, "refseq_splice_variants") else None
+        return self.upis_to_urls(obj.refseq_splice_variants) if hasattr(obj, "refseq_splice_variants") else None
 
     def get_tmrna_mate_upi(self, obj):
-        return self.upis_to_hrefs(obj.tmrna_mate_upi) if hasattr(obj, "tmrna_mate_upi") else None
+        return self.upis_to_urls(obj.tmrna_mate_upi) if hasattr(obj, "tmrna_mate_upi") else None
 
     def get_genomic_coordinates(self, obj):
         """Mirror the existing API while using the new GenomicCoordinates model."""
