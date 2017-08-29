@@ -13,11 +13,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import csv
 import json
 import logging
-from collections import Counter
 from optparse import make_option
 
+import attr
 from django.db.models import Q
 from django.core.management.base import BaseCommand, CommandError
 
@@ -26,12 +27,59 @@ from portal.models import Rna
 LOGGER = logging.getLogger(__name__)
 
 
-class Mapper(object):
-    def ensembl_accession(self, ensembl_id):
-        return ensembl_id
+@attr.s()  # pylint: disable=R0903
+class Counts(object):
+    """
+    This just counts what we do with each sequence.
+    """
 
-    def refseq_accession(self, refseq_id):
-        return refseq_id
+    mapped = attr.ib(default=0)
+    unmapped = attr.ib(default=0)
+    total = attr.ib(default=0)
+    none_possible = attr.ib(default=0)
+    inconsitent = attr.ib(default=0)
+    ensembl = attr.ib(default=0)
+    ref_seq = attr.ib(default=0)
+
+
+def read_rpi_lines(filename):
+    """
+    This will read the lines in MGI's RPI file into a saner format. That is it
+    will put the header of the tsv file into a single line as is normal.
+    """
+
+    with open(filename, 'rb') as raw:
+        header = "\t".join([next(raw).strip(), next(raw).strip()])
+        yield header
+        for line in raw:
+            yield line
+
+
+def parse_rpi(filename):
+    """
+    This will parse all the data in the RPI file into an iterable of dicts. The
+    keys are lower cased and have '_' instead of ' '. The columns which contain
+    ids will be split on '|' into a list.
+    """
+
+    for row in csv.DictReader(read_rpi_lines(filename), delimiter='\t'):
+        entry = {}
+        for key, value in row.items():
+            cleaned_key = key.replace(' ', '_').lower()
+            val = value
+            if 'ids' in cleaned_key:
+                if not value:
+                    val = []
+                else:
+                    val = value.split('|')
+            entry[cleaned_key] = val
+        yield entry
+
+
+class Mapper(object):
+    """
+    This will map as much MGI data as possible to known RNAcentral accessions.
+    """
 
     def map_accessions(self, accessions):
         rna = Rna.objects.\
@@ -44,22 +92,19 @@ class Mapper(object):
         return set(r.upi for r in rna)
 
     def rnacentral_id(self, counts, entry):
-        mappers = [
-            ('ensembl_transcript_ids', self.ensembl_accession),
-            ('refseq_transcript_ids', self.refseq_accession),
-        ]
 
-        seen = False
         ids = set()
-        for (key, method) in mappers:
-            if not ids:
-                counts[key] += 1
-                accessions = [method(mid) for mid in entry[key]]
-                ids = self.map_accessions(accessions)
-                seen = True
-
-        mgi_id = entry['mgi_marker']
-        if not seen:
+        mgi_id = entry['accession']
+        mappers = ['ensembl', 'ref_seq']
+        for key in mappers:
+            xrefs = entry['xref_data']
+            accessions = xrefs[key]['transcript_ids']
+            ids = self.map_accessions(accessions)
+            if ids:
+                setattr(counts, key, getattr(counts, key) + 1)
+                break
+        else:
+            counts.none_possible += 1
             LOGGER.info("No possible mapping for %s", mgi_id)
             return None
 
@@ -68,32 +113,33 @@ class Mapper(object):
             return None
 
         if len(ids) > 1:
+            counts.inconsitent += 1
             LOGGER.warn("Inconsistent rnacentral ids for %s", mgi_id)
             return None
 
         return ids.pop()
 
-    def map_data(self, data):
-        counts = Counter()
+    def __call__(self, filename, savefile):
+        data = []
+        with open(filename, 'rb') as raw:
+            data = json.load(raw)
+
         mapped = []
+        counts = Counts()
         for entry in data:
-            result = {}
-            result.update(entry)
+            counts.total += 1
             rnacentral_id = self.rnacentral_id(counts, entry)
             if rnacentral_id is None:
+                counts.unmapped += 1
                 continue
+            counts.mapped += 1
+            result = {}
+            result.update(entry)
             result['rnacentral_id'] = rnacentral_id
             mapped.append(result)
-        return mapped
-
-    def __call__(self, filename, savefile):
-        with open(filename, 'rb') as raw:
-            data = json.loads(raw)
-
-        mapped = self.map_data(data)
 
         with open(savefile, 'wb') as out:
-            json.dumps(out, mapped)
+            json.dumps(mapped, out)
 
 
 class Command(BaseCommand):
