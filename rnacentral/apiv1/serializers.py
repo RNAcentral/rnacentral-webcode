@@ -142,6 +142,8 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
     ucsc_db_id = serializers.Field(source='get_ucsc_db_id')
     genomic_coordinates = serializers.SerializerMethodField('get_genomic_coordinates')
 
+    # statistics on species
+
     class Meta:
         model = Xref
         fields = (
@@ -231,12 +233,15 @@ class RnaNestedSerializer(serializers.HyperlinkedModelSerializer):
     is_active = serializers.Field(source='is_active')
     description = serializers.Field(source='get_description')
     rna_type = serializers.Field(source='get_rna_type')
+    count_distinct_organisms = serializers.Field(source='count_distinct_organisms')
+    distinct_databases = serializers.Field(source='get_distinct_database_names')
 
     class Meta:
         model = Rna
         fields = (
             'url', 'rnacentral_id', 'md5', 'sequence', 'length', 'xrefs',
-            'publications', 'is_active', 'description', 'rna_type'
+            'publications', 'is_active', 'description', 'rna_type',
+            'count_distinct_organisms', 'distinct_databases'
         )
 
 
@@ -254,6 +259,7 @@ class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
     ncrna_types = serializers.SerializerMethodField('get_ncrna_types')
     taxid = serializers.SerializerMethodField('get_taxid')
     is_active = serializers.SerializerMethodField('is_active_id')
+    distinct_databases = serializers.SerializerMethodField('get_distinct_database_names')
 
     def is_active_id(self, obj):
         """Return false if all xrefs with this taxid are inactive."""
@@ -298,10 +304,14 @@ class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
     def get_taxid(self, obj):
         return int(self.context['taxid'])
 
+    def get_distinct_database_names(self, obj):
+        return obj.get_distinct_database_names(taxid=self.get_taxid(obj))
+
     class Meta:
         model = Rna
         fields = ('rnacentral_id', 'sequence', 'length', 'description',
-                  'species', 'taxid', 'genes', 'ncrna_types', 'is_active')
+                  'species', 'taxid', 'genes', 'ncrna_types', 'is_active',
+                  'distinct_databases')
 
 
 class RnaFlatSerializer(RnaNestedSerializer):

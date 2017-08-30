@@ -45,12 +45,14 @@ MAX_XREFS_TO_PREFETCH = 1000
 def _get_xrefs_from_genomic_coordinates(species, chromosome, start, end):
     """Common function for retrieving xrefs based on genomic coordinates."""
     try:
-        xrefs = Xref.objects.filter(accession__coordinates__chromosome=chromosome,
-                                    accession__coordinates__primary_start__gte=start,
-                                    accession__coordinates__primary_end__lte=end,
-                                    accession__species=species.replace('_', ' ').capitalize(),
-                                    deleted='N').\
-                             all()
+        xrefs = Xref.objects.filter(
+            accession__coordinates__chromosome=chromosome,
+            accession__coordinates__primary_start__gte=start,
+            accession__coordinates__primary_end__lte=end,
+            accession__species=species.replace('_', ' ').capitalize(),
+            deleted='N'
+        ).all()
+
         return xrefs
     except:
         return []
@@ -212,15 +214,17 @@ class DasFeatures(APIView):
     <GROUP id="{transcript_id}" type="{transcript_type}" label="{rnacentral_id}">
       <LINK href="{rnacentral_url}">{rnacentral_id}</LINK>
     </GROUP>
-  </FEATURE>""".format(exon_id=exon_id,
-                       start=exon.primary_start,
-                       end=exon.primary_end,
-                       feature_type=feature_types['exon'],
-                       strand='+' if exon.strand > 0 else '-',
-                       transcript_id=transcript_id,
-                       rnacentral_id=rnacentral_id,
-                       transcript_type=feature_types['transcript'],
-                       rnacentral_url=rnacentral_url)
+  </FEATURE>""".format(
+                    exon_id=exon_id,
+                    start=exon.primary_start,
+                    end=exon.primary_end,
+                    feature_type=feature_types['exon'],
+                    strand='+' if exon.strand > 0 else '-',
+                    transcript_id=transcript_id,
+                    rnacentral_id=rnacentral_id,
+                    transcript_type=feature_types['transcript'],
+                    rnacentral_url=rnacentral_url
+                )
 
             segment = """
 <SEGMENT id="{0}" start="{1}" stop="{2}">""".format(chromosome, start, end) + features + """
