@@ -23,6 +23,7 @@ from django.db.models import Q
 from django.core.management.base import BaseCommand, CommandError
 
 from portal.models import Rna
+from portal.models import Xref
 
 LOGGER = logging.getLogger(__name__)
 
@@ -36,44 +37,11 @@ class Counts(object):
     mapped = attr.ib(default=0)
     unmapped = attr.ib(default=0)
     total = attr.ib(default=0)
+    all_failed = attr.ib(default=0)
     none_possible = attr.ib(default=0)
     inconsitent = attr.ib(default=0)
     ensembl = attr.ib(default=0)
     ref_seq = attr.ib(default=0)
-
-
-def read_rpi_lines(filename):
-    """
-    This will read the lines in MGI's RPI file into a saner format. That is it
-    will put the header of the tsv file into a single line as is normal.
-    """
-
-    with open(filename, 'rb') as raw:
-        header = "\t".join([next(raw).strip(), next(raw).strip()])
-        yield header
-        for line in raw:
-            yield line
-
-
-def parse_rpi(filename):
-    """
-    This will parse all the data in the RPI file into an iterable of dicts. The
-    keys are lower cased and have '_' instead of ' '. The columns which contain
-    ids will be split on '|' into a list.
-    """
-
-    for row in csv.DictReader(read_rpi_lines(filename), delimiter='\t'):
-        entry = {}
-        for key, value in row.items():
-            cleaned_key = key.replace(' ', '_').lower()
-            val = value
-            if 'ids' in cleaned_key:
-                if not value:
-                    val = []
-                else:
-                    val = value.split('|')
-            entry[cleaned_key] = val
-        yield entry
 
 
 class Mapper(object):
@@ -86,38 +54,50 @@ class Mapper(object):
             filter(
                 Q(xrefs__accession__parent_ac__in=accessions) |
                 Q(xrefs__accession__external_id__in=accessions) |
-                Q(xrefs__accession__optional_id__in=accessions)
+                Q(xrefs__accession__optional_id__in=accessions) |
+                Q(xrefs__accession__accession__in=accessions)
             )
 
         return set(r.upi for r in rna)
 
+    def ensembl_upis(self, xref):
+        upis = set()
+        for transcript_id in xref['transcript_ids']:
+            xrefs = Xref.objects.filter(accession__accession__startswith=transcript_id)
+            upis.update(x.upi.upi for x in xrefs)
+        return upis
+
+    def refseq_upis(self, xref):
+        return self.map_accessions([tid for tid in xref['transcript_ids']])
+
     def rnacentral_id(self, counts, entry):
 
+        print('Fetching id for %s' % entry)
         ids = set()
         mgi_id = entry['accession']
-        mappers = ['ensembl', 'ref_seq']
-        for key in mappers:
-            xrefs = entry['xref_data']
-            accessions = xrefs[key]['transcript_ids']
-            ids = self.map_accessions(accessions)
+        mappers = [
+            ('ensembl', self.ensembl_upis),
+            ('ref_seq', self.refseq_upis),
+        ]
+        xrefs = entry['xref_data']
+        for (key, method) in mappers:
+            ids = method(xrefs[key])
             if ids:
+                print(key)
                 setattr(counts, key, getattr(counts, key) + 1)
                 break
         else:
-            counts.none_possible += 1
-            LOGGER.info("No possible mapping for %s", mgi_id)
+            if not sum(len(xrefs[k]['transcript_ids']) for k, m in mappers):
+                counts.none_possible += 1
+                print("No possible mapping for %s", mgi_id)
+            else:
+                counts.all_failed += 1
+                print("Failed mapping for %s", mgi_id)
             return None
 
-        if not ids:
-            LOGGER.info("Found no mappings for %s", mgi_id)
-            return None
-
-        if len(ids) > 1:
-            counts.inconsitent += 1
-            LOGGER.warn("Inconsistent rnacentral ids for %s", mgi_id)
-            return None
-
-        return ids.pop()
+        result = sorted(ids)
+        print('Found: %s -> %s', mgi_id, result)
+        return result
 
     def __call__(self, filename, savefile):
         data = []
@@ -128,16 +108,18 @@ class Mapper(object):
         counts = Counts()
         for entry in data:
             counts.total += 1
-            rnacentral_id = self.rnacentral_id(counts, entry)
-            if rnacentral_id is None:
+            upis = self.rnacentral_id(counts, entry)
+            if upis is None:
                 counts.unmapped += 1
                 continue
             counts.mapped += 1
-            result = {}
-            result.update(entry)
-            result['rnacentral_id'] = rnacentral_id
-            mapped.append(result)
+            for upi in upis:
+                result = {}
+                result.update(entry)
+                result['rnacentral_id'] = upi
+                mapped.append(result)
 
+        print(counts)
         with open(savefile, 'wb') as out:
             json.dumps(mapped, out)
 
