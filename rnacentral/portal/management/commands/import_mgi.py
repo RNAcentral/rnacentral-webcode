@@ -22,8 +22,6 @@ from django.core.management.base import BaseCommand, CommandError
 
 from portal.models import Xref
 from portal.models import Database
-from portal.models import Accession
-from portal.models import Reference_map
 from portal.models import Release
 
 
@@ -31,15 +29,12 @@ class MgiImporter(object):
     def __init__(self):
         self.database = Database.objects.get(descr='MGI')
         self.release = Release.objects.get(db_id=self.database.id)
-        self.reference = self.database.references()[0]
 
     def delete_current_data(self):
         Xref.objects.filter(db_id=self.database.id).delete()
-        Reference_map.objects.filter(accession__database=self.database.descr).delete()
-        Accession.objects.filter(database=self.database.descr).delete()
 
-    def xref(self, entry):
-        return Xref(
+    def save_xref(self, entry):
+        return Xref.create_or_update(
             db_id=self.database.id,
             accession_id=entry['accession'],
             created_id=self.release.id,
@@ -53,38 +48,13 @@ class MgiImporter(object):
             taxid=entry['ncbi_taxon_id'],
         )
 
-    def accession(self, entry):
-        return Accession(
-            accession=entry['accession'],
-            description=entry['name'],
-            division=entry['division'],
-            species=entry['species'],
-            is_composite='N',
-            database=entry['database'],
-            classification=entry['lineage'],
-            external_id=entry['accession'],
-            feature_name=entry['feature_name'],
-            ncrna_class=entry['ncrna_class'],
-            gene=entry['gene'],
-            note=json.dumps(entry['note']),
-            xref=json.dumps(entry['xref_data']),
-        )
-
-    def references(self, entry):
-        return Reference_map(
-            accession_id=entry['acccession'],
-            data_id=self.reference.id
-        )
-
     def __call__(self, filename):
         with open(filename, 'rb') as raw:
             data = json.load(raw)
 
         self.delete_current_data()
         for entry in data:
-            self.xref(entry).create_or_update()
-            self.accession(entry).create_or_update()
-            self.references(entry).create_or_update()
+            self.save_xref(entry)
 
 
 class Command(BaseCommand):
