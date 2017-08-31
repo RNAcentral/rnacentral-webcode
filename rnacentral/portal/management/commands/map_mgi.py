@@ -39,9 +39,9 @@ class Counts(object):
     total = attr.ib(default=0)
     all_failed = attr.ib(default=0)
     none_possible = attr.ib(default=0)
-    inconsitent = attr.ib(default=0)
     ensembl = attr.ib(default=0)
     ref_seq = attr.ib(default=0)
+    vega = attr.ib(default=0)
 
 
 class Mapper(object):
@@ -70,6 +70,11 @@ class Mapper(object):
     def refseq_upis(self, xref):
         return self.map_accessions([tid for tid in xref['transcript_ids']])
 
+    def vega_upis(self, xref):
+        tids = xref['transcript_ids']
+        xrefs = Xref.objects.filter(accession__accession__in=tids)
+        return set(x.upi.upi for x in xrefs)
+
     def rnacentral_id(self, counts, entry):
 
         print('Fetching id for %s' % entry)
@@ -78,6 +83,7 @@ class Mapper(object):
         mappers = [
             ('ensembl', self.ensembl_upis),
             ('ref_seq', self.refseq_upis),
+            ('vega', self.vega_upis),
         ]
         xrefs = entry['xref_data']
         for (key, method) in mappers:
