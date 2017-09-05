@@ -166,7 +166,7 @@ class Rna(CachingMixin, models.Model):
         expert_db_projects = Database.objects.exclude(project_id=None)\
                                              .values_list('project_id', flat=True)
 
-        xrefs = self.xrefs.filter(deleted='N', upi=self.upi)\
+        self.xrefs.filter(deleted='N', upi=self.upi)\
                           .exclude(db__id=1, accession__project__in=expert_db_projects)\
                           .order_by('-db__id')\
                           .select_related()\
@@ -185,35 +185,6 @@ class Rna(CachingMixin, models.Model):
                               )
                           )\
                           .all()
-
-        # Raw SQL queries to fetch database-specific data with self-joins, impossible in Django ORM
-        mirbase_mature_products = self.get_mirbase_mature_products(taxid, offset, limit)
-        mirbase_precursors = self.get_mirbase_precursor(taxid, offset, limit)
-        refseq_mirna_mature_products = self.get_refseq_mirna_mature_products(taxid, offset, limit)
-        refseq_mirna_precursors = self.get_refseq_mirna_precursor(taxid, offset, limit)
-        refseq_splice_variants = self.get_refseq_splice_variants(taxid, offset, limit)
-        tmrna_mates = self.get_tmrna_mate(taxid, offset, limit)
-
-        # "annotate" xrefs queryset with additional attributes, retrieved by raw SQL queries
-        for xref in xrefs:
-            if xref.id in mirbase_mature_products:
-                xref.mirbase_mature_products = [ mature_product.upi.upi for mature_product in mirbase_mature_products[xref.id] ]
-                # print "mirbase_mature_products = %s" % xref.mirbase_mature_products
-            if xref.id in mirbase_precursors:
-                xref.mirbase_precursor = [ precursor.upi.upi for precursor in mirbase_precursors[xref.id] ]
-                # print "mirbase_precursor = %s" % xref.mirbase_precursor
-            if xref.id in refseq_mirna_mature_products:
-                xref.refseq_mirna_mature_products = [ mature_product.upi.upi for mature_product in refseq_mirna_mature_products[xref.id] ]
-                # print "refseq_mirna_mature_products = %s" % xref.refseq_mirna_mature_products
-            if xref.id in refseq_mirna_precursors:
-                xref.refseq_mirna_precursor = [ precursor.upi.upi for precursor in refseq_mirna_precursors[xref.id] ]
-                # print "refseq_mirna_precursor = %s" % xref.refseq_mirna_precursor
-            if xref.id in refseq_splice_variants:
-                xref.refseq_splice_variants = [ splice_variant.upi.upi for splice_variant in refseq_splice_variants[xref.id] ]
-                # print "refseq_splice_variants = %s" % xref.refseq_splice_variants
-            if xref.id in tmrna_mates:
-                xref.tmrna_mates = [ tmrna_mate.upi.upi for tmrna_mate in tmrna_mates[xref.id] ]
-                # print "xref.tmrna_mates = %s" % xref.tmrna_mates
 
         if taxid:
             xrefs = xrefs.filter(taxid=taxid)
@@ -973,6 +944,49 @@ class GenomicCoordinates(models.Model):
         db_table = 'rnc_coordinates'
 
 
+class RawSqlQueryset(models.QuerySet):
+    def _fetch_all(self):
+        super(RawSqlQueryset, self)._fetch_all()
+
+        # Raw SQL queries to fetch database-specific data with self-joins, impossible in Django ORM
+        mirbase_mature_products = self.get_mirbase_mature_products(taxid, offset, limit)
+        mirbase_precursors = self.get_mirbase_precursor(taxid, offset, limit)
+        refseq_mirna_mature_products = self.get_refseq_mirna_mature_products(taxid, offset, limit)
+        refseq_mirna_precursors = self.get_refseq_mirna_precursor(taxid, offset, limit)
+        refseq_splice_variants = self.get_refseq_splice_variants(taxid, offset, limit)
+        tmrna_mates = self.get_tmrna_mate(taxid, offset, limit)
+
+        # "annotate" xrefs queryset with additional attributes, retrieved by raw SQL queries
+        for xref in xrefs:
+            if xref.id in mirbase_mature_products:
+                xref.mirbase_mature_products = [ mature_product.upi.upi for mature_product in mirbase_mature_products[xref.id] ]
+                # print "mirbase_mature_products = %s" % xref.mirbase_mature_products
+            if xref.id in mirbase_precursors:
+                xref.mirbase_precursor = [ precursor.upi.upi for precursor in mirbase_precursors[xref.id] ]
+                # print "mirbase_precursor = %s" % xref.mirbase_precursor
+            if xref.id in refseq_mirna_mature_products:
+                xref.refseq_mirna_mature_products = [ mature_product.upi.upi for mature_product in refseq_mirna_mature_products[xref.id] ]
+                # print "refseq_mirna_mature_products = %s" % xref.refseq_mirna_mature_products
+            if xref.id in refseq_mirna_precursors:
+                xref.refseq_mirna_precursor = [ precursor.upi.upi for precursor in refseq_mirna_precursors[xref.id] ]
+                # print "refseq_mirna_precursor = %s" % xref.refseq_mirna_precursor
+            if xref.id in refseq_splice_variants:
+                xref.refseq_splice_variants = [ splice_variant.upi.upi for splice_variant in refseq_splice_variants[xref.id] ]
+                # print "refseq_splice_variants = %s" % xref.refseq_splice_variants
+            if xref.id in tmrna_mates:
+                xref.tmrna_mates = [ tmrna_mate.upi.upi for tmrna_mate in tmrna_mates[xref.id] ]
+                # print "xref.tmrna_mates = %s" % xref.tmrna_mates
+
+
+class RawSqlXrefManager(models.Manager):
+    def get_queryset(self):
+        queryset = super(RawSqlXrefManager, self).get_queryset()
+
+        # annotate django queryset with data, retrieved via raw SQL
+        annotated_queryset = queryset
+
+
+
 class Xref(models.Model):
     id = models.AutoField(primary_key=True)
     db = models.ForeignKey(Database, db_column='dbid', related_name='xrefs')
@@ -986,6 +1000,8 @@ class Xref(models.Model):
     userstamp = models.CharField(max_length=100)
     version = models.IntegerField()
     taxid = models.IntegerField()
+
+    # raw_sql_objects = RawSqlXrefManager()
 
     class Meta:
         db_table = 'xref'

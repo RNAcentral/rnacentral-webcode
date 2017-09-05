@@ -45,7 +45,7 @@ class Timer(object):
 
     def __exit__(self, *args):
         self.end = time.clock()
-        self.timeout = self.end - self.start
+        self.timeout = (self.end - self.start) * 100
 
 
 class ApiV1BaseClass(unittest.TestCase):
