@@ -20,3 +20,4 @@ from reference import *
 from release import *
 from rna import *
 from xref import *
+from utils import get_ensembl_divisions

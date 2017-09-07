@@ -21,7 +21,7 @@ from portal.config.genomes import genomes as rnacentral_genomes
 from accession import Accession
 from genomic_coordinates import GenomicCoordinates
 from formatters import Gff3Formatter, GffFormatter, _xref_to_bed_format
-from portal.models.utils import get_ensembl_divisions
+from utils import get_ensembl_divisions
 
 
 class RawSqlQueryset(models.QuerySet):
