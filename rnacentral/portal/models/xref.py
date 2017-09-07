@@ -1,21 +1,37 @@
+"""
+Copyright [2009-2017] EMBL-European Bioinformatics Institute
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
 import re
 
 from django.db import models
 from django.db.models import Min, Max
-from django.
 from rest_framework.renderers import JSONRenderer
 
 from portal.config.genomes import genomes as rnacentral_genomes
-from portal.models.accession import Accession
-from portal.models.database import Database
-from portal.models.release import Release
-from portal.models.rna import Rna
-from portal.models.genomic_coordinates import GenomicCoordinates
-from portal.models.formatters import Gff3Formatter, GffFormatter, _xref_to_bed_format
-from portal.models import get_ensembl_divisions
+from accession import Accession
+from genomic_coordinates import GenomicCoordinates
+from formatters import Gff3Formatter, GffFormatter, _xref_to_bed_format
+from portal.models.utils import get_ensembl_divisions
 
 
 class RawSqlQueryset(models.QuerySet):
+    """
+    We override the default queryset to annotate each queryset object
+    with database-specific fields, obtained via raw SQL queries, when
+    queryset is actually evaluated (queryset is evaluated when its
+    _fetch_all() method is called). So, we override that method to
+    add some extra
+    """
     taxid = None
     offset = None
     limit = None
@@ -294,11 +310,11 @@ class RawSqlXrefManager(models.Manager):
 
 class Xref(models.Model):
     id = models.AutoField(primary_key=True)
-    db = models.ForeignKey(Database, db_column='dbid', related_name='xrefs')
-    accession = models.ForeignKey(Accession, db_column='ac', to_field='accession', related_name='xrefs', unique=True)
-    created = models.ForeignKey(Release, db_column='created', related_name='release_created')
-    last = models.ForeignKey(Release, db_column='last', related_name='last_release')
-    upi = models.ForeignKey(Rna, db_column='upi', to_field='upi', related_name='xrefs')
+    db = models.ForeignKey("Database", db_column='dbid', related_name='xrefs')
+    accession = models.ForeignKey("Accession", db_column='ac', to_field='accession', related_name='xrefs', unique=True)
+    created = models.ForeignKey("Release", db_column='created', related_name='release_created')
+    last = models.ForeignKey("Release", db_column='last', related_name='last_release')
+    upi = models.ForeignKey("Rna", db_column='upi', to_field='upi', related_name='xrefs')
     version_i = models.IntegerField()
     deleted = models.CharField(max_length=1)
     timestamp = models.DateTimeField()

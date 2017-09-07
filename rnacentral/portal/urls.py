@@ -15,7 +15,8 @@ from django.conf import settings
 from django.conf.urls import patterns, url
 
 from portal import views
-from portal.models import get_ensembl_divisions, Database
+from portal.models import Database
+from portal.models.utils import get_ensembl_divisions
 from portal.models.rna_precomputed import RnaPrecomputed
 
 urlpatterns = patterns('',
