@@ -191,212 +191,6 @@ class Rna(CachingMixin, models.Model):
 
         return xrefs if xrefs.exists() else self.xrefs.filter(deleted='Y').select_related()
 
-    def _xrefs_raw_queryset_to_dict(self, raw_queryset):
-        """
-        We covert it into a single dict, aggregate those iterables into a
-        :param raw_queryset: iterable of dicts, returned by Xref.object.raw()
-        :return: dict { Xref.pk: Xref (a single item of raw queryset) }
-        """
-        output_dict = {}
-        for xref in raw_queryset:
-            if xref.pk not in output_dict:
-                output_dict[xref.pk] = [xref]
-            else:
-                output_dict[xref.pk].append(xref)
-        return output_dict
-
-    def get_mirbase_mature_products(self, taxid=None, offset=None, limit=None):
-        limit_and_offset = "LIMIT %s OFFSET %s" % (limit, offset) if (limit and offset) else ""
-        taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
-
-        queryset = """
-            SELECT xref.*, rnc_accessions.external_id
-            FROM xref, rnc_accessions
-            WHERE xref.ac = rnc_accessions.accession
-              AND xref.upi = '{upi}'
-              AND rnc_accessions.database = 'MIRBASE'
-              {taxid_filter}
-              {limit_and_offset}
-        """.format(upi=self.upi, taxid_filter=taxid_filter, limit_and_offset=limit_and_offset)
-
-        annotated_queryset = """
-            SELECT xref.*
-            FROM xref
-            JOIN rnc_accessions
-            ON xref.ac = rnc_accessions.accession
-            JOIN (
-              {queryset}
-            ) x
-            ON rnc_accessions.external_id = x.external_id
-            WHERE rnc_accessions.feature_name = 'ncRNA'
-              AND rnc_accessions.database = 'MIRBASE'
-        """.format(queryset=queryset)
-
-        raw_queryset = Xref.objects.raw(annotated_queryset)
-
-        return self._xrefs_raw_queryset_to_dict(raw_queryset)
-
-    def get_mirbase_precursor(self, taxid=None, offset=None, limit=None):
-        limit_and_offset = "LIMIT %s OFFSET %s" % (limit, offset) if (limit and offset) else ""
-        taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
-
-        queryset = """
-            SELECT xref.*, rnc_accessions.external_id
-            FROM xref, rnc_accessions
-            WHERE xref.ac = rnc_accessions.accession
-              AND xref.upi = '{upi}'
-              AND rnc_accessions.database = 'MIRBASE'
-              {taxid_filter}
-              {limit_and_offset}
-        """.format(upi=self.upi, taxid_filter=taxid_filter, limit_and_offset=limit_and_offset)
-
-        annotated_queryset = """
-            SELECT xref.*
-            FROM xref
-            JOIN rnc_accessions
-            ON xref.ac = rnc_accessions.accession
-            JOIN (
-              {queryset}
-            ) x
-            ON rnc_accessions.external_id = x.external_id
-            WHERE rnc_accessions.feature_name = 'precursor_RNA'
-              AND rnc_accessions.database = 'MIRBASE'
-            ORDER BY xref.id
-            LIMIT 1
-        """.format(queryset=queryset)
-
-        raw_queryset = Xref.objects.raw(annotated_queryset)
-
-        return self._xrefs_raw_queryset_to_dict(raw_queryset)
-
-    def get_refseq_mirna_mature_products(self, offset=None, limit=None, taxid=None):
-        limit_and_offset = "LIMIT %s OFFSET %s" % (limit, offset) if (limit and offset) else ""
-        taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
-
-        queryset = """
-            SELECT xref.*, rnc_accessions.parent_ac
-            FROM xref, rnc_accessions
-            WHERE xref.ac = rnc_accessions.accession
-              AND xref.upi = '{upi}'
-              AND rnc_accessions.database = 'REFSEQ'
-              {taxid_filter}
-              {limit_and_offset}
-        """.format(upi=self.upi, taxid_filter=taxid_filter, limit_and_offset=limit_and_offset)
-
-        annotated_queryset = """
-            SELECT xref.*
-            FROM xref
-            JOIN rnc_accessions
-            ON xref.ac = rnc_accessions.accession
-            JOIN (
-              {queryset}
-            ) x
-            ON rnc_accessions.parent_ac = x.parent_ac
-            WHERE rnc_accessions.feature_name = 'ncRNA'
-              AND rnc_accessions.database = 'REFSEQ'
-        """.format(queryset=queryset)
-
-        raw_queryset = Xref.objects.raw(annotated_queryset)
-
-        return self._xrefs_raw_queryset_to_dict(raw_queryset)
-
-    def get_refseq_mirna_precursor(self, taxid=None, offset=None, limit=None):
-        limit_and_offset = "LIMIT %s OFFSET %s" % (limit, offset) if (limit and offset) else ""
-        taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
-
-        queryset = """
-            SELECT xref.*, rnc_accessions.parent_ac
-            FROM xref, rnc_accessions
-            WHERE xref.ac = rnc_accessions.accession
-              AND xref.upi = '{upi}'
-              AND rnc_accessions.database = 'REFSEQ'
-              {taxid_filter}
-              {limit_and_offset}
-        """.format(upi=self.upi, taxid_filter=taxid_filter, limit_and_offset=limit_and_offset)
-
-        annotated_queryset = """
-            SELECT xref.*
-            FROM xref
-            JOIN rnc_accessions
-            ON xref.ac = rnc_accessions.accession
-            JOIN (
-              {queryset}
-            ) x
-            ON rnc_accessions.parent_ac = x.parent_ac
-            WHERE rnc_accessions.feature_name = 'precursor_RNA'
-              AND rnc_accessions.database = 'REFSEQ'
-        """.format(queryset=queryset)
-
-        raw_queryset = Xref.objects.raw(annotated_queryset)
-
-        return self._xrefs_raw_queryset_to_dict(raw_queryset)
-
-    def get_refseq_splice_variants(self, taxid=None, offset=None, limit=None):
-        # WARNING: REGEX syntax is not database-compatible, I used Postgres version here,
-        # which will break on other vendors.
-
-        limit_and_offset = "LIMIT %s OFFSET %s" % (limit, offset) if (limit and offset) else ""
-        taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
-
-        queryset = """
-            SELECT xref. *, rnc_accessions.ncrna_class, rnc_accessions.db_xref, SUBSTRING(rnc_accessions.db_xref, '(GeneID:[0-9]+)\s') as geneid
-            FROM xref, rnc_accessions
-            WHERE xref.ac = rnc_accessions.accession
-              AND xref.upi = '{upi}'
-              {taxid_filter}
-              {limit_and_offset}
-        """.format(upi=self.upi, taxid_filter=taxid_filter, limit_and_offset=limit_and_offset)
-
-        annotated_queryset = """
-            SELECT xref.*
-            FROM xref
-            JOIN rnc_accessions
-            ON xref.ac = rnc_accessions.accession
-            JOIN (
-              {queryset}
-            ) x
-            ON rnc_accessions.db_xref ILIKE (x.geneid || '%%')
-            WHERE rnc_accessions.database = 'REFSEQ'
-              AND xref.deleted = 'N'
-              AND rnc_accessions.ncrna_class = x.ncrna_class
-              AND rnc_accessions.accession != x.ac;
-        """.format(queryset=queryset)
-
-        raw_queryset = Xref.objects.raw(annotated_queryset)
-
-        return self._xrefs_raw_queryset_to_dict(raw_queryset)
-
-    def get_tmrna_mate(self, taxid=None, offset=None, limit=None):
-        limit_and_offset = "LIMIT %s OFFSET %s" % (limit, offset) if (limit and offset) else ""
-        taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
-
-        queryset = """
-            SELECT xref.*, rnc_accessions.optional_id, rnc_accessions.database
-            FROM xref, rnc_accessions
-            WHERE xref.ac = rnc_accessions.accession
-              AND xref.upi = '{upi}'
-              AND rnc_accessions.database = 'TMRNA_WEB'
-              AND rnc_accessions.optional_id IS NOT NULL
-              {taxid_filter}
-              {limit_and_offset}
-        """.format(upi=self.upi, taxid_filter=taxid_filter, limit_and_offset=limit_and_offset)
-
-        annotated_queryset = """
-            SELECT xref.*
-            FROM xref
-            JOIN rnc_accessions
-            ON xref.ac = rnc_accessions.accession
-            JOIN (
-              {queryset}
-            ) x
-            ON rnc_accessions.parent_ac = x.optional_id
-            WHERE rnc_accessions.is_composite = 'Y'
-        """.format(queryset=queryset)
-
-        raw_queryset = Xref.objects.raw(annotated_queryset)
-
-        return self._xrefs_raw_queryset_to_dict(raw_queryset)
-
     def count_xrefs(self, taxid=None):
         """Count the number of cross-references associated with the sequence."""
         xrefs = self.xrefs.filter(db__project_id__isnull=True, deleted='N')
@@ -945,19 +739,33 @@ class GenomicCoordinates(models.Model):
 
 
 class RawSqlQueryset(models.QuerySet):
+    self.taxid = None
+    self.offset = None
+    self.limit = None
+
+    def for_taxid(self, taxid):
+        """Just save input parameters and return results of all()"""
+        self.taxid = taxid
+        return self
+
+    def with_offset_and_limit(self, offset, limit):
+        self.offset = offset
+        self.limit = limit
+        return self
+
     def _fetch_all(self):
         super(RawSqlQueryset, self)._fetch_all()
 
         # Raw SQL queries to fetch database-specific data with self-joins, impossible in Django ORM
-        mirbase_mature_products = self.get_mirbase_mature_products(taxid, offset, limit)
-        mirbase_precursors = self.get_mirbase_precursor(taxid, offset, limit)
-        refseq_mirna_mature_products = self.get_refseq_mirna_mature_products(taxid, offset, limit)
-        refseq_mirna_precursors = self.get_refseq_mirna_precursor(taxid, offset, limit)
-        refseq_splice_variants = self.get_refseq_splice_variants(taxid, offset, limit)
-        tmrna_mates = self.get_tmrna_mate(taxid, offset, limit)
+        mirbase_mature_products = self.get_mirbase_mature_products(self.taxid, self.offset, self.limit)
+        mirbase_precursors = self.get_mirbase_precursor(self.taxid, self.offset, self.limit)
+        refseq_mirna_mature_products = self.get_refseq_mirna_mature_products(self.taxid, self.offset, self.limit)
+        refseq_mirna_precursors = self.get_refseq_mirna_precursor(self.taxid, self.offset, self.limit)
+        refseq_splice_variants = self.get_refseq_splice_variants(self.taxid, self.offset, self.limit)
+        tmrna_mates = self.get_tmrna_mate(self.taxid, self.offset, self.limit)
 
         # "annotate" xrefs queryset with additional attributes, retrieved by raw SQL queries
-        for xref in xrefs:
+        for xref in self:
             if xref.id in mirbase_mature_products:
                 xref.mirbase_mature_products = [ mature_product.upi.upi for mature_product in mirbase_mature_products[xref.id] ]
                 # print "mirbase_mature_products = %s" % xref.mirbase_mature_products
@@ -977,14 +785,218 @@ class RawSqlQueryset(models.QuerySet):
                 xref.tmrna_mates = [ tmrna_mate.upi.upi for tmrna_mate in tmrna_mates[xref.id] ]
                 # print "xref.tmrna_mates = %s" % xref.tmrna_mates
 
+    def _xrefs_raw_queryset_to_dict(self, raw_queryset):
+        """
+        We covert it into a single dict, aggregate those iterables into a
+        :param raw_queryset: iterable of dicts, returned by Xref.object.raw()
+        :return: dict { Xref.pk: Xref (a single item of raw queryset) }
+        """
+        output_dict = {}
+        for xref in raw_queryset:
+            if xref.pk not in output_dict:
+                output_dict[xref.pk] = [xref]
+            else:
+                output_dict[xref.pk].append(xref)
+        return output_dict
+
+    def get_mirbase_mature_products(self, taxid=None, offset=None, limit=None):
+        limit_and_offset = "LIMIT %s OFFSET %s" % (limit, offset) if (limit and offset) else ""
+        taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
+
+        queryset = """
+            SELECT xref.*, rnc_accessions.external_id
+            FROM xref, rnc_accessions
+            WHERE xref.ac = rnc_accessions.accession
+              AND xref.upi = '{upi}'
+              AND rnc_accessions.database = 'MIRBASE'
+              {taxid_filter}
+              {limit_and_offset}
+        """.format(upi=self.upi, taxid_filter=taxid_filter, limit_and_offset=limit_and_offset)
+
+        annotated_queryset = """
+            SELECT xref.*
+            FROM xref
+            JOIN rnc_accessions
+            ON xref.ac = rnc_accessions.accession
+            JOIN (
+              {queryset}
+            ) x
+            ON rnc_accessions.external_id = x.external_id
+            WHERE rnc_accessions.feature_name = 'ncRNA'
+              AND rnc_accessions.database = 'MIRBASE'
+        """.format(queryset=queryset)
+
+        raw_queryset = Xref.objects.raw(annotated_queryset)
+
+        return self._xrefs_raw_queryset_to_dict(raw_queryset)
+
+    def get_mirbase_precursor(self, taxid=None, offset=None, limit=None):
+        limit_and_offset = "LIMIT %s OFFSET %s" % (limit, offset) if (limit and offset) else ""
+        taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
+
+        queryset = """
+            SELECT xref.*, rnc_accessions.external_id
+            FROM xref, rnc_accessions
+            WHERE xref.ac = rnc_accessions.accession
+              AND xref.upi = '{upi}'
+              AND rnc_accessions.database = 'MIRBASE'
+              {taxid_filter}
+              {limit_and_offset}
+        """.format(upi=self.upi, taxid_filter=taxid_filter, limit_and_offset=limit_and_offset)
+
+        annotated_queryset = """
+            SELECT xref.*
+            FROM xref
+            JOIN rnc_accessions
+            ON xref.ac = rnc_accessions.accession
+            JOIN (
+              {queryset}
+            ) x
+            ON rnc_accessions.external_id = x.external_id
+            WHERE rnc_accessions.feature_name = 'precursor_RNA'
+              AND rnc_accessions.database = 'MIRBASE'
+            ORDER BY xref.id
+            LIMIT 1
+        """.format(queryset=queryset)
+
+        raw_queryset = Xref.objects.raw(annotated_queryset)
+
+        return self._xrefs_raw_queryset_to_dict(raw_queryset)
+
+    def get_refseq_mirna_mature_products(self, offset=None, limit=None, taxid=None):
+        limit_and_offset = "LIMIT %s OFFSET %s" % (limit, offset) if (limit and offset) else ""
+        taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
+
+        queryset = """
+            SELECT xref.*, rnc_accessions.parent_ac
+            FROM xref, rnc_accessions
+            WHERE xref.ac = rnc_accessions.accession
+              AND xref.upi = '{upi}'
+              AND rnc_accessions.database = 'REFSEQ'
+              {taxid_filter}
+              {limit_and_offset}
+        """.format(upi=self.upi, taxid_filter=taxid_filter, limit_and_offset=limit_and_offset)
+
+        annotated_queryset = """
+            SELECT xref.*
+            FROM xref
+            JOIN rnc_accessions
+            ON xref.ac = rnc_accessions.accession
+            JOIN (
+              {queryset}
+            ) x
+            ON rnc_accessions.parent_ac = x.parent_ac
+            WHERE rnc_accessions.feature_name = 'ncRNA'
+              AND rnc_accessions.database = 'REFSEQ'
+        """.format(queryset=queryset)
+
+        raw_queryset = Xref.objects.raw(annotated_queryset)
+
+        return self._xrefs_raw_queryset_to_dict(raw_queryset)
+
+    def get_refseq_mirna_precursor(self, taxid=None, offset=None, limit=None):
+        limit_and_offset = "LIMIT %s OFFSET %s" % (limit, offset) if (limit and offset) else ""
+        taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
+
+        queryset = """
+            SELECT xref.*, rnc_accessions.parent_ac
+            FROM xref, rnc_accessions
+            WHERE xref.ac = rnc_accessions.accession
+              AND xref.upi = '{upi}'
+              AND rnc_accessions.database = 'REFSEQ'
+              {taxid_filter}
+              {limit_and_offset}
+        """.format(upi=self.upi, taxid_filter=taxid_filter, limit_and_offset=limit_and_offset)
+
+        annotated_queryset = """
+            SELECT xref.*
+            FROM xref
+            JOIN rnc_accessions
+            ON xref.ac = rnc_accessions.accession
+            JOIN (
+              {queryset}
+            ) x
+            ON rnc_accessions.parent_ac = x.parent_ac
+            WHERE rnc_accessions.feature_name = 'precursor_RNA'
+              AND rnc_accessions.database = 'REFSEQ'
+        """.format(queryset=queryset)
+
+        raw_queryset = Xref.objects.raw(annotated_queryset)
+
+        return self._xrefs_raw_queryset_to_dict(raw_queryset)
+
+    def get_refseq_splice_variants(self, taxid=None, offset=None, limit=None):
+        # WARNING: REGEX syntax is not database-compatible, I used Postgres version here,
+        # which will break on other vendors.
+
+        limit_and_offset = "LIMIT %s OFFSET %s" % (limit, offset) if (limit and offset) else ""
+        taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
+
+        queryset = """
+            SELECT xref. *, rnc_accessions.ncrna_class, rnc_accessions.db_xref, SUBSTRING(rnc_accessions.db_xref, '(GeneID:[0-9]+)\s') as geneid
+            FROM xref, rnc_accessions
+            WHERE xref.ac = rnc_accessions.accession
+              AND xref.upi = '{upi}'
+              {taxid_filter}
+              {limit_and_offset}
+        """.format(upi=self.upi, taxid_filter=taxid_filter, limit_and_offset=limit_and_offset)
+
+        annotated_queryset = """
+            SELECT xref.*
+            FROM xref
+            JOIN rnc_accessions
+            ON xref.ac = rnc_accessions.accession
+            JOIN (
+              {queryset}
+            ) x
+            ON rnc_accessions.db_xref ILIKE (x.geneid || '%%')
+            WHERE rnc_accessions.database = 'REFSEQ'
+              AND xref.deleted = 'N'
+              AND rnc_accessions.ncrna_class = x.ncrna_class
+              AND rnc_accessions.accession != x.ac;
+        """.format(queryset=queryset)
+
+        raw_queryset = Xref.objects.raw(annotated_queryset)
+
+        return self._xrefs_raw_queryset_to_dict(raw_queryset)
+
+    def get_tmrna_mate(self, taxid=None, offset=None, limit=None):
+        limit_and_offset = "LIMIT %s OFFSET %s" % (limit, offset) if (limit and offset) else ""
+        taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
+
+        queryset = """
+            SELECT xref.*, rnc_accessions.optional_id, rnc_accessions.database
+            FROM xref, rnc_accessions
+            WHERE xref.ac = rnc_accessions.accession
+              AND xref.upi = '{upi}'
+              AND rnc_accessions.database = 'TMRNA_WEB'
+              AND rnc_accessions.optional_id IS NOT NULL
+              {taxid_filter}
+              {limit_and_offset}
+        """.format(upi=self.upi, taxid_filter=taxid_filter, limit_and_offset=limit_and_offset)
+
+        annotated_queryset = """
+            SELECT xref.*
+            FROM xref
+            JOIN rnc_accessions
+            ON xref.ac = rnc_accessions.accession
+            JOIN (
+              {queryset}
+            ) x
+            ON rnc_accessions.parent_ac = x.optional_id
+            WHERE rnc_accessions.is_composite = 'Y'
+        """.format(queryset=queryset)
+
+        raw_queryset = Xref.objects.raw(annotated_queryset)
+
+        return self._xrefs_raw_queryset_to_dict(raw_queryset)
+
+
+
 
 class RawSqlXrefManager(models.Manager):
     def get_queryset(self):
         queryset = super(RawSqlXrefManager, self).get_queryset()
-
-        # annotate django queryset with data, retrieved via raw SQL
-        annotated_queryset = queryset
-
 
 
 class Xref(models.Model):
