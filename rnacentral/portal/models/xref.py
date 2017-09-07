@@ -2,6 +2,7 @@ import re
 
 from django.db import models
 from django.db.models import Min, Max
+from django.
 from rest_framework.renderers import JSONRenderer
 
 from portal.config.genomes import genomes as rnacentral_genomes
@@ -79,15 +80,18 @@ class RawSqlQueryset(models.QuerySet):
         limit_and_offset = "LIMIT %s OFFSET %s" % (limit, offset) if (limit and offset) else ""
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
+        # _fetch_all() has already called by now
+        pks = ','.join(["'%s'" % xref.pk for xref in self])  # e.g. "'250381225', '250381243', '295244525'"
+
         queryset = """
             SELECT xref.*, rnc_accessions.external_id
             FROM xref, rnc_accessions
             WHERE xref.ac = rnc_accessions.accession
-              AND xref.upi = '{upi}'
+              AND xref.id IN ({pks})
               AND rnc_accessions.database = 'MIRBASE'
               {taxid_filter}
               {limit_and_offset}
-        """.format(upi=self.upi, taxid_filter=taxid_filter, limit_and_offset=limit_and_offset)
+        """.format(pks=pks, taxid_filter=taxid_filter, limit_and_offset=limit_and_offset)
 
         annotated_queryset = """
             SELECT xref.*
@@ -110,15 +114,18 @@ class RawSqlQueryset(models.QuerySet):
         limit_and_offset = "LIMIT %s OFFSET %s" % (limit, offset) if (limit and offset) else ""
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
+        # _fetch_all() has already called by now
+        pks = ','.join(["'%s'" % xref.pk for xref in self])
+
         queryset = """
             SELECT xref.*, rnc_accessions.external_id
             FROM xref, rnc_accessions
             WHERE xref.ac = rnc_accessions.accession
-              AND xref.upi = '{upi}'
+              AND xref.id IN ({pks})
               AND rnc_accessions.database = 'MIRBASE'
               {taxid_filter}
               {limit_and_offset}
-        """.format(upi=self.upi, taxid_filter=taxid_filter, limit_and_offset=limit_and_offset)
+        """.format(pks=pks, taxid_filter=taxid_filter, limit_and_offset=limit_and_offset)
 
         annotated_queryset = """
             SELECT xref.*
@@ -143,15 +150,18 @@ class RawSqlQueryset(models.QuerySet):
         limit_and_offset = "LIMIT %s OFFSET %s" % (limit, offset) if (limit and offset) else ""
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
+        # _fetch_all() has already called by now
+        pks = ','.join(["'%s'" % xref.pk for xref in self])
+
         queryset = """
             SELECT xref.*, rnc_accessions.parent_ac
             FROM xref, rnc_accessions
             WHERE xref.ac = rnc_accessions.accession
-              AND xref.upi = '{upi}'
+              AND xref.id IN ({pks})
               AND rnc_accessions.database = 'REFSEQ'
               {taxid_filter}
               {limit_and_offset}
-        """.format(upi=self.upi, taxid_filter=taxid_filter, limit_and_offset=limit_and_offset)
+        """.format(pks=pks, taxid_filter=taxid_filter, limit_and_offset=limit_and_offset)
 
         annotated_queryset = """
             SELECT xref.*
@@ -174,15 +184,18 @@ class RawSqlQueryset(models.QuerySet):
         limit_and_offset = "LIMIT %s OFFSET %s" % (limit, offset) if (limit and offset) else ""
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
+        # _fetch_all() has already called by now
+        pks = ','.join(["'%s'" % xref.pk for xref in self])
+
         queryset = """
             SELECT xref.*, rnc_accessions.parent_ac
             FROM xref, rnc_accessions
             WHERE xref.ac = rnc_accessions.accession
-              AND xref.upi = '{upi}'
+              AND xref.id IN ({pks})
               AND rnc_accessions.database = 'REFSEQ'
               {taxid_filter}
               {limit_and_offset}
-        """.format(upi=self.upi, taxid_filter=taxid_filter, limit_and_offset=limit_and_offset)
+        """.format(pks=pks, taxid_filter=taxid_filter, limit_and_offset=limit_and_offset)
 
         annotated_queryset = """
             SELECT xref.*
@@ -208,14 +221,17 @@ class RawSqlQueryset(models.QuerySet):
         limit_and_offset = "LIMIT %s OFFSET %s" % (limit, offset) if (limit and offset) else ""
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
+        # _fetch_all() has already called by now
+        pks = ','.join(["'%s'" % xref.pk for xref in self])
+
         queryset = """
             SELECT xref. *, rnc_accessions.ncrna_class, rnc_accessions.db_xref, SUBSTRING(rnc_accessions.db_xref, '(GeneID:[0-9]+)\s') as geneid
             FROM xref, rnc_accessions
             WHERE xref.ac = rnc_accessions.accession
-              AND xref.upi = '{upi}'
+              AND xref.id IN ({pks})
               {taxid_filter}
               {limit_and_offset}
-        """.format(upi=self.upi, taxid_filter=taxid_filter, limit_and_offset=limit_and_offset)
+        """.format(pks=pks, taxid_filter=taxid_filter, limit_and_offset=limit_and_offset)
 
         annotated_queryset = """
             SELECT xref.*
@@ -240,16 +256,19 @@ class RawSqlQueryset(models.QuerySet):
         limit_and_offset = "LIMIT %s OFFSET %s" % (limit, offset) if (limit and offset) else ""
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
+        # _fetch_all() has already called by now
+        pks = ','.join(["'%s'" % xref.pk for xref in self])
+
         queryset = """
             SELECT xref.*, rnc_accessions.optional_id, rnc_accessions.database
             FROM xref, rnc_accessions
             WHERE xref.ac = rnc_accessions.accession
-              AND xref.upi = '{upi}'
+              AND xref.id IN ({pks})
               AND rnc_accessions.database = 'TMRNA_WEB'
               AND rnc_accessions.optional_id IS NOT NULL
               {taxid_filter}
               {limit_and_offset}
-        """.format(upi=self.upi, taxid_filter=taxid_filter, limit_and_offset=limit_and_offset)
+        """.format(pks=pks, taxid_filter=taxid_filter, limit_and_offset=limit_and_offset)
 
         annotated_queryset = """
             SELECT xref.*
@@ -270,7 +289,7 @@ class RawSqlQueryset(models.QuerySet):
 
 class RawSqlXrefManager(models.Manager):
     def get_queryset(self):
-        queryset = super(RawSqlXrefManager, self).get_queryset()
+        return RawSqlQueryset(self.model, using=self._db)
 
 
 class Xref(models.Model):
@@ -287,7 +306,7 @@ class Xref(models.Model):
     version = models.IntegerField()
     taxid = models.IntegerField()
 
-    # raw_sql_objects = RawSqlXrefManager()
+    objects = RawSqlXrefManager()
 
     class Meta:
         db_table = 'xref'
