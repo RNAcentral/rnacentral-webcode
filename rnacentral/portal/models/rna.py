@@ -1,0 +1,314 @@
+from collections import Counter
+
+from caching.base import CachingMixin, CachingManager
+from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
+from django.db import models
+from django.db.models import Prefetch, Min, Max
+from django.utils.functional import cached_property
+
+from portal.models import Reference, Database, Modification, GenomicCoordinates, Xref
+from portal.models.formatters import Gff3Formatter, GffFormatter, _xref_to_bed_format
+from portal.models.rna_precomputed import RnaPrecomputed
+from portal.utils import descriptions as desc
+
+
+class Rna(CachingMixin, models.Model):
+    id = models.IntegerField(db_column='id')
+    upi = models.CharField(max_length=13, db_index=True, primary_key=True)
+    timestamp = models.DateField()
+    userstamp = models.CharField(max_length=30)
+    crc64 = models.CharField(max_length=16)
+    length = models.IntegerField(db_column='len')
+    seq_short = models.CharField(max_length=4000)
+    seq_long = models.TextField()
+    md5 = models.CharField(max_length=32, unique=True, db_index=True)
+
+    objects = CachingManager()
+
+    class Meta:
+        db_table = 'rna'
+
+    def get_absolute_url(self):
+        """Get a URL for an RNA object. Used for generating sitemaps."""
+        return reverse('unique-rna-sequence', kwargs={'upi': self.upi})
+
+    def get_publications(self, taxid=None):
+        """
+        Get all publications associated with a Unique RNA Sequence.
+        Use raw SQL query for better performance.
+        """
+        query = """
+        SELECT b.id, b.location, b.title, b.pmid as pubmed, b.doi, b.authors
+        FROM
+            (SELECT DISTINCT t3.id
+            FROM xref t1, rnc_reference_map t2, RNC_REFERENCES t3
+            WHERE t1.ac = t2.accession AND
+                  t1.upi = %s AND
+                  {taxid_clause}
+                  t2.reference_id = t3.id) a
+        JOIN
+            rnc_references b
+        ON a.id = b.id
+        ORDER BY b.title
+        """
+
+        query = query.format(taxid_clause='t1.taxid = %s AND' % taxid) if taxid else query.format(taxid_clause='')
+
+        return Reference.objects.raw(query, [self.upi])
+
+    def is_active(self):
+        """A sequence is considered active if it has at least one active cross_reference."""
+        return 'N' in self.xrefs.values_list('deleted', flat=True).distinct()  # deleted xrefs are marked with N
+
+    def has_genomic_coordinates(self, taxid=None):
+        """Return True if at least one cross-reference has genomic coordinates."""
+        xrefs = self.xrefs
+        if taxid:
+            xrefs = xrefs.filter(taxid=taxid)
+        chromosomes = xrefs.all().values_list('accession__coordinates__chromosome', flat=True)
+        for chromosome in chromosomes:
+            if chromosome:
+                return True
+        return False
+
+    def get_sequence(self):
+        """
+        Sequences of up to 4000 nucleotides are stored in seq_short, while the
+        longer ones are in stored in seq_long as CLOB objects
+        due to Oracle column size restrictions.
+        """
+        if self.seq_short:
+            sequence = self.seq_short
+        else:
+            sequence = self.seq_long
+        return sequence.replace('T', 'U').upper()
+
+    def count_symbols(self):
+        """
+        Returns the number of occurrences of all symbols in RNA,
+        including non-canonical nucleotides and random garbage.
+        :return: dict {'A': 1, 'T': 2, 'C': 3, 'G': 4, 'N': 5, 'I': 6, '*': 7}
+        """
+        return dict(Counter(self.get_sequence()))
+
+    def get_xrefs(self, taxid=None, offset=None, limit=None):
+        """
+        Get all xrefs, show non-ENA annotations first.
+        Exclude source ENA entries that are associated with other expert db entries.
+        For example, only fetch Vega xrefs and don't retrieve the ENA entries they are
+        based on.
+        """
+        expert_db_projects = Database.objects.exclude(project_id=None)\
+                                             .values_list('project_id', flat=True)
+
+        self.xrefs.filter(deleted='N', upi=self.upi)\
+                          .exclude(db__id=1, accession__project__in=expert_db_projects)\
+                          .order_by('-db__id')\
+                          .select_related()\
+                          .prefetch_related(
+                              Prefetch(
+                                  'modifications',
+                                  queryset=Modification.objects.select_related('modification_id')
+                              )
+                          )\
+                          .prefetch_related(
+                              Prefetch(
+                                  'accession__coordinates',
+                                  queryset=GenomicCoordinates.objects.filter(chromosome__isnull=False)
+                                                                     .annotate(min_feature_start=Min('primary_start'))
+                                                                     .annotate(max_feature_end=Max('primary_end'))
+                              )
+                          )\
+                          .all()
+
+        if taxid:
+            xrefs = xrefs.filter(taxid=taxid)
+
+        return xrefs if xrefs.exists() else self.xrefs.filter(deleted='Y').select_related()
+
+    def count_xrefs(self, taxid=None):
+        """Count the number of cross-references associated with the sequence."""
+        xrefs = self.xrefs.filter(db__project_id__isnull=True, deleted='N')
+        if taxid:
+            xrefs = xrefs.filter(taxid=taxid)
+        return xrefs.count()
+
+    @cached_property
+    def count_distinct_organisms(self):
+        """Count the number of distinct taxids referenced by the sequence."""
+        queryset = self.xrefs.values('accession__species')
+        results = queryset.filter(deleted='N').distinct().count()
+        if not results:
+            results = queryset.distinct().count()
+        return results
+
+    def get_distinct_database_names(self, taxid=None):
+        """Get a non-redundant list of databases referencing the sequence."""
+        databases = self.xrefs.filter(deleted='N')
+        if taxid:
+            databases = databases.filter(taxid=taxid)
+        databases = list(databases.values_list('db__display_name', flat=True).distinct())
+        databases = sorted(databases, key=lambda s: s.lower())  # case-insensitive
+        return databases
+
+    @cached_property
+    def first_seen(self):
+        """Return the earliest release the sequence is referenced in."""
+        data = self.xrefs.aggregate(first_seen=Min('created__release_date'))
+        return data['first_seen']
+
+    @cached_property
+    def last_seen(self):
+        """Like `first_seen` but with reversed order."""
+        data = self.xrefs.aggregate(last_seen=Max('last__release_date'))
+        return data['last_seen']
+
+    def get_sequence_fasta(self):
+        """Split long sequences by a fixed number of characters per line."""
+        max_column = 80
+        seq = self.get_sequence()
+        split_seq = ''
+        i = 0
+        while i < len(seq):
+            split_seq += seq[i:i+max_column] + "\n"
+            i += max_column
+        description = self.get_description()
+        fasta = ">%s %s\n%s" % (self.upi, description, split_seq)
+        return fasta
+
+    def get_gff(self):
+        """
+        Format genomic coordinates from all xrefs into a single file in GFF2 format.
+        To reduce redundancy, keep only xrefs from the source entries,
+        not the entries added from the DR lines.
+        """
+        xrefs = self.xrefs.filter(db__project_id__isnull=True).all()
+        gff = ''
+        for xref in xrefs:
+            gff += GffFormatter(xref)()
+        return gff
+
+    def get_gff3(self):
+        """Format genomic coordinates from all xrefs into a single file in GFF3 format."""
+        xrefs = self.xrefs.filter(deleted='N').all()
+        gff = '##gff-version 3\n'
+        for xref in xrefs:
+            gff += Gff3Formatter(xref)()
+        return gff
+
+    def get_ucsc_bed(self):
+        """
+        Format genomic coordinates from all xrefs into a single file in UCSC BED format.
+        Example:
+        chr1    29554    31097    RNA000063C361    0    +   29554    31097    255,0,0    3    486,104,122    0,1009,1421
+        """
+        xrefs = self.xrefs.filter(db__project_id__isnull=True).all()
+        bed = ''
+        for xref in xrefs:
+            bed += _xref_to_bed_format(xref)
+        return bed
+
+    def get_rna_type(self, taxid=None, recompute=False):
+        """Determine the rna type for the given sequence. This will use the
+        precomuted data if possible. If not asked to recompute it will do so.
+        Providing an taxid will compute the rna_type for the given taxon only.
+        This means it will determine the rna_type for only that organism.
+
+        Parameters
+        ----------
+        taxid : int, None
+            The taxon id, if any to use for finding the rna_type.
+        recompute : bool, False
+            Flag to indicate if this should use the already stored data, or
+            recompute it.
+
+        Returns
+        -------
+        rna_type : str
+            The rna type computed for this sequence and possibly taxon id.
+        """
+
+        if not recompute:
+            queryset = RnaPrecomputed.objects.filter(taxid=taxid)
+            try:
+                rna_type = queryset.get(upi=self.upi).rna_type
+                if rna_type is None:
+                    xrefs = self.find_valid_xrefs(taxid=taxid)
+                    return desc.get_rna_type(self, xrefs, taxid=taxid)
+                return rna_type
+            except ObjectDoesNotExist:
+                pass
+
+        xrefs = self.find_valid_xrefs(taxid=taxid)
+        return desc.get_rna_type(self, xrefs, taxid=taxid)
+
+    def get_description(self, taxid=None, recompute=False):
+        """
+        Compute the description of this sequence. The description is intented
+        to be a good description of the sequence and is based upon the xrefs
+        this sequence has. If given a taxid this will produce a description
+        that is specific to that species, otherwise it will return a
+        description that is general for all species this has been observed in.
+
+        Normally, this will simply lookup a stored description in
+        rna_precomputed, however, if recompute=True is given then this will
+        recompute the description.
+
+
+        Parameters
+        ----------
+        taxid : int, None
+            The taxon id to create a description for.
+
+        recompute : bool, False
+            If this should compute the description or simply look it up.
+
+        Returns
+        -------
+        description : str
+            The description of this sequence.
+        """
+        if not recompute:
+            if taxid:
+                queryset = RnaPrecomputed.objects.filter(taxid=taxid)
+            else:
+                queryset = RnaPrecomputed.objects.filter(taxid__isnull=True)
+
+            try:
+                obj = queryset.get(upi=self.upi)
+                return obj.description
+            except ObjectDoesNotExist:
+                pass
+
+        xrefs = self.find_valid_xrefs(taxid=taxid)
+        return desc.get_description(self, xrefs, taxid=taxid)
+
+    def find_valid_xrefs(self, taxid=None):
+        """
+        Determine the valid xrefs for this sequence and taxid. This will
+        attempt to get all active (not deleted) xrefs for the given sequence
+        and taxon id. If there are no active xrefs then this will switch to use
+        the deleted xrefs.
+
+        taxid : int, None
+            The taxon id to use. None indicates no species constraint,
+            otherwise the taxid is the taxid of the xref to limit to.
+
+        Returns
+        -------
+        xrefs : queryset
+            The collection of xrefs that are valid for the sequence and taxid.
+        """
+
+        base = Xref.objects.filter(upi=self.upi)
+        xrefs = base.filter(deleted='N')
+        if taxid is not None:
+            xrefs = xrefs.filter(taxid=taxid)
+
+        if not xrefs.exists():
+            xrefs = base
+            if taxid is not None:
+                xrefs = xrefs.filter(taxid=taxid)
+
+        return xrefs.select_related('accession', 'db')

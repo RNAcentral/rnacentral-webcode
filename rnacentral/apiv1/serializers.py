@@ -25,7 +25,9 @@ from django.db.models import Min, Max
 from rest_framework import serializers
 from rest_framework import pagination
 
-from portal.models import Rna, Xref, Reference, Database, Accession, Release, Reference, Reference_map, Modification, ChemicalComponent
+from portal.models import Rna, Xref, Reference, Database, Accession, Release, Reference, Modification
+from portal.models.reference_map import Reference_map
+from portal.models.chemical_component import ChemicalComponent
 
 
 class RawCitationSerializer(serializers.ModelSerializer):

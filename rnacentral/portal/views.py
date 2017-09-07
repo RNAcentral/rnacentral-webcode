@@ -31,8 +31,9 @@ from rest_framework.views import APIView
 from portal.config.expert_databases import expert_dbs
 from portal.config.genomes import genomes as rnacentral_genomes
 from portal.forms import ContactForm
-from portal.models import Rna, Database, Release, Xref, DatabaseStats, RnaPrecomputed
-
+from portal.models import Rna, Database, Release, Xref
+from portal.models.database_stats import DatabaseStats
+from portal.models.rna_precomputed import RnaPrecomputed
 
 CACHE_TIMEOUT = 60 * 60 * 24 * 1 # per-view cache timeout in seconds
 XREF_PAGE_SIZE = 1000
