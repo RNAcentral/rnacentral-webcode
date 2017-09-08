@@ -204,12 +204,12 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
 
         # TODO: bring back all() -> filter(chromosome__isnull=False), when postgres is fully populated
 
-        if obj.accession.coordinates.exists():
+        if obj.accession.coordinates.exists() and obj.accession.coordinates.all()[0].chromosome:
             data = {
                 'chromosome': obj.accession.coordinates.all()[0].chromosome,
                 'strand': obj.accession.coordinates.all()[0].strand,
-                'start': obj.accession.coordinates.all()[0].min_feature_start,
-                'end': obj.accession.coordinates.all()[0].max_feature_end
+                'start': obj.accession.coordinates.all().aggregate(Min('primary_start')),
+                'end': obj.accession.coordinates.all().aggregate(Max('primary_end'))
             }
 
             exceptions = ['X', 'Y']
@@ -224,6 +224,12 @@ class PaginatedXrefSerializer(pagination.PaginationSerializer):
     """Paginated version of XrefSerializer."""
     class Meta:
         object_serializer_class = XrefSerializer
+
+
+class RnaListSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Rna
+        fields = ('__all__')
 
 
 class RnaNestedSerializer(serializers.HyperlinkedModelSerializer):

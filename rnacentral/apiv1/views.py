@@ -21,7 +21,6 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework import renderers
-from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
@@ -29,9 +28,9 @@ from rest_framework.reverse import reverse
 
 from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, PaginatedXrefSerializer, \
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
-                              RawCitationSerializer, RnaSpeciesSpecificSerializer
+                              RawCitationSerializer, RnaSpeciesSpecificSerializer, RnaListSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
-from portal.models import Rna, Accession, Xref, Reference, Database
+from portal.models import Rna, Accession, Xref, Database
 from portal.config.genomes import genomes
 
 """
