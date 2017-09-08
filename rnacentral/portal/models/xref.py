@@ -39,7 +39,7 @@ class RawSqlQueryset(models.QuerySet):
     def for_taxid(self, taxid):
         """Just save input parameters and return results of all()"""
         self.taxid = taxid
-        return self
+        return self.filter(taxid=taxid)
 
     def with_offset_and_limit(self, offset, limit):
         self.offset = offset
@@ -47,36 +47,50 @@ class RawSqlQueryset(models.QuerySet):
         return self
 
     def _fetch_all(self):
+        """
+        This method performs the actual database lookup, when queryset is evaluated.
+        We extend it to fetch database-specific data with raw SQL queries.
+        """
         super(RawSqlQueryset, self)._fetch_all()
 
-        # Raw SQL queries to fetch database-specific data with self-joins, impossible in Django ORM
-        mirbase_mature_products = self.get_mirbase_mature_products(self.taxid, self.offset, self.limit)
-        mirbase_precursors = self.get_mirbase_precursor(self.taxid, self.offset, self.limit)
-        refseq_mirna_mature_products = self.get_refseq_mirna_mature_products(self.taxid, self.offset, self.limit)
-        refseq_mirna_precursors = self.get_refseq_mirna_precursor(self.taxid, self.offset, self.limit)
-        refseq_splice_variants = self.get_refseq_splice_variants(self.taxid, self.offset, self.limit)
-        tmrna_mates = self.get_tmrna_mate(self.taxid, self.offset, self.limit)
+        # check this flag to avoid infinite recursion loop with _fetch_all() called by get_mirbase_mature_products()
+        if not hasattr(self, "fetch_all_already_called"):
 
-        # "annotate" xrefs queryset with additional attributes, retrieved by raw SQL queries
-        for xref in self:
-            if xref.id in mirbase_mature_products:
-                xref.mirbase_mature_products = [ mature_product.upi.upi for mature_product in mirbase_mature_products[xref.id] ]
-                # print "mirbase_mature_products = %s" % xref.mirbase_mature_products
-            if xref.id in mirbase_precursors:
-                xref.mirbase_precursor = [ precursor.upi.upi for precursor in mirbase_precursors[xref.id] ]
-                # print "mirbase_precursor = %s" % xref.mirbase_precursor
-            if xref.id in refseq_mirna_mature_products:
-                xref.refseq_mirna_mature_products = [ mature_product.upi.upi for mature_product in refseq_mirna_mature_products[xref.id] ]
-                # print "refseq_mirna_mature_products = %s" % xref.refseq_mirna_mature_products
-            if xref.id in refseq_mirna_precursors:
-                xref.refseq_mirna_precursor = [ precursor.upi.upi for precursor in refseq_mirna_precursors[xref.id] ]
-                # print "refseq_mirna_precursor = %s" % xref.refseq_mirna_precursor
-            if xref.id in refseq_splice_variants:
-                xref.refseq_splice_variants = [ splice_variant.upi.upi for splice_variant in refseq_splice_variants[xref.id] ]
-                # print "refseq_splice_variants = %s" % xref.refseq_splice_variants
-            if xref.id in tmrna_mates:
-                xref.tmrna_mates = [ tmrna_mate.upi.upi for tmrna_mate in tmrna_mates[xref.id] ]
-                # print "xref.tmrna_mates = %s" % xref.tmrna_mates
+            # set this flag to avoid infinite recursion loop
+            self.fetch_all_already_called = True
+
+            # add database-specific fields only if this queryset contains model objects
+            # (this is not the case for values() or values_list() methods)
+            if len(self) and type(self[0]) == Xref:
+
+                # Raw SQL queries to fetch database-specific data with self-joins, impossible in Django ORM
+                mirbase_mature_products = self.get_mirbase_mature_products(self.taxid, self.offset, self.limit)
+                mirbase_precursors = self.get_mirbase_precursor(self.taxid, self.offset, self.limit)
+                refseq_mirna_mature_products = self.get_refseq_mirna_mature_products(self.taxid, self.offset, self.limit)
+                refseq_mirna_precursors = self.get_refseq_mirna_precursor(self.taxid, self.offset, self.limit)
+                refseq_splice_variants = self.get_refseq_splice_variants(self.taxid, self.offset, self.limit)
+                tmrna_mates = self.get_tmrna_mate(self.taxid, self.offset, self.limit)
+
+                # "annotate" xrefs queryset with additional attributes, retrieved by raw SQL queries
+                for xref in self:
+                    if xref.id in mirbase_mature_products:
+                        xref.mirbase_mature_products = [ mature_product.upi.upi for mature_product in mirbase_mature_products[xref.id] ]
+                        # print "mirbase_mature_products = %s" % xref.mirbase_mature_products
+                    if xref.id in mirbase_precursors:
+                        xref.mirbase_precursor = [ precursor.upi.upi for precursor in mirbase_precursors[xref.id] ]
+                        # print "mirbase_precursor = %s" % xref.mirbase_precursor
+                    if xref.id in refseq_mirna_mature_products:
+                        xref.refseq_mirna_mature_products = [ mature_product.upi.upi for mature_product in refseq_mirna_mature_products[xref.id] ]
+                        # print "refseq_mirna_mature_products = %s" % xref.refseq_mirna_mature_products
+                    if xref.id in refseq_mirna_precursors:
+                        xref.refseq_mirna_precursor = [ precursor.upi.upi for precursor in refseq_mirna_precursors[xref.id] ]
+                        # print "refseq_mirna_precursor = %s" % xref.refseq_mirna_precursor
+                    if xref.id in refseq_splice_variants:
+                        xref.refseq_splice_variants = [ splice_variant.upi.upi for splice_variant in refseq_splice_variants[xref.id] ]
+                        # print "refseq_splice_variants = %s" % xref.refseq_splice_variants
+                    if xref.id in tmrna_mates:
+                        xref.tmrna_mates = [ tmrna_mate.upi.upi for tmrna_mate in tmrna_mates[xref.id] ]
+                        # print "xref.tmrna_mates = %s" % xref.tmrna_mates
 
     def _xrefs_raw_queryset_to_dict(self, raw_queryset):
         """
@@ -304,6 +318,8 @@ class RawSqlQueryset(models.QuerySet):
 
 
 class RawSqlXrefManager(models.Manager):
+    use_for_related_fields = True
+
     def get_queryset(self):
         return RawSqlQueryset(self.model, using=self._db)
 

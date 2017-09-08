@@ -76,7 +76,8 @@ class Rna(CachingMixin, models.Model):
 
     def is_active(self):
         """A sequence is considered active if it has at least one active cross_reference."""
-        print "type(self.xrefs.values_list) = %s" % type(self.xrefs.values_list)
+        values_list = self.xrefs.values_list('deleted', flat=True)
+        print "self.xrefs.values_list('deleted', flat=True) = %s" % values_list
         return 'N' in self.xrefs.values_list('deleted', flat=True).distinct()  # deleted xrefs are marked with N
 
     def has_genomic_coordinates(self, taxid=None):
@@ -120,7 +121,7 @@ class Rna(CachingMixin, models.Model):
         expert_db_projects = Database.objects.exclude(project_id=None)\
                                              .values_list('project_id', flat=True)
 
-        self.xrefs.filter(deleted='N', upi=self.upi)\
+        xrefs = self.xrefs.filter(deleted='N', upi=self.upi)\
                           .exclude(db__id=1, accession__project__in=expert_db_projects)\
                           .order_by('-db__id')\
                           .select_related()\
@@ -141,7 +142,10 @@ class Rna(CachingMixin, models.Model):
                           .all()
 
         if taxid:
-            xrefs = xrefs.filter(taxid=taxid)
+            xrefs = xrefs.for_taxid(taxid)
+
+        if offset and limit:
+            xrefs = xrefs.with_offset_and_limit(offset, limit)
 
         return xrefs if xrefs.exists() else self.xrefs.filter(deleted='Y').select_related()
 
