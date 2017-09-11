@@ -291,8 +291,8 @@ class DatabaseSpecificXrefsTestCase(ApiV1BaseClass):
         #self._test_time_and_existence('URS000075C808', self.timeout, "refseq_splice_variants")
         pass  # does not work so far
 
-    def test_tmrna_mate_upi(self):
-        pass  # does not work so far
+    # def test_tmrna_mate_upi(self):
+    #     pass  # does not work so far
 
     def test_genomic_coordinates(self):
         self._test_time_and_existence('URS000025784F', self.timeout, "genomic_coordinates")
