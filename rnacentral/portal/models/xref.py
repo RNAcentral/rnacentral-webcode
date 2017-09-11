@@ -514,25 +514,6 @@ class Xref(models.Model):
             splice_variants.sort(key=lambda x: x.length)
         return splice_variants
 
-    def get_vega_splice_variants(self):
-        """
-        Alternative transcripts are grouped by the same Gene id.
-        Vega gene names are stored in optional_id while
-        transcript names are stored in external_id.
-        """
-        # TODO: vega is a dead database and should be removed
-        splice_variants = []
-        if not re.match('(vega|ensembl)', self.db.display_name, re.IGNORECASE):
-            return splice_variants
-        for splice_variant in Accession.objects.filter(optional_id=self.accession.optional_id)\
-                                               .exclude(accession=self.accession.accession)\
-                                               .all():
-            for splice_xref in splice_variant.xrefs.all():
-                if splice_xref.deleted == 'N':
-                    splice_variants.append(splice_xref.upi)
-            splice_variants.sort(key=lambda x: x.length)
-        return splice_variants
-
     def get_tmrna_mate_upi(self):
         """Get the mate of the 2-piece tmRNA"""
         # TODO: Currently this function is not used anywhere in the code.

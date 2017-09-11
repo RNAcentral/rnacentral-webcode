@@ -75,7 +75,6 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
     rna_type = serializers.Field(source='get_rna_type')
     srpdb_id = serializers.Field(source='get_srpdb_id')
     ena_url = serializers.Field(source='get_ena_url')
-    # vega_transcript_url = serializers.Field(source='get_vega_transcript_url')
     gencode_transcript_id = serializers.Field(source='get_gencode_transcript_id')
     gencode_ensembl_url = serializers.Field(source='get_gencode_ensembl_url')
     ensembl_species_url = serializers.Field(source='get_ensembl_species_url')
@@ -88,7 +87,6 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
             'citations', 'source_url', 'expert_db_url',
             'pdb_entity_id', 'pdb_structured_note', 'hgnc_enembl_id', 'hgnc_id',
             'biotype', 'rna_type', 'srpdb_id', 'ena_url',
-            # 'vega_transcript_url',
             'gencode_transcript_id',
             'gencode_ensembl_url', 'ensembl_species_url'
         )
@@ -138,7 +136,6 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
     refseq_mirna_mature_products = serializers.SerializerMethodField('get_refseq_mirna_mature_products')
     refseq_mirna_precursor = serializers.SerializerMethodField('get_refseq_mirna_precursor')
     refseq_splice_variants = serializers.SerializerMethodField('get_refseq_splice_variants')
-    # vega_splice_variants = serializers.Field(source='get_vega_splice_variants') - DEAD
     # tmrna_mate_upi = serializers.SerializerMethodField('get_tmrna_mate_upi')
     # tmrna_type = serializers.Field(source='get_tmrna_type')
     ensembl_division = serializers.Field(source='get_ensembl_division')
@@ -155,7 +152,7 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
             'is_rfam_seed', 'ncbi_gene_id', 'ndb_external_url',
             'mirbase_mature_products', 'mirbase_precursor',
             'refseq_mirna_mature_products', 'refseq_mirna_precursor',
-            'refseq_splice_variants', # 'vega_splice_variants', - deprecated
+            'refseq_splice_variants',
             # 'tmrna_mate_upi',
             # 'tmrna_type',
             'ensembl_division', 'ucsc_db_id',  # 200-400 ms, no requests

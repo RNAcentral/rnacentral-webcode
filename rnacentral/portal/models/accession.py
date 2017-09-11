@@ -126,12 +126,6 @@ class Accession(models.Model):
         else:
             return ena_base_url + self.accession
 
-    def get_vega_transcript_url(self):
-        """Get external url for Vega transcripts."""
-        url = 'http://vega.sanger.ac.uk/{species}/Transcript/Summary?db=core;t={id}'.format(
-            id=self.external_id, species=self.species.replace(' ', '_'))
-        return url
-
     def get_gencode_transcript_id(self):
         """
         GENCODE entries have their corresponding Ensembl transcript ids stored
@@ -174,7 +168,6 @@ class Accession(models.Model):
         urls = {
             'RFAM': 'http://rfam.xfam.org/family/{id}',
             'SRPDB': 'http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/{id}',
-            'VEGA': 'http://vega.sanger.ac.uk/{species}/Gene/Summary?db=core;g={id}',
             'MIRBASE': 'http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc={id}',
             'TMRNA_WEB': 'http://bioinformatics.sandia.gov/tmrna/seqs/{id}',
             'LNCRNADB': 'http://www.lncrnadb.org/{id}',
