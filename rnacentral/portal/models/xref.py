@@ -555,7 +555,7 @@ class Xref(models.Model):
         ensembl_divisions = get_ensembl_divisions()
         for division in ensembl_divisions:
             if species in [x['name'] for x in division['species']]:
-                return division
+                return {'name': division['name'], 'url': division['url']}
         return {  # fall back to ensembl.org
             'name': 'Ensembl',
             'url': 'http://ensembl.org',
