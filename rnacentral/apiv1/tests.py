@@ -585,14 +585,14 @@ def run_tests():
     Organize and run the test suites.
     """
     suites = [
-        # unittest.TestLoader().loadTestsFromTestCase(BasicEndpointsTestCase),
-        # unittest.TestLoader().loadTestsFromTestCase(SpeciesSpecificIdsTestCase),
-        # unittest.TestLoader().loadTestsFromTestCase(FiltersTestCase),
-        # unittest.TestLoader().loadTestsFromTestCase(OutputFormatsTestCase),
-        # unittest.TestLoader().loadTestsFromTestCase(NestedXrefsTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(BasicEndpointsTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(SpeciesSpecificIdsTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(FiltersTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(OutputFormatsTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(NestedXrefsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(DatabaseSpecificXrefsTestCase),
-        # unittest.TestLoader().loadTestsFromTestCase(RnaEndpointsTestCase),
-        # unittest.TestLoader().loadTestsFromTestCase(AccessionEndpointsTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(RnaEndpointsTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(AccessionEndpointsTestCase),
     ]
     unittest.TextTestRunner().run(unittest.TestSuite(suites))
 
