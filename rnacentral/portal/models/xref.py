@@ -162,11 +162,7 @@ class RawSqlQueryset(models.QuerySet):
             LIMIT 1
         """.format(queryset=queryset)
 
-        print "annotated_queryset = %s" % annotated_queryset
-
         raw_queryset = Xref.objects.raw(annotated_queryset)
-
-        print "self._xrefs_raw_queryset_to_dict(raw_queryset) = %s" % self._xrefs_raw_queryset_to_dict(raw_queryset)
 
         return self._xrefs_raw_queryset_to_dict(raw_queryset)
 
