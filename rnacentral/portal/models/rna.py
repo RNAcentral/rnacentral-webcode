@@ -111,7 +111,7 @@ class Rna(CachingMixin, models.Model):
         """
         return dict(Counter(self.get_sequence()))
 
-    def get_xrefs(self, taxid=None, offset=None, limit=None):
+    def get_xrefs(self, taxid=None):
         """
         Get all xrefs, show non-ENA annotations first.
         Exclude source ENA entries that are associated with other expert db entries.
@@ -141,9 +141,6 @@ class Rna(CachingMixin, models.Model):
 
         if taxid:
             xrefs = xrefs.for_taxid(taxid)
-
-        if offset and limit:
-            xrefs = xrefs.with_offset_and_limit(offset, limit)
 
         return xrefs if xrefs.exists() else self.xrefs.filter(deleted='Y').select_related()
 
