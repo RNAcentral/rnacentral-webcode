@@ -178,11 +178,14 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         """
         Ensure that xrefs can be paginated.
         """
-        upi = 'URS0000004483'  # >150 xrefs
-        page = 7
+        upi = 'URS000075A546'  # >150 xrefs
+        page = 4
         page_size = 2
         url = self._get_api_url('rna/{upi}/xrefs?page={page}&page_size={page_size}'.format(
-            upi=upi, page=page, page_size=page_size))
+            upi=upi,
+            page=page,
+            page_size=page_size
+        ))
         data = self._test_url(url)
         self.assertTrue(len(data['results']), page_size)
 
