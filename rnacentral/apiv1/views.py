@@ -21,7 +21,6 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework import renderers
-from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
@@ -29,9 +28,9 @@ from rest_framework.reverse import reverse
 
 from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, PaginatedXrefSerializer, \
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
-                              RawCitationSerializer, RnaSpeciesSpecificSerializer
+                              RawCitationSerializer, RnaSpeciesSpecificSerializer, RnaListSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
-from portal.models import Rna, Accession, Xref, Reference, Database
+from portal.models import Rna, Accession, Xref, Database
 from portal.config.genomes import genomes
 
 """
@@ -43,16 +42,16 @@ MAX_XREFS_TO_PREFETCH = 1000
 
 
 def _get_xrefs_from_genomic_coordinates(species, chromosome, start, end):
-    """
-    Common function for retrieving xrefs based on genomic coordinates.
-    """
+    """Common function for retrieving xrefs based on genomic coordinates."""
     try:
-        xrefs = Xref.objects.filter(accession__coordinates__chromosome=chromosome,
-                                    accession__coordinates__primary_start__gte=start,
-                                    accession__coordinates__primary_end__lte=end,
-                                    accession__species=species.replace('_', ' ').capitalize(),
-                                    deleted='N').\
-                             all()
+        xrefs = Xref.objects.filter(
+            accession__coordinates__chromosome=chromosome,
+            accession__coordinates__primary_start__gte=start,
+            accession__coordinates__primary_end__lte=end,
+            accession__species=species.replace('_', ' ').capitalize(),
+            deleted='N'
+        ).all()
+
         return xrefs
     except:
         return []
@@ -107,9 +106,7 @@ class DasSources(APIView):
 
 
 class DasStylesheet(APIView):
-    """
-    Das stylesheet for controlling the appearance of the RNAcentral Ensembl track.
-    """
+    """Das stylesheet for controlling the appearance of the RNAcentral Ensembl track."""
 
     permission_classes = (AllowAny,)
     renderer_classes = (renderers.StaticHTMLRenderer,)  # return the string unchanged
@@ -152,9 +149,7 @@ class DasStylesheet(APIView):
 
 
 class DasFeatures(APIView):
-    """
-    DAS `features` method for retrieving genome annotations.
-    """
+    """DAS `features` method for retrieving genome annotations."""
 
     permission_classes = (AllowAny,)
     renderer_classes = (renderers.StaticHTMLRenderer, )  # return as an unmodified string
@@ -187,9 +182,7 @@ class DasFeatures(APIView):
             return (chromosome, start, end)
 
         def _format_segment():
-            """
-            Return a segment object containing exon features.
-            """
+            """Return a segment object containing exon features."""
             rnacentral_ids = []
             features = ''
             feature_types = { # defined in DasStylesheet
@@ -220,15 +213,17 @@ class DasFeatures(APIView):
     <GROUP id="{transcript_id}" type="{transcript_type}" label="{rnacentral_id}">
       <LINK href="{rnacentral_url}">{rnacentral_id}</LINK>
     </GROUP>
-  </FEATURE>""".format(exon_id=exon_id,
-                       start=exon.primary_start,
-                       end=exon.primary_end,
-                       feature_type=feature_types['exon'],
-                       strand='+' if exon.strand > 0 else '-',
-                       transcript_id=transcript_id,
-                       rnacentral_id=rnacentral_id,
-                       transcript_type=feature_types['transcript'],
-                       rnacentral_url=rnacentral_url)
+  </FEATURE>""".format(
+                    exon_id=exon_id,
+                    start=exon.primary_start,
+                    end=exon.primary_end,
+                    feature_type=feature_types['exon'],
+                    strand='+' if exon.strand > 0 else '-',
+                    transcript_id=transcript_id,
+                    rnacentral_id=rnacentral_id,
+                    transcript_type=feature_types['transcript'],
+                    rnacentral_url=rnacentral_url
+                )
 
             segment = """
 <SEGMENT id="{0}" start="{1}" stop="{2}">""".format(chromosome, start, end) + features + """
@@ -267,8 +262,6 @@ class GenomeAnnotations(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request, species, chromosome, start, end, format=None):
-        """
-        """
         start = start.replace(',','')
         end = end.replace(',','')
 
@@ -345,9 +338,7 @@ class APIRoot(APIView):
 
 
 class RnaFilter(django_filters.FilterSet):
-    """
-    Declare what fields can be filtered using django-filters
-    """
+    """Declare what fields can be filtered using django-filters"""
     min_length = django_filters.NumberFilter(name="length", lookup_type='gte')
     max_length = django_filters.NumberFilter(name="length", lookup_type='lte')
     external_id = django_filters.CharFilter(name="xrefs__accession__external_id", distinct=True)
@@ -358,13 +349,9 @@ class RnaFilter(django_filters.FilterSet):
 
 
 class RnaMixin(object):
-    """
-    Mixin for additional functionality specific to Rna views.
-    """
+    """Mixin for additional functionality specific to Rna views."""
     def get_serializer_class(self):
-        """
-        Determine a serializer for RnaSequences and RnaDetail views.
-        """
+        """Determine a serializer for RnaSequences and RnaDetail views."""
         if self.request.accepted_renderer.format == 'fasta':
             return RnaFastaSerializer
         elif self.request.accepted_renderer.format == 'gff':
@@ -453,9 +440,7 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
         # end DRF base code
 
     def _get_database_id(self, db_name):
-        """
-        Map the `database` parameter from the url to internal database ids
-        """
+        """Map the `database` parameter from the url to internal database ids"""
         for expert_database in Database.objects.all():
             if re.match(expert_database.label, db_name, re.IGNORECASE):
                 return expert_database.id
@@ -506,7 +491,7 @@ class RnaDetail(RnaMixin, generics.RetrieveAPIView):
 
         flat = self.request.QUERY_PARAMS.get('flat', None)
         if flat and rna.xrefs.count() <= MAX_XREFS_TO_PREFETCH:
-            queryset = queryset.prefetch_related('xrefs','xrefs__accession')
+            queryset = queryset.prefetch_related('xrefs', 'xrefs__accession')
             return get_object_or_404(queryset, **filter_kwargs)
         else:
             return rna
@@ -528,9 +513,6 @@ class RnaSpeciesSpecificView(generics.RetrieveAPIView):
     queryset = Rna.objects.all()
 
     def get(self, request, pk, taxid, format=None):
-        """
-        Respond to Get requests.
-        """
         rna = self.get_object()
         xrefs = rna.xrefs.filter(taxid=taxid)
         if not xrefs:
@@ -552,9 +534,7 @@ class XrefList(generics.ListAPIView):
     queryset = Rna.objects.select_related().all()
 
     def get(self, request, pk=None, format=None):
-        """
-        Get a paginated list of cross-references.
-        """
+        """Get a paginated list of cross-references."""
         page = request.QUERY_PARAMS.get('page', 1)
         page_size = request.QUERY_PARAMS.get('page_size', 100)
 
@@ -576,9 +556,7 @@ class AccessionView(generics.RetrieveAPIView):
     queryset = Accession.objects.select_related().all()
 
     def get(self, request, pk, format=None):
-        """
-        Retrive individual accessions.
-        """
+        """Retrive individual accessions."""
         accession = self.get_object()
         serializer = AccessionSerializer(accession, context={'request': request})
         return Response(serializer.data)

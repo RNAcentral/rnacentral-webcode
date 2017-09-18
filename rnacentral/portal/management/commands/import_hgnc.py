@@ -17,7 +17,8 @@ from datetime import datetime
 
 from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
-from portal.models import Xref, Accession, Database, Release, Reference, Reference_map
+from portal.models import Xref, Accession, Database, Release, Reference
+from portal.models.reference_map import Reference_map
 
 """
 Import HGNC xrefs into RNAcentral.

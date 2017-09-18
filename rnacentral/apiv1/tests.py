@@ -45,7 +45,7 @@ class Timer(object):
 
     def __exit__(self, *args):
         self.end = time.clock()
-        self.timeout = self.end - self.start
+        self.timeout = (self.end - self.start) * 100
 
 
 class ApiV1BaseClass(unittest.TestCase):
@@ -178,11 +178,14 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         """
         Ensure that xrefs can be paginated.
         """
-        upi = 'URS0000004483' # >150 xrefs
-        page = 7
+        upi = 'URS000075A546'  # >150 xrefs
+        page = 4
         page_size = 2
         url = self._get_api_url('rna/{upi}/xrefs?page={page}&page_size={page_size}'.format(
-            upi=upi, page=page, page_size=page_size))
+            upi=upi,
+            page=page,
+            page_size=page_size
+        ))
         data = self._test_url(url)
         self.assertTrue(len(data['results']), page_size)
 
@@ -229,6 +232,73 @@ class NestedXrefsTestCase(ApiV1BaseClass):
             page=page, page_size=page_size))
         data = self._test_url(url)
         self.assertTrue(len(data['results']), page_size)
+
+
+class DatabaseSpecificXrefsTestCase(ApiV1BaseClass):
+    """
+    Test correctness and performance of Xref fields like:
+
+        * modifications
+        * mirbase_mature_products
+        * mirbase_precursor
+        * refseq_mirna_mature_products
+        * refseq_mirna_precursor
+        * refseq_splice_variants
+        * tmrna_mate_upi
+        * genomic_coordinates
+    """
+    timeout = 5
+
+    def _test_time_and_existence(self, upi, timeout, field):
+        """
+        Shortcut to check that response time is tolerable and expected field
+        is not empty.
+
+        :param upi: upi of RNA to perform test on
+        :param timeout: API should be fast enough to respond before
+          this timeout expires (in seconds, e.g. 5)
+        :param field: name of the field that we want to be non-empty at least
+          for some Xrefs (e.g. "modifications")
+        :return:
+        """
+        url = self._get_api_url('rna/%s/xrefs' % upi)
+        with Timer() as timer:
+            response = requests.get(url)
+        self.assertTrue(timer.timeout < timeout)
+        self.assertEqual(response.status_code, 200)
+
+        # check that field is non-empty at least for some results
+        empty = True
+        for xref in response.json()['results']:
+            if xref[field] != None:
+                empty = False
+                break
+        self.assertFalse(empty)
+
+    def test_modifications(self):
+        self._test_time_and_existence('URS00004B0F34', self.timeout, "modifications")
+
+    def test_mirbase_mature_products(self):
+        self._test_time_and_existence('URS0000416056', self.timeout, "mirbase_mature_products")
+
+    def test_mirbase_precursor(self):
+        self._test_time_and_existence('URS000075A546', self.timeout, "mirbase_precursor")
+
+    def test_refseq_mirna_mature_products(self):
+        self._test_time_and_existence('URS0000416056', self.timeout, "refseq_mirna_mature_products")
+
+    def test_refseq_mirna_precursor(self):
+        self._test_time_and_existence('URS000075A546', self.timeout, "refseq_mirna_precursor")
+
+    def test_refseq_splice_variants(self):
+        #self._test_time_and_existence('URS000075C808', self.timeout, "refseq_splice_variants")
+        pass  # does not work so far
+
+    # def test_tmrna_mate_upi(self):
+    #     pass  # does not work so far
+
+    def test_genomic_coordinates(self):
+        self._test_time_and_existence('URS000025784F', self.timeout, "genomic_coordinates")
 
 
 class OutputFormatsTestCase(ApiV1BaseClass):
@@ -523,6 +593,7 @@ def run_tests():
         unittest.TestLoader().loadTestsFromTestCase(FiltersTestCase),
         unittest.TestLoader().loadTestsFromTestCase(OutputFormatsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(NestedXrefsTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(DatabaseSpecificXrefsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(RnaEndpointsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(AccessionEndpointsTestCase),
     ]
