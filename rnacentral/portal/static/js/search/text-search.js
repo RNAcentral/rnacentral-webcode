@@ -195,6 +195,7 @@ var search = function(_, $http, $interpolate, $location, $window, $q) {
                 }
 
                 self.status = 'success';
+                $window.ga('send', 'pageview', $location.path());
             },
             function(response) {
                 self.status = 'error';
