@@ -1,5 +1,8 @@
 User-agent: *
 Disallow: /api/v1/
 Disallow: /api/current/
+Disallow: /sequence-search/job-status
+Disallow: /sequence-search/cancel-job
+Disallow: /sequence-search/submit-query
 
 Sitemap: http://rnacentral.org/sitemap.xml

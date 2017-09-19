@@ -93,6 +93,7 @@ var search = function(_, $http, $interpolate, $location, $window) {
                     self.result.entries = self.result.entries.concat(data.entries); // append new entries
                 }
 
+                $window.ga('send', 'pageview', $location.path());
                 self.status = 'success';
             },
             function(response) {

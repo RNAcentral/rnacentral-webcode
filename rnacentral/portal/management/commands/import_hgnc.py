@@ -17,7 +17,8 @@ from datetime import datetime
 
 from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
-from portal.models import Xref, Accession, Database, Release, Reference, Reference_map
+from portal.models import Xref, Accession, Database, Release, Reference
+from portal.models.reference_map import Reference_map
 
 """
 Import HGNC xrefs into RNAcentral.
@@ -135,9 +136,14 @@ class HGNCImporter():
                 version=1,
                 taxid=9606
             )
+
+            gene_description = ''
+            if entry['symbol']:
+                gene_description = ' (%s)' % entry['symbol']
+
             Accession.objects.update_or_create(
                 accession=entry['hgnc_id'],
-                description='Homo sapiens ' + entry['name'],
+                description='Homo sapiens ' + entry['name'] + gene_description,
                 division='HUM',
                 species='Homo sapiens',
                 is_composite='N',

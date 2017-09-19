@@ -66,19 +66,19 @@ class SimpleDescriptionTests(GenericDescriptionTest):
 class HumanDescriptionTests(GenericDescriptionTest):
     def test_likes_hgnc_for_human(self):
         self.assertDescriptionIs(
-            'DiGeorge syndrome critical region gene 9 (non-protein coding)',
+            'DiGeorge syndrome critical region gene 9 (DGCR9)',
             'URS0000759BEC',
             taxid=9606)
 
         self.assertDescriptionIs(
-            'STARD4 antisense RNA 1',
+            'STARD4 antisense RNA 1 (STARD4-AS1)',
             'URS00003CE153',
             taxid=9606)
 
         # NOTE: This is a bit questionable, there are other names which may
         # possibly be better
         self.assertDescriptionIs(
-            'small Cajal body-specific RNA 10',
+            'small Cajal body-specific RNA 10 (SCARNA10)',
             'URS0000569A4A',
             taxid=9606)
 
@@ -92,6 +92,13 @@ class HumanDescriptionTests(GenericDescriptionTest):
             'Homo sapiens (human) microRNA hsa-mir-1302-9 precursor',
             'URS000075CC93',
             taxid=9606)
+
+    def test_includes_gene_name_for_hgnc(self):
+        self.assertDescriptionIs(
+            'HOX transcript antisense RNA (HOTAIR)',
+            'URS000075C808',
+            taxid=9606
+        )
 
 
 class ArabidopisDescriptionTests(GenericDescriptionTest):

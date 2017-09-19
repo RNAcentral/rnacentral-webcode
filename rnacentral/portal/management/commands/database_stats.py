@@ -13,7 +13,8 @@ limitations under the License.
 
 from django.core.management.base import BaseCommand
 from optparse import make_option
-from portal.models import Database, Rna, Xref, DatabaseStats
+from portal.models import Database, Rna, Xref
+from portal.models.database_stats import DatabaseStats
 from portal.views import _get_json_lineage_tree
 from django.db.models import Min, Max, Count, Avg
 import json

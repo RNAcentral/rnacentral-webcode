@@ -429,6 +429,36 @@ class TextSearchPage(BasePage):
         )
 
     @property
+    def facet_links(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.visibility_of_any_elements_located((By.CSS_SELECTOR, 'a.text-search-facet-link'))
+        )
+
+    @property
+    def rna_types_facet(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.visibility_of_any_elements_located((By.CSS_SELECTOR, '.text-search-facet-values'))
+        )[0]
+
+    @property
+    def organisms_facet(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.visibility_of_any_elements_located((By.CSS_SELECTOR, '.text-search-facet-values'))
+        )[1]
+
+    @property
+    def expert_databases_facet(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.visibility_of_any_elements_located((By.CSS_SELECTOR, '.text-search-facet-values'))
+        )[2]
+
+    @property
+    def genomic_mapping_facet(self):
+        return WebDriverWait(self.browser, self.timeout).until(
+            EC.visibility_of_any_elements_located((By.CSS_SELECTOR, '.text-search-facet-values'))
+        )[3]
+
+    @property
     def load_more_button(self):
         return WebDriverWait(self.browser, self.timeout).until(
             EC.element_to_be_clickable((By.CLASS_NAME, 'load-more'))
@@ -599,7 +629,7 @@ class RNAcentralTest(unittest.TestCase):
     def test_text_search_no_warnings(self):
         """
         Run a text search query that will find results, make sure that some
-        results are displyaed. The opposite of `test_text_search_no_results`.
+        results are displayed. The opposite of `test_text_search_no_results`.
         """
         page = TextSearchPage(self.browser)
         page.navigate()
@@ -638,8 +668,6 @@ class RNAcentralTest(unittest.TestCase):
 
     def test_autocomplete_test_suite(self):
         """A collection of queries to check correctness of autocomplete suggestions."""
-        # the dict has the following structure:
-        # {expectation: [queries, for which expectation should appear in autocomplete suggestions]}
         test_suite = [
             'mir 12',
             'lncrna',
@@ -675,14 +703,13 @@ class RNAcentralTest(unittest.TestCase):
         ]
 
         # add expert databases names to test_suites - their names should be suggested by autocomplete
-        expert_dbs = [db['name'] for db in expert_databases.expert_dbs]
+        expert_dbs = [db['name'] for db in expert_databases.expert_dbs if db['imported']]
         test_suite += expert_dbs
 
         page = TextSearchPage(self.browser)
         page.navigate()
 
         for query in test_suite:
-            print "query = %s" % query
             page.input.clear()
             page.input.send_keys(query)
             try:
@@ -693,8 +720,76 @@ class RNAcentralTest(unittest.TestCase):
             suggestions = [suggestion.text.lower() for suggestion in page.autocomplete_suggestions]
             if not query.lower() in suggestions:
                 print "Failed: query = %s not found in suggestions = %s" % (query, suggestions)
-            else:
-                print "Ok"
+
+    def test_text_search_test_suite(self):
+        """
+        A collection of queries, obtained as a feedback from SAB
+        and our own assumptions about what queries could be useful.
+        """
+        # the dict has the following structure
+        # {query: [hits that are expected to appear in results list]}
+        test_suite = OrderedDict([
+            ('bantam AND Taxonomy:"7227"', ['URS000055786A_7227', 'URS00004E9E38_7227', 'URS00002F21DA_7227']),
+            ('U12', ['URS000075EF5D_9606']),
+            ('ryhB', ['URS00003CF5BC_511145']),
+            ('coolair', ['URS000018EB2E_3702']),
+            ('tRNA-Phe', ['URS00003A0C47_9606']),
+            ('("HOTAIR" OR "HOX") AND TAXONOMY:"9606" AND rna_type:"lncRNA" AND length:[500 to 3000]', [
+                'URS000075C808_9606',  # HGNC HOTAIR Gene
+                'URS0000301B08_9606',  # GENCODE/Ensembl Gene
+                'URS0000759B00_9606',  # RefSeq transcript variant
+                'URS000075EF05_9606',  # RefSeq transcript variant
+                'URS00001A335C_9606',  # GENCODE/Ensembl transcript
+            ]),
+            ('4V4Q', [
+                'URS00004B0F34_562',  # LSU
+                'URS00000ABFE9_562',  # SSU
+                'URS0000049E57_562',  # 5S
+            ]),
+        ])
+
+        page = TextSearchPage(self.browser)
+        page.navigate()
+
+        for query, expected_results in test_suite.items():
+            page.input.clear()
+            page._submit_search_by_submit_button(query)
+
+            assert page.text_search_results_count
+            for expected_result in expected_results:
+                is_found = False
+                for result in page.text_search_results:
+                    if expected_result in result.text:
+                        is_found = True
+                        break  # ok, result found, move on to the next expected_result
+                if not is_found:  # if we managed to get here, expected_result is not found in results - fail
+                    print "Expected result %s not found for query %s" % (expected_result, query)  # or raise AssertionError
+
+    def test_text_search_facets(self):
+        """
+        Check that facet values make sense.
+        """
+        page = TextSearchPage(self.browser)
+        page.navigate()
+
+        # mirbase
+        page.input.clear()
+        page._submit_search_by_submit_button("mirbase")
+        for element in page.rna_types_facet.find_elements_by_css_selector('li > a'):
+            assert re.match('miRNA', element.text) or re.match('precursor RNA', element.text)
+
+        # hgnc
+        page.input.clear()
+        page._submit_search_by_submit_button("hgnc")
+        for element in page.organisms_facet.find_elements_by_css_selector('li > a'):
+            assert re.match('Homo sapiens', element.text)
+
+        # dictyBase
+        page.input.clear()
+        page._submit_search_by_submit_button('expert_db:"dictyBase"')
+        for element in page.organisms_facet.find_elements_by_css_selector('li > a'):
+            assert re.match('Dictyostelium discoideum AX4', element.text)
+
 
     # Sequence pages for specific databases
     # -------------------------------------
@@ -791,17 +886,12 @@ class RNAcentralTest(unittest.TestCase):
         """
         page = GenomeBrowserPage(self.browser)
         page.navigate()
-
+        time.sleep(15)
         page.start_input.clear()
         page.start_input.send_keys('2')  # on PhantomJS fails due to a known bug: https://github.com/ariya/phantomjs/issues/14211#issuecomment-279742472, https://github.com/SeleniumHQ/selenium/issues/2214
-
-        # Other possible implementation:
-        #  self.browser.execute_script("document.getElementById('genomic-start-input').setAttribute('value', '2');")
-
+        time.sleep(5)
         urlparams = urlparse.parse_qs(urlparse.urlparse(self.browser.current_url).query)
         assert urlparams['start'] == ['2']
-
-
 
     def test_UCSD_and_Ensembl_links_changed_on_input_changed(self):
         """
@@ -812,12 +902,12 @@ class RNAcentralTest(unittest.TestCase):
         """
         page = GenomeBrowserPage(self.browser)
         page.navigate()
-
+        time.sleep(15)
         page.start_input.clear()
-        page.start_input.send_keys('2')  # on PhantomJS fails due to a known bug: https://github.com/ariya/phantomjs/issues/14211#issuecomment-279742472, https://github.com/SeleniumHQ/selenium/issues/2214
-
+        page.start_input.send_keys('2')
+        time.sleep(5)
         urlparams = urlparse.parse_qs(urlparse.urlparse(page.ucsc_link.get_attribute('href')).query)
-        assert urlparams['position'] == ['chrX:2-73856333']
+        assert urlparams['position'] == ['chrX:2-73856333']  # TODO: fix failing tests
 
     # TaxId filtering
     # ---------------
@@ -836,7 +926,6 @@ class RNAcentralTest(unittest.TestCase):
         self.assertEqual(len(species), 1)
         self.assertEqual(species.pop(), taxid['species'])
         self.assertEqual(page.get_page_subtitle(), taxid['species'])
-        self.assertIn('Showing annotations from ' + taxid['species'], page.get_info_text())
 
     def test_taxid_filtering_spurious_taxid(self):
         """
@@ -864,7 +953,7 @@ if __name__ == '__main__':
     import argparse
     import sys
     parser = argparse.ArgumentParser()
-    parser.add_argument('--base_url', default='http://127.0.0.1:8000/')
+    parser.add_argument('--base_url', default='http://0.0.0.0:8000/')
     parser.add_argument('--driver', default='firefox',
                         choices=['firefox', 'phantomjs'])
     parser.add_argument('unittest_args', nargs='*')

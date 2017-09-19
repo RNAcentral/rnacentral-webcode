@@ -1,0 +1,44 @@
+node {
+    build()
+    runUnitTests()
+    deploy()
+}
+
+private void build() {
+    stage("Build for testing") {
+        checkout scm
+        withCredentials([file(credentialsId: 'local_settings_testing', variable: 'LOCAL_SETTINGS'), file(credentialsId: 'env_sh', variable: 'ENV_SH')]) {
+            sh 'cat $LOCAL_SETTINGS > rnacentral/rnacentral/local_settings.py'
+            sh 'cat $ENV_SH > rnacentral/scripts/env.sh'
+        }
+        sh '''
+            virtualenv ENV --python=/net/isilonP/public/rw/homes/xfm_adm/src/python/bin/python
+            source ENV/bin/activate
+            source rnacentral/scripts/env.sh
+            pip install --upgrade -r rnacentral/requirements.txt
+        '''
+    }
+}
+
+private void runUnitTests() {
+    stage("Run unit-tests") {
+        sh '''
+            source ENV/bin/activate
+            source rnacentral/scripts/env.sh
+            cd rnacentral
+            python apiv1/tests.py
+        '''
+    }
+}
+
+private void deploy() {
+    stage("Deploy") {
+        sh '''
+            cd /nfs/public/rw/xfam/rnacentral/test
+            source local/virtualenvs/RNAcentral/bin/activate
+            cd rnacentral-webcode/rnacentral
+            source scripts/env.sh
+            fab localhost deploy
+        '''
+    }
+}

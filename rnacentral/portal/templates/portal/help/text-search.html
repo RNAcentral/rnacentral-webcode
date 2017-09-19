@@ -13,6 +13,12 @@ limitations under the License.
 
 {% extends "portal/base.html" %}
 
+{% block meta_tags %}
+    {{ block.super }}
+    <meta name="description" content="Learn to use RNAcentral text search"/>
+    <meta name="twitter:description" content="Learn to use RNAcentral text search"/>
+{% endblock %}
+
 {% block title %}
 Help: Text search
 {% endblock %}

@@ -93,7 +93,7 @@
 
     <div class="col-md-12">
       <div class="alert alert-warning col-md-12 text-search-no-results">
-        <strong>No results</strong>
+        <strong>No results</strong><span ng-if="!$ctrl.search.luceneSyntaxUsed($ctrl.search.query)">. <a ng-href='/search?q={{ $ctrl.search.query }}%20OR%20author:%22{{ $ctrl.search.query }}%22%20OR%20pub_title:%22{{ $ctrl.search.query }}%22'>Search again in author names and paper titles</a> (omitted by default)</span>
       </div>
     </div>
 
@@ -102,10 +102,10 @@
       <ul>
         <li>
           <p>
-            Make sure your spelling is correct
+            Check the spelling
           </p>
           <p>
-            <em>Example</em>: misspelled terms like <code>Esherichia</code> (missing "c") won't find any results
+            <em>Example</em>: misspelled terms like <em>Esherichia</em> (missing "c") may not find any results
           </p>
         </li>
         <li>
@@ -113,17 +113,26 @@
             Use full species names
           </p>
           <p>
-            <em>Example</em>: use <code>Escherichia coli</code> and not <code>E. coli</code> as your search terms
+            <em>Example</em>: use <code>Escherichia coli</code> and not <em>E. coli</em> as your search terms
           </p>
         </li>
         <li>
           <p>
-            Make sure to include double quotes in field-specific search using the <code>field:"field value"</code> format
+            Use double quotes in field-specific search: <code>field:"field value"</code>
           </p>
         </li>
         <li>
+            <p>
+              Try searching by author name or publication title which are not searched by default
+            </p>
+            <p>
+              <em>Example</em>: <code>author:"Gelfand"</code> instead of <code>Gelfand</code><br>
+              <em>Example</em>: <code>pub_title:"lymphoma"</code>
+            </p>
+        </li>
+        <li>
           <p>
-            Read more about <a href="/help/text-search">query syntax</a>
+            Read more about <a href="/help/text-search">query syntax &rarr;</a>
           </p>
         </li>
       </ul>
@@ -161,29 +170,32 @@
       <ul class="list-unstyled">
         <li class="result" ng-repeat="rna in $ctrl.search.result.entries">
           <div class="text-search-result">
-            <h4>
+            <h4 style="margin-bottom: 0">
               <a href="/rna/{{rna.id_with_slash}}" ng-bind-html="rna.fields.description[0] | sanitize"></a>
-              <small>{{rna.id}}</small>
             </h4>
-            <div ng-show="rna.fields.description[0].indexOf('text-search-highlights') === -1" style="margin-bottom: 3px;">
-              <ul ng-repeat="pub_title in rna.fields.pub_title | filter:'text-search-highlights' | limitTo:1" class="small list-unstyled">
-                <li ng-bind-html="pub_title | sanitize"></li>
-              </ul>
+            <small class="text-muted">{{rna.id}}</small>
+            <div ng-show="$ctrl.anyHighlights(rna.fields)" style="margin-bottom: 3px; margin-top: 1px; color: #545454;" class="small">
+              <span ng-if="$ctrl.highlight(rna.fields).fieldName">
+                  <em>{{ $ctrl.highlight(rna.fields).fieldName }}:</em> <span ng-bind-html="$ctrl.highlight(rna.fields).highlight | sanitize"></span>
+              </span>
             </div>
-            <ul class="list-inline small">
-              <li>
-                <strong>{{rna.fields.length[0] | number}}</strong> nucleotides
+            <ul class="list-inline small" ng-if="$ctrl.expertDbsObject">
+              <li style="padding-right: 20px;">
+                {{rna.fields.length[0] | number}} nucleotides
               </li>
-              <li ng-if="rna.fields.has_genomic_coordinates[0] == 'True'"><i class="fa fa-check text-success" aria-hidden="true"></i> reference genome<li>
-              <li ng-if="rna.fields.active[0] == 'Obsolete'"><span class="label label-danger help" title="No active annotations">Obsolete</span></li>
+              <li style="padding-right: 20px;" ng-show="rna.fields.has_genomic_coordinates[0] == 'True'"><i class="fa fa-check text-success" aria-hidden="true"></i> reference genome<li>
+              <li style="padding-right: 20px;" ng-show="rna.fields.active[0] == 'Obsolete'"><span class="label label-danger help" title="No active annotations">Obsolete</span></li>
+              <li ng-repeat="expert_db in rna.fields.expert_db | plaintext | orderBy:expert_db:false:$ctrl.expertDbHasStarComparator"><img style="height: 15px; cursor: help;" class="greyscale" uib-tooltip-template="'/static/js/components/text-search/text-search-results/expert-database-tooltip-on-image.html'" tooltip-placement="bottom" ng-src="{{ $ctrl.expert_db_logo(expert_db) }}">&nbsp;&nbsp;</li>
             </ul>
           </div>
         </li>
       </ul>
 
-      <br>
-      <small ng-if="$ctrl.search.result.hitCount > result.entries.length" class="text-muted">Displaying {{ $ctrl.search.result.entries.length }} out of {{ $ctrl.search.result.hitCount | number }} sequences</small>
-      <br>
+      <div ng-if="$ctrl.search.result.hitCount > result.entries.length">
+        <br>
+          <small class="text-muted">Displaying {{ $ctrl.search.result.entries.length }} out of {{ $ctrl.search.result.hitCount | number }} sequences</small>
+        <br>
+      </div>
 
       <button class="btn btn-default load-more col-md-3" ng-click="$ctrl.search.loadMoreResults()" ng-show="$ctrl.search.result.hitCount > $ctrl.search.result.entries.length"><i ng-class="$ctrl.search.status === 'in progress' ? 'fa fa-spinner fa-spin' : 'hidden'"></i> Load more</button>
     </div>

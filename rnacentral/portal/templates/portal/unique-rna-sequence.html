@@ -17,12 +17,18 @@ limitations under the License.
 
 {% block meta_tags %}
     {{ block.super }}
-    <meta name="description" content="{{ context.description }} | {{ rna.upi }}"/>
-    <meta name="twitter:description" content="{{ context.description }} | {{ rna.upi }}">
+    {% with dbs=context.distinct_databases %}
+      <meta name="description" content="{{context.precomputed.rna_type}} sequence found in {{ dbs|length|intcomma }} database{{ dbs|length|pluralize }} {% for db in dbs %}{% if forloop.first %}({% endif %}{{db}}{% if not forloop.last %},{% else %}){% endif %}{% endfor %}"/>
+    {% endwith %}
+    <meta name="twitter:description" content="{{ context.description }}">
+
+    {% if not context.single_species %}
+      <meta name="robots" content="noindex">
+    {% endif %}
 {% endblock %}
 
 {% block title %}
-  {{ context.description }} | {{ rna.upi }}
+  {{ context.description }}
 {% endblock %}
 
 {% block content %}
@@ -47,16 +53,7 @@ limitations under the License.
   <div class="alert alert-danger">
     No annotations from taxid:{{context.taxid_not_found}}.
   </div>
-{% elif context.taxid_filtering %}
-  <div class="well well-sm">
-    <i class="fa fa-filter"></i> Showing annotations from <strong><em>{{ context.single_species}}</em></strong>.
-
-    {% if rna.count_distinct_organisms > 1 %}
-      <a href="" class="show-species-tab">Switch species</a> or
-      <a href="{% url 'portal.views.rna_view' rna.upi %}">view all data</a> from {{ rna.count_distinct_organisms }} species.
-    {% endif %}
-  </div>
-{% elif rna.count_distinct_organisms > 1 %}
+{% elif not context.taxid_filtering and rna.count_distinct_organisms > 1 %}
   <div class="well well-sm">
     <i class="fa fa-info-circle"></i> This unique sequence was observed in multiple species.
     <a href="" class="show-species-tab">Filter annotations</a> by species.
@@ -85,9 +82,9 @@ limitations under the License.
                       <b class="caret"></b>
                   </a>
           <ul class="dropdown-menu" id="download-formats">
-            <li><a href="/api/v1/rna/{{ rna.upi }}.fasta" download="{{ rna.upi }}.fasta">FASTA</a></li>
-            <li><a href="/api/v1/rna/{{ rna.upi }}.json" download="{{ rna.upi }}.json">JSON</a></li>
-            <li><a href="/api/v1/rna/{{ rna.upi }}.yaml" download="{{ rna.upi }}.yaml">YAML</a></li>
+            <li><a href="/api/v1/rna/{{ rna.upi }}.fasta" download="{{ rna.upi }}.fasta" rel="nofollow">FASTA</a></li>
+            <li><a href="/api/v1/rna/{{ rna.upi }}.json" download="{{ rna.upi }}.json" rel="nofollow">JSON</a></li>
+            <li><a href="/api/v1/rna/{{ rna.upi }}.yaml" download="{{ rna.upi }}.yaml" rel="nofollow">YAML</a></li>
           </ul>
         </li>
       </ul>
@@ -120,7 +117,7 @@ limitations under the License.
                 <li>
                   Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab">species</a>
                 </li>
-                <li>{{ context.precomputed.rna_type }}</li>                
+                <li>{{ context.precomputed.rna_type }}</li>
               </ul>
             </div>
           </div> <!-- .panel .panel-default -->
@@ -128,7 +125,7 @@ limitations under the License.
           <div>
             <h2>
               Annotations
-              <small id="xrefs-datatables-counter">{{ rna.count_xrefs|intcomma }} total</small>
+              <small id="xrefs-datatables-counter">{{ context.xrefs_count|intcomma }} total</small>
 
               <div class="btn-group btn-group-xs margin-left-5px btn-group-xref-sort" style="display:none">
                 <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -143,9 +140,9 @@ limitations under the License.
               <span id="xrefs-datatables-filter"></span>
             </h2>
 
-            {% if rna.count_xrefs > context.xref_page_size %}
+            {% if context.xrefs_count > context.xref_page_size %}
               <div class="alert alert-warning" role="alert">
-                Showing {{ context.xref_page_size|intcomma }} entries out of {{ rna.count_xrefs|intcomma }}.
+                Showing {{ context.xref_page_size|intcomma }} entries out of {{ context.xrefs_count|intcomma }}.
                 Navigate between batches:
                 <ul class="pagination pagination-sm">
                   {% for xref_page in context.xref_pages %}

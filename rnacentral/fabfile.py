@@ -26,7 +26,9 @@ For more options, run `fab help`.
 """
 
 import os
+import json
 import requests
+
 from fabric.api import cd, env, lcd, local, prefix, run, warn_only
 from fabric.contrib import django
 
@@ -42,6 +44,7 @@ COMMANDS = {
 
 env.deployment = None
 
+
 def production():
     """
     Enable remote execution of tasks.
@@ -49,6 +52,7 @@ def production():
     env.run = run
     env.cd = cd
     env.deployment = 'remote'
+
 
 def localhost():
     """
@@ -58,6 +62,7 @@ def localhost():
     env.run = local
     env.cd = lcd
     env.deployment = 'local'
+
 
 def git_updates(git_branch=None):
     """
@@ -69,6 +74,7 @@ def git_updates(git_branch=None):
         env.run('git pull')
         env.run('git submodule update')
 
+
 def install_django_requirements():
     """
     Run pip install.
@@ -76,6 +82,7 @@ def install_django_requirements():
     with env.cd(settings.PROJECT_PATH), prefix(COMMANDS['set_environment']), \
          prefix(COMMANDS['activate_virtualenv']):
         env.run('pip install --upgrade -r rnacentral/requirements.txt')
+
 
 def collect_static_files():
     """
@@ -85,6 +92,7 @@ def collect_static_files():
          prefix(COMMANDS['activate_virtualenv']):
         env.run('python rnacentral/manage.py collectstatic --noinput')
 
+
 def compress_static_files():
     """
     Run django compressor.
@@ -93,6 +101,7 @@ def compress_static_files():
          prefix(COMMANDS['activate_virtualenv']):
         env.run('python rnacentral/manage.py compress')
 
+
 def cache_sitemaps():
     """
     Create sitemaps cache in sitemaps folder.
@@ -100,6 +109,7 @@ def cache_sitemaps():
     with env.cd(settings.PROJECT_PATH), prefix(COMMANDS['set_environment'], \
          prefix(COMMANDS['activate_virtualenv'])):
         env.run('python rnacentral/manage.py cache_sitemaps')
+
 
 def rsync_sitemaps(dry_run=None):
     """
@@ -115,6 +125,7 @@ def rsync_sitemaps(dry_run=None):
     )
     local(cmd)
 
+
 def flush_memcached():
     """
     Delete all cached data.
@@ -123,6 +134,7 @@ def flush_memcached():
     cmd = 'echo flush_all | nc {host} {port} -vv'.format(host=host, port=port)
     with warn_only():
         env.run(cmd)
+
 
 def restart_django(restart_url=None):
     """
@@ -133,18 +145,29 @@ def restart_django(restart_url=None):
         if restart_url:
             requests.get(restart_url)
 
+
 def rsync_local_files(dry_run=None):
     """
     Rsync local files to production.
     """
     local_path = os.path.join(os.path.dirname(settings.PROJECT_PATH), 'local')
-    cmd = 'rsync -av{dry_run} {src}/ {host}:{dst}'.format(
+    cmd = 'rsync -avi{dry_run} {src}/ {host}:{dst}'.format(
         src=local_path,
         host=env.host,
         dst=local_path,
         dry_run='n' if dry_run else '',
     )
     local(cmd)
+
+
+def slack(message):
+    """
+    Send message to slack RNAcentral channel.
+    """
+    slack_hook = 'https://hooks.slack.com/services/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'
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    requests.post(slack_hook, json.dumps({'text': message}), headers=headers)
+
 
 def deploy_locally(git_branch=None, restart_url='http://rnacentral.org', quick=False):
     """
@@ -158,6 +181,11 @@ def deploy_locally(git_branch=None, restart_url='http://rnacentral.org', quick=F
     flush_memcached()
     restart_django(restart_url)
 
+    if not git_branch:
+        git_branch = 'master'
+    slack("Deployed '%s' at ves-hx-a4: <http://test.rnacentral.org|test.rnacentral.org>" % git_branch)
+
+
 def deploy_remotely(git_branch=None, restart_url='http://rnacentral.org', quick=False):
     """
     Run deployment remotely.
@@ -170,6 +198,11 @@ def deploy_remotely(git_branch=None, restart_url='http://rnacentral.org', quick=
     if not quick:
         rsync_local_files()
 
+    if not git_branch:
+        git_branch = 'master'
+    slack("Deployed '%s' at %s: <http://rnacentral.org|rnacentral.org>" % (git_branch, env.host))
+
+
 def deploy(git_branch=None, restart_url='http://rnacentral.org', quick=False):
     """
     Deployment function wrapper that launches local or remote deployment
@@ -181,6 +214,7 @@ def deploy(git_branch=None, restart_url='http://rnacentral.org', quick=False):
         deploy_locally(git_branch, restart_url, quick)
     else:
         print 'Check usage'
+
 
 def test(base_url='http://localhost:8000/'):
     """

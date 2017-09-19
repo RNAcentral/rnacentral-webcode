@@ -93,24 +93,6 @@ limitations under the License.
         {% endwith %}
       {% endif %}
 
-    {# Vega #}
-    {% elif xref.db.name == 'Vega' %}
-      {{ xref.db.name }} transcript <a href="{{ xref.accession.get_vega_transcript_url }}" target="_blank" title="View the transcript at {{ xref.db.name }}">{{ xref.accession.external_id }}</a>
-      from gene <a href="{{ xref.accession.get_expert_db_external_url }}" target="_blank" title="View the gene at {{ xref.db.name }}">{{ xref.accession.optional_id }}</a>
-      {% with splice_variants=xref.get_vega_splice_variants %}
-        {% if splice_variants %}
-          <br>
-          <i class="fa fa-angle-right"></i>
-          {{splice_variants|length}} alternative transcript{{splice_variants|length|pluralize}}:
-          <small>
-            {% for splice_variant in splice_variants %}
-              <a href="{% url  'portal.views.rna_view' upi=splice_variant.upi %}/{{ xref.taxid }}">{{ splice_variant.upi }}</a>
-              ({{ splice_variant.length|intcomma }} nts){% if not forloop.last %},{% else %}.{% endif %}
-            {% endfor %}
-          </small>
-        {% endif %}
-      {% endwith %}
-
     {# GENCODE #}
     {% elif xref.db.name == 'GENCODE' %}
       transcript <a href="{{ xref.accession.get_gencode_ensembl_url }}" target="_blank" title="View in Ensembl">{{ xref.accession.get_gencode_transcript_id }}</a>

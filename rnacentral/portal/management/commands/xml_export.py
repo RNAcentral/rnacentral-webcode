@@ -11,20 +11,65 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from django.core.management.base import BaseCommand, CommandError
 from optparse import make_option
 from cProfile import Profile
 import os
 import subprocess
 import sys
 import time
+import hashlib
+
+from django.core.management.base import BaseCommand, CommandError
+
 from portal.models import Rna
 from portal.management.commands.xml_exporters.rna2xml import RnaXmlExporter
+
+LINT_CMD = 'xmllint {filepath} --schema {schema_url} --noout --stream'
+SCHEMA_URL = 'http://www.ebi.ac.uk/ebisearch/XML4dbDumps.xsd'
+
+XML_HEADER = """
+<database>
+<name>RNAcentral</name>
+<description>a database for non-protein coding RNA sequences</description>
+<release>1.0</release>
+<release_date>{release_date}</release_date>
+<entry_count>{entry_count}</entry_count>
+<entries>
+"""
+
+
+def xmllint(filepath):
+    """
+    Run xmllint on the output file and print the resulting report.
+    """
+    cmd = LINT_CMD.format(filepath=filepath, schema_url=SCHEMA_URL)
+
+    try:
+        subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
+    except subprocess.CalledProcessError as err:
+        sys.stderr.write('ERROR: xmllint validation failed\n')
+        sys.stderr.write(err.output + '\n')
+        sys.stderr.write(err.cmd + '\n')
+        sys.stderr.write('Return code {0}\n'.format(err.returncode))
+        sys.exit(1)
+
+
+def gzip_file(filepath):
+    """
+    Gzip output file and keep the original.
+    """
+    gzipped_filename = '%s.gz' % filepath
+    cmd = 'gzip < %s > %s' % (filepath, gzipped_filename)
+    status = subprocess.call(cmd, shell=True)
+    if status == 0:
+        print('File compressed, new file %s' % gzipped_filename)
+    else:
+        sys.stderr.write('Compressing failed, no file created\n')
+        sys.exit(1)
 
 
 class Command(BaseCommand):
     """
-
     Usage:
     python manage.py xml_export <options>
 
@@ -40,24 +85,39 @@ class Command(BaseCommand):
     ########################
 
     option_list = BaseCommand.option_list + (
-        make_option('-d', '--destination',
+        make_option(
+            '-d',
+            '--destination',
             default='',
             dest='destination',
-            help='[Required] Full path to the output directory'),
+            help='[Required] Full path to the output directory'
+        ),
 
-        make_option('--min',
+        make_option(
+            '--upis',
+            dest='upis',
+            help='[Optional/Required] Comma sperated list of upis to process',
+        ),
+
+        make_option(
+            '--min',
             dest='min',
-            help='[Required] Minimum RNA id to output'),
+            help='[Required] Minimum RNA id to output',
+        ),
 
-        make_option('--max',
+        make_option(
+            '--max',
             dest='max',
             type='int',
-            help='[Required] Maximum RNA id to output'),
+            help='[Required] Maximum RNA id to output',
+        ),
 
-        make_option('--profile',
+        make_option(
+            '--profile',
             default=False,
             action='store_true',
-            help='[Optional] Show cProfile information for profiling purposes'),
+            help='[Optional] Show cProfile information for profiling purposes',
+        ),
     )
     # shown with -h, --help
     help = ('Export RNAcentral data in xml4dbdump format for EBeye search. '
@@ -67,147 +127,85 @@ class Command(BaseCommand):
     # Django entry point #
     ######################
 
-    def __init__(self, *args, **kwargs):
-        """
-        Set common variables.
-        """
-        super(Command, self).__init__(*args, **kwargs)
-
-        self.filename = 'xml4dbdumps__MIN__MAX.xml'
-        self.options = {
-            'destination': None,
-            'min': 0,
-            'max': 0,
-        }
-
     def handle(self, *args, **options):
         """
         Main function, called by django.
         """
-        def _handle(self, *args, **options):
-            """
-            Main program. Separated from `handle` to enable Python profiling.
-            """
-            def set_command_line_options():
-                """
-                Store command line options in `self.options`.
-                """
-                cmd_options = ['destination', 'min', 'max']
-                for cmd_option in cmd_options:
-                    if options[cmd_option]:
-                        self.options[cmd_option] = str(options[cmd_option])
 
-            def validate_command_line_options():
-                """
-                Validate the command line options.
-                """
-                if not self.options['destination']:
-                    raise CommandError('Please specify --destination')
-                if not self.options['min']:
-                    raise CommandError('Please specify --min')
-                if not self.options['max']:
-                    raise CommandError('Please specify --max')
-                if not os.path.exists(self.options['destination']):
-                    os.makedirs(self.options['destination'])
+        if not options['destination']:
+            raise CommandError('Please specify --destination')
 
-            set_command_line_options()
-            validate_command_line_options()
-            self.export_data()
+        if options['upis']:
+            options['upis'] = options['upis'].split(',')
+        else:
+            if not options['min']:
+                raise CommandError('Please specify --min')
+            else:
+                options['min'] = int(options['min'])
+            if not options['max']:
+                raise CommandError('Please specify --max')
+            else:
+                options['max'] = int(options['max'])
+
+        if not os.path.exists(options['destination']):
+            os.makedirs(options['destination'])
 
         if options['profile']:
             profiler = Profile()
-            profiler.runcall(_handle, self, *args, **options)
+            profiler.runcall(self.export_data, options)
             profiler.print_stats()
             profiler.dump_stats('profile.txt')
         else:
-            _handle(self, *args, **options)
+            self.export_data(options)
 
     ####################
     # Export functions #
     ####################
 
-    def export_data(self):
+    def export_data(self, options):
         """
         Write the data in xml4dbdumps format to the file specified
         in the --destination option.
         """
-        def write_xml_header():
-            """
-            Write out the beginning of the xml file.
-            """
-            def get_entry_count():
-                """
-                Get the number of entries to be written out.
-                """
-                return int(self.options['max']) - int(self.options['min'])
 
-            database = {
-                'name': 'RNAcentral',
-                'description': ('a database for non-protein coding RNA '
-                                'sequences'),
-                'release': '1.0',
-                'release_date': time.strftime("%d/%m/%Y"),
-                'entry_count': get_entry_count(),
-            }
-            header = """<database>
-            <name>{name}</name>
-            <description>{description}</description>
-            <release>{release}</release>
-            <release_date>{release_date}</release_date>
-            <entry_count>{entry_count}</entry_count>
-            <entries>""".format(**database)
-            filehandle.write(header)
+        filename = None
+        query = None
+        count = None
+        if options['min']:
+            filename = 'xml4dbdumps__{min}__{max}.xml'.format(
+                min=options['min'],
+                max=options['max'],
+            )
+            query = Rna.objects.filter(
+                id__gt=int(options['min']),
+                id__lte=int(options['max']),
+            )
+            count = options['max'] - options['min']
 
-        def write_rna_entries():
-            """
-            Write out RNA entries.
-            """
+        elif options['upis']:
+            upis = ','.join(sorted(options['upis']))
+            filename = 'xml4dbdumps__{upis}.xml'.format(
+                upis=hashlib.md5(upis).hexdigest()
+            )
+            query = Rna.objects.filter(upi__in=options['upis'])
+            count = len(options['upis'])
+
+        else:
+            raise ValueError("This should be impossible")
+
+        filepath = os.path.join(options['destination'], filename)
+        with open(filepath, 'w') as filehandle:
+            filehandle.write(XML_HEADER.format(
+                release_date=time.strftime("%d/%m/%Y"),
+                entry_count=count,
+            ))
+
             exporter = RnaXmlExporter()
-            for rna in Rna.objects.filter(id__gt=int(self.options['min']), id__lte=int(self.options['max'])).iterator():
+            for rna in query.iterator():
                 filehandle.write(exporter.get_xml_entry(rna))
                 filehandle.flush()
 
-        def write_xml_footer():
-            """
-            Write out the end of the xml file.
-            """
             filehandle.write('</entries></database>')
 
-        def xmllint():
-            """
-            Run xmllint on the output file and print the resulting report.
-            """
-            schema_url = 'http://www.ebi.ac.uk/ebisearch/XML4dbDumps.xsd'
-            cmd = ('xmllint {filepath} --schema {schema_url} --noout --stream')\
-                       .format(filepath=filepath, schema_url=schema_url)
-            try:
-                output = subprocess.check_output(cmd, shell=True,
-                                                 stderr=subprocess.STDOUT)
-            except subprocess.CalledProcessError as e:
-                print 'ERROR: xmllint validation failed'
-                print e.output
-                print e.cmd
-                print 'Return code {0}'.format(e.returncode)
-                sys.exit(1)
-
-        def gzip_file():
-            """
-            Gzip output file and keep the original.
-            """
-            gzipped_filename = '%s.gz' % filepath
-            cmd = 'gzip < %s > %s' % (filepath, gzipped_filename)
-            status = subprocess.call(cmd, shell=True)
-            if status == 0:
-                print 'File compressed, new file %s' % gzipped_filename
-            else:
-                print 'Compressing failed, no file created'
-
-        self.filename = self.filename.replace('MIN', self.options['min']).replace('MAX', self.options['max'])
-        filepath = os.path.join(self.options['destination'], self.filename)
-        filehandle = open(filepath, 'w')
-        write_xml_header()
-        write_rna_entries()
-        write_xml_footer()
-        filehandle.close()
-        xmllint()
-        gzip_file()
+        xmllint(filename)
+        gzip_file(filename)
