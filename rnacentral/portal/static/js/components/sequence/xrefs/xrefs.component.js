@@ -1,6 +1,7 @@
 var xrefs = {
     bindings: {
         upi: '<',
+        timeout: '<?',
         taxid: '<?',
         onActivatePublications: '&'
     },
@@ -8,18 +9,18 @@ var xrefs = {
         var ctrl = this;
 
         ctrl.$onInit = function() {
-            $http.get($interpolate('/api/v1/rna/{{upi}}/xrefs')({upi: ctrl.upi}), {timeout: 5000}).then(
+
+            // Request xrefs from server (with taxid, if necessary)
+            var dataEndpoint;
+            if (ctrl.taxid) dataEndpoint = $interpolate('/api/v1/rna/{{upi}}/xrefs/{{taxid}}')({upi: ctrl.upi, taxid: ctrl.taxid});
+            else dataEndpoint = $interpolate('/api/v1/rna/{{upi}}/xrefs')({upi: ctrl.upi});
+
+            // set default for ctrl.timeout, if not given
+            ctrl.timeout = parseInt(ctrl.timeout) || 5000;
+
+            $http.get(dataEndpoint, {timeout: ctrl.timeout}).then(
                 function(response) {
-                    // set ctrl.xrefs (filtering by taxid, if given)
-                    if (ctrl.taxid) {
-                        ctrl.xrefs = _.filter(response.data.results, function(result) {
-                            return result.taxid == ctrl.taxid;
-                        });
-                        console.log(ctrl.xrefs);
-                    }
-                    else {
-                        ctrl.xrefs = response.data.results;
-                    }
+                    ctrl.xrefs = response.data.results;
 
                     // $timeout is to ensure that xrefs data is rendered into the DOM
                     // before initializing DataTables
@@ -83,6 +84,7 @@ var xrefs = {
                 },
                 function(response) {
                     // TODO: display an error message in template!
+                    console.log("Error happened while downloading data");
                 }
             );
         }

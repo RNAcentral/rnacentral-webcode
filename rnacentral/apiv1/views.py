@@ -546,6 +546,27 @@ class XrefList(generics.ListAPIView):
         return Response(serializer.data)
 
 
+class XrefsSpeciesSpecificList(generics.ListAPIView):
+    """
+    List of cross-references for a particular RNA sequence in a specific species.
+
+    [API documentation](/api)
+    """
+    queryset = Rna.objects.select_related().all()
+
+    def get(self, request, pk=None, taxid=None, format=None):
+        """Get a paginated list of cross-references"""
+        page = request.QUERY_PARAMS.get('page', 1)
+        page_size = request.QUERY_PARAMS.get('page_size', 100)
+
+        rna = self.get_object()
+        xrefs = rna.get_xrefs(taxid=taxid)
+        paginator_xrefs = Paginator(xrefs, page_size)
+        xrefs_page = paginator_xrefs.page(page)
+        serializer = PaginatedXrefSerializer(xrefs_page, context={'request': request})
+        return Response(serializer.data)
+
+
 class AccessionView(generics.RetrieveAPIView):
     """
     API endpoint that allows single accessions to be viewed.
