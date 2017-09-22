@@ -240,12 +240,82 @@ class UnmodelledRnaType(object):
         return RfamMatchStatus.no_issues(rna.upi, taxid)
 
 
+class MissingMatch(object):
+    """
+    This finds sequences which should have a match, but for some reason do not.
+    For example:
+
+    - URS00002FFCAB
+        This should match the tRNA family but does not.
+    - URS00001A93F2
+        This should match the 5S family
+    - URS000044901A
+        Should match 5S, matches tRNA
+
+    This is limited to only a few families which have very broad models as we
+    don't want to warn too often.
+    """
+
+    name = 'missing_match'
+
+    def message(self, rna_type, possible):
+        article = 'the'
+        if len(possible) > 1:
+            article = 'a'
+
+        raw = 'No match to {article} {rna_type} Rfam model ({possible})'
+        return raw.format(
+            rna_type=rna_type,
+            article=article,
+            possible=', '.join(sorted(possible))
+        )
+
+    @property
+    def expected_matches(self):
+        """
+        Get the set of families we will check for missing matches. We
+        don't want to do all families yet, as we aren't sure if this will
+        be too senestive. The selected families are well known for having
+        very generous models.
+        """
+        return {
+            'rRNA': set([
+                'RF00001',  # 5S ribosomal RNA
+                'RF00002',  # 5.8S ribosomal RNA
+                'RF00177',  # Bacterial small subunit ribosomal RNA
+                'RF01959',  # Archaeal small subunit ribosomal RNA
+                'RF01960',  # Eukaryotic small subunit ribosomal RNA
+                'RF02540',  # Archaeal large subunit ribosomal RNA
+                'RF02541',  # Bacterial large subunit ribosomal RNA
+                'RF02542',  # Microsporidia small subunit ribosomal RNA
+                'RF02543',  # Eukaryotic large subunit ribosomal RNA
+                'RF02547',  # mito 5S RNA
+            ]),
+            'tRNA': set(['RF00005']),
+        }
+
+    def __call__(self, rna, taxid=None):
+        rna_type = rna.get_rna_type(taxid=taxid)
+        if rna_type not in self.expected_matches:
+            return RfamMatchStatus.no_issues(rna.upi, taxid)
+
+        required = self.expected_matches[rna_type]
+        hits = {h.rfam_model_id for h in rna.get_rfam_hits()}
+        if not hits or hits.intersection(required):
+            return RfamMatchStatus.no_issues(rna.upi, taxid)
+
+        # families = [RfamModel.get(r) for r in required]
+        message = self.message(rna_type, required)
+        return RfamMatchStatus.with_issue(rna.upi, taxid, self, message)
+
+
 def check_issues(rna, taxid=None):
     finders = [
             # UnmodelledRnaType(),
             DomainProblem(),
             IncompleteSequence(),
             RnaTypeConflict(),
+            MissingMatch(),
         ]
 
     issue = RfamMatchStatus.no_issues(rna.upi, taxid)
