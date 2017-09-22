@@ -63,7 +63,7 @@ var xrefs = {
                                 $('#annotations-table_info').appendTo('#annotations-datatables-counter');
 
                                 // tweak pagination controls
-                                if ( $('.dataTables_paginate').find('li').length == 3 ) { // 3 elements: <-, 1, ->
+                                if ( $('.dataTables_paginate').find('li').length == 1 ) {
                                     // hide pagination controls for tables with one page
                                     $('.dataTables_paginate').hide();
                                     $('#annotations-table_length').hide();

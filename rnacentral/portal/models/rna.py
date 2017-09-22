@@ -17,7 +17,7 @@ from caching.base import CachingMixin, CachingManager
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.db.models import Prefetch, Min, Max
+from django.db.models import Prefetch, Min, Max, Q
 from django.utils.functional import cached_property
 
 from database import Database
@@ -112,17 +112,15 @@ class Rna(CachingMixin, models.Model):
         return dict(Counter(self.get_sequence()))
 
     def get_xrefs(self, taxid=None):
-        """
-        Get all xrefs, show non-ENA annotations first.
-        Exclude source ENA entries that are associated with other expert db entries.
-        For example, only fetch Vega xrefs and don't retrieve the ENA entries they are
-        based on.
-        """
-        expert_db_projects = Database.objects.exclude(project_id=None)\
+        """Get all xrefs, show non-ENA annotations first."""
+
+        # Exclude source ENA entries that are associated with other expert db entries.
+        # For example, only fetch Vega xrefs and don't retrieve the ENA entries they are based on.
+        expert_db_projects = Database.objects.exclude(project_id__isnull=True)\
                                              .values_list('project_id', flat=True)
 
         xrefs = self.xrefs.filter(deleted='N', upi=self.upi)\
-                          .exclude(db__id=1, accession__project__in=expert_db_projects)\
+                          .filter(~Q(accession__project__in=expert_db_projects, db__id=1) | Q(accession__project__isnull=True))\
                           .order_by('-db__id')\
                           .select_related()\
                           .prefetch_related(
@@ -136,13 +134,19 @@ class Rna(CachingMixin, models.Model):
                                   'accession__coordinates',
                                   queryset=GenomicCoordinates.objects.filter(chromosome__isnull=False)
                               )
-                          )\
-                          .all()
+                          )
 
         if taxid:
-            xrefs = xrefs.for_taxid(taxid)
+            xrefs = xrefs.for_taxid(taxid=taxid)
 
-        return xrefs if xrefs.exists() else self.xrefs.filter(deleted='Y').select_related()
+        # Sometimes xrefs are deleted from databases (e.g. when they were mistakingly
+        # annotated as RNA being in fact protein-coding sequences). If our xrefs list
+        # doesn't contain proper RNA sequences, we should at least return these
+        # wrong annotations to hard-links to deleted sequences accessible from web.
+        if xrefs.exists():
+            return xrefs
+        else:
+            return self.xrefs.filter(deleted='Y').select_related()
 
     def count_xrefs(self, taxid=None):
         """Count the number of cross-references associated with the sequence."""

@@ -475,7 +475,6 @@ class Xref(models.Model):
                 return rna.upi
         return None
 
-
     def get_refseq_splice_variants(self):
         """
         RefSeq splice variants are identified by the same GeneID.
