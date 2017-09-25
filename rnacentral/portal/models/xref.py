@@ -103,7 +103,7 @@ class RawSqlQueryset(models.QuerySet):
     def get_mirbase_mature_products(self, taxid=None):
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
-        # _fetch_all() has already called by now
+        # _fetch_all() has already been called by now
         pks = ','.join(["'%s'" % xref.pk for xref in self])  # e.g. "'250381225', '250381243', '295244525'"
 
         queryset = """
@@ -135,7 +135,7 @@ class RawSqlQueryset(models.QuerySet):
     def get_mirbase_precursor(self, taxid=None):
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
-        # _fetch_all() has already called by now
+        # _fetch_all() has already been called by now
         pks = ','.join(["'%s'" % xref.pk for xref in self])
 
         queryset = """
@@ -169,7 +169,7 @@ class RawSqlQueryset(models.QuerySet):
     def get_refseq_mirna_mature_products(self, taxid=None):
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
-        # _fetch_all() has already called by now
+        # _fetch_all() has already been called by now
         pks = ','.join(["'%s'" % xref.pk for xref in self])
 
         queryset = """
@@ -201,7 +201,7 @@ class RawSqlQueryset(models.QuerySet):
     def get_refseq_mirna_precursor(self, taxid=None):
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
-        # _fetch_all() has already called by now
+        # _fetch_all() has already been called by now
         pks = ','.join(["'%s'" % xref.pk for xref in self])
 
         queryset = """
@@ -236,7 +236,7 @@ class RawSqlQueryset(models.QuerySet):
 
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
-        # _fetch_all() has already called by now
+        # _fetch_all() has already been called by now
         pks = ','.join(["'%s'" % xref.pk for xref in self])
 
         queryset = """
@@ -269,7 +269,7 @@ class RawSqlQueryset(models.QuerySet):
     def get_tmrna_mate(self, taxid=None):
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
-        # _fetch_all() has already called by now
+        # _fetch_all() has already been called by now
         pks = ','.join(["'%s'" % xref.pk for xref in self])
 
         queryset = """
