@@ -127,7 +127,7 @@
 
             <span ng-if="xref.is_active && (xref.refseq_mirna_precursor || xref.refseq_mirna_mature_products)">
               <span ng-if="xref.refseq_mirna_precursor">
-                - mature miRNA (precursor <a ng-href="{{ matureProduct + '/' + ctrl.taxid }}">{{ xref.refseq_mirna_precursor }}</a>)
+                - mature miRNA (precursor <a ng-href="{{ xref.refseq_mirna_precursor + '/' + ctrl.taxid }}">{{ xref.refseq_mirna_precursor }}</a>)
               </span>
               <span ng-if="xref.refseq_mirna_mature_products">
                 - precursor miRNA (<ng-pluralize count="xref.refseq_mirna_mature_products.length" when="{'one': 'mature product', 'other': 'mature products'}"></ng-pluralize>
