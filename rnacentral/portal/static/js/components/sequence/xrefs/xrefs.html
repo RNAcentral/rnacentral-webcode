@@ -43,11 +43,11 @@
           <br>
           <i class="fa fa-angle-right"></i>
           <!-- ENA -->
-          <span ng-switch-when="'ENA'">
+          <span ng-switch-when="ENA">
             ENA: <a href="{{ xref.accession.get_ena_url }}" target="_blank" ng-attr-title="{{ xref.accession.accession }} at ENA">{{ xref.accession.accession }}</a>
           </span>
           <!-- Rfam -->
-          <span ng-switch-when="'Rfam'">
+          <span ng-switch-when="Rfam">
             RFAM family: <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }}),
             <span ng-if="xref.is_rfam_seed" class="text-success">seed alignment</span> <i class="fa fa-info-circle help" title="part of a manually curated RFAM seed alignment"></i>
             <span ng-if="!xref.is_rfam_seed" class="text-danger">full alignment</span> <i class="fa fa-info-circle help" title="part of an automatically built RFAM full alignment"></i>
@@ -57,25 +57,25 @@
             (nucleotides {{ xref.accession.feature_start | number }}:{{ xref.accession.feature_end | number }})
           </span>
           <!-- SRPDB -->
-          <span ng-switch-when="'SRPDB'">
+          <span ng-switch-when="SRPDB">
             SRPDB:
             <a class="srpdb-external-url" href="{{ xref.accession.expert_db_url }}.fasta" target="_blank">{{ xref.accession.get_srpdb_id }}</a>
           </span>
 
           <!-- lncRNAdb -->
-          <span ng-switch-when="'lncRNAdb'">
+          <span ng-switch-when="lncRNAdb">
             lncRNAdb:
             <a class="lncrnadb-external-url" href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.optional_id }}</a>
           </span>
 
           <!-- gtRNAdb -->
-          <span ng-switch-when="'gtRNAdb'">
+          <span ng-switch-when="gtRNAdb">
             gtRNAdb:
             <a class="gtrnadb-external-url" href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
           </span>
 
           <!-- miRBase -->
-          <span ng-switch-when="'miRBase'">
+          <span ng-switch-when="miRBase">
             miRBase:
             <a class="mirbase-external-url" href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
 
@@ -97,7 +97,7 @@
           </span>
 
           <!-- Vega -->
-          <span ng-switch-when="'Vega'">
+          <span ng-switch-when="Vega">
             {{ xref.database }} transcript <a href="{{ xref.accession.get_vega_transcript_url }}" target="_blank" title="View the transcript at {{ xref.database }}">{{ xref.accession.external_id }}</a>
             from gene <a href="{{ xref.accession.expert_db_url }}" target="_blank" title="View the gene at {{ xref.database }}">{{ xref.accession.optional_id }}</a>
             <!-- {% with splice_variants=xref.get_vega_splice_variants %}
@@ -116,14 +116,24 @@
           </span>
 
           <!-- tmRNA Website -->
-          <span ng-switch-when="'tmRNA Website'">
+          <span ng-switch-when="tmRNA Website">
             tmRNA Website:
             <a href="{{ xref.accession.expert_db_url }}.html" target="_blank">{{ xref.accession.external_id }}</a>
           </span>
 
           <!-- RefSeq -->
-          <span ng-switch-when="'RefSeq'">
+          <span ng-switch-when="RefSeq">
             RefSeq: <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}.{{ xref.accession.seq_version }}</a>
+
+            <span ng-if="xref.is_active && (xref.refseq_mirna_precursor || xref.refseq_mirna_mature_products)">
+              <span ng-if="xref.refseq_mirna_precursor">
+                - mature miRNA (precursor <a ng-href=""></a>)
+              </span>
+              <span ng-if="xref.refseq_mirna_mature_products">
+                - precursor miRNA (<ng-pluralize count="xref.refseq_mirna_mature_products.length" when="{'one': 'mature product', 'other': 'mature products'}"></ng-pluralize>)
+                  <span ng-repeat="matureProduct in xref.refseq_mirna_mature_products"><a ng-href="{{ matureProduct }} ">{{ matureProduct.split('/').pop() }}</a>{{$last ? '' : ', '}}</span>
+              </span>
+            </span>
 
             <!-- {% if xref.is_active and xref.is_refseq_mirna %}
               {% with mirna_precursor=xref.get_refseq_mirna_precursor %}
@@ -166,12 +176,12 @@
           </span>
 
           <!-- RDP -->
-          <span ng-switch-when="'RDP'">
+          <span ng-switch-when="RDP">
             RDP: <a href="{{ xref.accession.expert_db_url }}&format=genbank" target="_blank">{{ xref.accession.external_id }}</a>
           </span>
 
           <!-- PDBe -->
-          <span ng-switch-when="'PDBe'">
+          <span ng-switch-when="PDBe">
             PDB: {{ xref.accession.external_id }}, chain {{ xref.accession.optional_id }}
             <br>
             <i class="fa fa-angle-right"></i>
@@ -193,37 +203,37 @@
           </span>
 
           <!-- snOPY -->
-          <span ng-switch-when="'snOPY'">
+          <span ng-switch-when="snOPY">
             snOPY: <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
           </span>
 
           <!-- SGD -->
-          <span ng-switch-when="'SGD'">
+          <span ng-switch-when="SGD">
             {{ xref.database }}: <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }})
           </span>
 
           <!-- TAIR -->
-          <span ng-switch-when="'TAIR'">
+          <span ng-switch-when="TAIR">
             {{ xref.database }}: <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> (locus {{ xref.accession.optional_id }})
           </span>
 
           <!-- WormBase -->
-          <span ng-switch-when="'WormBase'">
+          <span ng-switch-when="WormBase">
             {{ xref.database }}: <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> <span class="small text-muted">(gene)</span> |
             <a href="http://www.wormbase.org/species/c_elegans/transcript/{{ xref.accession.optional_id }}" target="_blank">{{ xref.accession.optional_id }}</a> <span class="small text-muted">(transcript)</span>
           </span>
 
           <!-- PLncDB -->
-          <span ng-switch-when="'PLncDB'">
+          <span ng-switch-when="PLncDB">
             {{ xref.database }}: <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
           </span>
 
-          <span ng-switch-when="'dictyBase'">
+          <span ng-switch-when="dictyBase">
             {{ xref.database }} gene <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
           </span>
 
           <!-- SILVA -->
-          <span ng-switch-when="'SILVA'">
+          <span ng-switch-when="SILVA">
             {{ xref.database }}: <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
             <span ng-if="xref.accession.feature_start < xref.accession.feature_end">
               nucleotides ({{ xref.accession.feature_start | number }} - {{ xref.accession.feature_end | number }})
@@ -234,7 +244,7 @@
           </span>
 
           <!-- Greengenes -->
-          <span ng-switch-when="'Greengenes'">
+          <span ng-switch-when="Greengenes">
             <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.parent_ac }}.{{ xref.accession.seq_version }}</a>
             <span ng-if="xref.accession.feature_start < xref.accession.feature_end">
               nucleotides ({{ xref.accession.feature_start | number }} - {{ xref.accession.feature_end | number }})
@@ -245,29 +255,29 @@
           </span>
 
           <!-- PomBase -->
-          <span ng-switch-when="'PomBase'">
+          <span ng-switch-when="PomBase">
             {{ xref.database }}: <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
           </span>
 
           <!-- Noncode -->
-          <span ng-switch-when="'NONCODE'">
+          <span ng-switch-when="NONCODE">
             {{ xref.database }}: transcript <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>,
             gene <a href="http://www.noncode.org/show_gene.php?id={{ xref.accession.optional_id }}" target="_blank">{{ xref.accession.optional_id }}</a>
           </span>
 
           <!-- LNCipedia -->
-          <span ng-switch-when="'LNCipedia'">
+          <span ng-switch-when="LNCipedia">
             {{ xref.database }}: transcript <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>,
             gene <a href="http://www.lncipedia.org/db/gene/{{ xref.accession.optional_id }}" target="_blank">{{ xref.accession.optional_id }}</a>
           </span>
 
           <!-- Modomics -->
-          <span ng-switch-when="'Modomics'">
+          <span ng-switch-when="Modomics">
             {{ xref.database }}: <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }} alignment</a>
           </span>
 
           <!-- HGNC -->
-          <span ng-switch-when="'HGNC'">
+          <span ng-switch-when="HGNC">
             {{ xref.database }}: <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.accession }})
             <!-- {% with ensembl_gene_id=xref.accession.get_hgnc_ensembl_id %}
               {% if ensembl_gene_id %}

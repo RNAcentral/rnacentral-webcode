@@ -5,7 +5,7 @@ var xrefs = {
         taxid: '<?',
         onActivatePublications: '&'
     },
-    controller: ['$http', '$interpolate', '$timeout', function($http, $interpolate, $timeout) {
+    controller: ['routes', '$http', '$interpolate', '$timeout', function(routes, $http, $interpolate, $timeout) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
