@@ -100,6 +100,13 @@ class HumanDescriptionTests(GenericDescriptionTest):
             taxid=9606
         )
 
+    def test_will_select_reasonable_hgnc_description(self):
+        self.assertDescriptionIs(
+            'Homo sapiens RNA, 5S ribosomal 1 (multiple genes)',
+            'URS00000F9D45',
+            taxid=9606
+        )
+
 
 class ArabidopisDescriptionTests(GenericDescriptionTest):
     def test_likes_lncrnadb_over_ena(self):

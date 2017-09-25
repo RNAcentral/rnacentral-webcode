@@ -100,8 +100,8 @@ def choose_best(ordered_choices, possible, check, default=None):
     for choice in ordered_choices:
         found = [entry for entry in possible if check(choice, entry)]
         if found:
-            return found
-    return default
+            return (choice, found)
+    return (None, default)
 
 
 def get_generic_name(rna_type, sequence, xrefs):
@@ -218,7 +218,47 @@ def suitable_xref(required_rna_type):
     return fn
 
 
-def get_species_specific_name(rna_type, sequence, xrefs):
+def select_best_description(descriptions):
+    """
+    This will generically select the best description. We select the string
+    with the maximum entropy and lowest description. The entropy constraint is
+    meant to deal with names for PDBe which include things like AP*CP*... and
+    other repetitive databases. The other constraint is to try to select things
+    that come from a lower number (if numbered) item.
+    """
+
+    def description_order(description):
+        """
+        Computes a tuple to order descriptions by.
+        """
+        return (round(entropy(description), 3), [-ord(d) for d in description])
+
+    return max(descriptions, key=description_order)
+
+
+def select_hgnc_description(accessions):
+    """
+    This will select the best description using HGNC. The idea is that if there
+    are several genes we should use the lowest one (RNA5S1, over RNA5S17) and
+    show the names of genes, if possible.
+    """
+
+    candidate = min(accessions, key=lambda a: a.gene)
+    genes = set(a.locus_tag for a in accessions)
+    if len(genes) == 1:
+        return candidate.description
+
+    genes = 'multiple genes'
+    if len(genes) < 3:
+        genes = ', '.join(sorted(genes))
+
+    return '{basic} ({genes})'.format(
+        basic=candidate.description,
+        genes=genes,
+    )
+
+
+def get_species_specific_name(rna_type, xrefs):
     """
     Determine the name for the species specific sequence. This will examine
     all descriptions in the xrefs and select one that is the 'best' name for
@@ -254,18 +294,18 @@ def get_species_specific_name(rna_type, sequence, xrefs):
         logger.debug("Falling back to generic ordering for %s", rna_type)
 
     ordering = CHOICES.get(rna_type, CHOICES['__generic__'])
-    best = choose_best(ordering, xrefs, suitable_xref(rna_type))
+    db_name, best = choose_best(ordering, xrefs, suitable_xref(rna_type))
     if not best:
         logger.debug("Ordered choice selection failed")
         return None
 
-    def description_order(xref):
-        return (round(entropy(xref.accession.description), 3),
-                xref.accession.description)
+    if db_name == 'HGNC':
+        accessions = [x.accession for x in best]
+        description = select_hgnc_description(accessions)
+    else:
+        descriptions = [x.accession.description for x in best]
+        description = select_best_description(descriptions)
 
-    xref = max(best, key=description_order)
-
-    description = xref.accession.description
     description = re.sub(r'\(\s*non-protein\s+coding\s*\)', '', description)
     return description.strip()
 
@@ -286,7 +326,7 @@ def correct_by_length(rna_type, sequence):
     return rna_type
 
 
-def correct_other_vs_misc(rna_type, sequence):
+def correct_other_vs_misc(rna_type, _):
     """
     Given 'misc_RNA' and 'other' we prefer 'other' as it is more specific. This
     will only select 'other' if 'misc_RNA' and other are the only two current
@@ -298,7 +338,7 @@ def correct_other_vs_misc(rna_type, sequence):
     return rna_type
 
 
-def remove_ambiguous(rna_type, sequence):
+def remove_ambiguous(rna_type, _):
     """
     If there is an annotation that is more specific than other or misc_RNA we
     should use it. This will remove the annotations if possible
@@ -311,7 +351,7 @@ def remove_ambiguous(rna_type, sequence):
     return rna_type
 
 
-def remove_ribozyme_if_possible(rna_type, sequence):
+def remove_ribozyme_if_possible(rna_type, _):
     """
     This will remove the ribozyme rna_type from the set of rna_types if there
     is a more specific ribozyme annotation avaiable.
@@ -448,4 +488,4 @@ def get_description(sequence, xrefs, taxid=None):
 
     if taxid is None:
         return get_generic_name(rna_type, sequence, xrefs)
-    return get_species_specific_name(rna_type, sequence, xrefs)
+    return get_species_specific_name(rna_type, xrefs)
