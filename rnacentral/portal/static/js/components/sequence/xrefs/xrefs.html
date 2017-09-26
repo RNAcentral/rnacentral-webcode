@@ -90,25 +90,6 @@
             </span>
           </span>
 
-          <!-- Vega -->
-          <span ng-switch-when="Vega">
-            {{ xref.database }} transcript <a href="{{ xref.accession.get_vega_transcript_url }}" target="_blank" title="View the transcript at {{ xref.database }}">{{ xref.accession.external_id }}</a>
-            from gene <a href="{{ xref.accession.expert_db_url }}" target="_blank" title="View the gene at {{ xref.database }}">{{ xref.accession.optional_id }}</a>
-            <!-- {% with splice_variants=xref.get_vega_splice_variants %}
-              {% if splice_variants %}
-                <br>
-                <i class="fa fa-angle-right"></i>
-                {{splice_variants|length}} alternative transcript{{splice_variants|length|pluralize}}:
-                <small>
-                  {% for splice_variant in splice_variants %}
-                    <a href="{% url  'portal.views.rna_view' upi=splice_variant.upi %}/{{ xref.taxid }}">{{ splice_variant.upi }}</a>
-                    ({{ splice_variant.length|intcomma }} nts){% if not forloop.last %},{% else %}.{% endif %}
-                  {% endfor %}
-                </small>
-              {% endif %}
-            {% endwith %} -->
-          </span>
-
           <!-- tmRNA Website -->
           <span ng-switch-when="tmRNA Website">
             tmRNA Website:
