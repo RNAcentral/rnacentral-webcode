@@ -134,6 +134,17 @@
                   <span ng-repeat="matureProduct in xref.refseq_mirna_mature_products"><a ng-href="{{ matureProduct + '/' + $ctrl.taxid }}">{{ matureProduct.split('/').pop() }}</a>{{$last ? '' : ', '}}</span>)
               </span>
             </span>
+            <span ng-if="xref.is_active && xref.splice_variants">
+              <br>
+              <i class="fa fa-angle-right"></i>
+              {{ splice_variants.length }} <ng-pluralize count="xref.splice_variants.length" when="{'one': 'alternative product', 'other': 'alternative products'}"></ng-pluralize>
+              <small>
+                <span ng-repeat="spliceVariant in xref.splice_variants">
+                  <a ng-href="{{ spliceVariant + '/' + $ctrl.taxid }}">{{ spliceVariant.split('/').pop() }}</a>
+                  ({{ spliceVariant.length | number }} nts) {{$last ? '' : ', '}}
+                </span>
+              </small>
+            </span>
 
             <!-- {% if xref.is_active and xref.is_refseq_mirna %}
               {% with mirna_precursor=xref.get_refseq_mirna_precursor %}
