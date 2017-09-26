@@ -80,19 +80,13 @@
             <a class="mirbase-external-url" ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
 
             <span ng-if="xref.accession.feature_name == 'precursor_RNA'">
-              <!-- {% with mature_products=xref.get_mirbase_mature_products %}
-                - precursor miRNA (mature product{{mature_products|length|pluralize}}
-                {% for mature_product in mature_products %}
-                  <a href="{% url  'portal.views.rna_view' upi=mature_product.upi %}/{{ xref.taxid }}">{{ mature_product.upi }}</a>{% if not forloop.last %},{% else %}){% endif %}
-                {% endfor %}
-              {% endwith %} -->
+              - precursor miRNA (<ng-pluralize count="xref.mirbase_mature_products.length" when="{'one': 'mature product', 'other': 'mature products'}"></ng-pluralize>
+              <span ng-repeat="matureProduct in xref.mirbase_mature_products">
+                <a ng-href="{{ matureProduct + "/" + xref.taxid }}">{{ matureProduct.split('/').pop() }}</a>{{$last ? '' : ', '}}
+              </span>)
             </span>
             <span ng-if="!xref.accession.feature_name == 'precursor_RNA'">
-              <!-- {% with mirna_precursor=xref.get_mirbase_precursor %}
-                {% if mirna_precursor %}
-                  - mature miRNA (precursor <a href="{% url  'portal.views.rna_view' upi=mirna_precursor %}/{{ xref.taxid }}">{{ mirna_precursor }}</a>)
-                {% endif %}
-              {% endwith %} -->
+              - mature miRNA (precursor <a ng-href="{{ xref.mirna_precursor + '/' + xref.taxid }}">{{ xref.mirna_precursor.split('/').pop() }}</a>)
             </span>
           </span>
 
