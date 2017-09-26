@@ -44,40 +44,40 @@
           <i class="fa fa-angle-right"></i>
           <!-- ENA -->
           <span ng-switch-when="ENA">
-            ENA: <a href="{{ xref.accession.get_ena_url }}" target="_blank" ng-attr-title="{{ xref.accession.accession }} at ENA">{{ xref.accession.accession }}</a>
+            ENA: <a ng-href="{{ xref.accession.ena_url }}" target="_blank" ng-attr-title="{{ xref.accession.accession }} at ENA">{{ xref.accession.accession }}</a>
           </span>
           <!-- Rfam -->
           <span ng-switch-when="Rfam">
-            RFAM family: <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }}),
+            RFAM family: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }}),
             <span ng-if="xref.is_rfam_seed" class="text-success">seed alignment</span> <i class="fa fa-info-circle help" title="part of a manually curated RFAM seed alignment"></i>
             <span ng-if="!xref.is_rfam_seed" class="text-danger">full alignment</span> <i class="fa fa-info-circle help" title="part of an automatically built RFAM full alignment"></i>
             <br>
             <i class="fa fa-angle-right"></i>
-            Source ENA entry: <a href="http://www.ebi.ac.uk/ena/data/view/{{ xref.accession.parent_ac }}.{{ xref.accession.seq_version }}" target="_blank">{{ xref.accession.parent_ac }}.{{ xref.accession.seq_version }}</a>
+            Source ENA entry: <a ng-href="{{ 'http://www.ebi.ac.uk/ena/data/view/' +  xref.accession.parent_ac + '.' + xref.accession.seq_version }}" target="_blank">{{ xref.accession.parent_ac }}.{{ xref.accession.seq_version }}</a>
             (nucleotides {{ xref.accession.feature_start | number }}:{{ xref.accession.feature_end | number }})
           </span>
           <!-- SRPDB -->
           <span ng-switch-when="SRPDB">
             SRPDB:
-            <a class="srpdb-external-url" href="{{ xref.accession.expert_db_url }}.fasta" target="_blank">{{ xref.accession.get_srpdb_id }}</a>
+            <a class="srpdb-external-url" ng-href="{{ xref.accession.expert_db_url }}.fasta" target="_blank">{{ xref.accession.srpdb_id }}</a>
           </span>
 
           <!-- lncRNAdb -->
           <span ng-switch-when="lncRNAdb">
             lncRNAdb:
-            <a class="lncrnadb-external-url" href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.optional_id }}</a>
+            <a class="lncrnadb-external-url" ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.optional_id }}</a>
           </span>
 
           <!-- gtRNAdb -->
           <span ng-switch-when="gtRNAdb">
             gtRNAdb:
-            <a class="gtrnadb-external-url" href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+            <a class="gtrnadb-external-url" ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
           </span>
 
           <!-- miRBase -->
           <span ng-switch-when="miRBase">
             miRBase:
-            <a class="mirbase-external-url" href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+            <a class="mirbase-external-url" ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
 
             <span ng-if="xref.accession.feature_name == 'precursor_RNA'">
               <!-- {% with mature_products=xref.get_mirbase_mature_products %}
