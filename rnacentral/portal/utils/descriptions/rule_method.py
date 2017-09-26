@@ -17,6 +17,7 @@ import re
 import math
 import string
 import logging
+import operator as op
 from collections import Counter
 
 __doc__ = """
@@ -236,25 +237,46 @@ def select_best_description(descriptions):
     return max(descriptions, key=description_order)
 
 
-def select_hgnc_description(accessions):
+def select_with_several_genes(accessions, name, pattern,
+                              description_items=None,
+                              attribute='gene',
+                              max_items=3):
     """
-    This will select the best description using HGNC. The idea is that if there
+    This will select the best description for databases where more than one
+    gene (or other attribute) map to a single URS. The idea is that if there
     are several genes we should use the lowest one (RNA5S1, over RNA5S17) and
-    show the names of genes, if possible.
+    show the names of genes, if possible. This will list the genes if there are
+    few, otherwise provide a note that there are several.
     """
 
-    candidate = min(accessions, key=lambda a: a.gene)
-    genes = set(a.locus_tag for a in accessions)
-    if len(genes) == 1:
+    def item_sorter(name):
+        match = re.search(r'(\d+)$', name)
+        if match:
+            name = re.sub(r'(\d+)$', '', name)
+            return (name, int(match.group(1)))
+        return (match, None)
+
+    getter = op.attrgetter(attribute)
+    candidate = min(accessions, key=getter)
+    genes = set(getter(a) for a in accessions)
+    if not genes or len(genes) == 1:
         return candidate.description
 
-    genes = 'multiple genes'
-    if len(genes) < 3:
-        genes = ', '.join(sorted(genes))
+    regexp = pattern % getter(candidate)
+    basic = re.sub(regexp, '', candidate.description)
 
-    return '{basic} ({genes})'.format(
-        basic=candidate.description,
-        genes=genes,
+    suffix = 'multiple %s' % name
+    if len(genes) < max_items:
+        items = sorted(genes)
+        if description_items is not None:
+            func = op.attrgetter(description_items)
+            items = [func(a) for a in accessions]
+            items = sorted(items, key=item_sorter)
+        suffix = ', '.join(items)
+
+    return '{basic} ({suffix})'.format(
+        basic=basic.strip(),
+        suffix=suffix,
     )
 
 
@@ -301,12 +323,31 @@ def get_species_specific_name(rna_type, xrefs):
 
     if db_name == 'HGNC':
         accessions = [x.accession for x in best]
-        description = select_hgnc_description(accessions)
+        description = select_with_several_genes(
+            accessions,
+            'genes',
+            '\(%s\)$'
+        )
+    elif db_name == 'miRBase':
+        product_name = 'precursors'
+        if rna_type == 'miRNA':
+            product_name = 'miRNAs'
+
+        accessions = [x.accession for x in best]
+        description = select_with_several_genes(
+            accessions,
+            product_name,
+            '\w+-%s',
+            description_items='optional_id',
+            max_items=5,
+        )
     else:
         descriptions = [x.accession.description for x in best]
         description = select_best_description(descriptions)
 
     description = re.sub(r'\(\s*non-protein\s+coding\s*\)', '', description)
+    description = re.sub(r'\s\s+', ' ', description)
+    description = re.sub(r'\.$', '', description)
     return description.strip()
 
 
