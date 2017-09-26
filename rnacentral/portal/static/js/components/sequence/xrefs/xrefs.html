@@ -145,45 +145,11 @@
                 </span>
               </small>
             </span>
-
-            <!-- {% if xref.is_active and xref.is_refseq_mirna %}
-              {% with mirna_precursor=xref.get_refseq_mirna_precursor %}
-                  {% if mirna_precursor %}
-                    - mature miRNA (precursor <a href="{% url  'portal.views.rna_view' upi=mirna_precursor.upi %}/{{ xref.taxid }}">{{ mirna_precursor.upi }}</a>)
-                  {% else %}
-                    {% with mature_products=xref.get_refseq_mirna_mature_products %}
-                      {% if mature_products %}
-                        - precursor miRNA (mature product{{mature_products|length|pluralize}}
-                        {% for mature_product in mature_products %}
-                          <a href="{% url  'portal.views.rna_view' upi=mature_product.upi %}/{{ xref.taxid }}">{{ mature_product.upi }}</a>{% if not forloop.last %},{% else %}){% endif %}
-                        {% endfor %}
-                      {% endif %}
-                    {% endwith %}
-                  {% endif %}
-              {% endwith %}
-            {% elif xref.is_active %}
-              {% with splice_variants=xref.get_refseq_splice_variants  %}
-                {% if splice_variants %}
-                  <br>
-                  <i class="fa fa-angle-right"></i>
-                  {{splice_variants|length}} alternative transcript{{splice_variants|length|pluralize}}:
-                  <small>
-                    {% for splice_variant in splice_variants %}
-                      <a href="{% url  'portal.views.rna_view' upi=splice_variant.upi %}/{{ xref.taxid }}">{{ splice_variant.upi }}</a>
-                      ({{ splice_variant.length|intcomma }} nts){% if not forloop.last %},{% else %}.{% endif %}
-                    {% endfor %}
-                  </small>
-                {% endif %}
-              {% endwith %}
-            {% endif %} {# is_refseq_mirna #}
-
-            {% with gene_id=xref.get_ncbi_gene_id %}
-                {% if gene_id %}
-                  <br>
-                  <i class="fa fa-angle-right"></i>
-                  NCBI GeneID: <a href="http://www.ncbi.nlm.nih.gov/gene/{{ gene_id }}" target="_blank">{{ gene_id }}</a>
-                {% endif %}
-            {% endwith %} -->
+            <span ng-if="xref.ncbi_gene_id">
+              <br>
+              <i class="fa fa-angle-right"></i>
+              NCBI GeneID: <a href="http://www.ncbi.nlm.nih.gov/gene/{{ xref.ncbi_gene_id }}" target="_blank">{{ xref.ncbi_gene_id }}</a>
+            </span>
           </span>
 
           <!-- RDP -->
