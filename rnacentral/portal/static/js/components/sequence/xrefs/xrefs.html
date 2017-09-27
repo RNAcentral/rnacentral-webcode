@@ -338,19 +338,17 @@
 
   </table>
 
-  <!-- {% if rna.count_xrefs > context.xref_page_size %}
+  <span ng-if="rna.xrefs.length > 1000">
     <div class="alert alert-warning" role="alert">
-      Showing {{ context.xref_page_size|intcomma }} entries out of {{ rna.count_xrefs|intcomma }}.
+      Showing 1000 entries out of {{ rna.xrefs.length | number }}.
       Navigate between batches:
       <ul class="pagination pagination-sm">
-        {% for xref_page in context.xref_pages %}
-          <li {% if context.xref_page_num == forloop.counter %}class="active"{% endif %}>
-            <a href="" data-xref-page="{{xref_page}}" class="xref-pagination">{{ xref_page }}</a>
-          </li>
-        {% endfor %}
+        <li ng-repeat="xrefPage in _.range(rna.xrefs.length)" ng-class="{ 'active':  $index == $ctrl.xrefsPage}">
+          <a ng-click="" class="xref-pagination">{{ xrefPage }}</a>
+        </li>
       </ul>
     </div>
-  {% endif %} -->
+  </span>
 
   <div ng-if="!$ctrl.xrefs && !$ctrl.error" class="table-responsive force-scrollbars">
 
