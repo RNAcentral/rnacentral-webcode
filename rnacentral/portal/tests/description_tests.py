@@ -89,7 +89,8 @@ class HumanDescriptionTests(GenericDescriptionTest):
             taxid=9606)
 
         self.assertDescriptionIs(
-            'Homo sapiens (human) microRNA precursor (hsa-mir-1302-2, hsa-mir-1302-9, hsa-mir-1302-10, hsa-mir-1302-11)',
+            'Homo sapiens (human) microRNA precursor (hsa-mir-1302-2, hsa-mir-1302 9 to 11)',
+            # 'Homo sapiens (human) microRNA precursor (hsa-mir-1302-2, hsa-mir-1302-9, hsa-mir-1302-10, hsa-mir-1302-11)',
             'URS000075CC93',
             taxid=9606)
 
@@ -102,7 +103,9 @@ class HumanDescriptionTests(GenericDescriptionTest):
 
     def test_will_indicate_several_genes_for_hgnc(self):
         self.assertDescriptionIs(
-            'Homo sapiens RNA, 5S ribosomal 1 (multiple genes)',
+            'Homo sapiens RNA, 5S ribosomal (RNA5S1-8, RNA5S 10-17)',
+            # 'Homo sapiens RNA, 5S ribosomal 1 (RNA5S1-8, RNA5S10-17)',
+            # 'Homo sapiens RNA, 5S ribosomal 1 (multiple genes)',
             'URS00000F9D45',
             taxid=9606
         )
@@ -151,24 +154,24 @@ class MouseDescriptionTests(GenericDescriptionTest):
         Rfam over RefSeq in this case.
         """
         self.assertDescriptionIs(
-            'Mus musculus small Cajal body-specific RNA 1 (Scarna13), guide RNA.',
+            'Mus musculus small Cajal body-specific RNA 1 (Scarna13), guide RNA',
             'URS00006550DA',
             taxid=10090)
 
     def test_likes_refseq_over_ena(self):
         self.assertDescriptionIs(
-            'Mus musculus small nucleolar RNA, C/D box 17 (Snord17), small nucleolar RNA.',
+            'Mus musculus small nucleolar RNA, C/D box 17 (Snord17), small nucleolar RNA',
             'URS000051DCEC',
             taxid=10090)
 
         self.assertDescriptionIs(
-            'Mus musculus small nucleolar RNA, H/ACA box 3 (Snora3), small nucleolar RNA.',
+            'Mus musculus small nucleolar RNA, H/ACA box 3 (Snora3), small nucleolar RNA',
             'URS000060B496',
             taxid=10090)
 
     def test_will_use_refseq_over_good_ena(self):
         self.assertDescriptionIs(
-            'Mus musculus predicted gene 12238 (Gm12238), small nucleolar RNA.',
+            'Mus musculus predicted gene 12238 (Gm12238), small nucleolar RNA',
             'URS00004E52D3',
             taxid=10090)
 
@@ -187,7 +190,7 @@ class MouseDescriptionTests(GenericDescriptionTest):
 class CattleDescriptionTests(GenericDescriptionTest):
     def test_likes_name_with_precursor(self):
         self.assertDescriptionIs(
-            'Bos taurus (cattle) microRNA 431 precursor.',
+            'Bos taurus (cattle) microRNA 431 precursor',
             'URS00007150F8',
             taxid=9913)
 
@@ -214,7 +217,7 @@ class CattleDescriptionTests(GenericDescriptionTest):
 
     def test_likes_refseq_over_ena(self):
         self.assertDescriptionIs(
-            'Bos taurus telomerase RNA component (TERC), telomerase RNA.',
+            'Bos taurus telomerase RNA component (TERC), telomerase RNA',
             'URS00003EBD9A',
             taxid=9913)
 

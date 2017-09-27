@@ -18,6 +18,7 @@ import math
 import string
 import logging
 import operator as op
+import itertools as it
 from collections import Counter
 
 __doc__ = """
@@ -236,11 +237,57 @@ def select_best_description(descriptions):
 
     return max(descriptions, key=description_order)
 
+def item_sorter(name):
+    match = re.search(r'(\d+)$', name)
+    if match:
+        name = re.sub(r'(\d+)$', '', name)
+        return (name, int(match.group(1)))
+    return (match, None)
+
+
+def group_consecutives(data, min_size=2):
+    """
+    Modified from the python itertools docs.
+    """
+
+    for _, group in it.groupby(enumerate(data), lambda (i, x): i - x):
+        key = op.itemgetter(1)
+        group = [key(g) for g in group]
+        if len(group) > 1:
+            if group[-1] - group[0] < min_size:
+                for member in group:
+                    yield member, None
+            else:
+                yield group[0], group[-1]
+        else:
+            yield group[0], None
+
+
+def compute_gene_ranges(genes):
+    data = sorted(item_sorter(gene) for gene in genes)
+    grouped = it.groupby(data, op.itemgetter(0))
+    names = []
+    for gene, numbers in grouped:
+        range_format = '%i-%i'
+        if '-' in gene:
+            range_format = ' %i to %i'
+        for (start, stop) in group_consecutives(n[1] for n in numbers):
+            if stop is None:
+                names.append(gene + str(start))
+            else:
+                prefix = gene
+                if prefix.endswith('-'):
+                    prefix = prefix[:-1]
+                names.append(prefix + range_format % (start, stop))
+
+    return names
+
 
 def select_with_several_genes(accessions, name, pattern,
                               description_items=None,
                               attribute='gene',
                               max_items=3):
+
     """
     This will select the best description for databases where more than one
     gene (or other attribute) map to a single URS. The idea is that if there
@@ -248,13 +295,6 @@ def select_with_several_genes(accessions, name, pattern,
     show the names of genes, if possible. This will list the genes if there are
     few, otherwise provide a note that there are several.
     """
-
-    def item_sorter(name):
-        match = re.search(r'(\d+)$', name)
-        if match:
-            name = re.sub(r'(\d+)$', '', name)
-            return (name, int(match.group(1)))
-        return (match, None)
 
     getter = op.attrgetter(attribute)
     candidate = min(accessions, key=getter)
@@ -265,13 +305,15 @@ def select_with_several_genes(accessions, name, pattern,
     regexp = pattern % getter(candidate)
     basic = re.sub(regexp, '', candidate.description)
 
+    func = getter
+    if description_items is not None:
+        func = op.attrgetter(description_items)
+
+    items = sorted([func(a) for a in accessions], key=item_sorter)
+    items = compute_gene_ranges(items)
+
     suffix = 'multiple %s' % name
-    if len(genes) < max_items:
-        items = sorted(genes)
-        if description_items is not None:
-            func = op.attrgetter(description_items)
-            items = [func(a) for a in accessions]
-            items = sorted(items, key=item_sorter)
+    if len(items) < max_items:
         suffix = ', '.join(items)
 
     return '{basic} ({suffix})'.format(
