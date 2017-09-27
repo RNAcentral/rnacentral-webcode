@@ -231,13 +231,11 @@
           <!-- HGNC -->
           <span ng-switch-when="HGNC">
             {{ xref.database }}: <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.accession }})
-            <!-- {% with ensembl_gene_id=xref.accession.get_hgnc_ensembl_id %}
-              {% if ensembl_gene_id %}
-                <br>
-                <i class="fa fa-angle-right"></i>
-                Ensembl: <a href="http://www.ensembl.org/Homo_sapiens/Gene/Summary?g={{ ensembl_gene_id }}" target="_blank">{{ ensembl_gene_id }}</a>
-              {% endif %}
-            {% endwith %} -->
+            <span ng-if="xref.accession.hgnc_ensembl_id">
+              <br>
+              <i class="fa fa-angle-right"></i>
+              Ensembl: <a ng-href="{{ 'http://www.ensembl.org/Homo_sapiens/Gene/Summary?g=' + xref.accession.ensembl_gene_id }}" target="_blank">{{ xref.accession.ensembl_gene_id }}</a>
+            </span>
           </span>
 
           <span ng-switch-default>
@@ -290,7 +288,7 @@
           <span ng-if="xref.accession.is_composite == 'Y'">
             <br>
             <i class="fa fa-angle-right"></i>
-            Source ENA entry: <a href="{{ xref.accession.get_ena_url }}" target="_blank" ng-attr-title="{{ xref.accession.non_coding_id }} at ENA">{{ xref.accession.non_coding_id }}</a>
+            Source ENA entry: <a href="{{ xref.accession.ena_url }}" target="_blank" ng-attr-title="{{ xref.accession.non_coding_id }} at ENA">{{ xref.accession.non_coding_id }}</a>
           </span>
 
           <!-- show genomic locations for non-human species -->
