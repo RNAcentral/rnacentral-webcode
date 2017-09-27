@@ -284,28 +284,18 @@
           <span ng-if="xref.coordinates">
             <br>
             <i class="fa fa-angle-right"></i>
-            <!-- {% with genomic_coordinates=xref.get_genomic_coordinates %}
-              <button type="button" class="btn btn-primary btn-xs genoverse-xref help margin-right-5px" data-genomic-start="{{ genomic_coordinates.start }}" data-genomic-end="{{ genomic_coordinates.end }}" data-strand="{{ genomic_coordinates.strand }}" data-chromosome="{{ genomic_coordinates.chromosome }}" data-species="{{xref.get_ensembl_species_name}}" data-description="{{ xref.accession.description }}" data-species-label="{{ xref.accession.species }}" title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> View genomic location</button>
+              <button type="button" class="btn btn-primary btn-xs genoverse-xref help margin-right-5px" data-genomic-start="{{ xref.genomic_coordinates.start }}" data-genomic-end="{{ xref.genomic_coordinates.end }}" data-strand="{{ xref.genomic_coordinates.strand }}" data-chromosome="{{ xref.genomic_coordinates.chromosome }}" data-species="{{ xref.genomic_coordinates.ensembl_species_name }}" data-description="{{ xref.accession.description }}" data-species-label="{{ xref.accession.species }}" title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> View genomic location</button>
               <small>
-                <span class="margin-right-5px">{{ genomic_coordinates.chromosome }}:{{ genomic_coordinates.start|intcomma }}-{{ genomic_coordinates.end|intcomma }}:{{ genomic_coordinates.strand }}</span>
-                {# Ensembl url #}
+                <span class="margin-right-5px">{{ xref.genomic_coordinates.chromosome }}:{{ xref.genomic_coordinates.start | number }}-{{ xref.genomic_coordinates.end | number }}:{{ xref.genomic_coordinates.strand }}</span>
+                <!-- Ensembl url -->
                 <span class="margin-right-5px ensembl-link">
-                  {% with ensembl_species_name=xref.get_ensembl_species_name %}
-                    {% with ensembl_division=xref.get_ensembl_division %}
-                      <a href="{{ ensembl_division.url }}/{{ensembl_species_name}}/Location/View?r={{ genomic_coordinates.chromosome }}%3A{{ genomic_coordinates.start }}-{{ genomic_coordinates.end }}" target="_blank">{{ ensembl_division.name }}</a>
-                    {% endwith %}
-                  {% endwith %}
+                  <a ng-href="{{ xref.accession.ensembl_species_url + '/Location/View?r=' + xref.genomic_coordinates.chromosome + '%3A' + xref.genomic_coordinates.start + '-' + xref.genomic_coordinates.end }}" target="_blank">{{ xref.ensembl_division.name }}</a>
                 </span>
-                {# UCSC url #}
-                {% with ucsc_db_id=xref.get_ucsc_db_id %}
-                  {% if ucsc_db_id %}
-                    <span class="margin-right-5px ucsc-link">
-                      <a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db={{ ucsc_db_id }}&position={{ genomic_coordinates.ucsc_chromosome }}%3A{{ genomic_coordinates.start }}-{{ genomic_coordinates.end }}" target="_blank">UCSC</a>
-                    </span>
-                  {% endif %}
-                {% endwith %}
+                <!-- UCSC url -->
+                <span ng-if="xref.ucsc_db_id" class="margin-right-5px ucsc-link">
+                  <a ng-href="{{ 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + xref.ucsc_db_id + '&position=' + xref.genomic_coordinates.ucsc_chromosome + '%3A' + xref.genomic_coordinates.start + '-' + xref.genomic_coordinates.end }}" target="_blank">UCSC</a>
+                </span>
               </small>
-            {% endwith %} -->
           </span>
 
           <!-- literature references -->
