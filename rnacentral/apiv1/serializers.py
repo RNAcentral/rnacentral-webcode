@@ -205,8 +205,8 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
             data = {
                 'chromosome': obj.accession.coordinates.all()[0].chromosome,
                 'strand': obj.accession.coordinates.all()[0].strand,
-                'start': obj.accession.coordinates.all().aggregate(Min('primary_start')),
-                'end': obj.accession.coordinates.all().aggregate(Max('primary_end'))
+                'start': obj.accession.coordinates.all().aggregate(Min('primary_start'))['primary_start__min'],
+                'end': obj.accession.coordinates.all().aggregate(Max('primary_end'))['primary_end__max']
             }
 
             exceptions = ['X', 'Y']
