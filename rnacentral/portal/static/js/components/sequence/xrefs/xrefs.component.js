@@ -78,20 +78,21 @@ var xrefs = {
         };
 
         ctrl.$onInit = function() {
+            // set defaults for optional parameters, if not given
+            ctrl.timeout = parseInt(ctrl.timeout) || 50000;
+            ctrl.page = ctrl.page || 1;
+            ctrl.pageSize = ctrl.pageSize || 5;
 
             // Request xrefs from server (with taxid, if necessary)
             ctrl.dataEndpoint;
             if (ctrl.taxid) ctrl.dataEndpoint = $interpolate('/api/v1/rna/{{upi}}/xrefs/{{taxid}}')({upi: ctrl.upi, taxid: ctrl.taxid});
             else ctrl.dataEndpoint = $interpolate('/api/v1/rna/{{upi}}/xrefs')({upi: ctrl.upi});
 
-            // set defaults for optional parameters, if not given
-            ctrl.timeout = parseInt(ctrl.timeout) || 5000;
-            ctrl.page = ctrl.page || 1;
-            ctrl.pageSize = ctrl.pageSize || 5;
-
             $http.get(ctrl.dataEndpoint, {timeout: ctrl.timeout}).then(
                 function(response) {
                     ctrl.xrefs = response.data.results;
+
+                    ctrl.displayedXrefs = ctrl.xrefs.slice();
 
                     // $timeout() call is to ensure that xrefs data is rendered
                     // into the DOM before initializing DataTables
