@@ -136,6 +136,16 @@ def flush_memcached():
         env.run(cmd)
 
 
+def start_supervisor():
+    """
+    Start supervisord and memcached on production machine.
+    """
+    with env.cd(settings.PROJECT_PATH), prefix(COMMANDS['set_environment']), \
+         prefix(COMMANDS['activate_virtualenv']):
+        env.run('supervisord -c supervisor/supervisor.conf')
+        env.run('supervisorctl -c supervisor/supervisor.conf start memcached')
+
+
 def restart_django(restart_url=None):
     """
     Restart django process and visit the website.
