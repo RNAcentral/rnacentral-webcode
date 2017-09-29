@@ -79,15 +79,20 @@
             miRBase:
             <a class="mirbase-external-url" ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
 
-            <span ng-if="xref.accession.feature_name == 'precursor_RNA'">
+            <span ng-if="xref.mirbase_mature_products">
               - precursor miRNA (<ng-pluralize count="xref.mirbase_mature_products.length" when="{'one': 'mature product', 'other': 'mature products'}"></ng-pluralize>
               <span ng-repeat="matureProduct in xref.mirbase_mature_products">
                 <a ng-href="{{ matureProduct + "/" + xref.taxid }}">{{ matureProduct.split('/').pop() }}</a>{{$last ? '' : ', '}}
               </span>)
             </span>
-            <span ng-if="!xref.accession.feature_name == 'precursor_RNA'">
+            <span ng-if="xref.mirna_precursor">
               - mature miRNA (precursor <a ng-href="{{ xref.mirna_precursor + '/' + xref.taxid }}">{{ xref.mirna_precursor.split('/').pop() }}</a>)
             </span>
+          </span>
+
+          <!-- FlyBase -->
+          <span ng-switch-when="FlyBase">
+            FlyBase gene <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>, {{ xref.accession.id }}
           </span>
 
           <!-- tmRNA Website -->
@@ -180,6 +185,7 @@
             {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
           </span>
 
+          <!-- dictyBase -->
           <span ng-switch-when="dictyBase">
             {{ xref.database }} gene <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
           </span>
@@ -281,7 +287,7 @@
           </span>
 
           <!-- show genomic locations for non-human species -->
-          <span ng-if="xref.coordinates">
+          <span ng-if="xref.genomic_coordinates">
             <br>
             <i class="fa fa-angle-right"></i>
               <button type="button" class="btn btn-primary btn-xs genoverse-xref help margin-right-5px" data-genomic-start="{{ xref.genomic_coordinates.start }}" data-genomic-end="{{ xref.genomic_coordinates.end }}" data-strand="{{ xref.genomic_coordinates.strand }}" data-chromosome="{{ xref.genomic_coordinates.chromosome }}" data-species="{{ xref.genomic_coordinates.ensembl_species_name }}" data-description="{{ xref.accession.description }}" data-species-label="{{ xref.accession.species }}" title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> View genomic location</button>
