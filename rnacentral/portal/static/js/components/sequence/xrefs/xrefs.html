@@ -23,9 +23,6 @@
         <th>Database</th>
         <th>Description</th>
         <th>Species</th>
-        <th>First&nbsp;seen</th>
-        <th>Last&nbsp;seen</th>
-        <th>Genomic coordinates available</th>
       </tr>
     </thead>
 
@@ -328,20 +325,6 @@
             <a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank" title="{{ xref.accession.classification }}"><em>{{ xref.accession.species }}</em></a>
           </span>
         </td>
-
-        <!-- first seen -->
-        <td><time datetime="{{ xref.first_seen | date:'y-M-d' }}">{{ xref.first_seen | date:'d M y' }}</time></td>
-
-        <!-- last seen -->
-        <td><time datetime="{{ xref.last_seen | date:'y-M-d' }}">{{ xref.last_seen | date:'d M y' }}</time></td>
-
-        <!-- genomic coordinates available -->
-        <td>
-          <span ng-if="xref.has_genomic_coordinates">1</span>
-          <span ng-if="!xref.has_genomic_coordinates">0</span>
-        </td>
-      </tr>
-
     </tbody>
 
   </table>
