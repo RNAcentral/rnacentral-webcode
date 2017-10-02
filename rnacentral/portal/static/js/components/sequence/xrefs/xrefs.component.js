@@ -51,7 +51,7 @@ var xrefs = {
 
         ctrl.$onInit = function() {
             // set defaults for optional parameters, if not given
-            ctrl.timeout = parseInt(ctrl.timeout) || 50000;
+            ctrl.timeout = parseInt(ctrl.timeout) || 5000;
             ctrl.page = ctrl.page || 1;
             ctrl.pageSize = ctrl.pageSize || 5;
             ctrl.paginateOn = 'client';
