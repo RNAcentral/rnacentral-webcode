@@ -3,11 +3,10 @@ python:
   - "2.7"
 # install dependencies
 install:
-  - "pip install requests selenium django djangorestframework django-cors-headers django-debug-toolbar django-compressor django-markdown-deux django-rq django-filter python-memcached"
-  - "pip install -e git+https://github.com/jbalogh/django-cache-machine.git@f827f05b195ad3fc1b0111131669471d843d631f#egg=django_cache_machine-dev"
+  - "pip install requests selenium"
 # run tests
 script:
-  - python rnacentral/portal/tests/selenium_tests.py --base_url=http://rnacentral.org --driver=phantomjs
+  - travis_wait python rnacentral/portal/tests/selenium_tests.py --base_url=http://rnacentral.org --driver=phantomjs
 # define branches
 branches:
   only:

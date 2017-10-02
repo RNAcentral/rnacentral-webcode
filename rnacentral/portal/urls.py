@@ -15,7 +15,9 @@ from django.conf import settings
 from django.conf.urls import patterns, url
 
 from portal import views
-from portal.models import get_ensembl_divisions, RnaPrecomputed, Database
+from portal.models import Database
+from portal.models.utils import get_ensembl_divisions
+from portal.models.rna_precomputed import RnaPrecomputed
 
 urlpatterns = patterns('',
     # homepage
@@ -30,8 +32,8 @@ urlpatterns = patterns('',
     url(r'^expert-database/(?P<expert_db_name>[-\w]+)/?$', 'portal.views.expert_database_view', name='expert-database'),
     # expert databases
     url(r'^expert-databases/?$', 'portal.views.expert_databases_view', name='expert-databases'),
-    # metadata search can route to any page because it will be taken over by Angular
-    url(r'^search/?$', views.TemplateView.as_view(template_name='portal/base.html'), name='metadata-search'),
+    # text search can route to any page because it will be taken over by Angular
+    url(r'^search/?$', views.TemplateView.as_view(template_name='portal/base.html'), name='text-search'),
     # coming soon
     url(r'^(?P<page>coming-soon)/?$', views.StaticView.as_view(), name='coming-soon'),
     # downloads
@@ -39,7 +41,7 @@ urlpatterns = patterns('',
     # help centre
     url(r'^help/?$', views.StaticView.as_view(), {'page': 'help/faq'}, name='help'),
     url(r'^help/browser-compatibility/?$', views.StaticView.as_view(), {'page': 'help/browser-compatibility'}, name='help-browser-compatibility'),
-    url(r'^help/metadata-search/?$', views.StaticView.as_view(), {'page': 'help/metadata-search'}, name='help-metadata-search'),
+    url(r'^help/text-search/?$', views.StaticView.as_view(), {'page': 'help/text-search'}, name='help-text-search'),
     url(r'^help/genomic-mapping/?$', views.StaticView.as_view(), {'page': 'help/genomic-mapping', 'divisions': get_ensembl_divisions()}, name='help-genomic-mapping'),
     # training
     url(r'^training/?$', views.StaticView.as_view(), {'page': 'training'}, name='training'),
@@ -88,7 +90,7 @@ class StaticViewSitemap(Sitemap):
         return [
             'homepage', 'about', 'contact-us', 'downloads', 'training',
             'expert-databases', 'nhmmer-sequence-search', 'api-docs',
-            'help', 'help-metadata-search', 'help-genomic-mapping', 'help-genomic-mapping',
+            'help', 'help-text-search', 'help-genomic-mapping', 'help-genomic-mapping',
         ]
 
     def location(self, item):

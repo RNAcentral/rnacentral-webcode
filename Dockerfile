@@ -28,6 +28,7 @@ RUN mkdir /rnacentral/static
 ENV LOC /rnacentral/local
 
 # Install Python
+# NOTE: Python-2.7.11 and python-2.7.11 are DIFFERENT folders, the former contains the sources, the later - binaries
 RUN \
     cd $LOC && \
     curl -OL http://www.python.org/ftp/python/2.7.11/Python-2.7.11.tgz && \

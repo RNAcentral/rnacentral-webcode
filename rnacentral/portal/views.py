@@ -31,8 +31,9 @@ from rest_framework.views import APIView
 from portal.config.expert_databases import expert_dbs
 from portal.config.genomes import genomes as rnacentral_genomes
 from portal.forms import ContactForm
-from portal.models import Rna, Database, Release, Xref, DatabaseStats, RnaPrecomputed
-
+from portal.models import Rna, Database, Release, Xref
+from portal.models.database_stats import DatabaseStats
+from portal.models.rna_precomputed import RnaPrecomputed
 
 CACHE_TIMEOUT = 60 * 60 * 24 * 1 # per-view cache timeout in seconds
 XREF_PAGE_SIZE = 1000
@@ -81,9 +82,7 @@ def get_sequence_lineage(request, upi):
 
 @cache_page(60)
 def homepage(request):
-    """
-    RNAcentral homepage.
-    """
+    """RNAcentral homepage."""
     context = {
         'databases': list(Database.objects.filter(alive='Y').order_by('?').all()),
         'blog_url': settings.RELEASE_ANNOUNCEMENT_URL,
@@ -93,9 +92,7 @@ def homepage(request):
 
 @cache_page(CACHE_TIMEOUT)
 def expert_databases_view(request):
-    """
-    List of RNAcentral expert databases.
-    """
+    """List of RNAcentral expert databases."""
     context = {
         'expert_dbs': sorted(expert_dbs, key=lambda x: x['name'].lower()),
         'num_imported': len([x for x in expert_dbs if x['imported']]),
@@ -105,9 +102,7 @@ def expert_databases_view(request):
 
 @cache_page(CACHE_TIMEOUT)
 def rna_view_redirect(request, upi, taxid):
-    """
-    Redirect from urs_taxid to urs/taxid.
-    """
+    """Redirect from urs_taxid to urs/taxid."""
     return redirect('unique-rna-sequence', upi=upi, taxid=taxid)
 
 
@@ -117,81 +112,20 @@ def rna_view(request, upi, taxid=None):
     Unique RNAcentral Sequence view.
     Display all annotations or customize the page using the taxid (optional).
     """
-    def get_xref_page_num():
-        """
-        For pages with many xrefs, get the xref page number.
-        Return it as a number because it is used in numerical comparisons
-        in the template.
-        """
-        xref_page_num = request.GET.get('xref-page')
-        if xref_page_num:
-            xref_page_num = int(xref_page_num)
-        else:
-            xref_page_num = 1
-        return xref_page_num
-
-    def get_xrefs_pages():
-        """
-        When the number of xrefs is large, calculate the number of xref batches.
-        Example:
-        count_xrefs = 3095
-        Return [1, 2, 3, 4] for 4 pages.
-        """
-        return xrange(1, int(math.ceil(rna.count_xrefs()/float(XREF_PAGE_SIZE))) + 1)
-
-    def is_taxid_filtering_possible():
-        """
-        Determine if the page should be customized using the taxid.
-        """
-        if taxid:
-            if rna.xref_with_taxid_exists(taxid):
-                return True
-            else:
-                return False
-        else:
-            return False
-
-    def get_single_species():
-        """
-        Determine if the sequence has only one species or get the taxid species.
-        """
-
-        def get_species_name_from_taxid(taxid):
-            """
-            Get a species name given an NCBI taxid.
-            """
-            species_name = ''
-            if taxid:
-                xref = Xref.objects.filter(taxid=taxid).select_related('accession')[:1].get()
-                if xref:
-                    species_name = xref.accession.species
-            return species_name
-
-        if taxid_filtering:
-            return get_species_name_from_taxid(taxid)
-        else:
-            if rna.count_distinct_organisms == 1:
-                queryset = rna.xrefs
-                results = queryset.filter(deleted='N')
-                if results.exists():
-                    return results.first().accession.species
-                else:
-                    return queryset.first().accession.species
-            else:
-                return None
-
+    # get Rna or die
     upi = upi.upper()
     try:
         rna = Rna.objects.get(upi=upi)
     except Rna.DoesNotExist:
         raise Http404
 
-    taxid_filtering = is_taxid_filtering_possible()
-
-    if taxid and not taxid_filtering:
+    # if taxid is given, but xrefs for it don't exist - redirect to non-taxon-filtered page with header
+    if taxid and not rna.xrefs.filter(taxid=taxid).exists():
         response = redirect('unique-rna-sequence', upi=upi)
         response['Location'] += '?taxid-not-found={taxid}'.format(taxid=taxid)
         return response
+
+    taxid_filtering = True if taxid else False
 
     symbol_counts = rna.count_symbols()
     non_canonical_base_counts = {key: symbol_counts[key] for key in symbol_counts if key not in ['A', 'U', 'G', 'C']}
@@ -202,14 +136,15 @@ def rna_view(request, upi, taxid=None):
         'taxid': taxid,
         'taxid_filtering': taxid_filtering,
         'taxid_not_found': request.GET.get('taxid-not-found', ''),
-        'single_species': get_single_species(),
+        'single_species': get_single_species(rna, taxid, taxid_filtering),
         'description': rna.get_description(taxid) if taxid_filtering else rna.get_description(),
         'distinct_databases': rna.get_distinct_database_names(taxid),
         'publications': rna.get_publications(taxid) if taxid_filtering else rna.get_publications(),
         'tab': request.GET.get('tab', ''),
-        'xref_pages': get_xrefs_pages(),
+        'xref_pages': xrange(1, int(math.ceil(rna.count_xrefs()/float(XREF_PAGE_SIZE))) + 1),
         'xref_page_size': XREF_PAGE_SIZE,
-        'xref_page_num': get_xref_page_num(),
+        'xref_page_num': int(request.GET.get('xref-page')) if request.GET.get('xref-page') else 1,
+        'xrefs_count': rna.count_xrefs(taxid) if taxid_filtering else rna.count_xrefs(),
         'precomputed': RnaPrecomputed.objects.filter(upi=upi, taxid=taxid).first(),
         'rfam_status': rna.get_rfam_status(taxid=taxid),
     }
@@ -217,15 +152,28 @@ def rna_view(request, upi, taxid=None):
     return render(request, 'portal/unique-rna-sequence.html', {'rna': rna, 'context': context})
 
 
+def get_single_species(rna, taxid, taxid_filtering):
+    """Determine if the sequence has only one species or get the taxid species."""
+    if taxid_filtering:  # if taxid_filtering, taxid should be supplied - get a species name given that NCBI taxid
+        xref = Xref.objects.filter(taxid=taxid).select_related('accession')[:1].get()
+        return xref.accession.species if xref else None  # if not available for this species, return None
+    else:  # if filtering is not enabled, still, there might be only one species in references
+        if rna.count_distinct_organisms == 1:
+            queryset = rna.xrefs
+            results = queryset.filter(deleted='N')
+            if results.exists():
+                return results.first().accession.species
+            else:
+                return queryset.first().accession.species
+        else:
+            return None
+
+
 @cache_page(CACHE_TIMEOUT)
 def expert_database_view(request, expert_db_name):
-    """
-    Expert database view.
-    """
+    """Expert database view."""
     def _normalize_expert_db_name(expert_db_name):
-        """
-        Expert_db_name should match RNACEN.RNC_DATABASE.DESCR
-        """
+        """Expert_db_name should match RNACEN.RNC_DATABASE.DESCR."""
         dbs = Database.objects.values_list('descr', flat=True)
         dbs_coming_soon = ()
         if re.match('tmrna-website', expert_db_name, flags=re.IGNORECASE):
@@ -262,9 +210,7 @@ def expert_database_view(request, expert_db_name):
 
 
 class ExpertDatabasesAPIView(APIView):
-    """
-    Return a list of RNA expert databases, indexed in RNAcentral.
-    """
+    """Return a list of RNA expert databases, indexed in RNAcentral."""
     permission_classes = ()
     authentication_classes = ()
 
@@ -322,9 +268,7 @@ def ebeye_proxy(request):
 #####################
 
 class StaticView(TemplateView):
-    """
-    Render flat pages.
-    """
+    """Render flat pages."""
     def get(self, request, page, *args, **kwargs):
         self.template_name = 'portal/' + page + '.html'
         response = super(StaticView, self).get(request, *args, **kwargs)
@@ -335,9 +279,7 @@ class StaticView(TemplateView):
 
 
 class GenomeBrowserView(TemplateView):
-    """
-    Render genome-browser, taking into account start/end locations
-    """
+    """Render genome-browser, taking into account start/end locations."""
     def get(self, request, *args, **kwargs):
         self.template_name = 'portal/genome-browser.html'
 
@@ -377,9 +319,7 @@ class GenomeBrowserView(TemplateView):
 
 
 class ContactView(FormView):
-    """
-    Contact form view.
-    """
+    """Contact form view."""
     template_name = 'portal/contact.html'
     form_class = ContactForm
 
@@ -444,17 +384,13 @@ def _get_json_lineage_tree(xrefs):
     """
 
     def get_lineages_and_taxids():
-        """
-        Combine the lineages from all accessions in a single list.
-        """
+        """Combine the lineages from all accessions in a single list."""
         for xref in xrefs:
             lineages.append(xref.accession.classification)
             taxids[xref.accession.classification.split('; ')[-1]] = xref.taxid
 
     def build_nested_dict_helper(path, text, container):
-        """
-        Recursive function that builds the nested dictionary.
-        """
+        """Recursive function that builds the nested dictionary."""
         segs = path.split('; ')
         head = segs[0]
         tail = segs[1:]

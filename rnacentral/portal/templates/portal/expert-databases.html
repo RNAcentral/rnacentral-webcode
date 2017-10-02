@@ -16,7 +16,8 @@ limitations under the License.
 
 {% block meta_tags %}
     {{ block.super }}
-    <meta name="description" content="List of RNAcentral expert databases"/>
+    <meta name="description" content="{{ context.expert_dbs|length }} RNA resources participate in RNAcentral, including {{ context.num_imported }} that already contributed the data"/>
+    <meta name="twitter:description" content="View {{ context.expert_dbs|length }} RNAcentral Expert Databases">
 {% endblock %}
 
 {% block title %}

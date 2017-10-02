@@ -1,0 +1,115 @@
+node {
+    stopKibana()
+    stopFilebeatPG()
+    stopFilebeatOY()
+    stopLogstash()
+    stopElasticsearch()
+    startElasticsearch()
+    startLogstash()
+    startFilebeatOY()
+    startFilebeatPG()
+    startKibana()
+}
+
+private void stopLogstash() {
+    stage("Stopping logstash") {
+        try {
+            sh '''kill $(ps aux | grep logstash | awk '{print $2}')'''
+        } catch (err) {
+            echo err.toString()
+        }
+        sleep 3
+    }
+}
+
+private void startLogstash() {
+    stage("Starting logstash") {
+        dir("/net/isilonP/public/rw/homes/xfm_adm/src") {
+            sh 'BUILD_ID=dontKillMe nohup logstash-5.4.3/bin/logstash -f logstash-apache.conf &'
+            sleep 10
+        }
+    }
+}
+
+private void stopElasticsearch() {
+    stage("Stopping elasticsearch") {
+        try {
+            sh '''kill $(ps aux | grep 'elasticsearch' | awk '{print $2}')'''
+        } catch(err) {
+            echo err.toString()
+        }
+        sleep 3
+    }
+}
+
+private void startElasticsearch() {
+    stage("Starting elasticsearch") {
+        dir("/net/isilonP/public/rw/homes/xfm_adm/src") {
+            sh '''
+            BUILD_ID=dontKillMe nohup elasticsearch-5.4.3/bin/elasticsearch -Enetwork.host=0.0.0.0 -Ebootstrap.system_call_filter=false &
+            '''
+            sleep 10
+        }
+    }
+}
+
+private void stopKibana() {
+    stage("Stopping kibana") {
+        try {
+            sh '''kill $(ps aux | grep 'elasticsearch' | awk '{print $2}')'''
+        } catch(err) {
+            echo err.toString()
+        }
+        sleep 3
+    }
+}
+
+private void startKibana() {
+    stage("Starting kibana") {
+        dir("/net/isilonP/public/rw/homes/xfm_adm/src") {
+            sh 'BUILD_ID=dontKillMe nohup kibana-5.4.3-linux-x86_64/bin/kibana -H 0.0.0.0 &'
+            sleep 10
+        }
+    }
+}
+
+private void stopFilebeatOY() {
+    stage("Stopping filebeat on OY") {
+        try {
+            sh '''kill $(ps aux | grep 'filebeat' | awk '{print $2}')'''
+        } catch(err) {
+            echo err.toString()
+        }
+    }
+}
+
+private void startFilebeatOY() {
+    stage("Starting filebeat on OY") {
+        dir("/net/isilonP/public/rw/homes/xfm_adm/src") {
+            sh 'BUILD_ID=dontKillMe nohup ./filebeat-5.5.0-linux-x86_64/filebeat -c filebeat.yml &'
+            sleep 10
+        }
+    }
+}
+
+private void stopFilebeatPG() {
+    stage("Stopping filebeat on PG") {
+        try {
+            sh '''
+            ssh ves-pg-a4 "ps aux | grep filebeat | awk '{print \\$2}' | xargs kill"
+            '''
+        } catch(err) {
+            echo err.toString()
+        }
+
+    }
+}
+
+private void startFilebeatPG() {
+    stage("Starting filebeat on PG") {
+        sh '''
+        ssh ves-pg-a4 'DISPLAY=:0 nohup /net/isilonP/public/rw/homes/xfm_adm/bin/filebeat-5.5.0-linux-x86_64/filebeat -c /net/isilonP/public/rw/homes/xfm_adm/bin/filebeat.yml < /dev/null > std.out 2> std.err &'
+        '''
+        sleep 10
+    }
+}

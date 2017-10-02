@@ -16,7 +16,8 @@ import sys
 from django.core.management.base import BaseCommand, CommandError
 from optparse import make_option
 from cProfile import Profile
-from portal.models import Rna, RnaPrecomputed
+from portal.models import Rna
+from portal.models.rna_precomputed import RnaPrecomputed
 
 
 class Command(BaseCommand):

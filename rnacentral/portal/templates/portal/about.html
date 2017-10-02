@@ -20,8 +20,8 @@ About RNAcentral
 
 {% block meta_tags %}
     {{ block.super }}
-    <meta name="description" content="Learn about RNAcentral: key features, statistics and timeline"/>
-    <meta name="twitter:description" content="Learn about RNAcentral: key features, statistics and timeline">
+    <meta name="description" content="RNAcentral is a comprehensive database of non-coding RNA sequences that provides a single entry point for accessing data from over 20 member databases"/>
+    <meta name="twitter:description" content="RNAcentral is a comprehensive database of non-coding RNA sequences that provides a single entry point for accessing data from over 20 member databases">
 {% endblock %}
 
 {% block content %}
@@ -49,7 +49,7 @@ About RNAcentral
 
       <p>
         RNAcentral imports ncRNA sequences from <strong>multiple databases</strong> and enables integrated
-        <a href="{% url 'metadata-search' %}?q=RNA">text search</a>,
+        <a href="{% url 'text-search' %}?q=RNA">text search</a>,
         <a href="{% url 'nhmmer-sequence-search' %}">sequence similarity search</a>,
         and <a href="{% url 'api-docs' %}">programmatic data access</a>.
       </p>

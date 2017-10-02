@@ -13,8 +13,10 @@ limitations under the License.
 
 from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
+
 from common_exporters.db_connection import DbConnection
-from portal.models import Xref, ChemicalComponent, Modification
+from portal.models import Xref, Modification
+from portal.models.chemical_component import ChemicalComponent
 
 """
 Import modified nucleotides from the PDBe database into RNAcentral.

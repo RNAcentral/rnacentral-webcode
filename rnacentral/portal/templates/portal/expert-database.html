@@ -17,11 +17,12 @@ limitations under the License.
 
 {% block meta_tags %}
     {{ block.super }}
-    <meta name="description" content="Summary for the {{expert_db.name}} expert database"/>
+    <meta name="description" content="{{expert_db.name}} {{expert_db.description|safe}}"/>
+    <meta name="twitter:description" content="{{expert_db.name}} {{expert_db.description|safe}}"/>
 {% endblock %}
 
 {% block title %}
-  {{ expert_db.name }} Expert Database
+  Explore {{expert_db.name}} data in RNAcentral
 {% endblock %}
 
 {% block content %}
@@ -82,7 +83,7 @@ limitations under the License.
     </p>
 
     <p>
-      <a class="btn btn-primary" ng-click="meta_search('expert_db:%22{{expert_db.name}}%22')" rel="nofollow">Browse all {{expert_db.name}} sequences</a>
+      <a class="btn btn-primary" ng-click="search.search('expert_db:&quot;{{expert_db.name}}&quot;')" rel="nofollow">Browse all {{expert_db.name}} sequences</a>
     </p>
 
     <h2>Links</h2>
@@ -209,7 +210,7 @@ limitations under the License.
         $(function(){
             {% if expert_db.descr != 'LNCRNADB' %}
               var data = {% autoescape off %}{{expert_db_stats.length_counts}}{% endautoescape %};
-              var search_url = '{% url "metadata-search" %}';
+              var search_url = '{% url "text-search" %}';
               ExpertDatabaseSequenceDistribution("#d3-seq-length-distribution", data, 500, 300, search_url);
             {% endif %}
             {% if expert_db.descr not in no_sunburst %}

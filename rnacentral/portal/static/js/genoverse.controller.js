@@ -312,7 +312,8 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
 
         return {
             title: '<a target=_blank href="http://rnacentral.org/rna/' + feature.label + '/' + $scope.genome.taxid.toString() +'">'+ feature.label + '</a>',
-            "Biotype": feature.biotype,
+            "Description": feature.description || "",
+            "RNA type": feature.biotype,
             "Feature type": feature.feature_type,
             "Location": location,
             "Logic name": feature.logic_name,

@@ -10,6 +10,16 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+from random import randint
+import argparse
+import math
+import os
+import sys
+import time
+import unittest
+
+import django
+import requests
 
 """
 API v1 tests
@@ -24,16 +34,18 @@ python apiv1/tests.py --base_url http://test.rnacentral.org/
 python apiv1/tests.py --base_url http://rnacentral.org/
 """
 
-import argparse
-import django
-import math
-import os
-import unittest
-import requests
-import sys
-import time
-import xml.dom.minidom
-from random import randint
+
+class Timer(object):
+    """
+    Helper class for detecting long-running requests.
+    """
+    def __enter__(self):
+        self.start = time.clock()
+        return self
+
+    def __exit__(self, *args):
+        self.end = time.clock()
+        self.timeout = (self.end - self.start) * 100
 
 
 class ApiV1BaseClass(unittest.TestCase):
@@ -45,9 +57,9 @@ class ApiV1BaseClass(unittest.TestCase):
 
     upi = 'URS0000000001'
     upi_with_genomic_coordinates = 'URS00000B15DA'
-    md5 = '6bba097c8c39ed9a0fdf02273ee1c79a' # URS0000000001
+    md5 = '6bba097c8c39ed9a0fdf02273ee1c79a'  # URS0000000001
     accession = 'Y09527.1:2562..2627:tRNA'
-    timeout = 60 # seconds
+    timeout = 60  # seconds
 
     def _get_api_url(self, extra=''):
         """
@@ -59,21 +71,19 @@ class ApiV1BaseClass(unittest.TestCase):
         """
         Auxiliary function for testing the API with and without trailing slash.
         """
-        # remove the trailing slash if present
-        if url[-1] == '/':
-            url = url[:-1]
-        # test without the slash
-        start = time.time()
-        r = requests.get(url)
-        end = time.time()
-        self.assertTrue(end - start < self.timeout)
-        self.assertEqual(r.status_code, 200)
+        url = url.strip('/')  # remove the trailing slash if present, test without slash
+
+        with Timer() as timer:
+            request = requests.get(url)
+        self.assertTrue(timer.timeout < self.timeout)
+        self.assertEqual(request.status_code, 200)
+
         # add the slash back if there are no url parameters
         if '?' not in url:
             url += '/'
-            r = requests.get(url)
-            self.assertEqual(r.status_code, 200)
-        return r.json()
+            request = requests.get(url)
+            self.assertEqual(request.status_code, 200)
+        return request.json()
 
 
 class BasicEndpointsTestCase(ApiV1BaseClass):
@@ -168,11 +178,14 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         """
         Ensure that xrefs can be paginated.
         """
-        upi = 'URS0000004483' # >150 xrefs
-        page = 7
+        upi = 'URS000075A546'  # >150 xrefs
+        page = 4
         page_size = 2
         url = self._get_api_url('rna/{upi}/xrefs?page={page}&page_size={page_size}'.format(
-            upi=upi, page=page, page_size=page_size))
+            upi=upi,
+            page=page,
+            page_size=page_size
+        ))
         data = self._test_url(url)
         self.assertTrue(len(data['results']), page_size)
 
@@ -221,6 +234,73 @@ class NestedXrefsTestCase(ApiV1BaseClass):
         self.assertTrue(len(data['results']), page_size)
 
 
+class DatabaseSpecificXrefsTestCase(ApiV1BaseClass):
+    """
+    Test correctness and performance of Xref fields like:
+
+        * modifications
+        * mirbase_mature_products
+        * mirbase_precursor
+        * refseq_mirna_mature_products
+        * refseq_mirna_precursor
+        * refseq_splice_variants
+        * tmrna_mate_upi
+        * genomic_coordinates
+    """
+    timeout = 5
+
+    def _test_time_and_existence(self, upi, timeout, field):
+        """
+        Shortcut to check that response time is tolerable and expected field
+        is not empty.
+
+        :param upi: upi of RNA to perform test on
+        :param timeout: API should be fast enough to respond before
+          this timeout expires (in seconds, e.g. 5)
+        :param field: name of the field that we want to be non-empty at least
+          for some Xrefs (e.g. "modifications")
+        :return:
+        """
+        url = self._get_api_url('rna/%s/xrefs' % upi)
+        with Timer() as timer:
+            response = requests.get(url)
+        self.assertTrue(timer.timeout < timeout)
+        self.assertEqual(response.status_code, 200)
+
+        # check that field is non-empty at least for some results
+        empty = True
+        for xref in response.json()['results']:
+            if xref[field] != None:
+                empty = False
+                break
+        self.assertFalse(empty)
+
+    def test_modifications(self):
+        self._test_time_and_existence('URS00004B0F34', self.timeout, "modifications")
+
+    def test_mirbase_mature_products(self):
+        self._test_time_and_existence('URS0000416056', self.timeout, "mirbase_mature_products")
+
+    def test_mirbase_precursor(self):
+        self._test_time_and_existence('URS000075A546', self.timeout, "mirbase_precursor")
+
+    def test_refseq_mirna_mature_products(self):
+        self._test_time_and_existence('URS0000416056', self.timeout, "refseq_mirna_mature_products")
+
+    def test_refseq_mirna_precursor(self):
+        self._test_time_and_existence('URS000075A546', self.timeout, "refseq_mirna_precursor")
+
+    def test_refseq_splice_variants(self):
+        #self._test_time_and_existence('URS000075C808', self.timeout, "refseq_splice_variants")
+        pass  # does not work so far
+
+    # def test_tmrna_mate_upi(self):
+    #     pass  # does not work so far
+
+    def test_genomic_coordinates(self):
+        self._test_time_and_existence('URS000025784F', self.timeout, "genomic_coordinates")
+
+
 class OutputFormatsTestCase(ApiV1BaseClass):
     """
     Test output formats.
@@ -255,11 +335,11 @@ class OutputFormatsTestCase(ApiV1BaseClass):
         # test response status codes
         self._output_format_tester(formats, targets)
         # further check the gff text output
-        r = requests.get(self._get_api_url(targets[0]+'.gff'))
-        self.assertIn('exon', r.text)
+        request = requests.get(self._get_api_url(targets[0]+'.gff'))
+        self.assertIn('exon', request.text)
         # test a sequence without genomic coordinates
-        r = requests.get(self._get_api_url('rna/%s.gff' % self.upi))
-        self.assertIn('# Genomic coordinates not available', r.text)
+        request = requests.get(self._get_api_url('rna/%s.gff' % self.upi))
+        self.assertIn('# Genomic coordinates not available', request.text)
 
     def test_gff3_output(self):
         """
@@ -270,11 +350,11 @@ class OutputFormatsTestCase(ApiV1BaseClass):
         # test response status codes
         self._output_format_tester(formats, targets)
         # further check the gff text output
-        r = requests.get(self._get_api_url(targets[0]+'.gff3'))
-        self.assertIn('noncoding_exon', r.text)
+        request = requests.get(self._get_api_url(targets[0]+'.gff3'))
+        self.assertIn('noncoding_exon', request.text)
         # test a sequence without genomic coordinates
-        r = requests.get(self._get_api_url('rna/%s.gff3' % self.upi))
-        self.assertIn('# Genomic coordinates not available', r.text)
+        request = requests.get(self._get_api_url('rna/%s.gff3' % self.upi))
+        self.assertIn('# Genomic coordinates not available', request.text)
 
     def test_bed_output(self):
         """
@@ -285,11 +365,11 @@ class OutputFormatsTestCase(ApiV1BaseClass):
         # test response status codes
         self._output_format_tester(formats, targets)
         # further check the gff text output
-        r = requests.get(self._get_api_url(targets[0]+'.bed'))
-        self.assertIn(self.upi_with_genomic_coordinates, r.text)
+        request = requests.get(self._get_api_url(targets[0]+'.bed'))
+        self.assertIn(self.upi_with_genomic_coordinates, request.text)
         # test a sequence without genomic coordinates
-        r = requests.get(self._get_api_url('rna/%s.bed' % self.upi))
-        self.assertIn('# Genomic coordinates not available', r.text)
+        request = requests.get(self._get_api_url('rna/%s.bed' % self.upi))
+        self.assertIn('# Genomic coordinates not available', request.text)
 
     def _output_format_tester(self, formats, targets):
         """
@@ -301,12 +381,12 @@ class OutputFormatsTestCase(ApiV1BaseClass):
         urls = [self._get_api_url(x) for x in targets]
         for url in urls:
             for suffix, headers in formats.iteritems():
-                r = requests.get(url + '.%s' % suffix) # format suffix
-                self.assertEqual(r.status_code, 200, url)
-                r = requests.get(url + '?format=%s' % suffix) # url notation
-                self.assertEqual(r.status_code, 200, url)
-                r = requests.get(url, headers={"Accept": headers}) # accept headers
-                self.assertEqual(r.status_code, 200, url)
+                request = requests.get(url + '.%s' % suffix) # format suffix
+                self.assertEqual(request.status_code, 200, url)
+                request = requests.get(url + '?format=%s' % suffix) # url notation
+                self.assertEqual(request.status_code, 200, url)
+                request = requests.get(url, headers={"Accept": headers}) # accept headers
+                self.assertEqual(request.status_code, 200, url)
 
     def test_genome_annotations(self):
         """
@@ -370,14 +450,12 @@ class FiltersTestCase(ApiV1BaseClass):
         """
         Test filtering by database name.
         """
-        for database in Database.objects.all():
-            if database.name in ['ENA', 'Rfam']:
-                continue # skip large databases
-            url = self._get_api_url('rna/?database=%s' % database.label)
+        for database in ['gtrnadb', 'srpdb', 'snopy']:
+            url = self._get_api_url('rna/?database=%s' % database)
             data = self._test_url(url)
             self.assertNotEqual(data['count'], 0)
 
-    def test_non_existing_database_filter(self):
+    def test_bad_database_filter(self):
         """
         Test filtering by database name when the database
         name does not exist.
@@ -417,12 +495,11 @@ class RandomEntriesTestCase(ApiV1BaseClass):
         for _ in xrange(num_tests):
             rna = Rna.objects.only('upi').get(id=randint(1, rna_count))
             url = self._get_api_url('rna/%s?flat=true' % rna.upi)
-            start = time.time()
-            r = requests.get(url)
-            end = time.time()
+            with Timer() as timer:
+                request = requests.get(url)
             msg = 'Failed on %s' % url
-            self.assertEqual(r.status_code, 200, msg)
-            self.assertTrue(end - start < self.timeout, msg)
+            self.assertEqual(request.status_code, 200, msg)
+            self.assertTrue(timer.timeout < self.timeout, msg)
 
     def test_random_api_pages(self):
         """
@@ -436,70 +513,11 @@ class RandomEntriesTestCase(ApiV1BaseClass):
             page = randint(1, num_pages)
             url = self._get_api_url('rna?flat=true&page_size={page_size}&page={page}'.format(
                 page_size=page_size, page=page))
-            start = time.time()
-            r = requests.get(url)
-            end = time.time()
+            with Timer() as timer:
+                request = requests.get(url)
             msg = 'Failed on %s' % url
-            self.assertEqual(r.status_code, 200, msg)
-            self.assertTrue(end - start < self.timeout, msg)
-
-
-class DasTestCase(ApiV1BaseClass):
-    """
-    Tests for DAS endpoints.
-    """
-    def test_valid_das_annotation_request(self):
-        """
-        Test DAS `feature` method response.
-        """
-        target = 'das/RNAcentral_GRCh38/features?segment=Y:25183643,25184773'
-        url = self._get_api_url(target)
-        r = requests.get(url)
-        self.assertEqual(r.status_code, 200)
-        self.assertIn(self.upi_with_genomic_coordinates, r.text)
-        self._validate_xml(r.text)
-
-    def test_das_request_no_annotation(self):
-        """
-        Test DAS `feature` method response with no annotations.
-        """
-        target = 'das/RNAcentral_GRCh38/features?segment=Y:100,120'
-        url = self._get_api_url(target)
-        r = requests.get(url)
-        self.assertEqual(r.status_code, 200)
-        self.assertNotIn('FEATURE', r.text)
-        self._validate_xml(r.text)
-
-    def test_das_source(self):
-        """
-        Test DAS `sources` method.
-        """
-        target = 'das/sources'
-        url = self._get_api_url(target)
-        r = requests.get(url)
-        self.assertEqual(r.status_code, 200)
-        self.assertIn('RNAcentral_GRCh38', r.text)
-        self._validate_xml(r.text)
-
-    def test_das_stylesheet(self):
-        """
-        Test DAS `stylesheet` method.
-        """
-        target = 'das/RNAcentral_GRCh38/stylesheet'
-        url = self._get_api_url(target)
-        r = requests.get(url)
-        self.assertEqual(r.status_code, 200)
-        self.assertIn('exon:non_coding:rnacentral', r.text)
-        self._validate_xml(r.text)
-
-    def _validate_xml(self, text):
-        """
-        Validate xml input.
-        """
-        try:
-            xml.dom.minidom.parseString(text)
-        except xml.parsers.expat.ExpatError:
-            self.assertEqual(0, 1, "Invalid XML")
+            self.assertEqual(request.status_code, 200, msg)
+            self.assertTrue(timer.timeout < self.timeout, msg)
 
 
 class SpeciesSpecificIdsTestCase(ApiV1BaseClass):
@@ -514,10 +532,10 @@ class SpeciesSpecificIdsTestCase(ApiV1BaseClass):
         Get an existing upi and taxid.
         """
         url = self._get_api_url('rna/%s/%i' % (self.upi, self.taxid))
-        r = requests.get(url)
-        self.assertEqual(r.status_code, 200)
-        self.assertEqual(r.json()['rnacentral_id'], '%s_%i' % (self.upi, self.taxid))
-        self.assertEqual(r.json()['is_active'], True)
+        request = requests.get(url)
+        self.assertEqual(request.status_code, 200)
+        self.assertEqual(request.json()['rnacentral_id'], '%s_%i' % (self.upi, self.taxid))
+        self.assertEqual(request.json()['is_active'], True)
 
     def test_nonexistent_taxid(self):
         """
@@ -525,19 +543,18 @@ class SpeciesSpecificIdsTestCase(ApiV1BaseClass):
         """
         taxid = 00000
         url = self._get_api_url('rna/%s/%i' % (self.upi, taxid))
-        r = requests.get(url)
-        self.assertEqual(r.status_code, 404)
+        request = requests.get(url)
+        self.assertEqual(request.status_code, 404)
 
     def test_inactive_entry(self):
         """
         When there are no active xrefs for a taxid,
         the `is_active` field should be `False`.
         """
-        upi = 'URS000017C633'
-        taxid = 9606
-        url = self._get_api_url('rna/%s/%i' % (upi, taxid))
-        r = requests.get(url)
-        self.assertEqual(r.json()['is_active'], False)
+        upi = 'URS0000516D2D'
+        url = self._get_api_url('rna/%s' % upi)
+        request = requests.get(url)
+        self.assertEqual(request.json()['is_active'], False)
 
 
 def setup_django_environment():
@@ -545,9 +562,7 @@ def setup_django_environment():
     Setup Django environment in order for the imports to work.
     """
     os.environ['DJANGO_SETTINGS_MODULE'] = 'rnacentral.settings'
-    project_dir = os.path.dirname(
-                    os.path.dirname(
-                        os.path.realpath(__file__)))
+    project_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
     sys.path.append(project_dir)
     django.setup()
 
@@ -567,6 +582,7 @@ def parse_arguments():
 
     sys.argv[1:] = args.unittest_args
 
+
 def run_tests():
     """
     Organize and run the test suites.
@@ -574,11 +590,10 @@ def run_tests():
     suites = [
         unittest.TestLoader().loadTestsFromTestCase(BasicEndpointsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(SpeciesSpecificIdsTestCase),
-        unittest.TestLoader().loadTestsFromTestCase(DasTestCase),
-        unittest.TestLoader().loadTestsFromTestCase(RandomEntriesTestCase),
         unittest.TestLoader().loadTestsFromTestCase(FiltersTestCase),
         unittest.TestLoader().loadTestsFromTestCase(OutputFormatsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(NestedXrefsTestCase),
+        unittest.TestLoader().loadTestsFromTestCase(DatabaseSpecificXrefsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(RnaEndpointsTestCase),
         unittest.TestLoader().loadTestsFromTestCase(AccessionEndpointsTestCase),
     ]

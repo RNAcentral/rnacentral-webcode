@@ -13,6 +13,12 @@ limitations under the License.
 
 {% extends "portal/base.html" %}
 
+{% block meta_tags %}
+    {{ block.super }}
+    <meta name="description" content="Learn to use RNAcentral text search"/>
+    <meta name="twitter:description" content="Learn to use RNAcentral text search"/>
+{% endblock %}
+
 {% block title %}
 Help: Text search
 {% endblock %}
@@ -24,12 +30,12 @@ Help: Text search
   <div class="col-md-8">
     {% load markdown_deux_tags %}
     {% markdown %}
-      {% include  'portal/docs/metadata-search.md' %}
+      {% include  'portal/docs/text-search.md' %}
     {% endmarkdown %}
 
     <hr>
 
-    <a class="btn btn-default btn-sm" title="Edit on GitHub" href="https://github.com/RNAcentral/rnacentral-webcode/edit/master/rnacentral/portal/templates/portal/docs/metadata-search.md" target="_blank"><i class="fa fa-pencil-square-o"></i> Improve this page</a>
+    <a class="btn btn-default btn-sm" title="Edit on GitHub" href="https://github.com/RNAcentral/rnacentral-webcode/edit/master/rnacentral/portal/templates/portal/docs/text-search.md" target="_blank"><i class="fa fa-pencil-square-o"></i> Improve this page</a>
   </div>
 
   <div class="col-md-4">

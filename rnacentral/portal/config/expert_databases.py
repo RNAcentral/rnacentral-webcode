@@ -75,7 +75,7 @@ expert_dbs = [
         'name': 'FlyBase',
         'label': 'flybase',
         'url': 'http://flybase.org/',
-        'description': 'a database of Drosophila genes and genomes',
+        'description': 'is a database of Drosophila genes and genomes',
         'hint': 'FlyBase is a database of Drosophila genes and genomes',
         'tags': ['curated', 'model organism', 'Drosophila'],
         'abbreviation': '',

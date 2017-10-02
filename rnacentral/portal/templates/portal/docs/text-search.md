@@ -25,7 +25,7 @@ Please note that "field value" **must be enclosed in double quotes**.
 
 * **expert database**
 
-	Possible values: "ena", "gtrnadb", "lncrnadb", "mirbase", "refseq", "rfam", "srpdb", "tmRNA Website", "vega", "pdbe", "snopy" and other imported database names.
+	Possible values: "ena", "gtrnadb", "lncrnadb", "mirbase", "refseq", "rfam", "srpdb", "tmRNA Website", "pdbe", "snopy" and other imported database names.
 
 	*Examples*: `expert_db:"tmrna website"`, `expert_db:"mirbase"`
 
