@@ -15,6 +15,8 @@ limitations under the License.
 
 from django.db import models
 
+from .go_terms import GoTerm
+
 
 class RfamClan(models.Model):
     """
@@ -30,7 +32,7 @@ class RfamClan(models.Model):
         db_table = 'rfam_clans'
 
     def url(self):
-        return 'http://rfam.xfam.org/clan/' + self.rfam_clan_id
+        return 'http://rfam.org/clan/' + self.rfam_clan_id
 
 
 class RfamModel(models.Model):
@@ -62,11 +64,11 @@ class RfamModel(models.Model):
 
     @property
     def url(self):
-        return 'http://rfam.xfam.org/family/' + self.rfam_model_id
+        return 'http://rfam.org/family/' + self.rfam_model_id
 
     @property
     def thumbnail_url(self):
-        return 'http://rfam.xfam.org/family/%s/thumbnail' % self.rfam_model_id
+        return 'http://rfam.org/family/%s/thumbnail' % self.rfam_model_id
 
     def go_terms(self):
         terms = []
@@ -86,7 +88,7 @@ class RfamHit(models.Model):
 
     rfam_hit_id = models.AutoField(primary_key=True)
 
-    upi = models.ForeignKey(Rna, db_column='upi', to_field='upi')
+    upi = models.ForeignKey('Rna', db_column='upi', to_field='upi')
     sequence_start = models.PositiveIntegerField()
     sequence_stop = models.PositiveIntegerField()
     sequence_completeness = models.FloatField()
@@ -122,7 +124,7 @@ class RfamInitialAnnotations(models.Model):
     """
 
     rfam_initial_annotation_id = models.AutoField(primary_key=True)
-    upi = models.ForeignKey(Rna, db_column='upi', to_field='upi')
+    upi = models.ForeignKey('Rna', db_column='upi', to_field='upi')
     rfam_model = models.ForeignKey(
         RfamModel,
         db_column='rfam_model_id',
@@ -142,7 +144,7 @@ class RfamAnalyzedSequences(models.Model):
     """
 
     upi = models.ForeignKey(
-        Rna,
+        'Rna',
         db_column='upi',
         to_field='upi',
         primary_key=True,
