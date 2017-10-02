@@ -67,7 +67,7 @@ class Accession(models.Model):
         * PDB structure title
         * release date
         """
-        if self.database == "PDB" and self.note:
+        if self.database == "PDBE" and self.note:
             return json.loads(self.note)
         else:
             return None
