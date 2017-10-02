@@ -70,6 +70,9 @@ class RfamModel(models.Model):
     def thumbnail_url(self):
         return 'http://rfam.org/family/%s/thumbnail' % self.rfam_model_id
 
+    def twod_url(self):
+        return self.url + '#tabview=tab3'
+
     def go_terms(self):
         terms = []
         mapping = RfamGoTerm.objects.filter(rfam_model_id=self.rfam_model_id)

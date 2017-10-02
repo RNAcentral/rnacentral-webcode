@@ -218,12 +218,12 @@ limitations under the License.
                 <li class="media col-md-6" style="margin-bottom: 1.5em;">
                   <div class="media-left media-top col-md-3"
                     uib-tooltip="Consensus secondary structure of Rfam model {{ hit.rfam_model_id }}">
-                      <img
-                      class="media-object thumbnail"
-                      src="{{ hit.rfam_model.thumbnail_url }}"
-                      style="max-width: 120px; max-height: 120px;"
-                      alt="{{ hit.rfam_model_id }} secondary structure"
-                      >
+                      <a href="{{ hit.rfam_model.twod_url }}">
+                        <img class="media-object thumbnail"
+                          src="{{ hit.rfam_model.thumbnail_url }}"
+                          style="max-width: 120px; max-height: 120px;"
+                          alt="{{ hit.rfam_model_id }} secondary structure">
+                      </a>
                   </div>
 
                   <div class="media-body col-md-9">
