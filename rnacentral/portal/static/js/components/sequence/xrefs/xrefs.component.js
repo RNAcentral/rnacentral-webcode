@@ -10,14 +10,16 @@ var xrefs = {
     controller: ['routes', '$http', '$interpolate', '$timeout', function(routes, $http, $interpolate, $timeout) {
         var ctrl = this;
 
-        ctrl.onPageSizeChanged = function(pageSize) {
+        ctrl.onPageSizeChanged = function(newPageSize, oldPageSize) {
+            oldPageSize = parseInt(oldPageSize);
+
             // re-calculate page, taking new pageSize into account
-            ctrl.page = Math.floor(ctrl.page * ctrl.pageSize, pageSize);
-            ctrl.pageSize = pageSize;
+            ctrl.page = Math.floor(((ctrl.page - 1) * oldPageSize) / newPageSize) + 1;
+            ctrl.pageSize = newPageSize;
             ctrl.pages = _.range(1, Math.ceil(ctrl.total / ctrl.pageSize) + 1);
             
             if (ctrl.paginateOn === 'client') {
-                ctrl.displayedXrefs = ctrl.xrefs.slice(ctrl.page*ctrl.pageSize, (ctrl.page + 1)*ctrl.pageSize);
+                ctrl.displayedXrefs = ctrl.xrefs.slice(ctrl.page * ctrl.pageSize, (ctrl.page + 1) * ctrl.pageSize);
             }
             else if (ctrl.paginateOn === 'server') {
                 ctrl.getPageFromServerSide();
@@ -27,7 +29,7 @@ var xrefs = {
         ctrl.onPageChanged = function(page) {
             ctrl.page = page;
             if (ctrl.paginateOn === 'client') {
-                ctrl.displayedXrefs = ctrl.xrefs.slice(ctrl.page*ctrl.pageSize, (ctrl.page + 1)*ctrl.pageSize);
+                ctrl.displayedXrefs = ctrl.xrefs.slice(ctrl.page * ctrl.pageSize, (ctrl.page + 1) * ctrl.pageSize);
             }
             else if (ctrl.paginateOn === 'server') {
                 ctrl.getPageFromServerSide();

@@ -329,13 +329,14 @@
 
   </table>
 
+  <!-- Pagination: pages list and page size select -->
   <div style="margin-top: 5px; margin-left: 5px; margin-right: 5px;">
     <ul class="pagination pagination-sm" style="display:inline">
       <li ng-repeat="page in $ctrl.pages" ng-class="{ 'active':  $index == $ctrl.page - 1}"><a href="">{{ page }}</a></li>
     </ul>
     <span class="pull-right">
       Page size:
-      <select ng-model="$ctrl.pageSize" ng-change="$ctrl.onPageSizeChanged">
+      <select ng-model="$ctrl.pageSize" ng-change="$ctrl.onPageSizeChanged($ctrl.pageSize, '{{ $ctrl.pageSize }}')">
         <option value="1">1</option>
         <option value="2">2</option>
         <option value="5">5</option>
