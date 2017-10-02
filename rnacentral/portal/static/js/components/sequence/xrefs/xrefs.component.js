@@ -19,7 +19,7 @@ var xrefs = {
             ctrl.pages = _.range(1, Math.ceil(ctrl.total / ctrl.pageSize) + 1);
             
             if (ctrl.paginateOn === 'client') {
-                ctrl.displayedXrefs = ctrl.xrefs.slice(ctrl.page * ctrl.pageSize, (ctrl.page + 1) * ctrl.pageSize);
+                ctrl.displayedXrefs = ctrl.xrefs.slice((ctrl.page - 1) * ctrl.pageSize, ctrl.page * ctrl.pageSize);
             }
             else if (ctrl.paginateOn === 'server') {
                 ctrl.getPageFromServerSide();
@@ -29,7 +29,7 @@ var xrefs = {
         ctrl.onPageChanged = function(page) {
             ctrl.page = page;
             if (ctrl.paginateOn === 'client') {
-                ctrl.displayedXrefs = ctrl.xrefs.slice(ctrl.page * ctrl.pageSize, (ctrl.page + 1) * ctrl.pageSize);
+                ctrl.displayedXrefs = ctrl.xrefs.slice((ctrl.page - 1) * ctrl.pageSize, ctrl.page * ctrl.pageSize);
             }
             else if (ctrl.paginateOn === 'server') {
                 ctrl.getPageFromServerSide();
