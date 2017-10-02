@@ -64,7 +64,7 @@ var xrefs = {
             $http.get(ctrl.dataEndpoint, {timeout: ctrl.timeout}).then(
                 function(response) {
                     ctrl.xrefs = response.data.results;
-                    ctrl.displayedXrefs = ctrl.xrefs.slice();
+                    ctrl.displayedXrefs = ctrl.xrefs.slice(0, ctrl.pageSize);
                     ctrl.total = response.data.count;
                     ctrl.pages = _.range(1, Math.ceil(ctrl.total / ctrl.pageSize) + 1);
                 },
