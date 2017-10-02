@@ -27,7 +27,7 @@
     </thead>
 
     <tbody>
-      <tr ng-repeat="xref in $ctrl.xrefs" ng-class="{ 'warning': xref.deleted == 'Y' }">
+      <tr ng-repeat="xref in $ctrl.displayedXrefs" ng-class="{ 'warning': xref.deleted == 'Y' }">
         <td ng-switch="xref.database">
           <span ng-switch-when="'PDBe'">PDB</span>
           <span ng-switch-when="'Vega'">Vega<br>(GENCODE)</span>
@@ -335,14 +335,7 @@
       <li ng-repeat="page in $ctrl.pages" ng-class="{ 'active':  $index == $ctrl.page - 1}"><a href="">{{ page }}</a></li>
     </ul>
     <span class="pull-right">
-      Page size:
-      <select ng-model="$ctrl.pageSize" ng-change="$ctrl.onPageSizeChanged($ctrl.pageSize, '{{ $ctrl.pageSize }}')">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="5">5</option>
-        <option value="10">10</option>
-        <option value="20">20</option>
-      </select>
+      <select ng-model="$ctrl.pageSize" ng-change="$ctrl.onPageSizeChanged($ctrl.pageSize, '{{ $ctrl.pageSize }}')" ng-options="v for v in [1, 2, 5, 10, 20]"></select> records per page
     </span>
   </div>
 
