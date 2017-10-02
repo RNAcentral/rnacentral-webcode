@@ -266,12 +266,12 @@ limitations under the License.
                               <strong>{{ ranges.0.0|add:"1"|intcomma }}-{{ ranges.0.1|intcomma }}</strong>
                               ({% widthratio ranges.0.2 1 100 %}% of the model)
                           {% else %}<a data-toggle="collapse"
-                                       href="#matchPositionsList"
+                                       href="#matchPositionsList-{{ forloop.counter }}"
                                        aria-expanded="false"
                                        aria-controls="matchPositionsList">
                             <i class="fa fa-list" aria-hidden="true"></i> {{ ranges|length }} locations
                           </a>
-                            <ul class='collapse list-unstyled' id='matchPositionsList'>
+                          <ul class='collapse list-unstyled' id='matchPositionsList-{{ forloop.counter }}'>
                             {% for seq_start, seq_stop, ratio in hit.ranges %}
                               <li style='padding-left: 1em;'>
                                 <strong>{{ seq_start|add:"1"|intcomma }}-{{ seq_stop|intcomma }}</strong>
