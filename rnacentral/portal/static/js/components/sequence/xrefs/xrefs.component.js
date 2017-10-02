@@ -14,6 +14,7 @@ var xrefs = {
             // re-calculate page, taking new pageSize into account
             ctrl.page = Math.floor(ctrl.page * ctrl.pageSize, pageSize);
             ctrl.pageSize = pageSize;
+            ctrl.pages = _.range(1, Math.ceil(ctrl.total / ctrl.pageSize) + 1);
             
             if (ctrl.paginateOn === 'client') {
                 ctrl.displayedXrefs = ctrl.xrefs.slice(ctrl.page*ctrl.pageSize, (ctrl.page + 1)*ctrl.pageSize);
@@ -37,6 +38,8 @@ var xrefs = {
             $http.get(ctrl.dataEndpoint, {params: { page: ctrl.page, page_size: ctrl.pageSize }}).then(
                 function(response) {
                     ctrl.displayedXrefs = response.data.results;
+                    ctrl.total = response.data.count;
+                    ctrl.pages = _.range(1, Math.ceil(ctrl.total / ctrl.pageSize) + 1);
                 },
                 function(response) {
                     console.log("failed to download a page");
@@ -59,8 +62,9 @@ var xrefs = {
             $http.get(ctrl.dataEndpoint, {timeout: ctrl.timeout}).then(
                 function(response) {
                     ctrl.xrefs = response.data.results;
-
                     ctrl.displayedXrefs = ctrl.xrefs.slice();
+                    ctrl.total = response.data.count;
+                    ctrl.pages = _.range(1, Math.ceil(ctrl.total / ctrl.pageSize) + 1);
                 },
                 function(response) {
                     // if it took server too long to respond and request was aborted by timeout

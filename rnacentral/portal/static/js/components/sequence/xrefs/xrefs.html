@@ -329,17 +329,22 @@
 
   </table>
 
-  <span ng-if="rna.xrefs.length > 1000">
-    <div class="alert alert-warning" role="alert">
-      Showing 1000 entries out of {{ rna.xrefs.length | number }}.
-      Navigate between batches:
-      <ul class="pagination pagination-sm">
-        <li ng-repeat="xrefPage in _.range(rna.xrefs.length)" ng-class="{ 'active':  $index == $ctrl.xrefsPage}">
-          <a ng-click="" class="xref-pagination">{{ xrefPage }}</a>
-        </li>
-      </ul>
-    </div>
-  </span>
+  <div style="margin-top: 5px; margin-left: 5px; margin-right: 5px;">
+    <ul class="pagination pagination-sm" style="display:inline">
+      <li ng-repeat="page in $ctrl.pages" ng-class="{ 'active':  $index == $ctrl.page - 1}"><a href="">{{ page }}</a></li>
+    </ul>
+    <span class="pull-right">
+      Page size:
+      <select ng-model="$ctrl.pageSize" ng-change="$ctrl.onPageSizeChanged">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+      </select>
+    </span>
+  </div>
+
 
   <div ng-if="!$ctrl.xrefs && !$ctrl.error" class="table-responsive force-scrollbars">
 
