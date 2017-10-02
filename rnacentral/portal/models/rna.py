@@ -420,3 +420,7 @@ class Rna(CachingMixin, models.Model):
                     continue
             domains.add(classification.split(';')[0])
         return domains
+
+    def get_rfam_hit_families(self, **kwargs):
+        hits = self.get_rfam_hits(**kwargs)
+        return sorted(set(hit.rfam_model for hit in hits))
