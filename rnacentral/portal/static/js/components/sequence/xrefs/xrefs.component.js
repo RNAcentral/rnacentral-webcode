@@ -10,48 +10,38 @@ var xrefs = {
     controller: ['routes', '$http', '$interpolate', '$timeout', function(routes, $http, $interpolate, $timeout) {
         var ctrl = this;
 
-        ctrl.onPageChanged = function(page) {
-            if (ctrl.paginateOn == 'client') {
-                ctrl.displayedXrefs = xrefs.slice(ctrl.page*ctrl.pageSize, ctrl.pageSize);
+        ctrl.onPageSizeChanged = function(pageSize) {
+            // re-calculate page, taking new pageSize into account
+            ctrl.page = Math.floor(ctrl.page * ctrl.pageSize, pageSize);
+            ctrl.pageSize = pageSize;
+            
+            if (ctrl.paginateOn === 'client') {
+                ctrl.displayedXrefs = ctrl.xrefs.slice(ctrl.page*ctrl.pageSize, (ctrl.page + 1)*ctrl.pageSize);
             }
-            else if (ctrl.paginateOn == 'server') {
-                ctrl.page = page;
-                $http.get(ctrl.dataEndpoint, {params: { page: ctrl.page, page_size: ctrl.pageSize }}).then(
-                    function(response) {
-                        ctrl.displayedXrefs = response.data.results;
-                    },
-                    function(response) {
-                        console.log("failed to download a page");
-                    }
-                )
+            else if (ctrl.paginateOn === 'server') {
+                ctrl.getPageFromServerSide();
             }
         };
 
-        ctrl.serverSidePagination = function(page) {
+        ctrl.onPageChanged = function(page) {
             ctrl.page = page;
+            if (ctrl.paginateOn === 'client') {
+                ctrl.displayedXrefs = ctrl.xrefs.slice(ctrl.page*ctrl.pageSize, (ctrl.page + 1)*ctrl.pageSize);
+            }
+            else if (ctrl.paginateOn === 'server') {
+                ctrl.getPageFromServerSide();
+            }
+        };
+
+        ctrl.getPageFromServerSide = function() {
             $http.get(ctrl.dataEndpoint, {params: { page: ctrl.page, page_size: ctrl.pageSize }}).then(
                 function(response) {
-                    ctrl.xrefs = response.data.results;
-
-                    ctrl.displayedXrefs = ctrl.xrefs;
-
-                    // create our own pagination that makes requests to the server side
-                    var totalPages = Math.floor(reponse.data.count, ctrl.pageSize);
-                    var pagination = $('ul').addClass('pagination pagination-sm');
-                    for (var page = 0; page < totalPages; page++) {
-                        var page = $('li');
-                        if (page == ctrl.page) page.addClass('active');
-                        pagination.append(page);
-                    }
-                    pagination.on('click', ctrl.serverSidePagination);
-                    pagination.appendTo('.annotations-datatables-controls');
-                    pagination.addClass('pull-left');
+                    ctrl.displayedXrefs = response.data.results;
                 },
                 function(response) {
-                    // TODO: display an error message in template!
-                    console.log("Error happened while downloading data");
+                    console.log("failed to download a page");
                 }
-            );
+            )
         };
 
         ctrl.$onInit = function() {
@@ -59,6 +49,7 @@ var xrefs = {
             ctrl.timeout = parseInt(ctrl.timeout) || 50000;
             ctrl.page = ctrl.page || 1;
             ctrl.pageSize = ctrl.pageSize || 5;
+            ctrl.paginateOn = 'client';
 
             // Request xrefs from server (with taxid, if necessary)
             ctrl.dataEndpoint;
@@ -70,79 +61,17 @@ var xrefs = {
                     ctrl.xrefs = response.data.results;
 
                     ctrl.displayedXrefs = ctrl.xrefs.slice();
-
-                    // $timeout() call is to ensure that xrefs data is rendered
-                    // into the DOM before initializing DataTables
-                    $timeout(function() {
-                        $("#annotations-table").DataTable({
-                            "columnDefs": [
-                                { targets: [0, 1, 2], visible: true },
-                                { targets: [3, 4, 5], visible: false}
-                            ], // hide columns, but keep them sortable
-                            "autoWidth": true, // pre-recalculate column widths
-                            "dom": "ftpil", // filter, table, pagination, information, length
-                            //"paginationType": "bootstrap", // requires dataTables.bootstrap.js
-                            "deferRender": false, // defer rendering until necessary
-                            "language": {
-                                "search": "", // don't display the "Search:" bit
-                                "info": "_START_-_END_ of _TOTAL_", // change the informational text
-                                "paginate": {
-                                    "next": "",
-                                    "previous": "",
-                                }
-                            },
-                            "order": [[ 5, "desc" ]], // prioritize entries with genomic coordinates
-                            "lengthMenu": [[5, 10, 20, 50, -1], [5, 10, 20, 50, "All"]],
-                            "initComplete": function(settings, json) {
-
-                                // some weird scripts sets width smaller than it should be
-                                $("#annotations-table").css("width",  "100%");
-
-                                // modify filter field and move it up
-                                $('.dataTables_filter input').attr('placeholder', 'Filter table')
-                                                             .attr("tabindex", 2)
-                                                             .attr('type', 'search')
-                                                             .addClass('form-control input-sm');
-
-                                $('#annotations-table_filter').appendTo('#annotations-datatables-filter')
-                                                              .addClass('pull-right hidden-xs');
-
-                                // replace angular row counter with datatables one
-                                $('#annotations-datatables-counter').html('');
-                                $('#annotations-table_info').appendTo('#annotations-datatables-counter');
-
-                                // tweak pagination controls
-                                if ( $('.dataTables_paginate').find('li').length == 1 ) {
-                                    // hide pagination controls for tables with one page
-                                    $('.dataTables_paginate').hide();
-                                    $('#annotations-table_length').hide();
-                                }
-                                else {
-                                    // move pagination
-                                    $('.dataTables_paginate').addClass('pull-left')
-                                                             .appendTo('.annotations-datatables-controls');
-                                    $('#annotations-table_length').addClass('pull-right text-muted small')
-                                                                  .appendTo('.annotations-datatables-controls');
-                                }
-
-                                $('.table th').css('padding-right','1.5em');
-                            }
-                        });
-                    });
-
                 },
                 function(response) {
                     // if it took server too long to respond and request was aborted by timeout
                     // send a paginated request instead and fallback to server-side processing
                     if (response.status === -1) {  // for timeout response.status is -1
-                        ctrl.serverSidePagination();
+                        ctrl.getPageFromServerSide();
                     }
                     else {
                         // TODO: display an error message in template!
                         console.log("Error happened while downloading data");
                     }
-
-
                 }
             );
         }
