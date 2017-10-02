@@ -81,7 +81,8 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Accession
         fields = (
-            'url', 'id', 'parent_ac', 'seq_version', 'description', 'external_id', 'optional_id',
+            'url', 'id', 'parent_ac', 'seq_version', 'feature_start', 'feature_end', 'feature_name',
+            'description', 'external_id', 'optional_id',
             'species', 'rna_type', 'gene', 'product', 'organelle',
             'citations', 'expert_db_url',
             'pdb_entity_id', 'pdb_structured_note', 'hgnc_enembl_id', 'hgnc_id',

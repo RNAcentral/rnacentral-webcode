@@ -233,7 +233,7 @@
 
           <!-- HGNC -->
           <span ng-switch-when="HGNC">
-            {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.accession }})
+            {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.id }})
             <span ng-if="xref.accession.hgnc_ensembl_id">
               <br>
               <i class="fa fa-angle-right"></i>
