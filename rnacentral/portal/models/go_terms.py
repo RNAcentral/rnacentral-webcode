@@ -33,6 +33,3 @@ class GoTerm(models.Model):
 
     def quickgo_url(self):
         return 'https://www.ebi.ac.uk/QuickGO/term/%s' % self.go_term_id
-
-
-
