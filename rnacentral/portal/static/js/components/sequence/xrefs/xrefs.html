@@ -22,7 +22,7 @@
       <tr>
         <th>Database</th>
         <th>Description</th>
-        <th>Species</th>
+        <th ng-if="!$ctrl.taxid">Species</th>
       </tr>
     </thead>
 
@@ -313,7 +313,7 @@
         </td>
 
         <!-- accession -->
-        <td>
+        <td ng-if="!$ctrl.taxid">
           <!-- Greengenes inferred taxonomy -->
           <span ng-if="xref.database == 'Greengenes'">
             INSDC classification:
