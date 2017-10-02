@@ -240,7 +240,9 @@ limitations under the License.
                         {% if hit.rfam_model.domain != None %}
                           | {{ hit.rfam_model.domain }}
                         {% endif %}
-                        | <span class="badge">{{ hit.rfam_model.rna_type }}</span>
+                        {% if hit.rfam_model.rna_type != "" %}
+                          | <span class="badge">{{ hit.rfam_model.rna_type }}</span>
+                        {% endif %}
                       </li>
                       <li>
                         {% if hit.rfam_model.go_terms|length > 1 %}
