@@ -308,7 +308,7 @@
                 <span class="margin-right-5px">{{ xref.genomic_coordinates.chromosome }}:{{ xref.genomic_coordinates.start | number }}-{{ xref.genomic_coordinates.end | number }}:{{ xref.genomic_coordinates.strand }}</span>
                 <!-- Ensembl url -->
                 <span class="margin-right-5px ensembl-link">
-                  <a ng-href="{{ xref.accession.ensembl_species_url + '/Location/View?r=' + xref.genomic_coordinates.chromosome + ':' + xref.genomic_coordinates.start + '-' + xref.genomic_coordinates.end }}" target="_blank">{{ xref.ensembl_division.name }}</a>
+                  <a ng-href="{{ xref.ensembl_division.url + '/' + xref.accession.ensembl_species_url + '/Location/View?r=' + xref.genomic_coordinates.chromosome + ':' + xref.genomic_coordinates.start + '-' + xref.genomic_coordinates.end }}" target="_blank">{{ xref.ensembl_division.name }}</a>
                 </span>
                 <!-- UCSC url -->
                 <span ng-if="xref.ucsc_db_id" class="margin-right-5px ucsc-link">
