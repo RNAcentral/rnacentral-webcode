@@ -82,9 +82,10 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
         model = Accession
         fields = (
             'url', 'id', 'parent_ac', 'seq_version', 'feature_start', 'feature_end', 'feature_name',
-            'description', 'external_id', 'optional_id', 'standard_name',
+            'description', 'external_id', 'optional_id', 'locus_tag',
             'species', 'rna_type', 'gene', 'product', 'organelle',
-            'citations', 'expert_db_url',
+            'citations', 'expert_db_url', 'standard_name',
+
             'pdb_entity_id', 'pdb_structured_note', 'hgnc_enembl_id', 'hgnc_id',
             'biotype', 'rna_type', 'srpdb_id', 'ena_url',
             'gencode_transcript_id',

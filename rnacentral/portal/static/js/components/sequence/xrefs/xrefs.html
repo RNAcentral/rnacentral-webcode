@@ -103,6 +103,28 @@
             </span>
           </span>
 
+          <!-- GENCODE -->
+          <span ng-switch-when="GENCODE">
+            transcript <a ng-href="{{ xref.accession.gencode_ensembl_url }}" target="_blank" title="View in Ensembl">{{ xref.accession.gencode_transcript_id }}</a>
+            (Havana id {{ xref.accession.external_id }})
+          </span>
+
+          <!-- Ensembl -->
+          <span ng-switch-when="Ensembl">
+            transcript <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank" title="View the transcript in {{ xref.db.name }}">{{ xref.accession.external_id }}</a> from
+            {{ xref.accession.locus_tag }} gene <a href="http://www.ensembl.org/{{ xref.accession.ensembl_species_url }}/Gene/Summary?g={{ xref.accession.optional_id }}" target="_blank">{{ xref.accession.optional_id }}</a>
+            <span ng-if="xref.refseq_splice_variants">
+              <br>
+              <i class="fa fa-angle-right"></i>
+              {{ xref.refseq_splice_variants.length }} <ng-pluralize count="xref.refseq_splice_variants.length" when="{'one': 'alternative transcript', 'other': 'alternative transcripts'}"></ng-pluralize>
+              <small>
+                <span ng-repeat="spliceVariant in xref.refseq_splice_variants">
+                  <a ng-href="{{ spliceVariant + '/' + xref.taxid }}">{{ spliceVariant.split('/').pop() }}</a>
+                </span>
+              </small>
+            </span>
+          </span>
+
           <!-- FlyBase -->
           <span ng-switch-when="FlyBase">
             FlyBase gene <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>, {{ xref.accession.id }}
