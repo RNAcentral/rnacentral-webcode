@@ -43,7 +43,7 @@
             </span>
         </td>
       </tr>
-      <tr ng-repeat="xref in $ctrl.displayedXrefs" ng-class="{ 'warning': xref.deleted == 'Y' }">
+      <tr ng-if="$ctrl.status === 'success'" ng-repeat="xref in $ctrl.displayedXrefs" ng-class="{ 'warning': xref.deleted == 'Y' }">
         <td ng-switch="xref.database">
           <span ng-switch-when="'PDBe'">PDB</span>
           <span ng-switch-when="'Vega'">Vega<br>(GENCODE)</span>

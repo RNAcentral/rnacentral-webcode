@@ -46,7 +46,6 @@ var xrefs = {
                     ctrl.pages = _.range(1, Math.ceil(ctrl.total / ctrl.pageSize) + 1);
                 },
                 function(response) {
-                    console.log("failed to download a page");
                     ctrl.status = 'error';
                 }
             )
@@ -77,12 +76,10 @@ var xrefs = {
                     // if it took server too long to respond and request was aborted by timeout
                     // send a paginated request instead and fallback to server-side processing
                     if (response.status === -1) {  // for timeout response.status is -1
-                        console.log('server-side pagination');
+                        ctrl.paginateOn = 'server';
                         ctrl.getPageFromServerSide();
                     }
                     else {
-                        // TODO: display an error message in template!
-                        console.log("Error happened while downloading data");
                         ctrl.status = 'error';
                     }
                 }
