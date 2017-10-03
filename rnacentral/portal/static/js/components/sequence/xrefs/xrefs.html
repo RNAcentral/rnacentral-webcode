@@ -27,6 +27,22 @@
     </thead>
 
     <tbody>
+      <tr ng-if="$ctrl.status === 'loading'">
+        <td colspan="3" style="text-align: center;">
+          <span>
+            <i class="fa fa-spinner fa-spin fa-2x"></i>
+            Loading database cross-references...
+          </span>
+        </td>
+      </tr>
+      <tr ng-if="$ctrl.status === 'error'">
+        <td colspan="3" style="text-align: center;">
+            <span>
+              <i class="fa fa-exclamation-circle fa-2x"></i>
+              Failed to load data from server
+            </span>
+        </td>
+      </tr>
       <tr ng-repeat="xref in $ctrl.displayedXrefs" ng-class="{ 'warning': xref.deleted == 'Y' }">
         <td ng-switch="xref.database">
           <span ng-switch-when="'PDBe'">PDB</span>
@@ -338,20 +354,6 @@
       <select ng-model="$ctrl.pageSize" ng-change="$ctrl.onPageSizeChanged($ctrl.pageSize, '{{ $ctrl.pageSize }}')" ng-options="v.value as v.key for v in [{key:1, value:1}, {key: 2, value: 2}, {key: 5, value: 5}, {key: 10, value: 10}, {key: 20, value: 20}, {key: 'all', value: 1000000000000}]"></select> records per page
     </span>
   </div>
-
-
-  <div ng-if="!$ctrl.xrefs && !$ctrl.error" class="table-responsive force-scrollbars">
-
-    <div class="panel panel-default" id="xrefs-loading">
-      <div class="panel-body" id="xrefs-loading-msg">
-        <i class="fa fa-spinner fa-spin fa-2x"></i>
-        Loading database cross-references...
-      </div>
-    </div>
-
-    <div id="xrefs-table-div"></div>
-
-  </div> <!-- .table-responsive -->
 
   <div class="annotations-datatables-controls"></div>
 </div>

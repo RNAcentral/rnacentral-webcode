@@ -37,14 +37,17 @@ var xrefs = {
         };
 
         ctrl.getPageFromServerSide = function() {
+            ctrl.status = 'loading';
             $http.get(ctrl.dataEndpoint, {params: { page: ctrl.page, page_size: ctrl.pageSize }}).then(
                 function(response) {
+                    ctrl.status = 'success';
                     ctrl.displayedXrefs = response.data.results;
                     ctrl.total = response.data.count;
                     ctrl.pages = _.range(1, Math.ceil(ctrl.total / ctrl.pageSize) + 1);
                 },
                 function(response) {
                     console.log("failed to download a page");
+                    ctrl.status = 'error';
                 }
             )
         };
@@ -55,6 +58,7 @@ var xrefs = {
             ctrl.page = ctrl.page || 1;
             ctrl.pageSize = ctrl.pageSize || 5;
             ctrl.paginateOn = 'client';
+            ctrl.status = 'loading';
 
             // Request xrefs from server (with taxid, if necessary)
             ctrl.dataEndpoint;
@@ -63,6 +67,7 @@ var xrefs = {
 
             $http.get(ctrl.dataEndpoint, {timeout: ctrl.timeout}).then(
                 function(response) {
+                    ctrl.status = 'success';
                     ctrl.xrefs = response.data.results;
                     ctrl.displayedXrefs = ctrl.xrefs.slice(0, ctrl.pageSize);
                     ctrl.total = response.data.count;
@@ -72,11 +77,13 @@ var xrefs = {
                     // if it took server too long to respond and request was aborted by timeout
                     // send a paginated request instead and fallback to server-side processing
                     if (response.status === -1) {  // for timeout response.status is -1
+                        console.log('server-side pagination');
                         ctrl.getPageFromServerSide();
                     }
                     else {
                         // TODO: display an error message in template!
                         console.log("Error happened while downloading data");
+                        ctrl.status = 'error';
                     }
                 }
             );
