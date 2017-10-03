@@ -344,7 +344,7 @@
   </table>
 
   <!-- Pagination: pages list and page size select -->
-  <div style="margin-top: 5px; margin-left: 5px; margin-right: 5px;">
+  <div ng-if="$ctrl.status == 'success'" style="margin-top: 5px; margin-left: 5px; margin-right: 5px;">
     <ul class="pagination pagination-sm" style="display:inline">
       <li ng-repeat="page in $ctrl.pages" ng-class="{ 'active':  $index == $ctrl.page - 1}" ng-click="$ctrl.onPageChanged(page)"><a href="">{{ page }}</a></li>
     </ul>
