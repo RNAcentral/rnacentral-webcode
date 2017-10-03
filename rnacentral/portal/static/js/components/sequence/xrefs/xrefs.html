@@ -190,7 +190,7 @@
           <!-- WormBase -->
           <span ng-switch-when="WormBase">
             {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> <span class="small text-muted">(gene)</span> |
-            <a ng-href="{{ 'http://www.wormbase.org/species/c_elegans/transcript/' + xref.accession.optional_id }}" target="_blank">{{ xref.accession.optional_id }}</a> <span class="small text-muted">(transcript)</span>
+            <a ng-href="{{ 'http://www.wormbase.org/species/c_elegans/transcript/' + xref.accession.standard_name }}" target="_blank">{{ xref.accession.standard_name }}</a> <span class="small text-muted">(transcript)</span>
           </span>
 
           <!-- PLncDB -->
@@ -351,7 +351,7 @@
       <li ng-repeat="page in $ctrl.pages" ng-class="{ 'active':  $index == $ctrl.page - 1}" ng-click="$ctrl.onPageChanged(page)"><a href="">{{ page }}</a></li>
     </ul>
     <span class="pull-right">
-      <select ng-model="$ctrl.pageSize" ng-change="$ctrl.onPageSizeChanged($ctrl.pageSize, '{{ $ctrl.pageSize }}')" ng-options="v.value as v.key for v in [{key:1, value:1}, {key: 2, value: 2}, {key: 5, value: 5}, {key: 10, value: 10}, {key: 20, value: 20}, {key: 'all', value: 1000000000000}]"></select> records per page
+      <select ng-model="$ctrl.pageSize" ng-change="$ctrl.onPageSizeChanged($ctrl.pageSize, '{{ $ctrl.pageSize }}')" ng-options="v.value as v.key for v in [{key:1, value:1}, {key: 2, value: 2}, {key: 5, value: 5}, {key: 10, value: 10}, {key: 20, value: 20}, {key: 50, value: 50}, {key: 'all', value: 1000000000000}]"></select> records per page
     </span>
   </div>
 
