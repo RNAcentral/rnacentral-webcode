@@ -541,6 +541,10 @@ code a:hover {
   margin-right: 5px;
 }
 
+#rna-sequence {
+  white-space: pre-wrap;
+}
+
 
 /*------------------------------------------------------------------
 [5.2 Force scrollbars on Macs]
