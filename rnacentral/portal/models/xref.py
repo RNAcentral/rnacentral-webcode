@@ -240,7 +240,7 @@ class RawSqlQueryset(models.QuerySet):
         pks = ','.join(["'%s'" % xref.pk for xref in self])
 
         queryset = """
-            SELECT xref. *, rnc_accessions.ncrna_class, rnc_accessions.db_xref, SUBSTRING(rnc_accessions.db_xref, '(GeneID:[0-9]+)\s') as geneid
+            SELECT xref.*, rnc_accessions.ncrna_class, rnc_accessions.db_xref, SUBSTRING(rnc_accessions.db_xref, '(GeneID:[0-9]+)\s') as geneid
             FROM xref, rnc_accessions
             WHERE xref.ac = rnc_accessions.accession
               AND xref.id IN ({pks})
@@ -259,6 +259,41 @@ class RawSqlQueryset(models.QuerySet):
             WHERE rnc_accessions.database = 'REFSEQ'
               AND xref.deleted = 'N'
               AND rnc_accessions.ncrna_class = x.ncrna_class
+              AND rnc_accessions.accession != x.ac;
+        """.format(queryset=queryset)
+
+        raw_queryset = Xref.objects.raw(annotated_queryset)
+
+        return self._xrefs_raw_queryset_to_dict(raw_queryset)
+
+    def get_ensembl_splice_variants(self, taxid=None):
+        # WARNING: REGEX syntax is not database-compatible, I used Postgres version here,
+        # which will break on other vendors.
+
+        taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
+
+        # _fetch_all() has already been called by now
+        pks = ','.join(["'%s'"] % xref.pk for xref in self)
+
+        queryset = """
+            SELECT xref.*, rnc_accessions.optional_id
+            FROM xref, rnc_accessions
+            WHERE xref.ac = rnc_accessions.accession
+              AND xref.id IN ({pks})
+              {taxid_filter}
+        """.format(pks=pks, taxid_filter=taxid_filter)
+
+        annotated_queryset = """
+            SELECT xref.*
+            FROM xref
+            JOIN rnc_accessions
+            ON xref.ac = rnc_accessions.accession
+            JOIN (
+              {queryset}
+            ) x
+            ON rnc_accessions.optional_id = x.optional_id
+            WHERE rnc_accessions.database = 'ENSEMBL'
+              AND xref.deleted = 'N'
               AND rnc_accessions.accession != x.ac;
         """.format(queryset=queryset)
 
