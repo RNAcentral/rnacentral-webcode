@@ -137,6 +137,7 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
     refseq_mirna_mature_products = serializers.SerializerMethodField('get_refseq_mirna_mature_products')
     refseq_mirna_precursor = serializers.SerializerMethodField('get_refseq_mirna_precursor')
     refseq_splice_variants = serializers.SerializerMethodField('get_refseq_splice_variants')
+    ensembl_splice_variants = serializers.SerializerMethodField('get_ensembl_splice_variants')
     # tmrna_mate_upi = serializers.SerializerMethodField('get_tmrna_mate_upi')
     # tmrna_type = serializers.Field(source='get_tmrna_type')
     ensembl_division = serializers.Field(source='get_ensembl_division')
@@ -153,7 +154,7 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
             'is_rfam_seed', 'ncbi_gene_id', 'ndb_external_url',
             'mirbase_mature_products', 'mirbase_precursor',
             'refseq_mirna_mature_products', 'refseq_mirna_precursor',
-            'refseq_splice_variants',
+            'refseq_splice_variants', 'ensembl_splice_variants',
             # 'tmrna_mate_upi',
             # 'tmrna_type',
             'ensembl_division', 'ucsc_db_id',  # 200-400 ms, no requests
@@ -182,6 +183,9 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_refseq_splice_variants(self, obj):
         return self.upis_to_urls(obj.refseq_splice_variants) if hasattr(obj, "refseq_splice_variants") else None
+
+    def get_ensembl_splice_variants(self, obj):
+        return self.upis_to_urls(obj.ensembl_splice_variants) if hasattr(obj, "ensembl_splice_variants") else None
 
     def get_tmrna_mate_upi(self, obj):
         return self.upis_to_urls(obj.tmrna_mate_upi) if hasattr(obj, "tmrna_mate_upi") else None
