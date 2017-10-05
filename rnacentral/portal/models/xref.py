@@ -85,22 +85,22 @@ class RawSqlQueryset(models.QuerySet):
                     if xref.id in refseq_splice_variants:
                         xref.refseq_splice_variants = [ splice_variant.upi.upi for splice_variant in refseq_splice_variants[xref.id] ]
                     #if xref.id in ensembl_splice_variants:
-                    #    xref.ensembl_splice_variants = [splice_variant.upi.upi for splice_variant in ensembl_splice_variants[xref.id] ]
+                    #    xref.ensembl_splice_variants = [ splice_variant.upi.upi for splice_variant in ensembl_splice_variants[xref.id] ]
                     if xref.id in tmrna_mates:
                         xref.tmrna_mates = [ tmrna_mate.upi.upi for tmrna_mate in tmrna_mates[xref.id] ]
 
     def _xrefs_raw_queryset_to_dict(self, raw_queryset):
         """
-        We covert it into a single dict, aggregate those iterables into a
+        We convert it into a single dict, aggregate those iterables into a
         :param raw_queryset: iterable of dicts, returned by Xref.object.raw()
         :return: dict { Xref.pk: Xref (a single item of raw queryset) }
         """
         output_dict = {}
         for xref in raw_queryset:
-            if xref.pk not in output_dict:
-                output_dict[xref.pk] = [xref]
+            if xref.xid not in output_dict:
+                output_dict[xref.xid] = [xref]
             else:
-                output_dict[xref.pk].append(xref)
+                output_dict[xref.xid].append(xref)
         return output_dict
 
     def get_mirbase_mature_products(self, taxid=None):
@@ -119,7 +119,7 @@ class RawSqlQueryset(models.QuerySet):
         """.format(pks=pks, taxid_filter=taxid_filter)
 
         annotated_queryset = """
-            SELECT xref.*
+            SELECT xref.*, x.id as xid
             FROM xref
             JOIN rnc_accessions
             ON xref.ac = rnc_accessions.accession
@@ -151,7 +151,7 @@ class RawSqlQueryset(models.QuerySet):
         """.format(pks=pks, taxid_filter=taxid_filter)
 
         annotated_queryset = """
-            SELECT xref.*
+            SELECT xref.*, x.id as xid
             FROM xref
             JOIN rnc_accessions
             ON xref.ac = rnc_accessions.accession
@@ -185,7 +185,7 @@ class RawSqlQueryset(models.QuerySet):
         """.format(pks=pks, taxid_filter=taxid_filter)
 
         annotated_queryset = """
-            SELECT xref.*
+            SELECT xref.*, x.id as xid
             FROM xref
             JOIN rnc_accessions
             ON xref.ac = rnc_accessions.accession
@@ -217,7 +217,7 @@ class RawSqlQueryset(models.QuerySet):
         """.format(pks=pks, taxid_filter=taxid_filter)
 
         annotated_queryset = """
-            SELECT xref.*
+            SELECT xref.*, x.id as xid
             FROM xref
             JOIN rnc_accessions
             ON xref.ac = rnc_accessions.accession
@@ -243,7 +243,7 @@ class RawSqlQueryset(models.QuerySet):
         pks = ','.join(["'%s'" % xref.pk for xref in self])
 
         queryset = """
-            SELECT xref.*, rnc_accessions.ncrna_class, rnc_accessions.db_xref, SUBSTRING(rnc_accessions.db_xref, '(GeneID:[0-9]+)\s') as geneid
+            SELECT xref.*, rnc_accessions.ncrna_class, rnc_accessions.db_xref, rnc_accessions.optional_id
             FROM xref, rnc_accessions
             WHERE xref.ac = rnc_accessions.accession
               AND xref.id IN ({pks})
@@ -251,14 +251,14 @@ class RawSqlQueryset(models.QuerySet):
         """.format(pks=pks, taxid_filter=taxid_filter)
 
         annotated_queryset = """
-            SELECT xref.*
+            SELECT xref.*, x.id as xid
             FROM xref
             JOIN rnc_accessions
             ON xref.ac = rnc_accessions.accession
             JOIN (
               {queryset}
             ) x
-            ON rnc_accessions.db_xref ILIKE (x.geneid || '%%')
+            ON rnc_accessions.optional_id = x.optional_id
             WHERE rnc_accessions.database = 'REFSEQ'
               AND xref.deleted = 'N'
               AND rnc_accessions.ncrna_class = x.ncrna_class
@@ -287,7 +287,7 @@ class RawSqlQueryset(models.QuerySet):
         """.format(pks=pks, taxid_filter=taxid_filter)
 
         annotated_queryset = """
-            SELECT xref.*
+            SELECT xref.*, x.id as xid
             FROM xref
             JOIN rnc_accessions
             ON xref.ac = rnc_accessions.accession
@@ -321,7 +321,7 @@ class RawSqlQueryset(models.QuerySet):
         """.format(pks=pks, taxid_filter=taxid_filter)
 
         annotated_queryset = """
-            SELECT xref.*
+            SELECT xref.*, x.id as xid
             FROM xref
             JOIN rnc_accessions
             ON xref.ac = rnc_accessions.accession
