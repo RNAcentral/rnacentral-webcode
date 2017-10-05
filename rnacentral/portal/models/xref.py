@@ -129,7 +129,8 @@ class RawSqlQueryset(models.QuerySet):
             ON rnc_accessions.external_id = x.external_id
             WHERE rnc_accessions.feature_name = 'ncRNA'
               AND rnc_accessions.database = 'MIRBASE'
-        """.format(queryset=queryset)
+              {taxid_filter}
+        """.format(queryset=queryset, taxid_filter=taxid_filter)
 
         raw_queryset = Xref.objects.raw(annotated_queryset)
 
@@ -161,9 +162,10 @@ class RawSqlQueryset(models.QuerySet):
             ON rnc_accessions.external_id = x.external_id
             WHERE rnc_accessions.feature_name = 'precursor_RNA'
               AND rnc_accessions.database = 'MIRBASE'
+              {taxid_filter}
             ORDER BY xref.id
             LIMIT 1
-        """.format(queryset=queryset)
+        """.format(queryset=queryset, taxid_filter=taxid_filter)
 
         raw_queryset = Xref.objects.raw(annotated_queryset)
 
@@ -195,7 +197,8 @@ class RawSqlQueryset(models.QuerySet):
             ON rnc_accessions.parent_ac = x.parent_ac
             WHERE rnc_accessions.feature_name = 'ncRNA'
               AND rnc_accessions.database = 'REFSEQ'
-        """.format(queryset=queryset)
+              {taxid_filter}
+        """.format(queryset=queryset, taxid_filter=taxid_filter)
 
         raw_queryset = Xref.objects.raw(annotated_queryset)
 
@@ -227,7 +230,8 @@ class RawSqlQueryset(models.QuerySet):
             ON rnc_accessions.parent_ac = x.parent_ac
             WHERE rnc_accessions.feature_name = 'precursor_RNA'
               AND rnc_accessions.database = 'REFSEQ'
-        """.format(queryset=queryset)
+              {taxid_filter}
+        """.format(queryset=queryset, taxid_filter=taxid_filter)
 
         raw_queryset = Xref.objects.raw(annotated_queryset)
 
@@ -262,8 +266,9 @@ class RawSqlQueryset(models.QuerySet):
             WHERE rnc_accessions.database = 'REFSEQ'
               AND xref.deleted = 'N'
               AND rnc_accessions.ncrna_class = x.ncrna_class
-              AND rnc_accessions.accession != x.ac;
-        """.format(queryset=queryset)
+              AND rnc_accessions.accession != x.ac
+              {taxid_filter}
+        """.format(queryset=queryset, taxid_filter=taxid_filter)
 
         raw_queryset = Xref.objects.raw(annotated_queryset)
 
@@ -297,8 +302,9 @@ class RawSqlQueryset(models.QuerySet):
             ON rnc_accessions.optional_id = x.optional_id
             WHERE rnc_accessions.database = 'ENSEMBL'
               AND xref.deleted = 'N'
-              AND rnc_accessions.accession != x.ac;
-        """.format(queryset=queryset)
+              AND rnc_accessions.accession != x.ac
+              {taxid_filter}
+        """.format(queryset=queryset, taxid_filter=taxid_filter)
 
         raw_queryset = Xref.objects.raw(annotated_queryset)
 
@@ -330,7 +336,8 @@ class RawSqlQueryset(models.QuerySet):
             ) x
             ON rnc_accessions.parent_ac = x.optional_id
             WHERE rnc_accessions.is_composite = 'Y'
-        """.format(queryset=queryset)
+              {taxid_filter}
+        """.format(queryset=queryset, taxid_filter=taxid_filter)
 
         raw_queryset = Xref.objects.raw(annotated_queryset)
 
