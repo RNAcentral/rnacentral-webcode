@@ -95,11 +95,11 @@
             <span ng-if="xref.mirbase_mature_products">
               - precursor miRNA (<ng-pluralize count="xref.mirbase_mature_products.length" when="{'one': 'mature product', 'other': 'mature products'}"></ng-pluralize>
               <span ng-repeat="matureProduct in xref.mirbase_mature_products">
-                <a ng-href="{{ matureProduct + "/" + xref.taxid }}">{{ matureProduct.split('/').pop() }}</a>{{$last ? '' : ', '}}
+                <a ng-href="{{ matureProduct + "/" + xref.taxid }}">{{ $ctrl.url2urs(xref.matureProduct) }}</a>{{$last ? '' : ', '}}
               </span>)
             </span>
             <span ng-if="xref.mirbase_precursor">
-              - mature miRNA (precursor <a ng-href="{{ xref.mirbase_precursor + '/' + xref.taxid }}">{{ xref.mirbase_precursor.split('/').pop() }}</a>)
+              - mature miRNA (precursor <a ng-href="{{ xref.mirbase_precursor + '/' + xref.taxid }}">{{ $ctrl.url2urs(xref.mirbase_precursor) }}</a>)
             </span>
           </span>
 
@@ -119,7 +119,7 @@
               {{ xref.refseq_splice_variants.length }} <ng-pluralize count="xref.refseq_splice_variants.length" when="{'one': 'alternative transcript', 'other': 'alternative transcripts'}"></ng-pluralize>
               <small>
                 <span ng-repeat="spliceVariant in xref.refseq_splice_variants">
-                  <a ng-href="{{ spliceVariant + '/' + xref.taxid }}">{{ spliceVariant.split('/').pop() }}</a>
+                  <a ng-href="{{ spliceVariant + '/' + xref.taxid }}">{{ $ctrl.url2urs(spliceVariant) }}</a>
                 </span>
               </small>
             </span>
@@ -142,11 +142,11 @@
 
             <span ng-if="xref.is_active && (xref.refseq_mirna_precursor || xref.refseq_mirna_mature_products)">
               <span ng-if="xref.refseq_mirna_precursor">
-                - mature miRNA (precursor <a ng-href="{{ xref.refseq_mirna_precursor + '/' + ctrl.taxid }}">{{ xref.refseq_mirna_precursor.split('/').pop() }}</a>)
+                - mature miRNA (precursor <a ng-href="{{ xref.refseq_mirna_precursor + '/' + ctrl.taxid }}">{{ $ctrl.url2urs(xref.refseq_mirna_precursor) }}</a>)
               </span>
               <span ng-if="xref.refseq_mirna_mature_products">
                 - precursor miRNA (<ng-pluralize count="xref.refseq_mirna_mature_products.length" when="{'one': 'mature product', 'other': 'mature products'}"></ng-pluralize>
-                  <span ng-repeat="matureProduct in xref.refseq_mirna_mature_products"><a ng-href="{{ matureProduct + '/' + $ctrl.taxid }}">{{ matureProduct.split('/').pop() }}</a>{{$last ? '' : ', '}}</span>)
+                  <span ng-repeat="matureProduct in xref.refseq_mirna_mature_products"><a ng-href="{{ matureProduct + '/' + $ctrl.taxid }}">{{ $ctrl.url2urs(matureProduct) }}</a>{{$last ? '' : ', '}}</span>)
               </span>
             </span>
             <span ng-if="xref.is_active && xref.refseq_splice_variants">
@@ -155,7 +155,7 @@
               {{ refseq_splice_variants.length }} <ng-pluralize count="xref.refseq_splice_variants.length" when="{'one': 'alternative transcript', 'other': 'alternative transcripts'}"></ng-pluralize>
               <small>
                 <span ng-repeat="spliceVariant in xref.refseq_splice_variants">
-                  <a ng-href="{{ spliceVariant + '/' + $ctrl.taxid }}">{{ spliceVariant.split('/').pop() }}</a>
+                  <a ng-href="{{ spliceVariant + '/' + $ctrl.taxid }}">{{ $ctrl.url2urs(spliceVariant) }}</a>
                   ({{ spliceVariant.length | number }} nts) {{$last ? '' : ', '}}
                 </span>
               </small>

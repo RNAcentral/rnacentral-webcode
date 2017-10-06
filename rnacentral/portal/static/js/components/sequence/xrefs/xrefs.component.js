@@ -10,6 +10,20 @@ var xrefs = {
     controller: ['routes', '$http', '$interpolate', '$timeout', function(routes, $http, $interpolate, $timeout) {
         var ctrl = this;
 
+        /**
+         * Given unique rna page url, extracts urs from it.
+         */
+        ctrl.url2urs = function(url) {
+            // if url ends with a slash, strip it
+            if (url.slice(-1) === '/') url = url.slice(-1);
+
+            // url might have a taxid, so let's just take the url fragment after 'rna'
+            var breadcrumbs = url.split('/');
+            for (var urlFragment = 0; urlFragment < breadcrumbs.length; urlFragment++) {
+                if (breadcrumbs[urlFragment] === 'rna') return breadcrumbs[urlFragment + 1];
+            }
+        };
+
         ctrl.onPageSizeChanged = function(newPageSize, oldPageSize) {
             oldPageSize = parseInt(oldPageSize);
 
