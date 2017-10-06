@@ -165,9 +165,19 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
         return True if obj.accession.non_coding_id else False
 
     def upis_to_urls(self, upis):
+        """
+        Returns a list of urls or single url that points to unique rna sequence
+        page, corresponding to given upi.
+
+        :param upis: list of upis or a single upi
+        :return: list of urls or a single url
+        """
         protocol = 'https://' if self.context['request'].is_secure() else 'http://'
         hostport = self.context['request'].get_host()
-        return [protocol + hostport + reverse('unique-rna-sequence', kwargs={'upi': upi}) for upi in upis]
+        if isinstance(upis, list):
+            return [protocol + hostport + reverse('unique-rna-sequence', kwargs={'upi': upi}) for upi in upis]
+        else:  # upis is just a single item
+            return protocol + hostport + reverse('unique-rna-sequence', kwargs={'upi': upis})
 
     def get_mirbase_mature_products(self, obj):
         return self.upis_to_urls(obj.mirbase_mature_products) if hasattr(obj, "mirbase_mature_products") else None

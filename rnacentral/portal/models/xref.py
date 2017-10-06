@@ -77,11 +77,11 @@ class RawSqlQueryset(models.QuerySet):
                     if xref.id in mirbase_mature_products:
                         xref.mirbase_mature_products = [ mature_product.upi.upi for mature_product in mirbase_mature_products[xref.id] ]
                     if xref.id in mirbase_precursors:
-                        xref.mirbase_precursor = [ precursor.upi.upi for precursor in mirbase_precursors[xref.id] ]
+                        xref.mirbase_precursor = mirbase_precursors[xref.id][0].upi.upi  # note, there's just 1 precursor
                     if xref.id in refseq_mirna_mature_products:
                         xref.refseq_mirna_mature_products = [ mature_product.upi.upi for mature_product in refseq_mirna_mature_products[xref.id] ]
                     if xref.id in refseq_mirna_precursors:
-                        xref.refseq_mirna_precursor = [ precursor.upi.upi for precursor in refseq_mirna_precursors[xref.id] ]
+                        xref.refseq_mirna_precursor = refseq_mirna_precursors[xref.id][0].upi.upi
                     if xref.id in refseq_splice_variants:
                         xref.refseq_splice_variants = [ splice_variant.upi.upi for splice_variant in refseq_splice_variants[xref.id] ]
                     #if xref.id in ensembl_splice_variants:

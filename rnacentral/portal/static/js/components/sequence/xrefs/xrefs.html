@@ -98,8 +98,8 @@
                 <a ng-href="{{ matureProduct + "/" + xref.taxid }}">{{ matureProduct.split('/').pop() }}</a>{{$last ? '' : ', '}}
               </span>)
             </span>
-            <span ng-if="xref.mirna_precursor">
-              - mature miRNA (precursor <a ng-href="{{ xref.mirna_precursor + '/' + xref.taxid }}">{{ xref.mirna_precursor.split('/').pop() }}</a>)
+            <span ng-if="xref.mirbase_precursor">
+              - mature miRNA (precursor <a ng-href="{{ xref.mirbase_precursor + '/' + xref.taxid }}">{{ xref.mirbase_precursor.split('/').pop() }}</a>)
             </span>
           </span>
 
@@ -142,7 +142,7 @@
 
             <span ng-if="xref.is_active && (xref.refseq_mirna_precursor || xref.refseq_mirna_mature_products)">
               <span ng-if="xref.refseq_mirna_precursor">
-                - mature miRNA (precursor <a ng-href="{{ xref.refseq_mirna_precursor[0] + '/' + ctrl.taxid }}">{{ xref.refseq_mirna_precursor[0].split('/').pop() }}</a>)
+                - mature miRNA (precursor <a ng-href="{{ xref.refseq_mirna_precursor + '/' + ctrl.taxid }}">{{ xref.refseq_mirna_precursor.split('/').pop() }}</a>)
               </span>
               <span ng-if="xref.refseq_mirna_mature_products">
                 - precursor miRNA (<ng-pluralize count="xref.refseq_mirna_mature_products.length" when="{'one': 'mature product', 'other': 'mature products'}"></ng-pluralize>
