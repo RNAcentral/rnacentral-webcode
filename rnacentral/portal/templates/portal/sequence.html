@@ -91,7 +91,7 @@ limitations under the License.
                                 {% endwith %}
                             </li>
                             <li>
-                                Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab">species</a>
+                                Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab" ng-click="activateTab('1')">species</a>
                             </li>
                             <li>{{ context.precomputed.rna_type }}</li>
                         </ul>
