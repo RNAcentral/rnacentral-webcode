@@ -240,16 +240,13 @@ class RawSqlQueryset(models.QuerySet):
         return self._xrefs_raw_queryset_to_dict(raw_queryset)
 
     def get_refseq_splice_variants(self, taxid=None):
-        # WARNING: REGEX syntax is not database-compatible, I used Postgres version here,
-        # which will break on other vendors.
-
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
         # _fetch_all() has already been called by now
         pks = ','.join(["'%s'" % xref.pk for xref in self])
 
         queryset = """
-            SELECT xref.*, rnc_accessions.ncrna_class, rnc_accessions.db_xref, rnc_accessions.optional_id
+            SELECT xref.*, rnc_accessions.ncrna_class, rnc_accessions.optional_id
             FROM xref, rnc_accessions
             WHERE xref.ac = rnc_accessions.accession
               AND xref.id IN ({pks})
@@ -277,9 +274,6 @@ class RawSqlQueryset(models.QuerySet):
         return self._xrefs_raw_queryset_to_dict(raw_queryset)
 
     def get_ensembl_splice_variants(self, taxid=None):
-        # WARNING: REGEX syntax is not database-compatible, I used Postgres version here,
-        # which will break on other vendors.
-
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
         # _fetch_all() has already been called by now
@@ -424,14 +418,17 @@ class Xref(models.Model):
         This function returns an NDB url using NDB ids where possible
         with PDB ids used as a fallback.
         """
-        ndb_url = 'http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget={structure_id}'
-        if self.accession.db_xref:
-            match = re.search('NDB\:(\w+)', self.accession.db_xref, re.IGNORECASE)
-            if match:
-                structure_id = match.group(1)  # NDB id
+        if self.accession.database == 'PDBE':
+            ndb_url = 'http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget={structure_id}'
+            if self.accession.db_xref:
+                match = re.search('NDB\:(\w+)', self.accession.db_xref, re.IGNORECASE)
+                if match:
+                    structure_id = match.group(1)  # NDB id
+                else:
+                    structure_id = self.accession.external_id  # default to PDB id
+                return ndb_url.format(structure_id=structure_id)
             else:
-                structure_id = self.accession.external_id  # default to PDB id
-            return ndb_url.format(structure_id=structure_id)
+                return None
         else:
             return None
 
