@@ -68,8 +68,8 @@ class RawSqlQueryset(models.QuerySet):
                 mirbase_precursors = self.get_mirbase_precursor(self.taxid)
                 refseq_mirna_mature_products = self.get_refseq_mirna_mature_products(self.taxid)
                 refseq_mirna_precursors = self.get_refseq_mirna_precursor(self.taxid)
-                refseq_splice_variants = self.get_refseq_splice_variants(self.taxid)
-                #ensembl_splice_variants = self.get_ensembl_splice_variants(self.taxid)
+                # refseq_splice_variants = self.get_refseq_splice_variants(self.taxid)
+                # ensembl_splice_variants = self.get_ensembl_splice_variants(self.taxid)
                 tmrna_mates = self.get_tmrna_mate(self.taxid)
 
                 # "annotate" xrefs queryset with additional attributes, retrieved by raw SQL queries
@@ -82,10 +82,10 @@ class RawSqlQueryset(models.QuerySet):
                         xref.refseq_mirna_mature_products = [ mature_product.upi.upi for mature_product in refseq_mirna_mature_products[xref.id] ]
                     if xref.id in refseq_mirna_precursors:
                         xref.refseq_mirna_precursor = refseq_mirna_precursors[xref.id][0].upi.upi
-                    if xref.id in refseq_splice_variants:
-                        xref.refseq_splice_variants = [ splice_variant.upi.upi for splice_variant in refseq_splice_variants[xref.id] ]
-                    #if xref.id in ensembl_splice_variants:
-                    #    xref.ensembl_splice_variants = [ splice_variant.upi.upi for splice_variant in ensembl_splice_variants[xref.id] ]
+                    # if xref.id in refseq_splice_variants:
+                    #     xref.refseq_splice_variants = [ splice_variant.upi.upi for splice_variant in refseq_splice_variants[xref.id] ]
+                    # if xref.id in ensembl_splice_variants:
+                    #     xref.ensembl_splice_variants = [ splice_variant.upi.upi for splice_variant in ensembl_splice_variants[xref.id] ]
                     if xref.id in tmrna_mates:
                         xref.tmrna_mates = [ tmrna_mate.upi.upi for tmrna_mate in tmrna_mates[xref.id] ]
 
