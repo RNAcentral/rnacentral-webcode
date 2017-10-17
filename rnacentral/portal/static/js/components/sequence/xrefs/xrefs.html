@@ -368,7 +368,13 @@
   <!-- Pagination: pages list and page size select -->
   <div ng-if="$ctrl.status == 'success'" style="margin-top: 5px; margin-left: 5px; margin-right: 5px;">
     <ul class="pagination pagination-sm" style="display:inline">
-      <li ng-repeat="page in $ctrl.pages" ng-class="{ 'active':  $index == $ctrl.page - 1}" ng-click="$ctrl.onPageChanged(page)"><a href="">{{ page }}</a></li>
+      <li ng-if="$ctrl.page != 1" ng-click="$ctrl.onPageChanged(1)"><a href="">1</a></li>
+      <li ng-if="$ctrl.page > 2" ng-click="$ctrl.onPageChanged(1)"><a href="">...</a></li>
+      <li ng-if="$ctrl.page > 2" ng-click="$ctrl.onPageChanged($ctrl.page - 1)"><a href="">{{ $ctrl.page - 1 }}</a></li>
+      <li class="active"><a href="">{{ $ctrl.page }}</a></li>
+      <li ng-if="$ctrl.page < $ctrl.pages.length - 1" ng-click="$ctrl.onPageChanged($ctrl.page + 1)"><a href="">{{ $ctrl.page + 1 }}</a></li>
+      <li ng-if="$ctrl.page < $ctrl.pages.length - 1" ng-click="$ctrl.onPageChanged($ctrl.pages.length)"><a href="">...</a></li>
+      <li ng-if="$ctrl.page != $ctrl.pages.length" ng-click="$ctrl.onPageChanged($ctrl.pages.length)"><a href="">{{ $ctrl.pages.length }}</a></li>
     </ul>
     <span class="pull-right">
       <select ng-model="$ctrl.pageSize" ng-change="$ctrl.onPageSizeChanged($ctrl.pageSize, '{{ $ctrl.pageSize }}')" ng-options="v.value as v.key for v in [{key:1, value:1}, {key: 5, value: 5}, {key: 10, value: 10}, {key: 20, value: 20}, {key: 50, value: 50}, {key: 'all', value: 1000000000000}]"></select> records per page
