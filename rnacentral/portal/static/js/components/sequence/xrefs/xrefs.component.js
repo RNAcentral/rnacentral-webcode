@@ -55,7 +55,7 @@ var xrefs = {
             $http.get(ctrl.dataEndpoint, {params: { page: ctrl.page, page_size: ctrl.pageSize }}).then(
                 function(response) {
                     ctrl.status = 'success';
-                    ctrl.displayedXrefs = response.data.results;
+                    ctrl.displayedXrefs = ctrl.orderByModificationsOrCoordinates(response.data.results);
                     ctrl.total = response.data.count;
                     ctrl.pages = _.range(1, Math.ceil(ctrl.total / ctrl.pageSize) + 1);
                 },
@@ -63,6 +63,27 @@ var xrefs = {
                     ctrl.status = 'error';
                 }
             )
+        };
+
+        /**
+         * Given results from data json, create a new results array, sorted so that entries
+         *  with modifications or genome coordinates go first.
+         *
+         * @param {Array} results - e.g. [{ database: "Ensembl", is_expert_db: false, accession: {...} ... }, ...]
+         * @returns {Array} - sorted copy of results
+         */
+        ctrl.orderByModificationsOrCoordinates = function(results) {
+            var output = [];
+
+            for (var i = 0; i < results.length; i++) {
+                if (results[i].modifications.length || results[i].genomic_coordinates) {
+                    output.unshift(results[i]);
+                } else {
+                    output.push(results[i]);
+                }
+            }
+
+            return output;
         };
 
         ctrl.$onInit = function() {
@@ -74,14 +95,13 @@ var xrefs = {
             ctrl.status = 'loading';
 
             // Request xrefs from server (with taxid, if necessary)
-            ctrl.dataEndpoint;
             if (ctrl.taxid) ctrl.dataEndpoint = $interpolate('/api/v1/rna/{{upi}}/xrefs/{{taxid}}')({upi: ctrl.upi, taxid: ctrl.taxid});
             else ctrl.dataEndpoint = $interpolate('/api/v1/rna/{{upi}}/xrefs')({upi: ctrl.upi});
 
             $http.get(ctrl.dataEndpoint, {timeout: ctrl.timeout}).then(
                 function(response) {
                     ctrl.status = 'success';
-                    ctrl.xrefs = response.data.results;
+                    ctrl.xrefs = ctrl.orderByModificationsOrCoordinates(response.data.results);
                     ctrl.displayedXrefs = ctrl.xrefs.slice(0, ctrl.pageSize);
                     ctrl.total = response.data.count;
                     ctrl.pages = _.range(1, Math.ceil(ctrl.total / ctrl.pageSize) + 1);
