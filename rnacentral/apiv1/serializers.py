@@ -154,7 +154,7 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
             'is_rfam_seed', 'ncbi_gene_id', 'ndb_external_url',
             'mirbase_mature_products', 'mirbase_precursor',
             'refseq_mirna_mature_products', 'refseq_mirna_precursor',
-            # 'refseq_splice_variants', 'ensembl_splice_variants',
+            'refseq_splice_variants', 'ensembl_splice_variants',
             # 'tmrna_mate_upi',
             # 'tmrna_type',
             'ensembl_division', 'ucsc_db_id',  # 200-400 ms, no requests

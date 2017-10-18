@@ -62,14 +62,13 @@ class RawSqlQueryset(models.QuerySet):
             # add database-specific fields only if this queryset contains model objects
             # (this is not the case for values() or values_list() methods)
             if len(self) and type(self[0]) == Xref:
-
                 # Raw SQL queries to fetch database-specific data with self-joins, impossible in Django ORM
                 mirbase_mature_products = self.get_mirbase_mature_products(self.taxid)
                 mirbase_precursors = self.get_mirbase_precursor(self.taxid)
                 refseq_mirna_mature_products = self.get_refseq_mirna_mature_products(self.taxid)
                 refseq_mirna_precursors = self.get_refseq_mirna_precursor(self.taxid)
-                # refseq_splice_variants = self.get_refseq_splice_variants(self.taxid)
-                # ensembl_splice_variants = self.get_ensembl_splice_variants(self.taxid)
+                refseq_splice_variants = self.get_refseq_splice_variants(self.taxid)
+                ensembl_splice_variants = self.get_ensembl_splice_variants(self.taxid)
                 tmrna_mates = self.get_tmrna_mate(self.taxid)
 
                 # "annotate" xrefs queryset with additional attributes, retrieved by raw SQL queries
@@ -81,11 +80,11 @@ class RawSqlQueryset(models.QuerySet):
                     if xref.id in refseq_mirna_mature_products:
                         xref.refseq_mirna_mature_products = [ mature_product.upi.upi for mature_product in refseq_mirna_mature_products[xref.id] ]
                     if xref.id in refseq_mirna_precursors:
-                        xref.refseq_mirna_precursor = refseq_mirna_precursors[xref.id][0].upi.upi
-                    # if xref.id in refseq_splice_variants:
-                    #     xref.refseq_splice_variants = [ splice_variant.upi.upi for splice_variant in refseq_splice_variants[xref.id] ]
-                    # if xref.id in ensembl_splice_variants:
-                    #     xref.ensembl_splice_variants = [ splice_variant.upi.upi for splice_variant in ensembl_splice_variants[xref.id] ]
+                        xref.refseq_mirna_precursor = refseq_mirna_precursors[xref.id][0].upi.upi  # note, there's just 1 precursor
+                    if xref.id in refseq_splice_variants:
+                        xref.refseq_splice_variants = [ splice_variant.upi.upi for splice_variant in refseq_splice_variants[xref.id] ]
+                    if xref.id in ensembl_splice_variants:
+                        xref.ensembl_splice_variants = [ splice_variant.upi.upi for splice_variant in ensembl_splice_variants[xref.id] ]
                     if xref.id in tmrna_mates:
                         xref.tmrna_mates = [ tmrna_mate.upi.upi for tmrna_mate in tmrna_mates[xref.id] ]
 
@@ -249,7 +248,10 @@ class RawSqlQueryset(models.QuerySet):
             SELECT xref.*, rnc_accessions.ncrna_class, rnc_accessions.optional_id
             FROM xref, rnc_accessions
             WHERE xref.ac = rnc_accessions.accession
+              AND xref.dbid = 9
               AND xref.id IN ({pks})
+              AND rnc_accessions.optional_id != ''
+              AND rnc_accessions.ncrna_class != 'miRNA'
               {taxid_filter}
         """.format(pks=pks, taxid_filter=taxid_filter)
 
@@ -262,9 +264,8 @@ class RawSqlQueryset(models.QuerySet):
               {queryset}
             ) x
             ON rnc_accessions.optional_id = x.optional_id
-            WHERE rnc_accessions.database = 'REFSEQ'
+            WHERE xref.dbid = 9
               AND xref.deleted = 'N'
-              AND rnc_accessions.ncrna_class = x.ncrna_class
               AND rnc_accessions.accession != x.ac
               {taxid_filter}
         """.format(queryset=queryset, taxid_filter=taxid_filter)
@@ -283,6 +284,9 @@ class RawSqlQueryset(models.QuerySet):
             SELECT xref.*, rnc_accessions.optional_id
             FROM xref, rnc_accessions
             WHERE xref.ac = rnc_accessions.accession
+              AND xref.dbid = 25
+              AND rnc_accessions.optional_id != ''
+              AND rnc_accessions.ncrna_class != 'miRNA'
               AND xref.id IN ({pks})
               {taxid_filter}
         """.format(pks=pks, taxid_filter=taxid_filter)
@@ -296,7 +300,7 @@ class RawSqlQueryset(models.QuerySet):
               {queryset}
             ) x
             ON rnc_accessions.optional_id = x.optional_id
-            WHERE rnc_accessions.database = 'ENSEMBL'
+            WHERE xref.dbid = 25
               AND xref.deleted = 'N'
               AND rnc_accessions.accession != x.ac
               {taxid_filter}

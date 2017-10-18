@@ -19,11 +19,17 @@ from django.db import models
 
 class Accession(models.Model):
     accession = models.CharField(max_length=100, primary_key=True)
+
+    # in miRNAs mature products and precursor have the same parent_ac
     parent_ac = models.CharField(max_length=100)
+
     seq_version = models.IntegerField(db_index=True)
     feature_start = models.IntegerField(db_index=True)
     feature_end = models.IntegerField(db_index=True)
+
+    # INSDC classification; 'ncRNA', unless it's rRNA/tRNA/precursor RNA
     feature_name = models.CharField(max_length=20)
+
     ordinal = models.IntegerField()
     division = models.CharField(max_length=3)
     keywords = models.CharField(max_length=100)
@@ -36,7 +42,10 @@ class Accession(models.Model):
     non_coding_id = models.CharField(max_length=100)
     database = models.CharField(max_length=20)
     external_id = models.CharField(max_length=150)
+
+    # GeneID (without coordinates); used to find splice variants for lncRNAs OR mature/precursor RNAs for miRNAs
     optional_id = models.CharField(max_length=100)
+
     anticodon = models.CharField(max_length=50)
     experiment = models.CharField(max_length=500)
     function = models.CharField(max_length=500)
