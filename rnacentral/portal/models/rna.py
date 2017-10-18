@@ -113,7 +113,6 @@ class Rna(CachingMixin, models.Model):
 
     def get_xrefs(self, taxid=None):
         """Get all xrefs, show non-ENA annotations first."""
-
         # Exclude source ENA entries that are associated with other expert db entries.
         # For example, only fetch Vega xrefs and don't retrieve the ENA entries they are based on.
         expert_db_projects = Database.objects.exclude(project_id__isnull=True)\
@@ -139,7 +138,7 @@ class Rna(CachingMixin, models.Model):
         if taxid:
             xrefs = xrefs.for_taxid(taxid=taxid)
 
-        # Sometimes xrefs are deleted from databases (e.g. when they were mistakingly
+        # Sometimes xrefs are deleted from databases (e.g. when by mistake they were
         # annotated as RNA being in fact protein-coding sequences). If our xrefs list
         # doesn't contain proper RNA sequences, we should at least return these
         # wrong annotations to hard-links to deleted sequences accessible from web.

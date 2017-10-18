@@ -30,27 +30,23 @@ class RawSqlQueryset(models.QuerySet):
     with database-specific fields, obtained via raw SQL queries, when
     queryset is actually evaluated (queryset is evaluated when its
     _fetch_all() method is called). So, we override that method to
-    add some extra
+    add some extra fields, obtained by raw SQL queries.
     """
     taxid = None
-    offset = None
-    limit = None
 
     def for_taxid(self, taxid):
         """Just save input parameters and return results of all()"""
-        self.taxid = taxid
-        return self.filter(taxid=taxid)
-
-    def with_offset_and_limit(self, offset, limit):
-        self.offset = offset
-        self.limit = limit
-        return self
+        queryset = self.filter(taxid=taxid)
+        queryset.taxid = taxid
+        return queryset
 
     def _fetch_all(self):
         """
         This method performs the actual database lookup, when queryset is evaluated.
         We extend it to fetch database-specific data with raw SQL queries.
         """
+        import pdb
+        pdb.set_trace()
         super(RawSqlQueryset, self)._fetch_all()
 
         # check this flag to avoid infinite recursion loop with _fetch_all() called by get_mirbase_mature_products()
@@ -248,8 +244,8 @@ class RawSqlQueryset(models.QuerySet):
             SELECT xref.*, rnc_accessions.ncrna_class, rnc_accessions.optional_id
             FROM xref, rnc_accessions
             WHERE xref.ac = rnc_accessions.accession
-              AND xref.dbid = 9
               AND xref.id IN ({pks})
+              AND xref.dbid = 9
               AND rnc_accessions.optional_id != ''
               AND rnc_accessions.ncrna_class != 'miRNA'
               {taxid_filter}
