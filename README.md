@@ -134,7 +134,6 @@ or get in touch using the [Contact form](http://rnacentral.org/contact) on our w
 * [Django](https://www.djangoproject.com/)
 * [Django REST Framework](http://www.django-rest-framework.org/)
 * [Fabric](http://www.fabfile.org/)
-* [cx_Oracle](http://cx-oracle.sourceforge.net/)
 * [Python RQ](http://python-rq.org/)
 * see [requirements.txt](rnacentral/requirements.txt) for the full list
 
