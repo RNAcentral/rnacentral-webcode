@@ -140,7 +140,6 @@ ENV RNACENTRAL_LOCAL /rnacentral/local
 ADD rnacentral/requirements.txt $RNACENTRAL_HOME/rnacentral/
 RUN \
     source $LOC/virtualenvs/RNAcentral/bin/activate && \
-    export LD_RUN_PATH=$LOC/instantclient_12_1 && \
     pip install -r $RNACENTRAL_HOME/rnacentral/requirements.txt
 
 # Expose a container port where the website is served
