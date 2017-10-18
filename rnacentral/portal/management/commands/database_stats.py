@@ -44,7 +44,7 @@ def compute_database_stats(database):
 
         context = dict()
         rnas = Rna.objects.filter(xrefs__deleted='N',
-                                  xrefs__db__descr=expert_db.descr)
+                                  xrefs__db_id=expert_db.id)
 
         # avg_length, min_length, max_length, len_counts
         context.update(rnas.aggregate(min_length=Min('length'),
@@ -55,7 +55,7 @@ def compute_database_stats(database):
                                      order_by('length'))
         # taxonomic_lineage
         xrefs = Xref.objects.select_related('accession').\
-                             filter(db__descr=expert_db.descr).iterator()
+                             filter(db_id=expert_db.id).iterator()
         lineages = _get_json_lineage_tree(xrefs)
 
         # update expert_db object
