@@ -149,7 +149,7 @@ class XrefsExporter(FtpBase):
             self.cursor.execute(sql)
             process_xref_entries()
         except Exception as exc:
-            self.log_oracle_error(exc)
+            self.log_database_error(exc)
             sys.exit(1)
 
         self.logger.info('Xref export complete')

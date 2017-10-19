@@ -132,8 +132,8 @@ class FastaExporter(FtpBase):
         try:
             self.cursor.execute(sql)
             process_active_sequences()
-        except cx_Oracle.DatabaseError, exc:
-            self.log_oracle_error(exc)
+        except psycopg2.Error, exc:
+            self.log_database_error(exc)
             sys.exit(1)
 
     def export_inactive_sequences(self):
@@ -180,8 +180,8 @@ class FastaExporter(FtpBase):
         try:
             self.cursor.execute(sql)
             process_inactive_sequences()
-        except cx_Oracle.DatabaseError, exc:
-            self.log_oracle_error(exc)
+        except psycopg2.Error, exc:
+            self.log_database_error(exc)
             sys.exit(1)
 
     def create_readme(self):

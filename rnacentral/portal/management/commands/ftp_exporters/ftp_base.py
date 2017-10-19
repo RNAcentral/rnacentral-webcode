@@ -122,16 +122,11 @@ class FtpBase(OracleConnection):
             self.logger.info('Compressing failed, no file created')
             return ''
 
-    ##################
-    # Oracle helpers #
-    ##################
-
-    def log_oracle_error(self, oracle_exception):
+    def log_database_error(self, pg_exception):
         """
+        Log Postgres error message.
         """
-        error, = oracle_exception.args
-        self.logger.critical('Oracle error code: %s' % error.code)
-        self.logger.critical('Oracle message: %s' % error.message)
+        self.logger.critical('Postgres: %s' % pg_exception.diag.message_primary)
 
     ##################
     # Data retrieval #

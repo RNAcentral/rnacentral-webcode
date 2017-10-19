@@ -89,7 +89,7 @@ class Md5Exporter(FtpBase):
             self.cursor.execute(sql)
             process_md5_entries()
         except Exception as exc:
-            self.log_oracle_error(exc)
+            self.log_database_error(exc)
             sys.exit(1)
 
     def create_readme(self):
