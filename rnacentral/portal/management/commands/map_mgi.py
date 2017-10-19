@@ -53,6 +53,7 @@ class Mapper(object):
         Using the Ensembl xref, find the RNAcentral id(s) if any.
         """
 
+        LOGGER.debug("Ensembl mapping %s" % xref)
         upis = set()
         for transcript_id in xref['transcript_ids']:
             xrefs = Xref.objects.filter(accession__accession__startswith=transcript_id)
@@ -64,6 +65,7 @@ class Mapper(object):
         Using the RefSeq xref, find the RNAcentral id(s) if any.
         """
 
+        LOGGER.debug("RefSeq mapping %s" % xref)
         accessions = [tid for tid in xref['transcript_ids']]
         rna = Rna.objects.\
             filter(
@@ -79,6 +81,7 @@ class Mapper(object):
         Using the VEGA xref, find the RNAcentral id(s) if any.
         """
 
+        LOGGER.debug("VEGA mapping %s" % xref)
         tids = xref['transcript_ids']
         xrefs = Xref.objects.filter(accession__accession__in=tids)
         return set(x.upi.upi for x in xrefs)
@@ -122,6 +125,7 @@ class Mapper(object):
         mapped = []
         counts = Counts()
         for entry in entries:
+            LOGGER.info('Trying to map %s' % entry['accession'])
             counts.total += 1
             upis = self.rnacentral_id(counts, entry)
             if upis is None:
