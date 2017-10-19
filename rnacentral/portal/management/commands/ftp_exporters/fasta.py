@@ -14,7 +14,6 @@ limitations under the License.
 from portal.management.commands.ftp_exporters.ftp_base import FtpBase
 from portal.models import Rna
 import cx_Oracle
-import logging
 import re
 import sys
 
@@ -52,7 +51,6 @@ class FastaExporter(FtpBase):
             'species_specific': 'rnacentral_species_specific_ids.fasta',
             'seq_example': 'example.txt',
         }
-        self.logger = logging.getLogger(__name__)
 
     def export(self):
         """

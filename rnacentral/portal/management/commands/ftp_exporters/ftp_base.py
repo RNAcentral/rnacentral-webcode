@@ -18,6 +18,7 @@ from portal.management.commands.common_exporters.oracle_connection \
     import OracleConnection
 import logging
 import os
+import logging
 import re
 import subprocess
 import time
@@ -47,7 +48,8 @@ class FtpBase(OracleConnection):
             'trackhub': os.path.join('genome_coordinates', 'track_hub'),
             'xrefs': 'id_mapping',
         }
-        self.logger = logging.getLogger(__name__)
+        logging.basicConfig(level='INFO')
+        self.logger = logging.getLogger(self.__class__.__name__)
 
     #########################
     # Files and directories #
