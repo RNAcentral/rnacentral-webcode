@@ -81,7 +81,7 @@ class FastaExporter(FtpBase):
             Get sequences with at least one active cross-reference.
             """
             if self.test:
-                return """SELECT * from RNA"""
+                return """SELECT * FROM rna WHERE id < 100"""
             return """
             SELECT t1.upi, t1.seq_short, t1.seq_long
             FROM rna t1, xref t2
@@ -143,7 +143,7 @@ class FastaExporter(FtpBase):
             Get sequences with no active cross-references.
             """
             if self.test:
-                return """SELECT * from RNA"""
+                return """SELECT * FROM rna WHERE id < 100"""
             return """
             SELECT t1.upi, t1.seq_short, t1.seq_long
             FROM rna t1, xref t2
