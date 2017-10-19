@@ -32,21 +32,39 @@ class RawSqlQueryset(models.QuerySet):
     _fetch_all() method is called). So, we override that method to
     add some extra fields, obtained by raw SQL queries.
     """
-    taxid = None
 
-    def for_taxid(self, taxid):
-        """Just save input parameters and return results of all()"""
-        queryset = self.filter(taxid=taxid)
-        queryset.taxid = taxid
-        return queryset
+    def _get_taxid(self):
+        """
+        This is a dirty-dirty hack that checks, if taxid filter is applied
+        to this queryset, and if it is, extracts it from django internal,
+        otherwise, returns None.
+
+        Used to provide taxid to raw SQL queries, issued by _fetch_all().
+
+        Dirty implementation details:
+         * self.query is a python object, used to actually construct raw SQL.
+         * self.query.where is a WhereNode, extending django.utils.Node,
+             it's a tree node. queryset.filter() expressions are stored as tree
+             nodes on WhereNode objects.
+         * self.query.where.children stores children of current node.
+         * self.query.where.children[0].lhs is a lookup object
+         * self.query.where.children[0].lhs is django.db.models.expressions.Col,
+             Col.target knows what field to lookup.
+         * self.query.were.children[0].rhs contains lookup value.
+        """
+        from django.db.models.lookups import Exact
+
+        taxid = None
+        for child in self.query.where.children:
+            if isinstance(child, Exact) and str(child.lhs.target) == 'portal.Xref.taxid':
+                taxid = child.rhs
+        return taxid
 
     def _fetch_all(self):
         """
         This method performs the actual database lookup, when queryset is evaluated.
         We extend it to fetch database-specific data with raw SQL queries.
         """
-        import pdb
-        pdb.set_trace()
         super(RawSqlQueryset, self)._fetch_all()
 
         # check this flag to avoid infinite recursion loop with _fetch_all() called by get_mirbase_mature_products()
@@ -58,14 +76,17 @@ class RawSqlQueryset(models.QuerySet):
             # add database-specific fields only if this queryset contains model objects
             # (this is not the case for values() or values_list() methods)
             if len(self) and type(self[0]) == Xref:
+
+                taxid = self._get_taxid()
+
                 # Raw SQL queries to fetch database-specific data with self-joins, impossible in Django ORM
-                mirbase_mature_products = self.get_mirbase_mature_products(self.taxid)
-                mirbase_precursors = self.get_mirbase_precursor(self.taxid)
-                refseq_mirna_mature_products = self.get_refseq_mirna_mature_products(self.taxid)
-                refseq_mirna_precursors = self.get_refseq_mirna_precursor(self.taxid)
-                refseq_splice_variants = self.get_refseq_splice_variants(self.taxid)
-                ensembl_splice_variants = self.get_ensembl_splice_variants(self.taxid)
-                tmrna_mates = self.get_tmrna_mate(self.taxid)
+                mirbase_mature_products = self.get_mirbase_mature_products(taxid)
+                mirbase_precursors = self.get_mirbase_precursor(taxid)
+                refseq_mirna_mature_products = self.get_refseq_mirna_mature_products(taxid)
+                refseq_mirna_precursors = self.get_refseq_mirna_precursor(taxid)
+                refseq_splice_variants = self.get_refseq_splice_variants(taxid)
+                ensembl_splice_variants = self.get_ensembl_splice_variants(taxid)
+                tmrna_mates = self.get_tmrna_mate(taxid)
 
                 # "annotate" xrefs queryset with additional attributes, retrieved by raw SQL queries
                 for xref in self:

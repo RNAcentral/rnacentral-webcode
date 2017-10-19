@@ -136,7 +136,7 @@ class Rna(CachingMixin, models.Model):
                           )
 
         if taxid:
-            xrefs = xrefs.for_taxid(taxid=taxid)
+            xrefs = xrefs.filter(taxid=taxid)
 
         # Sometimes xrefs are deleted from databases (e.g. when by mistake they were
         # annotated as RNA being in fact protein-coding sequences). If our xrefs list
