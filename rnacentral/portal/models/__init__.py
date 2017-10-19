@@ -17,6 +17,7 @@ from formatters import *
 from genomic_coordinates import *
 from modification import *
 from reference import *
+from reference_map import *
 from release import *
 from rna import *
 from secondary_structure import *
