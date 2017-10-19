@@ -221,7 +221,7 @@ class FtpBase(object):
 
         release_date = time.strftime("%d/%m/%Y")
         sequence_count = intcomma(Rna.objects.count())
-        xrefs_count = intcomma(Xref.objects.count())
+        xrefs_count = intcomma(Xref.objects.filter(deleted='N').count())
         database_count = intcomma(Database.objects.count())
 
         text = text.format(release_date=release_date,
