@@ -8,7 +8,8 @@ angular.module("rnacentralApp").service('routes', [function() {
         contactUs: '/contact',
         submitQuery: '/export/submit-query',
         resultsPage: '/export/results',
-        rnaView: '/rna/{{upi}}/{{taxid}}'
+        rnaView: '/rna/{{upi}}/{{taxid}}',
+        'expert-dbs-api': '/api/v1/expert-dbs/{{ expertDbName }}'
     };
 }]);
 

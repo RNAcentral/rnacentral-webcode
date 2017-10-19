@@ -1,7 +1,7 @@
 var textSearchResults = {
     bindings: {},
     templateUrl: '/static/js/components/text-search/text-search-results/text-search-results.html',
-    controller: ['$location', '$http', 'search', 'routes', function($location, $http, search, routes) {
+    controller: ['$interpolate', '$location', '$http', 'search', 'routes', function($interpolate, $location, $http, search, routes) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
@@ -16,7 +16,7 @@ var textSearchResults = {
             ctrl.routes = routes;
 
             // retrieve expert_dbs json for display in tooltips
-            $http.get('/api/internal/expert-dbs/').then(
+            $http.get($interpolate(routes['expert-dbs-api'])({ expertDbName: '' })).then(
                 function(response) {
                     ctrl.expertDbs = response.data;
 

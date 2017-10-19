@@ -98,6 +98,8 @@ limitations under the License.
 
     <h2>References</h2>
 
+    <publication publication="publication"></publication>
+
     {% for reference in expert_db.references %}
       <blockquote>
         <strong>
@@ -108,6 +110,8 @@ limitations under the License.
         <small>
           {{ reference.journal }}
           <br>
+
+
           <div class="abstract-preview">
             <button class="btn btn-xs btn-default abstract-btn abstract-control" data-pubmed-id="{{reference.pubmed_id}}">Show abstract</button>
             <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{reference.pubmed_id}}" target="_blank" class="abstract-control">PubMed</a>

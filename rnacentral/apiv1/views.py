@@ -32,6 +32,7 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, Accession, Xref, Database
 from portal.config.genomes import genomes
+from portal.config.expert_databases import expert_dbs
 
 """
 Docstrings of the classes exposed in urlpatterns support markdown.
@@ -612,11 +613,26 @@ class RnaCitationsView(generics.ListAPIView):
     [API documentation](/api)
     """
     # the above docstring appears on the API website
-    permission_classes = (AllowAny,)
+    permission_classes = (AllowAny, )
     serializer_class = RawCitationSerializer
 
     def get_queryset(self):
-        """
-        """
         upi = self.kwargs['pk']
         return list(Rna.objects.get(upi=upi).get_publications())
+
+
+class ExpertDatabasesAPIView(APIView):
+    """
+    API endpoint describing expert databases, comprising RNAcentral.
+
+    [API documentation](/api)
+    """
+    permission_classes = ()
+    authentication_classes = ()
+
+    def get(self, request, format=None):
+        return Response(expert_dbs)
+
+    def get_queryset(self):
+        expert_db_name = self.kwargs['expert_db_name']
+        return list(Database.objects.get(expert_db_name).references)

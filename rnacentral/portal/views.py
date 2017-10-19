@@ -209,15 +209,6 @@ def expert_database_view(request, expert_db_name):
         raise Http404()
 
 
-class ExpertDatabasesAPIView(APIView):
-    """Return a list of RNA expert databases, indexed in RNAcentral."""
-    permission_classes = ()
-    authentication_classes = ()
-
-    def get(self, request, format=None):
-        return Response(expert_dbs)
-
-
 @never_cache
 def website_status_view(request):
     """

@@ -41,6 +41,8 @@ urlpatterns = patterns('',
     # Ensembl-like genome coordinates endpoint
     url(r'^(feature|overlap)/region/(?P<species>\w+)/(?P<chromosome>\w+(\.\d+)?)\:(?P<start>(\d|,)+)-(?P<end>(\d|,)+)/?$',
         cache_page(CACHE_TIMEOUT)(views.GenomeAnnotations.as_view()), name='human-genome-coordinates'),
+    # expert databases as stored in config dict
+    url(r'^expert-dbs/$', views.ExpertDatabasesAPIView.as_view(), {}, name='expert-dbs-api'),
 )
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'yaml', 'fasta', 'api', 'gff', 'gff3', 'bed'])
