@@ -207,5 +207,5 @@ class Command(BaseCommand):
 
             filehandle.write('</entries></database>')
 
-        xmllint(filename)
-        gzip_file(filename)
+        xmllint(filepath)
+        gzip_file(filepath)
