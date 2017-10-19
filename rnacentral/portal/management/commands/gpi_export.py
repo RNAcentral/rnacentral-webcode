@@ -14,8 +14,12 @@ limitations under the License.
 from optparse import make_option
 import os
 import subprocess
+
+import psycopg2
+
 from django.core.management.base import BaseCommand, CommandError
-from common_exporters.oracle_connection import OracleConnection
+
+from common_exporters.database_connection import get_db_connection
 from portal.models import Rna
 from portal.utils import so_terms
 
@@ -145,17 +149,16 @@ class GPIExporter(object):
             assert(int(none_taxids) == 0)
 
         counter = 0
-        db = OracleConnection()
-        db.get_cursor()
-        db.cursor.execute(get_sql_command())
+        conn = get_db_connection()
+        cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cursor.execute(get_sql_command())
 
         with open(self.filepath, 'w') as f:
-            for row in db.cursor.fetchall():
+            for result in cursor.fetchall():
                 if counter == 0:
                     f.write('!gpi-version: 1.2\n')
-                f.write(self.format_row(db.row_to_dict(row)))
+                f.write(self.format_row(result))
                 counter += 1
-        db.close_connection()
 
         assert(counter > 0)
         assert(os.path.exists(self.filepath))
