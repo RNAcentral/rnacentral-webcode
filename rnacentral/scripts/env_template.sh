@@ -23,8 +23,3 @@ export RNACENTRAL_HOME=
 
 # path to local installations
 export RNACENTRAL_LOCAL=
-
-# path to Oracle Instant Client libraries
-export ORACLE_HOME=
-export LD_LIBRARY_PATH=$ORACLE_HOME
-export DYLD_LIBRARY_PATH=$ORACLE_HOME

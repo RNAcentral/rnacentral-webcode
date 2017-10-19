@@ -12,7 +12,6 @@ limitations under the License.
 """
 
 from portal.management.commands.ftp_exporters.ftp_base import FtpBase
-import cx_Oracle
 import logging
 import sys
 
@@ -25,7 +24,7 @@ class XrefsExporter(FtpBase):
     Output format:
     RNAcentral_id\tDatabase_name\tExternal_id\tTax_id\tRNA_type\tGene_name
 
-    Use cx_Oracle cursor instead of Django for faster performance.
+    Use cursor instead of Django for faster performance.
     """
 
     def __init__(self, *args, **kwargs):
@@ -149,7 +148,7 @@ class XrefsExporter(FtpBase):
         try:
             self.cursor.execute(sql)
             process_xref_entries()
-        except cx_Oracle.DatabaseError, exc:
+        except Exception as exc:
             self.log_oracle_error(exc)
             sys.exit(1)
 
