@@ -11,30 +11,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from portal.management.commands.ftp_exporters.ftp_base import FtpBase
-from portal.models import Rna
-import cx_Oracle
 import re
 import sys
 
+import psycopg2
 
-def read_lob(lob):
-    """
-    If lob is an Oracle lob object, return its string representation.
-    Otherwise, return None.
-    """
-    return lob.read() if lob else lob
+from portal.management.commands.ftp_exporters.ftp_base import FtpBase
+from portal.models import Rna
+from ..common_exporters.database_connection import get_db_connection
 
 
 class FastaExporter(FtpBase):
     """
     Export RNAcentral sequences in FASTA format.
 
-    Manually create Django model instances from raw cx_Oracle results
+    Manually create Django model instances from raw database results
     in order to reuse the fasta formatting routine defined on the Rna model.
-
-    Total runtime for 6M records: ~35m
-    This step is slow because of LOBs and gzipping the output file.
     """
     def __init__(self, *args, **kwargs):
         """
@@ -69,8 +61,8 @@ class FastaExporter(FtpBase):
         """
         self.logger.info('Exporting fasta to %s' % self.subdirectory)
         self.get_filenames_and_filehandles(self.names, self.subdirectory)
-        self.get_connection()
-        self.get_cursor()
+        conn = get_db_connection()
+        self.cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     def export_active_sequences(self):
         """
@@ -97,17 +89,16 @@ class FastaExporter(FtpBase):
             previous_upi = ''
             valid_chars = re.compile('^[ABCDGHKMNRSTVWXYU]+$', re.IGNORECASE) # IUPAC
 
-            for row in self.cursor:
+            for result in self.cursor:
                 if self.test and counter >= self.test_entries:
                     return
-                result = self.row_to_dict(row)
                 if result['upi'] == previous_upi:
                     continue
                 else:
                     previous_upi = result['upi']
                 rna = Rna(upi=result['upi'],
                           seq_short=result['seq_short'],
-                          seq_long=read_lob(result['seq_long']))
+                          seq_long=result['seq_long'])
                 fasta = rna.get_sequence_fasta()
                 self.filehandles['seq_active'].write(fasta)
                 if counter < self.examples:
@@ -159,17 +150,16 @@ class FastaExporter(FtpBase):
             counter = 0
             previous_upi = ''
 
-            for row in self.cursor:
+            for result in self.cursor:
                 if self.test and counter > self.test_entries:
                     return
-                result = self.row_to_dict(row)
                 if result['upi'] == previous_upi:
                     continue
                 else:
                     previous_upi = result['upi']
                 rna = Rna(upi=result['upi'],
                           seq_short=result['seq_short'],
-                          seq_long=read_lob(result['seq_long']))
+                          seq_long=result['seq_long'])
                 fasta = rna.get_sequence_fasta()
                 self.filehandles['seq_inactive'].write(fasta)
                 counter += 1

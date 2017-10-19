@@ -11,20 +11,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from django.conf import settings
-from portal.models import Rna, Database, Xref
-from django.contrib.humanize.templatetags.humanize import intcomma
-from portal.management.commands.common_exporters.oracle_connection \
-    import OracleConnection
-import logging
 import os
 import logging
 import re
 import subprocess
 import time
 
+import psycopg2
 
-class FtpBase(OracleConnection):
+from django.conf import settings
+from django.contrib.humanize.templatetags.humanize import intcomma
+
+from portal.models import Rna, Database, Xref
+
+
+class FtpBase(object):
     """
     Base class for FTP export helper classes.
     """
@@ -37,8 +38,7 @@ class FtpBase(OracleConnection):
         self.test = test # boolean indicating whether to export all data or the first `self.entries`.
         self.test_entries = 100 # number of entries to process when --test=True
         self.examples = 5 # number of entries to write to the example files
-        self.connection = None # Oracle connection
-        self.cursor = None # Oracle cursor
+        self.cursor = None # database cursor
         self.filenames = {} # defined in each class
         self.filehandles = {} # holds all open filehandles
         self.subfolders = { # names of subfolders
@@ -100,14 +100,12 @@ class FtpBase(OracleConnection):
         """
         * close all filehandles
         * gzip and delete all files except for examples and readme
-        * close Oracle connection.
         """
         for filename, filepath in self.filenames.iteritems():
             self.filehandles[filename].close()
             if 'example' not in filename and 'readme' not in filename:
                 self.gzip_file(filepath)
                 os.remove(filepath)
-        self.close_connection()
 
     def gzip_file(self, filename):
         """
