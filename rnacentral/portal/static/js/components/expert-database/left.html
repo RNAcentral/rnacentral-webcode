@@ -1,0 +1,44 @@
+<div class="col-md-6">
+  <h2>Overview</h2>
+  <ul>
+    <li>
+      <strong>{{ $ctrl.expertDb.num_sequences | number }}</strong> distinct sequences
+      from <strong>{{ $ctrl.expertDb.num_organisms | number }}</strong> <ng-pluralize count="$ctrl.expertDb.num_organisms" when="{'one': 'organism', 'other': 'organisms'}"></ng-pluralize>
+      contributed to RNAcentral
+    </li>
+    <li>
+      the shortest sequence has <strong>{{ $ctrl.expertDb.min_length | number }}</strong> nucleotides, the longest <strong>{{ $ctrl.expertDb.max_length | number }}</strong>
+    </li>
+    <li>
+      the average length is <strong>{{ $ctrl.expertDb.avg_length | number:0 }}</strong> <ng-pluralize count="$ctrl.expertDb.avg_length" when="{'one': 'nucleotide', 'other': 'nucleotides'}"></ng-pluralize>nucleotide
+    </li>
+      <li ng-if="$ctrl.expertDb.version">
+        database version: <em>{{ $ctrl.expertDb.version }}</em>
+      </li>
+  </ul>
+
+  <h2>Example entries</h2>
+  <p>
+    <a ng-repeat="example in $ctrl.expertDb.examples" ng-href="$ctrl.routes['unique-rna-sequence']({ upi: example.upi, taxid: example.taxid })"</a>{{$last ? '' : ', '}}
+  </p>
+
+  <p>
+    <a class="btn btn-primary" ng-click="search.search('expert_db:&quot;{{expert_db.name}}&quot;')" rel="nofollow">Browse all {{expert_db.name}} sequences</a>
+  </p>
+
+  <h2>Links</h2>
+  <ul>
+    <li><a href="{{ expert_db.url }}" target="_blank">{{ expertDb.name }} homepage</a></li>
+    <li ng-if="expertDb.name === 'Vega'"><a href="http://www.gencodegenes.org/" target="_blank">GENCODE</a></li>
+  </ul>
+
+  <div class="references">
+
+    <h2>References</h2>
+
+    <span ng-repeat="publication in $ctrl.references">
+        <publication publication="publication"></publication>
+    </span>
+  </div>
+
+</div>
