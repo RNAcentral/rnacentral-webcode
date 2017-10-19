@@ -36,7 +36,7 @@ class RawSqlQueryset(models.QuerySet):
     def _get_taxid(self):
         """
         This is a dirty-dirty hack that checks, if taxid filter is applied
-        to this queryset, and if it is, extracts it from django internal,
+        to this queryset, and if it is, extracts taxid from django internals,
         otherwise, returns None.
 
         Used to provide taxid to raw SQL queries, issued by _fetch_all().
@@ -47,8 +47,7 @@ class RawSqlQueryset(models.QuerySet):
              it's a tree node. queryset.filter() expressions are stored as tree
              nodes on WhereNode objects.
          * self.query.where.children stores children of current node.
-         * self.query.where.children[0].lhs is a lookup object
-         * self.query.where.children[0].lhs is django.db.models.expressions.Col,
+         * self.query.where.children[0].lhs is a lookup - Col object - where
              Col.target knows what field to lookup.
          * self.query.were.children[0].rhs contains lookup value.
         """
