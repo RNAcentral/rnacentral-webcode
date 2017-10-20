@@ -18,10 +18,8 @@ import logging
 from optparse import make_option
 
 import attr
-from django.db.models import Q
 from django.core.management.base import BaseCommand, CommandError
 
-from portal.models import Rna
 from portal.models import Xref
 
 LOGGER = logging.getLogger(__name__)
@@ -47,17 +45,6 @@ class Mapper(object):
     """
     This will map as much MGI data as possible to known RNAcentral accessions.
     """
-
-    def map_accessions(self, accessions):
-        rna = Rna.objects.\
-            filter(
-                Q(xrefs__accession__parent_ac__in=accessions) |
-                Q(xrefs__accession__external_id__in=accessions) |
-                Q(xrefs__accession__optional_id__in=accessions) |
-                Q(xrefs__accession__accession__in=accessions)
-            )
-
-        return set(r.upi for r in rna)
 
     def ensembl_upis(self, xref):
         rna = Xref.objects.filter(
