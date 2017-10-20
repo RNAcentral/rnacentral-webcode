@@ -43,6 +43,7 @@ class FtpBase(object):
             'sequences': 'sequences',
             'trackhub': os.path.join('genome_coordinates', 'track_hub'),
             'xrefs': 'id_mapping',
+            'gpi': 'gpi',
         }
         logging.basicConfig(level='INFO')
         self.logger = logging.getLogger(self.__class__.__name__)
