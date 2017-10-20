@@ -33,6 +33,7 @@ class Md5Exporter(FtpBase):
             'md5_example': 'example.txt',
         }
         self.logger = logging.getLogger(__name__)
+        self.cursor = None
 
     def export(self):
         """
@@ -50,8 +51,7 @@ class Md5Exporter(FtpBase):
         """
         self.logger.info('Exporting md5 data to %s' % self.subdirectory)
         self.get_filenames_and_filehandles(self.names, self.subdirectory)
-        self.get_connection()
-        self.get_cursor()
+        self.cursor = self.get_cursor()
 
     def export_md5(self):
         """
