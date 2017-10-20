@@ -24,6 +24,8 @@ from portal.models import Xref
 from portal.models import Accession
 from portal.models import Database
 from portal.models import Release
+from portal.models import Reference_map
+from portal.models import Reference
 
 
 class MgiImporter(object):
@@ -80,9 +82,9 @@ class MgiImporter(object):
             function=entry['function'],
             gene=entry['gene'],
             gene_synonym=entry['gene_synonym'],
-            inference=gene['inference'],
-            locus_tag=gene['locus_tag'],
-            map=gene['map'],
+            inference=entry['inference'],
+            locus_tag=entry['locus_tag'],
+            map=entry['map'],
             mol_type=entry['mol_type'],
             ncrna_class=entry['ncrna_class'],
             note=json.dumps(entry['note_data']),

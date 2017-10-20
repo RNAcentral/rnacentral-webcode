@@ -38,9 +38,9 @@ class Counts(object):
     total = attr.ib(default=0)
     all_failed = attr.ib(default=0)
     none_possible = attr.ib(default=0)
+    inconsitent = attr.ib(default=0)
     ensembl = attr.ib(default=0)
     ref_seq = attr.ib(default=0)
-    vega = attr.ib(default=0)
 
 
 class Mapper(object):
@@ -48,25 +48,7 @@ class Mapper(object):
     This will map as much MGI data as possible to known RNAcentral accessions.
     """
 
-    def ensembl_upis(self, xref):
-        """
-        Using the Ensembl xref, find the RNAcentral id(s) if any.
-        """
-
-        LOGGER.debug("Ensembl mapping %s" % xref)
-        upis = set()
-        for transcript_id in xref['transcript_ids']:
-            xrefs = Xref.objects.filter(accession__accession__startswith=transcript_id)
-            upis.update(x.upi.upi for x in xrefs)
-        return upis
-
-    def refseq_upis(self, xref):
-        """
-        Using the RefSeq xref, find the RNAcentral id(s) if any.
-        """
-
-        LOGGER.debug("RefSeq mapping %s" % xref)
-        accessions = [tid for tid in xref['transcript_ids']]
+    def map_accessions(self, accessions):
         rna = Rna.objects.\
             filter(
                 Q(xrefs__accession__parent_ac__in=accessions) |
@@ -74,58 +56,60 @@ class Mapper(object):
                 Q(xrefs__accession__optional_id__in=accessions) |
                 Q(xrefs__accession__accession__in=accessions)
             )
+
         return set(r.upi for r in rna)
 
-    def vega_upis(self, xref):
-        """
-        Using the VEGA xref, find the RNAcentral id(s) if any.
-        """
+    def ensembl_upis(self, xref):
+        rna = Xref.objects.filter(
+            accession__external_id__in=xref['transcript_ids'],
+            deleted='N'
+        )
+        return set(r.upi.upi for r in rna)
 
-        LOGGER.debug("VEGA mapping %s" % xref)
-        tids = xref['transcript_ids']
-        xrefs = Xref.objects.filter(accession__accession__in=tids)
-        return set(x.upi.upi for x in xrefs)
+    def refseq_upis(self, xref):
+        rna = Xref.objects.filter(
+            accession__parent_ac__in=xref['transcript_ids'],
+            deleted='N'
+        )
+        return set(r.upi.upi for r in rna)
 
     def rnacentral_id(self, counts, entry):
-        """
-        Compute the RNAcentral id(s), if any, for the given entry.
-        """
 
+        print('Fetching id for %s' % entry)
         ids = set()
         mgi_id = entry['accession']
         mappers = [
             ('ensembl', self.ensembl_upis),
             ('ref_seq', self.refseq_upis),
-            ('vega', self.vega_upis),
         ]
         xrefs = entry['xref_data']
         for (key, method) in mappers:
             ids = method(xrefs[key])
             if ids:
+                print(key)
                 setattr(counts, key, getattr(counts, key) + 1)
                 break
         else:
             if not sum(len(xrefs[k]['transcript_ids']) for k, m in mappers):
                 counts.none_possible += 1
-                LOGGER.info("No possible mapping for %s", mgi_id)
+                print("No possible mapping for %s", mgi_id)
             else:
                 counts.all_failed += 1
-                LOGGER.warn("Failed mapping for %s", mgi_id)
+                print("Failed mapping for %s", mgi_id)
             return None
 
         result = sorted(ids)
-        LOGGER.debug('Found: %s -> %s', mgi_id, result)
+        print('Found: %s -> %s', mgi_id, result)
         return result
 
-    def map_entries(self, entries):
-        """
-        Map all entries.
-        """
+    def __call__(self, filename, savefile):
+        data = []
+        with open(filename, 'rb') as raw:
+            data = json.load(raw)
 
         mapped = []
         counts = Counts()
-        for entry in entries:
-            LOGGER.info('Trying to map %s' % entry['accession'])
+        for entry in data:
             counts.total += 1
             upis = self.rnacentral_id(counts, entry)
             if upis is None:
@@ -138,20 +122,6 @@ class Mapper(object):
                 result['rnacentral_id'] = upi
                 mapped.append(result)
 
-        return mapped, counts
-
-    def __call__(self, filename, savefile):
-        """
-        Read in the data in the given filename and compute as many mappings as
-        possible. Then save the entries with an extra 'rnacentral_id' field to
-        the database.
-        """
-
-        data = []
-        with open(filename, 'rb') as raw:
-            data = json.load(raw)
-
-        mapped, counts = self.map_entries(data)
         print(counts)
         with open(savefile, 'wb') as out:
             json.dumps(mapped, out)
