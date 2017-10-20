@@ -385,7 +385,7 @@ def _get_json_lineage_tree(xrefs):
     def get_lineages_and_taxids():
         """Combine the lineages from all accessions in a single list."""
         for xref in xrefs:
-            lineages.append(xref.accession.classification)
+            lineages.add(xref.accession.classification)
             taxids[xref.accession.classification.split('; ')[-1]] = xref.taxid
 
     def build_nested_dict_helper(path, text, container):
@@ -457,7 +457,7 @@ def _get_json_lineage_tree(xrefs):
                 get_nested_tree(children, container['children'][-1])
         return container
 
-    lineages = []
+    lineages = set()
     taxids = dict()
     get_lineages_and_taxids()
     nodes = get_nested_dict(lineages)
