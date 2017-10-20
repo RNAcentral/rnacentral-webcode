@@ -33,10 +33,10 @@ class MgiImporter(object):
         self.database_name = 'MGI'
         self.database = Database.objects.get(descr=self.database_name)
         self.release = Release.objects.get(db_id=self.database.id)
-        self.reference_id = Reference.objects.filter(
+        self.reference_id = Reference.objects.get(
             md5='fd169d8e25abb306cbdc773b09a819f8',
             doi='10.1093/nar/gkw1040',
-        ).first().id
+        ).id
 
     def delete_current_data(self):
         Xref.objects.filter(db_id=self.database.id).delete()
