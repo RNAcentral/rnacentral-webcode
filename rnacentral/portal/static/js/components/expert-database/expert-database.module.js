@@ -2,7 +2,7 @@ var expertDatabaseController = function($scope, $location, $window, $rootScope, 
     // initialize $scope variables
     $scope.dbName = $location.path().split('/')[2];
     $scope.expertDb = null;
-    $scope.error = false;
+    $scope.error = false;  // if this flag is true, request to server failed - show error message template
     $scope.routes = routes;  // expose routes in template for error message
 
     // download expertDbs json from server, pick appropriate database from it
@@ -12,7 +12,7 @@ var expertDatabaseController = function($scope, $location, $window, $rootScope, 
             for (var i = 0; i < response.data.length; i++) {
                 if (response.data[i].label === $scope.dbName) {
                     $scope.expertDb = response.data[i];
-                    break
+                    break;
                 }
                 if (i === response.data.length - 1) {
                     console.log("Something's wrong, I can't find database '" + $scope.dbName + "' in our databases list");

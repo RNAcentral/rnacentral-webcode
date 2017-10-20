@@ -53,11 +53,11 @@ limitations under the License.
       </div> <!-- ng-if="showError" -->
 
       <div ng-if="error === false">
-        <top expertDb="expertDb"></top>
+        <top ng-if="expertDb" expert-db="expertDb"></top>
 
         <div class="row">
-          <left expertDb="expertDb"></left>
-          <right expertDb="expertDb"></right>
+          <left ng-if="expertDb" expert-db="expertDb"></left>
+          <right ng-if="expertDb" expert-db="expertDb"></right>
         </div>
       </div>
     </div>
