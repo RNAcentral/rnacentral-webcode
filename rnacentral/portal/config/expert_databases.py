@@ -149,7 +149,7 @@ expert_dbs = [
     {
         'name': 'Rfam',
         'label': 'rfam',
-        'url': 'http://rfam.xfam.org',
+        'url': 'http://rfam.org',
         'description': 'is a collection of non-coding RNA families represented by manually curated sequence alignments, consensus secondary structures and predicted homologues',
         'hint': 'Rfam is a collection of non-coding RNA families, represented by manually curated sequence alignments, consensus secondary structures and predicted homologues',
         'tags': ['curated', 'automatic', 'alignments'],
@@ -161,16 +161,16 @@ expert_dbs = [
         ],
         'references': [
             {
+                'title': 'Rfam 13.0: Shifting to a genome-centric resource for non- coding RNA families',
+                'authors': 'Kalvari I, Argasinska J, Quinones-Olvera N, Nawrocki EP, Rivas E, Eddy SR, Bateman A, Finn RD, Petrov AI',
+                'journal': 'Nucleic Acids Res. 2017 (Accepted)',
+                'pubmed_id': None,
+            },
+            {
                 'title': 'Rfam 12.0: updates to the RNA families database',
                 'authors': 'Nawrocki EP, Burge SW, Bateman A, Daub J, Eberhardt RY, Eddy SR, Floden EW, Gardner PP, Jones TA, Tate J, Finn RD',
                 'journal': 'Nucleic Acids Res. 2015 Jan 28;43(Database issue):D130-7',
                 'pubmed_id': 25392425,
-            },
-            {
-                'title': 'Rfam 11.0: 10 years of RNA families',
-                'authors': 'Burge SW, Daub J, Eberhardt R, Tate J, Barquist L, Nawrocki EP, Eddy SR, Gardner PP, Bateman A',
-                'journal': 'Nucleic Acids Res. 2013 Jan;41(Database issue):D226-32',
-                'pubmed_id': 23125362,
             },
         ],
         'imported': True,
