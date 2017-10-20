@@ -87,7 +87,7 @@ def compute_database_stats(database):
         expert_db.num_organisms = expert_db.count_organisms()
         expert_db.save()
 
-        expert_db_stats, created = DatabaseStats.objects.get_or_create(
+        expert_db_stats, _ = DatabaseStats.objects.get_or_create(
             database=expert_db.descr,
             defaults={
                 'length_counts': '',
@@ -95,8 +95,7 @@ def compute_database_stats(database):
             })
         # django produces 'counts' keys, but d3 expects 'count' keys
         expert_db_stats.length_counts = json.dumps(context['len_counts']).\
-                                  replace('counts', 'count')
-        expert_db_stats.taxonomic_lineage = lineages
+                                             replace('counts', 'count')
         expert_db_stats.taxonomic_lineage = get_lineages(expert_db.id)
         expert_db_stats.save()
 
