@@ -23,6 +23,7 @@ from django.conf import settings
 from django.contrib.humanize.templatetags.humanize import intcomma
 
 from portal.models import Rna, Database, Xref
+from ..common_exporters.database_connection import get_db_connection
 
 
 class FtpBase(object):
@@ -148,6 +149,13 @@ class FtpBase(object):
     ########
     # Misc #
     ########
+
+    def get_cursor(self):
+        """
+        Get Postgres database cursor.
+        """
+        conn = get_db_connection()
+        return conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     def format_docstring(self, text):
         """
