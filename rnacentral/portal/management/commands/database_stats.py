@@ -13,15 +13,40 @@ limitations under the License.
 
 from django.core.management.base import BaseCommand
 from optparse import make_option
-from portal.models import Database, Rna, Xref
+from portal.models import Database, Rna
 from portal.models.database_stats import DatabaseStats
 from portal.views import _get_json_lineage_tree
 from django.db.models import Min, Max, Count, Avg
 import json
 
+import psycopg2
+from portal.management.commands.common_exporters.database_connection import get_db_connection
+
 ####################
 # Export functions #
 ####################
+
+def get_lineages(dbid):
+    """
+    Construct a common taxonomic tree for all species annotated by an expert database.
+    The tree is visualised on the expert database page.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+    sql = """
+    SELECT distinct classification, taxid
+    from xref, rnc_accessions
+    WHERE
+        xref.ac = rnc_accessions.accession
+        and xref.dbid = {dbid}
+        and xref.deleted = 'N'
+    """
+    cursor.execute(sql.format(dbid=dbid))
+    data = []
+    for result in cursor:
+        data.append((result['classification'], result['taxid']))
+    return _get_json_lineage_tree(data)
+
 
 def compute_database_stats(database):
     """
@@ -53,10 +78,6 @@ def compute_database_stats(database):
         context['len_counts'] = list(rnas.values('length').\
                                      annotate(counts=Count('length')).\
                                      order_by('length'))
-        # taxonomic_lineage
-        xrefs = Xref.objects.select_related('accession').\
-                             filter(db_id=expert_db.id).iterator()
-        lineages = _get_json_lineage_tree(xrefs)
 
         # update expert_db object
         expert_db.avg_length = context['avg_length']
@@ -76,6 +97,7 @@ def compute_database_stats(database):
         expert_db_stats.length_counts = json.dumps(context['len_counts']).\
                                   replace('counts', 'count')
         expert_db_stats.taxonomic_lineage = lineages
+        expert_db_stats.taxonomic_lineage = get_lineages(expert_db.id)
         expert_db_stats.save()
 
 
