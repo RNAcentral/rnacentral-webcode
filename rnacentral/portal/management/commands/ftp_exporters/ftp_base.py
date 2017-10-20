@@ -224,6 +224,11 @@ class FtpBase(object):
         RNAcentral is available online at http://rnacentral.org.
         For more ways of downloading the data go to http://rnacentral.org/downloads.
         """
+        filename = self.get_output_filename('release_notes_template.txt')
+        if os.path.exists(filename):
+            self.logger.info('Release notes file already exists')
+            return
+
         text = self.create_release_notes_file.__doc__
         text = self.format_docstring(text)
 
@@ -236,6 +241,6 @@ class FtpBase(object):
                            sequence_count=sequence_count,
                            database_count=database_count,
                            xrefs_count=xrefs_count)
-        f = open(self.get_output_filename('release_notes_template.txt'), 'w')
+        f = open(filename, 'w')
         f.write(text)
         f.close()
