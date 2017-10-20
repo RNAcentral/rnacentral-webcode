@@ -15,6 +15,7 @@ import json
 import math
 import re
 import requests
+import types
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import Http404, HttpResponse
@@ -384,9 +385,14 @@ def _get_json_lineage_tree(xrefs):
 
     def get_lineages_and_taxids():
         """Combine the lineages from all accessions in a single list."""
-        for xref in xrefs:
-            lineages.add(xref.accession.classification)
-            taxids[xref.accession.classification.split('; ')[-1]] = xref.taxid
+        if isinstance(xrefs, types.ListType):
+            for xref in xrefs:
+                lineages.add(xref[0])
+                taxids[xref[0].split('; ')[-1]] = xref[1]
+        else:
+            for xref in xrefs:
+                lineages.add(xref.accession.classification)
+                taxids[xref.accession.classification.split('; ')[-1]] = xref.taxid
 
     def build_nested_dict_helper(path, text, container):
         """Recursive function that builds the nested dictionary."""
