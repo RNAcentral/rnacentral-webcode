@@ -61,14 +61,18 @@ class Mapper(object):
         return set(r.upi for r in rna)
 
     def ensembl_upis(self, xref):
-        upis = set()
-        for transcript_id in xref['transcript_ids']:
-            xrefs = Xref.objects.filter(accession__accession__startswith=transcript_id)
-            upis.update(x.upi.upi for x in xrefs)
-        return upis
+        rna = Xref.objects.filter(
+            accession__external_id__in=xref['transcript_ids'],
+            deleted='N'
+        )
+        return set(r.upi.upi for r in rna)
 
     def refseq_upis(self, xref):
-        return self.map_accessions([tid for tid in xref['transcript_ids']])
+        rna = Xref.objects.filter(
+            accession__parent_ac__in=xref['transcript_ids'],
+            deleted='N'
+        )
+        return set(r.upi.upi for r in rna)
 
     def rnacentral_id(self, counts, entry):
 
