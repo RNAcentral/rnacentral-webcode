@@ -32,7 +32,7 @@ class FtpBase(object):
         Set common variables.
         """
         self.destination = destination
-        self.test = test # boolean indicating whether to export all data or the first `self.entries`.
+        self.test = test # boolean indicating whether to export all data or the first `self.test_entries`.
         self.test_entries = 100 # number of entries to process when --test=True
         self.examples = 5 # number of entries to write to the example files
         self.filenames = {} # defined in each class
