@@ -122,7 +122,7 @@ class FtpBase(object):
         """
         Log Postgres error message.
         """
-        self.logger.critical('Postgres: %s' % pg_exception.diag.message_primary)
+        self.logger.critical('Postgres: %s' % pg_exception.message)
 
     ##################
     # Data retrieval #
