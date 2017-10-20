@@ -11,9 +11,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from portal.management.commands.ftp_exporters.ftp_base import FtpBase
 import logging
 import sys
+
+from portal.management.commands.ftp_exporters.ftp_base import FtpBase
 
 
 class XrefsExporter(FtpBase):
@@ -32,13 +33,15 @@ class XrefsExporter(FtpBase):
         """
         super(XrefsExporter, self).__init__(*args, **kwargs)
 
-        self.subdirectory = self.make_subdirectory(self.destination, self.subfolders['xrefs'])
+        self.subdirectory = self.make_subdirectory(self.destination,
+                                                   self.subfolders['xrefs'])
         self.names = {
             'readme': 'readme.txt',
             'xrefs': 'id_mapping.tsv',
             'example': 'example.txt',
         }
         self.logger = logging.getLogger(__name__)
+        self.cursor = None
 
     def export(self):
         """
@@ -56,8 +59,7 @@ class XrefsExporter(FtpBase):
         """
         self.logger.info('Exporting xref data to %s' % self.subdirectory)
         self.get_filenames_and_filehandles(self.names, self.subdirectory)
-        self.get_connection()
-        self.get_cursor()
+        self.cursor = self.get_cursor()
 
     def export_xrefs(self):
         """
@@ -112,11 +114,10 @@ class XrefsExporter(FtpBase):
                                        rna_type=rna_type)
 
             counter = 0
-            for row in self.cursor:
+            for result in self.cursor:
                 if self.test and counter > self.test_entries:
                     return
                 accession_source = get_accession_source()
-                result = self.row_to_dict(row)
                 upi = result['upi']
                 database = result['descr']
                 taxid = result['taxid']
@@ -163,7 +164,8 @@ class XrefsExporter(FtpBase):
 
         * id_mapping.tsv.gz
         Tab-separated file with RNAcentral ids, corresponding external ids,
-        NCBI taxon ids, RNA types (according to INSDC classification), and gene names.
+        NCBI taxon ids, RNA types (according to INSDC classification),
+        and gene names.
 
         * example.txt
         A small file showing the first few entries.
