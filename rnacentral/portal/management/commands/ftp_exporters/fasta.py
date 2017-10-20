@@ -18,7 +18,6 @@ import psycopg2
 
 from portal.management.commands.ftp_exporters.ftp_base import FtpBase
 from portal.models import Rna
-from ..common_exporters.database_connection import get_db_connection
 
 
 class FastaExporter(FtpBase):
@@ -43,6 +42,7 @@ class FastaExporter(FtpBase):
             'species_specific': 'rnacentral_species_specific_ids.fasta',
             'seq_example': 'example.txt',
         }
+        self.cursor = None
 
     def export(self):
         """
@@ -61,8 +61,7 @@ class FastaExporter(FtpBase):
         """
         self.logger.info('Exporting fasta to %s' % self.subdirectory)
         self.get_filenames_and_filehandles(self.names, self.subdirectory)
-        conn = get_db_connection()
-        self.cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        self.cursor = self.get_cursor()
 
     def export_active_sequences(self):
         """
