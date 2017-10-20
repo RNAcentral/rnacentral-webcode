@@ -17,13 +17,9 @@ import re
 import subprocess
 import time
 
-import psycopg2
-
-from django.conf import settings
 from django.contrib.humanize.templatetags.humanize import intcomma
 
 from portal.models import Rna, Database, Xref
-from ..common_exporters.database_connection import get_db_connection
 
 
 class FtpBase(object):
@@ -39,7 +35,6 @@ class FtpBase(object):
         self.test = test # boolean indicating whether to export all data or the first `self.entries`.
         self.test_entries = 100 # number of entries to process when --test=True
         self.examples = 5 # number of entries to write to the example files
-        self.cursor = None # database cursor
         self.filenames = {} # defined in each class
         self.filehandles = {} # holds all open filehandles
         self.subfolders = { # names of subfolders
@@ -149,13 +144,6 @@ class FtpBase(object):
     ########
     # Misc #
     ########
-
-    def get_cursor(self):
-        """
-        Get Postgres database cursor.
-        """
-        conn = get_db_connection()
-        return conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     def format_docstring(self, text):
         """
