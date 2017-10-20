@@ -3,7 +3,7 @@ var taxonomy = {
         upi: '<',
         taxid: '<?'
     },
-    controller: ['$http', '$interpolate',  function($http, $interpolate) {
+    controller: ['$http', '$interpolate', 'routes'  function($http, $interpolate, routes) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
@@ -13,7 +13,7 @@ var taxonomy = {
                 d3_species_tree.html('Your browser does not support SVG');
             }
             else {
-                $http.get($interpolate("/rna/{{upi}}/lineage")({ upi: ctrl.upi })).then(
+                $http.get(routes.lineageView({ upi: ctrl.upi })).then(
                     function(response) {
                         ctrl.response = response;
                         d3SpeciesTree(response.data, ctrl.upi, '#d3-species-tree');

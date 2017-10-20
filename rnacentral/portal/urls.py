@@ -70,7 +70,7 @@ urlpatterns += patterns('',
     url(r'^rna/(?P<upi>\w+)/xrefs/?$', 'portal.views.get_xrefs_data'),
     url(r'^rna/(?P<upi>\w+)/xrefs/(?P<taxid>\d+)/?$', 'portal.views.get_xrefs_data'),
     # get species tree
-    url(r'^rna/(?P<upi>\w+)/lineage/?$', 'portal.views.get_sequence_lineage'),
+    url(r'^rna/(?P<upi>\w+)/lineage/?$', 'portal.views.get_sequence_lineage', name='sequence-lineage'),
 )
 
 # sitemaps

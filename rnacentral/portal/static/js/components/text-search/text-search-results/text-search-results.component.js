@@ -16,7 +16,7 @@ var textSearchResults = {
             ctrl.routes = routes;
 
             // retrieve expert_dbs json for display in tooltips
-            $http.get($interpolate(routes['expert-dbs-api'])({ expertDbName: '' })).then(
+            $http.get(routes.expertDbsApi({ expertDbName: '' })).then(
                 function(response) {
                     ctrl.expertDbs = response.data;
 

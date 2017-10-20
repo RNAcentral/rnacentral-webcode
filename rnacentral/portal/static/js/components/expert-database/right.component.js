@@ -12,7 +12,7 @@ var right = {
 
             if (ctrl.expertDb.descr != 'LNCRNADB') {
                 var data = expert_db_stats.length_counts;
-                var search_url = routes['text-search']; // '{% url "text-search" %}';
+                var search_url = routes.textSearch; // '{% url "text-search" %}';
                 ExpertDatabaseSequenceDistribution("#d3-seq-length-distribution", data, 500, 300, search_url);
             }
 
