@@ -44,7 +44,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'r130',
+        'version': '133',
     },
     {
         'name': 'PDBe',
@@ -69,7 +69,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'as of December 9th, 2016',
+        'version': 'as of October 20th, 2016',
     },
     {
         'name': 'FlyBase',
@@ -93,7 +93,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': 'FB2017_01',
     },
     {
@@ -118,8 +118,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
-        'version': '87',
+        'status': 'updated',
+        'version': '90',
     },
     {
         'name': 'GENCODE',
@@ -143,7 +143,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': 'updated',
         'version': 'human 25/mouse M12',
     },
     {
@@ -175,7 +175,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': '',
-        'version': 'Rfam 12.1',
+        'version': '13.0',
     },
     {
         'name': 'miRBase',
@@ -336,8 +336,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
-        'version': '',
+        'status': 'updated',
+        'version': '2.1',
     },
     {
         'name': 'RefSeq',
@@ -425,7 +425,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': 'updated',
         'version': '',
     },
     {
@@ -700,7 +700,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
+        'status': 'updated',
         'version': '',
     },
     {
@@ -796,7 +796,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
+        'status': 'updated',
         'version': 'WS251',
     },
     {
