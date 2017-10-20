@@ -24,7 +24,7 @@ from portal.models import Xref
 from portal.models import Accession
 from portal.models import Database
 from portal.models import Release
-from portal.models import Reference_map
+from portal.models.reference_map import Reference_map
 from portal.models import Reference
 
 
@@ -33,6 +33,10 @@ class MgiImporter(object):
         self.database_name = 'MGI'
         self.database = Database.objects.get(descr=self.database_name)
         self.release = Release.objects.get(db_id=self.database.id)
+        self.reference_id = Reference.objects.filter(
+            md5='fd169d8e25abb306cbdc773b09a819f8',
+            doi='10.1093/nar/gkw1040',
+        ).first().id
 
     def delete_current_data(self):
         Xref.objects.filter(db_id=self.database.id).delete()
@@ -96,21 +100,11 @@ class MgiImporter(object):
             db_xref=json.dumps(entry['xref_data']),
         )
 
-    def save_reference_data(entry):
-        return Reference.update_or_create(
-            authors=entry['authors'],
-            location=entry['location'],
-            title=entry['title'],
-            pubmed=entry['pubmed'],
-            doi=entry['doi'],
-        )
-
     def save_references(self, entry):
-        for reference in self.save_reference_data(entry):
-            Reference_map.update_or_create(
-                accession_id=entry['accession'],
-                data_id=reference_data.id,
-            )
+        Reference_map.update_or_create(
+            accession_id=entry['accession'],
+            data_id=self.reference_id,
+        )
 
     def __call__(self, filename):
         with open(filename, 'rb') as raw:
