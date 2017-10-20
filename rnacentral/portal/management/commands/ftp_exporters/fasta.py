@@ -59,7 +59,7 @@ class FastaExporter(FtpBase):
         """
         Initialize database connection and filehandles.
         """
-        self.logger.info('Exporting fasta to %s' % self.subdirectory)
+        self.logger.info('Exporting fasta to %s', self.subdirectory)
         self.get_filenames_and_filehandles(self.names, self.subdirectory)
         self.cursor = self.get_cursor()
 
@@ -111,8 +111,11 @@ class FastaExporter(FtpBase):
                 template = ">{upi}_{taxid} {description}\n{sequence}"
                 queryset = rna.xrefs.filter(deleted='N')
                 for taxid in set(queryset.values_list('taxid', flat=True)):
+                    description = rna.get_description(taxid=taxid)
                     species_specific_fasta = template.format(upi=result['upi'],
-                        taxid=taxid, sequence=sequence, description=rna.get_description(taxid=taxid))
+                                                             taxid=taxid,
+                                                             sequence=sequence,
+                                                             description=description)
                     self.filehandles['species_specific'].write(species_specific_fasta)
                 counter += 1
 
