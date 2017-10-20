@@ -25,7 +25,7 @@ from django.db.models import Min, Max
 from rest_framework import serializers
 from rest_framework import pagination
 
-from portal.models import Rna, Xref, Reference, Database, Accession, Release, Reference, Modification
+from portal.models import Rna, Xref, Reference, Database, DatabaseStats, Accession, Release, Reference, Modification
 from portal.models.reference_map import Reference_map
 from portal.models.chemical_component import ChemicalComponent
 
@@ -384,3 +384,10 @@ class RnaBedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rna
         fields = ('bed',)
+
+
+class ExpertDatabaseStatsSerializer(serializers.ModelSerializer):
+    """Serializer for presenting DatabaseStats"""
+
+    class Meta:
+        model = DatabaseStats

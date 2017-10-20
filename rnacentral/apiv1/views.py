@@ -21,6 +21,8 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework import renderers
+from rest_framework.generics import GenericAPIView
+from rest_framework.mixins import RetrieveModelMixin, ListModelMixin
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny
@@ -28,9 +30,9 @@ from rest_framework.reverse import reverse
 
 from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, PaginatedXrefSerializer, \
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
-                              RawCitationSerializer, RnaSpeciesSpecificSerializer, RnaListSerializer
+                              RawCitationSerializer, RnaSpeciesSpecificSerializer, RnaListSerializer, ExpertDatabaseStatsSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
-from portal.models import Rna, Accession, Xref, Database
+from portal.models import Rna, Accession, Xref, Database, DatabaseStats
 from portal.config.genomes import genomes
 from portal.config.expert_databases import expert_dbs
 
@@ -636,3 +638,14 @@ class ExpertDatabasesAPIView(APIView):
     def get_queryset(self):
         expert_db_name = self.kwargs['expert_db_name']
         return list(Database.objects.get(expert_db_name).references)
+
+
+class ExpertDatabasesStatsViewSet(RetrieveModelMixin, ListModelMixin, GenericAPIView):
+    """
+    API endpoint with statistics of databases, comprising RNAcentral.
+
+    [API documentation](/api)
+    """
+    queryset = DatabaseStats.objects.all()
+    serializer_class = ExpertDatabaseStatsSerializer
+    lookup_field = 'pk'

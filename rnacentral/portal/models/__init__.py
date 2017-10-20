@@ -13,6 +13,7 @@ limitations under the License.
 
 from accession import *
 from database import *
+from database_stats import *
 from formatters import *
 from genomic_coordinates import *
 from modification import *
