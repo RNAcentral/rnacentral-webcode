@@ -16,9 +16,9 @@ limitations under the License.
 {% load humanize %}
 
 {% block meta_tags %}
-    {{ block.super }}
-    <meta name="description" content="{{expert_db.name}} {{expert_db.description|safe}}"/>
-    <meta name="twitter:description" content="{{expert_db.name}} {{expert_db.description|safe}}"/>
+  {{ block.super }}
+  <meta name="description" content="{{expert_db.name}} {{expert_db.description|safe}}"/>
+  <meta name="twitter:description" content="{{expert_db.name}} {{expert_db.description|safe}}"/>
 {% endblock %}
 
 {% block title %}
@@ -26,12 +26,40 @@ limitations under the License.
 {% endblock %}
 
 {% block content %}
+  {% verbatim %}
+    <div ng-cloak ng-controller="expertDatabaseController">
+      <br>
+      <div class="row" ng-if="error === true">
+        <div class="col-md-12">
+          <div class="alert alert-danger col-md-12">
+            There was an error while processing your query
+          </div>
+        </div>
+        <div class="col-md-12">
+          <h2>Suggestions</h2>
+          <ul>
+            <li>
+              <p>
+                Try reloading the page
+              </p>
+            </li>
+            <li>
+              <p>
+                <a ng-href="{{ routes.contactUs() }}">Contact us</a> if the problem persists
+              </p>
+            </li>
+          </ul>
+        </div>
+      </div> <!-- ng-if="showError" -->
 
-<top expertDb="expertDb"></top>
+      <div ng-if="error === false">
+        <top expertDb="expertDb"></top>
 
-<div class="row">
-  <left expertDb="expertDb"></left>
-  <right expertDb="expertDb"></right>
-</div>
-
+        <div class="row">
+          <left expertDb="expertDb"></left>
+          <right expertDb="expertDb"></right>
+        </div>
+      </div>
+    </div>
+  {% endverbatim %}
 {% endblock content %}
