@@ -14,6 +14,7 @@ limitations under the License.
 import sys
 
 from portal.management.commands.ftp_exporters.ftp_base import FtpBase
+from portal.management.commands.common_exporters.database_connection import cursor
 
 
 class Md5Exporter(FtpBase):
@@ -51,43 +52,35 @@ class Md5Exporter(FtpBase):
         """
         self.logger.info('Exporting md5 data to %s' % self.subdirectory)
         self.get_filenames_and_filehandles(self.names, self.subdirectory)
-        self.cursor = self.get_cursor()
 
-    def export_md5(self):
+    def get_distinct_md5_sql(self):
         """
-        Write out the data.
+        Get RNAcentral ids and md5's of their corresponding sequences.
         """
-        def get_distinct_md5_sql():
-            """
-            Get RNAcentral ids and md5's of their corresponding sequences.
-            """
-            if self.test:
-                return """SELECT * FROM rna WHERE id < %i""" % self.test_entries
+        if self.test:
+            return "SELECT * FROM rna WHERE id < %i" % self.test_entries
+        else:
             return """
             SELECT DISTINCT upi, md5
             FROM rna
             ORDER BY upi
             """
 
-        def process_md5_entries():
-            """
-            Create md5.tsv and md5_example.txt files.
-            """
-            counter = 0
-            for result in self.cursor:
-                if self.test and counter > self.test_entries:
-                    return
-                md5 = '{upi}\t{md5}\n'.format(upi=result['upi'],
-                                              md5=result['md5'])
-                self.filehandles['md5'].write(md5)
-                if counter < self.examples:
-                    self.filehandles['md5_example'].write(md5)
-                counter += 1
-
-        sql = get_distinct_md5_sql()
+    def export_md5(self):
+        """
+        Write out the data.
+        """
         try:
-            self.cursor.execute(sql)
-            process_md5_entries()
+            with cursor() as cur:
+                cur.execute(self.get_distinct_md5_sql())
+                for counter, result in enumerate(cur):
+                    if self.test and counter > self.test_entries:
+                        break
+                    md5 = '{upi}\t{md5}\n'.format(upi=result['upi'],
+                                                  md5=result['md5'])
+                    self.filehandles['md5'].write(md5)
+                    if counter < self.examples:
+                        self.filehandles['md5_example'].write(md5)
         except Exception as exc:
             self.log_database_error(exc)
             sys.exit(1)
