@@ -3,7 +3,7 @@ var taxonomy = {
         upi: '<',
         taxid: '<?'
     },
-    controller: ['$http', '$interpolate', 'routes'  function($http, $interpolate, routes) {
+    controller: ['$http', '$interpolate', 'routes',  function($http, $interpolate, routes) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
