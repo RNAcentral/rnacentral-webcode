@@ -11,9 +11,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from django.conf import settings
+import random
+from contextlib import contextmanager
 
 import psycopg2
+
+from django.conf import settings
 
 
 def psycopg2_string():
@@ -31,12 +34,30 @@ def psycopg2_string():
 def get_db_connection():
     """
     Open a database connection.
-    Should be used in situations where @contextmanager connection doesn't work.
-    For example, loading a new release should not be done with @contextmanager
-    because it wraps all work in a giant database transaction
-    that is likely to crash.
+    """
+    return psycopg2.connect(psycopg2_string())
+
+@contextmanager
+def connection():
+    """
+    Get a database connection.
     """
     conn = psycopg2.connect(psycopg2_string())
-    conn.set_session(autocommit=False)
-    conn.set_isolation_level(0)
-    return conn
+    try:
+        yield conn
+    finally:
+        conn.close()
+
+@contextmanager
+def cursor():
+    """
+    Create a database cursor.
+    """
+    with connection() as conn:
+        cursor_name = 'rnacentral-server-side-%i' % random.randint(1, 1000)
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor,
+                          name=cursor_name)
+        try:
+            yield cur
+        finally:
+            cur.close()
