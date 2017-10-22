@@ -21,10 +21,10 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework import renderers
-from rest_framework.generics import GenericAPIView
 from rest_framework.mixins import RetrieveModelMixin, ListModelMixin
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import GenericViewSet
 from rest_framework.permissions import AllowAny
 from rest_framework.reverse import reverse
 
@@ -640,7 +640,7 @@ class ExpertDatabasesAPIView(APIView):
         return list(Database.objects.get(expert_db_name).references)
 
 
-class ExpertDatabasesStatsViewSet(RetrieveModelMixin, ListModelMixin, GenericAPIView):
+class ExpertDatabasesStatsViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
     """
     API endpoint with statistics of databases, comprising RNAcentral.
 
