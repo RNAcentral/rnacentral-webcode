@@ -18,30 +18,31 @@ import logging
 from optparse import make_option
 
 import attr
+import psycopg2
 from django.core.management.base import BaseCommand, CommandError
 
-from portal.models import Xref
+from portal.management.commands.common_exporters.database_connection import get_db_connection
 
 LOGGER = logging.getLogger(__name__)
 
 ENSEMBL_QUERY = """
 select
     xref.upi
-from xref, rnc_accession acc
+from xref, rnc_accessions acc
 where
     xref.ac = acc.accession
-    and xref.deleted = "n
-    and ac.external_id in %s
+    and xref.deleted = 'N'
+    and acc.external_id in {ids}
 """
 
 REFSEQ_QUERY = """
 select
     xref.upi
-from xref, rnc_accession acc
+from xref, rnc_accessions acc
 where
     xref.ac = acc.accession
-    and xref.deleted = "n
-    and ac.parent_ac in %s
+    and xref.deleted = 'N'
+    and acc.parent_ac in {ids}
 """
 
 
@@ -66,19 +67,25 @@ class Mapper(object):
     This will map as much MGI data as possible to known RNAcentral accessions.
     """
 
+    def __init__(self):
+        conn = get_db_connection()
+        self.cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+    def upis(self, query):
+        self.cursor.execute(query)
+        return {result['upi'] for result in self.cursor}
+
     def ensembl_upis(self, xref):
-        rna = Xref.objects.filter(
-            accession__external_id__in=xref['transcript_ids'],
-            deleted='N'
-        )
-        return set(r.upi.upi for r in rna)
+        if not xref['transcript_ids']:
+            return set()
+        ids = ', '.join("'%s'" % x for x in xref['transcript_ids'])
+        return self.upis(ENSEMBL_QUERY.format(ids="(%s)" % ids))
 
     def refseq_upis(self, xref):
-        rna = Xref.objects.filter(
-            accession__parent_ac__in=xref['transcript_ids'],
-            deleted='N'
-        )
-        return set(r.upi.upi for r in rna)
+        if not xref['transcript_ids']:
+            return set()
+        ids = ', '.join("'%s'" % x for x in xref['transcript_ids'])
+        return self.upis(REFSEQ_QUERY.format(ids="(%s)" % ids))
 
     def rnacentral_id(self, counts, entry):
 
