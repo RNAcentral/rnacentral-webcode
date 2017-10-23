@@ -44,8 +44,8 @@ class GffExporter(FtpBase):
         example = open(example_file, 'w')
         counter = 0
         for accession in self.get_xrefs_with_genomic_coordinates(taxid=genome['taxid']):
-            text = Xref.objects.get(accession=accession, deleted='N').get_gff()
         self.logger.info('Exporting data for %s', genome['species'])
+            text = Xref.default_objects.get(accession=accession, deleted='N').get_gff()
             if text:
                 f.write(text)
                 counter += 1
@@ -91,7 +91,7 @@ class Gff3Exporter(FtpBase):
         example.write(header)
         counter = 0
         for accession in self.get_xrefs_with_genomic_coordinates(taxid=genome['taxid']):
-            text = Xref.objects.get(accession=accession, deleted='N').get_gff3()
+            text = Xref.default_objects.get(accession=accession, deleted='N').get_gff3()
             if text:
                 f.write(text)
                 counter += 1
