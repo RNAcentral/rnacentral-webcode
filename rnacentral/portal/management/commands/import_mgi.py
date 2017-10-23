@@ -18,6 +18,7 @@ from datetime import datetime
 
 from optparse import make_option
 
+from django.db.models import Max
 from django.core.management.base import BaseCommand, CommandError
 
 from portal.models import Xref
@@ -38,7 +39,8 @@ class MgiImporter(object):
     def create_release(self):
         now = datetime.now()
         release = Release()
-        release.dbi = self.database
+        release.id = self.next_release_id()
+        release.db = self.database
         release.release_date = now
         release.release_type = 'F'
         release.status = 'L'
@@ -47,6 +49,9 @@ class MgiImporter(object):
         release.force_load = 'N'
         release.save()
         return release
+
+    def next_release_id(self):
+        return Release.objects.all().aggregate(Max('id')) + 1
 
     def delete_current_data(self):
         Xref.objects.filter(db_id=self.database.id).delete()
