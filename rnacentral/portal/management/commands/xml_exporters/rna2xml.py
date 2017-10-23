@@ -13,11 +13,13 @@ limitations under the License.
 
 import re
 from xml.sax import saxutils
-from portal.management.commands.common_exporters.oracle_connection \
-    import OracleConnection
+
+import psycopg2
+
+from ..common_exporters.database_connection import get_db_connection
 
 
-class RnaXmlExporter(OracleConnection):
+class RnaXmlExporter():
     """
     A class for outputting data about unique RNA sequences in xml dump format
     used for metadata indexing.
@@ -27,44 +29,35 @@ class RnaXmlExporter(OracleConnection):
 
     def __init__(self):
         """
-        Connect to the database, prepare the query and set up all variables.
+        Connect to the database and set up all variables.
         """
-        super(RnaXmlExporter, self).__init__()
-
-        def prepare_sql_statement():
-            """
-            The SQL query retrieves the data about a single sequence
-            in one database request. The query is precompiled
-            with a UPI placeholder for better performance.
-            """
-            sql = """
-            SELECT t1.taxid, t1.deleted,
-                   t2.species, t2.organelle, t2.external_id, t2.optional_id,
-                   t2.non_coding_id, t2.accession,
-                   t2.function, t2.gene, t2.gene_synonym, t2.feature_name,
-                   t2.ncrna_class, t2.product, t2.common_name, t2.note,
-                   t2.parent_ac || '.' || t2.seq_version as parent_accession,
-                   t3.display_name as expert_db,
-                   t4.timestamp as created,
-                   t5.timestamp as last,
-                   t6.len as length,
-                   t7.rna_type,
-                   t2.locus_tag,
-                   t2.standard_name
-            FROM xref t1, rnc_accessions t2, rnc_database t3, rnc_release t4,
-                 rnc_release t5, rna t6, rnc_rna_precomputed t7
-            WHERE t1.ac = t2.accession AND
-                  t1.dbid = t3.id AND
-                  t1.created = t4.id AND
-                  t1.last = t5.id AND
-                  t1.upi = t6.upi AND
-                  t1.upi = t7.upi AND
-                  t1.taxid = t7.taxid AND
-                  t1.upi = :upi AND
-                  t1.deleted = 'N' AND
-                  t1.taxid = :taxid
-            """
-            self.cursor.prepare(sql)
+        self.sql_statement = """
+        SELECT t1.taxid, t1.deleted,
+               t2.species, t2.organelle, t2.external_id, t2.optional_id,
+               t2.non_coding_id, t2.accession,
+               t2.function, t2.gene, t2.gene_synonym, t2.feature_name,
+               t2.ncrna_class, t2.product, t2.common_name, t2.note,
+               t2.parent_ac || '.' || t2.seq_version as parent_accession,
+               t3.display_name as expert_db,
+               t4.timestamp as created,
+               t5.timestamp as last,
+               t6.len as length,
+               t7.rna_type,
+               t2.locus_tag,
+               t2.standard_name
+        FROM xref t1, rnc_accessions t2, rnc_database t3, rnc_release t4,
+             rnc_release t5, rna t6, rnc_rna_precomputed t7
+        WHERE t1.ac = t2.accession AND
+              t1.dbid = t3.id AND
+              t1.created = t4.id AND
+              t1.last = t5.id AND
+              t1.upi = t6.upi AND
+              t1.upi = t7.upi AND
+              t1.taxid = t7.taxid AND
+              t1.upi = '{upi}' AND
+              t1.deleted = 'N' AND
+              t1.taxid = {taxid}
+        """
 
         self.data = dict()
 
@@ -95,9 +88,8 @@ class RnaXmlExporter(OracleConnection):
         ])
 
         self.reset()
-        self.get_connection()
-        self.get_cursor()
-        prepare_sql_statement()
+        conn = get_db_connection()
+        self.cursor = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
     def reset(self):
         """
@@ -205,9 +197,8 @@ class RnaXmlExporter(OracleConnection):
                 short_gene = re.sub(product_pattern, '', result['product'])
                 self.data['gene'].add(saxutils.escape(short_gene))
 
-        self.cursor.execute(None, {'upi': upi, 'taxid': taxid})
-        for row in self.cursor:
-            result = self.row_to_dict(row)
+        self.cursor.execute(self.sql_statement.format(upi=upi, taxid=taxid))
+        for result in self.cursor:
             store_redundant_fields()
             store_xrefs()
             store_rna_type()

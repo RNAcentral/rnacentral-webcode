@@ -94,8 +94,8 @@ class Rna(CachingMixin, models.Model):
     def get_sequence(self):
         """
         Sequences of up to 4000 nucleotides are stored in seq_short, while the
-        longer ones are in stored in seq_long as CLOB objects
-        due to Oracle column size restrictions.
+        longer ones are in stored in seq_long.
+        This was due to Oracle column size restrictions.
         """
         if self.seq_short:
             sequence = self.seq_short

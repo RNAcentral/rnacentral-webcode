@@ -11,19 +11,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from django.conf import settings
-from portal.models import Rna, Database, Xref
-from django.contrib.humanize.templatetags.humanize import intcomma
-from portal.management.commands.common_exporters.oracle_connection \
-    import OracleConnection
-import logging
 import os
+import logging
 import re
 import subprocess
 import time
 
+from django.contrib.humanize.templatetags.humanize import intcomma
 
-class FtpBase(OracleConnection):
+from portal.models import Rna, Database, Xref
+
+
+class FtpBase(object):
     """
     Base class for FTP export helper classes.
     """
@@ -33,11 +32,9 @@ class FtpBase(OracleConnection):
         Set common variables.
         """
         self.destination = destination
-        self.test = test # boolean indicating whether to export all data or the first `self.entries`.
+        self.test = test # boolean indicating whether to export all data or the first `self.test_entries`.
         self.test_entries = 100 # number of entries to process when --test=True
         self.examples = 5 # number of entries to write to the example files
-        self.connection = None # Oracle connection
-        self.cursor = None # Oracle cursor
         self.filenames = {} # defined in each class
         self.filehandles = {} # holds all open filehandles
         self.subfolders = { # names of subfolders
@@ -46,8 +43,10 @@ class FtpBase(OracleConnection):
             'sequences': 'sequences',
             'trackhub': os.path.join('genome_coordinates', 'track_hub'),
             'xrefs': 'id_mapping',
+            'gpi': 'gpi',
         }
-        self.logger = logging.getLogger(__name__)
+        logging.basicConfig(level='INFO')
+        self.logger = logging.getLogger(self.__class__.__name__)
 
     #########################
     # Files and directories #
@@ -98,14 +97,12 @@ class FtpBase(OracleConnection):
         """
         * close all filehandles
         * gzip and delete all files except for examples and readme
-        * close Oracle connection.
         """
         for filename, filepath in self.filenames.iteritems():
             self.filehandles[filename].close()
             if 'example' not in filename and 'readme' not in filename:
                 self.gzip_file(filepath)
                 os.remove(filepath)
-        self.close_connection()
 
     def gzip_file(self, filename):
         """
@@ -122,16 +119,11 @@ class FtpBase(OracleConnection):
             self.logger.info('Compressing failed, no file created')
             return ''
 
-    ##################
-    # Oracle helpers #
-    ##################
-
-    def log_oracle_error(self, oracle_exception):
+    def log_database_error(self, pg_exception):
         """
+        Log Postgres error message.
         """
-        error, = oracle_exception.args
-        self.logger.critical('Oracle error code: %s' % error.code)
-        self.logger.critical('Oracle message: %s' % error.message)
+        self.logger.critical('Postgres: %s' % pg_exception.message)
 
     ##################
     # Data retrieval #
@@ -221,18 +213,23 @@ class FtpBase(OracleConnection):
         RNAcentral is available online at http://rnacentral.org.
         For more ways of downloading the data go to http://rnacentral.org/downloads.
         """
+        filename = self.get_output_filename('release_notes_template.txt')
+        if os.path.exists(filename):
+            self.logger.info('Release notes file already exists')
+            return
+
         text = self.create_release_notes_file.__doc__
         text = self.format_docstring(text)
 
         release_date = time.strftime("%d/%m/%Y")
         sequence_count = intcomma(Rna.objects.count())
-        xrefs_count = intcomma(Xref.objects.count())
+        xrefs_count = intcomma(Xref.objects.filter(deleted='N').count())
         database_count = intcomma(Database.objects.count())
 
         text = text.format(release_date=release_date,
                            sequence_count=sequence_count,
                            database_count=database_count,
                            xrefs_count=xrefs_count)
-        f = open(self.get_output_filename('release_notes_template.txt'), 'w')
+        f = open(filename, 'w')
         f.write(text)
         f.close()
