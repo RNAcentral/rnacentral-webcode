@@ -138,7 +138,7 @@ class Mapper(object):
 
         print(counts)
         with open(savefile, 'wb') as out:
-            json.dumps(mapped, out)
+            json.dump(mapped, out)
 
 
 class Command(BaseCommand):
