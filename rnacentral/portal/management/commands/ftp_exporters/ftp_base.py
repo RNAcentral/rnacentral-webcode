@@ -140,6 +140,8 @@ class FtpBase(object):
                              filter(accession__coordinates__chromosome__isnull=False).\
                              values_list('accession', flat=True).\
                              distinct()
+        if self.test:
+            xrefs = xrefs.filter(db_id=4)
         return xrefs
 
     ########
