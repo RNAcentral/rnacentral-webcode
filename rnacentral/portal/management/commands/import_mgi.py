@@ -32,11 +32,24 @@ class MgiImporter(object):
     def __init__(self):
         self.database_name = 'MGI'
         self.database = Database.objects.get(descr=self.database_name)
-        self.release = Release.objects.get(db_id=self.database.id)
         self.reference_id = Reference.objects.get(
             md5='fd169d8e25abb306cbdc773b09a819f8',
             doi='10.1093/nar/gkw1040',
         ).id
+        self.release = self.create_release()
+
+    def create_release(self):
+        now = datetime.now()
+        release = Release()
+        release.dbi = self.database
+        release.release_date = now
+        release.release_type = 'F'
+        release.status = 'L'
+        release.timestamp = now
+        release.userstamp = 'RNACEN'
+        release.force_load = 'N'
+        release.save()
+        return release
 
     def delete_current_data(self):
         Xref.objects.filter(db_id=self.database.id).delete()
@@ -115,9 +128,12 @@ class MgiImporter(object):
             if not entry['rnacentral_id']:
                 continue
 
-            self.save_xref(entry)
             self.save_accession(entry)
             self.save_references(entry)
+            self.save_xref(entry)
+
+        self.release.status = 'D'
+        self.release.save()
 
 
 class Command(BaseCommand):
