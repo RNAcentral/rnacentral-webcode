@@ -24,6 +24,26 @@ from portal.models import Xref
 
 LOGGER = logging.getLogger(__name__)
 
+ENSEMBL_QUERY = """
+select
+    xref.upi
+from xref, rnc_accession acc
+where
+    xref.ac = acc.accession
+    and xref.deleted = "n
+    and ac.external_id in %s
+"""
+
+REFSEQ_QUERY = """
+select
+    xref.upi
+from xref, rnc_accession acc
+where
+    xref.ac = acc.accession
+    and xref.deleted = "n
+    and ac.parent_ac in %s
+"""
+
 
 @attr.s()  # pylint: disable=R0903
 class Counts(object):
@@ -73,20 +93,20 @@ class Mapper(object):
         for (key, method) in mappers:
             ids = method(xrefs[key])
             if ids:
-                print(key)
+                print('Found using: ' + key)
                 setattr(counts, key, getattr(counts, key) + 1)
                 break
         else:
             if not sum(len(xrefs[k]['transcript_ids']) for k, m in mappers):
                 counts.none_possible += 1
-                print("No possible mapping for %s", mgi_id)
+                print("No possible mapping for %s" % mgi_id)
             else:
                 counts.all_failed += 1
-                print("Failed mapping for %s", mgi_id)
+                print("Failed mapping for %s" % mgi_id)
             return None
 
         result = sorted(ids)
-        print('Found: %s -> %s', mgi_id, result)
+        print('Found: %s -> %s' % (mgi_id, result))
         return result
 
     def __call__(self, filename, savefile):
