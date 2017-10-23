@@ -133,8 +133,7 @@ class FtpBase(object):
         """
         Get RNA sequences with genomic coordinates.
         """
-        xrefs = Xref.objects.select_related('accession__coordinates').\
-                             filter(db__project_id__isnull=True).\
+        xrefs = Xref.default_objects.select_related('accession__coordinates').\
                              filter(taxid=taxid).\
                              filter(deleted='N').\
                              filter(accession__coordinates__chromosome__isnull=False).\
