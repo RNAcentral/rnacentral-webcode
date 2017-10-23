@@ -32,8 +32,8 @@ from portal.models import Reference
 class MgiImporter(object):
     def __init__(self):
         self.database_name = 'MGI'
-        self.database = Database.objects.get(descr=self.database_name)
-        self.reference_id = Reference.objects.get(doi='10.1093/nar/gkw1040').id
+        self.database = Database.default_objects.get(descr=self.database_name)
+        self.reference_id = Reference.default_objects.get(doi='10.1093/nar/gkw1040').id
         self.release = self.create_release()
 
     def create_release(self):
@@ -51,15 +51,15 @@ class MgiImporter(object):
         return release
 
     def next_release_id(self):
-        return Release.objects.all().aggregate(Max('id'))['id__max'] + 1
+        return Release.default_objects.all().aggregate(Max('id'))['id__max'] + 1
 
     def delete_current_data(self):
-        Xref.objects.filter(db_id=self.database.id).delete()
-        Accession.objects.filter(database=self.database_name).delete()
-        Reference_map.objects.filter(accession__database=self.database_name).delete()
+        Xref.default_objects.filter(db_id=self.database.id).delete()
+        Accession.default_objects.filter(database=self.database_name).delete()
+        Reference_map.default_objects.filter(accession__database=self.database_name).delete()
 
     def save_xref(self, entry):
-        Xref.objects.update_or_create(
+        Xref.default_objects.update_or_create(
             db_id=self.database.id,
             created_id=self.release.id,
             last_id=self.release.id,
@@ -77,7 +77,7 @@ class MgiImporter(object):
         xref_data = json.dumps(entry['xref_data'])
         if len(xref_data) > 800:
             xref_data = ''
-        Accession.objects.update_or_create(
+        Accession.default_objects.update_or_create(
             accession=entry['accession'],
             parent_ac=entry['parent_accession'],
             seq_version=entry['seq_version'],
@@ -118,7 +118,7 @@ class MgiImporter(object):
         )
 
     def save_references(self, entry):
-        Reference_map.objects.update_or_create(
+        Reference_map.default_objects.update_or_create(
             accession_id=entry['accession'],
             data_id=self.reference_id,
         )
