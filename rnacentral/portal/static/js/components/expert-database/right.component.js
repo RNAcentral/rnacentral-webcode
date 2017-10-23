@@ -19,26 +19,20 @@ var right = {
                 function(response) {
                     ctrl.expertDbStats = response.data;
 
-                    if (ctrl.expertDb.label != 'lncrnadb') {
-                        ExpertDatabaseSequenceDistribution(
-                            "#d3-seq-length-distribution",
-                            ctrl.expertDbStats.length_counts,
-                            500,
-                            300,
-                            routes.textSearch()
-                        );
-                    } else {  // this is lncRNAdb - retrieve the list of RNAs from server
-                         $http.get(routes.apiRnaView({upi: ""}).slice(0, -1) + '?database=LNCRNADB').then(
+                    if (ctrl.expertDb.label === 'lncrnadb') {  // this is lncRNAdb - display a table of RNAs
+                         $http.get(routes.apiRnaView({upi: ""}).slice(0, -1) + '?database=LNCRNADB&page_size=1000000000').then(
                              function(response) {
-                                 ctrl.lncrnadb = response.data.results.sort(
-                                     function(a, b) { return a.length < b.length; }
-                                 );
+                                 ctrl.lncrnadb = response.data.results.slice(0);  // clone array with slice(0)
+                                 ctrl.lncrnadb.sort(function(a, b) { return parseInt(b.length) - parseInt(a.length); });
                              }, function(response) {
                                  ctrl.onError();
                              }
-                         )
+                         );
+                    } else {  // this in not lncRNAdb - display a d3 diagram with length distribution
+                        ExpertDatabaseSequenceDistribution("#d3-seq-length-distribution", ctrl.expertDbStats.length_counts, 500, 300, routes.textSearch());
                     }
 
+                    // is sunburst construction is not too slow, display it
                     if (ctrl.noSunburst.indexOf(ctrl.expertDb.label) === -1) {
                         d3SpeciesSunburst(ctrl.expertDbStats.taxonomic_lineage, '#d3-species-sunburst', 500, 300);
                     }
