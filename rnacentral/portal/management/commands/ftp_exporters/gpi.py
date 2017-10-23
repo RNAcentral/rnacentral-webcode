@@ -83,7 +83,7 @@ class GpiExporter(FtpBase):
                 for counter, result in enumerate(cur):
                     line = self.format_gpi_line(result)
                     filehandle.write(line)
-                    if counter > self.test_entries:
+                    if self.test and counter > self.test_entries:
                         break
         assert os.path.exists(self.filepath)
         self.test_unique_ids(self.filepath)
