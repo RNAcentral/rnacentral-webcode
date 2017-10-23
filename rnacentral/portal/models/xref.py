@@ -17,6 +17,7 @@ from django.db import models
 from django.db.models import Min, Max
 from rest_framework.renderers import JSONRenderer
 
+from caching.base import CachingMixin, CachingManager
 from portal.config.genomes import genomes as rnacentral_genomes
 from accession import Accession
 from genomic_coordinates import GenomicCoordinates
@@ -306,7 +307,7 @@ class RawSqlXrefManager(models.Manager):
         return RawSqlQueryset(self.model, using=self._db)
 
 
-class Xref(models.Model):
+class Xref(CachingMixin, models.Model):
     id = models.AutoField(primary_key=True)
     db = models.ForeignKey("Database", db_column='dbid', related_name='xrefs')
     accession = models.ForeignKey("Accession", db_column='ac', to_field='accession', related_name='xrefs', unique=True)
@@ -321,6 +322,7 @@ class Xref(models.Model):
     taxid = models.IntegerField()
 
     objects = RawSqlXrefManager()
+    default_objects = CachingManager()
 
     class Meta:
         db_table = 'xref'

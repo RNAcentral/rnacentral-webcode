@@ -102,9 +102,6 @@ class Gff3Formatter(object):
 
     def __call__(self):
         """Main entry point for the class."""
-        # skip TPAs to avoid duplication with the corresponding ENA records
-        if self.xref.accession.non_coding_id:
-            return self.gff
         self.get_exons()
         if self.exons.count() == 0:
             return self.gff
