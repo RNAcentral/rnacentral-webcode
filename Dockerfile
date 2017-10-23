@@ -19,6 +19,7 @@ RUN yum install -y \
     openssl-devel \
     tar \
     unzip \
+    wget \
     zlib-devel
 
 RUN mkdir /rnacentral
@@ -131,6 +132,16 @@ RUN \
     cd $LOC && \
     rm -Rf mod_wsgi-3.4 && \
     rm mod_wsgi-3.4.tar.gz
+
+# Install UCSC utilities
+RUN \
+  cd $LOC && \
+  mkdir ucsc && \
+  cd ucsc && \
+  wget http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/fetchChromSizes && \
+  wget http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/bedToBigBed && \
+  chmod o+x fetchChromSizes && \
+  chmod o+x bedToBigBed
 
 # Define container environment variables
 ENV RNACENTRAL_HOME /rnacentral/rnacentral-webcode
