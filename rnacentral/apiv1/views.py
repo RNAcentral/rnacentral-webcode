@@ -634,11 +634,30 @@ class ExpertDatabasesAPIView(APIView):
     authentication_classes = ()
 
     def get(self, request, format=None):
+        """The data from configuration JSON and database are combined here."""
+
+        def _normalize_expert_db_label(expert_db_label):
+            """Capitalizes db label (and accounts for special cases)"""
+            if re.match('tmrna-website', expert_db_label, flags=re.IGNORECASE):
+                expert_db_label = 'TMRNA_WEB'
+            else:
+                expert_db_label = expert_db_label.upper()
+            return expert_db_label
+
+        # { "TMRNA_WEB": {'name': 'tmRNA Website', 'label': 'tmrna-website', ...}}
+        databases = { db['descr']:db for db in Database.objects.values() }
+
+        # update config.expert_databases json with Database table objects
+        for db in expert_dbs:
+            normalized_label = _normalize_expert_db_label(db['label'])
+            if normalized_label in databases:
+                db.update(databases[normalized_label])
+
         return Response(expert_dbs)
 
-    def get_queryset(self):
-        expert_db_name = self.kwargs['expert_db_name']
-        return list(Database.objects.get(expert_db_name).references)
+    # def get_queryset(self):
+    #     expert_db_name = self.kwargs['expert_db_name']
+    #     return list(Database.objects.get(expert_db_name).references)
 
 
 class ExpertDatabasesStatsViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):

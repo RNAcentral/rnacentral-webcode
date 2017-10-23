@@ -29,6 +29,7 @@ limitations under the License.
   {% verbatim %}
     <div ng-cloak ng-controller="expertDatabaseController">
       <br>
+
       <div class="row" ng-if="error === true">
         <div class="col-md-12">
           <div class="alert alert-danger col-md-12">
@@ -53,13 +54,16 @@ limitations under the License.
       </div> <!-- ng-if="showError" -->
 
       <div ng-if="error === false">
-        <top ng-if="expertDb" expert-db="expertDb"></top>
+        <div class="row">
+          <top ng-if="expertDb" expert-db="expertDb"></top>
+        </div>
 
         <div class="row">
           <left ng-if="expertDb" expert-db="expertDb"></left>
           <right ng-if="expertDb" expert-db="expertDb" on-error="onError()"></right>
         </div>
       </div>
+
     </div>
   {% endverbatim %}
 {% endblock content %}

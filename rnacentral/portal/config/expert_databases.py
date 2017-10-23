@@ -55,9 +55,9 @@ expert_dbs = [
         'tags': ['curated', '3D structure'],
         'abbreviation': 'Protein Data Bank in Europe',
         'examples': [
-            {'upi': 'URS00000ABFE9', 'taxid': 562}, # E.coli SSU, 4V4Q chain AA
-            {'upi': 'URS00005A14E2', 'taxid': 9606}, # Human SSU, 4V6X chain B2
-            {'upi': 'URS000032B6B6', 'taxid': 9606}, # Human U1 snRNA, PDB 3PGW chain N
+            {'upi': 'URS00000ABFE9', 'taxid': 562},  # E.coli SSU, 4V4Q chain AA
+            {'upi': 'URS00005A14E2', 'taxid': 9606},  # Human SSU, 4V6X chain B2
+            {'upi': 'URS000032B6B6', 'taxid': 9606},  # Human U1 snRNA, PDB 3PGW chain N
         ],
         'references': [
             {
@@ -412,9 +412,9 @@ expert_dbs = [
         'tags': ['curated', 'human', 'gene nomenclature'],
         'abbreviation': 'HUGO Gene Nomenclature Committee',
         'examples': [
-            {'upi': 'URS000075C808', 'taxid': 9606}, # HOTAIR
-            {'upi': 'URS00004ACFCF', 'taxid': 9606}, # SNORA1
-            {'upi': 'URS000075CF56', 'taxid': 9606}, # MIRNA-1
+            {'upi': 'URS000075C808', 'taxid': 9606},  # HOTAIR
+            {'upi': 'URS00004ACFCF', 'taxid': 9606},  # SNORA1
+            {'upi': 'URS000075CF56', 'taxid': 9606},  # MIRNA-1
         ],
         'references': [
             {
@@ -662,9 +662,9 @@ expert_dbs = [
         'tags': ['curated', 'model organism', 'yeast', 'Saccharomyces'],
         'abbreviation': 'Saccharomyces Genome Database',
         'examples': [
-            {'upi': 'URS0000224E47', 'taxid': 559292}, # HRA1 gene
-            {'upi': 'URS00001CAAE9', 'taxid': 559292}, # SRP
-            {'upi': 'URS0000077671', 'taxid': 559292}, # snoRNA
+            {'upi': 'URS0000224E47', 'taxid': 559292},  # HRA1 gene
+            {'upi': 'URS00001CAAE9', 'taxid': 559292},  # SRP
+            {'upi': 'URS0000077671', 'taxid': 559292},  # snoRNA
         ],
         'references': [
             {
@@ -837,9 +837,9 @@ expert_dbs = [
         'tags': ['curated', 'model organism', 'Arabidopsis thaliana'],
         'abbreviation': 'The Arabidopsis Information Resource',
         'examples': [
-            {'upi': 'URS0000591E4F', 'taxid': 3702}, # tRNA
-            {'upi': 'URS000008172F', 'taxid': 3702}, # rRNA
-            {'upi': 'URS000035F1B7', 'taxid': 3702}, # snoRNA
+            {'upi': 'URS0000591E4F', 'taxid': 3702},  # tRNA
+            {'upi': 'URS000008172F', 'taxid': 3702},  # rRNA
+            {'upi': 'URS000035F1B7', 'taxid': 3702},  # snoRNA
         ],
         'references': [
             {
