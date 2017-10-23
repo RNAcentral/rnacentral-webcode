@@ -104,7 +104,7 @@ class BedExporter(FtpBase):
         with open(self.names['bed_unsorted'], 'w') as f, \
              open(self.names['example'], 'w') as example:
             for accession in accessions:
-                text = Xref.objects.get(accession=accession, deleted='N').get_ucsc_bed()
+                text = Xref.default_objects.get(accession=accession, deleted='N').get_ucsc_bed()
                 if self.genome['assembly_ucsc']:
                     text = self.validate_chr_names(text)
                 if text:
