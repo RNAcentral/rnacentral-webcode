@@ -345,10 +345,11 @@ class RnaFilter(django_filters.FilterSet):
     min_length = django_filters.NumberFilter(name="length", lookup_type='gte')
     max_length = django_filters.NumberFilter(name="length", lookup_type='lte')
     external_id = django_filters.CharFilter(name="xrefs__accession__external_id", distinct=True)
+    database = django_filters.CharFilter(name="xrefs__accession__database")
 
     class Meta:
         model = Rna
-        fields = ['upi', 'md5', 'length', 'min_length', 'max_length', 'external_id']
+        fields = ['upi', 'md5', 'length', 'min_length', 'max_length', 'external_id', 'database']
 
 
 class RnaMixin(object):

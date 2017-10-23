@@ -9,6 +9,7 @@
     <div class="tab-pane fade in active" id="seq-length">
       <div class="panel panel-default">
         <div class="panel-body">
+
           <div ng-if="$ctrl.expertDb.label === 'lncrnadb'">
             <div class="alert alert-info small">
               <i class="fa fa-info-circle"></i> Due to the small number of entries,
@@ -22,13 +23,11 @@
                   <th>length</th>
                 </tr>
               </thead>
-                <tr ng-repeat="rna in lncrnadb">
+                <tr ng-repeat="rna in $ctrl.lncrnadb">
                   <td>
-                    <a href="{% url 'unique-rna-sequence' rna.upi %}">
-                    {% with rna.xrefs.all|first as xref %}
-                      {{xref.accession.description}}
-                    {% endwith %}
-                    ({{rna.upi}})
+                    <a ng-href="{{ rna.url }}">
+                    {{ rna.description }}
+                    ({{ $ctrl.url2urs(rna.url) }})
                     </a>
                   </td>
                   <td>{{rna.length}}</td>

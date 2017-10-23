@@ -14,7 +14,8 @@ var right = {
             ctrl.expertDbStats = null;
 
             // retrieve databaseStats from server, render them, if success
-            $http.get(routes.expertDbStatsApi({expertDbName: ctrl.expertDb.label.toUpperCase()})).then(
+            var normalizedDbName = ctrl.normalizeDbLabel(ctrl.expertDb.label);
+            $http.get(routes.expertDbStatsApi({expertDbName: normalizedDbName})).then(
                 function(response) {
                     ctrl.expertDbStats = response.data;
 
@@ -26,6 +27,16 @@ var right = {
                             300,
                             routes.textSearch()
                         );
+                    } else {  // this is lncRNAdb - retrieve the list of RNAs from server
+                         $http.get(routes.apiRnaView({upi: ""}).slice(0, -1) + '?database=LNCRNADB').then(
+                             function(response) {
+                                 ctrl.lncrnadb = response.data.results.sort(
+                                     function(a, b) { return a.length < b.length; }
+                                 );
+                             }, function(response) {
+                                 ctrl.onError();
+                             }
+                         )
                     }
 
                     if (ctrl.noSunburst.indexOf(ctrl.expertDb.label) === -1) {
@@ -33,10 +44,31 @@ var right = {
                     }
                 },
                 function(response) {
-                    console.log("received an error");
                     ctrl.onError();
                 }
             );
+        };
+
+        /**
+         * Given an expert database label (lowercase), convert it to a PK in DatabaseStats table.
+         */
+        ctrl.normalizeDbLabel = function(label) {
+            if (label === 'tmrna-website') return "TMRNA_WEB";
+            else return ctrl.expertDb.label.toUpperCase();
+        };
+
+        /**
+         * Given unique rna page url, extracts urs from it.
+         */
+        ctrl.url2urs = function(url) {
+            // if url ends with a slash, strip it
+            if (url.slice(-1) === '/') url = url.slice(-1);
+
+            // url might have a taxid, so let's just take the url fragment after 'rna'
+            var breadcrumbs = url.split('/');
+            for (var urlFragment = 0; urlFragment < breadcrumbs.length; urlFragment++) {
+                if (breadcrumbs[urlFragment] === 'rna') return breadcrumbs[urlFragment + 1];
+            }
         };
     }]
 };

@@ -18,6 +18,7 @@ HyperlinkedIdentityField - link to a view
 
 """
 import re
+import json
 
 from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse
@@ -388,6 +389,15 @@ class RnaBedSerializer(serializers.ModelSerializer):
 
 class ExpertDatabaseStatsSerializer(serializers.ModelSerializer):
     """Serializer for presenting DatabaseStats"""
+    length_counts = serializers.SerializerMethodField('get_length_counts')
+    taxonomic_lineage = serializers.SerializerMethodField('get_taxonomic_lineage')
 
     class Meta:
         model = DatabaseStats
+        fields = ('database', 'length_counts', 'taxonomic_lineage')
+
+    def get_length_counts(self, obj):
+        return json.loads(obj.length_counts)
+
+    def get_taxonomic_lineage(self, obj):
+        return json.loads(obj.taxonomic_lineage)
