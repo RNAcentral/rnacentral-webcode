@@ -51,7 +51,7 @@ class MgiImporter(object):
         return release
 
     def next_release_id(self):
-        return Release.objects.all().aggregate(Max('id')) + 1
+        return Release.objects.all().aggregate(Max('id'))['id__max'] + 1
 
     def delete_current_data(self):
         Xref.objects.filter(db_id=self.database.id).delete()
@@ -59,7 +59,7 @@ class MgiImporter(object):
         Reference_map.objects.filter(accession__database=self.database_name).delete()
 
     def save_xref(self, entry):
-        Xref.update_or_create(
+        Xref.objects.update_or_create(
             db_id=self.database.id,
             created_id=self.release.id,
             last_id=self.release.id,
@@ -70,53 +70,55 @@ class MgiImporter(object):
             userstamp='RNACEN',
             accession_id=entry['accession'],
             version=1,
-            taxid=entry['ncbi_taxon_id'],
+            taxid=entry['ncbi_tax_id'],
         )
 
     def save_accession(self, entry):
-        Accession.create_or_update(
+        xref_data = json.dumps(entry['xref_data'])
+        if len(xref_data) > 800:
+            xref_data = ''
+        Accession.objects.update_or_create(
             accession=entry['accession'],
             parent_ac=entry['parent_accession'],
             seq_version=entry['seq_version'],
             feature_start=entry['feature_location_start'],
             feature_end=entry['feature_location_end'],
-            feature_name=entry['feature_name'],
+            feature_name=entry['feature_type'],
             ordinal=entry['ordinal'],
             division=entry['division'],
             description=entry['description'],
             species=entry['species'],
             organelle=entry['organelle'],
-            classification=entry['classification'],
+            classification=entry['lineage'],
             project=entry['project'],
             is_composite=entry['is_composite'],
             non_coding_id=entry['non_coding_id'],
             database=entry['database'],
             external_id=entry['external_id'],
             optional_id=entry['optional_id'],
-            common_name=entry['common_name'],
-            allele=entry['allele'],
+            # common_name=entry['common_name'],
+            # allele=entry['allele'],
             anticodon=entry['anticodon'],
-            chromosome=entry['chromosome'],
+            # chromosome=entry['chromosome'],
             experiment=entry['experiment'],
             function=entry['function'],
             gene=entry['gene'],
-            gene_synonym=entry['gene_synonym'],
+            gene_synonym='; '.join(entry['gene_synonyms']),
             inference=entry['inference'],
             locus_tag=entry['locus_tag'],
-            map=entry['map'],
+            # map=entry['map'],
             mol_type=entry['mol_type'],
             ncrna_class=entry['ncrna_class'],
             note=json.dumps(entry['note_data']),
             old_locus_tag=entry['old_locus_tag'],
-            operon=entry['operon'],
             product=entry['product'],
-            psuedogene=entry['psuedogene'],
+            # pseudogene=entry['pseudogene'],
             standard_name=entry['standard_name'],
-            db_xref=json.dumps(entry['xref_data']),
+            db_xref=xref_data,
         )
 
     def save_references(self, entry):
-        Reference_map.update_or_create(
+        Reference_map.objects.update_or_create(
             accession_id=entry['accession'],
             data_id=self.reference_id,
         )
@@ -130,9 +132,11 @@ class MgiImporter(object):
             if not entry['rnacentral_id']:
                 continue
 
+            print('Saving %s' % entry['accession'])
             self.save_accession(entry)
             self.save_references(entry)
             self.save_xref(entry)
+            print('Saved')
 
         self.release.status = 'D'
         self.release.save()
