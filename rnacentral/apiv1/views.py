@@ -649,3 +649,11 @@ class ExpertDatabasesStatsViewSet(RetrieveModelMixin, ListModelMixin, GenericVie
     queryset = DatabaseStats.objects.all()
     serializer_class = ExpertDatabaseStatsSerializer
     lookup_field = 'pk'
+
+    def list(self, request, *args, **kwargs):
+        return super(ExpertDatabasesStatsViewSet, self).list(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        import pdb
+        pdb.set_trace()
+        return super(ExpertDatabasesStatsViewSet, self).retrieve(request, *args, **kwargs)

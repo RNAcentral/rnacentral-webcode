@@ -10,7 +10,9 @@ angular.module("rnacentralApp").service('routes', ['$interpolate', function($int
         resultsPage: $interpolate('/export/results'),
         rnaView: $interpolate('/rna/{{upi}}/{{taxid}}'),
         lineageView: $interpolate('/rna/{{upi}}/lineage'),
-        expertDbsApi: $interpolate('/api/v1/expert-dbs/{{ expertDbName }}')
+        expertDbsApi: $interpolate('/api/v1/expert-dbs/{{ expertDbName }}'),
+        expertDbStatsApi: $interpolate('/api/v1/expert-db-stats/{{ expertDbName }}'),
+        textSearch: $interpolate('search'),
     };
 }]);
 

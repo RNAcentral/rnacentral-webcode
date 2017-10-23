@@ -1,5 +1,6 @@
 var right = {
     bindings: {
+        onError: "&",
         expertDb : "<"
     },
     templateUrl: '/static/js/components/expert-database/right.html',
@@ -10,17 +11,32 @@ var right = {
             // variables
             ctrl.routes = routes;  // urls used in template (hardcoded)
             ctrl.noSunburst = ['ena', 'rfam', 'silva', 'greengenes'];  // don't show sunburst for these databases
+            ctrl.expertDbStats = null;
 
-            if (ctrl.expertDb.label != 'lncrnadb') {
-                var data = expert_db_stats.length_counts;
-                var search_url = routes.textSearch;  // '{% url "text-search" %}';
-                ExpertDatabaseSequenceDistribution("#d3-seq-length-distribution", data, 500, 300, search_url);
-            }
+            // retrieve databaseStats from server, render them, if success
+            $http.get(routes.expertDbStatsApi({expertDbName: ctrl.expertDb.label.toUpperCase()})).then(
+                function(response) {
+                    ctrl.expertDbStats = response.data;
 
-            if ($ctrl.noSunburst.index(ctrl.expertDb.label) === -1) {
-                data = expert_db_stats.taxonomic_lineage;
-                d3SpeciesSunburst(data, '#d3-species-sunburst', 500, 300);
-            }
+                    if (ctrl.expertDb.label != 'lncrnadb') {
+                        ExpertDatabaseSequenceDistribution(
+                            "#d3-seq-length-distribution",
+                            ctrl.expertDbStats.length_counts,
+                            500,
+                            300,
+                            routes.textSearch()
+                        );
+                    }
+
+                    if (ctrl.noSunburst.indexOf(ctrl.expertDb.label) === -1) {
+                        d3SpeciesSunburst(ctrl.expertDbStats.taxonomic_lineage, '#d3-species-sunburst', 500, 300);
+                    }
+                },
+                function(response) {
+                    console.log("received an error");
+                    ctrl.onError();
+                }
+            );
         };
     }]
 };

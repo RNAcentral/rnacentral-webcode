@@ -45,7 +45,7 @@ urlpatterns = patterns('',
     url(r'^expert-dbs/$', views.ExpertDatabasesAPIView.as_view(), {}, name='expert-dbs-api'),
     # expert databases stats
     url(r'^expert-db-stats/$', views.ExpertDatabasesStatsViewSet.as_view({'get': 'list'}), {}, name='expert-db-stats'),
-    url(r'^expert-db-stats/(?P<pk>.*)/?$', views.ExpertDatabasesStatsViewSet.as_view({'get': 'detail'}), {}, name='expert-db-stats'),
+    url(r'^expert-db-stats/(?P<pk>.*)/?$', views.ExpertDatabasesStatsViewSet.as_view({'get': 'retrieve'}), {}, name='expert-db-stats'),
 )
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'yaml', 'fasta', 'api', 'gff', 'gff3', 'bed'])

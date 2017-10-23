@@ -5,6 +5,11 @@ var expertDatabaseController = function($scope, $location, $window, $rootScope, 
     $scope.error = false;  // if this flag is true, request to server failed - show error message template
     $scope.routes = routes;  // expose routes in template for error message
 
+    // pass this down to components to receive errors from them
+    $scope.onError = function() {
+        $scope.error = true;
+    };
+
     // download expertDbs json from server, pick appropriate database from it
     $http.get(routes.expertDbsApi()).then(
         function(response) {
