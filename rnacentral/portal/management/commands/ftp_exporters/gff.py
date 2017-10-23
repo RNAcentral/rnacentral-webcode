@@ -26,17 +26,19 @@ class GffExporter(FtpBase):
         """
         """
         super(GffExporter, self).__init__(*args, **kwargs)
-
-        self.subdirectory = self.make_subdirectory(self.destination, self.subfolders['coordinates'])
         self.logger = logging.getLogger(__name__)
+        self.subdirectory = self.make_subdirectory(self.destination,
+                                                   self.subfolders['coordinates'])
 
     def export(self, genome):
         """
         Main export function.
         """
         self.logger.info('Exporting gff')
-        filename = '%s.%s.gff' % (genome['species'].replace(' ', '_'), genome['assembly'])
-        gff_file = self.get_output_filename(filename, parent_dir=self.subdirectory)
+        filename = '%s.%s.gff' % (genome['species'].replace(' ', '_'),
+                                  genome['assembly'])
+        gff_file = self.get_output_filename(filename,
+                                            parent_dir=self.subdirectory)
         example_file = self.get_output_filename('gff_example.txt',
                                                 parent_dir=self.subdirectory)
         f = open(gff_file, 'w')
