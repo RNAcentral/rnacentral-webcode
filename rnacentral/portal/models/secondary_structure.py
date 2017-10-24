@@ -27,3 +27,4 @@ class SecondaryStructure(models.Model):
 
     class Meta:
         db_table = 'rnc_secondary_structure'
+        unique_together = (('accession', 'md5'),)
