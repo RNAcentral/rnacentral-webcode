@@ -12,6 +12,7 @@ limitations under the License.
 """
 
 import re
+import json
 from xml.sax import saxutils
 
 import psycopg2
@@ -69,22 +70,24 @@ class RnaXmlExporter():
                                  'created', 'last', 'deleted',
                                  'function', 'gene', 'gene_synonym', 'note',
                                  'product', 'common_name', 'parent_accession',
-                                 'optional_id', 'locus_tag', 'standard_name']
+                                 'optional_id', 'locus_tag', 'standard_name',
+                                 'rfam_family_name', 'rfam_id', 'rfam_clan']
         # other data fields for which the sets should be (re-)created
         self.data_fields = ['rna_type', 'authors', 'journal', 'popular_species',
-                            'pub_title', 'pub_id', 'insdc_submission', 'xrefs',]
+                            'pub_title', 'pub_id', 'insdc_submission', 'xrefs',
+                            'rfam_problem_found', 'rfam_problems']
 
         self.popular_species = set([
-            9606,   # human
-            10090,  # mouse
-            7955,   # zebrafish
-            3702,   # Arabidopsis thaliana
-            6239,   # Caenorhabditis elegans
-            7227,   # Drosophila melanogaster
-            559292, # Saccharomyces cerevisiae S288c
-            4896,   # Schizosaccharomyces pombe
-            511145, # Escherichia coli str. K-12 substr. MG1655
-            224308, # Bacillus subtilis subsp. subtilis str. 168
+            9606,    # human
+            10090,   # mouse
+            7955,    # zebrafish
+            3702,    # Arabidopsis thaliana
+            6239,    # Caenorhabditis elegans
+            7227,    # Drosophila melanogaster
+            559292,  # Saccharomyces cerevisiae S288c
+            4896,    # Schizosaccharomyces pombe
+            511145,  # Escherichia coli str. K-12 substr. MG1655
+            224308,  # Bacillus subtilis subsp. subtilis str. 168
         ])
 
         self.reset()
@@ -197,12 +200,32 @@ class RnaXmlExporter():
                 short_gene = re.sub(product_pattern, '', result['product'])
                 self.data['gene'].add(saxutils.escape(short_gene))
 
+        def store_rfam_data():
+            self.data['rfam_family_name'].add(result['rfam_family_name'])
+            self.data['rfam_id'].add(result['rfam_id'])
+            self.data['rfam_clan'].add(result['rfam_clan'])
+
+            problems = json.loads(result['rfam_problems'])
+            for problem in problems['problems']:
+                self.data['rfam_problems'].add(problem['name'])
+
+            if not 'rfam_problem_found' not in self.data or \
+                    not self.data['rfam_problem_found']:
+                self.data['rfam_problem_found'] = ['no']
+
+            if problems['has_issue']:
+                self.data['rfam_problem_found'] = ['yes']
+
         self.cursor.execute(self.sql_statement.format(upi=upi, taxid=taxid))
         for result in self.cursor:
             store_redundant_fields()
             store_xrefs()
             store_rna_type()
             store_computed_data()
+            store_rfam_data()
+
+        if not self.data['rfam_problems']:
+            self.data['rfam_problems'].add('none')
 
     def is_active(self):
         """
@@ -300,6 +323,9 @@ class RnaXmlExporter():
         generic_types = set(['misc_RNA', 'misc RNA', 'other'])
         if len(self.data['rna_type']) == 1 and \
                 generic_types.intersection(self.data['rna_type']):
+            boost = boost - 0.5
+
+        if 'incomplete_sequence' in self.data['rfam_problems']:
             boost = boost - 0.5
 
         self.data['boost'] = boost
@@ -413,37 +439,49 @@ class RnaXmlExporter():
                 {boost}
                 {locus_tag}
                 {standard_name}
+                {rfam_family_name}
+                {rfam_id}
+                {rfam_clan}
+                {rfam_problem}
+                {rfam_problem_found}
             </additional_fields>
         </entry>
-        """.format(upi=self.data['upi'],
-                   description=self.data['description_line'],
-                   first_seen=self.first_seen(),
-                   last_seen=self.last_seen(),
-                   cross_references=format_cross_references(),
-                   is_active=wrap_in_field_tag('active', self.is_active()),
-                   length=wrap_in_field_tag('length', self.data['length']),
-                   species=format_field('species'),
-                   organelles=format_field('organelle'),
-                   expert_dbs=format_field('expert_db'),
-                   common_name=format_field('common_name'),
-                   function=format_field('function'),
-                   gene=format_field('gene'),
-                   gene_synonym=format_field('gene_synonym'),
-                   rna_type=format_field('rna_type'),
-                   product=format_field('product'),
-                   has_genomic_coordinates=wrap_in_field_tag('has_genomic_coordinates',
-                                            str(self.data['has_genomic_coordinates'])),
-                   md5=wrap_in_field_tag('md5', self.data['md5']),
-                   authors=format_author_fields(),
-                   journal=format_field('journal'),
-                   insdc_submission = format_field('insdc_submission'),
-                   pub_title=format_field('pub_title'),
-                   pub_id=format_field('pub_id'),
-                   popular_species=format_field('popular_species'),
-                   boost=wrap_in_field_tag('boost', self.data['boost']),
-                   locus_tag=format_field('locus_tag'),
-                   standard_name=format_field('standard_name'),
-                   taxid=taxid)
+        """.format(
+            upi=self.data['upi'],
+            description=self.data['description_line'],
+            first_seen=self.first_seen(),
+            last_seen=self.last_seen(),
+            cross_references=format_cross_references(),
+            is_active=wrap_in_field_tag('active', self.is_active()),
+            length=wrap_in_field_tag('length', self.data['length']),
+            species=format_field('species'),
+            organelles=format_field('organelle'),
+            expert_dbs=format_field('expert_db'),
+            common_name=format_field('common_name'),
+            function=format_field('function'),
+            gene=format_field('gene'),
+            gene_synonym=format_field('gene_synonym'),
+            rna_type=format_field('rna_type'),
+            product=format_field('product'),
+            has_genomic_coordinates=wrap_in_field_tag('has_genomic_coordinates',
+                                                      str(self.data['has_genomic_coordinates'])),
+            md5=wrap_in_field_tag('md5', self.data['md5']),
+            authors=format_author_fields(),
+            journal=format_field('journal'),
+            insdc_submission = format_field('insdc_submission'),
+            pub_title=format_field('pub_title'),
+            pub_id=format_field('pub_id'),
+            popular_species=format_field('popular_species'),
+            boost=wrap_in_field_tag('boost', self.data['boost']),
+            locus_tag=format_field('locus_tag'),
+            standard_name=format_field('standard_name'),
+            taxid=taxid,
+            rfam_family_name=format_field('rfam_family_name'),
+            rfam_id=format_field('rfam_id'),
+            rfam_clan=format_field('rfam_clan'),
+            rfam_problem=format_field('rfam_problems'),
+            rfam_problem_found=format_field('rfam_problem_found'),
+        )
         return format_whitespace(text)
 
     ##################

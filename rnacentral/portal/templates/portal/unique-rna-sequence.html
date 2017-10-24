@@ -117,8 +117,25 @@ limitations under the License.
                 <li>
                   Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab">species</a>
                 </li>
-                <li>{{ context.precomputed.rna_type }}</li>
+                <li><span class="badge">{{ rna.get_rna_type }}</span></li>
               </ul>
+
+              {% if context.rfam_status.has_issue %}
+                <ul class="list-inline" style="margin-top: 5px;">
+                <li>
+                  <div class="alert alert-warning" style="margin-bottom: 0px">
+                    <i class="fa fa-warning fa-2x pull-left" aria-hidden="true"></i>
+                    {% for message in context.rfam_status.messages %}
+                      {% autoescape off %}
+                        <span>{{ message }}</span>
+                      {% endautoescape %}
+                      <br />
+                    {% endfor %}
+                  </div>
+                </li>
+                </ul>
+              {% endif %}
+
             </div>
           </div> <!-- .panel .panel-default -->
 
@@ -182,6 +199,108 @@ limitations under the License.
             </div>
           </div>
 
+          <div>
+            <h2>
+              Rfam hits
+              <small>
+                {% if rna.get_rfam_hits|length > 1 %}
+                  {% if rna.get_rfam_hit_families|length != rna.get_rfam_hits|length %}
+                    {{ rna.get_rfam_hit_families|length|intcomma }} families, {{ rna.get_rfam_hits|length|intcomma }} locations
+                  {% else %}
+                    {{ rna.get_rfam_hits|length|intcomma }} total
+                  {% endif %}
+                {% endif %}
+                <a href="#" uib-tooltip="Inferred from infernal scan. Click for details.">
+                  <i class="fa fa-question-circle" aria-hidden="true"></i>
+                </a>
+              </small>
+            </h2>
+
+            <div class="panel panel-default">
+              <div class="panel-body" style="padding-bottom: 0px;">
+                {% if rna.grouped_rfam_hits|length > 0 %}
+                <ul class="media-list">
+                {% for hit in rna.grouped_rfam_hits %}
+                <li class="media col-md-6" style="margin-bottom: 1.5em;">
+                  <div class="media-left media-top col-md-3"
+                    uib-tooltip="Consensus secondary structure of Rfam model {{ hit.rfam_model_id }}">
+                      <a href="{{ hit.rfam_model.twod_url }}">
+                        <img class="media-object thumbnail"
+                          src="{{ hit.rfam_model.thumbnail_url }}"
+                          style="max-width: 120px; max-height: 120px;"
+                          alt="{{ hit.rfam_model_id }} secondary structure">
+                      </a>
+                  </div>
+
+                  <div class="media-body col-md-9">
+                    <h4 class="media-heading" style='padding-left: 0px;'>
+                      <a href="{{ hit.rfam_model.url }}">
+                        {{ hit.rfam_model.long_name }}
+                      </a>
+                    </h4>
+
+                    <ul class="list-unstyled">
+                      <li>
+                        {{ hit.rfam_model_id }}
+                        | {{ hit.rfam_model.rfam_rna_type }}
+                        {% if hit.rfam_model.domain != None %}
+                          | {{ hit.rfam_model.domain }}
+                        {% endif %}
+                        {% if hit.rfam_model.rna_type != "" %}
+                          | <span class="badge">{{ hit.rfam_model.rna_type }}</span>
+                        {% endif %}
+                      </li>
+                      <li>
+                        {% if hit.rfam_model.go_terms|length > 1 %}
+                        <ul class="list-unstyled">
+                          {% for go_term in hit.rfam_model.go_terms %}
+                          <li>
+                            <a href="{{ go_term.quickgo_url }}">{{ go_term.go_term_id }}</a>
+                            <small>{{ go_term.name }}</small>
+                          </li>
+                          {% endfor %}
+                        </ul>
+                        {% else %}
+                          {% with hit.rfam_model.go_terms.0 as go_term %}
+                            <a href="{{ go_term.quickgo_url }}">{{ go_term.go_term_id }}</a>
+                            <small>{{ go_term.name }}</small>
+                          {% endwith %}
+                        {% endif %}
+                      </li>
+                      {% with hit.ranges as ranges %}
+                        <li>Matches at{% if ranges|length == 1 %}:
+                              <strong>{{ ranges.0.0|add:"1"|intcomma }}-{{ ranges.0.1|intcomma }}</strong>
+                              ({% widthratio ranges.0.2 1 100 %}% of the model)
+                          {% else %}<a data-toggle="collapse"
+                                       href="#matchPositionsList-{{ forloop.counter }}"
+                                       aria-expanded="false"
+                                       aria-controls="matchPositionsList">
+                            <i class="fa fa-list" aria-hidden="true"></i> {{ ranges|length }} locations
+                          </a>
+                          <ul class='collapse list-unstyled' id='matchPositionsList-{{ forloop.counter }}'>
+                            {% for seq_start, seq_stop, ratio in hit.ranges %}
+                              <li style='padding-left: 1em;'>
+                                <strong>{{ seq_start|add:"1"|intcomma }}-{{ seq_stop|intcomma }}</strong>
+                                ({% widthratio ratio 1 100 %}% of the model)
+                              </li>
+                            {% endfor %}
+                            </ul>
+                          {% endif %}
+                        </li>
+                      {% endwith %}
+                    </ul>
+
+                  </div>
+                </li>
+                {% endfor %}
+                </ul>
+                {% else %}
+                  <p>No hits found</p>
+                {% endif %}
+              </div>
+            </div>
+
+          </div>
 
           <h2>
               Sequence

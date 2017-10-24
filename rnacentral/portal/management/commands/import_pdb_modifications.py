@@ -13,6 +13,7 @@ limitations under the License.
 
 from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
+
 from common_exporters.oracle_connection import OracleConnection
 from portal.models import Xref, Modification
 from portal.models.chemical_component import ChemicalComponent

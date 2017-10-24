@@ -11,6 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import operator as op
+import itertools as it
 from collections import Counter
 
 from caching.base import CachingMixin, CachingManager
@@ -26,8 +28,12 @@ from modification import Modification
 from rna_precomputed import RnaPrecomputed
 from reference import Reference
 from xref import Xref
+from .rfam import RfamHit, RfamAnalyzedSequences
+from .accession import Accession
+
 from formatters import Gff3Formatter, GffFormatter, _xref_to_bed_format
 from portal.utils import descriptions as desc
+from portal.rfam_matches import check_issues
 
 
 class Rna(CachingMixin, models.Model):
@@ -329,3 +335,92 @@ class Rna(CachingMixin, models.Model):
                 xrefs = xrefs.filter(taxid=taxid)
 
         return xrefs.select_related('accession', 'db')
+
+    def has_rfam_hits(self):
+        """
+        Check if this has any Rfam hits.
+
+        :returns bool: True if there are any Rfam matches.
+        """
+        return bool(self.get_rfam_hits())
+
+    def get_rfam_hits(self, allow_suppressed=True):
+        """
+        This gets all matches of this Rna to any Rfam hit. Note that this does
+        not exclude any families which are supressed. If two families from the
+        same clan hit the same sequence then this will selec the hit with the
+        lowest e-value and highest score.
+
+        :returns list: A list of all Rfam hits to this sequence.
+        """
+
+        query = RfamHit.objects.filter(upi=self.upi)
+        if not allow_suppressed:
+            query = query.filter(rfam_model__is_suppressed=False)
+        return query.order_by('rfam_model_id', 'sequence_start')
+
+    def grouped_rfam_hits(self, allow_suppressed=True):
+        hits = it.groupby(
+            self.get_rfam_hits(allow_suppressed=allow_suppressed),
+            op.attrgetter('rfam_model_id')
+        )
+        results = []
+        for _, hits in hits:
+            hits = list(hits)
+            ranges = []
+            for hit in hits:
+                ranges.append((
+                    hit.sequence_start,
+                    hit.sequence_stop,
+                    hit.model_completeness,
+                ))
+
+            results.append({
+                'raw': hits,
+                'ranges': ranges,
+                'rfam_model': hits[0].rfam_model,
+                'rfam_model_id': hits[0].rfam_model_id,
+            })
+        return sorted(results, key=lambda h: h['ranges'][0][0])
+
+    def get_rfam_status(self, taxid=None):
+        return check_issues(self, taxid=taxid)
+
+    def was_rfam_analyzed(self):
+        """
+        Check if this Rna was analyzed with Rfam. This does not check if there
+        are matches, because some sequences will have no match even when
+        analyzed, so this looks at the RfamAnalyzedSequences table for this
+        information.
+
+        :returns bool: True if this was ever analyzed with Rfam.
+        """
+
+        has = bool(RfamAnalyzedSequences.objects.get(upi=self.upi))
+        return has
+
+    def get_domains(self, taxid=None, ignore_unclassified=False):
+        """
+        Get all domains this sequence has been found in. If taxid is given then
+        only the domain for all accessions from the given taxid will be
+        returned. If ignore_unclassified is given then this will exclude any
+        domains where the organism comes from an enviromental sample or is
+        uncultured.
+        """
+
+        domains = set()
+        accessions = Accession.objects.filter(xrefs__upi=self.upi)
+        if taxid:
+            accessions = accessions.filter(xrefs__taxid=taxid)
+        for accession in accessions:
+            classification = accession.classification
+            if ignore_unclassified:
+                if 'uncultured' in classification or \
+                        'environmental' in classification:
+                    continue
+            domains.add(classification.split(';')[0])
+        return domains
+
+    def get_rfam_hit_families(self, **kwargs):
+        hits = self.get_rfam_hits(**kwargs)
+        return sorted(set(hit.rfam_model for hit in hits))
