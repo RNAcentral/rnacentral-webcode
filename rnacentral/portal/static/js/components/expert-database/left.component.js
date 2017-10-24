@@ -7,8 +7,9 @@ var left = {
         var ctrl = this;
 
         ctrl.$onInit = function() {
-            // urls used in template (hardcoded)
+            // expose services to the template
             ctrl.routes = routes;
+            ctrl.search = search;
         };
     }]
 };

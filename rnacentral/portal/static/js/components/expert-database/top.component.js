@@ -10,8 +10,13 @@ var top = {
             // urls used in template (hardcoded)
             ctrl.routes = routes;
 
-            // TODO: route to expert-db-logos!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            // expert-db-logos {% static 'img/expert-db-logos/' %}{{expert_db.label}}.png
+            /**
+             * Given an expert database label (lowercase), convert it to a PK in DatabaseStats table.
+             */
+            ctrl.normalizeDbLabel = function(label) {
+                if (label === 'tmrna-website') return "TMRNA_WEB";
+                else return ctrl.expertDb.label.toUpperCase();
+            };
         };
     }]
 };
