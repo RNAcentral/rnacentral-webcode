@@ -70,6 +70,8 @@ class GpiExporter(FtpBase):
         SELECT upi, taxid, description, rna_type
         FROM rnc_rna_precomputed
         WHERE taxid IS NOT NULL
+        AND rna_type IS NOT NULL
+        AND description IS NOT NULL
         {test}
         """
         if self.test:
