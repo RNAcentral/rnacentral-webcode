@@ -15,7 +15,8 @@ import re
 
 from django.db import transaction
 from django.core.management.base import BaseCommand
-from portal.models import Xref, Database, Release, GenomicCoordinates, Reference_map, Accession
+from portal.models import Xref, Database, Release, GenomicCoordinates, Accession
+from portal.models.reference_map import Reference_map
 
 
 ####################

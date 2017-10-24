@@ -1,0 +1,13 @@
+node {
+    start_supervisor()
+}
+
+private void start_supervisor() {
+    sh '''
+    cd /nfs/public/rw/xfam/rnacentral/live
+    source local/virtualenvs/RNAcentral/bin/activate
+    cd rnacentral-webcode/rnacentral
+    source scripts/env.sh
+    fab -H ves-pg-a4 production start_supervisor
+    '''
+}

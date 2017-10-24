@@ -61,7 +61,7 @@ class HGNCMapper():
         """
         found = 0
         no_match = 0
-        match_refseq = match_vega = match_gtrnadb = match_sequence = 0
+        match_refseq = match_gtrnadb = match_sequence = 0
         for i, entry in enumerate(self.data):
             if self.test and i > 20:
                 break
@@ -70,10 +70,6 @@ class HGNCMapper():
                 rnacentral_id = self.get_rnacentral_id(entry['refseq_accession'][0])
                 if rnacentral_id:
                     match_refseq += 1
-            if 'vega_id' in entry and not rnacentral_id:
-                rnacentral_id = self.get_rnacentral_id(entry['vega_id'])
-                if rnacentral_id:
-                    match_vega += 1
             if entry['locus_type'] == 'RNA, transfer' and not rnacentral_id:
                 gtrnadb_id = self.get_gtrnadb_id(entry['symbol'])
                 if gtrnadb_id:
@@ -99,7 +95,6 @@ class HGNCMapper():
 
         print '%i matches found' % found
         print '%i RefSeq matches' % match_refseq
-        print '%i Vega matches' % match_vega
         print '%i GtRNAdb matches' % match_gtrnadb
         print '%i sequence matches' % match_sequence
         print '%i no match' % no_match
