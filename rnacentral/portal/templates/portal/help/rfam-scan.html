@@ -1,0 +1,51 @@
+<!--
+Copyright [2009-2017] EMBL-European Bioinformatics Institute
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+{% extends "portal/base.html" %}
+
+{% block meta_tags %}
+    {{ block.super }}
+    <meta name="description" content="Frequently Asked Questions about RNAcentral"/>
+    <meta name="twitter:description" content="Frequently Asked Questions about RNAcentral"/>
+{% endblock %}
+
+{% block title %}
+Help: Rfam annotations
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-md-8" role="main">
+
+    <h1><i class="fa fa-map-marker"></i> Rfam annotations</h1>
+
+    {% load markdown_deux_tags %}
+    {% markdown %}
+      {% include  'portal/docs/rfam-scan.md' %}
+    {% endmarkdown %}
+
+    <hr>
+
+    <a class="btn btn-default btn-sm" title="Edit on GitHub" href="https://github.com/RNAcentral/rnacentral-webcode/edit/master/rnacentral/portal/templates/portal/docs/rfam-scan.md" target="_blank"><i class="fa fa-pencil-square-o"></i> Improve this page</a>
+  </div>
+
+  <div class="col-md-4">
+    {% include 'portal/help/sidebar.html' %}
+  </div>
+
+</div>
+
+<br>
+
+{% endblock content %}

@@ -1,4 +1,3 @@
-# Rfam hits
 
 RNAcentral now provides the results of searching all sequences with Rfam
 models. Rfam is a database of noncoding RNA families. It covers a broad

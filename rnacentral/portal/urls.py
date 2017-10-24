@@ -42,6 +42,7 @@ urlpatterns = patterns('',
     url(r'^help/?$', views.StaticView.as_view(), {'page': 'help/faq'}, name='help'),
     url(r'^help/browser-compatibility/?$', views.StaticView.as_view(), {'page': 'help/browser-compatibility'}, name='help-browser-compatibility'),
     url(r'^help/text-search/?$', views.StaticView.as_view(), {'page': 'help/text-search'}, name='help-text-search'),
+    url(r'^help/rfam-scan/?$', views.StaticView.as_view(), {'page': 'help/rfam-scan'}, name='help-rfam-scan'),
     url(r'^help/genomic-mapping/?$', views.StaticView.as_view(), {'page': 'help/genomic-mapping', 'divisions': get_ensembl_divisions()}, name='help-genomic-mapping'),
     # training
     url(r'^training/?$', views.StaticView.as_view(), {'page': 'training'}, name='training'),
