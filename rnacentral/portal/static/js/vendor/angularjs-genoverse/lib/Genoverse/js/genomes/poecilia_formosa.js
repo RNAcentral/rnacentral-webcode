@@ -1,1 +1,0 @@
-Genoverse.Genomes.poecilia_formosa = {};

@@ -1,0 +1,395 @@
+<div>
+  <h2>
+    Annotations
+    <small id="annotations-datatables-counter">{{ $ctrl.total | number }} total</small>
+
+    <div class="btn-group btn-group-xs margin-left-5px btn-group-xref-sort" style="display:none">
+      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        Sort by<span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu">
+        <li><a id="sort-by-first-seen">first seen</a></li>
+        <li><a id="sort-by-last-seen">last seen</a></li>
+      </ul>
+    </div>
+
+    <span id="annotations-datatables-filter"></span>
+  </h2>
+
+  <table class="table table-hover table-condensed table-bordered" id="annotations-table">
+
+    <thead>
+      <tr>
+        <th>Database</th>
+        <th>Description</th>
+        <th ng-if="!$ctrl.taxid">Species</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr ng-if="$ctrl.status === 'loading'">
+        <td colspan="3" style="text-align: center;">
+          <span>
+            <i class="fa fa-spinner fa-spin fa-2x"></i>
+            Loading database cross-references...
+          </span>
+        </td>
+      </tr>
+      <tr ng-if="$ctrl.status === 'error'">
+        <td colspan="3" style="text-align: center;">
+            <span>
+              <i class="fa fa-exclamation-circle fa-2x"></i>
+              Failed to load data from server
+            </span>
+        </td>
+      </tr>
+      <tr ng-if="$ctrl.status === 'success'" ng-repeat="xref in $ctrl.displayedXrefs" ng-class="{ 'warning': xref.deleted == 'Y' }">
+        <td ng-switch="xref.database">
+          <span ng-switch-when="'PDBe'">PDB</span>
+          <span ng-switch-when="'Vega'">Vega<br>(GENCODE)</span>
+          <span ng-switch-default>{{ xref.database }}</span>
+        </td>
+
+        <!-- accession -->
+        <td ng-switch on="xref.database">
+          <strong>{{ xref.accession.description }}</strong>
+          <br>
+          <i class="fa fa-angle-right"></i>
+          <!-- ENA -->
+          <span ng-switch-when="ENA">
+            ENA: <a ng-href="{{ xref.accession.ena_url }}" target="_blank" ng-attr-title="{{ xref.accession.id }} at ENA">{{ xref.accession.id }}</a>
+          </span>
+          <!-- Rfam -->
+          <span ng-switch-when="Rfam">
+            RFAM family: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }}),
+            <span ng-if="xref.is_rfam_seed" class="text-success">seed alignment</span> <i class="fa fa-info-circle help" title="part of a manually curated RFAM seed alignment"></i>
+            <span ng-if="!xref.is_rfam_seed" class="text-danger">full alignment</span> <i class="fa fa-info-circle help" title="part of an automatically built RFAM full alignment"></i>
+            <br>
+            <i class="fa fa-angle-right"></i>
+            Source ENA entry: <a ng-href="{{ 'http://www.ebi.ac.uk/ena/data/view/' +  xref.accession.parent_ac + '.' + xref.accession.seq_version }}" target="_blank">{{ xref.accession.parent_ac }}.{{ xref.accession.seq_version }}</a>
+            (nucleotides {{ xref.accession.feature_start | number }}:{{ xref.accession.feature_end | number }})
+          </span>
+          <!-- SRPDB -->
+          <span ng-switch-when="SRPDB">
+            SRPDB:
+            <a class="srpdb-external-url" ng-href="{{ xref.accession.expert_db_url }}.fasta" target="_blank">{{ xref.accession.srpdb_id }}</a>
+          </span>
+
+          <!-- lncRNAdb -->
+          <span ng-switch-when="lncRNAdb">
+            lncRNAdb:
+            <a class="lncrnadb-external-url" ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.optional_id }}</a>
+          </span>
+
+          <!-- gtRNAdb -->
+          <span ng-switch-when="gtRNAdb">
+            gtRNAdb:
+            <a class="gtrnadb-external-url" ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+          </span>
+
+          <!-- miRBase -->
+          <span ng-switch-when="miRBase">
+            miRBase:
+            <a class="mirbase-external-url" ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+
+            <span ng-if="xref.mirbase_mature_products">
+              - precursor miRNA (<ng-pluralize count="xref.mirbase_mature_products.length" when="{'one': 'mature product', 'other': 'mature products'}"></ng-pluralize>
+              <span ng-repeat="matureProduct in xref.mirbase_mature_products">
+                <a ng-href="{{ matureProduct + "/" + xref.taxid }}">{{ $ctrl.url2urs(xref.matureProduct) }}</a>{{$last ? '' : ', '}}
+              </span>)
+            </span>
+            <span ng-if="xref.mirbase_precursor">
+              - mature miRNA (precursor <a ng-href="{{ xref.mirbase_precursor + '/' + xref.taxid }}">{{ $ctrl.url2urs(xref.mirbase_precursor) }}</a>)
+            </span>
+          </span>
+
+          <!-- GENCODE -->
+          <span ng-switch-when="GENCODE">
+            transcript <a ng-href="{{ xref.accession.gencode_ensembl_url }}" target="_blank" title="View in Ensembl">{{ xref.accession.gencode_transcript_id }}</a>
+            (Havana id: {{ xref.accession.external_id }})
+            <span ng-if="xref.ensembl_splice_variants">
+              <br>
+              <i class="fa fa-angle-right"></i>
+              {{ xref.ensembl_splice_variants.length }} <ng-pluralize count="xref.ensembl_splice_variants.length" when="{'one': 'alternative transcript', 'other': 'alternative transcripts'}"></ng-pluralize>
+              <small>
+                <span ng-repeat="spliceVariant in xref.ensembl_splice_variants">
+                  <a ng-href="{{ spliceVariant + '/' + xref.taxid }}">{{ $ctrl.url2urs(spliceVariant) }}</a>
+                </span>
+              </small>
+            </span>
+          </span>
+
+          <!-- Ensembl -->
+          <span ng-switch-when="Ensembl">
+            transcript <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank" title="View the transcript in {{ xref.db.name }}">{{ xref.accession.external_id }}</a> from
+            {{ xref.accession.locus_tag }} gene <a href="http://www.ensembl.org/{{ xref.accession.ensembl_species_url }}/Gene/Summary?g={{ xref.accession.optional_id }}" target="_blank">{{ xref.accession.optional_id }}</a>
+            <span ng-if="xref.ensembl_splice_variants">
+              <br>
+              <i class="fa fa-angle-right"></i>
+              {{ xref.ensembl_splice_variants.length }} <ng-pluralize count="xref.ensembl_splice_variants.length" when="{'one': 'alternative transcript', 'other': 'alternative transcripts'}"></ng-pluralize>
+              <small>
+                <span ng-repeat="spliceVariant in xref.ensembl_splice_variants">
+                  <a ng-href="{{ spliceVariant + '/' + xref.taxid }}">{{ $ctrl.url2urs(spliceVariant) }}</a>
+                </span>
+              </small>
+            </span>
+          </span>
+
+          <!-- FlyBase -->
+          <span ng-switch-when="FlyBase">
+            FlyBase gene <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>, {{ xref.accession.id }}
+          </span>
+
+          <!-- tmRNA Website -->
+          <span ng-switch-when="tmRNA Website">
+            tmRNA Website:
+            <a href="{{ xref.accession.expert_db_url }}.html" target="_blank">{{ xref.accession.external_id }}</a>
+          </span>
+
+          <!-- RefSeq -->
+          <span ng-switch-when="RefSeq">
+            RefSeq: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}.{{ xref.accession.seq_version }}</a>
+
+            <span ng-if="xref.is_active && (xref.refseq_mirna_precursor || xref.refseq_mirna_mature_products)">
+              <span ng-if="xref.refseq_mirna_precursor">
+                - mature miRNA (precursor <a ng-href="{{ xref.refseq_mirna_precursor + '/' + ctrl.taxid }}">{{ $ctrl.url2urs(xref.refseq_mirna_precursor) }}</a>)
+              </span>
+              <span ng-if="xref.refseq_mirna_mature_products">
+                - precursor miRNA (<ng-pluralize count="xref.refseq_mirna_mature_products.length" when="{'one': 'mature product', 'other': 'mature products'}"></ng-pluralize>
+                  <span ng-repeat="matureProduct in xref.refseq_mirna_mature_products"><a ng-href="{{ matureProduct + '/' + $ctrl.taxid }}">{{ $ctrl.url2urs(matureProduct) }}</a>{{$last ? '' : ', '}}</span>)
+              </span>
+            </span>
+            <span ng-if="xref.is_active && xref.refseq_splice_variants">
+              <br>
+              <i class="fa fa-angle-right"></i>
+              {{ refseq_splice_variants.length }} <ng-pluralize count="xref.refseq_splice_variants.length" when="{'one': 'alternative transcript', 'other': 'alternative transcripts'}"></ng-pluralize>
+              <small>
+                <span ng-repeat="spliceVariant in xref.refseq_splice_variants">
+                  <a ng-href="{{ spliceVariant + '/' + $ctrl.taxid }}">{{ $ctrl.url2urs(spliceVariant) }}</a>
+                  ({{ spliceVariant.length | number }} nts) {{$last ? '' : ', '}}
+                </span>
+              </small>
+            </span>
+            <span ng-if="xref.ncbi_gene_id">
+              <br>
+              <i class="fa fa-angle-right"></i>
+              NCBI GeneID: <a href="http://www.ncbi.nlm.nih.gov/gene/{{ xref.ncbi_gene_id }}" target="_blank">{{ xref.ncbi_gene_id }}</a>
+            </span>
+          </span>
+
+          <!-- RDP -->
+          <span ng-switch-when="RDP">
+            RDP: <a href="{{ xref.accession.expert_db_url }}&format=genbank" target="_blank">{{ xref.accession.external_id }}</a>
+          </span>
+
+          <!-- PDBe -->
+          <span ng-switch-when="PDBe">
+            PDB: {{ xref.accession.external_id }}, chain {{ xref.accession.optional_id }}
+            <br>
+            <i class="fa fa-angle-right"></i>
+            <a href="http://www.ebi.ac.uk/pdbe/entry/pdb/{{ xref.accession.external_id }}/RNA/{{ xref.accession.pdb_entity_id }}" target="_blank" title="Protein Data Bank in Europe" class="help">PDBe</a> |
+            <a href="http://www.pdb.org/pdb/pdb/explore/explore.do?structureId={{ xref.accession.external_id }}" target="_blank" title="Protein Data Bank USA" class="help">RCSB PDB</a> |
+            <a href="http://pdbj.org/mine/summary/{{ xref.accession.external_id }}" target="_blank" title="Protein Data Bank Japan" class="help">PDBj</a> |
+            <a href="{{ xref.ndb_external_url }}" target="_blank" title="Nucleic Acids Database" class="help">NDB</a>
+            <br>
+            <i class="fa fa-angle-right"></i>
+            <small>Structure title:</small> {{ xref.accession.pdb_structured_note.structureTitle }}
+            <br>
+            <i class="fa fa-angle-right"></i>
+            <small>Method:</small> {{ xref.accession.pdb_structured_note.experimentalTechnique }} |
+            <span ng-if="xref.accession.pdb_structured_note.resolution">
+              <!-- NMR structures do not have resolution -->
+              <small>resolution:</small> {{ xref.accession.pdb_structured_note.resolution }} Å |
+            </span>
+            <small>release date:</small> {{ xref.accession.pdb_structured_note.releaseDate }}
+          </span>
+
+          <!-- snOPY -->
+          <span ng-switch-when="snOPY">
+            snOPY: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+          </span>
+
+          <!-- SGD -->
+          <span ng-switch-when="SGD">
+            {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }})
+          </span>
+
+          <!-- TAIR -->
+          <span ng-switch-when="TAIR">
+            {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> (locus {{ xref.accession.optional_id }})
+          </span>
+
+          <!-- WormBase -->
+          <span ng-switch-when="WormBase">
+            {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> <span class="small text-muted">(gene)</span> |
+            <a ng-href="{{ 'http://www.wormbase.org/species/c_elegans/transcript/' + xref.accession.standard_name }}" target="_blank">{{ xref.accession.standard_name }}</a> <span class="small text-muted">(transcript)</span>
+          </span>
+
+          <!-- PLncDB -->
+          <span ng-switch-when="PLncDB">
+            {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+          </span>
+
+          <!-- dictyBase -->
+          <span ng-switch-when="dictyBase">
+            {{ xref.database }} gene <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+          </span>
+
+          <!-- SILVA -->
+          <span ng-switch-when="SILVA">
+            {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+            <span ng-if="xref.accession.feature_start < xref.accession.feature_end">
+              nucleotides ({{ xref.accession.feature_start | number }} - {{ xref.accession.feature_end | number }})
+            </span>
+            <span ng-if="!xref.accession.feature_start < xref.accession.feature_end">
+              nucleotides ({{ xref.accession.feature_end | number }} - {{ xref.accession.feature_start | number }})
+            </span>
+          </span>
+
+          <!-- Greengenes -->
+          <span ng-switch-when="Greengenes">
+            <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.parent_ac }}.{{ xref.accession.seq_version }}</a>
+            <span ng-if="xref.accession.feature_start < xref.accession.feature_end">
+              nucleotides ({{ xref.accession.feature_start | number }} - {{ xref.accession.feature_end | number }})
+            </span>
+            <span ng-if="!xref.accession.feature_start < xref.accession.feature_end">
+              nucleotides ({{ xref.accession.feature_end | number }} - {{ xref.accession.feature_start | number }})
+            </span>
+          </span>
+
+          <!-- PomBase -->
+          <span ng-switch-when="PomBase">
+            {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+          </span>
+
+          <!-- Noncode -->
+          <span ng-switch-when="NONCODE">
+            {{ xref.database }}: transcript <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>,
+            gene <a ng-href="{{ 'http://www.noncode.org/show_gene.php?id=' + xref.accession.optional_id }}" target="_blank">{{ xref.accession.optional_id }}</a>
+          </span>
+
+          <!-- LNCipedia -->
+          <span ng-switch-when="LNCipedia">
+            {{ xref.database }}: transcript <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>,
+            gene <a ng-href="{{ 'http://www.lncipedia.org/db/gene/' + xref.accession.optional_id }}" target="_blank">{{ xref.accession.optional_id }}</a>
+          </span>
+
+          <!-- Modomics -->
+          <span ng-switch-when="Modomics">
+            {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }} alignment</a>
+          </span>
+
+          <!-- HGNC -->
+          <span ng-switch-when="HGNC">
+            {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.id }})
+            <span ng-if="xref.accession.hgnc_ensembl_id">
+              <br>
+              <i class="fa fa-angle-right"></i>
+              Ensembl: <a ng-href="{{ 'http://www.ensembl.org/Homo_sapiens/Gene/Summary?g=' + xref.accession.ensembl_gene_id }}" target="_blank">{{ xref.accession.ensembl_gene_id }}</a>
+            </span>
+          </span>
+
+          <span ng-switch-default>
+            {{ xref.accession.external_id }} {{ xref.accession.optional_id }}
+          </span>
+
+          <span ng-if="xref.database == 'Modomics' || xref.database == 'PDBe'">
+            <br>
+            <i class="fa fa-angle-right"></i>
+            <span class="small" ng-if="xref.modifications.length != 0">
+              <button class="btn btn-primary btn-xs" data-modifications="{{ xref.modifications }}">
+                <i class="fa fa-crosshairs"></i> <ng-pluralize count="xref.modifications.length" when="{'one': 'View modification', 'other': 'View modifications'}"></ng-pluralize>
+              </button>
+              <span ng-repeat="modification in xref.modifications">
+                <span ng-if="modification.chem_comp.source = 'PDB'">
+                  {{ modification.chem_comp.description }}
+                  (<a class="help" target="_blank" ng-attr-title="{{ modification.chem_comp.id }}" ng-href="{{ modification.chem_comp.pdb_url }}">PDBe</a>)
+                  {{$last ? '' : ', '}}
+                </span>
+                <span ng-if="modification.chem_comp.source = 'Modomics'">
+                  {{ modification.chem_comp.description }}
+                  (<a class="help" target="_blank" ng-attr-title="{{ modification.chem_comp.id }}" ng-href="{{ modification.chem_comp.modomics_url }}">Modomics</a>
+                   <a ng-if="modification.chem_comp.pdb_url" class="help" target="_blank" ng-attr-title="{{ modification.chem_comp.ccd_id }}" ng-href="{{ modification.chem_comp.pdb_url }}">| PDBe</a>
+                  ){{$last ? '' : ', '}}
+                </span>
+              </span>
+            </span>
+            <span class="small" ng-if="xref.modifications.length == 0">
+              No modified nucleotides.
+            </span>
+          </span>
+
+          <span ng-if="xref.accession.organelle">
+            <br>
+            <i class="fa fa-angle-right"></i>
+            found in {{ xref.accession.organelle | lowercase }}
+          </span>
+
+          <span ng-if="xref.accession.is_composite == 'Y'">
+            <br>
+            <i class="fa fa-angle-right"></i>
+            Source ENA entry: <a href="{{ xref.accession.ena_url }}" target="_blank" ng-attr-title="{{ xref.accession.non_coding_id }} at ENA">{{ xref.accession.non_coding_id }}</a>
+          </span>
+
+          <!-- show genomic locations for non-human species -->
+          <span ng-if="xref.genomic_coordinates">
+            <br>
+            <i class="fa fa-angle-right"></i>
+              <button type="button" class="btn btn-primary btn-xs genoverse-xref help margin-right-5px" data-genomic-start="{{ xref.genomic_coordinates.start }}" data-genomic-end="{{ xref.genomic_coordinates.end }}" data-strand="{{ xref.genomic_coordinates.strand }}" data-chromosome="{{ xref.genomic_coordinates.chromosome }}" data-species="{{ xref.genomic_coordinates.ensembl_species_name }}" data-description="{{ xref.accession.description }}" data-species-label="{{ xref.accession.species }}" title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> View genomic location</button>
+              <small>
+                <span class="margin-right-5px">{{ xref.genomic_coordinates.chromosome }}:{{ xref.genomic_coordinates.start | number }}-{{ xref.genomic_coordinates.end | number }}:{{ xref.genomic_coordinates.strand }}</span>
+                <!-- Ensembl url -->
+                <span class="margin-right-5px ensembl-link">
+                  <a ng-href="{{ xref.ensembl_division.url + '/' + xref.accession.ensembl_species_url + '/Location/View?r=' + xref.genomic_coordinates.chromosome + ':' + xref.genomic_coordinates.start + '-' + xref.genomic_coordinates.end }}" target="_blank">{{ xref.ensembl_division.name }}</a>
+                </span>
+                <!-- UCSC url -->
+                <span ng-if="xref.ucsc_db_id" class="margin-right-5px ucsc-link">
+                  <a ng-href="{{ 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + xref.ucsc_db_id + '&position=' + xref.genomic_coordinates.ucsc_chromosome + ':' + xref.genomic_coordinates.start + '-' + xref.genomic_coordinates.end }}" target="_blank">UCSC</a>
+                </span>
+              </small>
+          </span>
+
+          <!-- literature references -->
+          <citations xref="xref" on-activate-publications="$ctrl.onActivatePublications()"></citations>
+
+          <span ng-if="xref.deleted == 'Y'">
+            <br>
+            <small><span class="label label-danger" title="This annotation was removed from the Expert Database">Obsolete</span></small>
+          </span>
+        </td>
+
+        <!-- accession -->
+        <td ng-if="!$ctrl.taxid">
+          <!-- Greengenes inferred taxonomy -->
+          <span ng-if="xref.database == 'Greengenes'">
+            INSDC classification:
+            <a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank" title="{{ xref.accession.classification }}"><em>{{ xref.accession.species }}</em></a>
+            <br>
+            Greengenes classification: <em>{{ xref.accession.inference }}</em>
+          </span>
+          <span ng-if="!(xref.database == 'Greengenes')">
+            <a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank" title="{{ xref.accession.classification }}"><em>{{ xref.accession.species }}</em></a>
+          </span>
+        </td>
+    </tbody>
+
+  </table>
+
+  <!-- Pagination: pages list and page size select -->
+  <div ng-if="$ctrl.status == 'success'" style="margin-top: 5px; margin-left: 5px; margin-right: 5px;">
+    <ul class="pagination pagination-sm" style="display:inline">
+      <li ng-if="$ctrl.page != 1" ng-click="$ctrl.onPageChanged(1)"><a href="">1</a></li>
+      <li ng-if="$ctrl.page > 3" ng-click="$ctrl.onPageChanged(1)"><a href="">&#8230;</a></li>
+      <li ng-if="$ctrl.page > 2" ng-click="$ctrl.onPageChanged($ctrl.page - 1)"><a href="">{{ $ctrl.page - 1 }}</a></li>
+      <li class="active"><a href="">{{ $ctrl.page }}</a></li>
+      <li ng-if="$ctrl.page < $ctrl.pages.length - 1" ng-click="$ctrl.onPageChanged($ctrl.page + 1)"><a href="">{{ $ctrl.page + 1 }}</a></li>
+      <li ng-if="$ctrl.page < $ctrl.pages.length - 2" ng-click="$ctrl.onPageChanged($ctrl.pages.length)"><a href="">&#8230;</a></li>
+      <li ng-if="$ctrl.page != $ctrl.pages.length" ng-click="$ctrl.onPageChanged($ctrl.pages.length)"><a href="">{{ $ctrl.pages.length }}</a></li>
+    </ul>
+    <span class="pull-right">
+      <select ng-model="$ctrl.pageSize" ng-change="$ctrl.onPageSizeChanged($ctrl.pageSize, '{{ $ctrl.pageSize }}')" ng-options="v.value as v.key for v in [{key:1, value:1}, {key: 5, value: 5}, {key: 10, value: 10}, {key: 20, value: 20}, {key: 50, value: 50}, {key: 'all', value: 1000000000000}]"></select> records per page
+    </span>
+  </div>
+
+  <div class="annotations-datatables-controls"></div>
+</div>

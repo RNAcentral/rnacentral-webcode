@@ -18,6 +18,7 @@ HyperlinkedIdentityField - link to a view
 
 """
 import re
+import json
 
 from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse
@@ -25,7 +26,7 @@ from django.db.models import Min, Max
 from rest_framework import serializers
 from rest_framework import pagination
 
-from portal.models import Rna, Xref, Reference, Database, Accession, Release, Reference, Modification
+from portal.models import Rna, Xref, Reference, Database, DatabaseStats, Accession, Release, Reference, Modification
 from portal.models.reference_map import Reference_map
 from portal.models.chemical_component import ChemicalComponent
 
@@ -81,9 +82,11 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Accession
         fields = (
-            'url', 'id', 'parent_ac', 'seq_version', 'description', 'external_id', 'optional_id',
+            'url', 'id', 'parent_ac', 'seq_version', 'feature_start', 'feature_end', 'feature_name',
+            'description', 'external_id', 'optional_id', 'locus_tag',
             'species', 'rna_type', 'gene', 'product', 'organelle',
-            'citations', 'expert_db_url',
+            'citations', 'expert_db_url', 'standard_name',
+
             'pdb_entity_id', 'pdb_structured_note', 'hgnc_enembl_id', 'hgnc_id',
             'biotype', 'rna_type', 'srpdb_id', 'ena_url',
             'gencode_transcript_id',
@@ -135,6 +138,7 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
     refseq_mirna_mature_products = serializers.SerializerMethodField('get_refseq_mirna_mature_products')
     refseq_mirna_precursor = serializers.SerializerMethodField('get_refseq_mirna_precursor')
     refseq_splice_variants = serializers.SerializerMethodField('get_refseq_splice_variants')
+    ensembl_splice_variants = serializers.SerializerMethodField('get_ensembl_splice_variants')
     # tmrna_mate_upi = serializers.SerializerMethodField('get_tmrna_mate_upi')
     # tmrna_type = serializers.Field(source='get_tmrna_type')
     ensembl_division = serializers.Field(source='get_ensembl_division')
@@ -151,7 +155,7 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
             'is_rfam_seed', 'ncbi_gene_id', 'ndb_external_url',
             'mirbase_mature_products', 'mirbase_precursor',
             'refseq_mirna_mature_products', 'refseq_mirna_precursor',
-            'refseq_splice_variants',
+            'refseq_splice_variants', 'ensembl_splice_variants',
             # 'tmrna_mate_upi',
             # 'tmrna_type',
             'ensembl_division', 'ucsc_db_id',  # 200-400 ms, no requests
@@ -162,9 +166,19 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
         return True if obj.accession.non_coding_id else False
 
     def upis_to_urls(self, upis):
+        """
+        Returns a list of urls or single url that points to unique rna sequence
+        page, corresponding to given upi.
+
+        :param upis: list of upis or a single upi
+        :return: list of urls or a single url
+        """
         protocol = 'https://' if self.context['request'].is_secure() else 'http://'
         hostport = self.context['request'].get_host()
-        return [protocol + hostport + reverse('unique-rna-sequence', kwargs={'upi': upi}) for upi in upis]
+        if isinstance(upis, list):
+            return [protocol + hostport + reverse('unique-rna-sequence', kwargs={'upi': upi}) for upi in upis]
+        else:  # upis is just a single item
+            return protocol + hostport + reverse('unique-rna-sequence', kwargs={'upi': upis})
 
     def get_mirbase_mature_products(self, obj):
         return self.upis_to_urls(obj.mirbase_mature_products) if hasattr(obj, "mirbase_mature_products") else None
@@ -180,6 +194,9 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_refseq_splice_variants(self, obj):
         return self.upis_to_urls(obj.refseq_splice_variants) if hasattr(obj, "refseq_splice_variants") else None
+
+    def get_ensembl_splice_variants(self, obj):
+        return self.upis_to_urls(obj.ensembl_splice_variants) if hasattr(obj, "ensembl_splice_variants") else None
 
     def get_tmrna_mate_upi(self, obj):
         return self.upis_to_urls(obj.tmrna_mate_upi) if hasattr(obj, "tmrna_mate_upi") else None
@@ -205,8 +222,8 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
             data = {
                 'chromosome': obj.accession.coordinates.all()[0].chromosome,
                 'strand': obj.accession.coordinates.all()[0].strand,
-                'start': obj.accession.coordinates.all().aggregate(Min('primary_start')),
-                'end': obj.accession.coordinates.all().aggregate(Max('primary_end'))
+                'start': obj.accession.coordinates.all().aggregate(Min('primary_start'))['primary_start__min'],
+                'end': obj.accession.coordinates.all().aggregate(Max('primary_end'))['primary_end__max']
             }
 
             exceptions = ['X', 'Y']
@@ -368,3 +385,19 @@ class RnaBedSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rna
         fields = ('bed',)
+
+
+class ExpertDatabaseStatsSerializer(serializers.ModelSerializer):
+    """Serializer for presenting DatabaseStats"""
+    length_counts = serializers.SerializerMethodField('get_length_counts')
+    taxonomic_lineage = serializers.SerializerMethodField('get_taxonomic_lineage')
+
+    class Meta:
+        model = DatabaseStats
+        fields = ('database', 'length_counts', 'taxonomic_lineage')
+
+    def get_length_counts(self, obj):
+        return json.loads(obj.length_counts)
+
+    def get_taxonomic_lineage(self, obj):
+        return json.loads(obj.taxonomic_lineage)

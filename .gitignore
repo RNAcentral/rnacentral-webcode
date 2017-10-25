@@ -58,7 +58,7 @@ build/config/buildinfo.properties
 # Packages
 *.egg
 *.egg-info
-build
+#build - commented-out by Burkov, masks some dirs in javascript packages.
 eggs
 parts
 bin

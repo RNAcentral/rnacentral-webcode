@@ -28,6 +28,8 @@ urlpatterns = patterns('',
 	url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/?$', cache_page(CACHE_TIMEOUT)(views.RnaDetail.as_view()), name='rna-detail'),
     # view for all cross-references associated with an RNAcentral id
 	url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/xrefs/?$', cache_page(CACHE_TIMEOUT)(views.XrefList.as_view()), name='rna-xrefs'),
+    # view for all cross-references, filtered down to a specific taxon
+    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/xrefs/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.XrefsSpeciesSpecificList.as_view()), name='rna-xrefs-species-specific'),
     # all literature citations associated with an RNAcentral id
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/publications/?$', cache_page(CACHE_TIMEOUT)(views.RnaCitationsView.as_view()), name='rna-publications'),
     # species-specific RNAcentral id
@@ -39,6 +41,11 @@ urlpatterns = patterns('',
     # Ensembl-like genome coordinates endpoint
     url(r'^(feature|overlap)/region/(?P<species>\w+)/(?P<chromosome>\w+(\.\d+)?)\:(?P<start>(\d|,)+)-(?P<end>(\d|,)+)/?$',
         cache_page(CACHE_TIMEOUT)(views.GenomeAnnotations.as_view()), name='human-genome-coordinates'),
+    # expert databases as stored in config dict
+    url(r'^expert-dbs/$', views.ExpertDatabasesAPIView.as_view(), {}, name='expert-dbs-api'),
+    # expert databases stats
+    url(r'^expert-db-stats/$', views.ExpertDatabasesStatsViewSet.as_view({'get': 'list'}), {}, name='expert-db-stats'),
+    url(r'^expert-db-stats/(?P<pk>.*)/?$', views.ExpertDatabasesStatsViewSet.as_view({'get': 'retrieve'}), {}, name='expert-db-stats'),
 )
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'yaml', 'fasta', 'api', 'gff', 'gff3', 'bed'])

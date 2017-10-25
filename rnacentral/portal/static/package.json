@@ -1,0 +1,47 @@
+{
+  "name": "rnacentral",
+  "version": "7.0.0",
+  "description": "",
+  "main": "rnacentral.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RNAcentral/rnacentral-webcode.git"
+  },
+  "keywords": [
+    "ncRNA"
+  ],
+  "author": "Anton I. Petrov",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/RNAcentral/rnacentral-webcode/issues"
+  },
+  "homepage": "https://github.com/RNAcentral/rnacentral-webcode#readme",
+  "dependencies": {
+    "angular": "^1.6.4",
+    "angular-animate": "^1.6.4",
+    "angular-loading-bar": "^0.9.0",
+    "angular-resource": "^1.6.4",
+    "angular-sanitize": "^1.6.4",
+    "angular-ui-bootstrap": "^2.5.0",
+    "angularjs-genoverse": "^1.2.0",
+    "animate.css": "^3.5.2",
+    "bootstrap": "^3.3.7",
+    "clipboard": "^1.6.1",
+    "d3": "^3",
+    "font-awesome": "^4.7.0",
+    "hopscotch": "^0.2.8",
+    "js-md5": "^0.4.2",
+    "json3": "^3.3.2",
+    "moment": "^2.18.1",
+    "query": "^0.2.0",
+    "slick-carousel": "^1.6.0",
+    "timelinejs3": "^3.4.0",
+    "underscore": "^1.8.3"
+  },
+  "devDependencies": {
+    "phantomjs": "^2.1.7"
+  }
+}

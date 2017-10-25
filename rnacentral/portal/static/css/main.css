@@ -454,21 +454,12 @@ h3.panel-title {
   color: black;
 }
 
-.xrefs-inline-block {
-  display: inline-block;
-  margin: 0px;
-}
-
 .abstract-preview {
   display: inline;
 }
 
 .abstract-control {
   margin: 0 0.5em;
-}
-
-.abstract-text {
-  display: none;
 }
 
 .small {
@@ -485,15 +476,6 @@ h3.panel-title {
 
 .pagination {
   margin: 5px 0;
-}
-
-.literature-refs-content {
-  display: none;
-  width: 98%;
-}
-
-#xrefs-table {
-  display: none;
 }
 
 #seq-length .panel {
@@ -529,33 +511,10 @@ code a:hover {
 /*------------------------------------------------------------------
 [5.1 Datatables integration]
 */
-table.table thead .sorting,
-table.table thead .sorting_asc,
-table.table thead .sorting_desc,
-table.table thead .sorting_asc_disabled,
-table.table thead .sorting_desc_disabled {
-    cursor: pointer;
-    *cursor: hand;
-}
 
-table.table thead .sorting {
-  background: url('../js/vendor/DataTables-1.9.4/media/images/sort_both.png') no-repeat center right;
-}
-
-table.table thead .sorting_asc {
-  background: url('../js/vendor/DataTables-1.9.4/media/images/sort_asc.png') no-repeat center right;
-}
-
-table.table thead .sorting_desc {
-  background: url('../js/vendor/DataTables-1.9.4/media/images/sort_desc.png') no-repeat center right;
-}
-
-table.table thead .sorting_asc_disabled {
-  background: url('../js/vendor/DataTables-1.9.4/media/images/sort_asc_disabled.png') no-repeat center right;
-}
-
-table.table thead .sorting_desc_disabled {
-  background: url('../js/vendor/DataTables-1.9.4/media/images/sort_desc_disabled.png') no-repeat center right;
+#annotations-table {
+  padding: 0px;
+  margin: 0px;
 }
 
 .dataTables_info {
@@ -570,7 +529,7 @@ table.table thead .sorting_desc_disabled {
   margin-bottom: 10px;
 }
 
-.xref-datatables-controls {
+.annotations-datatables-controls {
   margin-top: 5px;
 }
 
@@ -581,6 +540,11 @@ table.table thead .sorting_desc_disabled {
 .btn-group {
   margin-right: 5px;
 }
+
+#rna-sequence {
+  white-space: pre-wrap;
+}
+
 
 /*------------------------------------------------------------------
 [5.2 Force scrollbars on Macs]
@@ -868,6 +832,66 @@ textarea {
 
 .border-color-white {
   border-color: #FFFFFF;
+}
+
+/* Transitions for tab switches on unique rna sequence page */
+
+/* set reference point */
+.tab-animation > .tab-content {
+  position: relative;
+}
+
+/* set animate effect */
+.tab-animation > .tab-content > .tab-pane {
+  transition: 0.1s linear opacity;
+}
+
+/* overwrite display: none and remove from document flow */
+.tab-animation > .tab-content > .tab-pane.active-remove {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  display: block;
+}
+
+/* opacity=0 when removing "active" class */
+.tab-animation > .tab-content > .tab-pane.active-remove-active {
+  opacity: 0;
+}
+
+/* opacity=0 when adding "active" class */
+.tab-animation > .tab-content > .tab-pane.active-add {
+  opacity: 0;
+}
+
+/* Transitions for abstract-text */
+
+.abstract-text.slide-down.ng-enter {
+  overflow: hidden;
+  transition: max-height 1s ease-in;
+  max-height: 0px;
+}
+
+.abstract-text.slide-down.ng-enter-active {
+  overflow: hidden;
+  max-height: 20000px;
+}
+
+/* Similar transitions for citations */
+
+.literature-refs-content {
+  width: 98%;
+}
+
+.literature-refs-content.slide-down.ng-enter{
+  oveflow: hidden;
+  transition: max-height 1s ease-in;
+  max-height: 0px;
+}
+
+.literature-refs-content.slide-down.ng-enter-active {
+  overflow: hidden;
+  max-height: 20000px;
 }
 
 /*------------------------------------------------------------------

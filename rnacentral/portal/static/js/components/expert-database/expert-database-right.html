@@ -1,0 +1,72 @@
+<div class="col-md-6 hidden-xs">
+
+  <ul class="nav nav-tabs">
+    <li class="active"><a data-target="#seq-length" data-toggle="tab" href="">Sequence length</a></li>
+    <li ng-if="$ctrl.noSunburst.indexOf($ctrl.expertDb.label) === -1"><a data-target="#species" data-toggle="tab" href="">Species sunburst</a></li>
+  </ul>
+
+  <div class="tab-content">
+    <div class="tab-pane fade in active" id="seq-length">
+      <div class="panel panel-default">
+        <div class="panel-body">
+
+          <div ng-if="$ctrl.expertDb.label === 'lncrnadb'">
+            <div class="alert alert-info small">
+              <i class="fa fa-info-circle"></i> Due to the small number of entries,
+              a list of all lincRNAdb entries is provided instead of a sequence distribution graph.
+            </div>
+
+            <table class="table table-bordered table-striped table-condensed">
+              <thead>
+                <tr>
+                  <th>lncRNAdb sequence</th>
+                  <th>length</th>
+                </tr>
+              </thead>
+                <tr ng-repeat="rna in $ctrl.lncrnadb">
+                  <td>
+                    <a ng-href="{{ rna.url }}">
+                    {{ rna.description }}
+                    ({{ $ctrl.url2urs(rna.url) }})
+                    </a>
+                  </td>
+                  <td>{{rna.length}}</td>
+                </tr>
+            </table>
+          </div>
+
+          <div ng-if="$ctrl.expertDb.label !== 'lncrnadb'">
+            <div id="d3-seq-length-distribution"></div>
+            <p class="small text-muted">
+              <label class="label label-default">Tip</label> Click the graph to search by sequence length
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div ng-if="$ctrl.noSunburst.indexOf($ctrl.expertDb.label) === -1" class="tab-pane fade" id="species">
+      <div class="panel panel-default">
+        <div class="panel-body">
+          <div id="d3-species-sunburst"></div>
+
+            <p class="small text-muted">
+              <label class="label label-default margin-left-0px">Tip</label> <strong>Zoom</strong> and <strong>pan</strong> the diagram
+              or <strong>hover</strong> over sunburst segments to display taxon names
+              <button type="button" class="btn btn-default btn-xs margin-left-5px" data-toggle="collapse" data-target="#sunburst-help">
+                <i class="fa fa-info-circle"></i> Help
+              </button>
+            </p>
+
+            <div id="sunburst-help" class="collapse">
+              <p class="small text-muted">
+                  This diagram shows combined lineages of all taxonomic groups annotated by {{ $ctrl.expertDb.name }}.
+                  The circle segments are sized proportionally to the number of sequences from the corresponding taxon.
+              </p>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

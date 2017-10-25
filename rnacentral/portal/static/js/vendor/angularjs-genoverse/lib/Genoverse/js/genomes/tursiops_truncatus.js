@@ -1,1 +1,0 @@
-Genoverse.Genomes.tursiops_truncatus = {};

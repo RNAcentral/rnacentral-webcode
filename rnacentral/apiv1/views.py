@@ -21,17 +21,20 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework import renderers
+from rest_framework.mixins import RetrieveModelMixin, ListModelMixin
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import GenericViewSet
 from rest_framework.permissions import AllowAny
 from rest_framework.reverse import reverse
 
 from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, PaginatedXrefSerializer, \
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
-                              RawCitationSerializer, RnaSpeciesSpecificSerializer, RnaListSerializer
+                              RawCitationSerializer, RnaSpeciesSpecificSerializer, RnaListSerializer, ExpertDatabaseStatsSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
-from portal.models import Rna, Accession, Xref, Database
+from portal.models import Rna, Accession, Xref, Database, DatabaseStats
 from portal.config.genomes import genomes
+from portal.config.expert_databases import expert_dbs
 
 """
 Docstrings of the classes exposed in urlpatterns support markdown.
@@ -342,10 +345,11 @@ class RnaFilter(django_filters.FilterSet):
     min_length = django_filters.NumberFilter(name="length", lookup_type='gte')
     max_length = django_filters.NumberFilter(name="length", lookup_type='lte')
     external_id = django_filters.CharFilter(name="xrefs__accession__external_id", distinct=True)
+    database = django_filters.CharFilter(name="xrefs__accession__database")
 
     class Meta:
         model = Rna
-        fields = ['upi', 'md5', 'length', 'min_length', 'max_length', 'external_id']
+        fields = ['upi', 'md5', 'length', 'min_length', 'max_length', 'external_id', 'database']
 
 
 class RnaMixin(object):
@@ -536,10 +540,31 @@ class XrefList(generics.ListAPIView):
     def get(self, request, pk=None, format=None):
         """Get a paginated list of cross-references."""
         page = request.QUERY_PARAMS.get('page', 1)
-        page_size = request.QUERY_PARAMS.get('page_size', 100)
+        page_size = request.QUERY_PARAMS.get('page_size', 1000000000000)
 
         rna = self.get_object()
         xrefs = rna.get_xrefs()
+        paginator_xrefs = Paginator(xrefs, page_size)
+        xrefs_page = paginator_xrefs.page(page)
+        serializer = PaginatedXrefSerializer(xrefs_page, context={'request': request})
+        return Response(serializer.data)
+
+
+class XrefsSpeciesSpecificList(generics.ListAPIView):
+    """
+    List of cross-references for a particular RNA sequence in a specific species.
+
+    [API documentation](/api)
+    """
+    queryset = Rna.objects.select_related().all()
+
+    def get(self, request, pk=None, taxid=None, format=None):
+        """Get a paginated list of cross-references"""
+        page = request.QUERY_PARAMS.get('page', 1)
+        page_size = request.QUERY_PARAMS.get('page_size', 1000000000000)
+
+        rna = self.get_object()
+        xrefs = rna.get_xrefs(taxid=taxid)
         paginator_xrefs = Paginator(xrefs, page_size)
         xrefs_page = paginator_xrefs.page(page)
         serializer = PaginatedXrefSerializer(xrefs_page, context={'request': request})
@@ -591,11 +616,64 @@ class RnaCitationsView(generics.ListAPIView):
     [API documentation](/api)
     """
     # the above docstring appears on the API website
-    permission_classes = (AllowAny,)
+    permission_classes = (AllowAny, )
     serializer_class = RawCitationSerializer
 
     def get_queryset(self):
-        """
-        """
         upi = self.kwargs['pk']
         return list(Rna.objects.get(upi=upi).get_publications())
+
+
+class ExpertDatabasesAPIView(APIView):
+    """
+    API endpoint describing expert databases, comprising RNAcentral.
+
+    [API documentation](/api)
+    """
+    permission_classes = ()
+    authentication_classes = ()
+
+    def get(self, request, format=None):
+        """The data from configuration JSON and database are combined here."""
+
+        def _normalize_expert_db_label(expert_db_label):
+            """Capitalizes db label (and accounts for special cases)"""
+            if re.match('tmrna-website', expert_db_label, flags=re.IGNORECASE):
+                expert_db_label = 'TMRNA_WEB'
+            else:
+                expert_db_label = expert_db_label.upper()
+            return expert_db_label
+
+        # { "TMRNA_WEB": {'name': 'tmRNA Website', 'label': 'tmrna-website', ...}}
+        databases = { db['descr']:db for db in Database.objects.values() }
+
+        # update config.expert_databases json with Database table objects
+        for db in expert_dbs:
+            normalized_label = _normalize_expert_db_label(db['label'])
+            if normalized_label in databases:
+                db.update(databases[normalized_label])
+
+        return Response(expert_dbs)
+
+    # def get_queryset(self):
+    #     expert_db_name = self.kwargs['expert_db_name']
+    #     return list(Database.objects.get(expert_db_name).references)
+
+
+class ExpertDatabasesStatsViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
+    """
+    API endpoint with statistics of databases, comprising RNAcentral.
+
+    [API documentation](/api)
+    """
+    queryset = DatabaseStats.objects.all()
+    serializer_class = ExpertDatabaseStatsSerializer
+    lookup_field = 'pk'
+
+    def list(self, request, *args, **kwargs):
+        return super(ExpertDatabasesStatsViewSet, self).list(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        import pdb
+        pdb.set_trace()
+        return super(ExpertDatabasesStatsViewSet, self).retrieve(request, *args, **kwargs)

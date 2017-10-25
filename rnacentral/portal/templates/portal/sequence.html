@@ -1,0 +1,212 @@
+<!--
+Copyright [2009-2017] EMBL-European Bioinformatics Institute
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+{% extends "portal/base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+
+{% block meta_tags %}
+    {{ block.super }}
+    <meta name="description" content="{{ context.description }} | {{ rna.upi }}"/>
+    <meta name="twitter:description" content="{{ context.description }} | {{ rna.upi }}">
+{% endblock %}
+
+{% block title %}
+  {{ context.description }} | {{ rna.upi }}
+{% endblock %}
+
+{% block content %}
+<div class="row" ng-controller="rnaSequenceController">
+    <div class="col-md-12">
+        <h1>
+            Sequence {{ rna.upi }}
+
+            {% if context.single_species %}
+                <small><em>{{ context.single_species }}</em></small>
+            {% else %}
+                <small>{{ rna.count_distinct_organisms|intcomma }} species</small>
+            {% endif %}
+
+            <small class="pull-right hidden-xs">
+                <button type="button" class="btn btn-info tour help" title="Take an interactive tour to explore RNAcentral features" id="guided-tour" ng-click="activateTour()">
+                    <i class="fa fa-info-circle"></i> Interactive tour
+                </button>
+            </small>
+        </h1>
+
+        {% if context.taxid_not_found %}
+            <div class="alert alert-danger">
+                No annotations from taxid:{{context.taxid_not_found}}.
+            </div>
+        {% elif context.taxid_filtering %}
+            <div class="well well-sm">
+                <i class="fa fa-filter"></i> Showing annotations from <strong><em>{{ context.single_species}}</em></strong>.
+
+                {% if rna.count_distinct_organisms > 1 %}
+                  <a href="" ng-click="activateTab(1);" class="show-species-tab">Switch species</a> or
+                  <a href="{% url 'portal.views.rna_view' rna.upi %}">view all data</a> from {{ rna.count_distinct_organisms }} species.
+                {% endif %}
+            </div>
+        {% elif rna.count_distinct_organisms > 1 %}
+            <div class="well well-sm">
+                <i class="fa fa-info-circle"></i> This unique sequence was observed in multiple species.
+                <a href="" ng-click="activateTab(1);" class="show-species-tab">Filter annotations</a> by species.
+            </div>
+        {% endif %}
+
+        <div class="tabbable">
+
+        <uib-tabset class="tab-animation" active="activeTab">
+
+            <uib-tab index="0" heading="Overview" id="overview" deselect="checkTab($event, $selectedIndex)">
+                <h2>
+                    Overview
+                </h2>
+
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <ul class="list-inline">
+                            <li class="lead">{{ context.description }}</li>
+                        </ul>
+                        <ul class="list-inline">
+                            <li><strong>{{ rna.length|intcomma }}</strong> nucleotides</li>
+                            <li>
+                                {% with dbs=context.distinct_databases %}
+                                <strong>{{ dbs|length|intcomma }}</strong> database{{ dbs|length|pluralize }}
+                                <small>
+                                    {% for db in dbs %}
+                                        {% if forloop.first %}({% endif %}{{db}}{% if not forloop.last %},{% else %}){% endif %}
+                                    {% endfor %}
+                                </small>
+                                {% endwith %}
+                            </li>
+                            <li>
+                                Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab" ng-click="activateTab('1')">species</a>
+                            </li>
+                            <li>{{ context.precomputed.rna_type }}</li>
+                        </ul>
+                    </div>
+                </div> <!-- .panel .panel-default -->
+
+                <xrefs upi="upi" taxid="taxid" timeout="5000" page-size="5" on-activate-publications="activateTab('2')"></xrefs>
+
+                {# genoverse #}
+                <div>
+                    <div class="wrap genoverse-wrap">
+                        <h2 style="display:none;">
+                            Genome browser
+                            <small id="genoverse-coordinates"></small>
+                        </h2>
+                        <div id="genoverse-description"></div>
+                        <div id="genoverse"></div>
+                    </div>
+                </div>
+
+                <h2>
+                    Sequence
+                    <div class="btn-group pull-right">
+                        <button class="btn btn-default btn-sm" id="copy-as-rna">
+                          <i class="fa fa-copy" aria-hidden="true">&nbsp;as RNA</i>
+                        </button>
+                        <button class="btn btn-default btn-sm" id="copy-as-dna">
+                          <i class="fa fa-copy" aria-hidden="true">&nbsp;as DNA</i>
+                        </button>
+                    </div>
+                </h2>
+
+                <p>
+                    {{ rna.length|intcomma }} nucleotides
+                    <a href="{% url 'nhmmer-sequence-search' %}?q={{ rna.upi }}" class="margin-left-5px">Search for similar sequences</a>
+                </p>
+                {% if context.non_canonical_base_counts %}
+                <p class="small">
+                    <span class="text-warning"><i class="fa fa-warning"></i> Contains ambiguity characters:</span> {% for symbol,count in context.non_canonical_base_counts.items %}{{ count|intcomma }} {{ symbol }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                    <a href="https://en.wikipedia.org/wiki/Nucleic_acid_notation#IUPAC_notation">&nbsp;IUPAC notation</a>
+                </p>
+                {% endif %}
+                <pre class="pre-scrollable" id="rna-sequence">{{ rna.get_sequence }}</pre>
+            </uib-tab>
+
+            <uib-tab index="1" heading="Taxonomy" deselect="checkTab($event, $selectedIndex)">
+                <h2>Taxonomic Tree</h2>
+
+                <p>
+                    This sequence has been observed in <strong>{{ rna.count_distinct_organisms }}</strong> species.
+                    Get <strong>species-specific urls</strong> by clicking on <span class="text-primary"><strong>species names</strong></span>.
+                    <br>
+                    <small class="text-muted">
+                        <i class="fa fa-info-circle"></i>
+                        <strong>Scroll around</strong> to explore the entire tree.
+                        <strong>Click</strong> tree nodes to collapse or expand them.
+                        <strong>Hover</strong> over taxon names to display additional information.
+                    </small>
+                </p>
+
+                <div class="panel panel-default d3-species">
+                    <div class="tab-pane panel-body d3-species force-scrollbars d3-species-tree-tab">
+                        <taxonomy upi="upi" taxid="taxid"></taxonomy>
+                    </div>
+                </div>
+            </uib-tab>
+
+            <uib-tab index="2" heading="Publications" deselect="checkTab($event, $selectedIndex)">
+                    <publications upi="upi"></publications>
+            </uib-tab>
+
+            <uib-tab index="3" class="dropdown pull-right hidden-xs">
+                <uib-tab-heading>
+                    <span uib-dropdown>
+                        <a uib-dropdown-toggle>
+                            <i class="fa fa-download"></i> Download
+                            <b class="caret"></b>
+                        </a>
+                        <ul class="dropdown-menu" uib-dropdown-menu id="download-formats">
+                            <li><a ng-click="download('fasta')">FASTA</a></li>
+                            <li><a ng-click="download('json')">JSON</a></li>
+                            <li><a ng-click="download('yaml')">YAML</a></li>
+                            <li ng-if="enableGenomicFeatures"><a ng-click="download('bed')">BED</a></li>
+                            <li ng-if="enableGenomicFeatures"><a ng-click="download('gff')">GFF</a></li>
+                            <li ng-if="enableGenomicFeatures"><a ng-click="download('gff3')">GFF3</a></li>
+                        </ul>
+                    </span>
+                </uib-tab-heading>
+            </uib-tab>
+        </uib-tabset>
+
+        </div> <!-- .tabbable -->
+    </div> <!-- .col-md-12 -->
+</div> <!-- .row -->
+
+
+
+{% endblock content %}
+
+
+{#{% block extra_js_uncompressed %}#}
+{#  {{ block.super }}#}
+{#    <script type="text/javascript">#}
+{#    $(function() {#}
+{#      {% if context.taxid_filtering %}#}
+{#        rna_sequence_view = new rnaSequenceView('{{rna.upi}}', {{ context.taxid }});#}
+{#      {% else %}#}
+{#        rna_sequence_view = new rnaSequenceView('{{rna.upi}}');#}
+{#      {% endif %}#}
+{#      rna_sequence_view.initialize();#}
+{#      rna_sequence_view.load_xrefs({{ context.xref_page_num }});#}
+{##}
+{#      // hopscotch guided tour#}
+{#      hopscotch_tour = new guidedTour;#}
+{#      hopscotch_tour.initialize();#}
+{#    });#}
+{#  </script>#}
+{#{% endblock %}#}

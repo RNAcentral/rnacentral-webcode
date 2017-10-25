@@ -150,7 +150,8 @@ def rna_view(request, upi, taxid=None):
         'rfam_status': rna.get_rfam_status(taxid=taxid),
     }
 
-    return render(request, 'portal/unique-rna-sequence.html', {'rna': rna, 'context': context})
+    # return render(request, 'portal/unique-rna-sequence.html', {'rna': rna, 'context': context})
+    return render(request, 'portal/sequence.html', {'rna': rna, 'context': context})
 
 
 def get_single_species(rna, taxid, taxid_filtering):
@@ -208,15 +209,6 @@ def expert_database_view(request, expert_db_name):
         return render_to_response('portal/coming-soon.html')
     else:
         raise Http404()
-
-
-class ExpertDatabasesAPIView(APIView):
-    """Return a list of RNA expert databases, indexed in RNAcentral."""
-    permission_classes = ()
-    authentication_classes = ()
-
-    def get(self, request, format=None):
-        return Response(expert_dbs)
 
 
 @never_cache

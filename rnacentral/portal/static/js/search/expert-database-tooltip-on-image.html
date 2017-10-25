@@ -1,5 +1,0 @@
-<div style="max-width: 300px;">
-<h5><i ng-if="$ctrl.expertDbHasStar(expert_db.toLowerCase())" class="fa fa-star">  </i>{{ expert_db }} <img style="width: 50px; float: right; margin-left: 5px; margin-bottom: 5px;" class="img-thumbnail" ng-src="{{ $ctrl.expert_db_logo(expert_db) }}"></h5>
-<p>{{ $ctrl.expertDbsObject[expert_db.toLowerCase()].hint }}</p>
-<div><span ng-repeat="tag in $ctrl.expertDbsObject[expert_db.toLowerCase()].tags" class="rnacentral-tag label label-default">{{ tag.split(" ").join("&nbsp;") }}</span></div>
-</div>

@@ -1,1 +1,0 @@
-Genoverse.Genomes.sarcophilus_harrisii = {};
