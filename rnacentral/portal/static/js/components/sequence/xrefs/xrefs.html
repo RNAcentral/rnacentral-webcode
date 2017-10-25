@@ -376,8 +376,8 @@
   </table>
 
   <!-- Pagination: pages list and page size select -->
-  <div ng-if="$ctrl.status == 'success'" style="margin-top: 5px; margin-left: 5px; margin-right: 5px;">
-    <ul class="pagination pagination-sm" style="display:inline">
+  <div ng-if="$ctrl.status == 'success'" style="margin-top: 5px; margin-left: 5px; margin-right: 5px; padding-bottom: 10px;">
+    <ul ng-if="$ctrl.pages.length > 1" class="pagination pagination-sm" style="display:inline">
       <li ng-if="$ctrl.page != 1" ng-click="$ctrl.onPageChanged(1)"><a href="">1</a></li>
       <li ng-if="$ctrl.page > 3" ng-click="$ctrl.onPageChanged(1)"><a href="">&#8230;</a></li>
       <li ng-if="$ctrl.page > 2" ng-click="$ctrl.onPageChanged($ctrl.page - 1)"><a href="">{{ $ctrl.page - 1 }}</a></li>
