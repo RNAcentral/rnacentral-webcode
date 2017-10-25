@@ -62,7 +62,7 @@ limitations under the License.
                 <div class="panel panel-default">
                     <div class="panel-body">
                         <ul class="list-inline">
-                            <li class="lead">{{ context.description }}</li>
+                            <li class="lead" style="margin-bottom: 5px;">{{ context.description }}</li>
                         </ul>
                         <ul class="list-inline">
                             <li><strong>{{ rna.length|intcomma }}</strong> nucleotides</li>
@@ -116,7 +116,7 @@ limitations under the License.
 
                 <div>
                   <h2>
-                    Rfam hits
+                    Rfam classification
                     <small>
                       {% if rna.get_rfam_hits|length > 1 %}
                         {% if rna.get_rfam_hit_families|length != rna.get_rfam_hits|length %}
@@ -125,19 +125,19 @@ limitations under the License.
                           {{ rna.get_rfam_hits|length|intcomma }} total
                         {% endif %}
                       {% endif %}
-                      <a href="{% url 'help-rfam-scan' %}" uib-tooltip="Inferred from infernal scan. Click for details.">
+                      <a href="{% url 'help-rfam-scan' %}" uib-tooltip="Inferred from infernal scan. Click for details." style="color:inherit;">
                         <i class="fa fa-question-circle" aria-hidden="true"></i>
                       </a>
                     </small>
                   </h2>
 
                   <div class="panel panel-default">
-                    <div class="panel-body" style="padding-bottom: 0px;">
+                    <div class="panel-body" style="padding-bottom: 0px; padding-left: 5px;">
                       {% if rna.grouped_rfam_hits|length > 0 %}
                       <ul class="media-list">
                       {% for hit in rna.grouped_rfam_hits %}
-                      <li class="media col-md-6" style="margin-bottom: 1.5em;">
-                        <div class="media-left media-top col-md-3"
+                      <li class="media col-md-6" style="margin-bottom: 1.5em; padding-left: 5px;">
+                        <div class="media-left media-top col-md-3" style="padding-left: 0;"
                           uib-tooltip="Consensus secondary structure of Rfam model {{ hit.rfam_model_id }}">
                             <a href="{{ hit.rfam_model.twod_url }}" class="no-icon">
                               <img class="media-object thumbnail"
