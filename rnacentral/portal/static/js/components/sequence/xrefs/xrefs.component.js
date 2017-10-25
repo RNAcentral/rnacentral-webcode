@@ -5,7 +5,8 @@ var xrefs = {
         page: '<?',
         pageSize: '<?',
         taxid: '<?',
-        onActivatePublications: '&'
+        onActivatePublications: '&',
+        onActivateModifiedNucleotides: '&'
     },
     controller: ['routes', '$http', '$interpolate', '$timeout', function(routes, $http, $interpolate, $timeout) {
         var ctrl = this;

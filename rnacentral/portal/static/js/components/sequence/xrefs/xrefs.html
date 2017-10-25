@@ -297,7 +297,7 @@
             <br>
             <i class="fa fa-angle-right"></i>
             <span class="small" ng-if="xref.modifications.length != 0">
-              <button class="btn btn-primary btn-xs" data-modifications="{{ xref.modifications }}">
+              <button ng-click="$ctrl.onActivateModifiedNucleotides({ modifications: xref.modifications })" class="btn btn-primary btn-xs" data-modifications="{{ xref.modifications }}">
                 <i class="fa fa-crosshairs"></i> <ng-pluralize count="xref.modifications.length" when="{'one': 'View modification', 'other': 'View modifications'}"></ng-pluralize>
               </button>
               <span ng-repeat="modification in xref.modifications">
