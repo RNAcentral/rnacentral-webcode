@@ -48,20 +48,6 @@ limitations under the License.
             <div class="alert alert-danger">
                 No annotations from taxid:{{context.taxid_not_found}}.
             </div>
-        {% elif context.taxid_filtering %}
-            <div class="well well-sm">
-                <i class="fa fa-filter"></i> Showing annotations from <strong><em>{{ context.single_species}}</em></strong>.
-
-                {% if rna.count_distinct_organisms > 1 %}
-                  <a href="" ng-click="activateTab(1);" class="show-species-tab">Switch species</a> or
-                  <a href="{% url 'portal.views.rna_view' rna.upi %}">view all data</a> from {{ rna.count_distinct_organisms }} species.
-                {% endif %}
-            </div>
-        {% elif rna.count_distinct_organisms > 1 %}
-            <div class="well well-sm">
-                <i class="fa fa-info-circle"></i> This unique sequence was observed in multiple species.
-                <a href="" ng-click="activateTab(1);" class="show-species-tab">Filter annotations</a> by species.
-            </div>
         {% endif %}
 
         <div class="tabbable">
