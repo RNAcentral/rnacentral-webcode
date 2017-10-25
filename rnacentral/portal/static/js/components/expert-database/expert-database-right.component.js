@@ -1,9 +1,9 @@
-var right = {
+var expertDatabaseRight = {
     bindings: {
         onError: "&",
         expertDb : "<"
     },
-    templateUrl: '/static/js/components/expert-database/right.html',
+    templateUrl: '/static/js/components/expert-database/expert-database-right.html',
     controller: ['$interpolate', '$location', '$http', 'search', 'routes', function($interpolate, $location, $http, search, routes) {
         var ctrl = this;
 
@@ -67,4 +67,4 @@ var right = {
     }]
 };
 
-angular.module('expertDatabase').component('right', right);
+angular.module('expertDatabase').component('expertDatabaseRight', expertDatabaseRight);

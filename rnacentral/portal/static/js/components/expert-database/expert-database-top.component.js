@@ -1,8 +1,8 @@
-var top = {
+var expertDatabaseTop = {
     bindings: {
         expertDb: "<"
     },
-    templateUrl: '/static/js/components/expert-database/top.html',
+    templateUrl: '/static/js/components/expert-database/expert-database-top.html',
     controller: ['$interpolate', '$location', '$http', 'search', 'routes', function($interpolate, $location, $http, search, routes) {
         var ctrl = this;
 
@@ -21,4 +21,4 @@ var top = {
     }]
 };
 
-angular.module('expertDatabase').component('top', top);
+angular.module('expertDatabase').component('expertDatabaseTop', expertDatabaseTop);

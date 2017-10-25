@@ -55,12 +55,12 @@ limitations under the License.
 
       <div ng-if="error === false">
         <div class="row">
-          <top ng-if="expertDb" expert-db="expertDb"></top>
+          <expert-database-top ng-if="expertDb" expert-db="expertDb"></expert-database-top>
         </div>
 
         <div class="row">
-          <left ng-if="expertDb" expert-db="expertDb"></left>
-          <right ng-if="expertDb" expert-db="expertDb" on-error="onError()"></right>
+          <expert-database-left ng-if="expertDb" expert-db="expertDb"></expert-database-left>
+          <expert-database-right ng-if="expertDb" expert-db="expertDb" on-error="onError()"></expert-database-right>
         </div>
       </div>
 
