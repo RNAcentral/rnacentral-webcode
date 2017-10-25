@@ -22,7 +22,60 @@ var search = function(_, $http, $interpolate, $location, $window) {
     this.config = {
         ebeyeBaseUrl: global_settings.EBI_SEARCH_ENDPOINT,
         rnacentralBaseUrl: window.location.origin, // e.g. http://localhost:8000 or http://rnacentral.org
-        fields: ['description', 'active', 'length', 'pub_title', 'has_genomic_coordinates'],
+        fields: [
+            'active',
+            'author',
+            'common_name',
+            'description',
+            'expert_db',
+            'function',
+            'gene',
+            'gene_synonym',
+            'has_genomic_coordinates',
+            'length',
+            'locus_tag',
+            'organelle',
+            'pub_title',
+            'product',
+            'rna_type',
+            'standard_name'
+        ],
+        fieldWeights: {
+            'active': 0,
+            'author': 2,
+            'common_name': 3,
+            'description': 2,
+            'expert_db': 4,
+            'function': 4,
+            'gene': 4,
+            'gene_synonym': 3,
+            'has_genomic_coordinates': 0,
+            'length': 0,
+            'locus_tag': 2,
+            'organelle': 3,
+            'pub_title': 2,
+            'product': 1,
+            'rna_type': 2,
+            'standard_name': 2
+        },
+        fieldVerboseNames: {
+            'active': 'Active',
+            'author': 'Author',
+            'common_name': 'Species',
+            'description': 'Description',
+            'expert_db': 'Source',
+            'function': 'Function',
+            'gene': 'Gene',
+            'gene_synonym': 'Gene synonym',
+            'has_genomic_coordinates': 'Genomic coordinates',
+            'locus_tag': 'Locus tag',
+            'length': 'Length',
+            'organelle': 'Organelle',
+            'pub_title': 'Publication title',
+            'product': 'Product',
+            'rna_type': 'RNA type',
+            'standard_name': 'Standard name'
+        },
         facetfields: ['rna_type', 'TAXONOMY', 'expert_db', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
         facetcount: 30,
         pagesize: 15,
@@ -38,7 +91,8 @@ var search = function(_, $http, $interpolate, $location, $window) {
                         '&size=' + self.config.pagesize +
                         '&start={{ start }}' +
                         '&sort=boost:descending,length:descending' +
-                        '&hlpretag=<span class=text-search-highlights>&hlposttag=</span>',
+                        '&hlpretag=<span class=text-search-highlights>' +
+                        '&hlposttag=</span>',
         'ebeyeAutocomplete': 'http://www.ebi.ac.uk/ebisearch/ws/rest/RNAcentral/autocomplete' +
                               '?term={{ query }}' +
                               '&format=json',
@@ -47,11 +101,28 @@ var search = function(_, $http, $interpolate, $location, $window) {
     };
 
     this.autocomplete = function(query) {
-        // get queryUrl ready
-        var ebeyeUrl = $interpolate(self.queryUrls.ebeyeAutocomplete)({query: query});
-        var queryUrl = $interpolate(self.queryUrls.proxy)({ebeyeUrl: encodeURIComponent(ebeyeUrl)});
+        self = this;
+        self.autocompleteDeferred = $q.defer();
 
-        return $http.get(queryUrl, {ignoreLoadingBar: true});
+        if (query.length < 3) {
+            self.autocompleteDeferred.reject("query too short!");
+        }
+        else {
+            // get queryUrl ready
+            var ebeyeUrl = $interpolate(self.queryUrls.ebeyeAutocomplete)({query: query});
+            var queryUrl = $interpolate(self.queryUrls.proxy)({ebeyeUrl: encodeURIComponent(ebeyeUrl)});
+
+            $http.get(queryUrl, {ignoreLoadingBar: true}).then(
+                function(response) {
+                    self.autocompleteDeferred.resolve(response);
+                },
+                function(response) {
+                    self.autocompleteDeferred.reject(response);
+                }
+            );
+        }
+
+        return self.autocompleteDeferred.promise;
     };
 
     /**
@@ -62,6 +133,7 @@ var search = function(_, $http, $interpolate, $location, $window) {
         start = start || 0;
 
         // hopscotch.endTour(); // end guided tour when a search is launched
+        self.autocompleteDeferred && self.autocompleteDeferred.reject(); // if autocompletion was launched - reject it
 
         self.query = query;
         self.status = 'in progress';
@@ -268,6 +340,16 @@ var search = function(_, $http, $interpolate, $location, $window) {
     this.loadMoreResults = function() {
         self.search(self.query, self.result.entries.length);
     };
+
+    /**
+     * Checks, if search query contains any lucene-specific syntax, or if it's a plain text
+     */
+    this.luceneSyntaxUsed = function(query) {
+        if (/[\+\-\&\|\!\{\}\[\]\^~\?\:\\\/\*\"\(]/.test(query)) return true;
+        if (/[\s\"]OR[\s\"]/.test(query)) return true;
+        if (/[\s\"]AND[\s\"]/.test(query)) return true;
+        return false;
+    }
 };
 
 angular.module('rnacentralApp').service('search', ['_', '$http', '$interpolate', '$location', '$window', search]);
