@@ -175,7 +175,7 @@ class Accession(models.Model):
     def get_expert_db_external_url(self):
         """Get external url to expert database."""
         urls = {
-            'RFAM': 'http://rfam.xfam.org/family/{id}',
+            'RFAM': 'http://rfam.org/family/{id}',
             'SRPDB': 'http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/{id}',
             'MIRBASE': 'http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc={id}',
             'TMRNA_WEB': 'http://bioinformatics.sandia.gov/tmrna/seqs/{id}',
