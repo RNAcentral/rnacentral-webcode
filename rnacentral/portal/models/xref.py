@@ -232,7 +232,7 @@ class RawSqlQueryset(models.QuerySet):
             FROM xref, rnc_accessions
             WHERE xref.ac = rnc_accessions.accession
               AND xref.id IN ({pks})
-              AND rnc_accessions.database = 'REFSEQ'
+              AND xref.dbid = 9
               AND rnc_accessions.feature_name = 'ncRNA'
               {taxid_filter}
         """.format(pks=pks, taxid_filter=taxid_filter)
@@ -246,7 +246,7 @@ class RawSqlQueryset(models.QuerySet):
               {queryset}
             ) x
             ON rnc_accessions.parent_ac = x.parent_ac
-            WHERE rnc_accessions.database = 'REFSEQ'
+            WHERE xref.dbid = 9
               AND rnc_accessions.feature_name = 'precursor_RNA'
               {taxid_filter}
         """.format(queryset=queryset, taxid_filter=taxid_filter)
