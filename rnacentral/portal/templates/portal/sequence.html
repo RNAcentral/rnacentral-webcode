@@ -139,7 +139,7 @@ limitations under the License.
                           {{ rna.get_rfam_hits|length|intcomma }} total
                         {% endif %}
                       {% endif %}
-                      <a href="#" uib-tooltip="Inferred from infernal scan. Click for details.">
+                      <a href="{% url 'help-rfam-scan' %}" uib-tooltip="Inferred from infernal scan. Click for details.">
                         <i class="fa fa-question-circle" aria-hidden="true"></i>
                       </a>
                     </small>
