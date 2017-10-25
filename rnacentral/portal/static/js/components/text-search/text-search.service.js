@@ -61,7 +61,7 @@ var search = function(_, $http, $interpolate, $location, $window) {
     this.search = function(query, start) {
         start = start || 0;
 
-        hopscotch.endTour(); // end guided tour when a search is launched
+        // hopscotch.endTour(); // end guided tour when a search is launched
 
         self.query = query;
         self.status = 'in progress';
