@@ -98,7 +98,7 @@
             <span ng-if="xref.mirbase_mature_products">
               - precursor miRNA (<ng-pluralize count="xref.mirbase_mature_products.length" when="{'one': 'mature product', 'other': 'mature products'}"></ng-pluralize>
               <span ng-repeat="matureProduct in xref.mirbase_mature_products">
-                <a ng-href="{{ matureProduct + "/" + xref.taxid }}">{{ $ctrl.url2urs(xref.matureProduct) }}</a>{{$last ? '' : ', '}}
+                <a ng-href="{{ matureProduct + '/' + xref.taxid }}">{{ $ctrl.url2urs(matureProduct) }}</a>{{$last ? '' : ', '}}
               </span>)
             </span>
             <span ng-if="xref.mirbase_precursor">
