@@ -357,7 +357,8 @@ class Rna(CachingMixin, models.Model):
         :returns list: A list of all Rfam hits to this sequence.
         """
 
-        query = RfamHit.objects.filter(upi=self.upi)
+        query = RfamHit.objects.select_related('rfam_model').\
+                                filter(upi=self.upi)
         if not allow_suppressed:
             query = query.filter(rfam_model__is_suppressed=False)
         return query.order_by('rfam_model_id', 'sequence_start')
