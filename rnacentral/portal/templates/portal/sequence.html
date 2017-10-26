@@ -59,30 +59,23 @@ limitations under the License.
                     Overview
                 </h2>
 
-                <div class="panel panel-default">
-                    <div class="panel-body">
-                        <ul class="list-inline">
-                            <li class="lead" style="margin-bottom: 5px;">{{ context.description }}</li>
-                        </ul>
-                        <ul class="list-inline">
-                            <li><strong>{{ rna.length|intcomma }}</strong> nucleotides</li>
-                            <li>
-                                {% with dbs=context.distinct_databases %}
-                                <strong>{{ dbs|length|intcomma }}</strong> database{{ dbs|length|pluralize }}
-                                <small>
-                                    {% for db in dbs %}
-                                        {% if forloop.first %}({% endif %}{{db}}{% if not forloop.last %},{% else %}){% endif %}
-                                    {% endfor %}
-                                </small>
-                                {% endwith %}
-                            </li>
-                            <li>
-                                Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab" ng-click="activateTab('1')">species</a>
-                            </li>
-                            <li class="badge">{{ context.precomputed.rna_type }}</li>
-                        </ul>
-                    </div>
-                </div> <!-- .panel .panel-default -->
+                <ul class="list-inline" style="padding-left: 9px;">
+                    <li><strong>{{ rna.length|intcomma }}</strong> nucleotides</li>
+                    <li>
+                        {% with dbs=context.distinct_databases %}
+                        <strong>{{ dbs|length|intcomma }}</strong> database{{ dbs|length|pluralize }}
+                        <small>
+                            {% for db in dbs %}
+                                {% if forloop.first %}({% endif %}{{db}}{% if not forloop.last %},{% else %}){% endif %}
+                            {% endfor %}
+                        </small>
+                        {% endwith %}
+                    </li>
+                    <li>
+                        Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab" ng-click="activateTab('1')">species</a>
+                    </li>
+                    <li class="badge">{{ context.precomputed.rna_type }}</li>
+                </ul>
 
                 <xrefs upi="upi" taxid="taxid" timeout="5000" page-size="5" on-activate-publications="activateTab('2')"></xrefs>
 
