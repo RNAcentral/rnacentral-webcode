@@ -1,4 +1,4 @@
-var rnaSequenceController = function($scope, $location, $window, $rootScope, $compile) {
+var rnaSequenceController = function($scope, $location, $window, $rootScope, $compile, $http, routes) {
     // Take upi and taxid from url. Note that $location.path() always starts with slash
     $scope.upi = $location.path().split('/')[2];
     $scope.taxid = $location.path().split('/')[3];  // TODO: this might not exist!
@@ -104,15 +104,23 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 
     // populate data for angular-genoverse instance
     $scope.activateGenomeBrowser = function(start, end, strand, chromosome, species, description, label) {
-        $scope.genomes = genomes;
-        // genome must be a reference to an object in genomes Array, not another object with same value
-        $scope.genome = genomes.filter(function(element) {
-            return element.species.toLowerCase() == species.toLowerCase();
-        })[0];
-        $scope.start = start;
-        $scope.end = end;
-        $scope.chromosome = chromosome;
-        debugger;
+        $http.get(routes.genomesApi(), { cache: true }).then(  // if genomes've already been loaded, use cache
+            function(response) {
+                genomes = $scope.genomes = response.data;
+                // genome must be a reference to an object in genomes Array, not another object with same value
+                $scope.genome = $scope.genomes.filter(function(element) {
+                    return element.species.toLowerCase() == species.toLowerCase();
+                })[0];
+                $scope.start = start;
+                $scope.end = end;
+                $scope.chromosome = chromosome;
+
+                $scope.Genoverse = Genoverse;
+
+                console.log(`start = ${$scope.start}, end = ${$scope.end}, strand = ${$scope.strand}, chromosome = ${$scope.chromosome}, species = ${$scope.species}, genome = ${$scope.genome}`);
+            },
+            function(response) { console.log("Unable to download available genomes from server!"); return; }
+        );
     };
 
 
@@ -150,7 +158,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     };
 };
 
-rnaSequenceController.$inject = ['$scope', '$location', '$window', '$rootScope', '$compile'];
+rnaSequenceController.$inject = ['$scope', '$location', '$window', '$rootScope', '$compile', '$http', 'routes'];
 
 
 /**
