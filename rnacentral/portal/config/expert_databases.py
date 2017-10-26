@@ -807,11 +807,22 @@ expert_dbs = [
         'hint': 'MGI is the international database resource for the laboratory mouse',
         'tags': ['curated', 'model organism', 'mouse', 'Mus musculus'],
         'abbreviation': '',
-        'examples': [],
-        'references': [],
-        'imported': False,
-        'status': '',
-        'version': '',
+        'examples': [
+            {'upi': 'URS00009AEDBB', 'taxid': 10090},
+            {'upi': 'URS00009B2FC2', 'taxid': 10090},
+            {'upi': 'URS00007742B3', 'taxid': 10090},
+        ],
+        'references': [
+            {
+                'title': 'Mouse Genome Database (MGD)-2017: community knowledge resource for the laboratory mouse',
+                'authors': 'Blake JA, Eppig JT, Kadin JA, Richardson JE, Smith CL, Bult CJ; the Mouse Genome Database Group',
+                'journal': 'Nucleic Acids Res. 2017 Jan 4;45(D1):D723-D729',
+                'pubmed_id': 27899570,
+            }
+        ],
+        'imported': True,
+        'status': 'new',
+        'version': 'MGI 6.10',
     },
     {
         'name': 'RGD',
