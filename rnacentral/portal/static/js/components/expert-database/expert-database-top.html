@@ -1,10 +1,10 @@
 <h1>
-  <a href="{{ $ctrl.expertDb.url }}" target="_blank" class="expert-db-logo no-icon">
-    <img ng-src="{{ $ctrl.routes.expertDbLogo({ expertDbName: $ctrl.expertDb.label }) }}" alt="{{ $ctrl.expertDb.name }} logo" class="img-rounded">
+  <a href="{{ $ctrl.expertDb.url }}" target="_blank" class="no-icon">
+    <img ng-src="{{ $ctrl.routes.expertDbLogo({ expertDbName: $ctrl.expertDb.label }) }}" alt="{{ $ctrl.expertDb.name }} logo" class="img-rounded"  style="max-height: 40px; max-width: 100px;">
   </a>
   {{ $ctrl.expertDb.name }} Expert Database
-    <small ng-if="$ctrl.expertDb.status != 'archived'"><label class="label label-primary">{{ $ctrl.expertDb.status }}</label></small>
-    <small ng-if="$ctrl.expertDb.status == 'archived'"><label class="label label-danger">{{ $ctrl.expertDb.status }}</label></small>
+    <small ng-if="$ctrl.expertDb.status != 'archived'"><label class="badge">{{ $ctrl.expertDb.status }}</label></small>
+    <small ng-if="$ctrl.expertDb.status == 'archived'"><label class="badge">{{ $ctrl.expertDb.status }}</label></small>
 </h1>
 
 <div class="row">
