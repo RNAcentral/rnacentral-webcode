@@ -34,12 +34,6 @@ limitations under the License.
             {% if not context.single_species %}
                 <small>{{ rna.count_distinct_organisms|intcomma }} species</small>
             {% endif %}
-
-            <small class="pull-right hidden-xs">
-                <button type="button" class="btn btn-info tour help" title="Take an interactive tour to explore RNAcentral features" id="guided-tour" ng-click="activateTour()">
-                    <i class="fa fa-info-circle"></i> Interactive tour
-                </button>
-            </small>
         </h1>
 
         {% if context.taxid_not_found %}
