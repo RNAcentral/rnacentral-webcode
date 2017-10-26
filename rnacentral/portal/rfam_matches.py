@@ -291,7 +291,10 @@ class MissingMatch(object):
                 'RF02543',  # Eukaryotic large subunit ribosomal RNA
                 'RF02547',  # mito 5S RNA
             ]),
-            'tRNA': set(['RF00005']),
+            'tRNA': set([
+                'RF00005',  # tRNA
+                'RF01852',  # Selenocysteine tRNA
+            ]),
         }
 
     def __call__(self, rna, taxid=None):
