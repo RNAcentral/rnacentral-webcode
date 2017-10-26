@@ -84,22 +84,6 @@ limitations under the License.
                     </div>
                 </div> <!-- .panel .panel-default -->
 
-                {% if context.rfam_status.has_issue %}
-                  <ul class="list-inline" style="margin-top: 5px;">
-                  <li>
-                    <div class="alert alert-warning" style="margin-bottom: 0px">
-                      <i class="fa fa-warning fa-2x pull-left" aria-hidden="true"></i>
-                      {% for message in context.rfam_status.messages %}
-                        {% autoescape off %}
-                          <span>{{ message }}</span>
-                        {% endautoescape %}
-                        <br />
-                      {% endfor %}
-                    </div>
-                  </li>
-                  </ul>
-                {% endif %}
-
                 <xrefs upi="upi" taxid="taxid" timeout="5000" page-size="5" on-activate-publications="activateTab('2')"></xrefs>
 
                 {# genoverse #}
@@ -130,6 +114,22 @@ limitations under the License.
                       </a>
                     </small>
                   </h2>
+
+                  {% if context.rfam_status.has_issue %}
+                    <ul class="list-inline" style="margin-top: 5px;">
+                    <li>
+                      <div class="alert alert-warning" style="margin-bottom: 0px">
+                        <i class="fa fa-warning fa-2x pull-left" aria-hidden="true"></i>
+                        {% for message in context.rfam_status.messages %}
+                          {% autoescape off %}
+                            <span>{{ message }}</span>
+                          {% endautoescape %}
+                          <br />
+                        {% endfor %}
+                      </div>
+                    </li>
+                    </ul>
+                  {% endif %}
 
                   <div class="panel panel-default">
                     <div class="panel-body" style="padding-bottom: 0px; padding-left: 5px;">
