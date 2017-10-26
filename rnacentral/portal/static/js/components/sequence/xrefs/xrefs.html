@@ -62,8 +62,8 @@
           <!-- Rfam -->
           <span ng-switch-when="Rfam">
             RFAM family: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }}),
-            <span ng-if="xref.is_rfam_seed" class="text-success">seed alignment</span> <i class="fa fa-info-circle help" title="part of a manually curated RFAM seed alignment"></i>
-            <span ng-if="!xref.is_rfam_seed" class="text-danger">full alignment</span> <i class="fa fa-info-circle help" title="part of an automatically built RFAM full alignment"></i>
+            <span ng-if="xref.is_rfam_seed" class="text-success">seed alignment <i class="fa fa-info-circle help" title="part of a manually curated Rfam seed alignment"></i></span>
+            <span ng-if="!xref.is_rfam_seed" class="text-danger">full alignment <i class="fa fa-info-circle help" title="part of an automatically built Rfam full alignment"></i></span>
             <br>
             <i class="fa fa-angle-right"></i>
             Source ENA entry: <a ng-href="{{ 'http://www.ebi.ac.uk/ena/data/view/' +  xref.accession.parent_ac + '.' + xref.accession.seq_version }}" target="_blank">{{ xref.accession.parent_ac }}.{{ xref.accession.seq_version }}</a>
