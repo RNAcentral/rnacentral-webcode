@@ -210,7 +210,7 @@ limitations under the License.
                 </h2>
 
                 <p>
-                    {{ rna.length|intcomma }} nucleotides
+                    RNAcentral identifier <em>{{ rna.upi }}{% if context.single_species %}_{{context.taxid}}{% endif %}</em>
                     <a href="{% url 'nhmmer-sequence-search' %}?q={{ rna.upi }}" class="margin-left-5px">Search for similar sequences</a>
                 </p>
                 {% if context.non_canonical_base_counts %}
