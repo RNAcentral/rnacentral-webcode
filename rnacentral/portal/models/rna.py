@@ -83,7 +83,6 @@ class Rna(CachingMixin, models.Model):
     def is_active(self):
         """A sequence is considered active if it has at least one active cross_reference."""
         values_list = self.xrefs.values_list('deleted', flat=True)
-        print "self.xrefs.values_list('deleted', flat=True) = %s" % values_list
         return 'N' in self.xrefs.values_list('deleted', flat=True).distinct()  # deleted xrefs are marked with N
 
     def has_genomic_coordinates(self, taxid=None):
