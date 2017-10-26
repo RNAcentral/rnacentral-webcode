@@ -1,4 +1,4 @@
-var rnaSequenceController = function($scope, $location, $window, $rootScope, $compile, $http, routes) {
+var rnaSequenceController = function($scope, $location, $window, $rootScope, $compile, $http, $filter, routes, genoverse) {
     // Take upi and taxid from url. Note that $location.path() always starts with slash
     $scope.upi = $location.path().split('/')[2];
     $scope.taxid = $location.path().split('/')[3];  // TODO: this might not exist!
@@ -115,9 +115,10 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                 $scope.end = end;
                 $scope.chromosome = chromosome;
 
-                $scope.Genoverse = Genoverse;
+                $scope.Genoverse = genoverse.Genoverse;
+                $scope.urls = genoverse.urls;
+                $scope.RNAcentralParseData = genoverse.
 
-                console.log(`start = ${$scope.start}, end = ${$scope.end}, strand = ${$scope.strand}, chromosome = ${$scope.chromosome}, species = ${$scope.species}, genome = ${$scope.genome}`);
             },
             function(response) { console.log("Unable to download available genomes from server!"); return; }
         );
@@ -158,7 +159,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     };
 };
 
-rnaSequenceController.$inject = ['$scope', '$location', '$window', '$rootScope', '$compile', '$http', 'routes'];
+rnaSequenceController.$inject = ['$scope', '$location', '$window', '$rootScope', '$compile', '$http', '$filter', 'routes', 'genoverse'];
 
 
 /**
