@@ -675,3 +675,13 @@ class ExpertDatabasesStatsViewSet(RetrieveModelMixin, ListModelMixin, GenericVie
 
     def get(self, request, *args, **kwargs):
         return super(ExpertDatabasesStatsViewSet, self).retrieve(request, *args, **kwargs)
+
+
+class GenomesAPIView(APIView):
+    """API endpoint, presenting genomes available for display in RNAcentral genome browser."""
+    permission_classes = ()
+    authentication_classes = ()
+
+    def get(self, request, format=None):
+        sorted_genomes = sorted(genomes, key=lambda x: x['species'])
+        return Response(sorted_genomes)

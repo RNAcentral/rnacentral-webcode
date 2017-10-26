@@ -98,7 +98,7 @@ limitations under the License.
                     </div>
                 </div> <!-- .panel .panel-default -->
 
-                <xrefs upi="upi" taxid="taxid" timeout="5000" page-size="5" on-activate-publications="activateTab('2')" on-activate-modified-nucleotides="activateModifiedNucleotides(modifications)"></xrefs>
+                <xrefs upi="upi" taxid="taxid" timeout="5000" page-size="5" on-activate-publications="activateTab('2')" on-activate-modified-nucleotides="activateModifiedNucleotides(modifications)" on-activate-genome-browser="activateGenomeBrowser(start, end, stand, chromosome, species, description, label)"></xrefs>
 
                 <!-- genoverse -->
                 <div ng-if="genome && chromosome && start && end">
@@ -184,7 +184,4 @@ limitations under the License.
         </div> <!-- .tabbable -->
     </div> <!-- .col-md-12 -->
 </div> <!-- .row -->
-
-
-
 {% endblock content %}

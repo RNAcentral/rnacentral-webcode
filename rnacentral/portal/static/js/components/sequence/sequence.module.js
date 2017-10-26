@@ -57,6 +57,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         for (var i = 0; i < modifications.length; i++) {
             newText += text.slice(start, modifications[i].position - 1);
 
+            // create links to pdb and modomics, if possible
             var pdbLink = "", modomicsLink = "";
             if (modifications[i].chem_comp.pdb_url) {
                 pdbLink = '<a href=\'' + modifications[i].chem_comp.pdb_url + '\' target=\'_blank\'>PDBe</a> <br>';  // note <br> in the end
@@ -65,6 +66,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                 modomicsLink = '<a href=\'' + modifications[i].chem_comp.modomics_url + '\' target=\'_blank\'>Modomics</a>';
             }
 
+            // html template for a modified nucleotide
             modification = '<span class="modified-nt" role="button" tabindex="10" ' +
               'data-trigger="focus" ' +
               'data-toggle="popover" ' +
@@ -110,6 +112,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         $scope.start = start;
         $scope.end = end;
         $scope.chromosome = chromosome;
+        debugger;
     };
 
 

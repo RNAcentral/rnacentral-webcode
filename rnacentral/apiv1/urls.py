@@ -46,6 +46,8 @@ urlpatterns = patterns('',
     # expert databases stats
     url(r'^expert-db-stats/$', views.ExpertDatabasesStatsViewSet.as_view({'get': 'list'}), {}, name='expert-db-stats'),
     url(r'^expert-db-stats/(?P<pk>.*)/?$', views.ExpertDatabasesStatsViewSet.as_view({'get': 'retrieve'}), {}, name='expert-db-stats'),
+    # list of genomes, available for display in Genoverse
+    url(r'^genomes/$', views.GenomesAPIView.as_view(), {}, name='genomes-api'),
 )
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'yaml', 'fasta', 'api', 'gff', 'gff3', 'bed'])
