@@ -327,7 +327,7 @@ class Rna(CachingMixin, models.Model):
             The collection of xrefs that are valid for the sequence and taxid.
         """
 
-        base = Xref.objects.filter(upi=self.upi)
+        base = Xref.default_objects.filter(upi=self.upi)
         xrefs = base.filter(deleted='N')
         if taxid is not None:
             xrefs = xrefs.filter(taxid=taxid)
