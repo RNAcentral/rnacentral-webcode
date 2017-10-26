@@ -203,10 +203,11 @@ class Accession(models.Model):
         }
         if self.database in urls.keys():
             if self.database == 'GTRNADB':
-                if 'summary' in self.external_id:
-                    return urls[self.database] + self.external_id + '.html'
+                data = json.loads(self.note)
+                if 'url' in data:
+                    return data['url']
                 else:
-                    return urls[self.database] + self.external_id + '/' + self.external_id + '-summary.html'
+                    return ''
             elif self.database == 'LNCRNADB':
                 return urls[self.database].format(id=self.optional_id.replace(' ', ''))
             elif self.database == 'VEGA':
