@@ -1,12 +1,12 @@
 var rnaSequenceController = function($scope, $location, $window, $rootScope, $compile) {
     // Take upi and taxid from url. Note that $location.path() always starts with slash
     $scope.upi = $location.path().split('/')[2];
-    $scope.taxid = $location.path().split('/')[3]; // TODO: this might not exist!
+    $scope.taxid = $location.path().split('/')[3];  // TODO: this might not exist!
 
     // programmatically switch tabs
     $scope.activeTab = 0;
     $scope.activateTab = function(index) {
-        $scope.activeTab = parseInt(index); // have to convert index to string
+        $scope.activeTab = parseInt(index);  // have to convert index to string
     };
 
     // Downloads tab shouldn't be clickable
@@ -33,7 +33,9 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 
     // hopscotch guided tour
     $scope.activateTour = function () {
-        hopscotch.startTour($rootScope.tour, 4); // start from step 4
+        // hopscotch_tour = new guidedTour;
+        // hopscotch_tour.initialize();
+        hopscotch.startTour($rootScope.tour, 4);  // start from step 4
     };
 
     // Modified nucleotides visualisation.
@@ -98,6 +100,18 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         $('.modified-nt').first().focus().popover('show');
     };
 
+    // populate data for angular-genoverse instance
+    $scope.activateGenomeBrowser = function(start, end, strand, chromosome, species, description, label) {
+        $scope.genomes = genomes;
+        // genome must be a reference to an object in genomes Array, not another object with same value
+        $scope.genome = genomes.filter(function(element) {
+            return element.species.toLowerCase() == species.toLowerCase();
+        })[0];
+        $scope.start = start;
+        $scope.end = end;
+        $scope.chromosome = chromosome;
+    };
+
 
     activateCopyToClipboardButtons();
 
@@ -117,7 +131,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         var rnaClipboard = new Clipboard('#copy-as-rna', {
             "text": function() {
                 var rna = $('#rna-sequence').text();
-                rna = rna.replace(/\s/g, ''); // remove whitespace chars (arising due to colored <spans> in sequence)
+                rna = rna.replace(/\s/g, '');  // remove whitespace chars (arising due to colored <spans> in sequence)
                 return rna;
             }
         });
@@ -125,7 +139,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         var dnaClipbaord = new Clipboard('#copy-as-dna', {
             "text": function() {
                 var rna = $('#rna-sequence').text();
-                rna = rna.replace(/\s/g, ''); // remove whitespace chars (arising due to colored <spans> in sequence)
+                rna = rna.replace(/\s/g, '');  // remove whitespace chars (arising due to colored <spans> in sequence)
                 var dna = reverseTranscriptase(rna);
                 return dna;
             }
