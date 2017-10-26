@@ -389,7 +389,6 @@
     <span class="pull-right" style="padding-bottom: 10px;">
       <select ng-model="$ctrl.pageSize" ng-change="$ctrl.onPageSizeChanged($ctrl.pageSize, '{{ $ctrl.pageSize }}')" ng-options="v.value as v.key for v in [{key:1, value:1}, {key: 5, value: 5}, {key: 10, value: 10}, {key: 20, value: 20}, {key: 50, value: 50}, {key: 'all', value: 1000000000000}]"></select> records per page
     </span>
+    <div class="clearfix"></div>
   </div>
-
-  <div class="annotations-datatables-controls"></div>
 </div>
