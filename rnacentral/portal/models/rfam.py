@@ -75,11 +75,11 @@ class RfamModel(models.Model):
 
     def go_terms(self):
         terms = []
-        mapping = RfamGoTerm.objects.filter(rfam_model_id=self.rfam_model_id)
-        for result in mapping:
+        mapping = RfamGoTerm.objects.select_related('go_term').\
+                                     filter(rfam_model_id=self.rfam_model_id)
+        for result in mapping.all():
             terms.append(result.go_term)
         return terms
-
 
 
 class RfamHit(models.Model):
@@ -164,6 +164,7 @@ class RfamGoTerm(models.Model):
         GoTerm,
         db_column='go_term_id',
         to_field='go_term_id',
+        related_name='go_term'
     )
     rfam_model = models.ForeignKey(
         RfamModel,
@@ -174,5 +175,3 @@ class RfamGoTerm(models.Model):
     class Meta:
         db_table = 'rfam_go_terms'
         unique_together = (('rfam_model', 'go_term'),)
-
-
