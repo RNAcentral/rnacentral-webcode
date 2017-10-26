@@ -29,11 +29,9 @@ limitations under the License.
 <div class="row" ng-controller="rnaSequenceController">
     <div class="col-md-12">
         <h1>
-            Sequence {{ rna.upi }}
+            {{ context.description }}
 
-            {% if context.single_species %}
-                <small><em>{{ context.single_species }}</em></small>
-            {% else %}
+            {% if not context.single_species %}
                 <small>{{ rna.count_distinct_organisms|intcomma }} species</small>
             {% endif %}
 
