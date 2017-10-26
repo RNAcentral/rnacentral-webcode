@@ -674,6 +674,4 @@ class ExpertDatabasesStatsViewSet(RetrieveModelMixin, ListModelMixin, GenericVie
         return super(ExpertDatabasesStatsViewSet, self).list(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        import pdb
-        pdb.set_trace()
         return super(ExpertDatabasesStatsViewSet, self).retrieve(request, *args, **kwargs)
