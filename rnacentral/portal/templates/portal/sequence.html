@@ -247,8 +247,8 @@ limitations under the License.
                 <publications upi="upi"></publications>
             </uib-tab>
 
-            <uib-tab index="3" heading="2D" id="secondary-structures" deselect="checkTab($event, $selectedIndex)">
-                <secondary-structures upi="upi" taxid="taxid"></secondary-structures>
+            <uib-tab index="3" heading="2D" id="secondary-structures" deselect="checkTab($event, $selectedIndex)" ng-hide="hide2dTab">
+                <secondary-structures upi="upi" taxid="taxid" show-secondary-structure-tab="show2dTab()"></secondary-structures>
             </uib-tab>
 
             <uib-tab index="4" class="dropdown pull-right hidden-xs">

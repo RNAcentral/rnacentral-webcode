@@ -1,7 +1,8 @@
 var secondary_structures = {
     bindings: {
         upi: '<',
-        taxid: '<?'
+        taxid: '<?',
+        showSecondaryStructureTab: '&'
     },
     controller: ['$http', '$interpolate', 'routes', function($http, $interpolate, routes) {
         var ctrl = this;
@@ -49,6 +50,7 @@ var secondary_structures = {
                 'sequence': ctrl.secondaryStructures.sequence,
             };
             container.addRNA(options.structure, options);
+            ctrl.showSecondaryStructureTab();
         };
     }],
     template: '<div id="2d" style="min-height: 600px">' +
