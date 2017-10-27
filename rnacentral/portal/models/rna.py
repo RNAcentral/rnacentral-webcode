@@ -13,7 +13,7 @@ limitations under the License.
 
 import operator as op
 import itertools as it
-from collections import Counter
+from collections import Counter, defaultdict
 
 from caching.base import CachingMixin, CachingManager
 from django.core.exceptions import ObjectDoesNotExist
@@ -427,3 +427,31 @@ class Rna(CachingMixin, models.Model):
     def get_rfam_hit_families(self, **kwargs):
         hits = self.get_rfam_hits(**kwargs)
         return sorted(set(hit.rfam_model for hit in hits))
+
+    def get_secondary_structures(self, taxid=None):
+        """
+        Get secondary structures associated with a sequence.
+        """
+        queryset = Xref.default_objects.select_related('db', 'accession','accession__secondary_structure').\
+                                        filter(upi=self.upi, deleted='N')
+        if taxid:
+            queryset = queryset.filter(taxid=taxid)
+        queryset = queryset.filter(accession__secondary_structure__md5__isnull=False)
+
+        temp = defaultdict(list)
+        for result in queryset.all():
+            temp[result.accession.secondary_structure.secondary_structure].append({
+                'accession': result.accession.external_id,
+                'database': result.db.display_name,
+                'url': result.accession.get_expert_db_external_url(),
+            })
+        data = []
+        for secondary_structure, sources in temp.iteritems():
+            data.append({
+                'secondary_structure': secondary_structure,
+                'source': sources,
+            })
+        return {
+            'sequence': self.get_sequence(),
+            'secondary_structures': data,
+        }
