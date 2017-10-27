@@ -212,7 +212,9 @@ class RnaXmlExporter():
             self.data['rfam_id'].add(result['rfam_id'])
             self.data['rfam_clan'].add(result['rfam_clan'])
 
-            problems = json.loads(result['rfam_problems'])
+            problems = {'problems': [], 'has_issue': False}
+            if result['rfam_problems']:
+                problems = json.loads(result['rfam_problems'])
             for problem in problems['problems']:
                 self.data['rfam_problems'].add(problem['name'])
 
