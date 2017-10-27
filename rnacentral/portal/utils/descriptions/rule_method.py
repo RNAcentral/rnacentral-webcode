@@ -268,6 +268,9 @@ def compute_gene_ranges(genes):
     grouped = it.groupby(data, op.itemgetter(0))
     names = []
     for gene, numbers in grouped:
+        if not gene:
+            continue
+
         range_format = '%i-%i'
         if '-' in gene:
             range_format = ' %i to %i'
