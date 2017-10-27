@@ -1,5 +1,5 @@
 /**
- * Genoverse-related utilities.
+ * This service contains utility function that are used in RNAcentral to pass data to angularjs-genoverse.
  *
  * Contains re-used functions. Those functions access data from surrounding controller's scope.
  * Thus, the intended use for this factory is as follows:
@@ -25,40 +25,151 @@ angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($
 
     function GenoverseUtils($scope) {
         this.$scope = $scope;
-    }
 
-    GenoverseUtils.prototype.Genoverse = Genoverse;
-    GenoverseUtils.prototype.urls = {
-        sequence: function () {  // Sequence track configuration
-            var species = $filter('urlencodeSpecies')(this.$scope.genome.species);
-            var endpoint = getEndpoint(species);
-            return '__ENDPOINT__/sequence/region/__SPECIES__/__CHR__:__START__-__END__?content-type=text/plain'
-                .replace('__ENDPOINT__', endpoint)
-                .replace('__SPECIES__', species);
-        },
-        genes: function() {  // Genes track configuration
+        // Methods below need to be binded to 'this' object,
+        // cause otherwise they get passed 'this' from event handler context.
+        // We pass the $scope to these methods through 'this'.
 
+        this.urls = {
+            sequence: _.bind(function () {  // Sequence track configuration
                 var species = $filter('urlencodeSpecies')(this.$scope.genome.species);
-                var endpoint = getEndpoint(species);
+                var endpoint = this.getEnsemblEndpoint(species);
+                return '__ENDPOINT__/sequence/region/__SPECIES__/__CHR__:__START__-__END__?content-type=text/plain'
+                    .replace('__ENDPOINT__', endpoint)
+                    .replace('__SPECIES__', species);
+            }, this),
+            genes: _.bind(function () {  // Genes track configuration
+                var species = $filter('urlencodeSpecies')(this.$scope.genome.species);
+                var endpoint = this.getEnsemblEndpoint(species);
                 return '__ENDPOINT__/overlap/region/__SPECIES__/__CHR__:__START__-__END__?feature=gene;content-type=application/json'
                     .replace('__ENDPOINT__', endpoint)
                     .replace('__SPECIES__', species);
-
-        },
-        transcripts: function() {  // Transcripts track configuration
-            var species = $filter('urlencodeSpecies')(this.$scope.genome.species);
-            var endpoint = getEndpoint(species);
-            return '__ENDPOINT__/overlap/region/__SPECIES__/__CHR__:__START__-__END__?feature=transcript;feature=exon;feature=cds;content-type=application/json'
-                .replace('__ENDPOINT__', endpoint)
-                .replace('__SPECIES__', species);
-        },
-        RNAcentral: function () {  // custom RNAcentral track
-            return function() {
+            }, this),
+            transcripts: _.bind(function () {  // Transcripts track configuration
+                var species = $filter('urlencodeSpecies')(this.$scope.genome.species);
+                var endpoint = this.getEnsemblEndpoint(species);
+                return '__ENDPOINT__/overlap/region/__SPECIES__/__CHR__:__START__-__END__?feature=transcript;feature=exon;feature=cds;content-type=application/json'
+                    .replace('__ENDPOINT__', endpoint)
+                    .replace('__SPECIES__', species);
+            }, this),
+            RNAcentral: _.bind(function () {  // custom RNAcentral track
                 var origin = window.location.origin ? window.location.origin : window.location.protocol + "//" + window.location.host + '/';
                 return origin + '/api/v1/overlap/region/__SPECIES__/__CHR__:__START__-__END__'.replace('__SPECIES__', $filter('urlencodeSpecies')(this.$scope.genome.species));
+            }, this)
+        };
+
+        this.genesPopulateMenu = _.bind(function(feature) {
+            var chrStartEnd = feature.seq_region_name + ':' + feature.start + '-' + feature.end; // string e.g. 'X:1-100000'
+            var location = '<a href="http://' + this.$scope.domain + '/' + $filter('urlencodeSpecies')(this.$scope.genome.species) + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
+
+            var strand;
+            if (feature.strand == 1) {
+                strand = "forward >";
             }
-        }
-    };
+            else if (feature.strand == -1) {
+                strand = "< reverse";
+            }
+
+            var result = {
+                title: '<a href="http://' + this.$scope.domain + '/' + $filter('urlencodeSpecies')(this.$scope.genome.species) + '/Gene/Summary?g=' + feature.gene_id + '">' + feature.gene_id + '</a>',
+                "Assembly name": feature.assembly_name,
+                "Biotype": feature.biotype,
+                "Description": feature.description,
+                "Feature type": feature.feature_type,
+                "Gene id": feature.gene_id,
+                "Location": location,
+                "Logic name": feature.logic_name,
+                "Source": feature.source,
+                "Strand": strand,
+                "Version": feature.version
+            };
+
+            if (feature.havana_gene && feature.havana_version) {
+                result["Havana gene"] = feature.havana_gene;
+                result["Havana version"] = feature.havana_version;
+            }
+
+            if (feature.external_name) {
+                result["HGNC symbol"] = feature.external_name;
+            }
+
+            return result;
+        }, this);
+
+        this.transcriptsPopulateMenu = _.bind(function(feature) {
+            var chrStartEnd = feature.seq_region_name + ':' + feature.start + '-' + feature.end; // string e.g. 'X:1-100000'
+            var location = '<a href="http://' + this.$scope.domain + '/' + $filter('urlencodeSpecies')(this.$scope.genome.species) + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
+
+            var strand;
+            if (feature.strand == 1) {
+                strand = "forward >";
+            }
+            else if (feature.strand == -1) {
+                strand = "< reverse";
+            }
+
+            var result = {
+                title: '<a href="http://' + this.$scope.domain + '/' + $filter('urlencodeSpecies')(this.$scope.genome.species) + '/Transcript/Summary?db=core&t=' + feature.transcript_id + '">' + feature.transcript_id + '</a>',
+                "Assembly name": feature.assembly_name,
+                "Biotype": feature.biotype,
+                "Feature type": feature.feature_type,
+                "Location": location,
+                "Logic name": feature.logic_name,
+                "Parent": '<a href="http://' + this.$scope.domain + '/' + $filter('urlencodeSpecies')(this.$scope.genome.species) + '/Gene/Summary?g=' + feature.Parent + '">' + feature.Parent + '</a>',
+                "Source": feature.source,
+                "Strand": strand,
+                "Transcript id": feature.transcript_id,
+                "Version": feature.version
+            };
+
+            if (feature.havana_transcript && feature.havana_version) {
+                result["Havana transcript"] = feature.havana_transcript;
+                result["Havana version"] = feature.havana_version;
+            }
+
+            if (feature.external_name) {
+                result["HGNC symbol"] = feature.external_name;
+            }
+
+            if (feature.transcript_support_level) {
+                result["Transcript support level"] = '<a href="http://www.ensembl.org/Help/Glossary?id=492">' + feature.transcript_support_level + '</a>';
+            }
+
+            if (feature.tag) {
+                result["Tag"] = feature.tag;
+            }
+
+            if (feature.version) { result["Version"] = feature.version; }
+
+            return result;
+        }, this);
+
+        this.RNAcentralPopulateMenu = _.bind(function(feature) {
+            var chrStartEnd = feature.seq_region_name + ':' + feature.start + '-' + feature.end; // string e.g. 'X:1-100000'
+            var location = '<a href="http://' + this.$scope.domain + '/' + $filter('urlencodeSpecies')(this.$scope.genome.species) + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
+
+            var strand;
+            if (feature.strand == 1) {
+                strand = "forward >";
+            }
+            else if (feature.strand == -1) {
+                strand = "< reverse";
+            }
+
+            return {
+                title: '<a target=_blank href="http://rnacentral.org/rna/' + feature.label + '/' + this.$scope.genome.taxid.toString() +'">'+ feature.label + '</a>',
+                "Description": feature.description || "",
+                "RNA type": feature.biotype,
+                "Feature type": feature.feature_type,
+                "Location": location,
+                "Logic name": feature.logic_name,
+                "Strand": strand
+            };
+        }, this);
+
+    }
+
+    GenoverseUtils.prototype.Genoverse = Genoverse;
 
     GenoverseUtils.prototype.RNAcentralParseData = function(data) {
         for (var i = 0; i < data.length; i++) {
@@ -83,115 +194,6 @@ angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($
                 }
             }
         }
-    };
-
-    GenoverseUtils.prototype.genesPopulateMenu = function(feature) {
-        var chrStartEnd = feature.seq_region_name + ':' + feature.start + '-' + feature.end; // string e.g. 'X:1-100000'
-        var location = '<a href="http://' + this.$scope.domain + '/' + $filter('urlencodeSpecies')(this.$scope.genome.species) + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
-
-        var strand;
-        if (feature.strand == 1) {
-            strand = "forward >";
-        }
-        else if (feature.strand == -1) {
-            strand = "< reverse";
-        }
-
-        var result = {
-            title: '<a href="http://' + this.$scope.domain + '/' + $filter('urlencodeSpecies')(this.$scope.genome.species) + '/Gene/Summary?g=' + feature.gene_id + '">' + feature.gene_id + '</a>',
-            "Assembly name": feature.assembly_name,
-            "Biotype": feature.biotype,
-            "Description": feature.description,
-            "Feature type": feature.feature_type,
-            "Gene id": feature.gene_id,
-            "Location": location,
-            "Logic name": feature.logic_name,
-            "Source": feature.source,
-            "Strand": strand,
-            "Version": feature.version
-        };
-
-        if (feature.havana_gene && feature.havana_version) {
-            result["Havana gene"] = feature.havana_gene;
-            result["Havana version"] = feature.havana_version;
-        }
-
-        if (feature.external_name) {
-            result["HGNC symbol"] = feature.external_name;
-        }
-
-        return result;
-    };
-
-    GenoverseUtils.prototype.transcriptsPopulateMenu = function(feature) {
-        var chrStartEnd = feature.seq_region_name + ':' + feature.start + '-' + feature.end; // string e.g. 'X:1-100000'
-        var location = '<a href="http://' + this.$scope.domain + '/' + $filter('urlencodeSpecies')(this.$scope.genome.species) + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
-
-        var strand;
-        if (feature.strand == 1) {
-            strand = "forward >";
-        }
-        else if (feature.strand == -1) {
-            strand = "< reverse";
-        }
-
-        var result = {
-            title: '<a href="http://' + this.$scope.domain + '/' + $filter('urlencodeSpecies')(this.$scope.genome.species) + '/Transcript/Summary?db=core&t=' + feature.transcript_id + '">' + feature.transcript_id + '</a>',
-            "Assembly name": feature.assembly_name,
-            "Biotype": feature.biotype,
-            "Feature type": feature.feature_type,
-            "Location": location,
-            "Logic name": feature.logic_name,
-            "Parent": '<a href="http://' + this.$scope.domain + '/' + $filter('urlencodeSpecies')(this.$scope.genome.species) + '/Gene/Summary?g=' + feature.Parent + '">' + feature.Parent + '</a>',
-            "Source": feature.source,
-            "Strand": strand,
-            "Transcript id": feature.transcript_id,
-            "Version": feature.version
-        };
-
-        if (feature.havana_transcript && feature.havana_version) {
-            result["Havana transcript"] = feature.havana_transcript;
-            result["Havana version"] = feature.havana_version;
-        }
-
-        if (feature.external_name) {
-            result["HGNC symbol"] = feature.external_name;
-        }
-
-        if (feature.transcript_support_level) {
-            result["Transcript support level"] = '<a href="http://www.ensembl.org/Help/Glossary?id=492">' + feature.transcript_support_level + '</a>';
-        }
-
-        if (feature.tag) {
-            result["Tag"] = feature.tag;
-        }
-
-        if (feature.version) { result["Version"] = feature.version; }
-
-        return result;
-    };
-
-    GenoverseUtils.prototype.RNAcentralPopulateMenu = function(feature) {
-        var chrStartEnd = feature.seq_region_name + ':' + feature.start + '-' + feature.end; // string e.g. 'X:1-100000'
-        var location = '<a href="http://' + this.$scope.domain + '/' + $filter('urlencodeSpecies')(this.$scope.genome.species) + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
-
-        var strand;
-        if (feature.strand == 1) {
-            strand = "forward >";
-        }
-        else if (feature.strand == -1) {
-            strand = "< reverse";
-        }
-
-        return {
-            title: '<a target=_blank href="http://rnacentral.org/rna/' + feature.label + '/' + this.$scope.genome.taxid.toString() +'">'+ feature.label + '</a>',
-            "Description": feature.description || "",
-            "RNA type": feature.biotype,
-            "Feature type": feature.feature_type,
-            "Location": location,
-            "Logic name": feature.logic_name,
-            "Strand": strand
-        };
     };
 
      /**
