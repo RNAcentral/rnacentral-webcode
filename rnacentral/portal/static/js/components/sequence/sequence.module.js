@@ -11,7 +11,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope) {
 
     // Downloads tab shouldn't be clickable
     $scope.checkTab = function($event, $selectedIndex) {
-        if ($selectedIndex == 3) {
+        if ($selectedIndex == 4) {
             // don't call $event.stopPropagation() - we need the link on the tab to open a dropdown;
             $event.preventDefault();
         }
