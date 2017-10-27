@@ -16,7 +16,6 @@ angular.module("rnacentralApp").service('routes', ['$interpolate', function($int
         expertDbStatsApi: $interpolate('/api/v1/expert-db-stats/{{ expertDbName }}'),
         textSearch: $interpolate('search'),
         expertDbLogo: $interpolate('/static/img/expert-db-logos/{{ expertDbName }}.png'),
+        apiSecondaryStructuresView: $interpolate('/api/v1/rna/{{ upi }}/2d/{{ taxid }}'),
     };
 }]);
-
-
