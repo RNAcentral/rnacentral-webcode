@@ -11,8 +11,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import sys
-
 from django.core.management.base import BaseCommand, CommandError
 from optparse import make_option
 from cProfile import Profile
@@ -57,6 +55,12 @@ class Command(BaseCommand):
             action='store_true',
             help='[Optional] Show cProfile information for profiling purposes'
         ),
+
+        make_option(
+            '--upis',
+            dest='upis',
+            help='[Optional/Required] Comma sperated list of upis to process',
+        )
     )
     # shown with -h, --help
     help = ('Precompute entry data. '
@@ -66,72 +70,63 @@ class Command(BaseCommand):
     # Django entry point #
     ######################
 
-    def __init__(self, *args, **kwargs):
-        """
-        Set common variables.
-        """
-        super(Command, self).__init__(*args, **kwargs)
-        self.options = {
-            'min': 10,
-            'max': 100,
-        }
-
     def handle(self, *args, **options):
         """
         Main function, called by django.
         """
-        def _handle(self, *args, **options):
-            """
-            Main program. Separated from `handle` to enable Python profiling.
-            """
-            def set_command_line_options():
-                """
-                Store command line options in `self.options`.
-                """
-                cmd_options = ['min', 'max']
-                for cmd_option in cmd_options:
-                    if options[cmd_option]:
-                        self.options[cmd_option] = str(options[cmd_option])
 
-            def validate_command_line_options():
-                """
-                Validate the command line options.
-                """
-                if not self.options['min']:
-                    raise CommandError('Please specify --min')
-                if not self.options['max']:
-                    raise CommandError('Please specify --max')
+        if options['upis']:
+            options['upis'] = options['upis'].split(',')
+        else:
+            if not options['min']:
+                raise CommandError('Please specify --min')
 
-            set_command_line_options()
-            validate_command_line_options()
-            self.run()
+            if not options['max']:
+                raise CommandError('Please specify --max')
+
+            options['min'] = int(options['min'])
+            options['max'] = int(options['max'])
 
         if options['profile']:
             profiler = Profile()
-            profiler.runcall(_handle, self, *args, **options)
+            profiler.runcall(self.run, options)
             profiler.print_stats()
             profiler.dump_stats('profile.txt')
         else:
-            _handle(self, *args, **options)
+            self.run(options)
 
-    def run(self):
-        for rna in Rna.objects.filter(id__gt=self.options['min'],
-                                      id__lte=self.options['max']).iterator():
-            defaults = {
-                'upi_id': rna.upi,
-                'rna_type': rna.get_rna_type(recompute=True),
-                'description': rna.get_description(recompute=True),
-                'rfam_problems': rna.get_rfam_status().as_json()
-            }
-            RnaPrecomputed.objects.update_or_create(id=rna.upi, defaults=defaults)
+    def query(self, options):
+        if options['upis']:
+            return Rna.objects.filter(upi__in=options['upis'])
+
+        return Rna.objects.filter(
+            id__gt=options['min'],
+            id__lte=options['max'],
+        )
+
+    def run(self, options):
+        sequences = self.query(options).iterator()
+        for rna in sequences:
+            RnaPrecomputed.objects.update_or_create(
+                id=rna.upi,
+                defaults={
+                    'upi_id': rna.upi,
+                    'rna_type': rna.get_rna_type(recompute=True),
+                    'description': rna.get_description(recompute=True),
+                    'rfam_problems': rna.get_rfam_status().as_json(),
+                })
 
             for taxid in set(rna.xrefs.values_list('taxid', flat=True)):
                 _id = '{0}_{1}'.format(rna.upi, taxid)
-                defaults = {
-                    'upi_id': rna.upi,
-                    'taxid': taxid,
-                    'rna_type': rna.get_rna_type(taxid=taxid, recompute=True),
-                    'description': rna.get_description(recompute=True, taxid=taxid),
-                    'rfam_problems': rna.get_rfam_status(taxid=taxid).as_json()
-                }
-                RnaPrecomputed.objects.update_or_create(id=_id, defaults=defaults)
+                RnaPrecomputed.objects.update_or_create(
+                    id=_id,
+                    defaults={
+                        'upi_id': rna.upi,
+                        'taxid': taxid,
+                        'rna_type': rna.get_rna_type(taxid=taxid, recompute=True),
+                        'description': rna.get_description(
+                            recompute=True,
+                            taxid=taxid,
+                        ),
+                        'rfam_problems': rna.get_rfam_status(taxid=taxid).as_json(),
+                    })
