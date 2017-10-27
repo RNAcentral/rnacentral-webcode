@@ -5,7 +5,9 @@ var xrefs = {
         page: '<?',
         pageSize: '<?',
         taxid: '<?',
-        onActivatePublications: '&'
+        onActivatePublications: '&',
+        onActivateModifiedNucleotides: '&',
+        onActivateGenomeBrowser: '&'
     },
     controller: ['routes', '$http', '$interpolate', '$timeout', function(routes, $http, $interpolate, $timeout) {
         var ctrl = this;
@@ -88,11 +90,12 @@ var xrefs = {
 
         ctrl.$onInit = function() {
             // set defaults for optional parameters, if not given
-            ctrl.timeout = parseInt(ctrl.timeout) || 5000;
-            ctrl.page = ctrl.page || 1;
+            ctrl.page = ctrl.page || 1;  // human-readable number of page to show, in range of (1, n)
             ctrl.pageSize = ctrl.pageSize || 5;
-            ctrl.paginateOn = 'client';
-            ctrl.status = 'loading';
+            ctrl.paginateOn = 'client';  // load all Xrefs at once and paginate Xrefs table on client-side, or if too slow, fallback to loading'em page-by-page from server
+            ctrl.timeout = parseInt(ctrl.timeout) || 5000;  // if (time of response) > timeout, paginate on server side
+
+            ctrl.status = 'loading';  // {'loading', 'error' or 'success'} - display spinner, error message or xrefs table
 
             // Request xrefs from server (with taxid, if necessary)
             if (ctrl.taxid) ctrl.dataEndpoint = $interpolate('/api/v1/rna/{{upi}}/xrefs/{{taxid}}')({upi: ctrl.upi, taxid: ctrl.taxid});

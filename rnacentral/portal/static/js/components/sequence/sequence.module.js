@@ -1,12 +1,12 @@
-var rnaSequenceController = function($scope, $location, $window, $rootScope) {
+var rnaSequenceController = function($scope, $location, $window, $rootScope, $compile, $http, $filter, routes, GenoverseUtils) {
     // Take upi and taxid from url. Note that $location.path() always starts with slash
     $scope.upi = $location.path().split('/')[2];
-    $scope.taxid = $location.path().split('/')[3]; // TODO: this might not exist!
+    $scope.taxid = $location.path().split('/')[3];  // TODO: this might not exist!
 
     // programmatically switch tabs
     $scope.activeTab = 0;
     $scope.activateTab = function(index) {
-        $scope.activeTab = parseInt(index); // have to convert index to string
+        $scope.activeTab = parseInt(index);  // have to convert index to string
     };
 
     // Downloads tab shouldn't be clickable
@@ -33,64 +33,105 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope) {
 
     // hopscotch guided tour
     $scope.activateTour = function () {
-        hopscotch.startTour($rootScope.tour, 4); // start from step 4
+        // hopscotch_tour = new guidedTour;
+        // hopscotch_tour.initialize();
+        hopscotch.startTour($rootScope.tour, 4);  // start from step 4
     };
 
-    activateCopyToClipboardButtons();
-    activateModifiedNucleotides();
+    // Modified nucleotides visualisation.
+    $scope.activateModifiedNucleotides = function(modifications) {
+        // sort modifications by position
+        modifications.sort(function(a, b) {return a.position - b.position});
 
-    /**
-     * Modified nucleotides visualisation.
-     */
-    function activateModifiedNucleotides() {
-        $('body').on('click', 'button[data-modifications]', function() {
-            // destroy any existing popovers before reading in the sequence
-            $('.modified-nt').popover('destroy');
-            var $pre = $('#rna-sequence'),
-                text = $pre.text(),
-                modifications = $(this).data('modifications'),
-                arrayLength = modifications.length,
-                seq_new = '',
-                start = 0,
-                template = Handlebars.compile($("#handlebars-modified-nt-popover-tmpl").html());
+        // destroy any existing popovers before reading in the sequence
+        $('.modified-nt').popover('destroy');
 
-            // loop over modifications and insert span tags with modified nucleotide data
-            for (var i = 0; i < arrayLength; i++) {
-              seq_new += text.slice(start, modifications[i].position - 1) +
-                         template(modifications[i].chem_comp);
-              start = modifications[i].position;
+        // initialize variables
+        var $pre = $('#rna-sequence');
+        var text = $pre.text();
+        var newText = "";
+        var modification;
+
+        // loop over modifications and insert span tags with modified nucleotide data
+        var start = 0;
+        for (var i = 0; i < modifications.length; i++) {
+            newText += text.slice(start, modifications[i].position - 1);
+
+            // create links to pdb and modomics, if possible
+            var pdbLink = "", modomicsLink = "";
+            if (modifications[i].chem_comp.pdb_url) {
+                pdbLink = '<a href=\'' + modifications[i].chem_comp.pdb_url + '\' target=\'_blank\'>PDBe</a> <br>';  // note <br> in the end
             }
-            seq_new += text.slice(start, text.length);
-
-            // update the sequence (use `html`, not `text`)
-            $pre.html(seq_new);
-            // bring sequence in the viewport
-            scroll_to_pre();
-            // show the entire sequence
-            $pre.css({
-              'overflow': 'auto',
-              'max-height': 'initial',
-            });
-            // initialize popovers
-            $('.modified-nt').popover({
-              placement: 'top',
-              html: true,
-              container: 'body',
-              viewport: '#rna-sequence',
-            });
-            // activate the first popover
-            $('.modified-nt').first().focus().popover('show');
-
-            /**
-             * Scroll to the sequence.
-             */
-            function scroll_to_pre() {
-              $('html, body').animate({
-                  scrollTop: $('pre').offset().top - 100
-              }, 1200);
+            if (modifications[i].chem_comp.modomics_url) {
+                modomicsLink = '<a href=\'' + modifications[i].chem_comp.modomics_url + '\' target=\'_blank\'>Modomics</a>';
             }
+
+            // html template for a modified nucleotide
+            modification = '<span class="modified-nt" role="button" tabindex="10" ' +
+              'data-trigger="focus" ' +
+              'data-toggle="popover" ' +
+              'data-content="' + modifications[i].chem_comp.description + ' <br> ' + pdbLink + modomicsLink + '" ' +
+              'title="Modified nucleotide <strong>' + modifications[i].chem_comp.id + '</strong>">' +
+                modifications[i].chem_comp.one_letter_code +
+            '</span>';
+
+            newText += modification;
+
+            start = modifications[i].position;  // prepare start position for next iteration
+        }
+        newText += text.slice(start, text.length);  // last iteration
+
+        // update the sequence (use `html`, not `text`)
+        $pre.html(newText);
+
+        // scroll to sequence <pre>, bring sequence in the viewport
+        $('html, body').animate(
+            { scrollTop: $('#rna-sequence').offset().top - 100 },
+            1200
+        );
+
+        // initialize popovers
+        $('.modified-nt').popover({
+            placement: 'top',
+            html: true,
+            container: 'body',
+            viewport: '#rna-sequence',
         });
-    }
+
+        // activate the first popover
+        $('.modified-nt').first().focus().popover('show');
+    };
+
+    // populate data for angular-genoverse instance
+    $scope.activateGenomeBrowser = function(start, end, strand, chromosome, species, description, label) {
+        $http.get(routes.genomesApi(), { cache: true }).then(  // if genomes've already been loaded, use cache
+            function(response) {
+                genomes = $scope.genomes = response.data;
+                // genome must be a reference to an object in genomes Array, not another object with same value
+                $scope.genome = $scope.genomes.filter(function(element) {
+                    return element.species.toLowerCase() == species.toLowerCase();
+                })[0];
+                $scope.start = start;
+                $scope.end = end;
+                $scope.chromosome = chromosome;
+
+                $scope.genoverseUtils = new GenoverseUtils();
+
+                $scope.urls = {
+                    sequence: genoverse.urls.sequence($scope.genome),
+                    genes: genoverse.urls.genes($scope.genome),
+                    transcripts: genoverse.urls.transcripts($scope.genome),
+                    RNAcentral: genoverse.urls.RNAcentral($scope.genome)
+                };
+                $scope.RNAcentralParseData = genoverse;
+
+            },
+            function(response) { console.log("Unable to download available genomes from server!"); return; }
+        );
+    };
+
+
+    activateCopyToClipboardButtons();
 
     /**
      * Copy to clipboard buttons allow the user to copy an RNA sequence as RNA or DNA into
@@ -108,7 +149,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope) {
         var rnaClipboard = new Clipboard('#copy-as-rna', {
             "text": function() {
                 var rna = $('#rna-sequence').text();
-                rna = rna.replace(/\s/g, ''); // remove whitespace chars (arising due to colored <spans> in sequence)
+                rna = rna.replace(/\s/g, '');  // remove whitespace chars (arising due to colored <spans> in sequence)
                 return rna;
             }
         });
@@ -116,7 +157,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope) {
         var dnaClipbaord = new Clipboard('#copy-as-dna', {
             "text": function() {
                 var rna = $('#rna-sequence').text();
-                rna = rna.replace(/\s/g, ''); // remove whitespace chars (arising due to colored <spans> in sequence)
+                rna = rna.replace(/\s/g, '');  // remove whitespace chars (arising due to colored <spans> in sequence)
                 var dna = reverseTranscriptase(rna);
                 return dna;
             }
@@ -124,8 +165,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope) {
     };
 };
 
-rnaSequenceController.$inject = ['$scope', '$location', '$window', '$rootScope'];
-
+rnaSequenceController.$inject = ['$scope', '$location', '$window', '$rootScope', '$compile', '$http', '$filter', 'routes', 'GenoverseUtils'];
 
 
 /**

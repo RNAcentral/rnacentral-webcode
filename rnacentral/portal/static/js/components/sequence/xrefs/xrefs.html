@@ -305,7 +305,7 @@
             <br>
             <i class="fa fa-angle-right"></i>
             <span class="small" ng-if="xref.modifications.length != 0">
-              <button class="btn btn-primary btn-xs" data-modifications="{{ xref.modifications }}">
+              <button ng-click="$ctrl.onActivateModifiedNucleotides({ modifications: xref.modifications })" class="btn btn-primary btn-xs" data-modifications="{{ xref.modifications }}">
                 <i class="fa fa-crosshairs"></i> <ng-pluralize count="xref.modifications.length" when="{'one': 'View modification', 'other': 'View modifications'}"></ng-pluralize>
               </button>
               <span ng-repeat="modification in xref.modifications">
@@ -343,7 +343,7 @@
           <span ng-if="xref.genomic_coordinates">
             <br>
             <i class="fa fa-angle-right"></i>
-              <button type="button" class="btn btn-primary btn-xs genoverse-xref help margin-right-5px" data-genomic-start="{{ xref.genomic_coordinates.start }}" data-genomic-end="{{ xref.genomic_coordinates.end }}" data-strand="{{ xref.genomic_coordinates.strand }}" data-chromosome="{{ xref.genomic_coordinates.chromosome }}" data-species="{{ xref.genomic_coordinates.ensembl_species_name }}" data-description="{{ xref.accession.description }}" data-species-label="{{ xref.accession.species }}" title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> View genomic location</button>
+              <button type="button" class="btn btn-primary btn-xs genoverse-xref help margin-right-5px" ng-click="$ctrl.onActivateGenomeBrowser({ start: xref.genomic_coordinates.start, end: xref.genomic_coordinates.end, strand: xref.genomic_coordinates.strand, chromosome: xref.genomic_coordinates.chromosome, species: xref.accession.species, description: xref.accession.description, label: xref.accession.species })" title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> View genomic location</button>
               <small>
                 <span class="margin-right-5px">{{ xref.genomic_coordinates.chromosome }}:{{ xref.genomic_coordinates.start | number }}-{{ xref.genomic_coordinates.end | number }}:{{ xref.genomic_coordinates.strand }}</span>
                 <!-- Ensembl url -->
@@ -385,7 +385,7 @@
 
   <!-- Pagination: pages list and page size select -->
   <div ng-if="$ctrl.status == 'success'" style="margin-top: 5px; margin-left: 5px; margin-right: 5px;">
-    <ul class="pagination pagination-sm" style="display:inline">
+    <ul ng-if="$ctrl.pages.length > 1" class="pagination pagination-sm" style="display:inline">
       <li ng-if="$ctrl.page != 1" ng-click="$ctrl.onPageChanged(1)"><a href="">1</a></li>
       <li ng-if="$ctrl.page > 3" ng-click="$ctrl.onPageChanged(1)"><a href="">&#8230;</a></li>
       <li ng-if="$ctrl.page > 2" ng-click="$ctrl.onPageChanged($ctrl.page - 1)"><a href="">{{ $ctrl.page - 1 }}</a></li>
@@ -394,10 +394,9 @@
       <li ng-if="$ctrl.page < $ctrl.pages.length - 2" ng-click="$ctrl.onPageChanged($ctrl.pages.length)"><a href="">&#8230;</a></li>
       <li ng-if="$ctrl.page != $ctrl.pages.length" ng-click="$ctrl.onPageChanged($ctrl.pages.length)"><a href="">{{ $ctrl.pages.length }}</a></li>
     </ul>
-    <span class="pull-right">
+    <span class="pull-right" style="padding-bottom: 10px;">
       <select ng-model="$ctrl.pageSize" ng-change="$ctrl.onPageSizeChanged($ctrl.pageSize, '{{ $ctrl.pageSize }}')" ng-options="v.value as v.key for v in [{key:1, value:1}, {key: 5, value: 5}, {key: 10, value: 10}, {key: 20, value: 20}, {key: 50, value: 50}, {key: 'all', value: 1000000000000}]"></select> records per page
     </span>
+    <div class="clearfix"></div>
   </div>
-
-  <div class="annotations-datatables-controls"></div>
 </div>
