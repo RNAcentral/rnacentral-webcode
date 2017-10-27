@@ -141,12 +141,8 @@ class Accession(models.Model):
         in Accession.note. Example:
         {"transcript_id": ["ENSMUST00000160979.8"]}
         """
-        if self.database == 'GENCODE' and self.note:
-            note = json.loads(self.note)
-            ensembl_transcript_id = ''
-            if 'transcript_id' in note and len(note['transcript_id']) > 0:
-                ensembl_transcript_id = note['transcript_id'][0]
-            return ensembl_transcript_id
+        if self.database == 'GENCODE':
+            return self.accession
         else:
             return None
 
