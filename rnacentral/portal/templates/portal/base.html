@@ -192,6 +192,7 @@ limitations under the License.
         <script src="{% static "node_modules/angularjs-genoverse/lib/Genoverse/js/genoverse.combined.js" %}"></script>
         <!-- New genoverse contains tooltip from jquery ui, it conflicts with bootstrap - bridge it! -->
         <script>$.widget.bridge('uitooltip', $.ui.tooltip);</script>
+        <script src="{% static "js/components/genome-browser/genoverse-utils.service.js" %}"></script>
         <script src="{% static "js/components/genome-browser/genoverse.controller.js" %}"></script>
 
         <!-- always load genoverse module -->
