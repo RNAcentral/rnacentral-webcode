@@ -45,19 +45,26 @@ class RnaXmlExporter():
                t6.len as length,
                t7.rna_type,
                t2.locus_tag,
-               t2.standard_name
-        FROM xref t1, rnc_accessions t2, rnc_database t3, rnc_release t4,
-             rnc_release t5, rna t6, rnc_rna_precomputed t7
-        WHERE t1.ac = t2.accession AND
-              t1.dbid = t3.id AND
-              t1.created = t4.id AND
-              t1.last = t5.id AND
-              t1.upi = t6.upi AND
-              t1.upi = t7.upi AND
-              t1.taxid = t7.taxid AND
-              t1.upi = '{upi}' AND
-              t1.deleted = 'N' AND
-              t1.taxid = {taxid}
+               t2.standard_name,
+               t2.classification as tax_string,
+               models.short_name as rfam_family_name,
+               models.rfam_model_id as rfam_id,
+               clans.rfam_clan_id as rfam_clan,
+               t7.rfam_problems
+        FROM xref t1
+        JOIN rnc_accessions t2 ON t1.ac = t2.accession
+        JOIN rnc_database t3 ON t1.dbid = t3.id
+        JOIN rnc_release t4 on t1.created = t4.id
+        JOIN rnc_release t5 on t1.last = t5.id
+        JOIN rna t6 on t1.upi = t6.upi
+        JOIN rnc_rna_precomputed t7 on t1.upi = t7.upi and t1.taxid = t7.taxid
+        LEFT JOIN rfam_model_hits hits ON t1.upi = hits.upi
+        LEFT JOIN rfam_models models ON hits.rfam_model_id = models.rfam_model_id
+        LEFT JOIN rfam_clans clans ON models.rfam_clan_id = clans.rfam_clan_id
+        WHERE
+            t1.upi = '{upi}' AND
+            t1.deleted = 'N' AND
+            t1.taxid = {taxid}
         """
 
         self.data = dict()
@@ -75,7 +82,7 @@ class RnaXmlExporter():
         # other data fields for which the sets should be (re-)created
         self.data_fields = ['rna_type', 'authors', 'journal', 'popular_species',
                             'pub_title', 'pub_id', 'insdc_submission', 'xrefs',
-                            'rfam_problem_found', 'rfam_problems']
+                            'rfam_problem_found', 'rfam_problems', 'tax_string']
 
         self.popular_species = set([
             9606,    # human
@@ -223,6 +230,7 @@ class RnaXmlExporter():
             store_rna_type()
             store_computed_data()
             store_rfam_data()
+            self.data['tax_string'].add(result['tax_string'])
 
         if not self.data['rfam_problems']:
             self.data['rfam_problems'].add('none')
@@ -444,6 +452,7 @@ class RnaXmlExporter():
                 {rfam_clan}
                 {rfam_problem}
                 {rfam_problem_found}
+                {tax_string}
             </additional_fields>
         </entry>
         """.format(
@@ -481,6 +490,7 @@ class RnaXmlExporter():
             rfam_clan=format_field('rfam_clan'),
             rfam_problem=format_field('rfam_problems'),
             rfam_problem_found=format_field('rfam_problem_found'),
+            tax_string=format_field('tax_string'),
         )
         return format_whitespace(text)
 
