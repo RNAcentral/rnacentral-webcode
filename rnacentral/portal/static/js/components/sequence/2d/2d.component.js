@@ -7,23 +7,14 @@ var secondary_structures = {
         var ctrl = this;
 
         ctrl.fornaSize = 500;
+        ctrl.numStructures = 0;
 
         ctrl.$onInit = function() {
             ctrl.fetchSecondaryStructures().then(
                 function(response) {
-                  console.log(response);
                     ctrl.secondaryStructures = response.data.data;
-                    var container = new fornac.FornaContainer("#rna_ss", {
-                        'applyForce': false,
-                        'allowPanningAndZooming': true,
-                        'initialSize':[ctrl.fornaSize, ctrl.fornaSize],
-                    });
-                    var options = {
-                        'structure': ctrl.secondaryStructures.secondary_structures[0].secondary_structure,
-                        'sequence': ctrl.secondaryStructures.sequence,
-                    };
-                    console.log(ctrl.secondaryStructures);
-                    container.addRNA(options.structure, options);
+                    ctrl.numStructures = ctrl.secondaryStructures.secondary_structures.length;
+                    ctrl.displayForna();
                 },
                 function(response) {
                     ctrl.error = "Failed to download secondary structures";
@@ -36,15 +27,43 @@ var secondary_structures = {
                 { timeout: 5000 }
             )
         };
+
+        ctrl.getSourceUrl = function() {
+            if (ctrl.numStructures === 0) {
+                return '';
+            }
+            return ctrl.secondaryStructures.secondary_structures[0].source[0].url;
+        }
+
+        ctrl.displayForna = function() {
+            if (ctrl.numStructures === 0) {
+                return;
+            }
+            var container = new fornac.FornaContainer("#rna_ss", {
+                'applyForce': false,
+                'allowPanningAndZooming': true,
+                'initialSize':[ctrl.fornaSize, ctrl.fornaSize],
+            });
+            var options = {
+                'structure': ctrl.secondaryStructures.secondary_structures[0].secondary_structure,
+                'sequence': ctrl.secondaryStructures.sequence,
+            };
+            container.addRNA(options.structure, options);
+        };
     }],
     template: '<div id="2d" style="min-height: 600px">' +
-              '    <h2>Secondary structure</h2>' +
-              '    <div class="col-md-6">' +
+              '    <h2>Secondary structure</h2>'+
+              '    <div class="col-md-6" ng-if="$ctrl.numStructures > 0">' +
               '      <p>' +
-              '        Predicted using tRNAScan-SE (source: <a href="http://gtrnadb.ucsc.edu/">GtRNAdb</a>).' +
+              '        Predicted using tRNAScan-SE (source: <a href="{{ $ctrl.getSourceUrl() }}">GtRNAdb</a>).' +
               '      </p>' +
-              '      <div id="rna_ss" style="width: {{ ctrl.fornaSize }}px; height: {{ ctrl.fornaSize }}px; margin-left: 9px;"></div>' +
               '    </div>' +
+              '    <div class="col-md-6" ng-if="$ctrl.numStructures === 0">' +
+              '      <p>' +
+              '        No secondary structures available' +
+              '      </p>' +
+              '    </div>' +
+              '      <div id="rna_ss" style="width: {{ $ctrl.fornaSize }}px; height: {{ $ctrl.fornaSize }}px; margin-left: 9px;"></div>' +
               '</div>'
 };
 
