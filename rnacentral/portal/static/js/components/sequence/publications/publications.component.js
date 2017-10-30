@@ -25,13 +25,13 @@ var publications = {
 
         ctrl.fetchPublications = function(pageSize, page) {
             return $http.get(
-                routes.apiPublicationsViewWithTaxid({ upi: ctrl.upi, taxid: ctrl.taxid }),
+                routes.apiPublicationsView({ upi: ctrl.upi }),
                 { timeout: 5000, params: { page_size: pageSize, page: page } }
             )
         };
 
         ctrl.loadMore = function(pageSize) {
-            var page = Math.ceil(ctrl.publications.length / pageSize);
+            var page = Math.ceil(ctrl.publications.length / pageSize) + 1;
 
             ctrl.fetchPublications(pageSize, page).then(
                 function(response) {

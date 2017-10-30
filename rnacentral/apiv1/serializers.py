@@ -31,7 +31,7 @@ from portal.models.reference_map import Reference_map
 from portal.models.chemical_component import ChemicalComponent
 
 
-class RawCitationSerializer(serializers.ModelSerializer):
+class RawPublicationSerializer(serializers.ModelSerializer):
     """Serializer class for literature citations. Used in conjunction with raw querysets."""
     authors = serializers.CharField(source='get_authors_list')
     publication = serializers.CharField(source='location')
@@ -43,6 +43,12 @@ class RawCitationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Reference
         fields = ('title', 'authors', 'publication', 'pubmed_id', 'doi', 'pub_id')
+
+
+class PaginatedRawPublicationSerializer(pagination.PaginationSerializer):
+    """Paginated version of RawPublicationSerializer."""
+    class Meta:
+        object_serializer_class = RawPublicationSerializer
 
 
 class CitationSerializer(serializers.HyperlinkedModelSerializer):

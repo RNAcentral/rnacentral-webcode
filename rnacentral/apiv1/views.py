@@ -30,7 +30,9 @@ from rest_framework.reverse import reverse
 
 from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, PaginatedXrefSerializer, \
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
-                              RawCitationSerializer, RnaSpeciesSpecificSerializer, RnaListSerializer, ExpertDatabaseStatsSerializer
+                              RnaSpeciesSpecificSerializer, RnaListSerializer, ExpertDatabaseStatsSerializer, \
+                              RawPublicationSerializer, PaginatedRawPublicationSerializer
+
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, Accession, Xref, Database, DatabaseStats
 from portal.config.genomes import genomes
@@ -608,7 +610,7 @@ class CitationView(generics.RetrieveAPIView):
         return Response(serializer.data)
 
 
-class RnaCitationsView(generics.ListAPIView):
+class RnaPublicationsView(generics.ListAPIView):
     """
     API endpoint that allows the citations associated with
     each Unique RNA Sequence to be viewed.
@@ -617,11 +619,21 @@ class RnaCitationsView(generics.ListAPIView):
     """
     # the above docstring appears on the API website
     permission_classes = (AllowAny, )
-    serializer_class = RawCitationSerializer
 
     def get_queryset(self):
         upi = self.kwargs['pk']
         return list(Rna.objects.get(upi=upi).get_publications())
+
+    def get(self, request, pk=None, format=None):
+        """Get a paginated list of cross-references"""
+        page = request.QUERY_PARAMS.get('page', 1)
+        page_size = request.QUERY_PARAMS.get('page_size', 1000000000000)
+
+        publications = self.get_queryset()
+        paginator_publications = Paginator(publications, page_size)
+        publications_page = paginator_publications.page(page)
+        serializer = PaginatedRawPublicationSerializer(publications_page, context={'request': request})
+        return Response(serializer.data)
 
 
 class ExpertDatabasesAPIView(APIView):

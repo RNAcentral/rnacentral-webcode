@@ -31,7 +31,7 @@ urlpatterns = patterns('',
     # view for all cross-references, filtered down to a specific taxon
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/xrefs/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.XrefsSpeciesSpecificList.as_view()), name='rna-xrefs-species-specific'),
     # all literature citations associated with an RNAcentral id
-    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/publications/?$', cache_page(CACHE_TIMEOUT)(views.RnaCitationsView.as_view()), name='rna-publications'),
+    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/publications/?$', cache_page(CACHE_TIMEOUT)(views.RnaPublicationsView.as_view()), name='rna-publications'),
     # species-specific RNAcentral id
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})(/|_)(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.RnaSpeciesSpecificView.as_view()), name='rna-species-specific'),
     # literature citations associated with ENA records

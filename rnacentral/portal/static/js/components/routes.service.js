@@ -11,7 +11,6 @@ angular.module("rnacentralApp").service('routes', ['$interpolate', function($int
         rnaView: $interpolate('/rna/{{ upi }}'),
         rnaViewWithTaxid: $interpolate('/rna/{{upi}}/{{ taxid }}'),
         apiPublicationsView: $interpolate('/api/v1/rna/{{ upi }}/publications'),
-        apiPublicationsViewWithTaxid: $interpolate('/api/v1/rna/{{ upi }}/publications/{{ taxid }}'),
         apiRnaView: $interpolate('/api/v1/rna/{{ upi }}'),
         lineageView: $interpolate('/rna/{{ upi }}/lineage'),
         expertDbsApi: $interpolate('/api/v1/expert-dbs/{{ expertDbName }}'),
