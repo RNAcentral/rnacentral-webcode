@@ -268,7 +268,7 @@ class RawSqlQueryset(models.QuerySet):
               AND xref.id IN ({pks})
               AND xref.dbid = 9
               AND rnc_accessions.optional_id != ''
-              AND rnc_accessions.ncrna_class != 'miRNA'
+              AND (rnc_accessions.ncrna_class != 'miRNA' OR rnc_accessions.feature_name = 'precursor_RNA')
               {taxid_filter}
         """.format(pks=pks, taxid_filter=taxid_filter)
 
@@ -303,7 +303,7 @@ class RawSqlQueryset(models.QuerySet):
             WHERE xref.ac = rnc_accessions.accession
               AND xref.dbid = 25
               AND rnc_accessions.optional_id != ''
-              AND rnc_accessions.ncrna_class != 'miRNA'
+              AND (rnc_accessions.ncrna_class != 'miRNA' OR rnc_accessions.feature_name = 'precursor_RNA')
               AND xref.id IN ({pks})
               {taxid_filter}
         """.format(pks=pks, taxid_filter=taxid_filter)
