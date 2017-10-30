@@ -232,7 +232,7 @@ class RnaXmlExporter():
             store_rna_type()
             store_computed_data()
             store_rfam_data()
-            self.data['tax_string'].add(result['tax_string'])
+            self.data['tax_string'].add(saxutils.escape(result['tax_string']))
 
         if not self.data['rfam_problems']:
             self.data['rfam_problems'].add('none')
