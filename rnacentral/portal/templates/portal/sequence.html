@@ -29,11 +29,12 @@ limitations under the License.
 <div class="row" ng-controller="rnaSequenceController">
     <div class="col-md-12">
         <h1>
-            {{ context.description }}
+            Sequence {{ rna.upi }}
 
             {% if not context.single_species %}
                 <small>{{ rna.count_distinct_organisms|intcomma }} species</small>
             {% endif %}
+            <small id="sequence-description-header">{{ context.description }}</small>
         </h1>
 
         {% if context.taxid_not_found %}
@@ -42,32 +43,29 @@ limitations under the License.
             </div>
         {% endif %}
 
+        <ul class="list-inline" id="sequence-overview">
+            <li><strong>{{ rna.length|intcomma }}</strong> nucleotides</li>
+            <li>
+                {% with dbs=context.distinct_databases %}
+                <strong>{{ dbs|length|intcomma }}</strong> database{{ dbs|length|pluralize }}
+                <small>
+                    {% for db in dbs %}
+                        {% if forloop.first %}({% endif %}{{db}}{% if not forloop.last %},{% else %}){% endif %}
+                    {% endfor %}
+                </small>
+                {% endwith %}
+            </li>
+            <li>
+                Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab" ng-click="activateTab('1')">species</a>
+            </li>
+            <li class="badge">{{ context.precomputed.rna_type }}</li>
+        </ul>
+
         <div class="tabbable">
 
         <uib-tabset class="tab-animation" active="activeTab">
 
             <uib-tab index="0" heading="Overview" id="overview" deselect="checkTab($event, $selectedIndex)">
-                <h2>
-                    Overview
-                </h2>
-
-                <ul class="list-inline" style="padding-left: 9px;">
-                    <li><strong>{{ rna.length|intcomma }}</strong> nucleotides</li>
-                    <li>
-                        {% with dbs=context.distinct_databases %}
-                        <strong>{{ dbs|length|intcomma }}</strong> database{{ dbs|length|pluralize }}
-                        <small>
-                            {% for db in dbs %}
-                                {% if forloop.first %}({% endif %}{{db}}{% if not forloop.last %},{% else %}){% endif %}
-                            {% endfor %}
-                        </small>
-                        {% endwith %}
-                    </li>
-                    <li>
-                        Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab" ng-click="activateTab('1')">species</a>
-                    </li>
-                    <li class="badge">{{ context.precomputed.rna_type }}</li>
-                </ul>
 
                 <xrefs upi="upi" taxid="taxid" timeout="5000" page-size="5" on-activate-publications="activateTab('2')" on-activate-modified-nucleotides="activateModifiedNucleotides(modifications)" on-activate-genome-browser="activateGenomeBrowser(start, end, stand, chromosome, species, description, label)"></xrefs>
                 <br>

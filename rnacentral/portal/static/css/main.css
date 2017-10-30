@@ -36,6 +36,7 @@ Master Stylesheet for the RNAcentral Portal
 5.13 D3 nhmmer dashboard graph
 5.14 Doorbell feedback
 5.15 Tooltip customization
+5.16 Sequence page
 
 -------------------------------------------------------------------*/
 
@@ -1269,4 +1270,19 @@ textarea {
   font-weight: lighter;
   font-size: 9px;
   background-color: #777777;
+}
+
+/*------------------------------------------------------------------
+[5.16 Sequence page]
+*/
+#sequence-overview {
+  padding-left: 9px;
+  padding-bottom: 1em;
+}
+
+#sequence-description-header {
+  color: black;
+  display: block;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
 }
