@@ -1001,6 +1001,8 @@ textarea {
   transition-duration: 0.5s;
 }
 
+/* Slick theme overrides */
+
 .slick-dots {
   position: inherit;
   margin-top: 5px;
@@ -1020,6 +1022,30 @@ textarea {
 
 .slick-slide {
   margin-left: 35px;
+}
+
+.slick-prev
+{
+    left: 0px;
+}
+[dir='rtl'] .slick-prev
+{
+    right: 0px;
+    left: auto;
+}
+
+.slick-next
+{
+    right: 0px;
+}
+[dir='rtl'] .slick-next
+{
+    right: auto;
+    left: 0px;
+}
+
+.slick-prev:before, .slick-next:before {
+  color: #9e9e9e;
 }
 
 .desaturate {
