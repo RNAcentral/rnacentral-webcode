@@ -12,6 +12,7 @@ limitations under the License.
 """
 
 from accession import *
+from chemical_component import *
 from database import *
 from database_stats import *
 from formatters import *
@@ -21,6 +22,7 @@ from reference import *
 from reference_map import *
 from release import *
 from rna import *
+from rna_precomputed import *
 from secondary_structure import *
 from xref import *
 from utils import get_ensembl_divisions
