@@ -223,7 +223,9 @@ class RnaXmlExporter():
                 self.data['rfam_problem_found'] = ['no']
 
             if problems['has_issue']:
-                self.data['rfam_problem_found'] = ['yes']
+                self.data['rfam_problem_found'] = ['True']
+            else:
+                self.data['rfam_problem_found'] = ['False']
 
         self.cursor.execute(self.sql_statement.format(upi=upi, taxid=taxid))
         for result in self.cursor:
