@@ -22,7 +22,7 @@ var publication = {
               '        <abstract publication="$ctrl.publication"></abstract>' +
               '    </span>' +
               '  <br>' +
-              '  <a href="/search?q=pub_id:&#34;{{ $ctrl.publication.pubmed_id }}&#34;" class="margin-left-5px"><i class="fa fa-search"></i> Find other sequences from this reference</a>' +
+              '  <a href="/search?q=pub_id:&#34;{{ $ctrl.publication.pub_id }}&#34;" class="margin-left-5px"><i class="fa fa-search"></i> Find other sequences from this reference</a>' +
               '</small>'
 };
 

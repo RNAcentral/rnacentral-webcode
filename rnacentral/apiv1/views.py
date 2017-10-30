@@ -48,7 +48,7 @@ MAX_XREFS_TO_PREFETCH = 1000
 def _get_xrefs_from_genomic_coordinates(species, chromosome, start, end):
     """Common function for retrieving xrefs based on genomic coordinates."""
     try:
-        xrefs = Xref.objects.filter(
+        xrefs = Xref.default_objects.filter(
             accession__coordinates__chromosome=chromosome,
             accession__coordinates__primary_start__gte=start,
             accession__coordinates__primary_end__lte=end,

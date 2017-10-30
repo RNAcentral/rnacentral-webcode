@@ -455,3 +455,30 @@ class Rna(CachingMixin, models.Model):
             'sequence': self.get_sequence(),
             'secondary_structures': data,
         }
+
+    def get_organism_name(self, taxid):
+        """
+        Look at all accessions for the xrefs which have the given taxid and
+        fetch a name for the sequence. If there is a common_name that is used,
+        otherwise this uses the species_name.
+        """
+
+        accessions = Accession.objects.filter(
+            xrefs__upi=self.upi,
+            xrefs__taxid=taxid,
+        )
+
+        common_name = set()
+        species_name = set()
+        for accession in accessions:
+            if accession.common_name:
+                common_name.add(accession.common_name)
+            if accession.species:
+                species_name.add(accession.species)
+
+        if common_name:
+            if len(common_name) == 1:
+                return common_name.pop()
+            return max(common_name, key=len)
+
+        return max(species_name, key=len)

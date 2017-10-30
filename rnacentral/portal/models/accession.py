@@ -45,6 +45,7 @@ class Accession(models.Model):
 
     # GeneID (without coordinates); used to find splice variants for lncRNAs OR mature/precursor RNAs for miRNAs
     optional_id = models.CharField(max_length=100)
+    common_name = models.CharField(max_length=200)
 
     anticodon = models.CharField(max_length=50)
     experiment = models.CharField(max_length=500)
@@ -141,12 +142,8 @@ class Accession(models.Model):
         in Accession.note. Example:
         {"transcript_id": ["ENSMUST00000160979.8"]}
         """
-        if self.database == 'GENCODE' and self.note:
-            note = json.loads(self.note)
-            ensembl_transcript_id = ''
-            if 'transcript_id' in note and len(note['transcript_id']) > 0:
-                ensembl_transcript_id = note['transcript_id'][0]
-            return ensembl_transcript_id
+        if self.database == 'GENCODE':
+            return self.accession
         else:
             return None
 

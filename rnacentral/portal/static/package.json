@@ -33,11 +33,12 @@
     "d3": "^3",
     "font-awesome": "^4.7.0",
     "hopscotch": "^0.2.8",
+    "jquery": "^3.2.1",
     "js-md5": "^0.4.2",
     "json3": "^3.3.2",
     "moment": "^2.18.1",
     "query": "^0.2.0",
-    "slick-carousel": "^1.6.0",
+    "slick-carousel": "^1.8.1",
     "timelinejs3": "^3.4.0",
     "underscore": "^1.8.3"
   },

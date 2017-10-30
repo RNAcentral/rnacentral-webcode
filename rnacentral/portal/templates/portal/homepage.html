@@ -37,10 +37,6 @@ RNAcentral: The non-coding RNA sequence database
       <p class="text-center">
         <a href="{% url 'about' %}">More about RNAcentral &rarr;</a>
       </p>
-
-      <p class="text-center">
-        <a class="btn btn-success" id="guided-tour">Take a tour</a>
-      </p>
     </div>
 
   </div>
@@ -203,6 +199,7 @@ RNAcentral: The non-coding RNA sequence database
 
 {% block extra_js_uncompressed %}
 <script>
+$(document).ready(function() {
     $('#expert-databases').slick({
         draggable: true,
         rows: 1,
@@ -250,7 +247,8 @@ RNAcentral: The non-coding RNA sequence database
                 }
             }
         ]
-    });
+    })
+});
 </script>
 
 <script type="application/ld+json">

@@ -114,24 +114,15 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         $http.get(routes.genomesApi(), { cache: true }).then(  // if genomes've already been loaded, use cache
             function(response) {
                 genomes = $scope.genomes = response.data;
-                // genome must be a reference to an object in genomes Array, not another object with same value
                 $scope.genome = $scope.genomes.filter(function(element) {
                     return element.species.toLowerCase() == species.toLowerCase();
-                })[0];
+                })[0]; // genome must be a reference to an object in genomes Array, not another object with same value
                 $scope.start = start;
                 $scope.end = end;
                 $scope.chromosome = chromosome;
 
-                $scope.genoverseUtils = new GenoverseUtils();
-
-                $scope.urls = {
-                    sequence: genoverse.urls.sequence($scope.genome),
-                    genes: genoverse.urls.genes($scope.genome),
-                    transcripts: genoverse.urls.transcripts($scope.genome),
-                    RNAcentral: genoverse.urls.RNAcentral($scope.genome)
-                };
-                $scope.RNAcentralParseData = genoverse;
-
+                $scope.Genoverse = Genoverse;
+                $scope.genoverseUtils = new GenoverseUtils($scope);
             },
             function(response) { console.log("Unable to download available genomes from server!"); return; }
         );

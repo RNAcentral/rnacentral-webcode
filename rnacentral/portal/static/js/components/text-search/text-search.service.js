@@ -2,7 +2,7 @@
  * Service for launching a text search.
  */
 
-var search = function(_, $http, $interpolate, $location, $window) {
+var search = function(_, $http, $interpolate, $location, $window, $q) {
     var self = this; // in case some event handler or constructor overrides "this"
 
     /**
@@ -352,4 +352,4 @@ var search = function(_, $http, $interpolate, $location, $window) {
     }
 };
 
-angular.module('rnacentralApp').service('search', ['_', '$http', '$interpolate', '$location', '$window', search]);
+angular.module('rnacentralApp').service('search', ['_', '$http', '$interpolate', '$location', '$window', '$q', search]);

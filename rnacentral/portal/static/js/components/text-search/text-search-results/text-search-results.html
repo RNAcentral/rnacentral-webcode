@@ -179,7 +179,7 @@
                   <em>{{ $ctrl.highlight(rna.fields).fieldName }}:</em> <span ng-bind-html="$ctrl.highlight(rna.fields).highlight | sanitize"></span>
               </span>
             </div>
-            <ul class="list-inline small" ng-if="$ctrl.expertDbsObject">
+            <ul class="list-inline small" ng-if="$ctrl.expertDbsObject" style="margin-left: 0;">
               <li style="padding-right: 20px;">
                 {{rna.fields.length[0] | number}} nucleotides
               </li>

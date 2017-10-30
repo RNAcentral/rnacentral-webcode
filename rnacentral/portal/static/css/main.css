@@ -36,6 +36,7 @@ Master Stylesheet for the RNAcentral Portal
 5.13 D3 nhmmer dashboard graph
 5.14 Doorbell feedback
 5.15 Tooltip customization
+5.16 Sequence page
 
 -------------------------------------------------------------------*/
 
@@ -1000,6 +1001,8 @@ textarea {
   transition-duration: 0.5s;
 }
 
+/* Slick theme overrides */
+
 .slick-dots {
   position: inherit;
   margin-top: 5px;
@@ -1019,6 +1022,30 @@ textarea {
 
 .slick-slide {
   margin-left: 35px;
+}
+
+.slick-prev
+{
+    left: 0px;
+}
+[dir='rtl'] .slick-prev
+{
+    right: 0px;
+    left: auto;
+}
+
+.slick-next
+{
+    right: 0px;
+}
+[dir='rtl'] .slick-next
+{
+    right: auto;
+    left: 0px;
+}
+
+.slick-prev:before, .slick-next:before {
+  color: #9e9e9e;
 }
 
 .desaturate {
@@ -1269,4 +1296,19 @@ textarea {
   font-weight: lighter;
   font-size: 9px;
   background-color: #777777;
+}
+
+/*------------------------------------------------------------------
+[5.16 Sequence page]
+*/
+#sequence-overview {
+  padding-left: 9px;
+  padding-bottom: 1em;
+}
+
+#sequence-description-header {
+  color: black;
+  display: block;
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
 }

@@ -212,7 +212,9 @@ class RnaXmlExporter():
             self.data['rfam_id'].add(result['rfam_id'])
             self.data['rfam_clan'].add(result['rfam_clan'])
 
-            problems = json.loads(result['rfam_problems'])
+            problems = {'problems': [], 'has_issue': False}
+            if result['rfam_problems']:
+                problems = json.loads(result['rfam_problems'])
             for problem in problems['problems']:
                 self.data['rfam_problems'].add(problem['name'])
 
@@ -221,7 +223,9 @@ class RnaXmlExporter():
                 self.data['rfam_problem_found'] = ['no']
 
             if problems['has_issue']:
-                self.data['rfam_problem_found'] = ['yes']
+                self.data['rfam_problem_found'] = ['True']
+            else:
+                self.data['rfam_problem_found'] = ['False']
 
         self.cursor.execute(self.sql_statement.format(upi=upi, taxid=taxid))
         for result in self.cursor:
@@ -230,7 +234,7 @@ class RnaXmlExporter():
             store_rna_type()
             store_computed_data()
             store_rfam_data()
-            self.data['tax_string'].add(result['tax_string'])
+            self.data['tax_string'].add(saxutils.escape(result['tax_string']))
 
         if not self.data['rfam_problems']:
             self.data['rfam_problems'].add('none')
