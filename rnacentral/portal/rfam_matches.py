@@ -17,6 +17,8 @@ if the sequence is only a partial sequence
 
 import json
 
+from django.core.urlresolvers import reverse
+
 import attr
 from attr.validators import instance_of as is_a
 
@@ -103,13 +105,22 @@ class DomainProblem(object):
         Get a message that indicates a problem.
         """
 
-        differing = rna.get_domains() - set([model.domain])
-        differing = ', '.join(sorted(differing))
-        return 'This %s sequence matches a %s Rfam model (<a href="%s">%s</a>)' % (
-            differing,
-            model.domain,
-            model.url,
-            model.short_name,
+        names = ''
+        if taxid is None:
+            names = ', '.join(rna.get_domains())
+        else:
+            names = rna.get_organism_name(taxid=taxid)
+
+        return (
+            'This <i>{sequence_name}</i> sequence matches a {match_domain} '
+            'Rfam model (<a href="{model_url}">{model_name}</a>). '
+            '<a href="{help_url}">Learn more &rarr;</a>'.format(
+                sequence_name=names,
+                match_domain=model.domain,
+                model_url=model.url,
+                model_name=model.short_name,
+                help_url=reverse('help-rfam-scan'),
+            )
         )
 
     def __call__(self, rna, taxid=None):
@@ -127,7 +138,7 @@ class DomainProblem(object):
             return RfamMatchStatus.no_issues(rna.upi, taxid)
 
         if found not in rna_domains:
-            msg = self.message(model, rna)
+            msg = self.message(model, rna, taxid=taxid)
             return RfamMatchStatus.with_issue(rna.upi, taxid, self, msg)
         return RfamMatchStatus.no_issues(rna.upi, taxid)
 
