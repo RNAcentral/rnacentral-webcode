@@ -31,7 +31,7 @@ from rest_framework.reverse import reverse
 from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, PaginatedXrefSerializer, \
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
                               RnaSpeciesSpecificSerializer, RnaListSerializer, ExpertDatabaseStatsSerializer, \
-                              RawPublicationSerializer, PaginatedRawPublicationSerializer
+                              RawPublicationSerializer, PaginatedRawPublicationSerializer, RnaSecondaryStructureSerializer
 
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, Accession, Xref, Database, DatabaseStats
@@ -549,6 +549,23 @@ class XrefList(generics.ListAPIView):
         paginator_xrefs = Paginator(xrefs, page_size)
         xrefs_page = paginator_xrefs.page(page)
         serializer = PaginatedXrefSerializer(xrefs_page, context={'request': request})
+        return Response(serializer.data)
+
+
+class SecondaryStructureSpeciesSpecificList(generics.ListAPIView):
+    """
+    List of secondary structures for a particular RNA sequence in a specific species.
+
+    [API documentation](/api)
+    """
+    queryset = Rna.objects.all()
+
+    def get(self, request, pk=None, taxid=None, format=None):
+        """Get a paginated list of cross-references"""
+        rna = self.get_object()
+        serializer = RnaSecondaryStructureSerializer(rna, context={
+            'taxid': taxid,
+        })
         return Response(serializer.data)
 
 

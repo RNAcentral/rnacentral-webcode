@@ -2,6 +2,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     // Take upi and taxid from url. Note that $location.path() always starts with slash
     $scope.upi = $location.path().split('/')[2];
     $scope.taxid = $location.path().split('/')[3];  // TODO: this might not exist!
+    $scope.hide2dTab = true;
 
     // programmatically switch tabs
     $scope.activeTab = 0;
@@ -11,7 +12,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 
     // Downloads tab shouldn't be clickable
     $scope.checkTab = function($event, $selectedIndex) {
-        if ($selectedIndex == 3) {
+        if ($selectedIndex == 4) {
             // don't call $event.stopPropagation() - we need the link on the tab to open a dropdown;
             $event.preventDefault();
         }
@@ -30,6 +31,12 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     $scope.download = function(format) {
         $window.open('/api/v1/rna/' + $scope.upi + '.' + format, '_blank');
     };
+
+    // function passed to the 2D component in order to show the 2D tab
+    // if there are any 2D structures
+    $scope.show2dTab = function() {
+        $scope.hide2dTab = false;
+    }
 
     // hopscotch guided tour
     $scope.activateTour = function () {

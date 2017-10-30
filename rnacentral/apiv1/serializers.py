@@ -92,7 +92,6 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
             'description', 'external_id', 'optional_id', 'locus_tag',
             'species', 'rna_type', 'gene', 'product', 'organelle',
             'citations', 'expert_db_url', 'standard_name',
-
             'pdb_entity_id', 'pdb_structured_note', 'hgnc_enembl_id', 'hgnc_id',
             'biotype', 'rna_type', 'srpdb_id', 'ena_url',
             'gencode_transcript_id',
@@ -272,6 +271,17 @@ class RnaNestedSerializer(serializers.HyperlinkedModelSerializer):
             'count_distinct_organisms', 'distinct_databases'
         )
 
+class RnaSecondaryStructureSerializer(serializers.ModelSerializer):
+    """Serializer for presenting RNA secondary structures"""
+    data = serializers.SerializerMethodField('get_secondary_structures')
+
+    def get_secondary_structures(self, obj):
+        """Return secondary structures filtered by taxid."""
+        return obj.get_secondary_structures(taxid=self.context['taxid'])
+
+    class Meta:
+        model = Rna
+        fields = ('data',)
 
 class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
     """
