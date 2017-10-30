@@ -203,6 +203,7 @@ RNAcentral: The non-coding RNA sequence database
 
 {% block extra_js_uncompressed %}
 <script>
+$(document).ready(function() {
     $('#expert-databases').slick({
         draggable: true,
         rows: 1,
@@ -250,7 +251,8 @@ RNAcentral: The non-coding RNA sequence database
                 }
             }
         ]
-    });
+    })
+});
 </script>
 
 <script type="application/ld+json">
