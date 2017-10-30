@@ -3,7 +3,7 @@ var publications = {
         upi: '<',
         taxid: '<?'
     },
-    controller: ['$http', '$interpolate', function($http, $interpolate) {
+    controller: ['$http', 'routes', function($http, routes) {
         var ctrl = this;
 
         ctrl.defaultPageSize = 25;
@@ -25,7 +25,7 @@ var publications = {
 
         ctrl.fetchPublications = function(pageSize, page) {
             return $http.get(
-                $interpolate('/api/v1/rna/{{ upi }}/publications')({ upi: ctrl.upi }),
+                routes.apiPublicationsViewWithTaxid({ upi: ctrl.upi, taxid: ctrl.taxid }),
                 { timeout: 5000, params: { page_size: pageSize, page: page } }
             )
         };
