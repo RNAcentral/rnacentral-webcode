@@ -164,7 +164,11 @@ class DomainProblem(object):
         if not found:
             return RfamMatchStatus.no_issues(rna.upi, taxid)
 
-        rna_domains = rna.get_domains(taxid=taxid, ignore_unclassified=True)
+        rna_domains = rna.get_domains(
+            taxid=taxid,
+            ignore_synthetic=True,
+            ignore_unclassified=True
+        )
         if not rna_domains:
             return RfamMatchStatus.no_issues(rna.upi, taxid)
 
