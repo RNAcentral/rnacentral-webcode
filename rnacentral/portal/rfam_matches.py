@@ -98,7 +98,7 @@ class DomainProblem(object):
     only matches a mouse sequence then there is some sort of problem, likely
     contamination, with the sequence.
     """
-    name = 'domain_conflict'
+    name = 'possible_contamination'
 
     def message(self, model, rna, taxid=None):
         """
@@ -266,7 +266,6 @@ class MissingMatch(object):
     This is limited to only a few families which have very broad models as we
     don't want to warn too often.
     """
-
     name = 'missing_match'
 
     def message(self, rna_type, possible):
