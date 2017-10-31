@@ -113,6 +113,9 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     $scope.activateGenomeBrowser = function(start, end, strand, chromosome, species, description, label) {
         $http.get(routes.genomesApi(), { cache: true }).then(  // if genomes've already been loaded, use cache
             function(response) {
+                $scope.Genoverse = Genoverse;
+                $scope.genoverseUtils = new GenoverseUtils($scope);
+
                 genomes = $scope.genomes = response.data;
                 $scope.genome = $scope.genomes.filter(function(element) {
                     return element.species.toLowerCase() == species.toLowerCase();
@@ -120,9 +123,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                 $scope.start = start;
                 $scope.end = end;
                 $scope.chromosome = chromosome;
-
-                $scope.Genoverse = Genoverse;
-                $scope.genoverseUtils = new GenoverseUtils($scope);
+                $scope.domain = $scope.genoverseUtils.getEnsemblSubdomainByDivision($scope.genome);
             },
             function(response) { console.log("Unable to download available genomes from server!"); return; }
         );
