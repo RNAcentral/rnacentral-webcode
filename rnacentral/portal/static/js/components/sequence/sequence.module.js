@@ -117,11 +117,18 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                 $scope.genoverseUtils = new GenoverseUtils($scope);
 
                 genomes = $scope.genomes = response.data;
+
+                // genome must be a reference to an object in genomes Array, not another object with same value
                 $scope.genome = $scope.genomes.filter(function(element) {
                     return element.species.toLowerCase() == species.toLowerCase();
-                })[0]; // genome must be a reference to an object in genomes Array, not another object with same value
-                $scope.start = start;
-                $scope.end = end;
+                })[0];
+
+                var length = end - start;
+
+                // add some padding to both sides of feature
+                $scope.start = start - Math.floor(length / 10) < 0 ? 1 : start - Math.floor(length / 10);
+                $scope.end = end + Math.floor(length/10) > $scope.chromosomeSize ? $scope.chromosomeSize : end + Math.floor(length/10);
+
                 $scope.chromosome = chromosome;
                 $scope.domain = $scope.genoverseUtils.getEnsemblSubdomainByDivision($scope.genome);
             },
