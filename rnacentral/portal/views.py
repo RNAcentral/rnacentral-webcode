@@ -150,7 +150,6 @@ def rna_view(request, upi, taxid=None):
         'rfam_status': rna.get_rfam_status(taxid=taxid),
     }
 
-    # return render(request, 'portal/unique-rna-sequence.html', {'rna': rna, 'context': context})
     return render(request, 'portal/sequence.html', {'rna': rna, 'context': context})
 
 
