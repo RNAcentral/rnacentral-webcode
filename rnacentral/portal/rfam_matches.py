@@ -18,7 +18,6 @@ if the sequence is only a partial sequence
 import json
 
 from django.core.urlresolvers import reverse
-from django.db.models.functions import Lower
 
 import attr
 from attr.validators import instance_of as is_a
@@ -69,6 +68,7 @@ class RfamMatchStatus(object):
         Merge the given status with this one. This will update the issues found
         if any.
         """
+
         if status.upi != self.upi and self.taxid == status.taxid:
             raise ValueError("Can only merge MatchStatus from the same RNA.")
 
@@ -188,7 +188,6 @@ class IncompleteSequence(object):
         """
         Get a message that indicates a problem.
         """
-
         return 'Potential <a href="{url}">{name}</a> fragment'.format(
             name=hit.rfam_model.long_name,
             url=hit.rfam_model.url
@@ -201,7 +200,6 @@ class IncompleteSequence(object):
         be too senestive. The selected families are well known for having
         partial sequences.
         """
-
         return set([
             'RF00001',  # 5S ribosomal RNA
             'RF00002',  # 5.8S ribosomal RNA
@@ -300,6 +298,10 @@ class MissingMatch(object):
     name = 'missing_match'
 
     def message(self, rna_type, possible):
+        """
+        Compute a message to indicate the missing match that was detected.
+        """
+
         article = 'the'
         if len(possible) > 1:
             article = 'a'
@@ -354,6 +356,11 @@ class MissingMatch(object):
 
 
 def check_issues(rna, taxid=None):
+    """
+    Given the rna and possibly a taxid this will check for any known Rfam
+    detected issues.
+    """
+
     finders = [
             # UnmodelledRnaType(),
             DomainProblem(),
