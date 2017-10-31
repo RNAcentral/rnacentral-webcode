@@ -23,6 +23,7 @@ import attr
 from attr.validators import instance_of as is_a
 
 from portal.models import Accession
+from portal.models.rfam import RfamModel
 
 
 @attr.s()
@@ -297,6 +298,12 @@ class MissingMatch(object):
     """
     name = 'missing_match'
 
+    def href(self, model_id):
+        return '<a href="{url}">{model_id}</a>'.format(
+            url=RfamModel.url_of(model_id),
+            model_id=model_id,
+        )
+
     def message(self, rna_type, possible):
         """
         Compute a message to indicate the missing match that was detected.
@@ -306,11 +313,12 @@ class MissingMatch(object):
         if len(possible) > 1:
             article = 'a'
 
+        models = [self.href(p) for p in sorted(possible)]
         raw = 'No match to {article} {rna_type} Rfam model ({possible})'
         return raw.format(
             rna_type=rna_type,
             article=article,
-            possible=', '.join(sorted(possible))
+            possible=', '.join(models)
         )
 
     @property
