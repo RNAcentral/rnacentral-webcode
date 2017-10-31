@@ -17,6 +17,8 @@ from django.db import models
 
 from .go_terms import GoTerm
 
+RFAM_FAMILY_URL = 'http://rfam.org/family/'
+
 
 class RfamClan(models.Model):
     """
@@ -62,9 +64,13 @@ class RfamModel(models.Model):
     class Meta:
         db_table = 'rfam_models'
 
+    @classmethod
+    def url_of(cls, rfam_model_id):
+        return RFAM_FAMILY_URL + rfam_model_id
+
     @property
     def url(self):
-        return 'http://rfam.org/family/' + self.rfam_model_id
+        return RFAM_FAMILY_URL + self.rfam_model_id
 
     @property
     def thumbnail_url(self):

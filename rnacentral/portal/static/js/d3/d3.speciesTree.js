@@ -41,6 +41,7 @@ d3SpeciesTree = function(data, upi, selector){
       .projection(function(d) { return [d.y, d.x]; });
 
   var vis = d3.select(selector).append("svg:svg")
+      .style("width", w + m.left + m.right)
       .attr("width", w + m.left + m.right)
       .attr("height", h + m.top + m.bottom)
     .append("svg:g")

@@ -22,6 +22,9 @@ from django.core.urlresolvers import reverse
 import attr
 from attr.validators import instance_of as is_a
 
+from portal.models import Accession
+from portal.models.rfam import RfamModel
+
 
 @attr.s()
 class RfamMatchStatus(object):
@@ -66,6 +69,7 @@ class RfamMatchStatus(object):
         Merge the given status with this one. This will update the issues found
         if any.
         """
+
         if status.upi != self.upi and self.taxid == status.taxid:
             raise ValueError("Can only merge MatchStatus from the same RNA.")
 
@@ -98,7 +102,7 @@ class DomainProblem(object):
     only matches a mouse sequence then there is some sort of problem, likely
     contamination, with the sequence.
     """
-    name = 'domain_conflict'
+    name = 'possible_contamination'
 
     def message(self, model, rna, taxid=None):
         """
@@ -109,10 +113,13 @@ class DomainProblem(object):
         if taxid is None:
             names = ', '.join(rna.get_domains())
         else:
-            names = rna.get_organism_name(taxid=taxid)
+            names, is_common_name = rna.get_organism_name(taxid=taxid)
+
+        if not is_common_name:
+            names = '<i>%s</i>' % names
 
         return (
-            'This <i>{sequence_name}</i> sequence matches a {match_domain} '
+            'This {sequence_name} sequence matches a {match_domain} '
             'Rfam model (<a href="{model_url}">{model_name}</a>). '
             '<a href="{help_url}">Learn more &rarr;</a>'.format(
                 sequence_name=names,
@@ -122,6 +129,29 @@ class DomainProblem(object):
                 help_url=reverse('help-rfam-scan'),
             )
         )
+
+    def is_ignorable_mito_conflict(self, rna, hits, taxid=None):
+        """
+        This can ignore any conflict where the sequence probably comes from a
+        mitochondria but it matches a bacterial rRNA. In that case we do not
+        warn since this is expected from evolution.
+        """
+
+        has_mito_organelle = bool(Accession.objects.filter(
+            xrefs__upi=rna.upi,
+            xrefs__taxid=taxid,
+            organelle__istartswith='mitochondrion',
+        ).count())
+
+        possible_mito = has_mito_organelle or \
+            'mitochondri' in rna.get_description(taxid=taxid).lower()
+
+        return possible_mito and \
+            rna.get_rna_type(taxid=taxid) == 'rRNA' and \
+            hits[0].rfam_model_id in set([
+                'RF00177',  # Bacterial small subunit ribosomal RNA
+                'RF02541',  # Bacterial large subunit ribosomal RNA
+            ])
 
     def __call__(self, rna, taxid=None):
         hits = rna.get_rfam_hits()
@@ -137,7 +167,9 @@ class DomainProblem(object):
         if not rna_domains:
             return RfamMatchStatus.no_issues(rna.upi, taxid)
 
-        if found not in rna_domains:
+        if found not in rna_domains and \
+                not self.is_ignorable_mito_conflict(rna, hits, taxid=taxid):
+
             msg = self.message(model, rna, taxid=taxid)
             return RfamMatchStatus.with_issue(rna.upi, taxid, self, msg)
         return RfamMatchStatus.no_issues(rna.upi, taxid)
@@ -157,7 +189,6 @@ class IncompleteSequence(object):
         """
         Get a message that indicates a problem.
         """
-
         return 'Potential <a href="{url}">{name}</a> fragment'.format(
             name=hit.rfam_model.long_name,
             url=hit.rfam_model.url
@@ -170,7 +201,6 @@ class IncompleteSequence(object):
         be too senestive. The selected families are well known for having
         partial sequences.
         """
-
         return set([
             'RF00001',  # 5S ribosomal RNA
             'RF00002',  # 5.8S ribosomal RNA
@@ -266,19 +296,29 @@ class MissingMatch(object):
     This is limited to only a few families which have very broad models as we
     don't want to warn too often.
     """
-
     name = 'missing_match'
 
+    def href(self, model_id):
+        return '<a href="{url}">{model_id}</a>'.format(
+            url=RfamModel.url_of(model_id),
+            model_id=model_id,
+        )
+
     def message(self, rna_type, possible):
+        """
+        Compute a message to indicate the missing match that was detected.
+        """
+
         article = 'the'
         if len(possible) > 1:
             article = 'a'
 
+        models = [self.href(p) for p in sorted(possible)]
         raw = 'No match to {article} {rna_type} Rfam model ({possible})'
         return raw.format(
             rna_type=rna_type,
             article=article,
-            possible=', '.join(sorted(possible))
+            possible=', '.join(models)
         )
 
     @property
@@ -324,6 +364,11 @@ class MissingMatch(object):
 
 
 def check_issues(rna, taxid=None):
+    """
+    Given the rna and possibly a taxid this will check for any known Rfam
+    detected issues.
+    """
+
     finders = [
             # UnmodelledRnaType(),
             DomainProblem(),

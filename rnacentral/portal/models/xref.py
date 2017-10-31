@@ -284,6 +284,7 @@ class RawSqlQueryset(models.QuerySet):
             WHERE xref.dbid = 9
               AND xref.deleted = 'N'
               AND rnc_accessions.accession != x.ac
+              AND (rnc_accessions.ncrna_class != 'miRNA' OR rnc_accessions.feature_name = 'precursor_RNA')
               {taxid_filter}
         """.format(queryset=queryset, taxid_filter=taxid_filter)
 
