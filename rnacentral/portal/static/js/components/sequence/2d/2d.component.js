@@ -34,7 +34,7 @@ var secondary_structures = {
                 return '';
             }
             return ctrl.secondaryStructures.secondary_structures[0].source[0].url;
-        }
+        };
 
         ctrl.displayForna = function() {
             if (ctrl.numStructures === 0) {
