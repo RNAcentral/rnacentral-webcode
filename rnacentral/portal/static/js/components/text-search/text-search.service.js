@@ -37,6 +37,7 @@ var search = function(_, $http, $interpolate, $location, $window, $q) {
             'organelle',
             'pub_title',
             'product',
+            'rfam_problem_found',
             'rna_type',
             'standard_name'
         ],
