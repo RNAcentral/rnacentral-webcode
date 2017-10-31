@@ -112,10 +112,13 @@ class DomainProblem(object):
         if taxid is None:
             names = ', '.join(rna.get_domains())
         else:
-            names = rna.get_organism_name(taxid=taxid)
+            names, is_common_name = rna.get_organism_name(taxid=taxid)
+
+        if not is_common_name:
+            names = '<i>%s</i>' % names
 
         return (
-            'This <i>{sequence_name}</i> sequence matches a {match_domain} '
+            'This {sequence_name} sequence matches a {match_domain} '
             'Rfam model (<a href="{model_url}">{model_name}</a>). '
             '<a href="{help_url}">Learn more &rarr;</a>'.format(
                 sequence_name=names,

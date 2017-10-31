@@ -460,7 +460,9 @@ class Rna(CachingMixin, models.Model):
         """
         Look at all accessions for the xrefs which have the given taxid and
         fetch a name for the sequence. If there is a common_name that is used,
-        otherwise this uses the species_name.
+        otherwise this uses the species_name. This will return the name and a
+        flag to indicate if it found a common_name. The common name will always
+        be lowercased.
         """
 
         accessions = Accession.objects.filter(
@@ -472,13 +474,9 @@ class Rna(CachingMixin, models.Model):
         species_name = set()
         for accession in accessions:
             if accession.common_name:
-                common_name.add(accession.common_name)
+                common_name.add(accession.common_name.lower())
             if accession.species:
                 species_name.add(accession.species)
 
-        if common_name:
-            if len(common_name) == 1:
-                return common_name.pop()
-            return max(common_name, key=len)
-
-        return max(species_name, key=len)
+        name = max(common_name or species_name, key=len)
+        return (name, bool(common_name))
