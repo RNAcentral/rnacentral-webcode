@@ -186,7 +186,7 @@
               <li style="padding-right: 20px;" ng-show="rna.fields.has_genomic_coordinates[0] == 'True'"><i class="fa fa-check text-success" aria-hidden="true"></i> reference genome<li>
               <li style="padding-right: 20px;" ng-if="rna.fields.rfam_problem_found[0].indexOf('True') !== -1"><i class="fa fa-warning text-danger" aria-hidden="true"></i> Rfam warnings</li>
               <li style="padding-right: 20px;" ng-show="rna.fields.active[0] == 'Obsolete'"><span class="label label-danger help" title="No active annotations">Obsolete</span></li>
-              <li ng-repeat="expert_db in rna.fields.expert_db | plaintext | orderBy:expert_db:false:$ctrl.expertDbHasStarComparator"><img style="height: 15px; cursor: help;" class="greyscale" uib-tooltip-template="'/static/js/components/text-search/text-search-results/expert-database-tooltip-on-image.html'" tooltip-placement="bottom" ng-src="{{ $ctrl.routes.expertDbLogo({expertDbName: expert_db}) }}">&nbsp;&nbsp;</li>
+              <li ng-repeat="expert_db in rna.fields.expert_db | plaintext | orderBy:expert_db:false:$ctrl.expertDbHasStarComparator"><img style="height: 15px; cursor: help;" class="greyscale" uib-tooltip-template="'/static/js/components/text-search/text-search-results/expert-database-tooltip-on-image.html'" tooltip-placement="bottom" ng-src="{{ $ctrl.routes.expertDbLogo({expertDbName: expert_db.toLowerCase()}) }}">&nbsp;&nbsp;</li>
             </ul>
           </div>
         </li>
