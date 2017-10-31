@@ -110,6 +110,7 @@ class DomainProblem(object):
         """
 
         names = ''
+        is_common_name = False
         if taxid is None:
             names = ', '.join(rna.get_domains())
         else:
