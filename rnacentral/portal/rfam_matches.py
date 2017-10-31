@@ -18,9 +18,12 @@ if the sequence is only a partial sequence
 import json
 
 from django.core.urlresolvers import reverse
+from django.db.models.functions import Lower
 
 import attr
 from attr.validators import instance_of as is_a
+
+from portal.models import Accession
 
 
 @attr.s()
@@ -123,6 +126,29 @@ class DomainProblem(object):
             )
         )
 
+    def is_ignorable_mito_conflict(self, rna, hits, taxid=None):
+        """
+        This can ignore any conflict where the sequence probably comes from a
+        mitochondria but it matches a bacterial rRNA. In that case we do not
+        warn since this is expected from evolution.
+        """
+
+        has_mito_organelle = bool(Accession.objects.filter(
+            xrefs__upi=rna.upi,
+            xrefs__taxid=taxid,
+            organelle__istartswith='mitochondrion',
+        ).count())
+
+        possible_mito = has_mito_organelle or \
+            'mitochondri' in rna.get_description(taxid=taxid).lower()
+
+        return possible_mito and \
+            rna.get_rna_type(taxid=taxid) == 'rRNA' and \
+            hits[0].rfam_model_id in set([
+                'RF00177',  # Bacterial small subunit ribosomal RNA
+                'RF02541',  # Bacterial large subunit ribosomal RNA
+            ])
+
     def __call__(self, rna, taxid=None):
         hits = rna.get_rfam_hits()
         if not hits or len(hits) > 1:
@@ -137,7 +163,9 @@ class DomainProblem(object):
         if not rna_domains:
             return RfamMatchStatus.no_issues(rna.upi, taxid)
 
-        if found not in rna_domains:
+        if found not in rna_domains and \
+                not self.is_ignorable_mito_conflict(rna, hits, taxid=taxid):
+
             msg = self.message(model, rna, taxid=taxid)
             return RfamMatchStatus.with_issue(rna.upi, taxid, self, msg)
         return RfamMatchStatus.no_issues(rna.upi, taxid)
