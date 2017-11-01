@@ -360,7 +360,7 @@ class MissingMatch(object):
 
         required = self.expected_matches[rna_type]
         hits = {h.rfam_model_id for h in rna.get_rfam_hits()}
-        if not hits or hits.intersection(required):
+        if hits.intersection(required):
             return RfamMatchStatus.no_issues(rna.upi, taxid)
 
         # families = [RfamModel.get(r) for r in required]
