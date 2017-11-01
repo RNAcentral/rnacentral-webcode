@@ -77,7 +77,7 @@ var search = function(_, $http, $interpolate, $location, $window, $q) {
             'rna_type': 'RNA type',
             'standard_name': 'Standard name'
         },
-        facetfields: ['rna_type', 'TAXONOMY', 'expert_db', 'has_genomic_coordinates', 'popular_species', 'rfam_problem_found'], // will be displayed in this order
+        facetfields: ['rna_type', 'TAXONOMY', 'expert_db', 'rfam_problems', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
         facetcount: 30,
         pagesize: 15,
     };
