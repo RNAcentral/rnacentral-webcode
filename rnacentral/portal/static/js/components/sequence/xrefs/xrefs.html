@@ -305,16 +305,16 @@
             <br>
             <i class="fa fa-angle-right"></i>
             <span class="small" ng-if="xref.modifications.length != 0">
-              <button ng-click="$ctrl.onActivateModifiedNucleotides({ modifications: xref.modifications })" class="btn btn-primary btn-xs" data-modifications="{{ xref.modifications }}">
+              <button ng-click="$ctrl.onActivateModifiedNucleotides({ modifications: xref.modifications })" class="btn btn-primary btn-xs">
                 <i class="fa fa-crosshairs"></i> <ng-pluralize count="xref.modifications.length" when="{'one': 'View modification', 'other': 'View modifications'}"></ng-pluralize>
               </button>
-              <span ng-repeat="modification in xref.modifications">
-                <span ng-if="modification.chem_comp.source = 'PDB'">
+              <span ng-repeat="modification in xref.modifications | unique: 'chem_comp.id' ">
+                <span ng-if="modification.chem_comp.source === 'PDB'">
                   {{ modification.chem_comp.description }}
                   (<a class="help" target="_blank" ng-attr-title="{{ modification.chem_comp.id }}" ng-href="{{ modification.chem_comp.pdb_url }}">PDBe</a>)
                   {{$last ? '' : ', '}}
                 </span>
-                <span ng-if="modification.chem_comp.source = 'Modomics'">
+                <span ng-if="modification.chem_comp.source === 'Modomics'">
                   {{ modification.chem_comp.description }}
                   (<a class="help" target="_blank" ng-attr-title="{{ modification.chem_comp.id }}" ng-href="{{ modification.chem_comp.modomics_url }}">Modomics</a>
                    <a ng-if="modification.chem_comp.pdb_url" class="help" target="_blank" ng-attr-title="{{ modification.chem_comp.ccd_id }}" ng-href="{{ modification.chem_comp.pdb_url }}">| PDBe</a>
