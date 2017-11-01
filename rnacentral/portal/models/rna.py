@@ -147,10 +147,27 @@ class Rna(CachingMixin, models.Model):
         # annotated as RNA being in fact protein-coding sequences). If our xrefs list
         # doesn't contain proper RNA sequences, we should at least return these
         # wrong annotations to hard-links to deleted sequences accessible from web.
-        if xrefs.exists():
-            return xrefs
-        else:
-            return self.xrefs.filter(deleted='Y').select_related()
+        if not xrefs.exists():
+            xrefs = self.xrefs.filter(deleted='Y')\
+                             .filter(~Q(accession__project__in=expert_db_projects, db__id=1) | Q(accession__project__isnull=True))\
+                             .order_by('-db__id')\
+                             .select_related()\
+                             .prefetch_related(
+                                 Prefetch(
+                                     'modifications',
+                                     queryset=Modification.objects.select_related('modification_id')
+                                 )
+                             )\
+                             .prefetch_related(
+                                 Prefetch(
+                                     'accession__coordinates',
+                                     queryset=GenomicCoordinates.objects.filter(chromosome__isnull=False)
+                                 )
+                             )
+            if taxid:
+                xrefs = xrefs.filter(taxid=taxid)
+
+        return xrefs
 
     def count_xrefs(self, taxid=None):
         """Count the number of cross-references associated with the sequence."""

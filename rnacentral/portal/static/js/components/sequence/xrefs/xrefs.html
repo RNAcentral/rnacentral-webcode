@@ -43,7 +43,7 @@
             </span>
         </td>
       </tr>
-      <tr ng-if="$ctrl.status === 'success'" ng-repeat="xref in $ctrl.displayedXrefs" ng-class="{ 'warning': xref.deleted == 'Y' }">
+      <tr ng-if="$ctrl.status === 'success'" ng-repeat="xref in $ctrl.displayedXrefs" ng-class="{ 'warning': xref.is_active == false }">
         <td ng-switch="xref.database">
           <span ng-switch-when="'PDBe'">PDB</span>
           <span ng-switch-when="'Vega'">Vega<br>(GENCODE)</span>
@@ -360,9 +360,9 @@
           <!-- literature references -->
           <citations xref="xref" on-activate-publications="$ctrl.onActivatePublications()"></citations>
 
-          <span ng-if="xref.deleted == 'Y'">
+          <span ng-if="xref.is_active    == false">
             <br>
-            <small><span class="label label-danger" title="This annotation was removed from the Expert Database">Obsolete</span></small>
+            <small><span class="label label-danger" title="This annotation was removed from the Expert Database">Removed from database</span></small>
           </span>
         </td>
 
