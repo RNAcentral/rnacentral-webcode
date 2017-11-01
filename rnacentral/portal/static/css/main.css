@@ -112,6 +112,12 @@ body {
   margin-bottom: 0px;
 }
 
+/* override bootstrap 3.3.7 padding/margin to make navbar height like in 3.0.0 */
+.navbar-collapse.collapse a, .navbar-header a {
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+}
+
 .navbar-default {
   background-color: transparent;
 }
@@ -128,6 +134,17 @@ body {
 .rnacentral-masthead-menu .navbar-text {
   margin-left: 0px;
   margin-right: 8px;
+  /* override bootstrap 3.3.7 padding/margin to make navbar height like in 3.0.0 */
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+/* override bootstrap 3.3.7 padding/margin to make navbar height like in 3.0.0 */
+.navbar-toggle {
+  margin-top: 3px;
+  margin-bottom: 3px;
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
 .release-number {
