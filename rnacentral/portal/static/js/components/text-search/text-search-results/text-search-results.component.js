@@ -94,7 +94,6 @@ var textSearchResults = {
             );
         };
 
-
         /*
         ctrl.expert_db_logo = function(expert_db) {
             // expert_db can contain some html markup - strip it off, replace whitespaces with hyphens

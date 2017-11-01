@@ -595,6 +595,26 @@ class Xref(CachingMixin, models.Model):
             tmrna_type = 2  # two-piece tmRNA
         return tmrna_type
 
+    def get_gencode_transcript_id(self):
+        """
+        GENCODE entries have their corresponding Ensembl transcript ids stored
+        in Accession.note. Example:
+        {"transcript_id": ["ENSMUST00000160979.8"]}
+        """
+        if self.db.display_name == 'GENCODE':
+            return self.accession.accession
+        else:
+            return None
+
+    def get_gencode_ensembl_url(self):
+        """Get Ensembl URL for GENCODE transcripts."""
+        ensembl_transcript_id = self.get_gencode_transcript_id()
+        url = 'http://ensembl.org/{species}/Transcript/Summary?db=core;t={id}'.format(
+            id=ensembl_transcript_id,
+            species=self.accession.species.replace(' ', '_')
+        )
+        return url
+
     def get_ensembl_division(self):
         """Get Ensembl or Ensembl Genomes division for the cross-reference."""
         species = self.accession.get_ensembl_species_url()
