@@ -93,6 +93,97 @@ var textSearchResults = {
                 }
             );
         };
+
+
+        /*
+        ctrl.expert_db_logo = function(expert_db) {
+            // expert_db can contain some html markup - strip it off, replace whitespaces with hyphens
+            expert_db = expert_db.replace(/\s/g, '-').toLowerCase();
+
+            return '/static/img/expert-db-logos/' + expert_db + '.png';
+        };
+        */
+
+        /**
+         * Sorts expertDbs so that starred dbs have priority over non-starred, otherwise, keeping lexicographical order.
+         * @param v1 - plaintext db name
+         * @param v2 - plaintext db name
+         * @returns {number} - (-1 if v1 before v2) or (1 if v1 after v2)
+         */
+        ctrl.expertDbHasStarComparator = function(v1, v2) {
+            if (ctrl.expertDbHasStar(v1.value.toLowerCase()) && !ctrl.expertDbHasStar(v2.value.toLowerCase())) return -1;
+            else if (!ctrl.expertDbHasStar(v1.value.toLowerCase()) && ctrl.expertDbHasStar(v2.value.toLowerCase())) return 1;
+            else
+                return v1.value.toLowerCase() < v2.value.toLowerCase() ? -1 : 1;
+        };
+
+        /**
+         * We assign a star only to those expert_dbs that have a curated tag and don't have automatic tag at the same time.
+         * @param db {String} - name of expert_db as a key in expertDbsObject
+         * @returns {boolean}
+         */
+        ctrl.expertDbHasStar = function(db) {
+            return ctrl.expertDbsObject[db].tags.indexOf('curated') != -1 && ctrl.expertDbsObject[db].tags.indexOf('automatic') == -1;
+        };
+
+        /**
+         * Given EBIsearch results, returns a field name and a highlighted text snippet, matching the query. This
+         * helps explain the user, why this result was included into the results list.
+         * @param fields {Object} - object of field as returned by search.search()
+         * @returns {{highlight: String, fieldName: String}}
+         */
+        ctrl.highlight = function(fields) {
+            var highlight;
+            var verboseFieldName;
+            var maxWeight = -1; // multiple fields can have highlights - pick the field with highest weight
+
+            for (var fieldName in fields) {
+                if (fields.hasOwnProperty(fieldName) && ctrl.anyHighlightsInField(fields[fieldName])) { // description is quoted in hit's header, ignore it
+                    if (search.config.fieldWeights[fieldName] > maxWeight) {
+
+                        // get highlight string with match
+                        var field = fields[fieldName];
+                        for (var i = 0; i < fields.length; i++) {
+                            if (field[i].indexOf('text-search-highlights') !== -1) {
+                                highlight = field[i];
+                                break;
+                            }
+                        }
+
+                        // assign the new weight and verboseFieldName
+                        maxWeight = search.config.fieldWeights[fieldName];
+                        verboseFieldName = search.config.fieldVerboseNames[fieldName];
+                    }
+                }
+            }
+
+            // use human-readable fieldName
+            return {highlight: highlight, fieldName: verboseFieldName};
+        };
+
+        /**
+         * Are there any highlighted snippets in search results at all?
+         */
+        ctrl.anyHighlights = function(fields) {
+            for (var fieldName in fields) {
+                if (fields.hasOwnProperty(fieldName) && ctrl.anyHighlightsInField(fields[fieldName])) {
+                    return true;
+                }
+            }
+            return false;
+        };
+
+        /**
+         * Does the given field contain any highlighted text snippets?
+         */
+        ctrl.anyHighlightsInField = function(field) {
+            for (var i=0; i < field.length; i++) {
+                if (field[i].indexOf('text-search-highlights') !== -1) {
+                    return true;
+                }
+            }
+            return false;
+        };
     }]
 };
 
