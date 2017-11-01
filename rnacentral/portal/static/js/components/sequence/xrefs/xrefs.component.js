@@ -88,6 +88,14 @@ var xrefs = {
             return output;
         };
 
+        /**
+         * Genome browser breaks with chromosomes like 'GL00220.1' (e.g. localhost:8000/rna/URS000075A823/9606)
+         * Don't show "View genomic location" button, if that's the case.
+         */
+        ctrl.chromosomeIsScaffold = function(chromosome) {
+            return !!chromosome.match(/\S+\.\S/);
+        };
+
         ctrl.$onInit = function() {
             // set defaults for optional parameters, if not given
             ctrl.page = ctrl.page || 1;  // human-readable number of page to show, in range of (1, n)

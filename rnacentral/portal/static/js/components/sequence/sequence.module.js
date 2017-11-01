@@ -36,7 +36,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     // if there are any 2D structures
     $scope.show2dTab = function() {
         $scope.hide2dTab = false;
-    }
+    };
 
     // hopscotch guided tour
     $scope.activateTour = function () {
@@ -135,7 +135,6 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
             function(response) { console.log("Unable to download available genomes from server!"); return; }
         );
     };
-
 
     activateCopyToClipboardButtons();
 

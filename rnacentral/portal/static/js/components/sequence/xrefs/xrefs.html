@@ -343,7 +343,8 @@
           <span ng-if="xref.genomic_coordinates">
             <br>
             <i class="fa fa-angle-right"></i>
-              <button type="button" class="btn btn-primary btn-xs genoverse-xref help margin-right-5px" ng-click="$ctrl.onActivateGenomeBrowser({ start: xref.genomic_coordinates.start, end: xref.genomic_coordinates.end, strand: xref.genomic_coordinates.strand, chromosome: xref.genomic_coordinates.chromosome, species: xref.accession.species, description: xref.accession.description, label: xref.accession.species })" title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> View genomic location</button>
+              <button ng-if="!$ctrl.chromosomeIsScaffold(xref.genomic_coordinates.chromosome)" type="button" class="btn btn-primary btn-xs genoverse-xref help margin-right-5px" ng-click="$ctrl.onActivateGenomeBrowser({ start: xref.genomic_coordinates.start, end: xref.genomic_coordinates.end, strand: xref.genomic_coordinates.strand, chromosome: xref.genomic_coordinates.chromosome, species: xref.accession.species, description: xref.accession.description, label: xref.accession.species })" title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> View genomic location</button>
+              <li class="badge" ng-if="$ctrl.chromosomeIsScaffold(xref.genomic_coordinates.chromosome)">genomic location</li>
               <small>
                 <span class="margin-right-5px">{{ xref.genomic_coordinates.chromosome }}:{{ xref.genomic_coordinates.start | number }}-{{ xref.genomic_coordinates.end | number }}:{{ xref.genomic_coordinates.strand }}</span>
                 <!-- Ensembl url -->
