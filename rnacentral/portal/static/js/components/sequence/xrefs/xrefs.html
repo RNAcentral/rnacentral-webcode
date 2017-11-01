@@ -360,7 +360,7 @@
           <!-- literature references -->
           <citations xref="xref" on-activate-publications="$ctrl.onActivatePublications()"></citations>
 
-          <span ng-if="xref.is_active    == false">
+          <span ng-if="xref.is_active == false">
             <br>
             <small><span class="label label-danger" title="This annotation was removed from the Expert Database">Removed from database</span></small>
           </span>
@@ -379,6 +379,7 @@
             <a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank" title="{{ xref.accession.classification }}"><em>{{ xref.accession.species }}</em></a>
           </span>
         </td>
+      </tr>
     </tbody>
 
   </table>
