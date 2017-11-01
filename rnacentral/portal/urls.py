@@ -67,9 +67,6 @@ urlpatterns = patterns('',
 
 # internal API
 urlpatterns += patterns('',
-    # get xrefs table
-    url(r'^rna/(?P<upi>\w+)/xrefs/?$', 'portal.views.get_xrefs_data'),
-    url(r'^rna/(?P<upi>\w+)/xrefs/(?P<taxid>\d+)/?$', 'portal.views.get_xrefs_data'),
     # get species tree
     url(r'^rna/(?P<upi>\w+)/lineage/?$', 'portal.views.get_sequence_lineage', name='sequence-lineage'),
 )

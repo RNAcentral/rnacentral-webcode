@@ -43,26 +43,6 @@ XREF_PAGE_SIZE = 1000
 # Function-based views #
 ########################
 
-@never_cache
-def get_xrefs_data(request, upi, taxid=None):
-    """
-    Internal API.
-    Get the xrefs table in batches.
-    """
-    xref_list = Rna.objects.get(upi=upi).get_xrefs(taxid=taxid).all()
-    paginator = Paginator(xref_list, XREF_PAGE_SIZE)
-
-    page = request.GET.get('page')
-    try:
-        xrefs = paginator.page(page)
-    except PageNotAnInteger:
-        xrefs = paginator.page(1)
-    except EmptyPage:
-        xrefs = paginator.page(paginator.num_pages)
-
-    return render_to_response('portal/xref-table.html', {"xrefs": xrefs})
-
-
 @cache_page(CACHE_TIMEOUT)
 def get_sequence_lineage(request, upi):
     """
