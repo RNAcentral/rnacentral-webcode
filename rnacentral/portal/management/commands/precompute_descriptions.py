@@ -60,7 +60,13 @@ class Command(BaseCommand):
             '--upis',
             dest='upis',
             help='[Optional/Required] Comma sperated list of upis to process',
-        )
+        ),
+
+        make_option(
+            '--upi-file',
+            dest='upi_file',
+            help='[Optional/Required] Comma sperated list of upis to process',
+        ),
     )
     # shown with -h, --help
     help = ('Precompute entry data. '
@@ -77,6 +83,9 @@ class Command(BaseCommand):
 
         if options['upis']:
             options['upis'] = options['upis'].split(',')
+        elif options['upi_file']:
+            with open(options['upi_file'], 'rb') as raw:
+                options['upis'] = [line.strip() for line in raw]
         else:
             if not options['min']:
                 raise CommandError('Please specify --min')
