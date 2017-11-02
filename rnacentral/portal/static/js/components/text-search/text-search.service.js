@@ -38,6 +38,7 @@ var search = function(_, $http, $interpolate, $location, $window, $q) {
             'pub_title',
             'product',
             'rfam_problem_found',
+            'rfam_problems',
             'rna_type',
             'standard_name'
         ],
