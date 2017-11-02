@@ -165,7 +165,6 @@ class Accession(models.Model):
             'TAIR': 'http://www.arabidopsis.org/servlets/TairObject?id={id}&type=locus',
             'WORMBASE': 'http://www.wormbase.org/species/c_elegans/gene/{id}',
             'PLNCDB': 'http://chualab.rockefeller.edu/cgi-bin/gb2/gbrowse_details/arabidopsis?name={id}',
-            'GTRNADB': 'http://lowelab.ucsc.edu/GtRNAdb/',
             'DICTYBASE': 'http://dictybase.org/gene/{id}',
             'SILVA': 'http://www.arb-silva.de/browser/{lsu_ssu}/silva/{id}',
             'POMBASE': 'http://www.pombase.org/spombe/result/{id}',
