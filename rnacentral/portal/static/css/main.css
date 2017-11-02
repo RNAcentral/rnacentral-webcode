@@ -100,9 +100,9 @@ body {
   padding-left: 6px;
 }
 
-.rnacentral-masthead-menu .nav>li a:hover,
-.rnacentral-masthead-menu .nav>li a:focus,
-.rnacentral-masthead-menu .nav>li a:active,
+.rnacentral-masthead-menu .nav>li>a:hover,
+.rnacentral-masthead-menu .nav>li>a:focus,
+.rnacentral-masthead-menu .nav>li>a:active,
 .rnacentral-masthead-menu .navbar-text
 {
   color: white;
@@ -240,6 +240,11 @@ div#local-search form fieldset, form#local-search fieldset {
   .multi-column-dropdown li a:hover, .multi-column-dropdown li a:focus {
     background-color: #428bca;
   }
+}
+
+.dropdown-menu>li>a:hover {
+  color: white;
+  background-color: #428bca;
 }
 
 @media (max-width: 767px) {
@@ -1258,6 +1263,16 @@ textarea {
 /*------------------------------------------------------------------
 [5.15 Tooltip customization]
 */
+
+.tooltip {
+  font-family: Verdana, sans-serif;
+  opacity: 1;
+}
+
+.tooltip.in {
+  opacity: 1;
+}
+
 .tooltip-inner {
   background-color: rgb(51,51,51);
   border-radius: 0px;

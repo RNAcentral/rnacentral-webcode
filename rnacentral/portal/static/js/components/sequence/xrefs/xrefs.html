@@ -108,7 +108,7 @@
 
           <!-- GENCODE -->
           <span ng-switch-when="GENCODE">
-            transcript <a ng-href="{{ xref.accession.gencode_ensembl_url }}" target="_blank" title="View in Ensembl">{{ xref.accession.gencode_transcript_id }}</a>
+            transcript <a ng-href="{{ xref.gencode_ensembl_url }}" target="_blank" title="View in Ensembl">{{ xref.gencode_transcript_id }}</a>
             (Havana id: {{ xref.accession.external_id }})
             <span ng-if="xref.ensembl_splice_variants">
               <br>
