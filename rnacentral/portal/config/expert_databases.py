@@ -320,7 +320,7 @@ expert_dbs = [
         'url': 'http://gtrnadb.ucsc.edu/',
         'description': 'contains tRNA gene predictions on complete or nearly complete genomes',
         'hint': 'GtRNAdb contains tRNA gene predictions on complete or nearly complete genomes',
-        'tags': ['automatic', 'tRNA'],
+        'tags': ['automatic', 'tRNA', 'secondary structure'],
         'abbreviation': '',
         'examples': [
             {'upi': 'URS000047C79B', 'taxid': 9606},
