@@ -10,7 +10,7 @@
       the shortest sequence has <strong>{{ $ctrl.expertDb.min_length | number }}</strong> nucleotides, the longest <strong>{{ $ctrl.expertDb.max_length | number }}</strong>
     </li>
     <li>
-      the average length is <strong>{{ $ctrl.expertDb.avg_length | number:0 }}</strong> <ng-pluralize count="$ctrl.expertDb.avg_length" when="{'one': 'nucleotide', 'other': 'nucleotides'}"></ng-pluralize>nucleotide
+      the average length is <strong>{{ $ctrl.expertDb.avg_length | number:0 }}</strong> <ng-pluralize count="$ctrl.expertDb.avg_length" when="{'one': 'nucleotide', 'other': 'nucleotides'}"></ng-pluralize>
     </li>
       <li ng-if="$ctrl.expertDb.version">
         database version: <em>{{ $ctrl.expertDb.version }}</em>
