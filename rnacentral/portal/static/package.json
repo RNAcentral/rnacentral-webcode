@@ -1,6 +1,6 @@
 {
   "name": "rnacentral",
-  "version": "7.0.0",
+  "version": "8.0.0",
   "description": "",
   "main": "rnacentral.js",
   "scripts": {
@@ -33,7 +33,7 @@
     "clipboard": "^1.6.1",
     "d3": "^3",
     "font-awesome": "^4.7.0",
-    "fornac": "^1.1.8",
+    "fornac-burkov": "^1.1.9",
     "hopscotch": "^0.2.8",
     "jquery": "^3.2.1",
     "js-md5": "^0.4.2",
