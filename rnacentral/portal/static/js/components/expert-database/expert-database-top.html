@@ -12,7 +12,7 @@
     <p>
       <a href="{{ $ctrl.expertDb.url }}" target="_blank">{{ $ctrl.expertDb.name }}</a>
       <span ng-if="$ctrl.expertDb.abbreviation">({{ $ctrl.expertDb.abbreviation }})</span>
-      {{ $ctrl.expertDb.description }}.
+    <span ng-bind-html="$ctrl.expertDb.description"></span>.
     </p>
   </div>
 </div>

@@ -1,5 +1,6 @@
 angular.module('rnacentralApp', [
     'ngAnimate',
+    'ngSanitize',
     'angular.filter',
     'ui.bootstrap',
     'chieffancypants.loadingBar',

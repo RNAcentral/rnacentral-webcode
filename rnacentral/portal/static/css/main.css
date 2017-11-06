@@ -68,6 +68,14 @@ body {
   font-style:normal;
 }
 
+.strikethrough {
+  text-decoration: line-through;
+}
+
+.inserted {
+  background-color: #aca;
+}
+
 /*------------------------------------------------------------------
 [2. Masthead]
 */

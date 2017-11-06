@@ -237,7 +237,7 @@ expert_dbs = [
         'name': 'tmRNA Website',
         'label': 'tmrna-website',
         'url': 'http://bioinformatics.sandia.gov/tmrna/',
-        'description': 'contains predicted tmRNA sequences from RefSeq prokaryotic genomes, plasmids and phages',
+        'description': 'contains predicted tmRNA sequences from RefSeq <span class="strikethrough">prokaryotic</span><span class="inserted">bacterial</span> genomes, <span class="inserted">and some organelles</span> plasmids and phages; <span class="inserted">these includes two-piece tmRNAs from permuted genes</span>',
         'hint': 'tmRNA Website contains predicted tmRNA sequences from RefSeq prokaryotic genomes, plasmids and phages',
         'tags': ['automatic', 'tmRNA'],
         'abbreviation': '',
