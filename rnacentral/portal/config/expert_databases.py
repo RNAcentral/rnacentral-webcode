@@ -253,6 +253,12 @@ expert_dbs = [
                 'journal': 'Nucleic Acids Res. 32(Database issue): D104-8 (2004 Jan)',
                 'pubmed_id': 14681369,
             },
+            {
+                'title': 'The tmRNA website.',
+                'authors': 'Hudson CM, Williams KP',
+                'journal': 'Nucleic Acids Res. 43(Database issue):D138-40. (2015 Jan)',
+                'pubmed_id': 25378311,
+            }
         ],
         'imported': True,
         'status': '',
