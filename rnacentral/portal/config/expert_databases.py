@@ -237,8 +237,8 @@ expert_dbs = [
         'name': 'tmRNA Website',
         'label': 'tmrna-website',
         'url': 'http://bioinformatics.sandia.gov/tmrna/',
-        'description': 'contains predicted tmRNA sequences from RefSeq <span class="strikethrough">prokaryotic</span><span class="inserted">bacterial</span> genomes, <span class="inserted">and some organelles</span> plasmids and phages; <span class="inserted">these includes two-piece tmRNAs from permuted genes</span>',
-        'hint': 'tmRNA Website contains predicted tmRNA sequences from RefSeq prokaryotic genomes, plasmids and phages',
+        'description': 'contains predicted tmRNA sequences from RefSeq bacterial genomes, plasmids, phages and some organelles; these include two-piece tmRNAs from permuted genes',
+        'hint': 'tmRNA Website contains predicted tmRNA sequences from RefSeq bacterial genomes, plasmids, phages and some organelles',
         'tags': ['automatic', 'tmRNA'],
         'abbreviation': '',
         'examples': [
@@ -248,16 +248,16 @@ expert_dbs = [
         ],
         'references': [
             {
-                'title': 'The tmRNA website: reductive evolution of tmRNA in plastids and other endosymbionts',
-                'authors': 'Gueneau de Novoa P., Williams KP.',
-                'journal': 'Nucleic Acids Res. 32(Database issue): D104-8 (2004 Jan)',
-                'pubmed_id': 14681369,
-            },
-            {
                 'title': 'The tmRNA website.',
                 'authors': 'Hudson CM, Williams KP',
                 'journal': 'Nucleic Acids Res. 43(Database issue):D138-40. (2015 Jan)',
                 'pubmed_id': 25378311,
+            },
+            {
+                'title': 'The tmRNA website: reductive evolution of tmRNA in plastids and other endosymbionts',
+                'authors': 'Gueneau de Novoa P., Williams KP.',
+                'journal': 'Nucleic Acids Res. 32(Database issue): D104-8 (2004 Jan)',
+                'pubmed_id': 14681369,
             }
         ],
         'imported': True,
