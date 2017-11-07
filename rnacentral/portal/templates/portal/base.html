@@ -15,7 +15,7 @@ limitations under the License.
 {% load compress %}
 {% load portal_extras %}
 <!DOCTYPE html>
-<html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="rnacentralApp">
+<html xmlns:ng="http://angularjs.org" id="ng-app" ng-app="rnacentralApp" ng-cloak>
     <head>
         {% block meta_tags %}
             <meta charset="utf-8">
@@ -168,11 +168,11 @@ limitations under the License.
 
             <script src="{% static "js/components/sequence/sequence.module.js" %}"></script>
             <script src="{% static "js/components/sequence/abstract/abstract.component.js" %}"></script>
-            <script src="{% static "js/components/sequence/citations/citations.component.js" %}"></script>
             <script src="{% static "js/components/sequence/publications/publication.component.js" %}"></script>
             <script src="{% static "js/components/sequence/publications/publications.component.js" %}"></script>
             <script src="{% static "js/components/sequence/taxonomy/taxonomy.component.js" %}"></script>
             <script src="{% static "js/components/sequence/xrefs/xrefs.component.js" %}"></script>
+            <script src="{% static "js/components/sequence/xrefs/xref-publications/xref-publications.component.js" %}"></script>
             <script src="{% static "js/components/sequence/2d/2d.component.js" %}"></script>
 
             <script src="{% static "js/components/sequence-search/nhmmer.sequence.search.js" %}"></script>
