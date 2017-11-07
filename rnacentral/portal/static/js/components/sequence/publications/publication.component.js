@@ -1,13 +1,12 @@
 var publication = {
     bindings: {
-        publication: '<'
+        publication: '<',
+        showFindOtherSequences: '@?'  // true/false - if we should show "Find other sequences from this reference" link
     },
-    controller: [function() {
+    controller: ['routes', function(routes) {
         var ctrl = this;
 
-        ctrl.$onChanges = function(changes) {
-            ctrl.publication = changes.publication.currentValue;
-        }
+        ctrl.routes = routes;
     }],
     template: '<strong ng-if="$ctrl.publication.title">{{ $ctrl.publication.title }}</strong>' +
               '<br ng-if="$ctrl.publication.title">' +
@@ -22,7 +21,7 @@ var publication = {
               '        <abstract publication="$ctrl.publication"></abstract>' +
               '    </span>' +
               '  <br>' +
-              '  <a href="/search?q=pub_id:&#34;{{ $ctrl.publication.pub_id }}&#34;" class="margin-left-5px"><i class="fa fa-search"></i> Find other sequences from this reference</a>' +
+              '  <a ng-if="$ctrl.showFindOtherSequences" href="{{ $ctrl.routes.textSearch() }}?q=pub_id:&#34;{{ $ctrl.publication.pub_id }}&#34;" class="margin-left-5px"><i class="fa fa-search"></i> Find other sequences from this reference</a>' +
               '</small>'
 };
 

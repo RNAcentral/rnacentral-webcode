@@ -248,7 +248,7 @@ expert_dbs = [
         ],
         'references': [
             {
-                'title': 'The tmRNA website.',
+                'title': 'The tmRNA website',
                 'authors': 'Hudson CM, Williams KP',
                 'journal': 'Nucleic Acids Res. 43(Database issue):D138-40. (2015 Jan)',
                 'pubmed_id': 25378311,

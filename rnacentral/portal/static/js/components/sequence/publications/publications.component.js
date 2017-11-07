@@ -48,7 +48,7 @@ var publications = {
               '    <ol>' +
               '        <div ng-repeat="publication in $ctrl.publications" class="col-md-8">' +
               '            <li class="margin-bottom-10px">' +
-              '                <publication publication="publication"></publication>' +
+              '                <publication publication="publication" show-find-other-sequences="true"></publication>' +
               '            </li>' +
               '        </div>' +
               '    </ol>' +
