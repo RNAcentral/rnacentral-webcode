@@ -100,8 +100,8 @@ expert_dbs = [
         'name': 'Ensembl',
         'label': 'ensembl',
         'url': 'http://ensembl.org/',
-        'description': 'is a genome browser for vertebrate genomes that supports research in comparative genomics, evolution, sequence variation and transcriptional regulation',
-        'hint': 'Ensembl is a genome browser for vertebrate genomes that supports research in comparative genomics, evolution, sequence variation and transcriptional regulation',
+        'description': 'is a genome browser for vertebrate genomes and model organisms that supports research in comparative genomics, evolution, sequence variation and transcriptional regulation',
+        'hint': 'Ensembl is a genome browser for vertebrate genomes and model organisms that supports research in comparative genomics, evolution, sequence variation and transcriptional regulation',
         'tags': ['curated', 'reference genomes'],
         'abbreviation': '',
         'examples': [
