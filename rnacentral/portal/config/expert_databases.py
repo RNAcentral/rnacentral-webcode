@@ -424,11 +424,17 @@ expert_dbs = [
         ],
         'references': [
             {
+                'title': 'Genenames.org: the HGNC and VGNC resources in 2017.',
+                'authors': 'Yates B, Braschi B, Gray KA, Seal RL, Tweedie S, Bruford EA',
+                'journal': 'Nucleic Acids Res. 2017 Jan 4;45(D1):D619-D625',
+                'pubmed_id': '27799471',
+            },
+            {
                 'title': 'Genenames.org: the HGNC resources in 2015',
                 'authors': 'Gray KA, Yates B, Seal RL, Wright MW, Bruford EA',
                 'journal': 'Nucleic Acids Res. 2015 Jan;43(Database issue):D1079-85',
                 'pubmed_id': '25361968',
-            },
+            }
         ],
         'imported': True,
         'status': 'updated',
