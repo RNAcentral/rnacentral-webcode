@@ -10,7 +10,7 @@ var expertDatabaseRight = {
         ctrl.$onInit = function() {
             // variables
             ctrl.routes = routes;  // urls used in template (hardcoded)
-            ctrl.noSunburst = ['ena', 'rfam', 'silva', 'greengenes'];  // don't show sunburst for these databases
+            ctrl.noSunburst = ['ena', 'rfam', 'silva', 'greengenes', 'lncipedia'];  // don't show sunburst for these databases
             ctrl.expertDbStats = null;
 
             // retrieve databaseStats from server, render them, if success
