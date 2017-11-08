@@ -224,7 +224,7 @@ class ResultsView(generics.ListAPIView):
         """
         Filter results by query id.
         """
-        query_id = self.request.QUERY_PARAMS.get('id', None)
+        query_id = self.request.query_params.get('id', None)
         return Results.objects.filter(query_id=query_id)
 
 
@@ -258,7 +258,7 @@ class QueryView(generics.RetrieveAPIView):
         """
         Retrieve Query object.
         """
-        query_id = self.request.QUERY_PARAMS.get('id', None)
+        query_id = self.request.query_params.get('id', None)
         return get_object_or_404(Query, pk=query_id)
 
 

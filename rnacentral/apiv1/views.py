@@ -177,7 +177,7 @@ class DasFeatures(APIView):
             """
             regex = r'(?P<chromosome>(\d+|Y|X))\:(?P<start>\d+),(?P<end>\d+)'
             query_param = 'segment'
-            m = re.search(regex, request.QUERY_PARAMS[query_param])
+            m = re.search(regex, request.query_params[query_param])
             if m:
                 chromosome = m.group(1)
                 start = m.group(3)
@@ -367,7 +367,7 @@ class RnaMixin(object):
         elif self.request.accepted_renderer.format == 'bed':
             return RnaBedSerializer
 
-        flat = self.request.QUERY_PARAMS.get('flat', 'false')
+        flat = self.request.query_params.get('flat', 'false')
         if re.match('true', flat, re.IGNORECASE):
             return RnaFlatSerializer
         return RnaNestedSerializer
@@ -420,7 +420,7 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
         # end DRF base code
 
         # use prefetch_related where possible
-        flat = self.request.QUERY_PARAMS.get('flat', None)
+        flat = self.request.query_params.get('flat', None)
         if flat:
             to_prefetch = []
             no_prefetch = []
@@ -457,7 +457,7 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
         Manually filter against the `database` query parameter,
         use RnaFilter for other filtering operations.
         """
-        db_name = self.request.QUERY_PARAMS.get('database', None)
+        db_name = self.request.query_params.get('database', None)
         # `seq_long` **must** be deferred in order for filters to work
         queryset = Rna.objects.defer('seq_long')
         if db_name:
@@ -495,7 +495,7 @@ class RnaDetail(RnaMixin, generics.RetrieveAPIView):
         filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
         rna = get_object_or_404(queryset, **filter_kwargs)
 
-        flat = self.request.QUERY_PARAMS.get('flat', None)
+        flat = self.request.query_params.get('flat', None)
         if flat and rna.xrefs.count() <= MAX_XREFS_TO_PREFETCH:
             queryset = queryset.prefetch_related('xrefs', 'xrefs__accession')
             return get_object_or_404(queryset, **filter_kwargs)
@@ -541,8 +541,8 @@ class XrefList(generics.ListAPIView):
 
     def get(self, request, pk=None, format=None):
         """Get a paginated list of cross-references."""
-        page = request.QUERY_PARAMS.get('page', 1)
-        page_size = request.QUERY_PARAMS.get('page_size', 1000000000000)
+        page = request.query_params.get('page', 1)
+        page_size = request.query_params.get('page_size', 1000000000000)
 
         rna = self.get_object()
         xrefs = rna.get_xrefs()
@@ -579,8 +579,8 @@ class XrefsSpeciesSpecificList(generics.ListAPIView):
 
     def get(self, request, pk=None, taxid=None, format=None):
         """Get a paginated list of cross-references"""
-        page = request.QUERY_PARAMS.get('page', 1)
-        page_size = request.QUERY_PARAMS.get('page_size', 1000000000000)
+        page = request.query_params.get('page', 1)
+        page_size = request.query_params.get('page_size', 1000000000000)
 
         rna = self.get_object()
         xrefs = rna.get_xrefs(taxid=taxid)
@@ -643,8 +643,8 @@ class RnaPublicationsView(generics.ListAPIView):
 
     def get(self, request, pk=None, format=None):
         """Get a paginated list of cross-references"""
-        page = request.QUERY_PARAMS.get('page', 1)
-        page_size = request.QUERY_PARAMS.get('page_size', 1000000000000)
+        page = request.query_params.get('page', 1)
+        page_size = request.query_params.get('page_size', 1000000000000)
 
         publications = self.get_queryset()
         paginator_publications = Paginator(publications, page_size)
