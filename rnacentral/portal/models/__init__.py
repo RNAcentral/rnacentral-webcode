@@ -17,10 +17,12 @@ from database import *
 from database_stats import *
 from formatters import *
 from genomic_coordinates import *
+from go_terms import *
 from modification import *
 from reference import *
 from reference_map import *
 from release import *
+from rfam import *
 from rna import *
 from rna_precomputed import *
 from secondary_structure import *
