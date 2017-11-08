@@ -125,29 +125,29 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
     """Serializer class for all cross-references associated with an RNAcentral id."""
     database = serializers.CharField(source='db.display_name')
     is_expert_db = serializers.SerializerMethodField('is_expert_xref')
-    is_active = serializers.BooleanField(source='is_active', read_only=True)
+    is_active = serializers.BooleanField(read_only=True)
     first_seen = serializers.CharField(source='created.release_date')
     last_seen = serializers.CharField(source='last.release_date')
     accession = AccessionSerializer()
 
     # database-specific fields
     modifications = ModificationSerializer(many=True)
-    is_rfam_seed = serializers.BooleanField(source='is_rfam_seed', read_only=True)
+    is_rfam_seed = serializers.BooleanField(read_only=True)
     ncbi_gene_id = serializers.CharField(source='get_ncbi_gene_id', read_only=True)
     ndb_external_url = serializers.URLField(source='get_ndb_external_url', read_only=True)
-    mirbase_mature_products = serializers.SerializerMethodField('get_mirbase_mature_products')
-    mirbase_precursor = serializers.SerializerMethodField('get_mirbase_precursor')
-    refseq_mirna_mature_products = serializers.SerializerMethodField('get_refseq_mirna_mature_products')
-    refseq_mirna_precursor = serializers.SerializerMethodField('get_refseq_mirna_precursor')
-    refseq_splice_variants = serializers.SerializerMethodField('get_refseq_splice_variants')
-    ensembl_splice_variants = serializers.SerializerMethodField('get_ensembl_splice_variants')
+    mirbase_mature_products = serializers.SerializerMethodField()
+    mirbase_precursor = serializers.SerializerMethodField()
+    refseq_mirna_mature_products = serializers.SerializerMethodField()
+    refseq_mirna_precursor = serializers.SerializerMethodField()
+    refseq_splice_variants = serializers.SerializerMethodField()
+    ensembl_splice_variants = serializers.SerializerMethodField()
     # tmrna_mate_upi = serializers.SerializerMethodField('get_tmrna_mate_upi')
     # tmrna_type = serializers.ReadOnlyField(source='get_tmrna_type')
     gencode_transcript_id = serializers.CharField(source='get_gencode_transcript_id', read_only=True)
     gencode_ensembl_url = serializers.CharField(source='get_gencode_ensembl_url', read_only=True)
     ensembl_division = serializers.CharField(source='get_ensembl_division', read_only=True)
     ucsc_db_id = serializers.CharField(source='get_ucsc_db_id', read_only=True)
-    genomic_coordinates = serializers.SerializerMethodField('get_genomic_coordinates')
+    genomic_coordinates = serializers.SerializerMethodField()
 
     # statistics on species
 
@@ -257,10 +257,10 @@ class RnaNestedSerializer(serializers.HyperlinkedModelSerializer):
     xrefs = serializers.HyperlinkedIdentityField(view_name='rna-xrefs')
     publications = serializers.HyperlinkedIdentityField(view_name='rna-publications')
     rnacentral_id = serializers.CharField(source='upi')
-    is_active = serializers.BooleanField(source='is_active', read_only=True)
+    is_active = serializers.BooleanField(read_only=True)
     description = serializers.CharField(source='get_description', read_only=True)
     rna_type = serializers.CharField(source='get_rna_type', read_only=True)
-    count_distinct_organisms = serializers.IntegerField(source='count_distinct_organisms', read_only=True)
+    count_distinct_organisms = serializers.IntegerField(read_only=True)
     distinct_databases = serializers.ReadOnlyField(source='get_distinct_database_names')
 
     class Meta:

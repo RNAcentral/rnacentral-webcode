@@ -401,47 +401,32 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
         """
         # begin DRF base code
         self.object_list = self.filter_queryset(self.get_queryset())
-
-        # Default is to allow empty querysets.  This can be altered by setting
-        # `.allow_empty = False`, to raise 404 errors on empty querysets.
-        if not self.allow_empty and not self.object_list:
-            warnings.warn(
-                'The `allow_empty` parameter is deprecated. '
-                'To use `allow_empty=False` style behavior, You should override '
-                '`get_queryset()` and explicitly raise a 404 on empty querysets.',
-                DeprecationWarning
-            )
-            class_name = self.__class__.__name__
-            error_msg = self.empty_error % {'class_name': class_name}
-            raise Http404(error_msg)
-
-        # Switch between paginated or standard style responses
         page = self.paginate_queryset(self.object_list)
         # end DRF base code
 
-        # use prefetch_related where possible
-        flat = self.request.query_params.get('flat', None)
-        if flat:
-            to_prefetch = []
-            no_prefetch = []
-            for rna in page:
-                if rna.xrefs.count() <= MAX_XREFS_TO_PREFETCH:
-                    to_prefetch.append(rna.upi)
-                else:
-                    no_prefetch.append(rna.upi)
-
-            prefetched = Rna.objects.filter(upi__in=to_prefetch).prefetch_related('xrefs__accession').all()
-            not_prefetched = Rna.objects.filter(upi__in=no_prefetch).all()
-
-            result_list = list(chain(prefetched, not_prefetched))
-            page.object_list = result_list  # override data while keeping the rest of the pagination object
+        # begin RNAcentral override: use prefetch_related where possible
+        # flat = self.request.query_params.get('flat', None)
+        # if flat:
+        #     to_prefetch = []
+        #     no_prefetch = []
+        #     for rna in page:
+        #         if rna.xrefs.count() <= MAX_XREFS_TO_PREFETCH:
+        #             to_prefetch.append(rna.upi)
+        #         else:
+        #             no_prefetch.append(rna.upi)
+        #
+        #     prefetched = Rna.objects.filter(upi__in=to_prefetch).prefetch_related('xrefs__accession').all()
+        #     not_prefetched = Rna.objects.filter(upi__in=no_prefetch).all()
+        #
+        #     result_list = list(chain(prefetched, not_prefetched))
+        #     page.object_list = result_list  # override data while keeping the rest of the pagination object
+        # end RNAcentral override
 
         # begin DRF base code
         if page is not None:
             serializer = self.get_pagination_serializer(page)
         else:
             serializer = self.get_serializer(self.object_list, many=True)
-
         return Response(serializer.data)
         # end DRF base code
 
