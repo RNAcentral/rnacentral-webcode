@@ -36,7 +36,7 @@ class RawPublicationSerializer(serializers.ModelSerializer):
     authors = serializers.CharField(source='get_authors_list')
     publication = serializers.CharField(source='location')
     pubmed_id = serializers.CharField(source='pubmed')
-    doi = serializers.CharField(source='doi')
+    doi = serializers.CharField()
     title = serializers.CharField(source='get_title')
     pub_id = serializers.CharField(source='id')
 
@@ -293,9 +293,9 @@ class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
     rnacentral_id = serializers.SerializerMethodField('get_species_specific_id')
     description = serializers.SerializerMethodField('get_species_specific_description')
     species = serializers.SerializerMethodField('get_species_name')
-    genes = serializers.SerializerMethodField('get_genes')
-    ncrna_types = serializers.SerializerMethodField('get_ncrna_types')
-    taxid = serializers.SerializerMethodField('get_taxid')
+    genes = serializers.SerializerMethodField()
+    ncrna_types = serializers.SerializerMethodField()
+    taxid = serializers.SerializerMethodField()
     is_active = serializers.SerializerMethodField('is_active_id')
     distinct_databases = serializers.SerializerMethodField('get_distinct_database_names')
 
@@ -405,8 +405,8 @@ class RnaBedSerializer(serializers.ModelSerializer):
 
 class ExpertDatabaseStatsSerializer(serializers.ModelSerializer):
     """Serializer for presenting DatabaseStats"""
-    length_counts = serializers.SerializerMethodField('get_length_counts')
-    taxonomic_lineage = serializers.SerializerMethodField('get_taxonomic_lineage')
+    length_counts = serializers.SerializerMethodField()
+    taxonomic_lineage = serializers.SerializerMethodField()
 
     class Meta:
         model = DatabaseStats
