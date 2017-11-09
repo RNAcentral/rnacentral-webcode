@@ -42,6 +42,7 @@ CHOICES = {
         'HGNC',
         'Ensembl',
         'TAIR',
+        'FlyBase',
         'lncRNAdb',
         'PDBe',
         'RefSeq',
