@@ -33,7 +33,7 @@ from portal.models.chemical_component import ChemicalComponent
 
 class RawPublicationSerializer(serializers.ModelSerializer):
     """Serializer class for literature citations. Used in conjunction with raw querysets."""
-    authors = serializers.CharField(source='get_authors_list')
+    authors = serializers.ListField(serializers.CharField(), source='get_authors_list')
     publication = serializers.CharField(source='location')
     pubmed_id = serializers.CharField(source='pubmed')
     doi = serializers.CharField()
@@ -47,7 +47,7 @@ class RawPublicationSerializer(serializers.ModelSerializer):
 
 class CitationSerializer(serializers.HyperlinkedModelSerializer):
     """Serializer class for literature citations."""
-    authors = serializers.CharField(source='data.get_authors_list')
+    authors = serializers.ListField(serializers.CharField(), source='data.get_authors_list')
     publication = serializers.CharField(source='data.location')
     pubmed_id = serializers.CharField(source='data.pubmed')
     doi = serializers.CharField(source='data.doi')
