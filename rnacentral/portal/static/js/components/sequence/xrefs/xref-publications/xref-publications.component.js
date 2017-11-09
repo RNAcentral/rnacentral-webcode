@@ -9,7 +9,7 @@ var xrefPublications = {
         ctrl.onClick = function() {
             $http.get($interpolate('{{publications}}')({publications: ctrl.xref.accession.citations}), {cache: true}).then(
                 function(response) {
-                    ctrl.publications = response.data;
+                    ctrl.publications = response.data.results;  // response is paginated
                     ctrl.status = response.status;
                 },
                 function(response) {
