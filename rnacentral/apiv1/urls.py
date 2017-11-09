@@ -37,7 +37,7 @@ urlpatterns = patterns('',
     # species-specific RNAcentral id
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})(/|_)(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.RnaSpeciesSpecificView.as_view()), name='rna-species-specific'),
     # literature citations associated with ENA records
-    url(r'^accession/(?P<pk>.*?)/citations/?$', cache_page(CACHE_TIMEOUT)(views.CitationView.as_view()), name='accession-citations'),
+    url(r'^accession/(?P<pk>.*?)/citations/?$', cache_page(CACHE_TIMEOUT)(views.CitationsView.as_view()), name='accession-citations'),
     # view for an individual cross-reference
     url(r'^accession/(?P<pk>.*?)/info/?$', cache_page(CACHE_TIMEOUT)(views.AccessionView.as_view()), name='accession-detail'),
     # Ensembl-like genome coordinates endpoint

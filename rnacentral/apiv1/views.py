@@ -533,7 +533,7 @@ class XrefList(generics.ListAPIView):
 
     def get_queryset(self):
         upi = self.kwargs['pk']
-        return list(Rna.objects.get(upi=upi).get_xrefs())
+        return Rna.objects.get(upi=upi).get_xrefs()
 
 
 class XrefsSpeciesSpecificList(generics.ListAPIView):
@@ -548,7 +548,7 @@ class XrefsSpeciesSpecificList(generics.ListAPIView):
     def get_queryset(self):
         upi = self.kwargs['pk']
         taxid = self.kwargs['taxid']
-        return list(Rna.objects.get(upi=upi).get_xrefs(taxid=taxid))
+        return Rna.objects.get(upi=upi).get_xrefs(taxid=taxid)
 
 
 class SecondaryStructureSpeciesSpecificList(generics.ListAPIView):
@@ -576,33 +576,21 @@ class AccessionView(generics.RetrieveAPIView):
     """
     # the above docstring appears on the API website
     queryset = Accession.objects.select_related().all()
-
-    def get(self, request, pk, format=None):
-        """Retrive individual accessions."""
-        accession = self.get_object()
-        serializer = AccessionSerializer(accession, context={'request': request})
-        return Response(serializer.data)
+    serializer_class = AccessionSerializer
 
 
-class CitationView(generics.RetrieveAPIView):
+class CitationsView(generics.ListAPIView):
     """
     API endpoint that allows the citations associated with
-    each cross-reference to be viewed.
+    a particular cross-reference to be viewed.
 
     [API documentation](/api)
     """
-    # the above docstring appears on the API website
-    queryset = Accession.objects.select_related().all()
+    serializer_class = CitationSerializer
 
-    def get(self, request, pk, format=None):
-        """
-        Retrieve citations associated with a particular entry.
-        This method is used to retrieve citations for the unique sequence view.
-        """
-        accession = self.get_object()
-        citations = accession.refs.all()
-        serializer = CitationSerializer(citations, context={'request': request})
-        return Response(serializer.data)
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        return Accession.objects.select_related().get(pk=pk).refs.all()
 
 
 class RnaPublicationsView(generics.ListAPIView):
@@ -642,7 +630,7 @@ class ExpertDatabasesAPIView(APIView):
                 expert_db_label = expert_db_label.upper()
             return expert_db_label
 
-        # { "TMRNA_WEB": {'name': 'tmRNA Website', 'label': 'tmrna-website', ...}}
+        # e.g. { "TMRNA_WEB": {'name': 'tmRNA Website', 'label': 'tmrna-website', ...}}
         databases = { db['descr']:db for db in Database.objects.values() }
 
         # update config.expert_databases json with Database table objects
@@ -655,7 +643,7 @@ class ExpertDatabasesAPIView(APIView):
 
     # def get_queryset(self):
     #     expert_db_name = self.kwargs['expert_db_name']
-    #     return list(Database.objects.get(expert_db_name).references)
+    #     return Database.objects.get(expert_db_name).references
 
 
 class ExpertDatabasesStatsViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
