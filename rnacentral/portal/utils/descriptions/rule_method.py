@@ -394,6 +394,12 @@ def get_species_specific_name(rna_type, xrefs):
     description = re.sub(r'\(\s*non-protein\s+coding\s*\)', '', description)
     description = re.sub(r'\s\s+', ' ', description)
     description = re.sub(r'\.$', '', description)
+    description = re.sub(
+        r'transfer-messenger mRNA',
+        'transfer-messenger RNA',
+        description,
+        re.IGNORECASE
+    )
     return description.strip()
 
 
