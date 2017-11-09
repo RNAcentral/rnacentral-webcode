@@ -9,14 +9,8 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
-Quick reference:
-CharField - regular model field
-Field - model method call
-SerializerMethodField - serializer method call
-HyperlinkedIdentityField - link to a view
-
 """
+
 import re
 import json
 
@@ -24,7 +18,6 @@ from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse
 from django.db.models import Min, Max
 from rest_framework import serializers
-from rest_framework import pagination
 
 from portal.models import Rna, Xref, Reference, Database, DatabaseStats, Accession, Release, Reference, Modification
 from portal.models.reference_map import Reference_map
