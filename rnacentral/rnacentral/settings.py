@@ -178,6 +178,7 @@ INSTALLED_APPS = (
     'portal',
     'nhmmer',
     'apiv1',
+    'django_filters',  # required by DRF3.5+
     'rest_framework',
     'debug_toolbar',
     'compressor',
@@ -258,7 +259,7 @@ REST_FRAMEWORK = {
     },
 
     # Filtering
-    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',),
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
 
     # renderers
     'DEFAULT_RENDERER_CLASSES': (

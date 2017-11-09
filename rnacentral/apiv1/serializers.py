@@ -96,6 +96,7 @@ class ChemicalComponentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ChemicalComponent
+        fields = '__all__'
 
 
 class ModificationSerializer(serializers.ModelSerializer):
@@ -106,6 +107,7 @@ class ModificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Modification
+        fields = '__all__'
 
 
 class XrefSerializer(serializers.HyperlinkedModelSerializer):
@@ -229,7 +231,7 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
 class RnaListSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Rna
-        fields = ('__all__')
+        fields = '__all__'
 
 
 class RnaNestedSerializer(serializers.HyperlinkedModelSerializer):
@@ -256,13 +258,14 @@ class RnaSecondaryStructureSerializer(serializers.ModelSerializer):
     """Serializer for presenting RNA secondary structures"""
     data = serializers.SerializerMethodField('get_secondary_structures')
 
+    class Meta:
+        model = Rna
+        fields = ('data', )
+
     def get_secondary_structures(self, obj):
         """Return secondary structures filtered by taxid."""
         return obj.get_secondary_structures(taxid=self.context['taxid'])
 
-    class Meta:
-        model = Rna
-        fields = ('data',)
 
 class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
     """
@@ -279,6 +282,12 @@ class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
     taxid = serializers.SerializerMethodField()
     is_active = serializers.SerializerMethodField('is_active_id')
     distinct_databases = serializers.SerializerMethodField('get_distinct_database_names')
+
+    class Meta:
+        model = Rna
+        fields = ('rnacentral_id', 'sequence', 'length', 'description',
+                  'species', 'taxid', 'genes', 'ncrna_types', 'is_active',
+                  'distinct_databases')
 
     def is_active_id(self, obj):
         """Return false if all xrefs with this taxid are inactive."""
@@ -325,12 +334,6 @@ class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
 
     def get_distinct_database_names(self, obj):
         return obj.get_distinct_database_names(taxid=self.get_taxid(obj))
-
-    class Meta:
-        model = Rna
-        fields = ('rnacentral_id', 'sequence', 'length', 'description',
-                  'species', 'taxid', 'genes', 'ncrna_types', 'is_active',
-                  'distinct_databases')
 
 
 class RnaFlatSerializer(RnaNestedSerializer):

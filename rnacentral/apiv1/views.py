@@ -12,12 +12,12 @@ limitations under the License.
 """
 
 import re
-import django_filters
 import warnings
 from itertools import chain
 
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django_filters import rest_framework as filters
 from rest_framework import generics
 from rest_framework import renderers
 from rest_framework.mixins import RetrieveModelMixin, ListModelMixin
@@ -163,12 +163,12 @@ class APIRoot(APIView):
         })
 
 
-class RnaFilter(django_filters.FilterSet):
+class RnaFilter(filters.FilterSet):
     """Declare what fields can be filtered using django-filters"""
-    min_length = django_filters.NumberFilter(name="length", lookup_type='gte')
-    max_length = django_filters.NumberFilter(name="length", lookup_type='lte')
-    external_id = django_filters.CharFilter(name="xrefs__accession__external_id", distinct=True)
-    database = django_filters.CharFilter(name="xrefs__accession__database")
+    min_length = filters.NumberFilter(name="length", lookup_expr=['gte', ])
+    max_length = filters.NumberFilter(name="length", lookup_expr=['lte', ])
+    external_id = filters.CharFilter(name="xrefs__accession__external_id", distinct=True)
+    database = filters.CharFilter(name="xrefs__accession__database")
 
     class Meta:
         model = Rna
