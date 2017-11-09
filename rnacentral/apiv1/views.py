@@ -26,12 +26,15 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.permissions import AllowAny
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.reverse import reverse
+from rest_framework_jsonp.renderers import JSONPRenderer
+from rest_framework_yaml.renderers import YAMLRenderer
 
-from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, PaginatedXrefSerializer, \
+from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, XrefSerializer, \
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
                               RnaSpeciesSpecificSerializer, RnaListSerializer, ExpertDatabaseStatsSerializer, \
-                              RawPublicationSerializer, PaginatedRawPublicationSerializer, RnaSecondaryStructureSerializer
+                              RawPublicationSerializer, RnaSecondaryStructureSerializer
 
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, Accession, Xref, Database, DatabaseStats
@@ -382,9 +385,10 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
     # the above docstring appears on the API website
     permission_classes = (AllowAny,)
     filter_class = RnaFilter
-    renderer_classes = (renderers.JSONRenderer, renderers.JSONPRenderer,
+    renderer_classes = (renderers.JSONRenderer, JSONPRenderer,
                         renderers.BrowsableAPIRenderer,
-                        renderers.YAMLRenderer, RnaFastaRenderer)
+                        YAMLRenderer, RnaFastaRenderer)
+    pagination_class = PageNumberPagination
 
     def list(self, request, *args, **kwargs):
         """
@@ -400,33 +404,35 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
         * flat serializer limits the total number of displayed xrefs
         """
         # begin DRF base code
-        self.object_list = self.filter_queryset(self.get_queryset())
-        page = self.paginate_queryset(self.object_list)
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
         # end DRF base code
 
         # begin RNAcentral override: use prefetch_related where possible
-        # flat = self.request.query_params.get('flat', None)
-        # if flat:
-        #     to_prefetch = []
-        #     no_prefetch = []
-        #     for rna in page:
-        #         if rna.xrefs.count() <= MAX_XREFS_TO_PREFETCH:
-        #             to_prefetch.append(rna.upi)
-        #         else:
-        #             no_prefetch.append(rna.upi)
-        #
-        #     prefetched = Rna.objects.filter(upi__in=to_prefetch).prefetch_related('xrefs__accession').all()
-        #     not_prefetched = Rna.objects.filter(upi__in=no_prefetch).all()
-        #
-        #     result_list = list(chain(prefetched, not_prefetched))
-        #     page.object_list = result_list  # override data while keeping the rest of the pagination object
+        flat = self.request.query_params.get('flat', None)
+        if flat:
+            to_prefetch = []
+            no_prefetch = []
+            for rna in page:
+                if rna.xrefs.count() <= MAX_XREFS_TO_PREFETCH:
+                    to_prefetch.append(rna.upi)
+                else:
+                    no_prefetch.append(rna.upi)
+
+            prefetched = Rna.objects.filter(upi__in=to_prefetch).prefetch_related('xrefs__accession').all()
+            not_prefetched = Rna.objects.filter(upi__in=no_prefetch).all()
+
+            result_list = list(chain(prefetched, not_prefetched))
+            page.object_list = result_list  # override data while keeping the rest of the pagination object
         # end RNAcentral override
 
         # begin DRF base code
         if page is not None:
-            serializer = self.get_pagination_serializer(page)
-        else:
-            serializer = self.get_serializer(self.object_list, many=True)
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
         # end DRF base code
 
@@ -464,8 +470,8 @@ class RnaDetail(RnaMixin, generics.RetrieveAPIView):
     """
     # the above docstring appears on the API website
     queryset = Rna.objects.all()
-    renderer_classes = (renderers.JSONRenderer, renderers.JSONPRenderer,
-                        renderers.BrowsableAPIRenderer, renderers.YAMLRenderer,
+    renderer_classes = (renderers.JSONRenderer, JSONPRenderer,
+                        renderers.BrowsableAPIRenderer, YAMLRenderer,
                         RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer)
 
     def get_object(self):
@@ -522,19 +528,27 @@ class XrefList(generics.ListAPIView):
 
     [API documentation](/api)
     """
-    queryset = Rna.objects.select_related().all()
+    serializer_class = XrefSerializer
+    pagination_class = PageNumberPagination
 
-    def get(self, request, pk=None, format=None):
-        """Get a paginated list of cross-references."""
-        page = request.query_params.get('page', 1)
-        page_size = request.query_params.get('page_size', 1000000000000)
+    def get_queryset(self):
+        upi = self.kwargs['pk']
+        return list(Rna.objects.get(upi=upi).get_xrefs())
 
-        rna = self.get_object()
-        xrefs = rna.get_xrefs()
-        paginator_xrefs = Paginator(xrefs, page_size)
-        xrefs_page = paginator_xrefs.page(page)
-        serializer = PaginatedXrefSerializer(xrefs_page, context={'request': request})
-        return Response(serializer.data)
+
+class XrefsSpeciesSpecificList(generics.ListAPIView):
+    """
+    List of cross-references for a particular RNA sequence in a specific species.
+
+    [API documentation](/api)
+    """
+    serializer_class = XrefSerializer
+    pagination_class = PageNumberPagination
+
+    def get_queryset(self):
+        upi = self.kwargs['pk']
+        taxid = self.kwargs['taxid']
+        return list(Rna.objects.get(upi=upi).get_xrefs(taxid=taxid))
 
 
 class SecondaryStructureSpeciesSpecificList(generics.ListAPIView):
@@ -551,27 +565,6 @@ class SecondaryStructureSpeciesSpecificList(generics.ListAPIView):
         serializer = RnaSecondaryStructureSerializer(rna, context={
             'taxid': taxid,
         })
-        return Response(serializer.data)
-
-
-class XrefsSpeciesSpecificList(generics.ListAPIView):
-    """
-    List of cross-references for a particular RNA sequence in a specific species.
-
-    [API documentation](/api)
-    """
-    queryset = Rna.objects.select_related().all()
-
-    def get(self, request, pk=None, taxid=None, format=None):
-        """Get a paginated list of cross-references"""
-        page = request.query_params.get('page', 1)
-        page_size = request.query_params.get('page_size', 1000000000000)
-
-        rna = self.get_object()
-        xrefs = rna.get_xrefs(taxid=taxid)
-        paginator_xrefs = Paginator(xrefs, page_size)
-        xrefs_page = paginator_xrefs.page(page)
-        serializer = PaginatedXrefSerializer(xrefs_page, context={'request': request})
         return Response(serializer.data)
 
 
@@ -621,21 +614,12 @@ class RnaPublicationsView(generics.ListAPIView):
     """
     # the above docstring appears on the API website
     permission_classes = (AllowAny, )
+    serializer_class = RawPublicationSerializer
+    pagination_class = PageNumberPagination
 
     def get_queryset(self):
         upi = self.kwargs['pk']
         return list(Rna.objects.get(upi=upi).get_publications())
-
-    def get(self, request, pk=None, format=None):
-        """Get a paginated list of cross-references"""
-        page = request.query_params.get('page', 1)
-        page_size = request.query_params.get('page_size', 1000000000000)
-
-        publications = self.get_queryset()
-        paginator_publications = Paginator(publications, page_size)
-        publications_page = paginator_publications.page(page)
-        serializer = PaginatedRawPublicationSerializer(publications_page, context={'request': request})
-        return Response(serializer.data)
 
 
 class ExpertDatabasesAPIView(APIView):

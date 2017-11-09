@@ -242,7 +242,8 @@ REST_FRAMEWORK = {
     ],
 
     # API results pagination
-    'PAGINATE_BY': 10,
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10,
     'PAGINATE_BY_PARAM': 'page_size',
     'MAX_PAGINATE_BY': 1000000000000,
 
@@ -262,8 +263,8 @@ REST_FRAMEWORK = {
     # renderers
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.JSONPRenderer',
-        'rest_framework.renderers.YAMLRenderer',
+        'rest_framework_jsonp.renderers.JSONPRenderer',
+        'rest_framework_yaml.renderers.YAMLRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
     ),
 }

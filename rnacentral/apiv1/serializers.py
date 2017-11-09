@@ -45,12 +45,6 @@ class RawPublicationSerializer(serializers.ModelSerializer):
         fields = ('title', 'authors', 'publication', 'pubmed_id', 'doi', 'pub_id')
 
 
-class PaginatedRawPublicationSerializer(pagination.PaginationSerializer):
-    """Paginated version of RawPublicationSerializer."""
-    class Meta:
-        object_serializer_class = RawPublicationSerializer
-
-
 class CitationSerializer(serializers.HyperlinkedModelSerializer):
     """Serializer class for literature citations."""
     authors = serializers.CharField(source='data.get_authors_list')
@@ -237,12 +231,6 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
             else:
                 data['ucsc_chromosome'] = data['chromosome']
             return data
-
-
-class PaginatedXrefSerializer(pagination.PaginationSerializer):
-    """Paginated version of XrefSerializer."""
-    class Meta:
-        object_serializer_class = XrefSerializer
 
 
 class RnaListSerializer(serializers.HyperlinkedModelSerializer):
