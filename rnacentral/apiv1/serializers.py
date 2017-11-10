@@ -96,7 +96,9 @@ class ChemicalComponentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ChemicalComponent
-        fields = '__all__'
+        fields = (
+            'id', 'description', 'one_letter_code', 'ccd_id', 'source', 'modomics_short_name', 'pdb_url', 'modomics_url'
+        )
 
 
 class ModificationSerializer(serializers.ModelSerializer):
@@ -107,7 +109,7 @@ class ModificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Modification
-        fields = '__all__'
+        fields = ('position', 'author_assigned_position', 'chem_comp')
 
 
 class XrefSerializer(serializers.HyperlinkedModelSerializer):
