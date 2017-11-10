@@ -380,7 +380,7 @@ def check_issues(rna, taxid=None):
             # UnmodelledRnaType(),
             DomainProblem(),
             IncompleteSequence(),
-            RnaTypeConflict(),
+            # RnaTypeConflict(),
             MissingMatch(),
         ]
 
