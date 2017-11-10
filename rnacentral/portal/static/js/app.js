@@ -58,4 +58,30 @@ angular.module('rnacentralApp', [
             $window.location.href = $rootScope.actualLocation;
         }
     })
+}])
+.run([function() {
+    /**
+    * Function that tracks a click on an outbound link in Analytics.
+    * This function takes a valid URL string as an argument, and uses that URL string
+    * as the event label. Setting the transport method to 'beacon' lets the hit be sent
+    * using 'navigator.sendBeacon' in browser that support it.
+    */
+    var trackOutboundLink = function(url) {
+       ga('send', 'event', 'outbound', 'click', url, {
+         'transport': 'beacon',
+         'hitCallback': function(){document.location = url;}
+       });
+    };
+
+    /**
+     * Track outbound traffic with Google Analytics.
+     *
+     * NOTE: we delegate events to body in order to handle clicks on links created by angular dynamically
+     * NOTE: ng-clicks resulting in outbound traffic won't be reported!
+     */
+    $('body').on('click', 'a[href^="http://"]:not([href^="http://rnacentral.org"])', function (event) {
+        trackOutboundLink($(event.target).attr('href'));
+    }).on('click', 'a[href^="https://"]:not([href^="https://rnacentral.org"])', function (event) {
+        trackOutboundLink($(event.target).attr('href'));
+    });
 }]);
