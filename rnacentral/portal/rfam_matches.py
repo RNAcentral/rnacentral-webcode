@@ -152,6 +152,8 @@ class DomainProblem(object):
             hits[0].rfam_model_id in set([
                 'RF00177',  # Bacterial small subunit ribosomal RNA
                 'RF02541',  # Bacterial large subunit ribosomal RNA
+                'RF01959',  # Archaeal small subunit ribosomal RNA
+                'RF02540',  # Archaeal large subunit ribosomal RNA
             ])
 
     def __call__(self, rna, taxid=None):
