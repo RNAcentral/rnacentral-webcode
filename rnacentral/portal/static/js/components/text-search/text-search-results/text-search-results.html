@@ -176,7 +176,7 @@
             <small class="text-muted">{{rna.id}}</small>
             <div ng-show="$ctrl.anyHighlights(rna.fields)" style="margin-bottom: 3px; margin-top: 1px; color: #545454;" class="small">
               <span ng-if="$ctrl.highlight(rna.fields).fieldName">
-                  <em>{{ $ctrl.highlight(rna.fields).fieldName }}:</em> <span ng-bind-html="$ctrl.highlight(rna.fields).highlight | sanitize"></span>
+                <em>{{ $ctrl.highlight(rna.fields).fieldName }}:</em> <span ng-bind-html="$ctrl.highlight(rna.fields).highlight | sanitize"></span>
               </span>
             </div>
             <ul class="list-inline small" ng-if="$ctrl.expertDbsObject" style="margin-left: 0;">
@@ -184,7 +184,7 @@
                 {{rna.fields.length[0] | number}} nucleotides
               </li>
               <li style="padding-right: 20px;" ng-show="rna.fields.has_genomic_coordinates[0] == 'True'"><i class="fa fa-check text-success" aria-hidden="true"></i> reference genome<li>
-              <li style="padding-right: 20px;" ng-if="rna.fields.rfam_problem_found[0].indexOf('True') !== -1" uib-tooltip-template="'/static/js/components/text-search/text-search-results/rfam-problem-tooltip.html'"><i class="fa fa-warning text-danger" aria-hidden="true"></i>
+              <li style="padding-right: 20px; cursor: help;" ng-if="rna.fields.rfam_problems[0] != 'none'" uib-tooltip-template="'/static/js/components/text-search/text-search-results/rfam-problem-tooltip.html'" tooltip-placement="bottom"><i class="fa fa-warning text-danger" aria-hidden="true"></i>
                 <span ng-repeat="rfam_problem in rna.fields.rfam_problems | plaintext">
                   <span ng-if="rfam_problem==='domain_conflict'">possible contamination</span>
                   <span ng-if="rfam_problem==='incomplete_sequence'">incomplete sequence</span>
