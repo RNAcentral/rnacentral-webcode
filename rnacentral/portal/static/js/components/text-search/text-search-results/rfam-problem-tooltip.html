@@ -1,0 +1,5 @@
+<h5 ng-repeat="rfam_problem in rna.fields.rfam_problems | plaintext">
+  <span ng-if="rfam_problem==='domain_conflict'">possible contamination</span>
+  <span ng-if="rfam_problem==='incomplete_sequence'">incomplete sequence</span>
+  <span ng-if="rfam_problem==='missing_match'">missing Rfam hit</span>{{$last ? '' : ', '}}
+</h5>
