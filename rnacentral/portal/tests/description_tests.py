@@ -103,10 +103,15 @@ class HumanDescriptionTests(GenericDescriptionTest):
 
     def test_will_indicate_several_genes_for_hgnc(self):
         self.assertDescriptionIs(
-            'Homo sapiens RNA, 5S ribosomal (RNA5S1-8, RNA5S 10-17)',
-            # 'Homo sapiens RNA, 5S ribosomal 1 (RNA5S1-8, RNA5S10-17)',
-            # 'Homo sapiens RNA, 5S ribosomal 1 (multiple genes)',
+            # 'Homo sapiens RNA, 5S ribosomal (RNA5S1-8, RNA5S 10-17)',
+            'Homo sapiens RNA, 5S ribosomal 1 (RNA5S1-8, RNA5S10-17)',
             'URS00000F9D45',
+            taxid=9606
+        )
+
+        self.assertDescriptionIs(
+            'Homo sapiens RNA, 45S pre-ribosomal 4 (RNA45S4, RNA45SN1)',
+            'URS0000ABD87F',
             taxid=9606
         )
 
