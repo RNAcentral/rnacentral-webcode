@@ -326,6 +326,43 @@ def select_with_several_genes(accessions, name, pattern,
     )
 
 
+def trim_trailing_rna_type(rna_type, description):
+    """
+    Some descriptions like the ones from RefSeq (URS0000ABD871/9606) and some
+    from flybase (URS0000002CB3/7227) end with their RNA type. This isn't
+    really all that useful as we display the RNA type anyway. So  this
+    out along with ', ' that tends to go along with those.
+    """
+
+    trailing = [rna_type]
+    if rna_type == 'lncRNA':
+        trailing.append('long non-coding RNA')
+
+    for value in trailing:
+        pattern = '[, ]*%s$' % value
+        description = re.sub(pattern, '', description, re.IGNORECASE)
+    return description
+
+
+def remove_extra_description_terms(description):
+    """
+    Sometimes the description contains some things we don't want to include
+    like trailing '.', extra spaces, the string (non-protein coding) and a typo
+    in the name of tmRNA's. This corrects those issues.
+    """
+
+    description = re.sub(r'\(\s*non-protein\s+coding\s*\)', '', description)
+    description = re.sub(r'\s\s+', ' ', description)
+    description = re.sub(r'\.$', '', description)
+    description = re.sub(
+        r'transfer-messenger mRNA',
+        'transfer-messenger RNA',
+        description,
+        re.IGNORECASE
+    )
+    return description
+
+
 def get_species_specific_name(rna_type, xrefs):
     """
     Determine the name for the species specific sequence. This will examine
@@ -367,39 +404,32 @@ def get_species_specific_name(rna_type, xrefs):
         logger.debug("Ordered choice selection failed")
         return None
 
+    accessions = [x.accession for x in best]
     if db_name == 'HGNC':
-        accessions = [x.accession for x in best]
         description = select_with_several_genes(
             accessions,
             'genes',
-            '\(%s\)$'
+            r'\(%s\)$'
         )
     elif db_name == 'miRBase':
         product_name = 'precursors'
         if rna_type == 'miRNA':
             product_name = 'miRNAs'
 
-        accessions = [x.accession for x in best]
         description = select_with_several_genes(
             accessions,
             product_name,
-            '\w+-%s',
+            r'\w+-%s',
             description_items='optional_id',
             max_items=5,
         )
     else:
-        descriptions = [x.accession.description for x in best]
+        descriptions = [accession.description for accession in accessions]
         description = select_best_description(descriptions)
 
-    description = re.sub(r'\(\s*non-protein\s+coding\s*\)', '', description)
-    description = re.sub(r'\s\s+', ' ', description)
-    description = re.sub(r'\.$', '', description)
-    description = re.sub(
-        r'transfer-messenger mRNA',
-        'transfer-messenger RNA',
-        description,
-        re.IGNORECASE
-    )
+    description = remove_extra_description_terms(description)
+    description = trim_trailing_rna_type(rna_type, description)
+
     return description.strip()
 
 
