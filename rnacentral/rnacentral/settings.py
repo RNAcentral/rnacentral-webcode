@@ -21,7 +21,6 @@ except ImportError:
 
 
 DEBUG = False
-TEMPLATE_DEBUG = DEBUG
 
 # project root directory
 PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # pylint: disable=C0301
@@ -115,12 +114,6 @@ STATICFILES_FINDERS = (
 # Provide an initial value so that the site is functional with default settings
 SECRET_KEY = 'override this in local_settings.py'
 
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
-
 MIDDLEWARE_CLASSES = (
     # gzip
     'django.middleware.gzip.GZipMiddleware',
@@ -137,17 +130,34 @@ MIDDLEWARE_CLASSES = (
     'maintenancemode.middleware.MaintenanceModeMiddleware',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
-    "django.core.context_processors.static",
-    "django.core.context_processors.tz",
-    "django.contrib.messages.context_processors.messages",
-    "django.core.context_processors.request",
-    "portal.context_processors.baseurl",
-)
+TEMPLATES = [{
+    'BACKEND': 'django.template.backends.django.DjangoTemplates',  # django or jinja
+    'DIRS': (
+        os.path.join(PROJECT_PATH, 'rnacentral', 'templates'),
+        # Always use forward slashes, even on Windows.
+        # Don't forget to use absolute paths, not relative paths.
+    ),
+    'APP_DIRS': True,  # look for templates in app subdirectories
+    'OPTIONS': {
+        'context_processors': [
+            "django.contrib.auth.context_processors.auth",
+            "django.template.context_processors.debug",
+            "django.template.context_processors.i18n",
+            "django.template.context_processors.media",
+            "django.template.context_processors.static",
+            "django.template.context_processors.tz",
+            "django.contrib.messages.context_processors.messages",
+            "django.template.context_processors.request",
+            "portal.context_processors.baseurl",
+        ],
+        # 'loaders': [
+        #     # List of callables that know how to import templates from various sources.
+        #     'django.template.loaders.filesystem.Loader',
+        #     'django.template.loaders.app_directories.Loader',
+        # ],
+        'debug': DEBUG
+    }
+}]
 
 USE_ETAGS = True
 
@@ -157,12 +167,6 @@ ROOT_URLCONF = 'rnacentral.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'rnacentral.wsgi.application'
-
-TEMPLATE_DIRS = (
-    os.path.join(PROJECT_PATH, 'rnacentral', 'templates'),
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-)
 
 INSTALLED_APPS = (
     'django.contrib.admin',

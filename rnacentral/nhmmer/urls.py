@@ -11,27 +11,28 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.views.generic.base import TemplateView
 from settings import MIN_LENGTH, MAX_LENGTH
+
 import views
 
 
 # nhmmer sequence search urls
-urlpatterns = patterns('',
+urlpatterns = [
     # launch nhmmer search
     url(r'^submit-query/?$',
-        'nhmmer.views.submit_job',
+        views.submit_job,
         name='nhmmer-submit-job'),
 
     # cancel search results
     url(r'^cancel-job/?$',
-        'nhmmer.views.cancel_job',
+        views.cancel_job,
         name='nhmmer-cancel-job'),
 
     # get nhmmer search job status
     url(r'^job-status/?$',
-        'nhmmer.views.get_status',
+        views.get_status,
         name='nhmmer-job-status'),
 
     # get nhmmer results
@@ -46,9 +47,9 @@ urlpatterns = patterns('',
 
     # dashboard
     url(r'^dashboard/?$',
-        'nhmmer.views.dashboard_view',
+        views.dashboard_view,
         name='nhmmer-dashboard'),
-)
+]
 
 
 class SequenceSearchUIView(TemplateView):
@@ -71,8 +72,7 @@ class SequenceSearchUIView(TemplateView):
         return context
 
 
-urlpatterns += patterns('',
+urlpatterns += [
     # user interface
-    url(r'^$', SequenceSearchUIView.as_view(),
-        name='nhmmer-sequence-search'),
-)
+    url(r'^$', SequenceSearchUIView.as_view(), name='nhmmer-sequence-search'),
+]
