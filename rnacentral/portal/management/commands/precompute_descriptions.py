@@ -16,6 +16,8 @@ from optparse import make_option
 from cProfile import Profile
 from portal.models import Rna
 from portal.models.rna_precomputed import RnaPrecomputed
+from datetime import date
+from datetime import datetime as dt
 
 
 class Command(BaseCommand):
@@ -67,6 +69,12 @@ class Command(BaseCommand):
             dest='upi_file',
             help='[Optional/Required] Comma sperated list of upis to process',
         ),
+        make_option(
+            '--date',
+            default='',
+            dest='date',
+            help='[Opitonal] date to use in timestamp',
+        )
     )
     # shown with -h, --help
     help = ('Precompute entry data. '
@@ -96,6 +104,11 @@ class Command(BaseCommand):
             options['min'] = int(options['min'])
             options['max'] = int(options['max'])
 
+        if not options['date']:
+            options['date'] = date.today()
+        else:
+            options['date'] = dt.strptime(options['date'], '%Y-%m-%d')
+
         if options['profile']:
             profiler = Profile()
             profiler.runcall(self.run, options)
@@ -123,19 +136,25 @@ class Command(BaseCommand):
                     'rna_type': rna.get_rna_type(recompute=True),
                     'description': rna.get_description(recompute=True),
                     'rfam_problems': rna.get_rfam_status().as_json(),
+                    'update_date': options['date'],
                 })
 
             for taxid in set(rna.xrefs.values_list('taxid', flat=True)):
                 _id = '{0}_{1}'.format(rna.upi, taxid)
+                rfam_status = rna.get_rfam_status(taxid=taxid).as_json()
                 RnaPrecomputed.objects.update_or_create(
                     id=_id,
                     defaults={
                         'upi_id': rna.upi,
                         'taxid': taxid,
-                        'rna_type': rna.get_rna_type(taxid=taxid, recompute=True),
+                        'rna_type': rna.get_rna_type(
+                            taxid=taxid,
+                            recompute=True
+                        ),
                         'description': rna.get_description(
                             recompute=True,
                             taxid=taxid,
                         ),
-                        'rfam_problems': rna.get_rfam_status(taxid=taxid).as_json(),
+                        'rfam_problems': rfam_status,
+                        'update_date': options['date'],
                     })
