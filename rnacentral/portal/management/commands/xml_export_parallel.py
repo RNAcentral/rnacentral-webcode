@@ -12,6 +12,7 @@ limitations under the License.
 """
 
 from django.core.management.base import BaseCommand, CommandError
+from django.db.models import Max
 from optparse import make_option
 from portal.models import Rna
 
@@ -49,12 +50,12 @@ class Command(BaseCommand):
         if not options['destination']:
             raise CommandError('Please specify --destination')
 
-        total = Rna.objects.count()
-        step = pow(10,5) * 2
+        total = Rna.objects.all().aggregate(Max('id'))['id__max']
+        step = pow(10, 5) * 2
         start = 0
         stop = 0
 
-        for i in xrange(step,total,step):
+        for i in xrange(step, total, step):
             start = stop
             stop = min(total, i)
             print get_lsf_command(start, stop, options['destination'])
