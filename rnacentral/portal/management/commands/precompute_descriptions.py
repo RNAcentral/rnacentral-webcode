@@ -95,7 +95,7 @@ class Command(BaseCommand):
             with open(options['upi_file'], 'rb') as raw:
                 options['upis'] = [line.strip() for line in raw]
         else:
-            if not options['min']:
+            if not options['min'] and options['min'] != 0:
                 raise CommandError('Please specify --min')
 
             if not options['max']:
