@@ -463,7 +463,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': '',
-        'version': '',
+        'version': '13.5',
     },
     {
         'name': 'LncBase',
