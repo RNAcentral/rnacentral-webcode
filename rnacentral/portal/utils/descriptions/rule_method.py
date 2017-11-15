@@ -32,7 +32,7 @@ CHOICES = {
     'miRNA': ['miRBase', 'RefSeq', 'GENCODE', 'HGNC', 'Rfam', 'Ensembl', 'ENA'],
     'precursor_RNA': ['miRBase', 'RefSeq', 'Rfam', 'GENCODE', 'HGNC', 'Ensembl', 'ENA'],
     'ribozyme': ['RefSeq', 'Rfam', 'PDBe', 'Ensembl', 'ENA'],
-    'hammerhead_ribozyme': ['RefSeq', 'Rfam', 'PDBe','Ensembl',  'ENA'],
+    'hammerhead_ribozyme': ['RefSeq', 'Rfam', 'PDBe', 'Ensembl',  'ENA'],
     'autocatalytically_spliced_intron': ['RefSeq', 'Rfam', 'PDBe', 'Ensembl', 'ENA'],
 
     '__generic__': [
@@ -43,6 +43,7 @@ CHOICES = {
         'Ensembl',
         'TAIR',
         'FlyBase',
+        'dictBase',
         'lncRNAdb',
         'PDBe',
         'RefSeq',
@@ -351,7 +352,7 @@ def remove_extra_description_terms(description):
     in the name of tmRNA's. This corrects those issues.
     """
 
-    description = re.sub(r'\(\s*non-protein\s+coding\s*\)', '', description)
+    description = re.sub(r'\(\s*non\s*-\s*protein\s+coding\s*\)', '', description)
     description = re.sub(r'\s\s+', ' ', description)
     description = re.sub(r'\.$', '', description)
     description = re.sub(
