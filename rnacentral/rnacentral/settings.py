@@ -137,7 +137,7 @@ TEMPLATES = [{
         # Always use forward slashes, even on Windows.
         # Don't forget to use absolute paths, not relative paths.
     ),
-    'APP_DIRS': True,  # look for templates in app subdirectories
+    # 'APP_DIRS': True,  # look for templates in app subdirectories
     'OPTIONS': {
         'context_processors': [
             "django.contrib.auth.context_processors.auth",
@@ -150,11 +150,11 @@ TEMPLATES = [{
             "django.template.context_processors.request",
             "portal.context_processors.baseurl",
         ],
-        # 'loaders': [
-        #     # List of callables that know how to import templates from various sources.
-        #     'django.template.loaders.filesystem.Loader',
-        #     'django.template.loaders.app_directories.Loader',
-        # ],
+        'loaders': [
+            # List of callables that know how to import templates from various sources.
+            'django.template.loaders.filesystem.Loader',
+            'django.template.loaders.app_directories.Loader',
+        ],
         'debug': DEBUG
     }
 }]

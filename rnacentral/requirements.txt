@@ -1,6 +1,6 @@
 BeautifulSoup==3.2.1
-Django==1.10.8
-PyMySQL==0.6.6
+Django==1.11.7
+PyMySQL
 PyYAML==3.10
 astroid==1.0.1
 attrs==17.2.0
