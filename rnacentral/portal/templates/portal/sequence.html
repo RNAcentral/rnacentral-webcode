@@ -90,7 +90,7 @@ limitations under the License.
                           {{ rna.get_rfam_hits|length|intcomma }} total
                         {% endif %}
                       {% endif %}
-                      <a href="{% url 'help-rfam-scan' %}" uib-tooltip="Inferred from infernal scan. Click for details." style="color:inherit;">
+                      <a href="{% url 'help-rfam-annotations' %}" uib-tooltip="Learn more about Rfam annotations in RNAcentral &rarr;" style="color:inherit;">
                         <i class="fa fa-question-circle" aria-hidden="true"></i>
                       </a>
                     </small>
@@ -191,7 +191,7 @@ limitations under the License.
                     {% endfor %}
                     </ul>
                     {% else %}
-                      <p>The sequence did not match any Rfam families. <a href="{% url 'help-rfam-scan' %}">Learn more &rarr;</a></p>
+                      <p>The sequence did not match any Rfam families. <a href="{% url 'help-rfam-annotations' %}">Learn more &rarr;</a></p>
                     {% endif %}
                   {% endwith %}
                 </div>
