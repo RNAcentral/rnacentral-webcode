@@ -1347,6 +1347,11 @@ textarea {
   background-color: #777777;
 }
 
+.rfam-problem-tooltip {
+  font-size: 13px;
+  white-space: nowrap;
+}
+
 /*------------------------------------------------------------------
 [5.16 Sequence page]
 */
