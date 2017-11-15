@@ -84,4 +84,10 @@ angular.module('rnacentralApp', [
     }).on('click', 'a[href^="https://"]:not([href^="https://rnacentral.org"])', function (event) {
         trackOutboundLink($(event.target).attr('href'));
     });
+}])
+.run(['$anchorScroll', function ($anchorScroll) {
+    /**
+     * This will make anchorScroll scroll to the div minus 50px
+     */
+   $anchorScroll.yOffset = 50;
 }]);

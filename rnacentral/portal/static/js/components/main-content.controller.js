@@ -8,7 +8,7 @@ var MainContent = function($scope, $anchorScroll, $location, search) {
      */
     $scope.scrollTo = function(id) {
         $location.hash(id);
-        $anchorScroll();
+        $anchorScroll(id);
     };
 
     /**
