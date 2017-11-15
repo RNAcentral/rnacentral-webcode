@@ -69,7 +69,7 @@ angular.module('rnacentralApp', [
     var trackOutboundLink = function(url) {
        ga('send', 'event', 'outbound', 'click', url, {
          'transport': 'beacon',
-         'hitCallback': function(){document.location = url;}
+         // 'hitCallback': function(){ document.location = url; } - use this callback, if you decide to prevent default link bevaviour
        });
     };
 
