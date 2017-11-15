@@ -19,9 +19,9 @@ When an RNAcentral sequence matches only a **part of the Rfam covariance model**
 
 These sequences can be browsed by searching for [`rfam_problems:"incomplete_sequence"`](/search?q=rfam_problems:%22incomplete_sequence%22).
 
-### 2. Bacterial contamination
+### 2. Potential contamination
 
-When a **Eukaryotic sequence** matches an Rfam family that is only found in **Bacteria**, this could indicate bacterial contamination or taxonomic misclassification.
+For example, when a **Eukaryotic sequence** matches an Rfam family that is only found in **Bacteria**, this could indicate bacterial contamination or taxonomic misclassification.
 
 #### Examples
 
