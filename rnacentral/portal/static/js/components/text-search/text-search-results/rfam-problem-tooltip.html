@@ -1,6 +1,6 @@
 <div class="rfam-problem-tooltip">
   <span ng-repeat="rfam_problem in rna.fields.rfam_problems | plaintext">
-    <p ng-if="rfam_problem === 'domain_conflict'">This Eukaryotic sequence matches a Bacterial Rfam family</p>
+    <p ng-if="rfam_problem === 'possible_contamination'">This Eukaryotic sequence matches a Bacterial Rfam family</p>
     <p ng-if="rfam_problem === 'incomplete_sequence'">This sequence matches only part of Rfam model</p>
     <p ng-if="rfam_problem === 'missing_match'">This sequence does not match the expected Rfam family</p>
   </span>

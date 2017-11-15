@@ -28,7 +28,7 @@ When a **Eukaryotic sequence** matches an Rfam family that is only found in **Ba
 * [Bacterial GcvB RNA detected in mouse](/rna/URS00002EF971/10090)
 * [Human lncRNA matching Bacterial LSU model](rna/URS000013EF30/10090)
 
-Sequences of this type can be browsed with [`rfam_problems:"domain_conflict"`](/search?q=rfam_problems:%22domain_conflict%22).
+Sequences of this type can be browsed with [`rfam_problems:"possible_contamination"`](/search?q=rfam_problems:%22possible_contamination%22).
 
 ### 3. Missing Rfam hits
 
