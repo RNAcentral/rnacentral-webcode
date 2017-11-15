@@ -21,6 +21,8 @@ from django_performance_testing.timing import TimeLimit
 
 from portal.models import Rna
 
+from portal.utils.descriptions import rule_method as rm
+
 __doc__ = """
 To run these tests you can simply do:
 
@@ -180,6 +182,13 @@ class MouseDescriptionTests(GenericDescriptionTest):
             'URS00004E52D3',
             taxid=10090)
 
+    def test_it_will_strip_trailing_terms_from_description(self):
+        self.assertDescriptionIs(
+            'Mus musculus predicted gene 11532 (Gm11532)',
+            'URS00008E3A1B',
+            taxid=10090,
+        )
+
     def test_it_likes_rfam_over_noncode(self):
         self.assertDescriptionIs(
             'Mus musculus small Cajal body-specific RNA 2',
@@ -268,3 +277,44 @@ class LargeDataTests(GenericDescriptionTest):
         sequence with many ~10k xrefs
         """
         self.assertDescriptionIs('tRNA from 3413 species', 'URS0000181AEC')
+
+
+def test_can_strip_trailing_dots():
+    name = 'Mus musculus predicted gene 11532 (Gm11532), long non-coding RNA.'
+    ans = 'Mus musculus predicted gene 11532 (Gm11532), long non-coding RNA'
+    assert rm.remove_extra_description_terms(name) == ans
+
+
+def test_can_strip_extra_lnc_rna():
+    name = 'Mus musculus predicted gene 11532 (Gm11532), long non-coding RNA'
+    ans = 'Mus musculus predicted gene 11532 (Gm11532)'
+    assert rm.trim_trailing_rna_type('lncRNA', name) == ans
+
+
+def test_can_strip_extra_lnc_rna_when_antisense():
+    name = 'Mus musculus predicted gene 11532 (Gm11532), long non-coding RNA'
+    ans = 'Mus musculus predicted gene 11532 (Gm11532)'
+    assert rm.trim_trailing_rna_type('antisense', name) == ans
+
+
+def test_will_not_strip_if_rna_type_differs():
+    name = 'Mus musculus predicted gene 11532 (Gm11532), long non-coding RNA'
+    assert rm.trim_trailing_rna_type('SRP_RNA', name) == name
+
+
+def test_will_strip_non_coding_term_with_whitespace():
+    name = 'Mus musculus myocardial infarction associated transcript (non- protein coding)'
+    ans = 'Mus musculus myocardial infarction associated transcript'
+    assert rm.remove_extra_description_terms(name) == ans
+
+
+def test_will_strip_non_coding_term():
+    name = 'Mus musculus myocardial infarction associated transcript (non-protein coding)'
+    ans = 'Mus musculus myocardial infarction associated transcript'
+    assert rm.remove_extra_description_terms(name) == ans
+
+
+def test_will_correct_tmrna():
+    name = 'Homo sapiens (human) transfer-messenger mRNA Esche_coli_K12'
+    ans = 'Homo sapiens (human) transfer-messenger RNA Esche_coli_K12'
+    assert rm.remove_extra_description_terms(name) == ans

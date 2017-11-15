@@ -336,11 +336,11 @@ def trim_trailing_rna_type(rna_type, description):
     """
 
     trailing = [rna_type]
-    if rna_type == 'lncRNA':
+    if rna_type == 'lncRNA' or 'antisense' in rna_type:
         trailing.append('long non-coding RNA')
 
     for value in trailing:
-        pattern = '[, ]*%s$' % value
+        pattern = r'[, ]*%s$' % value
         description = re.sub(pattern, '', description, re.IGNORECASE)
     return description
 
@@ -352,15 +352,19 @@ def remove_extra_description_terms(description):
     in the name of tmRNA's. This corrects those issues.
     """
 
-    description = re.sub(r'\(\s*non\s*-\s*protein\s+coding\s*\)', '', description)
-    description = re.sub(r'\s\s+', ' ', description)
-    description = re.sub(r'\.$', '', description)
+    description = re.sub(
+        r'\(\s*non\s*-\s*protein\s+coding\s*\)',
+        '',
+        description
+    )
     description = re.sub(
         r'transfer-messenger mRNA',
         'transfer-messenger RNA',
         description,
         re.IGNORECASE
     )
+    description = re.sub(r'\s\s+', ' ', description)
+    description = re.sub(r'\.?\s*$', '', description)
     return description
 
 
