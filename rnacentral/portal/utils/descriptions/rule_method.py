@@ -47,6 +47,7 @@ CHOICES = {
         'lncRNAdb',
         'PDBe',
         'RefSeq',
+        'gtRNAdb',
         'Rfam',
         'VEGA',
         'SILVA',
