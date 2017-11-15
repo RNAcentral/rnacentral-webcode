@@ -69,7 +69,6 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
     """Serializer class for individual cross-references."""
     id = serializers.CharField(source='accession')
     citations = serializers.HyperlinkedIdentityField(view_name='accession-citations')
-    rna_type = serializers.Field(source='get_rna_type')
     expert_db_url = serializers.Field(source='get_expert_db_external_url')
 
     # database-specific fields
@@ -88,7 +87,7 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'url', 'id', 'parent_ac', 'seq_version', 'feature_start', 'feature_end', 'feature_name',
             'description', 'external_id', 'optional_id', 'locus_tag',
-            'species', 'rna_type', 'gene', 'product', 'organelle',
+            'species', 'inference', 'rna_type', 'gene', 'product', 'organelle',
             'citations', 'expert_db_url', 'standard_name',
             'pdb_entity_id', 'pdb_structured_note', 'hgnc_enembl_id', 'hgnc_id',
             'biotype', 'rna_type', 'srpdb_id', 'ena_url',
