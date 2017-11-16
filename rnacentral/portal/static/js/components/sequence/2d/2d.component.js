@@ -57,7 +57,7 @@ var secondary_structures = {
               '    <h2>Secondary structure</h2>'+
               '    <div class="col-md-6" ng-if="$ctrl.numStructures > 0">' +
               '      <p>' +
-              '        Predicted using tRNAScan-SE (source: <a href="{{ $ctrl.getSourceUrl() }}">GtRNAdb</a>).' +
+              '        Predicted using tRNAScan-SE 2.0 (source: <a href="{{ $ctrl.getSourceUrl() }}">GtRNAdb</a>).' +
               '      </p>' +
               '    </div>' +
               '    <div class="col-md-6" ng-if="$ctrl.numStructures === 0">' +
