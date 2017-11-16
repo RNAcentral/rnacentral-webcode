@@ -339,6 +339,6 @@ COMPRESS_CSS_FILTERS = [
 TEST_RUNNER = 'portal.tests.runner.FixedRunner'
 
 try:
-    from local_settings import *  # pylint: disable=W0401, W0614
+    from .local_settings import *  # pylint: disable=W0401, W0614
 except ImportError:
     pass
