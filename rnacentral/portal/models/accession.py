@@ -176,6 +176,7 @@ class Accession(models.Model):
             'ENSEMBL': 'http://www.ensembl.org/{species}/Transcript/Summary?t={id}',
             'FLYBASE': 'http://flybase.org/reports/{id}.html',
             'MGI': 'http://www.informatics.jax.org/marker/{id}',
+            'GTRNADB': '',
         }
         if self.database in urls.keys():
             if self.database == 'GTRNADB':
