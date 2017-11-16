@@ -335,6 +335,12 @@ expert_dbs = [
         ],
         'references': [
             {
+                'title': 'GtRNAdb 2.0: an expanded database of transfer RNA genes identified in complete and draft genomes',
+                'authors': 'Chan P.P., Lowe T.M.',
+                'journal': 'Nucleic Acids Res. 2016 Jan 4;44(D1):D184-9',
+                'pubmed_id': 26673694,
+            },
+            {
                 'title': 'GtRNAdb: a database of transfer RNA genes detected in genomic sequence',
                 'authors': 'Chan P.P., Lowe T.M.',
                 'journal': 'Nucleic Acids Res. 37(Database issue):D93-D97(2009)',
