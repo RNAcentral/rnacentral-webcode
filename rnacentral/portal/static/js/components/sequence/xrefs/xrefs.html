@@ -260,8 +260,12 @@
             <span ng-if="xref.accession.feature_start < xref.accession.feature_end">
               nucleotides ({{ xref.accession.feature_start | number }} - {{ xref.accession.feature_end | number }})
             </span>
-            <span ng-if="!xref.accession.feature_start < xref.accession.feature_end">
+            <span ng-if="xref.accession.feature_start >= xref.accession.feature_end">
               nucleotides ({{ xref.accession.feature_end | number }} - {{ xref.accession.feature_start | number }})
+            </span>
+            <span ng-if="$ctrl.taxid">
+              <br>
+              Greengenes classification: <em>{{ xref.accession.inference }}</em>
             </span>
           </span>
 
