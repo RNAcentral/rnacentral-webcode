@@ -27,10 +27,10 @@ from django.http import HttpResponse
 import django_rq
 from rq import get_current_job
 
-from nhmmer_search import NhmmerSearch
-from nhmmer_parse import NhmmerResultsParser
-from models import Results, Query
-from settings import EXPIRATION, MAX_RUN_TIME, NHMMER_SERVER
+from .nhmmer_search import NhmmerSearch
+from .nhmmer_parse import NhmmerResultsParser
+from .models import Results, Query
+from .settings import EXPIRATION, MAX_RUN_TIME, NHMMER_SERVER
 
 
 def nhmmer_proxy(request):

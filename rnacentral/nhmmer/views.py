@@ -18,10 +18,10 @@ from django.db import connections
 from django.shortcuts import get_object_or_404, render_to_response
 from django.views.decorators.cache import never_cache
 
-from settings import MIN_LENGTH, MAX_LENGTH, RQDASHBOARD
-from messages import messages
-from utils import get_job, enqueue_job, nhmmer_proxy, kill_nhmmer_job
-from models import Results, Query
+from .settings import MIN_LENGTH, MAX_LENGTH, RQDASHBOARD
+from .messages import messages
+from .utils import get_job, enqueue_job, nhmmer_proxy, kill_nhmmer_job
+from .models import Results, Query
 
 from rest_framework import generics, serializers, filters
 from rest_framework.permissions import AllowAny

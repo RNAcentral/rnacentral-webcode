@@ -33,7 +33,7 @@ from rest_framework import renderers
 
 from apiv1.serializers import RnaFlatSerializer
 from portal.models import Rna
-from settings import EXPIRATION, MAX_RUN_TIME, ESLSFETCH, FASTA_DB, MAX_OUTPUT,\
+from .settings import EXPIRATION, MAX_RUN_TIME, ESLSFETCH, FASTA_DB, MAX_OUTPUT,\
                      EXPORT_RESULTS_DIR
 
 

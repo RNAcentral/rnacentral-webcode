@@ -32,8 +32,8 @@ import unittest
 from random import randint
 from django.core.urlresolvers import reverse
 
-from messages import messages
-from settings import MAX_LENGTH
+from .messages import messages
+from .settings import MAX_LENGTH
 
 
 class NhmmerTestCase(unittest.TestCase):

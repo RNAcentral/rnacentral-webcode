@@ -13,41 +13,41 @@ limitations under the License.
 
 from django.conf.urls import url
 from django.views.generic.base import TemplateView
-from settings import MIN_LENGTH, MAX_LENGTH
 
-import views
+from .settings import MIN_LENGTH, MAX_LENGTH
+from .views import *
 
 
 # nhmmer sequence search urls
 urlpatterns = [
     # launch nhmmer search
     url(r'^submit-query/?$',
-        views.submit_job,
+        submit_job,
         name='nhmmer-submit-job'),
 
     # cancel search results
     url(r'^cancel-job/?$',
-        views.cancel_job,
+        cancel_job,
         name='nhmmer-cancel-job'),
 
     # get nhmmer search job status
     url(r'^job-status/?$',
-        views.get_status,
+        get_status,
         name='nhmmer-job-status'),
 
     # get nhmmer results
     url(r'^get-results/?$',
-        views.ResultsView.as_view(),
+        ResultsView.as_view(),
         name='nhmmer-job-results'),
 
     # get query details
     url(r'^query-info/?$',
-        views.QueryView.as_view(),
+        QueryView.as_view(),
         name='nhmmer-query-info'),
 
     # dashboard
     url(r'^dashboard/?$',
-        views.dashboard_view,
+        dashboard_view,
         name='nhmmer-dashboard'),
 ]
 

@@ -22,16 +22,15 @@ from django.db import models
 from django.db.models import Prefetch, Min, Max, Q
 from django.utils.functional import cached_property
 
-from database import Database
-from genomic_coordinates import GenomicCoordinates
-from modification import Modification
-from rna_precomputed import RnaPrecomputed
-from reference import Reference
-from xref import Xref
+from .database import Database
+from .genomic_coordinates import GenomicCoordinates
+from .modification import Modification
+from .rna_precomputed import RnaPrecomputed
+from .reference import Reference
+from .xref import Xref
 from .rfam import RfamHit, RfamAnalyzedSequences
 from .accession import Accession
-
-from formatters import Gff3Formatter, GffFormatter, _xref_to_bed_format
+from .formatters import Gff3Formatter, GffFormatter, _xref_to_bed_format
 from portal.utils import descriptions as desc
 from portal.rfam_matches import check_issues
 

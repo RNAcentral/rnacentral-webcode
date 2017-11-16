@@ -250,7 +250,7 @@ def group_consecutives(data, min_size=2):
     Modified from the python itertools docs.
     """
 
-    for _, group in it.groupby(enumerate(data), lambda (i, x): i - x):
+    for _, group in it.groupby(enumerate(data), lambda ix: ix[0] - ix[1]):
         key = op.itemgetter(1)
         group = [key(g) for g in group]
         if len(group) > 1:

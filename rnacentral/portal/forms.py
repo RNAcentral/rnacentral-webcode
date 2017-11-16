@@ -11,8 +11,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from django import forms
+from __future__ import print_function
 import smtplib
+
+from django import forms
+
 from rnacentral.settings import ADMINS
 
 
@@ -21,10 +24,10 @@ class ContactForm(forms.Form):
     message = forms.CharField()
     sender = forms.EmailField()
     cc_myself = forms.BooleanField(required=False)
-    phone = forms.CharField(required=False) # honeypot anti-spam hidden field
+    phone = forms.CharField(required=False)  # honeypot anti-spam hidden field
 
     def send_email(self):
-        print ADMINS[0][1]
+        print(ADMINS[0][1])
         if self.cleaned_data['phone']:
             # this field would only be filled out by a spam bot
             return False
