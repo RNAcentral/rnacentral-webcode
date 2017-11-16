@@ -11,6 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import six
+
 from django.core.management.base import BaseCommand, CommandError
 from optparse import make_option
 from portal.models import Rna
@@ -54,15 +56,15 @@ class Command(BaseCommand):
         start = 0
         stop = 0
 
-        for i in xrange(step,total,step):
+        for i in six.moves.xrange(step,total,step):
             start = stop
             stop = min(total, i)
-            print get_lsf_command(start, stop, options['destination'])
+            print(get_lsf_command(start, stop, options['destination']))
 
         if stop < total:
             start = stop
             stop = total
-            print get_lsf_command(start, stop, options['destination'])
+            print(get_lsf_command(start, stop, options['destination']))
 
 
 def get_lsf_command(start, stop, destination):

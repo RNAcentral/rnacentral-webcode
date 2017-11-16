@@ -10,6 +10,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+import six
 
 import datetime
 import django_rq
@@ -188,7 +189,7 @@ def get_job(job_id):
                         (None for localhost)
     """
     rq_queues = getattr(settings, 'RQ_QUEUES', [])
-    for queue_id, params in rq_queues.iteritems():
+    for queue_id, params in six.iteritems(rq_queues):
         queue = django_rq.get_queue(queue_id)
         job = queue.fetch_job(job_id)
         if job:

@@ -11,6 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from __future__ import print_function
+
 import json
 import hashlib
 import re
@@ -84,20 +86,20 @@ class HGNCMapper():
                     if rnacentral_id:
                         match_sequence += 1
             if rnacentral_id:
-                print '%s\t%s\t%s' % (rnacentral_id, entry['symbol'], entry['name'])
+                print('%s\t%s\t%s' % (rnacentral_id, entry['symbol'], entry['name']))
                 entry['rnacentral_id'] = rnacentral_id
                 found += 1
             else:
-                print 'No match\t%s\t%s\t%s' % (entry['name'], entry['symbol'], entry['symbol'])
+                print('No match\t%s\t%s\t%s' % (entry['name'], entry['symbol'], entry['symbol']))
                 entry['rnacentral_id'] = None
                 no_match += 1
             self.hgnc_with_rnacentral_ids.append(entry)
 
-        print '%i matches found' % found
-        print '%i RefSeq matches' % match_refseq
-        print '%i GtRNAdb matches' % match_gtrnadb
-        print '%i sequence matches' % match_sequence
-        print '%i no match' % no_match
+        print('%i matches found' % found)
+        print('%i RefSeq matches' % match_refseq)
+        print('%i GtRNAdb matches' % match_gtrnadb)
+        print('%i sequence matches' % match_sequence)
+        print('%i no match' % no_match)
 
     def get_sequence_fasta(self, ensembl_id):
         """
@@ -197,12 +199,12 @@ class HGNCMapper():
         """
         Main import function.
         """
-        print 'Mapping HGNC ncRNAs to RNAcentral identifiers'
+        print('Mapping HGNC ncRNAs to RNAcentral identifiers')
         self.get_hgnc_data()
         self.find_rnacentral_matches()
         self.export_hgnc_rnacentral_mapping()
-        print '%i entries' % len(self.data)
-        print 'Done'
+        print('%i entries' % len(self.data))
+        print('Done')
 
 
 class Command(BaseCommand):

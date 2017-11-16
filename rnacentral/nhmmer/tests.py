@@ -21,6 +21,9 @@ python tests.py
 python tests.py --base_url http://test.rnacentral.org/
 """
 
+from __future__ import print_function
+import six
+
 import argparse
 import django
 import os
@@ -240,7 +243,7 @@ class RandomSearchesTests(NhmmerTestCase):
         """
         Run tests against a random entry.
         """
-        for _ in xrange(self.num_tests):
+        for _ in six.moves.xrange(self.num_tests):
             query = self.get_random_query()
             self._check_results(query)
 
@@ -282,25 +285,25 @@ class EvalueRangeTests(NhmmerTestCase):
         and record the E-values of the best hits.
         """
         # test sequence ranges from 20 to 110 with step 10
-        ranges = range(20, 110, 10)
+        ranges = six.moves.range(20, 110, 10)
         # for every sequence length
         for x in ranges:
-            print 'Length: %i' % x
+            print('Length: %i' % x)
             # get the total number of sequences of that length
             url = self.base_url + reverse('rna-sequences')
             request = requests.get(url + '?length=%i' % x)
             total = request.json()['count']
             # get random URS ids
-            for i in xrange(5):
+            for i in six.moves.xrange(5):
                 rna_url = url + '?length=%i&page_size=1&page=%i' % (x, randint(1, total))
                 request = requests.get(rna_url)
                 urs = request.json()['results'][0]['rnacentral_id']
                 sequence = request.json()['results'][0]['sequence']
-                print urs
+                print(urs)
                 request = self._get_results(sequence)
-                print 'hits: %i' % request.json()['count']
+                print('hits: %i' % request.json()['count'])
                 if request.json()['count'] > 0:
-                    print 'Min e_value: ' + request.json()['results'][0]['e_value']
+                    print('Min e_value: ' + request.json()['results'][0]['e_value'])
 
 
 def setup_django_environment():

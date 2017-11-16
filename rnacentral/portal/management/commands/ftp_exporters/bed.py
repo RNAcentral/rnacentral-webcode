@@ -11,6 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import six
+
 from portal.management.commands.ftp_exporters.ftp_base import FtpBase
 from portal.models import Xref
 import csv
@@ -163,7 +165,7 @@ class BedExporter(FtpBase):
         self.names = self.name_templates.copy()
         if genome['assembly_ucsc']:
             self.names['chrom_sizes'] = self.fetch_chromosome_sizes(self.genome['assembly_ucsc'])
-        for key, value in self.names.iteritems():
+        for key, value in six.iteritems(self.names):
             self.names[key] = value.format(**self.genome)
 
         if genome['assembly_ucsc']:

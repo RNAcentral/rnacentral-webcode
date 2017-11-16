@@ -11,6 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from __future__ import print_function
+
 import re
 
 from django.db import transaction
@@ -53,7 +55,7 @@ def run():
             xrefs = Xref.objects.filter(accession__parent_ac=parent_accession, accession__locus_tag=locus_tag, deleted='N').all()
             if len(xrefs) == 0:
                 not_found += 1
-                print line
+                print(line)
                 continue
 
             for xref in xrefs:
@@ -64,9 +66,9 @@ def run():
                     match = re.findall(regex, xref.accession.note)
                     if match:
                         locus_tag_versioned = match[0].replace('\\', '_')
-                        print locus_tag_versioned
+                        print(locus_tag_versioned)
                     else:
-                        print xref.accession.note
+                        print(xref.accession.note)
                         import pdb
                         pdb.set_trace()
                 else:
@@ -74,7 +76,7 @@ def run():
 
                 accession = xref.accession
                 ena_id = xref.accession.accession
-                print 'Found xref ' + ena_id
+                print('Found xref ' + ena_id)
 
                 if locus_tag_versioned:
                     new_id = locus_tag_versioned
@@ -119,8 +121,8 @@ def run():
 
             found += 1
 
-        print 'Found %i' % found
-        print 'Not found %i' % not_found
+        print('Found %i' % found)
+        print('Not found %i' % not_found)
 
 
 class Command(BaseCommand):
