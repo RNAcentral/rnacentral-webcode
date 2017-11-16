@@ -43,6 +43,14 @@ The majority of RNAcentral sequences annotated as rRNA or tRNA match the corresp
 
 Browse all sequences with missing matches by searching for [`rfam_problems:"missing_match"`](/search?q=rfam_problems:%22missing_match%22).
 
-## Questions or feedback?
+## Why some sequences do not match any Rfam families
 
-We plan to expand the number of quality controls using Rfam classification. If you have any suggestions or questions, do not hesitate to get in [contact](/contact).
+There are several possible reasons:
+
+* not all RNA types are represented in Rfam
+
+  For example, **piRNAs or mature miRNAs** are too short to be accurately modelled in Rfam. Conversely, **lncRNAs** tend to be too long and poorly conserved, although Rfam includes several conserved [lncRNA domains](http://rfam.org/search?q=entry_type:%22Family%22%20AND%20rna_type:%22lncRNA%22).
+* this family may not yet exist in Rfam
+* Rfam model needs to be updated to include this sequence
+
+If you would like to suggest a new Rfam family or report an error, please get in touch using the **Feedback** button found at the top right of every RNAcentral page.
