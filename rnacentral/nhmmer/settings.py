@@ -18,10 +18,10 @@ MIN_LENGTH = 10
 MAX_LENGTH = 10000
 
 # Redis results expiration time
-EXPIRATION = 60*60*24*7 # seconds
+EXPIRATION = 60*60*24*7  # seconds
 
 # maximum time to run nhmmer
-MAX_RUN_TIME = 60*60 # seconds
+MAX_RUN_TIME = 60*60  # seconds
 
 # full path to query files
 QUERY_DIR = ''
@@ -42,6 +42,6 @@ NHMMER_SERVER = ''
 RQDASHBOARD = ''
 
 try:
-   from .local_settings import *
+    from .local_settings import *
 except ImportError as e:
-   pass
+    pass
