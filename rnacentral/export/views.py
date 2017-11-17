@@ -10,6 +10,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+from __future__ import print_function
 import six
 
 import datetime
@@ -410,6 +411,7 @@ def submit_export_job(request):
                                  datetime.timedelta(seconds=EXPIRATION)
         job.save()
         return JsonResponse({'job_id': job.id})
-    except:
+    except Exception as e:
+        print(e)
         status = 500
         return JsonResponse(messages[status], status=status)
