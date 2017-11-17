@@ -247,9 +247,9 @@ REST_FRAMEWORK = {
     ],
 
     # API results pagination
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'rnacentral.utils.pagination.Pagination',
     'PAGE_SIZE': 10,
-    'PAGINATE_BY_PARAM': 'page_size',
+    # 'PAGINATE_BY_PARAM': 'page_size', - this parameter no longer works - we had to subclass pagination class instead
     'MAX_PAGINATE_BY': 1000000000000,
 
     # API throttling

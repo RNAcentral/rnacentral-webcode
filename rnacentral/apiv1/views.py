@@ -25,7 +25,6 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.permissions import AllowAny
-from rest_framework.pagination import PageNumberPagination
 from rest_framework.reverse import reverse
 from rest_framework_jsonp.renderers import JSONPRenderer
 from rest_framework_yaml.renderers import YAMLRenderer
@@ -39,6 +38,7 @@ from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, R
 from portal.models import Rna, Accession, Xref, Database, DatabaseStats
 from portal.config.genomes import genomes
 from portal.config.expert_databases import expert_dbs
+from rnacentral.utils.pagination import Pagination
 
 """
 Docstrings of the classes exposed in urlpatterns support markdown.
@@ -206,7 +206,7 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
     renderer_classes = (renderers.JSONRenderer, JSONPRenderer,
                         renderers.BrowsableAPIRenderer,
                         YAMLRenderer, RnaFastaRenderer)
-    pagination_class = PageNumberPagination
+    pagination_class = Pagination
 
     def list(self, request, *args, **kwargs):
         """
@@ -347,7 +347,7 @@ class XrefList(generics.ListAPIView):
     [API documentation](/api)
     """
     serializer_class = XrefSerializer
-    pagination_class = PageNumberPagination
+    pagination_class = Pagination
 
     def get_queryset(self):
         upi = self.kwargs['pk']
@@ -361,7 +361,7 @@ class XrefsSpeciesSpecificList(generics.ListAPIView):
     [API documentation](/api)
     """
     serializer_class = XrefSerializer
-    pagination_class = PageNumberPagination
+    pagination_class = Pagination
 
     def get_queryset(self):
         upi = self.kwargs['pk']
@@ -421,7 +421,7 @@ class RnaPublicationsView(generics.ListAPIView):
     # the above docstring appears on the API website
     permission_classes = (AllowAny, )
     serializer_class = RawPublicationSerializer
-    pagination_class = PageNumberPagination
+    pagination_class = Pagination
 
     def get_queryset(self):
         upi = self.kwargs['pk']
