@@ -102,7 +102,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
             placement: 'top',
             html: true,
             container: 'body',
-            viewport: '#rna-sequence',
+            viewport: '#rna-sequence'
         });
 
         // activate the first popover
@@ -110,30 +110,24 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     };
 
     // populate data for angular-genoverse instance
-    $scope.activateGenomeBrowser = function(start, end, strand, chromosome, species, description, label) {
-        $http.get(routes.genomesApi(), { cache: true }).then(  // if genomes've already been loaded, use cache
-            function(response) {
-                $scope.Genoverse = Genoverse;
-                $scope.genoverseUtils = new GenoverseUtils($scope);
+    $scope.activateGenomeBrowser = function(start, end, chr, genome) {
+        console.log(arguments);
+        $scope.Genoverse = Genoverse;
+        $scope.genoverseUtils = new GenoverseUtils($scope);
 
-                genomes = $scope.genomes = response.data;
+        // genome must be a reference to an object in genomes Array, not another object with same value
+        $scope.genome = genome;
 
-                // genome must be a reference to an object in genomes Array, not another object with same value
-                $scope.genome = $scope.genomes.filter(function(element) {
-                    return element.species.toLowerCase() == species.toLowerCase();
-                })[0];
+        $scope.exampleLocations = $scope.genoverseUtils.exampleLocations;
 
-                var length = end - start;
+        var length = end - start;
 
-                // add some padding to both sides of feature
-                $scope.start = start - Math.floor(length / 10) < 0 ? 1 : start - Math.floor(length / 10);
-                $scope.end = end + Math.floor(length/10) > $scope.chromosomeSize ? $scope.chromosomeSize : end + Math.floor(length/10);
-
-                $scope.chromosome = chromosome;
-                $scope.domain = $scope.genoverseUtils.getEnsemblSubdomainByDivision($scope.genome);
-            },
-            function(response) { console.log("Unable to download available genomes from server!"); return; }
-        );
+        // add some padding to both sides of feature
+        $scope.start = start - Math.floor(length / 10) < 0 ? 1 : start - Math.floor(length / 10);
+        $scope.end = end + Math.floor(length/10) > $scope.chromosomeSize ? $scope.chromosomeSize : end + Math.floor(length/10);
+        $scope.chr = chr;
+        $scope.genome = $filter('urlencodeSpecies')(genome);
+        $scope.domain = $scope.genoverseUtils.getEnsemblSubdomainByDivision($scope.genome, $scope.genoverseUtils.genomes);
     };
 
     activateCopyToClipboardButtons();
@@ -189,6 +183,6 @@ var sceWhitelist = function($sceDelegateProvider) {
 sceWhitelist.$inject = ['$sceDelegateProvider'];
 
 
-angular.module("rnaSequence", ['ngResource', 'ngAnimate', 'ngSanitize', 'ui.bootstrap'])
+angular.module("rnaSequence", ['ngResource', 'ngAnimate', 'ngSanitize', 'ui.bootstrap', 'Genoverse'])
     .config(sceWhitelist)
     .controller("rnaSequenceController", rnaSequenceController);
