@@ -265,7 +265,7 @@ class GenomeBrowserView(TemplateView):
             # if user tinkers with it, she won't shoot anyone but herself
 
             # find our genome in taxonomy, replace genome with a dict with taxonomy data
-            kwargs['genome'] = _get_taxonomy_info_by_genome_identifier(request.GET['species'])
+            kwargs['genome'] = request.GET['species']
             if kwargs['genome'] is None:
                 raise Http404
 
@@ -278,10 +278,11 @@ class GenomeBrowserView(TemplateView):
             kwargs['start'] = request.GET['start']
             kwargs['end'] = request.GET['end']
         else:
-            kwargs['genome'] = _get_taxonomy_info_by_genome_identifier('homo_sapiens')
-            kwargs['chromosome'] = kwargs['genome']['example_location']['chromosome']
-            kwargs['start'] = kwargs['genome']['example_location']['start']
-            kwargs['end'] = kwargs['genome']['example_location']['end']
+            genome_info = _get_taxonomy_info_by_genome_identifier('homo_sapiens')
+            kwargs['genome'] = 'homo_sapiens'
+            kwargs['chromosome'] = genome_info['example_location']['chromosome']
+            kwargs['start'] = genome_info['example_location']['start']
+            kwargs['end'] = genome_info['example_location']['end']
 
         response = super(GenomeBrowserView, self).get(request, *args, **kwargs)
         try:
