@@ -639,6 +639,7 @@ angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($
 
         // get genome object from Genomes
         var genomeObject = GenoverseUtils.prototype.getGenomeObject(genome, genomes);
+        if (!genomeObject) return null;
 
         if (genomeObject.division == 'Ensembl') {
             subdomain = 'ensembl.org';
