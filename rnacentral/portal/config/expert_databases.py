@@ -30,16 +30,10 @@ expert_dbs = [
         ],
         'references': [
             {
-                'title': 'Facing growth in the European Nucleotide Archive',
-                'authors': 'Cochrane G, Alako B, Amid C, Bower L, Cerdeno-Tarraga A, Cleland I, Gibson R, Goodgame N, Jang M, Kay S et al.',
-                'journal': 'Nucleic Acids Res. 2013 Jan;41(Database issue):D30-5',
-                'pubmed_id': 23203883,
-            },
-            {
-                'title': 'Assembly information services in the European Nucleotide Archive',
-                'authors': 'Pakseresht N, Alako B, Amid C, Cerdeno-Tarraga A, Cleland I, Gibson R, Goodgame N, Gur T, Jang M, Kay S et al.',
-                'journal': 'Nucleic Acids Res. 2014 Jan;42(Database issue):D38-43',
-                'pubmed_id': 24214989,
+                'title': 'The European Nucleotide Archive in 2017',
+                'authors': 'Silvester et al.',
+                'journal': 'Nucleic Acids Res. 2017',
+                'pubmed_id': 29140475,
             },
         ],
         'imported': True,
