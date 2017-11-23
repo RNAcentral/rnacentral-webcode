@@ -113,15 +113,10 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     $scope.activateGenomeBrowser = function(start, end, chr, genome) {
         $scope.Genoverse = Genoverse;
         $scope.genoverseUtils = new GenoverseUtils($scope);
-
-        // genome must be a reference to an object in genomes Array, not another object with same value
-        $scope.genome = genome;
-
         $scope.exampleLocations = $scope.genoverseUtils.exampleLocations;
 
-        var length = end - start;
-
         // add some padding to both sides of feature
+        var length = end - start;
         $scope.start = start - Math.floor(length / 10) < 0 ? 1 : start - Math.floor(length / 10);
         $scope.end = end + Math.floor(length/10) > $scope.chromosomeSize ? $scope.chromosomeSize : end + Math.floor(length/10);
         $scope.chr = chr;
