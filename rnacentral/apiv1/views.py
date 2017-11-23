@@ -10,33 +10,31 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
 import re
-import django_filters
 import warnings
 from itertools import chain
 
+import django_filters
 from django.core.paginator import Paginator
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework import renderers
 from rest_framework.mixins import RetrieveModelMixin, ListModelMixin
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
-from rest_framework.permissions import AllowAny
-from rest_framework.reverse import reverse
-
-from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, PaginatedXrefSerializer, \
-                              RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
-                              RnaSpeciesSpecificSerializer, RnaListSerializer, ExpertDatabaseStatsSerializer, \
-                              RawPublicationSerializer, PaginatedRawPublicationSerializer, RnaSecondaryStructureSerializer
 
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
-from portal.models import Rna, Accession, Xref, Database, DatabaseStats
-from portal.config.genomes import genomes
+from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, PaginatedXrefSerializer, \
+                              RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
+                              RnaSpeciesSpecificSerializer, ExpertDatabaseStatsSerializer, \
+    PaginatedRawPublicationSerializer, RnaSecondaryStructureSerializer
 from portal.config.expert_databases import expert_dbs
+from portal.config.genomes import genomes, url2db, SpeciesNotInGenomes, get_taxid_from_species
+from portal.models import Rna, Accession, Xref, Database, DatabaseStats
 
 """
 Docstrings of the classes exposed in urlpatterns support markdown.
@@ -53,26 +51,13 @@ def _get_xrefs_from_genomic_coordinates(species, chromosome, start, end):
             accession__coordinates__chromosome=chromosome,
             accession__coordinates__primary_start__gte=start,
             accession__coordinates__primary_end__lte=end,
-            accession__species=species.replace('_', ' ').capitalize(),
+            accession__species=url2db(species),
             deleted='N'
         ).all()
 
         return xrefs
-    except:
+    except Exception as e:
         return []
-
-
-class SpeciesNotInGenomes(Exception):
-    pass
-
-
-def _get_taxid_from_species(species):
-    species = species.replace('_', ' ').capitalize()
-    for genome in genomes:
-        if species == genome['species']:
-            return genome['taxid']
-
-    raise SpeciesNotInGenomes(species)
 
 
 class DasSources(APIView):
@@ -273,9 +258,9 @@ class GenomeAnnotations(APIView):
         xrefs = _get_xrefs_from_genomic_coordinates(species, chromosome, start, end)
 
         try:
-            taxid = _get_taxid_from_species(species)
+            taxid = get_taxid_from_species(species)
         except SpeciesNotInGenomes as e:
-            return Http404(e.message)
+            raise Http404(e.message)
 
         rnacentral_ids = []
         data = []
