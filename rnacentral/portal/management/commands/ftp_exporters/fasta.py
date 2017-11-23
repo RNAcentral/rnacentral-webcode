@@ -108,7 +108,7 @@ class FastaExporter(FtpBase):
                                                                  sequence=sequence,
                                                                  description=description)
                         self.filehandles['species_specific'].write(species_specific_fasta)
-        except psycopg2.Error, exc:
+        except psycopg2.Error as exc:
             self.log_database_error(exc)
             sys.exit(1)
 
@@ -146,7 +146,7 @@ class FastaExporter(FtpBase):
                               seq_long=result['seq_long'])
                     fasta = rna.get_sequence_fasta()
                     self.filehandles['seq_inactive'].write(fasta)
-        except psycopg2.Error, exc:
+        except psycopg2.Error as exc:
             self.log_database_error(exc)
             sys.exit(1)
 

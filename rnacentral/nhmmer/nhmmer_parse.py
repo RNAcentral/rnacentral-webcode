@@ -11,6 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from __future__ import print_function
 import re
 
 
@@ -232,8 +233,8 @@ if __name__ == "__main__":
     """
     import sys
     if len(sys.argv) < 2:
-        print 'Provide full path to the input file with nhmmer search results'
+        print('Provide full path to the input file with nhmmer search results')
         sys.exit(1)
     filename = sys.argv[1]
     for record in NhmmerResultsParser(filename=filename)():
-        print record
+        print(record)

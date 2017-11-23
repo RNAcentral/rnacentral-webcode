@@ -21,7 +21,6 @@ except ImportError:
 
 
 DEBUG = False
-TEMPLATE_DEBUG = DEBUG
 
 # project root directory
 PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # pylint: disable=C0301
@@ -115,12 +114,6 @@ STATICFILES_FINDERS = (
 # Provide an initial value so that the site is functional with default settings
 SECRET_KEY = 'override this in local_settings.py'
 
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
-
 MIDDLEWARE_CLASSES = (
     # gzip
     'django.middleware.gzip.GZipMiddleware',
@@ -137,17 +130,34 @@ MIDDLEWARE_CLASSES = (
     'maintenancemode.middleware.MaintenanceModeMiddleware',
 )
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
-    "django.core.context_processors.static",
-    "django.core.context_processors.tz",
-    "django.contrib.messages.context_processors.messages",
-    "django.core.context_processors.request",
-    "portal.context_processors.baseurl",
-)
+TEMPLATES = [{
+    'BACKEND': 'django.template.backends.django.DjangoTemplates',  # django or jinja
+    'DIRS': (
+        os.path.join(PROJECT_PATH, 'rnacentral', 'templates'),
+        # Always use forward slashes, even on Windows.
+        # Don't forget to use absolute paths, not relative paths.
+    ),
+    # 'APP_DIRS': True,  # look for templates in app subdirectories
+    'OPTIONS': {
+        'context_processors': [
+            "django.contrib.auth.context_processors.auth",
+            "django.template.context_processors.debug",
+            "django.template.context_processors.i18n",
+            "django.template.context_processors.media",
+            "django.template.context_processors.static",
+            "django.template.context_processors.tz",
+            "django.contrib.messages.context_processors.messages",
+            "django.template.context_processors.request",
+            "portal.context_processors.baseurl",
+        ],
+        'loaders': [
+            # List of callables that know how to import templates from various sources.
+            'django.template.loaders.filesystem.Loader',
+            'django.template.loaders.app_directories.Loader',
+        ],
+        'debug': DEBUG
+    }
+}]
 
 USE_ETAGS = True
 
@@ -157,12 +167,6 @@ ROOT_URLCONF = 'rnacentral.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'rnacentral.wsgi.application'
-
-TEMPLATE_DIRS = (
-    os.path.join(PROJECT_PATH, 'rnacentral', 'templates'),
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-)
 
 INSTALLED_APPS = (
     'django.contrib.admin',
@@ -178,6 +182,7 @@ INSTALLED_APPS = (
     'portal',
     'nhmmer',
     'apiv1',
+    'django_filters',  # required by DRF3.5+
     'rest_framework',
     'debug_toolbar',
     'compressor',
@@ -199,26 +204,26 @@ LOGGING = {
     'disable_existing_loggers': True,
     'formatters': {
         'standard': {
-            'format' : "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",  # pylint: disable=W0401, C0301
-            'datefmt' : "%d/%b/%Y %H:%M:%S"
+            'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",  # pylint: disable=W0401, C0301
+            'datefmt': "%d/%b/%Y %H:%M:%S"
         },
     },
     'handlers': {
         'null': {
-            'level':'DEBUG',
-            'class':'django.utils.log.NullHandler',
+            'level': 'DEBUG',
+            'class': 'logging.NullHandler',
         },
         'console': {
-            'level':'INFO',
-            'class':'logging.StreamHandler',  # writes to stderr
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',  # writes to stderr
             'formatter': 'standard'
         },
     },
     'loggers': {
         'django': {
-            'handlers':['console'],
+            'handlers': ['console'],
             'propagate': True,
-            'level':'WARN',
+            'level': 'WARN',
         },
         'django.db.backends': {
             'handlers': ['console'],
@@ -242,8 +247,9 @@ REST_FRAMEWORK = {
     ],
 
     # API results pagination
-    'PAGINATE_BY': 10,
-    'PAGINATE_BY_PARAM': 'page_size',
+    'DEFAULT_PAGINATION_CLASS': 'rnacentral.utils.pagination.Pagination',
+    'PAGE_SIZE': 10,
+    # 'PAGINATE_BY_PARAM': 'page_size', - this parameter no longer works - we had to subclass pagination class instead
     'MAX_PAGINATE_BY': 1000000000000,
 
     # API throttling
@@ -257,13 +263,13 @@ REST_FRAMEWORK = {
     },
 
     # Filtering
-    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',),
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
 
     # renderers
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
-        'rest_framework.renderers.JSONPRenderer',
-        'rest_framework.renderers.YAMLRenderer',
+        'rest_framework_jsonp.renderers.JSONPRenderer',
+        'rest_framework_yaml.renderers.YAMLRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',
     ),
 }
@@ -287,7 +293,7 @@ MAINTENANCE_MODE = False
 # Memcached caching for django-cache-machine
 CACHES = {
     'default': {
-        'BACKEND': 'caching.backends.memcached.MemcachedCache',
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
         'LOCATION': 'localhost:8052',
     },
     'sitemaps': {
@@ -333,6 +339,6 @@ COMPRESS_CSS_FILTERS = [
 TEST_RUNNER = 'portal.tests.runner.FixedRunner'
 
 try:
-    from local_settings import *  # pylint: disable=W0401, W0614
+    from .local_settings import *  # pylint: disable=W0401, W0614
 except ImportError:
     pass

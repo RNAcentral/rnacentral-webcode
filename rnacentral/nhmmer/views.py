@@ -18,10 +18,10 @@ from django.db import connections
 from django.shortcuts import get_object_or_404, render_to_response
 from django.views.decorators.cache import never_cache
 
-from settings import MIN_LENGTH, MAX_LENGTH, RQDASHBOARD
-from messages import messages
-from utils import get_job, enqueue_job, nhmmer_proxy, kill_nhmmer_job
-from models import Results, Query
+from .settings import MIN_LENGTH, MAX_LENGTH, RQDASHBOARD
+from .messages import messages
+from .utils import get_job, enqueue_job, nhmmer_proxy, kill_nhmmer_job
+from .models import Results, Query
 
 from rest_framework import generics, serializers, filters
 from rest_framework.permissions import AllowAny
@@ -187,16 +187,16 @@ class ResultsSerializer(serializers.ModelSerializer):
     listing nhmmer search results.
     """
     id = serializers.CharField(source='result_id')
-    rnacentral_id = serializers.CharField(source='rnacentral_id')
-    description = serializers.CharField(source='description')
-    bias = serializers.FloatField(source='bias')
-    target_length = serializers.IntegerField(source='target_length')
-    query_length = serializers.IntegerField(source='query_length')
-    alignment = serializers.CharField(source='alignment')
-    score = serializers.FloatField(source='score')
-    e_value = serializers.FloatField(source='e_value')
-    nts_count1 = serializers.IntegerField(source='nts_count1')
-    nts_count2 = serializers.IntegerField(source='nts_count2')
+    rnacentral_id = serializers.CharField()
+    description = serializers.CharField()
+    bias = serializers.FloatField()
+    target_length = serializers.IntegerField()
+    query_length = serializers.IntegerField()
+    alignment = serializers.CharField()
+    score = serializers.FloatField()
+    e_value = serializers.FloatField()
+    nts_count1 = serializers.IntegerField()
+    nts_count2 = serializers.IntegerField()
 
     class Meta:
         model = Results
@@ -224,7 +224,7 @@ class ResultsView(generics.ListAPIView):
         """
         Filter results by query id.
         """
-        query_id = self.request.QUERY_PARAMS.get('id', None)
+        query_id = self.request.query_params.get('id', None)
         return Results.objects.filter(query_id=query_id)
 
 
@@ -233,10 +233,10 @@ class QuerySerializer(serializers.ModelSerializer):
     Django Rest Framework serializer class for
     retrieving query details.
     """
-    id = serializers.CharField(source='id')
+    id = serializers.CharField()
     sequence = serializers.CharField(source='query')
-    length = serializers.Field(source='get_length')
-    description = serializers.CharField(source='description')
+    length = serializers.ReadOnlyField(source='get_length')
+    description = serializers.CharField()
     enqueued_at = serializers.DateTimeField(source='submitted')
     ended_at = serializers.DateTimeField(source='finished')
 
@@ -258,7 +258,7 @@ class QueryView(generics.RetrieveAPIView):
         """
         Retrieve Query object.
         """
-        query_id = self.request.QUERY_PARAMS.get('id', None)
+        query_id = self.request.query_params.get('id', None)
         return get_object_or_404(Query, pk=query_id)
 
 

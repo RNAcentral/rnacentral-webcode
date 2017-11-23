@@ -11,6 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import six
+
 import os
 import logging
 import re
@@ -79,7 +81,7 @@ class FtpBase(object):
         # use self.destination by default
         if not destination:
             destination = self.destination
-        for key, value in names.iteritems():
+        for key, value in six.iteritems(names):
             value = self.get_output_filename(value, parent_dir=destination)
             self.filenames[key] = value
             self.filehandles[key] = open(value, 'w')
@@ -98,7 +100,7 @@ class FtpBase(object):
         * close all filehandles
         * gzip and delete all files except for examples and readme
         """
-        for filename, filepath in self.filenames.iteritems():
+        for filename, filepath in six.iteritems(self.filenames):
             self.filehandles[filename].close()
             if 'example' not in filename and 'readme' not in filename:
                 self.gzip_file(filepath)

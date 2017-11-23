@@ -11,44 +11,45 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 from django.views.generic.base import TemplateView
-from settings import MIN_LENGTH, MAX_LENGTH
-import views
+
+from .settings import MIN_LENGTH, MAX_LENGTH
+from .views import *
 
 
 # nhmmer sequence search urls
-urlpatterns = patterns('',
+urlpatterns = [
     # launch nhmmer search
     url(r'^submit-query/?$',
-        'nhmmer.views.submit_job',
+        submit_job,
         name='nhmmer-submit-job'),
 
     # cancel search results
     url(r'^cancel-job/?$',
-        'nhmmer.views.cancel_job',
+        cancel_job,
         name='nhmmer-cancel-job'),
 
     # get nhmmer search job status
     url(r'^job-status/?$',
-        'nhmmer.views.get_status',
+        get_status,
         name='nhmmer-job-status'),
 
     # get nhmmer results
     url(r'^get-results/?$',
-        views.ResultsView.as_view(),
+        ResultsView.as_view(),
         name='nhmmer-job-results'),
 
     # get query details
     url(r'^query-info/?$',
-        views.QueryView.as_view(),
+        QueryView.as_view(),
         name='nhmmer-query-info'),
 
     # dashboard
     url(r'^dashboard/?$',
-        'nhmmer.views.dashboard_view',
+        dashboard_view,
         name='nhmmer-dashboard'),
-)
+]
 
 
 class SequenceSearchUIView(TemplateView):
@@ -71,8 +72,7 @@ class SequenceSearchUIView(TemplateView):
         return context
 
 
-urlpatterns += patterns('',
+urlpatterns += [
     # user interface
-    url(r'^$', SequenceSearchUIView.as_view(),
-        name='nhmmer-sequence-search'),
-)
+    url(r'^$', SequenceSearchUIView.as_view(), name='nhmmer-sequence-search'),
+]

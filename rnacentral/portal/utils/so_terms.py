@@ -5,6 +5,9 @@ simple. The main entry point is the ``assign_term`` function and the mapping is
 stored in the ``MAPPING`` dict.
 """
 
+import six
+
+
 MAPPING = {
     "RNase_MRP_RNA": ('SO:0000385', "RNase_MRP_RNA"),
     "RNase_P_RNA": ('SO:0000386', "RNase_P_RNA"),
@@ -94,7 +97,7 @@ def assign_term(urs):
         label for the rna.
     """
 
-    if isinstance(urs, basestring):
+    if isinstance(urs, six.string_types):
         return MAPPING.get(urs, UNKNOWN)
     return assign_term(urs.get_rna_type())
 

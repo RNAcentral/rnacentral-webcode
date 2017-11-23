@@ -19,13 +19,13 @@ class NhmmerRouter(object):
             return 'nhmmer_db'
         return None
 
-    def allow_migrate(self, db, model):
+    def allow_migrate(self, db, app_label, model_name=None, **hints):
         """
         Make sure the nhmmer only appears in the 'nhmmer_db'
         database.
         """
         if db == 'nhmmer_db':
-            return model._meta.app_label == 'nhmmer'
-        elif model._meta.app_label == 'nhmmer':
+            return app_label == 'nhmmer'
+        elif app_label == 'nhmmer':
             return False
         return None

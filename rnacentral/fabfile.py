@@ -25,6 +25,8 @@ To run remotely:
 For more options, run `fab help`.
 """
 
+from __future__ import print_function
+
 import os
 import json
 import requests
@@ -35,7 +37,7 @@ from fabric.contrib import django
 # load Django settings
 django.settings_module('rnacentral.settings')
 from django.conf import settings
-print settings # this is a lazy object and should be evaluated to be used
+print(settings)  # this is a lazy object and should be evaluated to be used
 
 COMMANDS = {
     'set_environment': 'source rnacentral/scripts/env.sh',
@@ -235,7 +237,7 @@ def deploy(git_branch=None, restart_url='http://rnacentral.org', quick=False):
     elif env.deployment == 'local':
         deploy_locally(git_branch, restart_url, quick)
     else:
-        print 'Check usage'
+        print('Check usage')
 
 
 def test(base_url='http://localhost:8000/'):

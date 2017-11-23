@@ -12,8 +12,8 @@ limitations under the License.
 -->
 
 {% extends "portal/base.html" %}
-{% load url from future %}
 {% load rest_framework %}
+{% load staticfiles %}
 
 {% block title %}
     RNAcentral API
@@ -21,8 +21,8 @@ limitations under the License.
 
 {% block stylesheets %}
     {{ block.super }}
-    <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/prettify.css" %}"/>
-    <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/default.css" %}"/>
+    <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/prettify.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "rest_framework/css/default.css" %}">
 {% endblock %}
 
 

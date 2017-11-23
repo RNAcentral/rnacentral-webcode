@@ -56,7 +56,7 @@ limitations under the License.
                     <ul class="multi-column-dropdown">
                 {% endif %}
                 <li>
-                  <a href="{% url 'portal.views.expert_database_view' expert_db_name=expert_db.label %}">{{ expert_db.name }}</a>
+                  <a href="{% url 'expert-database' expert_db_name=expert_db.label %}">{{ expert_db.name }}</a>
                 </li>
                 {% if forloop.counter0 == 12 or forloop.last %}
                     </ul>
