@@ -18,12 +18,12 @@ please include the **RNAcentral Expert Database logo** on your website:
 
 ### How to create a badge
 
-Here's how the badge can look like: <img src="http://rnacentral.org/static/img/logo/RNAcentral_expert_database.svg" style="width: 100px">
+Here's how the badge can look like: <img src="http://rnacentral.org/static/img/logo/rnacentral-expert-database.svg" style="width: 100px">
 
 Code:
 
 ```
-<img src="http://rnacentral.org/static/img/logo/RNAcentral_expert_database.svg" style="width: 100px">
+<img src="http://rnacentral.org/static/img/logo/rnacentral-expert-database.svg" style="width: 100px">
 ```
 
 Badge image is available for download in <a href="" ng-click="scrollTo('downloads')">Downloads</a> section.
@@ -71,7 +71,7 @@ to the RNAcentral accession (e.g. *9606* for a *Homo sapiens* sequence):
 Example of link appearance:
 
 <p>
-  <img src="http://rnacentral.org/static/img/logo/RNAcentral_icon.png" style="width: 16px; height: 16px; vertical-align: middle;">
+  <img src="http://rnacentral.org/static/img/logo/rnacentral-logo.png" style="width: 16px; height: 16px; vertical-align: middle;">
   <a href="http://rnacentral.org/genome-browser?species=homo_sapiens&chromosome=X&start=73819307&end=73856333">http://rnacentral.org/genome-browser?species=homo_sapiens&chromosome=X&start=73819307&end=73856333</a>
 </p>
 
@@ -79,7 +79,7 @@ Code:
 
 ```
 <p>
-  <img src="http://rnacentral.org/static/img/logo/RNAcentral_icon.png" style="width: 16px; height: 16px; vertical-align: middle;">
+  <img src="http://rnacentral.org/static/img/logo/rnacentral-logo.png" style="width: 16px; height: 16px; vertical-align: middle;">
   <a href="http://rnacentral.org/genome-browser?species=homo_sapiens&chromosome=X&start=73819307&end=73856333">http://rnacentral.org/genome-browser?species=homo_sapiens&chromosome=X&start=73819307&end=73856333</a>
 </p>
 ```
@@ -105,7 +105,7 @@ Here:
 Example of link appearance:
 
 <p>
-  <img src="http://rnacentral.org/static/img/logo/RNAcentral_icon.png" style="width: 16px; height: 16px; vertical-align: middle;">
+  <img src="http://rnacentral.org/static/img/logo/rnacentral-logo.png" style="width: 16px; height: 16px; vertical-align: middle;">
   <a href="http://rnacentral.org/genome-browser?species=homo_sapiens&chromosome=X&start=73819307&end=73856333">Human XIST gene</a>
 </p>
 
@@ -113,7 +113,7 @@ Code:
 
 ```
 <p>
-  <img src="http://rnacentral.org/static/img/logo/RNAcentral_icon.png" style="width: 16px; height: 16px; vertical-align: middle;">
+  <img src="http://rnacentral.org/static/img/logo/rnacentral-logo.png" style="width: 16px; height: 16px; vertical-align: middle;">
   <a href="http://rnacentral.org/genome-browser?species=homo_sapiens&chromosome=X&start=73819307&end=73856333">Human XIST gene</a>
 </p>
 ```
@@ -128,16 +128,16 @@ RNAcentral logo icons are available for download in <a href="" ng-click="scrollT
 
 Here are RNAcentral logo icons in different resolutions:
 
-* <a target="_blank" href="http://rnacentral.org/static/img/logo/logo16x16.png">16x16.png</a>
-* <a target="_blank" href="http://rnacentral.org/static/img/logo/logo24x24.png">24x24.png</a>
-* <a target="_blank" href="http://rnacentral.org/static/img/logo/logo32x32.png">32x32.png</a>
-* <a target="_blank" href="http://rnacentral.org/static/img/logo/logo64x64.png">64x64.png</a>
-* <a target="_blank" href="http://rnacentral.org/static/img/logo/logo128x128.png">128x128.png</a>
-* <a target="_blank" href="http://rnacentral.org/static/img/logo/RNAcentral_icon.png">full_size.png</a>
+* <a target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-logo-16x16.png">16x16.png</a>
+* <a target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-logo-24x24.png">24x24.png</a>
+* <a target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-logo-32x32.png">32x32.png</a>
+* <a target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-logo-64x64.png">64x64.png</a>
+* <a target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-logo-128x128.png">128x128.png</a>
+* <a target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-logo.png">full_size.png</a>
 
 ### RNAcentral expert database badge
 
-* <a target="_blank" href="http://rnacentral.org/static/img/logo/RNAcentral_expert_database.svg">RNAcentral_expert_database.svg</a>
+* <a target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-expert-database.svg">rnacentral-expert-database.svg</a>
 
 ---
 
