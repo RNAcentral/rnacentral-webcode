@@ -17,14 +17,12 @@ please include the **RNAcentral Expert Database logo** on your website:
 
 ### How to create a badge
 
-Here's how the badge can look like:
-
-<img src="http://localhost:8000/static/img/logo/RNAcentral_expert_database_logo.png" style="width: 80px">
+Here's how the badge can look like: <img src="http://localhost:8000/static/img/logo/RNAcentral_expert_database.svg" style="width: 100px">
 
 Code:
 
 ```
-<img src="http://rnacentral.org/static/img/embed-logo/rnacentral.png" style="width: 80px">
+<img src="http://rnacentral.org/static/img/logo/RNAcentral_expert_database.svg" style="width: 100px">
 ```
 
 ### Download badge image
