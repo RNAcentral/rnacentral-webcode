@@ -4,7 +4,8 @@
  * <a href="" ng-click="scrollTo('link-to-sequence')">How to create a badge on RNAcentral member database website</a>
  * <a href="" ng-click="scrollTo('link-to-genome-location')">How to link to a specific sequence</a>
  * <a href="" ng-click="scrollTo('expert-database-badge')">How to link to a specific genome location</a>
- * <a href="" ng-click="scrollTo('citing-rnacentral')">How to cite RNAcentral</a>
+ * <a href="" ng-click="scrollTo('downloads')">Downloads
+ * <a href="" ng-click="scrollTo('citing-rnacentral')">Citing RNAcentral</a>
  * <a href="" ng-click="scrollTo('rnacentral-twitter')">RNAcentral Twitter</a>
  * <a href="http://rnacentral.org/contact">Contact us</a>
 
@@ -25,13 +26,12 @@ Code:
 <img src="http://rnacentral.org/static/img/logo/RNAcentral_expert_database.svg" style="width: 100px">
 ```
 
-### Download badge image
-
-You can download the logo and serve it from your website or retrieve it directly from RNAcentral.
+Badge image is available for download in <a href="" ng-click="scrollTo('downloads')">Downloads</a> section.
 
 ### What should the logo link to?
 
 The logo should link to the RNAcentral homepage or to the landing page of the member database within RNAcentral.
+
 
 For example, this is the FlyBase landing page in RNAcentral: [http://rnacentral.org/expert-database/flybase](http://rnacentral.org/expert-database/flybase).
 
@@ -84,6 +84,8 @@ Code:
 </p>
 ```
 
+RNAcentral logo icons are available for download in <a href="" ng-click="scrollTo('downloads')">Downloads</a> section.
+
 ---
 
 ## Linking to genome locations <a style="cursor: pointer" id="link-to-genome-location" ng-click="scrollTo('link-to-genome-location')" name="link-to-genome-location" class="text-muted smaller"><i class="fa fa-link"></i></a>
@@ -115,6 +117,27 @@ Code:
   <a href="http://rnacentral.org/genome-browser?species=homo_sapiens&chromosome=X&start=73819307&end=73856333">Human XIST gene</a>
 </p>
 ```
+
+RNAcentral logo icons are available for download in <a href="" ng-click="scrollTo('downloads')">Downloads</a> section.
+
+---
+
+## Downloads <a style="cursor: pointer" id="downloads" ng-click="scrollTo('downloads')" name="downloads" class="text-muted smaller"><i class="fa fa-link"></i></a>
+
+### RNAcentral logo icons
+
+Here are RNAcentral logo icons in different resolutions:
+
+* <a target="_blank" href="http://localhost:8000/static/img/logo/logo16x16.png">16x16.png</a>
+* <a target="_blank" href="http://localhost:8000/static/img/logo/logo24x24.png">24x24.png</a>
+* <a target="_blank" href="http://localhost:8000/static/img/logo/logo32x32.png">32x32.png</a>
+* <a target="_blank" href="http://localhost:8000/static/img/logo/logo64x64.png">64x64.png</a>
+* <a target="_blank" href="http://localhost:8000/static/img/logo/logo128x128.png">128x128.png</a>
+* <a target="_blank" href="http://localhost:8000/static/img/logo/RNAcentral_icon.png">full_size.png</a>
+
+### RNAcentral expert database badge
+
+* <a target="_blank" href="http://localhost:8000/static/img/logo/RNAcentral_expert_database.svg">RNAcentral_expert_database.svg</a>
 
 ---
 
