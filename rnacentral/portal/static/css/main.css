@@ -113,6 +113,11 @@ body {
   margin-bottom: 0;
 }
 
+.rnacentral-masthead fieldset {
+  background-color: rgba(0, 0, 0, 0.5);
+  border: none;
+}
+
 .rnacentral-masthead .help-block {
   margin-bottom: 0;
 }
