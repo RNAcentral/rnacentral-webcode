@@ -44,11 +44,15 @@ Master Stylesheet for the RNAcentral Portal
 [1. Body and main layout]
 */
 body {
-  background: #fff url("../img/pale_grey_slight_texture.jpg") top left repeat;
+  background: #fafafa;
 }
 
 .container {
   background: #fff;
+}
+
+.container.wrapper {
+  border: 1px solid #e7e7e7;
 }
 
 .container-main {
@@ -89,14 +93,20 @@ body {
 [2. Masthead]
 */
 .rnacentral-masthead {
-  background: rgb(188,216,224); /* Old browsers */
-  background: -moz-linear-gradient(left,  rgba(188,216,224,1) 41%, rgba(154,195,206,1) 68%); /* FF3.6+ */
-  background: -webkit-gradient(linear, left top, right top, color-stop(41%,rgba(188,216,224,1)), color-stop(68%,rgba(154,195,206,1))); /* Chrome,Safari4+ */
-  background: -webkit-linear-gradient(left,  rgba(188,216,224,1) 41%,rgba(154,195,206,1) 68%); /* Chrome10+,Safari5.1+ */
-  background: -o-linear-gradient(left,  rgba(188,216,224,1) 41%,rgba(154,195,206,1) 68%); /* Opera 11.10+ */
-  background: -ms-linear-gradient(left,  rgba(188,216,224,1) 41%,rgba(154,195,206,1) 68%); /* IE10+ */
-  background: linear-gradient(to right,  rgba(188,216,224,1) 41%,rgba(154,195,206,1) 68%); /* W3C */
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bcd8e0', endColorstr='#9ac3ce',GradientType=1 ); /* IE6-9 */
+  /*background: rgb(188,216,224); !* Old browsers *!*/
+  /*background: -moz-linear-gradient(left,  rgba(188,216,224,1) 41%, rgba(154,195,206,1) 68%); !* FF3.6+ *!*/
+  /*background: -webkit-gradient(linear, left top, right top, color-stop(41%,rgba(188,216,224,1)), color-stop(68%,rgba(154,195,206,1))); !* Chrome,Safari4+ *!*/
+  /*background: -webkit-linear-gradient(left,  rgba(188,216,224,1) 41%,rgba(154,195,206,1) 68%); !* Chrome10+,Safari5.1+ *!*/
+  /*background: -o-linear-gradient(left,  rgba(188,216,224,1) 41%,rgba(154,195,206,1) 68%); !* Opera 11.10+ *!*/
+  /*background: -ms-linear-gradient(left,  rgba(188,216,224,1) 41%,rgba(154,195,206,1) 68%); !* IE10+ *!*/
+  /*background: linear-gradient(to right,  rgba(188,216,224,1) 41%,rgba(154,195,206,1) 68%); !* W3C *!*/
+  /*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bcd8e0', endColorstr='#9ac3ce',GradientType=1 ); !* IE6-9 *!*/
+
+  /* https://www.canva.com/learn/website-color-schemes/ */
+  /* #6ec4db - blue rain */
+  /* #6eaeca - blue topaz */
+  background-image: linear-gradient(90deg, rgba(45,174,193,.3), rgba(0,85,158,.3), rgba(45,174,193,.3)), url(/static/img/homepage-banner.png?d3eeb6833ae2);
+  /*background: -webkit-linear-gradient(left, #6ec4db 41%, #6eaeca 68%);*/
 }
 
 .rnacentral-masthead .form-group {
@@ -108,8 +118,11 @@ body {
 }
 
 .rnacentral-masthead-menu {
-	background-color: #3F7D97;
-  padding: 0px;
+  font-family: 'HelveticaNeueLT Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+  background-color: rgba(0, 0, 0, 0.5);
+  /*padding: 0px;*/
+  margin-left: -15px;
+  margin-right: -15px;
 }
 
 .rnacentral-masthead-menu .nav>li>a {
@@ -127,11 +140,13 @@ body {
 
 .navbar {
   margin-bottom: 0px;
+  border-bottom: none;
 }
 
 /* override bootstrap 3.3.7 padding/margin to make navbar height like in 3.0.0 */
 .navbar-collapse.collapse a, .navbar-header a {
-  padding-top: 5px !important;
+  /*padding-top: 5px !important; - original value in bootstrap3.0.0 */
+  padding-top: 8px !important; /* our override to center text */
   padding-bottom: 5px !important;
 }
 
@@ -152,7 +167,8 @@ body {
   margin-left: 0px;
   margin-right: 8px;
   /* override bootstrap 3.3.7 padding/margin to make navbar height like in 3.0.0 */
-  margin-top: 5px;
+  /*margin-top: 5px; - original value in bootstrap 3.0.0 */
+  margin-top: 7px; /* our override */
   margin-bottom: 5px;
 }
 

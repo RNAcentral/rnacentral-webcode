@@ -27,84 +27,84 @@ limitations under the License.
     </div><!-- /row -->
     <!-- /global-search -->
 
-  </div>
-
-  <div class="container rnacentral-masthead-menu">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <p class="navbar-text">
-        <span class="badge release-number">v8</span>
-      </p>
-    </div>
-    <div class="navbar-collapse collapse">
-      <ul class="nav navbar-nav navbar-left">
-        {% get_expert_databases_list as expert_dbs %}
-        <li class="dropdown">
-          <a href="" class="dropdown-toggle" data-toggle="dropdown">Databases <b class="caret"></b></a>
-          <ul class="dropdown-menu multi-column columns-2">
-            <div class="row">
-              {% for expert_db in expert_dbs %}
-                {% if forloop.first %}
-                  <div class="col-sm-5">
-                    <ul class="multi-column-dropdown">
-                {% elif forloop.counter0 == 13 %}
-                  <div class="col-sm-7">
-                    <ul class="multi-column-dropdown">
-                {% endif %}
-                <li>
-                  <a href="{% url 'expert-database' expert_db_name=expert_db.label %}">{{ expert_db.name }}</a>
-                </li>
-                {% if forloop.counter0 == 12 or forloop.last %}
-                    </ul>
-                  </div>
-                {% endif %}
-              {% endfor %}
-            </div>
-
-            <div class="row">
-              <div class="col-sm-12">
-              <ul class="multi-column-dropdown">
-                <li class="divider"></li>
-                <li><a href="{% url 'expert-databases' %}">All databases</a></li>
-              </ul>
+    <div class="container rnacentral-masthead-menu">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <p class="navbar-text">
+          <span class="badge release-number">v8</span>
+        </p>
+      </div>
+      <div class="navbar-collapse collapse">
+        <ul class="nav navbar-nav navbar-left">
+          {% get_expert_databases_list as expert_dbs %}
+          <li class="dropdown">
+            <a href="" class="dropdown-toggle" data-toggle="dropdown">Databases <b class="caret"></b></a>
+            <ul class="dropdown-menu multi-column columns-2">
+              <div class="row">
+                {% for expert_db in expert_dbs %}
+                  {% if forloop.first %}
+                    <div class="col-sm-5">
+                      <ul class="multi-column-dropdown">
+                  {% elif forloop.counter0 == 13 %}
+                    <div class="col-sm-7">
+                      <ul class="multi-column-dropdown">
+                  {% endif %}
+                  <li>
+                    <a href="{% url 'expert-database' expert_db_name=expert_db.label %}">{{ expert_db.name }}</a>
+                  </li>
+                  {% if forloop.counter0 == 12 or forloop.last %}
+                      </ul>
+                    </div>
+                  {% endif %}
+                {% endfor %}
               </div>
-            </div>
-          </ul>
-        </li>
 
-        <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="">Tools<b class="caret"></b></a>
-          <ul class="dropdown-menu">
-            <li><a href="{% url 'nhmmer-sequence-search' %}">Sequence search</a></li>
-            <li><a href="{% url 'genome-browser' %}">Genome browser</a></li>
-          </ul>
-        </li>
+              <div class="row">
+                <div class="col-sm-12">
+                <ul class="multi-column-dropdown">
+                  <li class="divider"></li>
+                  <li><a href="{% url 'expert-databases' %}">All databases</a></li>
+                </ul>
+                </div>
+              </div>
+            </ul>
+          </li>
 
-        <li class="dropdown">
-          <a class="dropdown-toggle" data-toggle="dropdown" href="">API<b class="caret"></b></a>
-          <ul class="dropdown-menu">
-            <li><a href="{% url 'api-v1-root' %}">Browsable API</a></li>
-            <li><a href="{% url 'api-docs' %}">API Documentation</a></li>
-          </ul>
-        </li>
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="">Tools<b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="{% url 'nhmmer-sequence-search' %}">Sequence search</a></li>
+              <li><a href="{% url 'genome-browser' %}">Genome browser</a></li>
+            </ul>
+          </li>
 
-        <li><a href="{% url 'downloads' %}">Downloads</a></li>
-        <li><a href="/search?q=RNA">Browse</a></li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        <li>
-          <a href="{% url 'about' %}">About</a>
-        </li>
-        <li>
-          <a href="{% url 'help' %}">Help</a>
-        </li>
-        <li><a href="" class="doorbell-feedback help" title="Send quick feedback without leaving the page">Feedback <i class="fa fa-comment"></i></a></li>
-      </ul>
-    </div><!--/.nav-collapse -->
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="">API<b class="caret"></b></a>
+            <ul class="dropdown-menu">
+              <li><a href="{% url 'api-v1-root' %}">Browsable API</a></li>
+              <li><a href="{% url 'api-docs' %}">API Documentation</a></li>
+            </ul>
+          </li>
+
+          <li><a href="{% url 'downloads' %}">Downloads</a></li>
+          <li><a href="/search?q=RNA">Browse</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+          <li>
+            <a href="{% url 'about' %}">About</a>
+          </li>
+          <li>
+            <a href="{% url 'help' %}">Help</a>
+          </li>
+          <li><a href="" class="doorbell-feedback help" title="Send quick feedback without leaving the page">Feedback <i class="fa fa-comment"></i></a></li>
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div>
+
   </div>
 
 </div>
