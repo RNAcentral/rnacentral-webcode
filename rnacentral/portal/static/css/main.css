@@ -44,7 +44,7 @@ Master Stylesheet for the RNAcentral Portal
 [1. Body and main layout]
 */
 body {
-  background: #fafafa;
+  background: #f0f0f0;
 }
 
 .container {
@@ -102,10 +102,7 @@ body {
   /*background: linear-gradient(to right,  rgba(188,216,224,1) 41%,rgba(154,195,206,1) 68%); !* W3C *!*/
   /*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bcd8e0', endColorstr='#9ac3ce',GradientType=1 ); !* IE6-9 *!*/
 
-  /* https://www.canva.com/learn/website-color-schemes/ */
-  /* #6ec4db - blue rain */
-  /* #6eaeca - blue topaz */
-  background-image: linear-gradient(90deg, rgba(45,174,193,.3), rgba(0,85,158,.3), rgba(45,174,193,.3)), url(/static/img/homepage-banner.png?d3eeb6833ae2);
+  background-image: linear-gradient(90deg, rgba(45,174,193,.3), rgba(0,85,158,.3), rgba(45,174,193,.3)), url(/static/img/homepage-banner.png?d3eeb6833ae2); /* gradients shamelessly stolen from InterPro7 client */
   /*background: -webkit-linear-gradient(left, #6ec4db 41%, #6eaeca 68%);*/
 }
 
@@ -114,20 +111,27 @@ body {
 }
 
 .rnacentral-masthead fieldset {
-  background-color: rgba(0, 0, 0, 0.5);
+  background: none;
   border: none;
 }
 
 .rnacentral-masthead .help-block {
-  margin-bottom: 0;
+  font-family: 'HelveticaNeueLT Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
+  margin: 0 0 0 15px;
+  padding: 4px 15px 2px 15px;
+  display: inline-block;
+  background-color: rgba(255, 255, 255, 1);
+  border-radius: 1px 2px 5px 5px;
 }
 
 .rnacentral-masthead-menu {
   font-family: 'HelveticaNeueLT Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif !important;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(255, 255, 255, 1);
   /*padding: 0px;*/
   margin-left: -15px;
   margin-right: -15px;
+  border-left: 1px solid #e7e7e7;
+  border-right: 1px solid #e7e7e7;
 }
 
 .rnacentral-masthead-menu .nav>li>a {
@@ -140,7 +144,7 @@ body {
 .rnacentral-masthead-menu .nav>li>a:active,
 .rnacentral-masthead-menu .navbar-text
 {
-  color: white;
+  color: #555;
 }
 
 .navbar {
@@ -165,7 +169,20 @@ body {
 
 .navbar-default .navbar-nav>li>a,
 .navbar-default .navbar-nav>li>a>b {
-	color: #DDDDDD;
+	color: #3F7D97; /* #DDDDDD; */
+}
+
+.navbar-default .navbar-nav>.dropdown>a .caret
+{
+  border-top-color: #3F7D97; /* #DDDDDD; */
+  border-bottom-color: #3F7D97; /* #DDDDDD; */
+}
+
+.navbar-default .navbar-nav>.dropdown>a:hover .caret,
+.navbar-default .navbar-nav>.dropdown>a:focus .caret
+{
+  border-top-color: #555; /* white; */
+  border-bottom-color: #555; /* white; */
 }
 
 .rnacentral-masthead-menu .navbar-text {
@@ -190,29 +207,16 @@ body {
   color: #3F7D97;
 }
 
-.navbar-default .navbar-nav>.dropdown>a .caret
-{
-	border-top-color: #DDDDDD;
-	border-bottom-color: #DDDDDD;
-}
-
-.navbar-default .navbar-nav>.dropdown>a:hover .caret,
-.navbar-default .navbar-nav>.dropdown>a:focus .caret
-{
-  border-top-color: white;
-  border-bottom-color: white;
-}
-
 .rnacentral-header-logo {
-	margin-top: 15px;
+  margin-top: 15px;
 }
 
 div#local-search form fieldset, form#local-search fieldset {
-	max-width: 1000px;
+  max-width: 1000px;
 }
 
 #global-nav-expanded img {
-	margin-top: 5px;
+  margin-top: 5px;
 }
 
 .navbar-nav {
@@ -237,6 +241,22 @@ div#local-search form fieldset, form#local-search fieldset {
 .dropdown-menu li a {
   padding: 5px 15px;
   font-weight: 300;
+  color: black !important;
+}
+
+.dropdown-menu li a:hover {
+  color: white !important;
+  background-color: #428bca !important;
+}
+
+.dropdown-menu .col-sm-5 {
+  padding-right: 0px;
+}
+
+@media (min-width: 767px) {
+  .dropdown-menu .col-sm-7 {
+    padding-left: 0px;
+  }
 }
 
 .multi-column-dropdown {
@@ -253,49 +273,23 @@ div#local-search form fieldset, form#local-search fieldset {
   white-space: normal;
 }
 
-.multi-column-dropdown li a:hover, .multi-column-dropdown li a:focus {
+.multi-column-dropdown li a:hover,
+.multi-column-dropdown li a:focus {
   text-decoration: none;
   color: white;
+  background-color: #428bca;
 }
 
 .multi-column-dropdown .divider {
   margin: 3px 0;
 }
 
-.dropdown-menu .col-sm-5 {
-  padding-right: 0px;
-}
-
 /* hide `Search` text on Search button on small screens */
 .rnacentral-masthead .hidden-xs-inline {
-    display: inline-block !important;
-}
-
-@media (min-width: 767px) {
-  .dropdown-menu .col-sm-7 {
-    padding-left: 0px;
-  }
-  .multi-column-dropdown li a:hover, .multi-column-dropdown li a:focus {
-    background-color: #428bca;
-  }
-}
-
-.dropdown-menu>li>a:hover {
-  color: white;
-  background-color: #428bca;
+  display: inline-block !important;
 }
 
 @media (max-width: 767px) {
-  .navbar-default .navbar-nav .open .dropdown-menu>li>a,
-  .navbar-default .navbar-nav>li>a>b,
-  .multi-column-dropdown li>a,
-  .multi-column-dropdown li>a>b {
-    color: #DDDDDD;
-  }
-  .navbar-default .navbar-nav .open .dropdown-menu>li>a:hover,
-  .multi-column-dropdown .open .dropdown-menu>li>a:hover {
-    color: white;
-  }
   .rnacentral-masthead-menu .navbar-text {
     margin-left: 15px;
   }
