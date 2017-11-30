@@ -42,40 +42,6 @@ RNAcentral: The non-coding RNA sequence database
 
   <div class="row">
 
-    <p class="lead text-center margin-bottom-0px">
-      ncRNA data provided by {{ context.databases|length }} databases:
-    </p>
-
-    <div id="expert-databases">
-      {% for database in context.databases %}
-        {% if database and database.imported %}
-        <div class="hvr-grow help expert-db-card" data-container="body" title="{% if database.abbreviation %}{{ database.abbreviation }}{% else %}{{ database.name }}{% endif %}">
-          <a class="expert-db-logo" href="{% url 'expert-database' database.label %}">
-            <img class="img-rounded desaturate" data-lazy="{% static 'img/expert-db-logos' %}/{{database.label}}.png" alt="{{database.name}} logo">
-          </a>
-          <p class="margin-top-5px text-center">
-          <a href="" rel="nofollow" ng-click="search.search('expert_db:&quot;{{database.name}}&quot;')">
-            <em>{{database.num_sequences|intword|intcomma}}</em>
-            sequences
-          </a>
-          <br>
-          <a href="{% url 'unique-rna-sequence' upi=database.examples.0.upi taxid=database.examples.0.taxid %}" id="{{database.label}}-examples">Example</a>
-          <br>
-          {% if database.status == 'new' %}
-            <span class="label label-info help" data-placement="bottom">New</span>
-          {% elif database.status == 'updated' %}
-            <span class="label label-primary help" data-placement="bottom">Updated</span>
-          {% endif %}
-          </p>
-        </div>
-        {% endif %}
-      {% endfor %}
-    </div>
-
-  </div>
-
-  <div class="row well well-sm">
-
     <h1 class="text-center margin-bottom-0px">Getting started</h1>
 
     <div class="col-md-4 col-sm-4 col-xs-12">
@@ -114,6 +80,40 @@ RNAcentral: The non-coding RNA sequence database
           <a class="btn btn-primary" id="btn-genome-browser" href="{% url 'genome-browser' %}" role="button">Browse genomes</a>
         </div>
       </div>
+    </div>
+
+  </div>
+
+  <div class="row well well-sm">
+
+    <p class="lead text-center margin-bottom-0px">
+      ncRNA data provided by {{ context.databases|length }} databases:
+    </p>
+
+    <div id="expert-databases">
+      {% for database in context.databases %}
+        {% if database and database.imported %}
+        <div class="hvr-grow help expert-db-card" data-container="body" title="{% if database.abbreviation %}{{ database.abbreviation }}{% else %}{{ database.name }}{% endif %}">
+          <a class="expert-db-logo" href="{% url 'expert-database' database.label %}">
+            <img class="img-rounded desaturate" data-lazy="{% static 'img/expert-db-logos' %}/{{database.label}}.png" alt="{{database.name}} logo">
+          </a>
+          <p class="margin-top-5px text-center">
+          <a href="" rel="nofollow" ng-click="search.search('expert_db:&quot;{{database.name}}&quot;')">
+            <em>{{database.num_sequences|intword|intcomma}}</em>
+            sequences
+          </a>
+          <br>
+          <a href="{% url 'unique-rna-sequence' upi=database.examples.0.upi taxid=database.examples.0.taxid %}" id="{{database.label}}-examples">Example</a>
+          <br>
+          {% if database.status == 'new' %}
+            <span class="label label-info help" data-placement="bottom">New</span>
+          {% elif database.status == 'updated' %}
+            <span class="label label-primary help" data-placement="bottom">Updated</span>
+          {% endif %}
+          </p>
+        </div>
+        {% endif %}
+      {% endfor %}
     </div>
 
   </div>
