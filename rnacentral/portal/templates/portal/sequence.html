@@ -67,11 +67,11 @@ limitations under the License.
 
             <uib-tab index="0" heading="Overview" id="overview" deselect="checkTab($event, $selectedIndex)">
 
-                <xrefs upi="upi" taxid="taxid" timeout="5000" page-size="5" on-activate-publications="activateTab('2'); $('html, body').animate({ scrollTop: $('#tabs').offset().top }, 1200);" on-activate-modified-nucleotides="activateModifiedNucleotides(modifications)" on-activate-genome-browser="activateGenomeBrowser(start, end, stand, chromosome, species, description, label)"></xrefs>
-                {{ Genoverse.Track.Model.Gene.Ensembl }} {{ Genoverse }}
+                <xrefs upi="upi" taxid="taxid" timeout="5000" page-size="5" on-activate-publications="activateTab('2'); $('html, body').animate({ scrollTop: $('#tabs').offset().top }, 1200);" on-activate-modified-nucleotides="activateModifiedNucleotides(modifications)" on-activate-genome-browser="activateGenomeBrowser(start, end, chr, genome)"></xrefs>
+
                 <!-- genoverse -->
-                <div ng-if="genome && chromosome && start && end">
-                    <genoverse genome="genome" chromosome="chromosome" start="start" end="end">
+                <div ng-if="genome && chr && start && end">
+                    <genoverse genome="genome" chr="chr" start="start" end="end" example-locations="exampleLocations" container=".container">
                         <genoverse-track name="'Sequence'" model="Genoverse.Track.Model.Sequence.Ensembl" view="Genoverse.Track.View.Sequence" controller="Genoverse.Track.Controller.Sequence" url="genoverseUtils.urls.sequence" resizable="'auto'" auto-height="true" hide-empty="false" extra="{100000: false}"></genoverse-track>
                         <genoverse-track name="'Genes'" labels="true" info="'Ensembl API genes'" model="Genoverse.Track.Model.Gene.Ensembl" view="Genoverse.Track.View.Gene.Ensembl" url="genoverseUtils.urls.genes" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.genesPopulateMenu}"></genoverse-track>
                         <genoverse-track name="'Transcripts'" labels="true" info="'Ensembl API transcripts'" model="Genoverse.Track.Model.Transcript.Ensembl" view="Genoverse.Track.View.Transcript.Ensembl" url="genoverseUtils.urls.transcripts" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.transcriptsPopulateMenu}"></genoverse-track>
@@ -209,7 +209,7 @@ limitations under the License.
                 </h2>
 
                 <p>
-                    RNAcentral identifier <em>{{ rna.upi }}{% if context.single_species %}_{{context.taxid}}{% endif %}</em>
+                    RNAcentral identifier <em>{{ rna.upi }}{% if context.single_species %}_{{ context.taxid }}{% endif %}</em>
                     <a href="{% url 'nhmmer-sequence-search' %}?q={{ rna.upi }}" class="margin-left-5px">Search for similar sequences</a>
                 </p>
                 {% if context.non_canonical_base_counts %}

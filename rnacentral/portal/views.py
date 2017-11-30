@@ -30,7 +30,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from portal.config.expert_databases import expert_dbs
-from portal.config.genomes import genomes as rnacentral_genomes
+from portal.config.genomes import genomes as rnacentral_genomes, get_taxonomy_info_by_genome_identifier
 from portal.forms import ContactForm
 from portal.models import Rna, Database, Release, Xref
 from portal.models.database_stats import DatabaseStats
@@ -265,7 +265,7 @@ class GenomeBrowserView(TemplateView):
             # if user tinkers with it, she won't shoot anyone but herself
 
             # find our genome in taxonomy, replace genome with a dict with taxonomy data
-            kwargs['genome'] = _get_taxonomy_info_by_genome_identifier(request.GET['species'])
+            kwargs['genome'] = request.GET['species']
             if kwargs['genome'] is None:
                 raise Http404
 
@@ -278,10 +278,11 @@ class GenomeBrowserView(TemplateView):
             kwargs['start'] = request.GET['start']
             kwargs['end'] = request.GET['end']
         else:
-            kwargs['genome'] = _get_taxonomy_info_by_genome_identifier('homo_sapiens')
-            kwargs['chromosome'] = kwargs['genome']['example_location']['chromosome']
-            kwargs['start'] = kwargs['genome']['example_location']['start']
-            kwargs['end'] = kwargs['genome']['example_location']['end']
+            genome_info = get_taxonomy_info_by_genome_identifier('homo_sapiens')
+            kwargs['genome'] = 'homo_sapiens'
+            kwargs['chromosome'] = genome_info['example_location']['chromosome']
+            kwargs['start'] = genome_info['example_location']['start']
+            kwargs['end'] = genome_info['example_location']['end']
 
         response = super(GenomeBrowserView, self).get(request, *args, **kwargs)
         try:
@@ -307,46 +308,6 @@ class ContactView(FormView):
 ####################
 # Helper functions #
 ####################
-
-def _get_taxonomy_info_by_genome_identifier(identifier):
-    """
-    Returns a valid taxonomy, given a taxon identifier.
-
-    :param identifier: this is what we receive from django named urlparam
-    This is either a scientific name, or synonym or taxId. Note: whitespaces
-    in it are replaced with hyphens to avoid having to urlencode them.
-
-    :return: e.g. {
-        'species': 'Homo sapiens',
-        'synonyms': ['human'],
-        'assembly': 'GRCh38',
-        'assembly_ucsc': 'hg38',
-        'taxid': 9606,
-        'division': 'Ensembl',
-        'example_location': {
-            'chromosome': 'X',
-            'start': 73792205,
-            'end': 73829231,
-        }
-    }
-    """
-    identifier = identifier.replace('_', ' ')  # we transform all underscores back to whitespaces
-
-    for genome in rnacentral_genomes:
-        # check, if it's a scientific name or a trivial name
-        synonyms = [synonym.lower() for synonym in genome['synonyms']]
-        if (identifier.lower() == genome['species'].lower() or
-           identifier.lower() in synonyms):
-            return genome
-
-        # check, if it's a taxid
-        try:
-            if int(identifier) == genome['taxid']:
-                return genome
-        except ValueError:
-            pass
-
-    return None  # genome not found
 
 
 def _get_json_lineage_tree(xrefs):

@@ -27,7 +27,7 @@ limitations under the License.
 <script type="text/javascript">
     // global variables, exported from django context
     genomes = {{ genomes | safe }}; // JSON
-    genome = {{ genome | safe }}; // JSON
+    genome = "{{ genome }}"; // String
     chromosome = "{{ chromosome | safe }}"; // String
     start = {{ start | safe }}; // Number
     end = {{ end | safe }}; // Number
@@ -47,7 +47,7 @@ limitations under the License.
             <div class="row" style="padding-left: 15px;">
                 <div class="col-lg-3 col-md-3 col-sm-12">
                     <label for="genomic-species-select">Species</label>
-                    <select id="genomic-species-select" class="form-control" ng-options="genome as genome.species for genome in genomes" ng-model="genome">
+                    <select id="genomic-species-select" class="form-control" ng-options="genome as (genome | urldecodeSpecies) for genome in genoverseUtils.genomeNames" ng-model="genome">
                     </select>
                 </div>
                 <div class="ol-lg-2 col-md-2 col-sm-4">
@@ -74,16 +74,16 @@ limitations under the License.
     {% verbatim %}
     <p class='text-muted'>
         <span id='genomic-location' class='margin-right-5px'></span>
-        View in <a href='http://{{domain}}/{{genome.species | urlencodeSpecies}}/Location/View?r={{chromosome}}:{{start}}-{{end}}' id="ensembl-link" target='_blank'>{{ genome.division }}</a>
-        <span ng-show='genome.assembly_ucsc' class='ucsc-link'>|
-            <a href='http://genome.ucsc.edu/cgi-bin/hgTracks?db={{genome.assembly_ucsc}}&position={{chromosome | chrToUCSC}}%3A{{start}}-{{end}}' id="ucsc-link" target='_blank'>UCSC</a>
+        View in <a href='http://{{ domain }}/{{ genome }}/Location/View?r={{chromosome}}:{{start}}-{{end}}' id="ensembl-link" target='_blank'>{{ genoverseUtils.getGenomeObject(genome, genomes).division }}</a>
+        <span ng-show='genoverseUtils.getGenomeObject(genome, genomes).assembly_ucsc' class='ucsc-link'>|
+            <a href='http://genome.ucsc.edu/cgi-bin/hgTracks?db={{ genoverseUtils.getGenomeObject(genome, genomes).assembly_ucsc }}&position={{chromosome | chrToUCSC}}%3A{{start}}-{{end}}' id="ucsc-link" target='_blank'>UCSC</a>
         </span>
     </p>
-    <genoverse genome="genome" chromosome="chromosome" start="start" end="end">
-        <genoverse-track name="'Sequence'" model="Genoverse.Track.Model.Sequence.Ensembl" view="Genoverse.Track.View.Sequence" controller="Genoverse.Track.Controller.Sequence" url="urls.sequence" resizable="'auto'" auto-height="true" hide-empty="false" extra="{100000: false}"></genoverse-track>
-        <genoverse-track name="'Genes'" labels="true" info="'Ensembl API genes'" model="Genoverse.Track.Model.Gene.Ensembl" view="Genoverse.Track.View.Gene.Ensembl" url="urls.genes" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genesPopulateMenu}"></genoverse-track>
-        <genoverse-track name="'Transcripts'" labels="true" info="'Ensembl API transcripts'" model="Genoverse.Track.Model.Transcript.Ensembl" view="Genoverse.Track.View.Transcript.Ensembl" url="urls.transcripts" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: transcriptsPopulateMenu}"></genoverse-track>
-        <genoverse-track name="'RNAcentral'" id="'RNAcentral'" info="'Unique RNAcentral Sequences'" model="Genoverse.Track.Model.Gene.Ensembl" model-extra="{parseData: RNAcentralParseData}" view="Genoverse.Track.View.Transcript.Ensembl" url="urls.RNAcentral" extra="{populateMenu: RNAcentralPopulateMenu}" resizable="'auto'" auto-height="true" hide-empty="false"></genoverse-track>
+    <genoverse genome="genome" chr="chromosome" start="start" end="end" example-locations="genoverseUtils.exampleLocations" container=".container">
+        <genoverse-track name="'Sequence'" model="Genoverse.Track.Model.Sequence.Ensembl" view="Genoverse.Track.View.Sequence" controller="Genoverse.Track.Controller.Sequence" url="genoverseUtils.urls.sequence" resizable="'auto'" auto-height="true" hide-empty="false" extra="{100000: false}"></genoverse-track>
+        <genoverse-track name="'Genes'" labels="true" info="'Ensembl API genes'" model="Genoverse.Track.Model.Gene.Ensembl" view="Genoverse.Track.View.Gene.Ensembl" url="genoverseUtils.urls.genes" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.genesPopulateMenu}"></genoverse-track>
+        <genoverse-track name="'Transcripts'" labels="true" info="'Ensembl API transcripts'" model="Genoverse.Track.Model.Transcript.Ensembl" view="Genoverse.Track.View.Transcript.Ensembl" url="genoverseUtils.urls.transcripts" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.transcriptsPopulateMenu}"></genoverse-track>
+        <genoverse-track name="'RNAcentral'" id="'RNAcentral'" info="'Unique RNAcentral Sequences'" model="Genoverse.Track.Model.Gene.Ensembl" model-extra="{parseData: genoverseUtils.RNAcentralParseData}" view="Genoverse.Track.View.Transcript.Ensembl" url="genoverseUtils.urls.RNAcentral" extra="{populateMenu: genoverseUtils.RNAcentralPopulateMenu}" resizable="'auto'" auto-height="true" hide-empty="false"></genoverse-track>
     </genoverse>
     {% endverbatim %}
 

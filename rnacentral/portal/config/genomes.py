@@ -240,19 +240,19 @@ genomes = [
     #     },
     # },
     # Ensembl Protists
-    # {
-    #     'species': 'Dictyostelium discoideum',
-    #     'synonyms': [],
-    #     'assembly': 'dictybase.01',
-    #     'assembly_ucsc': '',
-    #     'taxid': 44689,
-    #     'division': 'Ensembl Protists',
-    #     'example_location': {
-    #         'chromosome': 2,
-    #         'start': 7874546,
-    #         'end': 7876498,
-    #     },
-    # },
+    {
+        'species': 'Dictyostelium discoideum',
+        'synonyms': [],
+        'assembly': 'dictybase.01',
+        'assembly_ucsc': '',
+        'taxid': 44689,
+        'division': 'Ensembl Protists',
+        'example_location': {
+            'chromosome': 2,
+            'start': 7874546,
+            'end': 7876498,
+        },
+    },
     # {
     #     'species': 'Plasmodium falciparum',
     #     'synonyms': [],
@@ -281,3 +281,69 @@ genomes = [
         },
     },
 ]
+
+
+def url2db(identifier):
+    """
+    Converts species name from its representation in url to its database representation.
+
+    :param identifier: Species name as in url, e.g. "canis_familiaris"
+    :return: Species name as in database "Canis lupus familiaris"
+    """
+    # special cases
+    if identifier in ('canis_familiaris', 'canis_lupus_familiaris'):
+        return "Canis lupus familiaris"
+    else:
+        return identifier.replace('_', ' ').capitalize()
+
+
+def get_taxonomy_info_by_genome_identifier(identifier):
+    """
+    Returns a valid taxonomy, given a taxon identifier.
+
+    :param identifier: this is what we receive from django named urlparam
+    This is either a scientific name, or synonym or taxId. Note: whitespaces
+    in it are replaced with hyphens to avoid having to urlencode them.
+
+    :return: e.g. {
+        'species': 'Homo sapiens',
+        'synonyms': ['human'],
+        'assembly': 'GRCh38',
+        'assembly_ucsc': 'hg38',
+        'taxid': 9606,
+        'division': 'Ensembl',
+        'example_location': {
+            'chromosome': 'X',
+            'start': 73792205,
+            'end': 73829231,
+        }
+    }
+    """
+    identifier = identifier.replace('_', ' ')  # we transform all underscores back to whitespaces
+
+    for genome in genomes:
+        # check, if it's a scientific name or a trivial name
+        synonyms = [synonym.lower() for synonym in genome['synonyms']]
+        if (identifier.lower() == genome['species'].lower() or
+           identifier.lower() in synonyms):
+            return genome
+
+        # check, if it's a taxid
+        try:
+            if int(identifier) == genome['taxid']:
+                return genome
+        except ValueError:
+            pass
+
+    return None  # genome not found
+
+
+class SpeciesNotInGenomes(Exception):
+    pass
+
+
+def get_taxid_from_species(species):
+    try:
+        return get_taxonomy_info_by_genome_identifier(species)['taxid']
+    except Exception as e:
+        raise SpeciesNotInGenomes(species)

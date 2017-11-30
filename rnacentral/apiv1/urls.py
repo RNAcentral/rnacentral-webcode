@@ -17,17 +17,17 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from apiv1 import views
 
 
-CACHE_TIMEOUT = 60 * 60 * 24 * 1 # per-view cache timeout in seconds
+CACHE_TIMEOUT = 60 * 60 * 24 * 1  # per-view cache timeout in seconds
 
 urlpatterns = patterns('',
-	# api root
-	url(r'^$', cache_page(CACHE_TIMEOUT)(views.APIRoot.as_view()), name='api-v1-root'),
-	# list of all RNAcentral entries
-	url(r'^rna/?$', cache_page(CACHE_TIMEOUT)(views.RnaSequences.as_view()), name='rna-sequences'),
-	# single RNAcentral sequence
-	url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/?$', cache_page(CACHE_TIMEOUT)(views.RnaDetail.as_view()), name='rna-detail'),
+    # api root
+    url(r'^$', cache_page(CACHE_TIMEOUT)(views.APIRoot.as_view()), name='api-v1-root'),
+    # list of all RNAcentral entries
+    url(r'^rna/?$', cache_page(CACHE_TIMEOUT)(views.RnaSequences.as_view()), name='rna-sequences'),
+    # single RNAcentral sequence
+    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/?$', cache_page(CACHE_TIMEOUT)(views.RnaDetail.as_view()), name='rna-detail'),
     # view for all cross-references associated with an RNAcentral id
-	url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/xrefs/?$', cache_page(CACHE_TIMEOUT)(views.XrefList.as_view()), name='rna-xrefs'),
+    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/xrefs/?$', cache_page(CACHE_TIMEOUT)(views.XrefList.as_view()), name='rna-xrefs'),
     # view for all cross-references, filtered down to a specific taxon
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/xrefs/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.XrefsSpeciesSpecificList.as_view()), name='rna-xrefs-species-specific'),
     # secondary structure for a species-specific entry

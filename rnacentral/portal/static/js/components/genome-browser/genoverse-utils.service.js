@@ -23,6 +23,9 @@
 
 angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($filter) {
 
+    // Constructor
+    // -----------
+
     function GenoverseUtils($scope) {
         this.$scope = $scope;
 
@@ -32,21 +35,21 @@ angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($
 
         this.urls = {
             sequence: _.bind(function () {  // Sequence track configuration
-                var species = $filter('urlencodeSpecies')(this.$scope.genome.species);
+                var species = this.$scope.genome;
                 var endpoint = this.getEnsemblEndpoint(species);
                 return '__ENDPOINT__/sequence/region/__SPECIES__/__CHR__:__START__-__END__?content-type=text/plain'
                     .replace('__ENDPOINT__', endpoint)
                     .replace('__SPECIES__', species);
             }, this),
             genes: _.bind(function () {  // Genes track configuration
-                var species = $filter('urlencodeSpecies')(this.$scope.genome.species);
+                var species = this.$scope.genome;
                 var endpoint = this.getEnsemblEndpoint(species);
                 return '__ENDPOINT__/overlap/region/__SPECIES__/__CHR__:__START__-__END__?feature=gene;content-type=application/json'
                     .replace('__ENDPOINT__', endpoint)
                     .replace('__SPECIES__', species);
             }, this),
             transcripts: _.bind(function () {  // Transcripts track configuration
-                var species = $filter('urlencodeSpecies')(this.$scope.genome.species);
+                var species = this.$scope.genome;
                 var endpoint = this.getEnsemblEndpoint(species);
                 return '__ENDPOINT__/overlap/region/__SPECIES__/__CHR__:__START__-__END__?feature=transcript;feature=exon;feature=cds;content-type=application/json'
                     .replace('__ENDPOINT__', endpoint)
@@ -54,13 +57,13 @@ angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($
             }, this),
             RNAcentral: _.bind(function () {  // custom RNAcentral track
                 var origin = window.location.origin ? window.location.origin : window.location.protocol + "//" + window.location.host + '/';
-                return origin + '/api/v1/overlap/region/__SPECIES__/__CHR__:__START__-__END__'.replace('__SPECIES__', $filter('urlencodeSpecies')(this.$scope.genome.species));
+                return origin + '/api/v1/overlap/region/__SPECIES__/__CHR__:__START__-__END__'.replace('__SPECIES__', this.$scope.genome);
             }, this)
         };
 
         this.genesPopulateMenu = _.bind(function(feature) {
             var chrStartEnd = feature.seq_region_name + ':' + feature.start + '-' + feature.end; // string e.g. 'X:1-100000'
-            var location = '<a href="http://' + this.$scope.domain + '/' + $filter('urlencodeSpecies')(this.$scope.genome.species) + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
+            var location = '<a href="http://' + this.$scope.domain + '/' + this.$scope.genome + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
 
             var strand;
             if (feature.strand == 1) {
@@ -71,7 +74,7 @@ angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($
             }
 
             var result = {
-                title: '<a href="http://' + this.$scope.domain + '/' + $filter('urlencodeSpecies')(this.$scope.genome.species) + '/Gene/Summary?g=' + feature.gene_id + '">' + feature.gene_id + '</a>',
+                title: '<a href="http://' + this.$scope.domain + '/' + this.$scope.genome + '/Gene/Summary?g=' + feature.gene_id + '">' + feature.gene_id + '</a>',
                 "Assembly name": feature.assembly_name,
                 "Biotype": feature.biotype,
                 "Description": feature.description,
@@ -98,7 +101,7 @@ angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($
 
         this.transcriptsPopulateMenu = _.bind(function(feature) {
             var chrStartEnd = feature.seq_region_name + ':' + feature.start + '-' + feature.end; // string e.g. 'X:1-100000'
-            var location = '<a href="http://' + this.$scope.domain + '/' + $filter('urlencodeSpecies')(this.$scope.genome.species) + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
+            var location = '<a href="http://' + this.$scope.domain + '/' + this.$scope.genome + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
 
             var strand;
             if (feature.strand == 1) {
@@ -109,13 +112,13 @@ angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($
             }
 
             var result = {
-                title: '<a href="http://' + this.$scope.domain + '/' + $filter('urlencodeSpecies')(this.$scope.genome.species) + '/Transcript/Summary?db=core&t=' + feature.transcript_id + '">' + feature.transcript_id + '</a>',
+                title: '<a href="http://' + this.$scope.domain + '/' + this.$scope.genome + '/Transcript/Summary?db=core&t=' + feature.transcript_id + '">' + feature.transcript_id + '</a>',
                 "Assembly name": feature.assembly_name,
                 "Biotype": feature.biotype,
                 "Feature type": feature.feature_type,
                 "Location": location,
                 "Logic name": feature.logic_name,
-                "Parent": '<a href="http://' + this.$scope.domain + '/' + $filter('urlencodeSpecies')(this.$scope.genome.species) + '/Gene/Summary?g=' + feature.Parent + '">' + feature.Parent + '</a>',
+                "Parent": '<a href="http://' + this.$scope.domain + '/' + this.$scope.genome + '/Gene/Summary?g=' + feature.Parent + '">' + feature.Parent + '</a>',
                 "Source": feature.source,
                 "Strand": strand,
                 "Transcript id": feature.transcript_id,
@@ -146,7 +149,7 @@ angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($
 
         this.RNAcentralPopulateMenu = _.bind(function(feature) {
             var chrStartEnd = feature.seq_region_name + ':' + feature.start + '-' + feature.end; // string e.g. 'X:1-100000'
-            var location = '<a href="http://' + this.$scope.domain + '/' + $filter('urlencodeSpecies')(this.$scope.genome.species) + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
+            var location = '<a href="http://' + this.$scope.domain + '/' + this.$scope.genome + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
 
             var strand;
             if (feature.strand == 1) {
@@ -157,7 +160,7 @@ angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($
             }
 
             return {
-                title: '<a target=_blank href="http://rnacentral.org/rna/' + feature.label + '/' + this.$scope.genome.taxid.toString() +'">'+ feature.label + '</a>',
+                title: '<a target=_blank href="http://rnacentral.org/rna/' + feature.label + '/' + this.getGenomeObject(this.$scope.genome, this.$scope.genomes).taxid.toString() +'">'+ feature.label + '</a>',
                 "Description": feature.description || "",
                 "RNA type": feature.biotype,
                 "Feature type": feature.feature_type,
@@ -169,10 +172,318 @@ angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($
 
     }
 
+
+    // Methods
+    // -------
+
     GenoverseUtils.prototype.Genoverse = Genoverse;
 
+    GenoverseUtils.prototype.genomes = [
+        // Ensembl
+        {
+            'ensemblSpecies': 'homo_sapiens',
+            'species': 'Homo sapiens',
+            'synonyms': ['human'],
+            'assembly': 'GRCh38',
+            'assembly_ucsc': 'hg38',
+            'taxid': 9606,
+            'division': 'Ensembl',
+            'example_location': {
+                'chromosome': 'X',
+                'start': 73819307,
+                'end': 73856333
+            }
+        },
+        {
+            'ensemblSpecies': 'mus_musculus',
+            'species': 'Mus musculus',
+            'synonyms': ['mouse'],
+            'assembly': 'GRCm38',
+            'assembly_ucsc': 'mm10',
+            'taxid': 10090,
+            'division': 'Ensembl',
+            'example_location': {
+                'chromosome': 1,
+                'start': 86351908,
+                'end': 86352200
+            }
+        },
+        {
+            'ensemblSpecies': 'danio_rerio',
+            'species': 'Danio rerio',
+            'synonyms': ['zebrafish'],
+            'assembly': 'GRCz10',
+            'assembly_ucsc': 'danRer10',
+            'taxid': 7955,
+            'division': 'Ensembl',
+            'example_location': {
+                'chromosome': 9,
+                'start': 7633910,
+                'end': 7634210
+            }
+        },
+        {
+            'ensemblSpecies': 'bos_taurus',
+            'species': 'Bos taurus',
+            'synonyms': ['cow'],
+            'assembly': 'UMD3.1',
+            'assembly_ucsc': 'bosTau6',
+            'taxid': 9913,
+            'division': 'Ensembl',
+            'example_location': {
+                'chromosome': 15,
+                'start': 82197673,
+                'end': 82197837
+            }
+        },
+        {
+            'ensemblSpecies': 'rattus_norvegicus',
+            'species': 'Rattus norvegicus',
+            'synonyms': ['rat'],
+            'assembly': 'Rnor_6.0',
+            'assembly_ucsc': 'rn6',
+            'taxid': 10116,
+            'division': 'Ensembl',
+            'example_location': {
+                'chromosome': 'X',
+                'start': 118277628,
+                'end': 118277850
+            }
+        },
+        // {
+        //     'ensemblSpecies': 'felis_catus',
+        //     'species': 'Felis catus',
+        //     'synonyms': ['cat'],
+        //     'assembly': 'Felis_catus_6.2',
+        //     'assembly_ucsc': 'felCat5',
+        //     'taxid': 9685,
+        //     'division': 'Ensembl',
+        //     'example_location': {
+        //         'chromosome': 'X',
+        //         'start': 18058223,
+        //         'end': 18058546
+        //     }
+        // },
+        // {
+        //     'ensemblSpecies': 'macaca_mulatta',
+        //     'species': 'Macaca mulatta',
+        //     'synonyms': ['macaque'],
+        //     'assembly': 'MMUL_1',
+        //     'assembly_ucsc': '', # no matching assembly
+        //     'taxid': 9544,
+        //     'division': 'Ensembl',
+        //     'example_location': {
+        //         'chromosome': 1,
+        //         'start': 146238837,
+        //         'end': 146238946
+        //     }
+        // },
+        {
+            'ensemblSpecies': 'pan_troglodytes',
+            'species': 'Pan troglodytes',
+            'synonyms': ['chimp'],
+            'assembly': 'CHIMP2.1.4',
+            'assembly_ucsc': 'panTro4',
+            'taxid': 9598,
+            'division': 'Ensembl',
+            'example_location': {
+                'chromosome': 11,
+                'start': 78369004,
+                'end': 78369219
+            }
+        },
+        {
+            'ensemblSpecies': 'canis_lupus_familiaris',
+            'species': 'Canis familiaris',
+            'synonyms': ['dog', 'Canis lupus familiaris'],
+            'assembly': 'CanFam3.1',
+            'assembly_ucsc': 'canFam3',
+            'taxid': 9615,
+            'division': 'Ensembl',
+            'example_location': {
+                'chromosome': 19,
+                'start': 22006909,
+                'end': 22007119
+            }
+        },
+        // {
+        //     'ensemblSpecies': 'gallus_gallus',
+        //     'species': 'Gallus gallus',
+        //     'synonyms': ['chicken'],
+        //     'assembly': 'Galgal4',
+        //     'assembly_ucsc': 'galGal4',
+        //     'taxid': 9031,
+        //     'division': 'Ensembl',
+        //     'example_location': {
+        //         'chromosome': 9,
+        //         'start': 15676031,
+        //         'end': 15676160
+        //     }
+        // },
+        // {
+        //     'ensemblSpecies': 'xenopus_tropicalis',
+        //     'species': 'Xenopus tropicalis',
+        //     'synonyms': ['frog'],
+        //     'assembly': 'JGI_4.2',
+        //     'assembly_ucsc': 'xenTro3',
+        //     'taxid': 8364,
+        //     'division': 'Ensembl',
+        //     'example_location': {
+        //         'chromosome': 'NC_006839',
+        //         'start': 11649,
+        //         'end': 11717
+        //     }
+        // },
+        // Ensembl Fungi
+        // {
+        //     'ensemblSpecies': 'saccharomyces_cerevisiae',
+        //     'species': 'Saccharomyces cerevisiae',
+        //     'synonyms': ['budding yeast', 'Saccharomyces cerevisiae S288c'],
+        //     'assembly': 'R64-1-1',
+        //     'assembly_ucsc': '',
+        //     'taxid': 559292,
+        //     'division': 'Ensembl Fungi',
+        //     'example_location': {
+        //         'chromosome': 'XII',
+        //         'start': 856709,
+        //         'end': 856919
+        //     }
+        // },
+        {
+            'ensemblSpecies': 'schizosaccharomyces_pombe',
+            'species': 'Schizosaccharomyces pombe',
+            'synonyms': ['fission yeast'],
+            'assembly': 'ASM294v2',
+            'assembly_ucsc': '',
+            'taxid': 4896,
+            'division': 'Ensembl Fungi',
+            'example_location': {
+                'chromosome': 'I',
+                'start': 540951,
+                'end': 544327
+            }
+        },
+        // Ensembl Metazoa
+        {
+            'ensemblSpecies': 'caenorhabditis_elegans',
+            'species': 'Caenorhabditis elegans',
+            'synonyms': ['worm'],
+            'assembly': 'WBcel235',
+            'assembly_ucsc': 'ce11',
+            'taxid': 6239,
+            'division': 'Ensembl Metazoa',
+            'example_location': {
+                'chromosome': 'III',
+                'start': 11467363,
+                'end': 11467705
+            }
+        },
+        {
+            'ensemblSpecies': 'drosophila_melanogaster',
+            'species': 'Drosophila melanogaster',
+            'synonyms': ['fly'],
+            'assembly': 'BDGP6',
+            'assembly_ucsc': 'dm6',
+            'taxid': 7227,
+            'division': 'Ensembl Metazoa',
+            'example_location': {
+                'chromosome': '3R',
+                'start': 7474331,
+                'end': 7475217
+            }
+        },
+        {
+            'ensemblSpecies': 'bombyx_mori',
+            'species': 'Bombyx mori',
+            'synonyms': ['silkworm'],
+            'assembly': 'GCA_000151625.1',
+            'assembly_ucsc': '',
+            'taxid': 7091,
+            'division': 'Ensembl Metazoa',
+            'example_location': {
+                'chromosome': 'scaf16',
+                'start': 6180018,
+                'end': 6180422
+            }
+        },
+        // {
+        //     'ensemblSpecies': 'anopheles_gambiae',
+        //     'species': 'Anopheles gambiae',
+        //     'synonyms': [],
+        //     'assembly': 'AgamP4',
+        //     'assembly_ucsc': '',
+        //     'taxid': 7165,
+        //     'division': 'Ensembl Metazoa',
+        //     'example_location': {
+        //         'chromosome': '2R',
+        //         'start': 34644956,
+        //         'end': 34645131
+        //     }
+        // },
+
+        // Ensembl Protists
+        {
+            'ensemblSpecies': 'dictyostelium_discoideum',
+            'species': 'Dictyostelium discoideum',
+            'synonyms': [],
+            'assembly': 'dictybase.01',
+            'assembly_ucsc': '',
+            'taxid': 44689,
+            'division': 'Ensembl Protists',
+            'example_location': {
+                'chromosome': 2,
+                'start': 7874546,
+                'end': 7876498
+            }
+        },
+        // {
+        //     'ensemblSpecies': 'plasmodium_falciparum',
+        //     'species': 'Plasmodium falciparum',
+        //     'synonyms': [],
+        //     'assembly': 'ASM276v1',
+        //     'assembly_ucsc': '',
+        //     'taxid': 5833,
+        //     'division': 'Ensembl Protists',
+        //     'example_location': {
+        //         'chromosome': 13,
+        //         'start': 2796339,
+        //         'end': 2798488
+        //     }
+        // },
+
+        // Ensembl Plants
+        {
+            'ensemblSpecies': 'arabidopsis_thaliana',
+            'species': 'Arabidopsis thaliana',
+            'synonyms': [],
+            'assembly': 'TAIR10',
+            'assembly_ucsc': '',
+            'taxid': 3702,
+            'division': 'Ensembl Plants',
+            'example_location': {
+                'chromosome': 2,
+                'start': 18819643,
+                'end': 18822629
+            }
+        }
+    ];
+
+    GenoverseUtils.prototype.genomeNames = [];
+    for (var i = 0; i < GenoverseUtils.prototype.genomes.length; i++) {
+        GenoverseUtils.prototype.genomeNames.push(GenoverseUtils.prototype.genomes[i].ensemblSpecies);
+    }
+
+    GenoverseUtils.prototype.exampleLocations = {};
+    for (i = 0; i < GenoverseUtils.prototype.genomes.length; i++) {
+        GenoverseUtils.prototype.exampleLocations[GenoverseUtils.prototype.genomes[i].ensemblSpecies] = {
+            'chr': GenoverseUtils.prototype.genomes[i].example_location.chromosome,
+            'start': GenoverseUtils.prototype.genomes[i].example_location.start,
+            'end': GenoverseUtils.prototype.genomes[i].example_location.end
+        }
+    }
+
     GenoverseUtils.prototype.RNAcentralParseData = function(data) {
-        for (var i = 0; i < data.length; i++) {
+        for (i = 0; i < data.length; i++) {
             var feature = data[i];
 
             if (feature.feature_type === 'transcript' && !this.featuresById[feature.ID]) {
@@ -290,31 +601,57 @@ angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($
     };
 
     /**
+    * @param genome {String} - e.g. 'homo_sapient'
+    * @param genomes {Array} - contents of $scope.genome
+    * @returns {String} element of genomes array
+    */
+    GenoverseUtils.prototype.getGenomeObject = function(genome, genomes) {
+        // get genome object from Genomes
+        var genomeObject;
+        for (var i = 0; i < GenoverseUtils.prototype.genomes.length; i++) {
+            if (genome === GenoverseUtils.prototype.genomes[i].ensemblSpecies) {
+                genomeObject = GenoverseUtils.prototype.genomes[i];
+                return genomeObject;
+            }
+        }
+
+        // if we're here, this is a failure
+        console.log("Can't get genomeObject for genome: " + genome);
+        return null;
+    };
+
+    /**
      * Takes a genome on input, looks into its division attribute and returns the corresponding Ensembl
      * subdomain
      *
-     * @param genome {Object} e.g.
-     * {
-     *     'species': 'Mus musculus', 'synonyms': ['mouse'], 'assembly': 'GRCm38', 'assembly_ucsc': 'mm10',
+     * @param genome {String}
+     * @param genomes {Array} e.g.
+     * [{
+     *     'ensemblSpecies': 'mus_musculus', 'species': 'Mus musculus', 'synonyms': ['mouse'],
+     *     'assembly': 'GRCm38', 'assembly_ucsc': 'mm10',
      *     'taxid': 10090, 'division': 'Ensembl',
      *     'example_location': {'chromosome': 1, 'start': 86351981, 'end': 86352127,}
-     * }
+     * }, ...]
      * @returns {String} domain name without protocol or slashes or trailing dots
      */
-    GenoverseUtils.prototype.getEnsemblSubdomainByDivision = function(genome) {
+    GenoverseUtils.prototype.getEnsemblSubdomainByDivision = function(genome, genomes) {
         var subdomain;
 
-        if (genome.division == 'Ensembl') {
+        // get genome object from Genomes
+        var genomeObject = GenoverseUtils.prototype.getGenomeObject(genome, genomes);
+        if (!genomeObject) return null;
+
+        if (genomeObject.division == 'Ensembl') {
             subdomain = 'ensembl.org';
-        } else if (genome.division == 'Ensembl Plants') {
+        } else if (genomeObject.division == 'Ensembl Plants') {
             subdomain = 'plants.ensembl.org';
-        } else if (genome.division == 'Ensembl Metazoa') {
+        } else if (genomeObject.division == 'Ensembl Metazoa') {
             subdomain = 'metazoa.ensembl.org';
-        } else if (genome.division == 'Ensembl Bacteria') {
+        } else if (genomeObject.division == 'Ensembl Bacteria') {
             subdomain = 'bacteria.ensembl.org';
-        } else if (genome.division == 'Ensembl Fungi') {
+        } else if (genomeObject.division == 'Ensembl Fungi') {
             subdomain = 'fungi.ensembl.org';
-        } else if (genome.division == 'Ensembl Protists') {
+        } else if (genomeObject.division == 'Ensembl Protists') {
             subdomain = 'protists.ensembl.org';
         }
 
