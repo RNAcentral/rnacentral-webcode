@@ -155,8 +155,8 @@ body {
 /* override bootstrap 3.3.7 padding/margin to make navbar height like in 3.0.0 */
 .navbar-collapse.collapse a, .navbar-header a {
   /*padding-top: 5px !important; - original value in bootstrap3.0.0 */
-  padding-top: 8px !important; /* our override to center text */
-  padding-bottom: 5px !important;
+  padding-top: 9px !important; /* our override to center text */
+  padding-bottom: 3px !important;
 }
 
 .navbar-default {
@@ -192,6 +192,11 @@ body {
   /*margin-top: 5px; - original value in bootstrap 3.0.0 */
   margin-top: 7px; /* our override */
   margin-bottom: 5px;
+}
+
+.rnacentral-masthead-menu .navbar-text .badge {
+  padding-top: 5px;
+  padding-bottom: 3px;
 }
 
 /* override bootstrap 3.3.7 padding/margin to make navbar height like in 3.0.0 */
