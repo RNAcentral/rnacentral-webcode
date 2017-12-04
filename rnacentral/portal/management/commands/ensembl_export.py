@@ -167,7 +167,10 @@ class Exporter(object):
         if test:
             self.min = 0
             self.max = 10000
-        self.filename = 'ensembl-xrefs.json'
+        self.filename = 'ensembl-xrefs-{min}-{max}.json'.format(
+            min=self.min,
+            max=self.max,
+        )
         self.filepath = os.path.join(self.destination, self.filename)
         self.validator = validator
         self.schema = os.path.realpath(
