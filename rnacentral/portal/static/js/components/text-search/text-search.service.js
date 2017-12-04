@@ -78,7 +78,7 @@ var search = function(_, $http, $interpolate, $location, $window, $q) {
             'rna_type': 'RNA type',
             'standard_name': 'Standard name'
         },
-        facetfields: ['rna_type', 'TAXONOMY', 'expert_db', 'rfam_problems', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
+        facetfields: ['rna_type', 'TAXONOMY', 'expert_db', 'rfam_problem_found', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
         facetcount: 30,
         pagesize: 15,
     };
@@ -263,6 +263,19 @@ var search = function(_, $http, $interpolate, $location, $window, $q) {
         data.facets = _.sortBy(data.facets, function(facet){
             return _.indexOf(self.config.facetfields, facet.id);
         });
+
+        // update rfam_problem_found labels from True/Fase to Yes/No
+        for (var i=0; i < data.facets.length; i++) {
+            if (data.facets[i].id == 'rfam_problem_found') {
+                for (var j=0; j < data.facets[i].facetValues.length; j++) {
+                    if (data.facets[i].facetValues[j].label == 'True') {
+                        data.facets[i].facetValues[j].label = 'Yes';
+                    } else if (data.facets[i].facetValues[j].label == 'False') {
+                        data.facets[i].facetValues[j].label = 'No';
+                    }
+                }
+            }
+        }
 
          // Use `hlfields` with highlighted matches instead of `fields`.
         for (var i=0; i < data.entries.length; i++) {
