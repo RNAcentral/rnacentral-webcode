@@ -185,7 +185,7 @@ class Exporter(object):
         for testing.
         """
 
-        xrefs = Xref.objects.filter(deleted='N')
+        xrefs = Xref.default_objects.filter(deleted='N')
 
         if kwargs:
             xrefs = xrefs.filter(**kwargs)
