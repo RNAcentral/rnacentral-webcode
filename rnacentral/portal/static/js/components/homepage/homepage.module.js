@@ -1,4 +1,4 @@
-var HomepageController = function($scope, $location, $window) {
+var HomepageController = function($scope) {
     $scope.rainbowTroutPublication = {
         "title": "Genome-Wide Discovery of Long Non-Coding RNAs in Rainbow Trout.",
         "authors": ["Al-Tobasei R", "Paneru B", "Salem M"],
@@ -36,7 +36,7 @@ var HomepageController = function($scope, $location, $window) {
     };
 };
 
-HomepageController.$inject = ['$scope', '$location'];
+HomepageController.$inject = ['$scope'];
 
 
 angular.module("homepage", ['ngResource', 'ngAnimate', 'ngSanitize', 'ui.bootstrap', 'rnaSequence'])
