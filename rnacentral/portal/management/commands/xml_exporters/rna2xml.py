@@ -290,7 +290,7 @@ class RnaXmlExporter(object):
             self.data['rna_type'].update(get_rna_type(result))
             self.data['tax_string'].add(saxutils.escape(result['tax_string']))
 
-        self.data['has_rfam_problem'] = [str(bool(self.data['rfam_problems']))]
+        self.data['rfam_problem_found'] = [str(bool(self.data['rfam_problems']))]
         if not self.data['rfam_problems']:
             self.data['rfam_problems'].add('none')
 
