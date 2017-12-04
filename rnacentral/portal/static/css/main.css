@@ -904,6 +904,10 @@ textarea {
   opacity: 0;
 }
 
+.abstract-text {
+  word-wrap: break-word;
+}
+
 /* Transitions for abstract-text */
 
 .abstract-text.slide-down.ng-enter {

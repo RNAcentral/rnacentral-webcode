@@ -1,6 +1,4 @@
-var useCasesController = function($scope, $location, $window, $rootScope, $http, routes) {
-    $scope.routes = routes;  // expose routes in template for error message
-
+var HomepageController = function($scope, $location, $window) {
     $scope.rainbowTroutPublication = {
         "title": "Genome-Wide Discovery of Long Non-Coding RNAs in Rainbow Trout.",
         "authors": ["Al-Tobasei R", "Paneru B", "Salem M"],
@@ -11,7 +9,7 @@ var useCasesController = function($scope, $location, $window, $rootScope, $http,
     };
 
     $scope.bovineLeukemiaPublication = {
-        "title": "Characterization of novel Bovine Leukemia Virus (BLV) antisense transcripts by deep sequencing reveals constitutive expression in tumors and transcriptional interaction with viral microRNAs.",
+        "title": "Genome-Wide Discovery of Long Non-Coding RNAs in Rainbow Trout.",
         "authors": ["Durkin K", "Rosewick N", "Artesi M", "Hahaut V", "Griebel P", "Arsic N", "Burny A", "Georges M", "Van den Broeke A"],
         "publication": "Retrovirology. 2016 May 3;13(1):33",
         "pubmed_id": 27141823,
@@ -38,8 +36,8 @@ var useCasesController = function($scope, $location, $window, $rootScope, $http,
     };
 };
 
-useCasesController.$inject = ['$scope', '$location', '$window', '$rootScope', '$http', 'routes'];
+HomepageController.$inject = ['$scope', '$location'];
 
 
-angular.module("useCases", ['ngResource', 'ngAnimate', 'ngSanitize', 'ui.bootstrap', 'rnaSequence'])
-    .controller("useCasesController", useCasesController);
+angular.module("homepage", ['ngResource', 'ngAnimate', 'ngSanitize', 'ui.bootstrap', 'rnaSequence'])
+    .controller("HomepageController", HomepageController);

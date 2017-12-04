@@ -118,19 +118,21 @@ RNAcentral: The non-coding RNA sequence database
 
   </div>
 
-  <div class="row">
+  <div class="row" ng-controller="HomepageController">
     <h2 class="text-center margin-bottom-0px">Why <a href="https://twitter.com/hashtag/UsingRNAcentral?src=hash">#UsingRNAcentral</a>?</h2>
 
     <div class="col-md-4">
       <div class="panel panel-default">
         <h3 class="text-center"><a href="{% url 'use-cases' %}#reference-ncrna-set">Reference ncRNA set</a></h3>
         <div class="panel-body">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Lake_Washington_Ship_Canal_Fish_Ladder_pamphlet_-_male_freshwater_phase_Steelhead.jpg">
           <p>
-            <p>RNAcentral used as a reference data set to discover new ncRNA in trout and Bovine Leukemia Virus.</p>
+            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Lake_Washington_Ship_Canal_Fish_Ladder_pamphlet_-_male_freshwater_phase_Steelhead.jpg">
+            <h4>RNAcentral used as a reference data set to discover new ncRNA in trout and Bovine Leukemia Virus.</h4>
             <blockquote>
-              <i>Al-Tobassei et al., PLoS One, 2016, PMID: 26895175</i><br>
-              <i>Durkin et. al., Retrovirology, 2016, PMID: 27141823</i>
+              <publication publication="rainbowTroutPublication"></publication>
+            </blockquote>
+            <blockquote>
+              <publication publication="bovineLeukemiaPublication"></publication>
             </blockquote>
           </p>
         </div>
@@ -142,13 +144,12 @@ RNAcentral: The non-coding RNA sequence database
         <h3 class="text-center"><a href="{% url 'use-cases' %}#literature-curation">Literature curation</a></h3>
         <div class="panel-body">
           <p>
-            <img src="https://pbs.twimg.com/profile_images/378800000553445763/e58f95d5139e075ad62514b88e97b6ac_400x400.png" style="height: 120px; margin-right: 5px;" class="pull-left">
-            <p>Stable RNAcentral ids used to annotate human miRNAs with Gene Ontology terms.</p>
-            <div class="clearfix"></div>
+            <img src="https://pbs.twimg.com/profile_images/378800000553445763/e58f95d5139e075ad62514b88e97b6ac_400x400.png" style="height: 120px; margin: auto; display: block;">
+            <h4>Stable RNAcentral ids used to annotate human miRNAs with Gene Ontology terms.</h4>
+            <blockquote>
+              <publication publication="goCurationPublication"></publication>
+            </blockquote>
           </p>
-          <blockquote>
-            <i>Huntley et al., RNA, 2016, PMID: 26917558</i>
-          </blockquote>
         </div>
       </div>
     </div>
@@ -158,12 +159,11 @@ RNAcentral: The non-coding RNA sequence database
         <h3 class="text-center"><a href="{% url 'use-cases' %}#programmatic-information-retrieval">Programmatic information retrieval</a></h3>
         <div class="panel-body">
           <p>
-            <img src="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4595900/bin/btv372f1p.jpg" style="height: 150px; margin-right: 5px;" class="pull-left">
-            <p>Source of sequences for secondary structure prediction.</p>
-            <div class="clearfix"></div>
+            <img src="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4595900/bin/btv372f1p.jpg" style="height: 150px; margin: auto; display: block;">
+            <h4>Source of sequences for secondary structure prediction.</h4>
           </p>
           <blockquote>
-            <i>Kerpedjiev et al., Bioinformatics, 2015, PMID: 26099263</i>
+            <publication publication="secondaryStructurePredictionPublication"></publication>
           </blockquote>
         </div>
       </div>
