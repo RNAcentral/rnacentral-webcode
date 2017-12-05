@@ -26,7 +26,7 @@ For example, when a **Eukaryotic sequence** matches an Rfam family that is only 
 #### Examples
 
 * [Bacterial GcvB RNA detected in mouse](/rna/URS00002EF971/10090)
-* [Human lncRNA matching Bacterial LSU model](/rna/URS000013EF30/10090)
+* [Mouse rRNA matching Bacterial LSU model](/rna/URS000013EF30/10090)
 * [Archaeal RNA matching Bacterial SRP](/rna/URS000028B82D/374847)
 
 Sequences of this type can be browsed with [`rfam_problems:"possible_contamination"`](/search?q=rfam_problems:%22possible_contamination%22).
