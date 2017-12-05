@@ -41,31 +41,33 @@
       "rna_type": {
         "description": "The INSDC type of the sequence",
         "enum": [
+          "RNase_MRP_RNA",
+          "RNase_P_RNA",
+          "SRP_RNA",
+          "Y_RNA",
           "antisense_RNA",
           "autocatalytically_spliced_intron",
-          "ribozyme",
+          "guide_RNA",
           "hammerhead_ribozyme",
           "lncRNA",
-          "RNase_P_RNA",
-          "RNase_MRP_RNA",
-          "telomerase_RNA",
-          "guide_RNA",
+          "miRNA",
+          "misc_RNA",
+          "ncRNA",
+          "other",
+          "piRNA",
+          "precursor_RNA",
+          "rRNA",
           "rasiRNA",
+          "ribozyme",
+          "sRNA",
           "scRNA",
           "siRNA",
-          "miRNA",
-          "piRNA",
-          "snoRNA",
           "snRNA",
-          "SRP_RNA",
-          "vault_RNA",
-          "Y_RNA",
-          "other",
-          "misc_RNA",
-          "rRNA",
+          "snoRNA",
           "tRNA",
+          "telomerase_RNA",
           "tmRNA",
-          "precursor_RNA"
+          "vault_RNA"
         ]
       },
 
@@ -97,7 +99,7 @@
                 "SNOpy",
                 "srPDB",
                 "tmRNA Website",
-                "Rfam" 
+                "Rfam"
               ]
             },
 
