@@ -434,7 +434,8 @@ def get_species_specific_name(rna_type, xrefs):
         description = select_best_description(descriptions)
 
     description = remove_extra_description_terms(description)
-    description = trim_trailing_rna_type(rna_type, description)
+    if db_name == 'RefSeq':
+        description = trim_trailing_rna_type(rna_type, description)
 
     return description.strip()
 
