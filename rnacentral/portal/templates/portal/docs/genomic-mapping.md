@@ -1,5 +1,5 @@
 
-## Genome-specific functionality <a name="genome-specific-functionality" href="#genome-specific-functionality" class="text-muted smaller"><i class="fa fa-link"></i></a>
+## Genome-specific functionality <a style="cursor: pointer" id="genome-specific-functionality" ng-click="scrollTo('genome-specific-functionality')" name="genome-specific-functionality" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Whenever genomic mapping is available, RNAcentral sequences can be viewed
 in their genomic context using a light-weight **genome browser** [Genoverse](http://genoverse.org)
@@ -11,7 +11,7 @@ and their genomic neighborhood can be interactively explored without leaving the
 The genomic coordinates of the RNAcentral entries can be **downloaded** in a variety of formats
 from the [FTP site](http://rnacentral.org/downloads) or through the [REST API](http://rnacentral.org/api).
 
-## About genomic mapping <a name="about-genomic-mapping" href="#about-genomic-mapping" class="text-muted smaller"><i class="fa fa-link"></i></a>
+## About genomic mapping <a style="cursor: pointer" id="about-genomic-mapping" ng-click="scrollTo('about-genomic-mapping')" name="about-genomic-mapping" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Viewing ncRNA sequences in their genomic context can often provide valuable information.
 For example, snoRNAs that are transcribed within the introns of protein coding genes

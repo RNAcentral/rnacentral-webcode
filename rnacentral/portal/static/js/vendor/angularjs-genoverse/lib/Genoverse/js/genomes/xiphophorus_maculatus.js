@@ -1,1 +1,0 @@
-Genoverse.Genomes.xiphophorus_maculatus = {};

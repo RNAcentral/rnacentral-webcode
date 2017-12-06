@@ -1,1 +1,0 @@
-Genoverse.Genomes.latimeria_chalumnae = {};

@@ -42,6 +42,7 @@ urlpatterns = patterns('',
     url(r'^help/?$', views.StaticView.as_view(), {'page': 'help/faq'}, name='help'),
     url(r'^help/browser-compatibility/?$', views.StaticView.as_view(), {'page': 'help/browser-compatibility'}, name='help-browser-compatibility'),
     url(r'^help/text-search/?$', views.StaticView.as_view(), {'page': 'help/text-search'}, name='help-text-search'),
+    url(r'^help/rfam-annotations/?$', views.StaticView.as_view(), {'page': 'help/rfam-annotations'}, name='help-rfam-annotations'),
     url(r'^help/genomic-mapping/?$', views.StaticView.as_view(), {'page': 'help/genomic-mapping', 'divisions': get_ensembl_divisions()}, name='help-genomic-mapping'),
     # training
     url(r'^training/?$', views.StaticView.as_view(), {'page': 'training'}, name='training'),
@@ -62,17 +63,12 @@ urlpatterns = patterns('',
     url(r'^genome-browser/?$', views.GenomeBrowserView.as_view(), {}, name='genome-browser'),
     # search proxy
     url(r'^api/internal/ebeye/?$', 'portal.views.ebeye_proxy', name='ebeye-proxy'),
-    # expert databases
-    url(r'^api/internal/expert-dbs/$', views.ExpertDatabasesAPIView.as_view(), {}, name='expert-dbs-api')
 )
 
 # internal API
 urlpatterns += patterns('',
-    # get xrefs table
-    url(r'^rna/(?P<upi>\w+)/xrefs/?$', 'portal.views.get_xrefs_data'),
-    url(r'^rna/(?P<upi>\w+)/xrefs/(?P<taxid>\d+)/?$', 'portal.views.get_xrefs_data'),
     # get species tree
-    url(r'^rna/(?P<upi>\w+)/lineage/?$', 'portal.views.get_sequence_lineage'),
+    url(r'^rna/(?P<upi>\w+)/lineage/?$', 'portal.views.get_sequence_lineage', name='sequence-lineage'),
 )
 
 # sitemaps

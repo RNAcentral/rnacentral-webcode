@@ -74,7 +74,7 @@ class Command(BaseCommand):
     python manage.py xml_export <options>
 
     Example:
-    python manage.py xml_export --destination /full/path/to/output/location --min=0 --max=100
+    python manage.py xml_export --destination /full/path/to/output/location --min=1 --max=100
 
     Help:
     python manage.py xml_export -h
@@ -171,9 +171,9 @@ class Command(BaseCommand):
         filename = None
         query = None
         count = None
-        if options['min']:
+        if options['min'] is not None:
             filename = 'xml4dbdumps__{min}__{max}.xml'.format(
-                min=options['min'],
+                min=max(options['min'], 1),
                 max=options['max'],
             )
             query = Rna.objects.filter(
@@ -207,5 +207,5 @@ class Command(BaseCommand):
 
             filehandle.write('</entries></database>')
 
-        xmllint(filename)
-        gzip_file(filename)
+        xmllint(filepath)
+        gzip_file(filepath)

@@ -19,6 +19,7 @@ RUN yum install -y \
     openssl-devel \
     tar \
     unzip \
+    wget \
     zlib-devel
 
 RUN mkdir /rnacentral
@@ -132,20 +133,15 @@ RUN \
     rm -Rf mod_wsgi-3.4 && \
     rm mod_wsgi-3.4.tar.gz
 
-# Install Oracle Instant Client
+# Install UCSC utilities
 RUN \
-    cd $LOC && \
-    curl -OL https://www.dropbox.com/s/iyguhv6qxluw2nv/instantclient-basic-linux.x64-12.1.0.2.0.zip?dl=1 && \
-    curl -OL https://www.dropbox.com/s/eaqyop7m4dukkbi/instantclient-sdk-linux.x64-12.1.0.2.0.zip?dl=1 && \
-    mv instantclient-basic-linux.x64-12.1.0.2.0.zip?dl=1 instantclient-basic-linux.x64-12.1.0.2.0.zip && \
-    mv instantclient-sdk-linux.x64-12.1.0.2.0.zip?dl=1 instantclient-sdk-linux.x64-12.1.0.2.0.zip && \
-    unzip instantclient-basic-linux.x64-12.1.0.2.0.zip && \
-    unzip instantclient-sdk-linux.x64-12.1.0.2.0.zip && \
-    rm *.zip && \
-    ln -s $LOC/instantclient_12_1/libclntsh.so.12.1 $LOC/instantclient_12_1/libclntsh.so
-
-ENV ORACLE_HOME $LOC/instantclient_12_1
-ENV LD_LIBRARY_PATH $LOC/instantclient_12_1
+  cd $LOC && \
+  mkdir ucsc && \
+  cd ucsc && \
+  wget http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/fetchChromSizes && \
+  wget http://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/bedToBigBed && \
+  chmod o+x fetchChromSizes && \
+  chmod o+x bedToBigBed
 
 # Define container environment variables
 ENV RNACENTRAL_HOME /rnacentral/rnacentral-webcode
@@ -155,7 +151,6 @@ ENV RNACENTRAL_LOCAL /rnacentral/local
 ADD rnacentral/requirements.txt $RNACENTRAL_HOME/rnacentral/
 RUN \
     source $LOC/virtualenvs/RNAcentral/bin/activate && \
-    export LD_RUN_PATH=$LOC/instantclient_12_1 && \
     pip install -r $RNACENTRAL_HOME/rnacentral/requirements.txt
 
 # Expose a container port where the website is served

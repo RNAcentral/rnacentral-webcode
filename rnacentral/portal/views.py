@@ -15,6 +15,7 @@ import json
 import math
 import re
 import requests
+import types
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import Http404, HttpResponse
@@ -29,7 +30,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from portal.config.expert_databases import expert_dbs
-from portal.config.genomes import genomes as rnacentral_genomes
+from portal.config.genomes import genomes as rnacentral_genomes, get_taxonomy_info_by_genome_identifier
 from portal.forms import ContactForm
 from portal.models import Rna, Database, Release, Xref
 from portal.models.database_stats import DatabaseStats
@@ -41,26 +42,6 @@ XREF_PAGE_SIZE = 1000
 ########################
 # Function-based views #
 ########################
-
-@never_cache
-def get_xrefs_data(request, upi, taxid=None):
-    """
-    Internal API.
-    Get the xrefs table in batches.
-    """
-    xref_list = Rna.objects.get(upi=upi).get_xrefs(taxid=taxid).all()
-    paginator = Paginator(xref_list, XREF_PAGE_SIZE)
-
-    page = request.GET.get('page')
-    try:
-        xrefs = paginator.page(page)
-    except PageNotAnInteger:
-        xrefs = paginator.page(1)
-    except EmptyPage:
-        xrefs = paginator.page(paginator.num_pages)
-
-    return render_to_response('portal/xref-table.html', {"xrefs": xrefs})
-
 
 @cache_page(CACHE_TIMEOUT)
 def get_sequence_lineage(request, upi):
@@ -146,15 +127,16 @@ def rna_view(request, upi, taxid=None):
         'xref_page_num': int(request.GET.get('xref-page')) if request.GET.get('xref-page') else 1,
         'xrefs_count': rna.count_xrefs(taxid) if taxid_filtering else rna.count_xrefs(),
         'precomputed': RnaPrecomputed.objects.filter(upi=upi, taxid=taxid).first(),
+        'rfam_status': rna.get_rfam_status(taxid=taxid),
     }
 
-    return render(request, 'portal/unique-rna-sequence.html', {'rna': rna, 'context': context})
+    return render(request, 'portal/sequence.html', {'rna': rna, 'context': context})
 
 
 def get_single_species(rna, taxid, taxid_filtering):
     """Determine if the sequence has only one species or get the taxid species."""
     if taxid_filtering:  # if taxid_filtering, taxid should be supplied - get a species name given that NCBI taxid
-        xref = Xref.objects.filter(taxid=taxid).select_related('accession')[:1].get()
+        xref = Xref.default_objects.filter(taxid=taxid).select_related('accession')[:1].get()
         return xref.accession.species if xref else None  # if not available for this species, return None
     else:  # if filtering is not enabled, still, there might be only one species in references
         if rna.count_distinct_organisms == 1:
@@ -206,15 +188,6 @@ def expert_database_view(request, expert_db_name):
         return render_to_response('portal/coming-soon.html')
     else:
         raise Http404()
-
-
-class ExpertDatabasesAPIView(APIView):
-    """Return a list of RNA expert databases, indexed in RNAcentral."""
-    permission_classes = ()
-    authentication_classes = ()
-
-    def get(self, request, format=None):
-        return Response(expert_dbs)
 
 
 @never_cache
@@ -292,7 +265,7 @@ class GenomeBrowserView(TemplateView):
             # if user tinkers with it, she won't shoot anyone but herself
 
             # find our genome in taxonomy, replace genome with a dict with taxonomy data
-            kwargs['genome'] = _get_taxonomy_info_by_genome_identifier(request.GET['species'])
+            kwargs['genome'] = request.GET['species']
             if kwargs['genome'] is None:
                 raise Http404
 
@@ -305,10 +278,11 @@ class GenomeBrowserView(TemplateView):
             kwargs['start'] = request.GET['start']
             kwargs['end'] = request.GET['end']
         else:
-            kwargs['genome'] = _get_taxonomy_info_by_genome_identifier('homo_sapiens')
-            kwargs['chromosome'] = kwargs['genome']['example_location']['chromosome']
-            kwargs['start'] = kwargs['genome']['example_location']['start']
-            kwargs['end'] = kwargs['genome']['example_location']['end']
+            genome_info = get_taxonomy_info_by_genome_identifier('homo_sapiens')
+            kwargs['genome'] = 'homo_sapiens'
+            kwargs['chromosome'] = genome_info['example_location']['chromosome']
+            kwargs['start'] = genome_info['example_location']['start']
+            kwargs['end'] = genome_info['example_location']['end']
 
         response = super(GenomeBrowserView, self).get(request, *args, **kwargs)
         try:
@@ -335,46 +309,6 @@ class ContactView(FormView):
 # Helper functions #
 ####################
 
-def _get_taxonomy_info_by_genome_identifier(identifier):
-    """
-    Returns a valid taxonomy, given a taxon identifier.
-
-    :param identifier: this is what we receive from django named urlparam
-    This is either a scientific name, or synonym or taxId. Note: whitespaces
-    in it are replaced with hyphens to avoid having to urlencode them.
-
-    :return: e.g. {
-        'species': 'Homo sapiens',
-        'synonyms': ['human'],
-        'assembly': 'GRCh38',
-        'assembly_ucsc': 'hg38',
-        'taxid': 9606,
-        'division': 'Ensembl',
-        'example_location': {
-            'chromosome': 'X',
-            'start': 73792205,
-            'end': 73829231,
-        }
-    }
-    """
-    identifier = identifier.replace('_', ' ')  # we transform all underscores back to whitespaces
-
-    for genome in rnacentral_genomes:
-        # check, if it's a scientific name or a trivial name
-        synonyms = [synonym.lower() for synonym in genome['synonyms']]
-        if (identifier.lower() == genome['species'].lower() or
-           identifier.lower() in synonyms):
-            return genome
-
-        # check, if it's a taxid
-        try:
-            if int(identifier) == genome['taxid']:
-                return genome
-        except ValueError:
-            pass
-
-    return None  # genome not found
-
 
 def _get_json_lineage_tree(xrefs):
     """
@@ -384,9 +318,14 @@ def _get_json_lineage_tree(xrefs):
 
     def get_lineages_and_taxids():
         """Combine the lineages from all accessions in a single list."""
-        for xref in xrefs:
-            lineages.append(xref.accession.classification)
-            taxids[xref.accession.classification.split('; ')[-1]] = xref.taxid
+        if isinstance(xrefs, types.ListType):
+            for xref in xrefs:
+                lineages.add(xref[0])
+                taxids[xref[0].split('; ')[-1]] = xref[1]
+        else:
+            for xref in xrefs:
+                lineages.add(xref.accession.classification)
+                taxids[xref.accession.classification.split('; ')[-1]] = xref.taxid
 
     def build_nested_dict_helper(path, text, container):
         """Recursive function that builds the nested dictionary."""
@@ -457,7 +396,7 @@ def _get_json_lineage_tree(xrefs):
                 get_nested_tree(children, container['children'][-1])
         return container
 
-    lineages = []
+    lineages = set()
     taxids = dict()
     get_lineages_and_taxids()
     nodes = get_nested_dict(lineages)

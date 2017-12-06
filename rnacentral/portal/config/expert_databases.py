@@ -30,21 +30,15 @@ expert_dbs = [
         ],
         'references': [
             {
-                'title': 'Facing growth in the European Nucleotide Archive',
-                'authors': 'Cochrane G, Alako B, Amid C, Bower L, Cerdeno-Tarraga A, Cleland I, Gibson R, Goodgame N, Jang M, Kay S et al.',
-                'journal': 'Nucleic Acids Res. 2013 Jan;41(Database issue):D30-5',
-                'pubmed_id': 23203883,
-            },
-            {
-                'title': 'Assembly information services in the European Nucleotide Archive',
-                'authors': 'Pakseresht N, Alako B, Amid C, Cerdeno-Tarraga A, Cleland I, Gibson R, Goodgame N, Gur T, Jang M, Kay S et al.',
-                'journal': 'Nucleic Acids Res. 2014 Jan;42(Database issue):D38-43',
-                'pubmed_id': 24214989,
+                'title': 'The European Nucleotide Archive in 2017',
+                'authors': 'Silvester et al.',
+                'journal': 'Nucleic Acids Res. 2017',
+                'pubmed_id': 29140475,
             },
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'r130',
+        'version': '133',
     },
     {
         'name': 'PDBe',
@@ -55,9 +49,9 @@ expert_dbs = [
         'tags': ['curated', '3D structure'],
         'abbreviation': 'Protein Data Bank in Europe',
         'examples': [
-            {'upi': 'URS00000ABFE9', 'taxid': 562}, # E.coli SSU, 4V4Q chain AA
-            {'upi': 'URS00005A14E2', 'taxid': 9606}, # Human SSU, 4V6X chain B2
-            {'upi': 'URS000032B6B6', 'taxid': 9606}, # Human U1 snRNA, PDB 3PGW chain N
+            {'upi': 'URS00000ABFE9', 'taxid': 562},  # E.coli SSU, 4V4Q chain AA
+            {'upi': 'URS00005A14E2', 'taxid': 9606},  # Human SSU, 4V6X chain B2
+            {'upi': 'URS000032B6B6', 'taxid': 9606},  # Human U1 snRNA, PDB 3PGW chain N
         ],
         'references': [
             {
@@ -69,7 +63,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'as of December 9th, 2016',
+        'version': 'as of October 20th, 2016',
     },
     {
         'name': 'FlyBase',
@@ -93,15 +87,15 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': 'FB2017_01',
     },
     {
         'name': 'Ensembl',
         'label': 'ensembl',
         'url': 'http://ensembl.org/',
-        'description': 'is a genome browser for vertebrate genomes that supports research in comparative genomics, evolution, sequence variation and transcriptional regulation',
-        'hint': 'Ensembl is a genome browser for vertebrate genomes that supports research in comparative genomics, evolution, sequence variation and transcriptional regulation',
+        'description': 'is a genome browser for vertebrate genomes and model organisms that supports research in comparative genomics, evolution, sequence variation and transcriptional regulation',
+        'hint': 'Ensembl is a genome browser for vertebrate genomes and model organisms that supports research in comparative genomics, evolution, sequence variation and transcriptional regulation',
         'tags': ['curated', 'reference genomes'],
         'abbreviation': '',
         'examples': [
@@ -118,8 +112,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
-        'version': '87',
+        'status': 'updated',
+        'version': '90',
     },
     {
         'name': 'GENCODE',
@@ -143,13 +137,13 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': 'updated',
         'version': 'human 25/mouse M12',
     },
     {
         'name': 'Rfam',
         'label': 'rfam',
-        'url': 'http://rfam.xfam.org',
+        'url': 'http://rfam.org',
         'description': 'is a collection of non-coding RNA families represented by manually curated sequence alignments, consensus secondary structures and predicted homologues',
         'hint': 'Rfam is a collection of non-coding RNA families, represented by manually curated sequence alignments, consensus secondary structures and predicted homologues',
         'tags': ['curated', 'automatic', 'alignments'],
@@ -161,21 +155,21 @@ expert_dbs = [
         ],
         'references': [
             {
+                'title': 'Rfam 13.0: Shifting to a genome-centric resource for non- coding RNA families',
+                'authors': 'Kalvari I, Argasinska J, Quinones-Olvera N, Nawrocki EP, Rivas E, Eddy SR, Bateman A, Finn RD, Petrov AI',
+                'journal': 'Nucleic Acids Res. 2017 (Accepted)',
+                'pubmed_id': None,
+            },
+            {
                 'title': 'Rfam 12.0: updates to the RNA families database',
                 'authors': 'Nawrocki EP, Burge SW, Bateman A, Daub J, Eberhardt RY, Eddy SR, Floden EW, Gardner PP, Jones TA, Tate J, Finn RD',
                 'journal': 'Nucleic Acids Res. 2015 Jan 28;43(Database issue):D130-7',
                 'pubmed_id': 25392425,
             },
-            {
-                'title': 'Rfam 11.0: 10 years of RNA families',
-                'authors': 'Burge SW, Daub J, Eberhardt R, Tate J, Barquist L, Nawrocki EP, Eddy SR, Gardner PP, Bateman A',
-                'journal': 'Nucleic Acids Res. 2013 Jan;41(Database issue):D226-32',
-                'pubmed_id': 23125362,
-            },
         ],
         'imported': True,
         'status': '',
-        'version': 'Rfam 12.1',
+        'version': '13.0',
     },
     {
         'name': 'miRBase',
@@ -237,8 +231,8 @@ expert_dbs = [
         'name': 'tmRNA Website',
         'label': 'tmrna-website',
         'url': 'http://bioinformatics.sandia.gov/tmrna/',
-        'description': 'contains predicted tmRNA sequences from RefSeq prokaryotic genomes, plasmids and phages',
-        'hint': 'tmRNA Website contains predicted tmRNA sequences from RefSeq prokaryotic genomes, plasmids and phages',
+        'description': 'contains predicted tmRNA sequences from RefSeq bacterial genomes, plasmids, phages and some organelles; these include two-piece tmRNAs from permuted genes',
+        'hint': 'tmRNA Website contains predicted tmRNA sequences from RefSeq bacterial genomes, plasmids, phages and some organelles',
         'tags': ['automatic', 'tmRNA'],
         'abbreviation': '',
         'examples': [
@@ -248,11 +242,17 @@ expert_dbs = [
         ],
         'references': [
             {
+                'title': 'The tmRNA website',
+                'authors': 'Hudson CM, Williams KP',
+                'journal': 'Nucleic Acids Res. 43(Database issue):D138-40. (2015 Jan)',
+                'pubmed_id': 25378311,
+            },
+            {
                 'title': 'The tmRNA website: reductive evolution of tmRNA in plastids and other endosymbionts',
                 'authors': 'Gueneau de Novoa P., Williams KP.',
                 'journal': 'Nucleic Acids Res. 32(Database issue): D104-8 (2004 Jan)',
                 'pubmed_id': 14681369,
-            },
+            }
         ],
         'imported': True,
         'status': '',
@@ -320,7 +320,7 @@ expert_dbs = [
         'url': 'http://gtrnadb.ucsc.edu/',
         'description': 'contains tRNA gene predictions on complete or nearly complete genomes',
         'hint': 'GtRNAdb contains tRNA gene predictions on complete or nearly complete genomes',
-        'tags': ['automatic', 'tRNA'],
+        'tags': ['automatic', 'tRNA', 'secondary structure'],
         'abbreviation': '',
         'examples': [
             {'upi': 'URS000047C79B', 'taxid': 9606},
@@ -329,6 +329,12 @@ expert_dbs = [
         ],
         'references': [
             {
+                'title': 'GtRNAdb 2.0: an expanded database of transfer RNA genes identified in complete and draft genomes',
+                'authors': 'Chan P.P., Lowe T.M.',
+                'journal': 'Nucleic Acids Res. 2016 Jan 4;44(D1):D184-9',
+                'pubmed_id': 26673694,
+            },
+            {
                 'title': 'GtRNAdb: a database of transfer RNA genes detected in genomic sequence',
                 'authors': 'Chan P.P., Lowe T.M.',
                 'journal': 'Nucleic Acids Res. 37(Database issue):D93-D97(2009)',
@@ -336,8 +342,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
-        'version': '',
+        'status': 'updated',
+        'version': '2.1',
     },
     {
         'name': 'RefSeq',
@@ -412,20 +418,26 @@ expert_dbs = [
         'tags': ['curated', 'human', 'gene nomenclature'],
         'abbreviation': 'HUGO Gene Nomenclature Committee',
         'examples': [
-            {'upi': 'URS000075C808', 'taxid': 9606}, # HOTAIR
-            {'upi': 'URS00004ACFCF', 'taxid': 9606}, # SNORA1
-            {'upi': 'URS000075CF56', 'taxid': 9606}, # MIRNA-1
+            {'upi': 'URS000075C808', 'taxid': 9606},  # HOTAIR
+            {'upi': 'URS00004ACFCF', 'taxid': 9606},  # SNORA1
+            {'upi': 'URS000075CF56', 'taxid': 9606},  # MIRNA-1
         ],
         'references': [
+            {
+                'title': 'Genenames.org: the HGNC and VGNC resources in 2017.',
+                'authors': 'Yates B, Braschi B, Gray KA, Seal RL, Tweedie S, Bruford EA',
+                'journal': 'Nucleic Acids Res. 2017 Jan 4;45(D1):D619-D625',
+                'pubmed_id': '27799471',
+            },
             {
                 'title': 'Genenames.org: the HGNC resources in 2015',
                 'authors': 'Gray KA, Yates B, Seal RL, Wright MW, Bruford EA',
                 'journal': 'Nucleic Acids Res. 2015 Jan;43(Database issue):D1079-85',
                 'pubmed_id': '25361968',
-            },
+            }
         ],
         'imported': True,
-        'status': 'new',
+        'status': 'updated',
         'version': '',
     },
     {
@@ -451,7 +463,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': '',
-        'version': '',
+        'version': '13.5',
     },
     {
         'name': 'LncBase',
@@ -631,7 +643,7 @@ expert_dbs = [
     {
         'name': 'SILVA',
         'label': 'silva',
-        'url': 'http://www.arb-silva.de/',
+        'url': 'https://www.arb-silva.de/',
         'description': 'is a comprehensive resource for quality checked and aligned ribosomal RNA sequence data',
         'hint': 'SILVA is a comprehensive resource for quality checked and aligned ribosomal RNA sequence data',
         'tags': ['automatic', 'SSU rRNA', 'LSU rRNA'],
@@ -662,9 +674,9 @@ expert_dbs = [
         'tags': ['curated', 'model organism', 'yeast', 'Saccharomyces'],
         'abbreviation': 'Saccharomyces Genome Database',
         'examples': [
-            {'upi': 'URS0000224E47', 'taxid': 559292}, # HRA1 gene
-            {'upi': 'URS00001CAAE9', 'taxid': 559292}, # SRP
-            {'upi': 'URS0000077671', 'taxid': 559292}, # snoRNA
+            {'upi': 'URS0000224E47', 'taxid': 559292},  # HRA1 gene
+            {'upi': 'URS00001CAAE9', 'taxid': 559292},  # SRP
+            {'upi': 'URS0000077671', 'taxid': 559292},  # snoRNA
         ],
         'references': [
             {
@@ -700,7 +712,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
+        'status': 'updated',
         'version': '',
     },
     {
@@ -796,7 +808,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
+        'status': 'updated',
         'version': 'WS251',
     },
     {
@@ -807,11 +819,22 @@ expert_dbs = [
         'hint': 'MGI is the international database resource for the laboratory mouse',
         'tags': ['curated', 'model organism', 'mouse', 'Mus musculus'],
         'abbreviation': '',
-        'examples': [],
-        'references': [],
-        'imported': False,
-        'status': '',
-        'version': '',
+        'examples': [
+            {'upi': 'URS00009AEDBB', 'taxid': 10090},
+            {'upi': 'URS00009B2FC2', 'taxid': 10090},
+            {'upi': 'URS00007742B3', 'taxid': 10090},
+        ],
+        'references': [
+            {
+                'title': 'Mouse Genome Database (MGD)-2017: community knowledge resource for the laboratory mouse',
+                'authors': 'Blake JA, Eppig JT, Kadin JA, Richardson JE, Smith CL, Bult CJ; the Mouse Genome Database Group',
+                'journal': 'Nucleic Acids Res. 2017 Jan 4;45(D1):D723-D729',
+                'pubmed_id': 27899570,
+            }
+        ],
+        'imported': True,
+        'status': 'new',
+        'version': 'MGI 6.10',
     },
     {
         'name': 'RGD',
@@ -837,9 +860,9 @@ expert_dbs = [
         'tags': ['curated', 'model organism', 'Arabidopsis thaliana'],
         'abbreviation': 'The Arabidopsis Information Resource',
         'examples': [
-            {'upi': 'URS0000591E4F', 'taxid': 3702}, # tRNA
-            {'upi': 'URS000008172F', 'taxid': 3702}, # rRNA
-            {'upi': 'URS000035F1B7', 'taxid': 3702}, # snoRNA
+            {'upi': 'URS0000591E4F', 'taxid': 3702},  # tRNA
+            {'upi': 'URS000008172F', 'taxid': 3702},  # rRNA
+            {'upi': 'URS000035F1B7', 'taxid': 3702},  # snoRNA
         ],
         'references': [
             {

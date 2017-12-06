@@ -27,4 +27,8 @@ class Migration(migrations.Migration):
             name='accession',
             field=models.ForeignKey(related_name='secondary_structure', db_column=b'rnc_accession_id', to='portal.Accession'),
         ),
+        migrations.AlterUniqueTogether(
+            name='secondarystructure',
+            unique_together=set([('accession', 'md5')]),
+        ),
     ]

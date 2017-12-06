@@ -291,8 +291,8 @@ class DatabaseSpecificXrefsTestCase(ApiV1BaseClass):
         self._test_time_and_existence('URS000075A546', self.timeout, "refseq_mirna_precursor")
 
     def test_refseq_splice_variants(self):
-        #self._test_time_and_existence('URS000075C808', self.timeout, "refseq_splice_variants")
-        pass  # does not work so far
+        self._test_time_and_existence('URS000075C808', self.timeout, "refseq_splice_variants")
+
 
     # def test_tmrna_mate_upi(self):
     #     pass  # does not work so far

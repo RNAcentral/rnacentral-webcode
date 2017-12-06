@@ -47,11 +47,11 @@ class Database(CachingMixin, models.Model):
 
     def count_organisms(self):
         """Count distinct taxids associated with the database."""
-        return self.xrefs.values_list('taxid', flat=True).distinct().count()
+        return self.xrefs.filter(deleted='N').values_list('taxid', flat=True).distinct().count()
 
     def first_imported(self):
         """Get the earliest imported date."""
-        return self.xrefs.order_by('timestamp').first().timestamp
+        return self.xrefs.filter(deleted='N').order_by('timestamp').first().timestamp
 
     @cached_property
     def description(self):

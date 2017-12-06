@@ -17,6 +17,8 @@ import re
 import math
 import string
 import logging
+import operator as op
+import itertools as it
 from collections import Counter
 
 __doc__ = """
@@ -30,7 +32,7 @@ CHOICES = {
     'miRNA': ['miRBase', 'RefSeq', 'GENCODE', 'HGNC', 'Rfam', 'Ensembl', 'ENA'],
     'precursor_RNA': ['miRBase', 'RefSeq', 'Rfam', 'GENCODE', 'HGNC', 'Ensembl', 'ENA'],
     'ribozyme': ['RefSeq', 'Rfam', 'PDBe', 'Ensembl', 'ENA'],
-    'hammerhead_ribozyme': ['RefSeq', 'Rfam', 'PDBe','Ensembl',  'ENA'],
+    'hammerhead_ribozyme': ['RefSeq', 'Rfam', 'PDBe', 'Ensembl',  'ENA'],
     'autocatalytically_spliced_intron': ['RefSeq', 'Rfam', 'PDBe', 'Ensembl', 'ENA'],
 
     '__generic__': [
@@ -40,9 +42,12 @@ CHOICES = {
         'HGNC',
         'Ensembl',
         'TAIR',
+        'FlyBase',
+        'dictBase',
         'lncRNAdb',
         'PDBe',
         'RefSeq',
+        'gtRNAdb',
         'Rfam',
         'VEGA',
         'SILVA',
@@ -100,8 +105,8 @@ def choose_best(ordered_choices, possible, check, default=None):
     for choice in ordered_choices:
         found = [entry for entry in possible if check(choice, entry)]
         if found:
-            return found
-    return default
+            return (choice, found)
+    return (None, default)
 
 
 def get_generic_name(rna_type, sequence, xrefs):
@@ -218,7 +223,153 @@ def suitable_xref(required_rna_type):
     return fn
 
 
-def get_species_specific_name(rna_type, sequence, xrefs):
+def select_best_description(descriptions):
+    """
+    This will generically select the best description. We select the string
+    with the maximum entropy and lowest description. The entropy constraint is
+    meant to deal with names for PDBe which include things like AP*CP*... and
+    other repetitive databases. The other constraint is to try to select things
+    that come from a lower number (if numbered) item.
+    """
+
+    def description_order(description):
+        """
+        Computes a tuple to order descriptions by.
+        """
+        return (round(entropy(description), 3), [-ord(d) for d in description])
+
+    return max(descriptions, key=description_order)
+
+def item_sorter(name):
+    match = re.search(r'(\d+)$', name)
+    if match:
+        name = re.sub(r'(\d+)$', '', name)
+        return (name, int(match.group(1)))
+    return (match, None)
+
+
+def group_consecutives(data, min_size=2):
+    """
+    Modified from the python itertools docs.
+    """
+
+    for _, group in it.groupby(enumerate(data), lambda (i, x): i - x):
+        key = op.itemgetter(1)
+        group = [key(g) for g in group]
+        if len(group) > 1:
+            if group[-1] - group[0] < min_size:
+                for member in group:
+                    yield member, None
+            else:
+                yield group[0], group[-1]
+        else:
+            yield group[0], None
+
+
+def compute_gene_ranges(genes):
+    data = sorted(item_sorter(gene) for gene in genes)
+    grouped = it.groupby(data, op.itemgetter(0))
+    names = []
+    for gene, numbers in grouped:
+        if not gene:
+            continue
+
+        range_format = '%i-%i'
+        if '-' in gene:
+            range_format = ' %i to %i'
+        for (start, stop) in group_consecutives(n[1] for n in numbers):
+            if stop is None:
+                names.append(gene + str(start))
+            else:
+                prefix = gene
+                if prefix.endswith('-'):
+                    prefix = prefix[:-1]
+                names.append(prefix + range_format % (start, stop))
+
+    return names
+
+
+def select_with_several_genes(accessions, name, pattern,
+                              description_items=None,
+                              attribute='gene',
+                              max_items=3):
+
+    """
+    This will select the best description for databases where more than one
+    gene (or other attribute) map to a single URS. The idea is that if there
+    are several genes we should use the lowest one (RNA5S1, over RNA5S17) and
+    show the names of genes, if possible. This will list the genes if there are
+    few, otherwise provide a note that there are several.
+    """
+
+    getter = op.attrgetter(attribute)
+    candidate = min(accessions, key=getter)
+    genes = set(getter(a) for a in accessions)
+    if not genes or len(genes) == 1:
+        return candidate.description
+
+    regexp = pattern % getter(candidate)
+    basic = re.sub(regexp, '', candidate.description)
+
+    func = getter
+    if description_items is not None:
+        func = op.attrgetter(description_items)
+
+    items = sorted([func(a) for a in accessions], key=item_sorter)
+    items = compute_gene_ranges(items)
+
+    suffix = 'multiple %s' % name
+    if len(items) < max_items:
+        suffix = ', '.join(items)
+
+    return '{basic} ({suffix})'.format(
+        basic=basic.strip(),
+        suffix=suffix,
+    )
+
+
+def trim_trailing_rna_type(rna_type, description):
+    """
+    Some descriptions like the ones from RefSeq (URS0000ABD871/9606) and some
+    from flybase (URS0000002CB3/7227) end with their RNA type. This isn't
+    really all that useful as we display the RNA type anyway. So  this
+    out along with ', ' that tends to go along with those.
+    """
+
+    trailing = [rna_type]
+    if rna_type == 'lncRNA' or 'antisense' in rna_type:
+        trailing.append('long non-coding RNA')
+
+    for value in trailing:
+        pattern = r'[, ]*%s$' % value
+        description = re.sub(pattern, '', description, re.IGNORECASE)
+    return description
+
+
+def remove_extra_description_terms(description):
+    """
+    Sometimes the description contains some things we don't want to include
+    like trailing '.', extra spaces, the string (non-protein coding) and a typo
+    in the name of tmRNA's. This corrects those issues.
+    """
+
+    description = re.sub(
+        r'\(\s*non\s*-\s*protein\s+coding\s*\)',
+        '',
+        description
+    )
+    description = re.sub(
+        r'transfer-messenger mRNA',
+        'transfer-messenger RNA',
+        description,
+        re.IGNORECASE
+    )
+    description = re.sub(r'\s\s+', ' ', description)
+    description = re.sub(r'\.?\s*$', '', description)
+    return description
+
+
+def get_species_specific_name(rna_type, xrefs):
     """
     Determine the name for the species specific sequence. This will examine
     all descriptions in the xrefs and select one that is the 'best' name for
@@ -254,19 +405,38 @@ def get_species_specific_name(rna_type, sequence, xrefs):
         logger.debug("Falling back to generic ordering for %s", rna_type)
 
     ordering = CHOICES.get(rna_type, CHOICES['__generic__'])
-    best = choose_best(ordering, xrefs, suitable_xref(rna_type))
+    db_name, best = choose_best(ordering, xrefs, suitable_xref(rna_type))
     if not best:
         logger.debug("Ordered choice selection failed")
         return None
 
-    def description_order(xref):
-        return (round(entropy(xref.accession.description), 3),
-                xref.accession.description)
+    accessions = [x.accession for x in best]
+    if db_name == 'HGNC':
+        description = select_with_several_genes(
+            accessions,
+            'genes',
+            r'\(%s\)$'
+        )
+    elif db_name == 'miRBase':
+        product_name = 'precursors'
+        if rna_type == 'miRNA':
+            product_name = 'miRNAs'
 
-    xref = max(best, key=description_order)
+        description = select_with_several_genes(
+            accessions,
+            product_name,
+            r'\w+-%s',
+            description_items='optional_id',
+            max_items=5,
+        )
+    else:
+        descriptions = [accession.description for accession in accessions]
+        description = select_best_description(descriptions)
 
-    description = xref.accession.description
-    description = re.sub(r'\(\s*non-protein\s+coding\s*\)', '', description)
+    description = remove_extra_description_terms(description)
+    if db_name == 'RefSeq':
+        description = trim_trailing_rna_type(rna_type, description)
+
     return description.strip()
 
 
@@ -286,7 +456,7 @@ def correct_by_length(rna_type, sequence):
     return rna_type
 
 
-def correct_other_vs_misc(rna_type, sequence):
+def correct_other_vs_misc(rna_type, _):
     """
     Given 'misc_RNA' and 'other' we prefer 'other' as it is more specific. This
     will only select 'other' if 'misc_RNA' and other are the only two current
@@ -298,7 +468,7 @@ def correct_other_vs_misc(rna_type, sequence):
     return rna_type
 
 
-def remove_ambiguous(rna_type, sequence):
+def remove_ambiguous(rna_type, _):
     """
     If there is an annotation that is more specific than other or misc_RNA we
     should use it. This will remove the annotations if possible
@@ -311,7 +481,7 @@ def remove_ambiguous(rna_type, sequence):
     return rna_type
 
 
-def remove_ribozyme_if_possible(rna_type, sequence):
+def remove_ribozyme_if_possible(rna_type, _):
     """
     This will remove the ribozyme rna_type from the set of rna_types if there
     is a more specific ribozyme annotation avaiable.
@@ -375,6 +545,11 @@ def determine_rna_type_for(sequence, xrefs):
     """
 
     databases = {xref.db.name for xref in xrefs}
+    if not databases:
+        logger.error("Could not find any database this sequence is from: %s",
+                     sequence)
+        return None
+
     trusted = databases.intersection(TRUSTED_DATABASES)
     logger.debug("Found %i trusted databases", len(trusted))
     if len(trusted) == 1:
@@ -448,4 +623,4 @@ def get_description(sequence, xrefs, taxid=None):
 
     if taxid is None:
         return get_generic_name(rna_type, sequence, xrefs)
-    return get_species_specific_name(rna_type, sequence, xrefs)
+    return get_species_specific_name(rna_type, xrefs)

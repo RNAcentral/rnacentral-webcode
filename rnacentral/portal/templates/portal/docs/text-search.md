@@ -1,7 +1,7 @@
 
 # <i class="fa fa-search"></i> Text search
 
-### Exact matching <a name="exact-matching" href="#exact-matching" class="text-muted smaller"><i class="fa fa-link"></i></a>
+### Exact matching <a style="cursor: pointer" id="exact-matching" ng-click="scrollTo('exact-matching')" name="exact-matching" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Use double quotes (**""**) to search for exact matches.
 
@@ -9,7 +9,7 @@ Use double quotes (**""**) to search for exact matches.
 
 ---
 
-### Wildcards <a name="wildcards" href="#wildcards" class="text-muted smaller"><i class="fa fa-link"></i></a>
+### Wildcards <a style="cursor: pointer" id="wildcards" ng-click="scrollTo('wildcards')" name="wildcards" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 A wildcard character (<strong>*</strong>) can match any number of characters. Wildcards are added automatically to all search terms that are not enclosed in double quotes.
 
@@ -18,7 +18,7 @@ and a search for `"HOTAIR"` (with double quotes) will find only *HOTAIR*.
 
 ---
 
-### Field-specific search <a name="field-specific-search" href="#field-specific-search" class="text-muted smaller"><i class="fa fa-link"></i></a>
+### Field-specific search <a style="cursor: pointer" id="field-specific-search" ng-click="scrollTo('field-specific-search')" name="field-specific-search" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Search can be restricted to specific fields using the **field_name:"field value"** syntax.
 Please note that "field value" **must be enclosed in double quotes**.
@@ -88,7 +88,7 @@ Please note that "field value" **must be enclosed in double quotes**.
 
 ---
 
-### Logic operators <a name="logic-operators" href="#logic-operators" class="text-muted smaller"><i class="fa fa-link"></i></a>
+### Logic operators <a style="cursor: pointer" id="logic-operators" ng-click="scrollTo('logic-operators')" name="logic-operators" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 * **and** (default)
 
@@ -105,7 +105,7 @@ Please note that "field value" **must be enclosed in double quotes**.
 
 ---
 
-### Grouping <a name="grouping" href="#grouping" class="text-muted smaller"><i class="fa fa-link"></i></a>
+### Grouping <a style="cursor: pointer" id="grouping" ng-click="scrollTo('grouping')" name="grouping" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Use parentheses to group and nest logical terms.
 
@@ -113,7 +113,7 @@ Use parentheses to group and nest logical terms.
 
 ---
 
-## Search tips <a name="tips" href="#tips" class="text-muted smaller"><i class="fa fa-link"></i></a>
+## Search tips <a style="cursor: pointer" id="tips" ng-click="scrollTo('tips')" name="tips" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 * Make sure your **spelling** is correct.
 
@@ -125,7 +125,7 @@ Use parentheses to group and nest logical terms.
 
 ---
 
-## About RNAcentral search <a name="ebi-search" href="#ebi-search" class="text-muted smaller"><i class="fa fa-link"></i></a>
+## About RNAcentral search <a style="cursor: pointer" id="ebi-search" ng-click="scrollTo('ebi-search')" name="ebi-search" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 RNAcentral is powered by the [EBI search](http://www.ebi.ac.uk/ebisearch/),
 which provides a publicly available REST interface for querying the data.

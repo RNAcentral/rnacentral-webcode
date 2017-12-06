@@ -11,13 +11,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from collections import Counter
+import operator as op
+import itertools as it
+from collections import Counter, defaultdict
 
 from caching.base import CachingMixin, CachingManager
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.db.models import Prefetch, Min, Max
+from django.db.models import Prefetch, Min, Max, Q
 from django.utils.functional import cached_property
 
 from database import Database
@@ -26,8 +28,12 @@ from modification import Modification
 from rna_precomputed import RnaPrecomputed
 from reference import Reference
 from xref import Xref
+from .rfam import RfamHit, RfamAnalyzedSequences
+from .accession import Accession
+
 from formatters import Gff3Formatter, GffFormatter, _xref_to_bed_format
 from portal.utils import descriptions as desc
+from portal.rfam_matches import check_issues
 
 
 class Rna(CachingMixin, models.Model):
@@ -77,7 +83,6 @@ class Rna(CachingMixin, models.Model):
     def is_active(self):
         """A sequence is considered active if it has at least one active cross_reference."""
         values_list = self.xrefs.values_list('deleted', flat=True)
-        print "self.xrefs.values_list('deleted', flat=True) = %s" % values_list
         return 'N' in self.xrefs.values_list('deleted', flat=True).distinct()  # deleted xrefs are marked with N
 
     def has_genomic_coordinates(self, taxid=None):
@@ -94,8 +99,8 @@ class Rna(CachingMixin, models.Model):
     def get_sequence(self):
         """
         Sequences of up to 4000 nucleotides are stored in seq_short, while the
-        longer ones are in stored in seq_long as CLOB objects
-        due to Oracle column size restrictions.
+        longer ones are in stored in seq_long.
+        This was due to Oracle column size restrictions.
         """
         if self.seq_short:
             sequence = self.seq_short
@@ -112,17 +117,14 @@ class Rna(CachingMixin, models.Model):
         return dict(Counter(self.get_sequence()))
 
     def get_xrefs(self, taxid=None):
-        """
-        Get all xrefs, show non-ENA annotations first.
-        Exclude source ENA entries that are associated with other expert db entries.
-        For example, only fetch Vega xrefs and don't retrieve the ENA entries they are
-        based on.
-        """
-        expert_db_projects = Database.objects.exclude(project_id=None)\
+        """Get all xrefs, show non-ENA annotations first."""
+        # Exclude source ENA entries that are associated with other expert db entries.
+        # For example, only fetch Vega xrefs and don't retrieve the ENA entries they are based on.
+        expert_db_projects = Database.objects.exclude(project_id__isnull=True)\
                                              .values_list('project_id', flat=True)
 
         xrefs = self.xrefs.filter(deleted='N', upi=self.upi)\
-                          .exclude(db__id=1, accession__project__in=expert_db_projects)\
+                          .filter(~Q(accession__project__in=expert_db_projects, db__id=1) | Q(accession__project__isnull=True))\
                           .order_by('-db__id')\
                           .select_related()\
                           .prefetch_related(
@@ -136,13 +138,36 @@ class Rna(CachingMixin, models.Model):
                                   'accession__coordinates',
                                   queryset=GenomicCoordinates.objects.filter(chromosome__isnull=False)
                               )
-                          )\
-                          .all()
+                          )
 
         if taxid:
-            xrefs = xrefs.for_taxid(taxid)
+            xrefs = xrefs.filter(taxid=taxid)
 
-        return xrefs if xrefs.exists() else self.xrefs.filter(deleted='Y').select_related()
+        # Sometimes xrefs are deleted from databases (e.g. when by mistake they were
+        # annotated as RNA being in fact protein-coding sequences). If our xrefs list
+        # doesn't contain proper RNA sequences, we should at least return these
+        # wrong annotations to hard-links to deleted sequences accessible from web.
+        if not xrefs.exists():
+            xrefs = self.xrefs.filter(deleted='Y')\
+                             .filter(~Q(accession__project__in=expert_db_projects, db__id=1) | Q(accession__project__isnull=True))\
+                             .order_by('-db__id')\
+                             .select_related()\
+                             .prefetch_related(
+                                 Prefetch(
+                                     'modifications',
+                                     queryset=Modification.objects.select_related('modification_id')
+                                 )
+                             )\
+                             .prefetch_related(
+                                 Prefetch(
+                                     'accession__coordinates',
+                                     queryset=GenomicCoordinates.objects.filter(chromosome__isnull=False)
+                                 )
+                             )
+            if taxid:
+                xrefs = xrefs.filter(taxid=taxid)
+
+        return xrefs
 
     def count_xrefs(self, taxid=None):
         """Count the number of cross-references associated with the sequence."""
@@ -318,7 +343,7 @@ class Rna(CachingMixin, models.Model):
             The collection of xrefs that are valid for the sequence and taxid.
         """
 
-        base = Xref.objects.filter(upi=self.upi)
+        base = Xref.default_objects.filter(upi=self.upi)
         xrefs = base.filter(deleted='N')
         if taxid is not None:
             xrefs = xrefs.filter(taxid=taxid)
@@ -329,3 +354,150 @@ class Rna(CachingMixin, models.Model):
                 xrefs = xrefs.filter(taxid=taxid)
 
         return xrefs.select_related('accession', 'db')
+
+    def has_rfam_hits(self):
+        """
+        Check if this has any Rfam hits.
+
+        :returns bool: True if there are any Rfam matches.
+        """
+        return bool(self.get_rfam_hits())
+
+    def get_rfam_hits(self, allow_suppressed=True):
+        """
+        This gets all matches of this Rna to any Rfam hit. Note that this does
+        not exclude any families which are supressed. If two families from the
+        same clan hit the same sequence then this will selec the hit with the
+        lowest e-value and highest score.
+
+        :returns list: A list of all Rfam hits to this sequence.
+        """
+
+        query = RfamHit.objects.select_related('rfam_model').\
+                                filter(upi=self.upi)
+        if not allow_suppressed:
+            query = query.filter(rfam_model__is_suppressed=False)
+        return query.order_by('rfam_model_id', 'sequence_start')
+
+    def grouped_rfam_hits(self, allow_suppressed=True):
+        hits = it.groupby(
+            self.get_rfam_hits(allow_suppressed=allow_suppressed),
+            op.attrgetter('rfam_model_id')
+        )
+        results = []
+        for _, hits in hits:
+            hits = list(hits)
+            ranges = []
+            for hit in hits:
+                ranges.append((
+                    hit.sequence_start,
+                    hit.sequence_stop,
+                    hit.model_completeness,
+                ))
+
+            results.append({
+                'raw': hits,
+                'ranges': ranges,
+                'rfam_model': hits[0].rfam_model,
+                'rfam_model_id': hits[0].rfam_model_id,
+            })
+        return sorted(results, key=lambda h: h['ranges'][0][0])
+
+    def get_rfam_status(self, taxid=None):
+        return check_issues(self, taxid=taxid)
+
+    def was_rfam_analyzed(self):
+        """
+        Check if this Rna was analyzed with Rfam. This does not check if there
+        are matches, because some sequences will have no match even when
+        analyzed, so this looks at the RfamAnalyzedSequences table for this
+        information.
+
+        :returns bool: True if this was ever analyzed with Rfam.
+        """
+
+        has = bool(RfamAnalyzedSequences.objects.get(upi=self.upi))
+        return has
+
+    def get_domains(self, taxid=None, ignore_synthetic=False, ignore_unclassified=False):
+        """
+        Get all domains this sequence has been found in. If taxid is given then
+        only the domain for all accessions from the given taxid will be
+        returned. If ignore_unclassified is given then this will exclude any
+        domains where the organism comes from an enviromental sample or is
+        uncultured.
+        """
+
+        domains = set()
+        accessions = Accession.objects.filter(xrefs__upi=self.upi)
+        if taxid:
+            accessions = accessions.filter(xrefs__taxid=taxid)
+        for accession in accessions:
+            classification = accession.classification
+            if ignore_unclassified:
+                if 'uncultured' in classification or \
+                        'environmental' in classification:
+                    continue
+
+            if ignore_synthetic and 'synthetic' in classification:
+                continue
+
+            domains.add(classification.split(';')[0])
+        return domains
+
+    def get_rfam_hit_families(self, **kwargs):
+        hits = self.get_rfam_hits(**kwargs)
+        return sorted(set(hit.rfam_model for hit in hits))
+
+    def get_secondary_structures(self, taxid=None):
+        """
+        Get secondary structures associated with a sequence.
+        """
+        queryset = Xref.default_objects.select_related('db', 'accession','accession__secondary_structure').\
+                                        filter(upi=self.upi, deleted='N')
+        if taxid:
+            queryset = queryset.filter(taxid=taxid)
+        queryset = queryset.filter(accession__secondary_structure__md5__isnull=False)
+
+        temp = defaultdict(list)
+        for result in queryset.all():
+            temp[result.accession.secondary_structure.secondary_structure].append({
+                'accession': result.accession.external_id,
+                'database': result.db.display_name,
+                'url': result.accession.get_expert_db_external_url(),
+            })
+        data = []
+        for secondary_structure, sources in temp.iteritems():
+            data.append({
+                'secondary_structure': secondary_structure,
+                'source': sources,
+            })
+        return {
+            'sequence': self.get_sequence(),
+            'secondary_structures': data,
+        }
+
+    def get_organism_name(self, taxid):
+        """
+        Look at all accessions for the xrefs which have the given taxid and
+        fetch a name for the sequence. If there is a common_name that is used,
+        otherwise this uses the species_name. This will return the name and a
+        flag to indicate if it found a common_name. The common name will always
+        be lowercased.
+        """
+
+        accessions = Accession.objects.filter(
+            xrefs__upi=self.upi,
+            xrefs__taxid=taxid,
+        )
+
+        common_name = set()
+        species_name = set()
+        for accession in accessions:
+            if accession.common_name:
+                common_name.add(accession.common_name.lower())
+            if accession.species:
+                species_name.add(accession.species)
+
+        name = max(common_name or species_name, key=len)
+        return (name, bool(common_name))

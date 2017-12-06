@@ -1,1 +1,0 @@
-Genoverse.Genomes.gasterosteus_aculeatus = {};

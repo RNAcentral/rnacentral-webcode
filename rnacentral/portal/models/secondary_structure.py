@@ -16,7 +16,7 @@ from django.db import models
 
 class SecondaryStructure(models.Model):
     id = models.AutoField(primary_key=True)
-    accession = models.ForeignKey(
+    accession = models.OneToOneField(
         'Accession',
         db_column='rnc_accession_id',
         to_field='accession',
@@ -27,3 +27,4 @@ class SecondaryStructure(models.Model):
 
     class Meta:
         db_table = 'rnc_secondary_structure'
+        unique_together = (('accession', 'md5'),)

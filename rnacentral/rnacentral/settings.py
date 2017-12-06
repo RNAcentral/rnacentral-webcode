@@ -244,7 +244,7 @@ REST_FRAMEWORK = {
     # API results pagination
     'PAGINATE_BY': 10,
     'PAGINATE_BY_PARAM': 'page_size',
-    'MAX_PAGINATE_BY': 100,
+    'MAX_PAGINATE_BY': 1000000000000,
 
     # API throttling
     'DEFAULT_THROTTLE_CLASSES': (
@@ -316,7 +316,7 @@ SILENCED_SYSTEM_CHECKS = ['1_6.W001']
 
 EBI_SEARCH_ENDPOINT = 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
 
-RELEASE_ANNOUNCEMENT_URL = 'http://blog.rnacentral.org/2017/05/rnacentral-release-7.html'
+RELEASE_ANNOUNCEMENT_URL = 'http://blog.rnacentral.org/2017/12/rnacentral-release-8.html'
 
 # django compressor
 COMPRESS_ENABLED = True

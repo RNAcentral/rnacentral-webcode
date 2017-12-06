@@ -15,11 +15,14 @@ import json
 import hashlib
 import re
 import requests
+import collections as coll
+import operator as op
 
 from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Q
 from portal.models import Xref, Accession, Rna
+from django.db import connection
 
 """
 Map HGNC ncRNAs to RNAcentral identifiers.
@@ -33,6 +36,39 @@ python manage.py map_hgnc -i /path/to/hgnc/json/file
 To run in test mode:
 python manage.py map_hgnc -i /path/to/hgnc/json/file -t
 """
+
+ENSEMBL_QUERY = """
+select
+    xref.upi,
+    acc.gene,
+    rna.len
+from xref
+join rnc_accessions acc on acc.accession = xref.ac
+join rna on rna.upi = xref.upi
+where
+    xref.dbid = 25
+    and xref.taxid = 9606
+    and xref.deleted = 'N'
+;
+"""
+
+
+def get_ensembl_mapping():
+    with connection.cursor() as cursor:
+        complete_mapping = coll.defaultdict(set)
+        cursor.execute(ENSEMBL_QUERY)
+        for row in cursor.fetchall():
+            gene, _ = row[1].split('.')
+            complete_mapping[gene].add((row[0], int(row[2])))
+
+    mapping = {}
+    for gene, ids in complete_mapping.items():
+        if not len(ids):
+            continue
+        best, _ = max(ids, key=op.itemgetter(1))
+        mapping[gene] = best
+    return mapping
+
 
 class HGNCMapper():
     """
@@ -61,7 +97,8 @@ class HGNCMapper():
         """
         found = 0
         no_match = 0
-        match_refseq = match_gtrnadb = match_sequence = 0
+        ensembl_mapping = get_ensembl_mapping()
+        match_refseq = match_gtrnadb = match_sequence = match_ensembl = 0
         for i, entry in enumerate(self.data):
             if self.test and i > 20:
                 break
@@ -70,19 +107,27 @@ class HGNCMapper():
                 rnacentral_id = self.get_rnacentral_id(entry['refseq_accession'][0])
                 if rnacentral_id:
                     match_refseq += 1
+
             if entry['locus_type'] == 'RNA, transfer' and not rnacentral_id:
                 gtrnadb_id = self.get_gtrnadb_id(entry['symbol'])
                 if gtrnadb_id:
                     rnacentral_id = self.get_rnacentral_id(gtrnadb_id)
                     if rnacentral_id:
                         match_gtrnadb += 1
+
             if not rnacentral_id:
                 if 'ensembl_gene_id' in entry:
-                    fasta = self.get_sequence_fasta(entry['ensembl_gene_id'])
+                    gene_id = entry['ensembl_gene_id']
+                    fasta = self.get_sequence_fasta(gene_id)
                     md5 = self.get_md5(fasta)
                     rnacentral_id = self.get_rnacentral_id_by_md5(md5)
                     if rnacentral_id:
                         match_sequence += 1
+                    else:
+                        rnacentral_id = ensembl_mapping.get(gene_id, None)
+                        if rnacentral_id:
+                            match_ensembl += 1
+
             if rnacentral_id:
                 print '%s\t%s\t%s' % (rnacentral_id, entry['symbol'], entry['name'])
                 entry['rnacentral_id'] = rnacentral_id
@@ -103,8 +148,10 @@ class HGNCMapper():
         """
         Get sequence based on Ensembl Gene id.
         """
-        url='https://rest.ensembl.org/sequence/id/' + ensembl_id + '?content-type=text/plain'
-        return requests.get(url).text
+        url = 'https://rest.ensembl.org/sequence/id/' + ensembl_id + '?content-type=text/plain'
+        response = requests.get(url)
+        response.raise_for_status()
+        return response.text
 
     def get_md5(self, sequence):
         """

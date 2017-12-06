@@ -16,9 +16,9 @@ limitations under the License.
 {% load humanize %}
 
 {% block meta_tags %}
-    {{ block.super }}
-    <meta name="description" content="{{expert_db.name}} {{expert_db.description|safe}}"/>
-    <meta name="twitter:description" content="{{expert_db.name}} {{expert_db.description|safe}}"/>
+  {{ block.super }}
+{#  <meta name="description" content="{{expert_db.name}} {{expert_db.description|safe}}"/>#}
+{#  <meta name="twitter:description" content="{{expert_db.name}} {{expert_db.description|safe}}"/>#}
 {% endblock %}
 
 {% block title %}
@@ -26,207 +26,42 @@ limitations under the License.
 {% endblock %}
 
 {% block content %}
-
-<h1>
-  <a href="{{ expert_db.url }}" target="_blank" class="expert-db-logo no-icon">
-    <img src="{% static 'img/expert-db-logos/' %}{{expert_db.label}}.png" alt="{{expert_db.name}} logo" class="img-rounded">
-  </a>
-  {{ expert_db.name }} Expert Database
-  {% if expert_db.status != 'archived' %}
-    <small><label class="label label-primary">{{expert_db.status}}</label></small>
-  {% else %}
-    <small><label class="label label-danger">{{expert_db.status}}</label></small>
-  {% endif %}
-</h1>
-
-<div class="row">
-  <div class="col-md-12">
-    <p>
-      <a href="{{expert_db.url}}" target="_blank">{{expert_db.name}}</a>
-      {% if expert_db.abbreviation %}
-        ({{expert_db.abbreviation}})
-      {% endif %}
-      {{expert_db.description|safe}}.
-    </p>
-  </div>
-</div>
-
-<div class="row">
-
-<div class="col-md-6">
-
-  <h2>Overview</h2>
-  <ul>
-    <li>
-      <strong>{{ expert_db.num_sequences|intcomma }}</strong> distinct sequences
-      from <strong>{{ expert_db.num_organisms|intcomma }}</strong> organism{{ expert_db.num_organisms|pluralize}}
-      contributed to RNAcentral
-    </li>
-    <li>
-      the shortest sequence has <strong>{{ expert_db.min_length|intcomma }}</strong> nucleotides, the longest <strong>{{ expert_db.max_length|intcomma }}</strong>
-    </li>
-    <li>
-      the average length is <strong>{{ expert_db.avg_length|floatformat:"0"|intcomma }}</strong> nucleotide{{ expert_db.avg_length|pluralize }}
-    </li>
-    {% if expert_db.version %}
-      <li>
-        database version: <em>{{expert_db.version}}</em>
-      </li>
-    {% endif %}
-  </ul>
-
-    <h2>Example entries</h2>
-    <p>
-    {% for example in expert_db.examples %}
-      <a href="{% url 'unique-rna-sequence' upi=example.upi taxid=example.taxid %}">{{ example.upi }}</a>{% if not forloop.last %},{% endif %}
-    {% endfor %}
-    </p>
-
-    <p>
-      <a class="btn btn-primary" ng-click="search.search('expert_db:&quot;{{expert_db.name}}&quot;')" rel="nofollow">Browse all {{expert_db.name}} sequences</a>
-    </p>
-
-    <h2>Links</h2>
-    <ul>
-      <li><a href="{{ expert_db.url }}" target="_blank">{{ expert_db.name }} homepage</a></li>
-      {% if expert_db.name == 'Vega' %}
-        <li><a href="http://www.gencodegenes.org/" target="_blank">GENCODE</a></li>
-      {% endif %}
-    </ul>
-
-  <div class="references">
-
-    <h2>References</h2>
-
-    {% for reference in expert_db.references %}
-      <blockquote>
-        <strong>
-          {{ reference.title }}.
-        </strong>
-        <br>
-          {{ reference.authors }}
-        <small>
-          {{ reference.journal }}
-          <br>
-          <div class="abstract-preview">
-            <button class="btn btn-xs btn-default abstract-btn abstract-control" data-pubmed-id="{{reference.pubmed_id}}">Show abstract</button>
-            <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{reference.pubmed_id}}" target="_blank" class="abstract-control">PubMed</a>
-            <div class="abstract-text"></div>
+  {% verbatim %}
+    <div ng-cloak ng-controller="expertDatabaseController">
+      <div class="row" ng-if="error === true">
+        <div class="col-md-12">
+          <div class="alert alert-danger col-md-12">
+            There was an error while processing your query
           </div>
-        </small>
-      </blockquote>
-    {% endfor %}
-
-  </div>
-
-</div>
-
-<div class="col-md-6 hidden-xs">
-
-  <ul class="nav nav-tabs">
-    <li class="active"><a data-target="#seq-length" data-toggle="tab" href="">Sequence length</a></li>
-    {% if expert_db.descr not in no_sunburst %}
-      <li><a data-target="#species" data-toggle="tab" href="">Species sunburst</a></li>
-    {% endif %}
-  </ul>
-
-  <div class="tab-content">
-    <div class="tab-pane fade in active" id="seq-length">
-      <div class="panel panel-default">
-        <div class="panel-body">
-          {% if expert_db.descr == 'LNCRNADB' %}
-            <div class="alert alert-info small">
-              <i class="fa fa-info-circle"></i> Due to the small number of entries,
-              a list of all lincRNAdb entries is provided instead of a sequence distribution graph.
-            </div>
-
-            <table class="table table-bordered table-striped table-condensed">
-              <thead>
-                <tr>
-                  <th>lncRNAdb sequence</th>
-                  <th>length</th>
-                </tr>
-              </thead>
-              {% for rna in lncrnadb  %}
-                <tr>
-                  <td>
-                    <a href="{% url 'unique-rna-sequence' rna.upi %}">
-                    {% with rna.xrefs.all|first as xref %}
-                      {{xref.accession.description}}
-                    {% endwith %}
-                    ({{rna.upi}})
-                    </a>
-                  </td>
-                  <td>{{rna.length}}</td>
-                </tr>
-              {% endfor %}
-            </table>
-          {% else %}
-            <div id="d3-seq-length-distribution"></div>
-            <p class="small text-muted">
-              <label class="label label-default">Tip</label> Click the graph to search by sequence length
-            </p>
-          {% endif %}
         </div>
-      </div>
-    </div>
-
-    {% if expert_db.descr not in no_sunburst %}
-    <div class="tab-pane fade" id="species">
-      <div class="panel panel-default">
-        <div class="panel-body">
-          <div id="d3-species-sunburst"></div>
-
-            <p class="small text-muted">
-              <label class="label label-default margin-left-0px">Tip</label> <strong>Zoom</strong> and <strong>pan</strong> the diagram
-              or <strong>hover</strong> over sunburst segments to display taxon names
-              <button type="button" class="btn btn-default btn-xs margin-left-5px" data-toggle="collapse" data-target="#sunburst-help">
-                <i class="fa fa-info-circle"></i> Help
-              </button>
-            </p>
-
-            <div id="sunburst-help" class="collapse">
-              <p class="small text-muted">
-                  This diagram shows combined lineages of all taxonomic groups annotated by {{ expert_db.name }}.
-                  The circle segments are sized proportionally to the number of sequences from the corresponding taxon.
+        <div class="col-md-12">
+          <h2>Suggestions</h2>
+          <ul>
+            <li>
+              <p>
+                Try reloading the page
               </p>
-            </div>
+            </li>
+            <li>
+              <p>
+                <a ng-href="{{ routes.contactUs() }}">Contact us</a> if the problem persists
+              </p>
+            </li>
+          </ul>
+        </div>
+      </div> <!-- ng-if="showError" -->
+
+      <div ng-if="error === false">
+        <div class="row">
+          <expert-database-top ng-if="expertDb" expert-db="expertDb"></expert-database-top>
+        </div>
+
+        <div class="row">
+          <expert-database-left ng-if="expertDb" expert-db="expertDb"></expert-database-left>
+          <expert-database-right ng-if="expertDb" expert-db="expertDb" on-error="onError()"></expert-database-right>
         </div>
       </div>
+
     </div>
-    {% endif %}
-  </div>
-
-</div>
-
-</div> {# row #}
-
+  {% endverbatim %}
 {% endblock content %}
-
-{% block extra_js_uncompressed %}
-    {{ block.super }}
-
-    <script type="text/javascript">
-        $(function(){
-            {% if expert_db.descr != 'LNCRNADB' %}
-              var data = {% autoescape off %}{{expert_db_stats.length_counts}}{% endautoescape %};
-              var search_url = '{% url "text-search" %}';
-              ExpertDatabaseSequenceDistribution("#d3-seq-length-distribution", data, 500, 300, search_url);
-            {% endif %}
-            {% if expert_db.descr not in no_sunburst %}
-                data = {% autoescape off %}{{expert_db_stats.taxonomic_lineage}}{% endautoescape %};
-                d3SpeciesSunburst(data, '#d3-species-sunburst', 500, 300);
-            {% endif %}
-
-            $('.abstract-btn').EuropePMCAbstracts({
-              'target_class': '.abstract-text',
-              'pubmed_id_data_attribute': 'pubmed-id',
-              'msg': {
-                'show_abstract': 'Show abstract',
-                'hide_abstract': 'Hide abstract',
-              }
-            });
-        });
-  </script>
-
-{% endblock extra_js_uncompressed %}

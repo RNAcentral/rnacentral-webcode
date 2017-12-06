@@ -20,6 +20,8 @@ class RnaPrecomputed(models.Model):
     taxid = models.IntegerField(db_index=True, null=True)
     description = models.CharField(max_length=250)
     rna_type = models.CharField(max_length=250)
+    rfam_problems = models.TextField(default='')
+    update_date = models.DateField()
 
     class Meta:
         db_table = 'rnc_rna_precomputed'

@@ -19,11 +19,17 @@ from django.db import models
 
 class Accession(models.Model):
     accession = models.CharField(max_length=100, primary_key=True)
+
+    # in miRNAs mature products and precursor have the same parent_ac
     parent_ac = models.CharField(max_length=100)
+
     seq_version = models.IntegerField(db_index=True)
     feature_start = models.IntegerField(db_index=True)
     feature_end = models.IntegerField(db_index=True)
+
+    # INSDC classification; 'ncRNA', unless it's rRNA/tRNA/precursor RNA
     feature_name = models.CharField(max_length=20)
+
     ordinal = models.IntegerField()
     division = models.CharField(max_length=3)
     keywords = models.CharField(max_length=100)
@@ -36,7 +42,11 @@ class Accession(models.Model):
     non_coding_id = models.CharField(max_length=100)
     database = models.CharField(max_length=20)
     external_id = models.CharField(max_length=150)
+
+    # GeneID (without coordinates); used to find splice variants for lncRNAs OR mature/precursor RNAs for miRNAs
     optional_id = models.CharField(max_length=100)
+    common_name = models.CharField(max_length=200)
+
     anticodon = models.CharField(max_length=50)
     experiment = models.CharField(max_length=500)
     function = models.CharField(max_length=500)
@@ -67,7 +77,7 @@ class Accession(models.Model):
         * PDB structure title
         * release date
         """
-        if self.database == "PDB" and self.note:
+        if self.database == "PDBE" and self.note:
             return json.loads(self.note)
         else:
             return None
@@ -126,30 +136,6 @@ class Accession(models.Model):
         else:
             return ena_base_url + self.accession
 
-    def get_gencode_transcript_id(self):
-        """
-        GENCODE entries have their corresponding Ensembl transcript ids stored
-        in Accession.note. Example:
-        {"transcript_id": ["ENSMUST00000160979.8"]}
-        """
-        if self.database == 'GENCODE' and self.note:
-            note = json.loads(self.note)
-            ensembl_transcript_id = ''
-            if 'transcript_id' in note and len(note['transcript_id']) > 0:
-                ensembl_transcript_id = note['transcript_id'][0]
-            return ensembl_transcript_id
-        else:
-            return None
-
-    def get_gencode_ensembl_url(self):
-        """Get Ensembl URL for GENCODE transcripts."""
-        ensembl_transcript_id = self.get_gencode_transcript_id()
-        url = 'http://ensembl.org/{species}/Transcript/Summary?db=core;t={id}'.format(
-            id=ensembl_transcript_id,
-            species=self.species.replace(' ', '_')
-        )
-        return url
-
     def get_ensembl_species_url(self):
         """Get species name in a format that can be used in Ensembl urls."""
         species = self.species
@@ -166,7 +152,7 @@ class Accession(models.Model):
     def get_expert_db_external_url(self):
         """Get external url to expert database."""
         urls = {
-            'RFAM': 'http://rfam.xfam.org/family/{id}',
+            'RFAM': 'http://rfam.org/family/{id}',
             'SRPDB': 'http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/{id}',
             'MIRBASE': 'http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc={id}',
             'TMRNA_WEB': 'http://bioinformatics.sandia.gov/tmrna/seqs/{id}',
@@ -179,7 +165,6 @@ class Accession(models.Model):
             'TAIR': 'http://www.arabidopsis.org/servlets/TairObject?id={id}&type=locus',
             'WORMBASE': 'http://www.wormbase.org/species/c_elegans/gene/{id}',
             'PLNCDB': 'http://chualab.rockefeller.edu/cgi-bin/gb2/gbrowse_details/arabidopsis?name={id}',
-            'GTRNADB': 'http://lowelab.ucsc.edu/GtRNAdb/',
             'DICTYBASE': 'http://dictybase.org/gene/{id}',
             'SILVA': 'http://www.arb-silva.de/browser/{lsu_ssu}/silva/{id}',
             'POMBASE': 'http://www.pombase.org/spombe/result/{id}',
@@ -190,13 +175,16 @@ class Accession(models.Model):
             'HGNC': 'http://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id={id}',
             'ENSEMBL': 'http://www.ensembl.org/{species}/Transcript/Summary?t={id}',
             'FLYBASE': 'http://flybase.org/reports/{id}.html',
+            'MGI': 'http://www.informatics.jax.org/marker/{id}',
+            'GTRNADB': '',
         }
         if self.database in urls.keys():
             if self.database == 'GTRNADB':
-                if 'summary' in self.external_id:
-                    return urls[self.database] + self.external_id + '.html'
+                data = json.loads(self.note)
+                if 'url' in data:
+                    return data['url']
                 else:
-                    return urls[self.database] + self.external_id + '/' + self.external_id + '-summary.html'
+                    return ''
             elif self.database == 'LNCRNADB':
                 return urls[self.database].format(id=self.optional_id.replace(' ', ''))
             elif self.database == 'VEGA':

@@ -10,28 +10,31 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
 import re
-import django_filters
 import warnings
 from itertools import chain
 
+import django_filters
 from django.core.paginator import Paginator
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from rest_framework import renderers
-from rest_framework.response import Response
-from rest_framework.views import APIView
+from rest_framework.mixins import RetrieveModelMixin, ListModelMixin
 from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from rest_framework.views import APIView
+from rest_framework.viewsets import GenericViewSet
 
+from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, PaginatedXrefSerializer, \
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
-                              RawCitationSerializer, RnaSpeciesSpecificSerializer, RnaListSerializer
-from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
-from portal.models import Rna, Accession, Xref, Database
-from portal.config.genomes import genomes
+                              RnaSpeciesSpecificSerializer, ExpertDatabaseStatsSerializer, \
+    PaginatedRawPublicationSerializer, RnaSecondaryStructureSerializer
+from portal.config.expert_databases import expert_dbs
+from portal.config.genomes import genomes, url2db, SpeciesNotInGenomes, get_taxid_from_species
+from portal.models import Rna, Accession, Xref, Database, DatabaseStats
 
 """
 Docstrings of the classes exposed in urlpatterns support markdown.
@@ -44,30 +47,17 @@ MAX_XREFS_TO_PREFETCH = 1000
 def _get_xrefs_from_genomic_coordinates(species, chromosome, start, end):
     """Common function for retrieving xrefs based on genomic coordinates."""
     try:
-        xrefs = Xref.objects.filter(
+        xrefs = Xref.default_objects.filter(
             accession__coordinates__chromosome=chromosome,
             accession__coordinates__primary_start__gte=start,
             accession__coordinates__primary_end__lte=end,
-            accession__species=species.replace('_', ' ').capitalize(),
+            accession__species=url2db(species),
             deleted='N'
         ).all()
 
         return xrefs
-    except:
+    except Exception as e:
         return []
-
-
-class SpeciesNotInGenomes(Exception):
-    pass
-
-
-def _get_taxid_from_species(species):
-    species = species.replace('_', ' ').capitalize()
-    for genome in genomes:
-        if species == genome['species']:
-            return genome['taxid']
-
-    raise SpeciesNotInGenomes(species)
 
 
 class DasSources(APIView):
@@ -268,9 +258,9 @@ class GenomeAnnotations(APIView):
         xrefs = _get_xrefs_from_genomic_coordinates(species, chromosome, start, end)
 
         try:
-            taxid = _get_taxid_from_species(species)
+            taxid = get_taxid_from_species(species)
         except SpeciesNotInGenomes as e:
-            return Http404(e.message)
+            raise Http404(e.message)
 
         rnacentral_ids = []
         data = []
@@ -342,10 +332,11 @@ class RnaFilter(django_filters.FilterSet):
     min_length = django_filters.NumberFilter(name="length", lookup_type='gte')
     max_length = django_filters.NumberFilter(name="length", lookup_type='lte')
     external_id = django_filters.CharFilter(name="xrefs__accession__external_id", distinct=True)
+    database = django_filters.CharFilter(name="xrefs__accession__database")
 
     class Meta:
         model = Rna
-        fields = ['upi', 'md5', 'length', 'min_length', 'max_length', 'external_id']
+        fields = ['upi', 'md5', 'length', 'min_length', 'max_length', 'external_id', 'database']
 
 
 class RnaMixin(object):
@@ -536,10 +527,48 @@ class XrefList(generics.ListAPIView):
     def get(self, request, pk=None, format=None):
         """Get a paginated list of cross-references."""
         page = request.QUERY_PARAMS.get('page', 1)
-        page_size = request.QUERY_PARAMS.get('page_size', 100)
+        page_size = request.QUERY_PARAMS.get('page_size', 1000000000000)
 
         rna = self.get_object()
         xrefs = rna.get_xrefs()
+        paginator_xrefs = Paginator(xrefs, page_size)
+        xrefs_page = paginator_xrefs.page(page)
+        serializer = PaginatedXrefSerializer(xrefs_page, context={'request': request})
+        return Response(serializer.data)
+
+
+class SecondaryStructureSpeciesSpecificList(generics.ListAPIView):
+    """
+    List of secondary structures for a particular RNA sequence in a specific species.
+
+    [API documentation](/api)
+    """
+    queryset = Rna.objects.all()
+
+    def get(self, request, pk=None, taxid=None, format=None):
+        """Get a paginated list of cross-references"""
+        rna = self.get_object()
+        serializer = RnaSecondaryStructureSerializer(rna, context={
+            'taxid': taxid,
+        })
+        return Response(serializer.data)
+
+
+class XrefsSpeciesSpecificList(generics.ListAPIView):
+    """
+    List of cross-references for a particular RNA sequence in a specific species.
+
+    [API documentation](/api)
+    """
+    queryset = Rna.objects.select_related().all()
+
+    def get(self, request, pk=None, taxid=None, format=None):
+        """Get a paginated list of cross-references"""
+        page = request.QUERY_PARAMS.get('page', 1)
+        page_size = request.QUERY_PARAMS.get('page_size', 1000000000000)
+
+        rna = self.get_object()
+        xrefs = rna.get_xrefs(taxid=taxid)
         paginator_xrefs = Paginator(xrefs, page_size)
         xrefs_page = paginator_xrefs.page(page)
         serializer = PaginatedXrefSerializer(xrefs_page, context={'request': request})
@@ -583,7 +612,7 @@ class CitationView(generics.RetrieveAPIView):
         return Response(serializer.data)
 
 
-class RnaCitationsView(generics.ListAPIView):
+class RnaPublicationsView(generics.ListAPIView):
     """
     API endpoint that allows the citations associated with
     each Unique RNA Sequence to be viewed.
@@ -591,11 +620,82 @@ class RnaCitationsView(generics.ListAPIView):
     [API documentation](/api)
     """
     # the above docstring appears on the API website
-    permission_classes = (AllowAny,)
-    serializer_class = RawCitationSerializer
+    permission_classes = (AllowAny, )
 
     def get_queryset(self):
-        """
-        """
         upi = self.kwargs['pk']
         return list(Rna.objects.get(upi=upi).get_publications())
+
+    def get(self, request, pk=None, format=None):
+        """Get a paginated list of cross-references"""
+        page = request.QUERY_PARAMS.get('page', 1)
+        page_size = request.QUERY_PARAMS.get('page_size', 1000000000000)
+
+        publications = self.get_queryset()
+        paginator_publications = Paginator(publications, page_size)
+        publications_page = paginator_publications.page(page)
+        serializer = PaginatedRawPublicationSerializer(publications_page, context={'request': request})
+        return Response(serializer.data)
+
+
+class ExpertDatabasesAPIView(APIView):
+    """
+    API endpoint describing expert databases, comprising RNAcentral.
+
+    [API documentation](/api)
+    """
+    permission_classes = ()
+    authentication_classes = ()
+
+    def get(self, request, format=None):
+        """The data from configuration JSON and database are combined here."""
+
+        def _normalize_expert_db_label(expert_db_label):
+            """Capitalizes db label (and accounts for special cases)"""
+            if re.match('tmrna-website', expert_db_label, flags=re.IGNORECASE):
+                expert_db_label = 'TMRNA_WEB'
+            else:
+                expert_db_label = expert_db_label.upper()
+            return expert_db_label
+
+        # { "TMRNA_WEB": {'name': 'tmRNA Website', 'label': 'tmrna-website', ...}}
+        databases = { db['descr']:db for db in Database.objects.values() }
+
+        # update config.expert_databases json with Database table objects
+        for db in expert_dbs:
+            normalized_label = _normalize_expert_db_label(db['label'])
+            if normalized_label in databases:
+                db.update(databases[normalized_label])
+
+        return Response(expert_dbs)
+
+    # def get_queryset(self):
+    #     expert_db_name = self.kwargs['expert_db_name']
+    #     return list(Database.objects.get(expert_db_name).references)
+
+
+class ExpertDatabasesStatsViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
+    """
+    API endpoint with statistics of databases, comprising RNAcentral.
+
+    [API documentation](/api)
+    """
+    queryset = DatabaseStats.objects.all()
+    serializer_class = ExpertDatabaseStatsSerializer
+    lookup_field = 'pk'
+
+    def list(self, request, *args, **kwargs):
+        return super(ExpertDatabasesStatsViewSet, self).list(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return super(ExpertDatabasesStatsViewSet, self).retrieve(request, *args, **kwargs)
+
+
+class GenomesAPIView(APIView):
+    """API endpoint, presenting genomes available for display in RNAcentral genome browser."""
+    permission_classes = ()
+    authentication_classes = ()
+
+    def get(self, request, format=None):
+        sorted_genomes = sorted(genomes, key=lambda x: x['species'])
+        return Response(sorted_genomes)

@@ -17,6 +17,7 @@ from django.db import models
 from django.db.models import Min, Max
 from rest_framework.renderers import JSONRenderer
 
+from caching.base import CachingMixin, CachingManager
 from portal.config.genomes import genomes as rnacentral_genomes
 from accession import Accession
 from genomic_coordinates import GenomicCoordinates
@@ -30,21 +31,34 @@ class RawSqlQueryset(models.QuerySet):
     with database-specific fields, obtained via raw SQL queries, when
     queryset is actually evaluated (queryset is evaluated when its
     _fetch_all() method is called). So, we override that method to
-    add some extra
+    add some extra fields, obtained by raw SQL queries.
     """
-    taxid = None
-    offset = None
-    limit = None
 
-    def for_taxid(self, taxid):
-        """Just save input parameters and return results of all()"""
-        self.taxid = taxid
-        return self.filter(taxid=taxid)
+    def _get_taxid(self):
+        """
+        This is a dirty-dirty hack that checks, if taxid filter is applied
+        to this queryset, and if it is, extracts taxid from django internals,
+        otherwise, returns None.
 
-    def with_offset_and_limit(self, offset, limit):
-        self.offset = offset
-        self.limit = limit
-        return self
+        Used to provide taxid to raw SQL queries, issued by _fetch_all().
+
+        Dirty implementation details:
+         * self.query is a python object, used to actually construct raw SQL.
+         * self.query.where is a WhereNode, extending django.utils.Node,
+             it's a tree node. queryset.filter() expressions are stored as tree
+             nodes on WhereNode objects.
+         * self.query.where.children stores children of current node.
+         * self.query.where.children[0].lhs is a lookup - Col object - where
+             Col.target knows what field to lookup.
+         * self.query.were.children[0].rhs contains lookup value.
+        """
+        from django.db.models.lookups import Exact
+
+        taxid = None
+        for child in self.query.where.children:
+            if isinstance(child, Exact) and str(child.lhs.target) == 'portal.Xref.taxid':
+                taxid = child.rhs
+        return taxid
 
     def _fetch_all(self):
         """
@@ -63,47 +77,52 @@ class RawSqlQueryset(models.QuerySet):
             # (this is not the case for values() or values_list() methods)
             if len(self) and type(self[0]) == Xref:
 
+                taxid = self._get_taxid()
+
                 # Raw SQL queries to fetch database-specific data with self-joins, impossible in Django ORM
-                mirbase_mature_products = self.get_mirbase_mature_products(self.taxid)
-                mirbase_precursors = self.get_mirbase_precursor(self.taxid)
-                refseq_mirna_mature_products = self.get_refseq_mirna_mature_products(self.taxid)
-                refseq_mirna_precursors = self.get_refseq_mirna_precursor(self.taxid)
-                refseq_splice_variants = self.get_refseq_splice_variants(self.taxid)
-                tmrna_mates = self.get_tmrna_mate(self.taxid)
+                mirbase_mature_products = self.get_mirbase_mature_products(taxid)
+                mirbase_precursors = self.get_mirbase_precursor(taxid)
+                refseq_mirna_mature_products = self.get_refseq_mirna_mature_products(taxid)
+                refseq_mirna_precursors = self.get_refseq_mirna_precursor(taxid)
+                refseq_splice_variants = self.get_refseq_splice_variants(taxid)
+                ensembl_splice_variants = self.get_ensembl_splice_variants(taxid)
+                tmrna_mates = self.get_tmrna_mate(taxid)
 
                 # "annotate" xrefs queryset with additional attributes, retrieved by raw SQL queries
                 for xref in self:
                     if xref.id in mirbase_mature_products:
                         xref.mirbase_mature_products = [ mature_product.upi.upi for mature_product in mirbase_mature_products[xref.id] ]
                     if xref.id in mirbase_precursors:
-                        xref.mirbase_precursor = [ precursor.upi.upi for precursor in mirbase_precursors[xref.id] ]
+                        xref.mirbase_precursor = mirbase_precursors[xref.id][0].upi.upi  # note, there's just 1 precursor
                     if xref.id in refseq_mirna_mature_products:
                         xref.refseq_mirna_mature_products = [ mature_product.upi.upi for mature_product in refseq_mirna_mature_products[xref.id] ]
                     if xref.id in refseq_mirna_precursors:
-                        xref.refseq_mirna_precursor = [ precursor.upi.upi for precursor in refseq_mirna_precursors[xref.id] ]
+                        xref.refseq_mirna_precursor = refseq_mirna_precursors[xref.id][0].upi.upi  # note, there's just 1 precursor
                     if xref.id in refseq_splice_variants:
                         xref.refseq_splice_variants = [ splice_variant.upi.upi for splice_variant in refseq_splice_variants[xref.id] ]
+                    if xref.id in ensembl_splice_variants:
+                        xref.ensembl_splice_variants = [ splice_variant.upi.upi for splice_variant in ensembl_splice_variants[xref.id] ]
                     if xref.id in tmrna_mates:
                         xref.tmrna_mates = [ tmrna_mate.upi.upi for tmrna_mate in tmrna_mates[xref.id] ]
 
     def _xrefs_raw_queryset_to_dict(self, raw_queryset):
         """
-        We covert it into a single dict, aggregate those iterables into a
+        We convert it into a single dict, aggregate those iterables into a
         :param raw_queryset: iterable of dicts, returned by Xref.object.raw()
         :return: dict { Xref.pk: Xref (a single item of raw queryset) }
         """
         output_dict = {}
         for xref in raw_queryset:
-            if xref.pk not in output_dict:
-                output_dict[xref.pk] = [xref]
+            if xref.xid not in output_dict:
+                output_dict[xref.xid] = [xref]
             else:
-                output_dict[xref.pk].append(xref)
+                output_dict[xref.xid].append(xref)
         return output_dict
 
     def get_mirbase_mature_products(self, taxid=None):
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
-        # _fetch_all() has already called by now
+        # _fetch_all() has already been called by now
         pks = ','.join(["'%s'" % xref.pk for xref in self])  # e.g. "'250381225', '250381243', '295244525'"
 
         queryset = """
@@ -112,11 +131,12 @@ class RawSqlQueryset(models.QuerySet):
             WHERE xref.ac = rnc_accessions.accession
               AND xref.id IN ({pks})
               AND rnc_accessions.database = 'MIRBASE'
+              AND rnc_accessions.feature_name = 'precursor_RNA'
               {taxid_filter}
         """.format(pks=pks, taxid_filter=taxid_filter)
 
         annotated_queryset = """
-            SELECT xref.*
+            SELECT xref.*, x.id as xid
             FROM xref
             JOIN rnc_accessions
             ON xref.ac = rnc_accessions.accession
@@ -124,9 +144,10 @@ class RawSqlQueryset(models.QuerySet):
               {queryset}
             ) x
             ON rnc_accessions.external_id = x.external_id
-            WHERE rnc_accessions.feature_name = 'ncRNA'
-              AND rnc_accessions.database = 'MIRBASE'
-        """.format(queryset=queryset)
+            WHERE rnc_accessions.database = 'MIRBASE'
+              AND rnc_accessions.feature_name = 'ncRNA'
+              {taxid_filter}
+        """.format(queryset=queryset, taxid_filter=taxid_filter)
 
         raw_queryset = Xref.objects.raw(annotated_queryset)
 
@@ -135,7 +156,7 @@ class RawSqlQueryset(models.QuerySet):
     def get_mirbase_precursor(self, taxid=None):
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
-        # _fetch_all() has already called by now
+        # _fetch_all() has already been called by now
         pks = ','.join(["'%s'" % xref.pk for xref in self])
 
         queryset = """
@@ -144,11 +165,12 @@ class RawSqlQueryset(models.QuerySet):
             WHERE xref.ac = rnc_accessions.accession
               AND xref.id IN ({pks})
               AND rnc_accessions.database = 'MIRBASE'
+              AND rnc_accessions.feature_name = 'ncRNA'
               {taxid_filter}
         """.format(pks=pks, taxid_filter=taxid_filter)
 
         annotated_queryset = """
-            SELECT xref.*
+            SELECT xref.*, x.id as xid
             FROM xref
             JOIN rnc_accessions
             ON xref.ac = rnc_accessions.accession
@@ -156,11 +178,10 @@ class RawSqlQueryset(models.QuerySet):
               {queryset}
             ) x
             ON rnc_accessions.external_id = x.external_id
-            WHERE rnc_accessions.feature_name = 'precursor_RNA'
-              AND rnc_accessions.database = 'MIRBASE'
-            ORDER BY xref.id
-            LIMIT 1
-        """.format(queryset=queryset)
+            WHERE rnc_accessions.database = 'MIRBASE'
+              AND rnc_accessions.feature_name = 'precursor_RNA'
+              {taxid_filter}
+        """.format(queryset=queryset, taxid_filter=taxid_filter)
 
         raw_queryset = Xref.objects.raw(annotated_queryset)
 
@@ -169,7 +190,7 @@ class RawSqlQueryset(models.QuerySet):
     def get_refseq_mirna_mature_products(self, taxid=None):
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
-        # _fetch_all() has already called by now
+        # _fetch_all() has already been called by now
         pks = ','.join(["'%s'" % xref.pk for xref in self])
 
         queryset = """
@@ -178,11 +199,12 @@ class RawSqlQueryset(models.QuerySet):
             WHERE xref.ac = rnc_accessions.accession
               AND xref.id IN ({pks})
               AND rnc_accessions.database = 'REFSEQ'
+              AND rnc_accessions.feature_name = 'precursor_RNA'
               {taxid_filter}
         """.format(pks=pks, taxid_filter=taxid_filter)
 
         annotated_queryset = """
-            SELECT xref.*
+            SELECT xref.*, x.id as xid
             FROM xref
             JOIN rnc_accessions
             ON xref.ac = rnc_accessions.accession
@@ -190,9 +212,10 @@ class RawSqlQueryset(models.QuerySet):
               {queryset}
             ) x
             ON rnc_accessions.parent_ac = x.parent_ac
-            WHERE rnc_accessions.feature_name = 'ncRNA'
-              AND rnc_accessions.database = 'REFSEQ'
-        """.format(queryset=queryset)
+            WHERE rnc_accessions.database = 'REFSEQ'
+              AND rnc_accessions.feature_name = 'ncRNA'
+              {taxid_filter}
+        """.format(queryset=queryset, taxid_filter=taxid_filter)
 
         raw_queryset = Xref.objects.raw(annotated_queryset)
 
@@ -201,7 +224,7 @@ class RawSqlQueryset(models.QuerySet):
     def get_refseq_mirna_precursor(self, taxid=None):
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
-        # _fetch_all() has already called by now
+        # _fetch_all() has already been called by now
         pks = ','.join(["'%s'" % xref.pk for xref in self])
 
         queryset = """
@@ -209,12 +232,13 @@ class RawSqlQueryset(models.QuerySet):
             FROM xref, rnc_accessions
             WHERE xref.ac = rnc_accessions.accession
               AND xref.id IN ({pks})
-              AND rnc_accessions.database = 'REFSEQ'
+              AND xref.dbid = 9
+              AND rnc_accessions.feature_name = 'ncRNA'
               {taxid_filter}
         """.format(pks=pks, taxid_filter=taxid_filter)
 
         annotated_queryset = """
-            SELECT xref.*
+            SELECT xref.*, x.id as xid
             FROM xref
             JOIN rnc_accessions
             ON xref.ac = rnc_accessions.accession
@@ -222,45 +246,83 @@ class RawSqlQueryset(models.QuerySet):
               {queryset}
             ) x
             ON rnc_accessions.parent_ac = x.parent_ac
-            WHERE rnc_accessions.feature_name = 'precursor_RNA'
-              AND rnc_accessions.database = 'REFSEQ'
-        """.format(queryset=queryset)
+            WHERE xref.dbid = 9
+              AND rnc_accessions.feature_name = 'precursor_RNA'
+              {taxid_filter}
+        """.format(queryset=queryset, taxid_filter=taxid_filter)
 
         raw_queryset = Xref.objects.raw(annotated_queryset)
 
         return self._xrefs_raw_queryset_to_dict(raw_queryset)
 
     def get_refseq_splice_variants(self, taxid=None):
-        # WARNING: REGEX syntax is not database-compatible, I used Postgres version here,
-        # which will break on other vendors.
-
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
-        # _fetch_all() has already called by now
+        # _fetch_all() has already been called by now
         pks = ','.join(["'%s'" % xref.pk for xref in self])
 
         queryset = """
-            SELECT xref. *, rnc_accessions.ncrna_class, rnc_accessions.db_xref, SUBSTRING(rnc_accessions.db_xref, '(GeneID:[0-9]+)\s') as geneid
+            SELECT xref.*, rnc_accessions.ncrna_class, rnc_accessions.optional_id
             FROM xref, rnc_accessions
             WHERE xref.ac = rnc_accessions.accession
               AND xref.id IN ({pks})
+              AND xref.dbid = 9
+              AND rnc_accessions.optional_id != ''
+              AND (rnc_accessions.ncrna_class != 'miRNA' OR rnc_accessions.feature_name = 'precursor_RNA')
               {taxid_filter}
         """.format(pks=pks, taxid_filter=taxid_filter)
 
         annotated_queryset = """
-            SELECT xref.*
+            SELECT xref.*, x.id as xid
             FROM xref
             JOIN rnc_accessions
             ON xref.ac = rnc_accessions.accession
             JOIN (
               {queryset}
             ) x
-            ON rnc_accessions.db_xref ILIKE (x.geneid || '%%')
-            WHERE rnc_accessions.database = 'REFSEQ'
+            ON rnc_accessions.optional_id = x.optional_id
+            WHERE xref.dbid = 9
               AND xref.deleted = 'N'
-              AND rnc_accessions.ncrna_class = x.ncrna_class
-              AND rnc_accessions.accession != x.ac;
-        """.format(queryset=queryset)
+              AND rnc_accessions.accession != x.ac
+              AND (rnc_accessions.ncrna_class != 'miRNA' OR rnc_accessions.feature_name = 'precursor_RNA')
+              {taxid_filter}
+        """.format(queryset=queryset, taxid_filter=taxid_filter)
+
+        raw_queryset = Xref.objects.raw(annotated_queryset)
+
+        return self._xrefs_raw_queryset_to_dict(raw_queryset)
+
+    def get_ensembl_splice_variants(self, taxid=None):
+        taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
+
+        # _fetch_all() has already been called by now
+        pks = ','.join(["'%s'" % xref.pk for xref in self])
+
+        queryset = """
+            SELECT xref.*, rnc_accessions.optional_id
+            FROM xref, rnc_accessions
+            WHERE xref.ac = rnc_accessions.accession
+              AND xref.dbid = 25
+              AND rnc_accessions.optional_id != ''
+              AND (rnc_accessions.ncrna_class != 'miRNA' OR rnc_accessions.feature_name = 'precursor_RNA')
+              AND xref.id IN ({pks})
+              {taxid_filter}
+        """.format(pks=pks, taxid_filter=taxid_filter)
+
+        annotated_queryset = """
+            SELECT xref.*, x.id as xid
+            FROM xref
+            JOIN rnc_accessions
+            ON xref.ac = rnc_accessions.accession
+            JOIN (
+              {queryset}
+            ) x
+            ON rnc_accessions.optional_id = x.optional_id
+            WHERE xref.dbid = 25
+              AND xref.deleted = 'N'
+              AND rnc_accessions.accession != x.ac
+              {taxid_filter}
+        """.format(queryset=queryset, taxid_filter=taxid_filter)
 
         raw_queryset = Xref.objects.raw(annotated_queryset)
 
@@ -269,7 +331,7 @@ class RawSqlQueryset(models.QuerySet):
     def get_tmrna_mate(self, taxid=None):
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
-        # _fetch_all() has already called by now
+        # _fetch_all() has already been called by now
         pks = ','.join(["'%s'" % xref.pk for xref in self])
 
         queryset = """
@@ -283,7 +345,7 @@ class RawSqlQueryset(models.QuerySet):
         """.format(pks=pks, taxid_filter=taxid_filter)
 
         annotated_queryset = """
-            SELECT xref.*
+            SELECT xref.*, x.id as xid
             FROM xref
             JOIN rnc_accessions
             ON xref.ac = rnc_accessions.accession
@@ -292,7 +354,8 @@ class RawSqlQueryset(models.QuerySet):
             ) x
             ON rnc_accessions.parent_ac = x.optional_id
             WHERE rnc_accessions.is_composite = 'Y'
-        """.format(queryset=queryset)
+              {taxid_filter}
+        """.format(queryset=queryset, taxid_filter=taxid_filter)
 
         raw_queryset = Xref.objects.raw(annotated_queryset)
 
@@ -306,7 +369,7 @@ class RawSqlXrefManager(models.Manager):
         return RawSqlQueryset(self.model, using=self._db)
 
 
-class Xref(models.Model):
+class Xref(CachingMixin, models.Model):
     id = models.AutoField(primary_key=True)
     db = models.ForeignKey("Database", db_column='dbid', related_name='xrefs')
     accession = models.ForeignKey("Accession", db_column='ac', to_field='accession', related_name='xrefs', unique=True)
@@ -321,6 +384,7 @@ class Xref(models.Model):
     taxid = models.IntegerField()
 
     objects = RawSqlXrefManager()
+    default_objects = CachingManager()
 
     class Meta:
         db_table = 'xref'
@@ -377,14 +441,17 @@ class Xref(models.Model):
         This function returns an NDB url using NDB ids where possible
         with PDB ids used as a fallback.
         """
-        ndb_url = 'http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget={structure_id}'
-        if self.accession.db_xref:
-            match = re.search('NDB\:(\w+)', self.accession.db_xref, re.IGNORECASE)
-            if match:
-                structure_id = match.group(1)  # NDB id
+        if self.accession.database == 'PDBE':
+            ndb_url = 'http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget={structure_id}'
+            if self.accession.db_xref:
+                match = re.search('NDB\:(\w+)', self.accession.db_xref, re.IGNORECASE)
+                if match:
+                    structure_id = match.group(1)  # NDB id
+                else:
+                    structure_id = self.accession.external_id  # default to PDB id
+                return ndb_url.format(structure_id=structure_id)
             else:
-                structure_id = self.accession.external_id  # default to PDB id
-            return ndb_url.format(structure_id=structure_id)
+                return None
         else:
             return None
 
@@ -475,7 +542,6 @@ class Xref(models.Model):
                 return rna.upi
         return None
 
-
     def get_refseq_splice_variants(self):
         """
         RefSeq splice variants are identified by the same GeneID.
@@ -528,6 +594,26 @@ class Xref(models.Model):
         else:
             tmrna_type = 2  # two-piece tmRNA
         return tmrna_type
+
+    def get_gencode_transcript_id(self):
+        """
+        GENCODE entries have their corresponding Ensembl transcript ids stored
+        in Accession.note. Example:
+        {"transcript_id": ["ENSMUST00000160979.8"]}
+        """
+        if self.db.display_name == 'GENCODE':
+            return self.accession.accession
+        else:
+            return None
+
+    def get_gencode_ensembl_url(self):
+        """Get Ensembl URL for GENCODE transcripts."""
+        ensembl_transcript_id = self.get_gencode_transcript_id()
+        url = 'http://ensembl.org/{species}/Transcript/Summary?db=core;t={id}'.format(
+            id=ensembl_transcript_id,
+            species=self.accession.species.replace(' ', '_')
+        )
+        return url
 
     def get_ensembl_division(self):
         """Get Ensembl or Ensembl Genomes division for the cross-reference."""

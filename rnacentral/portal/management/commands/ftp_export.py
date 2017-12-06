@@ -15,6 +15,7 @@ from django.core.management.base import BaseCommand, CommandError
 from optparse import make_option
 from cProfile import Profile
 from portal.management.commands.ftp_exporters.fasta import FastaExporter
+from portal.management.commands.ftp_exporters.gpi import GpiExporter
 from portal.management.commands.ftp_exporters.md5 import Md5Exporter
 from portal.management.commands.ftp_exporters.xrefs import XrefsExporter
 from portal.management.commands.ftp_exporters.gff import GffExporter, Gff3Exporter
@@ -115,7 +116,7 @@ class Command(BaseCommand):
     """
     # formats must be in correct execution order for the `all` parameter to work
     # e.g. `bed` should preceed `trackhub`
-    formats = ['xrefs', 'fasta', 'gff', 'gff3', 'bed', 'trackhub', 'md5', 'all']
+    formats = ['xrefs', 'fasta', 'gff', 'gff3', 'bed', 'trackhub', 'md5', 'gpi', 'all']
 
     option_list = BaseCommand.option_list + (
         make_option('-d', '--destination',
@@ -190,7 +191,7 @@ class Command(BaseCommand):
             profiler = Profile()
             profiler.runcall(self.export, **options)
             profiler.print_stats()
-            profiler.dump_stats('profile.txt')            
+            profiler.dump_stats('profile.txt')
         elif options['format'] == 'all':
             self.export_all(**options)
         else:

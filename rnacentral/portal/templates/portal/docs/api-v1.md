@@ -5,7 +5,7 @@ Most data in RNAcentral can be accessed programmatically using a RESTful API
 allowing for integration with other resources.
 The API implementation is based on the [Django Rest Framework](http://www.django-rest-framework.org/).
 
-## Web browsable API <a name="web-browsable-api" href="#web-browsable-api" class="text-muted smaller"><i class="fa fa-link"></i></a>
+## Web browsable API <a style="cursor: pointer" id="web-browsable-api" ng-click="scrollTo('web-browsable-api')" name="web-browsable-api" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The RNAcentral API is **web browsable**, which means that:
 
@@ -18,7 +18,7 @@ As a result, developers can familiarise themselves with the API and get a better
 
 <a href="/api/v1" class="btn btn-primary" role="button" target="_blank">Browse the API</a>
 
-## Versioning <a name="versioning" href="#versioning" class="text-muted smaller"><i class="fa fa-link"></i></a>
+## Versioning <a style="cursor: pointer" id="versioning" ng-click="scrollTo('versioning')" name="versioning" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 To ensure that changes in the RNAcentral API don't break the applications
 relying on it, the API is versioned, and **the version is included in the API's URL**.
@@ -46,7 +46,7 @@ The following **non-disruptive changes** may be implemented to a public API:
 An advance notice will be given before obsoleting an API version. To stay up to date,
 please consider signing up for the [RNAcentral updates](http://blog.rnacentral.org).
 
-## Throttling <a name="throttling" href="#throttling" class="text-muted smaller"><i class="fa fa-link"></i></a>
+## Throttling <a style="cursor: pointer" id="throttling" ng-click="scrollTo('throttling')" name="throttling" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The maximum number of requests from the same IP address is limited to **20 requests per second**.
 Currently there is no limit on the total number of requests from the same IP.
@@ -55,9 +55,9 @@ The limit can be lifted for registered users, so please get in touch if you requ
 
 <hr>
 
-# API v1 documentation <a name="v1" href="#v1" class="text-muted smaller"><i class="fa fa-link"></i></a>
+# API v1 documentation <a style="cursor: pointer" id="v1" ng-click="scrollTo('v1')" name="v1" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
-## Example responses <a name="v1-example-responses" href="#v1-example-responses" class="text-muted smaller"><i class="fa fa-link"></i></a>
+## Example responses <a style="cursor: pointer" id="v1-example-responses" ng-click="scrollTo('v1-example-responses')" name="v1-example-responses" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Responses containing **multiple entries** have the following fields:
 
@@ -102,7 +102,7 @@ Responses containing just a **single entry** don't have the extra navigation fie
 }
 ```
 
-### Hyperlinked vs flat responses <a name="v1-hyperlinked-vs-flat-responses" href="#v1-hyperlinked-vs-flat-responses" class="text-muted smaller"><i class="fa fa-link"></i></a>
+### Hyperlinked vs flat responses <a style="cursor: pointer" id="v1-hyperlinked-vs-flat-responses" ng-click="scrollTo('v1-hyperlinked-vs-flat-responses')" name="v1-hyperlinked-vs-flat-responses" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Some objects are represented by hyperlinks, for example in the default RNA object cross-references are represented by a hyperlink:
 
@@ -121,7 +121,7 @@ Note that such requests may take longer.
 * [{{ BASE_URL }}/api/v1/rna/URS0000000001](/api/v1/rna/URS0000000001) (hyperlinked)
 * [{{ BASE_URL }}/api/v1/rna/URS0000000001/?flat=true](/api/v1/rna/URS0000000001/?flat=true) (flat)
 
-##Pagination <a name="v1-pagination" href="#v1-pagination" class="text-muted smaller"><i class="fa fa-link"></i></a>
+##Pagination <a style="cursor: pointer" id="v1-pagination" ng-click="scrollTo('v1-pagination')" name="v1-pagination" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Responses containing multuple entries are paginated to prevent accidental downloads of large amounts of data and to speed up the API.
 
@@ -135,7 +135,7 @@ The page size is controlled by the `page_size` parameter. Its default value is
 * [{{ BASE_URL }}/api/v1/rna/?page_size=5](/api/v1/rna/?page_size=5)
 * [{{ BASE_URL }}/api/v1/rna/?page=2&page_size=5](/api/v1/rna/?page_size=5&page=2)
 
-## Output formats <a name="v1-output-formats" href="#v1-output-formats" class="text-muted smaller"><i class="fa fa-link"></i></a>
+## Output formats <a style="cursor: pointer" id="v1-output-formats" ng-click="scrollTo('v1-output-formats')" name="v1-output-formats" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The following output formats are supported for all endpoints:
 **JSON**, **JSONP** (for cross-origin Javascript requests), **YAML**, **HTML**.
@@ -187,11 +187,11 @@ curl -H "Accept: application/yaml" http://127.0.0.1:8000/api/v1/?format=json
 }
 ```
 
-## Filtering <a name="v1-filtering" href="#v1-filtering" class="text-muted smaller"><i class="fa fa-link"></i></a>
+## Filtering <a style="cursor: pointer" id="v1-filtering" ng-click="scrollTo('v1-filtering')" name="v1-filtering" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The API supports several filtering operations that complement the main RNAcentral search functionality.
 
-### Filtering by sequence length <a name="v1-filtering-by-sequence-length" href="#v1-filtering-by-sequence-length" class="text-muted smaller"><i class="fa fa-link"></i></a>
+### Filtering by sequence length <a style="cursor: pointer" id="v1-filtering-by-sequence-length" ng-click="scrollTo('v1-filtering-by-sequence-length')" name="v1-filtering-by-sequence-length" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 There are 3 url parameters: `length`, `min_length` (greater or equal length), and `max_length` (less or equal length).
 
@@ -202,7 +202,7 @@ There are 3 url parameters: `length`, `min_length` (greater or equal length), an
 * [{{ BASE_URL }}/api/v1/rna/?max_length=10](/api/v1/rna/?max_length=10)
 * [{{ BASE_URL }}/api/v1/rna/?min_length=1&max_length=4](/api/v1/rna/?min_length=1&max_length=4)
 
-### Filtering by database <a name="v1-filtering-by-database" href="#v1-filtering-by-database" class="text-muted smaller"><i class="fa fa-link"></i></a>
+### Filtering by database <a style="cursor: pointer" id="v1-filtering-by-database" ng-click="scrollTo('v1-filtering-by-database')" name="v1-filtering-by-database" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The expert database can be specified by setting the `database` url parameter
 (possible values: *srpdb*, *mirbase*, *tmrna-website*, *lncrnadb*, *gtrnadb*, *ena*, *rdp*, *rfam*, *refseq*, *snopy*, *pdbe*).
@@ -219,7 +219,7 @@ The expert database can be specified by setting the `database` url parameter
 * [{{ BASE_URL }}/api/v1/rna/?database=rfam](/api/v1/rna/?database=rfam)
 * [{{ BASE_URL }}/api/v1/rna/?database=refseq](/api/v1/rna/?database=refseq)
 
-### Filtering by external ids <a name="v1-filtering-by-external-ids" href="#v1-filtering-by-external-ids" class="text-muted smaller"><i class="fa fa-link"></i></a>
+### Filtering by external ids <a style="cursor: pointer" id="v1-filtering-by-external-ids" ng-click="scrollTo('v1-filtering-by-external-ids')" name="v1-filtering-by-external-ids" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The external id is an id assigned to a sequence in one of the Expert Databases,
 which is imported into RNAcentral as a cross-reference.
@@ -233,7 +233,7 @@ The external id can be specified by setting the `external_id` url parameter.
 * <a href="/api/v1/rna/?external_id=OTTHUMG00000172092" target="_blank">{{ BASE_URL }}/api/v1/rna/?external_id=OTTHUMG00000172092</a> (Vega)
 * <a href="/api/v1/rna/?external_id=Lepto_inter_Lai566" target="_blank">{{ BASE_URL }}/api/v1/rna/?external_id=Lepto_inter_Lai566</a> (tmRNA Website)
 
-### Combined filters <a name="v1-combined-filters" href="#v1-combined-filters" class="text-muted smaller"><i class="fa fa-link"></i></a>
+### Combined filters <a style="cursor: pointer" id="v1-combined-filters" ng-click="scrollTo('v1-combined-filters')" name="v1-combined-filters" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Any filters can be combined to narrow down the query using the `&` symbol as a separator,
 which acts as the logical `AND` operator. More logical operators will be supported in the future.
@@ -243,7 +243,7 @@ which acts as the logical `AND` operator. More logical operators will be support
 * [{{ BASE_URL }}/api/v1/rna/?database=srpdb&min_length=200](/api/v1/rna/?database=srpdb&min_length=200)
 * [{{ BASE_URL }}/api/v1/rna/?min_length=1&max_length=4](/api/v1/rna/?min_length=1&max_length=4)
 
-## Genome annotations <a name="v1-genome-annotations" href="#v1-genome-annotations" class="text-muted smaller"><i class="fa fa-link"></i></a>
+## Genome annotations <a style="cursor: pointer" id="v1-genome-annotations" ng-click="scrollTo('v1-genome-annotations')" name="v1-genome-annotations" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The API provides an endpoint for retrieving annotations based on genomic coordinates for a [number of species](/help/genomic-mapping).
 
@@ -257,7 +257,7 @@ The genome location should be in the `chromosome:start-end` format and may conta
 
 * [{{ BASE_URL }}/api/v1/overlap/region/homo_sapiens/2:39,745,816-39,826,679](/api/v1/overlap/region/homo_sapiens/2:39,745,816-39,826,679)
 
-## Example script <a name="v1-example-script" href="#v1-example-script" class="text-muted smaller"><i class="fa fa-link"></i></a>
+## Example script <a style="cursor: pointer" id="v1-example-script" ng-click="scrollTo('v1-example-script')" name="v1-example-script" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 A common task is finding whether some sequence of interest has an RNAcentral id.
 
@@ -278,11 +278,11 @@ Perl module for computing the md5 values. Additional notes:
 {# embedded GitHub gist #}
 <script src="https://gist.github.com/AntonPetrov/177cef0a3b4799f01536.js"></script>
 
-## Cross domain requests <a name="v1-cross-domain-requests" href="#v1-cross-domain-requests" class="text-muted smaller"><i class="fa fa-link"></i></a>
+## Cross domain requests <a style="cursor: pointer" id="v1-cross-domain-requests" ng-click="scrollTo('v1-cross-domain-requests')" name="v1-cross-domain-requests" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 To use the API in a javascript application, please use jsonp requests.
 
-#### Example using jQuery <a name="v1-example-using-jquery" href="#v1-example-using-jquery" class="text-muted smaller"><i class="fa fa-link"></i></a>
+#### Example using jQuery <a style="cursor: pointer" id="v1-example-using-jquery" ng-click="scrollTo('v1-example-using-jquery')" name="v1-example-using-jquery" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 ```
 $.ajax({
@@ -297,7 +297,7 @@ $.ajax({
 });
 ```
 
-## Trailing slash <a name="v1-trailing-slash" href="#v1-trailing-slash" class="text-muted smaller"><i class="fa fa-link"></i></a>
+## Trailing slash <a style="cursor: pointer" id="v1-trailing-slash" ng-click="scrollTo('v1-trailing-slash')" name="v1-trailing-slash" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The trailing slash in all urls used in the API is **optional**.
 

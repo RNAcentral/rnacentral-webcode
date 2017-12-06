@@ -20,8 +20,8 @@ About RNAcentral
 
 {% block meta_tags %}
     {{ block.super }}
-    <meta name="description" content="RNAcentral is a comprehensive database of non-coding RNA sequences that provides a single entry point for accessing data from over 20 member databases"/>
-    <meta name="twitter:description" content="RNAcentral is a comprehensive database of non-coding RNA sequences that provides a single entry point for accessing data from over 20 member databases">
+    <meta name="description" content="RNAcentral is a comprehensive database of non-coding RNA sequences that provides a single entry point for accessing data from over 25 member databases"/>
+    <meta name="twitter:description" content="RNAcentral is a comprehensive database of non-coding RNA sequences that provides a single entry point for accessing data from over 25 member databases">
 {% endblock %}
 
 {% block content %}
@@ -82,12 +82,6 @@ About RNAcentral
 
         You can use a <a href="{% url 'genome-browser' %}">genome browser</a> to browse all mapped sequences
         or view individual sequences in their genomic context.
-      </p>
-
-      <p>
-        For example,
-        <button type="button" class="btn btn-primary btn-sm genoverse-xref help margin-right-5px" data-genomic-start="73792205" data-genomic-end="73829231" data-strand="1" data-chromosome="X" data-species="homo_sapiens" data-description="Homo sapiens TSIX transcript, XIST antisense RNA (TSIX), antisense RNA." data-species-label="Homo sapiens" title="" data-original-title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> view genomic location</button>
-        of human <a href="{% url 'unique-rna-sequence' 'URS000025784F'%}">TSIX lncRNA</a>.
       </p>
 
     </div>
@@ -505,6 +499,27 @@ About RNAcentral
                         "text": "RNAcentral now includes data from <a href='http://ensembl.org'>Ensembl</a>, <a href='http://gencodegenes.org'>GENCODE</a>, and <a href='http://flybase.org'>FlyBase</a> <br> <a href='{{ blog_url }}'>Release announcement</a>"
                     }
                 },
+                {
+                    "media": {
+                        "url": "{% static "img/timeline/release-v8.png" %}",
+                        "caption": "Release 8 features",
+                        "credit": "RNAcentral"
+                    },
+                    "start_date": {
+                        "month": "11",
+                        "day": "10",
+                        "year": "2017"
+                    },
+                    "end_date": {
+                        "month": "11",
+                        "day": "10",
+                        "year": "2017"
+                    },
+                    "text": {
+                        "headline": "Release 8",
+                        "text": "RNAcentral now includes secondary structures and new data from <a href='http://gtrnadb.ucsc.edu/'>GtRNAdb 2.1</a> and links to <a href='http://www.informatics.jax.org/'>MGI</a> <br> <a href='{{ blog_url }}'>Release announcement</a>"
+                    }
+                },
             ]
       };
 
@@ -575,6 +590,12 @@ About RNAcentral
       'sequence_count': 11735072,
       'expert_databases': 25,
       'label': 'release 7',
+    },
+    {
+      'date': '03-11-17',
+      'sequence_count': 13154773,
+      'expert_databases': 26,
+      'label': 'release 8',
     },
   ];
 

@@ -21,6 +21,8 @@ from django_performance_testing.timing import TimeLimit
 
 from portal.models import Rna
 
+from portal.utils.descriptions import rule_method as rm
+
 __doc__ = """
 To run these tests you can simply do:
 
@@ -33,7 +35,7 @@ class GenericDescriptionTest(SimpleTestCase):
     def assertDescriptionIs(self, description, upi, taxid=None):
         seq = Rna.objects.get(upi=upi)
         with QueryBatchLimit(write=0, read=10):
-            with TimeLimit(total=5):
+            with TimeLimit(total=50):
                 computed = seq.get_description(taxid=taxid, recompute=True)
         self.assertEquals(description, computed)
 
@@ -66,37 +68,52 @@ class SimpleDescriptionTests(GenericDescriptionTest):
 class HumanDescriptionTests(GenericDescriptionTest):
     def test_likes_hgnc_for_human(self):
         self.assertDescriptionIs(
-            'DiGeorge syndrome critical region gene 9 (DGCR9)',
+            'Homo sapiens DiGeorge syndrome critical region gene 9 (DGCR9)',
             'URS0000759BEC',
             taxid=9606)
 
         self.assertDescriptionIs(
-            'STARD4 antisense RNA 1 (STARD4-AS1)',
+            'Homo sapiens STARD4 antisense RNA 1 (STARD4-AS1)',
             'URS00003CE153',
             taxid=9606)
 
         # NOTE: This is a bit questionable, there are other names which may
         # possibly be better
         self.assertDescriptionIs(
-            'small Cajal body-specific RNA 10 (SCARNA10)',
+            'Homo sapiens small Cajal body-specific RNA 10 (SCARNA10)',
             'URS0000569A4A',
             taxid=9606)
 
     def test_prefers_mirbase_for_mirna_precursor(self):
         self.assertDescriptionIs(
-            'Homo sapiens (human) microRNA hsa-mir-3648-2 precursor',
+            'Homo sapiens (human) microRNA precursor (hsa-mir-3648-1, hsa-mir-3648-2)',
             'URS000075A546',
             taxid=9606)
 
         self.assertDescriptionIs(
-            'Homo sapiens (human) microRNA hsa-mir-1302-9 precursor',
+            'Homo sapiens (human) microRNA precursor (hsa-mir-1302-2, hsa-mir-1302 9 to 11)',
+            # 'Homo sapiens (human) microRNA precursor (hsa-mir-1302-2, hsa-mir-1302-9, hsa-mir-1302-10, hsa-mir-1302-11)',
             'URS000075CC93',
             taxid=9606)
 
     def test_includes_gene_name_for_hgnc(self):
         self.assertDescriptionIs(
-            'HOX transcript antisense RNA (HOTAIR)',
+            'Homo sapiens HOX transcript antisense RNA (HOTAIR)',
             'URS000075C808',
+            taxid=9606
+        )
+
+    def test_will_indicate_several_genes_for_hgnc(self):
+        self.assertDescriptionIs(
+            # 'Homo sapiens RNA, 5S ribosomal (RNA5S1-8, RNA5S 10-17)',
+            'Homo sapiens RNA, 5S ribosomal 1 (RNA5S1-8, RNA5S10-17)',
+            'URS00000F9D45',
+            taxid=9606
+        )
+
+        self.assertDescriptionIs(
+            'Homo sapiens RNA, 45S pre-ribosomal 4 (RNA45S4, RNA45SN1)',
+            'URS0000ABD87F',
             taxid=9606
         )
 
@@ -144,30 +161,37 @@ class MouseDescriptionTests(GenericDescriptionTest):
         Rfam over RefSeq in this case.
         """
         self.assertDescriptionIs(
-            'Mus musculus small Cajal body-specific RNA 1 (Scarna13), guide RNA.',
+            'Mus musculus small Cajal body-specific RNA 1 (Scarna13), guide RNA',
             'URS00006550DA',
             taxid=10090)
 
     def test_likes_refseq_over_ena(self):
         self.assertDescriptionIs(
-            'Mus musculus small nucleolar RNA, C/D box 17 (Snord17), small nucleolar RNA.',
+            'Mus musculus small nucleolar RNA, C/D box 17 (Snord17), small nucleolar RNA',
             'URS000051DCEC',
             taxid=10090)
 
         self.assertDescriptionIs(
-            'Mus musculus small nucleolar RNA, H/ACA box 3 (Snora3), small nucleolar RNA.',
+            'Mus musculus small nucleolar RNA, H/ACA box 3 (Snora3), small nucleolar RNA',
             'URS000060B496',
             taxid=10090)
 
     def test_will_use_refseq_over_good_ena(self):
         self.assertDescriptionIs(
-            'Mus musculus predicted gene 12238 (Gm12238), small nucleolar RNA.',
+            'Mus musculus predicted gene 12238 (Gm12238), small nucleolar RNA',
             'URS00004E52D3',
             taxid=10090)
 
+    def test_it_will_strip_trailing_terms_from_description(self):
+        self.assertDescriptionIs(
+            'Mus musculus predicted gene 11532 (Gm11532)',
+            'URS00008E3A1B',
+            taxid=10090,
+        )
+
     def test_it_likes_rfam_over_noncode(self):
         self.assertDescriptionIs(
-            'Mus musculus Small Cajal body-specific RNA 2',
+            'Mus musculus small Cajal body-specific RNA 2',
             'URS00006B3271',
             taxid=10090)
 
@@ -180,7 +204,7 @@ class MouseDescriptionTests(GenericDescriptionTest):
 class CattleDescriptionTests(GenericDescriptionTest):
     def test_likes_name_with_precursor(self):
         self.assertDescriptionIs(
-            'Bos taurus (cattle) microRNA 431 precursor.',
+            'Bos taurus (cattle) microRNA 431 precursor',
             'URS00007150F8',
             taxid=9913)
 
@@ -207,7 +231,7 @@ class CattleDescriptionTests(GenericDescriptionTest):
 
     def test_likes_refseq_over_ena(self):
         self.assertDescriptionIs(
-            'Bos taurus telomerase RNA component (TERC), telomerase RNA.',
+            'Bos taurus telomerase RNA component (TERC), telomerase RNA',
             'URS00003EBD9A',
             taxid=9913)
 
@@ -215,7 +239,7 @@ class CattleDescriptionTests(GenericDescriptionTest):
 class WormTests(GenericDescriptionTest):
     def test_likes_wormbase(self):
         self.assertDescriptionIs(
-            'Caenorhabditis elegans Unclassified non-coding RNA linc-125',
+            'Caenorhabditis elegans long non-coding RNA linc-125 (linc-125), lncRNA',
             'URS00005511ED',
             taxid=6239)
 
@@ -247,8 +271,50 @@ class WormTests(GenericDescriptionTest):
 
 
 class LargeDataTests(GenericDescriptionTest):
+    @unittest.skip("No examples yet")
     def test_can_compute_when_many_cross_ref(self):
         """This is a stress test to see if this still performs quickly given a
         sequence with many ~10k xrefs
         """
         self.assertDescriptionIs('tRNA from 3413 species', 'URS0000181AEC')
+
+
+def test_can_strip_trailing_dots():
+    name = 'Mus musculus predicted gene 11532 (Gm11532), long non-coding RNA.'
+    ans = 'Mus musculus predicted gene 11532 (Gm11532), long non-coding RNA'
+    assert rm.remove_extra_description_terms(name) == ans
+
+
+def test_can_strip_extra_lnc_rna():
+    name = 'Mus musculus predicted gene 11532 (Gm11532), long non-coding RNA'
+    ans = 'Mus musculus predicted gene 11532 (Gm11532)'
+    assert rm.trim_trailing_rna_type('lncRNA', name) == ans
+
+
+def test_can_strip_extra_lnc_rna_when_antisense():
+    name = 'Mus musculus predicted gene 11532 (Gm11532), long non-coding RNA'
+    ans = 'Mus musculus predicted gene 11532 (Gm11532)'
+    assert rm.trim_trailing_rna_type('antisense', name) == ans
+
+
+def test_will_not_strip_if_rna_type_differs():
+    name = 'Mus musculus predicted gene 11532 (Gm11532), long non-coding RNA'
+    assert rm.trim_trailing_rna_type('SRP_RNA', name) == name
+
+
+def test_will_strip_non_coding_term_with_whitespace():
+    name = 'Mus musculus myocardial infarction associated transcript (non- protein coding)'
+    ans = 'Mus musculus myocardial infarction associated transcript'
+    assert rm.remove_extra_description_terms(name) == ans
+
+
+def test_will_strip_non_coding_term():
+    name = 'Mus musculus myocardial infarction associated transcript (non-protein coding)'
+    ans = 'Mus musculus myocardial infarction associated transcript'
+    assert rm.remove_extra_description_terms(name) == ans
+
+
+def test_will_correct_tmrna():
+    name = 'Homo sapiens (human) transfer-messenger mRNA Esche_coli_K12'
+    ans = 'Homo sapiens (human) transfer-messenger RNA Esche_coli_K12'
+    assert rm.remove_extra_description_terms(name) == ans

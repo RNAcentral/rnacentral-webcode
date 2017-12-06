@@ -11,10 +11,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from portal.management.commands.ftp_exporters.ftp_base import FtpBase
-import cx_Oracle
-import logging
 import sys
+
+from portal.management.commands.ftp_exporters.ftp_base import FtpBase
+from portal.management.commands.common_exporters.database_connection import cursor
 
 
 class Md5Exporter(FtpBase):
@@ -27,13 +27,14 @@ class Md5Exporter(FtpBase):
         """
         super(Md5Exporter, self).__init__(*args, **kwargs)
 
-        self.subdirectory = self.make_subdirectory(self.destination, self.subfolders['md5'])
+        self.subdirectory = self.make_subdirectory(self.destination,
+                                                   self.subfolders['md5'])
         self.names = {
             'readme': 'readme.txt',
             'md5': 'md5.tsv',
             'md5_example': 'example.txt',
         }
-        self.logger = logging.getLogger(__name__)
+        self.cursor = None
 
     def export(self):
         """
@@ -51,46 +52,37 @@ class Md5Exporter(FtpBase):
         """
         self.logger.info('Exporting md5 data to %s' % self.subdirectory)
         self.get_filenames_and_filehandles(self.names, self.subdirectory)
-        self.get_connection()
-        self.get_cursor()
 
-    def export_md5(self):
+    def get_distinct_md5_sql(self):
         """
-        Write out the data.
+        Get RNAcentral ids and md5's of their corresponding sequences.
         """
-        def get_distinct_md5_sql():
-            """
-            Get RNAcentral ids and md5's of their corresponding sequences.
-            """
-            if self.test:
-                return """SELECT * FROM rna"""
+        if self.test:
+            return "SELECT * FROM rna WHERE id < %i" % self.test_entries
+        else:
             return """
             SELECT DISTINCT upi, md5
             FROM rna
             ORDER BY upi
             """
 
-        def process_md5_entries():
-            """
-            Create md5.tsv and md5_example.txt files.
-            """
-            counter = 0
-            for row in self.cursor:
-                if self.test and counter > self.test_entries:
-                    return
-                result = self.row_to_dict(row)
-                md5 = '{upi}\t{md5}\n'.format(upi=result['upi'], md5=result['md5'])
-                self.filehandles['md5'].write(md5)
-                if counter < self.examples:
-                    self.filehandles['md5_example'].write(md5)
-                counter += 1
-
-        sql = get_distinct_md5_sql()
+    def export_md5(self):
+        """
+        Write out the data.
+        """
         try:
-            self.cursor.execute(sql)
-            process_md5_entries()
-        except cx_Oracle.DatabaseError, exc:
-            self.log_oracle_error(exc)
+            with cursor() as cur:
+                cur.execute(self.get_distinct_md5_sql())
+                for counter, result in enumerate(cur):
+                    if self.test and counter > self.test_entries:
+                        break
+                    md5 = '{upi}\t{md5}\n'.format(upi=result['upi'],
+                                                  md5=result['md5'])
+                    self.filehandles['md5'].write(md5)
+                    if counter < self.examples:
+                        self.filehandles['md5_example'].write(md5)
+        except Exception as exc:
+            self.log_database_error(exc)
             sys.exit(1)
 
     def create_readme(self):
@@ -103,8 +95,10 @@ class Md5Exporter(FtpBase):
         based on the uppercase DNA version of that sequence.
 
         * md5.tsv.gz
-        Tab-separated file with RNAcentral ids and md5 hashes of their corresponding sequences.
-        This file can be used to look up RNAcentral ids for a set of sequences given their md5.
+        Tab-separated file with RNAcentral ids and md5 hashes
+        of their corresponding sequences.
+        This file can be used to look up RNAcentral ids for a set of sequences
+        given their md5.
 
         * example.txt
         A small file showing the first few md5 entries.

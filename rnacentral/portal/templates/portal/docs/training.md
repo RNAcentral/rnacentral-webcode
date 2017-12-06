@@ -1,7 +1,7 @@
 
 # Training resources
 
-### Online training course <a name="online-training" href="#online-training" class="text-muted smaller"><i class="fa fa-link"></i></a>
+### Online training course <a style="cursor: pointer" id="online-training" ng-click="scrollTo('online-training')" name="online-training" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 If you would like to find out more about RNAcentral or take a tour of the website, consider taking
 an [online training course](http://www.ebi.ac.uk/training/online/course/rnacentral-exploring-non-coding-rna-sequences)
@@ -9,7 +9,7 @@ that contains data overview, tips for searching, quizzes, and more.
 
 <a href="http://www.ebi.ac.uk/training/online/course/rnacentral-exploring-non-coding-rna-sequences" class="btn btn-primary no-icon">Take the course now</a>
 
-### Webinar <a name="webinar" href="#webinar" class="text-muted smaller"><i class="fa fa-link"></i></a>
+### Webinar <a style="cursor: pointer" id="webinar" ng-click="scrollTo('webinar')" name="webinar" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Watch a recording of an online webinar to see RNAcentral in action:
 
@@ -17,7 +17,7 @@ Watch a recording of an online webinar to see RNAcentral in action:
 
 *Recorded on October 28th, 2015.*
 
-### Publications <a name="papers" href="#papers" class="text-muted smaller"><i class="fa fa-link"></i></a>
+### Publications <a style="cursor: pointer" id="papers" ng-click="scrollTo('papers')" name="papers" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 RNAcentral has been described in several papers:
 
@@ -48,7 +48,7 @@ RNAcentral has been described in several papers:
   <a href="http://www.ncbi.nlm.nih.gov/pubmed/21940779">Pubmed</a>  
 </blockquote>
 
-### Feedback <a name="feedback" href="#feedback" class="text-muted smaller"><i class="fa fa-link"></i></a>
+### Feedback <a style="cursor: pointer" id="feedback" ng-click="scrollTo('feedback')" name="feedback" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Let us know what you think by getting in touch on [Twitter](https://twitter.com/rnacentral),
 [GitHub](https://github.com/RNAcentral/rnacentral-webcode/issues/new), or by [email]({% url 'contact-us' %}).

@@ -84,6 +84,16 @@ def install_django_requirements():
         env.run('pip install --upgrade -r rnacentral/requirements.txt')
 
 
+def update_npm():
+    """
+    Navigate to the folder with `package.json` and run npm update to install
+    static content dependencies.
+    """
+    path = os.path.join(settings.PROJECT_PATH, 'rnacentral', 'portal', 'static')
+    with env.cd(path):
+        env.run('npm update --loglevel info')
+
+
 def collect_static_files():
     """
     Run django `collectstatic` command.
@@ -184,6 +194,7 @@ def deploy_locally(git_branch=None, restart_url='http://rnacentral.org', quick=F
     Run deployment locally.
     """
     git_updates(git_branch)
+    update_npm()
     collect_static_files()
     compress_static_files()
     if not quick:
@@ -201,6 +212,7 @@ def deploy_remotely(git_branch=None, restart_url='http://rnacentral.org', quick=
     Run deployment remotely.
     """
     git_updates(git_branch)
+    update_npm()
     collect_static_files()
     compress_static_files()
     flush_memcached()

@@ -1,1 +1,0 @@
-Genoverse.Genomes.otolemur_garnettii = {};
