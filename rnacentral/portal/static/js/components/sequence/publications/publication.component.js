@@ -11,8 +11,11 @@ var publication = {
     template: '<strong ng-if="$ctrl.publication.title">{{ $ctrl.publication.title }}</strong>' +
               '<br ng-if="$ctrl.publication.title">' +
               '<small>' +
-              '    <span ng-repeat="author in $ctrl.publication.authors track by $index"><a href="/search?q=author:&#34;{{ author }}&#34;">{{ author }}</a>{{ $last ? "" : ", " }}</span>' +
-              '    <br ng-if="$ctrl.publication.authors && $ctrl.publication.authors.length">' +
+              '    <div ng-if="$ctrl.publication.authors && $ctrl.publication.authors.length" style="height: 1em; line-height: 1em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: 5px 0px;">' +
+              '        <span ng-repeat="author in $ctrl.publication.authors track by $index">' +
+              '            <a href="/search?q=author:&#34;{{ author }}&#34;">{{ author }}</a>{{ $last ? "" : ", " }}' +
+              '        </span>' +
+              '    </div>' +
               '    <em ng-if="$ctrl.publication.publication">{{ $ctrl.publication.publication }}</em>' +
               '    <em ng-if="$ctrl.publication.journal">{{ $ctrl.publication.journal }}</em>' +
               '    <span ng-if="$ctrl.publication.pubmed_id">' +
