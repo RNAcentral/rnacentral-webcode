@@ -73,12 +73,29 @@ class Rna(CachingMixin, models.Model):
         JOIN
             rnc_references b
         ON a.id = b.id
+        {where_clause}
         ORDER BY b.title
         """
+        where_clause = "WHERE b.title is NOT NULL OR NOT b.location LIKE 'Submitted%%'"
+        taxid_clause = 't1.taxid = %s AND' % taxid
 
-        query = query.format(taxid_clause='t1.taxid = %s AND' % taxid) if taxid else query.format(taxid_clause='')
+        if taxid:
+            formatted_query = query.format(taxid_clause=taxid_clause, where_clause=where_clause)
+        else:
+            formatted_query = query.format(taxid_clause='', where_clause=where_clause)
 
-        return Reference.objects.raw(query, [self.upi])
+        queryset = list(Reference.objects.raw(formatted_query, [self.upi]))
+
+        if len(queryset):
+            return queryset
+        else:
+            if taxid:
+                formatted_query = query.format(taxid_clause=taxid_clause, where_clause='')
+            else:
+                formatted_query = query.format(taxid_clause='', where_clause='')
+
+            return list(Reference.objects.raw(formatted_query, [self.upi]))
+
 
     def is_active(self):
         """A sequence is considered active if it has at least one active cross_reference."""

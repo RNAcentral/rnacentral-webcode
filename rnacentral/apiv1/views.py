@@ -415,7 +415,7 @@ class RnaPublicationsView(generics.ListAPIView):
     def get_queryset(self):
         upi = self.kwargs['pk']
         taxid = self.kwargs['taxid'] if 'taxid' in self.kwargs else None
-        return list(Rna.objects.get(upi=upi).get_publications(taxid))
+        return Rna.objects.get(upi=upi).get_publications(taxid)
 
 
 class ExpertDatabasesAPIView(APIView):
