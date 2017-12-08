@@ -276,7 +276,7 @@
           <!-- Noncode -->
           <span ng-switch-when="NONCODE">
             {{ xref.database }}: transcript <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>,
-            gene <a ng-href="{{ 'http://www.noncode.org/show_gene.php?id=' + xref.accession.optional_id }}" target="_blank">{{ xref.accession.optional_id }}</a>
+            gene <a ng-href="{{ 'http://www.noncode.org/show_gene.php?id=' + xref.accession.optional_id.replace('.1', '').replace('.2', '') }}" target="_blank">{{ xref.accession.optional_id }}</a>
           </span>
 
           <!-- LNCipedia -->
