@@ -415,15 +415,7 @@ class RnaPublicationsView(generics.ListAPIView):
     def get_queryset(self):
         upi = self.kwargs['pk']
         taxid = self.kwargs['taxid'] if 'taxid' in self.kwargs else None
-        queryset = Rna.objects.get(upi=upi).get_publications(taxid)  # this is actually a list
-
-        # sort publications so that expert_db-related go last, add expert_db property to corresponding publications
-        sorted_queryset = []
-        for publication in queryset:
-            if publication.pubmed in expert_dbs.references:
-                return
-
-        return queryset
+        return Rna.objects.get(upi=upi).get_publications(taxid)  # this is actually a list
 
 
 class ExpertDatabasesAPIView(APIView):

@@ -34,6 +34,7 @@ from .accession import Accession
 from .formatters import Gff3Formatter, GffFormatter, _xref_to_bed_format
 from portal.utils import descriptions as desc
 from portal.rfam_matches import check_issues
+from portal.config.expert_databases import expert_dbs
 
 
 class Rna(CachingMixin, models.Model):
@@ -91,6 +92,7 @@ class Rna(CachingMixin, models.Model):
         where_clause = "WHERE b.title is NOT NULL OR NOT b.location LIKE 'Submitted%%'"
         taxid_clause = 't1.taxid = %s AND' % taxid
 
+        # filter-out INSDC submissions with where_clause; filter by taxid, if it's given
         if taxid:
             formatted_query = query.format(taxid_clause=taxid_clause, where_clause=where_clause)
         else:
@@ -98,16 +100,33 @@ class Rna(CachingMixin, models.Model):
 
         queryset = list(Reference.objects.raw(formatted_query, [self.upi]))
 
-        if len(queryset):
-            return queryset
-        else:
+        # if queryset is empty, try finding at least INSDC submissions
+        if len(queryset) == 0:
             if taxid:
                 formatted_query = query.format(taxid_clause=taxid_clause, where_clause='')
             else:
                 formatted_query = query.format(taxid_clause='', where_clause='')
 
-            return list(Reference.objects.raw(formatted_query, [self.upi]))
+            queryset = list(Reference.objects.raw(formatted_query, [self.upi]))
 
+        # find expert dbs and move them to the end of the list, apply filtration
+        references = {}
+        for expert_db in expert_dbs:
+            for reference in expert_db['references']:
+                references[reference['pubmed_id']] = expert_db
+
+        expert_db_publications = []
+        non_expert_db_publications = []
+
+        for publication in queryset:
+            if publication.pubmed in references:
+                expert_db_publications.append(publication)
+                publication.expert_db = True  # flags that it's an expert_db, UI should display a special label
+            else:
+                non_expert_db_publications.append(publication)
+                publication.expert_db = False
+
+        return non_expert_db_publications + expert_db_publications
 
     def is_active(self):
         """A sequence is considered active if it has at least one active cross_reference."""
