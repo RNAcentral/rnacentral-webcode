@@ -60,6 +60,18 @@ class Rna(CachingMixin, models.Model):
         """
         Get all publications associated with a Unique RNA Sequence.
         Use raw SQL query for better performance.
+
+        Normally, querysets are lazily evaluated, which (among other benefits)
+        allows code that receives queryset to paginate it later on (this is
+        used by Django and DRF views).
+
+        Here we want to do 2 things that require immediate evaluation of
+        queryset:
+         - filter out INSDC submissions only if there are no other papers
+         - order publications, so that expert database releases go last
+
+        Hopefully, the number of publications per RNA is not huge, so
+        this shouldn't make our server too slow.
         """
         query = """
         SELECT b.id, b.location, b.title, b.pmid as pubmed, b.doi, b.authors
