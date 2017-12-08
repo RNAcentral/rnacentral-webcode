@@ -158,7 +158,7 @@ expert_dbs = [
                 'title': 'Rfam 13.0: Shifting to a genome-centric resource for non- coding RNA families',
                 'authors': 'Kalvari I, Argasinska J, Quinones-Olvera N, Nawrocki EP, Rivas E, Eddy SR, Bateman A, Finn RD, Petrov AI',
                 'journal': 'Nucleic Acids Res. 2017 (Accepted)',
-                'pubmed_id': None,
+                'pubmed_id': 29112718,
             },
             {
                 'title': 'Rfam 12.0: updates to the RNA families database',
