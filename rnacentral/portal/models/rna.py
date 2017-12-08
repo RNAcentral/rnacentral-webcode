@@ -89,7 +89,8 @@ class Rna(CachingMixin, models.Model):
         {where_clause}
         ORDER BY b.title
         """
-        where_clause = "WHERE b.title is NOT NULL OR NOT b.location LIKE 'Submitted%%'"
+
+        where_clause = "WHERE NOT ((b.title is NULL OR b.title = '') AND b.location LIKE 'Submitted%%')"
         taxid_clause = 't1.taxid = %s AND' % taxid
 
         # filter-out INSDC submissions with where_clause; filter by taxid, if it's given
