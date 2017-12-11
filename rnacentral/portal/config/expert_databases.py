@@ -110,6 +110,12 @@ expert_dbs = [
                 'journal': 'Nucleic Acids Res. 2017 Jan 4;45(D1):D635-D642',
                 'pubmed_id': '27899575',
             },
+            {
+                'title': 'The Ensembl gene annotation system.',
+                'authors': 'Aken BL, Ayling S, Barrell D, Clarke L, Curwen V, Fairley S, Fernandez Banet J, Billis K, Garcia Giron C, Hourlier T, Howe K, Kahari A, Kokocinski F, Martin FJ, Murphy DN, Nag R, Ruffier M, Schuster M, Tang YA, Vogel JH, White S, Zadissa A, Flicek P, Searle SM.',
+                'journal': 'Database (Oxford). 2016 Jun 23;2016.',
+                'pubmed_id': '27337980',
+            }
         ],
         'imported': True,
         'status': 'updated',
@@ -191,6 +197,12 @@ expert_dbs = [
                 'journal': 'Nucleic Acids Res. 39(Database issue): D152-7 (2011 Jan)',
                 'pubmed_id': '21037258',
             },
+            {
+                'title': '',
+                'authors': 'Griffiths-Jones S, Grocock RJ, van Dongen S, Bateman A, Enright AJ',
+                'journal': 'Nucleic Acids Res. 34(Database issue):D140-4 (2006 Jan1)',
+                'pubmed_id': '16381832'
+            }
         ],
         'imported': True,
         'status': '',
