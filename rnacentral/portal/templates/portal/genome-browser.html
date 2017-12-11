@@ -79,7 +79,7 @@ limitations under the License.
             <a href='http://genome.ucsc.edu/cgi-bin/hgTracks?db={{ genoverseUtils.getGenomeObject(genome, genomes).assembly_ucsc }}&position={{chromosome | chrToUCSC}}%3A{{start}}-{{end}}' id="ucsc-link" target='_blank'>UCSC</a>
         </span>
     </p>
-    <genoverse genome="genome" chr="chromosome" start="start" end="end" example-locations="genoverseUtils.exampleLocations" container=".container">
+    <genoverse genome="genome" chr="chromosome" start="start" end="end" example-locations="genoverseUtils.exampleLocations">
         <genoverse-track name="'Sequence'" model="Genoverse.Track.Model.Sequence.Ensembl" view="Genoverse.Track.View.Sequence" controller="Genoverse.Track.Controller.Sequence" url="genoverseUtils.urls.sequence" resizable="'auto'" auto-height="true" hide-empty="false" extra="{100000: false}"></genoverse-track>
         <genoverse-track name="'Genes'" labels="true" info="'Ensembl API genes'" model="Genoverse.Track.Model.Gene.Ensembl" view="Genoverse.Track.View.Gene.Ensembl" url="genoverseUtils.urls.genes" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.genesPopulateMenu}"></genoverse-track>
         <genoverse-track name="'Transcripts'" labels="true" info="'Ensembl API transcripts'" model="Genoverse.Track.Model.Transcript.Ensembl" view="Genoverse.Track.View.Transcript.Ensembl" url="genoverseUtils.urls.transcripts" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.transcriptsPopulateMenu}"></genoverse-track>
