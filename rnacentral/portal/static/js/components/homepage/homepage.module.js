@@ -9,7 +9,7 @@ var HomepageController = function($scope) {
     };
 
     $scope.bovineLeukemiaPublication = {
-        "title": "Genome-Wide Discovery of Long Non-Coding RNAs in Rainbow Trout.",
+        "title": "Characterization of novel Bovine Leukemia Virus (BLV) antisense transcripts by deep sequencing reveals constitutive expression in tumors and transcriptional interaction with viral microRNAs.",
         "authors": ["Durkin K", "Rosewick N", "Artesi M", "Hahaut V", "Griebel P", "Arsic N", "Burny A", "Georges M", "Van den Broeke A"],
         "publication": "Retrovirology. 2016 May 3;13(1):33",
         "pubmed_id": 27141823,
