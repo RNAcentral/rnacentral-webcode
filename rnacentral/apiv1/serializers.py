@@ -32,10 +32,11 @@ class RawPublicationSerializer(serializers.ModelSerializer):
     doi = serializers.CharField()
     title = serializers.CharField(source='get_title')
     pub_id = serializers.CharField(source='id')
+    expert_db = serializers.BooleanField()
 
     class Meta:
         model = Reference
-        fields = ('title', 'authors', 'publication', 'pubmed_id', 'doi', 'pub_id')
+        fields = ('title', 'authors', 'publication', 'pubmed_id', 'doi', 'pub_id', 'expert_db')
 
 
 class CitationSerializer(serializers.HyperlinkedModelSerializer):
