@@ -20,6 +20,7 @@ var publication = {
               '    <em ng-if="$ctrl.publication.journal">{{ $ctrl.publication.journal }}</em>' +
               '    <span ng-if="$ctrl.publication.pubmed_id">' +
               '        <a href="http://www.ncbi.nlm.nih.gov/pubmed/{{ $ctrl.publication.pubmed_id }}" class="margin-left-5px">Pubmed</a>' +
+              '        <a href="https://europepmc.org/abstract/MED/{{ $ctrl.publication.pubmed_id }}" class="margin-left-5px">EuropePMC</a>' +
               '        <a ng-if="$ctrl.publication.doi" href="http://dx.doi.org/{{ $ctrl.publication.doi }}" target="_blank" class="abstract-control">Full text</a>' +
               '        <abstract publication="$ctrl.publication"></abstract>' +
               '    </span>' +
