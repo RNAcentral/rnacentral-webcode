@@ -114,7 +114,8 @@ class Rna(CachingMixin, models.Model):
         references = {}
         for expert_db in expert_dbs:
             for reference in expert_db['references']:
-                references[reference['pubmed_id']] = expert_db
+                pubmed_id = reference['pubmed_id']
+                references[pubmed_id] = expert_db
 
         expert_db_publications = []
         non_expert_db_publications = []
