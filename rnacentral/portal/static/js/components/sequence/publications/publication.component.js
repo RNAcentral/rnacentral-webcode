@@ -8,7 +8,7 @@ var publication = {
 
         ctrl.routes = routes;
     }],
-    template: '<strong ng-if="$ctrl.publication.title">{{ $ctrl.publication.title }}</strong> <span ng-if="$ctrl.publication.expert_db" class="label label-default">expert-database</span>' +
+    template: '<strong ng-if="$ctrl.publication.title">{{ $ctrl.publication.title }}</strong> <span ng-if="$ctrl.publication.expert_db" class="label label-default">Expert Database</span>' +
               '<br ng-if="$ctrl.publication.title">' +
               '<small>' +
               '    <div ng-if="$ctrl.publication.authors && $ctrl.publication.authors.length" style="height: 1em; line-height: 1em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: 5px 0px;">' +
