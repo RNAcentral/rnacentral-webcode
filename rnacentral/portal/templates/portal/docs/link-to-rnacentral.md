@@ -1,9 +1,11 @@
 
-## Linking to RNAcentral <a style="cursor: pointer" id="link-to-rnacentral" ng-click="scrollTo('link-to-rnacentral')" name="link-to-rnacentral" class="text-muted smaller"><i class="fa fa-link"></i></a>
+# Linking to RNAcentral <a style="cursor: pointer" id="link-to-rnacentral" ng-click="scrollTo('link-to-rnacentral')" name="link-to-rnacentral" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
- * <a href="" ng-click="scrollTo('link-to-sequence')">How to create a badge on RNAcentral member database website</a>
- * <a href="" ng-click="scrollTo('link-to-genome-location')">How to link to a specific sequence</a>
- * <a href="" ng-click="scrollTo('expert-database-badge')">How to link to a specific genome location</a>
+On this page:
+
+ * <a href="" ng-click="scrollTo('link-to-sequence')">RNAcentral Expert Database badge</a>
+ * <a href="" ng-click="scrollTo('link-to-genome-location')">Linking to RNAcentral sequences</a>
+ * <a href="" ng-click="scrollTo('expert-database-badge')">Linking to genome locations</a>
  * <a href="" ng-click="scrollTo('downloads')">Downloads
  * <a href="" ng-click="scrollTo('citing-rnacentral')">Citing RNAcentral</a>
 
@@ -11,26 +13,27 @@
 
 ## RNAcentral Expert Database badge <a style="cursor: pointer" id="expert-database-badge" ng-click="scrollTo('expert-database-badge')" name="expert-database-badge" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
-If you maintain a database that has been [integrated in RNAcentral](/expert-databases),
-please include the **RNAcentral Expert Database badge** on your website:
+Databases [integrated in RNAcentral](/expert-databases) can display
+an **RNAcentral Expert Database badge**:
 
-<img src="/static/img/logo/rnacentral-expert-database.svg" style="width: 120px">
+<a href="http://rnacentral.org" style="text-decoration: none;">
+  <img src="/static/img/logo/rnacentral-expert-database.svg"
+  style="width: 140px;">
+</a>
+<a class="btn btn-default" style="margin-left: 20px;" target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-expert-database.svg">Download (svg)</a>
 
 Example code:
 
 ```
-<img src="http://rnacentral.org/static/img/logo/rnacentral-expert-database.svg" style="width: 120px">
+<a href="http://rnacentral.org">
+  <img src="http://rnacentral.org/static/img/logo/rnacentral-expert-database.svg" style="width: 140px">
+</a>
 ```
 
 The badge should link to the [RNAcentral homepage](http://rnacentral.org)
 or to the **landing page** of the member database within RNAcentral,
 such as [http://rnacentral.org/expert-database/flybase](http://rnacentral.org/expert-database/flybase) or
 [http://rnacentral.org/expert-database/gtrnadb](http://rnacentral.org/expert-database/gtrnadb).
-
-The image is available for download in <a href="" ng-click="scrollTo('downloads')">Downloads</a> section.
-
-If you maintain an RNA database and would like to join RNAcentral,
-please <a href="http://rnacentral.org/contact">contact us</a>.
 
 ---
 
@@ -42,23 +45,23 @@ Please use the following format to link to RNAcentral sequences:
 
 `http://rnacentral.org/rna/<RNAcentral identifier>/<NCBI taxonomy identifier>`
 
-These links show information about a specific species using
+The URL includes
 [NCBI taxonomy identifiers](https://www.ncbi.nlm.nih.gov/taxonomy), for example
 *9606* for *Homo sapiens*.
 
-You can use slash `/` or underscore `_` before the NCBI taxonomy identifier:
+Either slash `/` or underscore `_` can be used as a separator:
 
-* <a href="http://rnacentral.org/rna/URS000075A546/9606">URS000075A546/9606</a>
-* <a href="http://rnacentral.org/rna/URS000075A546_9606">URS000075A546_9606</a>
+* <a href="/rna/URS000075A546/9606">URS000075A546/9606</a>
+* <a href="/rna/URS000075A546_9606">URS000075A546_9606</a>
 
-Links without NCBI taxonomy identifiers show information from all species
+Links without NCBI taxonomy identifiers show annotations from all species
 where the sequence was found.
 
 You can optionally add RNAcentral logo before the link, for example:
 
 <p>
-  <img src="http://rnacentral.org/static/img/logo/rnacentral-logo.png" style="width: 16px; height: 16px; vertical-align: middle;">
-  <a href="http://rnacentral.org/rna/URS000075A546/9606">URS000075A546/9606</a>
+  <img src="/static/img/logo/rnacentral-logo.png" style="width: 16px; height: 16px; vertical-align: middle;">
+  <a href="/rna/URS000075A546/9606">URS000075A546/9606</a>
 </p>
 
 Example code:
@@ -70,9 +73,9 @@ Example code:
 </p>
 ```
 
-RNAcentral logo icons are available for download in <a href="" ng-click="scrollTo('downloads')">Downloads</a> section.
+RNAcentral logos are available in the <a href="" ng-click="scrollTo('downloads')">Downloads</a> section.
 
-### What RNAcentral identifier should I link to?
+### Mapping between third-party identifiers and RNAcentral IDs
 
 For a **small number of sequences**, you can find RNAcentral accessions using [text search](/help/text-search).
 
@@ -89,7 +92,7 @@ please use the mapping files found in FTP archive:
 
 ## Linking to genome locations <a style="cursor: pointer" id="link-to-genome-location" ng-click="scrollTo('link-to-genome-location')" name="link-to-genome-location" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
-### Link format
+## Link format <a style="cursor: pointer" id="link-format" ng-click="scrollTo('link-format')" name="link-format" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 You can link to a genome location of interest within the RNAcentral genome browser using links like this:
 
@@ -97,14 +100,14 @@ You can link to a genome location of interest within the RNAcentral genome brows
 
 where:
 
-* `<species>` is the species name (lowercase, spaces replaced with underscores as in [Ensembl](https://ensembl.org), for example: *homo_sapiens* or *canis_lupus_familiaris*)
-* `<chromosome>` is Ensembl-style (not UCSC-style) chromosome name
-* `<start>` and `<end>` coordinates are also Ensembl coordinates
+* `<species>` - organism name (lowercase, spaces replaced with underscores as in [Ensembl](https://ensembl.org), for example: *homo_sapiens* or *canis_lupus_familiaris*)
+* `<chromosome>` - chromosome name in Ensembl format, for example `1` (not `chr1`)
+* `<start>` and `<end>` - genome coordinates
 
 Example:
 
 <p>
-  <img src="http://rnacentral.org/static/img/logo/rnacentral-logo.png" style="width: 16px; height: 16px; vertical-align: middle;">
+  <img src="/static/img/logo/rnacentral-logo.png" style="width: 16px; height: 16px; vertical-align: middle;">
   <a href="http://rnacentral.org/genome-browser?species=homo_sapiens&chromosome=X&start=73819307&end=73856333">Human XIST gene</a>
 </p>
 
@@ -117,26 +120,20 @@ Example code:
 </p>
 ```
 
-RNAcentral logo icons are available for download in <a href="" ng-click="scrollTo('downloads')">Downloads</a> section.
-
 ---
 
 ## Downloads <a style="cursor: pointer" id="downloads" ng-click="scrollTo('downloads')" name="downloads" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
-### RNAcentral logo icons
+<h3> RNAcentral icons <img src="/static/img/logo/rnacentral-logo-32x32.png"></h3>
 
 Here are RNAcentral logo icons in different resolutions:
 
-* <a target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-logo-16x16.png">16x16.png</a>
-* <a target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-logo-24x24.png">24x24.png</a>
-* <a target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-logo-32x32.png">32x32.png</a>
-* <a target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-logo-64x64.png">64x64.png</a>
-* <a target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-logo-128x128.png">128x128.png</a>
-* <a target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-logo.png">full-size.png</a>
-
-### RNAcentral Expert Database badge
-
-* <a target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-expert-database.svg">rnacentral-expert-database.svg</a>
+* <a target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-logo-16x16.png">16x16</a>
+* <a target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-logo-24x24.png">24x24</a>
+* <a target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-logo-32x32.png">32x32</a>
+* <a target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-logo-64x64.png">64x64</a>
+* <a target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-logo-128x128.png">128x128</a>
+* <a target="_blank" href="/static/img/logo/rnacentral-logo.png">530x530</a>
 
 ---
 
