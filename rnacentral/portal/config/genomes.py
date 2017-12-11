@@ -293,6 +293,10 @@ def url2db(identifier):
     # special cases
     if identifier in ('canis_familiaris', 'canis_lupus_familiaris'):
         return "Canis lupus familiaris"
+    elif identifier in ('gorilla_gorilla', 'gorilla_gorilla_gorilla'):
+        return "Gorilla gorilla gorilla"
+    elif identifier in ('ceratotherium_simum', 'ceratotherium_simum_simum'):
+        return "Ceratotherium simum simum"
     else:
         return identifier.replace('_', ' ').capitalize()
 
