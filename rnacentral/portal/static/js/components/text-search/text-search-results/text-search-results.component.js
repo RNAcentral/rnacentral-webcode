@@ -15,6 +15,15 @@ var textSearchResults = {
             // urls used in template (hardcoded)
             ctrl.routes = routes;
 
+            ctrl.lengthSlider = {
+                min: 100,
+                max: 180,
+                options: {
+                    floor: 0,
+                    ceil: 450
+                }
+            };
+
             // retrieve expert_dbs json for display in tooltips
             $http.get(routes.expertDbsApi({ expertDbName: '' })).then(
                 function(response) {

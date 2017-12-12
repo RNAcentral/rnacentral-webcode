@@ -141,9 +141,14 @@
   </div>
 
   <div class="row" ng-show="$ctrl.search.result.hitCount > 0">
-
     <div class="col-md-3 col-sm-4 hidden-xs text-search-facets">
       <ul class="list-unstyled">
+        <li class="facet">
+          <h3>Length</h3>
+          <div>
+            <rzslider rz-slider-model="$ctrl.lengthSlider.min" rz-slider-high="$ctrl.lengthSlider.max" rz-slider-options="$ctrl.lengthSlider.options"></rzslider> <!-- ceil: $ctrl.search.results.facets['length'] -->
+          </div>
+        </li>
         <li class="facet" ng-repeat="facet in $ctrl.search.result.facets">
           <h3>{{ facet.label }}</h3>
           <ul class="list-unstyled text-search-facet-values text-search-facet-overflow force-scrollbars" style="overflow-x: hidden;">
