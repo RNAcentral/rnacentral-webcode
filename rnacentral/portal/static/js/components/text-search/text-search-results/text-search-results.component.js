@@ -66,16 +66,7 @@ var textSearchResults = {
          * Determine if the facet has already been applied.
          */
         ctrl.isFacetApplied = function(facetId, facetValue) {
-            var facetQuery;
-
-            if (facetId === 'length') facetQuery = new RegExp(facetId + '\\:' + ctrl.oldLengthRange, 'i');
-            else                      facetQuery = new RegExp(facetId + '\\:"' + facetValue + '"', 'i');
-
-            if (facetId === 'length') {
-                console.log(search.query);
-                console.log(facetQuery);
-            }
-
+            var facetQuery = new RegExp(facetId + '\\:"' + facetValue + '"', 'i');
             return !!search.query.match(facetQuery);
         };
 
@@ -87,18 +78,30 @@ var textSearchResults = {
         ctrl.facetSearch = function(facetId, facetValue) {
             var newQuery, facet;
 
-            if (facetId === 'length') facet = facetId + ':' + facetValue;
-            else                      facet = facetId + ':"' + facetValue + '"';
+            if (facetId !== 'length') {
+                facet = facetId + ':"' + facetValue + '"';
 
-            if (ctrl.isFacetApplied(facetId, facetValue)) {
+                if (ctrl.isFacetApplied(facetId, facetValue)) {
+                    newQuery = search.query;
+
+                    // remove facet in different contexts
+                    newQuery = newQuery.replace(' AND ' + facet + ' AND ', ' AND ', 'i');
+                    newQuery = newQuery.replace(facet + ' AND ', '', 'i');
+                    newQuery = newQuery.replace(' AND ' + facet, '', 'i');
+                    newQuery = newQuery.replace(facet, '', 'i') || 'RNA';
+                } else {
+                    newQuery = search.query + ' AND ' + facet; // add new facet
+                }
+            } else {
+                facet = facetId + ':' + ctrl.oldLengthRange;
                 newQuery = search.query;
 
-                // remove facet in different contexts
+                // remove length facet in different contexts
                 newQuery = newQuery.replace(' AND ' + facet + ' AND ', ' AND ', 'i');
                 newQuery = newQuery.replace(facet + ' AND ', '', 'i');
                 newQuery = newQuery.replace(' AND ' + facet, '', 'i');
                 newQuery = newQuery.replace(facet, '', 'i') || 'RNA';
-            } else {
+                // add length facet
                 newQuery = search.query + ' AND ' + facet; // add new facet
             }
 
@@ -113,7 +116,7 @@ var textSearchResults = {
         };
 
         ctrl.rememberLengthRange = function() {
-            ctrl.oldLengthRange = '\\[' + ctrl.lengthSlider.min + ' to ' + ctrl.lengthSlider.max + '\\]';
+            ctrl.oldLengthRange = '[' + ctrl.lengthSlider.min + ' to ' + ctrl.lengthSlider.max + ']';
         };
 
         /**
