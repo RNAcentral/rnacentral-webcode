@@ -2,7 +2,7 @@
  * Service for launching a text search.
  */
 
-var search = function(_, $http, $interpolate, $location, $window, $q) {
+var search = function(_, $http, $interpolate, $location, $window, $q, routes) {
     var self = this; // in case some event handler or constructor overrides "this"
 
     /**
@@ -20,8 +20,6 @@ var search = function(_, $http, $interpolate, $location, $window, $q) {
     this.query = ''; // the query will be observed by watches
 
     this.config = {
-        ebeyeBaseUrl: global_settings.EBI_SEARCH_ENDPOINT,
-        rnacentralBaseUrl: window.location.origin, // e.g. http://localhost:8000 or http://rnacentral.org
         fields: [
             'active',
             'author',
@@ -83,27 +81,9 @@ var search = function(_, $http, $interpolate, $location, $window, $q) {
         pagesize: 15,
     };
 
-    this.queryUrls = {
-        'ebeyeSearch': self.config.ebeyeBaseUrl +
-                        '?query={{ query }}' +
-                        '&format=json' +
-                        '&hlfields=' + self.config.fields.join() +
-                        '&facetcount=' + self.config.facetcount +
-                        '&facetfields=' + self.config.facetfields.join() +
-                        '&size=' + self.config.pagesize +
-                        '&start={{ start }}' +
-                        '&sort=boost:descending,length:descending' +
-                        '&hlpretag=<span class=text-search-highlights>' +
-                        '&hlposttag=</span>',
-        'ebeyeAutocomplete': 'http://www.ebi.ac.uk/ebisearch/ws/rest/RNAcentral/autocomplete' +
-                              '?term={{ query }}' +
-                              '&format=json',
-        'proxy': self.config.rnacentralBaseUrl +
-                 '/api/internal/ebeye?url={{ ebeyeUrl }}',
-    };
-
     this.autocomplete = function(query) {
         self = this;
+        // may be we'd be better off with $q's ECMA6-ish promise syntax instead of jquery-ish overcomplicated deferred?
         self.autocompleteDeferred = $q.defer();
 
         if (query.length < 3) {
@@ -111,8 +91,8 @@ var search = function(_, $http, $interpolate, $location, $window, $q) {
         }
         else {
             // get queryUrl ready
-            var ebeyeUrl = $interpolate(self.queryUrls.ebeyeAutocomplete)({query: query});
-            var queryUrl = $interpolate(self.queryUrls.proxy)({ebeyeUrl: encodeURIComponent(ebeyeUrl)});
+            var ebeyeUrl = routes.ebiAutocomplete({query: query});
+            var queryUrl = routes.ebiSearchProxy({ebeyeUrl: encodeURIComponent(ebeyeUrl)});
 
             $http.get(queryUrl, {ignoreLoadingBar: true}).then(
                 function(response) {
@@ -149,8 +129,16 @@ var search = function(_, $http, $interpolate, $location, $window, $q) {
         query = self.preprocessQuery(query);
 
         // get queryUrl ready
-        var ebeyeUrl = $interpolate(self.queryUrls.ebeyeSearch)({query: query, start: start});
-        var queryUrl = $interpolate(self.queryUrls.proxy)({ebeyeUrl: encodeURIComponent(ebeyeUrl)});
+        var ebeyeUrl = routes.ebiSearch({
+            ebiBaseUrl: global_settings.EBI_SEARCH_ENDPOINT,
+            query: query,
+            hlfields: self.config.fields.join(),
+            facetcount: self.config.facetcount,
+            facetfields: self.config.facetfields.join(),
+            size: self.config.pagesize,
+            start: start
+        });
+        var queryUrl = routes.ebiSearchProxy({ebeyeUrl: encodeURIComponent(ebeyeUrl)});
 
         // perform search
         var overwriteResults = (start === 0);
@@ -367,4 +355,5 @@ var search = function(_, $http, $interpolate, $location, $window, $q) {
     }
 };
 
-angular.module('rnacentralApp').service('search', ['_', '$http', '$interpolate', '$location', '$window', '$q', search]);
+angular.module('rnacentralApp')
+    .service('search', ['_', '$http', '$interpolate', '$location', '$window', '$q', 'routes', search]);

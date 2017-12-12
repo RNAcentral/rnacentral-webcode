@@ -19,5 +19,20 @@ angular.module("rnacentralApp").service('routes', ['$interpolate', function($int
         expertDbLogo: $interpolate('/static/img/expert-db-logos/{{ expertDbName }}.png'),
         apiSecondaryStructuresView: $interpolate('/api/v1/rna/{{ upi }}/2d/{{ taxid }}'),
         genomesApi: $interpolate('/api/v1/genomes'),
+        ebiSearchProxy: $interpolate('/api/internal/ebeye?url={{ ebeyeUrl }}'),
+        ebiSearch: $interpolate(
+            '{{ ebiBaseUrl }}' +
+            '?query={{ query }}' +
+            '&format=json' +
+            '&hlfields={{ hlfields }}' +
+            '&facetcount={{ facetcount }}' +
+            '&facetfields={{ facetfields }}' +
+            '&size={{ pagesize }}' +
+            '&start={{ start }}' +
+            '&sort=boost:descending,length:descending' +
+            '&hlpretag=<span class=text-search-highlights>' +
+            '&hlposttag=</span>'
+        ),
+        ebiAutocomplete: $interpolate('http://www.ebi.ac.uk/ebisearch/ws/rest/RNAcentral/autocomplete?term={{ query }}&format=json')
     };
 }]);
