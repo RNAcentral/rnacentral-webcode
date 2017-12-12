@@ -1,7 +1,7 @@
 var textSearchResults = {
     bindings: {},
     templateUrl: '/static/js/components/text-search/text-search-results/text-search-results.html',
-    controller: ['$interpolate', '$location', '$http', 'search', 'routes', function($interpolate, $location, $http, search, routes) {
+    controller: ['$interpolate', '$location', '$http', '$timeout', '$scope', 'search', 'routes', function($interpolate, $location, $http, $timeout, $scope, search, routes) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
@@ -15,12 +15,16 @@ var textSearchResults = {
             // urls used in template (hardcoded)
             ctrl.routes = routes;
 
+            // slider that allows users to set range of sequence lengths
             ctrl.lengthSlider = {
-                min: 100,
-                max: 180,
+                min: 1,
+                max: 100000000000,
                 options: {
-                    floor: 0,
-                    ceil: 450
+                    floor: 1,
+                    ceil: 100000000000,
+                    logScale: true,
+                    onStart: ctrl.rememberLengthRange,
+                    onEnd: ctrl.lengthSearch
                 }
             };
 
@@ -39,13 +43,39 @@ var textSearchResults = {
                     ctrl.showExpertDbError = true;
                 }
             );
+
+            // $scope.$watch(function() { return search.result }, function(newValue, oldValue) {
+            //     if (newValue !== oldValue && newValue) {
+            //         console.log(newValue);
+            //
+            //         ctrl.lengthSlider = {
+            //             min: 1,
+            //             max: ctrl.search.result.fields['length'],
+            //             options: {
+            //                 floor: 1,
+            //                 ceil: ctrl.search.result.fields['length'],
+            //                 logScale: true,
+            //                 // showTicks: true
+            //             }
+            //         };
+            //     }
+            // })
         };
 
         /**
          * Determine if the facet has already been applied.
          */
         ctrl.isFacetApplied = function(facetId, facetValue) {
-            var facetQuery = new RegExp(facetId + '\\:"' + facetValue + '"', 'i');
+            var facetQuery;
+
+            if (facetId === 'length') facetQuery = new RegExp(facetId + '\\:' + ctrl.oldLengthRange, 'i');
+            else                      facetQuery = new RegExp(facetId + '\\:"' + facetValue + '"', 'i');
+
+            if (facetId === 'length') {
+                console.log(search.query);
+                console.log(facetQuery);
+            }
+
             return !!search.query.match(facetQuery);
         };
 
@@ -55,9 +85,11 @@ var textSearchResults = {
          * parameters.
          */
         ctrl.facetSearch = function(facetId, facetValue) {
-            var newQuery;
+            var newQuery, facet;
 
-            var facet = facetId + ':"' + facetValue + '"';
+            if (facetId === 'length') facet = facetId + ':' + facetValue;
+            else                      facet = facetId + ':"' + facetValue + '"';
+
             if (ctrl.isFacetApplied(facetId, facetValue)) {
                 newQuery = search.query;
 
@@ -74,6 +106,17 @@ var textSearchResults = {
         };
 
         /**
+         * Edge case of facet search with length slider.
+         */
+        ctrl.lengthSearch = function () {
+            ctrl.facetSearch('length', '[' + ctrl.lengthSlider.min + ' to ' + ctrl.lengthSlider.max + ']', true)
+        };
+
+        ctrl.rememberLengthRange = function() {
+            ctrl.oldLengthRange = '\\[' + ctrl.lengthSlider.min + ' to ' + ctrl.lengthSlider.max + '\\]';
+        };
+
+        /**
          * Show/hide search facets to save screen space.
          * Uses jQuery for simplicity.
          * Activated only on mobile devices.
@@ -84,6 +127,10 @@ var textSearchResults = {
             $('#toggle-facets').text(function(i, text) {
                  return text === "Show facets" ? "Hide facets" : "Show facets";
             });
+
+            // if facets were hidden, this is required to render the slider
+            $timeout(function () { $scope.$broadcast('rzSliderForceRender'); });
+
         };
 
         /**
