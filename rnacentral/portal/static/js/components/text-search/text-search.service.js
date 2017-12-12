@@ -81,9 +81,19 @@ var search = function(_, $http, $interpolate, $location, $window, $q, routes) {
         pagesize: 15,
     };
 
+    /**
+     * Launch EBeye autocompletion.
+     *
+     * Note that we're using $q CommonJS deferred syntax here,
+     * not simpler ES6-ish, cause we need to cancel autocomplete request,
+     * if search is started, which is not possible with ES6.
+     *
+     * @param query
+     * @returns {Promise}
+     */
     this.autocomplete = function(query) {
         self = this;
-        // may be we'd be better off with $q's ECMA6-ish promise syntax instead of jquery-ish overcomplicated deferred?
+
         self.autocompleteDeferred = $q.defer();
 
         if (query.length < 3) {
@@ -109,7 +119,9 @@ var search = function(_, $http, $interpolate, $location, $window, $q, routes) {
 
     /**
      * Launch EBeye search.
-     * `start` determines the range of the results to be returned.
+     * @param query
+     * @param start - determines the range of the results to be returned.
+     * @creates self.promise
      */
     this.search = function(query, start) {
         start = start || 0;
