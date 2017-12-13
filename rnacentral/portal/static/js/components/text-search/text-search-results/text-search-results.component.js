@@ -16,9 +16,13 @@ var textSearchResults = {
             ctrl.routes = routes;
 
             // slider that allows users to set range of sequence lengths
+            var lengthRegexp = new RegExp('length\\:\\[(\\d+) to (\\d+)\\]', 'i');
+            var groups = lengthRegexp.exec(search.query);
+            if (groups) ctrl.oldLengthRange = '[' + groups[1] + ' to ' + groups[2] + ']';
+
             ctrl.lengthSlider = {
-                min: 1,
-                max: 2147483647, // macrocosm constant; if length exceeds this, EBI search fails
+                min: groups ? parseInt(groups[1]) : 1,
+                max: groups ? parseInt(groups[2]) : 2147483647, // macrocosm constant; if length exceeds this, EBI search fails
                 options: {
                     floor: 1,
                     ceil: 2147483647,
@@ -43,23 +47,6 @@ var textSearchResults = {
                     ctrl.showExpertDbError = true;
                 }
             );
-
-            // $scope.$watch(function() { return search.result }, function(newValue, oldValue) {
-            //     if (newValue !== oldValue && newValue) {
-            //         console.log(newValue);
-            //
-            //         ctrl.lengthSlider = {
-            //             min: 1,
-            //             max: ctrl.search.result.fields['length'],
-            //             options: {
-            //                 floor: 1,
-            //                 ceil: ctrl.search.result.fields['length'],
-            //                 logScale: true,
-            //                 // showTicks: true
-            //             }
-            //         };
-            //     }
-            // })
         };
 
         /**
