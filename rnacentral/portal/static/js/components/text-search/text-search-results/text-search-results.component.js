@@ -18,10 +18,10 @@ var textSearchResults = {
             // slider that allows users to set range of sequence lengths
             ctrl.lengthSlider = {
                 min: 1,
-                max: 100000000000,
+                max: 2147483647, // macrocosm constant; if length exceeds this, EBI search fails
                 options: {
                     floor: 1,
-                    ceil: 100000000000,
+                    ceil: 2147483647,
                     logScale: true,
                     onStart: ctrl.rememberLengthRange,
                     onEnd: ctrl.lengthSearch
@@ -101,8 +101,10 @@ var textSearchResults = {
                 newQuery = newQuery.replace(facet + ' AND ', '', 'i');
                 newQuery = newQuery.replace(' AND ' + facet, '', 'i');
                 newQuery = newQuery.replace(facet, '', 'i') || 'RNA';
+
                 // add length facet
-                newQuery = search.query + ' AND ' + facet; // add new facet
+                facet = facetId + ':' + facetValue;
+                newQuery = newQuery + ' AND ' + facet; // add new facet
             }
 
             search.search(newQuery);
