@@ -29,7 +29,7 @@ angular.module("rnacentralApp").service('routes', ['$interpolate', function($int
             '&facetfields={{ facetfields }}' +
             '&size={{ pagesize }}' +
             '&start={{ start }}' +
-            '&sort=boost:descending,length:descending' +
+            '&sort={{ sort }}' +
             '&hlpretag=<span class=text-search-highlights>' +
             '&hlposttag=</span>'
         ),

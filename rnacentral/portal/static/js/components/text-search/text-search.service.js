@@ -148,7 +148,8 @@ var search = function(_, $http, $interpolate, $location, $window, $q, routes) {
             facetcount: self.config.facetcount,
             facetfields: self.config.facetfields.join(),
             size: self.config.pagesize,
-            start: start
+            start: start,
+            sort: "boost:descending,length:descending"
         });
         var queryUrl = routes.ebiSearchProxy({ebeyeUrl: encodeURIComponent(ebeyeUrl)});
 
