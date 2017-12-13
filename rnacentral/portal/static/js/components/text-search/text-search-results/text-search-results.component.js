@@ -1,7 +1,7 @@
 var textSearchResults = {
     bindings: {},
     templateUrl: '/static/js/components/text-search/text-search-results/text-search-results.html',
-    controller: ['$interpolate', '$location', '$http', '$timeout', '$scope', 'search', 'routes', function($interpolate, $location, $http, $timeout, $scope, search, routes) {
+    controller: ['$interpolate', '$location', '$http', '$timeout', '$scope', '$filter', 'search', 'routes', function($interpolate, $location, $http, $timeout, $scope, $filter, search, routes) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
@@ -21,12 +21,16 @@ var textSearchResults = {
             if (groups) ctrl.oldLengthRange = '[' + groups[1] + ' to ' + groups[2] + ']';
 
             ctrl.lengthSlider = {
-                min: groups ? parseInt(groups[1]) : 1,
+                min: groups ? parseInt(groups[1]) : 10,
                 max: groups ? parseInt(groups[2]) : 2147483647, // macrocosm constant; if length exceeds this, EBI search fails
                 options: {
-                    floor: 1,
+                    floor: 10,
                     ceil: 2147483647,
                     logScale: true,
+                    translate: function(value) {
+                        if (value < 10000) return $filter('number')(value);
+                        else return Number(Math.floor(value/1000)).toString() + 'k';
+                    },
                     onStart: ctrl.rememberLengthRange,
                     onEnd: ctrl.lengthSearch
                 }
