@@ -146,7 +146,7 @@
         <li class="facet">
           <h3>Length</h3>
           <div>
-            <rzslider rz-slider-model="$ctrl.lengthSlider.min" rz-slider-high="$ctrl.lengthSlider.max" rz-slider-options="$ctrl.lengthSlider.options"></rzslider> <!-- ceil: $ctrl.search.results.facets['length'] -->
+            <rzslider class="custom-slider" rz-slider-model="$ctrl.lengthSlider.min" rz-slider-high="$ctrl.lengthSlider.max" rz-slider-options="$ctrl.lengthSlider.options"></rzslider> <!-- ceil: $ctrl.search.results.facets['length'] -->
           </div>
         </li>
         <li class="facet" ng-repeat="facet in $ctrl.search.result.facets">
