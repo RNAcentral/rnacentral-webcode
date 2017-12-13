@@ -158,7 +158,7 @@
             <small ng-if="facet.label == 'Organisms' && facet.facetValues.length > 10" class="text-muted">Showing top {{ facet.facetValues.length }} organisms</small>
           </ul>
         </li>
-        <li class="facet">
+        <li class="facet" ng-if="$ctrl.lengthSlider">
           <h3>Length</h3>
           <div>
             <rzslider class="custom-slider" rz-slider-model="$ctrl.lengthSlider.min" rz-slider-high="$ctrl.lengthSlider.max" rz-slider-options="$ctrl.lengthSlider.options"></rzslider> <!-- ceil: $ctrl.search.results.facets['length'] -->

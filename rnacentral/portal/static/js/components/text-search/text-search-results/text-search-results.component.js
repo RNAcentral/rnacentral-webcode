@@ -1,7 +1,8 @@
 var textSearchResults = {
     bindings: {},
     templateUrl: '/static/js/components/text-search/text-search-results/text-search-results.html',
-    controller: ['$interpolate', '$location', '$http', '$timeout', '$scope', '$filter', 'search', 'routes', function($interpolate, $location, $http, $timeout, $scope, $filter, search, routes) {
+    controller: ['$interpolate', '$location', '$http', '$timeout', '$scope', '$filter', '$q', 'search', 'routes',
+    function($interpolate, $location, $http, $timeout, $scope, $filter, $q, search, routes) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
@@ -16,25 +17,27 @@ var textSearchResults = {
             ctrl.routes = routes;
 
             // slider that allows users to set range of sequence lengths
-            var lengthRegexp = new RegExp('length\\:\\[(\\d+) to (\\d+)\\]', 'i');
+            var lengthRegexp = new RegExp('length\\:\\[(\\d+) to (\\d+)\\]', 'i'); // find length filter in query, if any
             var groups = lengthRegexp.exec(search.query);
             if (groups) ctrl.oldLengthRange = '[' + groups[1] + ' to ' + groups[2] + ']';
 
-            ctrl.lengthSlider = {
-                min: groups ? parseInt(groups[1]) : 10,
-                max: groups ? parseInt(groups[2]) : 2147483647, // macrocosm constant; if length exceeds this, EBI search fails
-                options: {
-                    floor: 10,
-                    ceil: 2147483647,
-                    logScale: true,
-                    translate: function(value) {
-                        if (value < 10000) return $filter('number')(value);
-                        else return Number(Math.floor(value/1000)).toString() + 'k';
-                    },
-                    onStart: ctrl.rememberLengthRange,
-                    onEnd: ctrl.lengthSearch
+            ctrl.getFloorCeil(search.query).then(
+                function(floorceil) {
+                    console.log(floorceil);
+                    var floor = floorceil.value.data[0];
+                    var ceil = floorceil.value.data[1];
+                    var min = groups ? parseInt(groups[1]) : floor;
+                    var max = groups ? parseInt(groups[2]) : ceil;
+                    ctrl.lengthSlider = ctrl.LengthSlider(min, max, floor, ceil);
+                },
+                function (failure) { // non-mission critical, let's fallback to sensible defaults
+                    var floor = 10;
+                    var ceil = 2147483647; // macrocosm constant - if length exceeds it, EBI search fails
+                    var min = groups ? parseInt(groups[1]) : floor;
+                    var max = groups ? parseInt(groups[2]) : ceil;
+                    ctrl.lengthSlider = ctrl.LengthSlider(min, max, floor, ceil);
                 }
-            };
+            );
 
             // retrieve expert_dbs json for display in tooltips
             $http.get(routes.expertDbsApi({ expertDbName: '' })).then(
@@ -52,6 +55,79 @@ var textSearchResults = {
                 }
             );
         };
+
+        // Length slider-related code
+        // --------------------------
+
+        /**
+         * Constructor-ish function (but now 'new' needed) that returns a model for length slider
+         */
+        ctrl.LengthSlider = function(min, max, floor, ceil) {
+            return {
+                min: min,
+                max: max,
+                options: {
+                    floor: floor,
+                    ceil: ceil,
+                    logScale: true,
+                    translate: function(value) {
+                        if (value < 10000) return $filter('number')(value);
+                        else return Number(Math.floor(value/1000)).toString() + 'k';
+                    },
+                    onStart: ctrl.rememberLengthRange,
+                    onEnd: ctrl.lengthSearch
+                }
+            };
+        };
+
+        /**
+         * Issues additional queries to EBI search to get lowest and highest
+         * lengths of sequences in this query.
+         *
+         * @param query - value of search.query
+         * @returns {Promise} - resolves to Array of [floor, ceil]
+         */
+        ctrl.getFloorCeil = function(query) {
+            function createEbeyeUrl(ascending) {
+                ascending = ascending ? "ascending" : "descending";
+
+                return routes.ebiSearch({
+                    ebiBaseUrl: global_settings.EBI_SEARCH_ENDPOINT,
+                    query: search.preprocessQuery(query),
+                    hlfields: "length",
+                    facetcount: "",
+                    facetfields: "length",
+                    size: 1,
+                    start: 0,
+                    sort: "length:" + ascending
+                });
+            }
+
+            var ascendingEbeyeUrl = createEbeyeUrl(true);
+            var descendingEbeyeUrl = createEbeyeUrl(false);
+
+            var ascendingQueryUrl = routes.ebiSearchProxy({ebeyeUrl: encodeURIComponent(ascendingEbeyeUrl)});
+            var descendingQueryUrl = routes.ebiSearchProxy({ebeyeUrl: encodeURIComponent(descendingEbeyeUrl)});
+
+            return $q.all($http.get(ascendingQueryUrl), $http.get(descendingQueryUrl));
+        };
+
+        /**
+         * Edge case of facet search with length field applied.
+         */
+        ctrl.lengthSearch = function () {
+            ctrl.facetSearch('length', '[' + ctrl.lengthSlider.min + ' to ' + ctrl.lengthSlider.max + ']', true)
+        };
+
+        /**
+         * We need to remember the value of length range before moving slider to update length query.
+         */
+        ctrl.rememberLengthRange = function() {
+            ctrl.oldLengthRange = '[' + ctrl.lengthSlider.min + ' to ' + ctrl.lengthSlider.max + ']';
+        };
+
+        // Facets-related code
+        // -------------------
 
         /**
          * Determine if the facet has already been applied.
@@ -99,17 +175,6 @@ var textSearchResults = {
             }
 
             search.search(newQuery);
-        };
-
-        /**
-         * Edge case of facet search with length slider.
-         */
-        ctrl.lengthSearch = function () {
-            ctrl.facetSearch('length', '[' + ctrl.lengthSlider.min + ' to ' + ctrl.lengthSlider.max + ']', true)
-        };
-
-        ctrl.rememberLengthRange = function() {
-            ctrl.oldLengthRange = '[' + ctrl.lengthSlider.min + ' to ' + ctrl.lengthSlider.max + ']';
         };
 
         /**
