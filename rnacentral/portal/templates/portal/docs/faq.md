@@ -1,5 +1,5 @@
 
-# <i class="fa fa-info-circle"></i> Frequently Asked Questions
+# <i class="pe-7s-info pe-va"></i> Frequently Asked Questions
 
 ### What is RNAcentral? <a style="cursor: pointer" id="what-is-rnacentral" ng-click="scrollTo('what-is-rnacentral')" name="what-is-rnacentral" class="text-muted smaller"><i class="fa fa-link"></i></a>
 

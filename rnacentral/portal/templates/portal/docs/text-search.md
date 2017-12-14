@@ -1,5 +1,5 @@
 
-# <i class="fa fa-search"></i> Text search
+# <i class="pe-7s-search pe-va"></i>Text search
 
 ### Exact matching <a style="cursor: pointer" id="exact-matching" ng-click="scrollTo('exact-matching')" name="exact-matching" class="text-muted smaller"><i class="fa fa-link"></i></a>
 

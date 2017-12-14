@@ -1,5 +1,5 @@
 
-# Training resources
+# <i class="pe-7s-study pe-va"></i> Training resources
 
 ### Online training course <a style="cursor: pointer" id="online-training" ng-click="scrollTo('online-training')" name="online-training" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
