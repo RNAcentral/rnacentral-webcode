@@ -59,7 +59,7 @@ var publications = {
               '    </div>' +
               '    <div class="row">' +
               '        <div ng-if="!$ctrl.publications" class="col-md-12">' +
-              '            <i class="fa fa-spinner fa-spin fa-2x"></i>' +
+              '            <i class="pe-7s-config pe-spin pe-2x pe-va"></i>' +
               '            <span class="margin-left-5px">Loading publications...</span>' +
               '        </div>' +
               '    ' +

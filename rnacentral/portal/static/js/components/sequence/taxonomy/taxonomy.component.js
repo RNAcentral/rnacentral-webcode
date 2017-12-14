@@ -27,7 +27,7 @@ var taxonomy = {
     }],
     template: '<div id="d3-species-tree">' +
               '    <div ng-if="!$ctrl.response">' +
-              '        <i class="fa fa-spinner fa-spin fa-2x"></i><span class="margin-left-5px">Loading taxonomic tree...</span>' +
+              '        <i class="pe-7s-config pe-spin pe-2x pe-va"></i><span class="margin-left-5px">Loading taxonomic tree...</span>' +
               '    </div>' +
               '    <div ng-if="$ctrl.response.status >= 400" class="alert alert-danger fade">' +
               '        <i class="fa fa-exclamation-triangle"></i>Sorry, there was a problem loading the data. Please try again and contact us if the problem persists.' +
