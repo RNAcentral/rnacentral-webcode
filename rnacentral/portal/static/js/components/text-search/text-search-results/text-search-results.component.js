@@ -48,14 +48,21 @@ var textSearchResults = {
          * Sets new value of length slider upon init or search.
          * @param newQuery
          * @param oldQuery
-         * @modifies ctrl.oldLengthRange
          */
-        ctrl.setLengthSlider = function(newQuery, oldQuery) {
-            var lengthRegexp = new RegExp('length\\:\\[(\\d+) to (\\d+)\\]', 'i'); // find length filter in query, if any
-            var groups = lengthRegexp.exec(oldQuery);
-            if (groups) ctrl.oldLengthRange = '[' + groups[1] + ' to ' + groups[2] + ']';
+        ctrl.setLengthSlider = function(query) {
+            var lengthClause = 'length\\:\\[(\\d+) to (\\d+)\\]';
+            var lengthRegexp = new RegExp('length\\:\\[(\\d+) to (\\d+)\\]', 'i');
 
-            ctrl.getFloorCeil(newQuery).then(
+            // remove length clause in different contexts
+            var filteredQuery = query;
+            filteredQuery = filteredQuery.replace(new RegExp(' AND ' + lengthClause + ' AND '), ' AND ', 'i');
+            filteredQuery = filteredQuery.replace(new RegExp(lengthClause + ' AND '), '', 'i');
+            filteredQuery = filteredQuery.replace(new RegExp(' AND ' + lengthClause), '', 'i');
+            filteredQuery = filteredQuery.replace(new RegExp(lengthClause), '', 'i') || 'RNA';
+
+            // find min/max in query's lengthClause (if any), get floor/ceil by sending query without lengthClause
+            var groups = lengthRegexp.exec(query);
+            ctrl.getFloorCeil(filteredQuery).then(
                 function(floorceil) {
                     var floor = parseInt(floorceil[0].data.entries[0].highlights.length);
                     var ceil = parseInt(floorceil[1].data.entries[0].highlights.length);
@@ -120,7 +127,6 @@ var textSearchResults = {
                         if (value < 10000) return $filter('number')(value);
                         else return Number(Math.floor(value/1000)).toString() + 'k';
                     },
-                    onStart: ctrl.rememberLengthRange,
                     onEnd: ctrl.lengthSearch
                 }
             };
@@ -131,13 +137,6 @@ var textSearchResults = {
          */
         ctrl.lengthSearch = function () {
             ctrl.facetSearch('length', '[' + ctrl.lengthSlider.min + ' to ' + ctrl.lengthSlider.max + ']', true)
-        };
-
-        /**
-         * We need to remember the value of length range before moving slider to update length query.
-         */
-        ctrl.rememberLengthRange = function() {
-            ctrl.oldLengthRange = '[' + ctrl.lengthSlider.min + ' to ' + ctrl.lengthSlider.max + ']';
         };
 
         // Facets-related code
@@ -157,14 +156,12 @@ var textSearchResults = {
          * parameters.
          */
         ctrl.facetSearch = function(facetId, facetValue) {
-            var newQuery, facet;
+            var facet, newQuery = search.query;
 
             if (facetId !== 'length') {
                 facet = facetId + ':"' + facetValue + '"';
 
                 if (ctrl.isFacetApplied(facetId, facetValue)) {
-                    newQuery = search.query;
-
                     // remove facet in different contexts
                     newQuery = newQuery.replace(' AND ' + facet + ' AND ', ' AND ', 'i');
                     newQuery = newQuery.replace(facet + ' AND ', '', 'i');
@@ -174,14 +171,13 @@ var textSearchResults = {
                     newQuery = search.query + ' AND ' + facet; // add new facet
                 }
             } else {
-                facet = facetId + ':' + ctrl.oldLengthRange;
-                newQuery = search.query;
+                var lengthClause = 'length\\:\\[\\d+ to \\d+\\]';
 
-                // remove length facet in different contexts
-                newQuery = newQuery.replace(' AND ' + facet + ' AND ', ' AND ', 'i');
-                newQuery = newQuery.replace(facet + ' AND ', '', 'i');
-                newQuery = newQuery.replace(' AND ' + facet, '', 'i');
-                newQuery = newQuery.replace(facet, '', 'i') || 'RNA';
+                // remove length clause in different contexts
+                newQuery = newQuery.replace(new RegExp(' AND ' + lengthClause + ' AND '), ' AND ', 'i');
+                newQuery = newQuery.replace(new RegExp(lengthClause + ' AND '), '', 'i');
+                newQuery = newQuery.replace(new RegExp(' AND ' + lengthClause), '', 'i');
+                newQuery = newQuery.replace(new RegExp(lengthClause), '', 'i') || 'RNA';
 
                 // add length facet
                 facet = facetId + ':' + facetValue;
