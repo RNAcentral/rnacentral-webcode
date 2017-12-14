@@ -18,7 +18,7 @@ from portal.models import EnsemblAssembly, GenomicCoordinates
 
 
 class EnsemblInsdcMapping(CachingMixin, models.Model):
-    assembly_id = models.ForeignKey(EnsemblAssembly, related_name='assembly')
+    assembly_id = models.ForeignKey(EnsemblAssembly, related_name='assembly', db_column='assembly_id')
     insdc = models.CharField(max_length=255, db_index=True)
     ensembl_name = models.CharField(max_length=255, db_index=True)
 
