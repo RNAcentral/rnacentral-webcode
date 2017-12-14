@@ -100,6 +100,48 @@ def store_mapping(mapping):
                                              ensembl=entry['ensembl'])
 
 
+def get_ensembl_metadata(cursor, database):
+    """
+    Get metadata about genomic assemblies used in Ensembl.
+    """
+    cursor.execute("USE %s" % database)
+    sql = """
+    SELECT meta_key, meta_value
+    FROM meta
+    WHERE meta_key IN (
+    	'assembly.accession',
+    	'assembly.default',
+    	'assembly.long_name',
+    	'assembly.name',
+    	'assembly.ucsc_alias',
+    	'species.division',
+    	'species.production_name',
+    	'species.taxonomy_id',
+    	'species.common_name',
+    	'species.scientific_name'
+    )
+    """
+    cursor.execute(sql)
+    metadata = {}
+    for result in cursor.fetchall():
+        metadata[result['meta_key']] = result['meta_value']
+    return metadata
+
+
+def store_ensembl_metadata(metadata):
+    """
+    """
+    line = "{assembly_id}\t{assembly_full_name}\t{GCA_accession}\t{common_name}\t{taxid}".format(
+        assembly_id=metadata['assembly.default'],
+        GCA_accession=metadata['assembly.accession'] if 'assembly.accession' in metadata else '',
+        assembly_full_name=metadata['assembly.name'],
+        assembly_ucsc=metadata['assembly.ucsc_alias'] if 'assembly.ucsc_alias' in metadata else '',
+        division=metadata['species.division'],
+        taxid=metadata['species.taxonomy_id'],
+        common_name=metadata['species.common_name'],
+    )
+    print line
+
 
 class Command(BaseCommand):
     """
@@ -117,5 +159,7 @@ class Command(BaseCommand):
                 for database in databases:
                     mapping = get_ensembl_insdc_mapping(cursor, database)
                     store_mapping(mapping)
+                    ensembl_metadata = get_ensembl_metadata(cursor, database)
+                    store_ensembl_metadata(ensembl_metadata)
         finally:
             connection.close()
