@@ -45,6 +45,7 @@ Master Stylesheet for the RNAcentral Portal
 */
 body {
   background: #f0f0f0;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 .container {
@@ -72,6 +73,18 @@ body {
   font-style:normal;
 }
 
+h1, h2, h3 {
+  font-family: 'Helvetica Neue', 'HelveticaNeueLT Pro', Helvetica, Arial, sans-serif;
+  font-weight: 300;
+}
+
+h1 small, h2 small, h3 small {
+  font-family: 'HelveticaNeueLT Pro', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-weight: 300;
+}
+
+
+/* classes for ng-animate */
 .animate-if {
 }
 
