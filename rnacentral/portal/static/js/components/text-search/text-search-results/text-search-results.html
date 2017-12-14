@@ -1,9 +1,9 @@
 <div ng-show="$ctrl.search.status !== 'off'" class="ng-cloak" ng-cloak>
 
   <h1>
-    <i class="fa fa-search"></i> Results
+    <i class="pe-7s-search pe-va"></i>Results
     <small ng-show="$ctrl.search.status === 'in progress'">
-      <i class="fa fa-spinner fa-spin"></i>
+      <i class="pe-7s-config pe-spin"></i>
     </small>
     <small id="text-search-status" ng-show="$ctrl.search.status === 'in progress'">
       Searching...
@@ -204,7 +204,7 @@
         <br>
       </div>
 
-      <button class="btn btn-default load-more col-md-3" ng-click="$ctrl.search.loadMoreResults()" ng-show="$ctrl.search.result.hitCount > $ctrl.search.result.entries.length"><i ng-class="$ctrl.search.status === 'in progress' ? 'fa fa-spinner fa-spin' : 'hidden'"></i> Load more</button>
+      <button class="btn btn-default load-more col-md-3" ng-click="$ctrl.search.loadMoreResults()" ng-show="$ctrl.search.result.hitCount > $ctrl.search.result.entries.length"><i ng-class="$ctrl.search.status === 'in progress' ? 'pe-7s-config pe-spin' : 'hidden'"></i> Load more</button>
     </div>
 
   </div><!--/row-->
