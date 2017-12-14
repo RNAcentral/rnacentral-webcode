@@ -146,8 +146,8 @@ def store_ensembl_metadata(metadata):
     assembly = EnsemblAssembly(
         assembly_id=metadata['assembly.default'],
         assembly_full_name=metadata['assembly.name'],
-        gca_accession=metadata['assembly.accession'] if 'assembly.accession' in metadata else '',
-        assembly_ucsc=metadata['assembly.ucsc_alias'] if 'assembly.ucsc_alias' in metadata else '',
+        gca_accession=metadata['assembly.accession'] if 'assembly.accession' in metadata else None,
+        assembly_ucsc=metadata['assembly.ucsc_alias'] if 'assembly.ucsc_alias' in metadata else None,
         common_name=metadata['species.common_name'],
         taxid=metadata['species.taxonomy_id'],
     )
