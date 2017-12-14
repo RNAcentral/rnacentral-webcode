@@ -15,7 +15,7 @@ from collections import defaultdict
 
 from django.core.management.base import BaseCommand, CommandError
 from optparse import make_option
-from portal.models import Rna
+from portal.models import EnsemblAssembly, EnsemblInsdcMapping
 
 import pymysql.cursors
 
@@ -96,10 +96,18 @@ def store_mapping(mapping, ensembl_metadata):
     """
     """
     assembly_id = ensembl_metadata['assembly.default']
+    EnsemblInsdcMapping.objects.filter(assembly_id=assembly_id).delete()
+    data = []
     for entry in mapping:
         print '"{insdc}","{ensembl}","{assembly_id}"'.format(insdc=entry['insdc'],
             ensembl=entry['ensembl'],
             assembly_id=assembly_id)
+        data.append(EnsemblInsdcMapping(
+            assembly_id_id=assembly_id,
+            insdc=entry['insdc'],
+            ensembl_name=entry['ensembl']
+        ))
+    EnsemblInsdcMapping.objects.bulk_create(data)
 
 
 def get_ensembl_metadata(cursor, database):
@@ -133,6 +141,17 @@ def get_ensembl_metadata(cursor, database):
 def store_ensembl_metadata(metadata):
     """
     """
+    EnsemblAssembly.objects.filter(taxid=metadata['species.taxonomy_id']).delete()
+    assembly = EnsemblAssembly(
+        assembly_id = metadata['assembly.default'],
+        assembly_full_name = metadata['assembly.name'],
+        gca_accession = metadata['assembly.accession'] if 'assembly.accession' in metadata else '',
+        assembly_ucsc = metadata['assembly.ucsc_alias'] if 'assembly.ucsc_alias' in metadata else '',
+        common_name = metadata['species.common_name'],
+        taxid = metadata['species.taxonomy_id'],
+    )
+    assembly.save()
+
     line = "{assembly_id}\t{assembly_full_name}\t{GCA_accession}\t{assembly_ucsc}\t{common_name}\t{taxid}".format(
         assembly_id=metadata['assembly.default'],
         GCA_accession=metadata['assembly.accession'] if 'assembly.accession' in metadata else '',
@@ -160,8 +179,8 @@ class Command(BaseCommand):
                 databases = get_ensembl_databases(cursor)
                 for database in databases:
                     ensembl_metadata = get_ensembl_metadata(cursor, database)
+                    store_ensembl_metadata(ensembl_metadata)
                     mapping = get_ensembl_insdc_mapping(cursor, database)
                     store_mapping(mapping, ensembl_metadata)
-                    # store_ensembl_metadata(ensembl_metadata)
         finally:
             connection.close()
