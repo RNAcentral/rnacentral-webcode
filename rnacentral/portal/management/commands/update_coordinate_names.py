@@ -27,9 +27,9 @@ class Command(BaseCommand):
         sql = """
         UPDATE rnc_coordinates a
         SET
-        	name = b.ensembl_name,
-        	primary_start = local_start,
-        	primary_end = local_end
+          name = b.ensembl_name,
+          primary_start = local_start,
+          primary_end = local_end
         FROM ensembl_insdc_mapping b
         WHERE
           a.primary_accession = b.insdc
