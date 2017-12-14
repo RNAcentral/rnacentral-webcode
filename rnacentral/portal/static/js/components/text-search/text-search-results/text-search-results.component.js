@@ -23,6 +23,7 @@ var textSearchResults = {
 
             ctrl.getFloorCeil(search.query).then(
                 function(floorceil) {
+                    console.log("floorceil = ",);
                     console.log(floorceil);
                     var floor = floorceil.value.data[0];
                     var ceil = floorceil.value.data[1];
@@ -93,7 +94,7 @@ var textSearchResults = {
 
                 return routes.ebiSearch({
                     ebiBaseUrl: global_settings.EBI_SEARCH_ENDPOINT,
-                    query: search.preprocessQuery(query),
+                    query: query ? search.preprocessQuery(query): query,
                     hlfields: "length",
                     facetcount: "",
                     facetfields: "length",
