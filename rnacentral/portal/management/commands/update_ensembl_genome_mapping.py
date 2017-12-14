@@ -13,8 +13,7 @@ limitations under the License.
 
 from collections import defaultdict
 
-from django.core.management.base import BaseCommand, CommandError
-from optparse import make_option
+from django.core.management.base import BaseCommand
 from portal.models import EnsemblAssembly, EnsemblInsdcMapping
 
 import pymysql.cursors
@@ -55,7 +54,7 @@ def get_ensembl_databases(cursor):
     to_analyse = []
     # get the most recent database
     for organism, dbs in databases.iteritems():
-        most_recent = max(dbs,key=lambda item:item[0])
+        most_recent = max(dbs, key=lambda item: item[0])
         to_analyse.append(most_recent[1])
     return to_analyse
 
@@ -92,8 +91,9 @@ def get_ensembl_insdc_mapping(cursor, database):
     return mapping
 
 
-def store_mapping(mapping, ensembl_metadata):
+def store_ensembl_insdc_mapping(mapping, ensembl_metadata):
     """
+    Delete existing objects for the same assembly and insert new ones.
     """
     assembly_id = ensembl_metadata['assembly.default']
     EnsemblInsdcMapping.objects.filter(assembly_id=assembly_id).delete()
@@ -140,15 +140,16 @@ def get_ensembl_metadata(cursor, database):
 
 def store_ensembl_metadata(metadata):
     """
+    Delete existing Ensembl assembly for the same NCBI taxid and create a new one.
     """
     EnsemblAssembly.objects.filter(taxid=metadata['species.taxonomy_id']).delete()
     assembly = EnsemblAssembly(
-        assembly_id = metadata['assembly.default'],
-        assembly_full_name = metadata['assembly.name'],
-        gca_accession = metadata['assembly.accession'] if 'assembly.accession' in metadata else '',
-        assembly_ucsc = metadata['assembly.ucsc_alias'] if 'assembly.ucsc_alias' in metadata else '',
-        common_name = metadata['species.common_name'],
-        taxid = metadata['species.taxonomy_id'],
+        assembly_id=metadata['assembly.default'],
+        assembly_full_name=metadata['assembly.name'],
+        gca_accession=metadata['assembly.accession'] if 'assembly.accession' in metadata else '',
+        assembly_ucsc=metadata['assembly.ucsc_alias'] if 'assembly.ucsc_alias' in metadata else '',
+        common_name=metadata['species.common_name'],
+        taxid=metadata['species.taxonomy_id'],
     )
     assembly.save()
 
@@ -181,6 +182,6 @@ class Command(BaseCommand):
                     ensembl_metadata = get_ensembl_metadata(cursor, database)
                     store_ensembl_metadata(ensembl_metadata)
                     mapping = get_ensembl_insdc_mapping(cursor, database)
-                    store_mapping(mapping, ensembl_metadata)
+                    store_ensembl_insdc_mapping(mapping, ensembl_metadata)
         finally:
             connection.close()
