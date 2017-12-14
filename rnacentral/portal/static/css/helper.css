@@ -179,7 +179,7 @@
 
 /* Custom classes / mods - PIXEDEN */
 .pe-va {
-  vertical-align: middle;
+  vertical-align: baseline; /* modified by me, was middle */
 }
 
 .pe-border {
