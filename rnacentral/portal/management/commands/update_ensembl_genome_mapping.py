@@ -92,12 +92,14 @@ def get_ensembl_insdc_mapping(cursor, database):
     return mapping
 
 
-def store_mapping(mapping):
+def store_mapping(mapping, ensembl_metadata):
     """
     """
+    assembly_id = ensembl_metadata['assembly.default']
     for entry in mapping:
-        print '"{insdc}","{ensembl}"'.format(insdc=entry['insdc'],
-                                             ensembl=entry['ensembl'])
+        print '"{insdc}","{ensembl}","{assembly_id}"'.format(insdc=entry['insdc'],
+            ensembl=entry['ensembl'],
+            assembly_id=assembly_id)
 
 
 def get_ensembl_metadata(cursor, database):
@@ -131,7 +133,7 @@ def get_ensembl_metadata(cursor, database):
 def store_ensembl_metadata(metadata):
     """
     """
-    line = "{assembly_id}\t{assembly_full_name}\t{GCA_accession}\t{common_name}\t{taxid}".format(
+    line = "{assembly_id}\t{assembly_full_name}\t{GCA_accession}\t{assembly_ucsc}\t{common_name}\t{taxid}".format(
         assembly_id=metadata['assembly.default'],
         GCA_accession=metadata['assembly.accession'] if 'assembly.accession' in metadata else '',
         assembly_full_name=metadata['assembly.name'],
@@ -157,9 +159,9 @@ class Command(BaseCommand):
             with connection.cursor() as cursor:
                 databases = get_ensembl_databases(cursor)
                 for database in databases:
-                    mapping = get_ensembl_insdc_mapping(cursor, database)
-                    store_mapping(mapping)
                     ensembl_metadata = get_ensembl_metadata(cursor, database)
-                    store_ensembl_metadata(ensembl_metadata)
+                    mapping = get_ensembl_insdc_mapping(cursor, database)
+                    store_mapping(mapping, ensembl_metadata)
+                    # store_ensembl_metadata(ensembl_metadata)
         finally:
             connection.close()
