@@ -17,28 +17,12 @@ var textSearchResults = {
             ctrl.routes = routes;
 
             // slider that allows users to set range of sequence lengths
-            var lengthRegexp = new RegExp('length\\:\\[(\\d+) to (\\d+)\\]', 'i'); // find length filter in query, if any
-            var groups = lengthRegexp.exec(search.query);
-            if (groups) ctrl.oldLengthRange = '[' + groups[1] + ' to ' + groups[2] + ']';
-
-            ctrl.getFloorCeil(search.query).then(
-                function(floorceil) {
-                    console.log("floorceil = ",);
-                    console.log(floorceil);
-                    var floor = floorceil.value.data[0];
-                    var ceil = floorceil.value.data[1];
-                    var min = groups ? parseInt(groups[1]) : floor;
-                    var max = groups ? parseInt(groups[2]) : ceil;
-                    ctrl.lengthSlider = ctrl.LengthSlider(min, max, floor, ceil);
-                },
-                function (failure) { // non-mission critical, let's fallback to sensible defaults
-                    var floor = 10;
-                    var ceil = 2147483647; // macrocosm constant - if length exceeds it, EBI search fails
-                    var min = groups ? parseInt(groups[1]) : floor;
-                    var max = groups ? parseInt(groups[2]) : ceil;
-                    ctrl.lengthSlider = ctrl.LengthSlider(min, max, floor, ceil);
+            ctrl.setLengthSlider(search.query, search.query); // initial value
+            $scope.$watch(function() { return search.query }, function(newValue, oldValue) {
+                if (newValue !== oldValue && newValue) {
+                    ctrl.setLengthSlider(newValue, oldValue);
                 }
-            );
+            });
 
             // retrieve expert_dbs json for display in tooltips
             $http.get(routes.expertDbsApi({ expertDbName: '' })).then(
@@ -61,24 +45,32 @@ var textSearchResults = {
         // --------------------------
 
         /**
-         * Constructor-ish function (but now 'new' needed) that returns a model for length slider
+         * Sets new value of length slider upon init or search.
+         * @param newQuery
+         * @param oldQuery
+         * @modifies ctrl.oldLengthRange
          */
-        ctrl.LengthSlider = function(min, max, floor, ceil) {
-            return {
-                min: min,
-                max: max,
-                options: {
-                    floor: floor,
-                    ceil: ceil,
-                    logScale: true,
-                    translate: function(value) {
-                        if (value < 10000) return $filter('number')(value);
-                        else return Number(Math.floor(value/1000)).toString() + 'k';
-                    },
-                    onStart: ctrl.rememberLengthRange,
-                    onEnd: ctrl.lengthSearch
+        ctrl.setLengthSlider = function(newQuery, oldQuery) {
+            var lengthRegexp = new RegExp('length\\:\\[(\\d+) to (\\d+)\\]', 'i'); // find length filter in query, if any
+            var groups = lengthRegexp.exec(oldQuery);
+            if (groups) ctrl.oldLengthRange = '[' + groups[1] + ' to ' + groups[2] + ']';
+
+            ctrl.getFloorCeil(newQuery).then(
+                function(floorceil) {
+                    var floor = parseInt(floorceil[0].data.entries[0].highlights.length);
+                    var ceil = parseInt(floorceil[1].data.entries[0].highlights.length);
+                    var min = groups ? parseInt(groups[1]) : floor;
+                    var max = groups ? parseInt(groups[2]) : ceil;
+                    ctrl.lengthSlider = ctrl.LengthSlider(min, max, floor, ceil);
+                },
+                function (failure) { // non-mission critical, let's fallback to sensible defaults
+                    var floor = 10;
+                    var ceil = 2147483647; // macrocosm constant - if length exceeds it, EBI search fails
+                    var min = groups ? parseInt(groups[1]) : floor;
+                    var max = groups ? parseInt(groups[2]) : ceil;
+                    ctrl.lengthSlider = ctrl.LengthSlider(min, max, floor, ceil);
                 }
-            };
+            );
         };
 
         /**
@@ -110,7 +102,28 @@ var textSearchResults = {
             var ascendingQueryUrl = routes.ebiSearchProxy({ebeyeUrl: encodeURIComponent(ascendingEbeyeUrl)});
             var descendingQueryUrl = routes.ebiSearchProxy({ebeyeUrl: encodeURIComponent(descendingEbeyeUrl)});
 
-            return $q.all($http.get(ascendingQueryUrl), $http.get(descendingQueryUrl));
+            return $q.all([$http.get(ascendingQueryUrl), $http.get(descendingQueryUrl)]);
+        };
+
+        /**
+         * Constructor-ish function (but now 'new' needed) that returns a model for length slider
+         */
+        ctrl.LengthSlider = function(min, max, floor, ceil) {
+            return {
+                min: min,
+                max: max,
+                options: {
+                    floor: floor,
+                    ceil: ceil,
+                    logScale: true,
+                    translate: function(value) {
+                        if (value < 10000) return $filter('number')(value);
+                        else return Number(Math.floor(value/1000)).toString() + 'k';
+                    },
+                    onStart: ctrl.rememberLengthRange,
+                    onEnd: ctrl.lengthSearch
+                }
+            };
         };
 
         /**
