@@ -17,12 +17,9 @@ var textSearchResults = {
             ctrl.routes = routes;
 
             // slider that allows users to set range of sequence lengths
-            ctrl.setLengthSlider(search.query, search.query); // initial value
-            $scope.$watch(function() { return search.query }, function(newValue, oldValue) {
-                if (newValue !== oldValue && newValue) {
-                    ctrl.setLengthSlider(newValue, oldValue);
-                }
-            });
+            ctrl.setLengthSlider(search.query); // initial value
+
+            search.registerSearchCallback(function() { ctrl.setLengthSlider(search.query); });
 
             // retrieve expert_dbs json for display in tooltips
             $http.get(routes.expertDbsApi({ expertDbName: '' })).then(
@@ -69,6 +66,7 @@ var textSearchResults = {
                     var min = groups ? parseInt(groups[1]) : floor;
                     var max = groups ? parseInt(groups[2]) : ceil;
                     ctrl.lengthSlider = ctrl.LengthSlider(min, max, floor, ceil);
+                    $timeout(function () { $scope.$broadcast('rzSliderForceRender'); }); // issue render just in case
                 },
                 function (failure) { // non-mission critical, let's fallback to sensible defaults
                     var floor = 10;
@@ -76,6 +74,7 @@ var textSearchResults = {
                     var min = groups ? parseInt(groups[1]) : floor;
                     var max = groups ? parseInt(groups[2]) : ceil;
                     ctrl.lengthSlider = ctrl.LengthSlider(min, max, floor, ceil);
+                    $timeout(function () { $scope.$broadcast('rzSliderForceRender'); }); // issue render just in case
                 }
             );
         };

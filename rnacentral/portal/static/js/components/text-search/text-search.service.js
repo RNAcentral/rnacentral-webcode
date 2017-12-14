@@ -19,6 +19,8 @@ var search = function(_, $http, $interpolate, $location, $window, $q, routes) {
 
     this.query = ''; // the query will be observed by watches
 
+    this.callbacks = []; // callbacks to be called after each search.search(); done for slider redraw
+
     this.config = {
         fields: [
             'active',
@@ -118,6 +120,14 @@ var search = function(_, $http, $interpolate, $location, $window, $q, routes) {
     };
 
     /**
+     * For length slider we need to do updates after each search.
+     * @param callback - function to be called after every successful search
+     */
+    this.registerSearchCallback = function(callback) {
+        this.callbacks.push(callback);
+    };
+
+    /**
      * Launch EBeye search.
      * @param query
      * @param start - determines the range of the results to be returned.
@@ -168,8 +178,12 @@ var search = function(_, $http, $interpolate, $location, $window, $q, routes) {
                     self.result.entries = self.result.entries.concat(data.entries); // append new entries
                 }
 
+                // after each search send a pageview to GA
                 $window.ga('send', 'pageview', $location.path());
                 self.status = 'success';
+
+                // run callbacks
+                self.callbacks.forEach(function(callback) { callback() });
             },
             function(response) {
                 self.status = 'error';
