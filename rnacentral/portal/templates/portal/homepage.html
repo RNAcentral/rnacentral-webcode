@@ -42,14 +42,14 @@ RNAcentral: The non-coding RNA sequence database
 
   <div class="row">
 
-    <h1 class="text-center margin-bottom-0px">Getting started</h1>
+    <h2 class="text-center margin-bottom-0px" style="margin-top: 0px;">Getting started</h2>
 
     <div class="col-md-4 col-sm-4 col-xs-12">
       <div class="panel panel-default homepage-card">
         <div class="panel-body text-center">
           <h2 class="text-center"><i class="fa fa-search"></i> Text search</h2>
           <p class="text-center">
-            Search by <em>gene, species, publication, author</em> or any other keyword
+            Search by <em>gene, species, ncRNA type</em> or any other keyword
           </p>
           <a class="btn btn-primary" href="{% url 'text-search' %}?q=RNA" id="btn-browse-sequences">Browse sequences</a>
         </div>
@@ -119,20 +119,17 @@ RNAcentral: The non-coding RNA sequence database
   </div>
 
   <div class="row" ng-controller="HomepageController">
-    <h2 class="text-center margin-bottom-0px">Who is <a href="https://twitter.com/hashtag/UsingRNAcentral?src=hash">#UsingRNAcentral</a>?</h2>
+    <h2 class="text-center margin-bottom-0px" style="margin-top: 0px;">Featured use cases</h2>
 
     <div class="col-md-4">
       <div class="panel panel-default">
-        <h3 class="text-center"><a href="{% url 'use-cases' %}#reference-ncrna-set">Reference ncRNA set</a></h3>
+        <h3 class="text-center"><a href="{% url 'use-cases' %}#reference-ncrna-set" class="rnacentral-gold">Reference ncRNA set</a></h3>
         <div class="panel-body">
           <p>
             <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Lake_Washington_Ship_Canal_Fish_Ladder_pamphlet_-_male_freshwater_phase_Steelhead.jpg">
-            <h4>RNAcentral used as a reference data set to discover new ncRNA in trout and Bovine Leukemia Virus.</h4>
+            <h4>RNAcentral was used as a reference data set to discover novel ncRNA in trout and Bovine Leukemia Virus</h4>
             <blockquote>
               <publication publication="rainbowTroutPublication"></publication>
-            </blockquote>
-            <blockquote>
-              <publication publication="bovineLeukemiaPublication"></publication>
             </blockquote>
           </p>
         </div>
@@ -141,11 +138,11 @@ RNAcentral: The non-coding RNA sequence database
 
     <div class="col-md-4">
       <div class="panel panel-default">
-        <h3 class="text-center"><a href="{% url 'use-cases' %}#literature-curation">Literature curation</a></h3>
+        <h3 class="text-center"><a href="{% url 'use-cases' %}#literature-curation" class="rnacentral-gold">Stable identifiers for ncRNAs</a></h3>
         <div class="panel-body">
           <p>
             <img src="https://pbs.twimg.com/profile_images/378800000553445763/e58f95d5139e075ad62514b88e97b6ac_400x400.png" style="height: 120px; margin: auto; display: block;">
-            <h4>Stable RNAcentral ids used to annotate human miRNAs with Gene Ontology terms.</h4>
+            <h4>Stable RNAcentral ids used to annotate human miRNAs with Gene Ontology terms</h4>
             <blockquote>
               <publication publication="goCurationPublication"></publication>
             </blockquote>
@@ -156,11 +153,11 @@ RNAcentral: The non-coding RNA sequence database
 
     <div class="col-md-4">
       <div class="panel panel-default">
-        <h3 class="text-center"><a href="{% url 'use-cases' %}#programmatic-information-retrieval">Programmatic information retrieval</a></h3>
+        <h3 class="text-center"><a href="{% url 'use-cases' %}#programmatic-information-retrieval" class="rnacentral-gold">Programmatic information retrieval</a></h3>
         <div class="panel-body">
           <p>
             <img src="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4595900/bin/btv372f1p.jpg" style="height: 150px; margin: auto; display: block;">
-            <h4>Source of sequences for secondary structure prediction.</h4>
+            <h4>Source of sequences for secondary structure prediction</h4>
           </p>
           <blockquote>
             <publication publication="secondaryStructurePredictionPublication"></publication>
@@ -169,8 +166,9 @@ RNAcentral: The non-coding RNA sequence database
       </div>
     </div>
 
-  <div class="pull-right" style="margin-right: 20px; margin-bottom: 20px;"><a href="/use-cases">More examples&rarr;</a></div>
   <div class="clearfix"></div>
+  <div class="text-center" style="margin-right: 20px; margin-bottom: 20px;"><a href="/use-cases">More examples &rarr;</a></div>
+
   </div>
 
 
