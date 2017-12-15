@@ -11,6 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from __future__ import print_function
+
 """
 RNAcentral deployment script.
 
@@ -24,8 +26,6 @@ To run remotely:
 
 For more options, run `fab help`.
 """
-
-from __future__ import print_function
 
 import os
 import json
