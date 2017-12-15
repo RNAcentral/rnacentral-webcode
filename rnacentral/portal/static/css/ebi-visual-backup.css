@@ -10,32 +10,32 @@
   text-indent: 0;
 }
 
-/*body {*/
-  /*margin: 0*/
-/*auto;*/
-  /*width: 96%;*/
-  /*max-width: 1350px;*/
-/*}*/
+body {
+  margin: 0
+auto;
+  width: 96%;
+  max-width: 1350px;
+}
 
-/*body.narrow {*/
-  /*max-width: 984px;*/
-/*}*/
+body.narrow {
+  max-width: 984px;
+}
 
-/*body.wide {*/
-  /*max-width: 1600px;*/
-/*}*/
+body.wide {
+  max-width: 1600px;
+}
 
-/*body.full-width {*/
-  /*max-width: none;*/
-/*}*/
+body.full-width {
+  max-width: none;
+}
 
-/*body.level1 {*/
-  /*max-width: 1200px;*/
-/*}*/
+body.level1 {
+  max-width: 1200px;
+}
 
-/*body {*/
-  /*font-family: Verdana,sans-serif;*/
-/*}*/
+body {
+  font-family: Verdana,sans-serif;
+}
 
 /*@font-face {
   font-family:'HelveticaNeueLT Pro';src:url('http://www.ebi.ac.uk/web_guidelines/fonts/helveticaneueltprolt.eot');src:url('http://www.ebi.ac.uk/web_guidelines/fonts/helveticaneueltprolt.eot?#iefix') format('embedded-opentype'),

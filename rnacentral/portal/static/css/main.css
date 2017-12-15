@@ -48,6 +48,10 @@ body {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
+#wrapper {
+  width: 96%;
+}
+
 .container-main {
   min-height: 500px;
 }
@@ -97,6 +101,12 @@ h1 small, h2 small, h3 small {
 /*------------------------------------------------------------------
 [2. Masthead]
 */
+
+#logo {
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
 .rnacentral-masthead {
   /*background: rgb(188,216,224); !* Old browsers *!*/
   /*background: -moz-linear-gradient(left,  rgba(188,216,224,1) 41%, rgba(154,195,206,1) 68%); !* FF3.6+ *!*/
