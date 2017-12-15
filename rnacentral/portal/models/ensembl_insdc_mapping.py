@@ -11,20 +11,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from accession import *
-from chemical_component import *
-from database import *
-from database_stats import *
-from formatters import *
-from genomic_coordinates import *
-from modification import *
-from reference import *
-from reference_map import *
-from release import *
-from rna import *
-from rna_precomputed import *
-from secondary_structure import *
-from xref import *
-from ensembl_assembly import *
-from ensembl_insdc_mapping import *
-from utils import get_ensembl_divisions
+from caching.base import CachingMixin, CachingManager
+from django.db import models
+
+from portal.models import EnsemblAssembly, GenomicCoordinates
+
+
+class EnsemblInsdcMapping(CachingMixin, models.Model):
+    assembly_id = models.ForeignKey(EnsemblAssembly, related_name='assembly', db_column='assembly_id')
+    insdc = models.CharField(max_length=255, db_index=True)
+    ensembl_name = models.CharField(max_length=255, db_index=True)
+
+    objects = CachingManager()
+
+    class Meta:
+        db_table = 'ensembl_insdc_mapping'
