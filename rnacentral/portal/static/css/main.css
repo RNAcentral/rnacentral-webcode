@@ -490,6 +490,10 @@ h1, h2, h3 {
   color: #BF8E3E;
 }
 
+.rnacentral-gold {
+  color: #BF8E3E;
+}
+
 h3.panel-title {
   color: black;
 }
@@ -904,6 +908,10 @@ textarea {
   opacity: 0;
 }
 
+.abstract-text {
+  word-wrap: break-word;
+}
+
 /* Transitions for abstract-text */
 
 .abstract-text.slide-down.ng-enter {
@@ -1215,6 +1223,7 @@ textarea {
   background-size: cover;
   font-size: 18px;
   padding: 30px;
+  margin-bottom: 10px;
 }
 
 .homepage-callout-overlay {

@@ -49,6 +49,8 @@ urlpatterns = patterns('',
     url(r'^training/?$', views.StaticView.as_view(), {'page': 'training'}, name='training'),
     # about us
     url(r'^about-us/?$', views.StaticView.as_view(), {'page': 'about', 'blog_url': settings.RELEASE_ANNOUNCEMENT_URL}, name='about'),
+    # use cases
+    url(r'^use-cases/?$', views.StaticView.as_view(), {'page': 'use-cases'}, name='use-cases'),
     # API documentation
     url(r'^api/?$', views.StaticView.as_view(), {'page': 'help/api-v1'}, name='api-docs'),
     url(r'^api/v2/?$', views.StaticView.as_view(), {'page': 'coming-soon'}, name='api-v2'),
