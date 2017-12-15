@@ -1,7 +1,8 @@
 var textSearchResults = {
     bindings: {},
     templateUrl: '/static/js/components/text-search/text-search-results/text-search-results.html',
-    controller: ['$interpolate', '$location', '$http', 'search', 'routes', function($interpolate, $location, $http, search, routes) {
+    controller: ['$interpolate', '$location', '$http', '$timeout', '$scope', '$filter', '$q', 'search', 'routes',
+    function($interpolate, $location, $http, $timeout, $scope, $filter, $q, search, routes) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
@@ -14,6 +15,11 @@ var textSearchResults = {
 
             // urls used in template (hardcoded)
             ctrl.routes = routes;
+
+            // slider that allows users to set range of sequence lengths
+            ctrl.setLengthSlider(search.query); // initial value
+
+            search.registerSearchCallback(function() { ctrl.setLengthSlider(search.query); });
 
             // retrieve expert_dbs json for display in tooltips
             $http.get(routes.expertDbsApi({ expertDbName: '' })).then(
@@ -32,6 +38,141 @@ var textSearchResults = {
             );
         };
 
+        // Length slider-related code
+        // --------------------------
+
+        /**
+         * Sets new value of length slider upon init or search.
+         * @param newQuery
+         * @param oldQuery
+         */
+        ctrl.setLengthSlider = function(query) {
+            var min, max, floor, ceil;
+            var lengthClause = 'length\\:\\[(\\d+) to (\\d+)\\]';
+            var lengthRegexp = new RegExp('length\\:\\[(\\d+) to (\\d+)\\]', 'i');
+
+            // remove length clause in different contexts
+            var filteredQuery = query;
+            filteredQuery = filteredQuery.replace(new RegExp(' AND ' + lengthClause + ' AND '), ' AND ', 'i');
+            filteredQuery = filteredQuery.replace(new RegExp(lengthClause + ' AND '), '', 'i');
+            filteredQuery = filteredQuery.replace(new RegExp(' AND ' + lengthClause), '', 'i');
+            filteredQuery = filteredQuery.replace(new RegExp(lengthClause), '', 'i') || 'RNA';
+
+            // find min/max in query's lengthClause (if any), get floor/ceil by sending query without lengthClause
+            var groups = lengthRegexp.exec(query);
+            ctrl.getFloorCeil(filteredQuery).then(
+                function(floorceil) {
+                    floor = parseInt(floorceil[0].data.entries[0].highlights.length);
+                    ceil = parseInt(floorceil[1].data.entries[0].highlights.length);
+
+                    if (groups) {
+                        min = parseInt(groups[1]) < floor ? floor : parseInt(groups[1]);
+                        max = parseInt(groups[2]) > ceil ? ceil : parseInt(groups[2]);
+                    } else {
+                        min = floor;
+                        max = ceil;
+                    }
+
+                    ctrl.lengthSlider = ctrl.LengthSlider(min, max, floor, ceil);
+                    $timeout(function () { $scope.$broadcast('rzSliderForceRender'); }); // issue render just in case
+                },
+                function (failure) { // non-mission critical, let's fallback to sensible defaults
+                    var floor = 10;
+                    var ceil = 2147483647; // macrocosm constant - if length exceeds it, EBI search fails
+
+                    if (groups) {
+                        min = parseInt(groups[1]) < floor ? floor : parseInt(groups[1]);
+                        max = parseInt(groups[2]) > ceil ? ceil : parseInt(groups[2]);
+                    } else {
+                        min = floor;
+                        max = ceil;
+                    }
+
+                    ctrl.lengthSlider = ctrl.LengthSlider(min, max, floor, ceil);
+                    $timeout(function () { $scope.$broadcast('rzSliderForceRender'); }); // issue render just in case
+                }
+            );
+        };
+
+        /**
+         * Issues additional queries to EBI search to get lowest and highest
+         * lengths of sequences in this query.
+         *
+         * @param query - value of search.query
+         * @returns {Promise} - resolves to Array of [floor, ceil]
+         */
+        ctrl.getFloorCeil = function(query) {
+            function createEbeyeUrl(ascending) {
+                ascending = ascending ? "ascending" : "descending";
+
+                return routes.ebiSearch({
+                    ebiBaseUrl: global_settings.EBI_SEARCH_ENDPOINT,
+                    query: query ? search.preprocessQuery(query): query,
+                    hlfields: "length",
+                    facetcount: "",
+                    facetfields: "length",
+                    size: 1,
+                    start: 0,
+                    sort: "length:" + ascending
+                });
+            }
+
+            var ascendingEbeyeUrl = createEbeyeUrl(true);
+            var descendingEbeyeUrl = createEbeyeUrl(false);
+
+            var ascendingQueryUrl = routes.ebiSearchProxy({ebeyeUrl: encodeURIComponent(ascendingEbeyeUrl)});
+            var descendingQueryUrl = routes.ebiSearchProxy({ebeyeUrl: encodeURIComponent(descendingEbeyeUrl)});
+
+            return $q.all([$http.get(ascendingQueryUrl), $http.get(descendingQueryUrl)]);
+        };
+
+        /**
+         * Constructor-ish function (but now 'new' needed) that returns a model for length slider
+         */
+        ctrl.LengthSlider = function(min, max, floor, ceil) {
+            return {
+                min: min,
+                max: max,
+                options: {
+                    floor: floor,
+                    ceil: ceil,
+                    logScale: true,
+                    translate: function(value) {
+                        if (value < 10000) return $filter('number')(value);
+                        else return Number(Math.floor(value/1000)).toString() + 'k';
+                    },
+                    onEnd: ctrl.lengthSearch
+                }
+            };
+        };
+
+        /**
+         * Edge case of facet search with length field applied.
+         */
+        ctrl.lengthSearch = function () {
+            ctrl.facetSearch('length', '[' + ctrl.lengthSlider.min + ' to ' + ctrl.lengthSlider.max + ']', true)
+        };
+
+        /**
+         * Resets slider to default value
+         */
+        ctrl.resetSlider = function() {
+            var lengthClause = 'length\\:\\[(\\d+) to (\\d+)\\]';
+            var lengthRegexp = new RegExp('length\\:\\[(\\d+) to (\\d+)\\]', 'i');
+
+            // remove length clause in different contexts
+            var filteredQuery = search.query;
+            filteredQuery = filteredQuery.replace(new RegExp(' AND ' + lengthClause + ' AND '), ' AND ', 'i');
+            filteredQuery = filteredQuery.replace(new RegExp(lengthClause + ' AND '), '', 'i');
+            filteredQuery = filteredQuery.replace(new RegExp(' AND ' + lengthClause), '', 'i');
+            filteredQuery = filteredQuery.replace(new RegExp(lengthClause), '', 'i') || 'RNA';
+
+            search.search(filteredQuery);
+        };
+
+        // Facets-related code
+        // -------------------
+
         /**
          * Determine if the facet has already been applied.
          */
@@ -46,19 +187,32 @@ var textSearchResults = {
          * parameters.
          */
         ctrl.facetSearch = function(facetId, facetValue) {
-            var newQuery;
+            var facet, newQuery = search.query;
 
-            var facet = facetId + ':"' + facetValue + '"';
-            if (ctrl.isFacetApplied(facetId, facetValue)) {
-                newQuery = search.query;
+            if (facetId !== 'length') {
+                facet = facetId + ':"' + facetValue + '"';
 
-                // remove facet in different contexts
-                newQuery = newQuery.replace(' AND ' + facet + ' AND ', ' AND ', 'i');
-                newQuery = newQuery.replace(facet + ' AND ', '', 'i');
-                newQuery = newQuery.replace(' AND ' + facet, '', 'i');
-                newQuery = newQuery.replace(facet, '', 'i') || 'RNA';
+                if (ctrl.isFacetApplied(facetId, facetValue)) {
+                    // remove facet in different contexts
+                    newQuery = newQuery.replace(' AND ' + facet + ' AND ', ' AND ', 'i');
+                    newQuery = newQuery.replace(facet + ' AND ', '', 'i');
+                    newQuery = newQuery.replace(' AND ' + facet, '', 'i');
+                    newQuery = newQuery.replace(facet, '', 'i') || 'RNA';
+                } else {
+                    newQuery = search.query + ' AND ' + facet; // add new facet
+                }
             } else {
-                newQuery = search.query + ' AND ' + facet; // add new facet
+                var lengthClause = 'length\\:\\[\\d+ to \\d+\\]';
+
+                // remove length clause in different contexts
+                newQuery = newQuery.replace(new RegExp(' AND ' + lengthClause + ' AND '), ' AND ', 'i');
+                newQuery = newQuery.replace(new RegExp(lengthClause + ' AND '), '', 'i');
+                newQuery = newQuery.replace(new RegExp(' AND ' + lengthClause), '', 'i');
+                newQuery = newQuery.replace(new RegExp(lengthClause), '', 'i') || 'RNA';
+
+                // add length facet
+                facet = facetId + ':' + facetValue;
+                newQuery = newQuery + ' AND ' + facet; // add new facet
             }
 
             search.search(newQuery);
@@ -75,6 +229,10 @@ var textSearchResults = {
             $('#toggle-facets').text(function(i, text) {
                  return text === "Show facets" ? "Hide facets" : "Show facets";
             });
+
+            // if facets were hidden, this is required to render the slider
+            $timeout(function () { $scope.$broadcast('rzSliderForceRender'); });
+
         };
 
         /**

@@ -36,7 +36,8 @@ Master Stylesheet for the RNAcentral Portal
 5.13 D3 nhmmer dashboard graph
 5.14 Doorbell feedback
 5.15 Tooltip customization
-5.16 Sequence page
+5.16 Slider customization
+5.17 Sequence page
 
 -------------------------------------------------------------------*/
 
@@ -1362,7 +1363,56 @@ textarea {
 }
 
 /*------------------------------------------------------------------
-[5.16 Sequence page]
+[5.16 Slider customization]
+*/
+
+.custom-slider.rzslider .rz-bar {
+  background: #ffe4d1;
+  height: 2px;
+}
+.custom-slider.rzslider .rz-selection {
+  background: #BF8E3E;
+}
+
+.custom-slider.rzslider .rz-pointer {
+  width: 8px;
+  height: 16px;
+  top: auto; /* to remove the default positioning */
+  bottom: 0;
+  background-color: #BF8E3E; /* #337ab7; */
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+.custom-slider.rzslider .rz-pointer:after {
+  display: none;
+}
+
+.custom-slider.rzslider .rz-bubble {
+  bottom: 14px;
+  color: #337ab7;
+}
+
+.custom-slider.rzslider .rz-limit {
+  font-weight: bold;
+  color: #337ab7 !important; /* #BF8E3E; */
+}
+
+.custom-slider.rzslider .rz-tick {
+  width: 1px;
+  height: 10px;
+  margin-left: 4px;
+  border-radius: 0;
+  background: #ffe4d1;
+  top: -1px;
+}
+
+.custom-slider.rzslider .rz-tick.rz-selected {
+  background: #BF8E3E;
+}
+
+/*------------------------------------------------------------------
+[5.17 Sequence page]
 */
 #sequence-overview {
   padding-left: 9px;

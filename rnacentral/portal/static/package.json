@@ -28,6 +28,7 @@
     "angular-sanitize": "^1.6.4",
     "angular-ui-bootstrap": "^2.5.0",
     "angularjs-genoverse": "^2.0.1",
+    "angularjs-slider": "^6.4.3",
     "animate.css": "^3.5.2",
     "bootstrap": "^3.3.7",
     "clipboard": "^1.6.1",

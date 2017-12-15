@@ -4,6 +4,7 @@ angular.module('rnacentralApp', [
     'angular.filter',
     'ui.bootstrap',
     'chieffancypants.loadingBar',
+    'rzModule',
     'underscore',
 
     'Genoverse',

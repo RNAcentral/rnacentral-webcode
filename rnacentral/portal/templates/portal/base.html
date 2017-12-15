@@ -54,6 +54,7 @@ limitations under the License.
                 <link rel="stylesheet" href="{% static "node_modules/angularjs-genoverse/lib/Genoverse/css/resizer.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/angularjs-genoverse/lib/Genoverse/css/trackControls.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/angularjs-genoverse/lib/Genoverse/css/tooltips.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/angularjs-slider/dist/rzslider.css" %}">
             {% endblock stylesheets %}
         {% endcompress %}
 
@@ -117,7 +118,7 @@ limitations under the License.
             <div ng-show="!displaySearchInterface">
               {% block content %}{% endblock %}
             </div>
-            <text-search-results></text-search-results>
+            <text-search-results ng-if="displaySearchInterface"></text-search-results>
           </div>
 
           <footer>
@@ -149,6 +150,7 @@ limitations under the License.
             <script src="{% static "node_modules/clipboard/dist/clipboard.js" %}"></script>
             <script src="{% static "node_modules/timelinejs3/compiled/js/timeline.js" %}"></script>
             <script src="{% static "node_modules/fornac-burkov/dist/scripts/fornac.js" %}"></script>
+            <script src="{% static "node_modules/angularjs-slider/dist/rzslider.js" %}"></script>
 
             <script src="{% static "js/d3/d3.ExpertDatabaseSequenceDistribution.js" %}"></script>
             <script src="{% static "js/d3/d3.speciesSunburst.js" %}"></script>
