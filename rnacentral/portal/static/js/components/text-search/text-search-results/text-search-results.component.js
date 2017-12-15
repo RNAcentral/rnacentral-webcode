@@ -138,6 +138,23 @@ var textSearchResults = {
             ctrl.facetSearch('length', '[' + ctrl.lengthSlider.min + ' to ' + ctrl.lengthSlider.max + ']', true)
         };
 
+        /**
+         * Resets slider to default value
+         */
+        ctrl.resetSlider = function() {
+            var lengthClause = 'length\\:\\[(\\d+) to (\\d+)\\]';
+            var lengthRegexp = new RegExp('length\\:\\[(\\d+) to (\\d+)\\]', 'i');
+
+            // remove length clause in different contexts
+            var filteredQuery = search.query;
+            filteredQuery = filteredQuery.replace(new RegExp(' AND ' + lengthClause + ' AND '), ' AND ', 'i');
+            filteredQuery = filteredQuery.replace(new RegExp(lengthClause + ' AND '), '', 'i');
+            filteredQuery = filteredQuery.replace(new RegExp(' AND ' + lengthClause), '', 'i');
+            filteredQuery = filteredQuery.replace(new RegExp(lengthClause), '', 'i') || 'RNA';
+
+            search.search(filteredQuery);
+        };
+
         // Facets-related code
         // -------------------
 
