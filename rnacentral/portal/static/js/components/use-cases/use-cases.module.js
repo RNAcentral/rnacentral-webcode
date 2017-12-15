@@ -28,6 +28,15 @@ var useCasesController = function($scope, $location, $window, $rootScope, $http,
         "pub_id": ""
     };
 
+    $scope.yeastCurationPublication = {
+        "title": "The yeast noncoding RNA interaction network.",
+        "authors": ["Panni S", "Prakash A", "Bateman A", "Orchard S"],
+        "publication": "RNA. 2017 Oct;23(10):1479-1492",
+        "pubmed_id": 28701522,
+        "doi": "10.1261/rna.060996.117",
+        "pub_id": ""
+    };
+
     $scope.secondaryStructurePredictionPublication = {
         "title": "Forna (force-directed RNA): Simple and effective online RNA secondary structure diagrams.",
         "authors": ["Kerpedjiev P", "Hammer S", "Hofacker IL"],
