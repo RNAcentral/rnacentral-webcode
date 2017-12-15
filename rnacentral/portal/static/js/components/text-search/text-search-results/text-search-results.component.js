@@ -47,6 +47,7 @@ var textSearchResults = {
          * @param oldQuery
          */
         ctrl.setLengthSlider = function(query) {
+            var min, max, floor, ceil;
             var lengthClause = 'length\\:\\[(\\d+) to (\\d+)\\]';
             var lengthRegexp = new RegExp('length\\:\\[(\\d+) to (\\d+)\\]', 'i');
 
@@ -61,18 +62,32 @@ var textSearchResults = {
             var groups = lengthRegexp.exec(query);
             ctrl.getFloorCeil(filteredQuery).then(
                 function(floorceil) {
-                    var floor = parseInt(floorceil[0].data.entries[0].highlights.length);
-                    var ceil = parseInt(floorceil[1].data.entries[0].highlights.length);
-                    var min = groups ? parseInt(groups[1]) : floor;
-                    var max = groups ? parseInt(groups[2]) : ceil;
+                    floor = parseInt(floorceil[0].data.entries[0].highlights.length);
+                    ceil = parseInt(floorceil[1].data.entries[0].highlights.length);
+
+                    if (groups) {
+                        min = parseInt(groups[1]) < floor ? floor : parseInt(groups[1]);
+                        max = parseInt(groups[2]) > ceil ? ceil : parseInt(groups[2]);
+                    } else {
+                        min = floor;
+                        max = ceil;
+                    }
+
                     ctrl.lengthSlider = ctrl.LengthSlider(min, max, floor, ceil);
                     $timeout(function () { $scope.$broadcast('rzSliderForceRender'); }); // issue render just in case
                 },
                 function (failure) { // non-mission critical, let's fallback to sensible defaults
                     var floor = 10;
                     var ceil = 2147483647; // macrocosm constant - if length exceeds it, EBI search fails
-                    var min = groups ? parseInt(groups[1]) : floor;
-                    var max = groups ? parseInt(groups[2]) : ceil;
+
+                    if (groups) {
+                        min = parseInt(groups[1]) < floor ? floor : parseInt(groups[1]);
+                        max = parseInt(groups[2]) > ceil ? ceil : parseInt(groups[2]);
+                    } else {
+                        min = floor;
+                        max = ceil;
+                    }
+
                     ctrl.lengthSlider = ctrl.LengthSlider(min, max, floor, ceil);
                     $timeout(function () { $scope.$broadcast('rzSliderForceRender'); }); // issue render just in case
                 }
