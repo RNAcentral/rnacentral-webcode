@@ -101,7 +101,7 @@ limitations under the License.
         {% include "portal/header.html" %}
         </header>
 
-        <div class="container wrapper">
+        <div class="wrapper">
 
           <div class="container-main">
             <!--[if lt IE 10]>
@@ -122,15 +122,14 @@ limitations under the License.
             <text-search-results></text-search-results>
           </div>
 
-          <footer>
-            <div id="local-footer">
-              {% block optional-footer %}{% endblock  %}
-            </div>
-            {% include "portal/footer.html" %}
-          </footer>
-
         </div> <!-- container -->
 
+        <footer>
+          <div id="local-footer">
+            {% block optional-footer %}{% endblock  %}
+          </div>
+          {% include "portal/footer.html" %}
+        </footer>
 
         {% compress js %}
           {% block extra_js %}
