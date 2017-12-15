@@ -50,6 +50,7 @@ body {
 
 #wrapper {
   width: 96%;
+  margin: auto;
 }
 
 .container-main {
@@ -103,8 +104,8 @@ h1 small, h2 small, h3 small {
 */
 
 #logo {
-  padding-left: 50px;
-  padding-right: 50px;
+  padding-left: 50px !important;
+  padding-right: 50px !important;
 }
 
 .rnacentral-masthead {
