@@ -325,6 +325,12 @@ div#local-search form fieldset, form#local-search fieldset {
 /*------------------------------------------------------------------
 [3. Footer]
 */
+
+footer {
+  width: 90%;
+  margin: auto;
+}
+
 #global-footer {
   border-top: 1px solid #f0f0f0;
 }
