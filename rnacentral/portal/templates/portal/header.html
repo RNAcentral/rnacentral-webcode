@@ -15,11 +15,13 @@ limitations under the License.
 {% load portal_extras %}
 
   <div class="rnacentral-masthead">
-
     <!-- global-search -->
     <div class="row" style="min-height: 120px;">
-      <div id="logo" class="col-md-4">
-        <a href="/"><img src="{% static "img/logo/RNAcentral_logo_ltgrey.png" %}" alt="RNAcentral logo" class="rnacentral-header-logo"></a>
+      <div id="logo-and-subtitle" class="col-md-4">
+        <div id="logo">
+          <a href="/"><img src="{% static "img/logo/RNAcentral_logo_ltgrey.png" %}" alt="RNAcentral logo" class="rnacentral-header-logo"></a>
+        </div>
+        <div id="subtitle">non-coding RNA portal</div>
       </div>
       <text-search-bar class="col-md-8"></text-search-bar>
     </div><!-- /row -->
