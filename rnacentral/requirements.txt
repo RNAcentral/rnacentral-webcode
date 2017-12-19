@@ -45,7 +45,7 @@ redis==2.10.3
 
 # django compressor
 django-appconf==1.0.2
-django-compressor==2.0
+django-compressor==2.2
 rcssmin==1.0.6
 rjsmin==1.0.12
 
