@@ -114,6 +114,7 @@ h1 small, h2 small, h3 small {
 
 #subtitle {
   font-size: 150%;
+  font-family: 'HelveticaNeueLT Pro';
   text-align: center;
   padding-top: 10px;
   color: #eaeaea;
@@ -135,10 +136,10 @@ h1 small, h2 small, h3 small {
   /*background: linear-gradient(to right,  rgba(188,216,224,1) 41%,rgba(154,195,206,1) 68%); !* W3C *!*/
   /*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#bcd8e0', endColorstr='#9ac3ce',GradientType=1 ); !* IE6-9 *!*/
 
-  padding-top: 40px;
+  padding-top: 10px;
   /* gradients shamelessly stolen from InterPro7 client */
   /* background pattern courtesy of www.subtlepatterns.com */
-  background-image: linear-gradient(90deg, rgba(45,174,193,.3), rgba(0,85,158,.3), rgba(45,174,193,.3)), url('/static/img/footer_lodyas.png');
+  background-image: linear-gradient(90deg, rgba(0,85,158,.4), rgba(45,174,193,.3), rgba(0,85,158,.4)), url('/static/img/footer_lodyas.png');
   /*background: -webkit-linear-gradient(left, #6ec4db 41%, #6eaeca 68%);*/
 }
 
@@ -175,7 +176,12 @@ h1 small, h2 small, h3 small {
 
 .rnacentral-masthead-menu .nav>li>a:hover,
 .rnacentral-masthead-menu .nav>li>a:focus,
-.rnacentral-masthead-menu .nav>li>a:active,
+.rnacentral-masthead-menu .nav>li>a:active
+{
+  color: #555;
+  background: #e7e7e7;
+}
+
 .rnacentral-masthead-menu .navbar-text
 {
   color: #555;
@@ -203,13 +209,13 @@ h1 small, h2 small, h3 small {
 
 .navbar-default .navbar-nav>li>a,
 .navbar-default .navbar-nav>li>a>b {
-	color: #3F7D97; /* #DDDDDD; */
+  color: #eaeaea; /* #3F7D97 */ /* #DDDDDD; */
 }
 
 .navbar-default .navbar-nav>.dropdown>a .caret
 {
-  border-top-color: #3F7D97; /* #DDDDDD; */
-  border-bottom-color: #3F7D97; /* #DDDDDD; */
+  border-top-color: #eaeaea; /* #3F7D97; */ /* #DDDDDD; */
+  border-bottom-color: #eaeaea; /* #3F7D97; */ /* #DDDDDD; */
 }
 
 .navbar-default .navbar-nav>.dropdown>a:hover .caret,
@@ -280,7 +286,13 @@ div#local-search form fieldset, form#local-search fieldset {
 .dropdown-menu li a {
   padding: 5px 15px;
   font-weight: 300;
-  color: black !important;
+  color: black;
+}
+
+@media (max-width: 767px) {
+  .dropdown-menu li a {
+    color: #eaeaea !important;
+  }
 }
 
 .dropdown-menu li a:hover {
@@ -310,6 +322,12 @@ div#local-search form fieldset, form#local-search fieldset {
   line-height: 1.428571429;
   color: black;
   white-space: normal;
+}
+
+@media (max-width: 767px) {
+  .multi-column-dropdown li a {
+    color: #eaeaea;
+  }
 }
 
 .multi-column-dropdown li a:hover,
