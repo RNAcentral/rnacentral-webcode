@@ -125,6 +125,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     };
 
     activateCopyToClipboardButtons();
+    $(document).ready(activateFeatureViewer);
 
     /**
      * Copy to clipboard buttons allow the user to copy an RNA sequence as RNA or DNA into
@@ -156,6 +157,24 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
             }
         });
     };
+
+    function activateFeatureViewer() {
+        //Create a new Feature Viewer and add some rendering options
+        var options = {
+            showAxis: true,
+            showSequence: true,
+            brushActive: true,
+            toolbar:true,
+            bubbleHelp: true,
+            zoomMax:20
+        };
+
+        var ft = new FeatureViewer(
+            "FDSJKLFJDSFKLJDFHADJKLFHDSJKLFHDAFJKLDHFJKLDASFHDJKLFHDSAJKLFHDAKLFJDHSAFKLDLSNCDJKLFENFIUPERWDJKPCNVDDAAFJDSAKFL",
+            "#feature-viewer",
+            options
+        );
+    }
 };
 
 rnaSequenceController.$inject = ['$scope', '$location', '$window', '$rootScope', '$compile', '$http', '$filter', 'routes', 'GenoverseUtils'];
