@@ -3,7 +3,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     $scope.upi = $location.path().split('/')[2];
     $scope.taxid = $location.path().split('/')[3];  // TODO: this might not exist!
     $scope.hide2dTab = true;
-    $scope.getRnaError = false; // hide content and display error, if we fail to download rna from server
+    $scope.fetchRnaError = false; // hide content and display error, if we fail to download rna from server
 
     // programmatically switch tabs
     $scope.activeTab = 0;
@@ -46,7 +46,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         hopscotch.startTour($rootScope.tour, 4);  // start from step 4
     };
 
-    $scope.getRna = function() {
+    $scope.fetchRna = function() {
         return $q(function(resolve, reject) {
             $http.get(routes.apiRnaView({upi: $scope.upi})).then(
                 function(response) {
@@ -54,7 +54,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                     resolve();
                 },
                 function () {
-                    $scope.getRnaError = true;
+                    $scope.fetchRnaError = true;
                     reject();
                 }
             );
@@ -91,7 +91,6 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
             type: "rect",
             filter: "type1"
         });
-
 
         // scroll to sequence <pre>, bring sequence in the viewport
         $('html, body').animate(
@@ -171,7 +170,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     //---------------
 
     $scope.activateCopyToClipboardButtons();
-    $scope.getRna().then(function() {
+    $scope.fetchRna().then(function() {
         $scope.activateFeatureViewer();
     });
 };

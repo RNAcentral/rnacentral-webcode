@@ -27,7 +27,7 @@ limitations under the License.
 
 {% block content %}
 <div class="row" ng-controller="rnaSequenceController">
-    <div ng-if="getRnaError" class="col-md-12">
+    <div ng-if="fetchRnaError" class="col-md-12">
         <div class="alert alert-danger">
             <i class="fa fa-exclamation-triangle"></i> Sorry, there was a problem loading sequence from server. Please try again and contact us if the problem persists.
         </div>
