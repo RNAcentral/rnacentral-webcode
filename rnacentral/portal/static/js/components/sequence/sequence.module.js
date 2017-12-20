@@ -1,8 +1,9 @@
-var rnaSequenceController = function($scope, $location, $window, $rootScope, $compile, $http, $filter, routes, GenoverseUtils) {
+var rnaSequenceController = function($scope, $location, $window, $rootScope, $compile, $http, $q, $filter, routes, GenoverseUtils) {
     // Take upi and taxid from url. Note that $location.path() always starts with slash
     $scope.upi = $location.path().split('/')[2];
     $scope.taxid = $location.path().split('/')[3];  // TODO: this might not exist!
     $scope.hide2dTab = true;
+    $scope.getRnaError = false; // hide content and display error, if we fail to download rna from server
 
     // programmatically switch tabs
     $scope.activeTab = 0;
@@ -43,6 +44,21 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         // hopscotch_tour = new guidedTour;
         // hopscotch_tour.initialize();
         hopscotch.startTour($rootScope.tour, 4);  // start from step 4
+    };
+
+    $scope.getRna = function() {
+        return $q(function(resolve, reject) {
+            $http.get(routes.apiRnaView({upi: $scope.upi})).then(
+                function(response) {
+                    $scope.rna = response.data;
+                    resolve();
+                },
+                function () {
+                    $scope.getRnaError = true;
+                    reject();
+                }
+            );
+        });
     };
 
     // Modified nucleotides visualisation.
@@ -124,14 +140,12 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         $scope.domain = $scope.genoverseUtils.getEnsemblSubdomainByDivision($scope.genome, $scope.genoverseUtils.genomes);
     };
 
-    activateCopyToClipboardButtons();
-    $(document).ready(activateFeatureViewer);
 
     /**
      * Copy to clipboard buttons allow the user to copy an RNA sequence as RNA or DNA into
      * the clipboard by clicking on them. Buttons are located near the Sequence header.
      */
-    function activateCopyToClipboardButtons() {
+    $scope.activateCopyToClipboardButtons = function() {
         /**
          * Returns DNA sequence, corresponding to input RNA sequence. =)
          */
@@ -158,32 +172,45 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         });
     };
 
-    function activateFeatureViewer() {
-        $http.get(routes.apiRnaView({upi: $scope.upi})).then(
-            function (response) {
-                //Create a new Feature Viewer and add some rendering options
-                var options = {
-                    showAxis: true,
-                    showSequence: true,
-                    brushActive: true,
-                    toolbar:true,
-                    bubbleHelp: true,
-                    zoomMax:20
-                };
+    $scope.activateFeatureViewer = function() {
+        $(document).ready(function() {
+            //Create a new Feature Viewer and add some rendering options
+            var options = {
+                showAxis: true,
+                showSequence: true,
+                brushActive: true,
+                toolbar:true,
+                bubbleHelp: true,
+                zoomMax:20
+            };
 
-                var ft = new FeatureViewer(
-                    response.data.sequence,
-                    "#feature-viewer",
-                    options
-                );
-            }, function () {
-                $scope.getSequenceError = true;
-            }
-        );
-    }
+            var ft = new FeatureViewer(
+                $scope.rna.sequence,
+                "#feature-viewer",
+                options
+            );
+
+            ft.addFeature({
+                data: [{x:20,y:32},{x:46,y:100},{x:123,y:167}],
+                name: "Modifications",
+                className: "modification",
+                color: "#005572",
+                type: "rect",
+                filter: "type1"
+            });
+        });
+    };
+
+    // Initialization
+    //---------------
+
+    $scope.activateCopyToClipboardButtons();
+    $scope.getRna().then(function() {
+        $scope.activateFeatureViewer();
+    });
 };
 
-rnaSequenceController.$inject = ['$scope', '$location', '$window', '$rootScope', '$compile', '$http', '$filter', 'routes', 'GenoverseUtils'];
+rnaSequenceController.$inject = ['$scope', '$location', '$window', '$rootScope', '$compile', '$http', '$q', '$filter', 'routes', 'GenoverseUtils'];
 
 
 /**
