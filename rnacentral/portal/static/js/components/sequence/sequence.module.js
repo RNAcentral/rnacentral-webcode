@@ -184,14 +184,14 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                 zoomMax:20
             };
 
-            var ft = new FeatureViewer(
+            $scope.featureViewer = new FeatureViewer(
                 $scope.rna.sequence,
                 "#feature-viewer",
                 options
             );
 
-            ft.addFeature({
-                data: [{x:20,y:32},{x:46,y:100},{x:123,y:167}],
+            $scope.featureViewer.addFeature({
+                data: [{x:20,y:32}, {x:46,y:100}, {x:123,y:167}],
                 name: "Modifications",
                 className: "modification",
                 color: "#005572",

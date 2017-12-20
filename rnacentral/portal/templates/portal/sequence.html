@@ -217,8 +217,8 @@ limitations under the License.
                 <div id="feature-viewer"></div>
 
                 <div style="padding-top: 10px; padding-bottom: 10px;">
-                    <button class="btn btn-primary" ng-click="displaySequence = true">Display sequence</button>
-                    <div ng-if="displaySequence" class="btn-group pull-right">
+                    <button class="btn btn-primary" ng-click="showSequence = !showSequence">{% verbatim %}{{ showSequence ? "Hide sequence" : "Show sequence" }}{% endverbatim %}</button>
+                    <div ng-if="showSequence" class="btn-group">
                         <button class="btn btn-default btn-sm" id="copy-as-rna">
                           <i class="fa fa-copy" aria-hidden="true">&nbsp;as RNA</i>
                         </button>
@@ -228,7 +228,7 @@ limitations under the License.
                     </div>
                 </div>
 
-                <pre ng-if="displaySequence" class="pre-scrollable" id="rna-sequence">{{ rna.get_sequence }}</pre>
+                <pre ng-if="showSequence" class="pre-scrollable" id="rna-sequence">{{ rna.get_sequence }}</pre>
             </uib-tab>
 
             <uib-tab index="1" heading="Taxonomy" deselect="checkTab($event, $selectedIndex)">
