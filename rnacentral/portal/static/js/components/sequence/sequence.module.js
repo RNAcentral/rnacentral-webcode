@@ -146,6 +146,10 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         });
     };
 
+    $scope.fetchRfamHits = function() {
+        return $http.get(routes.apiRfamHitsView({upi: $scope.upi}))
+    };
+
     $scope.activateFeatureViewer = function() {
         $(document).ready(function() {
             //Create a new Feature Viewer and add some rendering options
@@ -162,6 +166,31 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                 $scope.rna.sequence,
                 "#feature-viewer",
                 options
+            );
+
+            $scope.fetchRfamHits().then(
+                function(response) {
+                    data = [];
+                    for (var i = 0; i < response.data.results.length; i++) {
+                        data.push({
+                            x: response.data.results[i].sequence_start,
+                            y: response.data.results[i].sequence_stop,
+                            description: response.data.results[i].rfam_model.long_name
+                        })
+                    }
+
+                    $scope.featureViewer.addFeature({
+                        data: data,
+                        name: "Rfam models",
+                        className: "rfamModels",
+                        color: "#734639",
+                        type: "rect",
+                        filter: "type1"
+                    });
+                },
+                function() {
+                    console.log('failed to fetch Rfam hits');
+                }
             );
         });
     };
