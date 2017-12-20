@@ -23,6 +23,7 @@ from reference_map import *
 from release import *
 from rna import *
 from rna_precomputed import *
+from rfam import *
 from secondary_structure import *
 from xref import *
 from ensembl_assembly import *

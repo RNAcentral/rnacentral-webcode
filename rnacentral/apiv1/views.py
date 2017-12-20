@@ -31,10 +31,11 @@ from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, R
 from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, PaginatedXrefSerializer, \
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
                               RnaSpeciesSpecificSerializer, ExpertDatabaseStatsSerializer, \
-    PaginatedRawPublicationSerializer, RnaSecondaryStructureSerializer
+                              PaginatedRawPublicationSerializer, RnaSecondaryStructureSerializer, \
+                              RfamHitSerializer
 from portal.config.expert_databases import expert_dbs
 from portal.config.genomes import genomes, url2db, SpeciesNotInGenomes, get_taxid_from_species
-from portal.models import Rna, Accession, Xref, Database, DatabaseStats
+from portal.models import Rna, Accession, Xref, Database, DatabaseStats, RfamHit
 
 """
 Docstrings of the classes exposed in urlpatterns support markdown.
@@ -699,3 +700,13 @@ class GenomesAPIView(APIView):
     def get(self, request, format=None):
         sorted_genomes = sorted(genomes, key=lambda x: x['species'])
         return Response(sorted_genomes)
+
+
+class RfamHitsAPIViewSet(ListModelMixin, GenericViewSet):
+    """API endpoint with Rfam models that are found in an RNA."""
+    lookup_field = 'pk'
+    serializer_class = RfamHitSerializer
+    queryset = RfamHit.objects.select_related('rfam_model')
+
+    def get(self, request, *args, **kwargs):
+        return super(RfamHitsAPIViewSet, self).list(request, *args, **kwargs)
