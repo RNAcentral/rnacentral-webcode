@@ -82,6 +82,7 @@ class Rna(CachingMixin, models.Model):
             WHERE t1.ac = t2.accession AND
                   t1.upi = %s AND
                   {taxid_clause}
+                  {deleted_clause}
                   t2.reference_id = t3.id) a
         JOIN
             rnc_references b
@@ -92,21 +93,31 @@ class Rna(CachingMixin, models.Model):
 
         where_clause = "WHERE NOT ((b.title is NULL OR b.title = '') AND b.location LIKE 'Submitted%%')"
         taxid_clause = 't1.taxid = %s AND' % taxid
+        deleted_clause = "t1.deleted = 'N' AND"
 
-        # filter-out INSDC submissions with where_clause; filter by taxid, if it's given
+        # filter-out INSDC submissions with where_clause, deleted with deleted_clause; filter by taxid, if it's given
         if taxid:
-            formatted_query = query.format(taxid_clause=taxid_clause, where_clause=where_clause)
+            formatted_query = query.format(taxid_clause=taxid_clause, where_clause=where_clause, deleted_clause=deleted_clause)
         else:
-            formatted_query = query.format(taxid_clause='', where_clause=where_clause)
+            formatted_query = query.format(taxid_clause='', where_clause=where_clause, deleted_clause=deleted_clause)
 
         queryset = list(Reference.objects.raw(formatted_query, [self.upi]))
 
         # if queryset is empty, try finding at least INSDC submissions
         if len(queryset) == 0:
             if taxid:
-                formatted_query = query.format(taxid_clause=taxid_clause, where_clause='')
+                formatted_query = query.format(taxid_clause=taxid_clause, where_clause='', deleted_clause=deleted_clause)
             else:
-                formatted_query = query.format(taxid_clause='', where_clause='')
+                formatted_query = query.format(taxid_clause='', where_clause='', deleted_clause=deleted_clause)
+
+            queryset = list(Reference.objects.raw(formatted_query, [self.upi]))
+
+        # if queryset is still empty, try displaying deleted papers
+        if len(queryset) == 0:
+            if taxid:
+                formatted_query = query.format(taxid_clause=taxid_clause, where_clause='', deleted_clause='')
+            else:
+                formatted_query = query.format(taxid_clause='', where_clause='', deleted_clause='')
 
             queryset = list(Reference.objects.raw(formatted_query, [self.upi]))
 
