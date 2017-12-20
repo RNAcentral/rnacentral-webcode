@@ -66,19 +66,9 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         // sort modifications by position
         modifications.sort(function(a, b) {return a.position - b.position});
 
-        // destroy any existing popovers before reading in the sequence
-        $('.modified-nt').popover('destroy');
-
-        // initialize variables
-        var $pre = $('#rna-sequence');
-        var text = $pre.text();
-        var newText = "";
-        var modification;
-
         // loop over modifications and insert span tags with modified nucleotide data
-        var start = 0;
+        var data = [];
         for (var i = 0; i < modifications.length; i++) {
-            newText += text.slice(start, modifications[i].position - 1);
 
             // create links to pdb and modomics, if possible
             var pdbLink = "", modomicsLink = "";
@@ -89,40 +79,25 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                 modomicsLink = '<a href=\'' + modifications[i].chem_comp.modomics_url + '\' target=\'_blank\'>Modomics</a>';
             }
 
-            // html template for a modified nucleotide
-            modification = '<span class="modified-nt" role="button" tabindex="10" ' +
-              'data-trigger="focus" ' +
-              'data-toggle="popover" ' +
-              'data-content="' + modifications[i].chem_comp.description + ' <br> ' + pdbLink + modomicsLink + '" ' +
-              'title="Modified nucleotide <strong>' + modifications[i].chem_comp.id + '</strong>">' +
-                modifications[i].chem_comp.one_letter_code +
-            '</span>';
+            data.push({x: modifications[i].position, y: modifications[i].position, description: 'Modified nucleotide ' + modifications[i].chem_comp.id + modifications[i].chem_comp.one_letter_code + ' <br> ' + modifications[i].chem_comp.description });
 
-            newText += modification;
-
-            start = modifications[i].position;  // prepare start position for next iteration
         }
-        newText += text.slice(start, text.length);  // last iteration
 
-        // update the sequence (use `html`, not `text`)
-        $pre.html(newText);
+        $scope.featureViewer.addFeature({
+            data: data,
+            name: "Modifications",
+            className: "modification",
+            color: "#005572",
+            type: "rect",
+            filter: "type1"
+        });
+
 
         // scroll to sequence <pre>, bring sequence in the viewport
         $('html, body').animate(
-            { scrollTop: $('#rna-sequence').offset().top - 100 },
+            { scrollTop: $('#feature-viewer').offset().top - 100 },
             1200
         );
-
-        // initialize popovers
-        $('.modified-nt').popover({
-            placement: 'top',
-            html: true,
-            container: 'body',
-            viewport: '#rna-sequence'
-        });
-
-        // activate the first popover
-        $('.modified-nt').first().focus().popover('show');
     };
 
     // populate data for angular-genoverse instance
@@ -189,15 +164,6 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                 "#feature-viewer",
                 options
             );
-
-            $scope.featureViewer.addFeature({
-                data: [{x:20,y:32}, {x:46,y:100}, {x:123,y:167}],
-                name: "Modifications",
-                className: "modification",
-                color: "#005572",
-                type: "rect",
-                filter: "type1"
-            });
         });
     };
 
