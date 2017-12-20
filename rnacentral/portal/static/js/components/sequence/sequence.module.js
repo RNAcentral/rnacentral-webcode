@@ -159,20 +159,26 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     };
 
     function activateFeatureViewer() {
-        //Create a new Feature Viewer and add some rendering options
-        var options = {
-            showAxis: true,
-            showSequence: true,
-            brushActive: true,
-            toolbar:true,
-            bubbleHelp: true,
-            zoomMax:20
-        };
+        $http.get(routes.apiRnaView({upi: $scope.upi})).then(
+            function (response) {
+                //Create a new Feature Viewer and add some rendering options
+                var options = {
+                    showAxis: true,
+                    showSequence: true,
+                    brushActive: true,
+                    toolbar:true,
+                    bubbleHelp: true,
+                    zoomMax:20
+                };
 
-        var ft = new FeatureViewer(
-            "FDSJKLFJDSFKLJDFHADJKLFHDSJKLFHDAFJKLDHFJKLDASFHDJKLFHDSAJKLFHDAKLFJDHSAFKLDLSNCDJKLFENFIUPERWDJKPCNVDDAAFJDSAKFL",
-            "#feature-viewer",
-            options
+                var ft = new FeatureViewer(
+                    response.data.sequence,
+                    "#feature-viewer",
+                    options
+                );
+            }, function () {
+                $scope.getSequenceError = true;
+            }
         );
     }
 };

@@ -219,6 +219,9 @@ limitations under the License.
                 </p>
                 {% endif %}
                 <pre class="pre-scrollable" id="rna-sequence">{{ rna.get_sequence }}</pre>
+                <div ng-if="getSequenceError" class="alert alert-danger">
+                    <i class="fa fa-exclamation-triangle"></i> Sorry, there was a problem loading sequence from server. Please try again and contact us if the problem persists.
+                </div>
                 <div id="feature-viewer"></div>
             </uib-tab>
 
