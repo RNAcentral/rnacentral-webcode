@@ -172,10 +172,21 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                 function(response) {
                     data = [];
                     for (var i = 0; i < response.data.results.length; i++) {
+                        var direction, x, y;
+                        if (response.data.results[i].sequence_start <= response.data.results[i].sequence_stop) {
+                            direction = '>';
+                            x = response.data.results[i].sequence_start;
+                            y = response.data.results[i].sequence_stop;
+                        } else {
+                            direction = '<';
+                            x = response.data.results[i].sequence_stop;
+                            y = response.data.results[i].sequence_start;
+                        }
+
                         data.push({
-                            x: response.data.results[i].sequence_start,
-                            y: response.data.results[i].sequence_stop,
-                            description: response.data.results[i].rfam_model.long_name
+                            x: x,
+                            y: y,
+                            description: direction + " " + response.data.results[i].rfam_model.long_name
                         })
                     }
 
