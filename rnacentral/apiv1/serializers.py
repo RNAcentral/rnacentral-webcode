@@ -439,3 +439,9 @@ class RfamHitSerializer(serializers.ModelSerializer):
     class Meta:
         model = RfamHit
         fields = ('sequence_start', 'sequence_stop', 'sequence_completeness', 'rfam_model')
+
+
+class PaginatedRfamHitSerializer(pagination.PaginationSerializer):
+    """Paginated version of RawPublicationSerializer."""
+    class Meta:
+        object_serializer_class = RfamHitSerializer

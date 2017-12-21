@@ -32,7 +32,7 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
                               RnaSpeciesSpecificSerializer, ExpertDatabaseStatsSerializer, \
                               PaginatedRawPublicationSerializer, RnaSecondaryStructureSerializer, \
-                              RfamHitSerializer
+                              PaginatedRfamHitSerializer
 from portal.config.expert_databases import expert_dbs
 from portal.config.genomes import genomes, url2db, SpeciesNotInGenomes, get_taxid_from_species
 from portal.models import Rna, Accession, Xref, Database, DatabaseStats, RfamHit
@@ -702,11 +702,20 @@ class GenomesAPIView(APIView):
         return Response(sorted_genomes)
 
 
-class RfamHitsAPIViewSet(ListModelMixin, GenericViewSet):
+class RfamHitsAPIViewSet(generics.ListAPIView):
     """API endpoint with Rfam models that are found in an RNA."""
-    lookup_field = 'pk'
-    serializer_class = RfamHitSerializer
-    queryset = RfamHit.objects.select_related('rfam_model')
+    permission_classes = (AllowAny, )
 
-    def get(self, request, *args, **kwargs):
-        return super(RfamHitsAPIViewSet, self).list(request, *args, **kwargs)
+    def get_queryset(self):
+        upi = self.kwargs['pk']
+        return RfamHit.objects.filter(upi=upi).select_related('rfam_model')
+
+    def get(self, request, pk=None, format=None):
+        page = request.QUERY_PARAMS.get('page', 1)
+        page_size = request.QUERY_PARAMS.get('page_size', 1000000000000)
+
+        rfam_hits = self.get_queryset()
+        paginator_rfam_hits = Paginator(rfam_hits, page_size)
+        rfam_hits_page = paginator_rfam_hits.page(page)
+        serializer = PaginatedRfamHitSerializer(rfam_hits_page, context={'request': request})
+        return Response(serializer.data)
