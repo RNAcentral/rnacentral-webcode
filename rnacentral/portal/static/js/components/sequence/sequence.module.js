@@ -64,8 +64,6 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     // Modified nucleotides visualisation.
     $scope.createModificationsFeature = function(modifications, accession) {
         if (!$scope.features.hasOwnProperty(accession)) { // if feature track's already there, don't duplicate it
-            console.log(modifications, accession);
-
             // sort modifications by position
             modifications.sort(function(a, b) {return a.position - b.position});
 
@@ -77,7 +75,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 
             $scope.featureViewer.addFeature({
                 data: data,
-                name: "Modifications from: " + accession,
+                name: "Modified in " + accession.substr(0, 8),
                 className: "modification",
                 color: "#005572",
                 type: "rect",

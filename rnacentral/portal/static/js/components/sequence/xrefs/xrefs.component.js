@@ -63,7 +63,7 @@ var xrefs = {
 
                     // for all new xrefs with modifications, create corresponding features in feature viewer
                     for (var i = 0; i < ctrl.displayedXrefs.length; i++) {
-                        if (ctrl.displayedXrefs[i].modifications) {
+                        if (ctrl.displayedXrefs[i].modifications.length > 0) {
                             ctrl.onCreateModificationsFeature({modifications: ctrl.displayedXrefs[i].modifications, accession: ctrl.displayedXrefs[i].accession.id});
                         }
                     }
@@ -126,7 +126,7 @@ var xrefs = {
 
                     // for all new xrefs with modifications, create corresponding features in feature viewer
                     for (var i = 0; i < ctrl.xrefs.length; i++) {
-                        if (ctrl.xrefs[i].modifications) {
+                        if (ctrl.xrefs[i].modifications.length > 0) {
                             ctrl.onCreateModificationsFeature({ modifications: ctrl.xrefs[i].modifications, accession: ctrl.xrefs[i].accession.id });
                         }
                     }
