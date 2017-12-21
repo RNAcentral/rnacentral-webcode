@@ -16,6 +16,7 @@ from itertools import chain
 
 import django_filters
 from django.core.paginator import Paginator
+from django.db.models import Min, Max
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
@@ -573,6 +574,42 @@ class XrefsSpeciesSpecificList(generics.ListAPIView):
         xrefs_page = paginator_xrefs.page(page)
         serializer = PaginatedXrefSerializer(xrefs_page, context={'request': request})
         return Response(serializer.data)
+
+
+class GenomeLocations(generics.ListAPIView):
+    """
+    List of distinct genomic locations, where a specific RNA
+    is found in a specific species, extracted from xrefs.
+
+    [API documentation](/api)
+    """
+    queryset = Rna.objects.select_related().all()
+
+    def get(self, request, pk=None, taxid=None, format=None):
+        """Paginated list of genome locations"""
+        locations = []
+
+        rna = self.get_object()
+        xrefs = rna.get_xrefs(taxid=taxid)
+        for xref in xrefs:
+            if xref.accession.coordinates.exists() and xref.accession.coordinates.all()[0].chromosome:
+                data = {
+                    'chromosome': xref.accession.coordinates.all()[0].chromosome,
+                    'strand': xref.accession.coordinates.all()[0].strand,
+                    'start': xref.accession.coordinates.all().aggregate(Min('primary_start'))['primary_start__min'],
+                    'end': xref.accession.coordinates.all().aggregate(Max('primary_end'))['primary_end__max']
+                }
+
+                exceptions = ['X', 'Y']
+                if re.match(r'\d+', data['chromosome']) or data['chromosome'] in exceptions:
+                    data['ucsc_chromosome'] = 'chr' + data['chromosome']
+                else:
+                    data['ucsc_chromosome'] = data['chromosome']
+
+                if data not in locations:  # TODO: improve comparison logic here!
+                    locations.append(data)
+
+        return Response(locations)
 
 
 class AccessionView(generics.RetrieveAPIView):
