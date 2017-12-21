@@ -168,6 +168,25 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                 options
             );
 
+            // if any non-canonical nucleotides found, show them on a separate track
+            nonCanonicalNucleotides = [];
+            for (var i = 0; i < $scope.rna.sequence.length; i++) {
+                if (['A', 'U', 'G', 'C'].indexOf($scope.rna.sequence[i]) === -1) {
+                    nonCanonicalNucleotides.push({x: i, y: i, description: $scope.rna.sequence[i]})
+                }
+            }
+            if (nonCanonicalNucleotides.length > 0) {
+                $scope.featureViewer.addFeature({
+                    data: nonCanonicalNucleotides,
+                    name: "Non-canonical",
+                    className: "nonCanonical",
+                    color: "#b94a48",
+                    type: "rect",
+                    filter: "type1"
+                });
+            }
+
+            // show Rfam models, found in this RNA
             $scope.fetchRfamHits().then(
                 function(response) {
                     data = [];
