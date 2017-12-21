@@ -62,41 +62,30 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     };
 
     // Modified nucleotides visualisation.
-    $scope.activateModifiedNucleotides = function(modifications) {
-        // sort modifications by position
-        modifications.sort(function(a, b) {return a.position - b.position});
+    $scope.createModificationsFeature = function(modifications, accession) {
+        if (!$scope.features.hasOwnProperty(accession)) { // if feature track's already there, don't duplicate it
+            console.log(modifications, accession);
 
-        // loop over modifications and insert span tags with modified nucleotide data
-        var data = [];
-        for (var i = 0; i < modifications.length; i++) {
+            // sort modifications by position
+            modifications.sort(function(a, b) {return a.position - b.position});
 
-            // create links to pdb and modomics, if possible
-            var pdbLink = "", modomicsLink = "";
-            if (modifications[i].chem_comp.pdb_url) {
-                pdbLink = '<a href=\'' + modifications[i].chem_comp.pdb_url + '\' target=\'_blank\'>PDBe</a> <br>';  // note <br> in the end
-            }
-            if (modifications[i].chem_comp.modomics_url) {
-                modomicsLink = '<a href=\'' + modifications[i].chem_comp.modomics_url + '\' target=\'_blank\'>Modomics</a>';
+            // loop over modifications and insert span tags with modified nucleotide data
+            var data = [];
+            for (var i = 0; i < modifications.length; i++) {
+                data.push({x: modifications[i].position, y: modifications[i].position, description: 'Modified nucleotide ' + modifications[i].chem_comp.id + modifications[i].chem_comp.one_letter_code + ' <br> ' + modifications[i].chem_comp.description });
             }
 
-            data.push({x: modifications[i].position, y: modifications[i].position, description: 'Modified nucleotide ' + modifications[i].chem_comp.id + modifications[i].chem_comp.one_letter_code + ' <br> ' + modifications[i].chem_comp.description });
+            $scope.featureViewer.addFeature({
+                data: data,
+                name: "Modifications from: " + accession,
+                className: "modification",
+                color: "#005572",
+                type: "rect",
+                filter: "type1"
+            });
 
+            $scope.features[accession] = data;
         }
-
-        $scope.featureViewer.addFeature({
-            data: data,
-            name: "Modifications",
-            className: "modification",
-            color: "#005572",
-            type: "rect",
-            filter: "type1"
-        });
-
-        // scroll to sequence <pre>, bring sequence in the viewport
-        $('html, body').animate(
-            { scrollTop: $('#feature-viewer').offset().top - 100 },
-            1200
-        );
     };
 
     // populate data for angular-genoverse instance
@@ -167,6 +156,8 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                 "#feature-viewer",
                 options
             );
+
+            $scope.features = {}; // {accession: feature} mapping used to avoid duplication of features
 
             // if any non-canonical nucleotides found, show them on a separate track
             nonCanonicalNucleotides = [];

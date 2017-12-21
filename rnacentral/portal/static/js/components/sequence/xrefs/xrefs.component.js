@@ -6,7 +6,7 @@ var xrefs = {
         pageSize: '<?',
         taxid: '<?',
         onActivatePublications: '&',
-        onActivateModifiedNucleotides: '&',
+        onCreateModificationsFeature: '&',
         onActivateGenomeBrowser: '&'
     },
     controller: ['routes', '$http', '$interpolate', '$timeout', '$filter', function(routes, $http, $interpolate, $timeout, $filter) {
@@ -60,6 +60,13 @@ var xrefs = {
                     ctrl.displayedXrefs = ctrl.orderByModificationsOrCoordinates(response.data.results);
                     ctrl.total = response.data.count;
                     ctrl.pages = _.range(1, Math.ceil(ctrl.total / ctrl.pageSize) + 1);
+
+                    // for all new xrefs with modifications, create corresponding features in feature viewer
+                    for (var i = 0; i < ctrl.displayedXrefs.length; i++) {
+                        if (ctrl.displayedXrefs[i].modifications) {
+                            ctrl.onCreateModificationsFeature({modifications: ctrl.displayedXrefs[i].modifications, accession: ctrl.displayedXrefs[i].accession.id});
+                        }
+                    }
                 },
                 function(response) {
                     ctrl.status = 'error';
@@ -116,6 +123,13 @@ var xrefs = {
                     ctrl.displayedXrefs = ctrl.xrefs.slice(0, ctrl.pageSize);
                     ctrl.total = response.data.count;
                     ctrl.pages = _.range(1, Math.ceil(ctrl.total / ctrl.pageSize) + 1);
+
+                    // for all new xrefs with modifications, create corresponding features in feature viewer
+                    for (var i = 0; i < ctrl.xrefs.length; i++) {
+                        if (ctrl.xrefs[i].modifications) {
+                            ctrl.onCreateModificationsFeature({ modifications: ctrl.xrefs[i].modifications, accession: ctrl.xrefs[i].accession.id });
+                        }
+                    }
                 },
                 function(response) {
                     // if it took server too long to respond and request was aborted by timeout
