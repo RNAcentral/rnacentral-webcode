@@ -34,7 +34,7 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RnaSpeciesSpecificSerializer, ExpertDatabaseStatsSerializer, \
     PaginatedRawPublicationSerializer, RnaSecondaryStructureSerializer
 from portal.config.expert_databases import expert_dbs
-from portal.config.genomes import genomes, url2db, SpeciesNotInGenomes, get_taxid_from_species
+from portal.config.genomes import genomes, url2db, db2url, SpeciesNotInGenomes, get_taxid_from_species
 from portal.models import Rna, Accession, Xref, Database, DatabaseStats
 
 """
@@ -597,7 +597,8 @@ class RnaGenomeLocations(generics.ListAPIView):
                     'chromosome': xref.accession.coordinates.all()[0].chromosome,
                     'strand': xref.accession.coordinates.all()[0].strand,
                     'start': xref.accession.coordinates.all().aggregate(Min('primary_start'))['primary_start__min'],
-                    'end': xref.accession.coordinates.all().aggregate(Max('primary_end'))['primary_end__max']
+                    'end': xref.accession.coordinates.all().aggregate(Max('primary_end'))['primary_end__max'],
+                    'species': db2url(xref.accession.species)
                 }
 
                 exceptions = ['X', 'Y']
@@ -606,7 +607,7 @@ class RnaGenomeLocations(generics.ListAPIView):
                 else:
                     data['ucsc_chromosome'] = data['chromosome']
 
-                if data not in locations:  # TODO: improve comparison logic here!
+                if data not in locations:
                     locations.append(data)
 
         return Response(locations)
