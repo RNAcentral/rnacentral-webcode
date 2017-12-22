@@ -1,4 +1,4 @@
-var rnaSequenceController = function($scope, $location, $window, $rootScope, $compile, $http, $filter, routes, GenoverseUtils) {
+var rnaSequenceController = function($scope, $location, $window, $rootScope, $compile, $http, $q, $filter, routes, GenoverseUtils) {
     // Take upi and taxid from url. Note that $location.path() always starts with slash
     $scope.upi = $location.path().split('/')[2];
     $scope.taxid = $location.path().split('/')[3];  // TODO: this might not exist!
@@ -43,6 +43,21 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         // hopscotch_tour = new guidedTour;
         // hopscotch_tour.initialize();
         hopscotch.startTour($rootScope.tour, 4);  // start from step 4
+    };
+
+    $scope.fetchGenomeLocations = function() {
+        return $q(function(resolve, reject) {
+            $http.get(routes.apiGenomeLocationsView({ upi: $scope.upi, taxid: $scope.taxid })).then(
+                function(response) {
+                    $scope.genomeLocations = response.data;
+                    resolve(response.data);
+                },
+                function() {
+                    reject();
+                }
+            );
+        });
+
     };
 
     // Modified nucleotides visualisation.
@@ -156,9 +171,11 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
             }
         });
     };
+
+    $scope.fetchGenomeLocations();
 };
 
-rnaSequenceController.$inject = ['$scope', '$location', '$window', '$rootScope', '$compile', '$http', '$filter', 'routes', 'GenoverseUtils'];
+rnaSequenceController.$inject = ['$scope', '$location', '$window', '$rootScope', '$compile', '$http', '$q', '$filter', 'routes', 'GenoverseUtils'];
 
 
 /**

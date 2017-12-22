@@ -210,20 +210,36 @@ limitations under the License.
                         </genoverse>
                     </div>
 
+                    {% verbatim %}
                     <table class="table table-hover table-condensed table-bordered">
                         <thead>
                             <tr>
-                                <th></th>
-                                <th></th>
+                                <th>Location</th>
+                                <th>Xrefs</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-for="location in locations">
-                                <td></td>
-                                <td></td>
+                            <tr ng-repeat="location in genomeLocations">
+                                <td>
+                                    <button ng-if="!$ctrl.chromosomeIsScaffold(location.chromosome)" type="button" class="btn btn-primary btn-xs genoverse-xref help margin-right-5px" ng-click="activateGenomeBrowser({ start: location.start, end: location.end, chr: location.chromosome, genome: location.species })" title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> View genomic location</button>
+                                    <li ng-if="$ctrl.chromosomeIsScaffold(location.chromosome)" class="badge">genome location</li>
+                                    <span class="margin-right-5px">{{ location.chromosome }}:{{ location.start | number }}-{{ location.end | number }}:{{ location.strand }}</span>
+                                    <!-- Ensembl url -->
+                                    <span class="margin-right-5px ensembl-link">
+                                      <a ng-href="{{ xref.ensembl_division.url + '/' + xref.accession.ensembl_species_url + '/Location/View?r=' + location.chromosome + ':' + location.start + '-' + location.end }}" target="_blank">{{ xref.ensembl_division.name }}</a>
+                                    </span>
+                                    <!-- UCSC url -->
+                                    <span ng-if="xref.ucsc_db_id" class="margin-right-5px ucsc-link">
+                                      <a ng-href="{{ 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + xref.ucsc_db_id + '&position=' + location.ucsc_chromosome + ':' + location.start + '-' + location.end }}" target="_blank">UCSC</a>
+                                    </span>
+                                </td>
+                                <td>
+
+                                </td>
                             </tr>
                         </tbody>
                     </table>
+                    {% endverbatim %}
                 </p>
 
                 <h2>
