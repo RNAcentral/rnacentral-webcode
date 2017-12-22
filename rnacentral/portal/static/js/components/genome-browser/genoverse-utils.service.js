@@ -602,7 +602,7 @@ angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($
 
     /**
     * @param genome {String} - e.g. 'homo_sapient'
-    * @param genomes {Array} - contents of $scope.genome
+    * @param genomes {Array} - contents of $scope.genomes
     * @returns {String} element of genomes array
     */
     GenoverseUtils.prototype.getGenomeObject = function(genome, genomes) {
