@@ -576,7 +576,7 @@ class XrefsSpeciesSpecificList(generics.ListAPIView):
         return Response(serializer.data)
 
 
-class GenomeLocations(generics.ListAPIView):
+class RnaGenomeLocations(generics.ListAPIView):
     """
     List of distinct genomic locations, where a specific RNA
     is found in a specific species, extracted from xrefs.
