@@ -169,7 +169,7 @@ class Accession(models.Model):
             'SILVA': 'http://www.arb-silva.de/browser/{lsu_ssu}/silva/{id}',
             'POMBASE': 'http://www.pombase.org/spombe/result/{id}',
             'GREENGENES': 'http://www.ebi.ac.uk/ena/data/view/{id}.{version}',
-            'NONCODE': 'http://www.noncode.org/show_rna.php?id={id}',
+            'NONCODE': 'http://www.noncode.org/show_rna.php?id={id}&version={version}',
             'LNCIPEDIA': 'http://www.lncipedia.org/db/transcript/{id}',
             'MODOMICS': 'http://modomics.genesilico.pl/sequences/list/{id}',
             'HGNC': 'http://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id={id}',
@@ -197,6 +197,9 @@ class Accession(models.Model):
                 return urls[self.database].format(id=self.parent_ac, version=self.seq_version)
             elif self.database == 'REFSEQ':
                 return urls[self.database].format(id=self.external_id, version=self.seq_version)
+            elif self.database == 'NONCODE':
+                noncode_id, version = self.external_id.split('.')
+                return urls[self.database].format(id=noncode_id, version=version)
             elif self.database == 'HGNC':
                 return urls[self.database].format(id=self.accession)
             elif self.database == 'ENSEMBL':
