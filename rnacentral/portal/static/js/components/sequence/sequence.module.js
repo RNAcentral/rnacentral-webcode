@@ -140,19 +140,18 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     $scope.activateFeatureViewer = function() {
         $(document).ready(function() {
             //Create a new Feature Viewer and add some rendering options
-            var options = {
-                showAxis: true,
-                showSequence: true,
-                brushActive: true,
-                toolbar:true,
-                bubbleHelp: true,
-                zoomMax:20
-            };
-
             $scope.featureViewer = new FeatureViewer(
                 $scope.rna.sequence,
                 "#feature-viewer",
-                options
+                {
+                    showAxis: true,
+                    showSequence: true,
+                    brushActive: true,
+                    toolbar:true,
+                    bubbleHelp: true,
+                    zoomMax:20,
+                    tooltipFontSize: '12px'
+                }
             );
 
             $scope.features = {}; // {accession: feature} mapping used to avoid duplication of features

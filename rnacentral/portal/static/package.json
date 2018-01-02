@@ -33,7 +33,7 @@
     "bootstrap": "^3.3.7",
     "clipboard": "^1.6.1",
     "d3": "^3",
-    "feature-viewer": "^0.1.44",
+    "feature-viewer-burkov": "1.1.1",
     "font-awesome": "^4.7.0",
     "fornac-burkov": "^1.1.10",
     "hopscotch": "^0.2.8",
