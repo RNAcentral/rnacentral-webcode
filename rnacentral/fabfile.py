@@ -215,12 +215,12 @@ def deploy_remotely(git_branch=None, restart_url='http://rnacentral.org', quick=
     """
     git_updates(git_branch)
     update_npm()
+    if not quick:
+        rsync_local_files()
     collect_static_files()
     compress_static_files()
     flush_memcached()
     restart_django(restart_url)
-    if not quick:
-        rsync_local_files()
 
     if not git_branch:
         git_branch = 'master'
