@@ -154,8 +154,8 @@ class APIRoot(APIView):
 
 class RnaFilter(filters.FilterSet):
     """Declare what fields can be filtered using django-filters"""
-    min_length = filters.NumberFilter(name="length", lookup_expr=['gte', ])
-    max_length = filters.NumberFilter(name="length", lookup_expr=['lte', ])
+    min_length = filters.NumberFilter(name="length", lookup_expr='gte')
+    max_length = filters.NumberFilter(name="length", lookup_expr='lte')
     external_id = filters.CharFilter(name="xrefs__accession__external_id", distinct=True)
     database = filters.CharFilter(name="xrefs__accession__database")
 
@@ -227,8 +227,8 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
                 else:
                     no_prefetch.append(rna.upi)
 
-            prefetched = Rna.objects.filter(upi__in=to_prefetch).prefetch_related('xrefs__accession').all()
-            not_prefetched = Rna.objects.filter(upi__in=no_prefetch).all()
+            prefetched = self.filter_queryset(Rna.objects.filter(upi__in=to_prefetch).prefetch_related('xrefs__accession').all())
+            not_prefetched = self.filter_queryset(Rna.objects.filter(upi__in=no_prefetch).all())
 
             result_list = list(chain(prefetched, not_prefetched))
             page.object_list = result_list  # override data while keeping the rest of the pagination object
@@ -261,9 +261,7 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
         if db_name:
             db_id = self._get_database_id(db_name)
             if db_id:
-                return queryset.filter(xrefs__db=db_id).\
-                                distinct().\
-                                all()
+                return queryset.filter(xrefs__db=db_id).distinct().all()
             else:
                 return Rna.objects.none()
         return queryset.all()
