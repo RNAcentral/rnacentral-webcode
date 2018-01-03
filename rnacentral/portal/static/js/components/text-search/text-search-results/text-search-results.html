@@ -141,7 +141,6 @@
   </div>
 
   <div class="row" ng-show="$ctrl.search.result.hitCount > 0">
-
     <div class="col-md-3 col-sm-4 hidden-xs text-search-facets">
       <ul class="list-unstyled">
         <li class="facet" ng-repeat="facet in $ctrl.search.result.facets">
@@ -158,6 +157,12 @@
             </li>
             <small ng-if="facet.label == 'Organisms' && facet.facetValues.length > 10" class="text-muted">Showing top {{ facet.facetValues.length }} organisms</small>
           </ul>
+        </li>
+        <li class="facet" ng-if="$ctrl.lengthSlider">
+          <h3>Length&nbsp;&nbsp;&nbsp;<small><a href="" ng-click="$ctrl.resetSlider()">reset length filter</a></small></h3>
+          <div>
+            <rzslider class="custom-slider" rz-slider-model="$ctrl.lengthSlider.min" rz-slider-high="$ctrl.lengthSlider.max" rz-slider-options="$ctrl.lengthSlider.options"></rzslider> <!-- ceil: $ctrl.search.results.facets['length'] -->
+          </div>
         </li>
       </ul>
       <hr>

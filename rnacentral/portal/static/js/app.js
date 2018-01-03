@@ -4,11 +4,14 @@ angular.module('rnacentralApp', [
     'angular.filter',
     'ui.bootstrap',
     'chieffancypants.loadingBar',
+    'rzModule',
     'underscore',
 
     'Genoverse',
     'rnaSequence',
-    'expertDatabase'
+    'expertDatabase',
+    'useCases',
+    'homepage'
 ])
 .config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
     // hide spinning wheel
