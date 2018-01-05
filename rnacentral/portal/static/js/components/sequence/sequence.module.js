@@ -201,7 +201,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                         data: data,
                         name: "Rfam models",
                         className: "rfamModels",
-                        color: "#734639",
+                        color: "#d28068",
                         type: "rect",
                         filter: "type1"
                     });
