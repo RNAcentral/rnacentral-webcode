@@ -11,28 +11,32 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from django.conf.urls import patterns, url
+from __future__ import absolute_import
+
+from django.conf.urls import url
 from django.views.generic.base import TemplateView
 
+from .views import *
+
 # exporting metadata search results
-urlpatterns = patterns('',
+urlpatterns = [
     # export search results
     url(r'^submit-query/?$',
-        'export.views.submit_export_job',
+        submit_export_job,
         name='export-submit-job'),
 
     # download search results
     url(r'^download-result/?$',
-        'export.views.download_search_result_file',
+        download_search_result_file,
         name='export-download-result'),
 
     # get metadata search export status
     url(r'^job-status/?$',
-        'export.views.get_export_job_status',
+        get_export_job_status,
         name='export-job-status'),
 
     # interstitial page for a job id
     url(r'^results/?$',
         TemplateView.as_view(template_name='portal/search/export-job-results.html'),
         name='export-job-results'),
-)
+]

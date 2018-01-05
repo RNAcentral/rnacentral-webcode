@@ -68,7 +68,7 @@ def run():
                 found += 1
                 accession = xref.accession
                 ena_id = xref.accession.accession
-                print 'Found xref ' + ena_id
+                print('Found xref ' + ena_id)
 
                 new_id = ':'.join([ena_id, 'WORMBASE', wormbase_accession])
 
@@ -95,14 +95,14 @@ def run():
                 coordinates = GenomicCoordinates.objects.filter(accession=ena_id).all()
                 for coordinate in coordinates:
                     coordinate.accession = accession
-                    print coordinate
+                    print(coordinate)
                     coordinate.save()
 
                 # create new reference_map object
                 references = Reference_map.objects.filter(accession=ena_id).all()
                 for reference in references:
                     reference.accession = accession
-                    print reference
+                    print(reference)
                     reference.save()
 
                 # add accession object to xref and save
@@ -111,8 +111,8 @@ def run():
 
             found += 1
 
-        print 'Found %i' % found
-        print 'Not found %i' % not_found
+        print('Found %i' % found)
+        print('Not found %i' % not_found)
 
 
 class Command(BaseCommand):

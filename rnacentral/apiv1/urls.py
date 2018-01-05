@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from django.views.decorators.cache import cache_page
 from rest_framework.urlpatterns import format_suffix_patterns
 from apiv1 import views
@@ -19,7 +19,8 @@ from apiv1 import views
 
 CACHE_TIMEOUT = 60 * 60 * 24 * 1  # per-view cache timeout in seconds
 
-urlpatterns = patterns('',
+
+urlpatterns = [
     # api root
     url(r'^$', cache_page(CACHE_TIMEOUT)(views.APIRoot.as_view()), name='api-v1-root'),
     # list of all RNAcentral entries
@@ -36,10 +37,11 @@ urlpatterns = patterns('',
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/rfam-hits/?$', cache_page(CACHE_TIMEOUT)(views.RfamHitsAPIViewSet.as_view()), name='rna-rfam-hits'),
     # all literature citations associated with an RNAcentral id
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/publications/?$', cache_page(CACHE_TIMEOUT)(views.RnaPublicationsView.as_view()), name='rna-publications'),
+    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/publications/(?P<taxid>\d+)/?$',cache_page(CACHE_TIMEOUT)(views.RnaPublicationsView.as_view()), name='rna-publications'),
     # species-specific RNAcentral id
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})(/|_)(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.RnaSpeciesSpecificView.as_view()), name='rna-species-specific'),
     # literature citations associated with ENA records
-    url(r'^accession/(?P<pk>.*?)/citations/?$', cache_page(CACHE_TIMEOUT)(views.CitationView.as_view()), name='accession-citations'),
+    url(r'^accession/(?P<pk>.*?)/citations/?$', cache_page(CACHE_TIMEOUT)(views.CitationsView.as_view()), name='accession-citations'),
     # view for an individual cross-reference
     url(r'^accession/(?P<pk>.*?)/info/?$', cache_page(CACHE_TIMEOUT)(views.AccessionView.as_view()), name='accession-detail'),
     # Ensembl-like genome coordinates endpoint
@@ -52,14 +54,6 @@ urlpatterns = patterns('',
     url(r'^expert-db-stats/(?P<pk>.*)/?$', views.ExpertDatabasesStatsViewSet.as_view({'get': 'retrieve'}), {}, name='expert-db-stats'),
     # list of genomes, available for display in Genoverse
     url(r'^genomes/$', views.GenomesAPIView.as_view(), {}, name='genomes-api'),
-)
+]
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'yaml', 'fasta', 'api', 'gff', 'gff3', 'bed'])
-
-# DAS
-urlpatterns += patterns('',
-    # DAS-like endpoints
-    url(r'^das(?:/sources)?/?$', cache_page(CACHE_TIMEOUT)(views.DasSources.as_view()), name='das-sources'),
-    url(r'^das/RNAcentral_GRCh38/features/?$', cache_page(CACHE_TIMEOUT)(views.DasFeatures.as_view()), name='das-features'),
-    url(r'^das/RNAcentral_GRCh38/stylesheet/?$', cache_page(CACHE_TIMEOUT)(views.DasStylesheet.as_view()), name='das-stylesheet'),
-)

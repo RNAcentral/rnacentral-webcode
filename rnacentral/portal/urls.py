@@ -12,26 +12,26 @@ limitations under the License.
 """
 
 from django.conf import settings
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from portal import views
 from portal.models import Database
 from portal.models.utils import get_ensembl_divisions
 from portal.models.rna_precomputed import RnaPrecomputed
 
-urlpatterns = patterns('',
+urlpatterns = [
     # homepage
-    url(r'^$', 'portal.views.homepage', name='homepage'),
+    url(r'^$', views.homepage, name='homepage'),
     # unique RNA sequence
-    url(r'^(?i)rna/(?P<upi>URS[0-9A-F]{10})/?$', 'portal.views.rna_view', name='unique-rna-sequence'),
+    url(r'^(?i)rna/(?P<upi>URS[0-9A-F]{10})/?$', views.rna_view, name='unique-rna-sequence'),
     # species specific identifier with forward slash
-    url(r'^(?i)rna/(?P<upi>URS[0-9A-F]{10})/(?P<taxid>\d+)/?$', 'portal.views.rna_view', name='unique-rna-sequence'),
+    url(r'^(?i)rna/(?P<upi>URS[0-9A-F]{10})/(?P<taxid>\d+)/?$', views.rna_view, name='unique-rna-sequence'),
     # species specific identifier with underscore
-    url(r'^(?i)rna/(?P<upi>URS[0-9A-F]{10})_(?P<taxid>\d+)/?$', 'portal.views.rna_view_redirect', name='unique-rna-sequence-redirect'),
+    url(r'^(?i)rna/(?P<upi>URS[0-9A-F]{10})_(?P<taxid>\d+)/?$', views.rna_view_redirect, name='unique-rna-sequence-redirect'),
     # expert database
-    url(r'^expert-database/(?P<expert_db_name>[-\w]+)/?$', 'portal.views.expert_database_view', name='expert-database'),
+    url(r'^expert-database/(?P<expert_db_name>[-\w]+)/?$', views.expert_database_view, name='expert-database'),
     # expert databases
-    url(r'^expert-databases/?$', 'portal.views.expert_databases_view', name='expert-databases'),
+    url(r'^expert-databases/?$', views.expert_databases_view, name='expert-databases'),
     # text search can route to any page because it will be taken over by Angular
     url(r'^search/?$', views.TemplateView.as_view(template_name='portal/base.html'), name='text-search'),
     # coming soon
@@ -61,18 +61,18 @@ urlpatterns = patterns('',
     # error
     url(r'^error/?$', views.StaticView.as_view(), {'page': 'error'}, name='error'),
     # status
-    url(r'^status/?$', 'portal.views.website_status_view', name='website-status'),
+    url(r'^status/?$', views.website_status_view, name='website-status'),
     # genome browser
     url(r'^genome-browser/?$', views.GenomeBrowserView.as_view(), {}, name='genome-browser'),
     # search proxy
-    url(r'^api/internal/ebeye/?$', 'portal.views.ebeye_proxy', name='ebeye-proxy'),
-)
+    url(r'^api/internal/ebeye/?$', views.ebeye_proxy, name='ebeye-proxy'),
+]
 
 # internal API
-urlpatterns += patterns('',
+urlpatterns += [
     # get species tree
-    url(r'^rna/(?P<upi>\w+)/lineage/?$', 'portal.views.get_sequence_lineage', name='sequence-lineage'),
-)
+    url(r'^rna/(?P<upi>\w+)/lineage/?$', views.get_sequence_lineage, name='sequence-lineage'),
+]
 
 # sitemaps
 import re
@@ -130,7 +130,7 @@ def sitemaps_cache(view, cache_alias='sitemaps'):
     return wrapped_view
 
 
-urlpatterns += patterns('',
+urlpatterns += [
     url(r'^sitemap\.xml$', sitemaps_cache(sitemap_index), kwargs={'sitemaps': sitemaps, 'sitemap_url_name': 'sitemap-section'}, name='sitemap-index'),
     url(r'^sitemap-(?P<section>.+)\.xml$', sitemaps_cache(sitemap_sitemap), kwargs={'sitemaps': sitemaps}, name='sitemap-section')
-)
+]

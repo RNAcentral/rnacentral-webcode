@@ -11,6 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from __future__ import print_function
+
 import json
 import requests
 from datetime import datetime
@@ -103,7 +105,7 @@ class HGNCImporter():
         Delete all already imported HGNC data so that there are no stale
         cross-references.
         """
-        print 'Deleting existing HGNC Xrefs, Accessions, and Reference_maps'
+        print('Deleting existing HGNC Xrefs, Accessions, and Reference_maps')
         Xref.objects.filter(db_id=self.database.id).delete()
         Reference_map.objects.filter(accession__database=self.database.descr).delete()
         Accession.objects.filter(database=self.database.descr).delete()
@@ -122,7 +124,7 @@ class HGNCImporter():
             if not entry['rnacentral_id']:
                 # some entries may not have been mapped to RNAcentral.
                 continue
-            print entry['symbol']
+            print(entry['symbol'])
             Xref.objects.update_or_create(
                 db_id=self.database.id,
                 accession_id=entry['hgnc_id'],
@@ -170,7 +172,7 @@ class HGNCImporter():
                             data_id=ref
                         )
             count += 1
-        print '%i entries imported' % count
+        print('%i entries imported' % count)
 
     def get_publication_info(self, pmid):
         """
@@ -206,11 +208,11 @@ class HGNCImporter():
         """
         Main import function.
         """
-        print 'Importing data from HGNC'
+        print('Importing data from HGNC')
         self.get_hgnc_data()
         self.delete_existing_hgnc_data()
         self.import_data()
-        print 'Done'
+        print('Done')
 
 
 class Command(BaseCommand):

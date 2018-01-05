@@ -116,7 +116,7 @@ var xrefs = {
             if (ctrl.taxid) ctrl.dataEndpoint = $interpolate('/api/v1/rna/{{upi}}/xrefs/{{taxid}}')({upi: ctrl.upi, taxid: ctrl.taxid});
             else ctrl.dataEndpoint = $interpolate('/api/v1/rna/{{upi}}/xrefs')({upi: ctrl.upi});
 
-            $http.get(ctrl.dataEndpoint, {timeout: ctrl.timeout}).then(
+            $http.get(ctrl.dataEndpoint, { timeout: ctrl.timeout, params: { page: 1, page_size: 1000000000000 } }).then(
                 function(response) {
                     ctrl.status = 'success';
                     ctrl.xrefs = ctrl.orderByModificationsOrCoordinates(response.data.results);

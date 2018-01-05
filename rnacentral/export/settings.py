@@ -34,8 +34,8 @@ EXPORT_RESULTS_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '
 
 # override default parameters using local_settings.py
 try:
-    from local_settings import *
-except ImportError, e:
+    from .local_settings import *
+except ImportError as e:
     pass
 
 # create destination for the search results files

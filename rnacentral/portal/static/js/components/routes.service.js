@@ -10,7 +10,7 @@ angular.module("rnacentralApp").service('routes', ['$interpolate', function($int
         resultsPage: $interpolate('/export/results'),
         rnaView: $interpolate('/rna/{{ upi }}'),
         rnaViewWithTaxid: $interpolate('/rna/{{upi}}/{{ taxid }}'),
-        apiPublicationsView: $interpolate('/api/v1/rna/{{ upi }}/publications'),
+        apiPublicationsView: $interpolate('/api/v1/rna/{{ upi }}/publications/{{ taxid }}'),
         apiRnaView: $interpolate('/api/v1/rna/{{ upi }}'),
         apiRfamHitsView: $interpolate('/api/v1/rna/{{ upi }}/rfam-hits'),
         lineageView: $interpolate('/rna/{{ upi }}/lineage'),

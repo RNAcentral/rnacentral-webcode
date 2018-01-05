@@ -76,6 +76,15 @@ angular.module('rnacentralApp', [
        });
     };
 
+    var trackOutboundLinkHostname = function(url) {
+        var tmp = document.createElement('a');
+        tmp.href = url;
+
+        ga('send', 'event', 'outbound', 'domain', tmp.hostname, {
+            'transport': 'beacon'
+        });
+    };
+
     /**
      * Track outbound traffic with Google Analytics.
      *
@@ -84,8 +93,10 @@ angular.module('rnacentralApp', [
      */
     $('body').on('click', 'a[href^="http://"]:not([href^="http://rnacentral.org"])', function (event) {
         trackOutboundLink($(event.target).attr('href'));
+        trackOutboundLinkHostname($(event.target).attr('href'));
     }).on('click', 'a[href^="https://"]:not([href^="https://rnacentral.org"])', function (event) {
         trackOutboundLink($(event.target).attr('href'));
+        trackOutboundLinkHostname($(event.target).attr('href'));
     });
 }])
 .run(['$anchorScroll', function ($anchorScroll) {

@@ -43,8 +43,14 @@ limitations under the License.
 
 """
 
-import urlparse
+from __future__ import print_function
+import six
+
 import unittest
+if six.PY2:
+    import urlparse
+else:
+    from urllib.parse import urlparse
 import re
 import sys
 import os
@@ -715,11 +721,11 @@ class RNAcentralTest(unittest.TestCase):
             try:
                 page.autocomplete_suggestions
             except:
-                print "Failed: query %s has no suggestions" % query
+                print("Failed: query %s has no suggestions" % query)
                 continue
             suggestions = [suggestion.text.lower() for suggestion in page.autocomplete_suggestions]
             if not query.lower() in suggestions:
-                print "Failed: query = %s not found in suggestions = %s" % (query, suggestions)
+                print("Failed: query = %s not found in suggestions = %s" % (query, suggestions))
 
     def test_text_search_test_suite(self):
         """
@@ -763,7 +769,7 @@ class RNAcentralTest(unittest.TestCase):
                         is_found = True
                         break  # ok, result found, move on to the next expected_result
                 if not is_found:  # if we managed to get here, expected_result is not found in results - fail
-                    print "Expected result %s not found for query %s" % (expected_result, query)  # or raise AssertionError
+                    print("Expected result %s not found for query %s" % (expected_result, query))  # or raise AssertionError
 
     def test_text_search_facets(self):
         """

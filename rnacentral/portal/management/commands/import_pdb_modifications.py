@@ -11,6 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from __future__ import print_function
+
 from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 
@@ -106,13 +108,13 @@ class PBDModificationsImporter(OracleConnection):
                              filter(db__descr='PDBE', deleted='N')
         i = 0
         for xref in xrefs.all():
-            print xref.accession.accession
+            print(xref.accession.accession)
             pdb_id, chain_id, entity_id = xref.accession.accession.split('_')
             self.cursor.execute(sql.format(pdb_id=pdb_id.lower(),
                 entity_id=entity_id, chain_id=chain_id))
             for row in self.cursor:
                 result = self.row_to_dict(row)
-                print pdb_id, chain_id, entity_id, result['chem_comp_id'], result['auth_seq_id']
+                print(pdb_id, chain_id, entity_id, result['chem_comp_id'], result['auth_seq_id'])
                 modifications.append(Modification(
                     id = i,
                     upi = xref.upi,
@@ -132,13 +134,13 @@ class PBDModificationsImporter(OracleConnection):
         """
         Main import function.
         """
-        print 'Importing data from PDBe'
+        print('Importing data from PDBe')
         self.get_connection(self.db_url)
         self.get_cursor()
         self.import_chemical_components()
         self.import_modified_positions()
         self.close_connection()
-        print 'Done'
+        print('Done')
 
 
 class Command(BaseCommand):
