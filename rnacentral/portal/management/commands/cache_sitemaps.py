@@ -10,6 +10,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+
+from __future__ import print_function
+
 import warnings
 
 from django.core.management.base import BaseCommand
@@ -113,11 +116,11 @@ class Command(BaseCommand):
             self.cache_sections()
 
     def cache_index(self):
-        print "-" * 80
-        print
-        print "    Processing index page"
-        print
-        print "-" * 80
+        print("-" * 80)
+        print()
+        print("    Processing index page")
+        print()
+        print("-" * 80)
 
         path = reverse('sitemap-index')  # django.contrib.sitemaps.views.index(request, sitemaps)
         self.cache_path(path, sitemaps)
@@ -131,11 +134,11 @@ class Command(BaseCommand):
             self.cache_section(section, pages)
 
     def cache_section(self, section, pages):
-        print "-" * 80
-        print
-        print "    Processing section %s" % section
-        print
-        print "-" * 80
+        print("-" * 80)
+        print()
+        print("    Processing section %s" % section)
+        print()
+        print("-" * 80)
 
         for page in pages:
             self.cache_section_page(section, page)
@@ -156,7 +159,7 @@ class Command(BaseCommand):
             request.META['QUERY_STRING'] = 'p=' + str(page)
             request.GET['p'] = page  # paginate response, if required
 
-        print "Processing %s" % request.get_full_path()
+        print("Processing %s" % request.get_full_path())
 
         # resolve path to view function
         view = resolve(path).func

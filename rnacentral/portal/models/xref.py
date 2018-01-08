@@ -19,10 +19,10 @@ from rest_framework.renderers import JSONRenderer
 
 from caching.base import CachingMixin, CachingManager
 from portal.config.genomes import genomes as rnacentral_genomes
-from accession import Accession
-from genomic_coordinates import GenomicCoordinates
-from formatters import Gff3Formatter, GffFormatter, _xref_to_bed_format
-from utils import get_ensembl_divisions
+from .accession import Accession
+from .genomic_coordinates import GenomicCoordinates
+from .formatters import Gff3Formatter, GffFormatter, _xref_to_bed_format
+from .utils import get_ensembl_divisions
 
 
 class RawSqlQueryset(models.QuerySet):

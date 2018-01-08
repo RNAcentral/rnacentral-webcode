@@ -10,6 +10,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+from __future__ import print_function
+import six
 
 import datetime
 import django_rq
@@ -22,7 +24,7 @@ import subprocess as sub
 import tempfile
 
 from django.conf import settings
-from django.core.servers.basehttp import FileWrapper
+from wsgiref.util import FileWrapper
 from django.http import JsonResponse, StreamingHttpResponse
 from django.utils.text import get_valid_filename
 from django.views.decorators.cache import never_cache
@@ -33,7 +35,7 @@ from rest_framework import renderers
 
 from apiv1.serializers import RnaFlatSerializer
 from portal.models import Rna
-from settings import EXPIRATION, MAX_RUN_TIME, ESLSFETCH, FASTA_DB, MAX_OUTPUT,\
+from .settings import EXPIRATION, MAX_RUN_TIME, ESLSFETCH, FASTA_DB, MAX_OUTPUT,\
                      EXPORT_RESULTS_DIR
 
 
@@ -188,7 +190,7 @@ def get_job(job_id):
                         (None for localhost)
     """
     rq_queues = getattr(settings, 'RQ_QUEUES', [])
-    for queue_id, params in rq_queues.iteritems():
+    for queue_id, params in six.iteritems(rq_queues):
         queue = django_rq.get_queue(queue_id)
         job = queue.fetch_job(job_id)
         if job:
@@ -409,6 +411,7 @@ def submit_export_job(request):
                                  datetime.timedelta(seconds=EXPIRATION)
         job.save()
         return JsonResponse({'job_id': job.id})
-    except:
+    except Exception as e:
+        print(e)
         status = 500
         return JsonResponse(messages[status], status=status)

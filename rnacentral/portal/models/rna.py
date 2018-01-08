@@ -11,6 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import six
 import operator as op
 import itertools as it
 from collections import Counter, defaultdict
@@ -22,18 +23,18 @@ from django.db import models
 from django.db.models import Prefetch, Min, Max, Q
 from django.utils.functional import cached_property
 
-from database import Database
-from genomic_coordinates import GenomicCoordinates
-from modification import Modification
-from rna_precomputed import RnaPrecomputed
-from reference import Reference
-from xref import Xref
+from .database import Database
+from .genomic_coordinates import GenomicCoordinates
+from .modification import Modification
+from .rna_precomputed import RnaPrecomputed
+from .reference import Reference
+from .xref import Xref
 from .rfam import RfamHit, RfamAnalyzedSequences
 from .accession import Accession
-
-from formatters import Gff3Formatter, GffFormatter, _xref_to_bed_format
+from .formatters import Gff3Formatter, GffFormatter, _xref_to_bed_format
 from portal.utils import descriptions as desc
 from portal.rfam_matches import check_issues
+from portal.config.expert_databases import expert_dbs
 
 
 class Rna(CachingMixin, models.Model):
@@ -60,6 +61,18 @@ class Rna(CachingMixin, models.Model):
         """
         Get all publications associated with a Unique RNA Sequence.
         Use raw SQL query for better performance.
+
+        Normally, querysets are lazily evaluated, which (among other benefits)
+        allows code that receives queryset to paginate it later on (this is
+        used by Django and DRF views).
+
+        Here we want to do 2 things that require immediate evaluation of
+        queryset:
+         - filter out INSDC submissions only if there are no other papers
+         - order publications, so that expert database releases go last
+
+        Hopefully, the number of publications per RNA is not huge, so
+        this shouldn't make our server too slow.
         """
         query = """
         SELECT b.id, b.location, b.title, b.pmid as pubmed, b.doi, b.authors
@@ -69,16 +82,64 @@ class Rna(CachingMixin, models.Model):
             WHERE t1.ac = t2.accession AND
                   t1.upi = %s AND
                   {taxid_clause}
+                  {deleted_clause}
                   t2.reference_id = t3.id) a
         JOIN
             rnc_references b
         ON a.id = b.id
+        {where_clause}
         ORDER BY b.title
         """
 
-        query = query.format(taxid_clause='t1.taxid = %s AND' % taxid) if taxid else query.format(taxid_clause='')
+        where_clause = "WHERE NOT ((b.title is NULL OR b.title = '') AND b.location LIKE 'Submitted%%')"
+        taxid_clause = 't1.taxid = %s AND' % taxid
+        deleted_clause = "t1.deleted = 'N' AND"
 
-        return Reference.objects.raw(query, [self.upi])
+        # filter-out INSDC submissions with where_clause, deleted with deleted_clause; filter by taxid, if it's given
+        if taxid:
+            formatted_query = query.format(taxid_clause=taxid_clause, where_clause=where_clause, deleted_clause=deleted_clause)
+        else:
+            formatted_query = query.format(taxid_clause='', where_clause=where_clause, deleted_clause=deleted_clause)
+
+        queryset = list(Reference.objects.raw(formatted_query, [self.upi]))
+
+        # if queryset is empty, try finding at least INSDC submissions
+        if len(queryset) == 0:
+            if taxid:
+                formatted_query = query.format(taxid_clause=taxid_clause, where_clause='', deleted_clause=deleted_clause)
+            else:
+                formatted_query = query.format(taxid_clause='', where_clause='', deleted_clause=deleted_clause)
+
+            queryset = list(Reference.objects.raw(formatted_query, [self.upi]))
+
+        # if queryset is still empty, try displaying deleted papers
+        if len(queryset) == 0:
+            if taxid:
+                formatted_query = query.format(taxid_clause=taxid_clause, where_clause='', deleted_clause='')
+            else:
+                formatted_query = query.format(taxid_clause='', where_clause='', deleted_clause='')
+
+            queryset = list(Reference.objects.raw(formatted_query, [self.upi]))
+
+        # find expert dbs and move them to the end of the list, apply filtration
+        references = {}
+        for expert_db in expert_dbs:
+            for reference in expert_db['references']:
+                pubmed_id = reference['pubmed_id']
+                references[pubmed_id] = expert_db
+
+        expert_db_publications = []
+        non_expert_db_publications = []
+
+        for publication in queryset:
+            if publication.pubmed in references:
+                expert_db_publications.append(publication)
+                publication.expert_db = True  # flags that it's an expert_db, UI should display a special label
+            else:
+                non_expert_db_publications.append(publication)
+                publication.expert_db = False
+
+        return non_expert_db_publications + expert_db_publications
 
     def is_active(self):
         """A sequence is considered active if it has at least one active cross_reference."""
@@ -467,7 +528,7 @@ class Rna(CachingMixin, models.Model):
                 'url': result.accession.get_expert_db_external_url(),
             })
         data = []
-        for secondary_structure, sources in temp.iteritems():
+        for secondary_structure, sources in six.iteritems(temp):
             data.append({
                 'secondary_structure': secondary_structure,
                 'source': sources,

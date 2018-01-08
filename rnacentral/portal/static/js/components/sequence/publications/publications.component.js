@@ -25,7 +25,7 @@ var publications = {
 
         ctrl.fetchPublications = function(pageSize, page) {
             return $http.get(
-                routes.apiPublicationsView({ upi: ctrl.upi }),
+                routes.apiPublicationsView({ upi: ctrl.upi, taxid: ctrl.taxid }),
                 { timeout: 5000, params: { page_size: pageSize, page: page } }
             )
         };

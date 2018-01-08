@@ -11,6 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+from __future__ import print_function
+
 """
 RNAcentral deployment script.
 
@@ -35,7 +37,7 @@ from fabric.contrib import django
 # load Django settings
 django.settings_module('rnacentral.settings')
 from django.conf import settings
-print settings # this is a lazy object and should be evaluated to be used
+print(settings)  # this is a lazy object and should be evaluated to be used
 
 COMMANDS = {
     'set_environment': 'source rnacentral/scripts/env.sh',
@@ -213,12 +215,12 @@ def deploy_remotely(git_branch=None, restart_url='http://rnacentral.org', quick=
     """
     git_updates(git_branch)
     update_npm()
+    if not quick:
+        rsync_local_files()
     collect_static_files()
     compress_static_files()
     flush_memcached()
     restart_django(restart_url)
-    if not quick:
-        rsync_local_files()
 
     if not git_branch:
         git_branch = 'master'
@@ -235,7 +237,7 @@ def deploy(git_branch=None, restart_url='http://rnacentral.org', quick=False):
     elif env.deployment == 'local':
         deploy_locally(git_branch, restart_url, quick)
     else:
-        print 'Check usage'
+        print('Check usage')
 
 
 def test(base_url='http://localhost:8000/'):

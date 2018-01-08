@@ -15,7 +15,7 @@ import json
 import math
 import re
 import requests
-import types
+import six
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import Http404, HttpResponse
@@ -122,7 +122,7 @@ def rna_view(request, upi, taxid=None):
         'distinct_databases': rna.get_distinct_database_names(taxid),
         'publications': rna.get_publications(taxid) if taxid_filtering else rna.get_publications(),
         'tab': request.GET.get('tab', ''),
-        'xref_pages': xrange(1, int(math.ceil(rna.count_xrefs()/float(XREF_PAGE_SIZE))) + 1),
+        'xref_pages': six.moves.range(1, int(math.ceil(rna.count_xrefs()/float(XREF_PAGE_SIZE))) + 1),
         'xref_page_size': XREF_PAGE_SIZE,
         'xref_page_num': int(request.GET.get('xref-page')) if request.GET.get('xref-page') else 1,
         'xrefs_count': rna.count_xrefs(taxid) if taxid_filtering else rna.count_xrefs(),
@@ -318,7 +318,7 @@ def _get_json_lineage_tree(xrefs):
 
     def get_lineages_and_taxids():
         """Combine the lineages from all accessions in a single list."""
-        if isinstance(xrefs, types.ListType):
+        if isinstance(xrefs, list):
             for xref in xrefs:
                 lineages.add(xref[0])
                 taxids[xref[0].split('; ')[-1]] = xref[1]
@@ -381,7 +381,7 @@ def _get_json_lineage_tree(xrefs):
                 "name": 'All',
                 "children": []
             }
-        for name, children in data.iteritems():
+        for name, children in six.iteritems(data):
             if isinstance(children, int):
                 container['children'].append({
                     "name": name,

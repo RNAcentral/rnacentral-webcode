@@ -65,7 +65,7 @@ def compute_database_stats(database):
             if expert_db.descr != database.upper():
                 continue
 
-        print expert_db.descr
+        print(expert_db.descr)
 
         context = dict()
         rnas = Rna.objects.filter(xrefs__deleted='N',

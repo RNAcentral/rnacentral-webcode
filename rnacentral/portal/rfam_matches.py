@@ -16,6 +16,7 @@ if the sequence is only a partial sequence
 """
 
 import json
+import six
 
 from django.core.urlresolvers import reverse
 
@@ -37,7 +38,7 @@ class RfamMatchStatus(object):
     """
 
     has_issue = attr.ib(validator=is_a(bool))
-    upi = attr.ib(validator=is_a(basestring))
+    upi = attr.ib(validator=is_a(six.string_types))
     taxid = attr.ib()
     finders = attr.ib(validator=is_a(list))
     messages = attr.ib(validator=is_a(list))

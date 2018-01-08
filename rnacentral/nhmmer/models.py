@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from caching.base import CachingManager, CachingMixin # django-cache-machine
+from caching.base import CachingManager, CachingMixin  # django-cache-machine
 from django.db import models
 
 

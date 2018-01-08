@@ -9,14 +9,8 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
-Quick reference:
-CharField - regular model field
-Field - model method call
-SerializerMethodField - serializer method call
-HyperlinkedIdentityField - link to a view
-
 """
+
 import re
 import json
 
@@ -24,7 +18,6 @@ from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse
 from django.db.models import Min, Max
 from rest_framework import serializers
-from rest_framework import pagination
 
 from portal.models import Rna, Xref, Reference, Database, DatabaseStats, Accession, Release, Reference, Modification
 from portal.models.reference_map import Reference_map
@@ -33,32 +26,27 @@ from portal.models.chemical_component import ChemicalComponent
 
 class RawPublicationSerializer(serializers.ModelSerializer):
     """Serializer class for literature citations. Used in conjunction with raw querysets."""
-    authors = serializers.CharField(source='get_authors_list')
+    authors = serializers.ListField(serializers.CharField(), source='get_authors_list')
     publication = serializers.CharField(source='location')
     pubmed_id = serializers.CharField(source='pubmed')
-    doi = serializers.CharField(source='doi')
-    title = serializers.Field(source='get_title')
-    pub_id = serializers.Field(source='id')
+    doi = serializers.CharField()
+    title = serializers.CharField(source='get_title')
+    pub_id = serializers.CharField(source='id')
+    expert_db = serializers.BooleanField()
 
     class Meta:
         model = Reference
-        fields = ('title', 'authors', 'publication', 'pubmed_id', 'doi', 'pub_id')
-
-
-class PaginatedRawPublicationSerializer(pagination.PaginationSerializer):
-    """Paginated version of RawPublicationSerializer."""
-    class Meta:
-        object_serializer_class = RawPublicationSerializer
+        fields = ('title', 'authors', 'publication', 'pubmed_id', 'doi', 'pub_id', 'expert_db')
 
 
 class CitationSerializer(serializers.HyperlinkedModelSerializer):
     """Serializer class for literature citations."""
-    authors = serializers.CharField(source='data.get_authors_list')
+    authors = serializers.ListField(serializers.CharField(), source='data.get_authors_list')
     publication = serializers.CharField(source='data.location')
     pubmed_id = serializers.CharField(source='data.pubmed')
     doi = serializers.CharField(source='data.doi')
-    title = serializers.Field(source='data.get_title')
-    pub_id = serializers.Field(source='data.id')
+    title = serializers.ReadOnlyField(source='data.get_title')
+    pub_id = serializers.ReadOnlyField(source='data.id')
 
     class Meta:
         model = Reference_map
@@ -69,18 +57,18 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
     """Serializer class for individual cross-references."""
     id = serializers.CharField(source='accession')
     citations = serializers.HyperlinkedIdentityField(view_name='accession-citations')
-    expert_db_url = serializers.Field(source='get_expert_db_external_url')
+    expert_db_url = serializers.ReadOnlyField(source='get_expert_db_external_url')
 
     # database-specific fields
-    pdb_entity_id = serializers.Field(source='get_pdb_entity_id')
-    pdb_structured_note = serializers.Field(source='get_pdb_structured_note')
-    hgnc_enembl_id = serializers.Field(source='get_hgnc_ensembl_id')
-    hgnc_id = serializers.Field(source='get_hgnc_id')
-    biotype = serializers.Field(source='get_biotype')
-    rna_type = serializers.Field(source='get_rna_type')
-    srpdb_id = serializers.Field(source='get_srpdb_id')
-    ena_url = serializers.Field(source='get_ena_url')
-    ensembl_species_url = serializers.Field(source='get_ensembl_species_url')
+    pdb_entity_id = serializers.ReadOnlyField(source='get_pdb_entity_id')
+    pdb_structured_note = serializers.ReadOnlyField(source='get_pdb_structured_note')
+    hgnc_enembl_id = serializers.ReadOnlyField(source='get_hgnc_ensembl_id')
+    hgnc_id = serializers.ReadOnlyField(source='get_hgnc_id')
+    biotype = serializers.ReadOnlyField(source='get_biotype')
+    rna_type = serializers.ReadOnlyField(source='get_rna_type')
+    srpdb_id = serializers.ReadOnlyField(source='get_srpdb_id')
+    ena_url = serializers.ReadOnlyField(source='get_ena_url')
+    ensembl_species_url = serializers.ReadOnlyField(source='get_ensembl_species_url')
 
     class Meta:
         model = Accession
@@ -103,11 +91,14 @@ class ChemicalComponentSerializer(serializers.ModelSerializer):
     ccd_id = serializers.CharField()
     source = serializers.CharField()
     modomics_short_name = serializers.CharField()
-    pdb_url = serializers.Field(source='get_pdb_url')
-    modomics_url = serializers.Field(source='get_modomics_url')
+    pdb_url = serializers.ReadOnlyField(source='get_pdb_url')
+    modomics_url = serializers.ReadOnlyField(source='get_modomics_url')
 
     class Meta:
         model = ChemicalComponent
+        fields = (
+            'id', 'description', 'one_letter_code', 'ccd_id', 'source', 'modomics_short_name', 'pdb_url', 'modomics_url'
+        )
 
 
 class ModificationSerializer(serializers.ModelSerializer):
@@ -118,35 +109,36 @@ class ModificationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Modification
+        fields = ('position', 'author_assigned_position', 'chem_comp')
 
 
 class XrefSerializer(serializers.HyperlinkedModelSerializer):
     """Serializer class for all cross-references associated with an RNAcentral id."""
     database = serializers.CharField(source='db.display_name')
     is_expert_db = serializers.SerializerMethodField('is_expert_xref')
-    is_active = serializers.Field('is_active')
+    is_active = serializers.BooleanField(read_only=True)
     first_seen = serializers.CharField(source='created.release_date')
     last_seen = serializers.CharField(source='last.release_date')
     accession = AccessionSerializer()
 
     # database-specific fields
     modifications = ModificationSerializer(many=True)
-    is_rfam_seed = serializers.Field(source='is_rfam_seed')
-    ncbi_gene_id = serializers.Field(source='get_ncbi_gene_id')
-    ndb_external_url = serializers.Field(source='get_ndb_external_url')
-    mirbase_mature_products = serializers.SerializerMethodField('get_mirbase_mature_products')
-    mirbase_precursor = serializers.SerializerMethodField('get_mirbase_precursor')
-    refseq_mirna_mature_products = serializers.SerializerMethodField('get_refseq_mirna_mature_products')
-    refseq_mirna_precursor = serializers.SerializerMethodField('get_refseq_mirna_precursor')
-    refseq_splice_variants = serializers.SerializerMethodField('get_refseq_splice_variants')
-    ensembl_splice_variants = serializers.SerializerMethodField('get_ensembl_splice_variants')
+    is_rfam_seed = serializers.BooleanField(read_only=True)
+    ncbi_gene_id = serializers.CharField(source='get_ncbi_gene_id', read_only=True)
+    ndb_external_url = serializers.URLField(source='get_ndb_external_url', read_only=True)
+    mirbase_mature_products = serializers.SerializerMethodField()
+    mirbase_precursor = serializers.SerializerMethodField()
+    refseq_mirna_mature_products = serializers.SerializerMethodField()
+    refseq_mirna_precursor = serializers.SerializerMethodField()
+    refseq_splice_variants = serializers.SerializerMethodField()
+    ensembl_splice_variants = serializers.SerializerMethodField()
     # tmrna_mate_upi = serializers.SerializerMethodField('get_tmrna_mate_upi')
-    # tmrna_type = serializers.Field(source='get_tmrna_type')
-    gencode_transcript_id = serializers.Field(source='get_gencode_transcript_id')
-    gencode_ensembl_url = serializers.Field(source='get_gencode_ensembl_url')
-    ensembl_division = serializers.Field(source='get_ensembl_division')
-    ucsc_db_id = serializers.Field(source='get_ucsc_db_id')
-    genomic_coordinates = serializers.SerializerMethodField('get_genomic_coordinates')
+    # tmrna_type = serializers.ReadOnlyField(source='get_tmrna_type')
+    gencode_transcript_id = serializers.CharField(source='get_gencode_transcript_id', read_only=True)
+    gencode_ensembl_url = serializers.CharField(source='get_gencode_ensembl_url', read_only=True)
+    ensembl_division = serializers.CharField(source='get_ensembl_division', read_only=True)
+    ucsc_db_id = serializers.CharField(source='get_ucsc_db_id', read_only=True)
+    genomic_coordinates = serializers.SerializerMethodField()
 
     # statistics on species
 
@@ -238,29 +230,17 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
             return data
 
 
-class PaginatedXrefSerializer(pagination.PaginationSerializer):
-    """Paginated version of XrefSerializer."""
-    class Meta:
-        object_serializer_class = XrefSerializer
-
-
-class RnaListSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Rna
-        fields = ('__all__')
-
-
 class RnaNestedSerializer(serializers.HyperlinkedModelSerializer):
     """Serializer class for a unique RNAcentral sequence."""
-    sequence = serializers.Field(source='get_sequence')
+    sequence = serializers.CharField(source='get_sequence', read_only=True)
     xrefs = serializers.HyperlinkedIdentityField(view_name='rna-xrefs')
     publications = serializers.HyperlinkedIdentityField(view_name='rna-publications')
     rnacentral_id = serializers.CharField(source='upi')
-    is_active = serializers.Field(source='is_active')
-    description = serializers.Field(source='get_description')
-    rna_type = serializers.Field(source='get_rna_type')
-    count_distinct_organisms = serializers.Field(source='count_distinct_organisms')
-    distinct_databases = serializers.Field(source='get_distinct_database_names')
+    is_active = serializers.BooleanField(read_only=True)
+    description = serializers.CharField(source='get_description', read_only=True)
+    rna_type = serializers.CharField(source='get_rna_type', read_only=True)
+    count_distinct_organisms = serializers.IntegerField(read_only=True)
+    distinct_databases = serializers.ReadOnlyField(source='get_distinct_database_names')
 
     class Meta:
         model = Rna
@@ -270,17 +250,19 @@ class RnaNestedSerializer(serializers.HyperlinkedModelSerializer):
             'count_distinct_organisms', 'distinct_databases'
         )
 
+
 class RnaSecondaryStructureSerializer(serializers.ModelSerializer):
     """Serializer for presenting RNA secondary structures"""
     data = serializers.SerializerMethodField('get_secondary_structures')
+
+    class Meta:
+        model = Rna
+        fields = ('data', )
 
     def get_secondary_structures(self, obj):
         """Return secondary structures filtered by taxid."""
         return obj.get_secondary_structures(taxid=self.context['taxid'])
 
-    class Meta:
-        model = Rna
-        fields = ('data',)
 
 class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
     """
@@ -288,15 +270,21 @@ class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
 
     Requires context['xrefs'] and context['taxid'].
     """
-    sequence = serializers.Field(source='get_sequence')
+    sequence = serializers.CharField(source='get_sequence', read_only=True)
     rnacentral_id = serializers.SerializerMethodField('get_species_specific_id')
     description = serializers.SerializerMethodField('get_species_specific_description')
     species = serializers.SerializerMethodField('get_species_name')
-    genes = serializers.SerializerMethodField('get_genes')
-    ncrna_types = serializers.SerializerMethodField('get_ncrna_types')
-    taxid = serializers.SerializerMethodField('get_taxid')
+    genes = serializers.SerializerMethodField()
+    ncrna_types = serializers.SerializerMethodField()
+    taxid = serializers.SerializerMethodField()
     is_active = serializers.SerializerMethodField('is_active_id')
     distinct_databases = serializers.SerializerMethodField('get_distinct_database_names')
+
+    class Meta:
+        model = Rna
+        fields = ('rnacentral_id', 'sequence', 'length', 'description',
+                  'species', 'taxid', 'genes', 'ncrna_types', 'is_active',
+                  'distinct_databases')
 
     def is_active_id(self, obj):
         """Return false if all xrefs with this taxid are inactive."""
@@ -344,12 +332,6 @@ class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
     def get_distinct_database_names(self, obj):
         return obj.get_distinct_database_names(taxid=self.get_taxid(obj))
 
-    class Meta:
-        model = Rna
-        fields = ('rnacentral_id', 'sequence', 'length', 'description',
-                  'species', 'taxid', 'genes', 'ncrna_types', 'is_active',
-                  'distinct_databases')
-
 
 class RnaFlatSerializer(RnaNestedSerializer):
     """Override the xrefs field in the default nested serializer to provide a flat representation."""
@@ -368,7 +350,7 @@ class RnaFlatSerializer(RnaNestedSerializer):
 
 class RnaFastaSerializer(serializers.ModelSerializer):
     """Serializer for presenting RNA sequences in FASTA format"""
-    fasta = serializers.Field(source='get_sequence_fasta')
+    fasta = serializers.CharField(source='get_sequence_fasta', read_only=True)
 
     class Meta:
         model = Rna
@@ -377,7 +359,7 @@ class RnaFastaSerializer(serializers.ModelSerializer):
 
 class RnaGffSerializer(serializers.ModelSerializer):
     """Serializer for presenting genomic coordinates in GFF format"""
-    gff = serializers.Field(source='get_gff')
+    gff = serializers.CharField(source='get_gff', read_only=True)
 
     class Meta:
         model = Rna
@@ -386,7 +368,7 @@ class RnaGffSerializer(serializers.ModelSerializer):
 
 class RnaGff3Serializer(serializers.ModelSerializer):
     """Serializer for presenting genomic coordinates in GFF format"""
-    gff3 = serializers.Field(source='get_gff3')
+    gff3 = serializers.CharField(source='get_gff3', read_only=True)
 
     class Meta:
         model = Rna
@@ -395,7 +377,7 @@ class RnaGff3Serializer(serializers.ModelSerializer):
 
 class RnaBedSerializer(serializers.ModelSerializer):
     """Serializer for presenting genomic coordinates in UCSC BED format"""
-    bed = serializers.Field(source='get_ucsc_bed')
+    bed = serializers.CharField(source='get_ucsc_bed', read_only=True)
 
     class Meta:
         model = Rna
@@ -404,8 +386,8 @@ class RnaBedSerializer(serializers.ModelSerializer):
 
 class ExpertDatabaseStatsSerializer(serializers.ModelSerializer):
     """Serializer for presenting DatabaseStats"""
-    length_counts = serializers.SerializerMethodField('get_length_counts')
-    taxonomic_lineage = serializers.SerializerMethodField('get_taxonomic_lineage')
+    length_counts = serializers.SerializerMethodField()
+    taxonomic_lineage = serializers.SerializerMethodField()
 
     class Meta:
         model = DatabaseStats

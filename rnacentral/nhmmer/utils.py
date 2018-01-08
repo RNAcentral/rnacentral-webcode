@@ -11,6 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import six
+
 import datetime
 import os
 import re
@@ -27,10 +29,10 @@ from django.http import HttpResponse
 import django_rq
 from rq import get_current_job
 
-from nhmmer_search import NhmmerSearch
-from nhmmer_parse import NhmmerResultsParser
-from models import Results, Query
-from settings import EXPIRATION, MAX_RUN_TIME, NHMMER_SERVER
+from .nhmmer_search import NhmmerSearch
+from .nhmmer_parse import NhmmerResultsParser
+from .models import Results, Query
+from .settings import EXPIRATION, MAX_RUN_TIME, NHMMER_SERVER
 
 
 def nhmmer_proxy(request):
@@ -112,7 +114,7 @@ def get_job(job_id):
                         (None for localhost)
     """
     rq_queues = getattr(settings, 'RQ_QUEUES', [])
-    for queue_id, params in rq_queues.iteritems():
+    for queue_id, params in six.iteritems(rq_queues):
         queue = django_rq.get_queue(queue_id)
         job = queue.fetch_job(job_id)
         if job:

@@ -14,11 +14,10 @@ import re
 import warnings
 from itertools import chain
 
-import django_filters
-from django.core.paginator import Paginator
 from django.db.models import Min, Max
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django_filters import rest_framework as filters
 from rest_framework import generics
 from rest_framework import renderers
 from rest_framework.mixins import RetrieveModelMixin, ListModelMixin
@@ -28,14 +27,21 @@ from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 
-from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
-from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, PaginatedXrefSerializer, \
+from rest_framework.permissions import AllowAny
+from rest_framework.reverse import reverse
+from rest_framework_jsonp.renderers import JSONPRenderer
+from rest_framework_yaml.renderers import YAMLRenderer
+
+from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, XrefSerializer, \
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
                               RnaSpeciesSpecificSerializer, ExpertDatabaseStatsSerializer, \
-    PaginatedRawPublicationSerializer, RnaSecondaryStructureSerializer
-from portal.config.expert_databases import expert_dbs
-from portal.config.genomes import genomes, url2db, db2url, SpeciesNotInGenomes, get_taxid_from_species
+                              RawPublicationSerializer, RnaSecondaryStructureSerializer
+
+from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, Accession, Xref, Database, DatabaseStats
+from portal.config.genomes import genomes, url2db, db2url, SpeciesNotInGenomes, get_taxid_from_species
+from portal.config.expert_databases import expert_dbs
+from rnacentral.utils.pagination import Pagination
 
 """
 Docstrings of the classes exposed in urlpatterns support markdown.
@@ -59,187 +65,6 @@ def _get_xrefs_from_genomic_coordinates(species, chromosome, start, end):
         return xrefs
     except Exception as e:
         return []
-
-
-class DasSources(APIView):
-    """
-    DAS `sources` method for determining supported capabilities.
-    RNAcentral emulates the Homo_sapiens.GRCh38.gene Ensembl DAS source.
-    """
-
-    permission_classes = (AllowAny,)
-    renderer_classes = (renderers.StaticHTMLRenderer,)  # return the string unchanged
-
-    def get(self, request):
-        """
-        Return the description of supported DAS sources.
-        Example:
-            http://www.ensembl.org/das/sources
-        """
-        urls = {
-            'features': request.build_absolute_uri(reverse('das-features')),
-            'stylesheet': request.build_absolute_uri(reverse('das-stylesheet')),
-        }
-
-        sources = """<?xml version="1.0" encoding="UTF-8" ?>
-<SOURCES>
-    <SOURCE uri="RNAcentral_GRCh38" title="RNAcentral" description="Unique RNAcentral Sequences">
-        <MAINTAINER email="helpdesk@rnacentral.org" />
-        <VERSION uri="RNAcentral_GRCh38" created="2014-03-06">
-            <PROP name="label" value="RNAcentral" />
-            <COORDINATES uri="http://www.dasregistry.org/dasregistry/coordsys/CS_DS311" taxid="9606" source="Chromosome" authority="GRCh" test_range="Y:26631479,26632610" version="38">GRCh_38,Chromosome,Homo sapiens</COORDINATES>
-            <CAPABILITY type="das1:features" query_uri="{0}" />
-            <CAPABILITY type="das1:stylesheet" query_uri="{1}" />
-        </VERSION>
-    </SOURCE>
-</SOURCES>""".format(urls['features'], urls['stylesheet'])
-        return Response(sources)
-
-
-class DasStylesheet(APIView):
-    """Das stylesheet for controlling the appearance of the RNAcentral Ensembl track."""
-
-    permission_classes = (AllowAny,)
-    renderer_classes = (renderers.StaticHTMLRenderer,)  # return the string unchanged
-
-    def get(self, request):
-        """
-        Style features created in DasFeatures.
-        Example:
-            http://www.ensembl.org/das/Homo_sapiens.GRCh38.transcript/stylesheet
-        """
-        stylesheet = """<?xml version="1.0" standalone="no"?>
-<!DOCTYPE DASSTYLE SYSTEM "http://www.biodas.org/dtd/dasstyle.dtd">
-<DASSTYLE>
-<STYLESHEET version="1.0">
-  <CATEGORY id="group">
-    <TYPE id="transcript:rnacentral">
-      <GLYPH>
-        <LINE>
-          <HEIGHT>6</HEIGHT>
-          <FGCOLOR>#104e8b</FGCOLOR>
-          <STYLE>hat</STYLE>
-        </LINE>
-      </GLYPH>
-    </TYPE>
-  </CATEGORY>
-  <CATEGORY id="transcription">
-    <TYPE id="exon:non_coding:rnacentral">
-      <GLYPH>
-        <BOX>
-          <HEIGHT>6</HEIGHT>
-          <BGCOLOR>#ffffff</BGCOLOR>
-          <FGCOLOR>#104e8b</FGCOLOR>
-        </BOX>
-      </GLYPH>
-    </TYPE>
-  </CATEGORY>
-</STYLESHEET>
-</DASSTYLE>"""
-        return Response(stylesheet)
-
-
-class DasFeatures(APIView):
-    """DAS `features` method for retrieving genome annotations."""
-
-    permission_classes = (AllowAny,)
-    renderer_classes = (renderers.StaticHTMLRenderer, )  # return as an unmodified string
-
-    def get(self, request):
-        """
-        Return genome annotation in DASGFF format.
-        Does not use serializers and renderers because the XML has self-closing tags.
-        Example:
-        # get annotations
-        http://www.ensembl.org/das/Homo_sapiens.GRCh38.transcript/features?segment=Y:25183643,25184773
-        # no annotations, empty response
-        http://www.ensembl.org/das/Homo_sapiens.GRCh38.transcript/features?segment=Y:100,120
-        """
-
-        def _parse_query_parameters():
-            """
-            Parse query parameters with genomic coordinates.
-            Example: .../features?segment=chrY:1,200
-            """
-            regex = r'(?P<chromosome>(\d+|Y|X))\:(?P<start>\d+),(?P<end>\d+)'
-            query_param = 'segment'
-            m = re.search(regex, request.QUERY_PARAMS[query_param])
-            if m:
-                chromosome = m.group(1)
-                start = m.group(3)
-                end = m.group(4)
-            else:
-                chromosome = start = end = ''
-            return (chromosome, start, end)
-
-        def _format_segment():
-            """Return a segment object containing exon features."""
-            rnacentral_ids = []
-            features = ''
-            feature_types = { # defined in DasStylesheet
-                'exon': 'exon:non_coding:rnacentral',
-                'transcript': 'transcript:rnacentral',
-            }
-            for i, xref in enumerate(xrefs):
-                rnacentral_id = xref.upi.upi
-                if rnacentral_id not in rnacentral_ids:
-                    rnacentral_ids.append(rnacentral_id)
-                else:
-                    continue
-                coordinates = xref.get_genomic_coordinates()
-                transcript_id = rnacentral_id + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
-                rnacentral_url = request.build_absolute_uri(reverse('unique-rna-sequence', kwargs={'upi': rnacentral_id}))
-                # exons
-                for i, exon in enumerate(xref.accession.coordinates.all()):
-                    exon_id = '_'.join([transcript_id, 'exon_' + str(i+1)])
-                    features += """
-  <FEATURE id="{exon_id}">
-    <START>{start}</START>
-    <END>{end}</END>
-    <TYPE id="{feature_type}" category="transcription">{feature_type}</TYPE>
-    <METHOD id="RNAcentral" />
-    <SCORE>-</SCORE>
-    <ORIENTATION>{strand}</ORIENTATION>
-    <PHASE>.</PHASE>
-    <GROUP id="{transcript_id}" type="{transcript_type}" label="{rnacentral_id}">
-      <LINK href="{rnacentral_url}">{rnacentral_id}</LINK>
-    </GROUP>
-  </FEATURE>""".format(
-                    exon_id=exon_id,
-                    start=exon.primary_start,
-                    end=exon.primary_end,
-                    feature_type=feature_types['exon'],
-                    strand='+' if exon.strand > 0 else '-',
-                    transcript_id=transcript_id,
-                    rnacentral_id=rnacentral_id,
-                    transcript_type=feature_types['transcript'],
-                    rnacentral_url=rnacentral_url
-                )
-
-            segment = """
-<SEGMENT id="{0}" start="{1}" stop="{2}">""".format(chromosome, start, end) + features + """
-</SEGMENT>"""
-            return segment
-
-        def _format_das_response():
-            """
-            Add the header
-            """
-            return """<?xml version="1.0" standalone="no"?>
-<!DOCTYPE DASGFF SYSTEM "http://www.biodas.org/dtd/dasgff.dtd">
-<DASGFF>
-<GFF version="1.0">""" + \
-            segments + \
-            """
-</GFF>
-</DASGFF>"""
-
-        (chromosome, start, end) = _parse_query_parameters()
-        # TODO: remove hardcoded species name
-        xrefs = _get_xrefs_from_genomic_coordinates('Homo sapiens', chromosome, start, end)
-        segments = _format_segment()
-        das = _format_das_response()
-        return Response(das)
 
 
 class GenomeAnnotations(APIView):
@@ -328,12 +153,12 @@ class APIRoot(APIView):
         })
 
 
-class RnaFilter(django_filters.FilterSet):
+class RnaFilter(filters.FilterSet):
     """Declare what fields can be filtered using django-filters"""
-    min_length = django_filters.NumberFilter(name="length", lookup_type='gte')
-    max_length = django_filters.NumberFilter(name="length", lookup_type='lte')
-    external_id = django_filters.CharFilter(name="xrefs__accession__external_id", distinct=True)
-    database = django_filters.CharFilter(name="xrefs__accession__database")
+    min_length = filters.NumberFilter(name="length", lookup_expr='gte')
+    max_length = filters.NumberFilter(name="length", lookup_expr='lte')
+    external_id = filters.CharFilter(name="xrefs__accession__external_id", distinct=True)
+    database = filters.CharFilter(name="xrefs__accession__database")
 
     class Meta:
         model = Rna
@@ -353,7 +178,7 @@ class RnaMixin(object):
         elif self.request.accepted_renderer.format == 'bed':
             return RnaBedSerializer
 
-        flat = self.request.QUERY_PARAMS.get('flat', 'false')
+        flat = self.request.query_params.get('flat', 'false')
         if re.match('true', flat, re.IGNORECASE):
             return RnaFlatSerializer
         return RnaNestedSerializer
@@ -368,9 +193,10 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
     # the above docstring appears on the API website
     permission_classes = (AllowAny,)
     filter_class = RnaFilter
-    renderer_classes = (renderers.JSONRenderer, renderers.JSONPRenderer,
+    renderer_classes = (renderers.JSONRenderer, JSONPRenderer,
                         renderers.BrowsableAPIRenderer,
-                        renderers.YAMLRenderer, RnaFastaRenderer)
+                        YAMLRenderer, RnaFastaRenderer)
+    pagination_class = Pagination
 
     def list(self, request, *args, **kwargs):
         """
@@ -386,27 +212,13 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
         * flat serializer limits the total number of displayed xrefs
         """
         # begin DRF base code
-        self.object_list = self.filter_queryset(self.get_queryset())
+        queryset = self.filter_queryset(self.get_queryset())
 
-        # Default is to allow empty querysets.  This can be altered by setting
-        # `.allow_empty = False`, to raise 404 errors on empty querysets.
-        if not self.allow_empty and not self.object_list:
-            warnings.warn(
-                'The `allow_empty` parameter is deprecated. '
-                'To use `allow_empty=False` style behavior, You should override '
-                '`get_queryset()` and explicitly raise a 404 on empty querysets.',
-                DeprecationWarning
-            )
-            class_name = self.__class__.__name__
-            error_msg = self.empty_error % {'class_name': class_name}
-            raise Http404(error_msg)
-
-        # Switch between paginated or standard style responses
-        page = self.paginate_queryset(self.object_list)
+        page = self.paginate_queryset(queryset)
         # end DRF base code
 
-        # use prefetch_related where possible
-        flat = self.request.QUERY_PARAMS.get('flat', None)
+        # begin RNAcentral override: use prefetch_related where possible
+        flat = self.request.query_params.get('flat', None)
         if flat:
             to_prefetch = []
             no_prefetch = []
@@ -416,18 +228,19 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
                 else:
                     no_prefetch.append(rna.upi)
 
-            prefetched = Rna.objects.filter(upi__in=to_prefetch).prefetch_related('xrefs__accession').all()
-            not_prefetched = Rna.objects.filter(upi__in=no_prefetch).all()
+            prefetched = self.filter_queryset(Rna.objects.filter(upi__in=to_prefetch).prefetch_related('xrefs__accession').all())
+            not_prefetched = self.filter_queryset(Rna.objects.filter(upi__in=no_prefetch).all())
 
             result_list = list(chain(prefetched, not_prefetched))
             page.object_list = result_list  # override data while keeping the rest of the pagination object
+        # end RNAcentral override
 
         # begin DRF base code
         if page is not None:
-            serializer = self.get_pagination_serializer(page)
-        else:
-            serializer = self.get_serializer(self.object_list, many=True)
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
 
+        serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
         # end DRF base code
 
@@ -443,15 +256,13 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
         Manually filter against the `database` query parameter,
         use RnaFilter for other filtering operations.
         """
-        db_name = self.request.QUERY_PARAMS.get('database', None)
+        db_name = self.request.query_params.get('database', None)
         # `seq_long` **must** be deferred in order for filters to work
         queryset = Rna.objects.defer('seq_long')
         if db_name:
             db_id = self._get_database_id(db_name)
             if db_id:
-                return queryset.filter(xrefs__db=db_id).\
-                                distinct().\
-                                all()
+                return queryset.filter(xrefs__db=db_id).distinct().all()
             else:
                 return Rna.objects.none()
         return queryset.all()
@@ -465,8 +276,8 @@ class RnaDetail(RnaMixin, generics.RetrieveAPIView):
     """
     # the above docstring appears on the API website
     queryset = Rna.objects.all()
-    renderer_classes = (renderers.JSONRenderer, renderers.JSONPRenderer,
-                        renderers.BrowsableAPIRenderer, renderers.YAMLRenderer,
+    renderer_classes = (renderers.JSONRenderer, JSONPRenderer,
+                        renderers.BrowsableAPIRenderer, YAMLRenderer,
                         RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer)
 
     def get_object(self):
@@ -481,7 +292,7 @@ class RnaDetail(RnaMixin, generics.RetrieveAPIView):
         filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
         rna = get_object_or_404(queryset, **filter_kwargs)
 
-        flat = self.request.QUERY_PARAMS.get('flat', None)
+        flat = self.request.query_params.get('flat', None)
         if flat and rna.xrefs.count() <= MAX_XREFS_TO_PREFETCH:
             queryset = queryset.prefetch_related('xrefs', 'xrefs__accession')
             return get_object_or_404(queryset, **filter_kwargs)
@@ -523,19 +334,27 @@ class XrefList(generics.ListAPIView):
 
     [API documentation](/api)
     """
-    queryset = Rna.objects.select_related().all()
+    serializer_class = XrefSerializer
+    pagination_class = Pagination
 
-    def get(self, request, pk=None, format=None):
-        """Get a paginated list of cross-references."""
-        page = request.QUERY_PARAMS.get('page', 1)
-        page_size = request.QUERY_PARAMS.get('page_size', 1000000000000)
+    def get_queryset(self):
+        upi = self.kwargs['pk']
+        return Rna.objects.get(upi=upi).get_xrefs()
 
-        rna = self.get_object()
-        xrefs = rna.get_xrefs()
-        paginator_xrefs = Paginator(xrefs, page_size)
-        xrefs_page = paginator_xrefs.page(page)
-        serializer = PaginatedXrefSerializer(xrefs_page, context={'request': request})
-        return Response(serializer.data)
+
+class XrefsSpeciesSpecificList(generics.ListAPIView):
+    """
+    List of cross-references for a particular RNA sequence in a specific species.
+
+    [API documentation](/api)
+    """
+    serializer_class = XrefSerializer
+    pagination_class = Pagination
+
+    def get_queryset(self):
+        upi = self.kwargs['pk']
+        taxid = self.kwargs['taxid']
+        return Rna.objects.get(upi=upi).get_xrefs(taxid=taxid)
 
 
 class SecondaryStructureSpeciesSpecificList(generics.ListAPIView):
@@ -552,27 +371,6 @@ class SecondaryStructureSpeciesSpecificList(generics.ListAPIView):
         serializer = RnaSecondaryStructureSerializer(rna, context={
             'taxid': taxid,
         })
-        return Response(serializer.data)
-
-
-class XrefsSpeciesSpecificList(generics.ListAPIView):
-    """
-    List of cross-references for a particular RNA sequence in a specific species.
-
-    [API documentation](/api)
-    """
-    queryset = Rna.objects.select_related().all()
-
-    def get(self, request, pk=None, taxid=None, format=None):
-        """Get a paginated list of cross-references"""
-        page = request.QUERY_PARAMS.get('page', 1)
-        page_size = request.QUERY_PARAMS.get('page_size', 1000000000000)
-
-        rna = self.get_object()
-        xrefs = rna.get_xrefs(taxid=taxid)
-        paginator_xrefs = Paginator(xrefs, page_size)
-        xrefs_page = paginator_xrefs.page(page)
-        serializer = PaginatedXrefSerializer(xrefs_page, context={'request': request})
         return Response(serializer.data)
 
 
@@ -621,33 +419,21 @@ class AccessionView(generics.RetrieveAPIView):
     """
     # the above docstring appears on the API website
     queryset = Accession.objects.select_related().all()
-
-    def get(self, request, pk, format=None):
-        """Retrive individual accessions."""
-        accession = self.get_object()
-        serializer = AccessionSerializer(accession, context={'request': request})
-        return Response(serializer.data)
+    serializer_class = AccessionSerializer
 
 
-class CitationView(generics.RetrieveAPIView):
+class CitationsView(generics.ListAPIView):
     """
     API endpoint that allows the citations associated with
-    each cross-reference to be viewed.
+    a particular cross-reference to be viewed.
 
     [API documentation](/api)
     """
-    # the above docstring appears on the API website
-    queryset = Accession.objects.select_related().all()
+    serializer_class = CitationSerializer
 
-    def get(self, request, pk, format=None):
-        """
-        Retrieve citations associated with a particular entry.
-        This method is used to retrieve citations for the unique sequence view.
-        """
-        accession = self.get_object()
-        citations = accession.refs.all()
-        serializer = CitationSerializer(citations, context={'request': request})
-        return Response(serializer.data)
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        return Accession.objects.select_related().get(pk=pk).refs.all()
 
 
 class RnaPublicationsView(generics.ListAPIView):
@@ -659,21 +445,13 @@ class RnaPublicationsView(generics.ListAPIView):
     """
     # the above docstring appears on the API website
     permission_classes = (AllowAny, )
+    serializer_class = RawPublicationSerializer
+    pagination_class = Pagination
 
     def get_queryset(self):
         upi = self.kwargs['pk']
-        return list(Rna.objects.get(upi=upi).get_publications())
-
-    def get(self, request, pk=None, format=None):
-        """Get a paginated list of cross-references"""
-        page = request.QUERY_PARAMS.get('page', 1)
-        page_size = request.QUERY_PARAMS.get('page_size', 1000000000000)
-
-        publications = self.get_queryset()
-        paginator_publications = Paginator(publications, page_size)
-        publications_page = paginator_publications.page(page)
-        serializer = PaginatedRawPublicationSerializer(publications_page, context={'request': request})
-        return Response(serializer.data)
+        taxid = self.kwargs['taxid'] if 'taxid' in self.kwargs else None
+        return Rna.objects.get(upi=upi).get_publications(taxid)  # this is actually a list
 
 
 class ExpertDatabasesAPIView(APIView):
@@ -696,7 +474,7 @@ class ExpertDatabasesAPIView(APIView):
                 expert_db_label = expert_db_label.upper()
             return expert_db_label
 
-        # { "TMRNA_WEB": {'name': 'tmRNA Website', 'label': 'tmrna-website', ...}}
+        # e.g. { "TMRNA_WEB": {'name': 'tmRNA Website', 'label': 'tmrna-website', ...}}
         databases = { db['descr']:db for db in Database.objects.values() }
 
         # update config.expert_databases json with Database table objects
@@ -709,7 +487,7 @@ class ExpertDatabasesAPIView(APIView):
 
     # def get_queryset(self):
     #     expert_db_name = self.kwargs['expert_db_name']
-    #     return list(Database.objects.get(expert_db_name).references)
+    #     return Database.objects.get(expert_db_name).references
 
 
 class ExpertDatabasesStatsViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):

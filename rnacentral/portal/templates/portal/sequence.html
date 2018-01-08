@@ -71,7 +71,7 @@ limitations under the License.
 
                 <!-- genoverse -->
                 <div ng-if="genome && chr && start && end">
-                    <genoverse genome="genome" chr="chr" start="start" end="end" example-locations="exampleLocations" container=".container">
+                    <genoverse genome="genome" chr="chr" start="start" end="end" example-locations="exampleLocations">
                         <genoverse-track name="'Sequence'" model="Genoverse.Track.Model.Sequence.Ensembl" view="Genoverse.Track.View.Sequence" controller="Genoverse.Track.Controller.Sequence" url="genoverseUtils.urls.sequence" resizable="'auto'" auto-height="true" hide-empty="false" extra="{100000: false}"></genoverse-track>
                         <genoverse-track name="'Genes'" labels="true" info="'Ensembl API genes'" model="Genoverse.Track.Model.Gene.Ensembl" view="Genoverse.Track.View.Gene.Ensembl" url="genoverseUtils.urls.genes" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.genesPopulateMenu}"></genoverse-track>
                         <genoverse-track name="'Transcripts'" labels="true" info="'Ensembl API transcripts'" model="Genoverse.Track.Model.Transcript.Ensembl" view="Genoverse.Track.View.Transcript.Ensembl" url="genoverseUtils.urls.transcripts" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.transcriptsPopulateMenu}"></genoverse-track>
@@ -290,7 +290,7 @@ limitations under the License.
             </uib-tab>
 
             <uib-tab index="2" heading="Publications" deselect="checkTab($event, $selectedIndex)">
-                <publications upi="upi"></publications>
+                <publications upi="upi" taxid="taxid"></publications>
             </uib-tab>
 
             <uib-tab index="3" heading="2D" id="secondary-structures" deselect="checkTab($event, $selectedIndex)" ng-hide="hide2dTab">

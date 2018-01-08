@@ -13,11 +13,11 @@ limitations under the License.
 
 import socket
 
-from django.conf.urls import patterns, url, include
+from django.conf.urls import url, include
 from django.views.generic import TemplateView
 
 
-urlpatterns = patterns('',
+urlpatterns = [
     # RNAcentral portal
     url(r'', include('portal.urls')),
     # REST API (use trailing slashes)
@@ -27,15 +27,15 @@ urlpatterns = patterns('',
     url(r'^export/', include('export.urls')),
     # sequence search
     url(r'^sequence-search/', include('nhmmer.urls')),
-)
+]
 
 if 'hx' in socket.gethostname():
-    additional_settings = patterns('',
+    additional_settings = [
       url(r'^robots\.txt$', TemplateView.as_view(template_name='robots-test.txt', content_type='text/plain')),
-    )
+    ]
 else:
-    additional_settings = patterns('',
+    additional_settings = [
       url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
-    )
+    ]
 
 urlpatterns += additional_settings
