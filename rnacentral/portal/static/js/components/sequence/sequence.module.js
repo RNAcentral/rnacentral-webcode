@@ -151,7 +151,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                     showSequence: true,
                     brushActive: true,
                     toolbar:true,
-                    bubbleHelp: true,
+                    // bubbleHelp: true,
                     zoomMax:20,
                     tooltipFontSize: '12px'
                 }
@@ -194,7 +194,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                         data.push({
                             x: x,
                             y: y,
-                            description: direction + " " + response.data.results[i].rfam_model.long_name
+                            description: direction + " " + response.data.results[i].rfam_model.rfam_model_id + " " + response.data.results[i].rfam_model.long_name
                         })
                     }
 
