@@ -63,17 +63,22 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 
     // Modified nucleotides visualisation.
     $scope.createModificationsFeature = function(modifications, accession) {
-        if (!$scope.features.hasOwnProperty(accession)) { // if feature track's already there, don't duplicate it
+        if (!$scope.featureViewer.hasFeature(accession, "id")) { // if feature track's already there, don't duplicate it
             // sort modifications by position
             modifications.sort(function(a, b) {return a.position - b.position});
 
             // loop over modifications and insert span tags with modified nucleotide data
             var data = [];
             for (var i = 0; i < modifications.length; i++) {
-                data.push({x: modifications[i].position, y: modifications[i].position, description: 'Modified nucleotide ' + modifications[i].chem_comp.id + modifications[i].chem_comp.one_letter_code + ' <br> ' + modifications[i].chem_comp.description });
+                data.push({
+                    x: modifications[i].position,
+                    y: modifications[i].position,
+                    description: 'Modified nucleotide ' + modifications[i].chem_comp.id + modifications[i].chem_comp.one_letter_code + ' <br> ' + modifications[i].chem_comp.description
+                });
             }
 
             $scope.featureViewer.addFeature({
+                id: accession,
                 data: data,
                 name: "Modified",  // in " + accession.substr(0, 8),
                 className: "modification",
@@ -81,8 +86,6 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                 type: "rect",
                 filter: "type1"
             });
-
-            $scope.features[accession] = data;
         }
     };
 
@@ -153,8 +156,6 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                     tooltipFontSize: '12px'
                 }
             );
-
-            $scope.features = {}; // {accession: feature} mapping used to avoid duplication of features
 
             // if any non-canonical nucleotides found, show them on a separate track
             nonCanonicalNucleotides = [];
