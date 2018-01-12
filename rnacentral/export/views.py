@@ -416,14 +416,13 @@ def submit_export_job(request):
                                  args=(query, _format, hits),
                                  timeout=MAX_RUN_TIME,
                                  result_ttl=EXPIRATION)
-        job.save()
         job.meta['progress'] = 0
         job.meta['query'] = query
         job.meta['format'] = _format
         job.meta['hits'] = hits
         job.meta['expiration'] = datetime.datetime.now() + \
                                  datetime.timedelta(seconds=EXPIRATION)
-        job.save_meta()
+        job.save()
         return JsonResponse({'job_id': job.id})
     except Exception as e:
         logger = logging.getLogger("django")
