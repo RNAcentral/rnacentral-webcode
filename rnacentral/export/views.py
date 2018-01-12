@@ -17,6 +17,7 @@ import datetime
 import django_rq
 import gzip
 import json
+import logging
 import os
 import re
 import requests
@@ -163,7 +164,9 @@ def export_search_results(query, _format, hits):
                 # join batches with commas except for the last iteration
                 archive.write(',\n')
             start = end
+
             job.meta['progress'] = min(round(float(start) * 100 / hits, 2), 85)
+            # job.save_meta()
             job.save()
 
         if _format == 'json':
@@ -171,11 +174,14 @@ def export_search_results(query, _format, hits):
             archive.close()
         if _format == 'fasta':
             run_easel(f, filename)
+
         job.meta['progress'] = 100
+        # job.save_meta()
         job.save()
         return filename
 
     job = get_current_job()
+    job.refresh()
     filename = paginate_over_results()
     return filename
 
@@ -298,7 +304,10 @@ def download_search_result_file(request):
         else:
             status = 202
             return JsonResponse(messages[status], status=status)
-    except:
+    except Exception as e:
+        logger = logging.getLogger("django")
+        logger.exception(e)
+
         status = 500
         return JsonResponse(messages[status], status=status)
 
@@ -344,7 +353,10 @@ def get_export_job_status(request):
         else:
             status = 404
             return JsonResponse(messages[status], status=status)
-    except:
+    except Exception as e:
+        logger = logging.getLogger("django")
+        logger.exception(e)
+
         status = 500
         return JsonResponse(messages[status], status=status)
 
@@ -399,19 +411,23 @@ def submit_export_job(request):
     try:
         queue = django_rq.get_queue()
         hits = get_hit_count(query)
+
         job = queue.enqueue_call(func=export_search_results,
                                  args=(query, _format, hits),
                                  timeout=MAX_RUN_TIME,
                                  result_ttl=EXPIRATION)
+        job.save()
         job.meta['progress'] = 0
         job.meta['query'] = query
         job.meta['format'] = _format
         job.meta['hits'] = hits
         job.meta['expiration'] = datetime.datetime.now() + \
                                  datetime.timedelta(seconds=EXPIRATION)
-        job.save()
+        job.save_meta()
         return JsonResponse({'job_id': job.id})
     except Exception as e:
-        print(e)
+        logger = logging.getLogger("django")
+        logger.exception(e)
+
         status = 500
         return JsonResponse(messages[status], status=status)
