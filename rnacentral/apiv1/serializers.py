@@ -19,7 +19,7 @@ from django.core.urlresolvers import reverse
 from django.db.models import Min, Max
 from rest_framework import serializers
 
-from portal.models import Rna, Xref, Reference, Database, DatabaseStats, Accession, Release, Reference, Modification
+from portal.models import Rna, Xref, Reference, Database, DatabaseStats, Accession, Release, Reference, Modification, RfamHit, RfamModel, RfamClan
 from portal.models.reference_map import Reference_map
 from portal.models.chemical_component import ChemicalComponent
 
@@ -414,3 +414,27 @@ class ExpertDatabaseStatsSerializer(serializers.ModelSerializer):
 
     def get_taxonomic_lineage(self, obj):
         return json.loads(obj.taxonomic_lineage)
+
+
+class RfamClanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RfamClan
+        fields = ('rfam_clan_id', 'name', 'description', 'family_count')
+
+
+class RfamModelSerializer(serializers.ModelSerializer):
+    rfam_clan = RfamClanSerializer(source='rfam_clan_id')
+
+    class Meta:
+        model = RfamModel
+        fields = ('rfam_model_id', 'short_name', 'long_name', 'description', 'rfam_clan',
+                  'seed_count', 'full_count', 'length', 'is_suppressed', 'domain', 'rna_type',
+                  'rfam_rna_type')
+
+
+class RfamHitSerializer(serializers.ModelSerializer):
+    rfam_model = RfamModelSerializer()
+
+    class Meta:
+        model = RfamHit
+        fields = ('sequence_start', 'sequence_stop', 'sequence_completeness', 'rfam_model')

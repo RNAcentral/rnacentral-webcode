@@ -34,10 +34,10 @@ from rest_framework_yaml.renderers import YAMLRenderer
 from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, XrefSerializer, \
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
                               RnaSpeciesSpecificSerializer, RnaListSerializer, ExpertDatabaseStatsSerializer, \
-                              RawPublicationSerializer, RnaSecondaryStructureSerializer
+                              RawPublicationSerializer, RnaSecondaryStructureSerializer, RfamHitSerializer
 
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
-from portal.models import Rna, Accession, Xref, Database, DatabaseStats
+from portal.models import Rna, Accession, Xref, Database, DatabaseStats, RfamHit
 from portal.config.genomes import genomes, url2db, SpeciesNotInGenomes, get_taxid_from_species
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination
@@ -477,3 +477,14 @@ class GenomesAPIView(APIView):
     def get(self, request, format=None):
         sorted_genomes = sorted(genomes, key=lambda x: x['species'])
         return Response(sorted_genomes)
+
+
+class RfamHitsAPIViewSet(generics.ListAPIView):
+    """API endpoint with Rfam models that are found in an RNA."""
+    permission_classes = (AllowAny, )
+    serializer_class = RfamHitSerializer
+    pagination_class = Pagination
+
+    def get_queryset(self):
+        upi = self.kwargs['pk']
+        return RfamHit.objects.filter(upi=upi).select_related('rfam_model')

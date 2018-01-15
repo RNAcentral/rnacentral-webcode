@@ -210,21 +210,21 @@ class Rna(CachingMixin, models.Model):
         # wrong annotations to hard-links to deleted sequences accessible from web.
         if not xrefs.exists():
             xrefs = self.xrefs.filter(deleted='Y')\
-                             .filter(~Q(accession__project__in=expert_db_projects, db__id=1) | Q(accession__project__isnull=True))\
-                             .order_by('-db__id')\
-                             .select_related()\
-                             .prefetch_related(
-                                 Prefetch(
-                                     'modifications',
-                                     queryset=Modification.objects.select_related('modification_id')
-                                 )
-                             )\
-                             .prefetch_related(
-                                 Prefetch(
-                                     'accession__coordinates',
-                                     queryset=GenomicCoordinates.objects.filter(chromosome__isnull=False)
-                                 )
-                             )
+                              .filter(~Q(accession__project__in=expert_db_projects, db__id=1) | Q(accession__project__isnull=True))\
+                              .order_by('-db__id')\
+                              .select_related()\
+                              .prefetch_related(
+                                  Prefetch(
+                                      'modifications',
+                                      queryset=Modification.objects.select_related('modification_id')
+                                  )
+                              )\
+                              .prefetch_related(
+                                  Prefetch(
+                                      'accession__coordinates',
+                                      queryset=GenomicCoordinates.objects.filter(chromosome__isnull=False)
+                                  )
+                              )
             if taxid:
                 xrefs = xrefs.filter(taxid=taxid)
 
