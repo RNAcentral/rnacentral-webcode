@@ -119,20 +119,11 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         }
 
         var rnaClipboard = new Clipboard('#copy-as-rna', {
-            "text": function() {
-                var rna = $('#rna-sequence').text();
-                rna = rna.replace(/\s/g, '');  // remove whitespace chars (arising due to colored <spans> in sequence)
-                return rna;
-            }
+            "text": function() { return $scope.rna.sequence; }
         });
 
         var dnaClipbaord = new Clipboard('#copy-as-dna', {
-            "text": function() {
-                var rna = $('#rna-sequence').text();
-                rna = rna.replace(/\s/g, '');  // remove whitespace chars (arising due to colored <spans> in sequence)
-                var dna = reverseTranscriptase(rna);
-                return dna;
-            }
+            "text": function() { return reverseTranscriptase($scope.rna.sequence); }
         });
     };
 
