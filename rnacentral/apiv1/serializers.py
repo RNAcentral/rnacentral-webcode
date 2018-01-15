@@ -256,6 +256,7 @@ class RnaNestedSerializer(serializers.HyperlinkedModelSerializer):
             'count_distinct_organisms', 'distinct_databases'
         )
 
+
 class RnaSecondaryStructureSerializer(serializers.ModelSerializer):
     """Serializer for presenting RNA secondary structures"""
     data = serializers.SerializerMethodField('get_secondary_structures')
@@ -349,8 +350,18 @@ class RnaFlatSerializer(RnaNestedSerializer):
         page_size = self.context.get('page_size', 100)
         paginator = Paginator(queryset, page_size)
         xrefs = paginator.page(page)
-        serializer = PaginatedXrefSerializer(xrefs, context=self.context)
+
+        serializer = XrefSerializer(xrefs, many=True, context=self.context)
+
         return serializer.data
+
+    class Meta:
+        model = Rna
+        fields = (
+            'url', 'rnacentral_id', 'md5', 'sequence', 'length', 'xrefs', 'publications',
+            'is_active', 'description', 'rna_type',
+            'count_distinct_organisms', 'distinct_databases'
+        )
 
 
 class RnaFastaSerializer(serializers.ModelSerializer):

@@ -33,6 +33,8 @@ from django.views.decorators.cache import never_cache
 from contextlib import closing
 from rq import get_current_job
 from rest_framework import renderers
+from rest_framework.test import APIRequestFactory
+from rest_framework.request import Request
 
 from apiv1.serializers import RnaFlatSerializer
 from portal.models import Rna
@@ -74,9 +76,15 @@ def export_search_results(query, _format, hits):
         if _format == 'list':
             return '\n'.join(rnacentral_ids) + '\n'
         elif _format == 'json':
+            # filter queryset to hold only specific rnacentral ids
             rnacentral_ids = [re.sub(r'_\d+', '', x) for x in rnacentral_ids]
             queryset = Rna.objects.filter(upi__in=rnacentral_ids).all()
-            serializer = RnaFlatSerializer(queryset, many=True)
+
+            factory = APIRequestFactory()
+            fake_request = factory.get('/')
+            serializer_context = {'request': fake_request}
+            serializer = RnaFlatSerializer(queryset, context=serializer_context, many=True)
+
             renderer = renderers.JSONRenderer()
             output = renderer.render(serializer.data)
             # omit opening and closing square brackets for easy concatenation
