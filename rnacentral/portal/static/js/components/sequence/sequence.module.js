@@ -137,7 +137,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     };
 
     $scope.fetchRfamHits = function() {
-        return $http.get(routes.apiRfamHitsView({upi: $scope.upi}))
+        return $http.get(routes.apiRfamHitsView({upi: $scope.upi}), {params: {page_size: 10000000000}})
     };
 
     $scope.activateFeatureViewer = function() {
