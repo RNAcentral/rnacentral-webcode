@@ -1,0 +1,50 @@
+#------------------------------------------------------------------------------
+# We have 2 ways to deploy RNAcentral in production:
+# bare-metal managed (no root permissions) CentOS 6 VMs and Kubernetes.
+#
+# This Dockerfile is meant for containerized deployment with Kubernetes.
+#
+#-------------------------------------------------------------------------------
+
+FROM debian:latest
+
+RUN apt-get update && apt-get install -y \
+    g++ \
+    build-essential \
+    curl \
+    wget \
+    tar \
+    git \
+    python-2.7 \
+    libpython2.7-dev \
+    python-pip \
+    redis \
+    memcached
+
+ADD . /srv/rnacentral
+RUN mkdir /srv/rnacentral/local
+RUN mkdir /srv/rnacentral/static
+
+ENV RNACENTRAL_LOCAL /usr/local/bin
+
+# Install Infernal
+RUN \
+    cd $RNACENTRAL_LOCAL && \
+    curl -OL http://eddylab.org/infernal/infernal-1.1.1.tar.gz && \
+    tar -xvzf infernal-1.1.1.tar.gz && \
+    cd infernal-1.1.1 && \
+    ./configure --prefix=$RNACENTRAL_LOCAL/infernal-1.1.1 && \
+    make && \
+    make install && \
+    cd easel && \
+    make install && \
+    cd $RNACENTRAL_LOCAL && \
+    rm infernal-1.1.1.tar.gz
+
+# Install Django requirements
+RUN pip install -r /srv/rnacentral/requirements.txt
+
+# Start up the app
+ENTRYPOINT
+    supervisord -c /srv/supervisor/supervisor.conf && \
+    python /srv/rnacentral/manage.py runserver 0.0.0.0:8000
