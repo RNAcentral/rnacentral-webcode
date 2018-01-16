@@ -1,9 +1,16 @@
+#------------------------------------------------------------------------------
+# We have 2 ways to deploy RNAcentral in production:
+# bare-metal managed (no root permissions) CentOS 6 VMs and Kubernetes.
 #
-# Create a reproducible installation of the RNAcentral website.
+# This dockerfile is meant to mimic the environment of
+# bare-metal CentOS VMs in order to reate a reproducible
+# installation of the RNAcentral website.
 #
-# All local dependencies are installed manually to mirror the production setup
-# where Docker or yum are not available.
+# All local dependencies are installed manually to mirror the
+# bare-metal production setup on EBI VMs, where Docker or yum
+# are not available.
 #
+#-------------------------------------------------------------------------------
 
 FROM centos:6.6
 
