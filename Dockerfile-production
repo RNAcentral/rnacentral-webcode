@@ -25,7 +25,8 @@ ADD . /srv/rnacentral
 RUN mkdir /srv/rnacentral/local
 RUN mkdir /srv/rnacentral/static
 
-ENV RNACENTRAL_LOCAL /usr/local/bin
+ENV RNACENTRAL_LOCAL /srv/rnacentral/local
+ENV RNACENTRAL_HOME /srv/rnacentral
 
 # Install Infernal
 RUN \
