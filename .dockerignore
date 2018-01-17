@@ -1,2 +1,2 @@
-*
-!rnacentral/requirements.txt
+**/local_settings*
+**/*.pyc

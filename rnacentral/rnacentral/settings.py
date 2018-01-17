@@ -207,6 +207,10 @@ LOGGING = {
             'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",  # pylint: disable=W0401, C0301
             'datefmt': "%d/%b/%Y %H:%M:%S"
         },
+        'rq_console': {
+            "format": "%(asctime)s %(message)s",
+            "datefmt": "%H:%M:%S",
+        },
     },
     'handlers': {
         'null': {
@@ -218,6 +222,12 @@ LOGGING = {
             'class': 'logging.StreamHandler',  # writes to stderr
             'formatter': 'standard'
         },
+        'rq_console': {
+            "level": "DEBUG",
+            "class": "rq.utils.ColorizingStreamHandler",
+            "formatter": "rq_console",
+            "exclude": ["%(asctime)s"],
+        },
     },
     'loggers': {
         'django': {
@@ -225,10 +235,19 @@ LOGGING = {
             'propagate': True,
             'level': 'WARN',
         },
+        'django.server': {
+            'handlers': ['console'],
+            'propagate': True,
+            'level': 'INFO',
+        },
         'django.db.backends': {
             'handlers': ['console'],
-            'level': 'DEBUG',
             'propagate': False,
+            'level': 'DEBUG',
+        },
+        'rq.worker': {
+            "handlers": ["rq_console"],
+            "level": "DEBUG"
         },
     }
 }

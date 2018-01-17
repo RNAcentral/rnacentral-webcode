@@ -27,7 +27,12 @@ limitations under the License.
 
 {% block content %}
 <div class="row" ng-controller="rnaSequenceController">
-    <div class="col-md-12">
+    <div ng-if="fetchRnaError" class="col-md-12">
+        <div class="alert alert-danger">
+            <i class="fa fa-exclamation-triangle"></i> Sorry, there was a problem loading sequence from server. Please try again and contact us if the problem persists.
+        </div>
+    </div>
+    <div ng-if="rna" class="col-md-12">
         <h1>
             Sequence {{ rna.upi }}
 
@@ -67,7 +72,7 @@ limitations under the License.
 
             <uib-tab index="0" heading="Overview" id="overview" deselect="checkTab($event, $selectedIndex)">
 
-                <xrefs upi="upi" taxid="taxid" timeout="5000" page-size="5" on-activate-publications="activateTab('2'); $('html, body').animate({ scrollTop: $('#tabs').offset().top }, 1200);" on-activate-modified-nucleotides="activateModifiedNucleotides(modifications)" on-activate-genome-browser="activateGenomeBrowser(start, end, chr, genome)"></xrefs>
+                <xrefs upi="upi" taxid="taxid" timeout="5000" page-size="5" on-activate-publications="activateTab('2'); $('html, body').animate({ scrollTop: $('#tabs').offset().top }, 1200);" on-create-modifications-feature="createModificationsFeature(modifications, accession)" on-activate-genome-browser="activateGenomeBrowser(start, end, chr, genome)"></xrefs>
 
                 <!-- genoverse -->
                 <div ng-if="genome && chr && start && end">
@@ -202,7 +207,7 @@ limitations under the License.
                 <p ng-if="taxid">
                      <!-- genoverse -->
                     <div ng-if="genome && chr && start && end">
-                        <genoverse genome="genome" chr="chr" start="start" end="end" example-locations="exampleLocations" container=".container">
+                        <genoverse genome="genome" chr="chr" start="start" end="end" example-locations="exampleLocations">
                             <genoverse-track name="'Sequence'" model="Genoverse.Track.Model.Sequence.Ensembl" view="Genoverse.Track.View.Sequence" controller="Genoverse.Track.Controller.Sequence" url="genoverseUtils.urls.sequence" resizable="'auto'" auto-height="true" hide-empty="false" extra="{100000: false}"></genoverse-track>
                             <genoverse-track name="'Genes'" labels="true" info="'Ensembl API genes'" model="Genoverse.Track.Model.Gene.Ensembl" view="Genoverse.Track.View.Gene.Ensembl" url="genoverseUtils.urls.genes" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.genesPopulateMenu}"></genoverse-track>
                             <genoverse-track name="'Transcripts'" labels="true" info="'Ensembl API transcripts'" model="Genoverse.Track.Model.Transcript.Ensembl" view="Genoverse.Track.View.Transcript.Ensembl" url="genoverseUtils.urls.transcripts" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.transcriptsPopulateMenu}"></genoverse-track>
@@ -264,7 +269,22 @@ limitations under the License.
                     <a href="https://en.wikipedia.org/wiki/Nucleic_acid_notation#IUPAC_notation">&nbsp;IUPAC notation</a>
                 </p>
                 {% endif %}
-                <pre class="pre-scrollable" id="rna-sequence">{{ rna.get_sequence }}</pre>
+                <div id="feature-viewer"></div>
+                <p><b>To zoom in :</b> Left click to select area of interest; <b>To zoom out :</b> Right click to reset the scale</p>
+
+                <div style="padding-top: 10px; padding-bottom: 10px;">
+                    <button class="btn btn-primary" ng-click="showSequence = !showSequence">{% verbatim %}{{ showSequence ? "Hide sequence" : "Show sequence" }}{% endverbatim %}</button>
+                    <div ng-if="rna" class="btn-group">
+                        <button class="btn btn-default btn-sm" id="copy-as-rna">
+                          <i class="fa fa-copy" aria-hidden="true">&nbsp;as RNA</i>
+                        </button>
+                        <button class="btn btn-default btn-sm" id="copy-as-dna">
+                          <i class="fa fa-copy" aria-hidden="true">&nbsp;as DNA</i>
+                        </button>
+                    </div>
+                </div>
+
+                <pre ng-if="showSequence" class="pre-scrollable" id="rna-sequence">{{ rna.get_sequence }}</pre>
             </uib-tab>
 
             <uib-tab index="1" heading="Taxonomy" deselect="checkTab($event, $selectedIndex)">

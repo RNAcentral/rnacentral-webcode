@@ -4,6 +4,9 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     $scope.taxid = $location.path().split('/')[3];  // TODO: this might not exist!
     $scope.hide2dTab = true;
 
+    $scope.fetchRnaError = false; // hide content and display error, if we fail to download rna from server
+    $scope.fetchGenomeLocationsError = false; // same
+
     // programmatically switch tabs
     $scope.activeTab = 0;
     $scope.activateTab = function(index) {
@@ -46,82 +49,60 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     };
 
     $scope.fetchGenomeLocations = function() {
-        return $q(function(resolve, reject) {
-            $http.get(routes.apiGenomeLocationsView({ upi: $scope.upi, taxid: $scope.taxid })).then(
-                function(response) {
+        return $q(function (resolve, reject) {
+            $http.get(routes.apiGenomeLocationsView({upi: $scope.upi, taxid: $scope.taxid})).then(
+                function (response) {
                     $scope.genomeLocations = response.data;
                     resolve(response.data);
                 },
-                function() {
+                function () {
+
+                }
+            );
+        });
+    };
+
+    $scope.fetchRna = function() {
+        return $q(function(resolve, reject) {
+            $http.get(routes.apiRnaView({upi: $scope.upi})).then(
+                function(response) {
+                    $scope.rna = response.data;
+                    resolve();
+                },
+                function () {
+                    $scope.fetchRnaError = true;
                     reject();
                 }
             );
         });
-
     };
 
     // Modified nucleotides visualisation.
-    $scope.activateModifiedNucleotides = function(modifications) {
-        // sort modifications by position
-        modifications.sort(function(a, b) {return a.position - b.position});
+    $scope.createModificationsFeature = function(modifications, accession) {
+        if (!$scope.featureViewer.hasFeature(accession, "id")) { // if feature track's already there, don't duplicate it
+            // sort modifications by position
+            modifications.sort(function(a, b) {return a.position - b.position});
 
-        // destroy any existing popovers before reading in the sequence
-        $('.modified-nt').popover('destroy');
-
-        // initialize variables
-        var $pre = $('#rna-sequence');
-        var text = $pre.text();
-        var newText = "";
-        var modification;
-
-        // loop over modifications and insert span tags with modified nucleotide data
-        var start = 0;
-        for (var i = 0; i < modifications.length; i++) {
-            newText += text.slice(start, modifications[i].position - 1);
-
-            // create links to pdb and modomics, if possible
-            var pdbLink = "", modomicsLink = "";
-            if (modifications[i].chem_comp.pdb_url) {
-                pdbLink = '<a href=\'' + modifications[i].chem_comp.pdb_url + '\' target=\'_blank\'>PDBe</a> <br>';  // note <br> in the end
-            }
-            if (modifications[i].chem_comp.modomics_url) {
-                modomicsLink = '<a href=\'' + modifications[i].chem_comp.modomics_url + '\' target=\'_blank\'>Modomics</a>';
+            // loop over modifications and insert span tags with modified nucleotide data
+            var data = [];
+            for (var i = 0; i < modifications.length; i++) {
+                data.push({
+                    x: modifications[i].position,
+                    y: modifications[i].position,
+                    description: 'Modified nucleotide ' + modifications[i].chem_comp.id + modifications[i].chem_comp.one_letter_code + ' <br> ' + modifications[i].chem_comp.description
+                });
             }
 
-            // html template for a modified nucleotide
-            modification = '<span class="modified-nt" role="button" tabindex="10" ' +
-              'data-trigger="focus" ' +
-              'data-toggle="popover" ' +
-              'data-content="' + modifications[i].chem_comp.description + ' <br> ' + pdbLink + modomicsLink + '" ' +
-              'title="Modified nucleotide <strong>' + modifications[i].chem_comp.id + '</strong>">' +
-                modifications[i].chem_comp.one_letter_code +
-            '</span>';
-
-            newText += modification;
-
-            start = modifications[i].position;  // prepare start position for next iteration
+            $scope.featureViewer.addFeature({
+                id: accession,
+                data: data,
+                name: "Modified",  // in " + accession.substr(0, 8),
+                className: "modification",
+                color: "#005572",
+                type: "rect",
+                filter: "type1"
+            });
         }
-        newText += text.slice(start, text.length);  // last iteration
-
-        // update the sequence (use `html`, not `text`)
-        $pre.html(newText);
-
-        // scroll to sequence <pre>, bring sequence in the viewport
-        $('html, body').animate(
-            { scrollTop: $('#rna-sequence').offset().top - 100 },
-            1200
-        );
-
-        // initialize popovers
-        $('.modified-nt').popover({
-            placement: 'top',
-            html: true,
-            container: 'body',
-            viewport: '#rna-sequence'
-        });
-
-        // activate the first popover
-        $('.modified-nt').first().focus().popover('show');
     };
 
     // populate data for angular-genoverse instance
@@ -139,13 +120,12 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         $scope.domain = $scope.genoverseUtils.getEnsemblSubdomainByDivision($scope.genome, $scope.genoverseUtils.genomes);
     };
 
-    activateCopyToClipboardButtons();
 
     /**
      * Copy to clipboard buttons allow the user to copy an RNA sequence as RNA or DNA into
      * the clipboard by clicking on them. Buttons are located near the Sequence header.
      */
-    function activateCopyToClipboardButtons() {
+    $scope.activateCopyToClipboardButtons = function() {
         /**
          * Returns DNA sequence, corresponding to input RNA sequence. =)
          */
@@ -155,24 +135,105 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         }
 
         var rnaClipboard = new Clipboard('#copy-as-rna', {
-            "text": function() {
-                var rna = $('#rna-sequence').text();
-                rna = rna.replace(/\s/g, '');  // remove whitespace chars (arising due to colored <spans> in sequence)
-                return rna;
-            }
+            "text": function() { return $scope.rna.sequence; }
         });
 
         var dnaClipbaord = new Clipboard('#copy-as-dna', {
-            "text": function() {
-                var rna = $('#rna-sequence').text();
-                rna = rna.replace(/\s/g, '');  // remove whitespace chars (arising due to colored <spans> in sequence)
-                var dna = reverseTranscriptase(rna);
-                return dna;
-            }
+            "text": function() { return reverseTranscriptase($scope.rna.sequence); }
         });
     };
 
-    $scope.fetchGenomeLocations();
+    $scope.fetchRfamHits = function() {
+        return $http.get(routes.apiRfamHitsView({upi: $scope.upi}), {params: {page_size: 10000000000}})
+    };
+
+    $scope.activateFeatureViewer = function() {
+        $(document).ready(function() {
+            //Create a new Feature Viewer and add some rendering options
+            $scope.featureViewer = new FeatureViewer(
+                $scope.rna.sequence,
+                "#feature-viewer",
+                {
+                    showAxis: true,
+                    showSequence: true,
+                    brushActive: true,
+                    toolbar:true,
+                    // bubbleHelp: true,
+                    zoomMax:20,
+                    tooltipFontSize: '12px'
+                }
+            );
+
+            // if any non-canonical nucleotides found, show them on a separate track
+            nonCanonicalNucleotides = [];
+            for (var i = 0; i < $scope.rna.sequence.length; i++) {
+                if (['A', 'U', 'G', 'C'].indexOf($scope.rna.sequence[i]) === -1) {
+                    nonCanonicalNucleotides.push({x: i, y: i, description: $scope.rna.sequence[i]})
+                }
+            }
+            if (nonCanonicalNucleotides.length > 0) {
+                $scope.featureViewer.addFeature({
+                    data: nonCanonicalNucleotides,
+                    name: "Non-canonical",
+                    className: "nonCanonical",
+                    color: "#b94a48",
+                    type: "rect",
+                    filter: "type1"
+                });
+            }
+
+            // show Rfam models, found in this RNA
+            $scope.fetchRfamHits().then(
+                function(response) {
+                    data = [];
+                    for (var i = 0; i < response.data.results.length; i++) {
+                        var direction, x, y;
+                        if (response.data.results[i].sequence_start <= response.data.results[i].sequence_stop) {
+                            direction = '>';
+                            x = response.data.results[i].sequence_start;
+                            y = response.data.results[i].sequence_stop;
+                        } else {
+                            direction = '<';
+                            x = response.data.results[i].sequence_stop;
+                            y = response.data.results[i].sequence_start;
+                        }
+
+                        data.push({
+                            x: x,
+                            y: y,
+                            description: direction + " " + response.data.results[i].rfam_model.rfam_model_id + " " + response.data.results[i].rfam_model.long_name
+                        })
+                    }
+
+                    $scope.featureViewer.addFeature({
+                        data: data,
+                        name: "Rfam models",
+                        className: "rfamModels",
+                        color: "#d28068",
+                        type: "rect",
+                        filter: "type1"
+                    });
+                },
+                function() {
+                    console.log('failed to fetch Rfam hits');
+                }
+            );
+        });
+    };
+
+    // Initialization
+    //---------------
+
+    $scope.activateCopyToClipboardButtons();
+    $scope.fetchRna().then(function() {
+        $scope.activateFeatureViewer();
+    });
+    $scope.fetchGenomeLocations().then(function() {
+        if ($scope.genomeLocations.length > 0) {
+            var location = $scope.genomeLocations[0];
+            $scope.activateGenomeBrowser(location.start, location.stop, location.chr, location.genome);
+        }
+    });
 };
 
 rnaSequenceController.$inject = ['$scope', '$location', '$window', '$rootScope', '$compile', '$http', '$q', '$filter', 'routes', 'GenoverseUtils'];

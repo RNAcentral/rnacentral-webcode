@@ -17,6 +17,7 @@ import datetime
 import django_rq
 import gzip
 import json
+import logging
 import os
 import re
 import requests
@@ -32,6 +33,8 @@ from django.views.decorators.cache import never_cache
 from contextlib import closing
 from rq import get_current_job
 from rest_framework import renderers
+from rest_framework.test import APIRequestFactory
+from rest_framework.request import Request
 
 from apiv1.serializers import RnaFlatSerializer
 from portal.models import Rna
@@ -73,9 +76,15 @@ def export_search_results(query, _format, hits):
         if _format == 'list':
             return '\n'.join(rnacentral_ids) + '\n'
         elif _format == 'json':
+            # filter queryset to hold only specific rnacentral ids
             rnacentral_ids = [re.sub(r'_\d+', '', x) for x in rnacentral_ids]
             queryset = Rna.objects.filter(upi__in=rnacentral_ids).all()
-            serializer = RnaFlatSerializer(queryset, many=True)
+
+            factory = APIRequestFactory()
+            fake_request = factory.get('/')
+            serializer_context = {'request': fake_request}
+            serializer = RnaFlatSerializer(queryset, context=serializer_context, many=True)
+
             renderer = renderers.JSONRenderer()
             output = renderer.render(serializer.data)
             # omit opening and closing square brackets for easy concatenation
@@ -163,7 +172,9 @@ def export_search_results(query, _format, hits):
                 # join batches with commas except for the last iteration
                 archive.write(',\n')
             start = end
+
             job.meta['progress'] = min(round(float(start) * 100 / hits, 2), 85)
+            # job.save_meta()
             job.save()
 
         if _format == 'json':
@@ -171,11 +182,14 @@ def export_search_results(query, _format, hits):
             archive.close()
         if _format == 'fasta':
             run_easel(f, filename)
+
         job.meta['progress'] = 100
+        # job.save_meta()
         job.save()
         return filename
 
     job = get_current_job()
+    job.refresh()
     filename = paginate_over_results()
     return filename
 
@@ -298,7 +312,10 @@ def download_search_result_file(request):
         else:
             status = 202
             return JsonResponse(messages[status], status=status)
-    except:
+    except Exception as e:
+        logger = logging.getLogger("django")
+        logger.exception(e)
+
         status = 500
         return JsonResponse(messages[status], status=status)
 
@@ -344,7 +361,10 @@ def get_export_job_status(request):
         else:
             status = 404
             return JsonResponse(messages[status], status=status)
-    except:
+    except Exception as e:
+        logger = logging.getLogger("django")
+        logger.exception(e)
+
         status = 500
         return JsonResponse(messages[status], status=status)
 
@@ -399,6 +419,7 @@ def submit_export_job(request):
     try:
         queue = django_rq.get_queue()
         hits = get_hit_count(query)
+
         job = queue.enqueue_call(func=export_search_results,
                                  args=(query, _format, hits),
                                  timeout=MAX_RUN_TIME,
@@ -412,6 +433,8 @@ def submit_export_job(request):
         job.save()
         return JsonResponse({'job_id': job.id})
     except Exception as e:
-        print(e)
+        logger = logging.getLogger("django")
+        logger.exception(e)
+
         status = 500
         return JsonResponse(messages[status], status=status)

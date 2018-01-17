@@ -308,9 +308,6 @@
             <br>
             <i class="fa fa-angle-right"></i>
             <span class="small" ng-if="xref.modifications.length != 0">
-              <button ng-click="$ctrl.onActivateModifiedNucleotides({ modifications: xref.modifications })" class="btn btn-primary btn-xs">
-                <i class="fa fa-crosshairs"></i> <ng-pluralize count="xref.modifications.length" when="{'one': 'View modification', 'other': 'View modifications'}"></ng-pluralize>
-              </button>
               <span ng-repeat="modification in xref.modifications | unique: 'chem_comp.id' ">
                 <span ng-if="modification.chem_comp.source === 'PDB'">
                   {{ modification.chem_comp.description }}

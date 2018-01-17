@@ -1,0 +1,23 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  # Unique key of the Deployment instance
+  name: rnacentral
+spec:
+  # 2 Pods should exist at all times.
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        # Apply this label to pods and default
+        # the Deployment label selector to this value
+        app: rnacentral-main-pod
+    spec:
+      containers:
+      - name: rnacentral-webcode
+        # Run this image
+        image: rnacentral/rnacentral-webcode:latest
+        volumeMounts:
+        - name: local-settings
+          mountPath: "/srv/rnacentral/rnacentral/rnacentral/local_settings.py"
+          readOnly: true

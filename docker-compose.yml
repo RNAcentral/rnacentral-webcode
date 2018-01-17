@@ -3,7 +3,9 @@ version: '2'
 services:
   # RNAcentral website
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile-development
     volumes:
       - ${RNACENTRAL_HOME}:/rnacentral/rnacentral-webcode
     ports:

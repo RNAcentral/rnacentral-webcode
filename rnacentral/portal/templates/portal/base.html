@@ -35,6 +35,8 @@ limitations under the License.
 
         {% compress css %}
             {% block stylesheets %}
+                <!-- warning: feature viewer css conflicts with bootstrap for navbar etc. -->
+                <link rel="stylesheet" href="{% static "node_modules/feature-viewer-burkov/css/style.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/bootstrap/dist/css/bootstrap.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/font-awesome/css/font-awesome.css" %}">
                 <link rel="stylesheet" href="{% static "css/ebi-global.css" %}">
@@ -133,6 +135,8 @@ limitations under the License.
 
         {% compress js %}
           {% block extra_js %}
+            <!-- warning, feature-viewer.bundle.js includes jquery, so it breaks slick and everything else -->
+            <script src="{% static "node_modules/feature-viewer-burkov/dist/feature-viewer.bundle.js" %}"></script>
             <script src="{% static "node_modules/jquery/dist/jquery.js" %}"></script>
             <script src="{% static "node_modules/slick-carousel/slick/slick.js" %}"></script>
             <script src="{% static "node_modules/hopscotch/dist/js/hopscotch.js" %}"></script>
