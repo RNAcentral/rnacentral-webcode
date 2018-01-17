@@ -17,3 +17,7 @@ spec:
       - name: rnacentral-webcode
         # Run this image
         image: rnacentral/rnacentral-webcode:latest
+        volumeMounts:
+        - name: local-settings
+          mountPath: "/srv/rnacentral/rnacentral/rnacentral/local_settings.py"
+          readOnly: true
