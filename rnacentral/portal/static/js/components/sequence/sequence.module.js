@@ -7,6 +7,9 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     $scope.fetchRnaError = false; // hide content and display error, if we fail to download rna from server
     $scope.fetchGenomeLocationsError = false; // same
 
+    // Tab controls
+    // ------------
+
     // programmatically switch tabs
     $scope.activeTab = 0;
     $scope.activateTab = function(index) {
@@ -41,12 +44,18 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         $scope.hide2dTab = false;
     };
 
-    // hopscotch guided tour
+    // Hopscotch tour
+    // --------------
+
+    // hopscotch guided tour (currently disabled)
     $scope.activateTour = function () {
         // hopscotch_tour = new guidedTour;
         // hopscotch_tour.initialize();
         hopscotch.startTour($rootScope.tour, 4);  // start from step 4
     };
+
+    // Data fetch functions
+    // --------------------
 
     $scope.fetchGenomeLocations = function() {
         return $q(function (resolve, reject) {
@@ -77,33 +86,12 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         });
     };
 
-    // Modified nucleotides visualisation.
-    $scope.createModificationsFeature = function(modifications, accession) {
-        if (!$scope.featureViewer.hasFeature(accession, "id")) { // if feature track's already there, don't duplicate it
-            // sort modifications by position
-            modifications.sort(function(a, b) {return a.position - b.position});
-
-            // loop over modifications and insert span tags with modified nucleotide data
-            var data = [];
-            for (var i = 0; i < modifications.length; i++) {
-                data.push({
-                    x: modifications[i].position,
-                    y: modifications[i].position,
-                    description: 'Modified nucleotide ' + modifications[i].chem_comp.id + modifications[i].chem_comp.one_letter_code + ' <br> ' + modifications[i].chem_comp.description
-                });
-            }
-
-            $scope.featureViewer.addFeature({
-                id: accession,
-                data: data,
-                name: "Modified",  // in " + accession.substr(0, 8),
-                className: "modification",
-                color: "#005572",
-                type: "rect",
-                filter: "type1"
-            });
-        }
+    $scope.fetchRfamHits = function() {
+        return $http.get(routes.apiRfamHitsView({upi: $scope.upi}), {params: {page_size: 10000000000}})
     };
+
+    // View functionality
+    // ------------------
 
     // populate data for angular-genoverse instance
     $scope.activateGenomeBrowser = function(start, end, chr, genome) {
@@ -143,10 +131,11 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         });
     };
 
-    $scope.fetchRfamHits = function() {
-        return $http.get(routes.apiRfamHitsView({upi: $scope.upi}), {params: {page_size: 10000000000}})
-    };
-
+    /**
+     * Creates feature viewer d3 plugin, that displays RNA sequence graphically
+     * and annotates it with features, such as Rfam models, modified or
+     * non-canonical nucleotides.
+     */
     $scope.activateFeatureViewer = function() {
         $(document).ready(function() {
             //Create a new Feature Viewer and add some rendering options
@@ -181,53 +170,87 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                     filter: "type1"
                 });
             }
-
-            // show Rfam models, found in this RNA
-            $scope.fetchRfamHits().then(
-                function(response) {
-                    data = [];
-                    for (var i = 0; i < response.data.results.length; i++) {
-                        var direction, x, y;
-                        if (response.data.results[i].sequence_start <= response.data.results[i].sequence_stop) {
-                            direction = '>';
-                            x = response.data.results[i].sequence_start;
-                            y = response.data.results[i].sequence_stop;
-                        } else {
-                            direction = '<';
-                            x = response.data.results[i].sequence_stop;
-                            y = response.data.results[i].sequence_start;
-                        }
-
-                        data.push({
-                            x: x,
-                            y: y,
-                            description: direction + " " + response.data.results[i].rfam_model.rfam_model_id + " " + response.data.results[i].rfam_model.long_name
-                        })
-                    }
-
-                    $scope.featureViewer.addFeature({
-                        data: data,
-                        name: "Rfam models",
-                        className: "rfamModels",
-                        color: "#d28068",
-                        type: "rect",
-                        filter: "type1"
-                    });
-                },
-                function() {
-                    console.log('failed to fetch Rfam hits');
-                }
-            );
         });
+    };
+
+    /**
+     * Modified nucleotides visualisation.
+     *
+     * Can be invoked upon changing Xrefs page, if server-side pagination's on.
+     */
+    $scope.createModificationsFeature = function(modifications, accession) {
+        if (!$scope.featureViewer.hasFeature(accession, "id")) { // if feature track's already there, don't duplicate it
+            // sort modifications by position
+            modifications.sort(function(a, b) {return a.position - b.position});
+
+            // loop over modifications and insert span tags with modified nucleotide data
+            var data = [];
+            for (var i = 0; i < modifications.length; i++) {
+                data.push({
+                    x: modifications[i].position,
+                    y: modifications[i].position,
+                    description: 'Modified nucleotide ' + modifications[i].chem_comp.id + modifications[i].chem_comp.one_letter_code + ' <br> ' + modifications[i].chem_comp.description
+                });
+            }
+
+            $scope.featureViewer.addFeature({
+                id: accession,
+                data: data,
+                name: "Modified",  // in " + accession.substr(0, 8),
+                className: "modification",
+                color: "#005572",
+                type: "rect",
+                filter: "type1"
+            });
+        }
     };
 
     // Initialization
     //---------------
 
     $scope.activateCopyToClipboardButtons();
+
     $scope.fetchRna().then(function() {
         $scope.activateFeatureViewer();
+
+        // show Rfam models, found in this RNA
+        $scope.fetchRfamHits().then(
+            function(response) {
+                data = [];
+                for (var i = 0; i < response.data.results.length; i++) {
+                    var direction, x, y;
+                    if (response.data.results[i].sequence_start <= response.data.results[i].sequence_stop) {
+                        direction = '>';
+                        x = response.data.results[i].sequence_start;
+                        y = response.data.results[i].sequence_stop;
+                    } else {
+                        direction = '<';
+                        x = response.data.results[i].sequence_stop;
+                        y = response.data.results[i].sequence_start;
+                    }
+
+                    data.push({
+                        x: x,
+                        y: y,
+                        description: direction + " " + response.data.results[i].rfam_model.rfam_model_id + " " + response.data.results[i].rfam_model.long_name
+                    })
+                }
+
+                $scope.featureViewer.addFeature({
+                    data: data,
+                    name: "Rfam models",
+                    className: "rfamModels",
+                    color: "#d28068",
+                    type: "rect",
+                    filter: "type1"
+                });
+            },
+            function() {
+                console.log('failed to fetch Rfam hits');
+            }
+        );
     });
+
     $scope.fetchGenomeLocations().then(function() {
         if ($scope.genomeLocations.length > 0) {
             var location = $scope.genomeLocations[0];
