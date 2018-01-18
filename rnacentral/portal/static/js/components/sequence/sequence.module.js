@@ -106,8 +106,19 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         $scope.chr = chr;
         $scope.genome = $filter('urlencodeSpecies')(genome);
         $scope.domain = $scope.genoverseUtils.getEnsemblSubdomainByDivision($scope.genome, $scope.genoverseUtils.genomes);
+
+        // cache activeLocation to highlight it in table, ignore start/end padding
+        $scope.activeLocation = {genome: genome, chr: chr, start: start, end: end};
     };
 
+    $scope.isActiveLocation = function(location) {
+        var isActive = location.species === $scope.activeLocation.genome &&
+                       location.chromosome === $scope.activeLocation.chr &&
+                       location.start === $scope.activeLocation.start &&
+                       location.end === $scope.activeLocation.end;
+
+        return isActive;
+    };
 
     /**
      * Copy to clipboard buttons allow the user to copy an RNA sequence as RNA or DNA into

@@ -251,7 +251,7 @@ limitations under the License.
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="location in genomeLocations">
+                            <tr ng-repeat="location in genomeLocations" ng-class="{'active': isActiveLocation(location) }">
                                 <td>
                                     <span class="margin-right-5px">{{ location.chromosome }}</span>
                                 </td>
