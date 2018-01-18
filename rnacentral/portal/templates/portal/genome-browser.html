@@ -74,9 +74,9 @@ limitations under the License.
     {% verbatim %}
     <p class='text-muted'>
         <span id='genomic-location' class='margin-right-5px'></span>
-        View in <a href='http://{{ domain }}/{{ genome }}/Location/View?r={{chromosome}}:{{start}}-{{end}}' id="ensembl-link" target='_blank'>{{ genoverseUtils.getGenomeObject(genome, genomes).division }}</a>
+        View in <a href='http://{{ domain }}/{{ genome }}/Location/View?r={{ chromosome }}:{{ start }}-{{ end }}' id="ensembl-link" target='_blank'>{{ genoverseUtils.getGenomeObject(genome, genomes).division }}</a>
         <span ng-show='genoverseUtils.getGenomeObject(genome, genomes).assembly_ucsc' class='ucsc-link'>|
-            <a href='http://genome.ucsc.edu/cgi-bin/hgTracks?db={{ genoverseUtils.getGenomeObject(genome, genomes).assembly_ucsc }}&position={{chromosome | chrToUCSC}}%3A{{start}}-{{end}}' id="ucsc-link" target='_blank'>UCSC</a>
+            <a href='http://genome.ucsc.edu/cgi-bin/hgTracks?db={{ genoverseUtils.getGenomeObject(genome, genomes).assembly_ucsc }}&position={{ chromosome | chrToUCSC }}%3A{{ start }}-{{ end }}' id="ucsc-link" target='_blank'>UCSC</a>
         </span>
     </p>
     <genoverse genome="genome" chr="chromosome" start="start" end="end" example-locations="genoverseUtils.exampleLocations">
