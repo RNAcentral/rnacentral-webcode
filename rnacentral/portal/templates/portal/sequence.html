@@ -238,7 +238,7 @@ limitations under the License.
                 </div>
                 <p ng-if="taxid">
                     {% verbatim %}
-                    <table class="table table-hover table-condensed table-bordered">
+                    <table class="table table-hover table-condensed table-bordered table-responsive">
                         <thead>
                             <tr>
                                 <th>Chromosome</th>
@@ -262,7 +262,7 @@ limitations under the License.
                                     {{ location.strand == "1" ? "forward" : "reverse" }}
                                 </td>
                                 <td>
-                                    <button ng-if="!$ctrl.chromosomeIsScaffold(location.chromosome)" type="button" class="btn btn-primary btn-xs genoverse-xref help margin-right-5px" ng-click="activateGenomeBrowser({ start: location.start, end: location.end, chr: location.chromosome, genome: location.species })" title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> View genomic location</button>
+                                    <button ng-if="!$ctrl.chromosomeIsScaffold(location.chromosome)" type="button" class="btn btn-primary btn-xs genoverse-xref help margin-right-5px" ng-click="activateGenomeBrowser(location.start, location.end, location.chromosome, location.species)" title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> View genomic location</button>
                                     <li ng-if="$ctrl.chromosomeIsScaffold(location.chromosome)" class="badge">Can't view - strange chromosome name</li>
                                 </td>
                                 <td><!-- Ensembl url -->
