@@ -395,7 +395,10 @@ class RnaGenomeLocations(generics.ListAPIView):
                     'strand': xref.accession.coordinates.all()[0].strand,
                     'start': xref.accession.coordinates.all().aggregate(Min('primary_start'))['primary_start__min'],
                     'end': xref.accession.coordinates.all().aggregate(Max('primary_end'))['primary_end__max'],
-                    'species': db2url(xref.accession.species)
+                    'species': db2url(xref.accession.species),
+                    'ucsc_db_id': xref.get_ucsc_db_id(),
+                    'ensembl_division': xref.get_ensembl_division(),
+                    'ensembl_species_url': xref.accession.get_ensembl_species_url()
                 }
 
                 exceptions = ['X', 'Y']
