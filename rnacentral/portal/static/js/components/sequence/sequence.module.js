@@ -254,7 +254,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     $scope.fetchGenomeLocations().then(function() {
         if ($scope.genomeLocations.length > 0) {
             var location = $scope.genomeLocations[0];
-            $scope.activateGenomeBrowser(location.start, location.stop, location.chromosome, location.species);
+            $scope.activateGenomeBrowser(location.start, location.end, location.chromosome, location.species);
         }
     });
 };
