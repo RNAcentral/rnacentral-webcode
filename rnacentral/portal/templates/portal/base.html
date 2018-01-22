@@ -132,6 +132,12 @@ limitations under the License.
 
         </div> <!-- container -->
 
+        <!-- import genoverse plugin or angularjs-genoverse directive OUTSIDE (!) compress block -->
+        <!-- Genoverse bundle contains jquery, avoid conflict with our jquery - let Genoverse go first -->
+        <script src="{% static "node_modules/angularjs-genoverse/lib/Genoverse/js/genoverse.min.js" %}"></script>
+        <!-- New genoverse contains tooltip from jquery ui, it conflicts with bootstrap - bridge it! -->
+        <!-- Bridge doesn't work now
+        <!-- <script>$.widget.bridge('uitooltip', $.ui.tooltip);</script> -->
 
         {% compress js %}
           {% block extra_js %}
@@ -199,14 +205,9 @@ limitations under the License.
           {% endblock extra_js %}
         {% endcompress %}
 
-        <!-- Conditionally import genoverse plugin or angularjs-genoverse directive OUTSIDE (!) compress block -->
-        <script src="{% static "node_modules/angularjs-genoverse/lib/Genoverse/js/genoverse.min.js" %}"></script>
-        <!-- New genoverse contains tooltip from jquery ui, it conflicts with bootstrap - bridge it! -->
-        <script>$.widget.bridge('uitooltip', $.ui.tooltip);</script>
+        <!-- Angular parts of Genoverse outside compress block -->
         <script src="{% static "js/components/genome-browser/genoverse-utils.service.js" %}"></script>
         <script src="{% static "js/components/genome-browser/genoverse.controller.js" %}"></script>
-
-        <!-- always load genoverse module -->
         <script src="{% static "node_modules/angularjs-genoverse/src/genoverse.module.js" %}"></script>
 
         <!-- bootstrap conflicts with jquery-ui tooltip, so it should go after datatables and genoverse -->
