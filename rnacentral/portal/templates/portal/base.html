@@ -200,7 +200,7 @@ limitations under the License.
         {% endcompress %}
 
         <!-- Conditionally import genoverse plugin or angularjs-genoverse directive OUTSIDE (!) compress block -->
-        <script src="{% static "node_modules/angularjs-genoverse/lib/Genoverse/js/genoverse.combined.nojquery.js" %}"></script>
+        <script src="{% static "node_modules/angularjs-genoverse/lib/Genoverse/js/genoverse.min.js" %}"></script>
         <!-- New genoverse contains tooltip from jquery ui, it conflicts with bootstrap - bridge it! -->
         <script>$.widget.bridge('uitooltip', $.ui.tooltip);</script>
         <script src="{% static "js/components/genome-browser/genoverse-utils.service.js" %}"></script>
