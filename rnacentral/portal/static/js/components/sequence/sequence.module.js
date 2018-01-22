@@ -95,9 +95,9 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 
     // populate data for angular-genoverse instance
     $scope.activateGenomeBrowser = function(start, end, chr, genome) {
-        $scope.Genoverse = Genoverse;
-        $scope.genoverseUtils = new GenoverseUtils($scope);
-        $scope.exampleLocations = $scope.genoverseUtils.exampleLocations;
+        if (!$scope.Genoverse) $scope.Genoverse = Genoverse;
+        if (!$scope.genoverseUtils) $scope.genoverseUtils = new GenoverseUtils($scope);
+        if (!$scope.exampleLocations) $scope.exampleLocations = $scope.genoverseUtils.exampleLocations;
 
         // add some padding to both sides of feature
         var length = end - start;
