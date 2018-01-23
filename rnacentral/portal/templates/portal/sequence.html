@@ -254,7 +254,7 @@ limitations under the License.
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="location in genomeLocations" ng-class="{'active': isActiveLocation(location) }">
+                            <tr ng-repeat="location in genomeLocations" ng-class="{'active': isSelectedLocation(location) }">
                                 <td>
                                     <span class="margin-right-5px">{{ location.chromosome }}</span>
                                 </td>
@@ -288,8 +288,8 @@ limitations under the License.
                 </div>
 
                 <!-- genoverse -->
-                <div ng-if="genome && chr && start && end">
-                    <genoverse genome="genome" chr="chr" start="start" end="end" example-locations="exampleLocations">
+                <div ng-if="browserLocation.genome && browserLocation.chr && browserLocation.start && browserLocation.end">
+                    <genoverse genome="browserLocation.genome" chr="browserLocation.chr" start="browserLocation.start" end="browserLocation.end" example-locations="exampleLocations">
                         <genoverse-track name="'Sequence'" model="Genoverse.Track.Model.Sequence.Ensembl" view="Genoverse.Track.View.Sequence" controller="Genoverse.Track.Controller.Sequence" url="genoverseUtils.urls.sequence" resizable="'auto'" auto-height="true" hide-empty="false" extra="{100000: false}"></genoverse-track>
                         <genoverse-track name="'Genes'" labels="true" info="'Ensembl API genes'" model="Genoverse.Track.Model.Gene.Ensembl" view="Genoverse.Track.View.Gene.Ensembl" url="genoverseUtils.urls.genes" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.genesPopulateMenu}"></genoverse-track>
                         <genoverse-track name="'Transcripts'" labels="true" info="'Ensembl API transcripts'" model="Genoverse.Track.Model.Transcript.Ensembl" view="Genoverse.Track.View.Transcript.Ensembl" url="genoverseUtils.urls.transcripts" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.transcriptsPopulateMenu}"></genoverse-track>

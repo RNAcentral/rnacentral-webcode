@@ -35,21 +35,21 @@ angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($
 
         this.urls = {
             sequence: _.bind(function () {  // Sequence track configuration
-                var species = this.$scope.genome;
+                var species = this.$scope.browserLocation.genome;
                 var endpoint = this.getEnsemblEndpoint(species);
                 return '__ENDPOINT__/sequence/region/__SPECIES__/__CHR__:__START__-__END__?content-type=text/plain'
                     .replace('__ENDPOINT__', endpoint)
                     .replace('__SPECIES__', species);
             }, this),
             genes: _.bind(function () {  // Genes track configuration
-                var species = this.$scope.genome;
+                var species = this.$scope.browserLocation.genome;
                 var endpoint = this.getEnsemblEndpoint(species);
                 return '__ENDPOINT__/overlap/region/__SPECIES__/__CHR__:__START__-__END__?feature=gene;content-type=application/json'
                     .replace('__ENDPOINT__', endpoint)
                     .replace('__SPECIES__', species);
             }, this),
             transcripts: _.bind(function () {  // Transcripts track configuration
-                var species = this.$scope.genome;
+                var species = this.$scope.browserLocation.genome;
                 var endpoint = this.getEnsemblEndpoint(species);
                 return '__ENDPOINT__/overlap/region/__SPECIES__/__CHR__:__START__-__END__?feature=transcript;feature=exon;feature=cds;content-type=application/json'
                     .replace('__ENDPOINT__', endpoint)
@@ -57,13 +57,13 @@ angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($
             }, this),
             RNAcentral: _.bind(function () {  // custom RNAcentral track
                 var origin = window.location.origin ? window.location.origin : window.location.protocol + "//" + window.location.host + '/';
-                return origin + '/api/v1/overlap/region/__SPECIES__/__CHR__:__START__-__END__'.replace('__SPECIES__', this.$scope.genome);
+                return origin + '/api/v1/overlap/region/__SPECIES__/__CHR__:__START__-__END__'.replace('__SPECIES__', this.$scope.browserLocation.genome);
             }, this)
         };
 
         this.genesPopulateMenu = _.bind(function(feature) {
             var chrStartEnd = feature.seq_region_name + ':' + feature.start + '-' + feature.end; // string e.g. 'X:1-100000'
-            var location = '<a href="http://' + this.$scope.domain + '/' + this.$scope.genome + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
+            var location = '<a href="http://' + this.$scope.browserLocation.domain + '/' + this.$scope.browserLocation.genome + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
 
             var strand;
             if (feature.strand == 1) {
@@ -74,7 +74,7 @@ angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($
             }
 
             var result = {
-                title: '<a href="http://' + this.$scope.domain + '/' + this.$scope.genome + '/Gene/Summary?g=' + feature.gene_id + '">' + feature.gene_id + '</a>',
+                title: '<a href="http://' + this.$scope.browserLocation.domain + '/' + this.$scope.browserLocation.genome + '/Gene/Summary?g=' + feature.gene_id + '">' + feature.gene_id + '</a>',
                 "Assembly name": feature.assembly_name,
                 "Biotype": feature.biotype,
                 "Description": feature.description,
@@ -101,7 +101,7 @@ angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($
 
         this.transcriptsPopulateMenu = _.bind(function(feature) {
             var chrStartEnd = feature.seq_region_name + ':' + feature.start + '-' + feature.end; // string e.g. 'X:1-100000'
-            var location = '<a href="http://' + this.$scope.domain + '/' + this.$scope.genome + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
+            var location = '<a href="http://' + this.$scope.browserLocation.domain + '/' + this.$scope.browserLocation.genome + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
 
             var strand;
             if (feature.strand == 1) {
@@ -112,13 +112,13 @@ angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($
             }
 
             var result = {
-                title: '<a href="http://' + this.$scope.domain + '/' + this.$scope.genome + '/Transcript/Summary?db=core&t=' + feature.transcript_id + '">' + feature.transcript_id + '</a>',
+                title: '<a href="http://' + this.$scope.browserLocation.domain + '/' + this.$scope.browserLocation.genome + '/Transcript/Summary?db=core&t=' + feature.transcript_id + '">' + feature.transcript_id + '</a>',
                 "Assembly name": feature.assembly_name,
                 "Biotype": feature.biotype,
                 "Feature type": feature.feature_type,
                 "Location": location,
                 "Logic name": feature.logic_name,
-                "Parent": '<a href="http://' + this.$scope.domain + '/' + this.$scope.genome + '/Gene/Summary?g=' + feature.Parent + '">' + feature.Parent + '</a>',
+                "Parent": '<a href="http://' + this.$scope.browserLocation.domain + '/' + this.$scope.browserLocation.genome + '/Gene/Summary?g=' + feature.Parent + '">' + feature.Parent + '</a>',
                 "Source": feature.source,
                 "Strand": strand,
                 "Transcript id": feature.transcript_id,
@@ -149,7 +149,7 @@ angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($
 
         this.RNAcentralPopulateMenu = _.bind(function(feature) {
             var chrStartEnd = feature.seq_region_name + ':' + feature.start + '-' + feature.end; // string e.g. 'X:1-100000'
-            var location = '<a href="http://' + this.$scope.domain + '/' + this.$scope.genome + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
+            var location = '<a href="http://' + this.$scope.browserLocation.domain + '/' + this.$scope.browserLocation.genome + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
 
             var strand;
             if (feature.strand == 1) {
@@ -160,7 +160,7 @@ angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($
             }
 
             return {
-                title: '<a target=_blank href="http://rnacentral.org/rna/' + feature.label + '/' + this.getGenomeObject(this.$scope.genome, this.$scope.genomes).taxid.toString() +'">'+ feature.label + '</a>',
+                title: '<a target=_blank href="http://rnacentral.org/rna/' + feature.label + '/' + this.getGenomeObject(this.$scope.browserLocation.genome, this.$scope.genomes).taxid.toString() +'">'+ feature.label + '</a>',
                 "Description": feature.description || "",
                 "RNA type": feature.biotype,
                 "Feature type": feature.feature_type,

@@ -1,4 +1,4 @@
-var rnaSequenceController = function($scope, $location, $window, $rootScope, $compile, $http, $q, $filter, routes, GenoverseUtils) {
+var rnaSequenceController = function($scope, $location, $window, $rootScope, $compile, $http, $q, $filter, $timeout, routes, GenoverseUtils) {
     // Take upi and taxid from url. Note that $location.path() always starts with slash
     $scope.upi = $location.path().split('/')[2];
     $scope.taxid = $location.path().split('/')[3];  // TODO: this might not exist!
@@ -6,6 +6,9 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 
     $scope.fetchRnaError = false; // hide content and display error, if we fail to download rna from server
     $scope.fetchGenomeLocationsError = false; // same
+
+    // avoid a terrible bug with intercepted 2-way binding: https://github.com/RNAcentral/rnacentral-webcode/issues/308
+    $scope.browserLocation = {start: undefined, end: undefined, chr: undefined, genome: undefined, domain: undefined};
 
     // Tab controls
     // ------------
@@ -101,23 +104,23 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 
         // add some padding to both sides of feature
         var length = end - start;
-        $scope.start = start - Math.floor(length / 10) < 0 ? 1 : start - Math.floor(length / 10);
-        $scope.end = end + Math.floor(length/10) > $scope.chromosomeSize ? $scope.chromosomeSize : end + Math.floor(length/10);
-        $scope.chr = chr;
-        $scope.genome = $filter('urlencodeSpecies')(genome);
-        $scope.domain = $scope.genoverseUtils.getEnsemblSubdomainByDivision($scope.genome, $scope.genoverseUtils.genomes);
+        $scope.browserLocation.start = start - Math.floor(length / 10) < 0 ? 1 : start - Math.floor(length / 10);
+        $scope.browserLocation.end = end + Math.floor(length/10) > $scope.chromosomeSize ? $scope.chromosomeSize : end + Math.floor(length/10);
+        $scope.browserLocation.chr = chr;
+        $scope.browserLocation.genome = $filter('urlencodeSpecies')(genome);
+        $scope.browserLocation.domain = $scope.genoverseUtils.getEnsemblSubdomainByDivision($scope.genome, $scope.genoverseUtils.genomes);
 
-        // cache activeLocation to highlight it in table, ignore start/end padding
-        $scope.activeLocation = {genome: genome, chr: chr, start: start, end: end};
+        // cache selectedLocation to highlight it in table, ignore start/end padding
+        $scope.selectedLocation = {genome: genome, chr: chr, start: start, end: end, domain: $scope.browserLocation.domain};
     };
 
-    $scope.isActiveLocation = function(location) {
-        var isActive = location.species === $scope.activeLocation.genome &&
-                       location.chromosome === $scope.activeLocation.chr &&
-                       location.start === $scope.activeLocation.start &&
-                       location.end === $scope.activeLocation.end;
+    $scope.isSelectedLocation = function(location) {
+        var isSelected = location.species === $scope.selectedLocation.genome &&
+                         location.chromosome === $scope.selectedLocation.chr &&
+                         location.start === $scope.selectedLocation.start &&
+                         location.end === $scope.selectedLocation.end;
 
-        return isActive;
+        return isSelected;
     };
 
     /**
@@ -272,7 +275,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     });
 };
 
-rnaSequenceController.$inject = ['$scope', '$location', '$window', '$rootScope', '$compile', '$http', '$q', '$filter', 'routes', 'GenoverseUtils'];
+rnaSequenceController.$inject = ['$scope', '$location', '$window', '$rootScope', '$compile', '$http', '$q', '$filter', '$timeout', 'routes', 'GenoverseUtils'];
 
 
 /**
