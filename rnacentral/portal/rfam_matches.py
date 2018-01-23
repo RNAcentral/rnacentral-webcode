@@ -356,7 +356,7 @@ class MissingMatch(object):
             ]),
         }
 
-    def is_ignorable_mito_missing(self, rna, hits, taxid=None):
+    def is_ignorable_mito_missing_tRNA(self, rna, hits, taxid=None):
         if rna.get_rna_type() != 'tRNA':
             return False
 
@@ -377,7 +377,7 @@ class MissingMatch(object):
             return RfamMatchStatus.no_issues(rna.upi, taxid)
 
         hits = rna.get_rfam_hits()
-        if self.is_ignorable_mito_missing(rna, hits):
+        if self.is_ignorable_mito_missing_tRNA(rna, hits, taxid=taxid):
             return RfamMatchStatus.no_issues(rna.upi, taxid)
 
         required = self.expected_matches[rna_type]
