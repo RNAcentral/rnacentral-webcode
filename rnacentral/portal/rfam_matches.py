@@ -356,17 +356,35 @@ class MissingMatch(object):
             ]),
         }
 
+    def is_ignorable_mito_missing(self, rna, hits, taxid=None):
+        if rna.get_rna_type() != 'tRNA':
+            return False
+
+        has_mito_organelle = bool(Accession.objects.filter(
+            xrefs__upi=rna.upi,
+            xrefs__taxid=taxid,
+            organelle__istartswith='mitochondri',
+        ).count())
+
+        possible_mito = has_mito_organelle or \
+            'mitochondri' in rna.get_description(taxid=taxid).lower()
+
+        return possible_mito and not hits
+
     def __call__(self, rna, taxid=None):
         rna_type = rna.get_rna_type(taxid=taxid)
         if rna_type not in self.expected_matches:
             return RfamMatchStatus.no_issues(rna.upi, taxid)
 
+        hits = rna.get_rfam_hits()
+        if self.is_ignorable_mito_missing(rna, hits):
+            return RfamMatchStatus.no_issues(rna.upi, taxid)
+
         required = self.expected_matches[rna_type]
-        hits = {h.rfam_model_id for h in rna.get_rfam_hits()}
+        hits = {h.rfam_model_id for h in hits}
         if hits.intersection(required):
             return RfamMatchStatus.no_issues(rna.upi, taxid)
 
-        # families = [RfamModel.get(r) for r in required]
         message = self.message(rna_type, required)
         return RfamMatchStatus.with_issue(rna.upi, taxid, self, message)
 
