@@ -18,15 +18,12 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
     // Variables
     // ---------
 
-    $scope.genomes = genomes;
-    $scope.genome = genome;
-    $scope.chromosome = chromosome;
-    $scope.start = start;
-    $scope.end = end;
-
     $scope.Genoverse = Genoverse;
-
     $scope.genoverseUtils = new GenoverseUtils($scope);
+    $scope.genomes = genomes;
+
+    $scope.browserLocation = { genome: genome, chromosome: chromosome, start: start, end: end, domain: $scope.genoverseUtils.getEnsemblSubdomainByDivision(genome)};
+
     $scope.$location = $location;
 
     // Event handlers
@@ -43,10 +40,10 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
     $('#copy-genome-location').tipsy();
 
     // reflect any changes in genome in address bar
-    $scope.$watch('genome', setUrl);
-    $scope.$watch('chromosome', setUrl);
-    $scope.$watch('start', setUrl);
-    $scope.$watch('end', setUrl);
+    $scope.$watch('browserLocation.genome', setUrl);
+    $scope.$watch('browserLocation.chromosome', setUrl);
+    $scope.$watch('browserLocation.start', setUrl);
+    $scope.$watch('browserLocation.end', setUrl);
 
     $scope.$watch('genome', setDomain);
 
@@ -56,10 +53,10 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
     function setUrl(newValue, oldValue) {
         // set the full url
         $location.search({
-            species: $scope.genome,  // filter is from Genoverse module
-            chromosome: $scope.chromosome,
-            start: $scope.start,
-            end: $scope.end
+            species: $scope.browserLocation.genome,  // filter is from Genoverse module
+            chromosome: $scope.browserLocation.chromosome,
+            start: $scope.browserLocation.start,
+            end: $scope.browserLocation.end
         });
         $location.replace();
     }
@@ -68,7 +65,7 @@ angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', 
      * Change ensembl subdomain upon species change
      */
     function setDomain(newValue, oldValue) {
-        $scope.domain = $scope.genoverseUtils.getEnsemblSubdomainByDivision(newValue);
+        $scope.browserLocation.domain = $scope.genoverseUtils.getEnsemblSubdomainByDivision(newValue);
     }
 }]);
 
