@@ -500,6 +500,12 @@ def remove_ribozyme_if_possible(rna_type, _):
     return rna_type
 
 
+def prefer_lnc_over_anti(rna_type, _):
+    if rna_type == set(['antisense_RNA', 'lncRNA']):
+        return set(['lncRNA'])
+    return rna_type
+
+
 def get_rna_types_from(xrefs, name):
     """
     Determine the rna_types as annotated by some database.
@@ -576,7 +582,8 @@ def determine_rna_type_for(sequence, xrefs):
         correct_other_vs_misc,
         remove_ambiguous,
         remove_ribozyme_if_possible,
-        correct_by_length
+        correct_by_length,
+        prefer_lnc_over_anti,
     ]
     for correction in corrections:
         rna_type = correction(rna_type, sequence)
