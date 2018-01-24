@@ -21,8 +21,8 @@ class GenericRnaTypeTest(TestCase):
             get(upi=upi).\
             get_rna_type(taxid=taxid, recompute=True)
 
-    def assertRnaTypeIs(self, description, upi, taxid=None):
-        self.assertEquals(description, self.description_of(upi, taxid=taxid))
+    def assertRnaTypeIs(self, rna_type, upi, taxid=None):
+        self.assertEquals(rna_type, self.rna_type_of(upi, taxid=taxid))
 
 
 class WormTests(GenericRnaTypeTest):
@@ -39,3 +39,25 @@ class HumanTests(GenericRnaTypeTest):
             'lncRNA',
             'URS0000732D5D',
             taxid=9606)
+
+
+class LongTRNATest(GenericRnaTypeTest):
+    def test_fixes_too_long_tRNA(self):
+        self.assertRnaTypeIs(
+            'other',
+            'URS0000A17B82',
+            taxid=640938,
+        )
+
+        self.assertRnaTypeIs(
+            'other',
+            'URS000083F182',
+            taxid=242161,
+        )
+
+    def test_does_not_change_all_long_trnas(self):
+        self.assertRnaTypeIs(
+            'tRNA',
+            'URS00005A245E',
+            taxid=10090,
+        )

@@ -453,6 +453,11 @@ def correct_by_length(rna_type, sequence):
         if 15 <= sequence.length <= 30:
             return set(['miRNA'])
         return set(['precursor_RNA'])
+
+    if 'tRNA' in rna_type and sequence.length > 700:
+        rna_type.remove('tRNA')
+        return rna_type or set(['other'])
+
     return rna_type
 
 
