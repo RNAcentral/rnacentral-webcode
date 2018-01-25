@@ -250,7 +250,6 @@ limitations under the License.
                                 <th>Go to location</th>
                                 <th>Ensembl</th>
                                 <th>UCSC</th>
-                                <th>Xrefs</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -277,9 +276,6 @@ limitations under the License.
                                     <span ng-if="location.ucsc_db_id" class="margin-right-5px ucsc-link">
                                         <a ng-href="{{ 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + location.ucsc_db_id + '&position=' + location.ucsc_chromosome + ':' + location.start + '-' + location.end }}" target="_blank">UCSC</a>
                                     </span>
-                                </td>
-                                <td>
-
                                 </td>
                             </tr>
                         </tbody>
