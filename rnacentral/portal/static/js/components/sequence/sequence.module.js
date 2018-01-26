@@ -108,8 +108,8 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         $scope.browserLocation.end = end + Math.floor(length/10) > $scope.chromosomeSize ? $scope.chromosomeSize : end + Math.floor(length/10);
         $scope.browserLocation.chr = chr;
         $scope.browserLocation.genome = $filter('urlencodeSpecies')(genome);
-        $scope.browserLocation.domain = $scope.genoverseUtils.getEnsemblSubdomainByDivision($scope.genome, $scope.genoverseUtils.genomes);
-        $scope.browserLocation.highlights = { "start": start, "end": end, "label": "Highlighted feature", "removable": true };
+        $scope.browserLocation.domain = $scope.genoverseUtils.getEnsemblSubdomainByDivision($scope.browserLocation.genome, $scope.genoverseUtils.genomes);
+        $scope.browserLocation.highlights = [{ "start": start, "end": end, "label": "Highlighted feature", "removable": true }];
 
         // cache selectedLocation to highlight it in table, ignore start/end padding
         $scope.selectedLocation = {genome: genome, chr: chr, start: start, end: end, domain: $scope.browserLocation.domain};
