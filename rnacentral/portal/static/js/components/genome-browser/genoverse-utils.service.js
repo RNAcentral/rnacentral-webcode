@@ -495,7 +495,8 @@ angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($
             if (feature.feature_type === 'transcript' && !this.featuresById[feature.ID]) {
                 feature.id    = feature.ID;
                 feature.label = label; // used to be feature.external_name
-                feature.exons = [];
+                feature.exons = {};
+                feature.subFeatures = [];
                 feature.cds   = [];
                 feature.chr   = feature.seq_region_name;
 
@@ -503,11 +504,10 @@ angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($
             }
             else if (feature.feature_type === 'exon' && this.featuresById[feature.Parent]) {
                 feature.id  = feature.ID;
-                feature.label = label; // previously, we didn't override this field
                 feature.chr = feature.seq_region_name;
 
                 if (!this.featuresById[feature.Parent].exons[feature.id]) {
-                    this.featuresById[feature.Parent].exons.push(feature);
+                    this.featuresById[feature.Parent].subFeatures.push(feature);
                     this.featuresById[feature.Parent].exons[feature.id] = feature;
                 }
             }
