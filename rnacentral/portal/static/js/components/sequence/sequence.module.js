@@ -115,6 +115,10 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         $scope.selectedLocation = {genome: genome, chr: chr, start: start, end: end, domain: $scope.browserLocation.domain};
     };
 
+    $scope.scrollToGenomeBrowser = function () {
+        $('html, body').animate({ scrollTop: $('#genoverse').offset().top - 200 }, 800);
+    };
+
     $scope.isSelectedLocation = function(location) {
         var isSelected = location.species === $scope.selectedLocation.genome &&
                          location.chromosome === $scope.selectedLocation.chr &&
