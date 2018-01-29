@@ -116,7 +116,25 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     };
 
     $scope.scrollToGenomeBrowser = function () {
-        $('html, body').animate({ scrollTop: $('#genoverse').offset().top - 200 }, 800);
+        // if '#genoverse' is already rendered, scroll to it
+        if ($('#genoverse').length) {
+            $('html, body').animate({ scrollTop: $('#genoverse').offset().top - 200 }, 800);
+            if ($scope.scrollToGenomeBrowserAttempts) delete $scope.scrollToGenomeBrowserAttempts;
+        }
+        else { // if '#genoverse' not rendered, wait 0.5 sec and another 0.5 sec... but no more than 5 attempts total;
+            // first attempt
+            if (!$scope.scrollToGenomeBrowserAttempts) {
+                $scope.scrollToGenomeBrowserAttempts = 1;
+                $timeout($scope.scrollToGenomeBrowser, 500);
+            } else { // not first
+                if ($scope.scrollToGenomeBrowserAttempts < 6) { // more attempts remaining
+                    $scope.scrollToGenomeBrowserAttempts++;
+                    $timeout($scope.scrollToGenomeBrowser, 500);
+                } else { // no more attempts
+                    delete $scope.scrollToGenomeBrowserAttempts;
+                }
+            }
+        }
     };
 
     $scope.isSelectedLocation = function(location) {
