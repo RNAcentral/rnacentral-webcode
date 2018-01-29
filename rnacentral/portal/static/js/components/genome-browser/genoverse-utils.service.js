@@ -483,35 +483,66 @@ angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($
     }
 
     GenoverseUtils.prototype.RNAcentralParseData = function(data) {
-        for (i = 0; i < data.length; i++) {
-            var feature = data[i];
+        var model = this;
+        var featuresById = this.featuresById;
+        var ids = [];
 
-            // prepare a label
-            var label = feature.description || feature.external_name;
-            if (label.length > 50) { label = label.substr(0, 47) + "..."; }
-            if (feature.strand == 1) { label = label + " >"; }
-            else if (feature.strand == -1) { label = "< " + label; }
+        data.filter(function (d) { return d.feature_type === 'transcript'; }).forEach(function (feature, i) {
+            if (!featuresById[feature.id]) {
+                // prepare a label
+                var label = feature.description || feature.external_name;
+                if (label.length > 50) {
+                    label = label.substr(0, 47) + "...";
+                }
+                if (feature.strand == 1) {
+                    label = label + " >";
+                }
+                else if (feature.strand == -1) {
+                    label = "< " + label;
+                }
 
-            if (feature.feature_type === 'transcript' && !this.featuresById[feature.ID]) {
-                feature.id    = feature.ID;
+                feature.id = feature.ID;
                 feature.label = label; // used to be feature.external_name
                 feature.exons = {};
                 feature.subFeatures = [];
-                feature.cds   = [];
-                feature.chr   = feature.seq_region_name;
-
-                this.insertFeature(feature);
-            }
-            else if (feature.feature_type === 'exon' && this.featuresById[feature.Parent]) {
-                feature.id  = feature.ID;
+                feature.cdsStart = Infinity;
+                feature.cdsEnd = -Infinity;
                 feature.chr = feature.seq_region_name;
+                feature.color = '#8B668B';
 
-                if (!this.featuresById[feature.Parent].exons[feature.id]) {
-                    this.featuresById[feature.Parent].subFeatures.push(feature);
-                    this.featuresById[feature.Parent].exons[feature.id] = feature;
-                }
+                model.insertFeature(feature);
+
+                ids.push(feature.id);
             }
-        }
+        });
+
+        data.filter(function (d) { return d.feature_type === 'exon' && featuresById[d.Parent] && !featuresById[d.Parent].exons[d.id]; }).forEach(function (feature) {
+            feature.id  = feature.ID;
+            feature.chr = feature.seq_region_name;
+
+            if (feature.end < featuresById[feature.Parent].cdsStart || feature.start > featuresById[feature.Parent].cdsEnd) {
+                feature.utr = true;
+            } else if (feature.start < featuresById[feature.Parent].cdsStart) {
+                featuresById[feature.Parent].subFeatures.push($.extend({ utr: true }, feature, { end: featuresById[feature.Parent].cdsStart }));
+
+                feature.start = featuresById[feature.Parent].cdsStart;
+            } else if (feature.end > featuresById[feature.Parent].cdsEnd) {
+                featuresById[feature.Parent].subFeatures.push($.extend({ utr: true }, feature, { start: featuresById[feature.Parent].cdsEnd }));
+
+                feature.end = featuresById[feature.Parent].cdsEnd;
+            }
+
+            featuresById[feature.Parent].subFeatures.push(feature);
+            featuresById[feature.Parent].exons[feature.id] = feature;
+
+            // set colors
+            feature.color = false;
+            feature.borderColor = '#8B668B';
+        });
+
+        ids.forEach(function (id) {
+            featuresById[id].subFeatures.sort(function (a, b) { return a.start - b.start; });
+        });
     };
 
      /**
