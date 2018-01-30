@@ -36,6 +36,7 @@ limitations under the License.
         {% compress css %}
             {% block stylesheets %}
                 <!-- warning: feature viewer css conflicts with bootstrap for navbar etc. -->
+                <link rel="stylesheet" href="{% static "node_modules/jquery.tipsy/src/jquery.tipsy.js" %}">
                 <link rel="stylesheet" href="{% static "node_modules/feature-viewer-burkov/css/style.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/bootstrap/dist/css/bootstrap.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/font-awesome/css/font-awesome.css" %}">
@@ -132,13 +133,6 @@ limitations under the License.
 
         </div> <!-- container -->
 
-        <!-- import genoverse plugin or angularjs-genoverse directive OUTSIDE (!) compress block -->
-        <!-- Genoverse bundle contains jquery, avoid conflict with our jquery - let Genoverse go first -->
-        <script src="{% static "node_modules/angularjs-genoverse/lib/Genoverse/js/genoverse.min.js" %}"></script>
-        <!-- New genoverse contains tooltip from jquery ui, it conflicts with bootstrap - bridge it! -->
-        <!-- Bridge doesn't work now
-        <!-- <script>$.widget.bridge('uitooltip', $.ui.tooltip);</script> -->
-
         {% compress js %}
           {% block extra_js %}
             <script src="{% static "node_modules/jquery/dist/jquery.js" %}"></script>
@@ -204,6 +198,17 @@ limitations under the License.
 
           {% endblock extra_js %}
         {% endcompress %}
+
+        <!-- import genoverse plugin or angularjs-genoverse directive OUTSIDE (!) compress block -->
+        <!-- Genoverse bundle contains jquery, avoid conflict with our jquery - let Genoverse go first -->
+        <script src="{% static "node_modules/angularjs-genoverse/lib/Genoverse/dist/js/genoverse.nodeps.min.js" %}"></script>
+        <script src="{% static "node_modules/jquery-ui-bundle/jquery-ui.js" %}"></script>
+        <script src="{% static "node_modules/jquery.mousehold/jquery.mousehold.js" %}"></script>
+        <script src="{% static "node_modules/jquery.mousewheel/jquery.mousewheel.js" %}"></script>
+        <script src="{% static "node_modules/jquery.tipsy/src/jquery.tipsy.js" %}"></script>
+        <!-- New genoverse contains tooltip from jquery ui, it conflicts with bootstrap - bridge it! -->
+        <!-- Bridge doesn't work now
+        <!-- <script>$.widget.bridge('uitooltip', $.ui.tooltip);</script> -->
 
         <!-- Angular parts of Genoverse outside compress block -->
         <script src="{% static "js/components/genome-browser/genoverse-utils.service.js" %}"></script>
