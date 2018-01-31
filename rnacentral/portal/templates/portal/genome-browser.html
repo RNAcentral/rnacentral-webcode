@@ -47,20 +47,20 @@ limitations under the License.
             <div class="row" style="padding-left: 15px;">
                 <div class="col-lg-3 col-md-3 col-sm-12">
                     <label for="genomic-species-select">Species</label>
-                    <select id="genomic-species-select" class="form-control" ng-options="genome as (genome | urldecodeSpecies) for genome in genoverseUtils.genomeNames" ng-model="genome">
+                    <select id="genomic-species-select" class="form-control" ng-options="genome as (genome | urldecodeSpecies) for genome in genoverseUtils.genomeNames" ng-model="browserLocation.genome">
                     </select>
                 </div>
                 <div class="ol-lg-2 col-md-2 col-sm-4">
                     <label for="chromosome-input">Chromosome</label>
-                    <input type="text" class="form-control" id="chromosome-input" placeholder="Enter chromosome" ng-model="chromosome">
+                    <input type="text" class="form-control" id="chromosome-input" placeholder="Enter chromosome" ng-model="browserLocation.chromosome">
                 </div>
                 <div class="col-lg-2 col-md-2 col-sm-4">
                     <label for="genomic-start-input">Start</label>
-                    <input type="number" class="form-control" id="genomic-start-input" placeholder="Enter start" ng-model="start">
+                    <input type="number" class="form-control" id="genomic-start-input" placeholder="Enter start" ng-model="browserLocation.start">
                 </div>
                 <div class="col-lg-2 col-md-2 col-sm-4">
                     <label for="genomic-end-input">End</label>
-                    <input type="number" class="form-control" id="genomic-end-input" placeholder="Enter end" ng-model="end">
+                    <input type="number" class="form-control" id="genomic-end-input" placeholder="Enter end" ng-model="browserLocation.end">
                 </div>
                 <div class="col-lg-3 col-md-3 col-sm-6">
                     <button id="copy-genome-location" class="btn btn-default" data-toggle="tooltip" title="Copy URL to clipboard" style="margin-top: 25px;"><i class="fa fa-share-alt"></i> Copy URL</button>
@@ -74,12 +74,12 @@ limitations under the License.
     {% verbatim %}
     <p class='text-muted'>
         <span id='genomic-location' class='margin-right-5px'></span>
-        View in <a href='http://{{ domain }}/{{ genome }}/Location/View?r={{chromosome}}:{{start}}-{{end}}' id="ensembl-link" target='_blank'>{{ genoverseUtils.getGenomeObject(genome, genomes).division }}</a>
-        <span ng-show='genoverseUtils.getGenomeObject(genome, genomes).assembly_ucsc' class='ucsc-link'>|
-            <a href='http://genome.ucsc.edu/cgi-bin/hgTracks?db={{ genoverseUtils.getGenomeObject(genome, genomes).assembly_ucsc }}&position={{chromosome | chrToUCSC}}%3A{{start}}-{{end}}' id="ucsc-link" target='_blank'>UCSC</a>
+        View in <a href='http://{{ browserLocation.domain }}/{{ browserLocation.genome }}/Location/View?r={{ browserLocation.chromosome }}:{{ browserLocation.start }}-{{ browserLocation.end }}' id="ensembl-link" target='_blank'>{{ genoverseUtils.getGenomeObject(browserLocation.genome, genomes).division }}</a>
+        <span ng-show='genoverseUtils.getGenomeObject(browserLocation.genome, genomes).assembly_ucsc' class='ucsc-link'>|
+            <a href='http://genome.ucsc.edu/cgi-bin/hgTracks?db={{ genoverseUtils.getGenomeObject(browserLocation.genome, genomes).assembly_ucsc }}&position={{ browserLocation.chromosome | chrToUCSC }}%3A{{ browserLocation.start }}-{{ browserLocation.end }}' id="ucsc-link" target='_blank'>UCSC</a>
         </span>
     </p>
-    <genoverse genome="genome" chr="chromosome" start="start" end="end" example-locations="genoverseUtils.exampleLocations">
+    <genoverse genome="browserLocation.genome" chr="browserLocation.chromosome" start="browserLocation.start" end="browserLocation.end" example-locations="genoverseUtils.exampleLocations">
         <genoverse-track name="'Sequence'" model="Genoverse.Track.Model.Sequence.Ensembl" view="Genoverse.Track.View.Sequence" controller="Genoverse.Track.Controller.Sequence" url="genoverseUtils.urls.sequence" resizable="'auto'" auto-height="true" hide-empty="false" extra="{100000: false}"></genoverse-track>
         <genoverse-track name="'Genes'" labels="true" info="'Ensembl API genes'" model="Genoverse.Track.Model.Gene.Ensembl" view="Genoverse.Track.View.Gene.Ensembl" url="genoverseUtils.urls.genes" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.genesPopulateMenu}"></genoverse-track>
         <genoverse-track name="'Transcripts'" labels="true" info="'Ensembl API transcripts'" model="Genoverse.Track.Model.Transcript.Ensembl" view="Genoverse.Track.View.Transcript.Ensembl" url="genoverseUtils.urls.transcripts" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.transcriptsPopulateMenu}"></genoverse-track>

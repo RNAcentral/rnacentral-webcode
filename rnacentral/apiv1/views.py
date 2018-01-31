@@ -14,6 +14,7 @@ import re
 import warnings
 from itertools import chain
 
+from django.db.models import Min, Max
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
@@ -33,12 +34,11 @@ from rest_framework_yaml.renderers import YAMLRenderer
 
 from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, XrefSerializer, \
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
-                              RnaSpeciesSpecificSerializer, RnaListSerializer, ExpertDatabaseStatsSerializer, \
+                              RnaSpeciesSpecificSerializer, ExpertDatabaseStatsSerializer, \
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, RfamHitSerializer
-
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, Accession, Xref, Database, DatabaseStats, RfamHit
-from portal.config.genomes import genomes, url2db, SpeciesNotInGenomes, get_taxid_from_species
+from portal.config.genomes import genomes, url2db, db2url, SpeciesNotInGenomes, get_taxid_from_species
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination
 
@@ -371,6 +371,46 @@ class SecondaryStructureSpeciesSpecificList(generics.ListAPIView):
             'taxid': taxid,
         })
         return Response(serializer.data)
+
+
+class RnaGenomeLocations(generics.ListAPIView):
+    """
+    List of distinct genomic locations, where a specific RNA
+    is found in a specific species, extracted from xrefs.
+
+    [API documentation](/api)
+    """
+    queryset = Rna.objects.select_related().all()
+
+    def get(self, request, pk=None, taxid=None, format=None):
+        """Paginated list of genome locations"""
+        locations = []
+
+        rna = self.get_object()
+        xrefs = rna.get_xrefs(taxid=taxid)
+        for xref in xrefs:
+            if xref.accession.coordinates.exists() and xref.accession.coordinates.all()[0].chromosome:
+                data = {
+                    'chromosome': xref.accession.coordinates.all()[0].chromosome,
+                    'strand': xref.accession.coordinates.all()[0].strand,
+                    'start': xref.accession.coordinates.all().aggregate(Min('primary_start'))['primary_start__min'],
+                    'end': xref.accession.coordinates.all().aggregate(Max('primary_end'))['primary_end__max'],
+                    'species': db2url(xref.accession.species),
+                    'ucsc_db_id': xref.get_ucsc_db_id(),
+                    'ensembl_division': xref.get_ensembl_division(),
+                    'ensembl_species_url': xref.accession.get_ensembl_species_url()
+                }
+
+                exceptions = ['X', 'Y']
+                if re.match(r'\d+', data['chromosome']) or data['chromosome'] in exceptions:
+                    data['ucsc_chromosome'] = 'chr' + data['chromosome']
+                else:
+                    data['ucsc_chromosome'] = data['chromosome']
+
+                if data not in locations:
+                    locations.append(data)
+
+        return Response(locations)
 
 
 class AccessionView(generics.RetrieveAPIView):

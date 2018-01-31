@@ -1,9 +1,17 @@
-var rnaSequenceController = function($scope, $location, $window, $rootScope, $compile, $http, $q, $filter, routes, GenoverseUtils) {
+var rnaSequenceController = function($scope, $location, $window, $rootScope, $compile, $http, $q, $filter, $timeout, routes, GenoverseUtils) {
     // Take upi and taxid from url. Note that $location.path() always starts with slash
     $scope.upi = $location.path().split('/')[2];
     $scope.taxid = $location.path().split('/')[3];  // TODO: this might not exist!
     $scope.hide2dTab = true;
+
     $scope.fetchRnaError = false; // hide content and display error, if we fail to download rna from server
+    $scope.fetchGenomeLocationsError = false; // same
+
+    // avoid a terrible bug with intercepted 2-way binding: https://github.com/RNAcentral/rnacentral-webcode/issues/308
+    $scope.browserLocation = {start: undefined, end: undefined, chr: undefined, genome: undefined, domain: undefined};
+
+    // Tab controls
+    // ------------
 
     // programmatically switch tabs
     $scope.activeTab = 0;
@@ -39,11 +47,31 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         $scope.hide2dTab = false;
     };
 
-    // hopscotch guided tour
+    // Hopscotch tour
+    // --------------
+
+    // hopscotch guided tour (currently disabled)
     $scope.activateTour = function () {
         // hopscotch_tour = new guidedTour;
         // hopscotch_tour.initialize();
         hopscotch.startTour($rootScope.tour, 4);  // start from step 4
+    };
+
+    // Data fetch functions
+    // --------------------
+
+    $scope.fetchGenomeLocations = function() {
+        return $q(function (resolve, reject) {
+            $http.get(routes.apiGenomeLocationsView({upi: $scope.upi, taxid: $scope.taxid})).then(
+                function (response) {
+                    $scope.genomeLocations = response.data;
+                    resolve(response.data);
+                },
+                function () {
+
+                }
+            );
+        });
     };
 
     $scope.fetchRna = function() {
@@ -61,49 +89,62 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         });
     };
 
-    // Modified nucleotides visualisation.
-    $scope.createModificationsFeature = function(modifications, accession) {
-        if (!$scope.featureViewer.hasFeature(accession, "id")) { // if feature track's already there, don't duplicate it
-            // sort modifications by position
-            modifications.sort(function(a, b) {return a.position - b.position});
-
-            // loop over modifications and insert span tags with modified nucleotide data
-            var data = [];
-            for (var i = 0; i < modifications.length; i++) {
-                data.push({
-                    x: modifications[i].position,
-                    y: modifications[i].position,
-                    description: 'Modified nucleotide ' + modifications[i].chem_comp.id + modifications[i].chem_comp.one_letter_code + ' <br> ' + modifications[i].chem_comp.description
-                });
-            }
-
-            $scope.featureViewer.addFeature({
-                id: accession,
-                data: data,
-                name: "Modified",  // in " + accession.substr(0, 8),
-                className: "modification",
-                color: "#005572",
-                type: "rect",
-                filter: "type1"
-            });
-        }
+    $scope.fetchRfamHits = function() {
+        return $http.get(routes.apiRfamHitsView({upi: $scope.upi}), {params: {page_size: 10000000000}})
     };
+
+    // View functionality
+    // ------------------
 
     // populate data for angular-genoverse instance
     $scope.activateGenomeBrowser = function(start, end, chr, genome) {
-        $scope.Genoverse = Genoverse;
-        $scope.genoverseUtils = new GenoverseUtils($scope);
-        $scope.exampleLocations = $scope.genoverseUtils.exampleLocations;
+        if (!$scope.Genoverse) $scope.Genoverse = Genoverse;
+        if (!$scope.genoverseUtils) $scope.genoverseUtils = new GenoverseUtils($scope);
+        if (!$scope.exampleLocations) $scope.exampleLocations = $scope.genoverseUtils.exampleLocations;
 
         // add some padding to both sides of feature
         var length = end - start;
-        $scope.start = start - Math.floor(length / 10) < 0 ? 1 : start - Math.floor(length / 10);
-        $scope.end = end + Math.floor(length/10) > $scope.chromosomeSize ? $scope.chromosomeSize : end + Math.floor(length/10);
-        $scope.chr = chr;
-        $scope.genome = $filter('urlencodeSpecies')(genome);
-        $scope.domain = $scope.genoverseUtils.getEnsemblSubdomainByDivision($scope.genome, $scope.genoverseUtils.genomes);
+        $scope.browserLocation.start = start - Math.floor(length / 10) < 0 ? 1 : start - Math.floor(length / 10);
+        $scope.browserLocation.end = end + Math.floor(length/10) > $scope.chromosomeSize ? $scope.chromosomeSize : end + Math.floor(length/10);
+        $scope.browserLocation.chr = chr;
+        $scope.browserLocation.genome = $filter('urlencodeSpecies')(genome);
+        $scope.browserLocation.domain = $scope.genoverseUtils.getEnsemblSubdomainByDivision($scope.browserLocation.genome, $scope.genoverseUtils.genomes);
+        $scope.browserLocation.highlights = [{ start: start, end: end, chr: chr, label: "Selected location (" + $filter('number')(start) + " - " + $filter('number')(end) + ")", removable: true }];
+
+        // cache selectedLocation to highlight it in table, ignore start/end padding
+        $scope.selectedLocation = {genome: genome, chr: chr, start: start, end: end, domain: $scope.browserLocation.domain};
     };
 
+    $scope.scrollToGenomeBrowser = function () {
+        // if '#genoverse' is already rendered, scroll to it
+        if ($('#genoverse').length) {
+            $('html, body').animate({ scrollTop: $('#genoverse').offset().top - 200 }, 800);
+            if ($scope.scrollToGenomeBrowserAttempts) delete $scope.scrollToGenomeBrowserAttempts;
+        }
+        else { // if '#genoverse' not rendered, wait 0.5 sec and another 0.5 sec... but no more than 5 attempts total;
+            // first attempt
+            if (!$scope.scrollToGenomeBrowserAttempts) {
+                $scope.scrollToGenomeBrowserAttempts = 1;
+                $timeout($scope.scrollToGenomeBrowser, 500);
+            } else { // not first
+                if ($scope.scrollToGenomeBrowserAttempts < 6) { // more attempts remaining
+                    $scope.scrollToGenomeBrowserAttempts++;
+                    $timeout($scope.scrollToGenomeBrowser, 500);
+                } else { // no more attempts
+                    delete $scope.scrollToGenomeBrowserAttempts;
+                }
+            }
+        }
+    };
+
+    $scope.isSelectedLocation = function(location) {
+        var isSelected = location.species === $scope.selectedLocation.genome &&
+                         location.chromosome === $scope.selectedLocation.chr &&
+                         location.start === $scope.selectedLocation.start &&
+                         location.end === $scope.selectedLocation.end;
+
+        return isSelected;
+    };
 
     /**
      * Copy to clipboard buttons allow the user to copy an RNA sequence as RNA or DNA into
@@ -127,10 +168,11 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         });
     };
 
-    $scope.fetchRfamHits = function() {
-        return $http.get(routes.apiRfamHitsView({upi: $scope.upi}), {params: {page_size: 10000000000}})
-    };
-
+    /**
+     * Creates feature viewer d3 plugin, that displays RNA sequence graphically
+     * and annotates it with features, such as Rfam models, modified or
+     * non-canonical nucleotides.
+     */
     $scope.activateFeatureViewer = function() {
         $(document).ready(function() {
             //Create a new Feature Viewer and add some rendering options
@@ -165,56 +207,98 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                     filter: "type1"
                 });
             }
-
-            // show Rfam models, found in this RNA
-            $scope.fetchRfamHits().then(
-                function(response) {
-                    data = [];
-                    for (var i = 0; i < response.data.results.length; i++) {
-                        var direction, x, y;
-                        if (response.data.results[i].sequence_start <= response.data.results[i].sequence_stop) {
-                            direction = '>';
-                            x = response.data.results[i].sequence_start;
-                            y = response.data.results[i].sequence_stop;
-                        } else {
-                            direction = '<';
-                            x = response.data.results[i].sequence_stop;
-                            y = response.data.results[i].sequence_start;
-                        }
-
-                        data.push({
-                            x: x,
-                            y: y,
-                            description: direction + " " + response.data.results[i].rfam_model.rfam_model_id + " " + response.data.results[i].rfam_model.long_name
-                        })
-                    }
-
-                    $scope.featureViewer.addFeature({
-                        data: data,
-                        name: "Rfam models",
-                        className: "rfamModels",
-                        color: "#d28068",
-                        type: "rect",
-                        filter: "type1"
-                    });
-                },
-                function() {
-                    console.log('failed to fetch Rfam hits');
-                }
-            );
         });
+    };
+
+    /**
+     * Modified nucleotides visualisation.
+     *
+     * Can be invoked upon changing Xrefs page, if server-side pagination's on.
+     */
+    $scope.createModificationsFeature = function(modifications, accession) {
+        if (!$scope.featureViewer.hasFeature(accession, "id")) { // if feature track's already there, don't duplicate it
+            // sort modifications by position
+            modifications.sort(function(a, b) {return a.position - b.position});
+
+            // loop over modifications and insert span tags with modified nucleotide data
+            var data = [];
+            for (var i = 0; i < modifications.length; i++) {
+                data.push({
+                    x: modifications[i].position,
+                    y: modifications[i].position,
+                    description: 'Modified nucleotide ' + modifications[i].chem_comp.id + modifications[i].chem_comp.one_letter_code + ' <br> ' + modifications[i].chem_comp.description
+                });
+            }
+
+            $scope.featureViewer.addFeature({
+                id: accession,
+                data: data,
+                name: "Modified",  // in " + accession.substr(0, 8),
+                className: "modification",
+                color: "#005572",
+                type: "rect",
+                filter: "type1"
+            });
+        }
     };
 
     // Initialization
     //---------------
 
     $scope.activateCopyToClipboardButtons();
+
     $scope.fetchRna().then(function() {
         $scope.activateFeatureViewer();
+
+        // show Rfam models, found in this RNA
+        $scope.fetchRfamHits().then(
+            function(response) {
+                data = [];
+                for (var i = 0; i < response.data.results.length; i++) {
+                    var direction, x, y;
+                    if (response.data.results[i].sequence_start <= response.data.results[i].sequence_stop) {
+                        direction = '>';
+                        x = response.data.results[i].sequence_start;
+                        y = response.data.results[i].sequence_stop;
+                    } else {
+                        direction = '<';
+                        x = response.data.results[i].sequence_stop;
+                        y = response.data.results[i].sequence_start;
+                    }
+
+                    data.push({
+                        x: x,
+                        y: y,
+                        description: direction + " " + response.data.results[i].rfam_model.rfam_model_id + " " + response.data.results[i].rfam_model.long_name
+                    })
+                }
+
+                $scope.featureViewer.addFeature({
+                    data: data,
+                    name: "Rfam models",
+                    className: "rfamModels",
+                    color: "#d28068",
+                    type: "rect",
+                    filter: "type1"
+                });
+            },
+            function() {
+                console.log('failed to fetch Rfam hits');
+            }
+        );
+    });
+
+    $scope.fetchGenomeLocations().then(function() {
+        if ($scope.genomeLocations.length > 0) {
+            var location = $scope.genomeLocations[0];
+            $scope.activateGenomeBrowser(location.start, location.end, location.chromosome, location.species);
+        }
+    }, function() {
+        $scope.fetchGenomeLocationsError = true;
     });
 };
 
-rnaSequenceController.$inject = ['$scope', '$location', '$window', '$rootScope', '$compile', '$http', '$q', '$filter', 'routes', 'GenoverseUtils'];
+rnaSequenceController.$inject = ['$scope', '$location', '$window', '$rootScope', '$compile', '$http', '$q', '$filter', '$timeout', 'routes', 'GenoverseUtils'];
 
 
 /**

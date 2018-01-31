@@ -40,6 +40,8 @@ urlpatterns = [
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/publications/(?P<taxid>\d+)/?$',cache_page(CACHE_TIMEOUT)(views.RnaPublicationsView.as_view()), name='rna-publications'),
     # species-specific RNAcentral id
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})(/|_)(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.RnaSpeciesSpecificView.as_view()), name='rna-species-specific'),
+    # genome locations for RNA (species-specific)
+    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/genome-locations/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.RnaGenomeLocations.as_view()), name='rna-genome-locations'),
     # literature citations associated with ENA records
     url(r'^accession/(?P<pk>.*?)/citations/?$', cache_page(CACHE_TIMEOUT)(views.CitationsView.as_view()), name='accession-citations'),
     # view for an individual cross-reference

@@ -286,7 +286,6 @@ genomes = [
 def url2db(identifier):
     """
     Converts species name from its representation in url to its database representation.
-
     :param identifier: Species name as in url, e.g. "canis_familiaris"
     :return: Species name as in database "Canis lupus familiaris"
     """
@@ -299,6 +298,23 @@ def url2db(identifier):
         return "Ceratotherium simum simum"
     else:
         return identifier.replace('_', ' ').capitalize()
+
+
+def db2url(identifier):
+    """
+    Converts species name from its representation in database to url representation.
+    :param identifier: Species name as in url, e.g. "Canis lupus familiaris"
+    :return: Species name as in database "canis_familiaris"
+    """
+    # special cases
+    if identifier in ("Canis lupus familiaris", "Canis familiaris"):
+        return "canis_familiaris"
+    elif identifier in ("Gorilla gorilla gorilla", "Gorilla gorilla"):
+        return "gorilla_gorilla"
+    elif identifier in ("Ceratotherium simum simum", "Ceratotherium simum"):
+        return "ceratotherium_simum"
+    else:
+        return identifier.replace(' ', '_').lower()
 
 
 def get_taxonomy_info_by_genome_identifier(identifier):

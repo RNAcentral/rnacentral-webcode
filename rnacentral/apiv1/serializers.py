@@ -136,7 +136,7 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
     # tmrna_type = serializers.ReadOnlyField(source='get_tmrna_type')
     gencode_transcript_id = serializers.CharField(source='get_gencode_transcript_id', read_only=True)
     gencode_ensembl_url = serializers.CharField(source='get_gencode_ensembl_url', read_only=True)
-    ensembl_division = serializers.CharField(source='get_ensembl_division', read_only=True)
+    ensembl_division = serializers.DictField(source='get_ensembl_division', read_only=True)
     ucsc_db_id = serializers.CharField(source='get_ucsc_db_id', read_only=True)
     genomic_coordinates = serializers.SerializerMethodField()
 
@@ -228,12 +228,6 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
             else:
                 data['ucsc_chromosome'] = data['chromosome']
             return data
-
-
-class RnaListSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Rna
-        fields = '__all__'
 
 
 class RnaNestedSerializer(serializers.HyperlinkedModelSerializer):
