@@ -35,9 +35,10 @@ from rest_framework_yaml.renderers import YAMLRenderer
 from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, XrefSerializer, \
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
                               RnaSpeciesSpecificSerializer, ExpertDatabaseStatsSerializer, \
-                              RawPublicationSerializer, RnaSecondaryStructureSerializer, RfamHitSerializer
+                              RawPublicationSerializer, RnaSecondaryStructureSerializer, RfamHitSerializer, \
+                              EnsemblInsdcMappingSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
-from portal.models import Rna, Accession, Xref, Database, DatabaseStats, RfamHit
+from portal.models import Rna, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblInsdcMapping
 from portal.config.genomes import genomes, url2db, db2url, SpeciesNotInGenomes, get_taxid_from_species
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination
@@ -528,3 +529,14 @@ class RfamHitsAPIViewSet(generics.ListAPIView):
     def get_queryset(self):
         upi = self.kwargs['pk']
         return RfamHit.objects.filter(upi=upi).select_related('rfam_model')
+
+
+class EnsemblInsdcMappingView(APIView):
+    """API endpoint, presenting mapping between E! and INSDC chromosome names."""
+    permission_classes = ()
+    authentication_classes = ()
+
+    def get(self, request, format=None):
+        mapping = EnsemblInsdcMapping.objects.all().select_related()
+        serializer = EnsemblInsdcMappingSerializer(mapping, many=True, context={request: request})
+        return Response(serializer.data)
