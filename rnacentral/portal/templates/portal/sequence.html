@@ -88,25 +88,16 @@ limitations under the License.
                     <table class="table table-hover table-condensed table-bordered table-responsive" style="margin-left: 9px; margin-right: 9px;">
                         <thead>
                             <tr>
+                                <th>Go to location</th>
                                 <th>Chromosome</th>
                                 <th>Coordinates</th>
                                 <th>Strand</th>
-                                <th>Go to location</th>
                                 <th>Ensembl</th>
                                 <th>UCSC</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr ng-repeat="location in genomeLocations" ng-class="{'active': isSelectedLocation(location) }">
-                                <td>
-                                    <span class="margin-right-5px">{{ location.chromosome }}</span>
-                                </td>
-                                <td>
-                                    {{ location.start | number }}&nbsp;-&nbsp;{{ location.end | number }}
-                                </td>
-                                <td>
-                                    {{ location.strand == "1" ? "forward" : "reverse" }}
-                                </td>
                                 <td>
                                     <button ng-if="!$ctrl.chromosomeIsScaffold(location.chromosome)"
                                             type="button"
@@ -115,6 +106,15 @@ limitations under the License.
                                             title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> View genomic location
                                     </button>
                                     <li ng-if="$ctrl.chromosomeIsScaffold(location.chromosome)" class="badge">Can't view - strange chromosome name</li>
+                                </td>
+                                <td>
+                                    <span class="margin-right-5px">{{ location.chromosome }}</span>
+                                </td>
+                                <td>
+                                    {{ location.start | number }}&nbsp;-&nbsp;{{ location.end | number }}
+                                </td>
+                                <td>
+                                    {{ location.strand == "1" ? "forward" : "reverse" }}
                                 </td>
                                 <td><!-- Ensembl url -->
                                     <span ng-if="location.ensembl_division && location.ensembl_species_url" class="margin-right-5px ensembl-link">

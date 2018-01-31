@@ -348,7 +348,7 @@
                   type="button"
                   class="btn btn-primary btn-xs genoverse-xref help margin-right-5px"
                   ng-click="$ctrl.onActivateGenomeBrowser({ start: xref.genomic_coordinates.start, end: xref.genomic_coordinates.end, chr: xref.genomic_coordinates.chromosome, genome: xref.accession.species }); $ctrl.onScrollToGenomeBrowser();"
-                  title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> {{ xref.genomic_coordinates.chromosome }} : {{ xref.genomic_coordinates.start | number }} - {{ xref.genomic_coordinates.end | number }} : {{ xref.genomic_coordinates.strand === 1 ? '>' : '<' }}
+                  title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> {{ xref.genomic_coordinates.chromosome }} : {{ xref.genomic_coordinates.start | number }} - {{ xref.genomic_coordinates.end | number }} : {{ xref.genomic_coordinates.strand === 1 ? '+' : '-' }}
               </button>
               <li ng-if="$ctrl.chromosomeIsScaffold(xref.genomic_coordinates.chromosome)" class="badge">genomic location</li>
               <small>
