@@ -230,15 +230,26 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                 });
             }
 
-            $scope.featureViewer.addFeature({
-                id: accession,
-                data: data,
-                name: "Modified",  // in " + accession.substr(0, 8),
-                className: "modification",
-                color: "#005572",
-                type: "rect",
-                filter: "type1"
-            });
+            /**
+             * If featureViewer was already initialized, add feature to it - otherwise, give it a second and try again.
+             */
+            var addModifications = function() {
+                if ($scope.featureViewer) {
+                    $scope.featureViewer.addFeature({
+                        id: accession,
+                        data: data,
+                        name: "Modified",  // in " + accession.substr(0, 8),
+                        className: "modification",
+                        color: "#005572",
+                        type: "rect",
+                        filter: "type1"
+                    });
+                } else {
+                    $timeout(addModifications, 1000);
+                }
+            };
+
+            addModifications()
         }
     };
 
