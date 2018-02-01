@@ -19,7 +19,7 @@ from django.core.urlresolvers import reverse
 from django.db.models import Min, Max
 from rest_framework import serializers
 
-from portal.models import Rna, Xref, Reference, Database, DatabaseStats, Accession, Release, Reference, Modification, RfamHit, RfamModel, RfamClan
+from portal.models import Rna, Xref, Reference, Database, DatabaseStats, Accession, Release, Reference, Modification, RfamHit, RfamModel, RfamClan, EnsemblAssembly, EnsemblInsdcMapping
 from portal.models.reference_map import Reference_map
 from portal.models.chemical_component import ChemicalComponent
 
@@ -432,3 +432,17 @@ class RfamHitSerializer(serializers.ModelSerializer):
     class Meta:
         model = RfamHit
         fields = ('sequence_start', 'sequence_stop', 'sequence_completeness', 'rfam_model')
+
+
+class EnsemblAssemblySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EnsemblAssembly
+        fields = ('assembly_id', 'assembly_full_name', 'gca_accession', 'assembly_ucsc', 'common_name', 'taxid')
+
+
+class EnsemblInsdcMappingSerializer(serializers.ModelSerializer):
+    assembly = EnsemblAssemblySerializer(source='assembly_id')
+
+    class Meta:
+        model = EnsemblInsdcMapping
+        fields = ('insdc', 'ensembl_name', 'assembly')
