@@ -286,7 +286,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 
     $scope.activateCopyToClipboardButtons();
 
-    // featureViewer requires both document.ready and $scope.rna
+    // featureViewer requires its tab to be open - container ready - and $scope.rna
     $q.all([$scope.fetchRna(), $scope.featureViewerContainerReady()]).then(function() {
         $scope.activateFeatureViewer();
 
