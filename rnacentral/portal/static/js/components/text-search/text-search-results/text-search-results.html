@@ -1,6 +1,6 @@
 <div ng-show="$ctrl.search.status !== 'off'" class="ng-cloak" ng-cloak>
 
-  <h1>
+  <h1 style="margin-bottom: 0px">
     <i class="fa fa-search"></i> Results
     <small ng-show="$ctrl.search.status === 'in progress'">
       <i class="fa fa-spinner fa-spin"></i>
@@ -170,8 +170,8 @@
     </div>
 
     <div class="col-md-9 col-sm-8 col-xs-12 text-search-results">
-      <div>
-        <form class="form-inline font-size-14-px hidden-xs" style="display: inline-block">
+      <div style="margin-top: 16px;">
+        <form class="form-inline font-size-14-px hidden-xs" style="padding-left: 0px">
           <div class="form-group">
             Sort by:
             <!-- ng-options="item.label for item in $ctrl.search.config.sortableFields | filter:{ type : search_type } track by item.label -->
@@ -179,6 +179,7 @@
           </div>
         </form>
       </div>
+
       <hr />
 
       <ul class="list-unstyled">
