@@ -127,7 +127,7 @@ var textSearchResults = {
         };
 
         /**
-         * Constructor-ish function (but now 'new' needed) that returns a model for length slider
+         * Constructor-ish function (but no 'new' needed) that returns a model for length slider
          */
         ctrl.LengthSlider = function(min, max, floor, ceil) {
             return {
