@@ -160,6 +160,10 @@ RUN \
     source $LOC/virtualenvs/RNAcentral/bin/activate && \
     pip install -r $RNACENTRAL_HOME/rnacentral/requirements.txt
 
+# Install NPM dependencies
+ADD rnacentral/portal/static/package.json $RNACENTRAL_HOME/rnacentral/portal/static/
+RUN cd rnacentral/portal/static && npm install
+
 # Expose a container port where the website is served
 EXPOSE 8000
 
