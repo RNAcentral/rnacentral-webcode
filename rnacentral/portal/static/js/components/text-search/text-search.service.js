@@ -5,24 +5,6 @@
 var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
     var self = this; // in case some event handler or constructor overrides "this"
 
-    /**
-     * Service initialization.
-     */
-    this.result = {
-        hitCount: null,
-        entries: [],
-        facets: [],
-        _query: null, // query after preprocessing
-    };
-
-    this.status = 'off'; // possible values: 'off', 'in progress', 'success', 'error'
-
-    this.query = ''; // the query will be observed by watches
-    this.sort = 'boost:descending'; // EBI search endpoint sorts results by this field value
-    this.sortTiebreaker = 'length:descending'; // secondary search field, used in case first field is even
-
-    this.callbacks = []; // callbacks to be called after each search.search(); done for slider redraw
-
     this.config = {
         fields: [
             'active',
@@ -81,10 +63,37 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             'standard_name': 'Standard name'
         },
         facetfields: ['length', 'rna_type', 'TAXONOMY', 'expert_db', 'rfam_problem_found', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
-        sortableFields: ['boost:ascending', 'boost:descending', 'length:ascending', 'length:descending', 'n_citations:ascending', 'n_citations:descending', 'n_xrefs:ascending', 'n_xrefs:descending'],
+        sortableFields: [
+            { label: 'Boost  ↓', value: 'boost:ascending' },
+            { label: 'Boost  ↑', value: 'boost:descending' },
+            { label: 'Length  ↓', value: 'length:ascending' },
+            { label: 'Length  ↑', value: 'length:descending' },
+            { label: 'Citations number ↓', value: 'n_citations:ascending' },
+            { label: 'Citations number ↑', value: 'n_citations:descending' },
+            { label: 'Annotations number ↓', value: 'n_xrefs:ascending' },
+            { label: 'Annotations number ↑', value: 'n_xrefs:descending' }
+        ],
         facetcount: 30,
         pagesize: 15,
     };
+
+    /**
+     * Service initialization.
+     */
+    this.result = {
+        hitCount: null,
+        entries: [],
+        facets: [],
+        _query: null, // query after preprocessing
+    };
+
+    this.status = 'off'; // possible values: 'off', 'in progress', 'success', 'error'
+
+    this.query = ''; // the query will be observed by watches
+    this.sort = 'boost:descending'; // EBI search endpoint sorts results by this field value
+    this.sortTiebreaker = 'length:descending'; // secondary search field, used in case first field is even
+
+    this.callbacks = []; // callbacks to be called after each search.search(); done for slider redraw
 
     /**
      * Launch EBeye autocompletion.
