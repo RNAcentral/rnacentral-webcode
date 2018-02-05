@@ -102,6 +102,7 @@ class GenomeAnnotations(APIView):
             data.append({
                 'ID': transcript_id,
                 'external_name': rnacentral_id,
+                'taxid': xref.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
                 'feature_type': 'transcript',
                 'logic_name': 'RNAcentral',  # required by Genoverse
                 'biotype': biotype,  # required by Genoverse
@@ -121,6 +122,7 @@ class GenomeAnnotations(APIView):
                 data.append({
                     'external_name': exon_id,
                     'ID': exon_id,
+                    'taxid': xref.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
                     'feature_type': 'exon',
                     'Parent': transcript_id,
                     'logic_name': 'RNAcentral',  # required by Genoverse
