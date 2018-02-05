@@ -64,14 +64,14 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
         },
         facetfields: ['length', 'rna_type', 'TAXONOMY', 'expert_db', 'rfam_problem_found', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
         sortableFields: [
-            { label: 'Boost  ↓', value: 'boost:ascending' },
             { label: 'Boost  ↑', value: 'boost:descending' },
-            { label: 'Length  ↓', value: 'length:ascending' },
+            { label: 'Boost  ↓', value: 'boost:ascending' },
             { label: 'Length  ↑', value: 'length:descending' },
-            { label: 'Citations number ↓', value: 'n_citations:ascending' },
+            { label: 'Length  ↓', value: 'length:ascending' },
             { label: 'Citations number ↑', value: 'n_citations:descending' },
-            { label: 'Annotations number ↓', value: 'n_xrefs:ascending' },
-            { label: 'Annotations number ↑', value: 'n_xrefs:descending' }
+            { label: 'Citations number ↓', value: 'n_citations:ascending' },
+            { label: 'Annotations number ↑', value: 'n_xrefs:descending' },
+            { label: 'Annotations number ↓', value: 'n_xrefs:ascending' }
         ],
         facetcount: 30,
         pagesize: 15,
