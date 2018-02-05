@@ -173,12 +173,12 @@
       <div style="margin-top: 16px;">
         <form class="form-inline font-size-14-px hidden-xs" style="padding-left: 0px">
           <div class="form-group">
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sort by:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sort by:
             <!-- ng-options="item.label for item in $ctrl.search.config.sortableFields | filter:{ type : search_type } track by item.label -->
             <select class="form-control" ng-change="$ctrl.search.search($ctrl.search.query)" ng-model="$ctrl.search.sort" ng-options="item.value as item.label for item in $ctrl.search.config.sortableFields"></select>
           </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
           <div class="form-group">
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Tiebreaker:
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Then by:
             <!-- ng-options="item.label for item in $ctrl.search.config.sortableFields | filter:{ type : search_type } track by item.label -->
             <select class="form-control" ng-change="$ctrl.search.search($ctrl.search.query)" ng-model="$ctrl.search.sortTiebreaker" ng-options="item.value as item.label for item in $ctrl.search.config.sortableFields"></select>
           </div>
