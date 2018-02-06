@@ -1,0 +1,15 @@
+node {
+    deploy()
+}
+
+private void deploy() {
+    sh '''
+        cd /nfs/public/rw/xfam/rnacentral/live
+        source local/virtualenvs/RNAcentral/bin/activate
+        cd rnacentral-webcode/rnacentral
+        source scripts/env.sh
+        fab localhost cache_sitemaps
+        fab localhost rsync_sitemaps:remote_host=ves-oy-a4
+        fab -H ves-oy-a4 production rsync_sitemaps:remote_host=ves-pg-a4
+    '''
+}
