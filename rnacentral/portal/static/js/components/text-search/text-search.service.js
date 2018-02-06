@@ -65,13 +65,13 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
         facetfields: ['length', 'rna_type', 'TAXONOMY', 'expert_db', 'rfam_problem_found', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
         sortableFields: [
             { label: 'Popular species  ↓', value: 'boost:descending' },
-            { label: 'Popular species  ↑', value: 'boost:ascending' },
+            // { label: 'Popular species  ↑', value: 'boost:ascending' },
             { label: 'Length  ↓', value: 'length:descending' },
             { label: 'Length  ↑', value: 'length:ascending' },
-            { label: 'Citations number ↓', value: 'n_citations:descending' },
-            { label: 'Citations number ↑', value: 'n_citations:ascending' },
-            { label: 'Annotations number ↓', value: 'n_xrefs:descending' },
-            { label: 'Annotations number ↑', value: 'n_xrefs:ascending' }
+            // { label: 'Citations number ↓', value: 'n_citations:descending' },
+            // { label: 'Citations number ↑', value: 'n_citations:ascending' },
+            // { label: 'Annotations number ↓', value: 'n_xrefs:descending' },
+            // { label: 'Annotations number ↑', value: 'n_xrefs:ascending' }
         ],
         facetcount: 30,
         pagesize: 15,
@@ -171,7 +171,7 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             facetfields: self.config.facetfields.join(),
             size: self.config.pagesize,
             start: start,
-            sort: self.sort + ',' + self.sortTiebreaker
+            sort: self.sort === 'boost:descending' ? self.sort + ',' + self.sortTiebreaker : self.sort
         });
         var queryUrl = routes.ebiSearchProxy({ebeyeUrl: encodeURIComponent(ebeyeUrl)});
 
