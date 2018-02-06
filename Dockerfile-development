@@ -160,9 +160,14 @@ RUN \
     source $LOC/virtualenvs/RNAcentral/bin/activate && \
     pip install -r $RNACENTRAL_HOME/rnacentral/requirements.txt
 
+# Install Node.js
+RUN curl -sL https://rpm.nodesource.com/setup_6.x | bash -
+RUN yum install -y nodejs
+RUN yum install -y gcc-c++ make
+
 # Install NPM dependencies
 ADD rnacentral/portal/static/package.json $RNACENTRAL_HOME/rnacentral/portal/static/
-RUN cd rnacentral/portal/static && npm install
+RUN cd $RNACENTRAL_HOME/rnacentral/portal/static && npm install --only=production
 
 # Expose a container port where the website is served
 EXPOSE 8000
