@@ -55,6 +55,14 @@ var textSearchBar = {
         ctrl.submitQuery = function() {
             ctrl.queryForm.text.$invalid ? ctrl.submitted = true : search.search(ctrl.query);
         };
+
+        /**
+         * Opens text search help modal.
+         */
+        ctrl.openTextSearchHelpModal = function() {
+            $('#text-search-help-modal-parent').detach().appendTo('body'); // move modal to body from our component
+            $('#text-search-help-modal-parent').modal(); // possible options: { backdrop: true, keyboard: true, show: true}
+        }
     }]
 };
 

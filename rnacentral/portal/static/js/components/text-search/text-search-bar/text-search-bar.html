@@ -41,6 +41,7 @@
             <a tooltip-placement="bottom" tooltip-append-to-body="true" uib-tooltip="Search by Expert Database" href="" rel="nofollow" ng-click="$ctrl.search.search('expert_db:&quot;mirbase&quot;')">miRBase</a>,
             <a tooltip-placement="bottom" tooltip-append-to-body="true" uib-tooltip="Search by external identifiers" href="" rel="nofollow" ng-click="$ctrl.search.search('4V4Q')">4V4Q</a>
           </i>
+          <a class="pull-right" href="" ng-click="$ctrl.openTextSearchHelpModal('lg')"><i class="fa fa-question-circle" aria-hidden="true"></i> Help on search</a>
       </span>
       <label class="control-label ng-cloak has-error"
              for="query-text" ng-show="$ctrl.submitted && ($ctrl.queryForm.text.$error.required || $ctrl.queryForm.text.$error.minlength)"
@@ -55,4 +56,187 @@
     </div><!-- /form-group -->
     </fieldset>
   </form><!-- /form -->
+
+  <!-- Text search help modal -->
+  <div id="text-search-help-modal-parent" class="modal fade">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body" id="modal-body">
+          <h1><i class="fa fa-search"></i> Text search</h1>
+
+          <h3>Exact matching</h3>
+          <p>
+            Use double quotes (<b>""</b>) to search for exact matches.
+          </p>
+          <p>
+            <i>Example</i>: `"hsa-mir-21"` will find only <i>hsa-mir-21</i> and not <i>hsa-mir-212</i>
+          </p>
+          <hr />
+
+          <h3>Wildcards</h3>
+          <p>
+            A wildcard character (<strong>*</strong>) can match any number of characters. Wildcards are added automatically to all search terms that are not enclosed in double quotes.
+          </p>
+          <p>
+            <i>Example</i>: a search for `HOTAIR` (no double quotes) will find both <i>HOTAIR</i> and <i>HOTAIRM1</i> genes
+            and a search for `"HOTAIR"` (with double quotes) will find only <i>HOTAIR</i>.
+          </p>
+          <hr />
+
+          <h3>Field-specific search</h3>
+          <p>
+            Search can be restricted to specific fields using the <b>field_name:"field value"</b> syntax.
+            Please note that "field value" <b>must be enclosed in double quotes</b>.
+          </p>
+          <ul>
+            <li>
+              <p><b>expert database</b></p>
+              <p>
+                <i>Possible values</i>: "ena", "gtrnadb", "lncrnadb", "mirbase", "refseq", "rfam", "srpdb", "tmRNA Website", "pdbe", "snopy" and other imported database names.
+              </p>
+              <p>
+                <i>Examples</i>: `expert_db:"tmrna website"`, `expert_db:"mirbase"`
+              </p>
+            </li>
+
+            <li>
+              <p><b>NCBI taxonomic identifier</b></p>
+
+              <p><i>Example</i>: `taxonomy:"9606"` where <a href="http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606">9606</a>is the NCBI taxonomy id for Homo sapiens.</p>
+            </li>
+
+            <li>
+              <p><b>scientific species name</b></p>
+
+              <p><i>Example</i>: `species:"Mus musculus"`</p>
+            </li>
+
+            <li>
+              <p><b>common species name</b></p>
+
+              <p><i>Example</i>: `common_name:"mouse"`</p>
+            </li>
+
+            <li>
+              <p><b>RNA type</b></p>
+
+              <p>To see the list of possible values, search for `RNA` and look at the "RNA types" facet.</p>
+
+              <p><i>Example</i>: `rna_type:"pirna"`</p>
+            </li>
+
+            <li>
+              <p><b>gene</b></p>
+
+              <p><i>Example</i>: `gene:"hotair"`</p>
+            </li>
+
+            <li>
+              <p><b>organelle</b></p>
+
+              <p><i>Example</i>: `organelle:"mitochondrion"`, `organelle:"plastid"`</p>
+            </li>
+
+            <li>
+              <p><b>description</b></p>
+              <p><i>Example</i>: `description:"16S"`</p>
+            </li>
+            <li>
+              <p><b>length</b> (supports range queries)</p>
+
+              <p><i>Example</i>: `length:"1500"`, `length:[9000 to 10000]`</p>
+            </li>
+            <li>
+              <p><b>publication title</b></p>
+
+              <p><i>Example</i>: `pub_title:"Danish population"`</p>
+            </li>
+            <li>
+              <p><b>author</b></p>
+
+              <p><i>Example</i>: `author:"Girard A."`</p>
+            </li>
+            <li>
+              <p><b>PubMed id</b></p>
+
+              <p><i>Example</i>: `pubmed:"17881443"`</p>
+            </li>
+            <li>
+              <p><b>Digital Object Identifier</b></p>
+
+              <p><i>Example</i>: `doi:"10.1093/nar/19.22.6328"`</p>
+            </li>
+            <li>
+              <p><b>MD5</b></p>
+
+              <p>
+                Use <a href="http://en.wikipedia.org/wiki/MD5">MD5</a> hash value of the uppercase DNA version of the sequence
+                to lookup the associated RNAcentral id.
+              </p>
+
+              <p><i>Example</i>: `md5:"020711a90d35bb197e29e085595dd52e"`</p>
+            </li>
+          </ul>
+
+          <hr />
+
+          <h3>Logic operators</h3>
+          <ul>
+            <li>
+              <p><b>and</b> (default)</p>
+
+              <p>
+                Multiple search terms separated by white spaces are combined using AND,
+                so a query like `Homo sapiens` is treated as `Homo AND sapiens` and only entries having both terms will be found.
+              </p>
+            </li>
+            <li>
+              <p>
+                <b>or</b> (to indicate equivalence)
+              </p>
+              <p>
+                <i>Example</i>: `rna_type:"pirna" or rna_type:"mirna"`
+              </p>
+            </li>
+            <li>
+              <p><b>not</b> (to indicate exclusion)</p>
+
+              <p><i>Example</i>: `expert_db:"lncrnadb" not expert_db:"rfam"`.</p>
+            </li>
+          </ul>
+          <hr />
+
+          <h3>Grouping</h3>
+          <p>
+            Use parentheses to group and nest logical terms.
+          </p>
+          <p>
+            <i>Example</i>: `(expert_db:"mirbase" OR expert_db:"lncrnadb") NOT expert_db:"rfam"`
+          </p>
+          <hr />
+
+          <h3>Search tips</h3>
+            <ul>
+              <li>
+                <p>Make sure your <b>spelling</b> is correct.</p>
+
+                <p><i>Example</i>: misspelled terms like `Esherichia` (missing "c") won't find any results.</p>
+              </li>
+              <li>
+                <p>Use <b>full species names</b>.</p>
+
+                <p><i>Example</i>: use `Escherichia coli` and not `E. coli` as your search terms.</p>
+              </li>
+            </ul>
+          <hr />
+
+          <h3>About RNAcentral search</h3>
+
+          RNAcentral is powered by the <a href="http://www.ebi.ac.uk/ebisearch/">EBI search</a>,
+          which provides a publicly available REST interface for querying the data.
+        </div> <!-- modal-body -->
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+
 </div><!-- /ng-controller -->
