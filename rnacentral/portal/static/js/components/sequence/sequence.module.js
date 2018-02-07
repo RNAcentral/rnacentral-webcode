@@ -313,14 +313,16 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                     })
                 }
 
-                $scope.featureViewer.addFeature({
-                    data: data,
-                    name: "Rfam models",
-                    className: "rfamModels",
-                    color: "#d28068",
-                    type: "rect",
-                    filter: "type1"
-                });
+                if (data.length > 0) { // add Rfam feature track, only if there are any data
+                    $scope.featureViewer.addFeature({
+                        data: data,
+                        name: "Rfam models",
+                        className: "rfamModels",
+                        color: "#d28068",
+                        type: "rect",
+                        filter: "type1"
+                    });
+                }
             },
             function() {
                 console.log('failed to fetch Rfam hits');
