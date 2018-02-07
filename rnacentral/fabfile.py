@@ -129,9 +129,8 @@ def rsync_sitemaps(dry_run=None, remote_host='ves-pg-a4'):
     """
     sitemaps_path = os.path.join(settings.PROJECT_PATH, 'rnacentral', 'sitemaps')
 
-    cmd = 'rsync -avi{dry_run} {host}:{src}/ {remote_host}:{dst}'.format(
+    cmd = 'rsync -avi{dry_run} {src}/ {remote_host}:{dst}'.format(
         src=sitemaps_path,
-        host=env.host,
         dst=sitemaps_path,
         remote_host=remote_host,
         dry_run='n' if dry_run else '',
