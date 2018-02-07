@@ -123,16 +123,17 @@ def cache_sitemaps():
         env.run('python rnacentral/manage.py cache_sitemaps')
 
 
-def rsync_sitemaps(dry_run=None):
+def rsync_sitemaps(dry_run=None, remote_host='ves-pg-a4'):
     """
     Copy cached sitemaps from local folder to remote one.
     """
     sitemaps_path = os.path.join(settings.PROJECT_PATH, 'rnacentral', 'sitemaps')
 
-    cmd = 'rsync -av{dry_run} {src}/ {host}:{dst}'.format(
+    cmd = 'rsync -avi{dry_run} {host}:{src}/ {remote_host}:{dst}'.format(
         src=sitemaps_path,
         host=env.host,
         dst=sitemaps_path,
+        remote_host=remote_host,
         dry_run='n' if dry_run else '',
     )
     local(cmd)
@@ -168,16 +169,15 @@ def restart_django(restart_url=None):
             requests.get(restart_url)
 
 
-def rsync_local_files(dry_run=None, remote_host):
+def rsync_local_files(dry_run=None):
     """
     Rsync local files to production.
     """
     local_path = os.path.join(os.path.dirname(settings.PROJECT_PATH), 'local')
-    cmd = 'rsync -avi{dry_run} {host}:{src}/ {remote_host}:{dst}'.format(
+    cmd = 'rsync -av{dry_run} {src}/ {host}:{dst}'.format(
         src=local_path,
         host=env.host,
         dst=local_path,
-        remote_host=remote_host,
         dry_run='n' if dry_run else '',
     )
     local(cmd)
