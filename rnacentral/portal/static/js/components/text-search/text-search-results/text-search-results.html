@@ -141,6 +141,21 @@
   <div class="row" ng-show="$ctrl.search.result.hitCount > 0">
     <div class="col-md-3 col-sm-4 hidden-xs text-search-facets">
       <ul class="list-unstyled">
+        <li class="facet" style="margin-top: 20px;">
+          <form class="form-inline font-size-14-px hidden-xs" style="padding-left: 0px">
+            Sort by:
+            <div class="form-group">
+              <select class="form-control small" ng-change="$ctrl.search.search($ctrl.search.query)" ng-model="$ctrl.search.sort" ng-options="item.value as item.label for item in $ctrl.search.config.sortableFields"></select>
+            </div>
+            <!--
+            <div class="form-group">
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Then by:
+              <select class="form-control" ng-change="$ctrl.search.search($ctrl.search.query)" ng-model="$ctrl.search.sortTiebreaker" ng-options="item.value as item.label for item in $ctrl.search.config.sortableFields"></select>
+            </div>
+            -->
+          </form>
+        </li>
+        <hr />
         <li class="facet" ng-repeat="facet in $ctrl.search.result.facets">
           <h3>{{ facet.label }}</h3>
           <ul class="list-unstyled text-search-facet-values text-search-facet-overflow force-scrollbars" style="overflow-x: hidden;">
@@ -161,20 +176,6 @@
           <div>
             <rzslider class="custom-slider" rz-slider-model="$ctrl.lengthSlider.min" rz-slider-high="$ctrl.lengthSlider.max" rz-slider-options="$ctrl.lengthSlider.options"></rzslider> <!-- ceil: $ctrl.search.results.facets['length'] -->
           </div>
-        </li>
-        <li class="facet">
-          <h3>Sort by</h3>
-          <form class="form-inline font-size-14-px hidden-xs" style="padding-left: 0px">
-            <div class="form-group">
-              <select class="form-control" ng-change="$ctrl.search.search($ctrl.search.query)" ng-model="$ctrl.search.sort" ng-options="item.value as item.label for item in $ctrl.search.config.sortableFields"></select>
-            </div>
-            <!--
-            <div class="form-group">
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Then by:
-              <select class="form-control" ng-change="$ctrl.search.search($ctrl.search.query)" ng-model="$ctrl.search.sortTiebreaker" ng-options="item.value as item.label for item in $ctrl.search.config.sortableFields"></select>
-            </div>
-            -->
-          </form>
         </li>
       </ul>
       <hr>
