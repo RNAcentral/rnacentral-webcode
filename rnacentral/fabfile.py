@@ -118,8 +118,8 @@ def cache_sitemaps():
     """
     Create sitemaps cache in sitemaps folder.
     """
-    with env.cd(settings.PROJECT_PATH), prefix(COMMANDS['set_environment'], \
-         prefix(COMMANDS['activate_virtualenv'])):
+    with env.cd(settings.PROJECT_PATH), prefix(COMMANDS['set_environment']), \
+         prefix(COMMANDS['activate_virtualenv']):
         env.run('python rnacentral/manage.py cache_sitemaps')
 
 
