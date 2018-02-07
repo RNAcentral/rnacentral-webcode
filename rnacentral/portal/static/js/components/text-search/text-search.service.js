@@ -64,10 +64,10 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
         },
         facetfields: ['length', 'rna_type', 'TAXONOMY', 'expert_db', 'rfam_problem_found', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
         sortableFields: [
-            { label: 'Popular species  ↓', value: 'boost:descending' },
-            // { label: 'Popular species  ↑', value: 'boost:ascending' },
-            { label: 'Length  ↓', value: 'length:descending' },
-            { label: 'Length  ↑', value: 'length:ascending' },
+            { label: 'Popular species, Length ↓', value: 'boost:descending,length:descending' },
+            // { label: 'Popular species ↑', value: 'boost:ascending' },
+            { label: 'Length ↓', value: 'length:descending' },
+            { label: 'Length ↑', value: 'length:ascending' },
             // { label: 'Citations number ↓', value: 'n_citations:descending' },
             // { label: 'Citations number ↑', value: 'n_citations:ascending' },
             // { label: 'Annotations number ↓', value: 'n_xrefs:descending' },
@@ -90,7 +90,7 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
     this.status = 'off'; // possible values: 'off', 'in progress', 'success', 'error'
 
     this.query = ''; // the query will be observed by watches
-    this.sort = 'boost:descending'; // EBI search endpoint sorts results by this field value
+    this.sort = 'boost:descending,length:descending' // EBI search endpoint sorts results by this field value
     this.sortTiebreaker = 'length:descending'; // secondary search field, used in case first field is even
 
     this.callbacks = []; // callbacks to be called after each search.search(); done for slider redraw
@@ -171,7 +171,7 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             facetfields: self.config.facetfields.join(),
             size: self.config.pagesize,
             start: start,
-            sort: self.sort === 'boost:descending' ? self.sort + ',' + self.sortTiebreaker : self.sort
+            sort: self.sort
         });
         var queryUrl = routes.ebiSearchProxy({ebeyeUrl: encodeURIComponent(ebeyeUrl)});
 
