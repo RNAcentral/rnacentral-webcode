@@ -11,13 +11,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import os
+
 from django.conf import settings
 from django.conf.urls import url
+from django.http import FileResponse, Http404
 
 from portal import views
-from portal.models import Database
 from portal.models.utils import get_ensembl_divisions
-from portal.models.rna_precomputed import RnaPrecomputed
 
 urlpatterns = [
     # homepage
@@ -74,63 +75,18 @@ urlpatterns += [
     url(r'^rna/(?P<upi>\w+)/lineage/?$', views.get_sequence_lineage, name='sequence-lineage'),
 ]
 
+
 # sitemaps
-import re
-
-from django.contrib.sitemaps import GenericSitemap, Sitemap
-from django.contrib.sitemaps.views import index as sitemap_index
-from django.contrib.sitemaps.views import sitemap as sitemap_sitemap
-from django.core.urlresolvers import reverse
-from django.core.cache import caches
-
-
-class StaticViewSitemap(Sitemap):
-    def items(self):
-        return [
-            'homepage', 'about', 'contact-us', 'downloads', 'training',
-            'expert-databases', 'nhmmer-sequence-search', 'api-docs',
-            'help', 'help-text-search', 'help-genomic-mapping', 'help-genomic-mapping',
-        ]
-
-    def location(self, item):
-        return reverse(item)
-
-
-class RnaSitemap(Sitemap):
-    def items(self):
-        return RnaPrecomputed.objects.filter(taxid__isnull=False).all()
-
-    def location(self, item):
-        return reverse('unique-rna-sequence', kwargs={'upi': item.upi_id, 'taxid': item.taxid})
-
-
-class ExpertDatabasesSitemap(Sitemap):
-    def items(self):
-        return Database.objects.filter(alive='Y').all()
-
-    def location(self, item):
-        return reverse('expert-database', kwargs={'expert_db_name': item.descr})
-
-sitemaps = {
-    'expert-databases': ExpertDatabasesSitemap,  # GenericSitemap({'queryset': Database.objects.all()}),
-    'static': StaticViewSitemap(),
-    'rna': RnaSitemap(),
-}
-
-
-def sitemaps_cache(view, cache_alias='sitemaps'):
-    def wrapped_view(request, *args, **kwargs):
-        cache = caches[cache_alias]
-        cache_key = re.sub('[:/#?&=+%]', '_', request.get_full_path())
-        response = cache.get(cache_key)
-        if response is not None:
-            return response
-        return view(request, *args, **kwargs)
-
-    return wrapped_view
-
+def sitemaps(request, section):
+    try:
+        # section is either empty string for sitemaps index or
+        # string e.g. "-expert-databases", note the dash in the beginning
+        path_to_xml_file = os.path.join(os.path.dirname(settings.PROJECT_PATH), 'sitemaps', 'sitemap%s.xml' % section)
+        xml_file = open(path_to_xml_file, 'rb')
+        return FileResponse(xml_file)
+    except IOError as e:
+        raise Http404
 
 urlpatterns += [
-    url(r'^sitemap\.xml$', sitemaps_cache(sitemap_index), kwargs={'sitemaps': sitemaps, 'sitemap_url_name': 'sitemap-section'}, name='sitemap-index'),
-    url(r'^sitemap-(?P<section>.+)\.xml$', sitemaps_cache(sitemap_sitemap), kwargs={'sitemaps': sitemaps}, name='sitemap-section')
+    url(r'^sitemap(?P<section>.+)\.xml$', sitemaps, name='sitemap')
 ]
