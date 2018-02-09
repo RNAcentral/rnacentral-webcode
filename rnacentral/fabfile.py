@@ -114,13 +114,13 @@ def compress_static_files():
         env.run('python rnacentral/manage.py compress')
 
 
-def cache_sitemaps():
+def create_sitemaps():
     """
     Create sitemaps cache in sitemaps folder.
     """
     with env.cd(settings.PROJECT_PATH), prefix(COMMANDS['set_environment']), \
          prefix(COMMANDS['activate_virtualenv']):
-        env.run('python rnacentral/manage.py cache_sitemaps')
+        env.run('python rnacentral/manage.py create_sitemaps')
 
 
 def rsync_sitemaps(dry_run=None, remote_host='ves-pg-a4'):
