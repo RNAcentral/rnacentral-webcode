@@ -127,14 +127,12 @@ class Command(BaseCommand):
             return
 
         if kwargs['section'] is not None:
-            site = self.sitemaps()[kwargs['section']]
-            if callable(site):
-                site = site()
-
             if kwargs['section'] == 'rna':
                 # determine range of pages to be cached
                 if kwargs['last_page'] == -1:  # last page is not specified
-                    last_page = site.paginator.num_pages
+                    rna_queryset = RnaPrecomputed.objects.filter(taxid__isnull=False).all().order_by('upi')
+                    rna_paginator = Paginator(rna_queryset, Sitemap.limit)
+                    last_page = rna_paginator.num_pages
                 else:  # last page is specified
                     last_page = kwargs['last_page']
 
