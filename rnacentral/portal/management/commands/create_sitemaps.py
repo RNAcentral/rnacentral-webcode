@@ -13,6 +13,7 @@ limitations under the License.
 
 from __future__ import print_function
 
+from collections import OrderedDict
 import os
 import warnings
 
@@ -99,7 +100,7 @@ class Command(BaseCommand):
 
                 @property
                 def paginator(self):
-                    output = type('paginator', (), {})()
+                    output = type('paginator', (), {'page': self.rna_paginator.page})()
                     output.num_pages = 1
                     return output
 
@@ -109,10 +110,10 @@ class Command(BaseCommand):
                 def location(self, item):
                     return reverse('unique-rna-sequence', kwargs={'upi': item.upi_id, 'taxid': item.taxid})
 
-            self._sitemaps = {
-                'expert-databases': ExpertDatabasesSitemap,
-                'static': StaticViewSitemap(),
-            }
+            self._sitemaps = OrderedDict([
+                ('-expert-databases', ExpertDatabasesSitemap),
+                ('-static', StaticViewSitemap()),
+            ])
 
             for page_number in rna_paginator.page_range:
                 key = '-rna-%s' % page_number
@@ -164,11 +165,7 @@ class Command(BaseCommand):
             self.create_section(section)
 
     def create_section(self, section):
-        print("-" * 80)
-        print()
         print("    Processing section %s" % section)
-        print()
-        print("-" * 80)
 
         request = self.prepare_request()
         response = sitemap_section(request, self.sitemaps(), section=section)

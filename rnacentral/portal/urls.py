@@ -88,5 +88,5 @@ def sitemaps(request, section):
         raise Http404
 
 urlpatterns += [
-    url(r'^sitemap(?P<section>.+)\.xml$', sitemaps, name='sitemap')
+    url(r'^sitemap(?P<section>.*)\.xml$', sitemaps, name='sitemap')
 ]
