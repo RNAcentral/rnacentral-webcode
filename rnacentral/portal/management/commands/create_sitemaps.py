@@ -13,6 +13,7 @@ limitations under the License.
 
 from __future__ import print_function
 
+import os
 import warnings
 
 from django.conf import settings
@@ -33,6 +34,13 @@ class Command(BaseCommand):
     python manage.py create_sitemaps --section rna --first_page 1 --last_page 21
     python manage.py create_sitemaps --section rna --first_page 20  --last_page 41
     python manage.py create_sitemaps --section rna --first_page 41
+
+    Note that we don't use pagination withing each section - instead, we create
+    a separate section instead of pages. E.g. if rna section were to contain
+    100,000 objects, we would create 2 sections rna-1 and rna-2.
+
+    We'll be calling rna a section and rna-1 and rna-2 pages (although in django
+    sitemaps terms they are separate sections).
     """
 
     help = "Generate sitemaps and save them to sitemaps directory"
@@ -59,7 +67,7 @@ class Command(BaseCommand):
         )
 
     def sitemaps(self):
-        if self._sitemaps:
+        if hasattr(self, "_sitemaps"):
             return self._sitemaps
         else:
             class StaticViewSitemap(Sitemap):
@@ -80,13 +88,23 @@ class Command(BaseCommand):
                 def location(self, item):
                     return reverse('expert-database', kwargs={'expert_db_name': item.descr})
 
+            # handle rna pages sub-sectioning
+            rna_queryset = RnaPrecomputed.objects.filter(taxid__isnull=False).all().order_by('upi')
+            rna_paginator = Paginator(rna_queryset, Sitemap.limit)
+
             class RnaSitemap(Sitemap):
-                def __init__(self, page):
-                    self.page = page
+                def __init__(self, page_number, rna_paginator):
+                    self.page_number = page_number
+                    self.rna_paginator = rna_paginator
+
+                @property
+                def paginator(self):
+                    output = type('paginator', (), {})()
+                    output.num_pages = 1
+                    return output
 
                 def items(self):
-                    paginator = Paginator(RnaPrecomputed.objects.filter(taxid__isnull=False).all(), Sitemap.limit)
-                    return paginator.get_page(self.page)
+                    return self.rna_paginator.page(self.page_number)
 
                 def location(self, item):
                     return reverse('unique-rna-sequence', kwargs={'upi': item.upi_id, 'taxid': item.taxid})
@@ -96,10 +114,9 @@ class Command(BaseCommand):
                 'static': StaticViewSitemap(),
             }
 
-            rna_paginator = Paginator(RnaPrecomputed.objects.filter(taxid__isull=False).all(), Sitemap.limit)
-            for page in rna_paginator.page_range:
-                key = 'rna-%s' % page
-                self._sitemaps[key] = RnaSitemap(page)
+            for page_number in rna_paginator.page_range:
+                key = '-rna-%s' % page_number
+                self._sitemaps[key] = RnaSitemap(page_number, rna_paginator)
 
             return self._sitemaps
 
@@ -113,18 +130,23 @@ class Command(BaseCommand):
             if callable(site):
                 site = site()
 
-            # determine range of pages to be cached
-            if kwargs['last_page'] == -1:  # last page is not specified
-                last_page = site.paginator.num_pages + 1
-            else:  # last page is specified
-                last_page = kwargs['last_page'] + 1
+            if kwargs['section'] == 'rna':
+                # determine range of pages to be cached
+                if kwargs['last_page'] == -1:  # last page is not specified
+                    last_page = site.paginator.num_pages
+                else:  # last page is specified
+                    last_page = kwargs['last_page']
 
-            pages = range(kwargs['first_page'], last_page)
+                # create section's sitemap
+                pages = range(kwargs['first_page'], last_page + 1)
+                for page_number in pages:
+                    self.create_section("-" + kwargs['section'] + "-" + str(page_number))
+            else:
+                warnings.warn("only rna section is currently supported")
+                return
 
-            self.create_section(kwargs['section'], pages)
         else:
             self.create_index()
-            self.create_sections()
 
     def create_index(self):
         print("-" * 80)
@@ -133,32 +155,27 @@ class Command(BaseCommand):
         print()
         print("-" * 80)
 
-        path = reverse('sitemap', kwargs={"section": "-" + section})
-        self.create_path(sitemap_index, path)
+        request = self.prepare_request()
+        sitemaps = self.sitemaps()
+        response = sitemap_index(request, **{'sitemaps': sitemaps, 'sitemap_url_name': 'sitemap'})
+        self.write_response(response, "")  # for index sitemap section is empty string
 
-    def create_sections(self):
-        for section, site in self.sitemaps().items():
-            if callable(site):
-                site = site()
+        for section in self.sitemaps().keys():
+            self.create_section(section)
 
-            pages = range(1, site.paginator.num_pages + 1)
-            self.create_section(section, pages)
-
-    def create_section(self, section, pages):
+    def create_section(self, section):
         print("-" * 80)
         print()
         print("    Processing section %s" % section)
         print()
         print("-" * 80)
 
-        for page in pages:
-            self.create_section_page(section, page)
+        request = self.prepare_request()
+        response = sitemap_section(request, self.sitemaps(), section=section)
+        self.write_response(response, section)
 
-    def create_section_page(self, section, page):
-        path = reverse('sitemap', kwargs={"section": "-" + section})
-        self.create_path(path, path, section, page)
-
-    def create_path(self, path, section=None, page=1):
+    def prepare_request(self):
+        """Manually create HttpRequest for django sitemaps views to process"""
         # prepare http request
         request = HttpRequest()
 
@@ -169,17 +186,11 @@ class Command(BaseCommand):
         request.META['SERVER_PORT'] = "80"
         request.META['REQUEST_METHOD'] = 'GET'
         request.method = 'GET'
-        request.path = path
 
-        if page > 1:  # if this is first page, or no pagination is required, don't set GET['p']
-            request.META['QUERY_STRING'] = 'p=' + str(page)
-            request.GET['p'] = page  # paginate response, if required
+        return request
 
-        print("Processing %s" % request.get_full_path())
-
-        # get response from sitemaps view and render it
-        if section:
-            response = sitemap_section(request, self.sitemaps(), section=section)
-        else:
-            response = sitemap_index(request, **{'sitemaps': self.sitemaps(), 'sitemap_url_name': 'sitemap-section'})
+    def write_response(self, response, section):
+        """Writes HttpResponse into a file"""
+        filename = os.path.join(settings.PROJECT_PATH, 'rnacentral', 'sitemaps', 'sitemap%s.xml' % section)
         response.render()
+        open(filename, 'w').write(response.content)

@@ -81,7 +81,7 @@ def sitemaps(request, section):
     try:
         # section is either empty string for sitemaps index or
         # string e.g. "-expert-databases", note the dash in the beginning
-        path_to_xml_file = os.path.join(os.path.dirname(settings.PROJECT_PATH), 'sitemaps', 'sitemap%s.xml' % section)
+        path_to_xml_file = os.path.join(settings.PROJECT_PATH, 'rnacentral', 'sitemaps', 'sitemap%s.xml' % section)
         xml_file = open(path_to_xml_file, 'rb')
         return FileResponse(xml_file)
     except IOError as e:
