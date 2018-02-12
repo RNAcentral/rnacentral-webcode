@@ -63,8 +63,9 @@ var textSearchBar = {
             $http.get('/help/text-search').then(
                 function(result) {
                     var helpDom = $(result.data).find('.col-md-8').get(1);
-                    var helpContents = $(helpDom).html();
-                    $('#text-search-help-modal-parent #modal-body').html(helpContents);
+                    var $helpContents = $(helpDom);
+                    $helpContents.find('h1').get(0).remove();
+                    $('#text-search-help-modal-parent #modal-body').html($helpContents.html());
                     $('#text-search-help-modal-parent').detach().appendTo('body'); // move modal to body from our component
                     $('#text-search-help-modal-parent').modal(); // possible options: { backdrop: true, keyboard: true, show: true}
                 }
