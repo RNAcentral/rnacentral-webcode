@@ -57,17 +57,33 @@ var textSearchBar = {
         };
 
         /**
-         * Opens text search help modal.
+         * Sends ajax to text-search help page, copy-pastes its content to the modal,
+         * copies over that modal to <body> and opens it.
          */
         ctrl.openTextSearchHelpModal = function() {
+            // request text search help from the backend
             $http.get('/help/text-search').then(
                 function(result) {
+                    // copy-paste help content from text search help page to the modal
                     var helpDom = $(result.data).find('.col-md-8').get(1);
                     var $helpContents = $(helpDom);
-                    $helpContents.find('h1').get(0).remove();
+                    $helpContents.find('h1').get(0).remove(); // remove page header - we already have a header in modal
+
+                    // make search examples clickable
+                    $helpContents.find('code').each(function() {
+                        var $this = $(this);
+                        var link = '<a target="_blank" rel="nofollow" href="/search?q=' + encodeURIComponent($this.html()) + '">' + $this.html() + '</a>';
+                        $this.html(link);
+                    });
+
+                    // copy over help contents to the modal
                     $('#text-search-help-modal-parent #modal-body').html($helpContents.html());
-                    $('#text-search-help-modal-parent').detach().appendTo('body'); // move modal to body from our component
-                    $('#text-search-help-modal-parent').modal(); // possible options: { backdrop: true, keyboard: true, show: true}
+
+                    // move modal from our component's html to <body>
+                    $('#text-search-help-modal-parent').detach().appendTo('body');
+
+                    // open modal; possible options: { backdrop: true, keyboard: true, show: true }
+                    $('#text-search-help-modal-parent').modal();
                 }
             );
         }
