@@ -1,7 +1,7 @@
 var textSearchBar = {
     bindings: {},
     templateUrl: '/static/js/components/text-search/text-search-bar/text-search-bar.html',
-    controller: ['$interpolate', '$location', '$window', '$timeout', 'search', function($interpolate, $location, $window, $timeout, search) {
+    controller: ['$interpolate', '$location', '$window', '$timeout', '$http', 'search', function($interpolate, $location, $window, $timeout, $http, search) {
         var ctrl = this;
         ctrl.search = search;
 
@@ -60,8 +60,15 @@ var textSearchBar = {
          * Opens text search help modal.
          */
         ctrl.openTextSearchHelpModal = function() {
-            $('#text-search-help-modal-parent').detach().appendTo('body'); // move modal to body from our component
-            $('#text-search-help-modal-parent').modal(); // possible options: { backdrop: true, keyboard: true, show: true}
+            $http.get('/help/text-search').then(
+                function(result) {
+                    var helpDom = $(result.data).find('.col-md-8').get(1);
+                    var helpContents = $(helpDom).html();
+                    $('#text-search-help-modal-parent #modal-body').html(helpContents);
+                    $('#text-search-help-modal-parent').detach().appendTo('body'); // move modal to body from our component
+                    $('#text-search-help-modal-parent').modal(); // possible options: { backdrop: true, keyboard: true, show: true}
+                }
+            );
         }
     }]
 };
