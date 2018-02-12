@@ -27,7 +27,7 @@ Help: Text search
 
 <div class="row">
 
-  <div class="col-md-8">
+  <div id="help-content" class="col-md-8">
     {% load markdown_deux_tags %}
     {% markdown %}
       {% include  'portal/docs/text-search.md' %}
@@ -38,7 +38,7 @@ Help: Text search
     <a class="btn btn-default btn-sm" title="Edit on GitHub" href="https://github.com/RNAcentral/rnacentral-webcode/edit/master/rnacentral/portal/templates/portal/docs/text-search.md" target="_blank"><i class="fa fa-pencil-square-o"></i> Improve this page</a>
   </div>
 
-  <div class="col-md-4">
+  <div id="help-sidebar" class="col-md-4">
     {% include 'portal/help/sidebar.html' %}
   </div>
 
@@ -52,13 +52,16 @@ Help: Text search
   {{ block.super }}
 
   <script>
-    // make search examples clickable
     $(function() {
+      // make search examples clickable
       $('code').each(function(){
         var $this = $(this);
         var link = '<a rel="nofollow" href="/search?q=' + encodeURIComponent($this.html()) + '">' + $this.html() + '</a>';
         $this.html(link);
       });
+
+      // style table
+      $('#help-content table').addClass('table table-bordered table-responsive');
     });
   </script>
 

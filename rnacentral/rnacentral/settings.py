@@ -331,6 +331,7 @@ MARKDOWN_DEUX_STYLES = {
     "default": {
         "extras": {
             "code-friendly": None,
+            "tables": None,
             "fenced-code-blocks": True,
         },
         "safe_mode": False,

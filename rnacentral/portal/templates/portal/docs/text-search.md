@@ -23,68 +23,22 @@ and a search for `"HOTAIR"` (with double quotes) will find only *HOTAIR*.
 Search can be restricted to specific fields using the **field_name:"field value"** syntax.
 Please note that "field value" **must be enclosed in double quotes**.
 
-* **expert database**
-
-	Possible values: "ena", "gtrnadb", "lncrnadb", "mirbase", "refseq", "rfam", "srpdb", "tmRNA Website", "pdbe", "snopy" and other imported database names.
-
-	*Examples*: `expert_db:"tmrna website"`, `expert_db:"mirbase"`
-
-* **NCBI taxonomic identifier**
-
-	*Example*: `taxonomy:"9606"` where [9606](http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606) is the NCBI taxonomy id for Homo sapiens.
-
-* **scientific species name**
-
-	*Example*: `species:"Mus musculus"`
-
-* **common species name**
-
-	*Example*: `common_name:"mouse"`
-
-* **RNA type**
-
-	To see the list of possible values, search for `RNA` and look at the "RNA types" facet.
-
-	*Example*: `rna_type:"pirna"`.
-
-* **gene**
-
-	*Example*: `gene:"hotair"`
-
-* **organelle**
-
-	*Example*: `organelle:"mitochondrion"`, `organelle:"plastid"`
-
-* **description**
-
-	*Example*: `description:"16S"`
-
-* **length** (supports range queries)
-
-	*Example*: `length:"1500"`, `length:[9000 to 10000]`
-
-* **publication title**
-
-  *Example*: `pub_title:"Danish population"`
-
-* **author**
-
-	*Example*: `author:"Girard A."`
-
-* **PubMed id**
-
-	*Example*: `pubmed:"17881443"`
-
-* **Digital Object Identifier**
-
-	*Example*: `doi:"10.1093/nar/19.22.6328"`
-
-* **MD5**
-
-	Use [MD5](http://en.wikipedia.org/wiki/MD5) hash value of the uppercase DNA version of the sequence
-	to lookup the associated RNAcentral id.
-
-	*Example*: `md5:"020711a90d35bb197e29e085595dd52e"`
+| Field                          | Examples                                                                                                                                           |
+| ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **expert database**            | `expert_db:"tmrna website"`, `expert_db:"mirbase"`, search for `RNA` and look at the "Expert databases" facet                                      |
+| **NCBI taxonomic identifier**  | `taxonomy:"9606"` where [9606](http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606) is the NCBI taxonomy id for Homo sapiens           |
+| **scientific species name**    | `species:"Mus musculus"`                                                                                                                           |
+| **common species name**        | `common_name:"mouse"`                                                                                                                              |
+| **RNA type**                   | `rna_type:"pirna"`, search for `RNA` and look at the "RNA types" facet.                                                                            |
+| **gene**                       | `gene:"hotair"`                                                                                                                                    |
+| **organelle**                  | `organelle:"mitochondrion"`, `organelle:"plastid"`                                                                                                 |
+| **description**                | `description:"16S"`                                                                                                                                |
+| **length**                     | `length:"1500"`, `length:[9000 to 10000]` (supports range queries)                                                                                 |
+| **publication title**          | `pub_title:"Danish population"`                                                                                                                    |
+| **author**                     | `author:"Girard A."`                                                                                                                               |
+| **PubMed id**                  | `pubmed:"17881443"`                                                                                                                                |
+| **Digital Object Identifier**  | `doi:"10.1093/nar/19.22.6328"`                                                                                                                     |
+| **MD5**                        | `md5:"020711a90d35bb197e29e085595dd52e"` [MD5](http://en.wikipedia.org/wiki/MD5) hash value of uppercase DNA corresponding to RNAcentral sequence. |
 
 ---
 

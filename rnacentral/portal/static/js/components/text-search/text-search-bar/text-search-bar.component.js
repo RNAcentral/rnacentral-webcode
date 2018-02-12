@@ -65,8 +65,7 @@ var textSearchBar = {
             $http.get('/help/text-search').then(
                 function(result) {
                     // copy-paste help content from text search help page to the modal
-                    var helpDom = $(result.data).find('.col-md-8').get(1);
-                    var $helpContents = $(helpDom);
+                    var $helpContents = $( $(result.data).find('#help-content').get(0) );
                     $helpContents.find('h1').get(0).remove(); // remove page header - we already have a header in modal
 
                     // make search examples clickable
@@ -75,6 +74,9 @@ var textSearchBar = {
                         var link = '<a target="_blank" rel="nofollow" href="/search?q=' + encodeURIComponent($this.html()) + '">' + $this.html() + '</a>';
                         $this.html(link);
                     });
+
+                    // style table
+                    $helpContents.find('table').addClass('table table-bordered table-responsive');
 
                     // remove fa-links
                     $helpContents.find('a').each(function() {
