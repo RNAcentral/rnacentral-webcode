@@ -76,6 +76,11 @@ var textSearchBar = {
                         $this.html(link);
                     });
 
+                    // remove fa-links
+                    $helpContents.find('a').each(function() {
+                        $(this).find('i.fa-link').remove();
+                    });
+
                     // copy over help contents to the modal
                     $('#text-search-help-modal-parent #modal-body').html($helpContents.html());
 
