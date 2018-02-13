@@ -27,6 +27,7 @@ Please note that "field value" **must be enclosed in double quotes**.
 | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **expert database**            | `expert_db:"tmrna website"`, `expert_db:"mirbase"`, search for `RNA` and look at the "Expert databases" facet                                      |
 | **NCBI taxonomic identifier**  | `taxonomy:"9606"` where [9606](http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606) is the NCBI taxonomy id for Homo sapiens           |
+| **taxonomy string**            | `tax_string:"primates"` - allows to search for taxonomic group                                                                                                                            |
 | **scientific species name**    | `species:"Mus musculus"`                                                                                                                           |
 | **common species name**        | `common_name:"mouse"`                                                                                                                              |
 | **RNA type**                   | `rna_type:"pirna"`, search for `RNA` and look at the "RNA types" facet.                                                                            |
