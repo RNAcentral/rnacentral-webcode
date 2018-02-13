@@ -22,7 +22,7 @@ class GenomeMapping(CachingMixin, models.Model):
 
     assembly_id = models.ForeignKey(EnsemblAssembly, related_name='genome_mappings', db_column='assembly_id')
     chromosome = models.CharField(max_length=100)
-    region_id = models.CharField()
+    region_id = models.CharField(max_length=100)
     rna_id = models.CharField(max_length=50)
     start = models.IntegerField()
     stop = models.IntegerField()
