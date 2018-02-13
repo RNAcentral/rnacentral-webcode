@@ -17,6 +17,7 @@ from .database import *
 from .database_stats import *
 from .formatters import *
 from .genomic_coordinates import *
+from .genome_mapping import *
 from .go_terms import *
 from .modification import *
 from .reference import *
