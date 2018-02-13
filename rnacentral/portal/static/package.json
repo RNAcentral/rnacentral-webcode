@@ -41,13 +41,13 @@
     "jquery-ui-bundle": "^1.12.1-migrate",
     "jquery.mousehold": "^2.0.0",
     "jquery.mousewheel": "^3.1.9",
-    "tipsy-1a": "^1.0.0",
     "js-md5": "^0.4.2",
     "json3": "^3.3.2",
     "moment": "^2.18.1",
     "query": "^0.2.0",
     "slick-carousel": "^1.8.1",
     "timelinejs3": "^3.4.0",
+    "tipsy-1a": "^1.0.0",
     "underscore": "^1.8.3"
   },
   "devDependencies": {

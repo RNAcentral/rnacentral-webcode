@@ -13,8 +13,7 @@
       <span ng-if="$ctrl.search.result.hitCount > 1" id="text-search-results-count">{{ $ctrl.search.result.entries.length }} out of {{ $ctrl.search.result.hitCount | number }} sequences</span>
     </small>
 
-    <small class="font-size-14-px hidden-xs pull-right">
-      <a class="text-muted margin-right-10px" ng-href="{{ $ctrl.routes.helpTextSearch() }}">Search help</a>
+    <small class="pull-right font-size-14-px hidden-xs">
       <div class="btn-group">
         <button type="button" ng-class="$ctrl.search.status === 'in progress' ? 'disabled' : ''" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
           Download

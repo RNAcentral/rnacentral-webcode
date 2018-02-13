@@ -41,6 +41,7 @@
             <a tooltip-placement="bottom" tooltip-append-to-body="true" uib-tooltip="Search by Expert Database" href="" rel="nofollow" ng-click="$ctrl.search.search('expert_db:&quot;mirbase&quot;')">miRBase</a>,
             <a tooltip-placement="bottom" tooltip-append-to-body="true" uib-tooltip="Search by external identifiers" href="" rel="nofollow" ng-click="$ctrl.search.search('4V4Q')">4V4Q</a>
           </i>
+          <a class="pull-right" href="" ng-click="$ctrl.openTextSearchHelpModal('lg')"><i class="fa fa-question-circle" aria-hidden="true"></i> Help on search</a>
       </span>
       <label class="control-label ng-cloak has-error"
              for="query-text" ng-show="$ctrl.submitted && ($ctrl.queryForm.text.$error.required || $ctrl.queryForm.text.$error.minlength)"
@@ -55,4 +56,19 @@
     </div><!-- /form-group -->
     </fieldset>
   </form><!-- /form -->
+
+  <!-- Text search help modal -->
+  <div id="text-search-help-modal-parent" class="modal fade" tabindex='-1'>
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h1><i class="fa fa-search"></i> Text search <small><a target="_blank" href="/help/text-search">open in a separate window</a></small></h1>
+        </div>
+        <div class="modal-body" id="modal-body">
+        </div> <!-- modal-body -->
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+
 </div><!-- /ng-controller -->

@@ -1,7 +1,7 @@
 var textSearchBar = {
     bindings: {},
     templateUrl: '/static/js/components/text-search/text-search-bar/text-search-bar.html',
-    controller: ['$interpolate', '$location', '$window', '$timeout', 'search', function($interpolate, $location, $window, $timeout, search) {
+    controller: ['$interpolate', '$location', '$window', '$timeout', '$http', 'search', function($interpolate, $location, $window, $timeout, $http, search) {
         var ctrl = this;
         ctrl.search = search;
 
@@ -55,6 +55,45 @@ var textSearchBar = {
         ctrl.submitQuery = function() {
             ctrl.queryForm.text.$invalid ? ctrl.submitted = true : search.search(ctrl.query);
         };
+
+        /**
+         * Sends ajax to text-search help page, copy-pastes its content to the modal,
+         * copies over that modal to <body> and opens it.
+         */
+        ctrl.openTextSearchHelpModal = function() {
+            // request text search help from the backend
+            $http.get('/help/text-search').then(
+                function(result) {
+                    // copy-paste help content from text search help page to the modal
+                    var $helpContents = $( $(result.data).find('#help-content').get(0) );
+                    $helpContents.find('h1').get(0).remove(); // remove page header - we already have a header in modal
+
+                    // make search examples clickable
+                    $helpContents.find('code').each(function() {
+                        var $this = $(this);
+                        var link = '<a target="_blank" rel="nofollow" href="/search?q=' + encodeURIComponent($this.html()) + '">' + $this.html() + '</a>';
+                        $this.html(link);
+                    });
+
+                    // style table
+                    $helpContents.find('table').addClass('table table-bordered table-responsive');
+
+                    // remove fa-links
+                    $helpContents.find('a').each(function() {
+                        $(this).find('i.fa-link').remove();
+                    });
+
+                    // copy over help contents to the modal
+                    $('#text-search-help-modal-parent #modal-body').html($helpContents.html());
+
+                    // move modal from our component's html to <body>
+                    $('#text-search-help-modal-parent').detach().appendTo('body');
+
+                    // open modal; possible options: { backdrop: true, keyboard: true, show: true }
+                    $('#text-search-help-modal-parent').modal();
+                }
+            );
+        }
     }]
 };
 
