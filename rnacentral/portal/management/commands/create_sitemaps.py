@@ -28,6 +28,11 @@ from django.http import HttpRequest
 from portal.models import RnaPrecomputed, Database
 
 
+# Queryset for Rna sections; include only Human and Mouse rnas for now.
+rna_queryset = RnaPrecomputed.objects.filter(taxid__in=[9606, 10090]).order_by('upi')  # RnaPrecomputed.objects.filter(taxid__isnull=False).all().order_by('upi')
+rna_paginator = Paginator(rna_queryset, Sitemap.limit)
+
+
 class Command(BaseCommand):
     """
     Usage:
@@ -89,10 +94,6 @@ class Command(BaseCommand):
                 def location(self, item):
                     return reverse('expert-database', kwargs={'expert_db_name': item.descr})
 
-            # handle rna pages sub-sectioning
-            rna_queryset = RnaPrecomputed.objects.filter(taxid__isnull=False).all().order_by('upi')
-            rna_paginator = Paginator(rna_queryset, Sitemap.limit)
-
             class RnaSitemap(Sitemap):
                 def __init__(self, page_number, rna_paginator):
                     self.page_number = page_number
@@ -130,8 +131,6 @@ class Command(BaseCommand):
             if kwargs['section'] == 'rna':
                 # determine range of pages to be cached
                 if kwargs['last_page'] == -1:  # last page is not specified
-                    rna_queryset = RnaPrecomputed.objects.filter(taxid__isnull=False).all().order_by('upi')
-                    rna_paginator = Paginator(rna_queryset, Sitemap.limit)
                     last_page = rna_paginator.num_pages
                 else:  # last page is specified
                     last_page = kwargs['last_page']
