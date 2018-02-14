@@ -125,7 +125,7 @@
           <!-- Ensembl -->
           <span ng-switch-when="Ensembl">
             transcript <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank" title="View the transcript in {{ xref.database }}">{{ xref.accession.external_id }}</a> from
-            {{ xref.accession.locus_tag }} gene <a href="http://www.ensembl.org/{{ xref.accession.ensembl_species_url }}/Gene/Summary?g={{ xref.accession.optional_id }}" target="_blank">{{ xref.accession.optional_id }}</a>
+            {{ xref.accession.locus_tag }} gene <a ng-if="xref.accession.optional_id" href="http://www.ensembl.org/{{ xref.accession.ensembl_species_url }}/Gene/Summary?g={{ xref.accession.optional_id }}" target="_blank">{{ xref.accession.optional_id }}</a>
             <span ng-if="xref.ensembl_splice_variants">
               <br>
               <i class="fa fa-angle-right"></i>
