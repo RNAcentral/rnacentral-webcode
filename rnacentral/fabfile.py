@@ -120,6 +120,7 @@ def create_sitemaps():
     """
     with env.cd(settings.PROJECT_PATH), prefix(COMMANDS['set_environment']), \
          prefix(COMMANDS['activate_virtualenv']):
+        env.run('rm rnacentral/sitemaps/*')
         env.run('python rnacentral/manage.py create_sitemaps')
 
 
@@ -173,7 +174,7 @@ def rsync_local_files(dry_run=None):
     Rsync local files to production.
     """
     local_path = os.path.join(os.path.dirname(settings.PROJECT_PATH), 'local')
-    cmd = 'rsync -av{dry_run} {src}/ {host}:{dst}'.format(
+    cmd = 'rsync -av{dry_run} --delete {src}/ {host}:{dst}'.format(
         src=local_path,
         host=env.host,
         dst=local_path,
