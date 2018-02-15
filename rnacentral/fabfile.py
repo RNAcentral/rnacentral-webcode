@@ -131,7 +131,7 @@ def rsync_sitemaps(dry_run=None, remote_host='ves-pg-a4'):
     """
     sitemaps_path = os.path.join(settings.PROJECT_PATH, 'rnacentral', 'sitemaps')
 
-    cmd = 'rsync -avi{dry_run} {src}/ {remote_host}:{dst}'.format(
+    cmd = 'rsync -avi{dry_run} --delete {src}/ {remote_host}:{dst}'.format(
         src=sitemaps_path,
         dst=sitemaps_path,
         remote_host=remote_host,
@@ -176,7 +176,7 @@ def rsync_local_files(dry_run=None):
     Rsync local files to production.
     """
     local_path = os.path.join(os.path.dirname(settings.PROJECT_PATH), 'local')
-    cmd = 'rsync -av{dry_run} --delete {src}/ {host}:{dst}'.format(
+    cmd = 'rsync -av{dry_run} {src}/ {host}:{dst}'.format(
         src=local_path,
         host=env.host,
         dst=local_path,
