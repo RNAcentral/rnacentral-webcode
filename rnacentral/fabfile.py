@@ -120,7 +120,7 @@ def create_sitemaps():
     """
     with env.cd(settings.PROJECT_PATH), prefix(COMMANDS['set_environment']), \
          prefix(COMMANDS['activate_virtualenv']):
-        env.run('rm sitemaps/*')
+        env.run('rm rnacentral/sitemaps/*')
         env.run('python rnacentral/manage.py create_sitemaps')
         slack("Created sitemaps at ves-oy-a4")
 
