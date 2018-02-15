@@ -122,6 +122,7 @@ def create_sitemaps():
          prefix(COMMANDS['activate_virtualenv']):
         env.run('rm sitemaps/*')
         env.run('python rnacentral/manage.py create_sitemaps')
+        slack("Created sitemaps at ves-oy-a4")
 
 
 def rsync_sitemaps(dry_run=None, remote_host='ves-pg-a4'):
@@ -137,6 +138,7 @@ def rsync_sitemaps(dry_run=None, remote_host='ves-pg-a4'):
         dry_run='n' if dry_run else '',
     )
     local(cmd)
+    slack("Rsynced sitemaps to %s" % remote_host)
 
 
 def flush_memcached():
