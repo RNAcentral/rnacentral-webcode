@@ -11,6 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import datetime
+
 from django.db import models
 
 
@@ -21,7 +23,7 @@ class RnaPrecomputed(models.Model):
     description = models.CharField(max_length=250)
     rna_type = models.CharField(max_length=250)
     rfam_problems = models.TextField(default='')
-    update_date = models.DateField()
+    update_date = models.DateField(null=False, default=datetime.date(1970, 1, 1))
 
     class Meta:
         db_table = 'rnc_rna_precomputed'

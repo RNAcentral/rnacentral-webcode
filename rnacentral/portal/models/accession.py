@@ -45,7 +45,7 @@ class Accession(models.Model):
 
     # GeneID (without coordinates); used to find splice variants for lncRNAs OR mature/precursor RNAs for miRNAs
     optional_id = models.CharField(max_length=100)
-    common_name = models.CharField(max_length=200)
+    common_name = models.CharField(max_length=200, default='')
 
     anticodon = models.CharField(max_length=50)
     experiment = models.CharField(max_length=500)
