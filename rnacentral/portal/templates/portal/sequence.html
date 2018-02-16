@@ -97,10 +97,29 @@ limitations under the License.
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                              <td colspan="6"><b>Genome locations based on literature data</b></td>
+                          <tr ng-if="!(genomeLocations && genomeMappings)">
+                                <td colspan="6" style="text-align: center;">
+                                    <span>
+                                        <i class="fa fa-spinner fa-spin fa-2x"></i>
+                                        Loading database cross-references...
+                                    </span>
+                                </td>
                             </tr>
-                            <tr ng-repeat="location in genomeLocations" ng-class="{'active': isSelectedLocation(location) }">
+                            <tr ng-if="fetchGenomeLocationsError">
+                                <td colspan="6" style="text-align: center;">
+                                    <span>
+                                        <i class="fa fa-exclamation-circle fa-2x"></i>
+                                        Failed to load data from server
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr ng-if="genomeLocations && genomeMappings">
+                                <td colspan="6"><b>Genome locations based on literature data</b></td>
+                            </tr>
+                            <tr ng-if="genomeLocations.length === 0">
+                                <td colspan="6">No genome locations known from literature</td>
+                            </tr>
+                            <tr ng-if="genomeLocations && genomeMappings" ng-repeat="location in genomeLocations" ng-class="{'active': isSelectedLocation(location) }">
                                 <td>
                                     <button ng-if="!$ctrl.chromosomeIsScaffold(location.chromosome)"
                                             type="button"
@@ -130,10 +149,13 @@ limitations under the License.
                                     </span>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr ng-if="genomeLocations && genomeMappings">
                                 <td colspan="6"><b>Automatically predicted genome locations</b></td>
                             </tr>
-                            <tr ng-repeat="location in genomeMappings" ng-class="{'active': isSelectedLocation(location) }">
+                            <tr ng-if="genomeMappings.length === 0">
+                                <td ng-if="genomeMappings.length === 0" colspan="6">No automatically predicted locations</td>
+                            </tr>
+                            <tr ng-if="genomeLocations && genomeMappings" ng-repeat="location in genomeMappings" ng-class="{'active': isSelectedLocation(location) }">
                                 <td>
                                     <button ng-if="!$ctrl.chromosomeIsScaffold(location.chromosome)"
                                             type="button"
