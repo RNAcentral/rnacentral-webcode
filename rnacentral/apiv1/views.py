@@ -411,6 +411,26 @@ class RnaGenomeLocations(generics.ListAPIView):
         return Response(locations)
 
 
+class RnaGenomeMapping(generics.ListAPIView):
+    queryset = Rna.objects.select_related().all()
+
+    def get(self, request, pk=None, taxid=None, format=None):
+        rna = self.get_object()
+        mappings = rna.genome_mappings.filter(taxid=taxid)
+
+        output = []
+        for mapping in mappings:
+            data = {
+                'chromosome': mapping.chromosome,
+                'strand': mapping.strand,
+                'start': mapping.start,
+                'stop': mapping.stop,
+            }
+            output.append(data)
+
+        return Response(output)
+
+
 class AccessionView(generics.RetrieveAPIView):
     """
     API endpoint that allows single accessions to be viewed.

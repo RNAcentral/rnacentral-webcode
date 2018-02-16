@@ -19,9 +19,8 @@ from django.core.urlresolvers import reverse
 from django.db.models import Min, Max
 from rest_framework import serializers
 
-from portal.models import Rna, Xref, Reference, Database, DatabaseStats, Accession, Release, Reference, Modification, RfamHit, RfamModel, RfamClan, EnsemblAssembly, EnsemblInsdcMapping
-from portal.models.reference_map import Reference_map
-from portal.models.chemical_component import ChemicalComponent
+from portal.models import Rna, Xref, Reference,  Reference_map, ChemicalComponent, Database, DatabaseStats, Accession, \
+    Release, Reference, Modification, RfamHit, RfamModel, RfamClan, EnsemblAssembly, EnsemblInsdcMapping, GenomeMapping
 
 
 class RawPublicationSerializer(serializers.ModelSerializer):
@@ -446,3 +445,9 @@ class EnsemblInsdcMappingSerializer(serializers.ModelSerializer):
     class Meta:
         model = EnsemblInsdcMapping
         fields = ('insdc', 'ensembl_name', 'assembly')
+
+
+class GenomeMappingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GenomeMapping
+        fields = ('chromosome', 'region_id', 'rna_id', 'start', 'stop', 'strand', 'taxid')

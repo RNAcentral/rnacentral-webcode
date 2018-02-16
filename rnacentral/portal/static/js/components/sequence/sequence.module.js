@@ -167,20 +167,15 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
          * Returns DNA sequence, corresponding to input RNA sequence. =)
          */
         function reverseTranscriptase(rna) {
-            // case-insensitive, global replacement of U's with T's
-            return rna.replace(/U/ig, 'T');
+            return rna.replace(/U/ig, 'T'); // case-insensitive, global replacement of U's with T's
         }
 
         var rnaClipboard = new Clipboard('#copy-as-rna', {
-            "text": function () {
-                return $scope.rna.sequence;
-            }
+            "text": function () { return $scope.rna.sequence; }
         });
 
         var dnaClipbaord = new Clipboard('#copy-as-dna', {
-            "text": function () {
-                return reverseTranscriptase($scope.rna.sequence);
-            }
+            "text": function () { return reverseTranscriptase($scope.rna.sequence); }
         });
     };
 
