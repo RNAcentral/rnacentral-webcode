@@ -39,7 +39,7 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               EnsemblInsdcMappingSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblInsdcMapping
-from portal.config.genomes import genomes, url2db, db2url, SpeciesNotInGenomes, get_taxid_from_species
+from portal.config.genomes import genomes, url2db, db2url, SpeciesNotInGenomes, get_taxid_from_species, get_ensembl_division, get_ensembl_species_url, get_ucsc_db_id
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination
 
@@ -420,12 +420,16 @@ class RnaGenomeMapping(generics.ListAPIView):
 
         output = []
         for mapping in mappings:
-            data = {
+            data = OrderedDict({
                 'chromosome': mapping.chromosome,
                 'strand': mapping.strand,
                 'start': mapping.start,
                 'stop': mapping.stop,
-            }
+                'species': "",  # TODO: NOT DOABLE CURRENTLY. NEED TO FIX GENOMES HANDLING MESS IN OUR DATABASE FIRST
+                'ucsc_db_id': get_ucsc_db_id(mapping.taxid),
+                'ensembl_division': "",  # TODO: NOT DOABLE CURRENTLY. NEED TO FIX GENOMES HANDLING MESS IN OUR DATABASE FIRST
+                'ensembl_species_url': ""  # TODO: NOT DOABLE CURRENTLY. NEED TO FIX GENOMES HANDLING MESS IN OUR DATABASE FIRST
+            })
             output.append(data)
 
         return Response(output)

@@ -30,4 +30,3 @@ from .secondary_structure import *
 from .xref import *
 from .ensembl_assembly import *
 from .ensembl_insdc_mapping import *
-from .utils import get_ensembl_divisions
