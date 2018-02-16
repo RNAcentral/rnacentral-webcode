@@ -97,7 +97,43 @@ limitations under the License.
                             </tr>
                         </thead>
                         <tbody>
+                            <tr>
+                              <td colspan="6"><b>Genome locations based on literature data</b></td>
+                            </tr>
                             <tr ng-repeat="location in genomeLocations" ng-class="{'active': isSelectedLocation(location) }">
+                                <td>
+                                    <button ng-if="!$ctrl.chromosomeIsScaffold(location.chromosome)"
+                                            type="button"
+                                            class="btn btn-default btn-xs genoverse-xref help margin-right-5px"
+                                            ng-click="activateGenomeBrowser(location.start, location.end, location.chromosome, location.species); scrollToGenomeBrowser();"
+                                            title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> View genome location
+                                    </button>
+                                    <li ng-if="$ctrl.chromosomeIsScaffold(location.chromosome)" class="badge">Can't view - strange chromosome name</li>
+                                </td>
+                                <td>
+                                    <span class="margin-right-5px">{{ location.chromosome }}</span>
+                                </td>
+                                <td>
+                                    {{ location.start | number }}&nbsp;-&nbsp;{{ location.end | number }}
+                                </td>
+                                <td>
+                                    {{ location.strand == "1" ? "forward" : "reverse" }}
+                                </td>
+                                <td><!-- Ensembl url -->
+                                    <span ng-if="location.ensembl_division && location.ensembl_species_url" class="margin-right-5px ensembl-link">
+                                        <a ng-href="{{ location.ensembl_division.url + '/' + location.ensembl_species_url + '/Location/View?r=' + location.chromosome + ':' + location.start + '-' + location.end }}" target="_blank">{{ location.ensembl_division.name }}</a>
+                                    </span>
+                                </td>
+                                <td><!-- UCSC url -->
+                                    <span ng-if="location.ucsc_db_id" class="margin-right-5px ucsc-link">
+                                        <a ng-href="{{ 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + location.ucsc_db_id + '&position=' + location.ucsc_chromosome + ':' + location.start + '-' + location.end }}" target="_blank">UCSC</a>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="6"><b>Automatically predicted genome locations</b></td>
+                            </tr>
+                            <tr ng-repeat="location in genomeMappings" ng-class="{'active': isSelectedLocation(location) }">
                                 <td>
                                     <button ng-if="!$ctrl.chromosomeIsScaffold(location.chromosome)"
                                             type="button"

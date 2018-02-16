@@ -445,9 +445,3 @@ class EnsemblInsdcMappingSerializer(serializers.ModelSerializer):
     class Meta:
         model = EnsemblInsdcMapping
         fields = ('insdc', 'ensembl_name', 'assembly')
-
-
-class GenomeMappingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = GenomeMapping
-        fields = ('chromosome', 'region_id', 'rna_id', 'start', 'stop', 'strand', 'taxid')

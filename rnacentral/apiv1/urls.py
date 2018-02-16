@@ -43,7 +43,7 @@ urlpatterns = [
     # genome locations for RNA (species-specific)
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/genome-locations/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.RnaGenomeLocations.as_view()), name='rna-genome-locations'),
     # genome mapping for RNA (species-specific)
-    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/genome-mapping/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.RnaGenomeMapping.as_view()), name='rna-genome-mapping'),
+    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/genome-mappings/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.RnaGenomeMappings.as_view()), name='rna-genome-mappings'),
     # literature citations associated with ENA records
     url(r'^accession/(?P<pk>.*?)/citations/?$', cache_page(CACHE_TIMEOUT)(views.CitationsView.as_view()), name='accession-citations'),
     # view for an individual cross-reference

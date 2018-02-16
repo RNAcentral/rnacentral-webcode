@@ -13,6 +13,7 @@ angular.module("rnacentralApp").service('routes', ['$interpolate', function($int
         apiPublicationsView: $interpolate('/api/v1/rna/{{ upi }}/publications/{{ taxid }}'),
         apiRnaView: $interpolate('/api/v1/rna/{{ upi }}'),
         apiGenomeLocationsView: $interpolate('/api/v1/rna/{{ upi }}/genome-locations/{{ taxid }}'),
+        apiGenomeMappingsView: $interpolate('/api/v1/rna/{{ upi }}/genome-mappings/{{ taxid }}'),
         apiRfamHitsView: $interpolate('/api/v1/rna/{{ upi }}/rfam-hits'),
         lineageView: $interpolate('/rna/{{ upi }}/lineage'),
         expertDbsApi: $interpolate('/api/v1/expert-dbs/{{ expertDbName }}'),

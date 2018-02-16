@@ -74,6 +74,21 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         });
     };
 
+    $scope.fetchGenomeMappings = function() {
+        return $q(function (resolve, reject) {
+            $http.get(routes.apiGenomeMappingsView({upi: $scope.upi, taxid: $scope.taxid})).then(
+                function (response) {
+                    console.log(`genomeMappings = ${ response.data }`);
+                    $scope.genomeMappings = response.data;
+                    resolve(response.data);
+                },
+                function () {
+
+                }
+            );
+        });
+    };
+
     $scope.fetchRna = function () {
         return $q(function (resolve, reject) {
             $http.get(routes.apiRnaView({upi: $scope.upi})).then(
@@ -325,9 +340,9 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         );
     });
 
-    $scope.fetchGenomeLocations().then(function() {
-        if ($scope.genomeLocations.length > 0) {
-            var location = $scope.genomeLocations[0];
+    $q.all([$scope.fetchGenomeLocations(), $scope.fetchGenomeMappings()]).then(function() {
+        if ($scope.genomeLocations.length > 0 || $scope.genomeMappings.length > 0) {
+            var location = $scope.genomeLocations.length ? $scope.genomeLocations[0] : $scope.genomeMappings[0];
             $scope.activateGenomeBrowser(location.start, location.end, location.chromosome, location.species);
         }
     }, function() {

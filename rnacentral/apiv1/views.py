@@ -411,7 +411,7 @@ class RnaGenomeLocations(generics.ListAPIView):
         return Response(locations)
 
 
-class RnaGenomeMapping(generics.ListAPIView):
+class RnaGenomeMappings(generics.ListAPIView):
     queryset = Rna.objects.select_related().all()
 
     def get(self, request, pk=None, taxid=None, format=None):
@@ -420,16 +420,16 @@ class RnaGenomeMapping(generics.ListAPIView):
 
         output = []
         for mapping in mappings:
-            data = OrderedDict({
+            data = {
                 'chromosome': mapping.chromosome,
                 'strand': mapping.strand,
                 'start': mapping.start,
-                'stop': mapping.stop,
+                'end': mapping.stop,
                 'species': "",  # TODO: NOT DOABLE CURRENTLY. NEED TO FIX GENOMES HANDLING MESS IN OUR DATABASE FIRST
                 'ucsc_db_id': get_ucsc_db_id(mapping.taxid),
                 'ensembl_division': "",  # TODO: NOT DOABLE CURRENTLY. NEED TO FIX GENOMES HANDLING MESS IN OUR DATABASE FIRST
                 'ensembl_species_url': ""  # TODO: NOT DOABLE CURRENTLY. NEED TO FIX GENOMES HANDLING MESS IN OUR DATABASE FIRST
-            })
+            }
             output.append(data)
 
         return Response(output)
