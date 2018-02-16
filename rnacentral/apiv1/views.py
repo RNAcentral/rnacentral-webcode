@@ -418,17 +418,19 @@ class RnaGenomeMappings(generics.ListAPIView):
         rna = self.get_object()
         mappings = rna.genome_mappings.filter(taxid=taxid)
 
+        species = rna.xrefs.first().accession.species
+
         output = []
         for mapping in mappings:
             data = {
                 'chromosome': mapping.chromosome,
-                'strand': mapping.strand,
+                'strand': 1 if mapping.strand == '+' else -1,  # convert +/- to 1/-1
                 'start': mapping.start,
                 'end': mapping.stop,
-                'species': "",  # TODO: NOT DOABLE CURRENTLY. NEED TO FIX GENOMES HANDLING MESS IN OUR DATABASE FIRST
+                'species': db2url(species),
                 'ucsc_db_id': get_ucsc_db_id(mapping.taxid),
-                'ensembl_division': "",  # TODO: NOT DOABLE CURRENTLY. NEED TO FIX GENOMES HANDLING MESS IN OUR DATABASE FIRST
-                'ensembl_species_url': ""  # TODO: NOT DOABLE CURRENTLY. NEED TO FIX GENOMES HANDLING MESS IN OUR DATABASE FIRST
+                'ensembl_division': get_ensembl_division(species),
+                'ensembl_species_url': get_ensembl_species_url(species, rna.xrefs.first().accession)
             }
             output.append(data)
 

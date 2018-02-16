@@ -78,7 +78,6 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         return $q(function (resolve, reject) {
             $http.get(routes.apiGenomeMappingsView({upi: $scope.upi, taxid: $scope.taxid})).then(
                 function (response) {
-                    console.log(`genomeMappings = ${ response.data }`);
                     $scope.genomeMappings = response.data;
                     resolve(response.data);
                 },
