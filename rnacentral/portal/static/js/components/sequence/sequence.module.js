@@ -341,6 +341,18 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 
     $q.all([$scope.fetchGenomeLocations(), $scope.fetchGenomeMappings()]).then(function() {
         $scope.fetchGenomeLocationsStatus = 'success';
+
+        // filter out genome locations, known from literature, from genome mappings
+        $scope.genomeMappings = $scope.genomeMappings.filter(function(mapping) {
+            return !$scope.genomeLocations.some(function(location) {
+                return location.start == mapping.start &&
+                       location.end  == mapping.end &&
+                       location.strand == mapping.strand &&
+                       location.chromosome == mapping.chromosome;
+            });
+        });
+
+        // if any locations/mappings, activate genome browser
         if ($scope.genomeLocations.length > 0 || $scope.genomeMappings.length > 0) {
             var location = $scope.genomeLocations.length ? $scope.genomeLocations[0] : $scope.genomeMappings[0];
             $scope.activateGenomeBrowser(location.start, location.end, location.chromosome, location.species);
