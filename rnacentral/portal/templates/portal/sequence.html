@@ -77,14 +77,14 @@ limitations under the License.
                 <h2 ng-if="taxid">
                     Genome locations
                 </h2>
-                <div ng-if="taxid && fetchGenomeLocationsError">
+                <div ng-if="taxid && fetchGenomeLocationsStatus === 'error'">
                     <div class="alert alert-danger">
                         <i class="fa fa-exclamation-triangle"></i> Sorry, there was a problem loading genome locations from server. Please try again and contact us if the problem persists.
                     </div>
                 </div>
-                <div ng-if="taxid && !fetchGenomeLocationsError && genomeLocations.length > 0">
+                <div ng-if="taxid && fetchGenomeLocationsStatus !== 'error'">
                     {% verbatim %}
-                    <p>This sequence is found in <strong>{{ genomeLocations.length }}</strong> genome <ng-pluralize count="genomeLocations.length" when="{'one': 'location', 'other': 'locations'}"></ng-pluralize>:</p>
+                    <p>This sequence is found in <strong>{{ genomeLocations.length + genomeMappings.length }}</strong> genome <ng-pluralize count="genomeLocations.length + genomeMappings.length" when="{'one': 'location', 'other': 'locations'}"></ng-pluralize>:</p>
                     <table class="table table-hover table-condensed table-bordered table-responsive" style="margin-left: 9px; margin-right: 9px;">
                         <thead>
                             <tr>
@@ -97,15 +97,15 @@ limitations under the License.
                             </tr>
                         </thead>
                         <tbody>
-                          <tr ng-if="!(genomeLocations && genomeMappings)">
+                          <tr ng-if="fetchGenomeLocationsStatus === 'loading'">
                                 <td colspan="6" style="text-align: center;">
                                     <span>
                                         <i class="fa fa-spinner fa-spin fa-2x"></i>
-                                        Loading database cross-references...
+                                        Loading genome locations...
                                     </span>
                                 </td>
                             </tr>
-                            <tr ng-if="fetchGenomeLocationsError">
+                            <tr ng-if="fetchGenomeLocationsStatus === 'error'">
                                 <td colspan="6" style="text-align: center;">
                                     <span>
                                         <i class="fa fa-exclamation-circle fa-2x"></i>
@@ -113,13 +113,13 @@ limitations under the License.
                                     </span>
                                 </td>
                             </tr>
-                            <tr ng-if="genomeLocations && genomeMappings">
+                            <tr ng-if="fetchGenomeLocationsStatus === 'success'">
                                 <td colspan="6"><b>Genome locations based on literature data</b></td>
                             </tr>
-                            <tr ng-if="genomeLocations.length === 0">
+                            <tr ng-if="fetchGenomeLocationsStatus === 'success' && genomeLocations.length === 0">
                                 <td colspan="6">No genome locations known from literature</td>
                             </tr>
-                            <tr ng-if="genomeLocations && genomeMappings" ng-repeat="location in genomeLocations" ng-class="{'active': isSelectedLocation(location) }">
+                            <tr ng-if="fetchGenomeLocationsStatus === 'success'" ng-repeat="location in genomeLocations" ng-class="{'active': isSelectedLocation(location) }">
                                 <td>
                                     <button ng-if="!$ctrl.chromosomeIsScaffold(location.chromosome)"
                                             type="button"
@@ -149,13 +149,13 @@ limitations under the License.
                                     </span>
                                 </td>
                             </tr>
-                            <tr ng-if="genomeLocations && genomeMappings">
+                            <tr ng-if="fetchGenomeLocationsStatus === 'success'">
                                 <td colspan="6"><b>Automatically predicted genome locations</b></td>
                             </tr>
-                            <tr ng-if="genomeMappings.length === 0">
+                            <tr ng-if="fetchGenomeLocationsStatus === 'success' && genomeMappings.length === 0">
                                 <td ng-if="genomeMappings.length === 0" colspan="6">No automatically predicted locations</td>
                             </tr>
-                            <tr ng-if="genomeLocations && genomeMappings" ng-repeat="location in genomeMappings" ng-class="{'active': isSelectedLocation(location) }">
+                            <tr ng-if="fetchGenomeLocationsStatus === 'success'" ng-repeat="location in genomeMappings" ng-class="{'active': isSelectedLocation(location) }">
                                 <td>
                                     <button ng-if="!$ctrl.chromosomeIsScaffold(location.chromosome)"
                                             type="button"
@@ -200,7 +200,7 @@ limitations under the License.
                     </genoverse>
                 </div>
 
-                <div ng-if="taxid && !fetchGenomeLocationsError && genomeLocations.length === 0">
+                <div ng-if="taxid && fetchGenomeLocationsStatus === 'success' && (genomeLocations.length + genomeMappings.length ) === 0">
                     No genome locations known for this sequence.
                 </div>
 

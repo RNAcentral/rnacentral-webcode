@@ -5,7 +5,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     $scope.hide2dTab = true;
 
     $scope.fetchRnaError = false; // hide content and display error, if we fail to download rna from server
-    $scope.fetchGenomeLocationsError = false; // same
+    $scope.fetchGenomeLocationsStatus = 'loading'; // 'loading' or 'error' or 'success'
 
     // avoid a terrible bug with intercepted 2-way binding: https://github.com/RNAcentral/rnacentral-webcode/issues/308
     $scope.browserLocation = {start: undefined, end: undefined, chr: undefined, genome: undefined, domain: undefined};
@@ -340,12 +340,13 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     });
 
     $q.all([$scope.fetchGenomeLocations(), $scope.fetchGenomeMappings()]).then(function() {
+        $scope.fetchGenomeLocationsStatus = 'success';
         if ($scope.genomeLocations.length > 0 || $scope.genomeMappings.length > 0) {
             var location = $scope.genomeLocations.length ? $scope.genomeLocations[0] : $scope.genomeMappings[0];
             $scope.activateGenomeBrowser(location.start, location.end, location.chromosome, location.species);
         }
     }, function() {
-        $scope.fetchGenomeLocationsError = true;
+        $scope.fetchGenomeLocationsStatus = 'error';
     });
 };
 
