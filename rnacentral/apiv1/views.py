@@ -416,19 +416,22 @@ class RnaGenomeMappings(generics.ListAPIView):
 
     def get(self, request, pk=None, taxid=None, format=None):
         rna = self.get_object()
-        mappings = rna.genome_mappings.filter(taxid=taxid)
+        mappings = rna.genome_mappings.filter(taxid=taxid)\
+                                      .values('region_id', 'strand', 'chromosome', 'taxid')\
+                                      .annotate(Min('start'), Max('stop'))
+        print(mappings)
 
         species = rna.xrefs.first().accession.species
 
         output = []
         for mapping in mappings:
             data = {
-                'chromosome': mapping.chromosome,
-                'strand': 1 if mapping.strand == '+' else -1,  # convert +/- to 1/-1
-                'start': mapping.start,
-                'end': mapping.stop,
+                'chromosome': mapping["chromosome"],
+                'strand': 1 if mapping["strand"] == '+' else -1,  # convert +/- to 1/-1
+                'start': mapping["start__min"],
+                'end': mapping["stop__max"],
                 'species': db2url(species),
-                'ucsc_db_id': get_ucsc_db_id(mapping.taxid),
+                'ucsc_db_id': get_ucsc_db_id(mapping["taxid"]),
                 'ensembl_division': get_ensembl_division(species),
                 'ensembl_species_url': get_ensembl_species_url(species, rna.xrefs.first().accession)
             }
