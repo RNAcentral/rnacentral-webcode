@@ -38,7 +38,7 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, RfamHitSerializer, \
                               EnsemblInsdcMappingSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
-from portal.models import Rna, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblInsdcMapping
+from portal.models import Rna, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblInsdcMapping, GenomeMapping
 from portal.config.genomes import genomes, url2db, db2url, SpeciesNotInGenomes, get_taxid_from_species, get_ensembl_division, get_ensembl_species_url, get_ucsc_db_id
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination
@@ -49,22 +49,6 @@ Docstrings of the classes exposed in urlpatterns support markdown.
 
 # maximum number of xrefs to use with prefetch_related
 MAX_XREFS_TO_PREFETCH = 1000
-
-
-def _get_xrefs_from_genomic_coordinates(species, chromosome, start, end):
-    """Common function for retrieving xrefs based on genomic coordinates."""
-    try:
-        xrefs = Xref.default_objects.filter(
-            accession__coordinates__chromosome=chromosome,
-            accession__coordinates__primary_start__gte=start,
-            accession__coordinates__primary_end__lte=end,
-            accession__species=url2db(species),
-            deleted='N'
-        ).all()
-
-        return xrefs
-    except Exception as e:
-        return []
 
 
 class GenomeAnnotations(APIView):
@@ -78,61 +62,91 @@ class GenomeAnnotations(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request, species, chromosome, start, end, format=None):
-        start = start.replace(',','')
-        end = end.replace(',','')
+        start = start.replace(',', '')
+        end = end.replace(',', '')
 
-        xrefs = _get_xrefs_from_genomic_coordinates(species, chromosome, start, end)
+        xrefs_features = features_from_xrefs(species, chromosome, start, end)
+        mappings_features = features_from_mappings(species, chromosome, start, end)
 
-        rnacentral_ids = []
-        data = []
-        for i, xref in enumerate(xrefs):
-            rnacentral_id = xref.upi.upi
+        return Response(xrefs_features + mappings_features)
 
-            # transcript object
-            if rnacentral_id not in rnacentral_ids:
-                rnacentral_ids.append(rnacentral_id)
-            else:
-                continue
 
-            coordinates = xref.get_genomic_coordinates()
-            transcript_id = rnacentral_id + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
-            biotype = xref.upi.precomputed.filter(taxid=xref.taxid)[0].rna_type  # used to be biotype = xref.accession.get_biotype()
-            description = xref.upi.precomputed.filter(taxid=xref.taxid)[0].description
+def features_from_xrefs(species, chromosome, start, end):
+    try:
+        xrefs = Xref.default_objects.filter(
+            accession__coordinates__chromosome=chromosome,
+            accession__coordinates__primary_start__gte=start,
+            accession__coordinates__primary_end__lte=end,
+            accession__species=url2db(species),
+            deleted='N'
+        ).all()
+    except Xref.DoesNotExist:
+        xrefs = []
 
+    rnacentral_ids = []
+    data = []
+    for i, xref in enumerate(xrefs):
+        rnacentral_id = xref.upi.upi
+
+        # transcript object
+        if rnacentral_id not in rnacentral_ids:
+            rnacentral_ids.append(rnacentral_id)
+        else:
+            continue
+
+        coordinates = xref.get_genomic_coordinates()
+        transcript_id = rnacentral_id + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(
+            coordinates['end'])
+        biotype = xref.upi.precomputed.filter(taxid=xref.taxid)[
+            0].rna_type  # used to be biotype = xref.accession.get_biotype()
+        description = xref.upi.precomputed.filter(taxid=xref.taxid)[0].description
+
+        data.append({
+            'ID': transcript_id,
+            'external_name': rnacentral_id,
+            'taxid': xref.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
+            'feature_type': 'transcript',
+            'logic_name': 'RNAcentral',  # required by Genoverse
+            'biotype': biotype,  # required by Genoverse
+            'description': description,
+            'seq_region_name': chromosome,
+            'strand': coordinates['strand'],
+            'start': coordinates['start'],
+            'end': coordinates['end'],
+        })
+
+        # exons
+        exons = xref.accession.coordinates.all()
+        for i, exon in enumerate(exons):
+            exon_id = '_'.join([xref.accession.accession, 'exon_' + str(i)])
+            if not exon.chromosome:
+                continue  # some exons may not be mapped onto the genome (common in RefSeq)
             data.append({
-                'ID': transcript_id,
-                'external_name': rnacentral_id,
+                'external_name': exon_id,
+                'ID': exon_id,
                 'taxid': xref.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
-                'feature_type': 'transcript',
+                'feature_type': 'exon',
+                'Parent': transcript_id,
                 'logic_name': 'RNAcentral',  # required by Genoverse
                 'biotype': biotype,  # required by Genoverse
-                'description': description,
                 'seq_region_name': chromosome,
-                'strand': coordinates['strand'],
-                'start': coordinates['start'],
-                'end': coordinates['end'],
+                'strand': exon.strand,
+                'start': exon.primary_start,
+                'end': exon.primary_end,
             })
 
-            # exons
-            exons = xref.accession.coordinates.all()
-            for i, exon in enumerate(exons):
-                exon_id = '_'.join([xref.accession.accession, 'exon_' + str(i)])
-                if not exon.chromosome:
-                    continue  # some exons may not be mapped onto the genome (common in RefSeq)
-                data.append({
-                    'external_name': exon_id,
-                    'ID': exon_id,
-                    'taxid': xref.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
-                    'feature_type': 'exon',
-                    'Parent': transcript_id,
-                    'logic_name': 'RNAcentral',  # required by Genoverse
-                    'biotype': biotype,  # required by Genoverse
-                    'seq_region_name': chromosome,
-                    'strand': exon.strand,
-                    'start': exon.primary_start,
-                    'end': exon.primary_end,
-                })
-        return Response(data)
+        return data
+
+
+def features_from_mappings(species, chromosome, start, end):
+    data = []
+
+    # TODO: this is a terribly indirect way to get taxid by species
+    taxid = Xref.objects.get(accession=Accession.objects.filter(species=species).first()).taxid
+
+    mappings = GenomeMapping.objects.filter(taxid=taxid, chromosome=chromosome, start__gte=start, stop__lte=end)
+
+    return data
 
 
 class APIRoot(APIView):
@@ -419,7 +433,6 @@ class RnaGenomeMappings(generics.ListAPIView):
         mappings = rna.genome_mappings.filter(taxid=taxid)\
                                       .values('region_id', 'strand', 'chromosome', 'taxid')\
                                       .annotate(Min('start'), Max('stop'))
-        print(mappings)
 
         species = rna.xrefs.first().accession.species
 
