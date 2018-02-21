@@ -38,7 +38,7 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, RfamHitSerializer, \
                               EnsemblInsdcMappingSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
-from portal.models import Rna, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblInsdcMapping, GenomeMapping
+from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblInsdcMapping, GenomeMapping
 from portal.config.genomes import genomes, url2db, db2url, SpeciesNotInGenomes, get_taxid_from_species, get_ensembl_division, get_ensembl_species_url, get_ucsc_db_id
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination
@@ -144,9 +144,27 @@ def features_from_mappings(species, chromosome, start, end):
     mappings = GenomeMapping.objects.filter(taxid=taxid, chromosome=chromosome, start__gte=start, stop__lte=end)\
                                     .select_related()
 
-    transcripts = mappings.filter(taxid=taxid) \
-        .values('region_id', 'strand', 'chromosome', 'taxid', 'upi') \
-        .annotate(Min('start'), Max('stop'))
+    transcripts = mappings.values('region_id', 'strand', 'chromosome', 'taxid', 'upi') \
+                          .annotate(Min('start'), Max('stop'))
+
+    transcripts_query = '''
+        SELECT region_id, strand, chromosome, taxid, upi
+        FROM {genome_mapping}
+        JOIN {rna}
+        ON {genome_mapping}.upi={rna}.upi
+        JOIN (
+          SELECT  FROM {rna_precomputed} WHERE {rna}.taxid=taxid
+        ) precomputed
+        ON {rna}.upi=precomputed.upi
+
+    '''.format(
+        genome_mapping=GenomeMapping._meta.db_table,
+        rna=Rna._meta.db_table,
+        rna_precomputed=RnaPrecomputed._meta.db_table,
+        taxid=taxid
+    )
+
+    transcripts = GenomeMapping.objects.raw(transcripts_query)
 
     data = []
     for transcript in transcripts:
