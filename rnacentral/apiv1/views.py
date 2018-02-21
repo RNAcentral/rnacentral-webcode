@@ -97,8 +97,7 @@ def features_from_xrefs(species, chromosome, start, end):
         coordinates = xref.get_genomic_coordinates()
         transcript_id = rnacentral_id + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(
             coordinates['end'])
-        biotype = xref.upi.precomputed.filter(taxid=xref.taxid)[
-            0].rna_type  # used to be biotype = xref.accession.get_biotype()
+        biotype = xref.upi.precomputed.filter(taxid=xref.taxid)[0].rna_type  # used to be biotype = xref.accession.get_biotype()
         description = xref.upi.precomputed.filter(taxid=xref.taxid)[0].description
 
         data.append({
@@ -139,12 +138,45 @@ def features_from_xrefs(species, chromosome, start, end):
 
 
 def features_from_mappings(species, chromosome, start, end):
-    data = []
-
     # TODO: this is a terribly indirect way to get taxid by species
     taxid = Xref.objects.get(accession=Accession.objects.filter(species=species).first()).taxid
 
-    mappings = GenomeMapping.objects.filter(taxid=taxid, chromosome=chromosome, start__gte=start, stop__lte=end)
+    mappings = GenomeMapping.objects.filter(taxid=taxid, chromosome=chromosome, start__gte=start, stop__lte=end)\
+                                    .select_related()
+
+    transcripts = mappings.filter(taxid=taxid) \
+        .values('region_id', 'strand', 'chromosome', 'taxid', 'upi') \
+        .annotate(Min('start'), Max('stop'))
+
+    data = []
+    for transcript in transcripts:
+        data.append({
+            'ID': transcript['region_id'],
+            'external_name': 'upi',
+            'taxid': transcript['taxid'],
+            'feature_type': 'transcript',
+            'logic_name': 'RNAcentral',
+            'biotype': Rna.objects.get(upi=transcript['upi']).precomputed.filter()[0].rna_type,
+            'seq_region_name': transcript['chromosome'],
+            'strand': transcript['strand'],
+            'start': transcript['start__min'],
+            'end': transcript['stop__max']
+        })
+
+    for exon in mappings:
+        data.append({
+            'external_name': exon.region_id,
+            'ID': exon.region_id,
+            'taxid': exon.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
+            'feature_type': 'exon',
+            'Parent': exon['region_id'],
+            'logic_name': 'RNAcentral',  # required by Genoverse
+            'biotype': biotype,  # required by Genoverse
+            'seq_region_name': chromosome,
+            'strand': exon.strand,
+            'start': exon.primary_start,
+            'end': exon.primary_end,
+        })
 
     return data
 
