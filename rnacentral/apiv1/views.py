@@ -139,13 +139,10 @@ def features_from_xrefs(species, chromosome, start, end):
 
 def features_from_mappings(species, chromosome, start, end):
     # TODO: this is a terribly indirect way to get taxid by species
-    taxid = Xref.objects.get(accession=Accession.objects.filter(species=species).first()).taxid
+    taxid = Xref.objects.get(accession=Accession.objects.filter(species=url2db(species)).first()).taxid
 
     mappings = GenomeMapping.objects.filter(taxid=taxid, chromosome=chromosome, start__gte=start, stop__lte=end)\
                                     .select_related()
-
-    # transcripts = mappings.values('region_id', 'strand', 'chromosome', 'taxid', 'upi') \
-    #                       .annotate(Min('start'), Max('stop'))
 
     transcripts_query = '''
         SELECT region_id, strand, chromosome, start, stop, precomputed.taxid, precomputed.rna_type, rna.upi
