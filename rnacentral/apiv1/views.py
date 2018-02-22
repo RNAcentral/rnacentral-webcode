@@ -144,19 +144,24 @@ def features_from_mappings(species, chromosome, start, end):
     mappings = GenomeMapping.objects.filter(taxid=taxid, chromosome=chromosome, start__gte=start, stop__lte=end)\
                                     .select_related()
 
-    transcripts = mappings.values('region_id', 'strand', 'chromosome', 'taxid', 'upi') \
-                          .annotate(Min('start'), Max('stop'))
+    # transcripts = mappings.values('region_id', 'strand', 'chromosome', 'taxid', 'upi') \
+    #                       .annotate(Min('start'), Max('stop'))
 
     transcripts_query = '''
-        SELECT region_id, strand, chromosome, taxid, upi
-        FROM {genome_mapping}
-        JOIN {rna}
-        ON {genome_mapping}.upi={rna}.upi
+        SELECT region_id, strand, chromosome, start, stop, precomputed.taxid, precomputed.rna_type, rna.upi
+        FROM (
+          SELECT region_id, upi, strand, chromosome, MIN(start) as start, MAX(stop) as stop
+          FROM {genome_mapping}
+          GROUP BY region_id, upi, strand, chromosome
+        ) mapping
+        JOIN rna
+        ON mapping.upi=rna.upi
         JOIN (
-          SELECT  FROM {rna_precomputed} WHERE {rna}.taxid=taxid
+          SELECT * FROM {rna_precomputed} WHERE taxid={taxid}
         ) precomputed
         ON {rna}.upi=precomputed.upi
-
+        WHERE mapping.start > 102197585
+        AND mapping.stop < 102402596
     '''.format(
         genome_mapping=GenomeMapping._meta.db_table,
         rna=Rna._meta.db_table,
