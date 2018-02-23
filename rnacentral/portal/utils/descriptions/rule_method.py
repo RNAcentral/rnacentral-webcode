@@ -44,6 +44,8 @@ CHOICES = {
         'TAIR',
         'FlyBase',
         'dictBase',
+        'MGI',
+        'RGD',
         'lncRNAdb',
         'gtRNAdb',
         'PDBe',
