@@ -17,7 +17,12 @@ from django.db import models
 
 
 class RnaPrecomputed(models.Model):
-    id = models.CharField(max_length=22, primary_key=True)
+    """
+    Contains 2 types of entries: species-specific (taxid != Null) and non-species-specific (taxid == Null).
+
+    For every Rna there should be 1 entry in RnaPrecomputed, where taxid = Null and some species-specific.
+    """
+    id = models.CharField(max_length=22, primary_key=True)  # id = upi + taxid if taxid != Null else upi
     upi = models.ForeignKey('Rna', db_column='upi', to_field='upi', related_name='precomputed')
     taxid = models.IntegerField(db_index=True, null=True)
     description = models.CharField(max_length=250)
