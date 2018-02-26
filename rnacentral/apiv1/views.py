@@ -188,6 +188,11 @@ def features_from_mappings(species, chromosome, start, end):
         })
 
     for exon in mappings:
+        try:
+            biotype = exon.upi.precomputed.get(taxid=taxid).rna_type
+        except exon.DoesNotExist:
+            biotype = exon.upi.precomputed.get(taxid__isnull=True).rna_type
+
         data.append({
             'external_name': exon.region_id,
             'ID': exon.region_id,
@@ -195,11 +200,11 @@ def features_from_mappings(species, chromosome, start, end):
             'feature_type': 'exon',
             'Parent': exon.region_id,
             'logic_name': 'RNAcentral',  # required by Genoverse
-            'biotype': exon.upi.precomputed.get(0).rna_type,  # required by Genoverse
+            'biotype': biotype,  # required by Genoverse
             'seq_region_name': exon.chromosome,
             'strand': exon.strand,
             'start': exon.start,
-            'end': exon.end,
+            'end': exon.stop,
         })
 
     return data
