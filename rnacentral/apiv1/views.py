@@ -65,10 +65,27 @@ class GenomeAnnotations(APIView):
         start = start.replace(',', '')
         end = end.replace(',', '')
 
+        # get features from xrefs and from genome mappings
         xrefs_features = features_from_xrefs(species, chromosome, start, end)
         mappings_features = features_from_mappings(species, chromosome, start, end)
 
-        return Response(xrefs_features + mappings_features)
+        # filter out features from genome mappings that duplicate features from xrefs
+        features = xrefs_features[:]
+        for mappings_feature in mappings_features:
+            duplicate = False  # flag
+            for xrefs_feature in xrefs_features:
+                if (xrefs_feature['start'] == mappings_feature['start'] and
+                   xrefs_feature['end'] == mappings_feature['end'] and
+                   # xrefs_feature['strand'] == mappings_feature['strand'] and
+                   xrefs_feature['seq_region_name'] == mappings_feature['seq_region_name'] and
+                   xrefs_feature['taxid'] == mappings_feature['taxid']):
+                    duplicate = True
+                    break
+
+            if not duplicate:
+                features.append(mappings_feature)
+
+        return Response(features)
 
 
 def features_from_xrefs(species, chromosome, start, end):
@@ -134,7 +151,7 @@ def features_from_xrefs(species, chromosome, start, end):
                 'end': exon.primary_end,
             })
 
-        return data
+    return data
 
 
 def features_from_mappings(species, chromosome, start, end):
@@ -145,7 +162,8 @@ def features_from_mappings(species, chromosome, start, end):
                                     .select_related('upi').prefetch_related('upi__precomputed')
 
     transcripts_query = '''
-        SELECT 1 id, region_id, strand, chromosome, start, stop, mapping.taxid as taxid, precomputed.rna_type as rna_type, rna.upi as upi
+        SELECT 1 id, region_id, strand, chromosome, start, stop, mapping.taxid as taxid,
+          precomputed.rna_type as rna_type, precomputed.description as description, rna.upi as upi
         FROM (
           SELECT region_id, upi, strand, chromosome, taxid, MIN(start) as start, MAX(stop) as stop
           FROM {genome_mapping}
@@ -170,7 +188,11 @@ def features_from_mappings(species, chromosome, start, end):
         stop=end,
         chromosome=chromosome
     )
-    transcripts = GenomeMapping.objects.raw(transcripts_query)
+
+    try:
+        transcripts = GenomeMapping.objects.raw(transcripts_query)
+    except GenomeMapping.DoesNotExist:
+        transcripts = []
 
     data = []
     for transcript in transcripts:
@@ -181,28 +203,30 @@ def features_from_mappings(species, chromosome, start, end):
             'feature_type': 'transcript',
             'logic_name': 'RNAcentral',
             'biotype': transcript.rna_type,
+            'description': transcript.description,
             'seq_region_name': transcript.chromosome,
-            'strand': transcript.strand,
+            'strand': 1.0 if transcript.strand == "+" else -1.0,
             'start': transcript.start,
             'end': transcript.stop
         })
 
-    for exon in mappings:
+    for i, exon in enumerate(mappings):
         try:
             biotype = exon.upi.precomputed.get(taxid=taxid).rna_type
         except exon.DoesNotExist:
             biotype = exon.upi.precomputed.get(taxid__isnull=True).rna_type
 
+        exon_id = '_'.join([exon.region_id, 'exon_' + str(i)])
         data.append({
             'external_name': exon.region_id,
-            'ID': exon.region_id,
+            'ID': exon_id,
             'taxid': exon.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
             'feature_type': 'exon',
             'Parent': exon.region_id,
             'logic_name': 'RNAcentral',  # required by Genoverse
             'biotype': biotype,  # required by Genoverse
             'seq_region_name': exon.chromosome,
-            'strand': exon.strand,
+            'strand': 1.0 if exon.strand == "+" else -1.0,
             'start': exon.start,
             'end': exon.stop,
         })
