@@ -67,23 +67,23 @@ class GenomeAnnotations(APIView):
 
         # get features from xrefs and from genome mappings
         xrefs_features = features_from_xrefs(species, chromosome, start, end)
-        mappings_features = features_from_mappings(species, chromosome, start, end)
+        # mappings_features = features_from_mappings(species, chromosome, start, end)
 
         # filter out features from genome mappings that duplicate features from xrefs
         features = xrefs_features[:]
-        for mappings_feature in mappings_features:
-            duplicate = False  # flag
-            for xrefs_feature in xrefs_features:
-                if (xrefs_feature['start'] == mappings_feature['start'] and
-                   xrefs_feature['end'] == mappings_feature['end'] and
-                   # xrefs_feature['strand'] == mappings_feature['strand'] and
-                   xrefs_feature['seq_region_name'] == mappings_feature['seq_region_name'] and
-                   xrefs_feature['taxid'] == mappings_feature['taxid']):
-                    duplicate = True
-                    break
-
-            if not duplicate:
-                features.append(mappings_feature)
+        # for mappings_feature in mappings_features:
+        #     duplicate = False  # flag
+        #     for xrefs_feature in xrefs_features:
+        #         if (xrefs_feature['start'] == mappings_feature['start'] and
+        #            xrefs_feature['end'] == mappings_feature['end'] and
+        #            # xrefs_feature['strand'] == mappings_feature['strand'] and
+        #            xrefs_feature['seq_region_name'] == mappings_feature['seq_region_name'] and
+        #            xrefs_feature['taxid'] == mappings_feature['taxid']):
+        #             duplicate = True
+        #             break
+        #
+        #     if not duplicate:
+        #         features.append(mappings_feature)
 
         return Response(features)
 
@@ -96,7 +96,7 @@ def features_from_xrefs(species, chromosome, start, end):
             accession__coordinates__primary_end__lte=end,
             accession__species=url2db(species),
             deleted='N'
-        ).all()
+        ).select_related('upi', 'accession').prefetch_related('upi__precomputed')
     except Xref.DoesNotExist:
         xrefs = []
 
