@@ -17,7 +17,7 @@ from django.db import models
 from ensembl_assembly import EnsemblAssembly
 
 
-class GenomeMapping(CachingMixin, models.Model):
+class GenomeMapping(models.Model):  # (CachingMixin, models.Model):
     STRAND_CHOICES = (('+', 'forward'), ('-', 'reverse'))
 
     assembly_id = models.ForeignKey(EnsemblAssembly, related_name='genome_mappings', db_column='assembly_id')
@@ -30,7 +30,7 @@ class GenomeMapping(CachingMixin, models.Model):
     taxid = models.IntegerField()
     upi = models.ForeignKey("Rna", db_column='upi', to_field='upi', related_name='genome_mappings')
 
-    objects = CachingManager()
+    # objects = CachingManager()
 
     class Meta:
         db_table = 'load_genome_mapping'

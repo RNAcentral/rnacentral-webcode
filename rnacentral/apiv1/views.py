@@ -142,14 +142,18 @@ def features_from_mappings(species, chromosome, start, end):
     taxid = Xref.objects.get(accession=Accession.objects.filter(species=url2db(species)).first()).taxid
 
     mappings = GenomeMapping.objects.filter(taxid=taxid, chromosome=chromosome, start__gte=start, stop__lte=end)\
-                                    .select_related()
+                                    .select_related('upi').prefetch_related('upi__precomputed')
 
     transcripts_query = '''
-        SELECT region_id, strand, chromosome, start, stop, precomputed.taxid, precomputed.rna_type, rna.upi
+        SELECT 1 id, region_id, strand, chromosome, start, stop, mapping.taxid as taxid, precomputed.rna_type as rna_type, rna.upi as upi
         FROM (
-          SELECT region_id, upi, strand, chromosome, MIN(start) as start, MAX(stop) as stop
+          SELECT region_id, upi, strand, chromosome, taxid, MIN(start) as start, MAX(stop) as stop
           FROM {genome_mapping}
-          GROUP BY region_id, upi, strand, chromosome
+          GROUP BY region_id, upi, strand, chromosome, taxid
+          HAVING MIN(start) > {start}
+             AND MAX(stop) < {stop}
+             AND taxid = {taxid}
+             AND chromosome = '{chromosome}'
         ) mapping
         JOIN rna
         ON mapping.upi=rna.upi
@@ -157,30 +161,30 @@ def features_from_mappings(species, chromosome, start, end):
           SELECT * FROM {rna_precomputed} WHERE taxid={taxid}
         ) precomputed
         ON {rna}.upi=precomputed.upi
-        WHERE mapping.start > 102197585
-        AND mapping.stop < 102402596
     '''.format(
         genome_mapping=GenomeMapping._meta.db_table,
         rna=Rna._meta.db_table,
         rna_precomputed=RnaPrecomputed._meta.db_table,
-        taxid=taxid
+        taxid=taxid,
+        start=start,
+        stop=end,
+        chromosome=chromosome
     )
-
     transcripts = GenomeMapping.objects.raw(transcripts_query)
 
     data = []
     for transcript in transcripts:
         data.append({
-            'ID': transcript['region_id'],
-            'external_name': 'upi',
-            'taxid': transcript['taxid'],
+            'ID': transcript.region_id,
+            'external_name': transcript.upi.upi,
+            'taxid': transcript.taxid,
             'feature_type': 'transcript',
             'logic_name': 'RNAcentral',
-            'biotype': Rna.objects.get(upi=transcript['upi']).precomputed.filter()[0].rna_type,
-            'seq_region_name': transcript['chromosome'],
-            'strand': transcript['strand'],
-            'start': transcript['start__min'],
-            'end': transcript['stop__max']
+            'biotype': transcript.rna_type,
+            'seq_region_name': transcript.chromosome,
+            'strand': transcript.strand,
+            'start': transcript.start,
+            'end': transcript.stop
         })
 
     for exon in mappings:
@@ -189,13 +193,13 @@ def features_from_mappings(species, chromosome, start, end):
             'ID': exon.region_id,
             'taxid': exon.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
             'feature_type': 'exon',
-            'Parent': exon['region_id'],
+            'Parent': exon.region_id,
             'logic_name': 'RNAcentral',  # required by Genoverse
-            'biotype': biotype,  # required by Genoverse
-            'seq_region_name': chromosome,
+            'biotype': exon.upi.precomputed.get(0).rna_type,  # required by Genoverse
+            'seq_region_name': exon.chromosome,
             'strand': exon.strand,
-            'start': exon.primary_start,
-            'end': exon.primary_end,
+            'start': exon.start,
+            'end': exon.end,
         })
 
     return data
