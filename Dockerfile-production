@@ -45,5 +45,13 @@ RUN \
 # Install Django requirements
 RUN pip install -r /srv/rnacentral/rnacentral/requirements.txt
 
+# Install node.js
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
+RUN apt-get install -y nodejs
+
+# Install node.js dependencies
+ADD rnacentral/portal/static/package.json $RNACENTRAL_HOME/rnacentral/portal/static/
+RUN cd $RNACENTRAL_HOME/rnacentral/portal/static && npm install --only=production
+
 # Start up the app
 ENTRYPOINT python /srv/rnacentral/rnacentral/manage.py runserver 0.0.0.0:8000
