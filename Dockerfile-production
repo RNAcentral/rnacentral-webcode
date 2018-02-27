@@ -46,5 +46,4 @@ RUN \
 RUN pip install -r /srv/rnacentral/rnacentral/requirements.txt
 
 # Start up the app
-ENTRYPOINT supervisord -c /srv/rnacentral/supervisor/supervisor.conf && \
-    python /srv/rnacentral/rnacentral/manage.py runserver 0.0.0.0:8000
+ENTRYPOINT python /srv/rnacentral/rnacentral/manage.py runserver 0.0.0.0:8000
