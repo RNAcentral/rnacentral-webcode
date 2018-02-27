@@ -21,13 +21,15 @@ RUN yum install -y \
     httpd \
     httpd-devel \
     libaio \
-    nc.x86_64 \
+    "nc.x86_64" \
     openssl \
     openssl-devel \
     tar \
     unzip \
     wget \
-    zlib-devel
+    zlib-devel \
+    gcc-c++ \
+    make
 
 RUN mkdir /rnacentral
 RUN mkdir /rnacentral/local
@@ -163,7 +165,6 @@ RUN \
 # Install Node.js
 RUN curl -sL https://rpm.nodesource.com/setup_6.x | bash -
 RUN yum install -y nodejs
-RUN yum install -y gcc-c++ make
 
 # Install NPM dependencies
 ADD rnacentral/portal/static/package.json $RNACENTRAL_HOME/rnacentral/portal/static/
