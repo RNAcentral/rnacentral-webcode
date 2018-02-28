@@ -31,6 +31,7 @@ $ python manage.py test portal.tests.description_tests
 
 
 class GenericDescriptionTest(SimpleTestCase):
+    allow_database_queries = True
 
     def assertDescriptionIs(self, description, upi, taxid=None):
         seq = Rna.objects.get(upi=upi)
@@ -63,6 +64,12 @@ class SimpleDescriptionTests(GenericDescriptionTest):
         We should pick a good, not repetitive name for ribozymes.
         """
         pass
+
+    def test_can_handle_trnas(self):
+        self.assertDescriptionIs(
+            'Escherichia coli tRNA-Pro (CGG)',
+            'URS00001DEEBE',
+            taxid=562)
 
 
 class HumanDescriptionTests(GenericDescriptionTest):
@@ -117,6 +124,12 @@ class HumanDescriptionTests(GenericDescriptionTest):
             taxid=9606
         )
 
+    def test_it_will_use_hgnc_over_gencode(self):
+        self.assertDescriptionIs(
+            'Homo sapiens HELLP associated long non-coding RNA (HELLPAR)',
+            'URS000019E0CD',
+            taxid=9606)
+
 
 class ArabidopisDescriptionTests(GenericDescriptionTest):
     def test_likes_lncrnadb_over_ena(self):
@@ -145,7 +158,7 @@ class ArabidopisDescriptionTests(GenericDescriptionTest):
 
     def test_it_uses_tair_over_refseq(self):
         self.assertDescriptionIs(
-            'Arabidopsis thaliana (thale cress) TAS3 (trans-acting siRNA3); other RNA',
+            'Arabidopsis thaliana (thale cress) TAS3/TASIR-ARF (TRANS-ACTING SIRNA3); other RNA',
             'URS00003AC4AA',
             taxid=3702)
 
@@ -176,9 +189,10 @@ class MouseDescriptionTests(GenericDescriptionTest):
             'URS000060B496',
             taxid=10090)
 
-    def test_will_use_refseq_over_good_ena(self):
+    def test_will_use_mgi_over_refseq_and_good_ena(self):
+        # This strips: ', small nucleolar RNA' from the end of description
         self.assertDescriptionIs(
-            'Mus musculus predicted gene 12238 (Gm12238), small nucleolar RNA',
+            'Mus musculus Small nucleolar RNA SNORA29 (Gm12238)',
             'URS00004E52D3',
             taxid=10090)
 
@@ -186,8 +200,7 @@ class MouseDescriptionTests(GenericDescriptionTest):
         self.assertDescriptionIs(
             'Mus musculus predicted gene 11532 (Gm11532)',
             'URS00008E3A1B',
-            taxid=10090,
-        )
+            taxid=10090)
 
     def test_it_likes_rfam_over_noncode(self):
         self.assertDescriptionIs(
@@ -239,7 +252,7 @@ class CattleDescriptionTests(GenericDescriptionTest):
 class WormTests(GenericDescriptionTest):
     def test_likes_wormbase(self):
         self.assertDescriptionIs(
-            'Caenorhabditis elegans long non-coding RNA linc-125 (linc-125), lncRNA',
+            'Caenorhabditis elegans long non-coding RNA linc-125',
             'URS00005511ED',
             taxid=6239)
 

@@ -269,7 +269,7 @@ def group_consecutives(data, min_size=2):
 
 
 def compute_gene_ranges(genes):
-    data = sorted(item_sorter(gene) for gene in genes)
+    data = sorted(item_sorter(gene) for gene in genes if gene)
     grouped = it.groupby(data, op.itemgetter(0))
     names = []
     for gene, numbers in grouped:
@@ -291,11 +291,23 @@ def compute_gene_ranges(genes):
     return names
 
 
+def add_term_suffix(base, additional_terms, name, max_items=3):
+    items = compute_gene_ranges(additional_terms)
+
+    suffix = 'multiple %s' % name
+    if len(items) < max_items:
+        suffix = ', '.join(items)
+
+    return '{basic} ({suffix})'.format(
+        basic=base.strip(),
+        suffix=suffix,
+    )
+
+
 def select_with_several_genes(accessions, name, pattern,
                               description_items=None,
                               attribute='gene',
                               max_items=3):
-
     """
     This will select the best description for databases where more than one
     gene (or other attribute) map to a single URS. The idea is that if there
@@ -317,17 +329,12 @@ def select_with_several_genes(accessions, name, pattern,
     if description_items is not None:
         func = op.attrgetter(description_items)
 
-    items = sorted([func(a) for a in accessions], key=item_sorter)
-    items = compute_gene_ranges(items)
+    items = sorted([func(a) for a in accessions if func(a)], key=item_sorter)
+    if not items:
+        print([a.accession for a in accessions])
+        return basic
 
-    suffix = 'multiple %s' % name
-    if len(items) < max_items:
-        suffix = ', '.join(items)
-
-    return '{basic} ({suffix})'.format(
-        basic=basic.strip(),
-        suffix=suffix,
-    )
+    return add_term_suffix(basic, items, name, max_items=max_items)
 
 
 def trim_trailing_rna_type(rna_type, description):
@@ -337,6 +344,9 @@ def trim_trailing_rna_type(rna_type, description):
     really all that useful as we display the RNA type anyway. So  this
     out along with ', ' that tends to go along with those.
     """
+
+    if 'predicted gene' in description:
+        return description
 
     trailing = [rna_type]
     if rna_type == 'lncRNA' or 'antisense' in rna_type:
@@ -413,12 +423,16 @@ def get_species_specific_name(rna_type, xrefs):
         return None
 
     accessions = [x.accession for x in best]
+
+    # It is possible that one sequence maps to several HGNC genes and we should
+    # indicate this
     if db_name == 'HGNC':
         description = select_with_several_genes(
             accessions,
             'genes',
-            r'\(%s\)$'
-        )
+            r'\(%s\)$')
+
+    # Similar issue for miRBase sequences
     elif db_name == 'miRBase':
         product_name = 'precursors'
         if rna_type == 'miRNA':
@@ -429,12 +443,27 @@ def get_species_specific_name(rna_type, xrefs):
             product_name,
             r'\w+-%s',
             description_items='optional_id',
-            max_items=5,
-        )
+            max_items=5)
+
+    # Fall back to a simple generic method
     else:
         descriptions = [accession.description for accession in accessions]
         description = select_best_description(descriptions)
 
+    # Sometimes we get a description that is 'predicted' from some databases.
+    # It would be better to pull from Rfam which may have a more useful
+    # description.
+    if 'predicted' in description:
+        alt = [x.accession.description for x in xrefs if x.db.display_name == 'Rfam']
+        if alt:
+            description = select_best_description(alt)
+
+        # If there is a gene to append we should
+        genes = [acc.gene for acc in accessions]
+        if genes:
+            description = add_term_suffix(description, genes, 'genes')
+
+    # There are often some extra terms we need to strip
     description = remove_extra_description_terms(description)
     if db_name == 'RefSeq':
         description = trim_trailing_rna_type(rna_type, description)
