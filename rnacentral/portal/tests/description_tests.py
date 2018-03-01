@@ -225,6 +225,12 @@ class MouseDescriptionTests(GenericDescriptionTest):
         #     'URS0000653D5F',
         #     taxid=10090)
 
+    def test_does_not_add_duplicate_gene_names(self):
+        self.assertDescriptionIs(
+            'Mus musculus predicted gene 29254 (Gm29254)',
+            'URS0000A86584',
+            taxid=10090)
+
 
 class CattleDescriptionTests(GenericDescriptionTest):
     def test_likes_name_with_precursor(self):

@@ -299,6 +299,9 @@ def add_term_suffix(base, additional_terms, name, max_items=3):
     if len(items) < max_items:
         suffix = ', '.join(items)
 
+    if suffix in base:
+        return base
+
     return '{basic} ({suffix})'.format(
         basic=base.strip(),
         suffix=suffix,
