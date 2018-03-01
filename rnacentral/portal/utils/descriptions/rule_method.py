@@ -536,6 +536,13 @@ def remove_ribozyme_if_possible(rna_type, _):
     return rna_type
 
 
+def remove_ncrna_if_possible(rna_types, _):
+    if 'ncRNA' in rna_types and len(rna_types) > 1:
+        rna_types.discard('ncRNA')
+        return rna_types
+    return rna_types
+
+
 def get_rna_types_from(xrefs, name):
     """
     Determine the rna_types as annotated by some database.
@@ -612,7 +619,8 @@ def determine_rna_type_for(sequence, xrefs):
         correct_other_vs_misc,
         remove_ambiguous,
         remove_ribozyme_if_possible,
-        correct_by_length
+        remove_ncrna_if_possible,
+        correct_by_length,
     ]
     for correction in corrections:
         rna_type = correction(rna_type, sequence)
