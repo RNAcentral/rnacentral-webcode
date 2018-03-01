@@ -242,6 +242,7 @@ def select_best_description(descriptions):
 
     return max(descriptions, key=description_order)
 
+
 def item_sorter(name):
     match = re.search(r'(\d+)$', name)
     if match:
@@ -318,9 +319,16 @@ def select_with_several_genes(accessions, name, pattern,
 
     getter = op.attrgetter(attribute)
     candidate = min(accessions, key=getter)
-    genes = set(getter(a) for a in accessions)
+    genes = set(getter(a) for a in accessions if getter(a))
     if not genes or len(genes) == 1:
-        return candidate.description
+        description = candidate.description
+        # Append gene name if it exists and is not present in the description
+        # already
+        if genes:
+            suffix = genes.pop()
+            if suffix not in description:
+                description += ' (%s)' % suffix
+        return description
 
     regexp = pattern % getter(candidate)
     basic = re.sub(regexp, '', candidate.description)
@@ -331,7 +339,6 @@ def select_with_several_genes(accessions, name, pattern,
 
     items = sorted([func(a) for a in accessions if func(a)], key=item_sorter)
     if not items:
-        print([a.accession for a in accessions])
         return basic
 
     return add_term_suffix(basic, items, name, max_items=max_items)
@@ -426,7 +433,7 @@ def get_species_specific_name(rna_type, xrefs):
 
     # It is possible that one sequence maps to several HGNC genes and we should
     # indicate this
-    if db_name == 'HGNC':
+    if db_name in set(['HGNC', 'Ensembl', 'GENCODE']):
         description = select_with_several_genes(
             accessions,
             'genes',

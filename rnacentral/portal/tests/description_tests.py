@@ -71,6 +71,12 @@ class SimpleDescriptionTests(GenericDescriptionTest):
             'URS00001DEEBE',
             taxid=562)
 
+    def test_does_not_truncate_rna_types_incorrectly(self):
+        self.assertDescriptionIs(
+            'Danio rerio tRNA',
+            'URS0000661037',
+            taxid=7955)
+
 
 class HumanDescriptionTests(GenericDescriptionTest):
     def test_likes_hgnc_for_human(self):
@@ -89,6 +95,12 @@ class HumanDescriptionTests(GenericDescriptionTest):
         self.assertDescriptionIs(
             'Homo sapiens small Cajal body-specific RNA 10 (SCARNA10)',
             'URS0000569A4A',
+            taxid=9606)
+
+    def test_uses_ensembl_names(self):
+        self.assertDescriptionIs(
+            'Homo sapiens long intergenic non-protein coding RNA 1729 (LINC01729)',
+            'URS00003BECAC',
             taxid=9606)
 
     def test_prefers_mirbase_for_mirna_precursor(self):
@@ -204,7 +216,7 @@ class MouseDescriptionTests(GenericDescriptionTest):
 
     def test_it_likes_rfam_over_noncode(self):
         self.assertDescriptionIs(
-            'Mus musculus small Cajal body-specific RNA 2',
+            'Mus musculus small Cajal body-specific RNA 2 (Scarna2)',
             'URS00006B3271',
             taxid=10090)
 
