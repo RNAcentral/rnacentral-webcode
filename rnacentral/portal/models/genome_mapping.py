@@ -18,15 +18,13 @@ from ensembl_assembly import EnsemblAssembly
 
 
 class GenomeMapping(models.Model):  # (CachingMixin, models.Model):
-    STRAND_CHOICES = (('+', 'forward'), ('-', 'reverse'))
-
     assembly_id = models.ForeignKey(EnsemblAssembly, related_name='genome_mappings', db_column='assembly_id')
     chromosome = models.CharField(max_length=100)
     region_id = models.CharField(max_length=100)
     rna_id = models.CharField(max_length=50)
     start = models.IntegerField()
     stop = models.IntegerField()
-    strand = models.CharField(max_length=10, choices=STRAND_CHOICES)
+    strand = models.IntegerField()
     taxid = models.IntegerField()
     upi = models.ForeignKey("Rna", db_column='upi', to_field='upi', related_name='genome_mappings')
 

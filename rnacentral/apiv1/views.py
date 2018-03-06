@@ -205,7 +205,7 @@ def features_from_mappings(species, chromosome, start, end):
             'biotype': transcript.rna_type,
             'description': transcript.description,
             'seq_region_name': transcript.chromosome,
-            'strand': 1.0 if transcript.strand == "+" else -1.0,
+            'strand': transcript.strand,
             'start': transcript.start,
             'end': transcript.stop
         })
@@ -226,7 +226,7 @@ def features_from_mappings(species, chromosome, start, end):
             'logic_name': 'RNAcentral',  # required by Genoverse
             'biotype': biotype,  # required by Genoverse
             'seq_region_name': exon.chromosome,
-            'strand': 1.0 if exon.strand == "+" else -1.0,
+            'strand': exon.strand,
             'start': exon.start,
             'end': exon.stop,
         })
@@ -525,7 +525,7 @@ class RnaGenomeMappings(generics.ListAPIView):
         for mapping in mappings:
             data = {
                 'chromosome': mapping["chromosome"],
-                'strand': 1 if mapping["strand"] == '+' else -1,  # convert +/- to 1/-1
+                'strand': mapping["strand"],
                 'start': mapping["start__min"],
                 'end': mapping["stop__max"],
                 'species': db2url(species),
