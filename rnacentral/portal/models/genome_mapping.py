@@ -33,4 +33,4 @@ class GenomeMapping(models.Model):  # (CachingMixin, models.Model):
     # objects = CachingManager()
 
     class Meta:
-        db_table = 'load_genome_mapping'
+        db_table = 'rnc_genome_mapping'
