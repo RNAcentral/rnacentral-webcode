@@ -76,6 +76,11 @@ limitations under the License.
 
                 <h2 ng-if="taxid">
                     Genome locations
+                    <small>
+                      <a href="{% url 'help-genomic-mapping' %}" uib-tooltip="Learn more &rarr;" style="color:inherit;">
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                      </a>
+                    </small>
                 </h2>
                 <div ng-if="taxid && fetchGenomeLocationsStatus === 'error'">
                     <div class="alert alert-danger">
