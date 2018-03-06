@@ -201,16 +201,18 @@ class MouseDescriptionTests(GenericDescriptionTest):
             'URS000060B496',
             taxid=10090)
 
-    def test_will_use_mgi_over_refseq_and_good_ena(self):
-        # This strips: ', small nucleolar RNA' from the end of description
+    def test_will_not_build_using_rfam_if_disagree_rna_type(self):
+        # This is a good candidate for using Rfam hits as a source of RNA
+        # types. If we did so then this would be a snoRNA and have a different
+        # name.
         self.assertDescriptionIs(
-            'Mus musculus Small nucleolar RNA SNORA29 (Gm12238)',
+            'Mus musculus predicted gene 12238 (Gm12238)',
             'URS00004E52D3',
             taxid=10090)
 
     def test_it_will_strip_trailing_terms_from_description(self):
         self.assertDescriptionIs(
-            'Mus musculus predicted gene 11532 (Gm11532)',
+            'Mus musculus predicted gene 11532 (Gm11532), long non-coding RNA',
             'URS00008E3A1B',
             taxid=10090)
 

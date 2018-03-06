@@ -440,7 +440,8 @@ def get_species_specific_name(rna_type, xrefs):
         description = select_with_several_genes(
             accessions,
             'genes',
-            r'\(%s\)$')
+            r'\(%s\)$',
+            max_items=5)
 
     # Similar issue for miRBase sequences
     elif db_name == 'miRBase':
@@ -464,7 +465,12 @@ def get_species_specific_name(rna_type, xrefs):
     # It would be better to pull from Rfam which may have a more useful
     # description.
     if 'predicted' in description:
-        alt = [x.accession.description for x in xrefs if x.db.display_name == 'Rfam']
+        alt = []
+        for xref in xrefs:
+            if xref.db.display_name == 'Rfam' and \
+                    xref.accession.get_rna_type() == rna_type:
+                alt.append(xref.accession)
+
         if alt:
             description = select_best_description(alt)
 
@@ -537,6 +543,10 @@ def remove_ribozyme_if_possible(rna_type, _):
 
 
 def remove_ncrna_if_possible(rna_types, _):
+    """
+    ncRNA is always consitent with everything else, so ignore it if possible.
+    """
+
     if 'ncRNA' in rna_types and len(rna_types) > 1:
         rna_types.discard('ncRNA')
         return rna_types

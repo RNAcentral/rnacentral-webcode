@@ -11,6 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import unittest
+
 from django.test import TestCase
 from portal.models import Rna
 
@@ -46,4 +48,11 @@ class MouseTests(GenericRnaTypeTest):
         self.assertRnaTypeIs(
             'lncRNA',
             'URS0000A86584',
+            taxid=10090)
+
+    @unittest.expectedFailure
+    def test_can_handle_duplicate_information(self):
+        self.assertRnaTypeIs(
+            'snoRNA',
+            'URS00004E52D3',
             taxid=10090)
