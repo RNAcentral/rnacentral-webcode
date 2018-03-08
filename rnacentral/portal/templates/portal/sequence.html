@@ -95,10 +95,12 @@ limitations under the License.
                             <tr>
                                 <th>Go to location</th>
                                 <th>Chromosome</th>
-                                <th>Coordinates</th>
+                                <th>Start</th>
+                                <th>End</th>
                                 <th>Strand</th>
                                 <th>Ensembl</th>
                                 <th>UCSC</th>
+                                <!--<th>Evidence</th>-->
                             </tr>
                         </thead>
                         <tbody>
@@ -138,7 +140,10 @@ limitations under the License.
                                     <span class="margin-right-5px">{{ location.chromosome }}</span>
                                 </td>
                                 <td>
-                                    {{ location.start | number }}&nbsp;-&nbsp;{{ location.end | number }}
+                                    {{ location.start | number }}
+                                </td>
+                                <td>
+                                    {{ location.end | number }}
                                 </td>
                                 <td>
                                     {{ location.strand == "1" ? "forward" : "reverse" }}
