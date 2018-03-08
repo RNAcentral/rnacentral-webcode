@@ -24,6 +24,7 @@ class GenomeMapping(models.Model):  # (CachingMixin, models.Model):
     rna_id = models.CharField(max_length=50)
     start = models.IntegerField()
     stop = models.IntegerField()
+    identity = models.FloatField()
     strand = models.IntegerField()
     taxid = models.IntegerField()
     upi = models.ForeignKey("Rna", db_column='upi', to_field='upi', related_name='genome_mappings')
