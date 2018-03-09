@@ -89,7 +89,7 @@ limitations under the License.
                 </div>
                 <div ng-if="taxid && fetchGenomeLocationsStatus !== 'error'">
                     {% verbatim %}
-                    <p ng-if="fetchGenomeLocationsStatus === 'loading' || genomeLocations.length + genomeMappings.length > 0">This sequence is found in <strong>{{ genomeLocations.length + genomeMappings.length }}</strong> genome <ng-pluralize count="genomeLocations.length + genomeMappings.length" when="{'one': 'location', 'other': 'locations'}"></ng-pluralize>:</p>
+                    <p ng-if="fetchGenomeLocationsStatus === 'success' && genomeLocations.length + genomeMappings.length > 0">This sequence is found in <strong>{{ genomeLocations.length + genomeMappings.length }}</strong> genome <ng-pluralize count="genomeLocations.length + genomeMappings.length" when="{'one': 'location', 'other': 'locations'}"></ng-pluralize>:</p>
                     <table ng-if="fetchGenomeLocationsStatus === 'loading' || genomeLocations.length + genomeMappings.length > 0" class="table table-hover table-condensed table-bordered table-responsive" style="margin-left: 9px; margin-right: 9px;">
                         <thead>
                             <tr>
