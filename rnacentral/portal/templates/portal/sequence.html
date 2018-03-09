@@ -100,12 +100,12 @@ limitations under the License.
                                 <th>Strand</th>
                                 <th>Ensembl</th>
                                 <th>UCSC</th>
-                                <!--<th>Evidence</th>-->
+                                <th>Evidence</th>
                             </tr>
                         </thead>
                         <tbody>
                           <tr ng-if="fetchGenomeLocationsStatus === 'loading'">
-                                <td colspan="6" style="text-align: center;">
+                                <td colspan="8" style="text-align: center;">
                                     <span>
                                         <i class="fa fa-spinner fa-spin fa-2x"></i>
                                         Loading genome locations...
@@ -113,18 +113,15 @@ limitations under the License.
                                 </td>
                             </tr>
                             <tr ng-if="fetchGenomeLocationsStatus === 'error'">
-                                <td colspan="6" style="text-align: center;">
+                                <td colspan="8" style="text-align: center;">
                                     <span>
                                         <i class="fa fa-exclamation-circle fa-2x"></i>
                                         Failed to load data from server
                                     </span>
                                 </td>
                             </tr>
-                            <tr ng-if="fetchGenomeLocationsStatus === 'success'">
-                                <td colspan="6"><b>Genome locations based on literature data</b></td>
-                            </tr>
-                            <tr ng-if="fetchGenomeLocationsStatus === 'success' && genomeLocations.length === 0">
-                                <td colspan="6">No genome locations known from literature</td>
+                            <tr ng-if="fetchGenomeLocationsStatus === 'success' && genomeLocations.length === 0 && genomeMappings.length === 0">
+                                <td colspan="8">No genome locations known</td>
                             </tr>
                             <tr ng-if="fetchGenomeLocationsStatus === 'success'" ng-repeat="location in genomeLocations" ng-class="{'active': isSelectedLocation(location) }">
                                 <td>
@@ -158,12 +155,9 @@ limitations under the License.
                                         <a ng-href="{{ 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + location.ucsc_db_id + '&position=' + location.ucsc_chromosome + ':' + location.start + '-' + location.end }}" target="_blank">UCSC</a>
                                     </span>
                                 </td>
-                            </tr>
-                            <tr ng-if="fetchGenomeLocationsStatus === 'success'">
-                                <td colspan="6"><b>Automatically predicted genome locations</b></td>
-                            </tr>
-                            <tr ng-if="fetchGenomeLocationsStatus === 'success' && genomeMappings.length === 0">
-                                <td ng-if="genomeMappings.length === 0" colspan="6">No automatically predicted locations</td>
+                                <td>
+                                    <span>Literature <i uib-tooltip="This genome location is known from literature annotations (see 'Annotations' section)" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i></span>
+                                </td>
                             </tr>
                             <tr ng-if="fetchGenomeLocationsStatus === 'success'" ng-repeat="location in genomeMappings" ng-class="{'active': isSelectedLocation(location) }">
                                 <td>
@@ -179,7 +173,10 @@ limitations under the License.
                                     <span class="margin-right-5px">{{ location.chromosome }}</span>
                                 </td>
                                 <td>
-                                    {{ location.start | number }}&nbsp;-&nbsp;{{ location.end | number }}
+                                    {{ location.start | number }}
+                                </td>
+                                <td>
+                                    {{ location.end | number }}
                                 </td>
                                 <td>
                                     {{ location.strand == "1" ? "forward" : "reverse" }}
@@ -193,6 +190,9 @@ limitations under the License.
                                     <span ng-if="location.ucsc_db_id" class="margin-right-5px ucsc-link">
                                         <a ng-href="{{ 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + location.ucsc_db_id + '&position=' + location.ucsc_chromosome + ':' + location.start + '-' + location.end }}" target="_blank">UCSC</a>
                                     </span>
+                                </td>
+                                <td>
+                                    {{ location.identity * 100 | number:2 }}% <i uib-tooltip="This genome location is predicted by alignment of RNA sequence to the genome. Identity is {{ location.identity * 100 | number:2 }}%" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i>
                                 </td>
                             </tr>
                         </tbody>
