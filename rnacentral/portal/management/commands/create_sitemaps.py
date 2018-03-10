@@ -29,7 +29,7 @@ from portal.models import RnaPrecomputed, Database
 
 
 # Queryset for Rna sections; include only Human and Mouse rnas for now.
-rna_queryset = RnaPrecomputed.objects.filter(taxid__in=[9606, 10090]).order_by('upi')  # RnaPrecomputed.objects.filter(taxid__isnull=False).all().order_by('upi')
+rna_queryset = RnaPrecomputed.objects.filter(taxid__in=[9606, 10090], upi__xrefs__db__descr="HGNC").order_by('upi')  # RnaPrecomputed.objects.filter(taxid__isnull=False).all().order_by('upi')
 rna_paginator = Paginator(rna_queryset, Sitemap.limit)
 
 
@@ -41,7 +41,7 @@ class Command(BaseCommand):
     python manage.py create_sitemaps --section rna --first_page 20  --last_page 41
     python manage.py create_sitemaps --section rna --first_page 41
 
-    Note that we don't use pagination withing each section - instead, we create
+    Note that we don't use pagination within each section - instead, we create
     a separate section instead of pages. E.g. if rna section were to contain
     100,000 objects, we would create 2 sections rna-1 and rna-2.
 
