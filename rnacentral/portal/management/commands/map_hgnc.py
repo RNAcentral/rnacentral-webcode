@@ -20,10 +20,9 @@ import requests
 import collections as coll
 import operator as op
 
-from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 from django.db.models import Q
-from portal.models import Xref, Accession, Rna
+from portal.models import Xref, Rna
 from django.db import connection
 
 """
@@ -42,7 +41,7 @@ python manage.py map_hgnc -i /path/to/hgnc/json/file -t
 ENSEMBL_QUERY = """
 select
     xref.upi,
-    acc.gene,
+    acc.optional_id,
     rna.len
 from xref
 join rnc_accessions acc on acc.accession = xref.ac
@@ -121,6 +120,8 @@ class HGNCMapper():
                 if 'ensembl_gene_id' in entry:
                     gene_id = entry['ensembl_gene_id']
                     fasta = self.get_sequence_fasta(gene_id)
+                    if not fasta:
+                        continue
                     md5 = self.get_md5(fasta)
                     rnacentral_id = self.get_rnacentral_id_by_md5(md5)
                     if rnacentral_id:
@@ -152,7 +153,10 @@ class HGNCMapper():
         """
         url = 'https://rest.ensembl.org/sequence/id/' + ensembl_id + '?content-type=text/plain'
         response = requests.get(url)
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except:
+            return None
         return response.text
 
     def get_md5(self, sequence):
@@ -223,12 +227,11 @@ class HGNCMapper():
         get the longest.
         """
         rna = Rna.objects.filter(
-                    Q(xrefs__accession__parent_ac=accession) |
-                    Q(xrefs__accession__external_id=accession) |
-                    Q(xrefs__accession__optional_id=accession)). \
-                filter(xrefs__taxid=9606, xrefs__deleted='N').\
-                order_by('-length').\
-                first()
+                    Q(xrefs__accession__parent_ac=accession, xrefs__taxid=9606, xrefs__deleted='N') |
+                    Q(xrefs__accession__external_id=accession, xrefs__taxid=9606, xrefs__deleted='N') |
+                    Q(xrefs__accession__optional_id=accession, xrefs__taxid=9606, xrefs__deleted='N')). \
+                order_by('-length')
+        rna = rna.first()
         if rna:
             return rna.upi
         else:
@@ -258,17 +261,20 @@ class Command(BaseCommand):
     """
     Handle command line options.
     """
-    option_list = BaseCommand.option_list + (
-        make_option('-i', '--input',
+
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '-i', '--input',
             dest='hgnc_json_file',
             default=False,
-            help='[Required] Path to HGNC JSON file'),
-        make_option('-t', '--test',
+            help='[Required] Path to HGNC JSON file')
+        parser.add_argument(
+            '-t', '--test',
             action='store_true',
             dest='test',
             default=False,
-            help='[Optional] Run in test mode to process only the first few entries'),
-    )
+            help='[Optional] Run in test mode to process only the first few entries')
+
     # shown with -h, --help
     help = ('Map HGNC accessions to RNAcentral identifiers. Requires a JSON file from HGNC.')
 
