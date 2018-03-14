@@ -104,6 +104,7 @@ class HGNCMapper():
             if self.test and i > 20:
                 break
             rnacentral_id = None
+
             if 'refseq_accession' in entry and not rnacentral_id:
                 rnacentral_id = self.get_rnacentral_id(entry['refseq_accession'][0])
                 if rnacentral_id:
@@ -112,7 +113,7 @@ class HGNCMapper():
             if entry['locus_type'] == 'RNA, transfer' and not rnacentral_id:
                 gtrnadb_id = self.get_gtrnadb_id(entry['symbol'])
                 if gtrnadb_id:
-                    rnacentral_id = self.get_rnacentral_id(gtrnadb_id)
+                    rnacentral_id = self.get_rnacentral_for_gtrnadb(gtrnadb_id)
                     if rnacentral_id:
                         match_gtrnadb += 1
 
@@ -219,6 +220,21 @@ class HGNCMapper():
             return "nmt-tRNA-" + one_to_three[m.group(1)] + "-" + m.group(2) + "-" + m.group(3)
         return None
 
+    def get_rnacentral_for_gtrnadb(self, accession):
+        rna = Rna.objects.filter(
+            xrefs__accession__optional_id=accession,
+            xrefs__accession__database="GTRNADB",
+            xrefs__taxid=9606,
+            xrefs__deleted='N',
+            xrefs__db__id=8,
+        ).order_by('-length')
+
+        rna = rna.first()
+        if rna:
+            return rna.upi
+        else:
+            return None
+
     def get_rnacentral_id(self, accession):
         """
         Get RNAcentral id based on external accession.
@@ -227,10 +243,11 @@ class HGNCMapper():
         get the longest.
         """
         rna = Rna.objects.filter(
-                    Q(xrefs__accession__parent_ac=accession, xrefs__taxid=9606, xrefs__deleted='N') |
-                    Q(xrefs__accession__external_id=accession, xrefs__taxid=9606, xrefs__deleted='N') |
-                    Q(xrefs__accession__optional_id=accession, xrefs__taxid=9606, xrefs__deleted='N')). \
-                order_by('-length')
+            Q(xrefs__accession__parent_ac=accession, xrefs__taxid=9606, xrefs__deleted='N') |
+            Q(xrefs__accession__external_id=accession, xrefs__taxid=9606, xrefs__deleted='N') |
+            Q(xrefs__accession__optional_id=accession, xrefs__taxid=9606, xrefs__deleted='N')
+        ).order_by('-length')
+
         rna = rna.first()
         if rna:
             return rna.upi
