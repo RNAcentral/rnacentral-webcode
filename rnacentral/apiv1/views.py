@@ -532,7 +532,7 @@ class RnaGenomeMappings(generics.ListAPIView):
                 'species': db2url(species),
                 'ucsc_db_id': get_ucsc_db_id(mapping["taxid"]),
                 'ensembl_division': get_ensembl_division(species),
-                'ensembl_species_url': get_ensembl_species_url(species, rna.xrefs.first().accession)
+                'ensembl_species_url': get_ensembl_species_url(species, rna.xrefs.first().accession.accession)
             }
             output.append(data)
 
