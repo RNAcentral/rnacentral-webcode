@@ -472,7 +472,7 @@ def get_species_specific_name(rna_type, xrefs):
                 alt.append(xref.accession)
 
         if alt:
-            description = select_best_description(alt)
+            description = select_best_description([a.description for a in alt])
 
         # If there is a gene to append we should
         genes = [acc.gene for acc in accessions]
