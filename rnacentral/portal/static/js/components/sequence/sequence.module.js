@@ -357,6 +357,10 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
             var location = $scope.genomeLocations.length ? $scope.genomeLocations[0] : $scope.genomeMappings[0];
             $scope.activateGenomeBrowser(location.start, location.end, location.chromosome, location.species);
         }
+
+        $scope.locations = $scope.genomeMappings.concat($scope.genomeLocations)
+                                                .sort(function(a, b) { return a.chromosome >= b.chromosome && a.start >= b.start; });
+
     }, function() {
         $scope.fetchGenomeLocationsStatus = 'error';
     });
