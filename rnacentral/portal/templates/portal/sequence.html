@@ -89,8 +89,8 @@ limitations under the License.
                 </div>
                 <div ng-if="taxid && fetchGenomeLocationsStatus !== 'error'">
                     {% verbatim %}
-                    <p ng-if="fetchGenomeLocationsStatus === 'success' && genomeLocations.length + genomeMappings.length > 0">This sequence is found in <strong>{{ genomeLocations.length + genomeMappings.length }}</strong> genome <ng-pluralize count="genomeLocations.length + genomeMappings.length" when="{'one': 'location', 'other': 'locations'}"></ng-pluralize>:</p>
-                    <table ng-if="fetchGenomeLocationsStatus === 'loading' || genomeLocations.length + genomeMappings.length > 0" class="table table-hover table-condensed table-bordered table-responsive" style="margin-left: 9px; margin-right: 9px;">
+                    <p ng-if="fetchGenomeLocationsStatus === 'success' && locations.length > 0">This sequence is found in <strong>{{ locations.length }}</strong> genome <ng-pluralize count="locations.length" when="{'one': 'location', 'other': 'locations'}"></ng-pluralize>:</p>
+                    <table ng-if="fetchGenomeLocationsStatus === 'loading' || locations.length > 0" class="table table-hover table-condensed table-bordered table-responsive" style="margin-left: 9px; margin-right: 9px;">
                         <thead>
                             <tr>
                                 <th>Go to location</th>
@@ -120,7 +120,7 @@ limitations under the License.
                                     </span>
                                 </td>
                             </tr>
-                            <tr ng-if="fetchGenomeLocationsStatus === 'success' && genomeLocations.length === 0 && genomeMappings.length === 0">
+                            <tr ng-if="fetchGenomeLocationsStatus === 'success' && locations.length === 0">
                                 <td colspan="8">No genome locations known</td>
                             </tr>
                             <tr ng-if="fetchGenomeLocationsStatus === 'success'" ng-repeat="location in locations" ng-class="{'active': isSelectedLocation(location) }">

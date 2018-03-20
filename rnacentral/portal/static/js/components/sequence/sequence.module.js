@@ -118,8 +118,8 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 
         // add some padding to both sides of feature
         var length = end - start;
-        $scope.browserLocation.start = start - Math.floor(length / 10) < 0 ? 1 : start - Math.floor(length / 10);
-        $scope.browserLocation.end = end + Math.floor(length / 10) > $scope.chromosomeSize ? $scope.chromosomeSize : end + Math.floor(length / 10);
+        $scope.browserLocation.start = start - length < 0 ? 1 : start - length;
+        $scope.browserLocation.end = end + length > $scope.chromosomeSize ? $scope.chromosomeSize : end + length;
         $scope.browserLocation.chr = chr;
         $scope.browserLocation.genome = $filter('urlencodeSpecies')(genome);
         $scope.browserLocation.domain = $scope.genoverseUtils.getEnsemblSubdomainByDivision($scope.browserLocation.genome, $scope.genoverseUtils.genomes);
