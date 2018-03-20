@@ -358,14 +358,17 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
             $scope.activateGenomeBrowser(location.start, location.end, location.chromosome, location.species);
         }
 
-        $scope.locations = $scope.genomeMappings.concat($scope.genomeLocations)
-                                                .sort(function(a, b) {
-                                                    if (a.chromosome !== b.chromosome) {  // sort by chromosome first
-                                                        return a.chromosome > b.chromosome ? 1 : -1;
-                                                    } else {
-                                                        return a.start - b.start;  // sort by start within chromosome
-                                                    }
-                                                });
+        $scope.locations = $scope.genomeMappings.concat($scope.genomeLocations);
+        $scope.locations = $scope.locations.sort(function(a, b) {
+            if (a.chromosome !== b.chromosome) {  // sort by chromosome first
+                if (isNaN(a.chromosome) && (!isNaN(b.chromosome))) return 1;
+                else if (isNaN(b.chromosome) && (!isNaN(a.chromosome))) return -1;
+                else if (isNaN(a.chromosome) && (isNaN(b.chromosome))) return a.chromosome > b.chromosome ? 1 : -1;
+                else return (parseInt(a.chromosome) - parseInt(b.chromosome));
+            } else {
+                return a.start - b.start;  // sort by start within chromosome
+            }
+        });
 
     }, function() {
         $scope.fetchGenomeLocationsStatus = 'error';
