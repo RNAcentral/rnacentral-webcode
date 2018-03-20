@@ -359,7 +359,13 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         }
 
         $scope.locations = $scope.genomeMappings.concat($scope.genomeLocations)
-                                                .sort(function(a, b) { return a.chromosome >= b.chromosome && a.start >= b.start; });
+                                                .sort(function(a, b) {
+                                                    if (a.chromosome !== b.chromosome) {  // sort by chromosome first
+                                                        return a.chromosome > b.chromosome ? 1 : -1;
+                                                    } else {
+                                                        return a.start - b.start;  // sort by start within chromosome
+                                                    }
+                                                });
 
     }, function() {
         $scope.fetchGenomeLocationsStatus = 'error';
