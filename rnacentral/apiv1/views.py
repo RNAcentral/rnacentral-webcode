@@ -112,8 +112,7 @@ def features_from_xrefs(species, chromosome, start, end):
             continue
 
         coordinates = xref.get_genomic_coordinates()
-        transcript_id = rnacentral_id + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(
-            coordinates['end'])
+        transcript_id = rnacentral_id + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
         biotype = xref.upi.precomputed.filter(taxid=xref.taxid)[0].rna_type  # used to be biotype = xref.accession.get_biotype()
         description = xref.upi.precomputed.filter(taxid=xref.taxid)[0].description
 

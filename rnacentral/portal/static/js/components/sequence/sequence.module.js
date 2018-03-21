@@ -358,6 +358,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
             $scope.activateGenomeBrowser(location.start, location.end, location.chromosome, location.species);
         }
 
+        // join genome locations and mappings and sort them in a biologically relevant way
         $scope.locations = $scope.genomeMappings.concat($scope.genomeLocations);
         $scope.locations = $scope.locations.sort(function(a, b) {
             if (a.chromosome !== b.chromosome) {  // sort by chromosome first
