@@ -484,7 +484,7 @@ class RnaGenomeLocations(generics.ListAPIView):
         locations = []
 
         rna = self.get_object()
-        xrefs = rna.get_xrefs(taxid=taxid)
+        xrefs = rna.get_xrefs(taxid=taxid).filter(deleted='N')
         for xref in xrefs:
             if xref.accession.coordinates.exists() and xref.accession.coordinates.all()[0].chromosome:
                 data = {
@@ -519,7 +519,7 @@ class RnaGenomeMappings(generics.ListAPIView):
                                       .values('region_id', 'strand', 'chromosome', 'taxid', 'identity')\
                                       .annotate(Min('start'), Max('stop'))
 
-        species = rna.xrefs.first().accession.species
+        species = rna.xrefs.filter(taxid=taxid).first().accession.species  # this applies only to species-specific pages
 
         output = []
         for mapping in mappings:
