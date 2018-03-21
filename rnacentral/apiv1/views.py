@@ -76,7 +76,7 @@ class GenomeAnnotations(APIView):
             for xrefs_feature in xrefs_features:
                 if (xrefs_feature['start'] == mappings_feature['start'] and
                    xrefs_feature['end'] == mappings_feature['end'] and
-                   # xrefs_feature['strand'] == mappings_feature['strand'] and
+                   str(xrefs_feature['strand']) == str(mappings_feature['strand']) and
                    xrefs_feature['seq_region_name'] == mappings_feature['seq_region_name'] and
                    xrefs_feature['taxid'] == mappings_feature['taxid']):
                     duplicate = True

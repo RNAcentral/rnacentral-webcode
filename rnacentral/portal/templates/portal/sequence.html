@@ -90,80 +90,84 @@ limitations under the License.
                 <div ng-if="taxid && fetchGenomeLocationsStatus !== 'error'">
                     {% verbatim %}
                     <p ng-if="fetchGenomeLocationsStatus === 'success' && locations.length > 0">This sequence is found in <strong>{{ locations.length }}</strong> genome <ng-pluralize count="locations.length" when="{'one': 'location', 'other': 'locations'}"></ng-pluralize>:</p>
-                    <table ng-if="fetchGenomeLocationsStatus === 'loading' || locations.length > 0" class="table table-hover table-condensed table-bordered table-responsive" style="margin-left: 9px; margin-right: 9px;">
-                        <thead>
-                            <tr>
-                                <th>Go to location</th>
-                                <th>Chromosome</th>
-                                <th>Start</th>
-                                <th>End</th>
-                                <th>Strand</th>
-                                <th>Ensembl</th>
-                                <th>UCSC</th>
-                                <th>Evidence</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                          <tr ng-if="fetchGenomeLocationsStatus === 'loading'">
-                                <td colspan="8" style="text-align: center;">
-                                    <span>
-                                        <i class="fa fa-spinner fa-spin fa-2x"></i>
-                                        Loading genome locations...
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr ng-if="fetchGenomeLocationsStatus === 'error'">
-                                <td colspan="8" style="text-align: center;">
-                                    <span>
-                                        <i class="fa fa-exclamation-circle fa-2x"></i>
-                                        Failed to load data from server
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr ng-if="fetchGenomeLocationsStatus === 'success' && locations.length === 0">
-                                <td colspan="8">No genome locations known</td>
-                            </tr>
-                            <tr ng-if="fetchGenomeLocationsStatus === 'success'" ng-repeat="location in locations" ng-class="{'active': isSelectedLocation(location) }">
-                                <td>
-                                    <button ng-if="!$ctrl.chromosomeIsScaffold(location.chromosome)"
-                                            type="button"
-                                            class="btn btn-default btn-xs genoverse-xref help margin-right-5px"
-                                            ng-click="activateGenomeBrowser(location.start, location.end, location.chromosome, location.species); scrollToGenomeBrowser();"
-                                            title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> View genome location
-                                    </button>
-                                    <li ng-if="$ctrl.chromosomeIsScaffold(location.chromosome)" class="badge">Can't view - strange chromosome name</li>
-                                </td>
-                                <td>
-                                    <span class="margin-right-5px">{{ location.chromosome }}</span>
-                                </td>
-                                <td>
-                                    {{ location.start | number }}
-                                </td>
-                                <td>
-                                    {{ location.end | number }}
-                                </td>
-                                <td>
-                                    {{ location.strand == "1" ? "forward" : "reverse" }}
-                                </td>
-                                <td><!-- Ensembl url -->
-                                    <span ng-if="location.ensembl_division && location.ensembl_species_url" class="margin-right-5px ensembl-link">
-                                        <a ng-href="{{ location.ensembl_division.url + '/' + location.ensembl_species_url + '/Location/View?r=' + location.chromosome + ':' + location.start + '-' + location.end }}" target="_blank">{{ location.ensembl_division.name }}</a>
-                                    </span>
-                                </td>
-                                <td><!-- UCSC url -->
-                                    <span ng-if="location.ucsc_db_id" class="margin-right-5px ucsc-link">
-                                        <a ng-href="{{ 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + location.ucsc_db_id + '&position=' + location.ucsc_chromosome + ':' + location.start + '-' + location.end }}" target="_blank">UCSC</a>
-                                    </span>
-                                </td>
-                                <td ng-if="genomeLocations.indexOf(location) !== -1">
-                                    <span>Literature <i uib-tooltip="This genome location is known from literature annotations (see 'Annotations' section)" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i></span>
-                                </td>
-                                <td ng-if="genomeMappings.indexOf(location) !== -1">
-                                    {{ location.identity * 100 | number:2 }}% <i uib-tooltip="This genome location is predicted by alignment of RNA sequence to the genome. Identity is {{ location.identity * 100 | number:2 }}%" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div style="position: relative;">
+                        <div style="max-height: 300px; overflow: auto;">
+                            <table ng-if="fetchGenomeLocationsStatus === 'loading' || locations.length > 0" class="table table-hover table-condensed table-bordered table-responsive" style="margin-left: 9px; margin-right: 9px;">
+                                <thead>
+                                    <tr>
+                                        <th>Go to location</th>
+                                        <th>Chromosome</th>
+                                        <th>Start</th>
+                                        <th>End</th>
+                                        <th>Strand</th>
+                                        <th>Ensembl</th>
+                                        <th>UCSC</th>
+                                        <th>Evidence</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                  <tr ng-if="fetchGenomeLocationsStatus === 'loading'">
+                                        <td colspan="8" style="text-align: center;">
+                                            <span>
+                                                <i class="fa fa-spinner fa-spin fa-2x"></i>
+                                                Loading genome locations...
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr ng-if="fetchGenomeLocationsStatus === 'error'">
+                                        <td colspan="8" style="text-align: center;">
+                                            <span>
+                                                <i class="fa fa-exclamation-circle fa-2x"></i>
+                                                Failed to load data from server
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr ng-if="fetchGenomeLocationsStatus === 'success' && locations.length === 0">
+                                        <td colspan="8">No genome locations known</td>
+                                    </tr>
+                                    <tr ng-if="fetchGenomeLocationsStatus === 'success'" ng-repeat="location in locations" ng-class="{'active': isSelectedLocation(location) }">
+                                        <td>
+                                            <button ng-if="!$ctrl.chromosomeIsScaffold(location.chromosome)"
+                                                    type="button"
+                                                    class="btn btn-default btn-xs genoverse-xref help margin-right-5px"
+                                                    ng-click="activateGenomeBrowser(location.start, location.end, location.chromosome, location.species); scrollToGenomeBrowser();"
+                                                    title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> Go to location
+                                            </button>
+                                            <li ng-if="$ctrl.chromosomeIsScaffold(location.chromosome)" class="badge">Can't view - strange chromosome name</li>
+                                        </td>
+                                        <td>
+                                            <span class="margin-right-5px">{{ location.chromosome }}</span>
+                                        </td>
+                                        <td>
+                                            {{ location.start | number }}
+                                        </td>
+                                        <td>
+                                            {{ location.end | number }}
+                                        </td>
+                                        <td>
+                                            {{ location.strand == "1" ? "forward" : "reverse" }}
+                                        </td>
+                                        <td><!-- Ensembl url -->
+                                            <span ng-if="location.ensembl_division && location.ensembl_species_url" class="margin-right-5px ensembl-link">
+                                                <a ng-href="{{ location.ensembl_division.url + '/' + location.ensembl_species_url + '/Location/View?r=' + location.chromosome + ':' + location.start + '-' + location.end }}" target="_blank">{{ location.ensembl_division.name }}</a>
+                                            </span>
+                                        </td>
+                                        <td><!-- UCSC url -->
+                                            <span ng-if="location.ucsc_db_id" class="margin-right-5px ucsc-link">
+                                                <a ng-href="{{ 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + location.ucsc_db_id + '&position=' + location.ucsc_chromosome + ':' + location.start + '-' + location.end }}" target="_blank">UCSC</a>
+                                            </span>
+                                        </td>
+                                        <td ng-if="genomeLocations.indexOf(location) !== -1">
+                                            <span>Literature <i uib-tooltip="This genome location is known from literature annotations (see 'Annotations' section)" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i></span>
+                                        </td>
+                                        <td ng-if="genomeMappings.indexOf(location) !== -1">
+                                            {{ location.identity * 100 | number:2 }}% <i uib-tooltip="This genome location is predicted by alignment of RNA sequence to the genome. Identity is {{ location.identity * 100 | number:2 }}%" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                     {% endverbatim %}
                 </div>
 
