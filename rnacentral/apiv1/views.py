@@ -78,7 +78,8 @@ class GenomeAnnotations(APIView):
                    xrefs_feature['end'] == mappings_feature['end'] and
                    str(xrefs_feature['strand']) == str(mappings_feature['strand']) and
                    xrefs_feature['seq_region_name'] == mappings_feature['seq_region_name'] and
-                   xrefs_feature['taxid'] == mappings_feature['taxid']):
+                   xrefs_feature['taxid'] == mappings_feature['taxid'] and
+                   xrefs_feature['external_name'] == mappings_feature['external_name']):
                     duplicate = True
                     break
 

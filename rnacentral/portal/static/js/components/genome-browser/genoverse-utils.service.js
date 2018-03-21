@@ -206,11 +206,14 @@ angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($
                     feature.color = '#8B668B';
 
                     // Make currently selected feature red
-                    if ((feature.start === self.$scope.selectedLocation.start) && (feature.end === self.$scope.selectedLocation.end) && (feature.chr === self.$scope.selectedLocation.chr)) {
+                    if ((feature.start === self.$scope.selectedLocation.start) &&
+                        (feature.end === self.$scope.selectedLocation.end) &&
+                        (feature.chr === self.$scope.selectedLocation.chr) &&
+                        (feature.external_name === self.$scope.upi)) {
                         feature.color = "#FF0000";
                         data.filter(function (datum) { return datum.feature_type === 'exon' && datum.Parent === feature.ID; }).forEach(function (exon) {
                             exon.borderColor = "#FF0000";
-                        })
+                        });
                     }
 
                     model.insertFeature(feature);
