@@ -465,7 +465,6 @@ class ExpertDatabasesAPIView(APIView):
 
     def get(self, request, format=None):
         """The data from configuration JSON and database are combined here."""
-
         def _normalize_expert_db_label(expert_db_label):
             """Capitalizes db label (and accounts for special cases)"""
             if re.match('tmrna-website', expert_db_label, flags=re.IGNORECASE):

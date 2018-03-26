@@ -20,24 +20,24 @@ register = template.Library()
 
 @register.assignment_tag
 def get_expert_databases_columns():
-	"""
-	Return expert databases grouped and order for the website footer.
-	"""
-	dbs = sorted(expert_dbs, key=lambda x: x['name'].lower())
-	return [
-				dbs[:10],
-				dbs[10:20],
-				dbs[20:30],
-				dbs[30:],
-			]
+    """
+    Return expert databases grouped and order for the website footer.
+    """
+    dbs = sorted(expert_dbs, key=lambda x: x['name'].lower())
+    return [
+        dbs[:10],
+        dbs[10:20],
+        dbs[20:30],
+        dbs[30:],
+    ]
+
 
 @register.assignment_tag
 def get_expert_databases_list():
-    """
-    Get an alphabetically sorted list of imported expert databases.
-    """
+    """Get an alphabetically sorted list of imported expert databases."""
     imported_dbs = [x for x in expert_dbs if x['imported']]
     return sorted(imported_dbs, key=lambda x: x['name'].lower())
+
 
 @register.simple_tag
 def get_ebi_search_endpoint():
