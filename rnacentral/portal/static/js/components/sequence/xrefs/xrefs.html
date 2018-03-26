@@ -148,6 +148,11 @@
             <a class="mgi-external-url" ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
           </span>
 
+          <!-- RGD -->
+          <span ng-switch-when="RGD">
+            <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+          </span>
+
           <!-- tmRNA Website -->
           <span ng-switch-when="tmRNA Website">
             tmRNA Website:

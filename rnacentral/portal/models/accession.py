@@ -178,6 +178,7 @@ class Accession(models.Model):
             'FLYBASE': 'http://flybase.org/reports/{id}.html',
             'MGI': 'http://www.informatics.jax.org/marker/{id}',
             'GTRNADB': '',
+            'RGD': 'https://rgd.mcw.edu/rgdweb/report/gene/main.html?id={id}'
         }
         if self.database in urls.keys():
             if self.database == 'GTRNADB':
