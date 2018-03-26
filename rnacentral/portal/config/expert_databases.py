@@ -871,7 +871,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'new',
-        'version': 'v2',
+        'version': 'as of March 2018',
     },
     {
         'name': 'TAIR',
