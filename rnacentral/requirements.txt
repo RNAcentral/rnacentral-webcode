@@ -3,7 +3,7 @@ PyMySQL
 PyYAML==3.10
 astroid==1.0.1
 attrs==17.2.0
-psycopg2==2.7.1
+psycopg2==2.7.4
 django-cors-headers==2.0.0
 django-debug-toolbar==1.4.0  # toolbar 1.4 requires sqlparse <2, current latest is 1.8, doesn't play nice with latest sqlparse 2.+
 django-filter==1.1.0
