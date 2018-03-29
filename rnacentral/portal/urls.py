@@ -18,7 +18,7 @@ from django.conf.urls import url
 from django.http import FileResponse, Http404
 
 from portal import views
-from portal.models.utils import get_ensembl_divisions
+from portal.config.genomes import get_ensembl_divisions
 
 urlpatterns = [
     # homepage

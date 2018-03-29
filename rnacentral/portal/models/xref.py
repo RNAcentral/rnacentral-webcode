@@ -16,13 +16,12 @@ import re
 from django.db import models
 from django.db.models import Min, Max
 from rest_framework.renderers import JSONRenderer
-
 from caching.base import CachingMixin, CachingManager
-from portal.config.genomes import genomes as rnacentral_genomes
+
+from portal.config.genomes import get_ucsc_db_id, get_ensembl_division
 from .accession import Accession
 from .genomic_coordinates import GenomicCoordinates
 from .formatters import Gff3Formatter, GffFormatter, _xref_to_bed_format
-from .utils import get_ensembl_divisions
 
 
 class RawSqlQueryset(models.QuerySet):
@@ -617,24 +616,12 @@ class Xref(CachingMixin, models.Model):
 
     def get_ensembl_division(self):
         """Get Ensembl or Ensembl Genomes division for the cross-reference."""
-        species = self.accession.get_ensembl_species_url()
-        species = species.replace('_', ' ').capitalize()
-
-        ensembl_divisions = get_ensembl_divisions()
-        for division in ensembl_divisions:
-            if species in [x['name'] for x in division['species']]:
-                return {'name': division['name'], 'url': division['url']}
-        return {  # fall back to ensembl.org
-            'name': 'Ensembl',
-            'url': 'http://ensembl.org',
-        }
+        species = self.accession.get_ensembl_species_url().replace('_', ' ').capitalize()
+        return get_ensembl_division(species)
 
     def get_ucsc_db_id(self):
         """Get UCSC id for the genome assembly. http://genome.ucsc.edu/FAQ/FAQreleases.html"""
-        for genome in rnacentral_genomes:
-            if self.taxid == genome['taxid']:
-                return genome['assembly_ucsc']
-        return None
+        return get_ucsc_db_id(self.taxid)
 
     def has_genomic_coordinates(self):
         """Determine whether an xref has genomic coordinates."""

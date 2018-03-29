@@ -367,3 +367,158 @@ def get_taxid_from_species(species):
         return get_taxonomy_info_by_genome_identifier(species)['taxid']
     except Exception as e:
         raise SpeciesNotInGenomes(species)
+
+
+def get_ucsc_db_id(taxid):
+    """Get UCSC id for the genome assembly. http://genome.ucsc.edu/FAQ/FAQreleases.html"""
+    for genome in genomes:
+        if taxid == genome['taxid']:
+            return genome['assembly_ucsc']
+    return None
+
+
+def get_ensembl_divisions():
+    """
+    A list of species with genomic coordinates grouped by Ensembl division.
+    Used for creating links to Ensembl sites.
+    """
+    return [
+        {
+            'url': 'http://ensembl.org',
+            'name': 'Ensembl',
+            'species': [
+                {
+                    'name': 'Homo sapiens',
+                    'taxid': 9606,
+                },
+                {
+                    'name': 'Mus musculus',
+                    'taxid': 10090,
+
+                },
+                {
+                    'name': 'Bos taurus',
+                    'taxid': 9913,
+
+                },
+                {
+                    'name': 'Rattus norvegicus',
+                    'taxid': 10116,
+
+                },
+                {
+                    'name': 'Felis catus',
+                    'taxid': 9685,
+
+                },
+                {
+                    'name': 'Danio rerio',
+                    'taxid': 7955,
+
+                },
+                {
+                    'name': 'Macaca mulatta',
+                    'taxid': 9544,
+
+                },
+                {
+                    'name': 'Pan troglodytes',
+                    'taxid': 9598,
+
+                },
+                {
+                    'name': 'Canis lupus familiaris',
+                    'taxid': 9615,
+
+                },
+            ],
+        },
+        {
+            'url': 'http://fungi.ensembl.org',
+            'name': 'Ensembl Fungi',
+            'species': [
+                {
+                    'name': 'Saccharomyces cerevisiae',
+                    'taxid': 4932,
+                },
+                {
+                    'name': 'Schizosaccharomyces pombe',
+                    'taxid': 4896,
+                },
+            ],
+        },
+        {
+            'url': 'http://metazoa.ensembl.org',
+            'name': 'Ensembl Metazoa',
+            'species': [
+                {
+                    'name': 'Caenorhabditis elegans',
+                    'taxid': 6239,
+                },
+                {
+                    'name': 'Drosophila melanogaster',
+                    'taxid': 7227,
+                },
+                {
+                    'name': 'Bombyx mori',
+                    'taxid': 7091,
+                },
+                {
+                    'name': 'Anopheles gambiae',
+                    'taxid': 7165,
+                },
+            ],
+        },
+        {
+            'url': 'http://protists.ensembl.org',
+            'name': 'Ensembl Protists',
+            'species': [
+                {
+                    'name': 'Dictyostelium discoideum',
+                    'taxid': 44689,
+                },
+                {
+                    'name': 'Plasmodium falciparum',
+                    'taxid': 5833,
+                },
+            ],
+        },
+        {
+            'url': 'http://plants.ensembl.org',
+            'name': 'Ensembl Plants',
+            'species': [
+                {
+                    'name': 'Arabidopsis thaliana',
+                    'taxid': 3702,
+                }
+            ],
+        },
+        {
+            'url': 'http://bacteria.ensembl.org',
+            'name': 'Ensembl Bacteria',
+            'species': [],
+        },
+    ]
+
+
+def get_ensembl_division(species):
+    """Get Ensembl or Ensembl Genomes division for the cross-reference."""
+    ensembl_divisions = get_ensembl_divisions()
+    for division in ensembl_divisions:
+        if species in [x['name'] for x in division['species']]:
+            return {'name': division['name'], 'url': division['url']}
+    return {  # fall back to ensembl.org
+        'name': 'Ensembl',
+        'url': 'http://ensembl.org',
+    }
+
+
+def get_ensembl_species_url(species, accession=""):
+    if species == 'Dictyostelium discoideum':
+        species = 'Dictyostelium discoideum AX4'
+    elif species.startswith('Mus musculus') and accession.startswith('MGP'): # Ensembl mouse strain
+            parts = accession.split('_')
+            if len(parts) == 3:
+                species = 'Mus musculus ' + parts[1]
+    species = species.replace(' ', '_').lower()
+    return species
