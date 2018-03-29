@@ -64,10 +64,10 @@ class AccessionEndpointsTestCase(ApiV1BaseClass):
     """
     def test_accession_entry(self):
         """Test accession info endpoint."""
-        url = reverse('accession-detail', {'pk': self.accession})
+        url = reverse('accession-detail', kwargs={'pk': self.accession})
         self._test_url(url)
 
     def test_accession_citations(self):
         """Test accession citations endpoint."""
-        url = reverse('accession-citations', {'pk': self.accession})
+        url = reverse('accession-citations', kwargs={'pk': self.accession})
         self._test_url(url)
