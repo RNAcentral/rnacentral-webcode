@@ -1,6 +1,6 @@
 node {
     build()
-    // runUnitTests()
+    runUnitTests()
     deploy()
 }
 
@@ -27,7 +27,7 @@ private void runUnitTests() {
             source ENV/bin/activate
             source rnacentral/scripts/env.sh
             cd rnacentral
-            python apiv1/tests.py
+            python manage.py test apiv1
         '''
     }
 }
