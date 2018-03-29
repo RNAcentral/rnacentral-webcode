@@ -121,3 +121,37 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         response = self._test_url(url, data={'page': page, 'page_size': page_size})
         self.assertTrue(len(response.data['results']), page_size)
 
+
+class NestedXrefsTestCase(ApiV1BaseClass):
+    """Test flat/hyperlinked pagination."""
+    def test_hyperlinked_responses(self):
+        """Test hyperlinked response explicitly specified in the url."""
+        url = reverse('rna-sequences')
+        response = self._test_url(url, data={'flat': False})
+        self.assertIn('http', response.data['results'][0]['xrefs'])
+
+    def test_flat_response(self):
+        """Test flat response explicitly specified in the url."""
+        url = reverse('rna-detail', kwargs={'pk': self.upi})
+        response = self._test_url(url, data={'flat': True})
+        self.assertNotEqual(len(response.data['xrefs']), 0)
+
+    def test_large_nested_rna(self):
+        """
+        For nested responses only a subset of xrefs is included
+        in the original response and the rest can be paginated
+        in separate requests.
+        """
+        upi = 'URS000065859A'  # >200,000 xrefs
+        url = reverse('rna-detail', kwargs={'pk': upi})
+        response = self._test_url(url, data={'flat': True})
+        self.assertTrue(response.data['xrefs']['count'] > 200000)
+        self.assertTrue(len(response.data['xrefs']) < 1000)
+
+    def test_large_nested_page(self):
+        """Ensure that xrefs can be paginated."""
+        page = 115
+        page_size = 100
+        url = reverse('rna-sequences')
+        response = self._test_url(url, data={'page': page, 'page_size': page_size, 'flat': True})
+        self.assertTrue(len(response.data['results']), page_size)
