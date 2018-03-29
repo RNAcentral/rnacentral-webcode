@@ -248,6 +248,6 @@ def test(base_url='http://localhost:8000/'):
     Single entry point for all tests.
     """
     with env.cd(settings.PROJECT_PATH):
-        env.run('python rnacentral/apiv1/tests.py --base_url=%s' % base_url)
+        # env.run('python rnacentral/apiv1/tests.py --base_url=%s' % base_url)
         env.run('python rnacentral/portal/tests/selenium_tests.py --base_url %s --driver=phantomjs' % base_url) # pylint: disable=C0301
         env.run('python rnacentral/apiv1/search/sequence/tests.py --base_url %s' % base_url) # pylint: disable=C0301
