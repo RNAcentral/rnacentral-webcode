@@ -145,8 +145,7 @@ class NestedXrefsTestCase(ApiV1BaseClass):
         upi = 'URS000065859A'  # >200,000 xrefs
         url = reverse('rna-detail', kwargs={'pk': upi})
         response = self._test_url(url, data={'flat': True})
-        self.assertTrue(response.data['xrefs']['count'] > 200000)
-        self.assertTrue(len(response.data['xrefs']) < 1000)
+        self.assertTrue(len(response.data['xrefs']) == 100)
 
     def test_large_nested_page(self):
         """Ensure that xrefs can be paginated."""
