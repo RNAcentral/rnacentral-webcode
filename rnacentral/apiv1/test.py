@@ -35,11 +35,12 @@ class ApiV1BaseClass(APITestCase):
     accession = 'Y09527.1:2562..2627:tRNA'
     timeout = 60  # seconds
 
-    def _test_url(self, url):
+    def _test_url(self, url, data=None, follow=False, **extra):
         """Auxiliary function for testing the API with and without trailing slash."""
         c = APIClient()
-        response = c.get(url)
+        response = c.get(url, data=data, follow=follow, **extra)
         self.assertEqual(response.status_code, 200)
+        return response
 
 
 class BasicEndpointsTestCase(ApiV1BaseClass):
@@ -71,3 +72,52 @@ class AccessionEndpointsTestCase(ApiV1BaseClass):
         """Test accession citations endpoint."""
         url = reverse('accession-citations', kwargs={'pk': self.accession})
         self._test_url(url)
+
+
+class RnaEndpointsTestCase(ApiV1BaseClass):
+    """
+    Test RNA endpoints
+    * /rna
+    * /rna/id/xrefs
+    * /rna/id/publications
+    """
+    def test_rna_list(self):
+        """Test RNA list (hyperlinked response)."""
+        url = reverse('rna-sequences')
+        self._test_url(url)
+
+    def test_rna_list_pagination(self):
+        """Test paginated RNA list (hyperlinked response)."""
+        page = 10
+        page_size = 5
+        url = reverse('rna-sequences')
+        response = self._test_url(url, data={'page': page, 'page_size': page_size})
+        self.assertEqual(len(response.data['results']), page_size)
+
+    def test_rna_sequence(self):
+        """Test RNA entry (hyperlinked response)."""
+        url = reverse('rna-detail', kwargs={'pk': self.upi})
+        response = self._test_url(url)
+        self.assertEqual(response.data['md5'], self.md5)
+        self.assertEqual(response.data['length'], 200)
+
+    def test_rna_xrefs(self):
+        """Test RNA xrefs endpoint."""
+        url = reverse('rna-xrefs', kwargs={'pk': self.upi})
+        self._test_url(url)
+
+    def test_rna_publications(self):
+        """Test RNA publications endpoint."""
+        url = reverse('rna-publications', kwargs={'pk': self.upi})
+        response = self._test_url(url)
+        self.assertEqual(len(response.data['results']), 1)
+
+    def test_xref_pagination(self):
+        """Ensure that xrefs can be paginated."""
+        upi = 'URS000075A546'  # >150 xrefs
+        page = 4
+        page_size = 2
+        url = reverse('rna-xrefs', kwargs={'pk': upi})
+        response = self._test_url(url, data={'page': page, 'page_size': page_size})
+        self.assertTrue(len(response.data['results']), page_size)
+
