@@ -54,3 +54,20 @@ class BasicEndpointsTestCase(ApiV1BaseClass):
         """Test API v1 endpoint."""
         url = reverse('api-v1-root')
         self._test_url(url)
+
+
+class AccessionEndpointsTestCase(ApiV1BaseClass):
+    """
+    Test Accession endpoints.
+    * /accession/id/info
+    * /accession/id/citations
+    """
+    def test_accession_entry(self):
+        """Test accession info endpoint."""
+        url = reverse('accession-detail', {'pk': self.accession})
+        self._test_url(url)
+
+    def test_accession_citations(self):
+        """Test accession citations endpoint."""
+        url = reverse('accession-citations', {'pk': self.accession})
+        self._test_url(url)
