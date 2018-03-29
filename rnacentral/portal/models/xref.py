@@ -597,11 +597,11 @@ class Xref(CachingMixin, models.Model):
     def get_gencode_transcript_id(self):
         """
         GENCODE entries have their corresponding Ensembl transcript ids stored
-        in Accession.note. Example:
-        {"transcript_id": ["ENSMUST00000160979.8"]}
+        in Accession.accession. Example:
+        {"transcript_id": ["GENCODE:ENSMUST00000160979.8"]}
         """
         if self.db.display_name == 'GENCODE':
-            return self.accession.accession
+            return self.accession.accession.split(':')[1]
         else:
             return None
 

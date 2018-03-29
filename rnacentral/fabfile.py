@@ -120,7 +120,9 @@ def create_sitemaps():
     """
     with env.cd(settings.PROJECT_PATH), prefix(COMMANDS['set_environment']), \
          prefix(COMMANDS['activate_virtualenv']):
+        env.run('rm rnacentral/sitemaps/*')
         env.run('python rnacentral/manage.py create_sitemaps')
+        slack("Created sitemaps at ves-oy-a4")
 
 
 def rsync_sitemaps(dry_run=None, remote_host='ves-pg-a4'):
@@ -129,13 +131,14 @@ def rsync_sitemaps(dry_run=None, remote_host='ves-pg-a4'):
     """
     sitemaps_path = os.path.join(settings.PROJECT_PATH, 'rnacentral', 'sitemaps')
 
-    cmd = 'rsync -avi{dry_run} {src}/ {remote_host}:{dst}'.format(
+    cmd = 'rsync -avi{dry_run} --delete {src}/ {remote_host}:{dst}'.format(
         src=sitemaps_path,
         dst=sitemaps_path,
         remote_host=remote_host,
         dry_run='n' if dry_run else '',
     )
     local(cmd)
+    slack("Rsynced sitemaps to %s" % remote_host)
 
 
 def flush_memcached():

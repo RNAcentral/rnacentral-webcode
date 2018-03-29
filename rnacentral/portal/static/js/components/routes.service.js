@@ -1,29 +1,25 @@
-/**
- * Service for resolving urls from backend, instead of hard
- */
-
 angular.module("rnacentralApp").service('routes', ['$interpolate', function($interpolate) {
-    return {
-        helpTextSearch: $interpolate('/help/text-search/'),
-        contactUs: $interpolate('/contact'),
-        submitQuery: $interpolate('/export/submit-query'),
-        resultsPage: $interpolate('/export/results'),
-        rnaView: $interpolate('/rna/{{ upi }}'),
-        rnaViewWithTaxid: $interpolate('/rna/{{upi}}/{{ taxid }}'),
-        apiPublicationsView: $interpolate('/api/v1/rna/{{ upi }}/publications/{{ taxid }}'),
-        apiRnaView: $interpolate('/api/v1/rna/{{ upi }}'),
-        apiGenomeLocationsView: $interpolate('/api/v1/rna/{{ upi }}/genome-locations/{{ taxid }}'),
-        apiGenomeMappingsView: $interpolate('/api/v1/rna/{{ upi }}/genome-mappings/{{ taxid }}'),
-        apiRfamHitsView: $interpolate('/api/v1/rna/{{ upi }}/rfam-hits'),
-        lineageView: $interpolate('/rna/{{ upi }}/lineage'),
-        expertDbsApi: $interpolate('/api/v1/expert-dbs/{{ expertDbName }}'),
-        expertDbStatsApi: $interpolate('/api/v1/expert-db-stats/{{ expertDbName }}'),
-        textSearch: $interpolate('search'),
-        expertDbLogo: $interpolate('/static/img/expert-db-logos/{{ expertDbName }}.png'),
-        apiSecondaryStructuresView: $interpolate('/api/v1/rna/{{ upi }}/2d/{{ taxid }}'),
-        genomesApi: $interpolate('/api/v1/genomes'),
-        ebiSearchProxy: $interpolate('/api/internal/ebeye?url={{ ebeyeUrl }}'),
-        ebiSearch: $interpolate(
+    var routes = {
+        helpTextSearch: '/help/text-search/',
+        contactUs: '/contact',
+        submitQuery: '/export/submit-query',
+        resultsPage: '/export/results',
+        rnaView: '/rna/{{ upi }}',
+        rnaViewWithTaxid: '/rna/{{upi}}/{{ taxid }}',
+        apiPublicationsView: '/api/v1/rna/{{ upi }}/publications/{{ taxid }}',
+        apiRnaView: '/api/v1/rna/{{ upi }}',
+        apiGenomeLocationsView: '/api/v1/rna/{{ upi }}/genome-locations/{{ taxid }}',
+        apiGenomeMappingsView: '/api/v1/rna/{{ upi }}/genome-mappings/{{ taxid }}',
+        apiRfamHitsView: '/api/v1/rna/{{ upi }}/rfam-hits',
+        lineageView: '/rna/{{ upi }}/lineage',
+        expertDbsApi: '/api/v1/expert-dbs/{{ expertDbName }}',
+        expertDbStatsApi: '/api/v1/expert-db-stats/{{ expertDbName }}',
+        textSearch: 'search',
+        expertDbLogo: '/static/img/expert-db-logos/{{ expertDbName }}.png',
+        apiSecondaryStructuresView: '/api/v1/rna/{{ upi }}/2d/{{ taxid }}',
+        genomesApi: '/api/v1/genomes',
+        ebiSearchProxy: '/api/internal/ebeye?url={{ ebeyeUrl }}',
+        ebiSearch:
             '{{ ebiBaseUrl }}' +
             '?query={{ query }}' +
             '&format=json' +
@@ -35,7 +31,12 @@ angular.module("rnacentralApp").service('routes', ['$interpolate', function($int
             '&sort={{ sort }}' +
             '&hlpretag=<span class=text-search-highlights>' +
             '&hlposttag=</span>'
-        ),
-        ebiAutocomplete: $interpolate('http://www.ebi.ac.uk/ebisearch/ws/rest/RNAcentral/autocomplete?term={{ query }}&format=json')
+        ,
+        ebiAutocomplete: 'http://www.ebi.ac.uk/ebisearch/ws/rest/RNAcentral/autocomplete?term={{ query }}&format=json'
     };
+
+    // apply $interpolate to each route template expression
+    return Object.keys(routes)
+          .map(function(key) { var output = {}; output[key] = $interpolate(routes[key]); return output })
+          .reduce(function(result, keyValue ) { return _.extend(result, keyValue) } );
 }]);

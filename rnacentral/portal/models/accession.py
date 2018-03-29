@@ -167,9 +167,11 @@ class Accession(models.Model):
             'MODOMICS': 'http://modomics.genesilico.pl/sequences/list/{id}',
             'HGNC': 'http://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id={id}',
             'ENSEMBL': 'http://www.ensembl.org/{species}/Transcript/Summary?t={id}',
+            'GENCODE': 'http://www.ensembl.org/{species}/Transcript/Summary?t={id}',
             'FLYBASE': 'http://flybase.org/reports/{id}.html',
             'MGI': 'http://www.informatics.jax.org/marker/{id}',
             'GTRNADB': '',
+            'RGD': 'https://rgd.mcw.edu/rgdweb/report/gene/main.html?id={id}'
         }
         if self.database in urls.keys():
             if self.database == 'GTRNADB':
@@ -195,7 +197,7 @@ class Accession(models.Model):
                 return urls[self.database].format(id=noncode_id, version=version)
             elif self.database == 'HGNC':
                 return urls[self.database].format(id=self.accession)
-            elif self.database == 'ENSEMBL':
+            elif self.database == 'ENSEMBL' or self.database == 'GENCODE':
                 return urls[self.database].format(id=self.external_id, species=self.get_ensembl_species_url())
             return urls[self.database].format(id=self.external_id)
         else:

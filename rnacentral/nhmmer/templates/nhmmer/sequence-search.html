@@ -14,6 +14,18 @@ limitations under the License.
 {% extends "portal/base.html" %}
 {% load staticfiles %}
 
+{% block meta_tags %}
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="@RNAcentral">
+  <meta name="twitter:creator" content="@RNAcentral">
+  <meta name="twitter:title" content="RNAcentral">
+  <meta name="twitter:image" content="http://rnacentral.org{% static "img/logo/rnacentral-logo.png" %}">
+  <meta name="robots" content="noindex">
+{% endblock meta_tags %}
+
 {% block title %}
 Sequence search
 {% endblock %}

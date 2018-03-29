@@ -218,7 +218,8 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         nonCanonicalNucleotides = [];
         for (var i = 0; i < $scope.rna.sequence.length; i++) {
             if (['A', 'U', 'G', 'C'].indexOf($scope.rna.sequence[i]) === -1) {
-                nonCanonicalNucleotides.push({x: i, y: i, description: $scope.rna.sequence[i]})
+                // careful with indexes here: people start counting from 1, computers - from 0
+                nonCanonicalNucleotides.push({x: i+1, y: i+1, description: $scope.rna.sequence[i]})
             }
         }
         if (nonCanonicalNucleotides.length > 0) {

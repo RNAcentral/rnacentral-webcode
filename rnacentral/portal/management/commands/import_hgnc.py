@@ -143,11 +143,16 @@ class HGNCImporter():
             if entry['symbol']:
                 gene_description = ' (%s)' % entry['symbol']
 
+            organelle = None
+            if entry['location'] == 'mitochondria':
+                organelle = 'Mitochondrion'
+
             Accession.objects.update_or_create(
                 accession=entry['hgnc_id'],
                 description='Homo sapiens ' + entry['name'] + gene_description,
                 division='HUM',
                 species='Homo sapiens',
+                organelle=organelle,
                 is_composite='N',
                 database='HGNC',
                 classification='Eukaryota; Metazoa; Chordata; Craniata; Vertebrata; Euteleostomi; Mammalia; Eutheria; Euarchontoglires; Primates; Haplorrhini; Catarrhini; Hominidae; Homo; Homo sapiens',
