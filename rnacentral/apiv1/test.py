@@ -360,3 +360,63 @@ class OutputFormatsTestCase(ApiV1BaseClass):
     #                 self.assertIn('URS', annotation['Parent'])
     #             else:
     #                 self.assertEqual(0, 1, "Unknown genomic annotation type")
+
+
+class FiltersTestCase(ApiV1BaseClass):
+    """Test url parameter filters."""
+    def test_rna_md5_filter(self):
+        """Test md5 filter."""
+        url = reverse('rna-sequences')
+        response = self._test_url(url, data={'md5': self.md5})
+        self.assertEqual(response.data['results'][0]['rnacentral_id'], self.upi)
+
+    def test_rna_upi_filter(self):
+        """Test filtering by RNAcentral id."""
+        url = reverse('rna-detail', kwargs={'pk': self.upi})
+        response = self._test_url(url)
+        self.assertEqual(response.data['md5'], self.md5)
+
+    def test_rna_length_filter(self):
+        """Test filtering by sequence length."""
+        filters = [
+            {'min_length': '200000'},
+            {'length': '2014'},
+            {'max_length': '11'},
+            {'min_length': '11', 'max_length': '12'},
+        ]
+
+        for filter in filters:
+            url = reverse('rna-sequences')
+            response = self._test_url(url, data=filter)
+            self.assertNotEqual(response.data['count'], 0)
+
+    # TODO: database filter doesn't work
+    # def test_rna_database_filter(self):
+    #     """Test filtering by database name."""
+    #     for database in ['gtrnadb', 'srpdb', 'snopy']:
+    #         url = reverse('rna-sequences')
+    #         response = self._test_url(url, data={'database': database})
+    #         self.assertNotEqual(response.data['count'], 0)
+
+    def test_bad_database_filter(self):
+        """Test filtering by database name when database name does not exist."""
+        url = reverse('rna-sequences')
+        response = self._test_url(url, data={'database': 'test'})
+        self.assertEqual(response.data['count'], 0)
+
+    def test_rna_external_id_filter(self):
+        """Test filtering by external id."""
+        external_ids = [
+            'Stap.epid._AF269831', # SRPDB
+            'MIMAT0000091', # miRBase
+            'OTTHUMG00000172092', # Vega
+            'Lepto_inter_Lai566', # tmRNA Website
+            '1J5E', # PDB
+            'NR_029645', # RefSeq
+        ]
+        for external_id in external_ids:
+            url = reverse('rna-sequences')
+            response = self._test_url(url, data={'external_id': external_id})
+            self.assertNotEqual(response.data['count'], 0, 'Failed on %s' % url)
+
+
