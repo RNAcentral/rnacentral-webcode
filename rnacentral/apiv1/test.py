@@ -420,6 +420,39 @@ class FiltersTestCase(ApiV1BaseClass):
             self.assertNotEqual(response.data['count'], 0, 'Failed on %s' % url)
 
 
+# TODO: kept these just for reference - we don't want randomized tests
+# class RandomEntriesTestCase(ApiV1BaseClass):
+#     """Test entries at random."""
+#     def test_random_api_sequences(self):
+#         """Test random API entries."""
+#         num_tests = 10
+#         rna_count = Rna.objects.count()
+#         for _ in six.moves.xrange(num_tests):
+#             rna = Rna.objects.only('upi').get(id=randint(1, rna_count))
+#             url = self._get_api_url('rna/%s?flat=true' % rna.upi)
+#             with Timer() as timer:
+#                 request = requests.get(url)
+#             msg = 'Failed on %s' % url
+#             self.assertEqual(request.status_code, 200, msg)
+#             self.assertTrue(timer.timeout < self.timeout, msg)
+#
+#     def test_random_api_pages(self):
+#         """Test random large paginated responses."""
+#         num_tests = 5
+#         page_size = 100
+#         rna_count = Rna.objects.count()
+#         num_pages = math.trunc(rna_count/page_size)
+#         for _ in six.moves.xrange(num_tests):
+#             page = randint(1, num_pages)
+#             url = self._get_api_url('rna?flat=true&page_size={page_size}&page={page}'.format(
+#                 page_size=page_size, page=page))
+#             with Timer() as timer:
+#                 request = requests.get(url)
+#             msg = 'Failed on %s' % url
+#             self.assertEqual(request.status_code, 200, msg)
+#             self.assertTrue(timer.timeout < self.timeout, msg)
+
+
 class SpeciesSpecificIdsTestCase(ApiV1BaseClass):
     """Tests for the species-specific endpoints."""
     upi = 'URS000047C79B'
