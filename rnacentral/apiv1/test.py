@@ -28,9 +28,7 @@ from rest_framework.test import APITestCase, APIClient
 
 
 class Timer(object):
-    """
-    Helper class for detecting long-running requests.
-    """
+    """Helper class for detecting long-running requests."""
     def __enter__(self):
         self.start = time.clock()
         return self
@@ -230,3 +228,135 @@ class DatabaseSpecificXrefsTestCase(ApiV1BaseClass):
 
     def test_refseq_splice_variants(self):
         self._test_time_and_existence('URS000075C808', self.timeout, "refseq_splice_variants")
+
+
+class OutputFormatsTestCase(ApiV1BaseClass):
+    """Test output formats."""
+    def _output_format_tester(self, formats, urls):
+        """
+        Test all possible ways of specifying output format:
+        * suffix, e.g. ".json"
+        * url notation, e.g. "?format=json"
+        * accept headers
+        """
+        c = APIClient()
+        for url in urls:
+            for suffix, headers in six.iteritems(formats):
+                request = c.get(url + '.%s' % suffix)  # format suffix
+                self.assertEqual(request.status_code, 200, url)
+                request = c.get(url + '?format=%s' % suffix)  # url notation
+                self.assertEqual(request.status_code, 200, url)
+                request = c.get(url, headers={"Accept": headers})  # accept headers
+                self.assertEqual(request.status_code, 200, url)
+
+    def test_json_yaml_api_formats(self):
+        """Test json/yaml/api formats."""
+        formats = {'json': 'application/json',
+                   'yaml': 'application/yaml',
+                   'api': 'text/html'}
+        urls = (
+            reverse('rna-sequences'),
+            reverse('rna-detail', kwargs={'pk': self.upi}),
+            reverse('rna-xrefs', kwargs={'pk': self.upi}),
+            reverse('accession-detail', kwargs={'pk': self.accession}),
+            reverse('accession-citations', kwargs={'pk': self.accession})
+        )
+
+        self._output_format_tester(formats, urls)
+
+    def test_fasta_output(self):
+        """Test fasta format."""
+        formats = {'fasta': 'text/fasta'}
+
+        urls = (
+            reverse('rna-sequences'),
+            reverse('rna-detail', kwargs={'pk': self.upi})
+        )
+
+        self._output_format_tester(formats, urls)
+
+    def test_gff_output(self):
+        """Test gff output."""
+        c = APIClient()
+        formats = {'gff': 'text/gff'}
+
+        urls = (
+            reverse('rna-detail', kwargs={'pk': self.upi_with_genomic_coordinates}),
+            reverse('rna-detail', kwargs={'pk': self.upi}),
+        )
+
+        # test response status codes
+        self._output_format_tester(formats, urls)
+
+        # further check the gff text output
+        response = c.get(urls[0] + '.gff')
+        self.assertIn('exon', response.content)
+
+        # test a sequence without genomic coordinates
+        response = c.get(urls[1] + '.gff')
+        self.assertIn('# Genomic coordinates not available', response.content)
+
+    def test_gff3_output(self):
+        """Test gff3 output."""
+        c = APIClient()
+        formats = {'gff3': 'text/gff3'}
+        urls = (
+            reverse('rna-detail', kwargs={'pk': self.upi_with_genomic_coordinates}),
+            reverse('rna-detail', kwargs={'pk': self.upi}),
+        )
+
+        # test response status codes
+        self._output_format_tester(formats, urls)
+
+        # further check the gff text output
+        response = c.get(urls[0] + '.gff3')
+        self.assertIn('noncoding_exon', response.content)
+
+        # test a sequence without genomic coordinates
+        response = c.get(urls[1] + '.gff3')
+        self.assertIn('# Genomic coordinates not available', response.content)
+
+    def test_bed_output(self):
+        """Test bed output."""
+        c = APIClient()
+        formats = {'bed': 'text/bed'}
+        urls = (
+            reverse('rna-detail', kwargs={'pk': self.upi_with_genomic_coordinates}),
+            reverse('rna-detail', kwargs={'pk': self.upi}),
+        )
+
+        # test response status codes
+        self._output_format_tester(formats, urls)
+
+        # further check the gff text output
+        response = c.get(urls[0] + '.bed')
+        self.assertIn(self.upi_with_genomic_coordinates, response.content)
+
+        # test a sequence without genomic coordinates
+        response = c.get(urls[1] + '.bed')
+        self.assertIn('# Genomic coordinates not available', response.content)
+
+    # TODO: something wrong with reverse()
+    # def test_genome_annotations(self):
+    #     """
+    #     Test the Ensembl-like endpoint for retrieving data
+    #     based on genome coordinates.
+    #     `feature` was replaced with `overlap` in Ensembl.
+    #     """
+    #     urls = [
+    #         reverse('human-genome-coordinates',
+    #                 kwargs={'species': 'homo_sapiens', 'chromosome': 'Y', 'start': '25,183,643', 'end': '25,184,773'}),
+    #         reverse('human-genome-coordinates',
+    #                 kwargs={'species': 'homo_sapiens', 'chromosome': '2', 'start': '39,745,816', 'end': '39,826,679'})
+    #     ]
+    #
+    #     for url in urls:
+    #         data = self._test_url(url)
+    #         self.assertNotEqual(len(data), 0)
+    #         for annotation in data:
+    #             if annotation['feature_type'] == 'transcript':
+    #                 self.assertIn('URS', annotation['external_name'])
+    #             elif annotation['feature_type'] == 'exon':
+    #                 self.assertIn('URS', annotation['Parent'])
+    #             else:
+    #                 self.assertEqual(0, 1, "Unknown genomic annotation type")
