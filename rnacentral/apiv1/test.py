@@ -13,16 +13,8 @@ limitations under the License.
 from __future__ import print_function
 import six
 
-from random import randint
-import argparse
-import math
-import os
-import sys
 import time
-import unittest
 
-import django
-import requests
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase, APIClient
 
