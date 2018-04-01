@@ -22,6 +22,8 @@ class EnsemblAssembly(CachingMixin, models.Model):
     assembly_ucsc = models.CharField(max_length=100, db_index=True, null=True)
     common_name = models.CharField(max_length=255, db_index=True)
     taxid = models.IntegerField(db_index=True, unique=True)
+    ensembl_url = models.CharField(max_length=100, db_index=True)
+    division = models.CharField(max_length=20, db_index=True)
 
     objects = CachingManager()
 

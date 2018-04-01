@@ -128,7 +128,9 @@ def get_ensembl_metadata(cursor, database):
     	'species.production_name',
     	'species.taxonomy_id',
     	'species.common_name',
-    	'species.scientific_name'
+    	'species.scientific_name',
+        'species.url',
+        'species.division'
     )
     """
     cursor.execute(sql)
@@ -150,6 +152,8 @@ def store_ensembl_metadata(metadata):
         assembly_ucsc=metadata['assembly.ucsc_alias'] if 'assembly.ucsc_alias' in metadata else None,
         common_name=metadata['species.common_name'],
         taxid=metadata['species.taxonomy_id'],
+        ensembl_url=metadata['species.url'],
+        division=metadata['species.division'],
     )
     assembly.save()
 

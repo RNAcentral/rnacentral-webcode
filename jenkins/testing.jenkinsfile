@@ -15,6 +15,7 @@ private void build() {
             virtualenv ENV --python=/net/isilonP/public/rw/homes/xfm_adm/src/python/bin/python
             source ENV/bin/activate
             source rnacentral/scripts/env.sh
+            pip install --upgrade pip
             pip install --upgrade -r rnacentral/requirements.txt
         '''
     }
@@ -26,7 +27,7 @@ private void runUnitTests() {
             source ENV/bin/activate
             source rnacentral/scripts/env.sh
             cd rnacentral
-            python apiv1/tests.py
+            python manage.py test apiv1
         '''
     }
 }
