@@ -97,4 +97,4 @@ var textSearchBar = {
     }]
 };
 
-angular.module('rnacentralApp').component('textSearchBar', textSearchBar);
+angular.module('textSearch').component('textSearchBar', textSearchBar);

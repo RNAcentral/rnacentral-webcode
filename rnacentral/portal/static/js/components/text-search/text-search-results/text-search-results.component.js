@@ -344,4 +344,4 @@ var textSearchResults = {
     }]
 };
 
-angular.module('rnacentralApp').component('textSearchResults', textSearchResults);
+angular.module('textSearch').component('textSearchResults', textSearchResults);

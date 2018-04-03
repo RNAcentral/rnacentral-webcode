@@ -9,6 +9,7 @@ angular.module('rnacentralApp', [
 
     'Genoverse',
     'rnaSequence',
+    'textSearch',
     'expertDatabase',
     'useCases',
     'homepage'
