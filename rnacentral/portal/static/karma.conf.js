@@ -30,42 +30,43 @@ module.exports = function(config) {
       // rnacentralApp module
       'js/app.js',
 
-      'js/components/main-content.controller.js',
+      // 'js/components/main-content.controller.js',
       'js/components/routes.service.js',
 
-      'js/components/sequence-search/nhmmer.sequence.search.js',
+      // 'js/components/sequence-search/nhmmer.sequence.search.js',
 
-      // Genoverse module
-      'node_modules/angularjs-genoverse/lib/Genoverse/dist/js/genoverse.min.nodeps.js',
-      'node_modules/angularjs-genoverse/dist/angularjs-genoverse.all.js',
-
-      // genomeBrowser module
-      'js/components/genome-browser/genoverse-utils.service.js',
-      'js/components/genome-browser/genome-browser.controller.js',
-
-      // textSearch module
-      'js/components/text-search/text-search.module.js',
-      'js/components/text-search/text-search.service.js',
-      'js/components/text-search/capitalize-first.filter.js',
-      'js/components/text-search/export-results.search.js',
-      'js/components/text-search/plaintext.filter.js',
-      'js/components/text-search/sanitize.filter.js',
-      'js/components/text-search/text-search.service.js',
-      'js/components/text-search/underscore-to-spaces.filter.js',
-
-      'js/components/text-search/text-search-bar/text-search-bar.component.js',
-
-      'js/components/text-search/text-search-results/text-search-results.component.js',
-
-      // rnaSequence module
-      'js/components/sequence/sequence.module.js',
-      'js/components/sequence/abstract/abstract.component.js',
-      'js/components/sequence/publications/publication.component.js',
-      'js/components/sequence/publications/publications.component.js',
-      'js/components/sequence/taxonomy/taxonomy.component.js',
-      'js/components/sequence/xrefs/xrefs.component.js',
-      'js/components/sequence/xrefs/xref-publications/xref-publications.component.js',
-      'js/components/sequence/2d/2d.component.js',
+      // // Genoverse module
+      // 'node_modules/angularjs-genoverse/lib/Genoverse/dist/js/genoverse.min.nodeps.js',
+      // 'node_modules/angularjs-genoverse/dist/angularjs-genoverse.all.js',
+      //
+      // // genomeBrowser module
+      // 'js/components/genome-browser/genome-browser.module.js',
+      // 'js/components/genome-browser/genome-browser.controller.js',
+      // 'js/components/genome-browser/genoverse-utils.service.js',
+      //
+      // // textSearch module
+      // 'js/components/text-search/text-search.module.js',
+      // 'js/components/text-search/text-search.service.js',
+      // 'js/components/text-search/capitalize-first.filter.js',
+      // 'js/components/text-search/export-results.search.js',
+      // 'js/components/text-search/plaintext.filter.js',
+      // 'js/components/text-search/sanitize.filter.js',
+      // 'js/components/text-search/text-search.service.js',
+      // 'js/components/text-search/underscore-to-spaces.filter.js',
+      //
+      // 'js/components/text-search/text-search-bar/text-search-bar.component.js',
+      //
+      // 'js/components/text-search/text-search-results/text-search-results.component.js',
+      //
+      // // rnaSequence module
+      // 'js/components/sequence/sequence.module.js',
+      // 'js/components/sequence/abstract/abstract.component.js',
+      // 'js/components/sequence/publications/publication.component.js',
+      // 'js/components/sequence/publications/publications.component.js',
+      // 'js/components/sequence/taxonomy/taxonomy.component.js',
+      // 'js/components/sequence/xrefs/xrefs.component.js',
+      // 'js/components/sequence/xrefs/xref-publications/xref-publications.component.js',
+      // 'js/components/sequence/2d/2d.component.js',
 
       // expertDatabase module
       'js/components/expert-database/expert-database.module.js',
@@ -75,11 +76,11 @@ module.exports = function(config) {
       'js/components/expert-database/normalize-expert-db-name.service.js',
       'js/components/expert-database/normalize-expert-db-name.service.spec.js',
 
-      // useCases module
-      'js/components/use-cases/use-cases.module.js',
-
-      // homepage module
-      'js/components/homepage/homepage.module.js'
+      // // useCases module
+      // 'js/components/use-cases/use-cases.module.js',
+      //
+      // // homepage module
+      // 'js/components/homepage/homepage.module.js'
     ],
 
 
