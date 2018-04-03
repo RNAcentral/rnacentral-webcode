@@ -404,5 +404,5 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
     }
 };
 
-angular.module('rnacentralApp')
+angular.module('textSearch')
     .service('search', ['_', '$http', '$interpolate', '$location', '$window', '$q', 'routes', search]);
