@@ -21,7 +21,7 @@
  * </genoverse>
  */
 
-angular.module("rnacentralApp").factory('GenoverseUtils', ['$filter', function($filter) {
+angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($filter) {
 
     // Constructor
     // -----------

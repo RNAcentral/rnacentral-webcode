@@ -1,4 +1,4 @@
-angular.module("rnacentralApp").service('normalizeExpertDbName', ['routes', function() {
+angular.module("expertDatabase").service('normalizeExpertDbName', ['routes', function() {
     return {
         nameToImageUrl: function(name) {
             if (name === "tmRNA Website") name = 'tmrna-website';

@@ -1,6 +1,6 @@
 describe("normalize-expert-db-name:", function() {
     beforeEach(function() {
-        module('rnacentralApp');
+        module('expertDatabase');
     });
 
     describe("labelToImageUrl():", function() {
