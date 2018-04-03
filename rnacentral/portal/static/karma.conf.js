@@ -32,14 +32,20 @@ module.exports = function(config) {
 
       'js/components/main-content.controller.js',
       'js/components/routes.service.js',
-      'js/components/normalize-expert-db-name.service.js',
-      'js/components/normalize-expert-db-name.service.spec.js',
-
-      'js/components/genome-browser/genoverse-utils.service.js',
-      'js/components/genome-browser/genoverse.controller.js',
 
       'js/components/sequence-search/nhmmer.sequence.search.js',
 
+      // Genoverse module
+      'node_modules/angularjs-genoverse/lib/Genoverse/dist/js/genoverse.min.nodeps.js',
+      'node_modules/angularjs-genoverse/dist/angularjs-genoverse.all.js',
+
+      // genomeBrowser module
+      'js/components/genome-browser/genoverse-utils.service.js',
+      'js/components/genome-browser/genome-browser.controller.js',
+
+      // textSearch module
+      'js/components/text-search/text-search.module.js',
+      'js/components/text-search/text-search.service.js',
       'js/components/text-search/capitalize-first.filter.js',
       'js/components/text-search/export-results.search.js',
       'js/components/text-search/plaintext.filter.js',
@@ -50,10 +56,6 @@ module.exports = function(config) {
       'js/components/text-search/text-search-bar/text-search-bar.component.js',
 
       'js/components/text-search/text-search-results/text-search-results.component.js',
-
-      // Genoverse module
-      'node_modules/angularjs-genoverse/lib/Genoverse/dist/js/genoverse.min.nodeps.js',
-      'node_modules/angularjs-genoverse/dist/angularjs-genoverse.all.js',
 
       // rnaSequence module
       'js/components/sequence/sequence.module.js',
@@ -70,6 +72,8 @@ module.exports = function(config) {
       'js/components/expert-database/expert-database-top.component.js',
       'js/components/expert-database/expert-database-left.component.js',
       'js/components/expert-database/expert-database-right.component.js',
+      'js/components/expert-database/normalize-expert-db-name.service.js',
+      'js/components/expert-database/normalize-expert-db-name.service.spec.js',
 
       // useCases module
       'js/components/use-cases/use-cases.module.js',

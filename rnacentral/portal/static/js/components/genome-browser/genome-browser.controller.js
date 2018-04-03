@@ -13,7 +13,7 @@ limitations under the License.
 
 (function() {
 
-angular.module('rnacentralApp').controller('GenoverseGenomeBrowser', ['$scope', '$location', '$filter', 'GenoverseUtils', function ($scope, $location, $filter, GenoverseUtils) {
+angular.module('genomeBrowser').controller('GenoverseGenomeBrowser', ['$scope', '$location', '$filter', 'GenoverseUtils', function ($scope, $location, $filter, GenoverseUtils) {
 
     // Variables
     // ---------

@@ -163,7 +163,6 @@ limitations under the License.
             <script src="{% static "js/app.js" %}"></script>
             <script src="{% static "js/components/main-content.controller.js" %}"></script>
             <script src="{% static "js/components/routes.service.js" %}"></script>
-            <script src="{% static "js/components/normalize-expert-db-name.service.js" %}"></script>
             <!-- <script src="{% static "js/components/tour.service.js" %}"></script> -->
 
             <script src="{% static "js/components/underscore.module.js" %}"></script>
@@ -176,6 +175,7 @@ limitations under the License.
             <script src="{% static "js/components/expert-database/expert-database-top.component.js" %}"></script>
             <script src="{% static "js/components/expert-database/expert-database-left.component.js" %}"></script>
             <script src="{% static "js/components/expert-database/expert-database-right.component.js" %}"></script>
+            <script src="{% static "js/components/expert-database/normalize-expert-db-name.service.js" %}"></script>
 
             <script src="{% static "js/components/sequence/sequence.module.js" %}"></script>
             <script src="{% static "js/components/sequence/abstract/abstract.component.js" %}"></script>
@@ -213,9 +213,10 @@ limitations under the License.
         <!-- <script>$.widget.bridge('uitooltip', $.ui.tooltip);</script> -->
 
         <!-- Angular parts of Genoverse outside compress block -->
+        <script src="{% static "js/components/genome-browser/genome-browser.module.js" %}"></script>
         <script src="{% static "js/components/genome-browser/genoverse-utils.service.js" %}"></script>
-        <script src="{% static "js/components/genome-browser/genoverse.controller.js" %}"></script>
-        <script src="{% static "node_modules/angularjs-genoverse/src/genoverse.module.js" %}"></script>
+        <script src="{% static "js/components/genome-browser/genome-browser.controller.js" %}"></script>
+        <script src="{% static "node_modules/angularjs-genoverse/dist/angularjs-genoverse.all.js" %}"></script>
 
         <!-- bootstrap conflicts with jquery-ui tooltip, so it should go after datatables and genoverse -->
         <script src="{% static "node_modules/bootstrap/dist/js/bootstrap.js" %}"></script>
