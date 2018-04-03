@@ -4,7 +4,7 @@
   "description": "",
   "main": "rnacentral.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node_modules/karma/bin/karma start --browsers Chrome --single-run false --debug --auto-watch"
   },
   "repository": {
     "type": "git",
@@ -51,6 +51,13 @@
     "underscore": "^1.8.3"
   },
   "devDependencies": {
+    "angular-mocks": "^1.6.9",
+    "jasmine-core": "^3.1.0",
+    "karma": "^2.0.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-firefox-launcher": "^1.1.0",
+    "karma-jasmine": "^1.1.1",
+    "karma-safari-launcher": "^1.0.0",
     "phantomjs": "^2.1.7"
   }
 }
