@@ -478,3 +478,16 @@ class SpeciesSpecificIdsTestCase(ApiV1BaseClass):
         c = APIClient()
         response = c.get(url)
         self.assertEqual(response.data['is_active'], False)
+
+
+class EnsemblAssemblyTestCase(ApiV1BaseClass):
+    """Tests for ensembl assemblies."""
+    def test_list(self):
+        url = reverse('ensembl-assembly')
+        response = self._test_url(url)
+        self.assertEqual(response.data['count'], 88)
+
+    def test_detail(self):
+        url = reverse('ensembl-assembly', kwargs={'pk': 'turTru1'})
+        response = self._test_url(url)
+        self.assertEqual(response.data['assembly_id'], 'turTru1')
