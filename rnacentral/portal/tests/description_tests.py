@@ -142,6 +142,13 @@ class HumanDescriptionTests(GenericDescriptionTest):
             'URS000019E0CD',
             taxid=9606)
 
+    @pytest.mark.skip()
+    def test_uses_snopy_descriptions(self):
+        self.assertDescriptionIs(
+            'Homo sapiens (human) small nucleolar RNA SNORD118L8',
+            'URS00006CE02F',
+            taxid=9606)
+
 
 class ArabidopisDescriptionTests(GenericDescriptionTest):
     def test_likes_lncrnadb_over_ena(self):
