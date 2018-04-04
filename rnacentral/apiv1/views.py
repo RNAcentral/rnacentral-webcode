@@ -36,9 +36,9 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
                               RnaSpeciesSpecificSerializer, ExpertDatabaseStatsSerializer, \
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, RfamHitSerializer, \
-                              EnsemblInsdcMappingSerializer
+                              EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
-from portal.models import Rna, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblInsdcMapping
+from portal.models import Rna, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly, EnsemblInsdcMapping
 from portal.config.genomes import genomes, url2db, db2url, SpeciesNotInGenomes, get_taxid_from_species
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination
@@ -526,6 +526,15 @@ class RfamHitsAPIViewSet(generics.ListAPIView):
     def get_queryset(self):
         upi = self.kwargs['pk']
         return RfamHit.objects.filter(upi=upi).select_related('rfam_model')
+
+
+class EnsemblAssemblyViewSet(ListModelMixin, GenericViewSet):
+    """API endpoint, presenting all E! assemblies, available in RNAcentral."""
+    permission_classes = (AllowAny, )
+    serializer_class = EnsemblAssemblySerializer
+    pagination_class = Pagination
+    queryset = EnsemblAssembly.objects.all()
+    lookup_field = 'pk'
 
 
 class EnsemblInsdcMappingView(APIView):
