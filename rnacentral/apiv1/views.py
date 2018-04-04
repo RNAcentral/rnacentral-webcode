@@ -528,13 +528,13 @@ class RfamHitsAPIViewSet(generics.ListAPIView):
         return RfamHit.objects.filter(upi=upi).select_related('rfam_model')
 
 
-class EnsemblAssemblyViewSet(ListModelMixin, GenericViewSet):
+class EnsemblAssemblyViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
     """API endpoint, presenting all E! assemblies, available in RNAcentral."""
     permission_classes = (AllowAny, )
     serializer_class = EnsemblAssemblySerializer
     pagination_class = Pagination
     queryset = EnsemblAssembly.objects.all()
-    lookup_field = 'pk'
+    lookup_field = 'ensembl_url'
 
 
 class EnsemblInsdcMappingView(APIView):

@@ -56,7 +56,9 @@ urlpatterns = [
     url(r'^expert-db-stats/(?P<pk>.*)/?$', views.ExpertDatabasesStatsViewSet.as_view({'get': 'retrieve'}), {}, name='expert-db-stats'),
     # list of genomes, available for display in Genoverse
     url(r'^genomes/$', views.GenomesAPIView.as_view(), {}, name='genomes-api'),
+    # ensembl assemblies list
     url(r'ensembl-assembly/$', views.EnsemblAssemblyViewSet.as_view({'get': 'list'}), {}, name='ensembl-assembly'),
+    url(r'ensembl-assembly/(?P<ensembl_url>\w+)/$', views.EnsemblAssemblyViewSet.as_view({'get': 'retrieve'}), {}, name='ensembl-assembly'),
     # mapping of ensembl assemblies to insdc submissions
     url(r'ensembl-insdc-mapping/$', views.EnsemblInsdcMappingView.as_view(), {}, name='ensembl-insdc-mapping')
 ]
