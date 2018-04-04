@@ -4,7 +4,7 @@ var expertDatabaseRight = {
         expertDb : "<"
     },
     templateUrl: '/static/js/components/expert-database/expert-database-right.html',
-    controller: ['$interpolate', '$location', '$http', 'search', 'routes', function($interpolate, $location, $http, search, routes) {
+    controller: ['$interpolate', '$location', '$http', 'search', 'routes', 'normalizeExpertDbName', function($interpolate, $location, $http, search, routes, normalizeExpertDbName) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
@@ -14,7 +14,7 @@ var expertDatabaseRight = {
             ctrl.expertDbStats = null;
 
             // retrieve databaseStats from server, render them, if success
-            var normalizedDbName = ctrl.normalizeDbLabel(ctrl.expertDb.label);
+            var normalizedDbName = normalizeExpertDbName.labelToDb(ctrl.expertDb.label);
             $http.get(routes.expertDbStatsApi({expertDbName: normalizedDbName})).then(
                 function(response) {
                     ctrl.expertDbStats = response.data;
@@ -41,14 +41,6 @@ var expertDatabaseRight = {
                     ctrl.onError();
                 }
             );
-        };
-
-        /**
-         * Given an expert database label (lowercase), convert it to a PK in DatabaseStats table.
-         */
-        ctrl.normalizeDbLabel = function(label) {
-            if (label === 'tmrna-website') return "TMRNA_WEB";
-            else return ctrl.expertDb.label.toUpperCase();
         };
 
         /**
