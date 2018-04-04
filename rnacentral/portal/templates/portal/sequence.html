@@ -294,6 +294,8 @@ limitations under the License.
 
                 <pre ng-if="showSequence" class="pre-scrollable" id="rna-sequence">{{ rna.get_sequence }}</pre>
 
+                <publications upi="upi" taxid="taxid"></publications>
+
             </uib-tab>
 
             <uib-tab index="1" heading="Taxonomy" deselect="checkTab($event, $selectedIndex)">
@@ -318,15 +320,11 @@ limitations under the License.
                 </div>
             </uib-tab>
 
-            <uib-tab index="2" heading="Publications" deselect="checkTab($event, $selectedIndex)">
-                <publications upi="upi" taxid="taxid"></publications>
-            </uib-tab>
-
-            <uib-tab index="3" heading="2D" id="secondary-structures" deselect="checkTab($event, $selectedIndex)" ng-hide="hide2dTab">
+            <uib-tab index="2" heading="2D" id="secondary-structures" deselect="checkTab($event, $selectedIndex)" ng-hide="hide2dTab">
                 <secondary-structures upi="upi" taxid="taxid" show-secondary-structure-tab="show2dTab()"></secondary-structures>
             </uib-tab>
 
-            <uib-tab index="4" class="dropdown pull-right hidden-xs">
+            <uib-tab index="3" class="dropdown pull-right hidden-xs">
                 <uib-tab-heading>
                     <span uib-dropdown>
                         <a uib-dropdown-toggle>
