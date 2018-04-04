@@ -1,8 +1,8 @@
 var textSearchResults = {
     bindings: {},
     templateUrl: '/static/js/components/text-search/text-search-results/text-search-results.html',
-    controller: ['$interpolate', '$location', '$http', '$timeout', '$scope', '$filter', '$q', 'search', 'routes',
-    function($interpolate, $location, $http, $timeout, $scope, $filter, $q, search, routes) {
+    controller: ['$interpolate', '$location', '$http', '$timeout', '$scope', '$filter', '$q', 'search', 'routes', 'normalizeExpertDbName',
+    function($interpolate, $location, $http, $timeout, $scope, $filter, $q, search, routes, normalizeExpertDbName) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
@@ -15,6 +15,7 @@ var textSearchResults = {
 
             // urls used in template (hardcoded)
             ctrl.routes = routes;
+            ctrl.normalizeExpertDbName = normalizeExpertDbName;
 
             // slider that allows users to set range of sequence lengths
             ctrl.setLengthSlider(search.query); // initial value

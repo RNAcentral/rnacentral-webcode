@@ -5,7 +5,6 @@ describe("normalize-expert-db-name:", function() {
 
     describe("labelToImageUrl():", function() {
         it("should handle 'tmrna-website'", inject(function(normalizeExpertDbName) {
-            console.log(normalizeExpertDbName.labelToImageUrl('tmrna-website'));
             expect(normalizeExpertDbName.labelToImageUrl('tmrna-website')).toEqual('/static/img/expert-db-logos/tmrna-website.png');
         }));
 
@@ -22,5 +21,15 @@ describe("normalize-expert-db-name:", function() {
         it("should handle 'GENCODE'", inject(function(normalizeExpertDbName) {
             expect(normalizeExpertDbName.nameToImageUrl('GENCODE')).toEqual('/static/img/expert-db-logos/gencode.png');
         }));
-    })
+    });
+
+    describe("labelToDb():", function() {
+       it("should handle 'tmrna-website'", inject(function(normalizeExpertDbName) {
+           expect(normalizeExpertDbName.labelToDb('tmrna-website')).toEqual('TMRNA_WEB');
+       }));
+
+       it("should handle 'GENCODE'", inject(function(normalizeExpertDbName) {
+           expect(normalizeExpertDbName.labelToDb('gencode')).toEqual('GENCODE');
+       }));
+    });
 });
