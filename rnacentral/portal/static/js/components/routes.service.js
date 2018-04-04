@@ -1,4 +1,4 @@
-angular.module("rnacentralApp").service('routes', ['$interpolate', function($interpolate) {
+angular.module("routes", []).service('routes', ['$interpolate', function($interpolate) {
     var routes = {
         helpTextSearch: '/help/text-search/',
         contactUs: '/contact',

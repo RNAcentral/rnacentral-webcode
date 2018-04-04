@@ -19,6 +19,7 @@ module.exports = function(config) {
       'node_modules/angular-animate/angular-animate.js',
       'node_modules/angular-sanitize/angular-sanitize.js',
       'node_modules/angular-filter/dist/angular-filter.js',
+      'node_modules/angular-resource/angular-resource.js',
       'node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js',
       'node_modules/angular-loading-bar/build/loading-bar.js',
       'node_modules/angularjs-slider/dist/rzslider.js',
@@ -28,7 +29,7 @@ module.exports = function(config) {
       'node_modules/angular-mocks/angular-mocks.js',
 
       // rnacentralApp module
-      'js/app.js',
+      // 'js/app.js',
 
       // 'js/components/main-content.controller.js',
       'js/components/routes.service.js',

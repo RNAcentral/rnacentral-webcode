@@ -48,5 +48,5 @@ var expertDatabaseController = function($scope, $location, $window, $rootScope, 
 expertDatabaseController.$inject = ['$scope', '$location', '$window', '$rootScope', '$http', 'routes'];
 
 
-angular.module("expertDatabase", ['ngResource', 'ngAnimate', 'ngSanitize', 'ui.bootstrap'])
+angular.module("expertDatabase", ['ngResource', 'ngAnimate', 'ngSanitize', 'routes', 'ui.bootstrap'])
     .controller("expertDatabaseController", expertDatabaseController);

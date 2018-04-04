@@ -50,5 +50,5 @@ var useCasesController = function($scope, $location, $window, $rootScope, $http,
 useCasesController.$inject = ['$scope', '$location', '$window', '$rootScope', '$http', 'routes'];
 
 
-angular.module("useCases", ['ngResource', 'ngAnimate', 'ngSanitize', 'ui.bootstrap', 'rnaSequence'])
+angular.module("useCases", ['ngResource', 'ngAnimate', 'ngSanitize', 'ui.bootstrap', 'routes', 'rnaSequence'])
     .controller("useCasesController", useCasesController);
