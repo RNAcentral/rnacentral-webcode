@@ -7,6 +7,7 @@ angular.module('rnacentralApp', [
     'rzModule',
     'underscore',
 
+    'routes',
     'Genoverse',
     'genomeBrowser',
     'rnaSequence',
