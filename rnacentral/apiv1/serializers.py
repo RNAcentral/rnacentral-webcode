@@ -438,7 +438,8 @@ class EnsemblAssemblySerializer(serializers.ModelSerializer):
     class Meta:
         model = EnsemblAssembly
         fields = ('assembly_id', 'assembly_full_name', 'gca_accession', 'assembly_ucsc',
-                  'common_name', 'taxid', 'ensembl_url', 'division')
+                  'common_name', 'taxid', 'ensembl_url', 'division',
+                  'example_chromosome', 'example_start', 'example_end')
 
 
 class EnsemblInsdcMappingSerializer(serializers.ModelSerializer):
