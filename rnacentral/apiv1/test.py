@@ -485,9 +485,9 @@ class EnsemblAssemblyTestCase(ApiV1BaseClass):
     def test_list(self):
         url = reverse('ensembl-assembly')
         response = self._test_url(url)
-        self.assertEqual(response.data['count'], 88)
+        self.assertEqual(response.data['count'], 94)
 
     def test_detail(self):
         url = reverse('ensembl-assembly', kwargs={'ensembl_url': 'Homo_sapiens'})
         response = self._test_url(url)
-        self.assertEqual(response.data['taxid'], '9606')
+        self.assertEqual(response.data['taxid'], 9606)
