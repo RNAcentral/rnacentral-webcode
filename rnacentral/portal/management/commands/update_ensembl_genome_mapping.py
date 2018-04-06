@@ -14,7 +14,8 @@ limitations under the License.
 from collections import defaultdict
 
 from django.core.management.base import BaseCommand
-from portal.models import EnsemblAssembly, EnsemblInsdcMapping
+from portal.models import EnsemblInsdcMapping
+from .update_ensembl_assembly import get_ensembl_metadata
 
 import pymysql.cursors
 
@@ -131,6 +132,7 @@ class Command(BaseCommand):
             with connection.cursor() as cursor:
                 databases = get_ensembl_databases(cursor)
                 for database in databases:
+                    ensembl_metadata = get_ensembl_metadata(cursor, database)
                     mapping = get_ensembl_insdc_mapping(cursor, database)
                     store_ensembl_insdc_mapping(mapping, ensembl_metadata)
         finally:
