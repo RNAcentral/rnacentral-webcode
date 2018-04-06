@@ -159,6 +159,11 @@ def store_ensembl_metadata(metadata):
     the same NCBI taxid and create a new one.
     """
     EnsemblAssembly.objects.filter(taxid=metadata['species.taxonomy_id']).delete()
+
+    try:
+        example_location = example_locations[metadata['species.url'].lower()]
+    except KeyError:
+        example_location = {'chromosome': None, 'start': None, 'end': None}
     assembly = EnsemblAssembly(
         assembly_id=metadata['assembly.default'],
         assembly_full_name=metadata['assembly.name'],
@@ -168,9 +173,9 @@ def store_ensembl_metadata(metadata):
         taxid=metadata['species.taxonomy_id'],
         ensembl_url=metadata['species.url'].lower(),
         division=metadata['species.division'],
-        example_chromosome=example_locations[metadata['species.url'].lower()]['chromosome'],
-        example_start=example_locations[metadata['species.url'].lower()]['start'],
-        example_end=example_locations[metadata['species.url'].lower()]['end']
+        example_chromosome=example_location['chromosome'],
+        example_start=example_location['start'],
+        example_end=example_location['end']
     )
     assembly.save()
 
