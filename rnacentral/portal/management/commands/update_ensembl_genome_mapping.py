@@ -20,14 +20,25 @@ import pymysql.cursors
 
 
 def get_ensembl_connection():
+    """Connect to the public Ensembl MySQL database."""
+    return pymysql.connect(
+        host='ensembldb.ensembl.org',
+        user='anonymous',
+        port=3306,
+        cursorclass=pymysql.cursors.DictCursor
+    )
+
+def get_ensembl_genomes_connection():
     """
-    Connect to the public Ensembl MySQL database.
+    Connect to the public Ensembl Genomes MySQL database. See:
+    http://ensemblgenomes.org/info/access/mysql
     """
-    connection = pymysql.connect(host='ensembldb.ensembl.org',
-                                 user='anonymous',
-                                 port=3306,
-                                 cursorclass=pymysql.cursors.DictCursor)
-    return connection
+    return pymysql.connect(
+        host='mysql-eg-publicsql.ebi.ac.uk',
+        user='anonymous',
+        port=4157,
+        cursorclass=pymysql.cursors.DictCursor
+    )
 
 
 def get_ensembl_databases(cursor):

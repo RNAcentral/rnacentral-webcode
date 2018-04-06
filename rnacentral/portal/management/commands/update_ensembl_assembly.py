@@ -12,13 +12,9 @@ limitations under the License.
 """
 from __future__ import print_function
 
-from collections import defaultdict
-
 from django.core.management.base import BaseCommand
-from portal.models import EnsemblAssembly, EnsemblInsdcMapping
+from portal.models import EnsemblAssembly
 from .update_ensembl_genome_mapping import get_ensembl_connection, get_ensembl_databases
-
-import pymysql.cursors
 
 
 example_locations = {
