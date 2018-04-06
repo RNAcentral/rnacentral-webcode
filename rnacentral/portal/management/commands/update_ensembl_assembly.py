@@ -10,6 +10,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+from __future__ import print_function
 
 from collections import defaultdict
 
@@ -18,6 +19,110 @@ from portal.models import EnsemblAssembly, EnsemblInsdcMapping
 from .update_ensembl_genome_mapping import get_ensembl_connection, get_ensembl_databases
 
 import pymysql.cursors
+
+
+example_locations = {
+    'homo_sapiens': {
+        'chromosome': 'X',
+        'start': 73819307,
+        'end': 73856333,
+    },
+    'mus_musculus': {
+        'chromosome': 1,
+        'start': 86351908,
+        'end': 86352200,
+    },
+    'danio_rerio': {
+        'chromosome': 9,
+        'start': 7633910,
+        'end': 7634210,
+    },
+    'bos_taurus': {
+        'chromosome': 15,
+        'start': 82197673,
+        'end': 82197837,
+    },
+    'rattus_norvegicus': {
+        'chromosome': 'X',
+        'start': 118277628,
+        'end': 118277850,
+    },
+    'felis_catus': {
+        'chromosome': 'X',
+        'start': 18058223,
+        'end': 18058546,
+    },
+    'macaca_mulatta': {
+        'chromosome': 1,
+        'start': 146238837,
+        'end': 146238946,
+    },
+    'pan_troglodytes': {
+        'chromosome': 11,
+        'start': 78369004,
+        'end': 78369219,
+    },
+    'canis_familiaris': {
+        'chromosome': 19,
+        'start': 22006909,
+        'end': 22007119,
+    },
+    'gallus_gallus': {
+        'chromosome': 9,
+        'start': 15676031,
+        'end': 15676160,
+    },
+    'xenopus_tropicalis': {
+        'chromosome': 'NC_006839',
+        'start': 11649,
+        'end': 11717,
+    },
+    'saccharomyces_cerevisiae': {
+        'chromosome': 'XII',
+        'start': 856709,
+        'end': 856919,
+    },
+    'schizosaccharomyces_pombe': {
+        'chromosome': 'I',
+        'start': 540951,
+        'end': 544327,
+    },
+    'caenorhabditis_elegans': {
+        'chromosome': 'III',
+        'start': 11467363,
+        'end': 11467705,
+    },
+    'drosophila_melanogaster': {
+        'chromosome': '3R',
+        'start': 7474331,
+        'end': 7475217,
+    },
+    'bombyx_mori': {
+        'chromosome': 'scaf16',
+        'start': 6180018,
+        'end': 6180422,
+    },
+    'anopheles_gambiae': {
+        'chromosome': '2R',
+        'start': 34644956,
+        'end': 34645131,
+    },
+    'dictyostelium_discoideum': {
+        'chromosome': 2,
+        'start': 7874546,
+        'end': 7876498,
+    },
+    'plasmodium_falciparum': {
+        'chromosome': 13,
+        'start': 2796339,
+        'end': 2798488,
+    },
+    'arabidopsis_thaliana': {
+        'chromosome': 2,
+        'start': 18819643,
+        'end': 18822629,
+    }
+}
 
 
 def get_ensembl_metadata(cursor, database):
@@ -61,8 +166,11 @@ def store_ensembl_metadata(metadata):
         assembly_ucsc=metadata['assembly.ucsc_alias'] if 'assembly.ucsc_alias' in metadata else None,
         common_name=metadata['species.common_name'],
         taxid=metadata['species.taxonomy_id'],
-        ensembl_url=metadata['species.url'],
+        ensembl_url=metadata['species.url'].lower(),
         division=metadata['species.division'],
+        example_chromosome=example_locations[metadata['species.url'].lower()]['chromosome'],
+        example_start=example_locations[metadata['species.url'].lower()]['start'],
+        example_end=example_locations[metadata['species.url'].lower()]['end']
     )
     assembly.save()
 
@@ -75,7 +183,7 @@ def store_ensembl_metadata(metadata):
         taxid=metadata['species.taxonomy_id'],
         common_name=metadata['species.common_name'],
     )
-    print line
+    print(line)
 
 
 class Command(BaseCommand):
