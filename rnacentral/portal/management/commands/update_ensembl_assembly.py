@@ -179,14 +179,18 @@ def store_ensembl_metadata(metadata):
     )
     assembly.save()
 
-    line = "{assembly_id}\t{assembly_full_name}\t{GCA_accession}\t{assembly_ucsc}\t{common_name}\t{taxid}".format(
+    line = "{assembly_id}\t{assembly_full_name}\t{GCA_accession}\t{assembly_ucsc}\t{common_name}\t{taxid}\t{ensembl_url}\t{division}\t{example_chromosome}\t{example_start}\t{example_end}".format(
         assembly_id=metadata['assembly.default'],
-        GCA_accession=metadata['assembly.accession'] if 'assembly.accession' in metadata else '',
         assembly_full_name=metadata['assembly.name'],
+        GCA_accession=metadata['assembly.accession'] if 'assembly.accession' in metadata else '',
         assembly_ucsc=metadata['assembly.ucsc_alias'] if 'assembly.ucsc_alias' in metadata else '',
-        division=metadata['species.division'],
-        taxid=metadata['species.taxonomy_id'],
         common_name=metadata['species.common_name'],
+        taxid=metadata['species.taxonomy_id'],
+        ensembl_url=metadata['species.url'].lower(),
+        division=metadata['species.division'],
+        example_chromosome=example_location['chromosome'],
+        example_start=example_location['start'],
+        example_end=example_location['end']
     )
     print(line)
 
