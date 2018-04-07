@@ -60,15 +60,31 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     // Data fetch functions
     // --------------------
 
+    $scope.fetchGenomes = function() {
+        return $q(function(resolve, reject) {
+            $http.get(routes.genomesApi({ ensemblAssembly: "" })).then(
+                function (response) {
+                    $scope.genomes = response.data;
+                    resolve(response.data);
+                },
+                function () {
+                    $scope.fetchGenomeLocationsError = true;
+                    reject();
+                }
+            )
+        });
+    };
+
     $scope.fetchGenomeLocations = function () {
         return $q(function (resolve, reject) {
-            $http.get(routes.apiGenomeLocationsView({upi: $scope.upi, taxid: $scope.taxid})).then(
+            $http.get(routes.apiGenomeLocationsView({ upi: $scope.upi, taxid: $scope.taxid })).then(
                 function (response) {
                     $scope.genomeLocations = response.data;
                     resolve(response.data);
                 },
                 function () {
-
+                    $scope.fetchGenomeLocationsError = true;
+                    reject();
                 }
             );
         });
@@ -334,7 +350,9 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     $scope.fetchGenomeLocations().then(function() {
         if ($scope.genomeLocations.length > 0) {
             var location = $scope.genomeLocations[0];
-            $scope.activateGenomeBrowser(location.start, location.end, location.chromosome, location.species);
+            $scope.fetchGenomeLocations().then(function() {
+                $scope.activateGenomeBrowser(location.start, location.end, location.chromosome, location.species);
+            });
         }
     }, function() {
         $scope.fetchGenomeLocationsError = true;
