@@ -13,14 +13,14 @@ limitations under the License.
 
 (function() {
 
-angular.module('genomeBrowser').controller('GenoverseGenomeBrowser', ['$scope', '$location', '$filter', 'GenoverseUtils', function ($scope, $location, $filter, GenoverseUtils) {
+angular.module('genomeBrowser').controller('GenoverseGenomeBrowser', ['$scope', '$location', '$filter', '$http', 'routes', 'GenoverseUtils', function ($scope, $location, $filter, $http, routes, GenoverseUtils) {
 
     // Variables
     // ---------
 
     $scope.Genoverse = Genoverse;
     $scope.genoverseUtils = new GenoverseUtils($scope);
-    $scope.genomes = genomes;
+    $scope.genomes = $http.get(routes.genomesApi({ ensemblAssembly: "" }));
 
     $scope.browserLocation = { genome: genome, chromosome: chromosome, start: start, end: end, domain: $scope.genoverseUtils.getEnsemblSubdomainByDivision(genome)};
 
