@@ -507,15 +507,13 @@ class ExpertDatabasesStatsViewSet(RetrieveModelMixin, ListModelMixin, GenericVie
         return super(ExpertDatabasesStatsViewSet, self).retrieve(request, *args, **kwargs)
 
 
-class GenomesAPIView(APIView):
-    """API endpoint, presenting genomes available for display in RNAcentral genome browser."""
-    permission_classes = ()
-    authentication_classes = ()
-
-    def get(self, request, format=None):
-        sorted_genomes = EnsemblAssembly.objects.all().order_by('-ensembl_url')
-        serializer = EnsemblAssemblySerializer(sorted_genomes, many=True, context={request: request})
-        return Response(serializer)
+class GenomesAPIViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
+    """API endpoint, presenting all E! assemblies, available in RNAcentral."""
+    permission_classes = (AllowAny, )
+    serializer_class = EnsemblAssemblySerializer
+    pagination_class = Pagination
+    queryset = EnsemblAssembly.objects.all().order_by('-ensembl_url')
+    lookup_field = 'ensembl_url'
 
 
 class RfamHitsAPIViewSet(generics.ListAPIView):
@@ -527,15 +525,6 @@ class RfamHitsAPIViewSet(generics.ListAPIView):
     def get_queryset(self):
         upi = self.kwargs['pk']
         return RfamHit.objects.filter(upi=upi).select_related('rfam_model')
-
-
-class EnsemblAssemblyViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
-    """API endpoint, presenting all E! assemblies, available in RNAcentral."""
-    permission_classes = (AllowAny, )
-    serializer_class = EnsemblAssemblySerializer
-    pagination_class = Pagination
-    queryset = EnsemblAssembly.objects.all()
-    lookup_field = 'ensembl_url'
 
 
 class EnsemblInsdcMappingView(APIView):

@@ -480,14 +480,14 @@ class SpeciesSpecificIdsTestCase(ApiV1BaseClass):
         self.assertEqual(response.data['is_active'], False)
 
 
-class EnsemblAssemblyTestCase(ApiV1BaseClass):
+class GenomesTestCase(ApiV1BaseClass):
     """Tests for ensembl assemblies."""
     def test_list(self):
-        url = reverse('ensembl-assembly')
+        url = reverse('genomes-api')
         response = self._test_url(url)
-        self.assertEqual(response.data['count'], 94)
+        self.assertEqual(response.data['count'], 96)
 
     def test_detail(self):
-        url = reverse('ensembl-assembly', kwargs={'ensembl_url': 'Homo_sapiens'})
+        url = reverse('genomes-api', kwargs={'ensembl_url': 'homo_sapiens'})
         response = self._test_url(url)
         self.assertEqual(response.data['taxid'], 9606)
