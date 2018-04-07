@@ -38,8 +38,8 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, RfamHitSerializer, \
                               EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
-from portal.models import Rna, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly, EnsemblInsdcMapping
-from portal.config.genomes import url2db, db2url
+from portal.models import Rna, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly, EnsemblInsdcMapping, \
+    url2db, db2url
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination
 
