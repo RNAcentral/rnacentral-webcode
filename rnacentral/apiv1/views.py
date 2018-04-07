@@ -39,7 +39,7 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly, EnsemblInsdcMapping
-from portal.config.genomes import genomes, url2db, db2url, SpeciesNotInGenomes, get_taxid_from_species
+from portal.config.genomes import url2db, db2url
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination
 
@@ -78,8 +78,8 @@ class GenomeAnnotations(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request, species, chromosome, start, end, format=None):
-        start = start.replace(',','')
-        end = end.replace(',','')
+        start = start.replace(',', '')
+        end = end.replace(',', '')
 
         xrefs = _get_xrefs_from_genomic_coordinates(species, chromosome, start, end)
 
@@ -513,8 +513,9 @@ class GenomesAPIView(APIView):
     authentication_classes = ()
 
     def get(self, request, format=None):
-        sorted_genomes = sorted(genomes, key=lambda x: x['species'])
-        return Response(sorted_genomes)
+        sorted_genomes = EnsemblAssembly.objects.all().order_by('-ensembl_url')
+        serializer = EnsemblAssemblySerializer(sorted_genomes, many=True, context={request: request})
+        return Response(serializer)
 
 
 class RfamHitsAPIViewSet(generics.ListAPIView):
