@@ -18,6 +18,8 @@ angular.module('genomeBrowser').controller('GenoverseGenomeBrowser', ['$scope', 
         // ---------
 
         $scope.genomes = response.data.results;
+        $scope.rnacentralGenomes = $scope.genomes.filter(genome => genome.example_chromosome);
+
         $scope.Genoverse = Genoverse;
         $scope.genoverseUtils = new GenoverseUtils($scope);
 
