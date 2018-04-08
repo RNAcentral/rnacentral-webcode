@@ -11,62 +11,69 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-(function() {
-
 angular.module('genomeBrowser').controller('GenoverseGenomeBrowser', ['$scope', '$location', '$filter', '$http', 'routes', 'GenoverseUtils', function ($scope, $location, $filter, $http, routes, GenoverseUtils) {
+    $http.get(routes.genomesApi({ ensemblAssembly: "" }), { params: { page: 1, page_size: 1000000 } } ).then(function(response) {
 
-    // Variables
-    // ---------
+        // Variables
+        // ---------
 
-    $scope.Genoverse = Genoverse;
-    $scope.genoverseUtils = new GenoverseUtils($scope);
-    $scope.genomes = $http.get(routes.genomesApi({ ensemblAssembly: "" }));
+        $scope.genomes = response.data.results;
+        $scope.Genoverse = Genoverse;
+        $scope.genoverseUtils = new GenoverseUtils($scope);
 
-    $scope.browserLocation = { genome: genome, chromosome: chromosome, start: start, end: end, domain: $scope.genoverseUtils.getEnsemblSubdomainByDivision(genome)};
+        $scope.browserLocation = {
+            genome: genome,
+            chromosome: chromosome,
+            start: start,
+            end: end,
+            domain: $scope.genoverseUtils.getEnsemblSubdomainByDivision(genome, $scope.genomes)
+        };
 
-    $scope.$location = $location;
+        $scope.$location = $location;
 
-    // Event handlers
-    // --------------
 
-    // handle copy to clipboard button
-    new Clipboard('#copy-genome-location', {
-        "text": function () {
-            return document.location.href;
+        // Event handlers
+        // --------------
+
+        // handle copy to clipboard button
+        new Clipboard('#copy-genome-location', {
+            "text": function () {
+                return document.location.href;
+            }
+        });
+
+        // initialize a tooltip on the share button
+        $('#copy-genome-location').tipsy();
+
+        // reflect any changes in genome in address bar
+        $scope.$watch('browserLocation.genome', setUrl);
+        $scope.$watch('browserLocation.chromosome', setUrl);
+        $scope.$watch('browserLocation.start', setUrl);
+        $scope.$watch('browserLocation.end', setUrl);
+
+        $scope.$watch('genome', setDomain);
+
+        /**
+         * Sets the url in address bar to reflect the changes in browser location
+         */
+        function setUrl(newValue, oldValue) {
+            // set the full url
+            $location.search({
+                species: $scope.browserLocation.genome,  // filter is from Genoverse module
+                chromosome: $scope.browserLocation.chromosome,
+                start: $scope.browserLocation.start,
+                end: $scope.browserLocation.end
+            });
+            $location.replace();
         }
+
+        /**
+         * Change ensembl subdomain upon species change
+         */
+        function setDomain(newValue, oldValue) {
+            $scope.browserLocation.domain = $scope.genoverseUtils.getEnsemblSubdomainByDivision(newValue, $scope.genomes);
+        }
+
     });
 
-    // initialize a tooltip on the share button
-    $('#copy-genome-location').tipsy();
-
-    // reflect any changes in genome in address bar
-    $scope.$watch('browserLocation.genome', setUrl);
-    $scope.$watch('browserLocation.chromosome', setUrl);
-    $scope.$watch('browserLocation.start', setUrl);
-    $scope.$watch('browserLocation.end', setUrl);
-
-    $scope.$watch('genome', setDomain);
-
-    /**
-     * Sets the url in address bar to reflect the changes in browser location
-     */
-    function setUrl(newValue, oldValue) {
-        // set the full url
-        $location.search({
-            species: $scope.browserLocation.genome,  // filter is from Genoverse module
-            chromosome: $scope.browserLocation.chromosome,
-            start: $scope.browserLocation.start,
-            end: $scope.browserLocation.end
-        });
-        $location.replace();
-    }
-
-    /**
-     * Change ensembl subdomain upon species change
-     */
-    function setDomain(newValue, oldValue) {
-        $scope.browserLocation.domain = $scope.genoverseUtils.getEnsemblSubdomainByDivision(newValue);
-    }
 }]);
-
-})();

@@ -33,6 +33,7 @@ limitations under the License.
 </script>
 
 <div ng-controller="GenoverseGenomeBrowser" ng-cloak>
+  <div ng-if="genomes">
     <div class="row">
         <div class="col-md-12" role="main">
 
@@ -46,7 +47,7 @@ limitations under the License.
             <div class="row" style="padding-left: 15px;">
                 <div class="col-lg-3 col-md-3 col-sm-12">
                     <label for="genomic-species-select">Species</label>
-                    <select id="genomic-species-select" class="form-control" ng-options="genome.ensembl_url for genome in genomes" ng-model="browserLocation.genome">
+                    <select id="genomic-species-select" class="form-control" ng-options="genome.ensembl_url as genome.ensembl_url for genome in genomes" ng-model="browserLocation.genome">
                     </select>
                 </div>
                 <div class="ol-lg-2 col-md-2 col-sm-4">
@@ -86,5 +87,6 @@ limitations under the License.
     </genoverse>
     {% endverbatim %}
 
+  </div>
 </div>
 {% endblock content %}

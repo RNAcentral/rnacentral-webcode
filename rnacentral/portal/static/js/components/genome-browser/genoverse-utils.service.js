@@ -29,6 +29,15 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
     function GenoverseUtils($scope) {
         this.$scope = $scope;
 
+        this.exampleLocations = {};
+        this.$scope.genomes.forEach(_.bind(function(genome) {
+            this.exampleLocations[genome.ensembl_species] = {
+                'chr': genome.example_chromosome,
+                'start': genome.example_start,
+                'end': genome.example_end
+            }
+        }, this));
+
         // Methods below need to be binded to 'this' object,
         // cause otherwise they get passed 'this' from event handler context.
         // We pass the $scope to these methods through 'this'.
@@ -36,21 +45,21 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
         this.urls = {
             sequence: _.bind(function () {  // Sequence track configuration
                 var species = this.$scope.browserLocation.genome;
-                var endpoint = this.getEnsemblEndpoint(species);
+                var endpoint = this.getEnsemblEndpoint(species, this.$scope.genomes);
                 return '__ENDPOINT__/sequence/region/__SPECIES__/__CHR__:__START__-__END__?content-type=text/plain'
                     .replace('__ENDPOINT__', endpoint)
                     .replace('__SPECIES__', species);
             }, this),
             genes: _.bind(function () {  // Genes track configuration
                 var species = this.$scope.browserLocation.genome;
-                var endpoint = this.getEnsemblEndpoint(species);
+                var endpoint = this.getEnsemblEndpoint(species, this.$scope.genomes);
                 return '__ENDPOINT__/overlap/region/__SPECIES__/__CHR__:__START__-__END__?feature=gene;content-type=application/json'
                     .replace('__ENDPOINT__', endpoint)
                     .replace('__SPECIES__', species);
             }, this),
             transcripts: _.bind(function () {  // Transcripts track configuration
                 var species = this.$scope.browserLocation.genome;
-                var endpoint = this.getEnsemblEndpoint(species);
+                var endpoint = this.getEnsemblEndpoint(species, this.$scope.genomes);
                 return '__ENDPOINT__/overlap/region/__SPECIES__/__CHR__:__START__-__END__?feature=transcript;feature=exon;feature=cds;content-type=application/json'
                     .replace('__ENDPOINT__', endpoint)
                     .replace('__SPECIES__', species);
@@ -179,15 +188,6 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
 
     GenoverseUtils.prototype.Genoverse = Genoverse;
 
-    GenoverseUtils.prototype.exampleLocations = {};
-    for (i = 0; i < this.$scope.genomes.length; i++) {
-        GenoverseUtils.prototype.exampleLocations[this.$scope.genomes[i].ensemblSpecies] = {
-            'chr': this.$scope.genomes[i].example_location.chromosome,
-            'start': this.$scope.genomes[i].example_location.start,
-            'end': this.$scope.genomes[i].example_location.end
-        }
-    }
-
     GenoverseUtils.prototype.RNAcentralParseData = function(data) {
         var model = this;
         var featuresById = this.featuresById;
@@ -256,92 +256,9 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
      * If species not in E!, use EG.
      * Ensembl species list: http://www.ensembl.org/info/about/species.html
      */
-    GenoverseUtils.prototype.getEnsemblEndpoint = function(species) {
-        var ensemblSpecies = [
-            "ailuropoda_melanoleuca",
-            "anas_platyrhynchos",
-            "anolis_carolinensis",
-            "astyanax_mexicanus",
-            "bos_taurus",
-            "callithrix_jacchus",
-            "canis_lupus_familiaris",
-            "cavia_porcellus",
-            "ceratotherium_simum_simum",
-            "chlorocebus_sabaeus",
-            "choloepus_hoffmanni",
-            "chrysemys_picta_bellii",
-            "ciona_intestinalis",
-            "ciona_savignyi",
-            "cricetulus_griseus",
-            "danio_rerio",
-            "dasypus_novemcinctus",
-            "dipodomys_ordii",
-            "drosophila_melanogaster",
-            "echinops_telfairi",
-            "equus_caballus",
-            "erinaceus_europaeus",
-            "felis_catus",
-            "ficedula_albicollis",
-            "gadus_morhua",
-            "gallus_gallus",
-            "gasterosteus_aculeatus",
-            "gorilla_gorilla_gorilla",
-            "heterocephalus_glaber",
-            "homo_sapiens",
-            "ictidomys_tridecemlineatus",
-            "latimeria_chalumnae",
-            "lepisosteus_oculatus",
-            "loxodonta_africana",
-            "macaca_fascicularis",
-            "macaca_mulatta",
-            "macropus_eugenii",
-            "meleagris_gallopavo",
-            "melopsittacus_undulatus",
-            "microcebus_murinus",
-            "microtus_ochrogaster",
-            "monodelphis_domestica",
-            "mus_musculus",
-            "mustela_putorius_furo",
-            "myotis_lucifugus",
-            "nomascus_leucogenys",
-            "ochotona_princeps",
-            "oreochromis_niloticus",
-            "ornithorhynchus_anatinus",
-            "orycteropus_afer_afer",
-            "oryctolagus_cuniculus",
-            "oryzias_latipes",
-            "otolemur_garnettii",
-            "ovis_aries",
-            "pan_troglodytes",
-            "papio_anubis",
-            "papio_hamadryas",
-            "pelodiscus_sinensis",
-            "petromyzon_marinus",
-            "poecilia_formosa",
-            "pongo_abelii",
-            "procavia_capensis",
-            "pteropus_vampyrus",
-            "rattus_norvegicus",
-            "saimiri_boliviensis",
-            "sarcophilus_harrisii",
-            "sorex_araneus",
-            "sus_scrofa",
-            "sus_scrofa_map",
-            "taeniopygia_guttata",
-            "takifugu_rubripes",
-            "tarsius_syrichta",
-            "tetraodon_nigroviridis",
-            "tupaia_belangeri",
-            "tursiops_truncatus",
-            "vicugna_pacos",
-            "xenopus_tropicalis",
-            "xiphophorus_maculatus"
-        ];
-        // "saccharomyces_cerevisiae", "caenorhabditis_elegans"];
-        // "saccharomyces_cerevisiae", "caenorhabditis_elegans" could use either E! or EG
-
-        var encoded = $filter('urlencodeSpecies')(species); // urlencoded species name
-        return ensemblSpecies.indexOf(encoded) > -1 ? 'https://rest.ensembl.org' : 'https://rest.ensemblgenomes.org';
+    GenoverseUtils.prototype.getEnsemblEndpoint = function(species, genomes) {
+        var genomeObject = GenoverseUtils.prototype.getGenomeObject(species, genomes);
+        return genomeObject.division === 'Ensembl' ? 'https://rest.ensembl.org' : 'https://rest.ensemblgenomes.org';
     };
 
     /**
@@ -350,10 +267,11 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
     * @returns {String} element of genomes array
     */
     GenoverseUtils.prototype.getGenomeObject = function(genome, genomes) {
+        if (typeof genome === 'undefined') debugger;
         // get genome object from Genomes
         var genomeObject;
         for (var i = 0; i < genomes.length; i++) {
-            if (genome === genomes[i].ensemblSpecies) {
+            if (genome === genomes[i].ensembl_url) {
                 genomeObject = genomes[i];
                 return genomeObject;
             }
