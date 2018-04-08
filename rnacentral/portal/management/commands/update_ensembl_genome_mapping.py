@@ -11,64 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from collections import defaultdict
-
 from django.core.management.base import BaseCommand
 from portal.models import EnsemblInsdcMapping
-from .update_ensembl_assembly import get_ensembl_metadata
-
-import pymysql.cursors
-
-
-def get_ensembl_connection():
-    """Connect to the public Ensembl MySQL database."""
-    return pymysql.connect(
-        host='ensembldb.ensembl.org',
-        user='anonymous',
-        port=3306,
-        cursorclass=pymysql.cursors.DictCursor
-    )
-
-def get_ensembl_genomes_connection():
-    """
-    Connect to the public Ensembl Genomes MySQL database. See:
-    http://ensemblgenomes.org/info/access/mysql
-    """
-    return pymysql.connect(
-        host='mysql-eg-publicsql.ebi.ac.uk',
-        user='anonymous',
-        port=4157,
-        cursorclass=pymysql.cursors.DictCursor
-    )
-
-
-def get_ensembl_databases(cursor):
-    """
-    Get a list of all available databases.
-    Return a list of the most recent core databases, for example:
-        homo_sapiens_core_91_38
-        mus_musculus_core_91_38
-    """
-    databases = defaultdict(list)
-    cursor.execute("show databases")
-    for result in cursor.fetchall():
-        database = result['Database']
-        if database.count('_') != 4 or 'mirror' in database:
-            continue
-        genus, species, database_type, ensembl_release, _ = database.split('_')
-        ensembl_release = int(ensembl_release)
-        if ensembl_release < 80:
-            continue
-        if database_type == 'core':
-            organism = genus + ' ' + species
-            databases[organism].append((ensembl_release, database))
-
-    to_analyse = []
-    # get the most recent database
-    for organism, dbs in databases.iteritems():
-        most_recent = max(dbs, key=lambda item: item[0])
-        to_analyse.append(most_recent[1])
-    return to_analyse
+from .update_ensembl_assembly import get_ensembl_metadata, get_ensembl_connection, get_ensembl_databases
 
 
 def get_ensembl_insdc_mapping(cursor, database):
