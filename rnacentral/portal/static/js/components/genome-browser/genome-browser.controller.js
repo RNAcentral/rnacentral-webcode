@@ -51,7 +51,7 @@ angular.module('genomeBrowser').controller('GenoverseGenomeBrowser', ['$scope', 
         $scope.$watch('browserLocation.start', setUrl);
         $scope.$watch('browserLocation.end', setUrl);
 
-        $scope.$watch('genome', setDomain);
+        $scope.$watch('browserLocation.genome', setDomain);
 
         /**
          * Sets the url in address bar to reflect the changes in browser location
