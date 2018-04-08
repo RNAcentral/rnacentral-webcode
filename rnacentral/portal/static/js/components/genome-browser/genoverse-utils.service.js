@@ -267,7 +267,6 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
     * @returns {String} element of genomes array
     */
     GenoverseUtils.prototype.getGenomeObject = function(genome, genomes) {
-        if (typeof genome === 'undefined') debugger;
         // get genome object from Genomes
         var genomeObject;
         for (var i = 0; i < genomes.length; i++) {
