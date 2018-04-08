@@ -282,43 +282,5 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
         return null;
     };
 
-    /**
-     * Takes a genome on input, looks into its division attribute and returns the corresponding Ensembl
-     * subdomain
-     *
-     * @param genome {String}
-     * @param genomes {Array} e.g.
-     * [{
-     *     'ensemblSpecies': 'mus_musculus', 'species': 'Mus musculus', 'synonyms': ['mouse'],
-     *     'assembly': 'GRCm38', 'assembly_ucsc': 'mm10',
-     *     'taxid': 10090, 'division': 'Ensembl',
-     *     'example_location': {'chromosome': 1, 'start': 86351981, 'end': 86352127,}
-     * }, ...]
-     * @returns {String} domain name without protocol or slashes or trailing dots
-     */
-    GenoverseUtils.prototype.getEnsemblSubdomainByDivision = function(genome, genomes) {
-        var subdomain;
-
-        // get genome object from Genomes
-        var genomeObject = GenoverseUtils.prototype.getGenomeObject(genome, genomes);
-        if (!genomeObject) return null;
-
-        if (genomeObject.division == 'Ensembl') {
-            subdomain = 'ensembl.org';
-        } else if (genomeObject.division == 'Ensembl Plants') {
-            subdomain = 'plants.ensembl.org';
-        } else if (genomeObject.division == 'Ensembl Metazoa') {
-            subdomain = 'metazoa.ensembl.org';
-        } else if (genomeObject.division == 'Ensembl Bacteria') {
-            subdomain = 'bacteria.ensembl.org';
-        } else if (genomeObject.division == 'Ensembl Fungi') {
-            subdomain = 'fungi.ensembl.org';
-        } else if (genomeObject.division == 'Ensembl Protists') {
-            subdomain = 'protists.ensembl.org';
-        }
-
-        return subdomain;
-    };
-
     return GenoverseUtils;
 }]);

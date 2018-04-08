@@ -28,7 +28,7 @@ angular.module('genomeBrowser').controller('GenoverseGenomeBrowser', ['$scope', 
             chromosome: chromosome,
             start: start,
             end: end,
-            domain: $scope.genoverseUtils.getEnsemblSubdomainByDivision(genome, $scope.genomes)
+            domain: $scope.genoverseUtils.getGenomeObject(genome, $scope.genomes).subdomain
         };
 
         $scope.$location = $location;
@@ -73,9 +73,8 @@ angular.module('genomeBrowser').controller('GenoverseGenomeBrowser', ['$scope', 
          * Change ensembl subdomain upon species change
          */
         function setDomain(newValue, oldValue) {
-            $scope.browserLocation.domain = $scope.genoverseUtils.getEnsemblSubdomainByDivision(newValue, $scope.genomes);
+            $scope.browserLocation.domain = $scope.genoverseUtils.getGenomeObject(newValue, $scope.genomes).subdomain;
         }
-
     });
 
 }]);
