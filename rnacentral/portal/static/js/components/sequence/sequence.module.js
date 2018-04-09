@@ -123,7 +123,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         $scope.browserLocation.start = start - Math.floor(length / 10) < 0 ? 1 : start - Math.floor(length / 10);
         $scope.browserLocation.end = end + Math.floor(length / 10) > $scope.chromosomeSize ? $scope.chromosomeSize : end + Math.floor(length / 10);
         $scope.browserLocation.chr = chr;
-        $scope.browserLocation.genome = $filter('urlencodeSpecies')(genome);
+        $scope.browserLocation.genome = genome;
         $scope.browserLocation.domain = $scope.genoverseUtils.getGenomeObject($scope.browserLocation.genome, $scope.genomes).subdomain;
         $scope.browserLocation.highlights = [{
             start: start,
