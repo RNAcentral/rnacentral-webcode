@@ -554,11 +554,13 @@ About RNAcentral
       };
 
       // initialize the timeline plugin to take data from spreadsheet and display timeline in div#timeline-embed
-      timeline = new TL.Timeline(
-          "timeline-embed",
-          timelineJSON,
-          timelineOptions
-      );
+      $(function() {
+        timeline = new TL.Timeline(
+            "timeline-embed",
+            timelineJSON,
+            timelineOptions
+        );
+      });
     </script>
 
 <script src="{% static "js/d3/d3.sequencesOverTime.js" %}"></script>
