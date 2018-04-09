@@ -31,7 +31,7 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
 
         this.exampleLocations = {};
         this.$scope.genomes.forEach(_.bind(function(genome) {
-            this.exampleLocations[genome.ensembl_species] = {
+            this.exampleLocations[genome.ensembl_url] = {
                 'chr': genome.example_chromosome,
                 'start': genome.example_start,
                 'end': genome.example_end
