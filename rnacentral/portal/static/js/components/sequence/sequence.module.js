@@ -62,9 +62,9 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 
     $scope.fetchGenomes = function() {
         return $q(function(resolve, reject) {
-            $http.get(routes.genomesApi({ ensemblAssembly: "" })).then(
+            $http.get(routes.genomesApi({ ensemblAssembly: "" }), { params: { page: 1, page_size: 1000000 } }).then(
                 function (response) {
-                    $scope.genomes = response.data;
+                    $scope.genomes = response.data.results;
                     resolve(response.data);
                 },
                 function () {
@@ -350,7 +350,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     $scope.fetchGenomeLocations().then(function() {
         if ($scope.genomeLocations.length > 0) {
             var location = $scope.genomeLocations[0];
-            $scope.fetchGenomeLocations().then(function() {
+            $scope.fetchGenomes().then(function() {
                 $scope.activateGenomeBrowser(location.start, location.end, location.chromosome, location.species);
             });
         }

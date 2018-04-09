@@ -82,7 +82,7 @@ limitations under the License.
                         <i class="fa fa-exclamation-triangle"></i> Sorry, there was a problem loading genome locations from server. Please try again and contact us if the problem persists.
                     </div>
                 </div>
-                <div ng-if="taxid && !fetchGenomeLocationsError && genomeLocations.length > 0">
+                <div ng-if="genomes && taxid && !fetchGenomeLocationsError && genomeLocations.length > 0">
                     {% verbatim %}
                     <p>This sequence is found in <strong>{{ genomeLocations.length }}</strong> genome <ng-pluralize count="genomeLocations.length" when="{'one': 'location', 'other': 'locations'}"></ng-pluralize>:</p>
                     <table class="table table-hover table-condensed table-bordered table-responsive" style="margin-left: 9px; margin-right: 9px;">
@@ -133,7 +133,7 @@ limitations under the License.
                 </div>
 
                 <!-- genoverse -->
-                <div ng-if="browserLocation.genome && browserLocation.chr && browserLocation.start && browserLocation.end">
+                <div ng-if="genomes && browserLocation.genome && browserLocation.chr && browserLocation.start && browserLocation.end">
                     <genoverse genome="browserLocation.genome" chr="browserLocation.chr" start="browserLocation.start" end="browserLocation.end" example-locations="exampleLocations" highlights="browserLocation.highlights">
                         <genoverse-track name="'Sequence'" model="Genoverse.Track.Model.Sequence.Ensembl" view="Genoverse.Track.View.Sequence" controller="Genoverse.Track.Controller.Sequence" url="genoverseUtils.urls.sequence" resizable="'auto'" auto-height="true" hide-empty="false" extra="{100000: false}"></genoverse-track>
                         <genoverse-track name="'Genes'" labels="true" info="'Ensembl API genes'" model="Genoverse.Track.Model.Gene.Ensembl" view="Genoverse.Track.View.Gene.Ensembl" url="genoverseUtils.urls.genes" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.genesPopulateMenu}"></genoverse-track>
