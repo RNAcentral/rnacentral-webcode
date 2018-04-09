@@ -224,17 +224,22 @@ class Command(BaseCommand):
     """
     Handle command line options.
     """
-    option_list = BaseCommand.option_list + (
-        make_option('-i', '--input',
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '-i', '--input',
             dest='json_file',
             default=False,
-            help='[Required] Path to HGNC JSON file with RNAcentral identifiers'),
-        make_option('-t', '--test',
+            help='[Required] Path to HGNC JSON file with RNAcentral identifiers'
+        )
+
+        parser.add_argument(
+            '-t', '--test',
             action='store_true',
             dest='test',
             default=False,
-            help='[Optional] Run in test mode, which does not change the data in the database.'),
-    )
+            help='[Optional] Run in test mode, which does not change the data in the database.'
+        )
+
     # shown with -h, --help
     help = ('Import HGNC cross-references into RNAcentral database')
 
