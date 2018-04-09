@@ -1,6 +1,10 @@
 node {
     build()
-    runUnitTests()
+    try {
+        runBackendUnitTests()
+    } catch (ex) {
+        currentBuild.status = 'UNSTABLE'
+    }
     deploy()
 }
 
@@ -21,8 +25,8 @@ private void build() {
     }
 }
 
-private void runUnitTests() {
-    stage("Run unit-tests") {
+private void runBackendUnitTests() {
+    stage("Run backend unit-tests") {
         sh '''
             source ENV/bin/activate
             source rnacentral/scripts/env.sh
