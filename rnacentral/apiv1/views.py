@@ -157,7 +157,10 @@ def features_from_xrefs(species, chromosome, start, end):
 def features_from_mappings(species, chromosome, start, end):
     # TODO: this is a terribly indirect way to get taxid by species
     accession = Accession.objects.filter(species=url2db(species)).first()
-    taxid = Xref.objects.get(accession=accession, deleted='N').taxid
+    try:
+        taxid = Xref.objects.get(accession=accession, deleted='N').taxid
+    except Xref.DoesNotExist:
+        taxid = Xref.objects.get(accession=accession).taxid
 
     mappings = GenomeMapping.objects.filter(taxid=taxid, chromosome=chromosome, start__gte=start, stop__lte=end)\
                                     .select_related('upi').prefetch_related('upi__precomputed')
