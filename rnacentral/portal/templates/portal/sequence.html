@@ -321,17 +321,17 @@ limitations under the License.
                 <p class="text-muted"><b>To zoom in:</b> Left click to select area of interest; <b>To zoom out:</b> Right click to reset the scale</p>
 
                 <div style="padding-top: 10px; padding-bottom: 10px;">
-                    <button class="btn btn-default" ng-click="showSequence = !showSequence">{% verbatim %}{{ showSequence ? "Hide sequence" : "Show sequence" }}{% endverbatim %}</button>
+                    <button class="btn btn-default" ng-click="showSequence = !showSequence"><i class="fa fa-align-justify" aria-hidden="true"></i> {% verbatim %}{{ showSequence ? "Hide sequence" : "Show sequence" }}{% endverbatim %}</button>
                     <div ng-if="rna" class="btn-group">
                         <button class="btn btn-default" id="copy-as-rna">
-                          <i class="fa fa-copy" aria-hidden="true">&nbsp;Copy as RNA</i>
+                          <i class="fa fa-copy" aria-hidden="true"></i> Copy as RNA
                         </button>
                         <button class="btn btn-default" id="copy-as-dna">
-                          <i class="fa fa-copy" aria-hidden="true">&nbsp;Copy as DNA</i>
+                          <i class="fa fa-copy" aria-hidden="true"></i> Copy as DNA
                         </button>
                     </div>
                     <a class="btn btn-default" href="{% url 'nhmmer-sequence-search' %}?q={{ rna.upi }}" class="margin-left-5px">
-                      <i class="fa fa-search" aria-hidden="true">&nbsp;Search for similar sequences</i>
+                      <i class="fa fa-search" aria-hidden="true"></i> Search for similar sequences
                     </a>
                 </div>
 
