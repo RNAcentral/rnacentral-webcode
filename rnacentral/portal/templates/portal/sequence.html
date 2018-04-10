@@ -338,18 +338,16 @@ limitations under the License.
             </uib-tab>
 
             <uib-tab index="1" heading="Taxonomy" deselect="checkTab($event, $selectedIndex)">
-                <h2>Taxonomic Tree</h2>
+                <h2>Taxonomic tree</h2>
 
                 <p>
-                    This sequence has been observed in <strong>{{ rna.count_distinct_organisms }}</strong> species.
-                    Get <strong>species-specific urls</strong> by clicking on <span class="text-primary"><strong>species names</strong></span>.
-                    <br>
-                    <small class="text-muted">
-                        <i class="fa fa-info-circle"></i>
-                        <strong>Scroll around</strong> to explore the entire tree.
-                        <strong>Click</strong> tree nodes to collapse or expand them.
-                        <strong>Hover</strong> over taxon names to display additional information.
-                    </small>
+                    View annotations in different species by clicking on <span class="text-primary"><strong>species names</strong></span>.
+                </p>
+                <p class="small text-muted">
+                    <i class="fa fa-info-circle"></i>
+                    <strong>Scroll around</strong> to explore the entire tree.
+                    <strong>Click</strong> tree nodes to collapse or expand them.
+                    <strong>Hover</strong> over taxon names to display additional information.
                 </p>
 
                 <div class="panel panel-default d3-species">
