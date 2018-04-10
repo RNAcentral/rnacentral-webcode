@@ -306,12 +306,11 @@ limitations under the License.
 
                 <h2>
                     Sequence
+                    <small>
+                      <em>{{ rna.upi }}{% if context.single_species %}_{{ context.taxid }}{% endif %}</em>
+                    </small>
                 </h2>
 
-                <p>
-                    RNAcentral identifier <em>{{ rna.upi }}{% if context.single_species %}_{{ context.taxid }}{% endif %}</em>
-                    <a href="{% url 'nhmmer-sequence-search' %}?q={{ rna.upi }}" class="margin-left-5px">Search for similar sequences</a>
-                </p>
                 {% if context.non_canonical_base_counts %}
                 <p class="small">
                     <span class="text-warning"><i class="fa fa-warning"></i> Contains ambiguity characters:</span> {% for symbol,count in context.non_canonical_base_counts.items %}{{ count|intcomma }} {{ symbol }}{% if not forloop.last %}, {% endif %}{% endfor %}
@@ -319,18 +318,21 @@ limitations under the License.
                 </p>
                 {% endif %}
                 <div id="feature-viewer"></div>
-                <p><b>To zoom in :</b> Left click to select area of interest; <b>To zoom out :</b> Right click to reset the scale</p>
+                <p class="text-muted"><b>To zoom in:</b> Left click to select area of interest; <b>To zoom out:</b> Right click to reset the scale</p>
 
                 <div style="padding-top: 10px; padding-bottom: 10px;">
-                    <button class="btn btn-primary" ng-click="showSequence = !showSequence">{% verbatim %}{{ showSequence ? "Hide sequence" : "Show sequence" }}{% endverbatim %}</button>
+                    <button class="btn btn-default" ng-click="showSequence = !showSequence">{% verbatim %}{{ showSequence ? "Hide sequence" : "Show sequence" }}{% endverbatim %}</button>
                     <div ng-if="rna" class="btn-group">
-                        <button class="btn btn-default btn-sm" id="copy-as-rna">
-                          <i class="fa fa-copy" aria-hidden="true">&nbsp;as RNA</i>
+                        <button class="btn btn-default" id="copy-as-rna">
+                          <i class="fa fa-copy" aria-hidden="true">&nbsp;Copy as RNA</i>
                         </button>
-                        <button class="btn btn-default btn-sm" id="copy-as-dna">
-                          <i class="fa fa-copy" aria-hidden="true">&nbsp;as DNA</i>
+                        <button class="btn btn-default" id="copy-as-dna">
+                          <i class="fa fa-copy" aria-hidden="true">&nbsp;Copy as DNA</i>
                         </button>
                     </div>
+                    <a class="btn btn-default" href="{% url 'nhmmer-sequence-search' %}?q={{ rna.upi }}" class="margin-left-5px">
+                      <i class="fa fa-search" aria-hidden="true">&nbsp;Search for similar sequences</i>
+                    </a>
                 </div>
 
                 <pre ng-if="showSequence" class="pre-scrollable" id="rna-sequence">{{ rna.get_sequence }}</pre>
