@@ -857,9 +857,9 @@ expert_dbs = [
         'tags': ['curated', 'model organism', 'rat', 'Rattus norvegicus'],
         'abbreviation': 'Rat Genome Database',
         'examples': [
-            {'upi': 'URS0000CCF976', 'taxid': 10116},
-            {'upi': 'URS0000CD067A', 'taxid': 10116},
-            {'upi': 'URS0000CD0230', 'taxid': 10116},
+            {'upi': 'URS000075AA07', 'taxid': 10116}, # Miat
+            {'upi': 'URS00004B2C76', 'taxid': 10116}, # 5.8S rRNA
+            {'upi': 'URS000075C796', 'taxid': 10116}, # SRP
         ],
         'references': [
             {
