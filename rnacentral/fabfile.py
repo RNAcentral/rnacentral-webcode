@@ -209,7 +209,7 @@ def deploy_locally(git_branch=None, restart_url='http://rnacentral.org', quick=F
 
     if not git_branch:
         with env.cd(settings.PROJECT_PATH):
-            git_branch = env.run('git symbolic - ref - -short - q HEAD')
+            git_branch = env.run('git symbolic-ref --short -q HEAD')
 
     slack("Deployed '%s' at ves-hx-a4: <http://test.rnacentral.org|test.rnacentral.org>" % git_branch)
 
@@ -229,7 +229,7 @@ def deploy_remotely(git_branch=None, restart_url='http://rnacentral.org', quick=
 
     if not git_branch:
         with env.cd(settings.PROJECT_PATH):
-            git_branch = env.run('git symbolic - ref - -short - q HEAD')
+            git_branch = env.run('git symbolic-ref --short -q HEAD')
     slack("Deployed '%s' at %s: <http://rnacentral.org|rnacentral.org>" % (git_branch, env.host))
 
 
