@@ -3,7 +3,7 @@ node {
     try {
         runBackendUnitTests()
     } catch (ex) {
-        currentBuild.status = 'UNSTABLE'
+        currentBuild.result = 'UNSTABLE'
     }
     deploy()
 }
