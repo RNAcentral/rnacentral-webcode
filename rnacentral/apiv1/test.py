@@ -128,11 +128,11 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
 class NestedXrefsTestCase(ApiV1BaseClass):
     """Test flat/hyperlinked pagination."""
     # TODO: this test is failing due to change in DRF3 pagination API
-    # def test_hyperlinked_responses(self):
-    #     """Test hyperlinked response explicitly specified in the url."""
-    #     url = reverse('rna-sequences')
-    #     response = self._test_url(url, data={'flat': False})
-    #     self.assertIn('http', response.data['results'][0]['xrefs'])
+    def test_hyperlinked_responses(self):
+        """Test hyperlinked response explicitly specified in the url."""
+        url = reverse('rna-sequences')
+        response = self._test_url(url, data={'flat': False})
+        self.assertIn('http', response.data['results'][0]['xrefs'])
 
     def test_flat_response(self):
         """Test flat response explicitly specified in the url."""
