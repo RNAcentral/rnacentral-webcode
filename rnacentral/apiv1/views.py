@@ -89,6 +89,19 @@ class GenomeAnnotations(APIView):
         return Response(features)
 
 
+def _species2taxid(species):
+    """This is a terribly indirect way to get taxid by species"""
+    accession = Accession.objects.filter(species=url2db(species)).first()
+    xrefs = Xref.objects.filter(accession=accession, deleted='N').all()
+    if len(xrefs) != 0:
+        taxid = xrefs[0].taxid
+    else:
+        xrefs = Xref.objects.filter(accession=accession).all()
+        taxid = xrefs[0].taxid
+
+    return taxid
+
+
 def features_from_xrefs(species, chromosome, start, end):
     try:
         xrefs = Xref.default_objects.filter(
@@ -101,13 +114,15 @@ def features_from_xrefs(species, chromosome, start, end):
     except Xref.DoesNotExist:
         xrefs = []
 
-    upi2data = {}  # { rnacentral_id: data }
+    upi2data = {}
     data = []
     for i, xref in enumerate(xrefs):
         upi = xref.upi.upi
 
         # create only one transcript object per upi
         if upi not in upi2data:
+            taxid = _species2taxid(species)
+            databases = list(set([xref.db.display_name for xref in Rna.objects.get(upi=upi).get_xrefs(taxid=taxid)]))
             coordinates = xref.get_genomic_coordinates()
             transcript_id = upi + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
             biotype = xref.upi.precomputed.filter(taxid=xref.taxid)[0].rna_type  # used to be biotype = xref.accession.get_biotype()
@@ -125,7 +140,7 @@ def features_from_xrefs(species, chromosome, start, end):
                 'strand': coordinates['strand'],
                 'start': coordinates['start'],
                 'end': coordinates['end'],
-                'databases': [xref.db.display_name]  # this field will probably be modified later
+                'databases': databases
             }
 
             upi2data[upi] = transcript
@@ -151,23 +166,11 @@ def features_from_xrefs(species, chromosome, start, end):
                     'end': exon.primary_end,
                 })
 
-        else:
-            if xref.db.display_name not in upi2data[upi]['databases']:
-                upi2data[upi]['databases'].append(xref.db.display_name)
-
     return data
 
 
 def features_from_mappings(species, chromosome, start, end):
-    # TODO: this is a terribly indirect way to get taxid by species
-    accession = Accession.objects.filter(species=url2db(species)).first()
-    xrefs = Xref.objects.filter(accession=accession, deleted='N').all()
-    if len(xrefs) != 0:
-        taxid = xrefs[0].taxid
-    else:
-        xrefs = Xref.objects.filter(accession=accession).all()
-        taxid = xrefs[0].taxid
-
+    taxid = _species2taxid(species)
     mappings = GenomeMapping.objects.filter(taxid=taxid, chromosome=chromosome, start__gte=start, stop__lte=end)\
                                     .select_related('upi').prefetch_related('upi__precomputed')
 
@@ -206,7 +209,7 @@ def features_from_mappings(species, chromosome, start, end):
 
     data = []
     for transcript in transcripts:
-        databases = list(set([xref.db.display_name for xref in Rna.get_xrefs(transcript.upi.upi, taxid=taxid)]))
+        databases = list(set([xref.db.display_name for xref in Rna.objects.get(upi=transcript.upi.upi).get_xrefs(taxid)]))
 
         data.append({
             'ID': transcript.region_id,
