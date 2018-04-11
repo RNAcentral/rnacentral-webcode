@@ -14,7 +14,7 @@ import re
 import warnings
 from itertools import chain
 
-from django.db.models import Min, Max
+from django.db.models import Min, Max, Prefetch
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
@@ -92,7 +92,7 @@ class GenomeAnnotations(APIView):
 def _species2taxid(species):
     """This is a terribly indirect way to get taxid by species"""
     accession = Accession.objects.filter(species=url2db(species)).first()
-    xrefs = Xref.objects.filter(accession=accession, deleted='N').all()
+    xrefs = Xref.default_objects.filter(accession=accession, deleted='N').all()
     if len(xrefs) != 0:
         taxid = xrefs[0].taxid
     else:
@@ -122,7 +122,8 @@ def features_from_xrefs(species, chromosome, start, end):
         # create only one transcript object per upi
         if upi not in upi2data:
             taxid = _species2taxid(species)
-            databases = list(set([xref.db.display_name for xref in Rna.objects.get(upi=upi).get_xrefs(taxid=taxid)]))
+            xrefs = Xref.default_objects.filter(upi=upi, taxid=taxid, deleted='N').select_related('db').all()
+            databases = list(set([xref.db.display_name for xref in xrefs]))
             coordinates = xref.get_genomic_coordinates()
             transcript_id = upi + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
             biotype = xref.upi.precomputed.filter(taxid=xref.taxid)[0].rna_type  # used to be biotype = xref.accession.get_biotype()
@@ -209,7 +210,8 @@ def features_from_mappings(species, chromosome, start, end):
 
     data = []
     for transcript in transcripts:
-        databases = list(set([xref.db.display_name for xref in Rna.objects.get(upi=transcript.upi.upi).get_xrefs(taxid)]))
+        xrefs = Xref.default_objects.filter(upi=transcript.upi.upi, taxid=taxid, deleted='N').select_related('db').all()
+        databases = list(set([xref.db.display_name for xref in xrefs]))
 
         data.append({
             'ID': transcript.region_id,
