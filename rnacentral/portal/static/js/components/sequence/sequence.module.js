@@ -5,7 +5,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     $scope.hide2dTab = true;
 
     $scope.fetchRnaError = false; // hide content and display error, if we fail to download rna from server
-    $scope.fetchGenomeLocationsError = false; // same
+    $scope.fetchGenomeLocationsStatus = 'loading'; // 'loading' or 'error' or 'success'
 
     // avoid a terrible bug with intercepted 2-way binding: https://github.com/RNAcentral/rnacentral-webcode/issues/308
     $scope.browserLocation = {start: undefined, end: undefined, chr: undefined, genome: undefined, domain: undefined};
@@ -90,6 +90,20 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         });
     };
 
+    $scope.fetchGenomeMappings = function() {
+        return $q(function (resolve, reject) {
+            $http.get(routes.apiGenomeMappingsView({upi: $scope.upi, taxid: $scope.taxid})).then(
+                function (response) {
+                    $scope.genomeMappings = response.data;
+                    resolve(response.data);
+                },
+                function () {
+
+                }
+            );
+        });
+    };
+
     $scope.fetchRna = function () {
         return $q(function (resolve, reject) {
             $http.get(routes.apiRnaView({upi: $scope.upi})).then(
@@ -120,8 +134,8 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 
         // add some padding to both sides of feature
         var length = end - start;
-        $scope.browserLocation.start = start - Math.floor(length / 10) < 0 ? 1 : start - Math.floor(length / 10);
-        $scope.browserLocation.end = end + Math.floor(length / 10) > $scope.chromosomeSize ? $scope.chromosomeSize : end + Math.floor(length / 10);
+        $scope.browserLocation.start = start - length < 0 ? 1 : start - length;
+        $scope.browserLocation.end = end + length > $scope.chromosomeSize ? $scope.chromosomeSize : end + length;
         $scope.browserLocation.chr = chr;
         $scope.browserLocation.genome = genome;
         $scope.browserLocation.domain = $scope.genoverseUtils.getGenomeObject($scope.browserLocation.genome, $scope.genomes).subdomain;
@@ -183,20 +197,15 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
          * Returns DNA sequence, corresponding to input RNA sequence. =)
          */
         function reverseTranscriptase(rna) {
-            // case-insensitive, global replacement of U's with T's
-            return rna.replace(/U/ig, 'T');
+            return rna.replace(/U/ig, 'T'); // case-insensitive, global replacement of U's with T's
         }
 
         var rnaClipboard = new Clipboard('#copy-as-rna', {
-            "text": function () {
-                return $scope.rna.sequence;
-            }
+            "text": function () { return $scope.rna.sequence; }
         });
 
         var dnaClipbaord = new Clipboard('#copy-as-dna', {
-            "text": function () {
-                return reverseTranscriptase($scope.rna.sequence);
-            }
+            "text": function () { return reverseTranscriptase($scope.rna.sequence); }
         });
     };
 
@@ -347,15 +356,42 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         );
     });
 
-    $scope.fetchGenomeLocations().then(function() {
-        if ($scope.genomeLocations.length > 0) {
-            var location = $scope.genomeLocations[0];
+    $q.all([$scope.fetchGenomeLocations(), $scope.fetchGenomeMappings()]).then(function() {
+        $scope.fetchGenomeLocationsStatus = 'success';
+
+        // filter out genome locations, known from literature, from genome mappings
+        $scope.genomeMappings = $scope.genomeMappings.filter(function(mapping) {
+            return !$scope.genomeLocations.some(function(location) {
+                return location.start == mapping.start &&
+                       location.end  == mapping.end &&
+                       location.strand == mapping.strand &&
+                       location.chromosome == mapping.chromosome;
+            });
+        });
+
+        // if any locations/mappings, activate genome browser
+        if ($scope.genomeLocations.length > 0 || $scope.genomeMappings.length > 0) {
+            var location = $scope.genomeLocations.length ? $scope.genomeLocations[0] : $scope.genomeMappings[0];
             $scope.fetchGenomes().then(function() {
-                $scope.activateGenomeBrowser(location.start, location.end, location.chromosome, location.species);
+                    $scope.activateGenomeBrowser(location.start, location.end, location.chromosome, location.species);
             });
         }
+
+        // join genome locations and mappings and sort them in a biologically relevant way
+        $scope.locations = $scope.genomeMappings.concat($scope.genomeLocations);
+        $scope.locations = $scope.locations.sort(function(a, b) {
+            if (a.chromosome !== b.chromosome) {  // sort by chromosome first
+                if (isNaN(a.chromosome) && (!isNaN(b.chromosome))) return 1;
+                else if (isNaN(b.chromosome) && (!isNaN(a.chromosome))) return -1;
+                else if (isNaN(a.chromosome) && (isNaN(b.chromosome))) return a.chromosome > b.chromosome ? 1 : -1;
+                else return (parseInt(a.chromosome) - parseInt(b.chromosome));
+            } else {
+                return a.start - b.start;  // sort by start within chromosome
+            }
+        });
+
     }, function() {
-        $scope.fetchGenomeLocationsError = true;
+        $scope.fetchGenomeLocationsStatus = 'error';
     });
 };
 

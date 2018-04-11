@@ -208,7 +208,9 @@ def deploy_locally(git_branch=None, restart_url='http://rnacentral.org', quick=F
     restart_django(restart_url)
 
     if not git_branch:
-        git_branch = 'master'
+        with env.cd(settings.PROJECT_PATH):
+            git_branch = env.run('git rev-parse --abbrev-ref HEAD')
+
     slack("Deployed '%s' at ves-hx-a4: <http://test.rnacentral.org|test.rnacentral.org>" % git_branch)
 
 
@@ -226,7 +228,8 @@ def deploy_remotely(git_branch=None, restart_url='http://rnacentral.org', quick=
     restart_django(restart_url)
 
     if not git_branch:
-        git_branch = 'master'
+        with env.cd(settings.PROJECT_PATH):
+            git_branch = env.run('git rev-parse --abbrev-ref HEAD')
     slack("Deployed '%s' at %s: <http://rnacentral.org|rnacentral.org>" % (git_branch, env.host))
 
 

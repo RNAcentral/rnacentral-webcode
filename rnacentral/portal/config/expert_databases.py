@@ -845,23 +845,33 @@ expert_dbs = [
             }
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': 'MGI 6.10',
     },
     {
         'name': 'RGD',
-        'label': '',
+        'label': 'rgd',
         'url': 'http://rgd.mcw.edu/',
         'description': 'a collaborative effort between leading research institutions involved in rat genetic and genomic research',
         'hint': 'RGD is a rat genetic and genomic research resource',
         'tags': ['curated', 'model organism', 'rat', 'Rattus norvegicus'],
-        'tags': [],
         'abbreviation': 'Rat Genome Database',
-        'examples': [],
-        'references': [],
-        'imported': False,
-        'status': '',
-        'version': '',
+        'examples': [
+            {'upi': 'URS000075AA07', 'taxid': 10116}, # Miat
+            {'upi': 'URS00004B2C76', 'taxid': 10116}, # 5.8S rRNA
+            {'upi': 'URS000075C796', 'taxid': 10116}, # SRP
+        ],
+        'references': [
+            {
+                'title': 'The Rat Genome Database 2015: genomic, phenotypic and environmental variations and disease',
+                'authors': 'Shimoyama M, De Pons J, Hayman GT, Laulederkind SJ, Liu W, Nigam R, Petri V, Smith JR, Tutaj M, Wang SJ, Worthey E, Dwinell M, Jacob H.',
+                'journal': 'Nucleic Acids Res. 2015 Jan 28;43(Database issue):D743-50',
+                'pubmed_id': '25355511',
+            }
+        ],
+        'imported': True,
+        'status': 'new',
+        'version': 'as of March 2018',
     },
     {
         'name': 'TAIR',

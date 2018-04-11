@@ -85,7 +85,7 @@ RUN \
 # Install libevent (memcached requirement)
 RUN \
     cd $LOC && \
-    curl -OL https://github.com/downloads/libevent/libevent/libevent-2.0.21-stable.tar.gz && \
+    curl --tlsv1 -OL https://github.com/downloads/libevent/libevent/libevent-2.0.21-stable.tar.gz && \
     tar -zxvf libevent-2.0.21-stable.tar.gz && \
     cd libevent-2.0.21-stable && \
     ./configure --prefix=$LOC/libevent && \
@@ -130,7 +130,7 @@ RUN \
     cd $LOC && \
     mkdir httpd && \
     mkdir httpd/modules && \
-    curl -L -o mod_wsgi-3.4.tar.gz https://github.com/GrahamDumpleton/mod_wsgi/archive/3.4.tar.gz && \
+    curl --tlsv1 -L -o mod_wsgi-3.4.tar.gz https://github.com/GrahamDumpleton/mod_wsgi/archive/3.4.tar.gz && \
     tar -zxvf mod_wsgi-3.4.tar.gz && \
     cd mod_wsgi-3.4 && \
     export LD_RUN_PATH=$LOC/python-2.7.11/lib && \

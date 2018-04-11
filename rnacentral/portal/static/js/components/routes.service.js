@@ -9,6 +9,7 @@ angular.module("routes", []).service('routes', ['$interpolate', function($interp
         apiPublicationsView: '/api/v1/rna/{{ upi }}/publications/{{ taxid }}',
         apiRnaView: '/api/v1/rna/{{ upi }}',
         apiGenomeLocationsView: '/api/v1/rna/{{ upi }}/genome-locations/{{ taxid }}',
+        apiGenomeMappingsView: '/api/v1/rna/{{ upi }}/genome-mappings/{{ taxid }}',
         apiRfamHitsView: '/api/v1/rna/{{ upi }}/rfam-hits',
         lineageView: '/rna/{{ upi }}/lineage',
         expertDbsApi: '/api/v1/expert-dbs/{{ expertDbName }}',
