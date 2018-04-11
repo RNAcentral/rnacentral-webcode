@@ -11,6 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import unittest
+
 from django.test import TestCase
 from portal.models import Rna
 
@@ -22,7 +24,7 @@ class GenericRnaTypeTest(TestCase):
             get_rna_type(taxid=taxid, recompute=True)
 
     def assertRnaTypeIs(self, description, upi, taxid=None):
-        self.assertEquals(description, self.description_of(upi, taxid=taxid))
+        self.assertEquals(description, self.rna_type_of(upi, taxid=taxid))
 
 
 class WormTests(GenericRnaTypeTest):
@@ -39,3 +41,18 @@ class HumanTests(GenericRnaTypeTest):
             'lncRNA',
             'URS0000732D5D',
             taxid=9606)
+
+
+class MouseTests(GenericRnaTypeTest):
+    def test_uses_lncrna_over_ncrna(self):
+        self.assertRnaTypeIs(
+            'lncRNA',
+            'URS0000A86584',
+            taxid=10090)
+
+    @unittest.expectedFailure
+    def test_can_handle_duplicate_information(self):
+        self.assertRnaTypeIs(
+            'snoRNA',
+            'URS00004E52D3',
+            taxid=10090)

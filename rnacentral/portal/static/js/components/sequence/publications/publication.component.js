@@ -11,7 +11,7 @@ var publication = {
     template: '<strong ng-if="$ctrl.publication.title">{{ $ctrl.publication.title }}</strong> <span ng-if="$ctrl.publication.expert_db" class="label label-default">Expert Database</span>' +
               '<br ng-if="$ctrl.publication.title">' +
               '<small>' +
-              '    <div ng-if="$ctrl.publication.authors && $ctrl.publication.authors.length" style="height: 1em; line-height: 1em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: 5px 0px;">' +
+              '    <div ng-if="$ctrl.publication.authors && $ctrl.publication.authors.length" style="height: 1em; line-height: 1em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin: 5px 0px; max-width: 500px;">' +
               '        <span ng-repeat="author in $ctrl.publication.authors track by $index">' +
               '            <a href="/search?q=author:&#34;{{ author }}&#34;">{{ author }}</a>{{ $last ? "" : ", " }}' +
               '        </span>' +

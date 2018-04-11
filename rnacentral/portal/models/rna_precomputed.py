@@ -11,17 +11,24 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import datetime
+
 from django.db import models
 
 
 class RnaPrecomputed(models.Model):
-    id = models.CharField(max_length=22, primary_key=True)
+    """
+    Contains 2 types of entries: species-specific (taxid != Null) and non-species-specific (taxid == Null).
+
+    For every Rna there should be 1 entry in RnaPrecomputed, where taxid = Null and some species-specific.
+    """
+    id = models.CharField(max_length=22, primary_key=True)  # id = upi + taxid if taxid != Null else upi
     upi = models.ForeignKey('Rna', db_column='upi', to_field='upi', related_name='precomputed')
     taxid = models.IntegerField(db_index=True, null=True)
     description = models.CharField(max_length=250)
     rna_type = models.CharField(max_length=250)
     rfam_problems = models.TextField(default='')
-    update_date = models.DateField()
+    update_date = models.DateField(null=False, default=datetime.date(1970, 1, 1))
 
     class Meta:
         db_table = 'rnc_rna_precomputed'

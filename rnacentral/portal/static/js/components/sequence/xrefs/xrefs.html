@@ -87,7 +87,7 @@
           <!-- gtRNAdb -->
           <span ng-switch-when="gtRNAdb">
             gtRNAdb:
-            <a class="gtrnadb-external-url" ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+            <a class="gtrnadb-external-url" ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.optional_id }}</a>
           </span>
 
           <!-- miRBase -->
@@ -146,6 +146,11 @@
           <!-- MGI -->
           <span ng-switch-when="MGI">
             <a class="mgi-external-url" ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+          </span>
+
+          <!-- RGD -->
+          <span ng-switch-when="RGD">
+            <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">RRID:RGD_{{ xref.accession.external_id }}</a>
           </span>
 
           <!-- tmRNA Website -->
@@ -223,7 +228,7 @@
 
           <!-- TAIR -->
           <span ng-switch-when="TAIR">
-            {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> (locus {{ xref.accession.optional_id }})
+            {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> (locus {{ xref.accession.locus_tag }})
           </span>
 
           <!-- WormBase -->
@@ -401,7 +406,7 @@
       <li ng-if="$ctrl.page < $ctrl.pages.length - 2" ng-click="$ctrl.onPageChanged($ctrl.pages.length)"><a href="">&#8230;</a></li>
       <li ng-if="$ctrl.page != $ctrl.pages.length" ng-click="$ctrl.onPageChanged($ctrl.pages.length)"><a href="">{{ $ctrl.pages.length }}</a></li>
     </ul>
-    <span class="pull-right">
+    <span class="pull-right" ng-if="$ctrl.total > $ctrl.pageSize">
       <select ng-model="$ctrl.pageSize" ng-change="$ctrl.onPageSizeChanged($ctrl.pageSize, '{{ $ctrl.pageSize }}')" ng-options="v.value as v.key for v in [{key:1, value:1}, {key: 5, value: 5}, {key: 10, value: 10}, {key: 20, value: 20}, {key: 50, value: 50}, {key: 'all', value: 1000000000000}]"></select> records per page
     </span>
     <div class="clearfix"></div>

@@ -27,6 +27,8 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
     // -----------
 
     function GenoverseUtils($scope) {
+        var self = this;
+
         this.$scope = $scope;
 
         // Methods below need to be binded to 'this' object,
@@ -60,6 +62,7 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
                 return origin + '/api/v1/overlap/region/__SPECIES__/__CHR__:__START__-__END__'.replace('__SPECIES__', this.$scope.browserLocation.genome);
             }, this)
         };
+
 
         this.genesPopulateMenu = _.bind(function(feature) {
             var chrStartEnd = feature.seq_region_name + ':' + feature.start + '-' + feature.end; // string e.g. 'X:1-100000'
@@ -98,6 +101,7 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
 
             return result;
         }, this);
+
 
         this.transcriptsPopulateMenu = _.bind(function(feature) {
             var chrStartEnd = feature.seq_region_name + ':' + feature.start + '-' + feature.end; // string e.g. 'X:1-100000'
@@ -147,6 +151,7 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
             return result;
         }, this);
 
+
         this.RNAcentralPopulateMenu = _.bind(function(feature) {
             var chrStartEnd = feature.seq_region_name + ':' + feature.start + '-' + feature.end; // string e.g. 'X:1-100000'
             var location = '<a href="http://' + this.$scope.browserLocation.domain + '/' + this.$scope.browserLocation.genome + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
@@ -170,6 +175,81 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
                 "Strand": strand
             };
         }, this);
+
+
+        this.RNAcentralParseData = function(data) {
+            var model = this;
+            var featuresById = this.featuresById;
+            var ids = [];
+
+            data.filter(function (d) { return d.feature_type === 'transcript'; }).forEach(function (feature, i) {
+                if (!featuresById[feature.id]) {
+                    // prepare a label
+                    var label = feature.description || feature.external_name;
+                    if (label.length > 50) {
+                        label = label.substr(0, 47) + "...";
+                    }
+                    if (feature.strand == 1) {
+                        label = label + " >";
+                    }
+                    else if (feature.strand == -1) {
+                        label = "< " + label;
+                    }
+
+                    feature.id = feature.ID;
+                    feature.label = label; // used to be feature.external_name
+                    feature.exons = {};
+                    feature.subFeatures = [];
+                    feature.cdsStart = Infinity;
+                    feature.cdsEnd = -Infinity;
+                    feature.chr = feature.seq_region_name;
+                    feature.color = '#8B668B';
+
+                    // Make currently selected feature red
+                    if ((feature.start === self.$scope.selectedLocation.start) &&
+                        (feature.end === self.$scope.selectedLocation.end) &&
+                        (feature.chr === self.$scope.selectedLocation.chr) &&
+                        (feature.external_name === self.$scope.upi)) {
+                        feature.color = "#FF0000";
+                        data.filter(function (datum) { return datum.feature_type === 'exon' && datum.Parent === feature.ID; }).forEach(function (exon) {
+                            exon.borderColor = "#FF0000";
+                        });
+                    }
+
+                    model.insertFeature(feature);
+
+                    ids.push(feature.id);
+                }
+            });
+
+            data.filter(function (d) { return d.feature_type === 'exon' && featuresById[d.Parent] && !featuresById[d.Parent].exons[d.id]; }).forEach(function (feature) {
+                feature.id  = feature.ID;
+                feature.chr = feature.seq_region_name;
+
+                if (feature.end < featuresById[feature.Parent].cdsStart || feature.start > featuresById[feature.Parent].cdsEnd) {
+                    feature.utr = true;
+                } else if (feature.start < featuresById[feature.Parent].cdsStart) {
+                    featuresById[feature.Parent].subFeatures.push($.extend({ utr: true }, feature, { end: featuresById[feature.Parent].cdsStart }));
+
+                    feature.start = featuresById[feature.Parent].cdsStart;
+                } else if (feature.end > featuresById[feature.Parent].cdsEnd) {
+                    featuresById[feature.Parent].subFeatures.push($.extend({ utr: true }, feature, { start: featuresById[feature.Parent].cdsEnd }));
+
+                    feature.end = featuresById[feature.Parent].cdsEnd;
+                }
+
+                featuresById[feature.Parent].subFeatures.push(feature);
+                featuresById[feature.Parent].exons[feature.id] = feature;
+
+                // set colors
+                feature.color = false;
+                if (!feature.borderColor) feature.borderColor = '#8B668B';  // this exon might've been colored already, if it's currently selected
+            });
+
+            ids.forEach(function (id) {
+                featuresById[id].subFeatures.sort(function (a, b) { return a.start - b.start; });
+            });
+        };
 
     }
 
@@ -482,69 +562,6 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
             'end': GenoverseUtils.prototype.genomes[i].example_location.end
         }
     }
-
-    GenoverseUtils.prototype.RNAcentralParseData = function(data) {
-        var model = this;
-        var featuresById = this.featuresById;
-        var ids = [];
-
-        data.filter(function (d) { return d.feature_type === 'transcript'; }).forEach(function (feature, i) {
-            if (!featuresById[feature.id]) {
-                // prepare a label
-                var label = feature.description || feature.external_name;
-                if (label.length > 50) {
-                    label = label.substr(0, 47) + "...";
-                }
-                if (feature.strand == 1) {
-                    label = label + " >";
-                }
-                else if (feature.strand == -1) {
-                    label = "< " + label;
-                }
-
-                feature.id = feature.ID;
-                feature.label = label; // used to be feature.external_name
-                feature.exons = {};
-                feature.subFeatures = [];
-                feature.cdsStart = Infinity;
-                feature.cdsEnd = -Infinity;
-                feature.chr = feature.seq_region_name;
-                feature.color = '#8B668B';
-
-                model.insertFeature(feature);
-
-                ids.push(feature.id);
-            }
-        });
-
-        data.filter(function (d) { return d.feature_type === 'exon' && featuresById[d.Parent] && !featuresById[d.Parent].exons[d.id]; }).forEach(function (feature) {
-            feature.id  = feature.ID;
-            feature.chr = feature.seq_region_name;
-
-            if (feature.end < featuresById[feature.Parent].cdsStart || feature.start > featuresById[feature.Parent].cdsEnd) {
-                feature.utr = true;
-            } else if (feature.start < featuresById[feature.Parent].cdsStart) {
-                featuresById[feature.Parent].subFeatures.push($.extend({ utr: true }, feature, { end: featuresById[feature.Parent].cdsStart }));
-
-                feature.start = featuresById[feature.Parent].cdsStart;
-            } else if (feature.end > featuresById[feature.Parent].cdsEnd) {
-                featuresById[feature.Parent].subFeatures.push($.extend({ utr: true }, feature, { start: featuresById[feature.Parent].cdsEnd }));
-
-                feature.end = featuresById[feature.Parent].cdsEnd;
-            }
-
-            featuresById[feature.Parent].subFeatures.push(feature);
-            featuresById[feature.Parent].exons[feature.id] = feature;
-
-            // set colors
-            feature.color = false;
-            feature.borderColor = '#8B668B';
-        });
-
-        ids.forEach(function (id) {
-            featuresById[id].subFeatures.sort(function (a, b) { return a.start - b.start; });
-        });
-    };
 
      /**
      * Dynamically determine whether to use E! or EG REST API based on species.
