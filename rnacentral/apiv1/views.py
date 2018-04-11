@@ -97,59 +97,63 @@ def features_from_xrefs(species, chromosome, start, end):
             accession__coordinates__primary_end__lte=end,
             accession__species=url2db(species),
             deleted='N'
-        ).select_related('upi', 'accession').prefetch_related('upi__precomputed')
+        ).select_related('upi', 'accession', 'db').prefetch_related('upi__precomputed')
     except Xref.DoesNotExist:
         xrefs = []
 
-    rnacentral_ids = []
+    upi2data = {}  # { rnacentral_id: data }
     data = []
     for i, xref in enumerate(xrefs):
-        rnacentral_id = xref.upi.upi
+        upi = xref.upi.upi
 
-        # transcript object
-        if rnacentral_id not in rnacentral_ids:
-            rnacentral_ids.append(rnacentral_id)
-        else:
-            continue
+        # create only one transcript object per upi
+        if upi not in upi2data:
+            coordinates = xref.get_genomic_coordinates()
+            transcript_id = upi + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
+            biotype = xref.upi.precomputed.filter(taxid=xref.taxid)[0].rna_type  # used to be biotype = xref.accession.get_biotype()
+            description = xref.upi.precomputed.filter(taxid=xref.taxid)[0].description
 
-        coordinates = xref.get_genomic_coordinates()
-        transcript_id = rnacentral_id + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
-        biotype = xref.upi.precomputed.filter(taxid=xref.taxid)[0].rna_type  # used to be biotype = xref.accession.get_biotype()
-        description = xref.upi.precomputed.filter(taxid=xref.taxid)[0].description
-
-        data.append({
-            'ID': transcript_id,
-            'external_name': rnacentral_id,
-            'taxid': xref.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
-            'feature_type': 'transcript',
-            'logic_name': 'RNAcentral',  # required by Genoverse
-            'biotype': biotype,  # required by Genoverse
-            'description': description,
-            'seq_region_name': chromosome,
-            'strand': coordinates['strand'],
-            'start': coordinates['start'],
-            'end': coordinates['end'],
-        })
-
-        # exons
-        exons = xref.accession.coordinates.all()
-        for i, exon in enumerate(exons):
-            exon_id = '_'.join([xref.accession.accession, 'exon_' + str(i)])
-            if not exon.chromosome:
-                continue  # some exons may not be mapped onto the genome (common in RefSeq)
-            data.append({
-                'external_name': exon_id,
-                'ID': exon_id,
+            transcript = {
+                'ID': transcript_id,
+                'external_name': upi,
                 'taxid': xref.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
-                'feature_type': 'exon',
-                'Parent': transcript_id,
+                'feature_type': 'transcript',
                 'logic_name': 'RNAcentral',  # required by Genoverse
                 'biotype': biotype,  # required by Genoverse
+                'description': description,
                 'seq_region_name': chromosome,
-                'strand': exon.strand,
-                'start': exon.primary_start,
-                'end': exon.primary_end,
-            })
+                'strand': coordinates['strand'],
+                'start': coordinates['start'],
+                'end': coordinates['end'],
+                'databases': [xref.db.display_name]  # this field will probably be modified later
+            }
+
+            upi2data[upi] = transcript
+            data.append(transcript)
+
+            # exons
+            exons = xref.accession.coordinates.all()
+            for i, exon in enumerate(exons):
+                exon_id = '_'.join([xref.accession.accession, 'exon_' + str(i)])
+                if not exon.chromosome:
+                    continue  # some exons may not be mapped onto the genome (common in RefSeq)
+                data.append({
+                    'external_name': exon_id,
+                    'ID': exon_id,
+                    'taxid': xref.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
+                    'feature_type': 'exon',
+                    'Parent': transcript_id,
+                    'logic_name': 'RNAcentral',  # required by Genoverse
+                    'biotype': biotype,  # required by Genoverse
+                    'seq_region_name': chromosome,
+                    'strand': exon.strand,
+                    'start': exon.primary_start,
+                    'end': exon.primary_end,
+                })
+
+        else:
+            if xref.db.display_name not in upi2data[upi]['databases']:
+                upi2data[upi]['databases'].append(xref.db.display_name)
 
     return data
 
@@ -202,6 +206,8 @@ def features_from_mappings(species, chromosome, start, end):
 
     data = []
     for transcript in transcripts:
+        databases = list(set([xref.db.display_name for xref in Rna.get_xrefs(transcript.upi.upi, taxid=taxid)]))
+
         data.append({
             'ID': transcript.region_id,
             'external_name': transcript.upi.upi,
@@ -213,7 +219,8 @@ def features_from_mappings(species, chromosome, start, end):
             'seq_region_name': transcript.chromosome,
             'strand': transcript.strand,
             'start': transcript.start,
-            'end': transcript.stop
+            'end': transcript.stop,
+            'databases': databases
         })
 
     for i, exon in enumerate(mappings):
