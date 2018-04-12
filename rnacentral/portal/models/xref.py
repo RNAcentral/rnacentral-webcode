@@ -616,8 +616,8 @@ class Xref(CachingMixin, models.Model):
 
     def get_ensembl_division(self):
         """Get Ensembl or Ensembl Genomes division for the cross-reference."""
-        species = self.accession.get_ensembl_species_url().replace('_', ' ').capitalize()
-        return get_ensembl_division(species)
+        assembly = EnsemblAssembly.objects.get(taxid=self.taxid)
+        return {'name': assembly.division, 'url': 'http://' + assembly.subdomain}
 
     def get_ucsc_db_id(self):
         """Get UCSC id for the genome assembly. http://genome.ucsc.edu/FAQ/FAQreleases.html"""

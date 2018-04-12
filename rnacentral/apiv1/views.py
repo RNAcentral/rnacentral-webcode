@@ -526,7 +526,7 @@ class RnaGenomeMappings(generics.ListAPIView):
                                       .values('region_id', 'strand', 'chromosome', 'taxid', 'identity')\
                                       .annotate(Min('start'), Max('stop'))
 
-        species = rna.xrefs.filter(taxid=taxid).first().accession.species  # this applies only to species-specific pages
+        assembly = EnsemblAssembly.objects.get(taxid=taxid)  # this applies only to species-specific pages
 
         output = []
         for mapping in mappings:
@@ -536,10 +536,10 @@ class RnaGenomeMappings(generics.ListAPIView):
                 'start': mapping["start__min"],
                 'end': mapping["stop__max"],
                 'identity': mapping["identity"],
-                'species': db2url(species),
-                'ucsc_db_id': get_ucsc_db_id(mapping["taxid"]),
-                'ensembl_division': get_ensembl_division(species),
-                'ensembl_species_url': get_ensembl_species_url(species, rna.xrefs.first().accession.accession)
+                'species': assembly.ensembl_url,
+                'ucsc_db_id': assembly.assembly_ucsc,
+                'ensembl_division': assembly.division,
+                'ensembl_species_url': assembly.ensembl_url
             }
             output.append(data)
 

@@ -16,8 +16,6 @@ import re
 
 from django.db import models
 
-from portal.config.genomes import get_ensembl_species_url
-
 
 class Accession(models.Model):
     accession = models.CharField(max_length=100, primary_key=True)
@@ -140,7 +138,18 @@ class Accession(models.Model):
 
     def get_ensembl_species_url(self):
         """Get species name in a format that can be used in Ensembl urls."""
-        return get_ensembl_species_url(self.species, self.accession)
+        if self.species == 'Dictyostelium discoideum':
+            species = 'Dictyostelium discoideum AX4'
+        elif self.species.startswith('Mus musculus') and self.accession.startswith('MGP'):  # Ensembl mouse strain
+            parts = self.accession.split('_')
+            if len(parts) == 3:
+                species = 'Mus musculus ' + parts[1]
+            else:
+                species = self.species
+        else:
+            species = self.species
+
+        return species.replace(' ', '_').lower()
 
     def get_expert_db_external_url(self):
         """Get external url to expert database."""
