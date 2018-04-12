@@ -13,30 +13,21 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='rnaprecomputeddata',
-            name='upi',
-        ),
-        migrations.AddField(
-            model_name='accession',
-            name='common_name',
-            field=models.CharField(default=b'', max_length=200),
-        ),
-        migrations.AddField(
-            model_name='accession',
-            name='standard_name',
-            field=models.CharField(default=b'', max_length=100),
-        ),
-        migrations.AddField(
-            model_name='ensemblassembly',
-            name='division',
-            field=models.CharField(db_index=True, max_length=20, null=True),
-        ),
-        migrations.AddField(
-            model_name='ensemblassembly',
-            name='ensembl_url',
-            field=models.CharField(db_index=True, max_length=100, null=True),
-        ),
+        # migrations.AddField(
+        #     model_name='ensemblassembly',
+        #     name='division',
+        #     field=models.CharField(db_index=True, max_length=20, null=True),
+        # ),
+        # migrations.AddField(
+        #     model_name='ensemblassembly',
+        #     name='ensembl_url',
+        #     field=models.CharField(db_index=True, max_length=100, null=True),
+        # ),
+        # migrations.AlterField(
+        #     model_name='ensemblassembly',
+        #     name='common_name',
+        #     field=models.CharField(db_index=True, max_length=255, null=True),
+        # ),
         migrations.AddField(
             model_name='ensemblassembly',
             name='example_chromosome',
@@ -51,48 +42,5 @@ class Migration(migrations.Migration):
             model_name='ensemblassembly',
             name='example_start',
             field=models.IntegerField(null=True),
-        ),
-        migrations.AddField(
-            model_name='rnaprecomputed',
-            name='update_date',
-            field=models.DateField(null=True),
-        ),
-        migrations.AlterField(
-            model_name='accession',
-            name='db_xref',
-            field=models.CharField(max_length=800),
-        ),
-        migrations.AlterField(
-            model_name='accession',
-            name='note',
-            field=models.CharField(max_length=1600),
-        ),
-        migrations.AlterField(
-            model_name='ensemblassembly',
-            name='common_name',
-            field=models.CharField(db_index=True, max_length=255, null=True),
-        ),
-        migrations.AlterField(
-            model_name='rfamgoterm',
-            name='go_term',
-            field=models.ForeignKey(db_column=b'go_term_id', on_delete=django.db.models.deletion.CASCADE, related_name='go_term', to='portal.GoTerm'),
-        ),
-        migrations.AlterField(
-            model_name='rnaprecomputed',
-            name='rna_type',
-            field=models.CharField(max_length=250),
-        ),
-        migrations.AlterField(
-            model_name='secondarystructure',
-            name='accession',
-            field=models.OneToOneField(db_column=b'rnc_accession_id', on_delete=django.db.models.deletion.CASCADE, related_name='secondary_structure', to='portal.Accession'),
-        ),
-        migrations.AlterField(
-            model_name='xref',
-            name='id',
-            field=models.AutoField(primary_key=True, serialize=False),
-        ),
-        migrations.DeleteModel(
-            name='RnaPrecomputedData',
         ),
     ]
