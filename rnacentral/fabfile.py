@@ -209,7 +209,7 @@ def deploy_locally(git_branch=None, restart_url='http://rnacentral.org', quick=F
 
     if not git_branch:
         with env.cd(settings.PROJECT_PATH):
-            git_branch = env.run('git rev-parse --abbrev-ref HEAD')
+            git_branch = env.run('git rev-parse --abbrev-ref HEAD', capture=True)  # env.run == local, takes capture arg
 
     slack("Deployed '%s' at ves-hx-a4: <http://test.rnacentral.org|test.rnacentral.org>" % git_branch)
 
