@@ -215,7 +215,8 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
                     feature.color = '#8B668B';
 
                     // Make currently selected feature red
-                    if ((feature.start === self.$scope.selectedLocation.start) &&
+                    if ((typeof self.$scope.selectedLocation !== 'undefined') &&
+                        (feature.start === self.$scope.selectedLocation.start) &&
                         (feature.end === self.$scope.selectedLocation.end) &&
                         (feature.chr === self.$scope.selectedLocation.chr) &&
                         (feature.external_name === self.$scope.upi)) {
