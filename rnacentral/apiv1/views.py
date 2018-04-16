@@ -124,6 +124,7 @@ def features_from_xrefs(species, chromosome, start, end):
             taxid = _species2taxid(species)
             xrefs = Xref.default_objects.filter(upi=upi, taxid=taxid, deleted='N').select_related('db').all()
             databases = list(set([xref.db.display_name for xref in xrefs]))
+            databases.sort()
             coordinates = xref.get_genomic_coordinates()
             transcript_id = upi + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
             biotype = xref.upi.precomputed.filter(taxid=xref.taxid)[0].rna_type  # used to be biotype = xref.accession.get_biotype()
@@ -212,6 +213,7 @@ def features_from_mappings(species, chromosome, start, end):
     for transcript in transcripts:
         xrefs = Xref.default_objects.filter(upi=transcript.upi.upi, taxid=taxid, deleted='N').select_related('db').all()
         databases = list(set([xref.db.display_name for xref in xrefs]))
+        databases.sort()
 
         data.append({
             'ID': transcript.region_id,
