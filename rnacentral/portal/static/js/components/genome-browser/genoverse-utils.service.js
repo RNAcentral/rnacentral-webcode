@@ -172,7 +172,8 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
                 "Feature type": feature.feature_type,
                 "Location": location,
                 "Logic name": feature.logic_name,
-                "Strand": strand
+                "Strand": strand,
+                "Databases": feature.databases.join(', ')
             };
         }, this);
 
