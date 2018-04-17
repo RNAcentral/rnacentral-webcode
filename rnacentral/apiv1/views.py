@@ -106,50 +106,51 @@ def features_from_xrefs(species, chromosome, start, end):
     for i, xref in enumerate(xrefs):
         rnacentral_id = xref.upi.upi
 
-        # transcript object
-        if rnacentral_id not in rnacentral_ids:
-            rnacentral_ids.append(rnacentral_id)
-        else:
-            continue
+        if xref.has_genomic_coordinates():
+            # transcript object
+            if rnacentral_id not in rnacentral_ids:
+                rnacentral_ids.append(rnacentral_id)
+            else:
+                continue
 
-        coordinates = xref.get_genomic_coordinates()
-        transcript_id = rnacentral_id + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
-        biotype = xref.upi.precomputed.filter(taxid=xref.taxid)[0].rna_type  # used to be biotype = xref.accession.get_biotype()
-        description = xref.upi.precomputed.filter(taxid=xref.taxid)[0].description
+            coordinates = xref.get_genomic_coordinates()
+            transcript_id = rnacentral_id + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
+            biotype = xref.upi.precomputed.filter(taxid=xref.taxid)[0].rna_type  # used to be biotype = xref.accession.get_biotype()
+            description = xref.upi.precomputed.filter(taxid=xref.taxid)[0].description
 
-        data.append({
-            'ID': transcript_id,
-            'external_name': rnacentral_id,
-            'taxid': xref.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
-            'feature_type': 'transcript',
-            'logic_name': 'RNAcentral',  # required by Genoverse
-            'biotype': biotype,  # required by Genoverse
-            'description': description,
-            'seq_region_name': chromosome,
-            'strand': coordinates['strand'],
-            'start': coordinates['start'],
-            'end': coordinates['end'],
-        })
-
-        # exons
-        exons = xref.accession.coordinates.all()
-        for i, exon in enumerate(exons):
-            exon_id = '_'.join([xref.accession.accession, 'exon_' + str(i)])
-            if not exon.chromosome:
-                continue  # some exons may not be mapped onto the genome (common in RefSeq)
             data.append({
-                'external_name': exon_id,
-                'ID': exon_id,
+                'ID': transcript_id,
+                'external_name': rnacentral_id,
                 'taxid': xref.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
-                'feature_type': 'exon',
-                'Parent': transcript_id,
+                'feature_type': 'transcript',
                 'logic_name': 'RNAcentral',  # required by Genoverse
                 'biotype': biotype,  # required by Genoverse
+                'description': description,
                 'seq_region_name': chromosome,
-                'strand': exon.strand,
-                'start': exon.primary_start,
-                'end': exon.primary_end,
+                'strand': coordinates['strand'],
+                'start': coordinates['start'],
+                'end': coordinates['end'],
             })
+
+            # exons
+            exons = xref.accession.coordinates.all()
+            for i, exon in enumerate(exons):
+                exon_id = '_'.join([xref.accession.accession, 'exon_' + str(i)])
+                if not exon.chromosome:
+                    continue  # some exons may not be mapped onto the genome (common in RefSeq)
+                data.append({
+                    'external_name': exon_id,
+                    'ID': exon_id,
+                    'taxid': xref.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
+                    'feature_type': 'exon',
+                    'Parent': transcript_id,
+                    'logic_name': 'RNAcentral',  # required by Genoverse
+                    'biotype': biotype,  # required by Genoverse
+                    'seq_region_name': chromosome,
+                    'strand': exon.strand,
+                    'start': exon.primary_start,
+                    'end': exon.primary_end,
+                })
 
     return data
 
