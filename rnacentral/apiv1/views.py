@@ -123,7 +123,7 @@ def features_from_xrefs(species, chromosome, start, end):
         if upi not in upi2data:
             taxid = _species2taxid(species)
             xrefs = Xref.default_objects.filter(upi=upi, taxid=taxid, deleted='N').select_related('db').all()
-            databases = list(set([xref.db.display_name for xref in xrefs]))
+            databases = list(set([x.db.display_name for x in xrefs]))
             databases.sort()
             coordinates = xref.get_genomic_coordinates()
             transcript_id = upi + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
