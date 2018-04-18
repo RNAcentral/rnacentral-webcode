@@ -16,15 +16,17 @@ import requests
 
 from django.core.management.base import BaseCommand
 
+from portal.models import EnsemblAssembly, EnsemblKaryotype
+
 
 class Command(BaseCommand):
     """
     Usage:
     python manage.py update_karyotypes
     """
-    def fetch_ensembl_karyotype(self, ensembl_url):
+    def fetch_ensembl_karyotype(self, ensembl_url, domain):
         response = requests.get(
-            'http://rest.ensembl.org/info/assembly/%s?bands=1' % ensembl_url,
+            'http://rest.%s.org/info/assembly/%s' % (domain, ensembl_url),
             headers={'Content-Type': 'application/json'}
         )
         if 200 <= response.status_code < 400:
@@ -47,11 +49,12 @@ class Command(BaseCommand):
 
                 return result
 
-
-    def fetch_ensembl_genomes_karyotypes(self):
-        pass
-
+    def store_ensembl_karyotype(self, karyotype):
+        EnsemblKaryotype.objects.create(
+            karyotype=karyotype,
+            ensembl_url=EnsemblAssembly.objects.get()
+        )
 
     def handle(self, *args, **options):
         """Main function, called by django."""
-        print(self.fetch_ensembl_karyotype('homo_sapiens'))
+        print(self.fetch_ensembl_karyotype('homo_sapiens', 'ensembl'))

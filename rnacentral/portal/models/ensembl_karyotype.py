@@ -11,23 +11,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from .accession import *
-from .chemical_component import *
-from .database import *
-from .database_stats import *
-from .formatters import *
-from .genomic_coordinates import *
-from .genome_mapping import *
-from .go_terms import *
-from .modification import *
-from .reference import *
-from .reference_map import *
-from .release import *
-from .rfam import *
-from .rna import *
-from .rna_precomputed import *
-from .secondary_structure import *
-from .xref import *
-from .ensembl_assembly import *
-from .ensembl_insdc_mapping import *
-from .ensembl_karyotype import *
+from caching.base import CachingMixin, CachingManager
+from django.contrib.postgres.fields import JSONField
+from django.db import models
+
+from portal.models import EnsemblAssembly
+
+
+class EnsemblKaryotype(CachingMixin, models.Model):
+    ensembl_url = models.ForeignKey(EnsemblAssembly, related_name='karyotype')
+    karyotype = JSONField()
+
+    objects = CachingManager()
+
+    class Meta:
+        db_table = 'ensembl_karyotype'
