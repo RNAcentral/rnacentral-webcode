@@ -26,7 +26,7 @@ class Command(BaseCommand):
     """
     def fetch_ensembl_karyotype(self, ensembl_url, domain):
         response = requests.get(
-            'http://rest.%s.org/info/assembly/%s' % (domain, ensembl_url),
+            'http://rest.%s.org/info/assembly/%s?bands=1' % (domain, ensembl_url),
             headers={'Content-Type': 'application/json'}
         )
 
@@ -36,17 +36,18 @@ class Command(BaseCommand):
         for data in response.json()["top_level_region"]:
             if data["coord_system"] == "chromosome":
                 try:
-                    start = data["bands"].start
-                    end = data["bands"].end
+                    bands = []
+                    for band in data["bands"]:
+                        bands.append({
+                            "id": band["id"],
+                            "start": band["start"],
+                            "end": band["stop"],
+                            "type": band["stain"]
+                        })
 
                     result[data["name"]] = {
                         "size": data["length"],
-                        "bands": {
-                            "id": data["bands"],
-                            "start": start,
-                            "end": end,
-                            "type": data["stain"]
-                        }
+                        "bands": bands
                     }
                 except KeyError:  # bands not defined
                     start = 1
@@ -54,19 +55,19 @@ class Command(BaseCommand):
 
                     result[data["name"]] = {
                         "size": data["length"],
-                        "bands": {
+                        "bands": [{
                             "start": start,
                             "end": end
-                        }
+                        }]
                     }
 
             elif data["coord_system"] == "scaffold":
                 result[data["name"]] = {
                     "size": data["length"],
-                    "bands": {
+                    "bands": [{
                         "start": 1,
                         "end": data["length"]
-                    }
+                    }]
                 }
 
         return result
