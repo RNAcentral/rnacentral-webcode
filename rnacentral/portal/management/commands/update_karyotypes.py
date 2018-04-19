@@ -86,3 +86,4 @@ class Command(BaseCommand):
                 domain = 'ensemblgenomes'
 
             karyotype = self.fetch_ensembl_karyotype(ensembl_url=assembly.ensembl_url, domain=domain)
+            EnsemblKaryotype.objects.create(assembly_id=assembly, karyotype=karyotype)
