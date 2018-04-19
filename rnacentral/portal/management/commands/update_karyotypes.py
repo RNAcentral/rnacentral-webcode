@@ -24,6 +24,13 @@ class Command(BaseCommand):
     Usage:
     python manage.py update_karyotypes
     """
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--ensembl_url',
+            type=str,
+            help='specific assembly, e.g. homo_sapiens'
+        )
+
     def fetch_ensembl_karyotype(self, ensembl_url, domain):
         response = requests.get(
             'http://rest.%s.org/info/assembly/%s?bands=1' % (domain, ensembl_url),
@@ -78,17 +85,24 @@ class Command(BaseCommand):
             assembly_id=EnsemblAssembly.objects.get()
         )
 
+    def process_ensembl_karyotype(self, assembly):
+        print("Retrieving kartyotype for: %s" % assembly.ensembl_url)
+
+        EnsemblKaryotype.objects.filter(assembly_id=assembly.assembly_id).delete()
+
+        if assembly.division == 'Ensembl':
+            domain = 'ensembl'
+        else:
+            domain = 'ensemblgenomes'
+
+        karyotype = self.fetch_ensembl_karyotype(ensembl_url=assembly.ensembl_url, domain=domain)
+        EnsemblKaryotype.objects.create(assembly_id=assembly, karyotype=karyotype)
+
     def handle(self, *args, **options):
         """Main function, called by django."""
-        for assembly in EnsemblAssembly.objects.all():
-            print("Retrieving kartyotype for: %s" % assembly.ensembl_url)
-
-            EnsemblKaryotype.objects.filter(assembly_id=assembly.assembly_id).delete()
-
-            if assembly.division == 'Ensembl':
-                domain = 'ensembl'
-            else:
-                domain = 'ensemblgenomes'
-
-            karyotype = self.fetch_ensembl_karyotype(ensembl_url=assembly.ensembl_url, domain=domain)
-            EnsemblKaryotype.objects.create(assembly_id=assembly, karyotype=karyotype)
+        if 'ensembl_url' in options:
+            assembly = EnsemblAssembly.objects.filter(ensembl_url=options['ensembl_url']).first()
+            self.process_ensembl_karyotype(assembly)
+        else:
+            for assembly in EnsemblAssembly.objects.all():
+                self.process_ensembl_karyotype(assembly)
