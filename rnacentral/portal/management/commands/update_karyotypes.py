@@ -80,6 +80,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Main function, called by django."""
         for assembly in EnsemblAssembly.objects.all():
+            print("Retrieving kartyotype for: %s" % assembly.ensembl_url)
+
+            EnsemblKaryotype.objects.filter(assembly_id=assembly.assembly_id).delete()
+
             if assembly.division == 'Ensembl':
                 domain = 'ensembl'
             else:
