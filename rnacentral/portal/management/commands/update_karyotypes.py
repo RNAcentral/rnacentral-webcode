@@ -100,7 +100,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         """Main function, called by django."""
-        if 'ensembl_url' in options:
+        if options['ensembl_url']:
             assembly = EnsemblAssembly.objects.filter(ensembl_url=options['ensembl_url']).first()
             self.process_ensembl_karyotype(assembly)
         else:
