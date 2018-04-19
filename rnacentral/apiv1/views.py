@@ -38,7 +38,8 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, RfamHitSerializer, \
                               EnsemblInsdcMappingSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
-from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblInsdcMapping, GenomeMapping
+from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblInsdcMapping, \
+    EnsemblAssembly, GenomeMapping
 from portal.config.genomes import genomes, url2db, db2url, SpeciesNotInGenomes, get_taxid_from_species, get_ensembl_division, get_ensembl_species_url, get_ucsc_db_id
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination
@@ -671,3 +672,17 @@ class EnsemblInsdcMappingView(APIView):
         mapping = EnsemblInsdcMapping.objects.all().select_related()
         serializer = EnsemblInsdcMappingSerializer(mapping, many=True, context={request: request})
         return Response(serializer.data)
+
+
+class EnsemblKaryotypeAPIView(APIView):
+    """API endpoint, presenting E! karyotype for a given species."""
+    permission_classes = ()
+    authentication_classes = ()
+
+    def get(self, request, ensembl_url):
+        try:
+            assembly = EnsemblAssembly.objects.filter(ensembl_url=ensembl_url).prefetch_related('karyotype').first()
+        except EnsemblAssembly.DoesNotExist:
+            raise Http404
+
+        return Response(assembly.karyotype.first().karyotype)

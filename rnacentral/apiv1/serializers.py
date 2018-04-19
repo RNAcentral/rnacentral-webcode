@@ -20,7 +20,8 @@ from django.db.models import Min, Max
 from rest_framework import serializers
 
 from portal.models import Rna, Xref, Reference,  Reference_map, ChemicalComponent, Database, DatabaseStats, Accession, \
-    Release, Reference, Modification, RfamHit, RfamModel, RfamClan, EnsemblAssembly, EnsemblInsdcMapping, GenomeMapping
+    Release, Reference, Modification, RfamHit, RfamModel, RfamClan, \
+    EnsemblAssembly, EnsemblInsdcMapping, EnsemblKaryotype
 
 
 class RawPublicationSerializer(serializers.ModelSerializer):
@@ -445,3 +446,9 @@ class EnsemblInsdcMappingSerializer(serializers.ModelSerializer):
     class Meta:
         model = EnsemblInsdcMapping
         fields = ('insdc', 'ensembl_name', 'assembly')
+
+
+class EnsemblKaryotypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EnsemblKaryotype
+        fields = ('karyotype', )
