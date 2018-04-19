@@ -29,32 +29,60 @@ class Command(BaseCommand):
             'http://rest.%s.org/info/assembly/%s' % (domain, ensembl_url),
             headers={'Content-Type': 'application/json'}
         )
-        if 200 <= response.status_code < 400:
-            result = {}
-            for data in response.json()["top_level_region"]:
-                if data["coord_system"] == "chromosome":
-                    start = data["bands"].start if data["bands"].start else 1
-                    end = data["bands"].end if data["bands"].end else data["length"]
-                    bands = {
-                        "id": data["bands"],
-                        "start": start,
-                        "end": end,
-                        "type": data["stain"]
+
+        response.raise_for_status()
+
+        result = {}
+        for data in response.json()["top_level_region"]:
+            if data["coord_system"] == "chromosome":
+                try:
+                    start = data["bands"].start
+                    end = data["bands"].end
+
+                    result[data["name"]] = {
+                        "size": data["length"],
+                        "bands": {
+                            "id": data["bands"],
+                            "start": start,
+                            "end": end,
+                            "type": data["stain"]
+                        }
+                    }
+                except KeyError:  # bands not defined
+                    start = 1
+                    end = data["length"]
+
+                    result[data["name"]] = {
+                        "size": data["length"],
+                        "bands": {
+                            "start": start,
+                            "end": end
+                        }
                     }
 
-                    result[data.name] = {
-                        "size": data.length,  # or len(data)???
-                        "bands": bands
+            elif data["coord_system"] == "scaffold":
+                result[data["name"]] = {
+                    "size": data["length"],
+                    "bands": {
+                        "start": 1,
+                        "end": data["length"]
                     }
+                }
 
-                return result
+        return result
 
     def store_ensembl_karyotype(self, karyotype):
         EnsemblKaryotype.objects.create(
             karyotype=karyotype,
-            ensembl_url=EnsemblAssembly.objects.get()
+            assembly_id=EnsemblAssembly.objects.get()
         )
 
     def handle(self, *args, **options):
         """Main function, called by django."""
-        print(self.fetch_ensembl_karyotype('homo_sapiens', 'ensembl'))
+        for assembly in EnsemblAssembly.objects.all():
+            if assembly.division == 'Ensembl':
+                domain = 'ensembl'
+            else:
+                domain = 'ensemblgenomes'
+
+            karyotype = self.fetch_ensembl_karyotype(ensembl_url=assembly.ensembl_url, domain=domain)
