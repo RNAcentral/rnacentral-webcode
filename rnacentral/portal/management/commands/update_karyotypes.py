@@ -48,7 +48,7 @@ class Command(BaseCommand):
                         bands.append({
                             "id": band["id"],
                             "start": band["start"],
-                            "end": band["stop"],
+                            "end": band["end"],
                             "type": band["stain"]
                         })
 
