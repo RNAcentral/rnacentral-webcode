@@ -47,7 +47,7 @@ limitations under the License.
             <div class="row" style="padding-left: 15px;">
                 <div class="col-lg-3 col-md-3 col-sm-12">
                     <label for="genomic-species-select">Species</label>
-                    <select id="genomic-species-select" class="form-control" ng-options="genome as (genome | urldecodeSpecies) for genome in genoverseUtils.genomeNames" ng-model="browserLocation.genome">
+                    <select id="genomic-species-select" class="form-control" ng-options="genome for genome in genoverseUtils.genomeNames" ng-model="browserLocation.genome">
                     </select>
                 </div>
                 <div class="ol-lg-2 col-md-2 col-sm-4">
@@ -76,15 +76,10 @@ limitations under the License.
         <span id='genomic-location' class='margin-right-5px'></span>
         View in <a href='http://{{ browserLocation.domain }}/{{ browserLocation.genome }}/Location/View?r={{ browserLocation.chromosome }}:{{ browserLocation.start }}-{{ browserLocation.end }}' id="ensembl-link" target='_blank'>{{ genoverseUtils.getGenomeObject(browserLocation.genome, genomes).division }}</a>
         <span ng-show='genoverseUtils.getGenomeObject(browserLocation.genome, genomes).assembly_ucsc' class='ucsc-link'>|
-            <a href='http://genome.ucsc.edu/cgi-bin/hgTracks?db={{ genoverseUtils.getGenomeObject(browserLocation.genome, genomes).assembly_ucsc }}&position={{ browserLocation.chromosome | chrToUCSC }}%3A{{ browserLocation.start }}-{{ browserLocation.end }}' id="ucsc-link" target='_blank'>UCSC</a>
+            <a href='http://genome.ucsc.edu/cgi-bin/hgTracks?db={{ genoverseUtils.getGenomeObject(browserLocation.genome, genomes).assembly_ucsc }}&position={{ browserLocation.chromosome }}%3A{{ browserLocation.start }}-{{ browserLocation.end }}' id="ucsc-link" target='_blank'>UCSC</a>
         </span>
     </p>
-    <genoverse genome="browserLocation.genome" chr="browserLocation.chromosome" start="browserLocation.start" end="browserLocation.end" example-locations="genoverseUtils.exampleLocations">
-        <genoverse-track name="'Sequence'" model="Genoverse.Track.Model.Sequence.Ensembl" view="Genoverse.Track.View.Sequence" controller="Genoverse.Track.Controller.Sequence" url="genoverseUtils.urls.sequence" resizable="'auto'" auto-height="true" hide-empty="false" extra="{100000: false}"></genoverse-track>
-        <genoverse-track name="'Genes'" labels="true" info="'Ensembl API genes'" model="Genoverse.Track.Model.Gene.Ensembl" view="Genoverse.Track.View.Gene.Ensembl" url="genoverseUtils.urls.genes" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.genesPopulateMenu}"></genoverse-track>
-        <genoverse-track name="'Transcripts'" labels="true" info="'Ensembl API transcripts'" model="Genoverse.Track.Model.Transcript.Ensembl" view="Genoverse.Track.View.Transcript.Ensembl" url="genoverseUtils.urls.transcripts" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.transcriptsPopulateMenu}"></genoverse-track>
-        <genoverse-track name="'RNAcentral'" id="'RNAcentral'" info="'Unique RNAcentral Sequences'" model="Genoverse.Track.Model.Gene.Ensembl" model-extra="{parseData: genoverseUtils.RNAcentralParseData}" view="Genoverse.Track.View.Transcript.Ensembl" url="genoverseUtils.urls.RNAcentral" extra="{populateMenu: genoverseUtils.RNAcentralPopulateMenu}" resizable="'auto'" auto-height="true" hide-empty="false"></genoverse-track>
-    </genoverse>
+    <genoverse genome="browserLocation.genome" chr="browserLocation.chromosome" start="browserLocation.start" end="browserLocation.end" example-locations="genoverseUtils.exampleLocations"></genoverse>
     {% endverbatim %}
 
 </div>
