@@ -426,9 +426,9 @@ class Xref(CachingMixin, models.Model):
             return False
 
     def get_ncbi_gene_id(self):
-        """GeneID links are stored in the db_xref field."""
-        if self.accession.db_xref:
-            match = re.search('GeneID\:(\d+)', self.accession.db_xref, re.IGNORECASE)
+        """GeneID links are stored in the optional_id field."""
+        if self.accession.optional_id:
+            match = re.search('GeneID\:(\d+)', self.accession.optional_id, re.IGNORECASE)
             return match.group(1) if match else None
         else:
             return None
