@@ -11,7 +11,7 @@ var genoverse = {
 
         genoverseUtils:   '='
     },
-    controller: ['$http', '$interpolate', function($http, $interpolate) {
+    controller: ['$http', '$interpolate', '$timeout', function($http, $interpolate, $timeout) {
         var ctrl = this;
 
         // Variables
@@ -41,6 +41,11 @@ var genoverse = {
          * @returns {Object} - config, suitable for calling new Genoverse(genoverseConfig);
          */
         ctrl.parseConfig = function() {
+            // <genoverse-track name="'Sequence'" model="Genoverse.Track.Model.Sequence.Ensembl" view="Genoverse.Track.View.Sequence" controller="Genoverse.Track.Controller.Sequence" url="genoverseUtils.urls.sequence" resizable="'auto'" auto-height="true" hide-empty="false" extra="{100000: false}"></genoverse-track>
+            // <genoverse-track name="'Genes'" labels="true" info="'Ensembl API genes'" model="Genoverse.Track.Model.Gene.Ensembl" view="Genoverse.Track.View.Gene.Ensembl" url="genoverseUtils.urls.genes" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.genesPopulateMenu}"></genoverse-track>
+            // <genoverse-track name="'Transcripts'" labels="true" info="'Ensembl API transcripts'" model="Genoverse.Track.Model.Transcript.Ensembl" view="Genoverse.Track.View.Transcript.Ensembl" url="genoverseUtils.urls.transcripts" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.transcriptsPopulateMenu}"></genoverse-track>
+            // <genoverse-track name="'RNAcentral'" id="'RNAcentral'" info="'Unique RNAcentral Sequences'" model="Genoverse.Track.Model.Gene.Ensembl" model-extra="{parseData: genoverseUtils.RNAcentralParseData}" view="Genoverse.Track.View.Transcript.Ensembl" url="genoverseUtils.urls.RNAcentral" extra="{populateMenu: genoverseUtils.RNAcentralPopulateMenu}" resizable="'auto'" auto-height="true" hide-empty="false"></genoverse-track>
+
             // Required + hard-coded
             // ---------------------
             var genoverseConfig = {
@@ -58,7 +63,7 @@ var genoverse = {
                     Genoverse.Track.Scalebar,
                     Genoverse.Track.extend({
                         name       : 'Sequence',
-                        url        : ctrl.genoverseUtils.urls.sequence,
+                        url        : ctrl.genoverseUtils.urls.sequence(),
                         controller : Genoverse.Track.Controller.Sequence,
                         model      : Genoverse.Track.Model.Sequence.Ensembl,
                         view       : Genoverse.Track.View.Sequence,
@@ -71,7 +76,7 @@ var genoverse = {
                         name        : 'Genes',
                         labels      : true,
                         info        : 'Ensembl API genes',
-                        url         : ctrl.genoverseUtils.urls.genes,
+                        url         : ctrl.genoverseUtils.urls.genes(),
                         model       : Genoverse.Track.Model.Gene.Ensembl,
                         view        : Genoverse.Track.View.Gene.Ensembl,
                         100000      : false,
@@ -84,7 +89,7 @@ var genoverse = {
                         name        : 'Transcripts',
                         labels      : true,
                         info        : 'Ensembl API transcripts',
-                        url         : ctrl.genoverseUtils.urls.transcripts,
+                        url         : ctrl.genoverseUtils.urls.transcripts(),
                         model       : Genoverse.Track.Model.Transcript.Ensembl,
                         view        : Genoverse.Track.View.Transcript.Ensembl,
                         100000      : false,
@@ -96,9 +101,9 @@ var genoverse = {
                     Genoverse.Track.extend({
                         name        : 'RNAcentral',
                         info        : 'Unique RNAcentral Sequences',
-                        url         : ctrl.genoverseUtils.urls.RNAcentral,
+                        url         : ctrl.genoverseUtils.urls.RNAcentral(),
                         controller  : Genoverse.Track.Controller.Sequence,
-                        model       : Genoverse.Track.Model.Gene.Ensembl({parseData: ctrl.genoverseUtils.RNAcentralParseData}),
+                        model       : Genoverse.Track.Model.Gene.Ensembl.extend({parseData: ctrl.genoverseUtils.RNAcentralParseData}),
                         view        : Genoverse.Track.View.Transcript.Ensembl,
                         100000      : false,
                         populateMenu: ctrl.genoverseUtils.RNAcentralPopulateMenu,
@@ -117,11 +122,6 @@ var genoverse = {
 
         this.$onInit = function() {
             ctrl.render();
-
-            // <genoverse-track name="'Sequence'" model="Genoverse.Track.Model.Sequence.Ensembl" view="Genoverse.Track.View.Sequence" controller="Genoverse.Track.Controller.Sequence" url="genoverseUtils.urls.sequence" resizable="'auto'" auto-height="true" hide-empty="false" extra="{100000: false}"></genoverse-track>
-            // <genoverse-track name="'Genes'" labels="true" info="'Ensembl API genes'" model="Genoverse.Track.Model.Gene.Ensembl" view="Genoverse.Track.View.Gene.Ensembl" url="genoverseUtils.urls.genes" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.genesPopulateMenu}"></genoverse-track>
-            // <genoverse-track name="'Transcripts'" labels="true" info="'Ensembl API transcripts'" model="Genoverse.Track.Model.Transcript.Ensembl" view="Genoverse.Track.View.Transcript.Ensembl" url="genoverseUtils.urls.transcripts" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.transcriptsPopulateMenu}"></genoverse-track>
-            // <genoverse-track name="'RNAcentral'" id="'RNAcentral'" info="'Unique RNAcentral Sequences'" model="Genoverse.Track.Model.Gene.Ensembl" model-extra="{parseData: genoverseUtils.RNAcentralParseData}" view="Genoverse.Track.View.Transcript.Ensembl" url="genoverseUtils.urls.RNAcentral" extra="{populateMenu: genoverseUtils.RNAcentralPopulateMenu}" resizable="'auto'" auto-height="true" hide-empty="false"></genoverse-track>
         };
 
         ctrl.$onChanges = function(changes) {
