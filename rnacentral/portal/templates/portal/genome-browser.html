@@ -79,7 +79,7 @@ limitations under the License.
             <a href='http://genome.ucsc.edu/cgi-bin/hgTracks?db={{ genoverseUtils.getGenomeObject(browserLocation.genome, genomes).assembly_ucsc }}&position={{ browserLocation.chromosome }}%3A{{ browserLocation.start }}-{{ browserLocation.end }}' id="ucsc-link" target='_blank'>UCSC</a>
         </span>
     </p>
-    <genoverse genome="browserLocation.genome" chr="browserLocation.chromosome" start="browserLocation.start" end="browserLocation.end" example-locations="genoverseUtils.exampleLocations"></genoverse>
+    <genoverse genome="browserLocation.genome" chr="browserLocation.chromosome" start="browserLocation.start" end="browserLocation.end" genoverse-utils="genoverseUtils" example-locations="genoverseUtils.exampleLocations"></genoverse>
     {% endverbatim %}
 
 </div>
