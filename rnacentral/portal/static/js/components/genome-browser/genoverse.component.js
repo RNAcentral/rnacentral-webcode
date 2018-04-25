@@ -102,7 +102,6 @@ var genoverse = {
                         name        : 'RNAcentral',
                         info        : 'Unique RNAcentral Sequences',
                         url         : ctrl.genoverseUtils.urls.RNAcentral(),
-                        controller  : Genoverse.Track.Controller.Sequence,
                         model       : Genoverse.Track.Model.Gene.Ensembl.extend({parseData: ctrl.genoverseUtils.RNAcentralParseData}),
                         view        : Genoverse.Track.View.Transcript.Ensembl,
                         100000      : false,
