@@ -40,10 +40,10 @@ angular.module('genomeBrowser').controller('GenoverseGenomeBrowser', ['$scope', 
     $('#copy-genome-location').tipsy();
 
     // reflect any changes in genome in address bar
-    $scope.$watch('browserLocation.genome', setUrl);
-    $scope.$watch('browserLocation.chromosome', setUrl);
-    $scope.$watch('browserLocation.start', setUrl);
-    $scope.$watch('browserLocation.end', setUrl);
+    // $scope.$watch('browserLocation.genome', setUrl);
+    // $scope.$watch('browserLocation.chromosome', setUrl);
+    // $scope.$watch('browserLocation.start', setUrl);
+    // $scope.$watch('browserLocation.end', setUrl);
 
     $scope.$watch('genome', setDomain);
 
@@ -51,9 +51,6 @@ angular.module('genomeBrowser').controller('GenoverseGenomeBrowser', ['$scope', 
      * Sets the url in address bar to reflect the changes in browser location
      */
     function setUrl(newValue, oldValue) {
-        console.log("$scope.browserLocation = ", $scope.browserLocation);
-
-
         // set the full url
         $location.search({
             species: $scope.browserLocation.genome,  // filter is from Genoverse module

@@ -57,6 +57,8 @@ var genoverse = {
                 end: ctrl.end,
                 genome: ctrl.genome,
 
+                urlParamTemplate: false,
+
                 highlights: ctrl.highlights,
                 plugins: ['controlPanel', 'karyotype', 'resizer', 'fileDrop'],
                 tracks: [
@@ -156,9 +158,15 @@ var genoverse = {
             }
 
             if (changes.highlights) {
-                ctrl.browser.addHighlights(changes.highlights)
+                ctrl.browser.addHighlights(changes.highlights);
             }
 
+        };
+
+        ctrl.$doCheck = function() {
+            if (ctrl.browser.start !== ctrl.start) { ctrl.start = ctrl.browser.start; }
+            if (ctrl.browser.end !== ctrl.end) { ctrl.end = ctrl.browser.end; }
+            if (ctrl.browser.chr !== ctrl.chromosome) { ctrl.chromosome = ctrl.browser.chr; }
         };
 
     }],
