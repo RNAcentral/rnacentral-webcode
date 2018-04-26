@@ -124,8 +124,41 @@ var genoverse = {
         };
 
         ctrl.$onChanges = function(changes) {
-            // ctrl.publication = changes.publication.currentValue;
-            // ctrl.fetchAbstract(ctrl.publication.pubmed_id);
+            // TODO: Replace exampleLocations with genoverseUtils.exampleLocations
+
+            if (changes.genome)     { ctrl.genome = changes.genome.currentValue; }
+            if (changes.chr)        { ctrl.chr = changes.chr.currentValue; }
+            if (changes.start)      { ctrl.start = changes.start.currentValue; }
+            if (changes.end)        { ctrl.end = changes.end.currentValue; }
+            if (changes.highlights) { ctrl.highlights = changes.highlights.currentValue; }
+
+            if (!changes.genome && (changes.chr || changes.start || changes.end)) {
+                $scope.browser.moveTo(ctrl.chr, ctrl.start, ctrl.end, true);
+            }
+
+            if (changes.genome) {
+                if (!angular.equals(changes.genome.previousValue, changes.genome.currentValue)) {
+                    // destroy the old instance of browser and watches
+                    ctrl.browser.destroy(); // destroy genoverse and all callbacks and ajax requests
+                    delete ctrl.browser; // clear old instance of browser
+
+                    // set the default location for the browser
+                    if (ctrl.exampleLocations[newValue]) {
+                        ctrl.chr = ctrl.exampleLocations[newValue].chr;
+                        ctrl.start = ctrl.exampleLocations[newValue].start;
+                        ctrl.end = ctrl.exampleLocations[newValue].end;
+                    } else {
+                        alert("Can't find example location for genome ", newValue);
+                    }
+
+                    ctrl.render(); // create a new instance of browser
+                }
+            }
+
+            if (changes.highlights) {
+                ctrl.browser.addHighlights(changes.highlights)
+            }
+
         };
 
     }],

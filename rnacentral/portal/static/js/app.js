@@ -59,7 +59,7 @@ angular.module('rnacentralApp', [
     });
 
     $rootScope.$watch(function () {return $location.absUrl()}, function (newLocation, oldLocation) {
-        if($rootScope.actualLocation === newLocation) {
+        if ($rootScope.actualLocation === newLocation) {
             $window.location.href = $rootScope.actualLocation;
         }
     })

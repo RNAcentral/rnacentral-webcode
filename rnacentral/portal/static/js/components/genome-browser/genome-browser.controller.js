@@ -51,6 +51,9 @@ angular.module('genomeBrowser').controller('GenoverseGenomeBrowser', ['$scope', 
      * Sets the url in address bar to reflect the changes in browser location
      */
     function setUrl(newValue, oldValue) {
+        console.log("$scope.browserLocation = ", $scope.browserLocation);
+
+
         // set the full url
         $location.search({
             species: $scope.browserLocation.genome,  // filter is from Genoverse module
