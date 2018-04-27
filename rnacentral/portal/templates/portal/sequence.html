@@ -173,7 +173,7 @@ limitations under the License.
 
                 <!-- genoverse -->
                 <div ng-if="browserLocation.genome && browserLocation.chr && browserLocation.start && browserLocation.end">
-                    <genoverse genome="browserLocation.genome" chr="browserLocation.chr" start="browserLocation.start" end="browserLocation.end" highlights="browserLocation.highlights" genoverse-utils="genoverseUtils" example-locations="exampleLocations"></genoverse>
+                    <genoverse genome="browserLocation.genome" chr="browserLocation.chr" start="browserLocation.start" end="browserLocation.end" highlights="browserLocation.highlights" genoverse-utils="genoverseUtils"></genoverse>
                 </div>
 
                 <div ng-if="taxid && fetchGenomeLocationsStatus === 'success' && (genomeLocations.length + genomeMappings.length ) === 0">

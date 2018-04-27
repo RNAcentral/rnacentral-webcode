@@ -5,8 +5,6 @@ var genoverse = {
         start:            '=',
         end:              '=',
 
-        exampleLocations: '=?', // our addition, allows to switch species
-
         highlights:       '=?',
 
         genoverseUtils:   '='
@@ -125,7 +123,6 @@ var genoverse = {
         };
 
         ctrl.$doCheck = function() {
-            // TODO: Replace exampleLocations with genoverseUtils.exampleLocations
             if (ctrl.browser.start != ctrl.oldBrowserStart) {
                 ctrl.start = ctrl.oldStart = ctrl.oldBrowserStart = ctrl.browser.start;
             }
@@ -147,10 +144,10 @@ var genoverse = {
                 }
 
                 // set the default location for the browser
-                if (ctrl.exampleLocations[ctrl.genome]) {
-                    ctrl.chr = ctrl.exampleLocations[ctrl.genome].chr;
-                    ctrl.start = ctrl.exampleLocations[ctrl.genome].start;
-                    ctrl.end = ctrl.exampleLocations[ctrl.genome].end;
+                if (ctrl.genoverseUtils.exampleLocations[ctrl.genome]) {
+                    ctrl.chr = ctrl.genoverseUtils.exampleLocations[ctrl.genome].chr;
+                    ctrl.start = ctrl.genoverseUtils.exampleLocations[ctrl.genome].start;
+                    ctrl.end = ctrl.genoverseUtils.exampleLocations[ctrl.genome].end;
                 } else {
                     alert("Can't find example location for genome ", ctrl.genome);
                 }
