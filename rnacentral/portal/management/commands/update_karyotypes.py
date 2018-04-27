@@ -98,12 +98,10 @@ class Command(BaseCommand):
     def process_ensembl_karyotype(self, assembly, path):
         karyotype = self.fetch_ensembl_karyotype(assembly=assembly)
         if not path:
-            import pdb
-            pdb.set_trace()
-            EnsemblKaryotype.objects.filter(assembly_id=assembly.assembly_id).delete()
-            EnsemblKaryotype.objects.create(assembly_id=assembly, karyotype=karyotype)
+            EnsemblKaryotype.objects.update_or_create(assembly_id=assembly.assembly_id, karyotype=karyotype)
         else:
-            open(path, 'wb').write("Genoverse.Genomes." + assembly.ensembl_url + " = " + json.dumps(karyotype, indent=2))
+            file = open(path, 'wb')
+            file.write("Genoverse.Genomes.%s = %s" % (assembly.ensembl_url, json.dumps(karyotype, indent=2)))
 
     def handle(self, *args, **options):
         """Main function, called by django."""
