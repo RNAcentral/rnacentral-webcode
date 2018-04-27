@@ -12,6 +12,7 @@ limitations under the License.
 """
 from __future__ import print_function
 
+import json
 import requests
 
 from django.core.management.base import BaseCommand
@@ -31,7 +32,22 @@ class Command(BaseCommand):
             help='specific assembly, e.g. homo_sapiens'
         )
 
-    def fetch_ensembl_karyotype(self, ensembl_url, domain):
+        parser.add_argument(
+            '--path',
+            type=str,
+            help='store assembly file or files in specific directory on disk, instead of a database model'
+        )
+
+    def fetch_ensembl_karyotype(self, assembly):
+        ensembl_url = assembly.ensembl_url
+
+        if assembly.division == 'Ensembl':
+            domain = 'ensembl'
+        else:
+            domain = 'ensemblgenomes'
+
+        print("Retrieving kartyotype for: %s" % ensembl_url)
+
         response = requests.get(
             'http://rest.%s.org/info/assembly/%s?bands=1' % (domain, ensembl_url),
             headers={'Content-Type': 'application/json'}
@@ -79,30 +95,21 @@ class Command(BaseCommand):
 
         return result
 
-    def store_ensembl_karyotype(self, karyotype):
-        EnsemblKaryotype.objects.create(
-            karyotype=karyotype,
-            assembly_id=EnsemblAssembly.objects.get()
-        )
-
-    def process_ensembl_karyotype(self, assembly):
-        print("Retrieving kartyotype for: %s" % assembly.ensembl_url)
-
-        EnsemblKaryotype.objects.filter(assembly_id=assembly.assembly_id).delete()
-
-        if assembly.division == 'Ensembl':
-            domain = 'ensembl'
+    def process_ensembl_karyotype(self, assembly, path):
+        karyotype = self.fetch_ensembl_karyotype(assembly=assembly)
+        if not path:
+            import pdb
+            pdb.set_trace()
+            EnsemblKaryotype.objects.filter(assembly_id=assembly.assembly_id).delete()
+            EnsemblKaryotype.objects.create(assembly_id=assembly, karyotype=karyotype)
         else:
-            domain = 'ensemblgenomes'
-
-        karyotype = self.fetch_ensembl_karyotype(ensembl_url=assembly.ensembl_url, domain=domain)
-        EnsemblKaryotype.objects.create(assembly_id=assembly, karyotype=karyotype)
+            open(path, 'wb').write("Genoverse.Genomes." + assembly.ensembl_url + " = " + json.dumps(karyotype, indent=2))
 
     def handle(self, *args, **options):
         """Main function, called by django."""
         if options['ensembl_url']:
             assembly = EnsemblAssembly.objects.filter(ensembl_url=options['ensembl_url']).first()
-            self.process_ensembl_karyotype(assembly)
+            self.process_ensembl_karyotype(assembly, options['path'])
         else:
             for assembly in EnsemblAssembly.objects.all():
-                self.process_ensembl_karyotype(assembly)
+                self.process_ensembl_karyotype(assembly, options['path'])
