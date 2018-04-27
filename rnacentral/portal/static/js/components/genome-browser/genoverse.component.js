@@ -1,13 +1,13 @@
 var genoverse = {
     bindings: {
-        genome:           '<',
-        chr:              '<',
-        start:            '<',
-        end:              '<',
+        genome:           '=',
+        chr:              '=',
+        start:            '=',
+        end:              '=',
 
-        exampleLocations: '<?', // our addition, allows to switch species
+        exampleLocations: '=?', // our addition, allows to switch species
 
-        highlights:       '<?',
+        highlights:       '=?',
 
         genoverseUtils:   '='
     },
@@ -104,6 +104,17 @@ var genoverse = {
                     $timeout(angular.noop);
                 }
             });
+
+            // initialize old state for $doCheck hook
+            ctrl.oldBrowserStart = ctrl.browser.start;
+            ctrl.oldBrowserEnd = ctrl.browser.end;
+            ctrl.oldBrowserChr = ctrl.browser.chr;
+
+            ctrl.oldStart = ctrl.start;
+            ctrl.oldEnd = ctrl.end;
+            ctrl.oldChr = ctrl.chr;
+            ctrl.oldGenome = ctrl.genome;
+            ctrl.oldHighlights = ctrl.highlights;
         };
 
         // Hooks
@@ -113,50 +124,49 @@ var genoverse = {
             ctrl.render();
         };
 
-        ctrl.$onChanges = function(changes) {
+        ctrl.$doCheck = function() {
             // TODO: Replace exampleLocations with genoverseUtils.exampleLocations
+            if (ctrl.browser.start != ctrl.oldBrowserStart) {
+                ctrl.start = ctrl.oldStart = ctrl.oldBrowserStart = ctrl.browser.start;
+            }
+            if (ctrl.browser.end != ctrl.oldBrowserEnd) {
+                ctrl.end = ctrl.oldEnd = ctrl.oldBrowserEnd = ctrl.browser.end;
+            }
+            if (ctrl.browser.chr != ctrl.oldBrowserChr) {
+                ctrl.chr = ctrl.oldBrowserChr = ctrl.oldChr = ctrl.browser.chr;
+            }
 
-            if (changes.genome)     { ctrl.genome = changes.genome.currentValue; }
-            if (changes.chr)        { ctrl.chr = changes.chr.currentValue; }
-            if (changes.start)      { ctrl.start = changes.start.currentValue; }
-            if (changes.end)        { ctrl.end = changes.end.currentValue; }
-            if (changes.highlights) { ctrl.highlights = changes.highlights.currentValue; }
-
-            if (!changes.genome && (changes.chr || changes.start || changes.end)) {
+            if (ctrl.genome === ctrl.oldGenome && (ctrl.chr !== ctrl.oldChr || ctrl.start !== ctrl.oldStart || ctrl.end !== ctrl.oldEnd )) {
                 ctrl.browser.moveTo(ctrl.chr, ctrl.start, ctrl.end, true);
             }
-
-            if (changes.genome) {
-                if (!angular.equals(changes.genome.previousValue, changes.genome.currentValue)) {
-                    // destroy the old instance of browser and watches
-                    if (ctrl.browser) {
-                        ctrl.browser.destroy(); // destroy genoverse and all callbacks and ajax requests
-                        delete ctrl.browser; // clear old instance of browser
-                    }
-
-                    // set the default location for the browser
-                    if (ctrl.exampleLocations[changes.genome.currentValue]) {
-                        ctrl.chr = ctrl.exampleLocations[changes.genome.currentValue].chr;
-                        ctrl.start = ctrl.exampleLocations[changes.genome.currentValue].start;
-                        ctrl.end = ctrl.exampleLocations[changes.genome.currentValue].end;
-                    } else {
-                        alert("Can't find example location for genome ", changes.genome.currentValue);
-                    }
-
-                    ctrl.render(); // create a new instance of browser
+            if (ctrl.genome !== ctrl.oldGenome) {
+                // destroy the old instance of browser and watches
+                if (ctrl.browser) {
+                    ctrl.browser.destroy(); // destroy genoverse and all callbacks and ajax requests
+                    delete ctrl.browser; // clear old instance of browser
                 }
+
+                // set the default location for the browser
+                if (ctrl.exampleLocations[ctrl.genome]) {
+                    ctrl.chr = ctrl.exampleLocations[ctrl.genome].chr;
+                    ctrl.start = ctrl.exampleLocations[ctrl.genome].start;
+                    ctrl.end = ctrl.exampleLocations[ctrl.genome].end;
+                } else {
+                    alert("Can't find example location for genome ", ctrl.genome);
+                }
+
+                ctrl.render(); // create a new instance of browser
+
+                ctrl.oldGenome = ctrl.genome;
+                ctrl.oldChr = ctrl.oldBrowserChr = ctrl.chr;
+                ctrl.oldStart = ctrl.oldBrowserStart = ctrl.start;
+                ctrl.oldEnd = ctrl.oldBrowserEnd = ctrl.end;
+            }
+            if (ctrl.highlights !== ctrl.oldHighlights) {
+                ctrl.browser.addHighlights(ctrl.highlights);
+                ctrl.oldHighlights = ctrl.highlights;
             }
 
-            if (changes.highlights) {
-                ctrl.browser.addHighlights(changes.highlights);
-            }
-
-        };
-
-        ctrl.$doCheck = function() {
-            if (ctrl.browser.start !== ctrl.start) { ctrl.start = ctrl.browser.start; }
-            if (ctrl.browser.end !== ctrl.end) { ctrl.end = ctrl.browser.end; }
-            if (ctrl.browser.chr !== ctrl.chromosome) { ctrl.chromosome = ctrl.browser.chr; }
         };
 
     }],
