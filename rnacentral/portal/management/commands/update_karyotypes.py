@@ -98,7 +98,11 @@ class Command(BaseCommand):
     def process_ensembl_karyotype(self, assembly, path):
         karyotype = self.fetch_ensembl_karyotype(assembly=assembly)
         if not path:
-            EnsemblKaryotype.objects.update_or_create(assembly_id=assembly.assembly_id, karyotype=karyotype)
+            EnsemblKaryotype.objects.update_or_create(assembly=assembly, karyotype=karyotype)
+            # from django.db import connection
+            # print(connection.queries[-1])
+            # import pdb
+            # pdb.set_trace()
         else:
             file = open(path, 'wb')
             file.write("Genoverse.Genomes.%s = %s" % (assembly.ensembl_url, json.dumps(karyotype, indent=2)))

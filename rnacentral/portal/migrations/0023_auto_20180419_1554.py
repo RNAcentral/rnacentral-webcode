@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='ensemblkaryotype',
-            name='assembly_id',
+            name='assembly',
             field=models.ForeignKey(db_column=b'assembly_id', default='foobar', on_delete=django.db.models.deletion.CASCADE, related_name='karyotype', to='portal.EnsemblAssembly'),
             preserve_default=False,
         ),
