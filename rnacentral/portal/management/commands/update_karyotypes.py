@@ -24,6 +24,8 @@ class Command(BaseCommand):
     """
     Usage:
     python manage.py update_karyotypes
+    python manage.py update_karyotypes --ensembl_url homo_sapiens
+    python manage.py update_karyotypes --path ./portal/static/node_modules/@burkov/genoverse/dist/js/genomes
     """
     def add_arguments(self, parser):
         parser.add_argument(
@@ -99,12 +101,8 @@ class Command(BaseCommand):
         karyotype = self.fetch_ensembl_karyotype(assembly=assembly)
         if not path:
             EnsemblKaryotype.objects.update_or_create(assembly=assembly, karyotype=karyotype)
-            # from django.db import connection
-            # print(connection.queries[-1])
-            # import pdb
-            # pdb.set_trace()
         else:
-            file = open(path, 'wb')
+            file = open(path + '/' + assembly.ensembl_url + '.js', 'wb')
             file.write("Genoverse.Genomes.%s = %s" % (assembly.ensembl_url, json.dumps(karyotype, indent=2)))
 
     def handle(self, *args, **options):

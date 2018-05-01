@@ -50,13 +50,13 @@ limitations under the License.
                 <link rel="stylesheet" href="{% static "node_modules/angular-loading-bar/build/loading-bar.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/timelinejs3/compiled/css/timeline.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/timelinejs3/compiled/css/fonts/font.bevan-pontanosans.css" %}">
-                <link rel="stylesheet" href="{% static "node_modules/angularjs-genoverse/lib/Genoverse/css/genoverse.css" %}">
-                <link rel="stylesheet" href="{% static "node_modules/angularjs-genoverse/lib/Genoverse/css/controlPanel.css" %}">
-                <link rel="stylesheet" href="{% static "node_modules/angularjs-genoverse/lib/Genoverse/css/fileDrop.css" %}">
-                <link rel="stylesheet" href="{% static "node_modules/angularjs-genoverse/lib/Genoverse/css/karyotype.css" %}">
-                <link rel="stylesheet" href="{% static "node_modules/angularjs-genoverse/lib/Genoverse/css/resizer.css" %}">
-                <link rel="stylesheet" href="{% static "node_modules/angularjs-genoverse/lib/Genoverse/css/trackControls.css" %}">
-                <link rel="stylesheet" href="{% static "node_modules/angularjs-genoverse/lib/Genoverse/css/tooltips.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/genoverse.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/controlPanel.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/fileDrop.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/karyotype.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/resizer.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/trackControls.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/tooltips.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/angularjs-slider/dist/rzslider.css" %}">
             {% endblock stylesheets %}
         {% endcompress %}
@@ -203,7 +203,7 @@ limitations under the License.
 
         <!-- import genoverse plugin or angularjs-genoverse directive OUTSIDE (!) compress block -->
         <!-- Genoverse bundle contains jquery, avoid conflict with our jquery - let Genoverse go first -->
-        <script src="{% static "node_modules/angularjs-genoverse/lib/Genoverse/dist/js/genoverse.concat.nodeps.js" %}"></script>
+        <script src="{% static "node_modules/@burkov/genoverse/dist/js/genoverse.concat.nodeps.js" %}"></script>
         <script src="{% static "node_modules/jquery-ui-bundle/jquery-ui.js" %}"></script>
         <script src="{% static "node_modules/jquery.mousehold/jquery.mousehold.js" %}"></script>
         <script src="{% static "node_modules/jquery.mousewheel/jquery.mousewheel.js" %}"></script>
