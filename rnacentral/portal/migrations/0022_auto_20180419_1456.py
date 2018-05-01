@@ -20,6 +20,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('karyotype', django.contrib.postgres.fields.jsonb.JSONField()),
+                ('assembly', models.ForeignKey(db_column=b'assembly_id', default='foobar', on_delete=models.CASCADE, related_name='karyotype', to='portal.EnsemblAssembly')),
             ],
             options={
                 'db_table': 'ensembl_karyotype',

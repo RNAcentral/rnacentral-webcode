@@ -19,7 +19,7 @@ from portal.models import EnsemblAssembly
 
 
 class EnsemblKaryotype(CachingMixin, models.Model):
-    assembly = models.ForeignKey(EnsemblAssembly, related_name='karyotype', db_column='assembly_id', to_field='assembly_id')
+    assembly = models.ForeignKey(EnsemblAssembly, related_name='karyotype', db_column='assembly_id', to_field='assembly_id', on_delete=models.CASCADE)
     karyotype = JSONField()
 
     objects = CachingManager()
