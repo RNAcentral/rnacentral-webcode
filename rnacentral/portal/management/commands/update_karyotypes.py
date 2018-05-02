@@ -48,7 +48,7 @@ class Command(BaseCommand):
         else:
             domain = 'ensemblgenomes'
 
-        print("Retrieving kartyotype for: %s" % ensembl_url)
+        print("Retrieving kartyotype for: %s from %s" % (ensembl_url, domain))
 
         response = requests.get(
             'http://rest.%s.org/info/assembly/%s?bands=1' % (domain, ensembl_url),
@@ -86,7 +86,7 @@ class Command(BaseCommand):
                         }]
                     }
 
-            elif data["coord_system"] == "scaffold":
+            elif data["coord_system"] == "scaffold" or data["coord_system"] == "supercontig":
                 result[data["name"]] = {
                     "size": data["length"],
                     "bands": [{
