@@ -89,9 +89,37 @@ var genoverse = {
                         autoHeight  : true,
                         hideEmpty   : false
                     })
-                ]
+                ],
+                loadGenome: function () {
+                    if (typeof this.genome === 'string') {
+                        var genomeName = this.genome;
+
+                        return $.ajax({
+                            url      : '/api/v1/karyotypes/' + genomeName,
+                            dataType : 'json',
+                            context  : this,
+                            success  : function (result) {
+                                Genoverse.Genomes[genomeName] = result;
+                                this.genome = Genoverse.Genomes[genomeName];
+
+                                if (!this.genome) {
+                                    this.die('Unable to load genome ' + genomeName);
+                                }
+                            }
+                        });
+                    }
+                },
             };
-            ctrl.browser = new Genoverse(genoverseConfig);
+
+            try { ctrl.browser = new Genoverse(genoverseConfig); }
+            catch (e) {
+                if (e instanceof TypeError) {
+                    ctrl.browser.destroy();
+                    delete ctrl.browser;
+                    genoverseConfig.plugins = ['controlPanel', 'resizer', 'fileDrop'];
+                    ctrl.browser = new Genoverse(genoverseConfig);
+                }
+            }
 
             // set browser -> Angular data flow
             ctrl.browser.on({
