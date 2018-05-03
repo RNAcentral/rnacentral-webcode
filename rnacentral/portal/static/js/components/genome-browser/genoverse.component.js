@@ -203,15 +203,15 @@ var genoverse = {
 
             };
 
-            try { ctrl.browser = new Genoverse(genoverseConfig); }
-            catch (e) {
-                if (e instanceof TypeError) {
-                    ctrl.browser.destroy();
-                    delete ctrl.browser;
-                    genoverseConfig.plugins = ['controlPanel', 'resizer', 'fileDrop'];
-                    ctrl.browser = new Genoverse(genoverseConfig);
-                }
-            }
+            ctrl.browser = new Genoverse(genoverseConfig);
+            // catch (e) {
+            //     if (e instanceof TypeError) {
+            //         ctrl.browser.destroy();
+            //         delete ctrl.browser;
+            //         genoverseConfig.plugins = ['controlPanel', 'resizer', 'fileDrop'];
+            //         ctrl.browser = new Genoverse(genoverseConfig);
+            //     }
+            // }
 
             // set browser -> Angular data flow
             ctrl.browser.on({
