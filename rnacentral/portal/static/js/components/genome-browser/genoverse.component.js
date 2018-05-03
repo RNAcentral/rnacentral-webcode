@@ -109,6 +109,98 @@ var genoverse = {
                         });
                     }
                 },
+                /**
+                 * Override loadPlugins to hard-code genoverse location, so that Genoverse survives minification.
+                 */
+                loadPlugins: function (plugins) {
+                    var browser         = this;
+                    var loadPluginsTask = $.Deferred();
+
+                    plugins = plugins || this.plugins;
+
+                    this.loadedPlugins = this.loadedPlugins || {};
+
+                    for (var i in Genoverse.Plugins) {
+                      this.loadedPlugins[i] = this.loadedPlugins[i] || 'script';
+                    }
+
+                    if (typeof plugins === 'string') {
+                      plugins = [ plugins ];
+                    }
+
+                    function loadPlugin(plugin) {
+                      var css      = '/static/node_modules/@burkov/genoverse/dist/' + 'css/'        + plugin + '.css';
+                      var js       = '/static/node_modules/@burkov/genoverse/dist/' + 'js/plugins/' + plugin + '.js';
+                      var deferred = $.Deferred();
+
+                      function getCSS() {
+                        function done() {
+                          browser.loadedPlugins[plugin] = browser.loadedPlugins[plugin] || 'script';
+                          deferred.resolve(plugin);
+                        }
+
+                        if (Genoverse.Plugins[plugin].noCSS || $('link[href="' + css + '"]').length) {
+                          return done();
+                        }
+
+                        $('<link href="' + css + '" rel="stylesheet">').on('load', done).appendTo('body');
+                      }
+
+                      if (browser.loadedPlugins[plugin] || $('script[src="' + js + '"]').length) {
+                        getCSS();
+                      } else {
+                        $.getScript(js, getCSS);
+                      }
+
+                      return deferred;
+                    }
+
+                    function initializePlugin(plugin) {
+                      if (typeof Genoverse.Plugins[plugin] !== 'function' || browser.loadedPlugins[plugin] === true) {
+                        return [];
+                      }
+
+                      var requires = Genoverse.Plugins[plugin].requires;
+                      var deferred = $.Deferred();
+
+                      function init() {
+                        if (browser.loadedPlugins[plugin] !== true) {
+                          Genoverse.Plugins[plugin].call(browser);
+                          browser.container.addClass('gv-' + plugin.replace(/([A-Z])/g, '-$1').toLowerCase() + '-plugin');
+                          browser.loadedPlugins[plugin] = true;
+                        }
+
+                        deferred.resolve();
+                      }
+
+                      if (requires) {
+                        $.when(browser.loadPlugins(requires)).done(init);
+                      } else {
+                        init();
+                      }
+
+                      return deferred;
+                    }
+
+                    // Load plugins css file
+                    $.when.apply($, $.map(plugins, loadPlugin)).done(function () {
+                      var pluginsLoaded = [];
+                      var plugin;
+
+                      for (var i = 0; i < arguments.length; i++) {
+                        plugin = arguments[i];
+
+                        if (browser.loadedPlugins[plugin] !== true) {
+                          pluginsLoaded.push(initializePlugin(plugin));
+                        }
+                      }
+
+                      $.when.apply($, pluginsLoaded).always(loadPluginsTask.resolve);
+                    });
+
+                    return loadPluginsTask;
+                  },
+
             };
 
             try { ctrl.browser = new Genoverse(genoverseConfig); }
