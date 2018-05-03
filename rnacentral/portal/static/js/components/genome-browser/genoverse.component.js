@@ -141,6 +141,21 @@ var genoverse = {
             ctrl.oldChr = ctrl.chr;
             ctrl.oldGenome = ctrl.genome;
             ctrl.oldHighlights = ctrl.highlights;
+
+            // resize genoverse on browser width changes, if container passed - attach once only
+            $(window).on('resize', ctrl.setGenoverseWidth);
+        };
+
+        /**
+         * Makes browser "responsive" - if container changes width, so does the browser.
+         */
+        ctrl.setGenoverseWidth = function() {
+            // if $scope.container passed, makes browser width responsive
+            var width = $('.genoverse-wrap').width();
+            ctrl.browser.setWidth(width);
+
+            // resize might change viewport location - digest these changes
+            $timeout(angular.noop)
         };
 
         // Hooks
