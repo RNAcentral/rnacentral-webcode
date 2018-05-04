@@ -22,7 +22,7 @@
   "dependencies": {
     "@burkov/feature-viewer": "^1.1.1",
     "@burkov/fornac": "^1.1.10",
-    "@burkov/genoverse": "^3.0.0",
+    "@burkov/genoverse": "^3.0.1",
     "angular": "^1.6.4",
     "angular-animate": "^1.6.4",
     "angular-filter": "^0.5.17",
@@ -30,7 +30,6 @@
     "angular-resource": "^1.6.4",
     "angular-sanitize": "^1.6.4",
     "angular-ui-bootstrap": "^2.5.0",
-    "angularjs-genoverse": "^4.1.0",
     "angularjs-slider": "^6.4.3",
     "animate.css": "^3.5.2",
     "bootstrap": "^3.3.7",
