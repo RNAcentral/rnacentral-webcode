@@ -60,7 +60,9 @@ urlpatterns = [
     url(r'genomes/$', views.GenomesAPIViewSet.as_view({'get': 'list'}), {}, name='genomes-api'),
     url(r'genomes/(?P<ensembl_url>\w+)/$', views.GenomesAPIViewSet.as_view({'get': 'retrieve'}), {}, name='genomes-api'),
     # mapping of ensembl assemblies to insdc submissions
-    url(r'ensembl-insdc-mapping/$', views.EnsemblInsdcMappingView.as_view(), {}, name='ensembl-insdc-mapping')
+    url(r'ensembl-insdc-mapping/$', views.EnsemblInsdcMappingView.as_view(), {}, name='ensembl-insdc-mapping'),
+    # endpoint that returns karyotypes, downloaded from ensembl
+    url(r'karyotypes/(?P<ensembl_url>.*?)/?$', cache_page(CACHE_TIMEOUT)(views.EnsemblKaryotypeAPIView.as_view()), {}, name='ensembl-karyotype')
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'yaml', 'fasta', 'api', 'gff', 'gff3', 'bed'])

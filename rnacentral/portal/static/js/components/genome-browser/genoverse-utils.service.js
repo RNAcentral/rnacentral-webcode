@@ -215,15 +215,16 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
                     feature.color = '#8B668B';
 
                     // Make currently selected feature red
-                    if ((typeof self.$scope.selectedLocation !== 'undefined') &&
-                        (feature.start === self.$scope.selectedLocation.start) &&
-                        (feature.end === self.$scope.selectedLocation.end) &&
-                        (feature.chr === self.$scope.selectedLocation.chr) &&
-                        (feature.external_name === self.$scope.upi)) {
-                        feature.color = "#FF0000";
-                        data.filter(function (datum) { return datum.feature_type === 'exon' && datum.Parent === feature.ID; }).forEach(function (exon) {
-                            exon.borderColor = "#FF0000";
-                        });
+                    if (typeof self.$scope.selectedLocation !== 'undefined') {
+                        if ((feature.start === self.$scope.selectedLocation.start) &&
+                            (feature.end === self.$scope.selectedLocation.end) &&
+                            (feature.chr === self.$scope.selectedLocation.chr) &&
+                            (feature.external_name === self.$scope.upi)) {
+                            feature.color = "#FF0000";
+                            data.filter(function (datum) { return datum.feature_type === 'exon' && datum.Parent === feature.ID; }).forEach(function (exon) {
+                                exon.borderColor = "#FF0000";
+                            });
+                        }
                     }
 
                     model.insertFeature(feature);

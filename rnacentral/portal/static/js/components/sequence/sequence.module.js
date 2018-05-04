@@ -414,6 +414,6 @@ var sceWhitelist = function($sceDelegateProvider) {
 sceWhitelist.$inject = ['$sceDelegateProvider'];
 
 
-angular.module("rnaSequence", ['ngResource', 'ngAnimate', 'ngSanitize', 'ui.bootstrap', 'routes', 'Genoverse'])
+angular.module("rnaSequence", ['ngResource', 'ngAnimate', 'ngSanitize', 'ui.bootstrap', 'routes'])
     .config(sceWhitelist)
     .controller("rnaSequenceController", rnaSequenceController);
