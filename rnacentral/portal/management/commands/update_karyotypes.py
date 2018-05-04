@@ -86,7 +86,7 @@ class Command(BaseCommand):
                         }]
                     }
 
-            elif data["coord_system"] == "scaffold" or data["coord_system"] == "supercontig":
+            else:  # if data["coord_system"] == "scaffold" or data["coord_system"] == "supercontig" or there might be other types
                 result[data["name"]] = {
                     "size": data["length"],
                     "bands": [{
@@ -100,7 +100,8 @@ class Command(BaseCommand):
     def process_ensembl_karyotype(self, assembly, path):
         karyotype = self.fetch_ensembl_karyotype(assembly=assembly)
         if not path:
-            EnsemblKaryotype.objects.update_or_create(assembly=assembly, karyotype=karyotype)
+            EnsemblKaryotype.objects.filter(assembly=assembly).delete()
+            EnsemblKaryotype.objects.create(assembly=assembly, karyotype=karyotype)
         else:
             file = open(path + '/' + assembly.ensembl_url + '.js', 'wb')
             file.write("Genoverse.Genomes.%s = %s" % (assembly.ensembl_url, json.dumps(karyotype, indent=2)))
