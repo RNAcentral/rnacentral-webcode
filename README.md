@@ -143,9 +143,7 @@ or get in touch using the [Contact form](http://rnacentral.org/contact) on our w
 * [Twitter Bootstrap](http://getbootstrap.com/)
 * [D3](http://d3js.org/)
 * [jQuery](https://jquery.com/)
-* [DataTables](http://datatables.net/)
 * [Hopscotch](https://github.com/linkedin/hopscotch)
-* [Handlebars](http://handlebarsjs.com/)
 * [Genoverse](http://genoverse.org)
 * see [LICENSE](LICENSE) for more details
 

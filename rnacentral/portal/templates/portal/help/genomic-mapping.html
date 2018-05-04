@@ -31,20 +31,20 @@ Help: Genomic mapping
     </p>
 
     <div class="row">
-    {% for division in divisions %}
-      {% if division.species %}
-        <div class="col-md-4">
-          <h4>{{ division.name }}</h4>
+    {% regroup assemblies by division as assemblies_by_division %}
 
-          <ol>
-          {% for species in division.species %}
-            <li>
-              <a  href="" ng-click="search.search('TAXONOMY:&quot;{{ species.taxid }}&quot; AND has_genomic_coordinates:&quot;True&quot;')">{{ species.name }}</a>
-            </li>
-          {% endfor %}
-          </ol>
-        </div>
-      {% endif %}
+    {% for division in assemblies_by_division %}
+      <div class="col-md-4">
+        <h4>{{ division.grouper }}</h4>
+
+        <ol>
+        {% for assembly in division.list %}
+          <li>
+            <a href="" ng-click="search.search('TAXONOMY:&quot;{{ assembly.taxid }}&quot; AND has_genomic_coordinates:&quot;True&quot;')">{{ assembly.ensembl_url }}</a>
+          </li>
+        {% endfor %}
+        </ol>
+      </div>
     {% endfor %}
     </div>
 

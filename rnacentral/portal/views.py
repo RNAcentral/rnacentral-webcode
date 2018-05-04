@@ -30,9 +30,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from portal.config.expert_databases import expert_dbs
-from portal.config.genomes import genomes as rnacentral_genomes, get_taxonomy_info_by_genome_identifier
 from portal.forms import ContactForm
-from portal.models import Rna, Database, Release, Xref
+from portal.models import Rna, Database, Release, Xref, EnsemblAssembly
 from portal.models.database_stats import DatabaseStats
 from portal.models.rna_precomputed import RnaPrecomputed
 
@@ -255,10 +254,6 @@ class GenomeBrowserView(TemplateView):
     def get(self, request, *args, **kwargs):
         self.template_name = 'portal/genome-browser.html'
 
-        # always add genomes to kwargs
-        genomes = sorted(rnacentral_genomes, key=lambda x: x['species'])
-        kwargs['genomes'] = genomes
-
         # if current location is given in GET parameters - use it; otherwise, use defaults
         if 'species' in request.GET and ('chromosome' in request.GET or 'chr' in request.GET) and 'start' in request.GET and 'end' in request.GET:
             # security-wise it doesn't make sense to validate location:
@@ -278,11 +273,12 @@ class GenomeBrowserView(TemplateView):
             kwargs['start'] = request.GET['start']
             kwargs['end'] = request.GET['end']
         else:
-            genome_info = get_taxonomy_info_by_genome_identifier('homo_sapiens')
+            ensembl_assembly = EnsemblAssembly.objects.get(ensembl_url='homo_sapiens')
+
             kwargs['genome'] = 'homo_sapiens'
-            kwargs['chromosome'] = genome_info['example_location']['chromosome']
-            kwargs['start'] = genome_info['example_location']['start']
-            kwargs['end'] = genome_info['example_location']['end']
+            kwargs['chromosome'] = ensembl_assembly.example_chromosome
+            kwargs['start'] = ensembl_assembly.example_start
+            kwargs['end'] = ensembl_assembly.example_end
 
         response = super(GenomeBrowserView, self).get(request, *args, **kwargs)
         try:

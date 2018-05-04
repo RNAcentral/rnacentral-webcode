@@ -16,8 +16,6 @@ import re
 
 from django.db import models
 
-from portal.config.genomes import get_ensembl_species_url
-
 
 class Accession(models.Model):
     accession = models.CharField(max_length=100, primary_key=True)
@@ -140,7 +138,18 @@ class Accession(models.Model):
 
     def get_ensembl_species_url(self):
         """Get species name in a format that can be used in Ensembl urls."""
-        return get_ensembl_species_url(self.species, self.accession)
+        if self.species == 'Dictyostelium discoideum':
+            species = 'Dictyostelium discoideum AX4'
+        elif self.species.startswith('Mus musculus') and self.accession.startswith('MGP'):  # Ensembl mouse strain
+            parts = self.accession.split('_')
+            if len(parts) == 3:
+                species = 'Mus musculus ' + parts[1]
+            else:
+                species = self.species
+        else:
+            species = self.species
+
+        return species.replace(' ', '_').lower()
 
     def get_expert_db_external_url(self):
         """Get external url to expert database."""
@@ -202,3 +211,37 @@ class Accession(models.Model):
             return urls[self.database].format(id=self.external_id)
         else:
             return ''
+
+
+def url2db(identifier):
+    """
+    Converts species name from its representation in url to its database representation.
+    :param identifier: Species name as in url, e.g. "canis_familiaris"
+    :return: Species name as in database "Canis lupus familiaris"
+    """
+    # special cases
+    if identifier in ('canis_familiaris', 'canis_lupus_familiaris'):
+        return "Canis lupus familiaris"
+    elif identifier in ('gorilla_gorilla', 'gorilla_gorilla_gorilla'):
+        return "Gorilla gorilla gorilla"
+    elif identifier in ('ceratotherium_simum', 'ceratotherium_simum_simum'):
+        return "Ceratotherium simum simum"
+    else:
+        return identifier.replace('_', ' ').capitalize()
+
+
+def db2url(identifier):
+    """
+    Converts species name from its representation in database to url representation.
+    :param identifier: Species name as in url, e.g. "Canis lupus familiaris"
+    :return: Species name as in database "canis_familiaris"
+    """
+    # special cases
+    if identifier in ("Canis lupus familiaris", "Canis familiaris"):
+        return "canis_familiaris"
+    elif identifier in ("Gorilla gorilla gorilla", "Gorilla gorilla"):
+        return "gorilla_gorilla"
+    elif identifier in ("Ceratotherium simum simum", "Ceratotherium simum"):
+        return "ceratotherium_simum"
+    else:
+        return identifier.replace(' ', '_').lower()

@@ -60,15 +60,31 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     // Data fetch functions
     // --------------------
 
+    $scope.fetchGenomes = function() {
+        return $q(function(resolve, reject) {
+            $http.get(routes.genomesApi({ ensemblAssembly: "" }), { params: { page: 1, page_size: 1000000 } }).then(
+                function (response) {
+                    $scope.genomes = response.data.results;
+                    resolve(response.data);
+                },
+                function () {
+                    $scope.fetchGenomeLocationsError = true;
+                    reject();
+                }
+            )
+        });
+    };
+
     $scope.fetchGenomeLocations = function () {
         return $q(function (resolve, reject) {
-            $http.get(routes.apiGenomeLocationsView({upi: $scope.upi, taxid: $scope.taxid})).then(
+            $http.get(routes.apiGenomeLocationsView({ upi: $scope.upi, taxid: $scope.taxid })).then(
                 function (response) {
                     $scope.genomeLocations = response.data;
                     resolve(response.data);
                 },
                 function () {
-
+                    $scope.fetchGenomeLocationsError = true;
+                    reject();
                 }
             );
         });
@@ -122,7 +138,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         $scope.browserLocation.end = end + length > $scope.chromosomeSize ? $scope.chromosomeSize : end + length;
         $scope.browserLocation.chr = chr;
         $scope.browserLocation.genome = genome;
-        $scope.browserLocation.domain = $scope.genoverseUtils.getEnsemblSubdomainByDivision($scope.browserLocation.genome, $scope.genoverseUtils.genomes);
+        $scope.browserLocation.domain = $scope.genoverseUtils.getGenomeObject($scope.browserLocation.genome, $scope.genomes).subdomain;
         $scope.browserLocation.highlights = [{
             start: start,
             end: end,
@@ -356,7 +372,9 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         // if any locations/mappings, activate genome browser
         if ($scope.genomeLocations.length > 0 || $scope.genomeMappings.length > 0) {
             var location = $scope.genomeLocations.length ? $scope.genomeLocations[0] : $scope.genomeMappings[0];
-            $scope.activateGenomeBrowser(location.start, location.end, location.chromosome, location.species);
+            $scope.fetchGenomes().then(function() {
+                    $scope.activateGenomeBrowser(location.start, location.end, location.chromosome, location.species);
+            });
         }
 
         // join genome locations and mappings and sort them in a biologically relevant way

@@ -26,7 +26,6 @@ limitations under the License.
 
 <script type="text/javascript">
     // global variables, exported from django context
-    genomes = {{ genomes | safe }}; // JSON
     genome = "{{ genome }}"; // String
     chromosome = "{{ chromosome | safe }}"; // String
     start = {{ start | safe }}; // Number
@@ -34,6 +33,7 @@ limitations under the License.
 </script>
 
 <div ng-controller="GenoverseGenomeBrowser" ng-cloak>
+  <div ng-if="genomes">
     <div class="row">
         <div class="col-md-12" role="main">
 
@@ -47,7 +47,7 @@ limitations under the License.
             <div class="row" style="padding-left: 15px;">
                 <div class="col-lg-3 col-md-3 col-sm-12">
                     <label for="genomic-species-select">Species</label>
-                    <select id="genomic-species-select" class="form-control" ng-options="genome for genome in genoverseUtils.genomeNames" ng-model="browserLocation.genome">
+                    <select id="genomic-species-select" class="form-control" ng-options="genome.ensembl_url as genome.common_name for genome in rnacentralGenomes" ng-model="browserLocation.genome">
                     </select>
                 </div>
                 <div class="ol-lg-2 col-md-2 col-sm-4">
@@ -82,5 +82,6 @@ limitations under the License.
     <genoverse genome="browserLocation.genome" chr="browserLocation.chromosome" start="browserLocation.start" end="browserLocation.end" genoverse-utils="genoverseUtils"></genoverse>
     {% endverbatim %}
 
+  </div>
 </div>
 {% endblock content %}

@@ -36,11 +36,11 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
                               RnaSpeciesSpecificSerializer, ExpertDatabaseStatsSerializer, \
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, RfamHitSerializer, \
-                              EnsemblInsdcMappingSerializer
+                              EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
-from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblInsdcMapping, \
-    EnsemblAssembly, GenomeMapping
-from portal.config.genomes import genomes, url2db, db2url, SpeciesNotInGenomes, get_taxid_from_species, get_ensembl_division, get_ensembl_species_url, get_ucsc_db_id
+
+from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
+    EnsemblInsdcMapping, GenomeMapping, url2db, db2url
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination
 
@@ -527,7 +527,7 @@ class RnaGenomeMappings(generics.ListAPIView):
                                       .values('region_id', 'strand', 'chromosome', 'taxid', 'identity')\
                                       .annotate(Min('start'), Max('stop'))
 
-        species = rna.xrefs.filter(taxid=taxid).first().accession.species  # this applies only to species-specific pages
+        assembly = EnsemblAssembly.objects.get(taxid=taxid)  # this applies only to species-specific pages
 
         output = []
         for mapping in mappings:
@@ -537,10 +537,10 @@ class RnaGenomeMappings(generics.ListAPIView):
                 'start': mapping["start__min"],
                 'end': mapping["stop__max"],
                 'identity': mapping["identity"],
-                'species': db2url(species),
-                'ucsc_db_id': get_ucsc_db_id(mapping["taxid"]),
-                'ensembl_division': get_ensembl_division(species),
-                'ensembl_species_url': get_ensembl_species_url(species, rna.xrefs.first().accession.accession)
+                'species': assembly.ensembl_url,
+                'ucsc_db_id': assembly.assembly_ucsc,
+                'ensembl_division': assembly.division,
+                'ensembl_species_url': assembly.ensembl_url
             }
             output.append(data)
 
@@ -642,14 +642,13 @@ class ExpertDatabasesStatsViewSet(RetrieveModelMixin, ListModelMixin, GenericVie
         return super(ExpertDatabasesStatsViewSet, self).retrieve(request, *args, **kwargs)
 
 
-class GenomesAPIView(APIView):
-    """API endpoint, presenting genomes available for display in RNAcentral genome browser."""
-    permission_classes = ()
-    authentication_classes = ()
-
-    def get(self, request, format=None):
-        sorted_genomes = sorted(genomes, key=lambda x: x['species'])
-        return Response(sorted_genomes)
+class GenomesAPIViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
+    """API endpoint, presenting all E! assemblies, available in RNAcentral."""
+    permission_classes = (AllowAny, )
+    serializer_class = EnsemblAssemblySerializer
+    pagination_class = Pagination
+    queryset = EnsemblAssembly.objects.all().order_by('-ensembl_url')
+    lookup_field = 'ensembl_url'
 
 
 class RfamHitsAPIViewSet(generics.ListAPIView):
