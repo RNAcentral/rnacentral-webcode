@@ -33,6 +33,7 @@ limitations under the License.
             {% block title %} RNAcentral {% endblock %}
         </title>
 
+        <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/genoverse.css" %}">
         {% compress css %}
             {% block stylesheets %}
                 <!-- warning: feature viewer css conflicts with bootstrap for navbar etc. -->
@@ -50,7 +51,6 @@ limitations under the License.
                 <link rel="stylesheet" href="{% static "node_modules/angular-loading-bar/build/loading-bar.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/timelinejs3/compiled/css/timeline.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/timelinejs3/compiled/css/fonts/font.bevan-pontanosans.css" %}">
-                <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/genoverse.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/controlPanel.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/fileDrop.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/karyotype.css" %}">
