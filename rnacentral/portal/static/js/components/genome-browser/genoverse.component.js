@@ -258,19 +258,6 @@ var genoverse = {
         };
 
         ctrl.$doCheck = function() {
-            if (ctrl.browser.start != ctrl.oldBrowserStart) {
-                ctrl.start = ctrl.oldStart = ctrl.oldBrowserStart = ctrl.browser.start;
-            }
-            if (ctrl.browser.end != ctrl.oldBrowserEnd) {
-                ctrl.end = ctrl.oldEnd = ctrl.oldBrowserEnd = ctrl.browser.end;
-            }
-            if (ctrl.browser.chr != ctrl.oldBrowserChr) {
-                ctrl.chr = ctrl.oldBrowserChr = ctrl.oldChr = ctrl.browser.chr;
-            }
-
-            if (ctrl.genome === ctrl.oldGenome && (ctrl.chr !== ctrl.oldChr || ctrl.start !== ctrl.oldStart || ctrl.end !== ctrl.oldEnd )) {
-                ctrl.browser.moveTo(ctrl.chr, ctrl.start, ctrl.end, true);
-            }
             if (ctrl.genome !== ctrl.oldGenome) {
                 // destroy the old instance of browser and watches
                 if (ctrl.browser) {
@@ -294,7 +281,19 @@ var genoverse = {
                 ctrl.oldStart = ctrl.oldBrowserStart = ctrl.start;
                 ctrl.oldEnd = ctrl.oldBrowserEnd = ctrl.end;
             }
-            if (ctrl.highlights !== ctrl.oldHighlights) {
+            else if (ctrl.genome === ctrl.oldGenome && (ctrl.chr !== ctrl.oldChr || ctrl.start !== ctrl.oldStart || ctrl.end !== ctrl.oldEnd )) {
+                ctrl.browser.moveTo(ctrl.chr, ctrl.start, ctrl.end, true);
+            }
+            else if (ctrl.browser.start != ctrl.oldBrowserStart) {
+                ctrl.start = ctrl.oldStart = ctrl.oldBrowserStart = ctrl.browser.start;
+            }
+            else if (ctrl.browser.end != ctrl.oldBrowserEnd) {
+                ctrl.end = ctrl.oldEnd = ctrl.oldBrowserEnd = ctrl.browser.end;
+            }
+            else if (ctrl.browser.chr != ctrl.oldBrowserChr) {
+                ctrl.chr = ctrl.oldBrowserChr = ctrl.oldChr = ctrl.browser.chr;
+            }
+            else if (ctrl.highlights !== ctrl.oldHighlights) {
                 ctrl.browser.addHighlights(ctrl.highlights);
                 ctrl.oldHighlights = ctrl.highlights;
             }
