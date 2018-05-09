@@ -35,6 +35,8 @@ angular.module("routes", []).service('routes', ['$interpolate', function($interp
         ebiAutocomplete: 'http://www.ebi.ac.uk/ebisearch/ws/rest/RNAcentral/autocomplete?term={{ query }}&format=json'
     };
 
+    apiGoTermsView: '/api/v1/rna/{{ upi }}/go-annotations/{{ taxid }}';
+
     // apply $interpolate to each route template expression
     return Object.keys(routes)
           .map(function(key) { var output = {}; output[key] = $interpolate(routes[key]); return output })
