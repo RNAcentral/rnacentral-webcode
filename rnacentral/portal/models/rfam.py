@@ -168,7 +168,7 @@ class RfamGoTerm(models.Model):
     rfam_go_term_id = models.AutoField(primary_key=True)
     go_term = models.ForeignKey(
         OntologyTerm,
-        db_column='go_term_id',
+        db_column='ontology_term_id',
         to_field='ontology_term_id',
         related_name='go_term'
     )
