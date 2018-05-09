@@ -15,7 +15,7 @@ limitations under the License.
 
 from django.db import models
 
-from .go_terms import GoTerm
+from .go_terms import OntologyTerm
 
 RFAM_FAMILY_URL = 'http://rfam.org/family/'
 
@@ -167,9 +167,9 @@ class RfamAnalyzedSequences(models.Model):
 class RfamGoTerm(models.Model):
     rfam_go_term_id = models.AutoField(primary_key=True)
     go_term = models.ForeignKey(
-        GoTerm,
+        OntologyTerm,
         db_column='go_term_id',
-        to_field='go_term_id',
+        to_field='ontology_term_id',
         related_name='go_term'
     )
     rfam_model = models.ForeignKey(
