@@ -1,6 +1,7 @@
 var go_annotations = {
     bindings: {
         upi: '=',
+        taxid: '=',
     },
 
     controller: ['$http', 'routes', function($http, routes) {

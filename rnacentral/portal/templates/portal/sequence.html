@@ -365,6 +365,10 @@ limitations under the License.
                 <secondary-structures upi="upi" taxid="taxid" show-secondary-structure-tab="show2dTab()"></secondary-structures>
             </uib-tab>
 
+            <uib-tab index="3" heading="GO Annotations" id="go-annotations" deselect="checkTab($event, $selectedIndex)">
+              <go-annotations upi="upi" taxid="taxid"></go-annotations>
+            </uib-tab>
+
             <uib-tab index="3" class="dropdown pull-right hidden-xs">
                 <uib-tab-heading>
                     <span uib-dropdown>
