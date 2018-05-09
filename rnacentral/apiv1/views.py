@@ -36,7 +36,7 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
                               RnaSpeciesSpecificSerializer, ExpertDatabaseStatsSerializer, \
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, RfamHitSerializer, \
-                              EnsemblInsdcMappingSerializer, RnaGoTermSerializer
+                              EnsemblInsdcMappingSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblInsdcMapping, GenomeMapping, \
     GoAnnotation
@@ -690,7 +690,6 @@ class EnsemblInsdcMappingView(APIView):
 
 class RnaGoAnnotationsView(APIView):
     permission_classes = (AllowAny, )
-    serializer_class = RnaGoTermSerializer
     pagination_class = Pagination
 
 
