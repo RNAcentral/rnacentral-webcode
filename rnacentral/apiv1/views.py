@@ -36,9 +36,11 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
                               RnaSpeciesSpecificSerializer, ExpertDatabaseStatsSerializer, \
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, RfamHitSerializer, \
-                              EnsemblInsdcMappingSerializer
+                              EnsemblInsdcMappingSerializer, RnaGoTermSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
-from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblInsdcMapping, GenomeMapping
+from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblInsdcMapping, GenomeMapping, \
+    GoAnnotation
+
 from portal.config.genomes import genomes, url2db, db2url, SpeciesNotInGenomes, get_taxid_from_species, get_ensembl_division, get_ensembl_species_url, get_ucsc_db_id
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination
@@ -684,3 +686,33 @@ class EnsemblInsdcMappingView(APIView):
         mapping = EnsemblInsdcMapping.objects.all().select_related()
         serializer = EnsemblInsdcMappingSerializer(mapping, many=True, context={request: request})
         return Response(serializer.data)
+
+
+class RnaGoAnnotationsView(APIView):
+    permission_classes = (AllowAny, )
+    serializer_class = RnaGoTermSerializer
+    pagination_class = Pagination
+
+
+    def get(self, request, pk, taxid, **kwargs):
+
+        rna_id = pk + '_' + taxid
+        annotations = GoAnnotation.objects.filter(rna_id=rna_id).\
+            select_related('ontology_term', 'evidence_code')
+
+        result = []
+        for annotation in annotations:
+            result.append({
+                'rna_id': annotation.rna_id,
+                'upi': pk,
+                'taxid': taxid,
+                'go_term_id': annotation.ontology_term.ontology_term_id,
+                'go_term_name': annotation.ontology_term.name,
+                'qualifier': annotation.qualifier,
+                'evidence_code_id': annotation.evidence_code.ontology_term_id,
+                'evidence_code_name': annotation.evidence_code.name,
+                'assigned_by': annotation.assigned_by,
+                'extensions': annotation.assigned_by or {},
+            })
+
+        return Response(result)
