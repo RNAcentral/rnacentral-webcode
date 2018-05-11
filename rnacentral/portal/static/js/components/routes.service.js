@@ -35,7 +35,7 @@ angular.module("routes", []).service('routes', ['$interpolate', function($interp
         ebiAutocomplete: 'http://www.ebi.ac.uk/ebisearch/ws/rest/RNAcentral/autocomplete?term={{ query }}&format=json',
         apiGoTermsView: '/api/v1/rna/{{ upi }}/go-annotations/{{ taxid }}',
         quickGoSummaryPage: 'https://www.ebi.ac.uk/QuickGO/term/{{ term_id }}',
-        quickGoChart: 'https://www.ebi.ac.uk/QuickGO/services/ontology/go/terms/{{ term_ids }}/chart',
+        quickGoChart: 'https://www.ebi.ac.uk/QuickGO/services/ontology/{{ ontology }}/terms/{{ term_ids }}/chart',
     };
 
 
