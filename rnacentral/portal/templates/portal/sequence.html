@@ -264,14 +264,14 @@ limitations under the License.
                             <ul class="list-unstyled">
                               {% for go_term in hit.rfam_model.go_terms %}
                               <li>
-                                <a href="{{ go_term.quickgo_url }}" target="_blank">{{ go_term.go_term_id }}</a>
-                                <small>{{ go_term.name }}</small>
+                                <a href="{{ go_term.quickgo_url }}" target="_blank">{{ go_term.ontology_term_id }}</a>
+                                <small>{{ go_term.go_term.name }}</small>
                               </li>
                               {% endfor %}
                             </ul>
                             {% else %}
                               {% with hit.rfam_model.go_terms.0 as go_term %}
-                                <a href="{{ go_term.quickgo_url }}">{{ go_term.go_term_id }}</a>
+                                <a href="{{ go_term.quickgo_url }}">{{ go_term.ontology_term_id }}</a>
                                 <small>{{ go_term.name }}</small>
                               {% endwith %}
                             {% endif %}
