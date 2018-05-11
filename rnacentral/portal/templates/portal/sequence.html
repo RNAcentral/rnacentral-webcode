@@ -187,6 +187,12 @@ limitations under the License.
                   <p>
                 </div>
 
+              <div>
+                <h2>Go Annotations</h2>
+                <go-annotations upi="upi" taxid="taxid"></go-annotations>
+              </div>
+
+
                 <div>
                   <h2>
                     Rfam classification
@@ -363,10 +369,6 @@ limitations under the License.
 
             <uib-tab index="2" heading="2D" id="secondary-structures" deselect="checkTab($event, $selectedIndex)" ng-hide="hide2dTab">
                 <secondary-structures upi="upi" taxid="taxid" show-secondary-structure-tab="show2dTab()"></secondary-structures>
-            </uib-tab>
-
-            <uib-tab index="3" heading="GO Annotations" id="go-annotations" deselect="checkTab($event, $selectedIndex)">
-              <go-annotations upi="upi" taxid="taxid"></go-annotations>
             </uib-tab>
 
             <uib-tab index="3" class="dropdown pull-right hidden-xs">
