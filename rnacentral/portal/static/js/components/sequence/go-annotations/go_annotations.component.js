@@ -24,6 +24,12 @@ var go_annotations = {
                 { timeout: 5000 }
             );
         };
+
+        ctrl.openGoChartModal = function(term_id) {
+            var png = routes.quickGoChart({ term_ids: term_id });
+            $('#go-annotation-chart-modal .modal-body').html('<img src=' + png + '></img>');
+            $('#go-annotation-chart-modal').modal();
+        };
     }],
 
     templateUrl: '/static/js/components/sequence/go-annotations/go_annotations.html'
