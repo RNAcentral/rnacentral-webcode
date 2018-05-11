@@ -696,6 +696,7 @@ class RnaGoAnnotationsView(APIView):
     def get(self, request, pk, taxid, **kwargs):
 
         rna_id = pk + '_' + taxid
+        taxid = int(taxid)
         annotations = GoAnnotation.objects.filter(rna_id=rna_id).\
             select_related('ontology_term', 'evidence_code')
 
