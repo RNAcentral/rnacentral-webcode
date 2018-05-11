@@ -435,11 +435,16 @@ class RfamHitSerializer(serializers.ModelSerializer):
 
 
 class EnsemblAssemblySerializer(serializers.ModelSerializer):
+    human_readable_ensembl_url = serializers.SerializerMethodField()
+
     class Meta:
         model = EnsemblAssembly
         fields = ('assembly_id', 'assembly_full_name', 'gca_accession', 'assembly_ucsc',
-                  'common_name', 'taxid', 'ensembl_url', 'division', 'subdomain',
+                  'common_name', 'taxid', 'ensembl_url', 'human_readable_ensembl_url', 'division', 'subdomain',
                   'example_chromosome', 'example_start', 'example_end')
+
+    def get_human_readable_ensembl_url(self, obj):
+        return obj.ensembl_url.replace("_", " ").capitalize()
 
 
 class EnsemblInsdcMappingSerializer(serializers.ModelSerializer):
