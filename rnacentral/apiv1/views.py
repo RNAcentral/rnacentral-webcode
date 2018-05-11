@@ -692,9 +692,7 @@ class RnaGoAnnotationsView(APIView):
     permission_classes = (AllowAny, )
     pagination_class = Pagination
 
-
     def get(self, request, pk, taxid, **kwargs):
-
         rna_id = pk + '_' + taxid
         taxid = int(taxid)
         annotations = GoAnnotation.objects.filter(rna_id=rna_id).\

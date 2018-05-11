@@ -1,4 +1,4 @@
-<table class="table table-hover table-condensed" id="go-annotations">
+<table ng-if="$ctrl.go_annotations.length > 0 && !$ctrl.error" class="table table-hover table-condensed" id="go-annotations">
   <thead>
   <th>Qualifier</th>
   <th>GO Term</th>
@@ -7,11 +7,20 @@
   </thead>
 
   <tbody>
-  <tr ng-repeat="annotation in $ctrl.go_annotations">
+  <tr ng-if="!$ctrl.error" ng-repeat="annotation in $ctrl.go_annotations">
     <td>{{ annotation.qualifier }}</td>
     <td><a href="http://www.ebi.ac.uk/QuickGO/term/{{ annotation.go_term_id }}">{{ annotation.go_term_name }}</a></td>
     <td><a href="https://www.ebi.ac.uk/QuickGO/term/{{ annotation.evidence_code_id }}">{{ annotation.evidence_code_name }}</a></td>
     <td>{{ annotation.assigned_by }}</td>
   </tr>
+  <tr ng-if="$ctrl.error">
+    <td colspan="3" style="text-align: center;">
+        <span>
+          <i class="fa fa-exclamation-circle fa-2x"></i>
+          Failed to load data from server
+        </span>
+    </td>
+  </tr>
   </tbody>
 </table>
+<p ng-if="$ctrl.go_annotations.length == 0">No Go annotations available.</p>
