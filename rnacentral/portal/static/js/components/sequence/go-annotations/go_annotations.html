@@ -1,26 +1,50 @@
-<table ng-if="$ctrl.go_annotations.length > 0 && !$ctrl.error" class="table table-hover table-condensed" id="go-annotations">
-  <thead>
-  <th>Qualifier</th>
-  <th>GO Term</th>
-  <th>Evidence Code</th>
-  <th>Source</th>
-  </thead>
+<div ng-if="$ctrl.go_annotations.length > 0 && !$ctrl.error">
+  <table class="table table-hover table-condensed" id="go-annotations">
+    <thead>
+    <th>Qualifier</th>
+    <th>GO Term</th>
+    <th>Evidence Code</th>
+    <th>Source</th>
+    </thead>
 
-  <tbody>
-  <tr ng-if="!$ctrl.error" ng-repeat="annotation in $ctrl.go_annotations">
-    <td>{{ annotation.qualifier }}</td>
-    <td><a href="http://www.ebi.ac.uk/QuickGO/term/{{ annotation.go_term_id }}">{{ annotation.go_term_name }}</a></td>
-    <td><a href="https://www.ebi.ac.uk/QuickGO/term/{{ annotation.evidence_code_id }}">{{ annotation.evidence_code_name }}</a></td>
-    <td>{{ annotation.assigned_by }}</td>
-  </tr>
-  <tr ng-if="$ctrl.error">
-    <td colspan="3" style="text-align: center;">
-        <span>
-          <i class="fa fa-exclamation-circle fa-2x"></i>
-          Failed to load data from server
-        </span>
-    </td>
-  </tr>
-  </tbody>
-</table>
+    <tbody>
+    <tr ng-if="!$ctrl.error" ng-repeat="annotation in $ctrl.go_annotations">
+      <td>{{ annotation.qualifier }}</td>
+      <td>
+        <a href="http://www.ebi.ac.uk/QuickGO/term/{{ annotation.go_term_id }}">{{ annotation.go_term_name }}</a>
+        (<a ng-click="$ctrl.openGoChartModal(annotation.go_term_id)">chart</a>)
+      </td>
+      <td>
+        <a href="https://www.ebi.ac.uk/QuickGO/term/{{ annotation.evidence_code_id }}">{{ annotation.evidence_code_name }}</a>
+        (<a ng-click="$ctrl.openGoChartModal(annotation.evidence_code_id)">chart</a>)
+      </td>
+      <td>{{ annotation.assigned_by }}</td>
+    </tr>
+    <tr ng-if="$ctrl.error">
+      <td colspan="3" style="text-align: center;">
+          <span>
+            <i class="fa fa-exclamation-circle fa-2x"></i>
+            Failed to load data from server
+          </span>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div id='go-annotation-chart-modal' class='modal fade' tabindex=-1>
+    <div class='modal-dialog modal-lg' role='document'>
+      <div class='modal-content'>
+        <div class="modal-header">
+            <h3 class="modal-title">Ancestor Chart</h3>
+        </div>
+        <div class="modal-body">
+          Here is where the image will go
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <p ng-if="$ctrl.go_annotations.length == 0">No Go annotations available.</p>
