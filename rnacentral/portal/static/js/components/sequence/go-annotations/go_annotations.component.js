@@ -1,0 +1,32 @@
+var go_annotations = {
+    bindings: {
+        upi: '=',
+        taxid: '=',
+    },
+
+    controller: ['$http', 'routes', function($http, routes) {
+        var ctrl = this;
+
+        ctrl.$onInit = function() {
+            ctrl.fetchGoTerms().then(
+                function(response) {
+                    ctrl.go_annotations = response.data;
+                },
+                function(response) {
+                    ctrl.error = "Failed to fetch GO annotations";
+                }
+            );
+        };
+
+        ctrl.fetchGoTerms = function() {
+            return $http.get(
+                routes.apiGoTermsView({ upi: ctrl.upi, taxid: ctrl.taxid }),
+                { timeout: 5000 }
+            );
+        };
+    }],
+
+    templateUrl: '/static/js/components/sequence/go-annotations/go_annotations.html'
+};
+
+angular.module("rnaSequence").component("goAnnotations", go_annotations);
