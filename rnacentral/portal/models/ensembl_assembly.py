@@ -20,10 +20,14 @@ class EnsemblAssembly(CachingMixin, models.Model):
     assembly_full_name = models.CharField(max_length=255, db_index=True)
     gca_accession = models.CharField(max_length=20, db_index=True, null=True)
     assembly_ucsc = models.CharField(max_length=100, db_index=True, null=True)
-    common_name = models.CharField(max_length=255, db_index=True)
+    common_name = models.CharField(max_length=255, db_index=True, null=True)
     taxid = models.IntegerField(db_index=True, unique=True)
-    ensembl_url = models.CharField(max_length=100, db_index=True)
-    division = models.CharField(max_length=20, db_index=True)
+    ensembl_url = models.CharField(max_length=100, db_index=True, null=True)
+    division = models.CharField(max_length=20, db_index=True, null=True)
+    subdomain = models.CharField(max_length=100, db_index=True, default='ensembl.org')
+    example_chromosome = models.CharField(max_length=20, null=True)
+    example_start = models.IntegerField(null=True)
+    example_end = models.IntegerField(null=True)
 
     objects = CachingManager()
 

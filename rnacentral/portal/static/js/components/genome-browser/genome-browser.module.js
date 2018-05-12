@@ -1,1 +1,1 @@
-angular.module("genomeBrowser", ['ngResource', 'ngAnimate', 'ngSanitize', 'ui.bootstrap', 'routes', 'Genoverse']);
+angular.module("genomeBrowser", ['ngResource', 'ngAnimate', 'ngSanitize', 'ui.bootstrap', 'routes']);

@@ -20,7 +20,8 @@ from django.db.models import Min, Max
 from rest_framework import serializers
 
 from portal.models import Rna, Xref, Reference,  Reference_map, ChemicalComponent, Database, DatabaseStats, Accession, \
-    Release, Reference, Modification, RfamHit, RfamModel, RfamClan, EnsemblAssembly, EnsemblInsdcMapping, GenomeMapping
+    Release, Reference, Modification, RfamHit, RfamModel, RfamClan, \
+    EnsemblAssembly, EnsemblInsdcMapping, EnsemblKaryotype
 
 
 class RawPublicationSerializer(serializers.ModelSerializer):
@@ -434,9 +435,16 @@ class RfamHitSerializer(serializers.ModelSerializer):
 
 
 class EnsemblAssemblySerializer(serializers.ModelSerializer):
+    human_readable_ensembl_url = serializers.SerializerMethodField()
+
     class Meta:
         model = EnsemblAssembly
-        fields = ('assembly_id', 'assembly_full_name', 'gca_accession', 'assembly_ucsc', 'common_name', 'taxid')
+        fields = ('assembly_id', 'assembly_full_name', 'gca_accession', 'assembly_ucsc',
+                  'common_name', 'taxid', 'ensembl_url', 'human_readable_ensembl_url', 'division', 'subdomain',
+                  'example_chromosome', 'example_start', 'example_end')
+
+    def get_human_readable_ensembl_url(self, obj):
+        return obj.ensembl_url.replace("_", " ").capitalize()
 
 
 class EnsemblInsdcMappingSerializer(serializers.ModelSerializer):
@@ -445,3 +453,9 @@ class EnsemblInsdcMappingSerializer(serializers.ModelSerializer):
     class Meta:
         model = EnsemblInsdcMapping
         fields = ('insdc', 'ensembl_name', 'assembly')
+
+
+class EnsemblKaryotypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EnsemblKaryotype
+        fields = ('karyotype', )
