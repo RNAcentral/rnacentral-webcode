@@ -98,7 +98,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                     resolve(response.data);
                 },
                 function () {
-
+                    //
                 }
             );
         });

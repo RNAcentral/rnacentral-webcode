@@ -540,7 +540,10 @@ class RnaGenomeMappings(generics.ListAPIView):
                                       .values('region_id', 'strand', 'chromosome', 'taxid', 'identity')\
                                       .annotate(Min('start'), Max('stop'))
 
-        assembly = EnsemblAssembly.objects.get(taxid=taxid)  # this applies only to species-specific pages
+        try:
+            assembly = EnsemblAssembly.objects.get(taxid=taxid)  # this applies only to species-specific pages
+        except EnsemblAssembly.DoesNotExist:
+            raise Http404
 
         output = []
         for mapping in mappings:

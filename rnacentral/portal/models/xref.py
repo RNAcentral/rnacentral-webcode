@@ -616,8 +616,11 @@ class Xref(CachingMixin, models.Model):
 
     def get_ensembl_division(self):
         """Get Ensembl or Ensembl Genomes division for the cross-reference."""
-        assembly = EnsemblAssembly.objects.get(taxid=self.taxid)
-        return {'name': assembly.division, 'url': 'http://' + assembly.subdomain}
+        try:
+            assembly = EnsemblAssembly.objects.get(taxid=self.taxid)
+            return {'name': assembly.division, 'url': 'http://' + assembly.subdomain}
+        except EnsemblAssembly.DoesNotExist:
+            return None
 
     def get_ucsc_db_id(self):
         """Get UCSC id for the genome assembly. http://genome.ucsc.edu/FAQ/FAQreleases.html"""
