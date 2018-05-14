@@ -48,6 +48,7 @@ CHOICES = {
         'RGD',
         'lncRNAdb',
         'gtRNAdb',
+        'tmRNA Website',
         'PDBe',
         'RefSeq',
         'Rfam',

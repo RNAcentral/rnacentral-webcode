@@ -15,7 +15,6 @@ import unittest
 
 from django.test import SimpleTestCase
 
-
 from django_performance_testing.queries import QueryBatchLimit
 from django_performance_testing.timing import TimeLimit
 
@@ -76,6 +75,12 @@ class SimpleDescriptionTests(GenericDescriptionTest):
             'Danio rerio tRNA',
             'URS0000661037',
             taxid=7955)
+
+    def test_cleans_up_tmrna_descriptions(self):
+        self.assertDescriptionIs(
+            'Homo sapiens (human) transfer-messenger RNA Esche_coli_K12',
+            'URS000037602E',
+            taxid=9606)
 
 
 class HumanDescriptionTests(GenericDescriptionTest):
@@ -142,12 +147,11 @@ class HumanDescriptionTests(GenericDescriptionTest):
             'URS000019E0CD',
             taxid=9606)
 
-    @pytest.mark.skip()
-    def test_uses_snopy_descriptions(self):
-        self.assertDescriptionIs(
-            'Homo sapiens (human) small nucleolar RNA SNORD118L8',
-            'URS00006CE02F',
-            taxid=9606)
+    # def test_uses_snopy_descriptions(self):
+    #     self.assertDescriptionIs(
+    #         'Homo sapiens (human) small nucleolar RNA SNORD118L8',
+    #         'URS00006CE02F',
+    #         taxid=9606)
 
 
 class ArabidopisDescriptionTests(GenericDescriptionTest):
