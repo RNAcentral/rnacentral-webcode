@@ -28,16 +28,8 @@ var go_annotations = {
         ctrl.openGoChartModal = function(term_id) {
             var ontology = term_id.split(':')[0].toLowerCase();
             var png = routes.quickGoChart({ ontology: ontology, term_ids: term_id });
-            console.log(png);
-            $http.get(png, { timeout: 5000 }).then(
-                function(response) {
-                    $('#go-annotation-chart-modal .modal-body').html('<img src=' + png + '></img>');
-                    $('#go-annotation-chart-modal').modal();
-                },
-                function(response) {
-                    $('#go-annotation-chart-modal .modal-body').html('<p>Failed to load QuickGO Chart');
-                    $('#go-annotation-chart-modal').modal();
-                });
+            $('#go-annotation-chart-modal .modal-body').html('<img src=' + png + '></img>');
+            $('#go-annotation-chart-modal').modal();
         };
     }],
 
