@@ -42,8 +42,18 @@ var go_annotations = {
         ctrl.openGoChartModal = function(term_id) {
             var ontology = term_id.split(':')[0].toLowerCase();
             var png = routes.quickGoChart({ ontology: ontology, term_ids: term_id });
-            $('#go-annotation-chart-modal .modal-body').html('<img src=' + png + '></img>');
+            ctrl.modal_status = 'loading';
+            ctrl.chart_data = '';
             $('#go-annotation-chart-modal').modal();
+
+            $http.get(png, { timeout: 5000 }).then(
+                function(response) {
+                    ctrl.modal_status = 'loaded';
+                    ctrl.chart_data = 'data:image/png;charset=utf-8;base64,' + response.data;
+                },
+                function(error) {
+                    ctrl.modal_status = 'failed';
+                });
         };
     }],
 
