@@ -1,47 +1,49 @@
 <div ng-if="$ctrl.go_annotations.length > 0 && !$ctrl.error">
-  <table class="table table-hover table-condensed" id="go-annotations">
-    <thead>
-    <th>Qualifier</th>
-    <th>GO Term</th>
-    <th>Evidence Code</th>
-    <th>Source</th>
-    </thead>
+  <div style="max-height: 200px; overflow-y: auto;">
+    <table class="table table-hover table-condensed" id="go-annotations">
+      <thead>
+      <th>Qualifier</th>
+      <th>GO Term</th>
+      <th>Evidence Code</th>
+      <th>Source</th>
+      </thead>
 
-    <tbody>
-    <tr ng-if="!$ctrl.error" ng-repeat="annotation in $ctrl.go_annotations">
-      <td>{{ annotation.qualifier }}</td>
-      <td>
-        <a href="http://www.ebi.ac.uk/QuickGO/term/{{ annotation.go_term_id }}">{{ annotation.go_term_name }}</a>
-        (<a ng-click="$ctrl.openGoChartModal(annotation.go_term_id)">chart</a>)
-      </td>
-      <td>
-        <a href="https://www.ebi.ac.uk/QuickGO/term/{{ annotation.evidence_code_id }}">{{ annotation.evidence_code_name }}</a>
-        (<a ng-click="$ctrl.openGoChartModal(annotation.evidence_code_id)">chart</a>)
-      </td>
-      <td>
-          <a ng-if="annotation.assigned_url" href="{{ annotation.assigned_url }}">{{ annotation.assigned_by }}</a>
-          <span ng-if="!annotation.assigned_url">{{ annotation.assigned_by }}</span>
-      </td>
-    </tr>
+      <tbody>
+      <tr ng-if="!$ctrl.error" ng-repeat="annotation in $ctrl.go_annotations">
+        <td>{{ annotation.qualifier }}</td>
+        <td>
+          <a><i ng-click="$ctrl.openGoChartModal(annotation.go_term_id)" class="fa fa-sitemap"></i></a>
+          <a href='/search?q={{ annotation.qualifier }}:"{{ annotation.go_term_id }}"'><i class="fa fa-search" uib-tooltip="Search for sequences with this GO term"></i></a>
+          <a href="http://www.ebi.ac.uk/QuickGO/term/{{ annotation.go_term_id }}" class="no-icon">{{ annotation.go_term_name }}</a>
+        </td>
+        <td>
+          <a><i ng-click="$ctrl.openGoChartModal(annotation.evidence_code_id)" class="fa fa-sitemap"></i></a>
+          <a href="https://www.ebi.ac.uk/QuickGO/term/{{ annotation.evidence_code_id }}" class="no-icon">{{ annotation.evidence_code_name }}</a>
+        </td>
+        <td>
+            <a ng-if="annotation.assigned_url" href="{{ annotation.assigned_url }}" class="no-icon">{{ annotation.assigned_by }}</a>
+            <span ng-if="!annotation.assigned_url">{{ annotation.assigned_by }}</span>
+        </td>
+      </tr>
 
-    <tr ng-if="$ctrl.error">
-      <td colspan="3" style="text-align: center;">
-          <span>
-            <i class="fa fa-exclamation-circle fa-2x"></i>
-            Failed to load data from server
-          </span>
-      </td>
-    </tr>
-    </tbody>
+      <tr ng-if="$ctrl.error">
+        <td colspan="3" style="text-align: center;">
+            <span>
+              <i class="fa fa-exclamation-circle fa-2x"></i>
+              Failed to load data from server
+            </span>
+        </td>
+      </tr>
+      </tbody>
 
-    <tfoot>
-      <span>
-        View these annotations in 
-        <a href="https://www.ebi.ac.uk/QuickGO/annotations?geneProductId={{ $ctrl.go_annotations[0].rna_id }}">QuickGO</a>
-      <span>
-    </tfoot>
-  </table>
-
+      <tfoot>
+        <span>
+          View in
+          <a href="https://www.ebi.ac.uk/QuickGO/annotations?geneProductId={{ $ctrl.go_annotations[0].rna_id }}">QuickGO</a>
+        <span>
+      </tfoot>
+    </table>
+</div>
 
   <div id='go-annotation-chart-modal' class='modal fade' tabindex=-1>
     <div class='modal-dialog modal-lg' role='document'>
@@ -50,7 +52,10 @@
             <h3 class="modal-title">Ancestor Chart</h3>
         </div>
         <div class="modal-body">
-          Here is where the image will go
+          <span>
+            <i class="fa fa-spinner fa-spin fa-2x"></i>
+            Loading ontology ancestors...
+          </span>
         </div>
         <div class="modal-footer">
             <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
