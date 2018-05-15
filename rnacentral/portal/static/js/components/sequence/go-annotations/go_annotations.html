@@ -18,8 +18,12 @@
         <a href="https://www.ebi.ac.uk/QuickGO/term/{{ annotation.evidence_code_id }}">{{ annotation.evidence_code_name }}</a>
         (<a ng-click="$ctrl.openGoChartModal(annotation.evidence_code_id)">chart</a>)
       </td>
-      <td>{{ annotation.assigned_by }}</td>
+      <td>
+          <a ng-if="annotation.assigned_url" href="{{ annotation.assigned_url }}">{{ annotation.assigned_by }}</a>
+          <span ng-if="!annotation.assigned_url">{{ annotation.assigned_by }}</span>
+      </td>
     </tr>
+
     <tr ng-if="$ctrl.error">
       <td colspan="3" style="text-align: center;">
           <span>

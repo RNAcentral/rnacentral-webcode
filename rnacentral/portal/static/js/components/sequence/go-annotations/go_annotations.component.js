@@ -7,10 +7,24 @@ var go_annotations = {
     controller: ['$http', 'routes', function($http, routes) {
         var ctrl = this;
 
+        var sourceUrls = {
+            "bhf-ucl": "https://www.ucl.ac.uk/functional-gene-annotation/cardiovascular/projects",
+            "sgd": "https://www.yeastgenome.org/",
+            "mgi": "http://www.informatics.jax.org",
+            "uniprot": "http://www.uniprot.org",
+            "goc": "http://geneontology.org",
+            "aruk-ucl": "http://www.ucl.ac.uk/functional-gene-annotation/neurological",
+            "parkinsonsuk-ucl": "http://www.ucl.ac.uk/functional-gene-annotation/neurological",
+        };
+
         ctrl.$onInit = function() {
             ctrl.fetchGoTerms().then(
                 function(response) {
                     ctrl.go_annotations = response.data;
+                    ctrl.go_annotations.forEach(function(annotation) {
+                        var key = annotation.assigned_by.toLowerCase();
+                        annotation.assigned_url = sourceUrls[key];
+                    });
                 },
                 function(response) {
                     ctrl.error = "Failed to fetch GO annotations";
