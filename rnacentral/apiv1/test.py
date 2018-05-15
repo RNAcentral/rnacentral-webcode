@@ -485,7 +485,7 @@ class GenomesTestCase(ApiV1BaseClass):
     def test_list(self):
         url = reverse('genomes-api')
         response = self._test_url(url)
-        self.assertEqual(response.data['count'], 96)
+        self.assertEqual(response.data['count'], 296)
 
     def test_detail(self):
         url = reverse('genomes-api', kwargs={'ensembl_url': 'homo_sapiens'})
