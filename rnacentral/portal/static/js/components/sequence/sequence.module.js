@@ -68,7 +68,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                     resolve(response.data);
                 },
                 function () {
-                    $scope.fetchGenomeLocationsError = true;
+                    $scope.fetchGenomeLocationsStatus = 'error';
                     reject();
                 }
             )
@@ -83,7 +83,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                     resolve(response.data);
                 },
                 function () {
-                    $scope.fetchGenomeLocationsError = true;
+                    $scope.fetchGenomeLocationsStatus = 'error';
                     reject();
                 }
             );
@@ -98,7 +98,8 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                     resolve(response.data);
                 },
                 function () {
-                    //
+                    $scope.fetchGenomeLocationsStatus = 'error';
+                    reject();
                 }
             );
         });
@@ -373,7 +374,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         if ($scope.genomeLocations.length > 0 || $scope.genomeMappings.length > 0) {
             var location = $scope.genomeLocations.length ? $scope.genomeLocations[0] : $scope.genomeMappings[0];
             $scope.fetchGenomes().then(function() {
-                    $scope.activateGenomeBrowser(location.start, location.end, location.chromosome, location.species);
+                $scope.activateGenomeBrowser(location.start, location.end, location.chromosome, location.species);
             });
         }
 

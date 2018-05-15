@@ -532,6 +532,12 @@ class RnaGenomeLocations(generics.ListAPIView):
 
 
 class RnaGenomeMappings(generics.ListAPIView):
+    """
+    List of distinct genomic locations, where a specific RNA
+    was computationally mapped onto a specific genome location.
+
+    [API documentation](/api)
+    """
     queryset = Rna.objects.select_related().all()
 
     def get(self, request, pk=None, taxid=None, format=None):
@@ -543,7 +549,7 @@ class RnaGenomeMappings(generics.ListAPIView):
         try:
             assembly = EnsemblAssembly.objects.get(taxid=taxid)  # this applies only to species-specific pages
         except EnsemblAssembly.DoesNotExist:
-            raise Http404
+            return Response([])
 
         output = []
         for mapping in mappings:
