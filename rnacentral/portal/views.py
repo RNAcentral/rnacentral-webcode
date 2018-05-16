@@ -99,8 +99,8 @@ def rna_view(request, upi, taxid=None):
     except Rna.DoesNotExist:
         raise Http404
 
-    # if taxid is given, but xrefs for it don't exist - redirect to non-taxon-filtered page with header
-    if taxid and not rna.xrefs.filter(taxid=taxid).exists():
+    # if taxid is given, but the RNA does not have annotations for this taxid, redirect to an error page
+    if taxid and not RnaPrecomputed.objects.filter(upi=upi, taxid=taxid).exists():
         response = redirect('unique-rna-sequence', upi=upi)
         response['Location'] += '?taxid-not-found={taxid}'.format(taxid=taxid)
         return response
@@ -116,7 +116,6 @@ def rna_view(request, upi, taxid=None):
         'taxid': taxid,
         'taxid_filtering': taxid_filtering,
         'taxid_not_found': request.GET.get('taxid-not-found', ''),
-        'single_species': get_single_species(rna, taxid, taxid_filtering),
         'description': rna.get_description(taxid) if taxid_filtering else rna.get_description(),
         'distinct_databases': rna.get_distinct_database_names(taxid),
         'publications': rna.get_publications(taxid) if taxid_filtering else rna.get_publications(),
@@ -130,23 +129,6 @@ def rna_view(request, upi, taxid=None):
     }
 
     return render(request, 'portal/sequence.html', {'rna': rna, 'context': context})
-
-
-def get_single_species(rna, taxid, taxid_filtering):
-    """Determine if the sequence has only one species or get the taxid species."""
-    if taxid_filtering:  # if taxid_filtering, taxid should be supplied - get a species name given that NCBI taxid
-        xref = Xref.default_objects.filter(taxid=taxid).select_related('accession')[:1].get()
-        return xref.accession.species if xref else None  # if not available for this species, return None
-    else:  # if filtering is not enabled, still, there might be only one species in references
-        if rna.count_distinct_organisms == 1:
-            queryset = rna.xrefs
-            results = queryset.filter(deleted='N')
-            if results.exists():
-                return results.first().accession.species
-            else:
-                return queryset.first().accession.species
-        else:
-            return None
 
 
 @cache_page(CACHE_TIMEOUT)

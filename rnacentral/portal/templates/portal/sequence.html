@@ -36,9 +36,6 @@ limitations under the License.
         <h1>
             Sequence {{ rna.upi }}
 
-            {% if not context.single_species %}
-                <small>{{ rna.count_distinct_organisms|intcomma }} species</small>
-            {% endif %}
             <small id="sequence-description-header">{{ context.description }}</small>
         </h1>
 
@@ -304,7 +301,7 @@ limitations under the License.
                 <h2>
                     Sequence
                     <small>
-                      <em>{{ rna.upi }}{% if context.single_species %}_{{ context.taxid }}{% endif %}</em>
+                      <em>{{ rna.upi }}{% if context.taxid %}_{{ context.taxid }}{% endif %}</em>
                     </small>
                 </h2>
 
