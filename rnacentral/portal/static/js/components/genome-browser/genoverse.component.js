@@ -268,7 +268,7 @@ var genoverse = {
                     ctrl.start = ctrl.genoverseUtils.exampleLocations[ctrl.genome].start;
                     ctrl.end = ctrl.genoverseUtils.exampleLocations[ctrl.genome].end;
                 } else {
-                    alert("Can't find example location for genome ", ctrl.genome);
+                    console.log("Can't find example location for genome ", ctrl.genome);
                 }
 
                 ctrl.render(); // create a new instance of browser
