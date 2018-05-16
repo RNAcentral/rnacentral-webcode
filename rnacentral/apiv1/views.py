@@ -90,30 +90,23 @@ class GenomeAnnotations(APIView):
         return Response(features)
 
 
-def _species2taxid(species):
-    """This is a terribly indirect way to get taxid by species"""
-    accession = Accession.objects.filter(species=url2db(species)).first()
-    xrefs = Xref.default_objects.filter(accession=accession, deleted='N').all()
-    if len(xrefs) != 0:
-        taxid = xrefs[0].taxid
-    else:
-        xrefs = Xref.objects.filter(accession=accession).all()
-        taxid = xrefs[0].taxid
-
-    return taxid
-
-
 def features_from_xrefs(species, chromosome, start, end):
     try:
-        xrefs = Xref.default_objects.filter(
-            accession__coordinates__chromosome=chromosome,
-            accession__coordinates__primary_start__gte=start,
-            accession__coordinates__primary_end__lte=end,
-            accession__species=url2db(species),
-            deleted='N'
-        ).select_related('upi', 'accession', 'db').prefetch_related('upi__precomputed')
-    except Xref.DoesNotExist:
-        xrefs = []
+        assembly = EnsemblAssembly.objects.get(ensembl_url=species)
+    except EnsemblAssembly.DoesNotExist:
+        return Response([])
+
+    if assembly:
+        try:
+            xrefs = Xref.default_objects.filter(
+                accession__coordinates__chromosome=chromosome,
+                accession__coordinates__primary_start__gte=start,
+                accession__coordinates__primary_end__lte=end,
+                taxid=assembly.taxid,
+                deleted='N'
+            ).select_related('upi', 'accession', 'db').prefetch_related('upi__precomputed')
+        except Xref.DoesNotExist:
+            xrefs = []
 
     upi2data = {}
     data = []
@@ -122,8 +115,7 @@ def features_from_xrefs(species, chromosome, start, end):
 
         # create only one transcript object per upi
         if upi not in upi2data:
-            taxid = _species2taxid(species)
-            xrefs = Xref.default_objects.filter(upi=upi, taxid=taxid, deleted='N').select_related('db').all()
+            xrefs = Xref.default_objects.filter(upi=upi, taxid=assembly.taxid, deleted='N').select_related('db').all()
             databases = list(set([x.db.display_name for x in xrefs]))
             databases.sort()
             coordinates = xref.get_genomic_coordinates()
@@ -173,7 +165,11 @@ def features_from_xrefs(species, chromosome, start, end):
 
 
 def features_from_mappings(species, chromosome, start, end):
-    taxid = _species2taxid(species)
+    try:
+        taxid = EnsemblAssembly.objects.get(ensembl_url=species).taxid
+    except EnsemblAssembly.DoesNotExist:
+        return Response([])
+
     mappings = GenomeMapping.objects.filter(taxid=taxid, chromosome=chromosome, start__gte=start, stop__lte=end)\
                                     .select_related('upi').prefetch_related('upi__precomputed')
 
@@ -506,6 +502,12 @@ class RnaGenomeLocations(generics.ListAPIView):
 
         rna = self.get_object()
         xrefs = rna.get_xrefs(taxid=taxid).filter(deleted='N')
+        # if assembly with this taxid is not found, just return empty locations list
+        try:
+            assembly = EnsemblAssembly.objects.get(taxid=taxid)  # this applies only to species-specific pages
+        except EnsemblAssembly.DoesNotExist:
+            return Response([])
+
         for xref in xrefs:
             if xref.accession.coordinates.exists() and xref.accession.coordinates.all()[0].chromosome:
                 data = {
@@ -513,7 +515,7 @@ class RnaGenomeLocations(generics.ListAPIView):
                     'strand': xref.accession.coordinates.all()[0].strand,
                     'start': xref.accession.coordinates.all().aggregate(Min('primary_start'))['primary_start__min'],
                     'end': xref.accession.coordinates.all().aggregate(Max('primary_end'))['primary_end__max'],
-                    'species': db2url(xref.accession.species),
+                    'species': assembly.ensembl_url,
                     'ucsc_db_id': xref.get_ucsc_db_id(),
                     'ensembl_division': xref.get_ensembl_division(),
                     'ensembl_species_url': xref.accession.get_ensembl_species_url()
