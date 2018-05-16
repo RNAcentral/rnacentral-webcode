@@ -3,6 +3,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     $scope.upi = $location.path().split('/')[2];
     $scope.taxid = $location.path().split('/')[3];  // TODO: this might not exist!
     $scope.hide2dTab = true;
+    $scope.hideGoAnnotations = true;
 
     $scope.fetchRnaError = false; // hide content and display error, if we fail to download rna from server
     $scope.fetchGenomeLocationsStatus = 'loading'; // 'loading' or 'error' or 'success'
@@ -45,6 +46,10 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     // if there are any 2D structures
     $scope.show2dTab = function () {
         $scope.hide2dTab = false;
+    };
+
+    $scope.showGOAnnotations = function () {
+        $scope.hideGoAnnotations = false;
     };
 
     // Hopscotch tour

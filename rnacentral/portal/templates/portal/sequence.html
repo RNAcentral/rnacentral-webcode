@@ -187,9 +187,10 @@ limitations under the License.
                   <p>
                 </div>
 
-              <div>
+
+              <div ng-hide="hideGoAnnotations">
                 <h2>Gene Ontology Annotations</h2>
-                <go-annotations upi="upi" taxid="taxid"></go-annotations>
+                <go-annotations upi="upi" taxid="taxid" show-go-annotations="showGOAnnotations()"></go-annotations>
               </div>
 
 

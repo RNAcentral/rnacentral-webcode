@@ -2,6 +2,7 @@ var go_annotations = {
     bindings: {
         upi: '=',
         taxid: '=',
+        showGoAnnotations: '&',
     },
 
     controller: ['$http', 'routes', function($http, routes) {
@@ -25,6 +26,9 @@ var go_annotations = {
                         var key = annotation.assigned_by.toLowerCase();
                         annotation.assigned_url = sourceUrls[key];
                     });
+                    if (ctrl.go_annotations.length) {
+                        ctrl.showGoAnnotations();
+                    }
                 },
                 function(response) {
                     ctrl.error = "Failed to fetch GO annotations";

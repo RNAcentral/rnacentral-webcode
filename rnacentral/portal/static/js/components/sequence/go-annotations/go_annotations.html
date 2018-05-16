@@ -1,5 +1,11 @@
 <div ng-if="$ctrl.go_annotations.length > 0 && !$ctrl.error">
-  <div style="max-height: 200px; overflow-y: auto;">
+  <p>
+  <span>
+    View in
+    <a href="https://www.ebi.ac.uk/QuickGO/annotations?geneProductId={{ $ctrl.go_annotations[0].rna_id }}">QuickGO</a>
+  <span>
+
+  <div class="force-scrollbars" style="max-height: 200px; overflow-y: scroll;">
     <table class="table table-hover table-condensed" id="go-annotations">
       <thead>
       <th>Qualifier</th>
@@ -12,12 +18,12 @@
       <tr ng-if="!$ctrl.error" ng-repeat="annotation in $ctrl.go_annotations">
         <td>{{ annotation.qualifier }}</td>
         <td>
-          <a><i ng-click="$ctrl.openGoChartModal(annotation.go_term_id)" class="fa fa-sitemap"></i></a>
-          <a href='/search?q={{ annotation.qualifier }}:"{{ annotation.go_term_id }}"'><i class="fa fa-search" uib-tooltip="Search for sequences with this GO term"></i></a>
+          <a class="btn btn-circle btn-primary btn-sm" type="button"><i ng-click="$ctrl.openGoChartModal(annotation.go_term_id)" class="fa fa-sitemap"></i></button>
+          <a class="btn btn-sm" href='/search?q={{ annotation.qualifier }}:"{{ annotation.go_term_id }}"'><i class="fa fa-search" uib-tooltip="Search for sequences with this GO term"></i></a>
           <a href="http://www.ebi.ac.uk/QuickGO/term/{{ annotation.go_term_id }}" class="no-icon">{{ annotation.go_term_name }}</a>
         </td>
         <td>
-          <a><i ng-click="$ctrl.openGoChartModal(annotation.evidence_code_id)" class="fa fa-sitemap"></i></a>
+          <a class="btn btn-circle btn-primary btn-sm" type="button"><i ng-click="$ctrl.openGoChartModal(annotation.evidence_code_id)" class="fa fa-sitemap"></i></a>
           <a href="https://www.ebi.ac.uk/QuickGO/term/{{ annotation.evidence_code_id }}" class="no-icon">{{ annotation.evidence_code_name }}</a>
         </td>
         <td>
@@ -35,13 +41,6 @@
         </td>
       </tr>
       </tbody>
-
-      <tfoot>
-        <span>
-          View in
-          <a href="https://www.ebi.ac.uk/QuickGO/annotations?geneProductId={{ $ctrl.go_annotations[0].rna_id }}">QuickGO</a>
-        <span>
-      </tfoot>
     </table>
 </div>
 
@@ -73,5 +72,7 @@
       </div>
     </div>
   </div>
+  </p>
 </div>
-<p ng-if="$ctrl.go_annotations.length == 0">No Go annotations available.</p>
+
+<p ng-if="$ctrl.go_annotations.length == 0">No GO annotations available.</p>
