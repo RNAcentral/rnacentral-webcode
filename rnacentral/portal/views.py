@@ -99,8 +99,8 @@ def rna_view(request, upi, taxid=None):
     except Rna.DoesNotExist:
         raise Http404
 
-    # if taxid is given, but xrefs for it don't exist - redirect to non-taxon-filtered page with header
-    if taxid and not rna.xrefs.filter(taxid=taxid).exists():
+    # if taxid is given, but the RNA does not have annotations for this taxid, redirect to an error page
+    if taxid and not RnaPrecomputed.objects.filter(upi=upi, taxid=taxid).exists():
         response = redirect('unique-rna-sequence', upi=upi)
         response['Location'] += '?taxid-not-found={taxid}'.format(taxid=taxid)
         return response
