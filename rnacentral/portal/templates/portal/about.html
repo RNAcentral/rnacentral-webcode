@@ -28,7 +28,7 @@ About RNAcentral
 
 <div class="row">
   <div class="col-md-12">
-    <h1><i class="fa fa-info-circle"></i> About RNAcentral <a name="about-rnacentral" href="#about-rnacentral" class="text-muted smaller"><i class="fa fa-link"></i></a></h1>
+    <h1><i class="fa fa-info-circle"></i> About RNAcentral <a name="about-rnacentral" href="{% url 'about' %}#about-rnacentral" class="text-muted smaller"><i class="fa fa-link"></i></a></h1>
 
     <p>
       RNAcentral is a public resource that offers integrated access to a <strong>comprehensive and up-to-date</strong> set of non-coding RNA sequences
@@ -60,7 +60,7 @@ About RNAcentral
       <h3><i class="fa fa-barcode margin-right-5px"></i> Stable identifiers</h3>
 
       <p>
-        RNAcentral assigns <a href="{% url 'help' %}"#rnacentral-identifiers>unique identifiers</a> to every distinct sequence
+        RNAcentral assigns <a href="{% url 'help' %}#rnacentral-identifiers">unique identifiers</a> to every distinct sequence
         and supports <strong>species-specific identifiers</strong> for referring to sequences in specific organisms.
         <a href="http://blog.rnacentral.org/2015/02/rnacentral-release-2.html">More &rarr;</a>
       </p>
@@ -118,7 +118,7 @@ About RNAcentral
 <div class="row">
 
   <div class="col-md-12">
-    <h2><i class="fa fa-line-chart"></i> Database growth <a name="growth-chart" href="#growth-chart" class="text-muted smaller"><i class="fa fa-link"></i></a></h2>
+    <h2><i class="fa fa-line-chart"></i> Database growth <a name="growth-chart" href="{% url 'about' %}#growth-chart" class="text-muted smaller"><i class="fa fa-link"></i></a></h2>
 
     <ul class="nav nav-tabs" role="tablist">
       <li role="presentation" class="active"><a href="" data-target="#sequences" aria-controls="sequences" role="tab" data-toggle="tab">Number of sequences over time</a></li>
@@ -156,7 +156,7 @@ About RNAcentral
 <div class="row">
   <div class="col-md-12">
 
-    <h2><i class="fa fa-history"></i> Timeline <a name="timeline" href="#timeline" class="text-muted smaller"><i class="fa fa-link"></i></a></h2>
+    <h2><i class="fa fa-history"></i> Timeline <a name="timeline" href="{% url 'about' %}#timeline" class="text-muted smaller"><i class="fa fa-link"></i></a></h2>
 
     <div class="panel panel-default">
       <div class="panel-body">
@@ -169,7 +169,7 @@ About RNAcentral
 
 <div class="row">
   <div class="col-md-12">
-    <h2>Want to learn more? <a name="training" href="#training" class="text-muted smaller"><i class="fa fa-link"></i></a></h2>
+    <h2>Want to learn more? <a name="training" href="{% url 'about' %}#training" class="text-muted smaller"><i class="fa fa-link"></i></a></h2>
 
     Explore all RNAcentral <a href="{% url 'training' %}">training materials</a>, including an online training course and a video walkthrough of the website.
 
@@ -527,13 +527,13 @@ About RNAcentral
                         "credit": "RNAcentral"
                     },
                     "start_date": {
-                        "month": "11",
-                        "day": "04",
+                        "month": "04",
+                        "day": "11",
                         "year": "2018"
                     },
                     "end_date": {
-                        "month": "11",
-                        "day": "04",
+                        "month": "04",
+                        "day": "11",
                         "year": "2018"
                     },
                     "text": {
@@ -621,7 +621,7 @@ About RNAcentral
       'label': 'release 8',
     },
     {
-      'date': '04-10-18',
+      'date': '10-04-18',
       'sequence_count': 13437640,
       'expert_databases': 27,
       'label': 'release 9',
