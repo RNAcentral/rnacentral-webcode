@@ -189,7 +189,14 @@ limitations under the License.
 
 
               <div ng-hide="hideGoAnnotations">
-                <h2>Gene Ontology annotations</h2>
+                <h2>
+                  Gene Ontology annotations
+                  <small>
+                    <a href="{% url 'help-gene-ontology-annotations' %}" uib-tooltip="Learn more about Gene Ontology annotations in RNAcentral &rarr;" style="color:inherit;">
+                      <i class="fa fa-question-circle" aria-hidden="true"></i>
+                    </a>
+                  </small>
+                </h2>
                 <go-annotations upi="upi" taxid="taxid" show-go-annotations="showGOAnnotations()"></go-annotations>
               </div>
 
