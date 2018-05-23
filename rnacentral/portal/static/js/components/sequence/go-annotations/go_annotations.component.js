@@ -44,7 +44,12 @@ var go_annotations = {
                     ctrl.go_annotations.forEach(function(annotation) {
                         var key = annotation.assigned_by.toLowerCase();
                         annotation.assigned_url = sourceUrls[key];
+                        annotation.needs_explanation = annotation.evidence_code_id == 'ECO:0000307';
+                        if (annotation.needs_explanation) {
+                            annotation.explanation_url = 'http://wiki.geneontology.org/index.php/No_biological_Data_available_(ND)_evidence_code';
+                        }
                     });
+
                     if (ctrl.go_annotations.length) {
                         ctrl.showGoAnnotations();
                     }

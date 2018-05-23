@@ -21,6 +21,7 @@
         <td>
           <a class="btn btn-circle btn-default btn-sm" ng-click="$ctrl.openGoChartModal(annotation.evidence_code_id)" type="button"><i class="fa fa-sitemap" uib-tooltip="View {{annotation.evidence_code_id}} ancestor chart"></i></a>
           <a href="https://www.ebi.ac.uk/QuickGO/term/{{ annotation.evidence_code_id }}" class="no-icon">{{ annotation.evidence_code_name }}</a>
+          <small ng-if="annotation.needs_explanation">(<a href="{{ annotation.explanation_url }}">About this annotation</a>)</small>
         </td>
         <td>
             <a ng-if="annotation.assigned_url" href="{{ annotation.assigned_url }}" class="no-icon">{{ annotation.assigned_by }}</a>
