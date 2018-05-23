@@ -14,22 +14,54 @@ limitations under the License.
 """
 
 from django.db import models
+from django.contrib.postgres.fields import JSONField
 
 
-class GoTerm(models.Model):
-    # A GO term id is of the form: GO:0006617
-    go_term_id = models.CharField(
+class OntologyTerm(models.Model):
+    # An ontology term id is of the form: GO:0006617
+    ontology_term_id = models.CharField(
         max_length=10,
         db_index=True,
         primary_key=True
     )
+    ontology = models.CharField(max_length=5)
     name = models.TextField()
+    definition = models.TextField()
 
     class Meta:
-        db_table = 'go_terms'
+        db_table = 'ontology_terms'
 
     def url(self):
-        return 'http://amigo.geneontology.org/amigo/term/%s' % self.go_term_id
+        if self.ontology != 'GO':
+            return None
+        return 'http://amigo.geneontology.org/amigo/term/%s' % self.ontology_term_id
 
     def quickgo_url(self):
-        return 'https://www.ebi.ac.uk/QuickGO/term/%s' % self.go_term_id
+        if self.ontology != 'GO':
+            return None
+        return 'https://www.ebi.ac.uk/QuickGO/term/%s' % self.ontology_term_id
+
+
+class GoAnnotation(models.Model):
+    go_term_annotation_id = models.AutoField(primary_key=True)
+    rna_id = models.CharField(max_length=50, null=False)
+    qualifier = models.CharField(max_length=30, null=False)
+    ontology_term = models.ForeignKey(
+        'OntologyTerm',
+        db_column='ontology_term_id',
+        to_field='ontology_term_id',
+        null=False,
+        related_name='go_annotations',
+    )
+    evidence_code = models.ForeignKey(
+        'OntologyTerm',
+        db_column='evidence_code',
+        to_field='ontology_term_id',
+        null=False,
+        related_name='go_annotation_evidence',
+    )
+    assigned_by = models.CharField(max_length=50)
+    extensions = JSONField()
+
+    class Meta:
+        db_table = 'go_term_annotations'

@@ -38,9 +38,8 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, RfamHitSerializer, \
                               EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
-
 from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
-    EnsemblInsdcMapping, GenomeMapping, url2db, db2url
+    EnsemblInsdcMapping, GenomeMapping, GoAnnotation, url2db, db2url
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination
 
@@ -693,6 +692,34 @@ class EnsemblInsdcMappingView(APIView):
         mapping = EnsemblInsdcMapping.objects.all().select_related()
         serializer = EnsemblInsdcMappingSerializer(mapping, many=True, context={request: request})
         return Response(serializer.data)
+
+
+class RnaGoAnnotationsView(APIView):
+    permission_classes = (AllowAny, )
+    pagination_class = Pagination
+
+    def get(self, request, pk, taxid, **kwargs):
+        rna_id = pk + '_' + taxid
+        taxid = int(taxid)
+        annotations = GoAnnotation.objects.filter(rna_id=rna_id).\
+            select_related('ontology_term', 'evidence_code')
+
+        result = []
+        for annotation in annotations:
+            result.append({
+                'rna_id': annotation.rna_id,
+                'upi': pk,
+                'taxid': taxid,
+                'go_term_id': annotation.ontology_term.ontology_term_id,
+                'go_term_name': annotation.ontology_term.name,
+                'qualifier': annotation.qualifier,
+                'evidence_code_id': annotation.evidence_code.ontology_term_id,
+                'evidence_code_name': annotation.evidence_code.name,
+                'assigned_by': annotation.assigned_by,
+                'extensions': annotation.assigned_by or {},
+            })
+
+        return Response(result)
 
 
 class EnsemblKaryotypeAPIView(APIView):
