@@ -18,8 +18,8 @@ from django.db.models import Min, Max
 from rest_framework.renderers import JSONRenderer
 from caching.base import CachingMixin, CachingManager
 
-from portal.config.genomes import get_ucsc_db_id, get_ensembl_division
 from .accession import Accession
+from .ensembl_assembly import EnsemblAssembly
 from .genomic_coordinates import GenomicCoordinates
 from .formatters import Gff3Formatter, GffFormatter, _xref_to_bed_format
 
@@ -616,12 +616,19 @@ class Xref(CachingMixin, models.Model):
 
     def get_ensembl_division(self):
         """Get Ensembl or Ensembl Genomes division for the cross-reference."""
-        species = self.accession.get_ensembl_species_url().replace('_', ' ').capitalize()
-        return get_ensembl_division(species)
+        try:
+            assembly = EnsemblAssembly.objects.get(taxid=self.taxid)
+            return {'name': assembly.division, 'url': 'http://' + assembly.subdomain}
+        except EnsemblAssembly.DoesNotExist:
+            return None
 
     def get_ucsc_db_id(self):
         """Get UCSC id for the genome assembly. http://genome.ucsc.edu/FAQ/FAQreleases.html"""
-        return get_ucsc_db_id(self.taxid)
+        try:
+            genome = EnsemblAssembly.objects.get(taxid=self.taxid)
+            return genome.assembly_ucsc
+        except EnsemblAssembly.DoesNotExist:
+            return None
 
     def has_genomic_coordinates(self):
         """Determine whether an xref has genomic coordinates."""

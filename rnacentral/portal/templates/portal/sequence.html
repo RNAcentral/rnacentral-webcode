@@ -36,9 +36,6 @@ limitations under the License.
         <h1>
             Sequence {{ rna.upi }}
 
-            {% if not context.single_species %}
-                <small>{{ rna.count_distinct_organisms|intcomma }} species</small>
-            {% endif %}
             <small id="sequence-description-header">{{ context.description }}</small>
         </h1>
 
@@ -87,7 +84,9 @@ limitations under the License.
                         <i class="fa fa-exclamation-triangle"></i> Sorry, there was a problem loading genome locations from server. Please try again and contact us if the problem persists.
                     </div>
                 </div>
-                <div ng-if="taxid && fetchGenomeLocationsStatus !== 'error'">
+
+                <div ng-if="genomes && taxid && fetchGenomeLocationsStatus !== 'error'">
+
                     {% verbatim %}
                     <p ng-if="fetchGenomeLocationsStatus === 'success' && locations.length > 0">This sequence is found in <strong>{{ locations.length }}</strong> genome <ng-pluralize count="locations.length" when="{'one': 'location', 'other': 'locations'}"></ng-pluralize>:</p>
                     <div>
@@ -172,13 +171,8 @@ limitations under the License.
                 </div>
 
                 <!-- genoverse -->
-                <div ng-if="browserLocation.genome && browserLocation.chr && browserLocation.start && browserLocation.end">
-                    <genoverse genome="browserLocation.genome" chr="browserLocation.chr" start="browserLocation.start" end="browserLocation.end" example-locations="exampleLocations" highlights="browserLocation.highlights">
-                        <genoverse-track name="'Sequence'" model="Genoverse.Track.Model.Sequence.Ensembl" view="Genoverse.Track.View.Sequence" controller="Genoverse.Track.Controller.Sequence" url="genoverseUtils.urls.sequence" resizable="'auto'" auto-height="true" hide-empty="false" extra="{100000: false}"></genoverse-track>
-                        <genoverse-track name="'Genes'" labels="true" info="'Ensembl API genes'" model="Genoverse.Track.Model.Gene.Ensembl" view="Genoverse.Track.View.Gene.Ensembl" url="genoverseUtils.urls.genes" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.genesPopulateMenu}"></genoverse-track>
-                        <genoverse-track name="'Transcripts'" labels="true" info="'Ensembl API transcripts'" model="Genoverse.Track.Model.Transcript.Ensembl" view="Genoverse.Track.View.Transcript.Ensembl" url="genoverseUtils.urls.transcripts" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.transcriptsPopulateMenu}"></genoverse-track>
-                        <genoverse-track name="'RNAcentral'" id="'RNAcentral'" info="'Unique RNAcentral Sequences'" model="Genoverse.Track.Model.Transcript.Ensembl" model-extra="{parseData: genoverseUtils.RNAcentralParseData}" view="Genoverse.Track.View.Transcript.Ensembl" url="genoverseUtils.urls.RNAcentral" extra="{populateMenu: genoverseUtils.RNAcentralPopulateMenu}" resizable="'auto'" auto-height="true" hide-empty="false"></genoverse-track>
-                    </genoverse>
+                <div ng-if="genomes && browserLocation.genome && browserLocation.chr && browserLocation.start && browserLocation.end">
+                    <genoverse genome="browserLocation.genome" chr="browserLocation.chr" start="browserLocation.start" end="browserLocation.end" highlights="browserLocation.highlights" genoverse-utils="genoverseUtils"></genoverse>
                 </div>
 
                 <div ng-if="taxid && fetchGenomeLocationsStatus === 'success' && (genomeLocations.length + genomeMappings.length ) === 0">
@@ -321,7 +315,7 @@ limitations under the License.
                 <h2>
                     Sequence
                     <small>
-                      <em>{{ rna.upi }}{% if context.single_species %}_{{ context.taxid }}{% endif %}</em>
+                      <em>{{ rna.upi }}{% if context.taxid %}_{{ context.taxid }}{% endif %}</em>
                     </small>
                 </h2>
 
