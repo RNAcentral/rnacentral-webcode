@@ -42,12 +42,14 @@ CHOICES = {
         'GENCODE',
         'Ensembl',
         'TAIR',
+        'SGD',
         'FlyBase',
         'dictBase',
         'MGI',
         'RGD',
         'lncRNAdb',
         'gtRNAdb',
+        'tmRNA Website',
         'PDBe',
         'RefSeq',
         'Rfam',
@@ -248,7 +250,7 @@ def item_sorter(name):
     if match:
         name = re.sub(r'(\d+)$', '', name)
         return (name, int(match.group(1)))
-    return (match, None)
+    return (name, '')
 
 
 def group_consecutives(data, min_size=2):
@@ -256,7 +258,13 @@ def group_consecutives(data, min_size=2):
     Modified from the python itertools docs.
     """
 
-    for _, group in it.groupby(enumerate(data), lambda ix: ix[0] - ix[1]):
+    def grouper(ix):
+        if isinstance(ix[0], int) and isinstance(ix[1], int):
+            return ix[0] - ix[1]
+        else:
+            return float('inf')
+
+    for _, group in it.groupby(enumerate(data), grouper):
         key = op.itemgetter(1)
         group = [key(g) for g in group]
         if len(group) > 1:
@@ -280,6 +288,7 @@ def compute_gene_ranges(genes):
         range_format = '%i-%i'
         if '-' in gene:
             range_format = ' %i to %i'
+
         for (start, stop) in group_consecutives(n[1] for n in numbers):
             if stop is None:
                 names.append(gene + str(start))
@@ -340,7 +349,7 @@ def select_with_several_genes(accessions, name, pattern,
     if description_items is not None:
         func = op.attrgetter(description_items)
 
-    items = sorted([func(a) for a in accessions if func(a)], key=item_sorter)
+    items = sorted((func(a) for a in accessions if func(a)), key=item_sorter)
     if not items:
         return basic
 
@@ -455,6 +464,42 @@ def get_species_specific_name(rna_type, xrefs):
             r'\w+-%s',
             description_items='optional_id',
             max_items=5)
+
+    elif db_name == 'gtRNAdb':
+        description = select_with_several_genes(
+            accessions,
+            'tRNAs',
+            r'\(%s\)$',
+            description_items='gene',
+            max_items=5)
+
+    elif db_name == 'SGD':
+        description = select_with_several_genes(
+            accessions,
+            'genes',
+            r'%s$',
+            attribute='optional_id',
+            description_items='optional_id',
+            max_items=6)
+
+    elif db_name == 'TAIR':
+        description = select_with_several_genes(
+            accessions,
+            'genes',
+            r'%s$',
+            attribute='locus_tag',
+            description_items='locus_tag',
+            max_items=6)
+
+    elif db_name == 'FlyBase':
+        description = select_with_several_genes(
+            accessions,
+            'genes',
+            r'%s$',
+            attribute='locus_tag',
+            description_items='locus_tag',
+            max_items=6)
+
 
     # Fall back to a simple generic method
     else:

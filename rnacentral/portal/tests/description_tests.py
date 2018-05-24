@@ -15,7 +15,6 @@ import unittest
 
 from django.test import SimpleTestCase
 
-
 from django_performance_testing.queries import QueryBatchLimit
 from django_performance_testing.timing import TimeLimit
 
@@ -67,7 +66,7 @@ class SimpleDescriptionTests(GenericDescriptionTest):
 
     def test_can_handle_trnas(self):
         self.assertDescriptionIs(
-            'Escherichia coli tRNA-Pro (CGG)',
+            'Escherichia coli tRNA-Pro (CGG) (tRNA-Pro-CGG-1-1)',
             'URS00001DEEBE',
             taxid=562)
 
@@ -76,6 +75,12 @@ class SimpleDescriptionTests(GenericDescriptionTest):
             'Danio rerio tRNA',
             'URS0000661037',
             taxid=7955)
+
+    def test_cleans_up_tmrna_descriptions(self):
+        self.assertDescriptionIs(
+            'Homo sapiens (human) transfer-messenger RNA Esche_coli_K12',
+            'URS000037602E',
+            taxid=9606)
 
 
 class HumanDescriptionTests(GenericDescriptionTest):
@@ -142,12 +147,11 @@ class HumanDescriptionTests(GenericDescriptionTest):
             'URS000019E0CD',
             taxid=9606)
 
-    @pytest.mark.skip()
-    def test_uses_snopy_descriptions(self):
-        self.assertDescriptionIs(
-            'Homo sapiens (human) small nucleolar RNA SNORD118L8',
-            'URS00006CE02F',
-            taxid=9606)
+    # def test_uses_snopy_descriptions(self):
+    #     self.assertDescriptionIs(
+    #         'Homo sapiens (human) small nucleolar RNA SNORD118L8',
+    #         'URS00006CE02F',
+    #         taxid=9606)
 
 
 class ArabidopisDescriptionTests(GenericDescriptionTest):
@@ -177,8 +181,14 @@ class ArabidopisDescriptionTests(GenericDescriptionTest):
 
     def test_it_uses_tair_over_refseq(self):
         self.assertDescriptionIs(
-            'Arabidopsis thaliana (thale cress) TAS3/TASIR-ARF (TRANS-ACTING SIRNA3); other RNA',
+            'Arabidopsis thaliana (thale cress) TAS3/TASIR-ARF (TRANS-ACTING SIRNA3); other RNA (AT3G17185)',
             'URS00003AC4AA',
+            taxid=3702)
+
+    def test_improves_descriptions_with_gene_name(self):
+        self.assertDescriptionIs(
+            'Arabidopsis thaliana (thale cress) other RNA (AT1G44125)',
+            'URS0000A767C0',
             taxid=3702)
 
 
@@ -308,6 +318,34 @@ class WormTests(GenericDescriptionTest):
             'Caenorhabditis elegans tRNA-His',
             'URS000069D7FA',
             taxid=6239)
+
+
+class YeastTests(GenericDescriptionTest):
+    def test_uses_sgd_gene_names(self):
+        self.assertDescriptionIs(
+            'Saccharomyces cerevisiae S288c (RDN25-1, RDN25-2)',
+            'URS000061F377',
+            taxid=559292)
+
+    def test_can_handle_sgd_trnas(self):
+        self.assertDescriptionIs(
+            'Saccharomyces cerevisiae S288c tRNA-Gln (tQ(UUG)C, tQ(UUG)D1-3, tQ(UUG)E1, tQ(UUG)H, tQ(UUG)L)',
+            'URS000001E7BA',
+            taxid=559292)
+
+
+class FlyTests(GenericDescriptionTest):
+    def test_uses_flybase_genes(self):
+        self.assertDescriptionIs(
+            'Drosophila melanogaster (fruit fly) signal recognition particle 7SL RNA CR32864 (Dmel_CR32864, Dmel_CR42652)',
+            'URS000034C5CB',
+            taxid=7227)
+
+    def test_uses_standard_genes(self):
+        self.assertDescriptionIs(
+            'Drosophila melanogaster (fruit fly) snoRNA:Tudor-SN-a (Dmel_CR43585)',
+            'URS0000563A36',
+            taxid=7227)
 
 
 class LargeDataTests(GenericDescriptionTest):
