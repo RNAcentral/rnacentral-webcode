@@ -18,20 +18,27 @@ var go_annotations = {
             "parkinsonsuk-ucl": "http://www.ucl.ac.uk/functional-gene-annotation/neurological",
         };
 
-        var qualiferOrdering = {
-            "involved_in": 0,
-            "enables": 1, 
-            "contributes_to": 2,
-            "colocalizes_with": 3,
-            "part_of": 4,
-            "__unknown__": 5,
-            
-            "indexOf": function(annotation) {
-                if (this.hasOwnProperty(annotation.qualifier)) {
-                    return this[annotation.qualifier];
-                }
-                return this.__unknown__;
-            }
+        var annotationOrdering = function(annotation) {
+            var qualifier = {
+                "involved_in": 10,
+                "enables": 20, 
+                "contributes_to": 30,
+                "colocalizes_with": 40,
+                "part_of": 50,
+                "__unknown__": 60,
+            };
+
+            var evidence = {
+                "ECO:0000314": 1,
+                "ECO:0000315": 2,
+                "ECO:0000353": 3,
+                "ECO:0000316": 4,
+                "ECO:0000270": 5,
+                "__unknown__": 6,
+            };
+
+            return (qualifier[annotation.qualifier] || qualifier.__unknown__) +
+                (evidence[annotation.evidence_code_id] || evidence.__unknown__);
         };
 
         ctrl.$onInit = function() {
@@ -61,9 +68,7 @@ var go_annotations = {
         };
 
         ctrl.compareAnnotations = function(first, second) {
-            // var index1 = qualiferOrdering.hasOwnProperty(first.qualifier) ? qualiferOrdering[first.qualifier] : qualiferOrdering.__unknown__;
-            // var index2 = qualiferOrdering.hasOwnProperty(second.qualifier) ? qualiferOrdering[second.qualifier] : qualiferOrdering.__unknown__;
-            return qualiferOrdering.indexOf(first) - qualiferOrdering.indexOf(second);
+            return annotationOrdering(first) - annotationOrdering(second);
         };
 
         ctrl.fetchGoTerms = function() {
