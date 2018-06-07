@@ -65,7 +65,7 @@
           </span>
 
           <span ng-if="$ctrl.modal_status === 'loaded'">
-            <img src='{{ $ctrl.chart_data }}'></img>
+            <img ng-src="{{ $ctrl.chart_data }}" />
           </span>
 
         </div>
