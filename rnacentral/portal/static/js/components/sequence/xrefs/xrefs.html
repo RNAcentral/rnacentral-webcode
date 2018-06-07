@@ -37,10 +37,10 @@
       </tr>
       <tr ng-if="$ctrl.status === 'error'">
         <td colspan="3" style="text-align: center;">
-            <span>
-              <i class="fa fa-exclamation-circle fa-2x"></i>
-              Failed to load data from server
-            </span>
+          <span>
+            <i class="fa fa-exclamation-circle fa-2x"></i>
+            Failed to load data from server
+          </span>
         </td>
       </tr>
       <tr ng-if="$ctrl.status === 'success'" ng-repeat="xref in $ctrl.displayedXrefs" ng-class="{ 'warning': xref.is_active == false }">

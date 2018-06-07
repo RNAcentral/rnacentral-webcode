@@ -62,6 +62,13 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         hopscotch.startTour($rootScope.tour, 4);  // start from step 4
     };
 
+    // Publications
+    // ------------
+
+    $scope.activatePublications = function () {
+        $('html, body').animate({ scrollTop: $('#publications').offset().top }, 1200);
+    };
+
     // Data fetch functions
     // --------------------
 
