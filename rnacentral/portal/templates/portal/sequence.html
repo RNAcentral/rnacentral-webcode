@@ -36,9 +36,6 @@ limitations under the License.
         <h1>
             Sequence {{ rna.upi }}
 
-            {% if not context.single_species %}
-                <small>{{ rna.count_distinct_organisms|intcomma }} species</small>
-            {% endif %}
             <small id="sequence-description-header">{{ context.description }}</small>
         </h1>
 
@@ -72,17 +69,131 @@ limitations under the License.
 
             <uib-tab index="0" heading="Overview" id="overview" deselect="checkTab($event, $selectedIndex)">
 
-                <xrefs upi="upi" taxid="taxid" timeout="5000" page-size="5" on-activate-publications="activateTab('2'); $('html, body').animate({ scrollTop: $('#tabs').offset().top }, 1200);" on-create-modifications-feature="createModificationsFeature(modifications, accession)" on-activate-genome-browser="activateGenomeBrowser(start, end, chr, genome)"></xrefs>
+                <xrefs upi="upi" taxid="taxid" timeout="500" page-size="5" on-activate-publications="activatePublications()" on-create-modifications-feature="createModificationsFeature(modifications, accession)" on-activate-genome-browser="activateGenomeBrowser(start, end, chr, genome)" on-scroll-to-genome-browser="scrollToGenomeBrowser()"></xrefs>
+
+                <h2 ng-if="taxid">
+                    Genome locations
+                    <small>
+                      <a href="{% url 'help-genomic-mapping' %}" uib-tooltip="Learn more about RNAcentral genome mapping &rarr;" style="color:inherit;">
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                      </a>
+                    </small>
+                </h2>
+                <div ng-if="taxid && fetchGenomeLocationsStatus === 'error'">
+                    <div class="alert alert-danger">
+                        <i class="fa fa-exclamation-triangle"></i> Sorry, there was a problem loading genome locations from server. Please try again and contact us if the problem persists.
+                    </div>
+                </div>
+
+                <div ng-if="genomes && taxid && fetchGenomeLocationsStatus !== 'error'">
+
+                    {% verbatim %}
+                    <p ng-if="fetchGenomeLocationsStatus === 'success' && locations.length > 0">This sequence is found in <strong>{{ locations.length }}</strong> genome <ng-pluralize count="locations.length" when="{'one': 'location', 'other': 'locations'}"></ng-pluralize>:</p>
+                    <div>
+                        <div style="max-height: 300px; overflow: auto;">
+                            <table ng-if="fetchGenomeLocationsStatus === 'loading' || locations.length > 0" class="table table-hover table-condensed table-responsive" style="margin-left: 9px; margin-right: 9px;">
+                                <thead>
+                                    <tr>
+                                        <th>Go to location</th>
+                                        <th>Chromosome</th>
+                                        <th>Start</th>
+                                        <th>End</th>
+                                        <th>Strand</th>
+                                        <th>Ensembl</th>
+                                        <th>UCSC</th>
+                                        <th>Evidence</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                  <tr ng-if="fetchGenomeLocationsStatus === 'loading'">
+                                        <td colspan="8" style="text-align: center;">
+                                            <span>
+                                                <i class="fa fa-spinner fa-spin fa-2x"></i>
+                                                Loading genome locations...
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr ng-if="fetchGenomeLocationsStatus === 'error'">
+                                        <td colspan="8" style="text-align: center;">
+                                            <span>
+                                                <i class="fa fa-exclamation-circle fa-2x"></i>
+                                                Failed to load data from server
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <tr ng-if="fetchGenomeLocationsStatus === 'success' && locations.length === 0">
+                                        <td colspan="8">No genome locations known</td>
+                                    </tr>
+                                    <tr ng-if="fetchGenomeLocationsStatus === 'success'" ng-repeat="location in locations" ng-class="{'active': isSelectedLocation(location) }">
+                                        <td>
+                                            <button ng-if="!$ctrl.chromosomeIsScaffold(location.chromosome)"
+                                                    type="button"
+                                                    class="btn btn-default btn-xs genoverse-xref help margin-right-5px"
+                                                    ng-click="activateGenomeBrowser(location.start, location.end, location.chromosome, location.species); scrollToGenomeBrowser();"
+                                                    title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> Go to location
+                                            </button>
+                                            <li ng-if="$ctrl.chromosomeIsScaffold(location.chromosome)" class="badge">Can't view - strange chromosome name</li>
+                                        </td>
+                                        <td>
+                                            <span class="margin-right-5px">{{ location.chromosome }}</span>
+                                        </td>
+                                        <td>
+                                            {{ location.start | number }}
+                                        </td>
+                                        <td>
+                                            {{ location.end | number }}
+                                        </td>
+                                        <td>
+                                            {{ location.strand == "1" ? "forward" : "reverse" }}
+                                        </td>
+                                        <td><!-- Ensembl url -->
+                                            <span ng-if="location.ensembl_division && location.ensembl_species_url" class="margin-right-5px ensembl-link">
+                                                <a ng-href="{{ location.ensembl_division.url + '/' + location.ensembl_species_url + '/Location/View?r=' + location.chromosome + ':' + location.start + '-' + location.end }}" target="_blank">{{ location.ensembl_division.name }}</a>
+                                            </span>
+                                        </td>
+                                        <td><!-- UCSC url -->
+                                            <span ng-if="location.ucsc_db_id" class="margin-right-5px ucsc-link">
+                                                <a ng-href="{{ 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + location.ucsc_db_id + '&position=' + location.ucsc_chromosome + ':' + location.start + '-' + location.end }}" target="_blank">UCSC</a>
+                                            </span>
+                                        </td>
+                                        <td ng-if="genomeLocations.indexOf(location) !== -1">
+                                            <span>Literature <i uib-tooltip="This genome location is known from literature annotations (see 'Annotations' section)" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i></span>
+                                        </td>
+                                        <td ng-if="genomeMappings.indexOf(location) !== -1">
+                                            {{ location.identity * 100 | number:2 }}% <i uib-tooltip="This genome location is predicted by alignment of RNA sequence to the genome. Identity is {{ location.identity * 100 | number:2 }}%" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% endverbatim %}
+                </div>
 
                 <!-- genoverse -->
-                <div ng-if="genome && chr && start && end">
-                    <genoverse genome="genome" chr="chr" start="start" end="end" example-locations="exampleLocations">
-                        <genoverse-track name="'Sequence'" model="Genoverse.Track.Model.Sequence.Ensembl" view="Genoverse.Track.View.Sequence" controller="Genoverse.Track.Controller.Sequence" url="genoverseUtils.urls.sequence" resizable="'auto'" auto-height="true" hide-empty="false" extra="{100000: false}"></genoverse-track>
-                        <genoverse-track name="'Genes'" labels="true" info="'Ensembl API genes'" model="Genoverse.Track.Model.Gene.Ensembl" view="Genoverse.Track.View.Gene.Ensembl" url="genoverseUtils.urls.genes" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.genesPopulateMenu}"></genoverse-track>
-                        <genoverse-track name="'Transcripts'" labels="true" info="'Ensembl API transcripts'" model="Genoverse.Track.Model.Transcript.Ensembl" view="Genoverse.Track.View.Transcript.Ensembl" url="genoverseUtils.urls.transcripts" resizable="'auto'" auto-height="true" hide-empty="false" extra="{populateMenu: genoverseUtils.transcriptsPopulateMenu}"></genoverse-track>
-                        <genoverse-track name="'RNAcentral'" id="'RNAcentral'" info="'Unique RNAcentral Sequences'" model="Genoverse.Track.Model.Gene.Ensembl" model-extra="{parseData: genoverseUtils.RNAcentralParseData}" view="Genoverse.Track.View.Transcript.Ensembl" url="genoverseUtils.urls.RNAcentral" extra="{populateMenu: genoverseUtils.RNAcentralPopulateMenu}" resizable="'auto'" auto-height="true" hide-empty="false"></genoverse-track>
-                    </genoverse>
+                <div ng-if="genomes && browserLocation.genome && browserLocation.chr && browserLocation.start && browserLocation.end">
+                    <genoverse genome="browserLocation.genome" chr="browserLocation.chr" start="browserLocation.start" end="browserLocation.end" highlights="browserLocation.highlights" genoverse-utils="genoverseUtils"></genoverse>
                 </div>
+
+                <div ng-if="taxid && fetchGenomeLocationsStatus === 'success' && (genomeLocations.length + genomeMappings.length ) === 0">
+                  <p>
+                    No genome locations found for this sequence. <a href="{% url 'help-genomic-mapping' %}">Learn more &rarr;</a>
+                  <p>
+                </div>
+
+
+              <div ng-hide="hideGoAnnotations">
+                <h2>
+                  Gene Ontology annotations
+                  <small>
+                    <a href="{% url 'help-gene-ontology-annotations' %}" uib-tooltip="Learn more about Gene Ontology annotations in RNAcentral &rarr;" style="color:inherit;">
+                      <i class="fa fa-question-circle" aria-hidden="true"></i>
+                    </a>
+                  </small>
+                </h2>
+                <go-annotations upi="upi" taxid="taxid" show-go-annotations="showGOAnnotations()"></go-annotations>
+              </div>
+
 
                 <div>
                   <h2>
@@ -155,14 +266,14 @@ limitations under the License.
                             <ul class="list-unstyled">
                               {% for go_term in hit.rfam_model.go_terms %}
                               <li>
-                                <a href="{{ go_term.quickgo_url }}" target="_blank">{{ go_term.go_term_id }}</a>
+                                <a href="{{ go_term.quickgo_url }}" target="_blank">{{ go_term.ontology_term_id }}</a>
                                 <small>{{ go_term.name }}</small>
                               </li>
                               {% endfor %}
                             </ul>
                             {% else %}
                               {% with hit.rfam_model.go_terms.0 as go_term %}
-                                <a href="{{ go_term.quickgo_url }}">{{ go_term.go_term_id }}</a>
+                                <a href="{{ go_term.quickgo_url }}">{{ go_term.ontology_term_id }}</a>
                                 <small>{{ go_term.name }}</small>
                               {% endwith %}
                             {% endif %}
@@ -201,12 +312,13 @@ limitations under the License.
                   {% endwith %}
                 </div>
 
-                <h2>Sequence</h2>
+                <h2>
+                    Sequence
+                    <small>
+                      <em>{{ rna.upi }}{% if context.taxid %}_{{ context.taxid }}{% endif %}</em>
+                    </small>
+                </h2>
 
-                <p>
-                    RNAcentral identifier <em>{{ rna.upi }}{% if context.single_species %}_{{ context.taxid }}{% endif %}</em>
-                    <a href="{% url 'nhmmer-sequence-search' %}?q={{ rna.upi }}" class="margin-left-5px">Search for similar sequences</a>
-                </p>
                 {% if context.non_canonical_base_counts %}
                 <p class="small">
                     <span class="text-warning"><i class="fa fa-warning"></i> Contains ambiguity characters:</span> {% for symbol,count in context.non_canonical_base_counts.items %}{{ count|intcomma }} {{ symbol }}{% if not forloop.last %}, {% endif %}{% endfor %}
@@ -214,36 +326,40 @@ limitations under the License.
                 </p>
                 {% endif %}
                 <div id="feature-viewer"></div>
-                <p><b>To zoom in :</b> Left click to select area of interest; <b>To zoom out :</b> Right click to reset the scale</p>
+                <p class="text-muted"><b>To zoom in:</b> Left click to select area of interest; <b>To zoom out:</b> Right click to reset the scale</p>
 
                 <div style="padding-top: 10px; padding-bottom: 10px;">
-                    <button class="btn btn-primary" ng-click="showSequence = !showSequence">{% verbatim %}{{ showSequence ? "Hide sequence" : "Show sequence" }}{% endverbatim %}</button>
+                    <button class="btn btn-default" ng-click="showSequence = !showSequence"><i class="fa fa-align-justify" aria-hidden="true"></i> {% verbatim %}{{ showSequence ? "Hide sequence" : "Show sequence" }}{% endverbatim %}</button>
                     <div ng-if="rna" class="btn-group">
-                        <button class="btn btn-default btn-sm" id="copy-as-rna">
-                          <i class="fa fa-copy" aria-hidden="true">&nbsp;as RNA</i>
+                        <button class="btn btn-default" id="copy-as-rna">
+                          <i class="fa fa-copy" aria-hidden="true"></i> Copy as RNA
                         </button>
-                        <button class="btn btn-default btn-sm" id="copy-as-dna">
-                          <i class="fa fa-copy" aria-hidden="true">&nbsp;as DNA</i>
+                        <button class="btn btn-default" id="copy-as-dna">
+                          <i class="fa fa-copy" aria-hidden="true"></i> Copy as DNA
                         </button>
                     </div>
+                    <a class="btn btn-default" href="{% url 'nhmmer-sequence-search' %}?q={{ rna.upi }}" class="margin-left-5px">
+                      <i class="fa fa-search" aria-hidden="true"></i> Search for similar sequences
+                    </a>
                 </div>
 
                 <pre ng-if="showSequence" class="pre-scrollable" id="rna-sequence">{{ rna.get_sequence }}</pre>
+
+                <publications upi="upi" taxid="taxid"></publications>
+
             </uib-tab>
 
             <uib-tab index="1" heading="Taxonomy" deselect="checkTab($event, $selectedIndex)">
-                <h2>Taxonomic Tree</h2>
+                <h2>Taxonomic tree</h2>
 
                 <p>
-                    This sequence has been observed in <strong>{{ rna.count_distinct_organisms }}</strong> species.
-                    Get <strong>species-specific urls</strong> by clicking on <span class="text-primary"><strong>species names</strong></span>.
-                    <br>
-                    <small class="text-muted">
-                        <i class="fa fa-info-circle"></i>
-                        <strong>Scroll around</strong> to explore the entire tree.
-                        <strong>Click</strong> tree nodes to collapse or expand them.
-                        <strong>Hover</strong> over taxon names to display additional information.
-                    </small>
+                    View annotations in different species by clicking on <span class="text-primary"><strong>species names</strong></span>.
+                </p>
+                <p class="small text-muted">
+                    <i class="fa fa-info-circle"></i>
+                    <strong>Scroll around</strong> to explore the entire tree.
+                    <strong>Click</strong> tree nodes to collapse or expand them.
+                    <strong>Hover</strong> over taxon names to display additional information.
                 </p>
 
                 <div class="panel panel-default d3-species">
@@ -253,15 +369,11 @@ limitations under the License.
                 </div>
             </uib-tab>
 
-            <uib-tab index="2" heading="Publications" deselect="checkTab($event, $selectedIndex)">
-                <publications upi="upi" taxid="taxid"></publications>
-            </uib-tab>
-
-            <uib-tab index="3" heading="2D" id="secondary-structures" deselect="checkTab($event, $selectedIndex)" ng-hide="hide2dTab">
+            <uib-tab index="2" heading="2D" id="secondary-structures" deselect="checkTab($event, $selectedIndex)" ng-hide="hide2dTab">
                 <secondary-structures upi="upi" taxid="taxid" show-secondary-structure-tab="show2dTab()"></secondary-structures>
             </uib-tab>
 
-            <uib-tab index="4" class="dropdown pull-right hidden-xs">
+            <uib-tab index="3" class="dropdown pull-right hidden-xs">
                 <uib-tab-heading>
                     <span uib-dropdown>
                         <a uib-dropdown-toggle>

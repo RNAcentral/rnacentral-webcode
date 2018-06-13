@@ -21,13 +21,15 @@ RUN yum install -y \
     httpd \
     httpd-devel \
     libaio \
-    nc.x86_64 \
+    "nc.x86_64" \
     openssl \
     openssl-devel \
     tar \
     unzip \
     wget \
-    zlib-devel
+    zlib-devel \
+    gcc-c++ \
+    make
 
 RUN mkdir /rnacentral
 RUN mkdir /rnacentral/local
@@ -83,7 +85,7 @@ RUN \
 # Install libevent (memcached requirement)
 RUN \
     cd $LOC && \
-    curl -OL https://github.com/downloads/libevent/libevent/libevent-2.0.21-stable.tar.gz && \
+    curl --tlsv1 -OL https://github.com/downloads/libevent/libevent/libevent-2.0.21-stable.tar.gz && \
     tar -zxvf libevent-2.0.21-stable.tar.gz && \
     cd libevent-2.0.21-stable && \
     ./configure --prefix=$LOC/libevent && \
@@ -128,7 +130,7 @@ RUN \
     cd $LOC && \
     mkdir httpd && \
     mkdir httpd/modules && \
-    curl -L -o mod_wsgi-3.4.tar.gz https://github.com/GrahamDumpleton/mod_wsgi/archive/3.4.tar.gz && \
+    curl --tlsv1 -L -o mod_wsgi-3.4.tar.gz https://github.com/GrahamDumpleton/mod_wsgi/archive/3.4.tar.gz && \
     tar -zxvf mod_wsgi-3.4.tar.gz && \
     cd mod_wsgi-3.4 && \
     export LD_RUN_PATH=$LOC/python-2.7.11/lib && \
@@ -159,6 +161,14 @@ ADD rnacentral/requirements.txt $RNACENTRAL_HOME/rnacentral/
 RUN \
     source $LOC/virtualenvs/RNAcentral/bin/activate && \
     pip install -r $RNACENTRAL_HOME/rnacentral/requirements.txt
+
+# Install Node.js
+RUN curl -sL https://rpm.nodesource.com/setup_6.x | bash -
+RUN yum install -y nodejs
+
+# Install NPM dependencies
+ADD rnacentral/portal/static/package.json $RNACENTRAL_HOME/rnacentral/portal/static/
+RUN cd $RNACENTRAL_HOME/rnacentral/portal/static && npm install --only=production
 
 # Expose a container port where the website is served
 EXPOSE 8000

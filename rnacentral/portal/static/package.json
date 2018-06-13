@@ -4,7 +4,7 @@
   "description": "",
   "main": "rnacentral.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node_modules/karma/bin/karma start --browsers Chrome --single-run false --debug --auto-watch"
   },
   "repository": {
     "type": "git",
@@ -20,6 +20,9 @@
   },
   "homepage": "https://github.com/RNAcentral/rnacentral-webcode#readme",
   "dependencies": {
+    "@burkov/feature-viewer": "^1.1.1",
+    "@burkov/fornac": "^1.1.10",
+    "@burkov/genoverse": "^3.0.1",
     "angular": "^1.6.4",
     "angular-animate": "^1.6.4",
     "angular-filter": "^0.5.17",
@@ -27,7 +30,6 @@
     "angular-resource": "^1.6.4",
     "angular-sanitize": "^1.6.4",
     "angular-ui-bootstrap": "^2.5.0",
-    "angularjs-genoverse": "^3.0.3",
     "angularjs-slider": "^6.4.3",
     "animate.css": "^3.5.2",
     "bootstrap": "^3.3.7",
@@ -38,15 +40,26 @@
     "fornac-burkov": "^1.1.10",
     "hopscotch": "^0.2.8",
     "jquery": "^3.2.1",
+    "jquery-ui-bundle": "^1.12.1-migrate",
+    "jquery.mousehold": "^2.0.0",
+    "jquery.mousewheel": "^3.1.9",
     "js-md5": "^0.4.2",
     "json3": "^3.3.2",
     "moment": "^2.18.1",
     "query": "^0.2.0",
     "slick-carousel": "^1.8.1",
     "timelinejs3": "^3.4.0",
+    "tipsy-1a": "^1.0.0",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
+    "angular-mocks": "^1.6.9",
+    "jasmine-core": "^3.1.0",
+    "karma": "^2.0.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-firefox-launcher": "^1.1.0",
+    "karma-jasmine": "^1.1.1",
+    "karma-safari-launcher": "^1.0.0",
     "phantomjs": "^2.1.7"
   }
 }

@@ -19,9 +19,9 @@ from django.core.urlresolvers import reverse
 from django.db.models import Min, Max
 from rest_framework import serializers
 
-from portal.models import Rna, Xref, Reference, Database, DatabaseStats, Accession, Release, Reference, Modification, RfamHit, RfamModel, RfamClan
-from portal.models.reference_map import Reference_map
-from portal.models.chemical_component import ChemicalComponent
+from portal.models import Rna, Xref, Reference,  Reference_map, ChemicalComponent, Database, DatabaseStats, Accession, \
+    Release, Reference, Modification, RfamHit, RfamModel, RfamClan, \
+    EnsemblAssembly, EnsemblInsdcMapping, EnsemblKaryotype
 
 
 class RawPublicationSerializer(serializers.ModelSerializer):
@@ -136,7 +136,7 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
     # tmrna_type = serializers.ReadOnlyField(source='get_tmrna_type')
     gencode_transcript_id = serializers.CharField(source='get_gencode_transcript_id', read_only=True)
     gencode_ensembl_url = serializers.CharField(source='get_gencode_ensembl_url', read_only=True)
-    ensembl_division = serializers.CharField(source='get_ensembl_division', read_only=True)
+    ensembl_division = serializers.DictField(source='get_ensembl_division', read_only=True)
     ucsc_db_id = serializers.CharField(source='get_ucsc_db_id', read_only=True)
     genomic_coordinates = serializers.SerializerMethodField()
 
@@ -228,12 +228,6 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
             else:
                 data['ucsc_chromosome'] = data['chromosome']
             return data
-
-
-class RnaListSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Rna
-        fields = '__all__'
 
 
 class RnaNestedSerializer(serializers.HyperlinkedModelSerializer):
@@ -438,3 +432,30 @@ class RfamHitSerializer(serializers.ModelSerializer):
     class Meta:
         model = RfamHit
         fields = ('sequence_start', 'sequence_stop', 'sequence_completeness', 'rfam_model')
+
+
+class EnsemblAssemblySerializer(serializers.ModelSerializer):
+    human_readable_ensembl_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = EnsemblAssembly
+        fields = ('assembly_id', 'assembly_full_name', 'gca_accession', 'assembly_ucsc',
+                  'common_name', 'taxid', 'ensembl_url', 'human_readable_ensembl_url', 'division', 'subdomain',
+                  'example_chromosome', 'example_start', 'example_end')
+
+    def get_human_readable_ensembl_url(self, obj):
+        return obj.ensembl_url.replace("_", " ").capitalize()
+
+
+class EnsemblInsdcMappingSerializer(serializers.ModelSerializer):
+    assembly = EnsemblAssemblySerializer(source='assembly_id')
+
+    class Meta:
+        model = EnsemblInsdcMapping
+        fields = ('insdc', 'ensembl_name', 'assembly')
+
+
+class EnsemblKaryotypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EnsemblKaryotype
+        fields = ('karyotype', )

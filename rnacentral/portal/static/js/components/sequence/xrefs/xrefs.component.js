@@ -7,7 +7,8 @@ var xrefs = {
         taxid: '<?',
         onActivatePublications: '&',
         onCreateModificationsFeature: '&',
-        onActivateGenomeBrowser: '&'
+        onActivateGenomeBrowser: '&',
+        onScrollToGenomeBrowser: '&'
     },
     controller: ['routes', '$http', '$interpolate', '$timeout', '$filter', function(routes, $http, $interpolate, $timeout, $filter) {
         var ctrl = this;

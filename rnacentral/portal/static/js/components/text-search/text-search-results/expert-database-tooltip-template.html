@@ -1,4 +1,4 @@
-<h5><i ng-if="$ctrl.expertDbHasStar(facetValue.value.toLowerCase())" class="fa fa-star">  </i>{{ $ctrl.expertDbsObject[facetValue.value.toLowerCase()].name }} <img style="width: 50px; float: right; margin-left: 5px; margin-bottom: 5px;" class="img-thumbnail" ng-src="{{ $ctrl.routes.expertDbLogo({ expertDbName: facetValue.value.toLowerCase() }) }}"></h5>
+<h5><i ng-if="$ctrl.expertDbHasStar(facetValue.value.toLowerCase())" class="fa fa-star">  </i>{{ $ctrl.expertDbsObject[facetValue.value.toLowerCase()].name }} <img style="width: 50px; float: right; margin-left: 5px; margin-bottom: 5px;" class="img-thumbnail" ng-src="{{ $ctrl.normalizeExpertDbName.nameToImageUrl(facetValue.value) }}"></h5>
 <p>{{ $ctrl.expertDbsObject[facetValue.value.toLowerCase()].hint }}</p>
 <div><span ng-repeat="tag in $ctrl.expertDbsObject[facetValue.value.toLowerCase()].tags" class="rnacentral-tag label label-default">{{ tag.split(" ").join("&nbsp;") }}</span></div>
 <!-- <i ng-if="tag == 'curated'" class="fa fa-users"></i><i ng-if="tag == 'automatic'" class="fa fa-desktop"></i><i ng-if="tag == 'community curated'" class="fa fa-wikipedia-w"></i> -->

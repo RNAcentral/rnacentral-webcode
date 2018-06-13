@@ -1425,3 +1425,12 @@ textarea {
   margin-top: 0.5em;
   margin-bottom: 0.5em;
 }
+
+.btn-circle {
+  width: 20px;
+  height: 20px;
+  text-align: center;
+  padding: 0px 0;
+  font-size: 12px;
+  border-radius: 15px;
+}

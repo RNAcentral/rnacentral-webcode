@@ -30,9 +30,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from portal.config.expert_databases import expert_dbs
-from portal.config.genomes import genomes as rnacentral_genomes, get_taxonomy_info_by_genome_identifier
 from portal.forms import ContactForm
-from portal.models import Rna, Database, Release, Xref
+from portal.models import Rna, Database, Release, Xref, EnsemblAssembly
 from portal.models.database_stats import DatabaseStats
 from portal.models.rna_precomputed import RnaPrecomputed
 
@@ -100,8 +99,8 @@ def rna_view(request, upi, taxid=None):
     except Rna.DoesNotExist:
         raise Http404
 
-    # if taxid is given, but xrefs for it don't exist - redirect to non-taxon-filtered page with header
-    if taxid and not rna.xrefs.filter(taxid=taxid).exists():
+    # if taxid is given, but the RNA does not have annotations for this taxid, redirect to an error page
+    if taxid and not RnaPrecomputed.objects.filter(upi=upi, taxid=taxid).exists():
         response = redirect('unique-rna-sequence', upi=upi)
         response['Location'] += '?taxid-not-found={taxid}'.format(taxid=taxid)
         return response
@@ -117,7 +116,6 @@ def rna_view(request, upi, taxid=None):
         'taxid': taxid,
         'taxid_filtering': taxid_filtering,
         'taxid_not_found': request.GET.get('taxid-not-found', ''),
-        'single_species': get_single_species(rna, taxid, taxid_filtering),
         'description': rna.get_description(taxid) if taxid_filtering else rna.get_description(),
         'distinct_databases': rna.get_distinct_database_names(taxid),
         'publications': rna.get_publications(taxid) if taxid_filtering else rna.get_publications(),
@@ -131,23 +129,6 @@ def rna_view(request, upi, taxid=None):
     }
 
     return render(request, 'portal/sequence.html', {'rna': rna, 'context': context})
-
-
-def get_single_species(rna, taxid, taxid_filtering):
-    """Determine if the sequence has only one species or get the taxid species."""
-    if taxid_filtering:  # if taxid_filtering, taxid should be supplied - get a species name given that NCBI taxid
-        xref = Xref.default_objects.filter(taxid=taxid).select_related('accession')[:1].get()
-        return xref.accession.species if xref else None  # if not available for this species, return None
-    else:  # if filtering is not enabled, still, there might be only one species in references
-        if rna.count_distinct_organisms == 1:
-            queryset = rna.xrefs
-            results = queryset.filter(deleted='N')
-            if results.exists():
-                return results.first().accession.species
-            else:
-                return queryset.first().accession.species
-        else:
-            return None
 
 
 @cache_page(CACHE_TIMEOUT)
@@ -255,10 +236,6 @@ class GenomeBrowserView(TemplateView):
     def get(self, request, *args, **kwargs):
         self.template_name = 'portal/genome-browser.html'
 
-        # always add genomes to kwargs
-        genomes = sorted(rnacentral_genomes, key=lambda x: x['species'])
-        kwargs['genomes'] = genomes
-
         # if current location is given in GET parameters - use it; otherwise, use defaults
         if 'species' in request.GET and ('chromosome' in request.GET or 'chr' in request.GET) and 'start' in request.GET and 'end' in request.GET:
             # security-wise it doesn't make sense to validate location:
@@ -278,11 +255,12 @@ class GenomeBrowserView(TemplateView):
             kwargs['start'] = request.GET['start']
             kwargs['end'] = request.GET['end']
         else:
-            genome_info = get_taxonomy_info_by_genome_identifier('homo_sapiens')
+            ensembl_assembly = EnsemblAssembly.objects.get(ensembl_url='homo_sapiens')
+
             kwargs['genome'] = 'homo_sapiens'
-            kwargs['chromosome'] = genome_info['example_location']['chromosome']
-            kwargs['start'] = genome_info['example_location']['start']
-            kwargs['end'] = genome_info['example_location']['end']
+            kwargs['chromosome'] = ensembl_assembly.example_chromosome
+            kwargs['start'] = ensembl_assembly.example_start
+            kwargs['end'] = ensembl_assembly.example_end
 
         response = super(GenomeBrowserView, self).get(request, *args, **kwargs)
         try:

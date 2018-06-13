@@ -33,9 +33,11 @@ limitations under the License.
             {% block title %} RNAcentral {% endblock %}
         </title>
 
+        <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/genoverse.css" %}">
         {% compress css %}
             {% block stylesheets %}
                 <!-- warning: feature viewer css conflicts with bootstrap for navbar etc. -->
+                <link rel="stylesheet" href="{% static "node_modules/tipsy-1a/src/stylesheets/tipsy.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/feature-viewer-burkov/css/style.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/bootstrap/dist/css/bootstrap.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/font-awesome/css/font-awesome.css" %}">
@@ -49,13 +51,12 @@ limitations under the License.
                 <link rel="stylesheet" href="{% static "node_modules/angular-loading-bar/build/loading-bar.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/timelinejs3/compiled/css/timeline.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/timelinejs3/compiled/css/fonts/font.bevan-pontanosans.css" %}">
-                <link rel="stylesheet" href="{% static "node_modules/angularjs-genoverse/lib/Genoverse/css/genoverse.css" %}">
-                <link rel="stylesheet" href="{% static "node_modules/angularjs-genoverse/lib/Genoverse/css/controlPanel.css" %}">
-                <link rel="stylesheet" href="{% static "node_modules/angularjs-genoverse/lib/Genoverse/css/fileDrop.css" %}">
-                <link rel="stylesheet" href="{% static "node_modules/angularjs-genoverse/lib/Genoverse/css/karyotype.css" %}">
-                <link rel="stylesheet" href="{% static "node_modules/angularjs-genoverse/lib/Genoverse/css/resizer.css" %}">
-                <link rel="stylesheet" href="{% static "node_modules/angularjs-genoverse/lib/Genoverse/css/trackControls.css" %}">
-                <link rel="stylesheet" href="{% static "node_modules/angularjs-genoverse/lib/Genoverse/css/tooltips.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/controlPanel.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/fileDrop.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/karyotype.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/resizer.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/trackControls.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/tooltips.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/angularjs-slider/dist/rzslider.css" %}">
             {% endblock stylesheets %}
         {% endcompress %}
@@ -132,11 +133,8 @@ limitations under the License.
 
         </div> <!-- container -->
 
-
         {% compress js %}
           {% block extra_js %}
-            <!-- warning, feature-viewer.bundle.js includes jquery, so it breaks slick and everything else -->
-            <script src="{% static "node_modules/feature-viewer-burkov/dist/feature-viewer.bundle.js" %}"></script>
             <script src="{% static "node_modules/jquery/dist/jquery.js" %}"></script>
             <script src="{% static "node_modules/slick-carousel/slick/slick.js" %}"></script>
             <script src="{% static "node_modules/hopscotch/dist/js/hopscotch.js" %}"></script>
@@ -150,11 +148,22 @@ limitations under the License.
             <script src="{% static "node_modules/underscore/underscore.js" %}"></script>
             <script src="{% static "node_modules/moment/moment.js" %}"></script>
             <script src="{% static "node_modules/js-md5/build/md5.min.js" %}"></script>
+            <script src="{% static "node_modules/@burkov/fornac/dist/scripts/fornac.js" %}"></script>
             <script src="{% static "node_modules/d3/d3.js" %}"></script>
             <script src="{% static "node_modules/clipboard/dist/clipboard.js" %}"></script>
             <script src="{% static "node_modules/timelinejs3/compiled/js/timeline.js" %}"></script>
-            <script src="{% static "node_modules/fornac-burkov/dist/scripts/fornac.js" %}"></script>
             <script src="{% static "node_modules/angularjs-slider/dist/rzslider.js" %}"></script>
+            <!-- warning, feature-viewer.bundle.js includes jquery, so it breaks slick and everything else -->
+            <script src="{% static "node_modules/@burkov/feature-viewer/src/feature-viewer.js" %}"></script>
+            <!-- Genoverse bundle contains jquery, avoid conflict with our jquery - let Genoverse go first -->
+            <script src="{% static "node_modules/@burkov/genoverse/dist/js/genoverse.concat.nodeps.js" %}"></script>
+            <script src="{% static "node_modules/jquery-ui-bundle/jquery-ui.js" %}"></script>
+            <script src="{% static "node_modules/jquery.mousehold/jquery.mousehold.js" %}"></script>
+            <script src="{% static "node_modules/jquery.mousewheel/jquery.mousewheel.js" %}"></script>
+            <script src="{% static "node_modules/tipsy-1a/src/javascripts/jquery.tipsy.js" %}"></script>
+            <!-- New genoverse contains tooltip from jquery ui, it conflicts with bootstrap - bridge it! -->
+            <!-- Bridge doesn't work now
+            <!-- <script>$.widget.bridge('uitooltip', $.ui.tooltip);</script> -->
 
             <script src="{% static "js/d3/d3.ExpertDatabaseSequenceDistribution.js" %}"></script>
             <script src="{% static "js/d3/d3.speciesSunburst.js" %}"></script>
@@ -175,6 +184,7 @@ limitations under the License.
             <script src="{% static "js/components/expert-database/expert-database-top.component.js" %}"></script>
             <script src="{% static "js/components/expert-database/expert-database-left.component.js" %}"></script>
             <script src="{% static "js/components/expert-database/expert-database-right.component.js" %}"></script>
+            <script src="{% static "js/components/expert-database/normalize-expert-db-name.service.js" %}"></script>
 
             <script src="{% static "js/components/sequence/sequence.module.js" %}"></script>
             <script src="{% static "js/components/sequence/abstract/abstract.component.js" %}"></script>
@@ -184,9 +194,16 @@ limitations under the License.
             <script src="{% static "js/components/sequence/xrefs/xrefs.component.js" %}"></script>
             <script src="{% static "js/components/sequence/xrefs/xref-publications/xref-publications.component.js" %}"></script>
             <script src="{% static "js/components/sequence/2d/2d.component.js" %}"></script>
+            <script src="{% static "js/components/sequence/go-annotations/go_annotations.component.js" %}"></script>
 
             <script src="{% static "js/components/sequence-search/nhmmer.sequence.search.js" %}"></script>
 
+            <script src="{% static "js/components/genome-browser/genome-browser.module.js" %}"></script>
+            <script src="{% static "js/components/genome-browser/genoverse-utils.service.js" %}"></script>
+            <script src="{% static "js/components/genome-browser/genome-browser.controller.js" %}"></script>
+            <script src="{% static "js/components/genome-browser/genoverse.component.js" %}"></script>
+
+            <script src="{% static "js/components/text-search/text-search.module.js" %}"></script>
             <script src="{% static "js/components/text-search/text-search.service.js" %}"></script>
             <script src="{% static "js/components/text-search/sanitize.filter.js" %}"></script>
             <script src="{% static "js/components/text-search/plaintext.filter.js" %}"></script>
@@ -198,16 +215,6 @@ limitations under the License.
 
           {% endblock extra_js %}
         {% endcompress %}
-
-        <!-- Conditionally import genoverse plugin or angularjs-genoverse directive OUTSIDE (!) compress block -->
-        <script src="{% static "node_modules/angularjs-genoverse/lib/Genoverse/js/genoverse.combined.nojquery.js" %}"></script>
-        <!-- New genoverse contains tooltip from jquery ui, it conflicts with bootstrap - bridge it! -->
-        <script>$.widget.bridge('uitooltip', $.ui.tooltip);</script>
-        <script src="{% static "js/components/genome-browser/genoverse-utils.service.js" %}"></script>
-        <script src="{% static "js/components/genome-browser/genoverse.controller.js" %}"></script>
-
-        <!-- always load genoverse module -->
-        <script src="{% static "node_modules/angularjs-genoverse/src/genoverse.module.js" %}"></script>
 
         <!-- bootstrap conflicts with jquery-ui tooltip, so it should go after datatables and genoverse -->
         <script src="{% static "node_modules/bootstrap/dist/js/bootstrap.js" %}"></script>
@@ -247,19 +254,6 @@ limitations under the License.
           ga('send', 'pageview');
         </script>
         <!--Google Analytics-->
-
-        <!-- Hotjar Tracking Code for rnacentral.org -->
-        <script>
-            (function(h,o,t,j,a,r){
-                h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-                h._hjSettings={hjid:562364,hjsv:5};
-                a=o.getElementsByTagName('head')[0];
-                r=o.createElement('script');r.async=1;
-                r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
-                a.appendChild(r);
-            })(window,document,'//static.hotjar.com/c/hotjar-','.js?sv=');
-        </script>
-        <!-- Hotjar Tracking Code for rnacentral.org -->
 
         <!--Doorbell.io feedback-->
         <script type="text/javascript">

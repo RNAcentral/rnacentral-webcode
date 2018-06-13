@@ -1,8 +1,8 @@
 var textSearchResults = {
     bindings: {},
     templateUrl: '/static/js/components/text-search/text-search-results/text-search-results.html',
-    controller: ['$interpolate', '$location', '$http', '$timeout', '$scope', '$filter', '$q', 'search', 'routes',
-    function($interpolate, $location, $http, $timeout, $scope, $filter, $q, search, routes) {
+    controller: ['$interpolate', '$location', '$http', '$timeout', '$scope', '$filter', '$q', 'search', 'routes', 'normalizeExpertDbName',
+    function($interpolate, $location, $http, $timeout, $scope, $filter, $q, search, routes, normalizeExpertDbName) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
@@ -15,6 +15,7 @@ var textSearchResults = {
 
             // urls used in template (hardcoded)
             ctrl.routes = routes;
+            ctrl.normalizeExpertDbName = normalizeExpertDbName;
 
             // slider that allows users to set range of sequence lengths
             ctrl.setLengthSlider(search.query); // initial value
@@ -127,7 +128,7 @@ var textSearchResults = {
         };
 
         /**
-         * Constructor-ish function (but now 'new' needed) that returns a model for length slider
+         * Constructor-ish function (but no 'new' needed) that returns a model for length slider
          */
         ctrl.LengthSlider = function(min, max, floor, ceil) {
             return {
@@ -344,4 +345,4 @@ var textSearchResults = {
     }]
 };
 
-angular.module('rnacentralApp').component('textSearchResults', textSearchResults);
+angular.module('textSearch').component('textSearchResults', textSearchResults);

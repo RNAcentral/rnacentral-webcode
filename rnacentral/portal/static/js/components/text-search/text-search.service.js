@@ -2,24 +2,8 @@
  * Service for launching a text search.
  */
 
-var search = function(_, $http, $interpolate, $location, $window, $q, routes) {
+var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
     var self = this; // in case some event handler or constructor overrides "this"
-
-    /**
-     * Service initialization.
-     */
-    this.result = {
-        hitCount: null,
-        entries: [],
-        facets: [],
-        _query: null, // query after preprocessing
-    };
-
-    this.status = 'off'; // possible values: 'off', 'in progress', 'success', 'error'
-
-    this.query = ''; // the query will be observed by watches
-
-    this.callbacks = []; // callbacks to be called after each search.search(); done for slider redraw
 
     this.config = {
         fields: [
@@ -79,9 +63,37 @@ var search = function(_, $http, $interpolate, $location, $window, $q, routes) {
             'standard_name': 'Standard name'
         },
         facetfields: ['length', 'rna_type', 'TAXONOMY', 'expert_db', 'rfam_problem_found', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
+        sortableFields: [
+            { label: 'Popular species, Length ↓', value: 'boost:descending,length:descending' },
+            // { label: 'Popular species ↑', value: 'boost:ascending' },
+            { label: 'Length ↓', value: 'length:descending' },
+            { label: 'Length ↑', value: 'length:ascending' },
+            // { label: 'Citations number ↓', value: 'n_citations:descending' },
+            // { label: 'Citations number ↑', value: 'n_citations:ascending' },
+            // { label: 'Annotations number ↓', value: 'n_xrefs:descending' },
+            // { label: 'Annotations number ↑', value: 'n_xrefs:ascending' }
+        ],
         facetcount: 30,
         pagesize: 15,
     };
+
+    /**
+     * Service initialization.
+     */
+    this.result = {
+        hitCount: null,
+        entries: [],
+        facets: [],
+        _query: null, // query after preprocessing
+    };
+
+    this.status = 'off'; // possible values: 'off', 'in progress', 'success', 'error'
+
+    this.query = ''; // the query will be observed by watches
+    this.sort = 'boost:descending,length:descending' // EBI search endpoint sorts results by this field value
+    this.sortTiebreaker = 'length:descending'; // secondary search field, used in case first field is even
+
+    this.callbacks = []; // callbacks to be called after each search.search(); done for slider redraw
 
     /**
      * Launch EBeye autocompletion.
@@ -93,7 +105,7 @@ var search = function(_, $http, $interpolate, $location, $window, $q, routes) {
      * @param query
      * @returns {Promise}
      */
-    this.autocomplete = function(query) {
+    this.autocomplete = function (query) {
         self = this;
 
         self.autocompleteDeferred = $q.defer();
@@ -123,7 +135,7 @@ var search = function(_, $http, $interpolate, $location, $window, $q, routes) {
      * For length slider we need to do updates after each search.
      * @param callback - function to be called after every successful search
      */
-    this.registerSearchCallback = function(callback) {
+    this.registerSearchCallback = function (callback) {
         this.callbacks.push(callback);
     };
 
@@ -133,7 +145,7 @@ var search = function(_, $http, $interpolate, $location, $window, $q, routes) {
      * @param start - determines the range of the results to be returned.
      * @creates self.promise
      */
-    this.search = function(query, start) {
+    this.search = function (query, start) {
         start = start || 0;
 
         // hopscotch.endTour(); // end guided tour when a search is launched
@@ -159,7 +171,7 @@ var search = function(_, $http, $interpolate, $location, $window, $q, routes) {
             facetfields: self.config.facetfields.join(),
             size: self.config.pagesize,
             start: start,
-            sort: "boost:descending,length:descending"
+            sort: self.sort
         });
         var queryUrl = routes.ebiSearchProxy({ebeyeUrl: encodeURIComponent(ebeyeUrl)});
 
@@ -202,7 +214,7 @@ var search = function(_, $http, $interpolate, $location, $window, $q, routes) {
      * Each "word" is a sequence of characters that aren't spaces or quotes,
      * or a sequence of characters that begin and end with a quote, with no quotes in between.
      */
-    this.preprocessQuery = function(query) {
+    this.preprocessQuery = function (query) {
 
         // replace URS/taxid with URS_taxid - replace slashes with underscore
         query = query.replace(/(URS[0-9A-F]{10})\/(\d+)/ig, '$1_$2');
@@ -262,15 +274,25 @@ var search = function(_, $http, $interpolate, $location, $window, $q, routes) {
          * Escaped: + - && || ! { } [ ] ^ ~ ? : \ /
          * Not escaped: * " ( ) because they may be used deliberately by the user
          */
-        function escapeSearchTerm(searchTerm) {
+        function escapeSearchTerm (searchTerm) {
             return searchTerm.replace(/[\+\-&|!\{\}\[\]\^~\?\:\\\/]/g, "\\$&");
         }
     };
 
+    // /**
+    //  * Looks into self.sort (e.g. [['boost', 'ascending'], ['length', 'descending']])
+    //  * @returns {string} - e.g. 'boost:ascending,length:descending'
+    //  */
+    // this.preprocessSort = function () {
+    //     var sort = "";
+    //     self.sort.forEach( function (field) { sort.concat("," + field[0] + ":" + field[1]) } );
+    //     return sort;
+    // };
+
     /**
      * Preprocess data received from the server.
      */
-    this.preprocessResults = function(data) {
+    this.preprocessResults = function (data) {
 
         _mergeSpeciesFacets(data);
 
@@ -308,7 +330,7 @@ var search = function(_, $http, $interpolate, $location, $window, $q, routes) {
          * - TAXONOMY (all species)
          * - popularSpecies (manually curated set of top organisms).
          */
-        function _mergeSpeciesFacets(data) {
+        function _mergeSpeciesFacets (data) {
 
             // find the popular species facet
             var topSpeciesFacetId = _findFacetId('popular_species', data);
@@ -337,7 +359,7 @@ var search = function(_, $http, $interpolate, $location, $window, $q, routes) {
              * [{'id': 'a'}, {'id': 'b'}, {'id': 'c'}]
              * findFacetId('b') -> 1
              */
-            function _findFacetId(facetLabel, data) {
+            function _findFacetId (facetLabel, data) {
                 var index;
                 _.find(data.facets, function(facet, i) {
                     if (facet.id === facetLabel) {
@@ -351,7 +373,7 @@ var search = function(_, $http, $interpolate, $location, $window, $q, routes) {
             /**
              * Get Taxonomy facet values that are not also in popularSpecies.
              */
-            function _getOtherSpecies(data) {
+            function _getOtherSpecies (data) {
                 var taxonomyFacet = data.facets[taxonomyFacetId].facetValues;
                 var otherSpecies = [];
                 for (var i=0; i<taxonomyFacet.length; i++) {
@@ -367,14 +389,14 @@ var search = function(_, $http, $interpolate, $location, $window, $q, routes) {
     /**
      * Load more results starting from the last loaded index.
      */
-    this.loadMoreResults = function() {
+    this.loadMoreResults = function () {
         self.search(self.query, self.result.entries.length);
     };
 
     /**
      * Checks, if search query contains any lucene-specific syntax, or if it's a plain text
      */
-    this.luceneSyntaxUsed = function(query) {
+    this.luceneSyntaxUsed = function (query) {
         if (/[\+\-\&\|\!\{\}\[\]\^~\?\:\\\/\*\"\(]/.test(query)) return true;
         if (/[\s\"]OR[\s\"]/.test(query)) return true;
         if (/[\s\"]AND[\s\"]/.test(query)) return true;
@@ -382,5 +404,5 @@ var search = function(_, $http, $interpolate, $location, $window, $q, routes) {
     }
 };
 
-angular.module('rnacentralApp')
+angular.module('textSearch')
     .service('search', ['_', '$http', '$interpolate', '$location', '$window', '$q', 'routes', search]);

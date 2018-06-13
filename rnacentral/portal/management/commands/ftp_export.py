@@ -11,9 +11,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from django.core.management.base import BaseCommand, CommandError
-from optparse import make_option
 from cProfile import Profile
+from optparse import make_option
+import os
+
+from django.core.management.base import BaseCommand, CommandError
+
 from portal.management.commands.ftp_exporters.fasta import FastaExporter
 from portal.management.commands.ftp_exporters.gpi import GpiExporter
 from portal.management.commands.ftp_exporters.md5 import Md5Exporter
@@ -21,8 +24,8 @@ from portal.management.commands.ftp_exporters.xrefs import XrefsExporter
 from portal.management.commands.ftp_exporters.gff import GffExporter, Gff3Exporter
 from portal.management.commands.ftp_exporters.bed import BedExporter
 from portal.management.commands.ftp_exporters.trackhub import TrackhubExporter
-from portal.config.genomes import genomes
-import os
+from portal.models import EnsemblAssembly
+
 
 """
 Exporting RNAcentral data in several formats.
@@ -63,16 +66,11 @@ Help:
 python manage.py ftp_export -h
 """
 
-class Exporter(object):
-    """
-    A wrapper object that launches data export
-    in the specified format.
-    """
 
+class Exporter(object):
+    """A wrapper object that launches data export in the specified format."""
     def __init__(self, **kwargs):
-        """
-        Store relevant options in `self.options`.
-        """
+        """Store relevant options in `self.options`."""
         self.options = dict()
         for option in ['format', 'destination', 'bedToBigBed', 'test']:
             if option in kwargs:
@@ -86,15 +84,15 @@ class Exporter(object):
         Dynamically choose an appropriate export class
         depending on the export format.
         """
-        class_name = self.options['format'].capitalize() + \
-                     'Exporter' # e.g. GffExporter
+        class_name = self.options['format'].capitalize() + 'Exporter'  # e.g. GffExporter
         constructor = globals()[class_name]
         exporter = constructor(destination=self.options['destination'],
                                test=self.options['test'])
+        genomes = EnsemblAssembly.objects.all().values()
 
         mode = self.options['format']
 
-        if mode in ['gff', 'gff3']: # genome coordinates
+        if mode in ['gff', 'gff3']:  # genome coordinates
             for genome in genomes:
                 exporter.export(genome=genome)
         elif mode == 'bed':
@@ -102,7 +100,7 @@ class Exporter(object):
                 exporter.export(genome=genome, bedToBigBed=self.options['bedToBigBed'])
         elif mode == 'trackhub':
             exporter.export(all_genomes=genomes)
-        else: # fasta, md5, xrefs etc
+        else:  # fasta, md5, xrefs etc
             exporter.export()
 
         exporter.create_release_notes_file()
@@ -111,11 +109,9 @@ class Exporter(object):
 
 
 class Command(BaseCommand):
-    """
-    Handle command line options.
-    """
+    """Handle command line options."""
     # formats must be in correct execution order for the `all` parameter to work
-    # e.g. `bed` should preceed `trackhub`
+    # e.g. `bed` should precede `trackhub`
     formats = ['xrefs', 'fasta', 'gff', 'gff3', 'bed', 'trackhub', 'md5', 'gpi', 'all']
 
     option_list = BaseCommand.option_list + (
@@ -148,31 +144,23 @@ class Command(BaseCommand):
             help='[Optional] Run in test mode, which retrieves only a small subset of all data.'),
     )
     help = 'Export RNAcentral data in various formats. ' + \
-           'Run `python manage.py export -h` for more information.' # -h, --help
+           'Run `python manage.py export -h` for more information.'  # -h, --help
 
     def export(self, **options):
-        """
-        Main export.
-        """
+        """Main export."""
         Exporter(**options)()
 
     def export_all(self, **options):
-        """
-        Export the data in all formats.
-        """
+        """Export the data in all formats."""
         for mode in self.formats:
             if mode == 'all':
-                continue # avoid recursive calls to export_all
+                continue  # avoid recursive calls to export_all
             self.export(**options)
 
     def handle(self, **options):
-        """
-        Django entry point.
-        """
+        """Django entry point."""
         def validate_options():
-            """
-            Validate command line options.
-            """
+            """Validate command line options."""
             if not options['destination']:
                 raise CommandError('Please specify the --destination option')
 

@@ -12,7 +12,6 @@ limitations under the License.
 """
 
 from django.core.management.base import BaseCommand, CommandError
-from optparse import make_option
 from cProfile import Profile
 from portal.models import Rna
 from portal.models.rna_precomputed import RnaPrecomputed
@@ -36,46 +35,47 @@ class Command(BaseCommand):
     # Command line options #
     ########################
 
-    option_list = BaseCommand.option_list + (
-        make_option(
+    def add_arguments(self, parser):
+        parser.add_argument(
             '--min',
             dest='min',
-            type='int',
+            type=int,
             help='Minimum RNA id to output'
-        ),
+        )
 
-        make_option(
+        parser.add_argument(
             '--max',
             dest='max',
-            type='int',
+            type=int,
             help='Maximum RNA id to output'
-        ),
+        )
 
-        make_option(
+        parser.add_argument(
             '--profile',
             default=False,
             action='store_true',
             help='[Optional] Show cProfile information for profiling purposes'
-        ),
+        )
 
-        make_option(
+        parser.add_argument(
             '--upis',
             dest='upis',
             help='[Optional/Required] Comma sperated list of upis to process',
-        ),
+        )
 
-        make_option(
+        parser.add_argument(
             '--upi-file',
             dest='upi_file',
             help='[Optional/Required] Comma sperated list of upis to process',
-        ),
-        make_option(
+        )
+
+        parser.add_argument(
             '--date',
             default='',
             dest='date',
             help='[Opitonal] date to use in timestamp',
         )
-    )
+
     # shown with -h, --help
     help = ('Precompute entry data. '
             'Run `python manage.py precompute_data -h` for more information.')

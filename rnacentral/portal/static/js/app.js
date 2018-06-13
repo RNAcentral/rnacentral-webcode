@@ -7,8 +7,10 @@ angular.module('rnacentralApp', [
     'rzModule',
     'underscore',
 
-    'Genoverse',
+    'routes',
+    'genomeBrowser',
     'rnaSequence',
+    'textSearch',
     'expertDatabase',
     'useCases',
     'homepage'
@@ -38,29 +40,6 @@ angular.module('rnacentralApp', [
     if (!window.location.origin) {
          window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
     }
-}])
-.run(['$rootScope', '$window', '$location', function($rootScope, $window, $location) {
-    /**
-     * This is an ugly hack to catch back/forward buttons pressed in the browser.
-     *
-     * When url is changed in a usual way (not with back/forward button),
-     *  $locationChangeSuccess event fires after $watch callback.
-     * But when url is changed using back/forward button or history.back() api,
-     * $locationChangeSuccess event fires before $watch callback.
-     *
-     * Taken from here:
-     * https://stackoverflow.com/questions/15813850/how-to-detect-browser-back-button-click-event-using-angular
-     */
-
-    $rootScope.$on('$locationChangeSuccess', function() {
-        $rootScope.actualLocation = $location.absUrl();
-    });
-
-    $rootScope.$watch(function () {return $location.absUrl()}, function (newLocation, oldLocation) {
-        if($rootScope.actualLocation === newLocation) {
-            $window.location.href = $rootScope.actualLocation;
-        }
-    })
 }])
 .run([function() {
     /**

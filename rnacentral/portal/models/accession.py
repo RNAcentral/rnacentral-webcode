@@ -45,7 +45,7 @@ class Accession(models.Model):
 
     # GeneID (without coordinates); used to find splice variants for lncRNAs OR mature/precursor RNAs for miRNAs
     optional_id = models.CharField(max_length=100)
-    common_name = models.CharField(max_length=200)
+    common_name = models.CharField(max_length=200, default='')
 
     anticodon = models.CharField(max_length=50)
     experiment = models.CharField(max_length=500)
@@ -138,16 +138,18 @@ class Accession(models.Model):
 
     def get_ensembl_species_url(self):
         """Get species name in a format that can be used in Ensembl urls."""
-        species = self.species
-        if species == 'Dictyostelium discoideum':
+        if self.species == 'Dictyostelium discoideum':
             species = 'Dictyostelium discoideum AX4'
-        elif species.startswith('Mus musculus'):
-            if self.accession.startswith('MGP'):  # Ensembl mouse strain
-                parts = self.accession.split('_')
-                if len(parts) == 3:
-                    species = 'Mus musculus ' + parts[1]
-        species = species.replace(' ', '_').lower()
-        return species
+        elif self.species.startswith('Mus musculus') and self.accession.startswith('MGP'):  # Ensembl mouse strain
+            parts = self.accession.split('_')
+            if len(parts) == 3:
+                species = 'Mus musculus ' + parts[1]
+            else:
+                species = self.species
+        else:
+            species = self.species
+
+        return species.replace(' ', '_').lower()
 
     def get_expert_db_external_url(self):
         """Get external url to expert database."""
@@ -174,9 +176,11 @@ class Accession(models.Model):
             'MODOMICS': 'http://modomics.genesilico.pl/sequences/list/{id}',
             'HGNC': 'http://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id={id}',
             'ENSEMBL': 'http://www.ensembl.org/{species}/Transcript/Summary?t={id}',
+            'GENCODE': 'http://www.ensembl.org/{species}/Transcript/Summary?t={id}',
             'FLYBASE': 'http://flybase.org/reports/{id}.html',
             'MGI': 'http://www.informatics.jax.org/marker/{id}',
             'GTRNADB': '',
+            'RGD': 'https://rgd.mcw.edu/rgdweb/report/gene/main.html?id={id}'
         }
         if self.database in urls.keys():
             if self.database == 'GTRNADB':
@@ -202,8 +206,42 @@ class Accession(models.Model):
                 return urls[self.database].format(id=noncode_id, version=version)
             elif self.database == 'HGNC':
                 return urls[self.database].format(id=self.accession)
-            elif self.database == 'ENSEMBL':
+            elif self.database == 'ENSEMBL' or self.database == 'GENCODE':
                 return urls[self.database].format(id=self.external_id, species=self.get_ensembl_species_url())
             return urls[self.database].format(id=self.external_id)
         else:
             return ''
+
+
+def url2db(identifier):
+    """
+    Converts species name from its representation in url to its database representation.
+    :param identifier: Species name as in url, e.g. "canis_familiaris"
+    :return: Species name as in database "Canis lupus familiaris"
+    """
+    # special cases
+    if identifier in ('canis_familiaris', 'canis_lupus_familiaris'):
+        return "Canis lupus familiaris"
+    elif identifier in ('gorilla_gorilla', 'gorilla_gorilla_gorilla'):
+        return "Gorilla gorilla gorilla"
+    elif identifier in ('ceratotherium_simum', 'ceratotherium_simum_simum'):
+        return "Ceratotherium simum simum"
+    else:
+        return identifier.replace('_', ' ').capitalize()
+
+
+def db2url(identifier):
+    """
+    Converts species name from its representation in database to url representation.
+    :param identifier: Species name as in url, e.g. "Canis lupus familiaris"
+    :return: Species name as in database "canis_familiaris"
+    """
+    # special cases
+    if identifier in ("Canis lupus familiaris", "Canis familiaris"):
+        return "canis_familiaris"
+    elif identifier in ("Gorilla gorilla gorilla", "Gorilla gorilla"):
+        return "gorilla_gorilla"
+    elif identifier in ("Ceratotherium simum simum", "Ceratotherium simum"):
+        return "ceratotherium_simum"
+    else:
+        return identifier.replace(' ', '_').lower()

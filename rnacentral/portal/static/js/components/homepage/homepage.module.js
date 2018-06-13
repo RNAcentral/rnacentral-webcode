@@ -39,5 +39,5 @@ var HomepageController = function($scope) {
 HomepageController.$inject = ['$scope'];
 
 
-angular.module("homepage", ['ngResource', 'ngAnimate', 'ngSanitize', 'ui.bootstrap', 'rnaSequence'])
+angular.module("homepage", ['ngResource', 'ngAnimate', 'ngSanitize', 'ui.bootstrap', 'routes', 'rnaSequence'])
     .controller("HomepageController", HomepageController);

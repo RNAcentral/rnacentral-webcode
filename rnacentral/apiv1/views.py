@@ -14,6 +14,7 @@ import re
 import warnings
 from itertools import chain
 
+from django.db.models import Min, Max, Prefetch
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
@@ -33,12 +34,12 @@ from rest_framework_yaml.renderers import YAMLRenderer
 
 from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, XrefSerializer, \
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
-                              RnaSpeciesSpecificSerializer, RnaListSerializer, ExpertDatabaseStatsSerializer, \
-                              RawPublicationSerializer, RnaSecondaryStructureSerializer, RfamHitSerializer
-
+                              RnaSpeciesSpecificSerializer, ExpertDatabaseStatsSerializer, \
+                              RawPublicationSerializer, RnaSecondaryStructureSerializer, RfamHitSerializer, \
+                              EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
-from portal.models import Rna, Accession, Xref, Database, DatabaseStats, RfamHit
-from portal.config.genomes import genomes, url2db, SpeciesNotInGenomes, get_taxid_from_species
+from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
+    EnsemblInsdcMapping, GenomeMapping, GoAnnotation, url2db, db2url
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination
 
@@ -48,22 +49,6 @@ Docstrings of the classes exposed in urlpatterns support markdown.
 
 # maximum number of xrefs to use with prefetch_related
 MAX_XREFS_TO_PREFETCH = 1000
-
-
-def _get_xrefs_from_genomic_coordinates(species, chromosome, start, end):
-    """Common function for retrieving xrefs based on genomic coordinates."""
-    try:
-        xrefs = Xref.default_objects.filter(
-            accession__coordinates__chromosome=chromosome,
-            accession__coordinates__primary_start__gte=start,
-            accession__coordinates__primary_end__lte=end,
-            accession__species=url2db(species),
-            deleted='N'
-        ).all()
-
-        return xrefs
-    except Exception as e:
-        return []
 
 
 class GenomeAnnotations(APIView):
@@ -77,35 +62,78 @@ class GenomeAnnotations(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request, species, chromosome, start, end, format=None):
-        start = start.replace(',','')
-        end = end.replace(',','')
+        start = start.replace(',', '')
+        end = end.replace(',', '')
 
-        xrefs = _get_xrefs_from_genomic_coordinates(species, chromosome, start, end)
+        # get features from xrefs and from genome mappings
+        xrefs_features = features_from_xrefs(species, chromosome, start, end)
+        mappings_features = features_from_mappings(species, chromosome, start, end)
 
-        try:
-            taxid = get_taxid_from_species(species)
-        except SpeciesNotInGenomes as e:
-            raise Http404(e.message)
+        # filter out features from genome mappings that duplicate features from xrefs
+        features = xrefs_features[:]
+        for mappings_feature in mappings_features:
+            duplicate = False  # flag
+            for xrefs_feature in xrefs_features:
+                if (xrefs_feature['start'] == mappings_feature['start'] and
+                   xrefs_feature['end'] == mappings_feature['end'] and
+                   str(xrefs_feature['strand']) == str(mappings_feature['strand']) and
+                   xrefs_feature['seq_region_name'] == mappings_feature['seq_region_name'] and
+                   xrefs_feature['taxid'] == mappings_feature['taxid'] and
+                   xrefs_feature['external_name'] == mappings_feature['external_name']):
+                    duplicate = True
+                    break
 
-        rnacentral_ids = []
-        data = []
-        for i, xref in enumerate(xrefs):
-            rnacentral_id = xref.upi.upi
+            if not duplicate:
+                features.append(mappings_feature)
 
-            # transcript object
-            if rnacentral_id not in rnacentral_ids:
-                rnacentral_ids.append(rnacentral_id)
-            else:
-                continue
+        return Response(features)
 
+
+def _species2taxid(species):
+    """This is a terribly indirect way to get taxid by species"""
+    accession = Accession.objects.filter(species=url2db(species)).first()
+    xrefs = Xref.default_objects.filter(accession=accession, deleted='N').all()
+    if len(xrefs) != 0:
+        taxid = xrefs[0].taxid
+    else:
+        xrefs = Xref.objects.filter(accession=accession).all()
+        taxid = xrefs[0].taxid
+
+    return taxid
+
+
+def features_from_xrefs(species, chromosome, start, end):
+    try:
+        xrefs = Xref.default_objects.filter(
+            accession__coordinates__chromosome=chromosome,
+            accession__coordinates__primary_start__gte=start,
+            accession__coordinates__primary_end__lte=end,
+            accession__species=url2db(species),
+            deleted='N'
+        ).select_related('upi', 'accession', 'db').prefetch_related('upi__precomputed')
+    except Xref.DoesNotExist:
+        xrefs = []
+
+    upi2data = {}
+    data = []
+    for i, xref in enumerate(xrefs):
+        upi = xref.upi.upi
+
+        # create only one transcript object per upi
+        if upi not in upi2data:
+            taxid = _species2taxid(species)
+            xrefs = Xref.default_objects.filter(upi=upi, taxid=taxid, deleted='N').select_related('db').all()
+            databases = list(set([x.db.display_name for x in xrefs]))
+            databases.sort()
             coordinates = xref.get_genomic_coordinates()
-            transcript_id = rnacentral_id + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
-            biotype = xref.upi.precomputed.filter(taxid=taxid)[0].rna_type  # used to be biotype = xref.accession.get_biotype()
-            description = xref.upi.precomputed.filter(taxid=taxid)[0].description
+            transcript_id = upi + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
+            biotype = xref.upi.precomputed.filter(taxid=xref.taxid)[0].rna_type  # used to be biotype = xref.accession.get_biotype()
+            description = xref.upi.precomputed.filter(taxid=xref.taxid)[0].description
 
-            data.append({
+            transcript = {
                 'ID': transcript_id,
-                'external_name': rnacentral_id,
+                'external_name': upi,
+                'taxid': xref.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
                 'feature_type': 'transcript',
                 'logic_name': 'RNAcentral',  # required by Genoverse
                 'biotype': biotype,  # required by Genoverse
@@ -114,7 +142,11 @@ class GenomeAnnotations(APIView):
                 'strand': coordinates['strand'],
                 'start': coordinates['start'],
                 'end': coordinates['end'],
-            })
+                'databases': databases
+            }
+
+            upi2data[upi] = transcript
+            data.append(transcript)
 
             # exons
             exons = xref.accession.coordinates.all()
@@ -125,6 +157,7 @@ class GenomeAnnotations(APIView):
                 data.append({
                     'external_name': exon_id,
                     'ID': exon_id,
+                    'taxid': xref.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
                     'feature_type': 'exon',
                     'Parent': transcript_id,
                     'logic_name': 'RNAcentral',  # required by Genoverse
@@ -134,7 +167,91 @@ class GenomeAnnotations(APIView):
                     'start': exon.primary_start,
                     'end': exon.primary_end,
                 })
-        return Response(data)
+
+    return data
+
+
+def features_from_mappings(species, chromosome, start, end):
+    taxid = _species2taxid(species)
+    mappings = GenomeMapping.objects.filter(taxid=taxid, chromosome=chromosome, start__gte=start, stop__lte=end)\
+                                    .select_related('upi').prefetch_related('upi__precomputed')
+
+    transcripts_query = '''
+        SELECT 1 id, region_id, strand, chromosome, start, stop, mapping.taxid as taxid,
+          precomputed.rna_type as rna_type, precomputed.description as description, rna.upi as upi
+        FROM (
+          SELECT region_id, upi, strand, chromosome, taxid, MIN(start) as start, MAX(stop) as stop
+          FROM {genome_mapping}
+          GROUP BY region_id, upi, strand, chromosome, taxid
+          HAVING MIN(start) > {start}
+             AND MAX(stop) < {stop}
+             AND taxid = {taxid}
+             AND chromosome = '{chromosome}'
+        ) mapping
+        JOIN rna
+        ON mapping.upi=rna.upi
+        JOIN (
+          SELECT * FROM {rna_precomputed} WHERE taxid={taxid}
+        ) precomputed
+        ON {rna}.upi=precomputed.upi
+    '''.format(
+        genome_mapping=GenomeMapping._meta.db_table,
+        rna=Rna._meta.db_table,
+        rna_precomputed=RnaPrecomputed._meta.db_table,
+        taxid=taxid,
+        start=start,
+        stop=end,
+        chromosome=chromosome
+    )
+
+    try:
+        transcripts = GenomeMapping.objects.raw(transcripts_query)
+    except GenomeMapping.DoesNotExist:
+        transcripts = []
+
+    data = []
+    for transcript in transcripts:
+        xrefs = Xref.default_objects.filter(upi=transcript.upi.upi, taxid=taxid, deleted='N').select_related('db').all()
+        databases = list(set([xref.db.display_name for xref in xrefs]))
+        databases.sort()
+
+        data.append({
+            'ID': transcript.region_id,
+            'external_name': transcript.upi.upi,
+            'taxid': transcript.taxid,
+            'feature_type': 'transcript',
+            'logic_name': 'RNAcentral',
+            'biotype': transcript.rna_type,
+            'description': transcript.description,
+            'seq_region_name': transcript.chromosome,
+            'strand': transcript.strand,
+            'start': transcript.start,
+            'end': transcript.stop,
+            'databases': databases
+        })
+
+    for i, exon in enumerate(mappings):
+        try:
+            biotype = exon.upi.precomputed.get(taxid=taxid).rna_type
+        except exon.DoesNotExist:
+            biotype = exon.upi.precomputed.get(taxid__isnull=True).rna_type
+
+        exon_id = '_'.join([exon.region_id, 'exon_' + str(i)])
+        data.append({
+            'external_name': exon.region_id,
+            'ID': exon_id,
+            'taxid': exon.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
+            'feature_type': 'exon',
+            'Parent': exon.region_id,
+            'logic_name': 'RNAcentral',  # required by Genoverse
+            'biotype': biotype,  # required by Genoverse
+            'seq_region_name': exon.chromosome,
+            'strand': exon.strand,
+            'start': exon.start,
+            'end': exon.stop,
+        })
+
+    return data
 
 
 class APIRoot(APIView):
@@ -373,6 +490,84 @@ class SecondaryStructureSpeciesSpecificList(generics.ListAPIView):
         return Response(serializer.data)
 
 
+class RnaGenomeLocations(generics.ListAPIView):
+    """
+    List of distinct genomic locations, where a specific RNA
+    is found in a specific species, extracted from xrefs.
+
+    [API documentation](/api)
+    """
+    queryset = Rna.objects.select_related().all()
+
+    def get(self, request, pk=None, taxid=None, format=None):
+        """Paginated list of genome locations"""
+        locations = []
+
+        rna = self.get_object()
+        xrefs = rna.get_xrefs(taxid=taxid).filter(deleted='N')
+        for xref in xrefs:
+            if xref.accession.coordinates.exists() and xref.accession.coordinates.all()[0].chromosome:
+                data = {
+                    'chromosome': xref.accession.coordinates.all()[0].chromosome,
+                    'strand': xref.accession.coordinates.all()[0].strand,
+                    'start': xref.accession.coordinates.all().aggregate(Min('primary_start'))['primary_start__min'],
+                    'end': xref.accession.coordinates.all().aggregate(Max('primary_end'))['primary_end__max'],
+                    'species': db2url(xref.accession.species),
+                    'ucsc_db_id': xref.get_ucsc_db_id(),
+                    'ensembl_division': xref.get_ensembl_division(),
+                    'ensembl_species_url': xref.accession.get_ensembl_species_url()
+                }
+
+                exceptions = ['X', 'Y']
+                if re.match(r'\d+', data['chromosome']) or data['chromosome'] in exceptions:
+                    data['ucsc_chromosome'] = 'chr' + data['chromosome']
+                else:
+                    data['ucsc_chromosome'] = data['chromosome']
+
+                if data not in locations:
+                    locations.append(data)
+
+        return Response(locations)
+
+
+class RnaGenomeMappings(generics.ListAPIView):
+    """
+    List of distinct genomic locations, where a specific RNA
+    was computationally mapped onto a specific genome location.
+
+    [API documentation](/api)
+    """
+    queryset = Rna.objects.select_related().all()
+
+    def get(self, request, pk=None, taxid=None, format=None):
+        rna = self.get_object()
+        mappings = rna.genome_mappings.filter(taxid=taxid)\
+                                      .values('region_id', 'strand', 'chromosome', 'taxid', 'identity')\
+                                      .annotate(Min('start'), Max('stop'))
+
+        try:
+            assembly = EnsemblAssembly.objects.get(taxid=taxid)  # this applies only to species-specific pages
+        except EnsemblAssembly.DoesNotExist:
+            return Response([])
+
+        output = []
+        for mapping in mappings:
+            data = {
+                'chromosome': mapping["chromosome"],
+                'strand': mapping["strand"],
+                'start': mapping["start__min"],
+                'end': mapping["stop__max"],
+                'identity': mapping["identity"],
+                'species': assembly.ensembl_url,
+                'ucsc_db_id': assembly.assembly_ucsc,
+                'ensembl_division': assembly.division,
+                'ensembl_species_url': assembly.ensembl_url
+            }
+            output.append(data)
+
+        return Response(output)
+
+
 class AccessionView(generics.RetrieveAPIView):
     """
     API endpoint that allows single accessions to be viewed.
@@ -427,7 +622,6 @@ class ExpertDatabasesAPIView(APIView):
 
     def get(self, request, format=None):
         """The data from configuration JSON and database are combined here."""
-
         def _normalize_expert_db_label(expert_db_label):
             """Capitalizes db label (and accounts for special cases)"""
             if re.match('tmrna-website', expert_db_label, flags=re.IGNORECASE):
@@ -469,14 +663,13 @@ class ExpertDatabasesStatsViewSet(RetrieveModelMixin, ListModelMixin, GenericVie
         return super(ExpertDatabasesStatsViewSet, self).retrieve(request, *args, **kwargs)
 
 
-class GenomesAPIView(APIView):
-    """API endpoint, presenting genomes available for display in RNAcentral genome browser."""
-    permission_classes = ()
-    authentication_classes = ()
-
-    def get(self, request, format=None):
-        sorted_genomes = sorted(genomes, key=lambda x: x['species'])
-        return Response(sorted_genomes)
+class GenomesAPIViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
+    """API endpoint, presenting all E! assemblies, available in RNAcentral."""
+    permission_classes = (AllowAny, )
+    serializer_class = EnsemblAssemblySerializer
+    pagination_class = Pagination
+    queryset = EnsemblAssembly.objects.all().order_by('-ensembl_url')
+    lookup_field = 'ensembl_url'
 
 
 class RfamHitsAPIViewSet(generics.ListAPIView):
@@ -488,3 +681,56 @@ class RfamHitsAPIViewSet(generics.ListAPIView):
     def get_queryset(self):
         upi = self.kwargs['pk']
         return RfamHit.objects.filter(upi=upi).select_related('rfam_model')
+
+
+class EnsemblInsdcMappingView(APIView):
+    """API endpoint, presenting mapping between E! and INSDC chromosome names."""
+    permission_classes = ()
+    authentication_classes = ()
+
+    def get(self, request, format=None):
+        mapping = EnsemblInsdcMapping.objects.all().select_related()
+        serializer = EnsemblInsdcMappingSerializer(mapping, many=True, context={request: request})
+        return Response(serializer.data)
+
+
+class RnaGoAnnotationsView(APIView):
+    permission_classes = (AllowAny, )
+    pagination_class = Pagination
+
+    def get(self, request, pk, taxid, **kwargs):
+        rna_id = pk + '_' + taxid
+        taxid = int(taxid)
+        annotations = GoAnnotation.objects.filter(rna_id=rna_id).\
+            select_related('ontology_term', 'evidence_code')
+
+        result = []
+        for annotation in annotations:
+            result.append({
+                'rna_id': annotation.rna_id,
+                'upi': pk,
+                'taxid': taxid,
+                'go_term_id': annotation.ontology_term.ontology_term_id,
+                'go_term_name': annotation.ontology_term.name,
+                'qualifier': annotation.qualifier,
+                'evidence_code_id': annotation.evidence_code.ontology_term_id,
+                'evidence_code_name': annotation.evidence_code.name,
+                'assigned_by': annotation.assigned_by,
+                'extensions': annotation.assigned_by or {},
+            })
+
+        return Response(result)
+
+
+class EnsemblKaryotypeAPIView(APIView):
+    """API endpoint, presenting E! karyotype for a given species."""
+    permission_classes = ()
+    authentication_classes = ()
+
+    def get(self, request, ensembl_url):
+        try:
+            assembly = EnsemblAssembly.objects.filter(ensembl_url=ensembl_url).prefetch_related('karyotype').first()
+        except EnsemblAssembly.DoesNotExist:
+            raise Http404
+
+        return Response(assembly.karyotype.first().karyotype)

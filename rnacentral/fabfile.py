@@ -114,28 +114,31 @@ def compress_static_files():
         env.run('python rnacentral/manage.py compress')
 
 
-def cache_sitemaps():
+def create_sitemaps():
     """
     Create sitemaps cache in sitemaps folder.
     """
-    with env.cd(settings.PROJECT_PATH), prefix(COMMANDS['set_environment'], \
-         prefix(COMMANDS['activate_virtualenv'])):
-        env.run('python rnacentral/manage.py cache_sitemaps')
+    with env.cd(settings.PROJECT_PATH), prefix(COMMANDS['set_environment']), \
+         prefix(COMMANDS['activate_virtualenv']):
+        env.run('rm rnacentral/sitemaps/*')
+        env.run('python rnacentral/manage.py create_sitemaps')
+        slack("Created sitemaps at ves-oy-a4")
 
 
-def rsync_sitemaps(dry_run=None):
+def rsync_sitemaps(dry_run=None, remote_host='ves-pg-a4'):
     """
     Copy cached sitemaps from local folder to remote one.
     """
     sitemaps_path = os.path.join(settings.PROJECT_PATH, 'rnacentral', 'sitemaps')
 
-    cmd = 'rsync -av{dry_run} {src}/ {host}:{dst}'.format(
+    cmd = 'rsync -avi{dry_run} --delete {src}/ {remote_host}:{dst}'.format(
         src=sitemaps_path,
-        host=env.host,
         dst=sitemaps_path,
+        remote_host=remote_host,
         dry_run='n' if dry_run else '',
     )
     local(cmd)
+    slack("Rsynced sitemaps to %s" % remote_host)
 
 
 def flush_memcached():
@@ -173,7 +176,7 @@ def rsync_local_files(dry_run=None):
     Rsync local files to production.
     """
     local_path = os.path.join(os.path.dirname(settings.PROJECT_PATH), 'local')
-    cmd = 'rsync -avi{dry_run} {src}/ {host}:{dst}'.format(
+    cmd = 'rsync -av{dry_run} {src}/ {host}:{dst}'.format(
         src=local_path,
         host=env.host,
         dst=local_path,
@@ -205,7 +208,9 @@ def deploy_locally(git_branch=None, restart_url='http://rnacentral.org', quick=F
     restart_django(restart_url)
 
     if not git_branch:
-        git_branch = 'master'
+        with env.cd(settings.PROJECT_PATH):
+            git_branch = env.run('git rev-parse --abbrev-ref HEAD', capture=True)  # env.run == local, takes capture arg
+
     slack("Deployed '%s' at ves-hx-a4: <http://test.rnacentral.org|test.rnacentral.org>" % git_branch)
 
 
@@ -223,7 +228,8 @@ def deploy_remotely(git_branch=None, restart_url='http://rnacentral.org', quick=
     restart_django(restart_url)
 
     if not git_branch:
-        git_branch = 'master'
+        with env.cd(settings.PROJECT_PATH):
+            git_branch = env.run('git rev-parse --abbrev-ref HEAD')
     slack("Deployed '%s' at %s: <http://rnacentral.org|rnacentral.org>" % (git_branch, env.host))
 
 
@@ -245,6 +251,6 @@ def test(base_url='http://localhost:8000/'):
     Single entry point for all tests.
     """
     with env.cd(settings.PROJECT_PATH):
-        env.run('python rnacentral/apiv1/tests.py --base_url=%s' % base_url)
+        # env.run('python rnacentral/apiv1/tests.py --base_url=%s' % base_url)
         env.run('python rnacentral/portal/tests/selenium_tests.py --base_url %s --driver=phantomjs' % base_url) # pylint: disable=C0301
         env.run('python rnacentral/apiv1/search/sequence/tests.py --base_url %s' % base_url) # pylint: disable=C0301

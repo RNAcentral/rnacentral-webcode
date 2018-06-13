@@ -40,6 +40,12 @@ urlpatterns = [
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/publications/(?P<taxid>\d+)/?$',cache_page(CACHE_TIMEOUT)(views.RnaPublicationsView.as_view()), name='rna-publications'),
     # species-specific RNAcentral id
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})(/|_)(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.RnaSpeciesSpecificView.as_view()), name='rna-species-specific'),
+    # genome locations for RNA (species-specific)
+    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/genome-locations/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.RnaGenomeLocations.as_view()), name='rna-genome-locations'),
+    # genome mapping for RNA (species-specific)
+    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/genome-mappings/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.RnaGenomeMappings.as_view()), name='rna-genome-mappings'),
+    # go annotations for RNA (species-specific)
+    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/go-annotations/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.RnaGoAnnotationsView.as_view()), name='rna-go-annotations'),
     # literature citations associated with ENA records
     url(r'^accession/(?P<pk>.*?)/citations/?$', cache_page(CACHE_TIMEOUT)(views.CitationsView.as_view()), name='accession-citations'),
     # view for an individual cross-reference
@@ -52,8 +58,13 @@ urlpatterns = [
     # expert databases stats
     url(r'^expert-db-stats/$', views.ExpertDatabasesStatsViewSet.as_view({'get': 'list'}), {}, name='expert-db-stats'),
     url(r'^expert-db-stats/(?P<pk>.*)/?$', views.ExpertDatabasesStatsViewSet.as_view({'get': 'retrieve'}), {}, name='expert-db-stats'),
-    # list of genomes, available for display in Genoverse
-    url(r'^genomes/$', views.GenomesAPIView.as_view(), {}, name='genomes-api'),
+    # genomes - ensembl assemblies list
+    url(r'genomes/$', views.GenomesAPIViewSet.as_view({'get': 'list'}), {}, name='genomes-api'),
+    url(r'genomes/(?P<ensembl_url>\w+)/$', views.GenomesAPIViewSet.as_view({'get': 'retrieve'}), {}, name='genomes-api'),
+    # mapping of ensembl assemblies to insdc submissions
+    url(r'ensembl-insdc-mapping/$', views.EnsemblInsdcMappingView.as_view(), {}, name='ensembl-insdc-mapping'),
+    # endpoint that returns karyotypes, downloaded from ensembl
+    url(r'karyotypes/(?P<ensembl_url>.*?)/?$', cache_page(CACHE_TIMEOUT)(views.EnsemblKaryotypeAPIView.as_view()), {}, name='ensembl-karyotype')
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'yaml', 'fasta', 'api', 'gff', 'gff3', 'bed'])

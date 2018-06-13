@@ -16,13 +16,12 @@ import re
 from django.db import models
 from django.db.models import Min, Max
 from rest_framework.renderers import JSONRenderer
-
 from caching.base import CachingMixin, CachingManager
-from portal.config.genomes import genomes as rnacentral_genomes
+
 from .accession import Accession
+from .ensembl_assembly import EnsemblAssembly
 from .genomic_coordinates import GenomicCoordinates
 from .formatters import Gff3Formatter, GffFormatter, _xref_to_bed_format
-from .utils import get_ensembl_divisions
 
 
 class RawSqlQueryset(models.QuerySet):
@@ -427,9 +426,9 @@ class Xref(CachingMixin, models.Model):
             return False
 
     def get_ncbi_gene_id(self):
-        """GeneID links are stored in the db_xref field."""
-        if self.accession.db_xref:
-            match = re.search('GeneID\:(\d+)', self.accession.db_xref, re.IGNORECASE)
+        """GeneID links are stored in the optional_id field."""
+        if self.accession.optional_id:
+            match = re.search('GeneID\:(\d+)', self.accession.optional_id, re.IGNORECASE)
             return match.group(1) if match else None
         else:
             return None
@@ -598,11 +597,11 @@ class Xref(CachingMixin, models.Model):
     def get_gencode_transcript_id(self):
         """
         GENCODE entries have their corresponding Ensembl transcript ids stored
-        in Accession.note. Example:
-        {"transcript_id": ["ENSMUST00000160979.8"]}
+        in Accession.accession. Example:
+        {"transcript_id": ["GENCODE:ENSMUST00000160979.8"]}
         """
         if self.db.display_name == 'GENCODE':
-            return self.accession.accession
+            return self.accession.accession.split(':')[1]
         else:
             return None
 
@@ -617,24 +616,19 @@ class Xref(CachingMixin, models.Model):
 
     def get_ensembl_division(self):
         """Get Ensembl or Ensembl Genomes division for the cross-reference."""
-        species = self.accession.get_ensembl_species_url()
-        species = species.replace('_', ' ').capitalize()
-
-        ensembl_divisions = get_ensembl_divisions()
-        for division in ensembl_divisions:
-            if species in [x['name'] for x in division['species']]:
-                return {'name': division['name'], 'url': division['url']}
-        return {  # fall back to ensembl.org
-            'name': 'Ensembl',
-            'url': 'http://ensembl.org',
-        }
+        try:
+            assembly = EnsemblAssembly.objects.get(taxid=self.taxid)
+            return {'name': assembly.division, 'url': 'http://' + assembly.subdomain}
+        except EnsemblAssembly.DoesNotExist:
+            return None
 
     def get_ucsc_db_id(self):
         """Get UCSC id for the genome assembly. http://genome.ucsc.edu/FAQ/FAQreleases.html"""
-        for genome in rnacentral_genomes:
-            if self.taxid == genome['taxid']:
-                return genome['assembly_ucsc']
-        return None
+        try:
+            genome = EnsemblAssembly.objects.get(taxid=self.taxid)
+            return genome.assembly_ucsc
+        except EnsemblAssembly.DoesNotExist:
+            return None
 
     def has_genomic_coordinates(self):
         """Determine whether an xref has genomic coordinates."""

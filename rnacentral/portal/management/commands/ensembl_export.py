@@ -102,7 +102,7 @@ class SimpleSequence(coll.namedtuple('SimpleSequence',
     This class represents a species specific entry in the RNA table. It
     serves to hold data that does not fit in the model (species specific
     description and rna type) as well as contain the tiny bit of logic for
-    generating the needed fields for serializiation.
+    generating the needed fields for serialization.
     """
 
     @classmethod

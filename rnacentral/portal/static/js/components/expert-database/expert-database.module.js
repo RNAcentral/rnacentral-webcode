@@ -1,6 +1,6 @@
 var expertDatabaseController = function($scope, $location, $window, $rootScope, $http, routes) {
     // initialize $scope variables
-    $scope.dbName = $location.path().split('/')[2];
+    $scope.dbName = $location.path().split('/')[2].toLowerCase();
     $scope.expertDb = null;
     $scope.error = false;  // if this flag is true, request to server failed - show error message template
     $scope.routes = routes;  // expose routes in template for error message
@@ -48,5 +48,5 @@ var expertDatabaseController = function($scope, $location, $window, $rootScope, 
 expertDatabaseController.$inject = ['$scope', '$location', '$window', '$rootScope', '$http', 'routes'];
 
 
-angular.module("expertDatabase", ['ngResource', 'ngAnimate', 'ngSanitize', 'ui.bootstrap'])
+angular.module("expertDatabase", ['ngResource', 'ngAnimate', 'ngSanitize', 'routes', 'ui.bootstrap'])
     .controller("expertDatabaseController", expertDatabaseController);
