@@ -668,26 +668,30 @@ class GenomesAPIViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
     permission_classes = (AllowAny, )
     serializer_class = EnsemblAssemblySerializer
     pagination_class = Pagination
-    queryset = EnsemblAssembly.objects.prefetch_related('genome_mappings').all().order_by('-ensembl_url')
+    # queryset = EnsemblAssembly.objects.prefetch_related('genome_mappings').all().order_by('-ensembl_url')
     lookup_field = 'ensembl_url'
 
-    # def get_queryset(self):
-    #     query = '''
-    #         SELECT * FROM {ensembl_assembly}
-    #         JOIN (
-    #           SELECT DISTINCT ON ({genome_mapping}.assembly_id)
-    #             {genome_mapping}.assembly_id, {genome_mapping}.start, {genome_mapping}.stop, {genome_mapping}.chromosome
-    #           FROM {genome_mapping}
-    #         ) mapping
-    #         ON mapping.assembly_id = {ensembl_assembly}.assembly_id
-    #         ORDER BY {ensembl_assembly}.ensembl_url ASC
-    #     '''.format(
-    #         genome_mapping=GenomeMapping._meta.db_table,
-    #         ensembl_assembly=EnsemblAssembly._meta.db_table
-    #     )
-    #
-    #     # this won't really paginate
-    #     return list(GenomeMapping.objects.raw(query))
+    def get_queryset(self):
+        query = '''
+            SELECT 1 as id, {ensembl_assembly}.assembly_id, assembly_full_name, gca_accession, assembly_ucsc,
+              common_name, taxid, ensembl_url, division, subdomain,
+              example_chromosome, example_start, example_end,
+              start, stop, chromosome
+            FROM {ensembl_assembly}
+            JOIN (
+              SELECT DISTINCT ON ({genome_mapping}.assembly_id)
+                {genome_mapping}.assembly_id, {genome_mapping}.start, {genome_mapping}.stop, {genome_mapping}.chromosome
+              FROM {genome_mapping}
+            ) mapping
+            ON mapping.assembly_id = {ensembl_assembly}.assembly_id
+            ORDER BY {ensembl_assembly}.ensembl_url ASC
+        '''.format(
+            genome_mapping=GenomeMapping._meta.db_table,
+            ensembl_assembly=EnsemblAssembly._meta.db_table
+        )
+
+        # this won't really paginate
+        return list(EnsemblAssembly.objects.raw(query))
 
 
 class RfamHitsAPIViewSet(generics.ListAPIView):

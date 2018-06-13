@@ -453,28 +453,19 @@ class EnsemblAssemblySerializer(serializers.ModelSerializer):
         if obj.example_chromosome is not None:
             return obj.example_chromosome
         else:
-            if len(obj.genome_mappings.all()) != 0:
-                return obj.genome_mappings.all()[0].chromosome
-            else:
-                return None
+            return obj.chromosome
 
     def get_example_start(self, obj):
         if obj.example_chromosome is not None:
             return obj.example_start
         else:
-            if len(obj.genome_mappings.all()) != 0:
-                return obj.genome_mappings.all()[0].start
-            else:
-                return None
+            return obj.start
 
     def get_example_end(self, obj):
         if obj.example_chromosome is not None:
             return obj.example_end
         else:
-            if len(obj.genome_mappings.all()) != 0:
-                return obj.genome_mappings.all()[0].stop
-            else:
-                return None
+            return obj.stop
 
 
 class EnsemblInsdcMappingSerializer(serializers.ModelSerializer):
