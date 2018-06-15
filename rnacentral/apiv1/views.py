@@ -39,7 +39,7 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
-    EnsemblInsdcMapping, GenomeMapping, GoAnnotation, url2db, db2url
+    EnsemblInsdcMapping, GenomeMapping, GenomicCoordinates, GoAnnotation, url2db, db2url
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination
 
@@ -97,19 +97,46 @@ def features_from_xrefs(species, chromosome, start, end):
 
     if assembly:
         try:
-            xrefs = Xref.default_objects.filter(
-                accession__coordinates__chromosome=chromosome,
-                accession__coordinates__primary_start__gte=start,
-                accession__coordinates__primary_end__lte=end,
+            # xrefs = Xref.default_objects.select_related('upi', 'accession', 'db').prefetch_related('upi__precomputed', 'accession__coordinates').filter(
+            #     accession__coordinates__chromosome=chromosome,
+            #     accession__coordinates__primary_start__gte=start,
+            #     accession__coordinates__primary_end__lte=end,
+            #     taxid=assembly.taxid,
+            #     deleted='N'
+            # )
+            query = '''
+                SELECT 1 id, upi, xrefs.ac, coordinates.primary_start, coordinates.primary_end, coordinates.name
+                FROM (
+                    SELECT id, upi, ac
+                    FROM {xref}
+                    WHERE {xref}.deleted = 'N' AND {xref}.taxid = 9606
+                ) xrefs
+                JOIN {rnc_accessions}
+                ON xrefs.ac={rnc_accessions}.accession
+                JOIN (
+                    SELECT name, primary_start, primary_end, accession
+                    FROM {rnc_coordinates}
+                    WHERE {rnc_coordinates}.primary_start >= {start}
+                      AND {rnc_coordinates}.primary_end <= {end}
+                      AND {rnc_coordinates}.name = '{chromosome}'
+                ) coordinates
+                ON coordinates.accession = {rnc_accessions}.accession
+            '''.format(
+                xref=Xref._meta.db_table,
+                rnc_accessions=Accession._meta.db_table,
+                rnc_coordinates=GenomicCoordinates._meta.db_table,
                 taxid=assembly.taxid,
-                deleted='N'
-            ).select_related('upi', 'accession', 'db').prefetch_related('upi__precomputed')
+                start=start,
+                end=end,
+                chromosome=chromosome
+            )
+            xrefs = Xref.default_objects.raw(query)
         except Xref.DoesNotExist:
             xrefs = []
 
     upi2data = {}
     data = []
-    for i, xref in enumerate(xrefs):
+    for xref in xrefs:
         upi = xref.upi.upi
 
         # create only one transcript object per upi
