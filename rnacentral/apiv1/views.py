@@ -160,13 +160,13 @@ def features_from_xrefs(species, chromosome, start, end):
             databases = list(set([x.db.display_name for x in xrefs_object]))
             databases.sort()
 
+            # manually populate coordinates with what used to be xref.get_genomic_coordinates()
             coordinates = {
                 'chromosome': GenomicCoordinates.objects.filter(accession=accession, chromosome__isnull=False).first().chromosome,
                 'strand': GenomicCoordinates.objects.filter(accession=accession, chromosome__isnull=False).first().strand,
                 'start': min([location.primary_start for location in locations]),
                 'end': max([location.primary_end for location in locations])
             }
-
             if re.match(r'\d+', coordinates['chromosome']) or coordinates['chromosome'] in ['X', 'Y']:
                 coordinates['ucsc_chromosome'] = 'chr' + coordinates['chromosome']
             else:
@@ -174,6 +174,7 @@ def features_from_xrefs(species, chromosome, start, end):
 
             transcript_id = upi + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
 
+            # do N+1 requests on rna_precomputed per each upi, cause SQL join with it is dead slow for some reason
             rna_precomputed = RnaPrecomputed.objects.get(upi=locations[0].upi, taxid=assembly.taxid)
             biotype = rna_precomputed.rna_type  # used to be biotype = xref.accession.get_biotype()
             description = rna_precomputed.description
