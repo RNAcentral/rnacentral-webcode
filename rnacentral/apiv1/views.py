@@ -95,64 +95,93 @@ def features_from_xrefs(species, chromosome, start, end):
     except EnsemblAssembly.DoesNotExist:
         return Response([])
 
-    if assembly:
-        try:
-            # xrefs = Xref.default_objects.select_related('upi', 'accession', 'db').prefetch_related('upi__precomputed', 'accession__coordinates').filter(
-            #     accession__coordinates__chromosome=chromosome,
-            #     accession__coordinates__primary_start__gte=start,
-            #     accession__coordinates__primary_end__lte=end,
-            #     taxid=assembly.taxid,
-            #     deleted='N'
-            # )
-            query = '''
-                SELECT 1 id, upi, xrefs.ac, coordinates.primary_start, coordinates.primary_end, coordinates.name
-                FROM (
-                    SELECT id, upi, ac
-                    FROM {xref}
-                    WHERE {xref}.deleted = 'N' AND {xref}.taxid = 9606
-                ) xrefs
-                JOIN {rnc_accessions}
-                ON xrefs.ac={rnc_accessions}.accession
-                JOIN (
-                    SELECT name, primary_start, primary_end, accession
-                    FROM {rnc_coordinates}
-                    WHERE {rnc_coordinates}.primary_start >= {start}
-                      AND {rnc_coordinates}.primary_end <= {end}
-                      AND {rnc_coordinates}.name = '{chromosome}'
-                ) coordinates
-                ON coordinates.accession = {rnc_accessions}.accession
-            '''.format(
-                xref=Xref._meta.db_table,
-                rnc_accessions=Accession._meta.db_table,
-                rnc_coordinates=GenomicCoordinates._meta.db_table,
-                taxid=assembly.taxid,
-                start=start,
-                end=end,
-                chromosome=chromosome
-            )
-            xrefs = Xref.default_objects.raw(query)
-        except Xref.DoesNotExist:
-            xrefs = []
+    query = '''
+        WITH acc_coord AS (
+          SELECT DISTINCT
+          c.name,
+          c.strand,
+          c.primary_start,
+          c.primary_end,
+          c.accession
+          FROM {rnc_coordinates} c
+          JOIN {rnc_accessions} a on (a.accession = c.accession)
+          WHERE c.primary_start >= {start}
+          AND c.primary_end <= {end}
+          AND c.name = '{chromosome}'
+        )
+        SELECT
+        1 id,
+        xref.upi,
+        xref.taxid,
+        acc_coord.accession,
+        acc_coord.name,
+        acc_coord.strand,
+        acc_coord.primary_start,
+        acc_coord.primary_end
+        FROM xref 
+        JOIN acc_coord ON (xref.ac = acc_coord.accession)
+        WHERE xref.deleted = 'N'
+        AND xref.taxid = {taxid};
+    '''.format(
+        xref=Xref._meta.db_table,
+        rnc_accessions=Accession._meta.db_table,
+        rnc_coordinates=GenomicCoordinates._meta.db_table,
+        rnc_rna_precomputed=RnaPrecomputed._meta.db_table,
+        taxid=assembly.taxid,
+        start=start,
+        end=end,
+        chromosome=chromosome
+    )
+
+    from django.db import connections
+    from psycopg2.extras import NamedTupleCursor
+    conn = connections['default']
+    conn.ensure_connection()
+    with conn.connection.cursor(cursor_factory=NamedTupleCursor) as cursor:
+        cursor.execute(query)
+        results = cursor.fetchall()
 
     upi2data = {}
     data = []
-    for xref in xrefs:
-        upi = xref.upi.upi
+
+    ac2locations = {}  # { result.accession: [result, result, result]}
+    for result in results:
+        if result.accession not in ac2locations:
+            ac2locations[result.accession] = [result]
+        else:
+            ac2locations[result.accession].append(result)
+
+    for accession, locations in ac2locations.items():
+        upi = locations[0].upi
 
         # create only one transcript object per upi
         if upi not in upi2data:
-            xrefs = Xref.default_objects.filter(upi=upi, taxid=assembly.taxid, deleted='N').select_related('db').all()
-            databases = list(set([x.db.display_name for x in xrefs]))
+            xrefs_object = Xref.default_objects.filter(upi=upi, taxid=assembly.taxid, deleted='N').select_related('db').all()
+            databases = list(set([x.db.display_name for x in xrefs_object]))
             databases.sort()
-            coordinates = xref.get_genomic_coordinates()
+
+            coordinates = {
+                'chromosome': GenomicCoordinates.objects.filter(accession=accession, chromosome__isnull=False).first().chromosome,
+                'strand': GenomicCoordinates.objects.filter(accession=accession, chromosome__isnull=False).first().strand,
+                'start': min([location.primary_start for location in locations]),
+                'end': max([location.primary_end for location in locations])
+            }
+
+            if re.match(r'\d+', coordinates['chromosome']) or coordinates['chromosome'] in ['X', 'Y']:
+                coordinates['ucsc_chromosome'] = 'chr' + coordinates['chromosome']
+            else:
+                coordinates['ucsc_chromosome'] = coordinates['chromosome']
+
             transcript_id = upi + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
-            biotype = xref.upi.precomputed.filter(taxid=xref.taxid)[0].rna_type  # used to be biotype = xref.accession.get_biotype()
-            description = xref.upi.precomputed.filter(taxid=xref.taxid)[0].description
+
+            rna_precomputed = RnaPrecomputed.objects.get(upi=locations[0].upi, taxid=assembly.taxid)
+            biotype = rna_precomputed.rna_type  # used to be biotype = xref.accession.get_biotype()
+            description = rna_precomputed.description
 
             transcript = {
                 'ID': transcript_id,
                 'external_name': upi,
-                'taxid': xref.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
+                'taxid': locations[0].taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
                 'feature_type': 'transcript',
                 'logic_name': 'RNAcentral',  # required by Genoverse
                 'biotype': biotype,  # required by Genoverse
@@ -168,15 +197,15 @@ def features_from_xrefs(species, chromosome, start, end):
             data.append(transcript)
 
             # exons
-            exons = xref.accession.coordinates.all()
+            exons = ac2locations[accession]
             for i, exon in enumerate(exons):
-                exon_id = '_'.join([xref.accession.accession, 'exon_' + str(i)])
-                if not exon.chromosome:
+                exon_id = '_'.join([accession, 'exon_' + str(i)])
+                if not exon.name:
                     continue  # some exons may not be mapped onto the genome (common in RefSeq)
                 data.append({
                     'external_name': exon_id,
                     'ID': exon_id,
-                    'taxid': xref.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
+                    'taxid': locations[0].taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
                     'feature_type': 'exon',
                     'Parent': transcript_id,
                     'logic_name': 'RNAcentral',  # required by Genoverse
