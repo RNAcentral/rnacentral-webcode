@@ -144,15 +144,15 @@ def features_from_xrefs(species, chromosome, start, end):
     upi2data = {}
     data = []
 
-    ac2locations = {}  # { result.accession: [result, result, result]}
+    ac2exons = {}  # { result.accession: [result, result, result]}
     for result in results:
-        if result.accession not in ac2locations:
-            ac2locations[result.accession] = [result]
+        if result.accession not in ac2exons:
+            ac2exons[result.accession] = [result]
         else:
-            ac2locations[result.accession].append(result)
+            ac2exons[result.accession].append(result)
 
-    for accession, locations in ac2locations.items():
-        upi = locations[0].upi
+    for accession, exons in ac2exons.items():
+        upi = exons[0].upi
 
         # create only one transcript object per upi
         if upi not in upi2data:
@@ -164,8 +164,8 @@ def features_from_xrefs(species, chromosome, start, end):
             coordinates = {
                 'chromosome': GenomicCoordinates.objects.filter(accession=accession, chromosome__isnull=False).first().chromosome,
                 'strand': GenomicCoordinates.objects.filter(accession=accession, chromosome__isnull=False).first().strand,
-                'start': min([location.primary_start for location in locations]),
-                'end': max([location.primary_end for location in locations])
+                'start': min([exon.primary_start for exon in exons]),
+                'end': max([exon.primary_end for exon in exons])
             }
             if re.match(r'\d+', coordinates['chromosome']) or coordinates['chromosome'] in ['X', 'Y']:
                 coordinates['ucsc_chromosome'] = 'chr' + coordinates['chromosome']
@@ -175,14 +175,14 @@ def features_from_xrefs(species, chromosome, start, end):
             transcript_id = upi + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
 
             # do N+1 requests on rna_precomputed per each upi, cause SQL join with it is dead slow for some reason
-            rna_precomputed = RnaPrecomputed.objects.get(upi=locations[0].upi, taxid=assembly.taxid)
+            rna_precomputed = RnaPrecomputed.objects.get(upi=exons[0].upi, taxid=assembly.taxid)
             biotype = rna_precomputed.rna_type  # used to be biotype = xref.accession.get_biotype()
             description = rna_precomputed.description
 
             transcript = {
                 'ID': transcript_id,
                 'external_name': upi,
-                'taxid': locations[0].taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
+                'taxid': exons[0].taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
                 'feature_type': 'transcript',
                 'logic_name': 'RNAcentral',  # required by Genoverse
                 'biotype': biotype,  # required by Genoverse
@@ -198,7 +198,6 @@ def features_from_xrefs(species, chromosome, start, end):
             data.append(transcript)
 
             # exons
-            exons = ac2locations[accession]
             for i, exon in enumerate(exons):
                 exon_id = '_'.join([accession, 'exon_' + str(i)])
                 if not exon.name:
@@ -206,7 +205,7 @@ def features_from_xrefs(species, chromosome, start, end):
                 data.append({
                     'external_name': exon_id,
                     'ID': exon_id,
-                    'taxid': locations[0].taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
+                    'taxid': exons[0].taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
                     'feature_type': 'exon',
                     'Parent': transcript_id,
                     'logic_name': 'RNAcentral',  # required by Genoverse
