@@ -1,0 +1,20 @@
+---
+# This playbook contains tasks related to refreshing the production databases
+
+#- name: Become dxrnacen
+#  shell: |
+#   become dxrnacen
+
+#  notify: List snapshots on PRO
+
+- name: List snapshots on PRO
+  shell: /nfs/dbtools/delphix/postgres/ebi_list_snapshots.sh -d pgsql-dlvm-010.ebi.ac.uk
+
+- name: Create a snapshot on PRO
+  notify: Refresh FB1 from the latest snapshot
+  remote_user: burkov
+  hosts: fb1-001
+  shell: /nfs/dbtools/delphix/postgres/ebi_create_snapshot.sh -s pgsql-hxvm-038.ebi.ac.uk
+  register: snapshots
+
+- debug: msg="{{ snapshots.stdout }}"

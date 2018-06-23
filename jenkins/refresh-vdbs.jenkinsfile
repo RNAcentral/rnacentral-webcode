@@ -1,0 +1,8 @@
+node {
+    deploy()
+}
+
+private void deploy() {
+    sh '''
+    '''
+}
