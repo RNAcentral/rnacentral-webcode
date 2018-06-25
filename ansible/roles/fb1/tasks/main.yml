@@ -12,9 +12,7 @@
 
 - name: Create a snapshot on PRO
   notify: Refresh FB1 from the latest snapshot
-  remote_user: burkov
-  hosts: fb1-001
-  shell: /nfs/dbtools/delphix/postgres/ebi_create_snapshot.sh -s pgsql-hxvm-038.ebi.ac.uk
-  register: snapshots
+  shell: /nfs/dbtools/delphix/postgres/ebi_create_snapshot.sh -s pgsql-hxvm-038.ebi.ac.uk | tail -1
+  register: snapshot
 
-- debug: msg="{{ snapshots.stdout }}"
+- debug: msg="{{ snapshot.stdout }}"

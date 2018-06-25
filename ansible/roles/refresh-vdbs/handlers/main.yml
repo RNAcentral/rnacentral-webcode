@@ -1,5 +1,0 @@
----
-# handlers invoked by notify lines of tasks
-
-- name: Refresh FB1 from the latest snapshot
-  shell: /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-010.ebi.ac.uk -S '2017-12-04 04:23'
