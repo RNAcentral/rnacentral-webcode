@@ -7,7 +7,7 @@ private void deploy() {
         checkout scm
         // https://stackoverflow.com/questions/47475160/how-to-use-multiple-credentials-in-withcredentials-in-jenkins-pipeline
         withCredentials([file(credentialsId: 'fb1-001-rsa', variable: 'KEYFILE')]) {
-            sh 'cat $KEYFILE > ansible/fb1-001-rsa'
+            sh "cat \$KEYFILE > ansible/fb1-001-rsa"
         }
         withCredentials([usernamePassword(credentialsId: 'refresh_vdbs_login', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
             sh '''
