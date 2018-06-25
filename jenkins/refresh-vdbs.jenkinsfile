@@ -8,12 +8,12 @@ private void deploy() {
         withCredentials([usernamePassword(credentialsId: refresh_vdbs_login, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD'),
                          sshUserPrivateKey(credentialsId: "pg_keyfile", keyfileVariable: 'KEYFILE', usernameVariable: 'USERNAME')]) {
             sh '''
-                sshpass -p $PASSWORD ssh $USERNAME@fb1-001.ebi.ac.uk
+                ssh -i $KEYFILE $USERNAME@fb1-001.ebi.ac.uk
                 become dxrnacen
                 SNAPSHOT="$(/nfs/dbtools/delphix/postgres/ebi_create_snapshot.sh -s pgsql-hxvm-038.ebi.ac.uk | tail -1)"
                 /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-010.ebi.ac.uk -S '${SNAPSHOT}'
                 /nfs/dbtools/delphix/postgres/ebi_push_replication.sh -s pgsql-hxvm-038.ebi.ac.uk
-                ssh -i $KEYFILE $USERNAME@pg-001.ebi.ac.uk
+                sshpass -p $PASSWORD ssh $USERNAME@pg-001.ebi.ac.uk
                 become dxrnacen
                 /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvmpub1-010.ebi.ac.uk -S '${SNAPSHOT}'
             '''
