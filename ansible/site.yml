@@ -1,0 +1,10 @@
+- name: fb1
+  hosts: fb1-001
+  remote_user: burkov
+  become: true
+  become_user: dxrnacen
+  become_method: sudo
+  vars:
+    ansible_ssh_private_key_file: "fb1-001-rsa"
+  roles:
+    - fb1
