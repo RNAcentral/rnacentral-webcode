@@ -8,7 +8,8 @@ private void deploy() {
         withCredentials([usernamePassword(credentialsId: "refresh_vdbs_login", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD'),
                          file(credentialsId: "fb1-001-rsa", variable: 'KEYFILE')]) {
             sh '''
-                ssh -i $KEYFILE $USERNAME@fb1-001.ebi.ac.uk
+                cat $KEYFILE > ansible/fb1-001-rsa
+                ssh -i ansible/fb1-001-rsa $USERNAME@fb1-001.ebi.ac.uk
                 become dxrnacen
                 SNAPSHOT="$(/nfs/dbtools/delphix/postgres/ebi_create_snapshot.sh -s pgsql-hxvm-038.ebi.ac.uk | tail -1)"
                 /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-010.ebi.ac.uk -S '${SNAPSHOT}'
