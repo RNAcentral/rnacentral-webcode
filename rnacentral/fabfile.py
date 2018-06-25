@@ -66,6 +66,30 @@ def localhost():
     env.deployment = 'local'
 
 
+def fb1(key):
+    """fab fb1 refresh_fb1:key=/path/to/keyfile"""
+    env.host = 'fb1-001.ebi.ac.uk'
+    env.user = 'burkov'
+    # if you have key based authentication, uncomment and point to private key
+    env.key_filename = key
+
+
+def hx():
+    """fab pg --password=mytopsecretpassword refresh_pg:snapshot=2018-06-25 10:13"""
+    env.host = 'pg-001.ebi.ac.uk'
+    env.user = 'burkov'
+
+
+def refresh_fb1():
+    snapshot = env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_create_snapshot.sh -s pgsql-hxvm-038.ebi.ac.uk | tail -1")
+    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-010.ebi.ac.uk -S '%s'" % snapshot)
+    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_push_replication.sh -s pgsql-hxvm-038.ebi.ac.uk")
+
+
+def refresh_pg(snapshot):
+    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvmpub1-010.ebi.ac.uk -S '%s'" % snapshot)
+
+
 def git_updates(git_branch=None):
     """
     Perform git updates.
