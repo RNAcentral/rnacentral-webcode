@@ -11,7 +11,7 @@ private void deploy() {
         }
         withCredentials([usernamePassword(credentialsId: 'refresh_vdbs_login', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
             sh '''
-                sudo -u dxrnacen ssh -i ansible/fb1-001-rsa $USERNAME@fb1-001.ebi.ac.uk '/nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-010.ebi.ac.uk -S "`ebi_create_snapshot.sh -s pgsql-hxvm-038.ebi.ac.uk | tail -1`"'
+                ssh -i ansible/fb1-001-rsa $USERNAME@fb1-001.ebi.ac.uk 'sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-010.ebi.ac.uk -S "`sudo -u dxrnacen ebi_create_snapshot.sh -s pgsql-hxvm-038.ebi.ac.uk | tail -1`"'
             '''
         }
     }
