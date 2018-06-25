@@ -3,15 +3,19 @@ node {
 }
 
 private void deploy() {
-    stage("Take snapshot and refresh") {
+    stage("FB1 and PG refresh") {
         // https://stackoverflow.com/questions/47475160/how-to-use-multiple-credentials-in-withcredentials-in-jenkins-pipeline
-        withCredentials(usernamePassword(credentialsId: refresh_vdbs_login, usernameVariable: 'LOGIN', passwordVariable: 'PASSWORD')) {
+        withCredentials([usernamePassword(credentialsId: refresh_vdbs_login, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD'),
+                         sshUserPrivateKey(credentialsId: "pg_keyfile", keyfileVariable: 'KEYFILE', usernameVariable: 'USERNAME')]) {
             sh '''
-                sshpass -p $PASSWORD ssh $LOGIN@fb1-001.ebi.ac.uk
+                sshpass -p $PASSWORD ssh $USERNAME@fb1-001.ebi.ac.uk
                 become dxrnacen
                 SNAPSHOT="$(/nfs/dbtools/delphix/postgres/ebi_create_snapshot.sh -s pgsql-hxvm-038.ebi.ac.uk | tail -1)"
-                /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-010.ebi.ac.uk -S ${SNAPSHOT}
+                /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-010.ebi.ac.uk -S '${SNAPSHOT}'
                 /nfs/dbtools/delphix/postgres/ebi_push_replication.sh -s pgsql-hxvm-038.ebi.ac.uk
+                ssh -i $KEYFILE $USERNAME@pg-001.ebi.ac.uk
+                become dxrnacen
+                /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvmpub1-010.ebi.ac.uk -S '${SNAPSHOT}'
             '''
         }
     }
