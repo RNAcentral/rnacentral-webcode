@@ -5,7 +5,7 @@ node {
 private void deploy() {
     stage("FB1 and PG refresh") {
         // https://stackoverflow.com/questions/47475160/how-to-use-multiple-credentials-in-withcredentials-in-jenkins-pipeline
-        withCredentials([usernamePassword(credentialsId: refresh_vdbs_login, usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD'),
+        withCredentials([usernamePassword(credentialsId: "refresh_vdbs_login", usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD'),
                          sshUserPrivateKey(credentialsId: "pg_keyfile", keyfileVariable: 'KEYFILE', usernameVariable: 'USERNAME')]) {
             sh '''
                 ssh -i $KEYFILE $USERNAME@fb1-001.ebi.ac.uk
