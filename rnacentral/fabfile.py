@@ -268,7 +268,6 @@ def fb1(key):
     env.user = 'burkov'
     env.run = run
     env.cd = cd
-    # if you have key based authentication, uncomment and point to private key
     env.key_filename = key
 
 
@@ -288,6 +287,7 @@ def refresh_fb1():
     snapshot = env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_create_snapshot.sh -s pgsql-hxvm-038.ebi.ac.uk | tail -1")
     env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-010.ebi.ac.uk -S '%s'" % snapshot)
     env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_push_replication.sh -s pgsql-hxvm-038.ebi.ac.uk")
+    print(snapshot)
 
 
 def refresh_pg(snapshot):
