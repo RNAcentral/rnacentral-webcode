@@ -8,6 +8,8 @@
 // Jenkins environment variable:
 // https://jenkins.io/doc/book/pipeline/jenkinsfile/#working-with-the-environment
 
+// `fab fb1:key=fb1-001-rsa refresh_fb1``
+
 node {
     deploy()
 }
@@ -15,12 +17,12 @@ node {
 private void deploy() {
     stage("FB1 and PG refresh") {
         checkout scm
-        // `fab fb1:key=fb1-001-rsa refresh_fb1`
+
         withCredentials([file(credentialsId: 'fb1-001-rsa', variable: 'KEYFILE')]) {
             sh 'cat $KEYFILE > rnacentral/fb1-001-rsa'
         }
         withCredentials([usernamePassword(credentialsId: 'refresh_vdbs_login', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-            sh refresh-vdbs.sh ${PASSWORD}
+            sh refresh_vdbs.sh
         }
     }
 }
