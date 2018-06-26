@@ -66,34 +66,6 @@ def localhost():
     env.deployment = 'local'
 
 
-def fb1(key):
-    """fab fb1:key=/path/to/keyfile refresh_fb1"""
-    env.hosts = ['fb1-001.ebi.ac.uk']
-    env.user = 'burkov'
-    env.run = run
-    env.cd = cd
-    # if you have key based authentication, uncomment and point to private key
-    env.key_filename = key
-
-
-def pg():
-    """fab pg --password=mytopsecretpassword refresh_pg:snapshot='2018-06-25 10:13'"""
-    env.hosts = ['pg-001.ebi.ac.uk']
-    env.user = 'burkov'
-    env.run = run
-    env.cd = cd
-
-
-def refresh_fb1():
-    snapshot = env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_create_snapshot.sh -s pgsql-hxvm-038.ebi.ac.uk | tail -1")
-    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-010.ebi.ac.uk -S '%s'" % snapshot)
-    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_push_replication.sh -s pgsql-hxvm-038.ebi.ac.uk")
-
-
-def refresh_pg(snapshot):
-    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvmpub1-010.ebi.ac.uk -S '%s'" % snapshot)
-
-
 def git_updates(git_branch=None):
     """
     Perform git updates.
@@ -282,3 +254,41 @@ def test(base_url='http://localhost:8000/'):
         # env.run('python rnacentral/apiv1/tests.py --base_url=%s' % base_url)
         env.run('python rnacentral/portal/tests/selenium_tests.py --base_url %s --driver=phantomjs' % base_url) # pylint: disable=C0301
         env.run('python rnacentral/apiv1/search/sequence/tests.py --base_url %s' % base_url) # pylint: disable=C0301
+
+
+# VDBS refresh-related code
+
+def fb1(key):
+    """
+    Configures environment variables for running commands on fb1, e.g.:
+
+    fab fb1:key=/path/to/keyfile refresh_fb1
+    """
+    env.hosts = ['fb1-001.ebi.ac.uk']
+    env.user = 'burkov'
+    env.run = run
+    env.cd = cd
+    # if you have key based authentication, uncomment and point to private key
+    env.key_filename = key
+
+
+def pg():
+    """
+    Configures environment variables for running commands on pg, e.g.:
+
+    fab pg --password=mytopsecretpassword refresh_pg:snapshot='2018-06-25 10:13'
+    """
+    env.hosts = ['pg-001.ebi.ac.uk']
+    env.user = 'burkov'
+    env.run = run
+    env.cd = cd
+
+
+def refresh_fb1():
+    snapshot = env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_create_snapshot.sh -s pgsql-hxvm-038.ebi.ac.uk | tail -1")
+    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-010.ebi.ac.uk -S '%s'" % snapshot)
+    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_push_replication.sh -s pgsql-hxvm-038.ebi.ac.uk")
+
+
+def refresh_pg(snapshot):
+    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvmpub1-010.ebi.ac.uk -S '%s'" % snapshot)
