@@ -22,7 +22,7 @@ private void deploy() {
             sh 'cat $KEYFILE > rnacentral/fb1-001-rsa'
         }
         withCredentials([usernamePassword(credentialsId: 'refresh_vdbs_login', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-            sh 'ls'
+            sh 'cd jenkins; ./refresh_vdbs.sh'
         }
     }
 }
