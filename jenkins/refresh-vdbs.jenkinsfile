@@ -1,3 +1,10 @@
+// handling credentials:
+// https://stackoverflow.com/questions/47475160/how-to-use-multiple-credentials-in-withcredentials-in-jenkins-pipeline
+
+// escaping and interpolation between Jenkinsfile and bash:
+// https://gist.github.com/Faheetah/e11bd0315c34ed32e681616e41279ef4
+// https://stackoverflow.com/questions/41539076/how-to-pass-variables-from-jenkinsfile-to-shell-command
+
 node {
     deploy()
 }
@@ -5,7 +12,6 @@ node {
 private void deploy() {
     stage("FB1 and PG refresh") {
         checkout scm
-        // https://stackoverflow.com/questions/47475160/how-to-use-multiple-credentials-in-withcredentials-in-jenkins-pipeline
         // `fab fb1:key=fb1-001-rsa refresh_fb1`
         withCredentials([file(credentialsId: 'fb1-001-rsa', variable: 'KEYFILE')]) {
             sh 'cat $KEYFILE > rnacentral/fb1-001-rsa'
@@ -14,7 +20,7 @@ private void deploy() {
             sh '''
                 cd rnacentral
                 SNAPSHOT="2018-06-25 10:13"
-                fab pg --password=${PASSWORD} refresh_pg:snapshot=\\"$SNAPSHOT\\"
+                fab pg --password=${PASSWORD} refresh_pg:snapshot=$SNAPSHOT
             '''
         }
     }
