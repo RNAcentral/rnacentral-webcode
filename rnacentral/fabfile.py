@@ -76,8 +76,8 @@ def fb1(key):
     env.key_filename = key
 
 
-def hx():
-    """fab pg --password=mytopsecretpassword refresh_pg:snapshot=2018-06-25 10:13"""
+def pg():
+    """fab pg --password=mytopsecretpassword refresh_pg:snapshot='2018-06-25 10:13'"""
     env.hosts = ['pg-001.ebi.ac.uk']
     env.user = 'burkov'
     env.run = run
