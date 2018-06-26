@@ -1,4 +1,4 @@
-cd rnacentral
+cd ../rnacentral
 SNAPSHOT="2018-06-25 10:13"
 echo $SNAPSHOT
 echo $1
