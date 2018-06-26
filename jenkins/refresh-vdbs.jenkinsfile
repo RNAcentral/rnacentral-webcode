@@ -26,10 +26,10 @@ pipeline {
                 echo "USER = $USER"
                 echo "USER = ${USER}"
                 sh "cat $KEYFILE > fb1-001-rsa"
-                sh "echo '$PASSWORD' > vmpass"
                 sh """
                     cd rnacentral
-                    fab pg --password=`cat ../vmpass` refresh_pg
+                    password=${PASSWORD}
+                    fab pg -p $password refresh_pg
                 """
             }
         }
