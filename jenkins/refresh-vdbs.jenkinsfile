@@ -19,16 +19,18 @@ pipeline {
                 KEYFILE = credentials('fb1-001-rsa')
                 LOGINPASSWORD = credentials('refresh_vdbs_login')
             }
-            echo "$LOGINPASSWORD"
-            checkout scm
-            sh "cat $LOGINPASSWORD > vmpass"
-            sh "cat $KEYFILE > fb1-001-rsa"
+            steps {
+                echo "$LOGINPASSWORD"
+                checkout scm
+                sh "cat $LOGINPASSWORD > vmpass"
+                sh "cat $KEYFILE > fb1-001-rsa"
 
-            SNAPSHOT = "2018-06-25 10:13"
-            sh """
-                cd rnacentral
-                fab pg --password=`cat ../vmpass` refresh_pg:snapshot="${SNAPSHOT}"
-            """
+                SNAPSHOT = "2018-06-25 10:13"
+                sh """
+                    cd rnacentral
+                    fab pg --password=`cat ../vmpass` refresh_pg:snapshot="${SNAPSHOT}"
+                """
+            }
         }
     }
 }
