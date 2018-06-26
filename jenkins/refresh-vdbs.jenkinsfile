@@ -17,10 +17,11 @@ pipeline {
         stage("FB1 and PG refresh") {
             environment {
                 KEYFILE = credentials('fb1-001-rsa')
-                USERNAME, VMPASS = credentials('refresh_vdbs_login')
+                LOGINPASSWORD = credentials('refresh_vdbs_login')
             }
+            echo "$LOGINPASSWORD"
             checkout scm
-            sh "cat $VMPASS > vmpass"
+            sh "cat $LOGINPASSWORD > vmpass"
             sh "cat $KEYFILE > fb1-001-rsa"
 
             SNAPSHOT = "2018-06-25 10:13"
