@@ -12,7 +12,7 @@ private void deploy() {
         withCredentials([usernamePassword(credentialsId: 'refresh_vdbs_login', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
             sh '''
                 cd rnacentral
-                SNAPSHOT='2018-06-25 10:13' #`fab fb1:key=fb1-001-rsa refresh_fb1`
+                SNAPSHOT=\\"2018-06-25 10:13\\"  #`fab fb1:key=fb1-001-rsa refresh_fb1`
                 fab pg --password=${PASSWORD} refresh_pg:snapshot=\\"$SNAPSHOT\\"
             '''
         }
