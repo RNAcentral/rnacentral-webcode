@@ -28,8 +28,7 @@ pipeline {
                 sh "cat $KEYFILE > fb1-001-rsa"
                 sh '''
                     cd rnacentral
-                    password=${PASSWORD}
-                    fab pg -p $password refresh_pg
+                    fab pg:password=${PASSWORD} refresh_pg
                 '''
             }
         }

@@ -272,14 +272,15 @@ def fb1(key):
     env.key_filename = key
 
 
-def pg():
+def pg(password):
     """
     Configures environment variables for running commands on pg, e.g.:
 
-    fab pg --password=mytopsecretpassword refresh_pg
+    fab pg:password=mytopsecretpassword refresh_pg
     """
     env.hosts = ['pg-001.ebi.ac.uk']
     env.user = 'burkov'
+    env.password = password
     env.run = run
     env.cd = cd
 
