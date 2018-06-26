@@ -19,15 +19,15 @@ private void deploy() {
         checkout scm
 
         withCredentials([file(credentialsId: 'fb1-001-rsa', variable: 'KEYFILE'),
-                         usernamePassword(credentialsId: 'refresh_vdbs_login', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-            // sh 'cat ${PASSWORD} > password'
+                         usernamePassword(credentialsId: 'refresh_vdbs_login', usernameVariable: 'USERNAME', passwordVariable: 'VMPASS')]) {
+            sh 'cat ${VMPASS} > vmpass'
             sh 'cat ${KEYFILE} > fb1-001-rsa'
         }
 
         SNAPSHOT = "2018-06-25 10:13"
         sh """
             cd rnacentral
-            fab pg --password=`cat ../password` refresh_pg:snapshot="${SNAPSHOT}"
+            fab pg --password=`cat ../vmpass` refresh_pg:snapshot="${SNAPSHOT}"
         """
 
     }
