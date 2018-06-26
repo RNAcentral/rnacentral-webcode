@@ -20,17 +20,15 @@ private void deploy() {
 
         withCredentials([file(credentialsId: 'fb1-001-rsa', variable: 'KEYFILE'),
                          usernamePassword(credentialsId: 'refresh_vdbs_login', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-            sh 'cat $PASSWORD > rnacentral/password'
-            sh 'cat $KEYFILE > rnacentral/fb1-001-rsa'
+            sh 'cat $PASSWORD > password'
+            sh 'cat $KEYFILE > fb1-001-rsa'
         }
 
         SNAPSHOT = "2018-06-25 10:13"
+        sh """
+            cd rnacentral
+            fab pg --password=`cat ../fb1-001-rsa` refresh_pg:snapshot="${SNAPSHOT}"
+        """
 
-        withCredentials([]) {
-            sh """
-                cd rnacentral
-                fab pg --password=`cat rnacentral/fb1-001-rsa` refresh_pg:snapshot="${SNAPSHOT}"
-            """
-        }
     }
 }
