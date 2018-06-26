@@ -29,7 +29,7 @@ pipeline {
                 sh "echo '$PASSWORD' > vmpass"
                 sh """
                     cd rnacentral
-                    fab pg --password=`cat vmpass` refresh_pg
+                    fab pg --password=`cat ../vmpass` refresh_pg
                 """
             }
         }
