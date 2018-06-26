@@ -6,13 +6,14 @@ private void deploy() {
     stage("FB1 and PG refresh") {
         checkout scm
         // https://stackoverflow.com/questions/47475160/how-to-use-multiple-credentials-in-withcredentials-in-jenkins-pipeline
+        // `fab fb1:key=fb1-001-rsa refresh_fb1`
         withCredentials([file(credentialsId: 'fb1-001-rsa', variable: 'KEYFILE')]) {
             sh 'cat $KEYFILE > rnacentral/fb1-001-rsa'
         }
         withCredentials([usernamePassword(credentialsId: 'refresh_vdbs_login', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
             sh '''
                 cd rnacentral
-                SNAPSHOT=\\"2018-06-25 10:13\\"  #`fab fb1:key=fb1-001-rsa refresh_fb1`
+                SNAPSHOT="2018-06-25 10:13"
                 fab pg --password=${PASSWORD} refresh_pg:snapshot=\\"$SNAPSHOT\\"
             '''
         }
