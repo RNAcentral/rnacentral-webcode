@@ -29,7 +29,7 @@ pipeline {
                 // sh "cat $KEYFILE > fb1-001-rsa"
                 sh """
                     cd rnacentral
-                    fab pg --password=`cat ../vmpass` refresh_pg"
+                    fab pg --password=$PASSWORD refresh_pg
                 """
             }
         }
