@@ -17,13 +17,16 @@ pipeline {
         stage("FB1 and PG refresh") {
             environment {
                 KEYFILE = credentials('fb1-001-rsa')
-                LOGINPASSWORD = credentials('refresh_vdbs_login')
+                USERPASSWORD = credentials('refresh_vdbs_login')
+                USER = "${env.USERPASSWORD_USR}"
+                PASSWORD = "${env.USERPASSWORD_PSW}"
             }
             steps {
-                echo "$LOGINPASSWORD"
                 checkout scm
-                sh "cat $LOGINPASSWORD > vmpass"
-                sh "cat $KEYFILE > fb1-001-rsa"
+                echo "USER = $USER"
+                echo "USER = ${USER"
+                // sh "cat $LOGINPASSWORD > vmpass"
+                // sh "cat $KEYFILE > fb1-001-rsa"
                 sh """
                     cd rnacentral
                     fab pg --password=`cat ../vmpass` refresh_pg"
