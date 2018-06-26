@@ -11,7 +11,7 @@ private void deploy() {
         }
         withCredentials([usernamePassword(credentialsId: 'refresh_vdbs_login', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
             sh '''
-                SNAPSHOT="$(fab fb1 refresh_fb1:key=${KEYFILE})"
+                SNAPSHOT="$(fab fb1:key=$KEYFILE refresh_fb1)"
                 fab pg --password=${PASSWORD} refresh_pg:snapshot=$SNAPSHOT
             '''
         }

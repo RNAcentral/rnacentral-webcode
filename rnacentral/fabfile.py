@@ -67,17 +67,21 @@ def localhost():
 
 
 def fb1(key):
-    """fab fb1 refresh_fb1:key=/path/to/keyfile"""
-    env.host = 'fb1-001.ebi.ac.uk'
+    """fab fb1:key=/path/to/keyfile refresh_fb1"""
+    env.hosts = ['fb1-001.ebi.ac.uk']
     env.user = 'burkov'
+    env.run = run
+    env.cd = cd
     # if you have key based authentication, uncomment and point to private key
     env.key_filename = key
 
 
 def hx():
     """fab pg --password=mytopsecretpassword refresh_pg:snapshot=2018-06-25 10:13"""
-    env.host = 'pg-001.ebi.ac.uk'
+    env.hosts = ['pg-001.ebi.ac.uk']
     env.user = 'burkov'
+    env.run = run
+    env.cd = cd
 
 
 def refresh_fb1():
