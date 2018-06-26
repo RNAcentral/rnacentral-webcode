@@ -11,26 +11,23 @@
 // https://jenkins.io/doc/book/pipeline/jenkinsfile/#working-with-the-environment
 
 // `fab fb1:key=fb1-001-rsa refresh_fb1``
-
-node {
-    deploy()
-}
-
-private void deploy() {
-    stage("FB1 and PG refresh") {
-        checkout scm
-
-        withCredentials([file(credentialsId: 'fb1-001-rsa', variable: 'KEYFILE'),
-                         usernamePassword(credentialsId: 'refresh_vdbs_login', usernameVariable: 'USERNAME', passwordVariable: 'VMPASS')]) {
+pipeline {
+    agent any
+    stages {
+        stage("FB1 and PG refresh") {
+            environment {
+                KEYFILE = credentials('fb1-001-rsa')
+                USERNAME, VMPASS = credentials('refresh_vdbs_login')
+            }
+            checkout scm
             sh "cat $VMPASS > vmpass"
             sh "cat $KEYFILE > fb1-001-rsa"
+
+            SNAPSHOT = "2018-06-25 10:13"
+            sh """
+                cd rnacentral
+                fab pg --password=`cat ../vmpass` refresh_pg:snapshot="${SNAPSHOT}"
+            """
         }
-
-        SNAPSHOT = "2018-06-25 10:13"
-        sh """
-            cd rnacentral
-            fab pg --password=`cat ../vmpass` refresh_pg:snapshot="${SNAPSHOT}"
-        """
-
     }
 }
