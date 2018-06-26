@@ -21,8 +21,14 @@ private void deploy() {
         withCredentials([file(credentialsId: 'fb1-001-rsa', variable: 'KEYFILE')]) {
             sh 'cat $KEYFILE > rnacentral/fb1-001-rsa'
         }
+
+        SNAPSHOT = "2018-06-25 10:13"
+
         withCredentials([usernamePassword(credentialsId: 'refresh_vdbs_login', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-            sh 'cd jenkins; bash refresh_vdbs.sh ${PASSWORD}'
+            sh """
+                cd ../rnacentral
+                fab pg --password=${PASSWORD} refresh_pg:snapshot="${SNAPSHOT}"
+            """
         }
     }
 }
