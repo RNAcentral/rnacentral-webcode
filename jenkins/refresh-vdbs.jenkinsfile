@@ -22,8 +22,8 @@ private void deploy() {
 
         withCredentials([file(credentialsId: 'fb1-001-rsa', variable: 'KEYFILE'),
                          usernamePassword(credentialsId: 'refresh_vdbs_login', usernameVariable: 'USERNAME', passwordVariable: 'VMPASS')]) {
-            sh "cat ${VMPASS} > vmpass"
-            sh "cat ${KEYFILE} > fb1-001-rsa"
+            sh "cat $VMPASS > vmpass"
+            sh "cat $KEYFILE > fb1-001-rsa"
         }
 
         SNAPSHOT = "2018-06-25 10:13"
