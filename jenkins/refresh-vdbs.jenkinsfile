@@ -26,7 +26,7 @@ pipeline {
                 echo "USER = $USER"
                 echo "USER = ${USER}"
                 // sh "cat $LOGINPASSWORD > vmpass"
-                // sh "cat $KEYFILE > fb1-001-rsa"
+                sh "cat $KEYFILE > fb1-001-rsa"
                 sh """
                     cd rnacentral
                     fab pg --password=$PASSWORD refresh_pg
