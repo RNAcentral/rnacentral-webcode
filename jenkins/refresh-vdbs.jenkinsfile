@@ -24,11 +24,9 @@ pipeline {
                 checkout scm
                 sh "cat $LOGINPASSWORD > vmpass"
                 sh "cat $KEYFILE > fb1-001-rsa"
-
-                SNAPSHOT = "2018-06-25 10:13"
                 sh """
                     cd rnacentral
-                    fab pg --password=`cat ../vmpass` refresh_pg:snapshot="${SNAPSHOT}"
+                    fab pg --password=`cat ../vmpass` refresh_pg"
                 """
             }
         }
