@@ -26,7 +26,6 @@ private void deploy() {
 
         withCredentials([usernamePassword(credentialsId: 'refresh_vdbs_login', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
             sh """
-                cd ../rnacentral
                 fab pg --password=${PASSWORD} refresh_pg:snapshot="${SNAPSHOT}"
             """
         }
