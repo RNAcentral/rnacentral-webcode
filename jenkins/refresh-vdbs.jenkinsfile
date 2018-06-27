@@ -13,7 +13,7 @@
 pipeline {
     agent any
     stages {
-        stage("checkout scm" {
+        stage("checkout scm") {
             checkout scm
         }
         stage("FB1 refresh") {
@@ -41,6 +41,5 @@ pipeline {
                 '''
             }
         }
-
     }
 }
