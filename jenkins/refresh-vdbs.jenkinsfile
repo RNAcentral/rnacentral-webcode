@@ -28,7 +28,7 @@ pipeline {
                 sh "cat $KEYFILE > fb1-001-rsa"
                 sh '''
                     cd rnacentral
-                    fab pg:password=${PASSWORD} refresh_pg
+                    python refresh_vdbs.py --password=${PASSWORD}
                 '''
             }
         }
