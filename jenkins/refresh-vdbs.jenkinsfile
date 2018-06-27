@@ -23,8 +23,6 @@ pipeline {
             }
             steps {
                 checkout scm
-                echo "USER = $USER"
-                echo "USER = ${USER}"
                 sh "cat $KEYFILE > fb1-001-rsa"
                 sh '''
                     cd jenkins

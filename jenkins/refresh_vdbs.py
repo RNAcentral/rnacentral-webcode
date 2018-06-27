@@ -34,20 +34,24 @@ def connect(host, user, password=None, keyfile=None):
 
 
 if __name__ == "__main__":
+    # parse command line arguments
     parser = argparse.ArgumentParser(description='Refresh remote databases')
     group = parser.add_mutually_exclusive_group()
     group.add_argument('--password', type=str, help='password for logging-in, if ssh private key is not used for logging in')
-    group.add_argument('--keyfile', type=str, help='')
+    group.add_argument('--keyfile', type=str, help='keyfile path for passwordless login')
     args = parser.parse_args()
 
+    print("args.password = %s" % args.password)
     client = connect(host='pg-001.ebi.ac.uk', user='burkov', password=args.password)
+
+    # find the latest snapshot on PG
     stdin, stdout, stderr = client.exec_command('sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_list_snapshots.sh -d pgsql-dlvmpub1-010.ebi.ac.uk | tail -1')
+    snapshot = stdout.read()
+    # if stdout and stderr were passed together, we would've had to filter them as bash curses about absence of /home
+    # snapshot = re.search("\d\d\d\d\-\d\d\-\d\d\s\d\d\:\d\d$", output).group(0)  # e.g. 2018-06-26 11:16
+    print(snapshot + stderr.read())
 
-    # bash curses about absence of /home directory, thus we have to filter out snapshot)
-    output = stdout.read()  # need stderr - use stderr.read()
-    snapshot = re.search("\d\d\d\d\-\d\d\-\d\d\s\d\d\:\d\d$", output).group(0)  # e.g. 2018-06-26 11:16
-    print(output + stderr.read())
-
+    # refresh PG from the latest snapshot
     stdin, stdout, stderr = client.exec_command("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvmpub1-010.ebi.ac.uk -S '%s'" % snapshot)
     print(stdout.read() + stderr.read())
 
