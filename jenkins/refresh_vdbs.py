@@ -41,7 +41,7 @@ if __name__ == "__main__":
     group.add_argument('--keyfile', type=str, help='keyfile path for passwordless login')
     args = parser.parse_args()
 
-    password = open(args.password).read()
+    password = open(args.password).read().strip()
     print("password = %s" % password)
     client = connect(host='pg-001.ebi.ac.uk', user='burkov', password=password)
 
