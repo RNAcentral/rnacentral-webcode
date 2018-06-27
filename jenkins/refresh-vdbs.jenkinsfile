@@ -13,11 +13,6 @@
 pipeline {
     agent any
     stages {
-        stage("checkout scm") {
-            steps {
-                checkout scm
-            }
-        }
         stage("FB1 refresh") {
             environment {
                 KEYFILE = credentials('fb1-001-rsa')
