@@ -41,8 +41,9 @@ if __name__ == "__main__":
     group.add_argument('--keyfile', type=str, help='keyfile path for passwordless login')
     args = parser.parse_args()
 
-    print("args.password = %s" % args.password)
-    client = connect(host='pg-001.ebi.ac.uk', user='burkov', password=args.password)
+    password = open(args.password).read()
+    print("password = %s" % password)
+    client = connect(host='pg-001.ebi.ac.uk', user='burkov', password=password)
 
     # find the latest snapshot on PG
     stdin, stdout, stderr = client.exec_command('sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_list_snapshots.sh -d pgsql-dlvmpub1-010.ebi.ac.uk | tail -1')
