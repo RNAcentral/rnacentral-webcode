@@ -225,4 +225,4 @@ function ebiFrameworkCookieBanner() {
 }
 
 // execute
-// ebiFrameworkRunDataProtectionBanner('1.3');
+ebiFrameworkRunDataProtectionBanner('1.3');
