@@ -25,7 +25,7 @@ pipeline {
                 checkout scm
                 sh "cat $KEYFILE > fb1-001-rsa"
                 sh '''
-                    cd jenkins
+                    cd rnacentral
                     fab pg --password=$PASSWORD refresh_pg
                 '''
             }
