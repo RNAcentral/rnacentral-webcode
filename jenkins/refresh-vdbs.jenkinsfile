@@ -27,7 +27,7 @@ pipeline {
                 echo "USER = ${USER}"
                 sh "cat $KEYFILE > fb1-001-rsa"
                 sh '''
-                    cd rnacentral
+                    cd jenkins
                     python refresh_vdbs.py --password=${PASSWORD}
                 '''
             }
