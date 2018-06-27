@@ -1,28 +1,42 @@
-// handling credentials:
-// https://stackoverflow.com/questions/47475160/how-to-use-multiple-credentials-in-withcredentials-in-jenkins-pipeline
-
 // escaping and interpolation between Jenkinsfile and bash:
+// https://jenkins.io/doc/book/pipeline/syntax/
+// https://github.com/puzzle/jenkins-techlab/blob/master/labs/05_string_interpolation_quoting_escaping.md
 // https://gist.github.com/Faheetah/e11bd0315c34ed32e681616e41279ef4
 // https://stackoverflow.com/questions/41539076/how-to-pass-variables-from-jenkinsfile-to-shell-command
+
+// handling credentials:
+// https://stackoverflow.com/questions/47475160/how-to-use-multiple-credentials-in-withcredentials-in-jenkins-pipeline
 
 // Jenkins environment variable:
 // https://jenkins.io/doc/book/pipeline/jenkinsfile/#working-with-the-environment
 
-// `fab fb1:key=fb1-001-rsa refresh_fb1``
-
-node {
-    deploy()
-}
-
-private void deploy() {
-    stage("FB1 and PG refresh") {
-        checkout scm
-
-        withCredentials([file(credentialsId: 'fb1-001-rsa', variable: 'KEYFILE')]) {
-            sh 'cat $KEYFILE > rnacentral/fb1-001-rsa'
+pipeline {
+    agent any
+    stages {
+        stage("FB1 refresh") {
+            environment {
+                KEYFILE = credentials('fb1-001-rsa')
+            }
+            steps {
+                sh "cat $KEYFILE > fb1-001-rsa"
+                sh '''
+                    cd rnacentral
+                    fab fb1:key=../fb1-001-rsa refresh_fb1
+                '''
+            }
         }
-        withCredentials([usernamePassword(credentialsId: 'refresh_vdbs_login', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
-            sh refresh_vdbs.sh
+        stage("PG refresh") {
+            environment {
+                USERPASSWORD = credentials('refresh_vdbs_login')
+                USER = "${env.USERPASSWORD_USR}"
+                PASSWORD = "${env.USERPASSWORD_PSW}"
+            }
+            steps {
+                sh '''
+                    cd rnacentral
+                    fab pg --password=$PASSWORD refresh_pg
+                '''
+            }
         }
     }
 }
