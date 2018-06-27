@@ -13,22 +13,34 @@
 pipeline {
     agent any
     stages {
-        stage("FB1 and PG refresh") {
+        stage("checkout scm" {
+            checkout scm
+        }
+        stage("FB1 refresh") {
             environment {
                 KEYFILE = credentials('fb1-001-rsa')
+            }
+            steps {
+                sh "cat $KEYFILE > fb1-001-rsa"
+                sh '''
+                    cd rnacentral
+                    fab fb1:key=../fb1-001-rsa refresh_fb1
+                '''
+            }
+        }
+        stage("PG refresh") {
+            environment {
                 USERPASSWORD = credentials('refresh_vdbs_login')
                 USER = "${env.USERPASSWORD_USR}"
                 PASSWORD = "${env.USERPASSWORD_PSW}"
             }
             steps {
-                checkout scm
-                sh "cat $KEYFILE > fb1-001-rsa"
                 sh '''
                     cd rnacentral
-                    fab fb1:key=../fb1-001-rsa refresh_fb1
                     fab pg --password=$PASSWORD refresh_pg
                 '''
             }
         }
+
     }
 }
