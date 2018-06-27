@@ -10,7 +10,6 @@
 // Jenkins environment variable:
 // https://jenkins.io/doc/book/pipeline/jenkinsfile/#working-with-the-environment
 
-// `fab fb1:key=fb1-001-rsa refresh_fb1``
 pipeline {
     agent any
     stages {
@@ -26,6 +25,7 @@ pipeline {
                 sh "cat $KEYFILE > fb1-001-rsa"
                 sh '''
                     cd rnacentral
+                    fab fb1:key=../fb1-001-rsa refresh_fb1
                     fab pg --password=$PASSWORD refresh_pg
                 '''
             }
