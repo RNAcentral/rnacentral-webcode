@@ -24,10 +24,9 @@ pipeline {
             steps {
                 checkout scm
                 sh "cat $KEYFILE > fb1-001-rsa"
-                sh "echo '${PASSWORD}' > password.txt"
                 sh '''
                     cd jenkins
-                    python refresh_vdbs.py --password=../password.txt
+                    fab pg --password=$PASSWORD refresh_pg
                 '''
             }
         }
