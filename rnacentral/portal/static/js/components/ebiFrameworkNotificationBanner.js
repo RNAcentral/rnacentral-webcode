@@ -16,6 +16,7 @@ function ebiFrameworkCreateDataProtectionBanner() {
   banner.className = "data-protection-banner";
   banner.style.cssText = "position: fixed; background: #111; width: 100%; padding: .75rem 1%; left: 0; bottom: 0; color: #eee; z-index: 10;";
   wrapper.className = "row";
+  wrapper.style = "margin: 0px;"; // adde by Burkov to override bootstrap defaults
   wrapper.innerHTML = "" +
     "<div class='columns medium-8 large-9 white-color'>" +
     dataProtectionSettings.message +
