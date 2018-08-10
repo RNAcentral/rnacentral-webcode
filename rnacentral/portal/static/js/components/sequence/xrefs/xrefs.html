@@ -287,7 +287,7 @@
           <!-- LNCipedia -->
           <span ng-switch-when="LNCipedia">
             {{ xref.database }}: transcript <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>,
-            gene <a ng-href="{{ 'http://www.lncipedia.org/db/gene/' + xref.accession.optional_id }}" target="_blank">{{ xref.accession.optional_id }}</a>
+            gene <a ng-href="{{ 'http://www.lncipedia.org/db/gene/' + xref.accession.gene }}" target="_blank">{{ xref.accession.gene }}</a>
           </span>
 
           <!-- Modomics -->
