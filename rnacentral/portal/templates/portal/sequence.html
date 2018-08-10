@@ -203,7 +203,7 @@ limitations under the License.
                         {% if rna.get_rfam_hit_families|length != rna.get_rfam_hits|length %}
                           {{ rna.get_rfam_hit_families|length|intcomma }} families, {{ rna.get_rfam_hits|length|intcomma }} locations
                         {% else %}
-                          {{ rna.get_rfam_hits|length|intcomma }} total
+                          {{ rna.get_rfam_hits|length|intcomma }} families
                         {% endif %}
                       {% endif %}
                       <a href="{% url 'help-rfam-annotations' %}" uib-tooltip="Learn more about Rfam annotations in RNAcentral &rarr;" style="color:inherit;">
