@@ -101,7 +101,7 @@ limitations under the License.
                                         <th>Strand</th>
                                         <th>Ensembl</th>
                                         <th>UCSC</th>
-                                        <th>Evidence</th>
+                                        <th>Sequence identity</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -157,10 +157,10 @@ limitations under the License.
                                             </span>
                                         </td>
                                         <td ng-if="genomeLocations.indexOf(location) !== -1">
-                                            <span>Literature <i uib-tooltip="This genome location is known from literature annotations (see 'Annotations' section)" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i></span>
+                                            <span>100% <i uib-tooltip="Imported from an Expert Database" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i></span>
                                         </td>
                                         <td ng-if="genomeMappings.indexOf(location) !== -1">
-                                            {{ location.identity * 100 | number:2 }}% <i uib-tooltip="This genome location is predicted by alignment of RNA sequence to the genome. Identity is {{ location.identity * 100 | number:2 }}%" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i>
+                                            <span>{{ location.identity * 100 | number:0 }}% <i uib-tooltip="Based on blat genome mapping" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i>
                                         </td>
                                     </tr>
                                 </tbody>
