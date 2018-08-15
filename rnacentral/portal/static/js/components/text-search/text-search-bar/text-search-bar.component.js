@@ -135,7 +135,11 @@ var textSearchBar = {
                     {
                         'label': 'Escherichia coli',
                         'search_string': 'Escherichia coli',
-                    }
+                    },
+                    {
+                        'label': 'Alphaproteobacteria',
+                        'search_string': 'tax_string:"Alphaproteobacteria"',
+                    },
                 ],
                 'rna_type': [
                     {
@@ -187,13 +191,13 @@ var textSearchBar = {
                         'search_string': '"hsa-mir-126"',
                     },
                     {
-                        'label': "PMID:17881443",
-                        'search_string': 'pubmed:"17881443"',
+                        'label': "PMID:27174936",
+                        'search_string': 'pubmed:"27174936"',
                     },
                     {
-                        'label': '"GO:0043410"',
+                        'label': 'GO:0043410',
                         'search_string': '"GO:0043410"',
-                    }
+                    },
                   ]
             }
             randomExamples = new Array();
