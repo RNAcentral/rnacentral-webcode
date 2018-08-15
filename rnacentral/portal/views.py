@@ -266,19 +266,16 @@ class GenomeBrowserView(TemplateView):
             kwargs['genome'] = 'homo_sapiens'
             ensembl_assembly = get_assembly_with_example_location('homo_sapiens')
 
-        # check kwargs for chromosome (and 'chr' as alias) or use example location as a default
-        if 'chromosome' in request.GET:
-            kwargs['chromosome'] = request.GET['chromosome']
-        elif 'chr' in request.GET:
-            kwargs['chromosome'] = request.GET['chr']
-        else:
-            kwargs['chromosome'] = ensembl_assembly.example_chromosome
-
-        # require both start and end in kwargs - otherwise logic would be a bit complicated - or use default location
-        if 'start' in request.GET and 'end' in request.GET:
+        # require chromosome, start and end in kwargs or use default location for this species
+        if ('chromosome' in request.GET or 'chr' in request.GET) and 'start' in request.GET and 'end' in request.GET:
+            if 'chromosome' in request.GET:
+                kwargs['chromosome'] = request.GET['chromosome']
+            elif 'chr' in request.GET:
+                kwargs['chromosome'] = request.GET['chr']
             kwargs['start'] = request.GET['start']
             kwargs['end'] = request.GET['end']
         else:
+            kwargs['chromosome'] = ensembl_assembly.example_chromosome
             kwargs['start'] = ensembl_assembly.example_start
             kwargs['end'] = ensembl_assembly.example_end
 
