@@ -17,12 +17,12 @@ var HomepageController = function($scope) {
         "pub_id": ""
     };
 
-    $scope.goCurationPublication = {
-        "title": "Guidelines for the functional annotation of microRNAs using the Gene Ontology.",
-        "authors": ["Huntley RP", "Sitnikov D", "Orlic-Milacic M", "Balakrishnan R", "D'Eustachio P", "Gillespie ME", "Howe D", "Kalea AZ", "Maegdefessel L", "Osumi-Sutherland D", "Petri V", "Smith JR", "Van Auken K", "Wood V", "Zampetaki A", "Mayr M", "Lovering RC"],
-        "publication": "RNA. 2016 May;22(5):667-76",
-        "pubmed_id": 26917558,
-        "doi": "10.1261/rna.055301.115",
+    $scope.expandingHorizonsPublication = {
+        "title": "Expanding the horizons of microRNA bioinformatics.",
+        "authors": ["Huntley R", 'Kramarz B', 'Sawford T', 'Umrao Z', 'Kalea A', 'Acquaah V', 'Martin MJ', 'Mayr M', 'Lovering RC'],
+        "publication": "RNA. 2018 Aug;24(8):1005-1017",
+        "pubmed_id": 29871895,
+        "doi": "doi: 10.1261/rna.065565.118",
         "pub_id": ""
     };
 

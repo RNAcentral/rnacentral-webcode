@@ -7,7 +7,8 @@ var useCasesController = function($scope, $location, $window, $rootScope, $http,
         "publication": "PLoS One. 2016 Feb 19;11(2):e0148940",
         "pubmed_id": 26895175,
         "doi": "10.1371/journal.pone.0148940",
-        "pub_id": ""
+        "pub_id": "",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/b/b1/Lake_Washington_Ship_Canal_Fish_Ladder_pamphlet_-_male_freshwater_phase_Steelhead.jpg",
     };
 
     $scope.bovineLeukemiaPublication = {
@@ -16,7 +17,8 @@ var useCasesController = function($scope, $location, $window, $rootScope, $http,
         "publication": "Retrovirology. 2016 May 3;13(1):33",
         "pubmed_id": 27141823,
         "doi": "10.1186/s12977-016-0267-8",
-        "pub_id": ""
+        "pub_id": "",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/8/8f/Fo%C3%BBboutaedje_fine_pea_ouy.JPG",
     };
 
     $scope.goCurationPublication = {
@@ -25,7 +27,8 @@ var useCasesController = function($scope, $location, $window, $rootScope, $http,
         "publication": "RNA. 2016 May;22(5):667-76",
         "pubmed_id": 26917558,
         "doi": "10.1261/rna.055301.115",
-        "pub_id": ""
+        "pub_id": "",
+        "image": "http://rnajournal.cshlp.org/content/22/5/667/F4.large.jpg",
     };
 
     $scope.yeastCurationPublication = {
@@ -34,7 +37,8 @@ var useCasesController = function($scope, $location, $window, $rootScope, $http,
         "publication": "RNA. 2017 Oct;23(10):1479-1492",
         "pubmed_id": 28701522,
         "doi": "10.1261/rna.060996.117",
-        "pub_id": ""
+        "pub_id": "",
+        "image": "http://rnajournal.cshlp.org/content/23/10/1479/F2.small.gif",
     };
 
     $scope.secondaryStructurePredictionPublication = {
@@ -42,9 +46,41 @@ var useCasesController = function($scope, $location, $window, $rootScope, $http,
         "authors": ["Kerpedjiev P", "Hammer S", "Hofacker IL"],
         "publication": "Bioinformatics. 2015 Oct 15;31(20):3377-9",
         "pubmed_id": 26099263,
-        "doi": "doi: 10.1093/bioinformatics/btv372",
-        "pub_id": ""
+        "doi": "10.1093/bioinformatics/btv372",
+        "pub_id": "",
+        "image": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4595900/bin/btv372f1p.jpg",
     };
+
+    $scope.expandingHorizonsPublication = {
+        "title": "Expanding the horizons of microRNA bioinformatics.",
+        "authors": ["Huntley R", 'Kramarz B', 'Sawford T', 'Umrao Z', 'Kalea A', 'Acquaah V', 'Martin MJ', 'Mayr M', 'Lovering RC'],
+        "publication": "RNA. 2018 Aug;24(8):1005-1017",
+        "pubmed_id": 29871895,
+        "doi": "10.1261/rna.065565.118",
+        "pub_id": "",
+        "image": "http://rnajournal.cshlp.org/content/24/8/1005/F2.large.jpg",
+    };
+
+    $scope.mg7MetagenomicPublication = {
+        "title": "MG7: Configurable and scalable 16S metagenomics data analysis",
+        "authors": ["Alexey Alekhin", 'Evdokim Kovach', 'Marina Manrique', 'Pablo Pareja-Tobes', 'Eduardo Pareja', 'Raquel Tobes', 'Eduardo Pareja-Tobes'],
+        "publication": "bioRxiv 027714",
+        "pubmed_id": "",
+        "doi": "10.1101/027714",
+        "pub_id": "",
+        "image": "https://era7bioinformatics.com/en/download_area_image.cfm?id=464",
+    };
+
+    $scope.anemoneMirnaPublication = {
+        "title": "Evidence for miRNA-mediated modulation of the host transcriptome in cnidarian-dinoflagellate symbiosis.",
+        "authors": ['Baumgarten S', 'Cziesielski MJ', 'Thomas L', 'Michell CT', 'Esherick LY', 'Pringle JR', 'Aranda M', 'Voolstra CR'],
+        "publication": "Mol Ecol. 2018 Jan;27(2):403-418",
+        "pubmed_id": 29218749,
+        "doi": "10.1111/mec.14452",
+        "pub_id": "",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/3/37/Aiptasia_2.jpg",
+    };
+
 };
 
 useCasesController.$inject = ['$scope', '$location', '$window', '$rootScope', '$http', 'routes'];
