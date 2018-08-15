@@ -12,17 +12,6 @@ maintained by [expert databases]({% url 'expert-databases' %}).
 
 [More about RNAcentral &rarr;]({% url 'about' %})
 
-### What sequences are included in RNAcentral? <a style="cursor: pointer" id="included-sequences" ng-click="scrollTo('included-sequences')" name="included-sequences" class="text-muted smaller"><i class="fa fa-link"></i></a>
-
-The [INSDC](http://www.insdc.org/) databases contain a large number of sequences
-annotated with **non-coding features**.
-
-RNAcentral imports **all** non-coding features found on INSDC entries
-as individual sequences, including the data submitted to INSDC by the expert databases.
-
-In addition, RNAcentral contains sequences from Rfam seed and full alignments,
-which also refer to the INSDC accession space.
-
 ### What sequences are excluded from RNAcentral? <a style="cursor: pointer" id="excluded-sequences" ng-click="scrollTo('excluded-sequences')" name="excluded-sequences" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 * sequences shorter than **10 nucleotides**
@@ -39,6 +28,8 @@ and can be parsed using this regular expression: `/URS[0-9A-F]{10}/`.
 
 Example identifiers: URS0000000001, URS00000478B7.
 
+**Species-specific identifiers** also include NCBI taxid, for example: [URS00000478B7_9606](/rna/URS00000478B7_9606) or [URS00000478B7/9606](/rna/URS00000478B7/9606).
+
 ### How do I find RNAcentral identifiers for an RNA sequence? <a style="cursor: pointer" id="how-to-find-rnacentral-id" ng-click="scrollTo('how-to-find-rnacentral-id')" name="how-to-find-rnacentral-id" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 To find an RNAcentral identifier for a **single sequence**, one can use RNAcentral
@@ -46,7 +37,7 @@ To find an RNAcentral identifier for a **single sequence**, one can use RNAcentr
 
 For a **large number of sequences**, one can:
 
-* use an [example script](http://gist.github.com/AntonPetrov/177cef0a3b4799f01536) that interacts with the [RNAcentral API]({% url 'api-docs' %});
+* use an [example script](http://gist.github.com/AntonPetrov/177cef0a3b4799f01536) that works with the [RNAcentral API]({% url 'api-docs' %});
 
 * download a [mapping file](ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/md5/)
 from the RNAcentral FTP site with correspondences
@@ -69,10 +60,6 @@ please [get in touch]({% url 'contact-us' %}).
 
 The RNAcentral data is updated **every 3 months**, while the user interface
 and website functionality is continuously updated.
-
-Provisional release dates are available on the public [RNAcentral Events](https://www.google.com/calendar/embed?src=rnacentral%40gmail.com&ctz=Europe/London) calendar.
-
-<iframe src="https://www.google.com/calendar/embed?title=RNAcentral%20Events&amp;showPrint=0&amp;showTz=0&amp;mode=AGENDA&amp;height=300&amp;wkst=2&amp;bgcolor=%23FFFFFF&amp;src=rnacentral%40gmail.com&amp;color=%230F4B38&amp;ctz=Europe%2FLondon" width="600" height="200" frameborder="0" scrolling="no"></iframe>
 
 ### Want to learn more? <a style="cursor: pointer" id="train-online" ng-click="scrollTo('train-online')" name="train-online" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
