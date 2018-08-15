@@ -140,7 +140,7 @@
 
           <!-- FlyBase -->
           <span ng-switch-when="FlyBase">
-            FlyBase gene <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>, {{ xref.accession.id }}
+            transcript <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> from gene <a target="_blank" href="http://flybase.org/reports/{{ xref.accession.gene }}">{{ xref.accession.gene }}</a>
           </span>
 
           <!-- MGI -->
