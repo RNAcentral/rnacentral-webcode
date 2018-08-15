@@ -236,37 +236,32 @@ class GenomeBrowserView(TemplateView):
     def get(self, request, *args, **kwargs):
         self.template_name = 'portal/genome-browser.html'
 
-        # if current location is given in GET parameters - use it; otherwise, use defaults
-        if 'species' in request.GET and ('chromosome' in request.GET or 'chr' in request.GET) and 'start' in request.GET and 'end' in request.GET:
-            # security-wise it doesn't make sense to validate location:
-            # if user tinkers with it, she won't shoot anyone but herself
-
-            # find our genome in taxonomy, replace genome with a dict with taxonomy data
+        # if species is not defined - use homo_sapiens as default
+        if 'species' in request.GET:
             kwargs['genome'] = request.GET['species']
-            if kwargs['genome'] is None:
-                raise Http404
+            try:
+                ensembl_assembly = EnsemblAssembly.objects.get(ensembl_url=kwargs['genome'])
+            except EnsemblAssembly.DoesNotExist:
+                ensembl_assembly = EnsemblAssembly.objects.get(ensembl_url='homo_sapiens')
 
-            # 'chromosome' takes precedence over 'chr'
-            if 'chromosome' in request.GET:
-                kwargs['chromosome'] = request.GET['chromosome']
-            else:
-                kwargs['chromosome'] = request.GET['chr']
+        # chromosome and chr as alias
+        if 'chromosome' in request.GET:
+            kwargs['chromosome'] = request.GET['chromosome']
+        elif 'chr' in request.GET:
+            kwargs['chromosome'] = request.GET['chr']
+        else:
+            kwargs['chromosome'] = ensembl_assembly.example_chromosome
 
+        # let's require both start and end - otherwise logic would be a bit complicated
+        if 'start' in request.GET and 'end' in request.GET:
             kwargs['start'] = request.GET['start']
             kwargs['end'] = request.GET['end']
         else:
-            ensembl_assembly = EnsemblAssembly.objects.get(ensembl_url='homo_sapiens')
-
-            kwargs['genome'] = 'homo_sapiens'
-            kwargs['chromosome'] = ensembl_assembly.example_chromosome
             kwargs['start'] = ensembl_assembly.example_start
             kwargs['end'] = ensembl_assembly.example_end
 
         response = super(GenomeBrowserView, self).get(request, *args, **kwargs)
-        try:
-            return response.render()
-        except TemplateDoesNotExist:
-            raise Http404()
+        return response.render()
 
 
 class ContactView(FormView):
