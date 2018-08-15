@@ -13,6 +13,7 @@ var textSearchBar = {
             if ($location.url().indexOf("/search?q=") > -1) {
                 search.search($location.search().q); // a search result page, launch a new search
             }
+            ctrl.randomExamples = ctrl.getRandomSearchExamples();
         };
 
         /**
@@ -93,6 +94,113 @@ var textSearchBar = {
                     $('#text-search-help-modal-parent').modal();
                 }
             );
+        };
+
+        /**
+         * Get random text search examples from each search category.
+         */
+        ctrl.getRandomSearchExamples = function() {
+            examples = {
+              'gene': [
+                    {
+                        'label': 'human HOTAIR',
+                        'search_string': '"HOTAIR" homo sapiens',
+                    },
+                    {
+                        'label': 'human RN7SL',
+                        'search_string': 'RN7SL homo sapiens',
+                    },
+                    {
+                        'label': 'KCNQ1OT1',
+                        'search_string': 'KCNQ1OT1',
+                    },
+                ],
+                'species': [
+                    {
+                        'label': 'Homo sapiens',
+                        'search_string': 'TAXONOMY:"9606"',
+                    },
+                    {
+                        'label': 'Mus musculus',
+                        'search_string': 'TAXONOMY:"10090"',
+                    },
+                    {
+                        'label': 'D. melanogaster',
+                        'search_string': 'TAXONOMY:"7227"',
+                    },
+                    {
+                        'label': 'primates',
+                        'search_string': 'tax_string:"primates"',
+                    },
+                    {
+                        'label': 'Escherichia coli',
+                        'search_string': 'Escherichia coli',
+                    }
+                ],
+                'rna_type': [
+                    {
+                        'label': 'lncRNA',
+                        'search_string': 'rna_type:"lncRNA"',
+                    },
+                    {
+                        'label': 'miRNA',
+                        'search_string': 'rna_type:"miRNA"',
+                    },
+                    {
+                        'label': 'snoRNA',
+                        'search_string': 'rna_type:"snoRNA"',
+                    },
+                ],
+                'expert_db': [
+                    {
+                        'label': 'miRBase',
+                        'search_string': 'expert_db:"miRBase"',
+                    },
+                    {
+                        'label': 'FlyBase',
+                        'search_string': 'expert_db:"FlyBase"',
+                    },
+                    {
+                        'label': 'GtRNAdb',
+                        'search_string': 'expert_db:"GtRNAdb"',
+                    },
+                    {
+                        'label': 'HGNC',
+                        'search_string': 'expert_db:"HGNC"',
+                    },
+                    {
+                        'label': 'LNCipedia',
+                        'search_string': 'expert_db:"LNCipedia"',
+                    },
+                  ],
+                    'accession': [
+                    {
+                        'label': 'ENSG00000228630',
+                        'search_string': 'ENSG00000228630',
+                    },
+                    {
+                        'label': '4V4Q',
+                        'search_string': '4V4Q',
+                    },
+                    {
+                        'label': 'hsa-mir-126',
+                        'search_string': '"hsa-mir-126"',
+                    },
+                    {
+                        'label': "PMID:17881443",
+                        'search_string': 'pubmed:"17881443"',
+                    },
+                    {
+                        'label': '"GO:0043410"',
+                        'search_string': '"GO:0043410"',
+                    }
+                  ]
+            }
+            randomExamples = new Array();
+            Object.keys(examples).forEach(function(example_type) {
+                randomExamples.push(examples[example_type][Math.floor(Math.random()*examples[example_type].length)]);
+            });
+            return randomExamples;
         }
     }]
 };

@@ -16,7 +16,7 @@
                autocapitalize="off"
                autocorrect="off"
                spellcheck="off"
-               placeholder="Search RNAcentral"
+               placeholder="Search by gene, species, accession, or any keyword"
                uib-typeahead="suggestion for suggestion in $ctrl.autocomplete($viewValue)"
                typeahead-focus-first="false"
                typeahead-on-select="$ctrl.submitQuery()"
@@ -35,11 +35,9 @@
       <span class="help-block example-searches">
           <i>
             Examples:
-            <a tooltip-placement="bottom" tooltip-append-to-body="true" uib-tooltip="Search by gene name" href="" rel="nofollow" ng-click="$ctrl.search.search('&quot;HOTAIR&quot; AND TAXONOMY:&quot;9606&quot;')">human HOTAIR</a>,
-            <a tooltip-placement="bottom" tooltip-append-to-body="true" uib-tooltip="Search by species name or NCBI taxonomy ID" href="" rel="nofollow" ng-click="$ctrl.search.search('TAXONOMY:&quot;9606&quot;')">Homo sapiens</a>,
-            <a tooltip-placement="bottom" tooltip-append-to-body="true" uib-tooltip="Search by RNA type" href="" rel="nofollow" ng-click="$ctrl.search.search('rna_type:&quot;tRNA&quot;')">tRNA</a>,
-            <a tooltip-placement="bottom" tooltip-append-to-body="true" uib-tooltip="Search by Expert Database" href="" rel="nofollow" ng-click="$ctrl.search.search('expert_db:&quot;mirbase&quot;')">miRBase</a>,
-            <a tooltip-placement="bottom" tooltip-append-to-body="true" uib-tooltip="Search by external identifiers" href="" rel="nofollow" ng-click="$ctrl.search.search('4V4Q')">4V4Q</a>
+            <span ng-repeat="example in $ctrl.randomExamples">
+                <a href="" rel="nofollow" ng-click="$ctrl.search.search(example.search_string)">{{example.label}}</a>{{$last ? '' : ', '}}
+            </span>
           </i>
           <a class="pull-right" href="" ng-click="$ctrl.openTextSearchHelpModal('lg')"><i class="fa fa-question-circle" aria-hidden="true"></i> Help on search</a>
       </span>
