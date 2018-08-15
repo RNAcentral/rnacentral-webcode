@@ -32,7 +32,7 @@ markdown2==2.3.5
 # fabric
 ecdsa==0.13
 Fabric==1.11.1
-paramiko==1.17.6
+paramiko==1.18.5
 
 # supervisord - commented-out because of python3 incompatibility - uncomment it if running on python2.
 supervisor==3.1.3
