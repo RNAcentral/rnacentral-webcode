@@ -31,5 +31,8 @@ class EnsemblAssembly(CachingMixin, models.Model):
 
     objects = CachingManager()
 
+    def get_human_readable_ensembl_url(self):
+        return self.ensembl_url.replace("_", " ").capitalize()
+
     class Meta:
         db_table = 'ensembl_assembly'
