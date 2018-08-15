@@ -242,7 +242,10 @@ class GenomeBrowserView(TemplateView):
             try:
                 ensembl_assembly = EnsemblAssembly.objects.get(ensembl_url=kwargs['genome'])
             except EnsemblAssembly.DoesNotExist:
-                ensembl_assembly = EnsemblAssembly.objects.get(ensembl_url='homo_sapiens')
+                raise Http404
+        else:
+            kwargs['genome'] = 'homo_sapiens'
+            ensembl_assembly = EnsemblAssembly.objects.get(ensembl_url='homo_sapiens')
 
         # chromosome and chr as alias
         if 'chromosome' in request.GET:
