@@ -118,7 +118,7 @@ def features_from_xrefs(species, chromosome, start, end):
         acc_coord.strand,
         acc_coord.primary_start,
         acc_coord.primary_end
-        FROM xref 
+        FROM xref
         JOIN acc_coord ON (xref.ac = acc_coord.accession)
         WHERE xref.deleted = 'N'
         AND xref.taxid = {taxid};
@@ -243,7 +243,7 @@ def features_from_mappings(species, chromosome, start, end):
         JOIN rna
         ON mapping.upi=rna.upi
         JOIN (
-          SELECT * FROM {rna_precomputed} WHERE taxid={taxid}
+          SELECT * FROM {rna_precomputed} WHERE taxid={taxid} and is_active = true
         ) precomputed
         ON {rna}.upi=precomputed.upi
     '''.format(
