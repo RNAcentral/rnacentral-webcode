@@ -1,4 +1,4 @@
-var go_annotations = {
+var goAnnotations = {
     bindings: {
         upi: '=',
         taxid: '=',
@@ -95,7 +95,7 @@ var go_annotations = {
         };
     }],
 
-    templateUrl: '/static/js/components/sequence/go-annotations/go_annotations.html'
+    templateUrl: '/static/js/components/sequence/go-annotations/go-annotations.html'
 };
 
-angular.module("rnaSequence").component("goAnnotations", go_annotations);
+angular.module("rnaSequence").component("goAnnotations", goAnnotations);
