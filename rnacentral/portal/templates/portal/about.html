@@ -51,6 +51,7 @@ About RNAcentral
         RNAcentral imports ncRNA sequences from <strong>multiple databases</strong> and enables integrated
         <a href="{% url 'text-search' %}?q=RNA">text search</a>,
         <a href="{% url 'nhmmer-sequence-search' %}">sequence similarity search</a>,
+        <a href="{% url 'downloads' %}">bulk downloads</a>,
         and <a href="{% url 'api-docs' %}">programmatic data access</a>.
       </p>
 
@@ -78,26 +79,28 @@ About RNAcentral
       <h3><i class="fa fa-map-signs margin-right-5px"></i> Genomic mapping</h3>
 
       <p>
-        Where possible, we map sequences to <strong>reference genomes</strong> from <a href="{% url 'help-genomic-mapping' %}">select species</a>.
+        The sequences are mapped to <strong>reference genomes</strong> from <a href="{% url 'help-genomic-mapping' %}">more than 250 species</a>
+        using <strong>blat</strong>.
 
-        You can use a <a href="{% url 'genome-browser' %}">genome browser</a> to browse all mapped sequences
-        or view individual sequences in their genomic context.
+        You can use a <a href="{% url 'genome-browser' %}">genome browser</a> to browse all mapped sequences,
+        view individual sequences in their genomic context,
+        or <a href="ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/">download genome coordinates</a>
+        in several formats.
+        <a href="{% url 'help-genomic-mapping' %}">More &rarr;</a>
       </p>
 
     </div>
 
     <div class="col-md-6">
 
-      <h3><i class="fa fa-file-text margin-right-5px"></i> Additional annotations</h3>
+      <h3><i class="fa fa-file-text margin-right-5px"></i> Functional annotations</h3>
 
       <p>
-        Currently we import <strong>modified nucleotides</strong> from Modomics and PDB
-        (for example, <a href="{% url 'unique-rna-sequence' 'URS00001BBAFC' %}">this <em>E.coli</em> tRNA</a>
-        is annotated by both databases).
-      </p>
-
-      <p>
-        We aim to include intermolecular interactions and high-quality secondary structures soon.
+        We import <strong>modified nucleotides</strong> from Modomics and PDB.
+        tRNA <strong>secondary structures</strong> from GtRNAdb (for example <a href="{% url 'unique-rna-sequence' 'URS00006DCB39' %}/9606">tRNA-Leu-CAA-6-1</a>)
+        and <a href="{% url 'help-gene-ontology-annotations' %}">Gene Ontology annotations</a> from QuickGO.
+        All sequences are annotated with <strong>Rfam models</strong>
+        to provide <a href="{% url 'help-rfam-annotations' %}">warnings</a> and additional annotations.
       </p>
     </div>
 
