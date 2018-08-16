@@ -27,18 +27,30 @@ About RNAcentral
 {% block content %}
 
 <div class="row">
+
   <div class="col-md-12">
     <h1><i class="fa fa-info-circle"></i> About RNAcentral <a name="about-rnacentral" href="{% url 'about' %}#about-rnacentral" class="text-muted smaller"><i class="fa fa-link"></i></a></h1>
 
-    <p>
-      RNAcentral is a public resource that offers integrated access to a <strong>comprehensive and up-to-date</strong> set of non-coding RNA sequences
-      provided by a collaborating group of <a href="/expert-databases">Expert Databases</a>.
-      The development of RNAcentral is coordinated by <a href="http://www.ebi.ac.uk" target="_blank">European Bioinformatics Institute</a>
-      and is funded by <a href="http://www.bbsrc.ac.uk/pa/grants/AwardDetails.aspx?FundingReference=BB/J019321/1">BBSRC</a>.
-    </p>
-  </div>
+    <div class="col-md-6">
+      <a href="{% url 'expert-databases' %}"><img class="img-thumbnail img-rounded" src="{% static "img/expert-databases.png" %}"></a>
+    </div>
 
-</div>
+    <div class="col-md-6">
+      <p>
+        RNAcentral is a free, public resource that offers integrated access to a <strong>comprehensive</strong> and <strong>up-to-date</strong> set of non-coding RNA sequences
+        provided by a collaborating group of <a href="/expert-databases">Expert Databases</a>
+        representing a <strong>broad range of organisms and RNA types</strong>.
+      </p>
+      <p>
+        The development of RNAcentral is coordinated by <a href="http://www.ebi.ac.uk" target="_blank">European Bioinformatics Institute</a>
+        and is funded by <a href="http://www.bbsrc.ac.uk/pa/grants/AwardDetails.aspx?FundingReference=BB/J019321/1">BBSRC</a>.
+      </p>
+
+      <a href="http://www.ebi.ac.uk" class="no-icon img-thumbnail"><img src="{% static "img/logo/embl-ebi.jpg" %}"></a>
+      <a href="http://www.bbsrc.ac.uk/" class="no-icon img-thumbnail"><img src="{% static "img/logo/bbsrc.png" %}"></a>
+    </div>
+
+  </div>
 
 <div class="row">
 
@@ -174,7 +186,10 @@ About RNAcentral
   <div class="col-md-12">
     <h2>Want to learn more? <a name="training" href="{% url 'about' %}#training" class="text-muted smaller"><i class="fa fa-link"></i></a></h2>
 
-    Explore all RNAcentral <a href="{% url 'training' %}">training materials</a>, including an online training course and a video walkthrough of the website.
+    <p>
+      Explore all RNAcentral <a href="{% url 'training' %}">training materials</a>, including <strong>research papers</strong>,
+      an online <strong>training course</strong>, and a <strong>video walkthrough</strong> of the website.
+    </p>
 
   </div>
 </div>
