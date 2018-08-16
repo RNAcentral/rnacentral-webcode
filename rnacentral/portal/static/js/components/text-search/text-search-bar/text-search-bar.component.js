@@ -196,7 +196,7 @@ var textSearchBar = {
                     },
                     {
                         'label': 'GO:0043410',
-                        'search_string': '"GO:0043410"',
+                        'search_string': '"GO:2000352"',
                     },
                   ]
             }
