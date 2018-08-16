@@ -11,6 +11,11 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     // avoid a terrible bug with intercepted 2-way binding: https://github.com/RNAcentral/rnacentral-webcode/issues/308
     $scope.browserLocation = {start: undefined, end: undefined, chr: undefined, genome: undefined, domain: undefined};
 
+    // go modal handling
+    $scope.goTermId = null;
+    $scope.goChartData = '';
+    $scope.goModalStatus = '';
+
     // Tab controls
     // ------------
 
@@ -52,10 +57,6 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         $scope.hideGoAnnotations = false;
     };
 
-    // Pass non-null termId to open Go modal and null to close
-    $scope.toggleGoModal = function(termId) {
-        $scope.goTermId = termId;
-    };
 
     // Hopscotch tour
     // --------------
@@ -204,6 +205,33 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                          location.end === $scope.selectedLocation.end;
 
         return isSelected;
+    };
+
+    /**
+     * Pass non-null termId to open Go modal and null to close
+     */
+    $scope.toggleGoModal = function(termId) {
+        $scope.goTermId = termId;
+
+        if (termId != null) {
+            var ontology = termId.split(':')[0].toLowerCase();
+
+            $('#go-annotation-chart-modal').modal();
+
+            $scope.goModalStatus = 'loading';
+            $http.get(routes.quickGoChart({ ontology: ontology, term_ids: termId }), { timeout: 5000 }).then(
+                function(response) {
+                    $scope.goModalStatus = 'loaded';
+                    $scope.goChartData = 'data:image/png;charset=utf-8;base64,' + response.data;
+                },
+                function(error) {
+                    $scope.goModalStatus = 'failed';
+                }
+            );
+        } else {
+            $('#go-annotation-chart-modal').modal('toggle');
+        }
+        console.log($scope.goChartData);
     };
 
     /**
