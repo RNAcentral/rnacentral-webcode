@@ -31,13 +31,23 @@ RNAcentral Expert Databases
   <div class="col-md-12">
     <h1><i class="fa fa-database"></i> RNAcentral Expert Databases</h1>
 
-    <p>
-      Currently the RNAcentral Consortium is formed by <strong>{{ context.expert_dbs|length }}</strong> Expert Databases,
-      <strong>{{ context.num_imported }}</strong> of which have already been imported into RNAcentral.
-      If you maintain an ncRNA database and would like to join RNAcentral, please
-      <a href="{% url 'contact-us' %}">contact us</a>.
-    </p>
+    <div class="col-md-6">
+      <img class="img-thumbnail img-rounded" src="{% static "img/expert-databases.png" %}">
+    </div>
 
+    <div class="col-md-6">
+      <p>
+        Currently the RNAcentral Consortium is formed by <strong>{{ context.expert_dbs|length }}</strong> Expert Databases,
+        <strong>{{ context.num_imported }}</strong> of which have already been imported into RNAcentral.
+      </p>
+      <p>
+        If you develop an ncRNA database and would like to join RNAcentral, please
+        <a href="{% url 'contact-us' %}">contact us</a>.
+      </p>
+    </div>
+  </div>
+
+  <div class="col-md-12">
     <div class="col-md-11">
       <table class="table table-condensed table-hover">
         <thead>
