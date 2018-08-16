@@ -191,7 +191,8 @@ limitations under the License.
                     </a>
                   </small>
                 </h2>
-                <go-annotations upi="upi" taxid="taxid" show-go-annotations="showGOAnnotations()"></go-annotations>
+                <go-annotations upi="upi" taxid="taxid" show-go-annotations="showGOAnnotations()" on-toggle-go-modal="toggleGoModal(termId)"></go-annotations>
+                <go-modal upi="upi" taxid="taxid" term-id="goTermId" on-toggle-go-modal="toggleGoModal(termId)"></go-modal>
               </div>
 
 

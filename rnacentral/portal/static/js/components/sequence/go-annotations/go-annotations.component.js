@@ -3,6 +3,7 @@ var goAnnotations = {
         upi: '=',
         taxid: '=',
         showGoAnnotations: '&',
+        onToggleGoModal: '&'
     },
 
     controller: ['$http', 'routes', function($http, routes) {
@@ -42,7 +43,6 @@ var goAnnotations = {
         };
 
         ctrl.$onInit = function() {
-            ctrl.chart_data = '';
             ctrl.fetchGoTerms().then(
                 function(response) {
                     ctrl.go_annotations = response.data;
@@ -74,24 +74,12 @@ var goAnnotations = {
         ctrl.fetchGoTerms = function() {
             return $http.get(
                 routes.apiGoTermsView({ upi: ctrl.upi, taxid: ctrl.taxid }),
-                { timeout: 5000 }
+                { timeout: 20000 }
             );
         };
 
-        ctrl.openGoChartModal = function(term_id) {
-            var ontology = term_id.split(':')[0].toLowerCase();
-            var png = routes.quickGoChart({ ontology: ontology, term_ids: term_id });
-            ctrl.modal_status = 'loading';
-            $('#go-annotation-chart-modal').modal();
-
-            $http.get(png, { timeout: 5000 }).then(
-                function(response) {
-                    ctrl.modal_status = 'loaded';
-                    ctrl.chart_data = 'data:image/png;charset=utf-8;base64,' + response.data;
-                },
-                function(error) {
-                    ctrl.modal_status = 'failed';
-                });
+        ctrl.openGoModal = function(termId) {
+            ctrl.onToggleGoModal({termId: termId});
         };
     }],
 

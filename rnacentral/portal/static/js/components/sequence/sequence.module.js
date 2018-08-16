@@ -52,6 +52,11 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         $scope.hideGoAnnotations = false;
     };
 
+    // Pass non-null termId to open Go modal and null to close
+    $scope.toggleGoModal = function(termId) {
+        $scope.goTermId = termId;
+    };
+
     // Hopscotch tour
     // --------------
 
