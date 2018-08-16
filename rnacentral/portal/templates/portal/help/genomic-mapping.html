@@ -36,8 +36,8 @@ Help: Genomic mapping
       <th>Assembly</th>
       {% for assembly in assemblies  %}
         <tr>
-          <td><a href='/search?q=taxonomy:"{{ assembly.taxid }}"%20AND%20has_genomic_coordinates:"True"'>{{ assembly.get_human_readable_ensembl_url }}</a> <em>{{ assembly.common_name }}<em></td>
-          <td>{{ assembly.assembly_full_name }}</td>
+          <td><a href='/search?q=taxonomy:"{{ assembly.taxid }}"%20AND%20has_genomic_coordinates:"True"' class="help" title="Browse sequences">{{ assembly.get_human_readable_ensembl_url }}</a> {{ assembly.common_name }}</td>
+          <td><a href="{% url 'genome-browser'%}?species={{ assembly.ensembl_url }}" class="help" title="Open in RNAcentral genome browser">{{ assembly.assembly_full_name }}</a></td>
         </tr>
       {% endfor %}
     </table>
