@@ -299,6 +299,7 @@ limitations under the License.
                               <li>
                                 <a href="{{ go_term.quickgo_url }}" target="_blank">{{ go_term.ontology_term_id }}</a>
                                 <small>{{ go_term.name }}</small>
+                                <a class="btn btn-circle btn-default btn-sm" ng-click="toggleGoModal('{{ go_term.ontology_term_id }}')" type="button"><i class="fa fa-sitemap" uib-tooltip="View {{ go_term.ontology_term_id }} ancestor chart"></i></a>
                               </li>
                               {% endfor %}
                             </ul>
