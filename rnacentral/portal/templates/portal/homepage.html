@@ -33,6 +33,9 @@ RNAcentral: The non-coding RNA sequence database
       <h2 class="text-center">
         RNAcentral: The non-coding RNA sequence database
       </h2>
+      <p class="text-center" style="opacity: 0.7;">
+        a comprehensive ncRNA sequence collection representing all ncRNA types from a broad range of organisms
+      </p>
       <p class="text-center">
         <a href="{% url 'about' %}">More about RNAcentral &rarr;</a>
       </p>
@@ -49,7 +52,7 @@ RNAcentral: The non-coding RNA sequence database
         <div class="panel-body text-center">
           <h2 class="text-center"><i class="fa fa-search"></i> Text search</h2>
           <p class="text-center">
-            Search by <em>gene, species, ncRNA type</em> or any other keyword
+            Search by <em>gene, species, ncRNA type, accession</em>, or any other keyword
           </p>
           <a class="btn btn-primary" href="{% url 'text-search' %}?q=RNA" id="btn-browse-sequences">Browse sequences</a>
         </div>
@@ -77,7 +80,7 @@ RNAcentral: The non-coding RNA sequence database
           <p class="text-center">
             Explore RNAcentral sequences in your favorite genome locations
           </p>
-          <a class="btn btn-primary" id="btn-genome-browser" href="{% url 'genome-browser' %}" role="button">Browse genomes</a>
+          <a class="btn btn-primary" id="btn-genome-browser" href="{% url 'genome-browser' %}" role="button">Explore genomes</a>
         </div>
       </div>
     </div>
@@ -87,7 +90,7 @@ RNAcentral: The non-coding RNA sequence database
   <div class="row well well-sm">
 
     <p class="lead text-center margin-bottom-0px">
-      ncRNA data provided by {{ context.databases|length }} databases:
+      Data provided by <a href="{% url 'expert-databases' %}">{{ context.databases|length }} databases</a>
     </p>
 
     <div id="expert-databases">
@@ -167,7 +170,7 @@ RNAcentral: The non-coding RNA sequence database
     </div>
 
   <div class="clearfix"></div>
-  <div class="text-center" style="margin-right: 20px; margin-bottom: 20px;"><a href="/use-cases">More examples &rarr;</a></div>
+  <div class="text-center" style="margin-right: 20px; margin-bottom: 20px;"><a href="/use-cases">More use cases &rarr;</a></div>
 
   </div>
 
