@@ -126,13 +126,15 @@ RNAcentral: The non-coding RNA sequence database
 
     <div class="col-md-4">
       <div class="panel panel-default">
-        <h3 class="text-center"><a href="{% url 'use-cases' %}#reference-ncrna-set" class="rnacentral-gold">Reference ncRNA set</a></h3>
+        <h3 class="text-center"><a href="{% url 'use-cases' %}#{% verbatim %}{{ randomExamples[0].category }}{% endverbatim %}" class="rnacentral-gold">Reference ncRNA set</a></h3>
         <div class="panel-body">
           <p>
-            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Lake_Washington_Ship_Canal_Fish_Ladder_pamphlet_-_male_freshwater_phase_Steelhead.jpg">
-            <h4>RNAcentral was used as a reference data set to discover novel ncRNA in trout and Bovine Leukemia Virus</h4>
+            {% verbatim %}
+              <img ng-src="{{ randomExamples[0].image }}">
+              <h4>{{ randomExamples[0].title }}</h4>
+            {% endverbatim %}
             <blockquote>
-              <publication publication="useCases.rainbowTroutPublication"></publication>
+              <publication publication="randomExamples[0]"></publication>
             </blockquote>
           </p>
         </div>
@@ -141,13 +143,15 @@ RNAcentral: The non-coding RNA sequence database
 
     <div class="col-md-4">
       <div class="panel panel-default">
-        <h3 class="text-center"><a href="{% url 'use-cases' %}#literature-curation" class="rnacentral-gold">Stable identifiers for ncRNAs</a></h3>
+        <h3 class="text-center"><a href="{% url 'use-cases' %}#{% verbatim %}{{ randomExamples[1].category }}{% endverbatim %}" class="rnacentral-gold">Stable identifiers for ncRNAs</a></h3>
         <div class="panel-body">
           <p>
-            <img src="http://rnajournal.cshlp.org/content/24/8/1005/F2.large.jpg" style="height: 120px; margin: auto; display: block;">
-            <h4>Stable RNAcentral ids used to annotate miRNAs with Gene Ontology terms</h4>
+            {% verbatim %}
+              <img ng-src="{{ randomExamples[1].image }}" style="height: 120px; margin: auto; display: block;">
+              <h4>Stable RNAcentral ids used to annotate miRNAs with Gene Ontology terms</h4>
+            {% endverbatim %}
             <blockquote>
-              <publication publication="useCases.expandingHorizonsPublication"></publication>
+              <publication publication="randomExamples[1]"></publication>
             </blockquote>
           </p>
         </div>
@@ -156,14 +160,16 @@ RNAcentral: The non-coding RNA sequence database
 
     <div class="col-md-4">
       <div class="panel panel-default">
-        <h3 class="text-center"><a href="{% url 'use-cases' %}#programmatic-information-retrieval" class="rnacentral-gold">Programmatic information retrieval</a></h3>
+        <h3 class="text-center"><a href="{% url 'use-cases' %}#{% verbatim %}{{ randomExamples[2].category }}{% endverbatim %}" class="rnacentral-gold">Programmatic information retrieval</a></h3>
         <div class="panel-body">
           <p>
-            <img src="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4595900/bin/btv372f1p.jpg" style="height: 150px; margin: auto; display: block;">
-            <h4>Source of sequences for secondary structure prediction</h4>
+            {% verbatim %}
+              <img ng-src="{{ randomExamples[2].image }}" style="height: 150px; margin: auto; display: block;">
+              <h4>Source of sequences for secondary structure prediction</h4>
+            {% endverbatim %}
           </p>
           <blockquote>
-            <publication publication="useCases.secondaryStructurePredictionPublication"></publication>
+            <publication publication="randomExamples[2]"></publication>
           </blockquote>
         </div>
       </div>
