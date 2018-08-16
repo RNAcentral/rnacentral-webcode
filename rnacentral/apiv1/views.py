@@ -618,7 +618,10 @@ class RnaGenomeMappings(generics.ListAPIView):
                 'identity': mapping["identity"],
                 'species': assembly.ensembl_url,
                 'ucsc_db_id': assembly.assembly_ucsc,
-                'ensembl_division': assembly.division,
+                'ensembl_division': {
+                    'name': assembly.division,
+                    'url': 'http://' + assembly.subdomain
+                },
                 'ensembl_species_url': assembly.ensembl_url
             }
             output.append(data)
