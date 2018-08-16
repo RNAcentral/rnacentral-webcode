@@ -1,0 +1,28 @@
+<div id='go-annotation-chart-modal' class='modal fade' tabindex=-1>
+  <div class='modal-dialog modal-lg' role='document'>
+    <div class='modal-content'>
+      <div class="modal-header">
+          <h3 class="modal-title">Ancestor Chart</h3>
+      </div>
+      <div class="modal-body">
+
+        <span ng-if="$ctrl.modal_status === 'loading'">
+          <i class="fa fa-spinner fa-spin fa-2x"></i>
+          Loading ontology ancestors...
+        </span>
+
+        <span ng-if="$ctrl.modal_status === 'failed'">
+          Failed to load QuickGO Ancestor chart
+        </span>
+
+        <span ng-if="$ctrl.modal_status === 'loaded'">
+          <img ng-src="{{ $ctrl.chart_data }}" />
+        </span>
+
+      </div>
+      <div class="modal-footer">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      </div>
+    </div>
+  </div>
+</div>
