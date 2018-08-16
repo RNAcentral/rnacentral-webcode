@@ -23,7 +23,7 @@ var HomepageController = function($scope, useCases) {
         });
 
         return output
-    };
+    }
 
     $scope.randomExamples = generateRandomExamples(useCases);
 };
