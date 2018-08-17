@@ -6,7 +6,7 @@ install:
   - "pip install requests selenium"
 # run tests
 script:
-  - travis_wait python rnacentral/portal/tests/selenium_tests.py --base_url=http://rnacentral.org --driver=phantomjs
+  - travis_wait python rnacentral/portal/tests/selenium_tests.py --base_url=https://rnacentral.org --driver=phantomjs
 # define branches
 branches:
   only:

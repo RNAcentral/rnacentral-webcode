@@ -32,7 +32,7 @@ class ExportSearchResultsTestCase(unittest.TestCase):
     python export_results_tests.py
 
     # test an RNAcentral instance
-    python export_results_tests.py --base_url http://test.rnacentral.org/
+    python export_results_tests.py --base_url https://test.rnacentral.org/
     """
     base_url = ''
 

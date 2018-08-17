@@ -177,7 +177,7 @@ class Command(BaseCommand):
         # cause domain name for sitemaps is taken from django.contrib.sites,
         # but they should exist
         request.META['SERVER_NAME'] = "rnacentral.org"
-        request.META['SERVER_PORT'] = "80"
+        request.META['SERVER_PORT'] = "443"
         request.META['REQUEST_METHOD'] = 'GET'
         request.method = 'GET'
 

@@ -18,7 +18,7 @@ Usage:
 python tests.py
 
 # test an RNAcentral instance
-python tests.py --base_url http://test.rnacentral.org/
+python tests.py --base_url https://test.rnacentral.org/
 """
 
 from __future__ import print_function
