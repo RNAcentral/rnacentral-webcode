@@ -207,7 +207,7 @@ class DatabaseSpecificXrefsTestCase(ApiV1BaseClass):
         self._test_time_and_existence('URS00004B0F34', self.timeout, "modifications")
 
     def test_mirbase_mature_products(self):
-        self._test_time_and_existence('URS000075A546', self.timeout, "mirbase_mature_products")
+        self._test_time_and_existence('URS0000759B7E', self.timeout, "mirbase_mature_products")
 
     def test_mirbase_precursor(self):
         self._test_time_and_existence('URS0000057A7C', self.timeout, "mirbase_precursor")
