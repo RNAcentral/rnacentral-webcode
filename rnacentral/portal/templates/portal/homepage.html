@@ -26,7 +26,7 @@ RNAcentral: The non-coding RNA sequence database
 {% endblock %}
 
 {% block content %}
-
+<div ng-controller="HomepageController">
   <div class="row well well-sm homepage-callout" id="homepage-callout">
 
     <div class="homepage-callout-overlay">
@@ -121,7 +121,7 @@ RNAcentral: The non-coding RNA sequence database
 
   </div>
 
-  <div class="row" ng-controller="HomepageController">
+  <div class="row">
     <h2 class="text-center margin-bottom-0px" style="margin-top: 0px;"><a href="/use-cases" class="rnacentral-gold">Featured use cases</a></h2>
 
     <div class="col-md-4">
@@ -175,8 +175,8 @@ RNAcentral: The non-coding RNA sequence database
       </div>
     </div>
 
-  <div class="clearfix"></div>
-  <div class="text-center" style="margin-right: 20px; margin-bottom: 20px;"><a href="/use-cases">More use cases &rarr;</a></div>
+    <div class="clearfix"></div>
+    <div class="text-center" style="margin-right: 20px; margin-bottom: 20px;"><a href="/use-cases">More use cases &rarr;</a></div>
 
   </div>
 
@@ -245,9 +245,7 @@ RNAcentral: The non-coding RNA sequence database
               If you use RNAcentral,
               please cite the following paper:
               <blockquote class="callout-info">
-                <p>RNAcentral: a comprehensive database of non-coding RNA sequences</p>
-                <footer>The RNAcentral Consortium, 2017</footer>
-                <footer><em>Nucleic Acids Research (Database Issue)</em></footer>
+                <publication publication="RNAcentralPublication"></publication>
               </blockquote>
             </p>
             <a href="http://nar.oxfordjournals.org/content/45/D1/D128.full" target="_blank">NAR</a> |
@@ -258,7 +256,7 @@ RNAcentral: The non-coding RNA sequence database
       </div>
 
   </div>
-
+</div>
 {% endblock content %}
 
 {% block extra_js_uncompressed %}

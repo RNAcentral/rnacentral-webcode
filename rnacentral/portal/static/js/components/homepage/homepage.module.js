@@ -26,6 +26,15 @@ var HomepageController = function($scope, useCases) {
     }
 
     $scope.randomExamples = generateRandomExamples(useCases);
+
+    $scope.RNAcentralPublication = {
+        "title": "RNAcentral: a comprehensive database of non-coding RNA sequences",
+        "authors": ["The RNAcentral Consortium"],
+        "publication": "Nucleic Acids Res. 2017 Jan 4;45(D1):D128-D134",
+        "pubmed_id": 27794554,
+        "doi": "10.1093/nar/gkw1008",
+        "pub_id": ""
+    }
 };
 HomepageController.$inject = ['$scope', 'useCases'];
 
