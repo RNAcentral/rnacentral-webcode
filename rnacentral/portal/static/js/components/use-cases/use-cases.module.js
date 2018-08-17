@@ -8,7 +8,9 @@ var useCasesService = function() {
             "doi": "10.1371/journal.pone.0148940",
             "pub_id": "",
             "image": "https://upload.wikimedia.org/wikipedia/commons/b/b1/Lake_Washington_Ship_Canal_Fish_Ladder_pamphlet_-_male_freshwater_phase_Steelhead.jpg",
-            "category": "reference-ncrna-set"
+            "caption": "RNAcentral used as a reference data set to discover novel ncRNA in rainbow trout",
+            "category": "reference-ncrna-set",
+            "category_header": "Reference ncRNA set"
         },
         bovineLeukemiaPublication: {
             "title": "Characterization of novel Bovine Leukemia Virus (BLV) antisense transcripts by deep sequencing reveals constitutive expression in tumors and transcriptional interaction with viral microRNAs.",
@@ -18,17 +20,22 @@ var useCasesService = function() {
             "doi": "10.1186/s12977-016-0267-8",
             "pub_id": "",
             "image": "https://upload.wikimedia.org/wikipedia/commons/8/8f/Fo%C3%BBboutaedje_fine_pea_ouy.JPG",
-            "category": "reference-ncrna-set"
+            "caption": "RNAcentral used as a reference data set to discover new ncRNA in Bovine Leukemia Virus",
+            "category": "reference-ncrna-set",
+            "category_header": "Reference ncRNA set"
         },
         goCurationPublication: {
-            "title": "Guidelines for the functional annotation of microRNAs using the Gene Ontology.",
+            "title": "RNAcentral identifiers used to annotate human miRNAs with Gene Ontology terms",
             "authors": ["Huntley RP", "Sitnikov D", "Orlic-Milacic M", "Balakrishnan R", "D'Eustachio P", "Gillespie ME", "Howe D", "Kalea AZ", "Maegdefessel L", "Osumi-Sutherland D", "Petri V", "Smith JR", "Van Auken K", "Wood V", "Zampetaki A", "Mayr M", "Lovering RC"],
             "publication": "RNA. 2016 May;22(5):667-76",
             "pubmed_id": 26917558,
             "doi": "10.1261/rna.055301.115",
             "pub_id": "",
             "image": "http://rnajournal.cshlp.org/content/22/5/667/F4.large.jpg",
-            "category": "literature-curation"
+            "caption": "RNAcentral identifiers used to annotate ncRNAs with Gene Ontology terms",
+            "category": "literature-curation",
+            "category_header": "Stable identifiers for ncRNAs"
+
         },
         yeastCurationPublication: {
             "title": "The yeast noncoding RNA interaction network.",
@@ -38,7 +45,9 @@ var useCasesService = function() {
             "doi": "10.1261/rna.060996.117",
             "pub_id": "",
             "image": "http://rnajournal.cshlp.org/content/23/10/1479/F2.small.gif",
-            "category": "literature-curation"
+            "caption": "RNAcentral identifiers used to annotate ncRNA interactions in yeast",
+            "category": "literature-curation",
+            "category_header": "Stable identifiers for ncRNAs"
         },
         secondaryStructurePredictionPublication: {
             "title": "Forna (force-directed RNA): Simple and effective online RNA secondary structure diagrams.",
@@ -48,7 +57,9 @@ var useCasesService = function() {
             "doi": "10.1093/bioinformatics/btv372",
             "pub_id": "",
             "image": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4595900/bin/btv372f1p.jpg",
-            "category": "programmatic-information-retrieval"
+            "caption": "Source of sequences for secondary structure prediction",
+            "category": "programmatic-information-retrieval",
+            "category_header": "Programmatic information retrieval"
         },
         expandingHorizonsPublication: {
             "title": "Expanding the horizons of microRNA bioinformatics.",
@@ -58,7 +69,9 @@ var useCasesService = function() {
             "doi": "10.1261/rna.065565.118",
             "pub_id": "",
             "image": "http://rnajournal.cshlp.org/content/24/8/1005/F2.large.jpg",
-            "category": "literature-curation"
+            "caption": "RNAcentral identifiers used to annotate ncRNAs with Gene Ontology terms",
+            "category": "literature-curation",
+            "category_header": "Stable identifiers for ncRNAs"
         },
         mg7MetagenomicPublication: {
             "title": "MG7: Configurable and scalable 16S metagenomics data analysis",
@@ -68,7 +81,9 @@ var useCasesService = function() {
             "doi": "10.1101/027714",
             "pub_id": "",
             "image": "https://era7bioinformatics.com/en/download_area_image.cfm?id=464",
-            "category": "reference-ncrna-set"
+            "caption": "RNAcentral is used to build a reference database for metagenomics analysis using the MG7 pipeline",
+            "category": "reference-ncrna-set",
+            "category_header": "Reference ncRNA set"
         },
         anemoneMirnaPublication: {
             "title": "Evidence for miRNA-mediated modulation of the host transcriptome in cnidarian-dinoflagellate symbiosis.",
@@ -78,7 +93,9 @@ var useCasesService = function() {
             "doi": "10.1111/mec.14452",
             "pub_id": "",
             "image": "https://upload.wikimedia.org/wikipedia/commons/3/37/Aiptasia_2.jpg",
-            "category": "reference-ncrna-set"
+            "caption": "RNAcentral is used to identify ncRNAs in sea anemone Aiptasia",
+            "category": "reference-ncrna-set",
+            "category_header": "Reference ncRNA set"
         }
     }
 };

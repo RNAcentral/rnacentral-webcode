@@ -126,12 +126,12 @@ RNAcentral: The non-coding RNA sequence database
 
     <div class="col-md-4">
       <div class="panel panel-default">
-        <h3 class="text-center"><a href="{% url 'use-cases' %}#{% verbatim %}{{ randomExamples[0].category }}{% endverbatim %}" class="rnacentral-gold">Reference ncRNA set</a></h3>
+        <h3 class="text-center"><a href="{% url 'use-cases' %}#{% verbatim %}{{ randomExamples[0].category }}{% endverbatim %}" class="rnacentral-gold">{% verbatim %}{{ randomExamples[0].category_header }}{% endverbatim %}</a></h3>
         <div class="panel-body">
           <p>
             {% verbatim %}
               <img ng-src="{{ randomExamples[0].image }}">
-              <h4>{{ randomExamples[0].title }}</h4>
+              <h4>{{ randomExamples[0].caption }}</h4>
             {% endverbatim %}
             <blockquote>
               <publication publication="randomExamples[0]"></publication>
@@ -143,12 +143,12 @@ RNAcentral: The non-coding RNA sequence database
 
     <div class="col-md-4">
       <div class="panel panel-default">
-        <h3 class="text-center"><a href="{% url 'use-cases' %}#{% verbatim %}{{ randomExamples[1].category }}{% endverbatim %}" class="rnacentral-gold">Stable identifiers for ncRNAs</a></h3>
+        <h3 class="text-center"><a href="{% url 'use-cases' %}#{% verbatim %}{{ randomExamples[1].category }}{% endverbatim %}" class="rnacentral-gold">{% verbatim %}{{ randomExamples[1].category_header }}{% endverbatim %}</a></h3>
         <div class="panel-body">
           <p>
             {% verbatim %}
               <img ng-src="{{ randomExamples[1].image }}" style="height: 120px; margin: auto; display: block;">
-              <h4>Stable RNAcentral ids used to annotate miRNAs with Gene Ontology terms</h4>
+              <h4>{{ randomExamples[1].caption }}</h4>
             {% endverbatim %}
             <blockquote>
               <publication publication="randomExamples[1]"></publication>
@@ -160,12 +160,12 @@ RNAcentral: The non-coding RNA sequence database
 
     <div class="col-md-4">
       <div class="panel panel-default">
-        <h3 class="text-center"><a href="{% url 'use-cases' %}#{% verbatim %}{{ randomExamples[2].category }}{% endverbatim %}" class="rnacentral-gold">Programmatic information retrieval</a></h3>
+        <h3 class="text-center"><a href="{% url 'use-cases' %}#{% verbatim %}{{ randomExamples[2].category }}{% endverbatim %}" class="rnacentral-gold">{% verbatim %}{{ randomExamples[2].category_header }}{% endverbatim %}</a></h3>
         <div class="panel-body">
           <p>
             {% verbatim %}
               <img ng-src="{{ randomExamples[2].image }}" style="height: 150px; margin: auto; display: block;">
-              <h4>Source of sequences for secondary structure prediction</h4>
+              <h4>{{ randomExamples[2].caption }}</h4>
             {% endverbatim %}
           </p>
           <blockquote>
