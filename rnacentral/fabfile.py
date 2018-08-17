@@ -194,7 +194,7 @@ def slack(message):
     requests.post(slack_hook, json.dumps({'text': message}), headers=headers)
 
 
-def deploy_locally(git_branch=None, restart_url='http://rnacentral.org', quick=False):
+def deploy_locally(git_branch=None, restart_url='https://rnacentral.org', quick=False):
     """
     Run deployment locally.
     """
@@ -211,10 +211,10 @@ def deploy_locally(git_branch=None, restart_url='http://rnacentral.org', quick=F
         with env.cd(settings.PROJECT_PATH):
             git_branch = env.run('git rev-parse --abbrev-ref HEAD', capture=True)  # env.run == local, takes capture arg
 
-    slack("Deployed '%s' at ves-hx-a4: <http://test.rnacentral.org|test.rnacentral.org>" % git_branch)
+    slack("Deployed '%s' at ves-hx-a4: <https://test.rnacentral.org|test.rnacentral.org>" % git_branch)
 
 
-def deploy_remotely(git_branch=None, restart_url='http://rnacentral.org', quick=False):
+def deploy_remotely(git_branch=None, restart_url='https://rnacentral.org', quick=False):
     """
     Run deployment remotely.
     """
@@ -230,10 +230,10 @@ def deploy_remotely(git_branch=None, restart_url='http://rnacentral.org', quick=
     if not git_branch:
         with env.cd(settings.PROJECT_PATH):
             git_branch = env.run('git rev-parse --abbrev-ref HEAD')
-    slack("Deployed '%s' at %s: <http://rnacentral.org|rnacentral.org>" % (git_branch, env.host))
+    slack("Deployed '%s' at %s: <https://rnacentral.org|rnacentral.org>" % (git_branch, env.host))
 
 
-def deploy(git_branch=None, restart_url='http://rnacentral.org', quick=False):
+def deploy(git_branch=None, restart_url='https://rnacentral.org', quick=False):
     """
     Deployment function wrapper that launches local or remote deployment
     based on the environment.
