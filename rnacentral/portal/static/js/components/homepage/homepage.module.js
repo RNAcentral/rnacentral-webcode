@@ -13,11 +13,11 @@ var HomepageController = function($scope, useCases) {
      */
     function generateRandomExamples(useCases) {
         // generate a non-redundant list of categories
-        var categories = [...new Set(Object.values(useCases).map(value => value.category))];
+        var categories = Array.from(new Set(Object.values(useCases).map(function(value) { return value.category })));
 
         var output = [];
         categories.forEach(function(category) {
-            var categoryMembers = Object.values(useCases).filter(useCase => useCase.category === category);
+            var categoryMembers = Object.values(useCases).filter(function(useCase) { return useCase.category === category });
             var randomIndex = Math.floor(Math.random() * categoryMembers.length);
             output.push(categoryMembers[randomIndex]);
         });
