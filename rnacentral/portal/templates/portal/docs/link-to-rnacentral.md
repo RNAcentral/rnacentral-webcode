@@ -16,24 +16,24 @@ On this page:
 Databases [integrated in RNAcentral](/expert-databases) can display
 an **RNAcentral Expert Database badge**:
 
-<a href="https://rnacentral.org" style="text-decoration: none;">
+<a href="http://rnacentral.org" style="text-decoration: none;">
   <img src="/static/img/logo/rnacentral-expert-database.svg"
   style="width: 140px;">
 </a>
-<a class="btn btn-default" style="margin-left: 20px;" target="_blank" href="https://rnacentral.org/static/img/logo/rnacentral-expert-database.svg">Download (svg)</a>
+<a class="btn btn-default" style="margin-left: 20px;" target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-expert-database.svg">Download (svg)</a>
 
 Example code:
 
 ```
-<a href="https://rnacentral.org">
-  <img src="https://rnacentral.org/static/img/logo/rnacentral-expert-database.svg" style="width: 140px">
+<a href="http://rnacentral.org">
+  <img src="http://rnacentral.org/static/img/logo/rnacentral-expert-database.svg" style="width: 140px">
 </a>
 ```
 
-The badge should link to the [RNAcentral homepage](https://rnacentral.org)
+The badge should link to the [RNAcentral homepage](http://rnacentral.org)
 or to the **landing page** of the member database within RNAcentral,
-such as [https://rnacentral.org/expert-database/flybase](https://rnacentral.org/expert-database/flybase) or
-[https://rnacentral.org/expert-database/gtrnadb](https://rnacentral.org/expert-database/gtrnadb).
+such as [http://rnacentral.org/expert-database/flybase](http://rnacentral.org/expert-database/flybase) or
+[http://rnacentral.org/expert-database/gtrnadb](http://rnacentral.org/expert-database/gtrnadb).
 
 ---
 
@@ -43,7 +43,7 @@ such as [https://rnacentral.org/expert-database/flybase](https://rnacentral.org/
 
 Please use the following format to link to RNAcentral sequences:
 
-`https://rnacentral.org/rna/<RNAcentral identifier>/<NCBI taxonomy identifier>`
+`http://rnacentral.org/rna/<RNAcentral identifier>/<NCBI taxonomy identifier>`
 
 The URL includes
 [NCBI taxonomy identifiers](https://www.ncbi.nlm.nih.gov/taxonomy), for example
@@ -68,8 +68,8 @@ Example code:
 
 ```
 <p>
-  <img src="https://rnacentral.org/static/img/logo/rnacentral-logo.png" style="width: 16px; height: 16px; vertical-align: middle;">
-  <a href="https://rnacentral.org/rna/URS000075A546/9606">URS000075A546/9606</a>
+  <img src="http://rnacentral.org/static/img/logo/rnacentral-logo.png" style="width: 16px; height: 16px; vertical-align: middle;">
+  <a href="http://rnacentral.org/rna/URS000075A546/9606">URS000075A546/9606</a>
 </p>
 ```
 
@@ -96,7 +96,7 @@ please use the mapping files found in FTP archive:
 
 You can link to a genome location of interest within the RNAcentral genome browser using links like this:
 
-`https://rnacentral.org/genome-browser?species=<species>&chromosome=<chromosome>&start=<start>&end=<end>`
+`http://rnacentral.org/genome-browser?species=<species>&chromosome=<chromosome>&start=<start>&end=<end>`
 
 where:
 
@@ -108,15 +108,15 @@ Example:
 
 <p>
   <img src="/static/img/logo/rnacentral-logo.png" style="width: 16px; height: 16px; vertical-align: middle;">
-  <a href="https://rnacentral.org/genome-browser?species=homo_sapiens&chromosome=X&start=73819307&end=73856333">Human XIST gene</a>
+  <a href="http://rnacentral.org/genome-browser?species=homo_sapiens&chromosome=X&start=73819307&end=73856333">Human XIST gene</a>
 </p>
 
 Example code:
 
 ```
 <p>
-  <img src="https://rnacentral.org/static/img/logo/rnacentral-logo.png" style="width: 16px; height: 16px; vertical-align: middle;">
-  <a href="https://rnacentral.org/genome-browser?species=homo_sapiens&chromosome=X&start=73819307&end=73856333">Human XIST gene</a>
+  <img src="http://rnacentral.org/static/img/logo/rnacentral-logo.png" style="width: 16px; height: 16px; vertical-align: middle;">
+  <a href="http://rnacentral.org/genome-browser?species=homo_sapiens&chromosome=X&start=73819307&end=73856333">Human XIST gene</a>
 </p>
 ```
 
@@ -128,12 +128,12 @@ Example code:
 
 Here are RNAcentral logo icons in different resolutions:
 
-* <a target="_blank" href="https://rnacentral.org/static/img/logo/rnacentral-logo-16x16.png">16x16</a>
-* <a target="_blank" href="https://rnacentral.org/static/img/logo/rnacentral-logo-24x24.png">24x24</a>
-* <a target="_blank" href="https://rnacentral.org/static/img/logo/rnacentral-logo-32x32.png">32x32</a>
-* <a target="_blank" href="https://rnacentral.org/static/img/logo/rnacentral-logo-64x64.png">64x64</a>
-* <a target="_blank" href="https://rnacentral.org/static/img/logo/rnacentral-logo-128x128.png">128x128</a>
-* <a target="_blank" href="https://rnacentral.org/static/img/logo/rnacentral-logo.png">530x530</a>
+* <a target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-logo-16x16.png">16x16</a>
+* <a target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-logo-24x24.png">24x24</a>
+* <a target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-logo-32x32.png">32x32</a>
+* <a target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-logo-64x64.png">64x64</a>
+* <a target="_blank" href="http://rnacentral.org/static/img/logo/rnacentral-logo-128x128.png">128x128</a>
+* <a target="_blank" href="/static/img/logo/rnacentral-logo.png">530x530</a>
 
 ---
 

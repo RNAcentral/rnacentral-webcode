@@ -4,7 +4,7 @@
 
 ## About
 
-RNAcentral is an open public resource that offers integrated access to a comprehensive and up-to-date set of ncRNA sequences. For more information, please visit https://rnacentral.org/about-us.
+RNAcentral is an open public resource that offers integrated access to a comprehensive and up-to-date set of ncRNA sequences. For more information, please visit http://rnacentral.org/about-us.
 
 The development of RNAcentral is coordinated by the
 [European Bioinformatics Institute](http://www.ebi.ac.uk) and is funded by the
@@ -125,7 +125,7 @@ py.test portal/tests/description_tests.py
 ## Feedback
 
 Feel free to give feedback using [GitHub issues](https://github.com/RNAcentral/rnacentral-webcode/issues)
-or get in touch using the [Contact form](https://rnacentral.org/contact) on our website.
+or get in touch using the [Contact form](http://rnacentral.org/contact) on our website.
 
 ## Technology overview
 
@@ -157,7 +157,7 @@ or get in touch using the [Contact form](https://rnacentral.org/contact) on our 
 ### Testing
 * [Selenium](http://www.seleniumhq.org/)
 * [PhantomJS](http://phantomjs.org/)
-* [Jenkins](https://rnacentral.org)
+* [Jenkins](http://rnacentral.org)
 * [BrowserStack](http://browserstack.com)
 
 ### Other

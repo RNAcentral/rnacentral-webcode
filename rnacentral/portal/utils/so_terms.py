@@ -49,10 +49,10 @@ misc_RNA: SO:0000673
     isn't a good SO term for this at all. The best I can do is assign to it the
     'transcript' type. This is kind of wrong. These sequences are sometimes a
     processed transcript, that has been incorrectly assigned 'misc_RNA':
-    https://rnacentral.org/rna/URS00004A2461/9606 (is a Y_RNA). We are probably
+    http://rnacentral.org/rna/URS00004A2461/9606 (is a Y_RNA). We are probably
     best of trying to avoid the misc_RNA label as much as possible. However,
     there are times times it is truly unclear:
-    https://rnacentral.org/rna/URS0000256D95/9606. Some minor browsing does show
+    http://rnacentral.org/rna/URS0000256D95/9606. Some minor browsing does show
     at least a couple sequences which are transcripts so hopefully this isn't
     too wrong. Overall we should just avoid sequences that have this term, it's
     not very informative

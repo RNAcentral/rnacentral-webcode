@@ -174,8 +174,8 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
             }
 
             return {
-                title: '<a target=_blank href="https://rnacentral.org/rna/' + feature.external_name + '/' + feature.taxid.toString() +'">'+ feature.label + '</a>',
-                "RNAcentral id": '<a target=_blank href="https://rnacentral.org/rna/' + feature.external_name + '/' + feature.taxid.toString() +'">' + feature.external_name + '</a>',
+                title: '<a target=_blank href="http://rnacentral.org/rna/' + feature.external_name + '/' + feature.taxid.toString() +'">'+ feature.label + '</a>',
+                "RNAcentral id": '<a target=_blank href="http://rnacentral.org/rna/' + feature.external_name + '/' + feature.taxid.toString() +'">' + feature.external_name + '</a>',
                 "Description": feature.description || "",
                 "RNA type": feature.biotype,
                 "Feature type": feature.feature_type,

@@ -213,8 +213,8 @@ class FtpBase(object):
         are compressed with Gzip. Small uncompressed example files are also provided.
         Each folder contains a readme file with data description.
 
-        RNAcentral is available online at https://rnacentral.org.
-        For more ways of downloading the data go to https://rnacentral.org/downloads.
+        RNAcentral is available online at http://rnacentral.org.
+        For more ways of downloading the data go to http://rnacentral.org/downloads.
         """
         filename = self.get_output_filename('release_notes_template.txt')
         if os.path.exists(filename):

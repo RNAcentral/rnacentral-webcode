@@ -33,10 +33,10 @@ limitations under the License.
     python selenium_tests.py
 
     # test an RNAcentral instance
-    python selenium_tests.py --base_url https://test.rnacentral.org/
+    python selenium_tests.py --base_url http://test.rnacentral.org/
 
     # test an RNAcentral instance using PhantomJS
-    python selenium_tests.py --base_url https://test.rnacentral.org/ --driver=phantomjs
+    python selenium_tests.py --base_url http://test.rnacentral.org/ --driver=phantomjs
 
     # test a specific method in a specific test case
     python selenium_tests.py RNAcentralTest.test_url_changed_on_input_changed --driver=phantomjs

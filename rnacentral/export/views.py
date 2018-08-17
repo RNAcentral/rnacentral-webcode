@@ -90,7 +90,7 @@ def export_search_results(query, _format, hits):
             # omit opening and closing square brackets for easy concatenation
             output = output[1:-1]
             # make relative urls absolute
-            output = output.replace('"/api/v1/', '"https://rnacentral.org/api/v1/')
+            output = output.replace('"/api/v1/', '"http://rnacentral.org/api/v1/')
         return output
 
     def check_ssi_file():
