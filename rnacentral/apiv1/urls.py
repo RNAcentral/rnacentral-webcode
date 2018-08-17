@@ -60,7 +60,6 @@ urlpatterns = [
     url(r'^expert-db-stats/(?P<pk>.*)/?$', views.ExpertDatabasesStatsViewSet.as_view({'get': 'retrieve'}), {}, name='expert-db-stats'),
     # genomes - ensembl assemblies list
     url(r'genomes/$', cache_page(CACHE_TIMEOUT)(views.GenomesAPIViewSet.as_view({'get': 'list'})), {}, name='genomes-api'),
-    url(r'genomes/(?P<ensembl_url>\w+)/$', views.GenomesAPIViewSet.as_view({'get': 'retrieve'}), {}, name='genomes-api'),
     # mapping of ensembl assemblies to insdc submissions
     url(r'ensembl-insdc-mapping/$', views.EnsemblInsdcMappingView.as_view(), {}, name='ensembl-insdc-mapping'),
     # endpoint that returns karyotypes, downloaded from ensembl

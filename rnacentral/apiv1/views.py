@@ -707,7 +707,7 @@ class ExpertDatabasesAPIView(APIView):
     #     return Database.objects.get(expert_db_name).references
 
 
-class ExpertDatabasesStatsViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
+class ExpertDatabasesStatsViewSet(ListModelMixin, GenericViewSet):
     """
     API endpoint with statistics of databases, comprising RNAcentral.
 
@@ -715,13 +715,10 @@ class ExpertDatabasesStatsViewSet(RetrieveModelMixin, ListModelMixin, GenericVie
     """
     queryset = DatabaseStats.objects.all()
     serializer_class = ExpertDatabaseStatsSerializer
-    lookup_field = 'pk'
+    lookup_field = 'ensembl_url'
 
     def list(self, request, *args, **kwargs):
         return super(ExpertDatabasesStatsViewSet, self).list(request, *args, **kwargs)
-
-    def get(self, request, *args, **kwargs):
-        return super(ExpertDatabasesStatsViewSet, self).retrieve(request, *args, **kwargs)
 
 
 class GenomesAPIViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):

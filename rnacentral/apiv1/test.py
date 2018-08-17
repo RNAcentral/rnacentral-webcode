@@ -485,9 +485,11 @@ class GenomesTestCase(ApiV1BaseClass):
     def test_list(self):
         url = reverse('genomes-api')
         response = self._test_url(url)
-        self.assertEqual(response.data['count'], 296)
+        self.assertEqual(response.status_code, 200)
 
-    def test_detail(self):
-        url = reverse('genomes-api', kwargs={'ensembl_url': 'homo_sapiens'})
-        response = self._test_url(url)
-        self.assertEqual(response.data['taxid'], 9606)
+    # Due to the fact that we're using raw SQL query, it is currently impossible to access individual genome
+
+    # def test_detail(self):
+    #     url = reverse('genomes-api', kwargs={'ensembl_url': 'homo_sapiens'})
+    #     response = self._test_url(url)
+    #     self.assertEqual(response.data['taxid'], 9606)
