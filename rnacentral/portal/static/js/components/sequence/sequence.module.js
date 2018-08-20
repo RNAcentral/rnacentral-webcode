@@ -216,6 +216,8 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         if (termId != null) {
             var ontology = termId.split(':')[0].toLowerCase();
 
+            $('#go-annotation-chart-modal').detach().appendTo("body");
+
             $('#go-annotation-chart-modal').modal();
 
             $scope.goModalStatus = 'loading';
