@@ -133,6 +133,8 @@ class Rna(CachingMixin, models.Model):
 
         titles = []
         for publication in queryset:
+            if not publication.title:
+                publication.title = ''
             if publication.pubmed in references and publication.title.lower() not in titles:
                 expert_db_publications.append(publication)
                 titles.append(publication.title.lower())
