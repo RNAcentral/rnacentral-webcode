@@ -63,7 +63,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'as of October 20th, 2016',
+        'version': 'as of June 11th, 2018',
     },
     {
         'name': 'FlyBase',
@@ -88,7 +88,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'FB2017_04',
+        'version': 'fb_2018_03',
     },
     {
         'name': 'Ensembl',
@@ -166,12 +166,6 @@ expert_dbs = [
                 'journal': 'Nucleic Acids Res. 2017 (Accepted)',
                 'pubmed_id': '29112718',
             },
-            {
-                'title': 'Rfam 12.0: updates to the RNA families database',
-                'authors': 'Nawrocki EP, Burge SW, Bateman A, Daub J, Eberhardt RY, Eddy SR, Floden EW, Gardner PP, Jones TA, Tate J, Finn RD',
-                'journal': 'Nucleic Acids Res. 2015 Jan 28;43(Database issue):D130-7',
-                'pubmed_id': '25392425',
-            },
         ],
         'imported': True,
         'status': '',
@@ -198,7 +192,7 @@ expert_dbs = [
                 'pubmed_id': '21037258',
             },
             {
-                'title': '',
+                'title': 'miRBase: microRNA sequences, targets and gene nomenclature',
                 'authors': 'Griffiths-Jones S, Grocock RJ, van Dongen S, Bateman A, Enright AJ',
                 'journal': 'Nucleic Acids Res. 34(Database issue):D140-4 (2006 Jan1)',
                 'pubmed_id': '16381832'

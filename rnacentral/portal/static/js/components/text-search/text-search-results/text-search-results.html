@@ -203,9 +203,10 @@
               <li style="padding-right: 20px;" ng-show="rna.fields.has_genomic_coordinates[0].toLowerCase().indexOf('true') !== -1"><i class="fa fa-check text-success" aria-hidden="true"></i> reference genome<li>
               <li style="padding-right: 20px; cursor: help;" ng-if="(rna.fields.rfam_problems | plaintext) != 'none'" tooltip-popup-close-delay="2000" uib-tooltip-template="'/static/js/components/text-search/text-search-results/rfam-problem-tooltip.html'" tooltip-placement="bottom"><i class="fa fa-warning text-danger" aria-hidden="true"></i>
                 <span ng-repeat="rfam_problem in rna.fields.rfam_problems | plaintext">
+                  <span ng-if="rfam_problem==='has_issue'"></span>
                   <span ng-if="rfam_problem==='possible_contamination'">possible contamination</span>
                   <span ng-if="rfam_problem==='incomplete_sequence'">incomplete sequence</span>
-                  <span ng-if="rfam_problem==='missing_match'">missing Rfam hit</span>{{$last ? '' : ', '}}
+                  <span ng-if="rfam_problem==='missing_rfam_match'">missing Rfam hit</span>{{$last || rfam_problem==='has_issue' ? '' : ', '}}
                 </span>
               </li>
               <li style="padding-right: 20px;" ng-show="rna.fields.active[0] == 'Obsolete'"><span class="label label-danger help" title="No active annotations">Obsolete</span></li>

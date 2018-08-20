@@ -101,7 +101,7 @@ limitations under the License.
                                         <th>Strand</th>
                                         <th>Ensembl</th>
                                         <th>UCSC</th>
-                                        <th>Evidence</th>
+                                        <th>Sequence identity</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -157,10 +157,10 @@ limitations under the License.
                                             </span>
                                         </td>
                                         <td ng-if="genomeLocations.indexOf(location) !== -1">
-                                            <span>Literature <i uib-tooltip="This genome location is known from literature annotations (see 'Annotations' section)" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i></span>
+                                            <span>100% <i uib-tooltip="Imported from an Expert Database" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i></span>
                                         </td>
                                         <td ng-if="genomeMappings.indexOf(location) !== -1">
-                                            {{ location.identity * 100 | number:2 }}% <i uib-tooltip="This genome location is predicted by alignment of RNA sequence to the genome. Identity is {{ location.identity * 100 | number:2 }}%" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i>
+                                            <span>{{ location.identity * 100 | number:0 }}% <i uib-tooltip="Based on blat genome mapping" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -191,9 +191,40 @@ limitations under the License.
                     </a>
                   </small>
                 </h2>
-                <go-annotations upi="upi" taxid="taxid" show-go-annotations="showGOAnnotations()"></go-annotations>
-              </div>
+                <go-annotations upi="upi" taxid="taxid" show-go-annotations="showGOAnnotations()" on-toggle-go-modal="toggleGoModal(termId)"></go-annotations>
 
+                <div id='go-annotation-chart-modal' class='modal fade' tabindex=-1>
+                  <div class='modal-dialog modal-lg' role='document'>
+                    <div class='modal-content'>
+                      <div class="modal-header">
+                          <h3 class="modal-title">Ancestor Chart</h3>
+                      </div>
+                      <div class="modal-body">
+
+                        <span ng-if="goModalStatus === 'loading'">
+                          <i class="fa fa-spinner fa-spin fa-2x"></i>
+                          Loading ontology ancestors...
+                        </span>
+
+                        <span ng-if="goModalStatus === 'failed'">
+                          Failed to load QuickGO Ancestor chart
+                        </span>
+
+                        <span ng-if="goModalStatus === 'loaded'">
+                          {% verbatim %}
+                          <img ng-src="{{ goChartData }}" />
+                          {% endverbatim %}
+                        </span>
+
+                      </div>
+                      <div class="modal-footer">
+                          <button ng-click="toggleGoModal(null)" type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
 
                 <div>
                   <h2>
@@ -245,7 +276,7 @@ limitations under the License.
 
                       <div class="media-body">
                         <h4 class="media-heading" style='padding-left: 0px;'>
-                          <a href="{{ hit.rfam_model.url }}">
+                          <a href="{{ hit.rfam_model.url }}" class="no-icon">
                             {{ hit.rfam_model.long_name }}
                           </a>
                         </h4>
@@ -266,8 +297,8 @@ limitations under the License.
                             <ul class="list-unstyled">
                               {% for go_term in hit.rfam_model.go_terms %}
                               <li>
-                                <a href="{{ go_term.quickgo_url }}" target="_blank">{{ go_term.ontology_term_id }}</a>
-                                <small>{{ go_term.name }}</small>
+                                GO: <a href="{{ go_term.quickgo_url }}" target="_blank" class="help no-icon" title="View {{ go_term.ontology_term_id }} in QuickGO">{{ go_term.name }}</a>
+                                <a class="btn btn-circle btn-default btn-sm margin-left-5px" ng-click="toggleGoModal('{{ go_term.ontology_term_id }}')" type="button"><i class="fa fa-sitemap" uib-tooltip="View {{ go_term.ontology_term_id }} ancestor chart"></i></a>
                               </li>
                               {% endfor %}
                             </ul>
@@ -383,9 +414,6 @@ limitations under the License.
                         <ul class="dropdown-menu" uib-dropdown-menu id="download-formats">
                             <li><a ng-click="download('fasta')">FASTA</a></li>
                             <li><a ng-click="download('json')">JSON</a></li>
-                            <li ng-if="enableGenomicFeatures"><a ng-click="download('bed')">BED</a></li>
-                            <li ng-if="enableGenomicFeatures"><a ng-click="download('gff')">GFF</a></li>
-                            <li ng-if="enableGenomicFeatures"><a ng-click="download('gff3')">GFF3</a></li>
                         </ul>
                     </span>
                 </uib-tab-heading>

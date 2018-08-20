@@ -45,7 +45,7 @@ urlpatterns = [
     url(r'^help/text-search/?$', views.StaticView.as_view(), {'page': 'help/text-search'}, name='help-text-search'),
     url(r'^help/rfam-annotations/?$', views.StaticView.as_view(), {'page': 'help/rfam-annotations'}, name='help-rfam-annotations'),
     url(r'^help/gene-ontology-annotations/?$', views.StaticView.as_view(), {'page': 'help/gene-ontology-annotations'}, name='help-gene-ontology-annotations'),
-    url(r'^help/genomic-mapping/?$', views.StaticView.as_view(), {'page': 'help/genomic-mapping', 'assemblies': EnsemblAssembly.objects.filter(example_chromosome__isnull=False)}, name='help-genomic-mapping'),
+    url(r'^help/genomic-mapping/?$', views.StaticView.as_view(), {'page': 'help/genomic-mapping', 'assemblies': EnsemblAssembly.objects.all()}, name='help-genomic-mapping'),
     url(r'^help/link-to-rnacentral/?$', views.StaticView.as_view(), {'page': 'help/link-to-rnacentral'}, name='linking-to-rnacentral'),
     # training
     url(r'^training/?$', views.StaticView.as_view(), {'page': 'training'}, name='training'),
