@@ -72,6 +72,7 @@ class GpiExporter(FtpBase):
         WHERE taxid IS NOT NULL
         AND rna_type IS NOT NULL
         AND description IS NOT NULL
+        AND is_active = true
         {test}
         """
         if self.test:

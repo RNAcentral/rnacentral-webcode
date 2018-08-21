@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 """
 Copyright [2009-2017] EMBL-European Bioinformatics Institute
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -236,37 +238,49 @@ class GenomeBrowserView(TemplateView):
     def get(self, request, *args, **kwargs):
         self.template_name = 'portal/genome-browser.html'
 
-        # if current location is given in GET parameters - use it; otherwise, use defaults
-        if 'species' in request.GET and ('chromosome' in request.GET or 'chr' in request.GET) and 'start' in request.GET and 'end' in request.GET:
-            # security-wise it doesn't make sense to validate location:
-            # if user tinkers with it, she won't shoot anyone but herself
+        def get_assembly_with_example_location(species):
+            """
+            Helper function to retrieve species with example coordinates
+            :param species: EnsemblAssembly.ensembl_url of a species (e.g. "homo_sapiens")
+            :return: EnsemblAssembly as a raw queryset element
+            """
+            assemblies = EnsemblAssembly.get_assemblies_with_example_locations()
+            for assembly in assemblies:
+                if species == assembly.ensembl_url:
+                    if not assembly.example_start:
+                        assembly.example_start = assembly.start
+                    if not assembly.example_end:
+                        assembly.example_end = assembly.stop
+                    if not assembly.example_chromosome:
+                        assembly.example_chromosome = assembly.chromosome
+                    return assembly
+            return None
 
-            # find our genome in taxonomy, replace genome with a dict with taxonomy data
+        # if species is not defined - use homo_sapiens as default, if specified and wrong - 404
+        if 'species' in request.GET:
             kwargs['genome'] = request.GET['species']
-            if kwargs['genome'] is None:
+            ensembl_assembly = get_assembly_with_example_location(kwargs['genome'])
+            if not ensembl_assembly:
                 raise Http404
+        else:
+            kwargs['genome'] = 'homo_sapiens'
+            ensembl_assembly = get_assembly_with_example_location('homo_sapiens')
 
-            # 'chromosome' takes precedence over 'chr'
+        # require chromosome, start and end in kwargs or use default location for this species
+        if ('chromosome' in request.GET or 'chr' in request.GET) and 'start' in request.GET and 'end' in request.GET:
             if 'chromosome' in request.GET:
                 kwargs['chromosome'] = request.GET['chromosome']
-            else:
+            elif 'chr' in request.GET:
                 kwargs['chromosome'] = request.GET['chr']
-
             kwargs['start'] = request.GET['start']
             kwargs['end'] = request.GET['end']
         else:
-            ensembl_assembly = EnsemblAssembly.objects.get(ensembl_url='homo_sapiens')
-
-            kwargs['genome'] = 'homo_sapiens'
             kwargs['chromosome'] = ensembl_assembly.example_chromosome
             kwargs['start'] = ensembl_assembly.example_start
             kwargs['end'] = ensembl_assembly.example_end
 
         response = super(GenomeBrowserView, self).get(request, *args, **kwargs)
-        try:
-            return response.render()
-        except TemplateDoesNotExist:
-            raise Http404()
+        return response.render()
 
 
 class ContactView(FormView):

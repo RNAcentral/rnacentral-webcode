@@ -14,7 +14,7 @@ limitations under the License.
 from caching.base import CachingMixin, CachingManager
 from django.db import models
 
-from ensembl_assembly import EnsemblAssembly
+from portal.models.ensembl_assembly import EnsemblAssembly
 
 
 class GenomeMapping(models.Model):  # (CachingMixin, models.Model):
@@ -28,6 +28,9 @@ class GenomeMapping(models.Model):  # (CachingMixin, models.Model):
     strand = models.IntegerField()
     taxid = models.IntegerField()
     upi = models.ForeignKey("Rna", db_column='upi', to_field='upi', related_name='genome_mappings')
+
+    # NOTE: I disabled caching for this model, cause otherwise we run into endless recursion with cache
+    # population/invalidation on GenomeBrowser page
 
     # objects = CachingManager()
 

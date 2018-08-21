@@ -651,6 +651,7 @@ path {
 
 .species-node {
   font-weight: bold;
+  cursor: pointer;
 }
 
 .modified-nt {

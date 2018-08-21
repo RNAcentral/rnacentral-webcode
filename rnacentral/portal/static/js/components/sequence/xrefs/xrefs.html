@@ -140,7 +140,7 @@
 
           <!-- FlyBase -->
           <span ng-switch-when="FlyBase">
-            FlyBase gene <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>, {{ xref.accession.id }}
+            transcript <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> from gene <a target="_blank" href="http://flybase.org/reports/{{ xref.accession.gene }}">{{ xref.accession.gene }}</a>
           </span>
 
           <!-- MGI -->
@@ -287,7 +287,7 @@
           <!-- LNCipedia -->
           <span ng-switch-when="LNCipedia">
             {{ xref.database }}: transcript <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>,
-            gene <a ng-href="{{ 'http://www.lncipedia.org/db/gene/' + xref.accession.optional_id }}" target="_blank">{{ xref.accession.optional_id }}</a>
+            gene <a ng-href="{{ 'http://www.lncipedia.org/db/gene/' + xref.accession.gene }}" target="_blank">{{ xref.accession.gene }}</a>
           </span>
 
           <!-- Modomics -->
@@ -367,9 +367,6 @@
                 </span>
               </small>
           </span>
-
-          <!-- literature references -->
-          <xref-publications xref="xref" on-activate-publications="$ctrl.onActivatePublications()"></xref-publications>
 
           <span ng-if="xref.is_active == false">
             <br>

@@ -118,7 +118,7 @@ def features_from_xrefs(species, chromosome, start, end):
         acc_coord.strand,
         acc_coord.primary_start,
         acc_coord.primary_end
-        FROM xref 
+        FROM xref
         JOIN acc_coord ON (xref.ac = acc_coord.accession)
         WHERE xref.deleted = 'N'
         AND xref.taxid = {taxid};
@@ -243,7 +243,7 @@ def features_from_mappings(species, chromosome, start, end):
         JOIN rna
         ON mapping.upi=rna.upi
         JOIN (
-          SELECT * FROM {rna_precomputed} WHERE taxid={taxid}
+          SELECT * FROM {rna_precomputed} WHERE taxid={taxid} and is_active = true
         ) precomputed
         ON {rna}.upi=precomputed.upi
     '''.format(
@@ -618,7 +618,10 @@ class RnaGenomeMappings(generics.ListAPIView):
                 'identity': mapping["identity"],
                 'species': assembly.ensembl_url,
                 'ucsc_db_id': assembly.assembly_ucsc,
-                'ensembl_division': assembly.division,
+                'ensembl_division': {
+                    'name': assembly.division,
+                    'url': 'http://' + assembly.subdomain
+                },
                 'ensembl_species_url': assembly.ensembl_url
             }
             output.append(data)
@@ -717,11 +720,11 @@ class ExpertDatabasesStatsViewSet(RetrieveModelMixin, ListModelMixin, GenericVie
     def list(self, request, *args, **kwargs):
         return super(ExpertDatabasesStatsViewSet, self).list(request, *args, **kwargs)
 
-    def get(self, request, *args, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         return super(ExpertDatabasesStatsViewSet, self).retrieve(request, *args, **kwargs)
 
 
-class GenomesAPIViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
+class GenomesAPIViewSet(ListModelMixin, GenericViewSet):
     """API endpoint, presenting all E! assemblies, available in RNAcentral."""
     permission_classes = (AllowAny, )
     serializer_class = EnsemblAssemblySerializer
@@ -730,26 +733,7 @@ class GenomesAPIViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
     lookup_field = 'ensembl_url'
 
     def get_queryset(self):
-        query = '''
-            SELECT 1 as id, {ensembl_assembly}.assembly_id, assembly_full_name, gca_accession, assembly_ucsc,
-              common_name, taxid, ensembl_url, division, subdomain,
-              example_chromosome, example_start, example_end,
-              start, stop, chromosome
-            FROM {ensembl_assembly}
-            JOIN (
-              SELECT DISTINCT ON ({genome_mapping}.assembly_id)
-                {genome_mapping}.assembly_id, {genome_mapping}.start, {genome_mapping}.stop, {genome_mapping}.chromosome
-              FROM {genome_mapping}
-            ) mapping
-            ON mapping.assembly_id = {ensembl_assembly}.assembly_id
-            ORDER BY {ensembl_assembly}.ensembl_url ASC
-        '''.format(
-            genome_mapping=GenomeMapping._meta.db_table,
-            ensembl_assembly=EnsemblAssembly._meta.db_table
-        )
-
-        # this won't really paginate
-        return list(EnsemblAssembly.objects.raw(query))
+        return EnsemblAssembly.get_assemblies_with_example_locations()
 
 
 class RfamHitsAPIViewSet(generics.ListAPIView):

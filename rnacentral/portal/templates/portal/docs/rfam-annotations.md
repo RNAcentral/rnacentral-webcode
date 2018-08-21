@@ -41,7 +41,7 @@ The majority of RNAcentral sequences annotated as rRNA or tRNA match the corresp
 * [Sequence annotated as rRNA that matches a riboswitch](/rna/URS00002A4649/1151342)
 * [Sequence annotated as tRNA that matches SSU rRNA](/rna/URS00000A7AA6/114707)
 
-Browse all sequences with missing matches by searching for [`rfam_problems:"missing_match"`](/search?q=rfam_problems:%22missing_match%22).
+Browse all sequences with missing matches by searching for [`rfam_problems:"missing_rfam_match"`](/search?q=rfam_problems:%22missing_rfam_match%22).
 
 ## Why some sequences do not match any Rfam families
 

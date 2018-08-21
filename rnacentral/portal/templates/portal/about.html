@@ -27,18 +27,30 @@ About RNAcentral
 {% block content %}
 
 <div class="row">
+
   <div class="col-md-12">
     <h1><i class="fa fa-info-circle"></i> About RNAcentral <a name="about-rnacentral" href="{% url 'about' %}#about-rnacentral" class="text-muted smaller"><i class="fa fa-link"></i></a></h1>
 
-    <p>
-      RNAcentral is a public resource that offers integrated access to a <strong>comprehensive and up-to-date</strong> set of non-coding RNA sequences
-      provided by a collaborating group of <a href="/expert-databases">Expert Databases</a>.
-      The development of RNAcentral is coordinated by <a href="http://www.ebi.ac.uk" target="_blank">European Bioinformatics Institute</a>
-      and is funded by <a href="http://www.bbsrc.ac.uk/pa/grants/AwardDetails.aspx?FundingReference=BB/J019321/1">BBSRC</a>.
-    </p>
-  </div>
+    <div class="col-md-6">
+      <a href="{% url 'expert-databases' %}"><img class="img-thumbnail img-rounded" src="{% static "img/expert-databases.png" %}"></a>
+    </div>
 
-</div>
+    <div class="col-md-6">
+      <p>
+        RNAcentral is a free, public resource that offers integrated access to a <strong>comprehensive</strong> and <strong>up-to-date</strong> set of non-coding RNA sequences
+        provided by a collaborating group of <a href="/expert-databases">Expert Databases</a>
+        representing a <strong>broad range of organisms and RNA types</strong>.
+      </p>
+      <p>
+        The development of RNAcentral is coordinated by <a href="http://www.ebi.ac.uk" target="_blank">European Bioinformatics Institute</a>
+        and is funded by <a href="http://www.bbsrc.ac.uk/pa/grants/AwardDetails.aspx?FundingReference=BB/J019321/1">BBSRC</a>.
+      </p>
+
+      <a href="http://www.ebi.ac.uk" class="no-icon img-thumbnail"><img src="{% static "img/logo/embl-ebi.jpg" %}"></a>
+      <a href="http://www.bbsrc.ac.uk/" class="no-icon img-thumbnail"><img src="{% static "img/logo/bbsrc.png" %}"></a>
+    </div>
+
+  </div>
 
 <div class="row">
 
@@ -51,6 +63,7 @@ About RNAcentral
         RNAcentral imports ncRNA sequences from <strong>multiple databases</strong> and enables integrated
         <a href="{% url 'text-search' %}?q=RNA">text search</a>,
         <a href="{% url 'nhmmer-sequence-search' %}">sequence similarity search</a>,
+        <a href="{% url 'downloads' %}">bulk downloads</a>,
         and <a href="{% url 'api-docs' %}">programmatic data access</a>.
       </p>
 
@@ -78,26 +91,28 @@ About RNAcentral
       <h3><i class="fa fa-map-signs margin-right-5px"></i> Genomic mapping</h3>
 
       <p>
-        Where possible, we map sequences to <strong>reference genomes</strong> from <a href="{% url 'help-genomic-mapping' %}">select species</a>.
+        The sequences are mapped to <strong>reference genomes</strong> from <a href="{% url 'help-genomic-mapping' %}">more than 250 species</a>
+        using <strong>blat</strong>.
 
-        You can use a <a href="{% url 'genome-browser' %}">genome browser</a> to browse all mapped sequences
-        or view individual sequences in their genomic context.
+        You can use a <a href="{% url 'genome-browser' %}">genome browser</a> to browse all mapped sequences,
+        view individual sequences in their genomic context,
+        or <a href="ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/">download genome coordinates</a>
+        in several formats.
+        <a href="{% url 'help-genomic-mapping' %}">More &rarr;</a>
       </p>
 
     </div>
 
     <div class="col-md-6">
 
-      <h3><i class="fa fa-file-text margin-right-5px"></i> Additional annotations</h3>
+      <h3><i class="fa fa-file-text margin-right-5px"></i> Functional annotations</h3>
 
       <p>
-        Currently we import <strong>modified nucleotides</strong> from Modomics and PDB
-        (for example, <a href="{% url 'unique-rna-sequence' 'URS00001BBAFC' %}">this <em>E.coli</em> tRNA</a>
-        is annotated by both databases).
-      </p>
-
-      <p>
-        We aim to include intermolecular interactions and high-quality secondary structures soon.
+        We import <strong>modified nucleotides</strong> from Modomics and PDB.
+        tRNA <strong>secondary structures</strong> from GtRNAdb (for example <a href="{% url 'unique-rna-sequence' 'URS00006DCB39' %}/9606">tRNA-Leu-CAA-6-1</a>)
+        and <a href="{% url 'help-gene-ontology-annotations' %}">Gene Ontology annotations</a> from QuickGO.
+        All sequences are annotated with <strong>Rfam models</strong>
+        to provide <a href="{% url 'help-rfam-annotations' %}">warnings</a> and additional annotations.
       </p>
     </div>
 
@@ -171,7 +186,10 @@ About RNAcentral
   <div class="col-md-12">
     <h2>Want to learn more? <a name="training" href="{% url 'about' %}#training" class="text-muted smaller"><i class="fa fa-link"></i></a></h2>
 
-    Explore all RNAcentral <a href="{% url 'training' %}">training materials</a>, including an online training course and a video walkthrough of the website.
+    <p>
+      Explore all RNAcentral <a href="{% url 'training' %}">training materials</a>, including <strong>research papers</strong>,
+      an online <strong>training course</strong>, and a <strong>video walkthrough</strong> of the website.
+    </p>
 
   </div>
 </div>
@@ -541,6 +559,27 @@ About RNAcentral
                         "text": "RNAcentral now includes data from the <a href='https://rgd.mcw.edu/'>Rat Genome Database</a> <br> <a href='{{ blog_url }}'>Release announcement</a>"
                     }
                 },
+                {
+                    "media": {
+                        "url": "{% static "img/timeline/release-v10.png" %}",
+                        "caption": "Release 10 features",
+                        "credit": "RNAcentral"
+                    },
+                    "start_date": {
+                        "month": "08",
+                        "day": "20",
+                        "year": "2018"
+                    },
+                    "end_date": {
+                        "month": "08",
+                        "day": "20",
+                        "year": "2018"
+                    },
+                    "text": {
+                        "headline": "Release 10",
+                        "text": "RNAcentral now includes 10 times more sequences with genome locations as well as Gene Ontology annotations imported from QuickGO <br> <a href='{{ blog_url }}'>Release announcement</a>"
+                    }
+                },
             ]
       };
 
@@ -625,6 +664,12 @@ About RNAcentral
       'sequence_count': 13437640,
       'expert_databases': 27,
       'label': 'release 9',
+    },
+    {
+      'date': '20-08-18',
+      'sequence_count': 14046908,
+      'expert_databases': 27,
+      'label': 'release 10',
     },
   ];
 
