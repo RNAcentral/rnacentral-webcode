@@ -83,8 +83,7 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
     this.result = {
         hitCount: null,
         entries: [],
-        facets: [],
-        _query: null, // query after preprocessing
+        facets: []
     };
 
     this.status = 'off'; // possible values: 'off', 'in progress', 'success', 'error'
@@ -184,7 +183,6 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
 
                 overwriteResults = overwriteResults || false;
                 if (overwriteResults) {
-                    data._query = self.result._query;
                     self.result = data; // replace
                 } else {
                     self.result.entries = self.result.entries.concat(data.entries); // append new entries
@@ -266,7 +264,6 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
         if (lengthClause) {
           query = query.replace(placeholder + '*', lengthClause[0]);
         }
-        self.result._query = query;
         return query;
 
         /**
