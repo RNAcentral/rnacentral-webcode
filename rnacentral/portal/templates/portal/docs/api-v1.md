@@ -44,7 +44,7 @@ The following **non-disruptive changes** may be implemented to a public API:
 * adding new filtering methods
 
 An advance notice will be given before obsoleting an API version. To stay up to date,
-please consider signing up for the [RNAcentral updates](http://blog.rnacentral.org).
+please consider signing up for the [RNAcentral updates](https://blog.rnacentral.org).
 
 ## Throttling <a style="cursor: pointer" id="throttling" ng-click="scrollTo('throttling')" name="throttling" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
