@@ -1,0 +1,13 @@
+pipeline {
+    agent any
+    stages {
+        stage("refresh TST from last snapshot") {
+            steps {
+                sh '''
+                    cd rnacentral
+                    fab localhost refresh_tst
+                '''
+            }
+        }
+    }
+}
