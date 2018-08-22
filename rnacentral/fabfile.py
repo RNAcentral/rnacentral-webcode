@@ -317,11 +317,11 @@ def refresh_dev():
     snapshot = env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_list_snapshots.sh -d pgsql-dlvm-008.ebi.ac.uk | tail -1")
     env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-008.ebi.ac.uk -S '%s'" % snapshot)
 
-    slack("Refreshed DEV and TST databases from '%s' snapshot" % snapshot)
+    slack("Refreshed DEV database from '%s' snapshot" % snapshot)
 
 
 def refresh_tst():
     snapshot = env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_list_snapshots.sh -d pgsql-dlvm-009.ebi.ac.uk | tail -1")
     env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-009.ebi.ac.uk -S '%s'" % snapshot)
 
-    slack("Refreshed DEV and TST databases from '%s' snapshot" % snapshot)
+    slack("Refreshed TST database from '%s' snapshot" % snapshot)
