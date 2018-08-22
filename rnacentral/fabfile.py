@@ -315,8 +315,6 @@ def refresh_pg():
 
 def refresh_dev():
     snapshot = env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_list_snapshots.sh -s pgsql-hxvm-038.ebi.ac.uk | tail -1")
-    # bash curses about absence of /home directory, thus we have to filter out snapshot
-    snapshot = re.search("\d\d\d\d\-\d\d\-\d\d\s\d\d\:\d\d$", snapshot).group(0)  # e.g. 2018-06-26 11:16
     env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-008.ebi.ac.uk -S '%s'" % snapshot)
 
     slack("Refreshed DEV and TST databases from '%s' snapshot" % snapshot)
@@ -324,8 +322,6 @@ def refresh_dev():
 
 def refresh_tst():
     snapshot = env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_list_snapshots.sh -s pgsql-hxvm-038.ebi.ac.uk | tail -1")
-    # bash curses about absence of /home directory, thus we have to filter out snapshot
-    snapshot = re.search("\d\d\d\d\-\d\d\-\d\d\s\d\d\:\d\d$", snapshot).group(0)  # e.g. 2018-06-26 11:16
     env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-009.ebi.ac.uk -S '%s'" % snapshot)
 
     slack("Refreshed DEV and TST databases from '%s' snapshot" % snapshot)
