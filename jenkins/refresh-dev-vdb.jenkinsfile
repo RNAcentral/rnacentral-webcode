@@ -2,10 +2,15 @@ pipeline {
     agent any
     stages {
         stage("refresh DEV from last snapshot") {
+            environment {
+                USERPASSWORD = credentials('refresh_vdbs_login')
+                USER = "${env.USERPASSWORD_USR}"
+                PASSWORD = "${env.USERPASSWORD_PSW}"
+            }
             steps {
                 sh '''
                     cd rnacentral
-                    fab localhost refresh_dev
+                    fab ebi_cli --password=$PASSWORD refresh_dev
                 '''
             }
         }

@@ -284,6 +284,18 @@ def pg():
     env.cd = cd
 
 
+def ebi_cli():
+    """
+    Configures environment variables for running commands on ebi-cli-001, e.g.:
+
+    fab pg --password=mytopsecretpassword refresh_dev
+    """
+    env.hosts = ['ebi-cli.ebi.ac.uk']
+    env.user = 'burkov'
+    env.run = run
+    env.cd = cd
+
+
 def refresh_fb1():
     snapshot = env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_create_snapshot.sh -s pgsql-hxvm-038.ebi.ac.uk | tail -1")
     env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-010.ebi.ac.uk -S '%s'" % snapshot)
