@@ -24,7 +24,8 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             'rfam_problem_found',
             'rfam_problems',
             'rna_type',
-            'standard_name'
+            'standard_name',
+            'tax_string'
         ],
         fieldWeights: {
             'active': 0,
@@ -42,7 +43,8 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             'pub_title': 2,
             'product': 1,
             'rna_type': 2,
-            'standard_name': 2
+            'standard_name': 2,
+            'tax_string': 2,
         },
         fieldVerboseNames: {
             'active': 'Active',
@@ -60,7 +62,8 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             'pub_title': 'Publication title',
             'product': 'Product',
             'rna_type': 'RNA type',
-            'standard_name': 'Standard name'
+            'standard_name': 'Standard name',
+            'tax_string': 'Taxonomy'
         },
         facetfields: ['length', 'rna_type', 'TAXONOMY', 'expert_db', 'rfam_problem_found', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
         sortableFields: [
