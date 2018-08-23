@@ -279,29 +279,34 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
         }
     };
 
-    // /**
-    //  * Looks into self.sort (e.g. [['boost', 'ascending'], ['length', 'descending']])
-    //  * @returns {string} - e.g. 'boost:ascending,length:descending'
-    //  */
-    // this.preprocessSort = function () {
-    //     var sort = "";
-    //     self.sort.forEach( function (field) { sort.concat("," + field[0] + ":" + field[1]) } );
-    //     return sort;
-    // };
-
     /**
      * Preprocess data received from the server.
      */
     this.preprocessResults = function (data) {
+        // Merge popularSpecies facet into TAXONOMY facet at the top of the list.
+        var popularSpeciesFacet = data.facets.find(function(el) { return el.id === 'popular_species' });
+        var taxonomyFacet = data.facets.find(function(el) { return el.id === 'TAXONOMY' }); // find facets by 'id': [{'id': 'a'}, {'id': 'b'}, {'id': 'c'}]
+        if (popularSpeciesFacet) {
+            // populate taxonomyFacet with the contents of popularSpeciesFacet
+            var taxonomySpecies = taxonomyFacet.facetValues.reduce(
+                function(acc, el) { acc.push(el.label); return acc },
+                []
+            ); // e.g. ['gorilla_gorilla', 'homo_sapiens'] etc.
+            popularSpeciesFacet.facetValues.forEach(function(el) {
+                if (taxonomySpecies.indexOf(el.label)) taxonomyFacet.facetValues.splice(0, 0, el);
+            });
 
-        _mergeSpeciesFacets(data);
+            // remove the Popular species facet and any empty entries
+            delete data.facets[data.facets.indexOf(popularSpeciesFacet)];
+            data.facets = data.facets.filter(function(facet) { return facet }); // will filter out falsy values
+        }
 
         // order facets the same way as in the config
-        data.facets = _.sortBy(data.facets, function(facet){
-            return _.indexOf(self.config.facetfields, facet.id);
+        data.facets = data.facets.sort(function(a, b) {
+            return self.config.facetfields.indexOf(a.id) - self.config.facetfields.indexOf(b.id);
         });
 
-        // update rfam_problem_found labels from True/Fase to Yes/No
+        // update rfam_problem_found labels from True/False to Yes/No
         data.facets.forEach(function(facet) {
             if (facet.id === 'rfam_problem_found') {
                 facet.facetValues.forEach(function(facetValue) {
@@ -312,75 +317,13 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
         });
 
          // Use `hlfields` with highlighted matches instead of `fields`.
-        for (var i=0; i < data.entries.length; i++) {
-            data.entries[i].fields = data.entries[i].highlights;
-            data.entries[i].fields.length[0] = data.entries[i].fields.length[0].replace(/<[^>]+>/gm, '');
-            data.entries[i].id_with_slash = data.entries[i].id.replace('_', '/');
-        }
+        data.entries.forEach(function(entry) {
+            entry.fields = entry.highlights;
+            entry.fields.length[0] = entry.fields.length[0].replace(/<[^>]+>/gm, '');
+            entry.id_with_slash = entry.id.replace('_', '/');
+        });
 
         return data;
-
-        /**
-         * Merge the two species facets putting popularSpecies
-         * at the top of the list.
-         * Species facets:
-         * - TAXONOMY (all species)
-         * - popularSpecies (manually curated set of top organisms).
-         */
-        function _mergeSpeciesFacets (data) {
-
-            // find the popular species facet
-            var topSpeciesFacetId = _findFacetId('popular_species', data);
-
-            if (topSpeciesFacetId) {
-                // get top species names
-                var popularSpecies = _.pluck(data.facets[topSpeciesFacetId].facetValues, 'label');
-
-                // find the taxonomy facet
-                var taxonomyFacetId = _findFacetId('TAXONOMY', data);
-
-                // extract other species from the taxonomy facet
-                var otherSpecies = _getOtherSpecies(data);
-
-                // merge popularSpecies with otherSpecies
-                data.facets[taxonomyFacetId].facetValues = data.facets[topSpeciesFacetId].facetValues.concat(otherSpecies);
-
-                // remove the Popular species facet
-                delete data.facets[topSpeciesFacetId];
-                data.facets = _.compact(data.facets);
-            }
-
-            /**
-             * Find objects in array by attribute value.
-             * Given an array like:
-             * [{'id': 'a'}, {'id': 'b'}, {'id': 'c'}]
-             * findFacetId('b') -> 1
-             */
-            function _findFacetId (facetLabel, data) {
-                var index;
-                _.find(data.facets, function(facet, i) {
-                    if (facet.id === facetLabel) {
-                        index = i;
-                        return true;
-                    }
-                });
-                return index;
-            }
-
-            /**
-             * Get Taxonomy facet values that are not also in popularSpecies.
-             */
-            function _getOtherSpecies (data) {
-                var taxonomyFacet = data.facets[taxonomyFacetId].facetValues;
-                var otherSpecies = [];
-                for (var i=0; i<taxonomyFacet.length; i++) {
-                    if (_.indexOf(popularSpecies, taxonomyFacet[i].label) === -1) {
-                        otherSpecies.push(taxonomyFacet[i]);
-                    }
-                }
-                return otherSpecies;
-            }
-        }
     };
 
     /**
