@@ -807,6 +807,8 @@ button.load-more {
 .text-search-highlights {
   font-weight: bold;
   text-rendering: optimizeLegibility;
+  background-color: whitesmoke;
+  padding: 2px 3px;
 }
 
 .hidden {
