@@ -153,7 +153,6 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
         // hopscotch.endTour(); // end guided tour when a search is launched
         self.autocompleteDeferred && self.autocompleteDeferred.reject(); // if autocompletion was launched - reject it
 
-        self.query = query;
         self.status = 'in progress';
 
         // display search spinner if not a "load more" request
@@ -163,6 +162,7 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
         $window.document.title = 'Search: ' + query;
 
         query = self.preprocessQuery(query);
+        self.query = query;
 
         // get queryUrl ready
         var ebeyeUrl = routes.ebiSearch({
