@@ -1,6 +1,18 @@
 
 # <i class="fa fa-book" id="overview"></i> API overview
 
+<div class="alert alert-warning">
+
+<h2>Migration to https on September 3rd, 2018</h2>
+
+<blockquote class="twitter-tweet" data-lang="en"><p lang="en" dir="ltr">🔓➡️🔒 RNAcentral website will switch to the <a href="https://twitter.com/hashtag/https?src=hash&amp;ref_src=twsrc%5Etfw">#https</a> protocol on Sep 3rd. No action should be required but feel free to get in touch if you have any questions</p>&mdash; RNAcentral (@RNAcentral) <a href="https://twitter.com/RNAcentral/status/1032639341196136450?ref_src=twsrc%5Etfw">August 23, 2018</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+<p>
+You may need to <strong>update your code</strong> after September 3rd, 2018 to use "https" instead of "http" in the RNAcentral URLs.
+</p>
+
+</div>
+
 Most data in RNAcentral can be accessed programmatically using a RESTful API
 allowing for integration with other resources.
 The API implementation is based on the [Django Rest Framework](http://www.django-rest-framework.org/).
