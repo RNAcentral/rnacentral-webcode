@@ -323,24 +323,16 @@ var textSearchResults = {
          * Are there any highlighted snippets in search results at all?
          */
         ctrl.anyHighlights = function(fields) {
-            for (var fieldName in fields) {
-                if (fields.hasOwnProperty(fieldName) && ctrl.anyHighlightsInField(fields[fieldName])) {
-                    return true;
-                }
-            }
-            return false;
+            return Object.keys(fields).some(function(fieldName) {
+                return (fields.hasOwnProperty(fieldName) && ctrl.anyHighlightsInField(fields[fieldName]));
+            });
         };
 
         /**
          * Does the given field contain any highlighted text snippets?
          */
         ctrl.anyHighlightsInField = function(field) {
-            for (var i=0; i < field.length; i++) {
-                if (field[i].indexOf('text-search-highlights') !== -1) {
-                    return true;
-                }
-            }
-            return false;
+            return field.some(function(el) { return el.indexOf('text-search-highlights') !== -1 });
         };
     }]
 };
