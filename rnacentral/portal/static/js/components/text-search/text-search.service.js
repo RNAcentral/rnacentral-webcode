@@ -302,17 +302,14 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
         });
 
         // update rfam_problem_found labels from True/Fase to Yes/No
-        for (var i=0; i < data.facets.length; i++) {
-            if (data.facets[i].id == 'rfam_problem_found') {
-                for (var j=0; j < data.facets[i].facetValues.length; j++) {
-                    if (data.facets[i].facetValues[j].label == 'True') {
-                        data.facets[i].facetValues[j].label = 'Yes';
-                    } else if (data.facets[i].facetValues[j].label == 'False') {
-                        data.facets[i].facetValues[j].label = 'No';
-                    }
-                }
+        data.facets.forEach(function(facet) {
+            if (facet.id === 'rfam_problem_found') {
+                facet.facetValues.forEach(function(facetValue) {
+                    if (facetValue.label === 'True') { facetValue.label = 'Yes'; }
+                    else if (facetValue.label === 'False') { facetValue.label = 'No'; }
+                });
             }
-        }
+        });
 
          // Use `hlfields` with highlighted matches instead of `fields`.
         for (var i=0; i < data.entries.length; i++) {
