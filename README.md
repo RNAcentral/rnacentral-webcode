@@ -15,7 +15,7 @@ The development of RNAcentral is coordinated by the
 1. Clone Git repository:
 
   ```
-  git clone --recursive https://github.com/RNAcentral/rnacentral-webcode.git
+  git clone https://github.com/RNAcentral/rnacentral-webcode.git
   ```
 
 2. Edit database connection parameters in `rnacentral/local_settings.py`
@@ -126,44 +126,3 @@ py.test portal/tests/description_tests.py
 
 Feel free to give feedback using [GitHub issues](https://github.com/RNAcentral/rnacentral-webcode/issues)
 or get in touch using the [Contact form](http://rnacentral.org/contact) on our website.
-
-## Technology overview
-
-### Python
-
-* [Django](https://www.djangoproject.com/)
-* [Django REST Framework](http://www.django-rest-framework.org/)
-* [Fabric](http://www.fabfile.org/)
-* [Python RQ](http://python-rq.org/)
-* see [requirements.txt](rnacentral/requirements.txt) for the full list
-
-### Javascript
-
-* [AngularJS](https://angularjs.org/)
-* [Twitter Bootstrap](http://getbootstrap.com/)
-* [D3](http://d3js.org/)
-* [jQuery](https://jquery.com/)
-* [Hopscotch](https://github.com/linkedin/hopscotch)
-* [Genoverse](http://genoverse.org)
-* see [LICENSE](LICENSE) for more details
-
-### CSS
-
-* [Twitter Bootstrap](http://getbootstrap.com/)
-* [Font Awesome](http://fontawesome.io/)
-* [Animate.css](https://daneden.github.io/animate.css/)
-* see [LICENSE](LICENSE) for more details
-
-### Testing
-* [Selenium](http://www.seleniumhq.org/)
-* [PhantomJS](http://phantomjs.org/)
-* [Jenkins](http://rnacentral.org)
-* [BrowserStack](http://browserstack.com)
-
-### Other
-* [Memcached](http://memcached.org/)
-* [Redis](http://redis.io/)
-* [Supervisor](http://supervisord.org/)
-* [Docker](https://www.docker.com)
-
-
