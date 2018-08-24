@@ -49,8 +49,8 @@ var textSearchResults = {
             var query = ctrl.search.query;
 
             var min, max, floor, ceil;
-            var lengthClause = 'length\\:\\[(\\d+) to (\\d+)\\]';
-            var lengthRegexp = new RegExp('length\\:\\[(\\d+) to (\\d+)\\]', 'i');
+            var lengthClause = 'length\\:\\[(\\d+) TO (\\d+)\\]';
+            var lengthRegexp = new RegExp('length\\:\\[(\\d+) TO (\\d+)\\]', 'i');
 
             // remove length clause in different contexts
             var filteredQuery = query;
@@ -151,15 +151,15 @@ var textSearchResults = {
          * Edge case of facet search with length field applied.
          */
         ctrl.lengthSearch = function () {
-            ctrl.facetSearch('length', '[' + ctrl.lengthSlider.min + ' to ' + ctrl.lengthSlider.max + ']', true)
+            ctrl.facetSearch('length', '[' + ctrl.lengthSlider.min + ' TO ' + ctrl.lengthSlider.max + ']', true)
         };
 
         /**
          * Resets slider to default value
          */
         ctrl.resetSlider = function() {
-            var lengthClause = 'length\\:\\[(\\d+) to (\\d+)\\]';
-            var lengthRegexp = new RegExp('length\\:\\[(\\d+) to (\\d+)\\]', 'i');
+            var lengthClause = 'length\\:\\[(\\d+) TO (\\d+)\\]';
+            var lengthRegexp = new RegExp('length\\:\\[(\\d+) TO (\\d+)\\]', 'i');
 
             // remove length clause in different contexts
             var filteredQuery = search.query;
@@ -203,7 +203,7 @@ var textSearchResults = {
                     newQuery = search.query + ' AND ' + facet; // add new facet
                 }
             } else {
-                var lengthClause = 'length\\:\\[\\d+ to \\d+\\]';
+                var lengthClause = 'length\\:\\[\\d+ TO \\d+\\]';
 
                 // remove length clause in different contexts
                 newQuery = newQuery.replace(new RegExp(' AND ' + lengthClause + ' AND '), ' AND ', 'i');
