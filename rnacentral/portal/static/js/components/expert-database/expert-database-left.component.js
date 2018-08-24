@@ -3,7 +3,7 @@ var expertDatabaseLeft = {
         expertDb: "<"
     },
     templateUrl: '/static/js/components/expert-database/expert-database-left.html',
-    controller: ['$interpolate', '$location', '$http', 'search', 'routes', function($interpolate, $location, $http, search, routes) {
+    controller: ['search', 'routes', function(search, routes) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
