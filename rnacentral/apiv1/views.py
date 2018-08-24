@@ -574,7 +574,7 @@ class RnaGenomeLocations(generics.ListAPIView):
                         'chromosome': chromosome,
                         'strand': xref.accession.coordinates.filter(chromosome=chromosome).all()[0].strand,
                         'start': xref.accession.coordinates.filter(chromosome=chromosome).all().aggregate(Min('primary_start'))['primary_start__min'],
-                        'end': xref.accession.coordinates.filter(chromosome=chromosome).all().aggregate(Max('primary_end'))['primary_end__max'] + 1,
+                        'end': xref.accession.coordinates.filter(chromosome=chromosome).all().aggregate(Max('primary_end'))['primary_end__max'],
                         'species': assembly.ensembl_url,
                         'ucsc_db_id': xref.get_ucsc_db_id(),
                         'ensembl_division': xref.get_ensembl_division(),
