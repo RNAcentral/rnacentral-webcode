@@ -564,26 +564,31 @@ class RnaGenomeLocations(generics.ListAPIView):
             return Response([])
 
         for xref in xrefs:
-            if xref.accession.coordinates.exists() and xref.accession.coordinates.all()[0].chromosome:
-                data = {
-                    'chromosome': xref.accession.coordinates.all()[0].chromosome,
-                    'strand': xref.accession.coordinates.all()[0].strand,
-                    'start': xref.accession.coordinates.all().aggregate(Min('primary_start'))['primary_start__min'],
-                    'end': xref.accession.coordinates.all().aggregate(Max('primary_end'))['primary_end__max'],
-                    'species': assembly.ensembl_url,
-                    'ucsc_db_id': xref.get_ucsc_db_id(),
-                    'ensembl_division': xref.get_ensembl_division(),
-                    'ensembl_species_url': xref.accession.get_ensembl_species_url()
-                }
+            if xref.accession.coordinates.exists():
+                chromosomes = []
+                for entry in xref.accession.coordinates.all():
+                    if entry.chromosome not in chromosomes:
+                        chromosomes.append(entry.chromosome)
+                for chromosome in chromosomes:
+                    data = {
+                        'chromosome': chromosome,
+                        'strand': xref.accession.coordinates.filter(chromosome=chromosome).all()[0].strand,
+                        'start': xref.accession.coordinates.filter(chromosome=chromosome).all().aggregate(Min('primary_start'))['primary_start__min'],
+                        'end': xref.accession.coordinates.filter(chromosome=chromosome).all().aggregate(Max('primary_end'))['primary_end__max'] + 1,
+                        'species': assembly.ensembl_url,
+                        'ucsc_db_id': xref.get_ucsc_db_id(),
+                        'ensembl_division': xref.get_ensembl_division(),
+                        'ensembl_species_url': xref.accession.get_ensembl_species_url()
+                    }
 
-                exceptions = ['X', 'Y']
-                if re.match(r'\d+', data['chromosome']) or data['chromosome'] in exceptions:
-                    data['ucsc_chromosome'] = 'chr' + data['chromosome']
-                else:
-                    data['ucsc_chromosome'] = data['chromosome']
+                    exceptions = ['X', 'Y']
+                    if re.match(r'\d+', data['chromosome']) or data['chromosome'] in exceptions:
+                        data['ucsc_chromosome'] = 'chr' + data['chromosome']
+                    else:
+                        data['ucsc_chromosome'] = data['chromosome']
 
-                if data not in locations:
-                    locations.append(data)
+                    if data not in locations:
+                        locations.append(data)
 
         return Response(locations)
 
