@@ -1,8 +1,8 @@
 var textSearchResults = {
     bindings: {},
     templateUrl: '/static/js/components/text-search/text-search-results/text-search-results.html',
-    controller: ['$interpolate', '$location', '$http', '$timeout', '$scope', '$filter', '$q', 'search', 'routes', 'normalizeExpertDbName',
-    function($interpolate, $location, $http, $timeout, $scope, $filter, $q, search, routes, normalizeExpertDbName) {
+    controller: ['$http', '$timeout', '$scope', '$filter', '$q', 'search', 'routes', 'normalizeExpertDbName',
+    function($http, $timeout, $scope, $filter, $q, search, routes, normalizeExpertDbName) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
