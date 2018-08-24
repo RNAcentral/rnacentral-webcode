@@ -92,7 +92,7 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
     this.status = 'off'; // possible values: 'off', 'in progress', 'success', 'error'
 
     this.query = ''; // the query will be observed by watches
-    this.sort = 'boost:descending,length:descending' // EBI search endpoint sorts results by this field value
+    this.sort = 'boost:descending,length:descending'; // EBI search endpoint sorts results by this field value
     this.sortTiebreaker = 'length:descending'; // secondary search field, used in case first field is even
 
     this.callbacks = []; // callbacks to be called after each search.search(); done for slider redraw
@@ -108,8 +108,6 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
      * @returns {Promise}
      */
     this.autocomplete = function (query) {
-        self = this;
-
         self.autocompleteDeferred = $q.defer();
 
         if (query.length < 3) {
@@ -152,7 +150,7 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
 
         // hopscotch.endTour(); // end guided tour when a search is launched
         self.autocompleteDeferred && self.autocompleteDeferred.reject(); // if autocompletion was launched - reject it
-
+        self.query = query;
         self.status = 'in progress';
 
         // display search spinner if not a "load more" request
@@ -162,7 +160,6 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
         $window.document.title = 'Search: ' + query;
 
         query = self.preprocessQuery(query);
-        self.query = query;
 
         // get queryUrl ready
         var ebeyeUrl = routes.ebiSearch({

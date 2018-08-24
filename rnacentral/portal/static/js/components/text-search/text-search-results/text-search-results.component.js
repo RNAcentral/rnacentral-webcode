@@ -18,9 +18,9 @@ var textSearchResults = {
             ctrl.normalizeExpertDbName = normalizeExpertDbName;
 
             // slider that allows users to set range of sequence lengths
-            ctrl.setLengthSlider(search.query); // initial value
+            ctrl.setLengthSlider(); // initial value
 
-            search.registerSearchCallback(function() { ctrl.setLengthSlider(search.query); });
+            search.registerSearchCallback(function() { ctrl.setLengthSlider(); });
 
             // retrieve expert_dbs json for display in tooltips
             $http.get(routes.expertDbsApi({ expertDbName: '' })).then(
@@ -44,10 +44,10 @@ var textSearchResults = {
 
         /**
          * Sets new value of length slider upon init or search.
-         * @param newQuery
-         * @param oldQuery
          */
-        ctrl.setLengthSlider = function(query) {
+        ctrl.setLengthSlider = function() {
+            var query = ctrl.search.query;
+
             var min, max, floor, ceil;
             var lengthClause = 'length\\:\\[(\\d+) to (\\d+)\\]';
             var lengthRegexp = new RegExp('length\\:\\[(\\d+) to (\\d+)\\]', 'i');
