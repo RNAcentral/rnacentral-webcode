@@ -283,18 +283,20 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
      * Preprocess data received from the server.
      */
     this.preprocessResults = function (data) {
-        // Merge popularSpecies facet into TAXONOMY facet at the top of the list.
+        // Prepend entries from popularSpecies facet into TAXONOMY facet, eliminating redundancy.
         var popularSpeciesFacet = data.facets.find(function(el) { return el.id === 'popular_species' });
         var taxonomyFacet = data.facets.find(function(el) { return el.id === 'TAXONOMY' }); // find facets by 'id': [{'id': 'a'}, {'id': 'b'}, {'id': 'c'}]
         if (popularSpeciesFacet) {
             // populate taxonomyFacet with the contents of popularSpeciesFacet
-            var taxonomySpecies = taxonomyFacet.facetValues.reduce(
+            var popularSpecies = popularSpeciesFacet.facetValues.reduce(
                 function(acc, el) { acc.push(el.label); return acc },
                 []
             ); // e.g. ['gorilla_gorilla', 'homo_sapiens'] etc.
-            popularSpeciesFacet.facetValues.forEach(function(el) {
-                if (taxonomySpecies.indexOf(el.label)) taxonomyFacet.facetValues.splice(0, 0, el);
+
+            var nonPopularValues =  taxonomyFacet.facetValues.filter(function(el) {
+                return popularSpecies.indexOf(el.label) === -1;
             });
+            taxonomyFacet.facetValues = popularSpeciesFacet.facetValues.concat(nonPopularValues);
 
             // remove the Popular species facet and any empty entries
             delete data.facets[data.facets.indexOf(popularSpeciesFacet)];
