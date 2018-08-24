@@ -293,21 +293,14 @@ limitations under the License.
                             {% endif %}
                           </li>
                           <li>
-                            {% if hit.rfam_model.go_terms|length > 1 %}
                             <ul class="list-unstyled">
                               {% for go_term in hit.rfam_model.go_terms %}
                               <li>
-                                GO: <a href="{{ go_term.quickgo_url }}" target="_blank" class="help no-icon" title="View {{ go_term.ontology_term_id }} in QuickGO">{{ go_term.name }}</a>
-                                <a class="btn btn-circle btn-default btn-sm margin-left-5px" ng-click="toggleGoModal('{{ go_term.ontology_term_id }}')" type="button"><i class="fa fa-sitemap" uib-tooltip="View {{ go_term.ontology_term_id }} ancestor chart"></i></a>
+                                <a href="{{ go_term.quickgo_url }}" target="_blank" class="no-icon" uib-tooltip="View {{ go_term.ontology_term_id }} in QuickGO">{{ go_term.name }}</a>
+                                <a class="btn btn-circle btn-default margin-left-5px" ng-click="toggleGoModal('{{ go_term.ontology_term_id }}')" type="button"><i class="fa fa-sitemap" uib-tooltip="View {{ go_term.ontology_term_id }} ancestor chart"></i></a>
                               </li>
                               {% endfor %}
                             </ul>
-                            {% else %}
-                              {% with hit.rfam_model.go_terms.0 as go_term %}
-                                <a href="{{ go_term.quickgo_url }}">{{ go_term.ontology_term_id }}</a>
-                                <small>{{ go_term.name }}</small>
-                              {% endwith %}
-                            {% endif %}
                           </li>
 
                           {% with hit.ranges as ranges %}
