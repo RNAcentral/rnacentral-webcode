@@ -105,7 +105,7 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
             }
 
             if (feature.external_name) {
-                result["HGNC symbol"] = feature.external_name;
+                result["Symbol"] = feature.external_name;
             }
 
             return result;
@@ -144,7 +144,7 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
             }
 
             if (feature.external_name) {
-                result["HGNC symbol"] = feature.external_name;
+                result["Symbol"] = feature.external_name;
             }
 
             if (feature.transcript_support_level) {
