@@ -31,3 +31,6 @@ from .xref import *
 from .ensembl_assembly import *
 from .ensembl_insdc_mapping import *
 from .ensembl_karyotype import *
+from .protein_info import *
+from .related_sequences import *
+from .sequence_features import *
