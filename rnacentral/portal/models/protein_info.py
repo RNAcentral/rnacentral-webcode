@@ -20,7 +20,10 @@ from django.contrib.postgres.fields import ArrayField
 
 
 class ProteinInfo(models.Model):
-    protein_accession = models.TextField(primary_key=True)
+    protein_accession = models.TextField(
+        primary_key=True,
+        db_column='protein_accession',
+    )
     description = models.TextField()
     label = models.TextField(null=True)
     synonyms = ArrayField(models.TextField(), null=True)
