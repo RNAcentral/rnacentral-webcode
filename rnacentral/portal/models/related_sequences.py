@@ -37,7 +37,7 @@ class RelatedSequence(models.Model):
         to_field='id',
         null=True,
     )
-    relationship_type = models.CharField()
+    relationship_type = models.TextField()
     methods = ArrayField(models.TextField(), null=True)
 
     class Meta:
