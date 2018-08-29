@@ -24,6 +24,10 @@ six==1.8.0
 sqlparse==0.1.19
 versiontools==1.9.1
 
+# code style and test coverage reporting
+django-jenkins==0.110.0
+coverage==4.5.1
+
 # markdown support
 Markdown==2.3.1
 django-markdown-deux==1.0.5

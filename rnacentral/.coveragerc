@@ -1,0 +1,5 @@
+[run]
+omit =
+    # omit management commands and migrations
+    portal/management/*
+    portal/migrations/*
