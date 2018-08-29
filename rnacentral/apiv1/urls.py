@@ -46,6 +46,8 @@ urlpatterns = [
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/genome-mappings/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.RnaGenomeMappings.as_view()), name='rna-genome-mappings'),
     # go annotations for RNA (species-specific)
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/go-annotations/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.RnaGoAnnotationsView.as_view()), name='rna-go-annotations'),
+    # target proteins for RNA (species-specific)
+    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/related-protein/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.RelatedProteinsView.as_view()), name='rna-related-proteins'),
     # literature citations associated with ENA records
     url(r'^accession/(?P<pk>.*?)/citations/?$', cache_page(CACHE_TIMEOUT)(views.CitationsView.as_view()), name='accession-citations'),
     # view for an individual cross-reference
@@ -63,7 +65,7 @@ urlpatterns = [
     # mapping of ensembl assemblies to insdc submissions
     url(r'ensembl-insdc-mapping/$', views.EnsemblInsdcMappingView.as_view(), {}, name='ensembl-insdc-mapping'),
     # endpoint that returns karyotypes, downloaded from ensembl
-    url(r'karyotypes/(?P<ensembl_url>.*?)/?$', cache_page(CACHE_TIMEOUT)(views.EnsemblKaryotypeAPIView.as_view()), {}, name='ensembl-karyotype')
+    url(r'karyotypes/(?P<ensembl_url>.*?)/?$', cache_page(CACHE_TIMEOUT)(views.EnsemblKaryotypeAPIView.as_view()), {}, name='ensembl-karyotype'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'yaml', 'fasta', 'api', 'gff', 'gff3', 'bed'])

@@ -1,3 +1,4 @@
+from __future__ import print_function
 """
 Copyright [2009-2017] EMBL-European Bioinformatics Institute
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -39,7 +40,7 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
-    EnsemblInsdcMapping, GenomeMapping, GenomicCoordinates, GoAnnotation, url2db, db2url
+    EnsemblInsdcMapping, GenomeMapping, GenomicCoordinates, GoAnnotation, RelatedSequence, ProteinInfo, url2db, db2url
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination
 
@@ -798,3 +799,45 @@ class EnsemblKaryotypeAPIView(APIView):
             raise Http404
 
         return Response(assembly.karyotype.first().karyotype)
+
+
+class RelatedProteinsView(APIView):
+    """API endpoint, presenting ProteinInfo, related to given rna."""
+    permission_classes = ()
+    authentication_classes = ()
+
+    def get(self, request, pk, taxid, **kwargs):
+        # example: pk='URS0000013DD8', taxid='9606'
+        protein_info_query = '''
+            SELECT {related_sequence}.target_accession, {related_sequence}.source_urs_taxid,
+              {rna_precomputed}.upi, {rna_precomputed}.taxid,
+              {protein_info}.pk as id, {protein_info}.protein_accession, {protein_info}.description, {protein_info}.label, {protein_info}.synonyms
+            FROM {related_sequence}
+            JOIN {rna_precomputed}
+            ON {rna_precomputed}.id = {related_sequence}.source_urs_taxid
+            JOIN {protein_info}
+            ON {protein_info}.protein_accession = {related_sequence}.target_accession
+            WHERE {related_sequence}.relationship_type = 'target_protein'
+              AND {rna_precomputed}.upi = '{pk}'
+              AND {rna_precomputed}.taxid = '{taxid}'
+        '''.format(
+            rna=Rna._meta.db_table,
+            rna_precomputed=RnaPrecomputed._meta.db_table,
+            related_sequence=RelatedSequence._meta.db_table,
+            protein_info=ProteinInfo._meta.db_table,
+            pk=pk,
+            taxid=taxid
+        )
+
+        try:
+            proteins = ProteinInfo.objects.raw(protein_info_query)
+        except ProteinInfo.DoesNotExist:
+            proteins = []
+
+        return [{
+            'id': protein.id,
+            'protein_accession': protein.protein_accession,
+            'description': protein.description,
+            'label': protein.label,
+            'synonyms': protein.synonyms,
+        } for protein in proteins]
