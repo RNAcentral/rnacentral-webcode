@@ -809,17 +809,18 @@ class RelatedProteinsView(APIView):
     def get(self, request, pk, taxid, **kwargs):
         # example: pk='URS0000013DD8', taxid='9606'
         protein_info_query = '''
-            SELECT {related_sequence}.target_accession, {related_sequence}.source_urs_taxid,
-              {rna_precomputed}.upi, {rna_precomputed}.taxid,
-              {protein_info}.pk as id, {protein_info}.protein_accession, {protein_info}.description, {protein_info}.label, {protein_info}.synonyms
+            SELECT 
+                {related_sequence}.target_accession, 
+                {related_sequence}.source_urs_taxid,
+                {protein_info}.protein_accession, 
+                {protein_info}.description, 
+                {protein_info}.label, 
+                {protein_info}.synonyms
             FROM {related_sequence}
-            JOIN {rna_precomputed}
-            ON {rna_precomputed}.id = {related_sequence}.source_urs_taxid
             JOIN {protein_info}
             ON {protein_info}.protein_accession = {related_sequence}.target_accession
             WHERE {related_sequence}.relationship_type = 'target_protein'
-              AND {rna_precomputed}.upi = '{pk}'
-              AND {rna_precomputed}.taxid = '{taxid}'
+              AND {related_sequence}.source_urs_taxid = '{pk}_{taxid}'
         '''.format(
             rna=Rna._meta.db_table,
             rna_precomputed=RnaPrecomputed._meta.db_table,
@@ -834,10 +835,9 @@ class RelatedProteinsView(APIView):
         except ProteinInfo.DoesNotExist:
             proteins = []
 
-        return [{
-            'id': protein.id,
+        return Response([{
             'protein_accession': protein.protein_accession,
             'description': protein.description,
             'label': protein.label,
             'synonyms': protein.synonyms,
-        } for protein in proteins]
+        } for protein in proteins])
