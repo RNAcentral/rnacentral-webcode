@@ -807,17 +807,18 @@ class RelatedProteinsView(APIView):
     authentication_classes = ()
 
     def get(self, request, pk, taxid, **kwargs):
-        # example: pk='URS0000013DD8', taxid='9606'
+        # we select redundant {protein_info}.protein_accession because
+        # otherwise django curses about lack of primary key in raw query
         protein_info_query = '''
             SELECT 
                 {related_sequence}.target_accession, 
                 {related_sequence}.source_urs_taxid,
-                {protein_info}.protein_accession, 
+                {protein_info}.protein_accession,
                 {protein_info}.description, 
                 {protein_info}.label, 
                 {protein_info}.synonyms
             FROM {related_sequence}
-            JOIN {protein_info}
+            LEFT JOIN {protein_info}
             ON {protein_info}.protein_accession = {related_sequence}.target_accession
             WHERE {related_sequence}.relationship_type = 'target_protein'
               AND {related_sequence}.source_urs_taxid = '{pk}_{taxid}'
@@ -836,7 +837,7 @@ class RelatedProteinsView(APIView):
             proteins = []
 
         return Response([{
-            'protein_accession': protein.protein_accession,
+            'protein_accession': protein.target_accession,
             'description': protein.description,
             'label': protein.label,
             'synonyms': protein.synonyms,
