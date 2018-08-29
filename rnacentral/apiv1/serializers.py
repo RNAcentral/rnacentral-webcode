@@ -367,6 +367,13 @@ class RnaFastaSerializer(serializers.ModelSerializer):
         fields = ('fasta',)
 
 
+class RelatedProteinSerializer(serializers.Serializer):
+    protein_accession = serializers.CharField()
+    description = serializers.CharField()
+    label = serializers.CharField()
+    synonyms = serializers.ListField(serializers.CharField())
+
+
 class RnaGffSerializer(serializers.ModelSerializer):
     """Serializer for presenting genomic coordinates in GFF format"""
     gff = serializers.CharField(source='get_gff', read_only=True)

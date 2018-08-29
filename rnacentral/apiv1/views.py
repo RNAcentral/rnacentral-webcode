@@ -37,12 +37,12 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
                               RnaSpeciesSpecificSerializer, ExpertDatabaseStatsSerializer, \
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, RfamHitSerializer, \
-                              EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer
+                              EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer, RelatedProteinSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
     EnsemblInsdcMapping, GenomeMapping, GenomicCoordinates, GoAnnotation, RelatedSequence, ProteinInfo, url2db, db2url
 from portal.config.expert_databases import expert_dbs
-from rnacentral.utils.pagination import Pagination
+from rnacentral.utils.pagination import Pagination, RawQuerysetPagination
 
 """
 Docstrings of the classes exposed in urlpatterns support markdown.
@@ -805,6 +805,8 @@ class RelatedProteinsView(APIView):
     """API endpoint, presenting ProteinInfo, related to given rna."""
     permission_classes = ()
     authentication_classes = ()
+    pagination_class = RawQuerysetPagination
+    serializer_class = RelatedProteinSerializer
 
     def get(self, request, pk, taxid, **kwargs):
         # we select redundant {protein_info}.protein_accession because
@@ -831,14 +833,5 @@ class RelatedProteinsView(APIView):
             taxid=taxid
         )
 
-        try:
-            proteins = ProteinInfo.objects.raw(protein_info_query)
-        except ProteinInfo.DoesNotExist:
-            proteins = []
+        return ProteinInfo.objects.raw(protein_info_query)
 
-        return Response([{
-            'protein_accession': protein.target_accession,
-            'description': protein.description,
-            'label': protein.label,
-            'synonyms': protein.synonyms,
-        } for protein in proteins])
