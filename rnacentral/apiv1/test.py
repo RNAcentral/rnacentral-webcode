@@ -83,6 +83,7 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
     * /rna
     * /rna/id/xrefs
     * /rna/id/publications
+    * /rna/id/related-protein
     """
     def test_rna_list(self):
         """Test RNA list (hyperlinked response)."""
@@ -124,6 +125,17 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         response = self._test_url(url, data={'page': page, 'page_size': page_size})
         self.assertTrue(len(response.data['results']), page_size)
 
+    def test_related_proteins(self):
+        """Test RNA proteins endpoint."""
+        upi = 'URS0000013DD8'  # >270 related proteins
+        taxid = '9606'
+        url = reverse('rna-related-proteins', kwargs={'pk': upi, 'taxid': taxid})
+        with Timer() as timer:
+            c = APIClient()
+            response = c.get(url, data={})
+        self.assertTrue(timer.timeout < 5)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(len(response.data) > 200)
 
 class NestedXrefsTestCase(ApiV1BaseClass):
     """Test flat/hyperlinked pagination."""
