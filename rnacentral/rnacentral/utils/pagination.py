@@ -6,7 +6,7 @@ class Pagination(PageNumberPagination):
     """
     DRF pagination_class, you use it by saying:
 
-    class MyView(APIView):
+    class MyView(GenericAPIView):
         pagination_class = Pagination
     """
     page_size_query_param = 'page_size'
@@ -20,7 +20,7 @@ class RawQuerysetPaginator(Paginator):
     Stolen from:
     https://stackoverflow.com/questions/2532475/django-paginator-raw-sql-query
     """
-    def __init__(self, object_list, per_page, count, **kwargs):
+    def __init__(self, object_list, per_page, count=1, **kwargs):
         super(RawQuerysetPaginator, self).__init__(object_list, per_page, **kwargs)
         self._raw_count = count
 

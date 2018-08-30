@@ -21,7 +21,7 @@ from rest_framework import serializers
 
 from portal.models import Rna, Xref, Reference,  Reference_map, ChemicalComponent, Database, DatabaseStats, Accession, \
     Release, Reference, Modification, RfamHit, RfamModel, RfamClan, \
-    EnsemblAssembly, EnsemblInsdcMapping, EnsemblKaryotype, GenomeMapping
+    EnsemblAssembly, EnsemblInsdcMapping, EnsemblKaryotype, GenomeMapping, ProteinInfo
 
 
 class RawPublicationSerializer(serializers.ModelSerializer):
@@ -367,11 +367,14 @@ class RnaFastaSerializer(serializers.ModelSerializer):
         fields = ('fasta',)
 
 
-class RelatedProteinSerializer(serializers.Serializer):
-    protein_accession = serializers.CharField()
-    description = serializers.CharField()
-    label = serializers.CharField()
-    synonyms = serializers.ListField(serializers.CharField())
+class RelatedProteinSerializer(serializers.ModelSerializer):
+    # protein_accession = serializers.CharField()
+    # description = serializers.CharField()
+    # label = serializers.CharField()
+    # synonyms = serializers.ListField(serializers.CharField())
+    class Meta:
+        model = ProteinInfo
+        fields = ('protein_accession', 'description', 'label', 'synonyms')
 
 
 class RnaGffSerializer(serializers.ModelSerializer):

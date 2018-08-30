@@ -801,14 +801,17 @@ class EnsemblKaryotypeAPIView(APIView):
         return Response(assembly.karyotype.first().karyotype)
 
 
-class RelatedProteinsView(APIView):
+class RelatedProteinsView(generics.ListAPIView):
     """API endpoint, presenting ProteinInfo, related to given rna."""
     permission_classes = ()
     authentication_classes = ()
     pagination_class = RawQuerysetPagination
     serializer_class = RelatedProteinSerializer
 
-    def get(self, request, pk, taxid, **kwargs):
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        taxid = self.kwargs['taxid']
+
         # we select redundant {protein_info}.protein_accession because
         # otherwise django curses about lack of primary key in raw query
         protein_info_query = '''
@@ -835,3 +838,13 @@ class RelatedProteinsView(APIView):
 
         return ProteinInfo.objects.raw(protein_info_query)
 
+    # def list(self, request, *args, **kwargs):
+    #     queryset = self.filter_queryset(self.get_queryset())
+    #
+    #     page = self.paginate_queryset(queryset)
+    #     if page is not None:
+    #         serializer = self.get_serializer(page, many=True)
+    #         return self.get_paginated_response(serializer.data)
+    #
+    #     serializer = self.get_serializer(queryset, many=True)
+    #     return Response(serializer.data)
