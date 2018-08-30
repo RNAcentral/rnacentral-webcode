@@ -28,7 +28,7 @@ class Timer(object):
 
     def __exit__(self, *args):
         self.end = time.clock()
-        self.timeout = (self.end - self.start) * 100
+        self.timeout = (self.end - self.start)
 
 
 class ApiV1BaseClass(APITestCase):
@@ -141,13 +141,15 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         self.assertTrue(len(response.data['results']) > 200)
 
     def test_related_proteins_pagination(self):
-        upi = 'URS0000013DD8'
-        taxid = '9606'
+        upi = 'URS0000021B51'  # over 9000 entries =)
+        taxid = '10090'
         url = reverse('rna-related-proteins', kwargs={'pk': upi, 'taxid': taxid})
         with Timer() as timer:
             c = APIClient()
             response = c.get(url, data={})  # pagination is enabled by default
-        self.assertTrue(timer.timeout < 1)
+        print(timer.timeout)
+        self.assertTrue(timer.timeout < 2)  # paginated request has to be fast
+        self.assertGreater(response.data['count'], 8000)  # well, not quite 'over 9000', but still many...
         self.assertEqual(response.status_code, 200)
         self.assertTrue(len(response.data['results']) == settings.REST_FRAMEWORK['PAGE_SIZE'])
 
