@@ -11,6 +11,7 @@ angular.module("routes", []).service('routes', ['$interpolate', function($interp
         apiGenomeLocationsView: '/api/v1/rna/{{ upi }}/genome-locations/{{ taxid }}',
         apiGenomeMappingsView: '/api/v1/rna/{{ upi }}/genome-mappings/{{ taxid }}',
         apiRfamHitsView: '/api/v1/rna/{{ upi }}/rfam-hits',
+        apiRelatedProteinsView: '/api/v1/rna/{{ upi }}/related-proteins/{{ taxid }}',
         lineageView: '/rna/{{ upi }}/lineage',
         expertDbsApi: '/api/v1/expert-dbs/{{ expertDbName }}',
         expertDbStatsApi: '/api/v1/expert-db-stats/{{ expertDbName }}',
