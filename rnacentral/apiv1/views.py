@@ -836,4 +836,5 @@ class RelatedProteinsView(generics.ListAPIView):
             taxid=taxid
         )
 
-        return PaginatedRawQuerySet(protein_info_query, model=ProteinInfo)  # was: ProteinInfo.objects.raw(protein_info_query)
+        queryset = PaginatedRawQuerySet(protein_info_query, model=ProteinInfo)  # was: ProteinInfo.objects.raw(protein_info_query)
+        return queryset
