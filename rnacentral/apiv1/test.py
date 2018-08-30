@@ -133,9 +133,9 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         with Timer() as timer:
             c = APIClient()
             response = c.get(url, data={})
-        self.assertTrue(timer.timeout < 5)
+        self.assertTrue(timer.timeout < 10)
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(len(response.data) > 200)
+        self.assertTrue(len(response.data['results']) > 200)
 
 class NestedXrefsTestCase(ApiV1BaseClass):
     """Test flat/hyperlinked pagination."""
