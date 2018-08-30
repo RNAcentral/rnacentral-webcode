@@ -15,6 +15,7 @@ import six
 
 import time
 
+from django.conf import settings
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase, APIClient
 
@@ -129,13 +130,27 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         """Test RNA proteins endpoint."""
         upi = 'URS0000013DD8'  # >270 related proteins
         taxid = '9606'
+        page = 1
+        page_size = 1000
         url = reverse('rna-related-proteins', kwargs={'pk': upi, 'taxid': taxid})
         with Timer() as timer:
             c = APIClient()
-            response = c.get(url, data={})
+            response = c.get(url, data={'page': page, 'page_size': page_size})
         self.assertTrue(timer.timeout < 10)
         self.assertEqual(response.status_code, 200)
         self.assertTrue(len(response.data['results']) > 200)
+
+    def test_related_proteins_pagination(self):
+        upi = 'URS0000013DD8'
+        taxid = '9606'
+        url = reverse('rna-related-proteins', kwargs={'pk': upi, 'taxid': taxid})
+        with Timer() as timer:
+            c = APIClient()
+            response = c.get(url, data={})  # pagination is enabled by default
+        self.assertTrue(timer.timeout < 1)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(len(response.data['results']) == settings.REST_FRAMEWORK['PAGE_SIZE'])
+
 
 class NestedXrefsTestCase(ApiV1BaseClass):
     """Test flat/hyperlinked pagination."""
