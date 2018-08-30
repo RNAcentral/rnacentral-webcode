@@ -1,4 +1,5 @@
 from django.db.models.query import RawQuerySet
+from django.db.models import sql
 from django.core.paginator import Paginator
 from rest_framework.pagination import PageNumberPagination
 
@@ -92,7 +93,7 @@ class PaginatedRawQuerySet(RawQuerySet):
         if self._result_cache is not None:
             return len(self._result_cache)
 
-        return self.model.objects.count()
+        return self.query.get_count(using=self.db)  # Originally was: return self.model.objects.count()
 
     def set_limits(self, start, stop):
         limit_offset = ''

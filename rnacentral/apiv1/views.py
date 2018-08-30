@@ -42,7 +42,7 @@ from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, R
 from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
     EnsemblInsdcMapping, GenomeMapping, GenomicCoordinates, GoAnnotation, RelatedSequence, ProteinInfo, url2db, db2url
 from portal.config.expert_databases import expert_dbs
-from rnacentral.utils.pagination import Pagination, RawQuerysetPagination
+from rnacentral.utils.pagination import Pagination, PaginatedRawQuerySet
 
 """
 Docstrings of the classes exposed in urlpatterns support markdown.
@@ -805,7 +805,7 @@ class RelatedProteinsView(generics.ListAPIView):
     """API endpoint, presenting ProteinInfo, related to given rna."""
     permission_classes = ()
     authentication_classes = ()
-    pagination_class = RawQuerysetPagination
+    pagination_class = Pagination
     serializer_class = RelatedProteinSerializer
 
     def get_queryset(self):
@@ -836,7 +836,8 @@ class RelatedProteinsView(generics.ListAPIView):
             taxid=taxid
         )
 
-        return ProteinInfo.objects.raw(protein_info_query)
+        # ProteinInfo.objects.raw(protein_info_query)
+        return PaginatedRawQuerySet(protein_info_query, model=ProteinInfo)
 
     # def list(self, request, *args, **kwargs):
     #     queryset = self.filter_queryset(self.get_queryset())
