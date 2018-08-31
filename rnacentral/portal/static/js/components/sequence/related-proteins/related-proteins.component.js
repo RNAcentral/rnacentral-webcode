@@ -2,6 +2,7 @@ var relatedProteins = {
     bindings: {
         upi: '<',
         taxid: '<',
+        genomes: '<',
         timeout: '<?',
         page: '<?',
         pageSize: '<?'
@@ -78,6 +79,12 @@ var relatedProteins = {
                     }
                 }
             )
+        };
+
+        ctrl.proteinAccessionToUrl = function(proteinAccession) {
+            var accession = proteinAccession.split(":")[1];
+            var species = ctrl.genomes.find(function(genome) { return genome.taxid.toString() == ctrl.taxid; }).ensembl_url;
+            return $interpolate("https://www.ensembl.org/{{ species }}/Gene/Summary?g={{ accession }};")({ species: species, accession: accession });
         };
     }],
     templateUrl: '/static/js/components/sequence/related-proteins/related-proteins.html'

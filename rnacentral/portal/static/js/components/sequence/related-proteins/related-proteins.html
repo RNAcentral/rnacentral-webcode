@@ -47,13 +47,13 @@
 
       <tr ng-if="$ctrl.status === 'success'" ng-repeat="protein in $ctrl.displayedProteins">
         <td>
-          {{ protein.target_accession }}
+          <a ng-href="{{ $ctrl.proteinAccessionToUrl(protein.target_accession) }}">{{ protein.target_accession.split(":")[1] }}</a>
         </td>
         <td>
           {{ protein.label }}
         </td>
         <td>
-          {{ protein.methods }}
+          <span ng-repeat="method in protein.methods">{{ method }}<span ng-show="!$last">, </span></span>
         </td>
         <td>
           {{ protein.description }}
