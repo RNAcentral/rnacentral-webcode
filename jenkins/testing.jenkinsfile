@@ -37,7 +37,7 @@ pipeline {
                             source ENV/bin/activate
                             source rnacentral/scripts/env.sh
                             cd rnacentral
-                            python manage.py jenkins --enable-coverage apiv1
+                            python manage.py jenkins --enable-coverage --keepdb apiv1
                         '''
                     } catch (err) {
                         currentBuild.result = 'UNSTABLE'

@@ -295,11 +295,13 @@ REST_FRAMEWORK = {
 }
 
 # Jenkins integration config taken from here: https://sites.google.com/site/kmmbvnr/home/django-jenkins-tutorial
+JENKINS_TEST_RUNNER = "rnacentral.utils.test_runner.JenkinsTestRunner"
 JENKINS_TASKS = (
     'django_jenkins.tasks.run_pep8',
     'django_jenkins.tasks.run_pyflakes',
     'django_jenkins.tasks.run_sloccount'
 )
+
 
 # django-debug-toolbar
 DEBUG_TOOLBAR_PANELS = (
