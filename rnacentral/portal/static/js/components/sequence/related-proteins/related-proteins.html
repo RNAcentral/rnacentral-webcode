@@ -25,8 +25,8 @@
       <tr>
         <th>Protein accession</th>
         <th>Label</th>
-        <th>Methods</th>
         <th>Description</th>
+        <th>Methods</th>
       </tr>
     </thead>
 
@@ -56,10 +56,10 @@
           {{ protein.label }}
         </td>
         <td>
-          <span ng-repeat="method in protein.methods">{{ method }}<span ng-show="!$last">, </span></span>
+          {{ protein.description.split(" [")[0] }}
         </td>
         <td>
-          {{ protein.description }}
+          <span ng-repeat="method in protein.methods">{{ method }}<span ng-show="!$last">, </span></span>
         </td>
       </tr>
     </tbody>
