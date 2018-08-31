@@ -27,6 +27,7 @@ versiontools==1.9.1
 # code style and test coverage reporting
 django-jenkins==0.110.0
 coverage==4.5.1
+pep8==1.7.1
 
 # markdown support
 Markdown==2.3.1
