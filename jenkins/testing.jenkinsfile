@@ -29,30 +29,34 @@ pipeline {
             }
         }
         stage("Run backend unit-tests") {
-            // see: https://medium.com/ordergroove-engineering/continuous-deployment-of-django-applications-part-1-e3bc332bcbaf
-            script {
-                try {
-                    sh '''
-                        source ENV/bin/activate
-                        source rnacentral/scripts/env.sh
-                        cd rnacentral
-                        python manage.py jenkins --enable-coverage apiv1
-                    '''
-                } catch (err) {
-                    currentBuild.result = 'UNSTABLE'
-                } finally {
-                    junit 'reports/junit.xml'
+            steps {
+                // see: https://medium.com/ordergroove-engineering/continuous-deployment-of-django-applications-part-1-e3bc332bcbaf
+                script {
+                    try {
+                        sh '''
+                            source ENV/bin/activate
+                            source rnacentral/scripts/env.sh
+                            cd rnacentral
+                            python manage.py jenkins --enable-coverage apiv1
+                        '''
+                    } catch (err) {
+                        currentBuild.result = 'UNSTABLE'
+                    } finally {
+                        junit 'reports/junit.xml'
+                    }
                 }
             }
         }
         stage("Deploy") {
-            sh '''
-                cd /nfs/public/rw/xfam/rnacentral/test
-                source local/virtualenvs/RNAcentral/bin/activate
-                cd rnacentral-webcode/rnacentral
-                source scripts/env.sh
-                fab localhost deploy
-            '''
+            steps {
+                sh '''
+                    cd /nfs/public/rw/xfam/rnacentral/test
+                    source local/virtualenvs/RNAcentral/bin/activate
+                    cd rnacentral-webcode/rnacentral
+                    source scripts/env.sh
+                    fab localhost deploy
+                '''
+            }
         }
     }
 }
