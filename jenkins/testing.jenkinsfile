@@ -13,8 +13,8 @@ pipeline {
     stages {
         stage("Build for testing") {
             environment {
-                LOCAL_SETTINGS = credentials('refresh_vdbs_login')
-                ENV_SH = credentials('refresh_vdbs_login')
+                LOCAL_SETTINGS = credentials('local_settings_testing')
+                ENV_SH = credentials('env_sh')
             }
             steps {
                 sh 'cat $LOCAL_SETTINGS > rnacentral/rnacentral/local_settings.py'
