@@ -1,6 +1,6 @@
 <div>
   <h2>
-    Related proteins
+    Protein targets
     <small id="annotations-datatables-counter">{{ $ctrl.total | number }} total</small>
 
     <div class="btn-group btn-group-xs margin-left-5px btn-group-xref-sort" style="display:none">
@@ -22,7 +22,7 @@
       <tr>
         <th>Protein accession</th>
         <th>Label</th>
-        <th>Synonyms</th>
+        <th>Methods</th>
         <th>Description</th>
       </tr>
     </thead>
@@ -53,7 +53,7 @@
           {{ protein.label }}
         </td>
         <td>
-          {{ protein.synonyms }}
+          {{ protein.methods }}
         </td>
         <td>
           {{ protein.description }}

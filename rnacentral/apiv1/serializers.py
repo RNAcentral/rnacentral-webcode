@@ -369,10 +369,11 @@ class RnaFastaSerializer(serializers.ModelSerializer):
 
 class RelatedProteinSerializer(serializers.ModelSerializer):
     target_accession = serializers.CharField()  # use non-null target_accession instead of nullable protein_accession
+    methods = serializers.ListField(serializers.CharField())
 
     class Meta:
         model = ProteinInfo
-        fields = ('target_accession', 'description', 'label', 'synonyms')
+        fields = ('target_accession', 'description', 'label', 'synonyms', 'methods')
 
 
 class RnaGffSerializer(serializers.ModelSerializer):

@@ -818,6 +818,7 @@ class RelatedProteinsView(generics.ListAPIView):
             SELECT 
                 {related_sequence}.target_accession, 
                 {related_sequence}.source_urs_taxid,
+                {related_sequence}.methods,
                 {protein_info}.protein_accession,
                 {protein_info}.description, 
                 {protein_info}.label, 
