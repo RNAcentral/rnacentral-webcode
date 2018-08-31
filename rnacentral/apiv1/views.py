@@ -816,7 +816,8 @@ class RelatedProteinsView(generics.ListAPIView):
         # otherwise django curses about lack of primary key in raw query
         protein_info_query = '''
             SELECT 
-                {related_sequence}.target_accession, 
+                {related_sequence}.target_accession,
+                {related_sequence}.source_accession,
                 {related_sequence}.source_urs_taxid,
                 {related_sequence}.methods,
                 {protein_info}.protein_accession,

@@ -88,6 +88,13 @@ var relatedProteins = {
             var species = ctrl.genomes.find(function(genome) { return genome.taxid.toString() == ctrl.taxid; }).ensembl_url;
             return $interpolate("https://www.ensembl.org/{{ species }}/Gene/Summary?g={{ accession }};")({ species: species, accession: accession });
         };
+
+        ctrl.tarbaseUrl = function(protein) {
+            var tarbaseId = protein.source_accession.split(":")[1];
+            var ensemblId = protein.target_accession.split(":")[1];
+            var template = "http://carolina.imis.athena-innovation.gr/diana_tools/web/index.php?r=tarbasev8%2Findex&miRNAs%5B0%5D={{ tarbaseId }}&genes%5B0%5D={{ ensemblId }}&sources%5B0%5D=1&sources%5B1%5D=7&sources%5B2%5D=9";
+            return $interpolate(template)({ tarbaseId: tarbaseId, ensemblId: ensemblId });
+        }
     }],
     templateUrl: '/static/js/components/sequence/related-proteins/related-proteins.html'
 };

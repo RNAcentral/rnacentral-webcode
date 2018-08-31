@@ -53,7 +53,7 @@
           <a ng-href="{{ $ctrl.proteinAccessionToUrl(protein.target_accession) }}">{{ protein.target_accession.split(":")[1] }}</a>
         </td>
         <td>
-          {{ protein.label }}
+          <a ng-href="{{ $ctrl.tarbaseUrl(protein) }}">{{ protein.label }}</a>
         </td>
         <td>
           {{ protein.description.split(" [")[0] }}
