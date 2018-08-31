@@ -28,6 +28,7 @@ versiontools==1.9.1
 django-jenkins==0.110.0
 coverage==4.5.1
 pep8==1.7.1
+pyflakes==2.0.0
 
 # markdown support
 Markdown==2.3.1
