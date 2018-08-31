@@ -29,6 +29,7 @@ pipeline {
             }
         }
         stage("Run backend unit-tests") {
+            // see: https://medium.com/ordergroove-engineering/continuous-deployment-of-django-applications-part-1-e3bc332bcbaf
             script {
                 try {
                     sh '''
@@ -37,7 +38,7 @@ pipeline {
                         cd rnacentral
                         python manage.py jenkins --enable-coverage apiv1
                     '''
-                } except {
+                } catch (err) {
                     currentBuild.result = 'UNSTABLE'
                 } finally {
                     junit 'reports/junit.xml'
