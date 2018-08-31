@@ -1,7 +1,10 @@
 <div>
   <h2>
     Protein targets
-    <small id="annotations-datatables-counter">{{ $ctrl.total | number }} total</small>
+    <small>{{ $ctrl.total | number }} total</small>
+    <small>
+      <a ng-href="{{ $ctrl.help }}" uib-tooltip="Learn more about protein targets &rarr;" style="color:inherit;"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
+    </small>
 
     <div class="btn-group btn-group-xs margin-left-5px btn-group-xref-sort" style="display:none">
       <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">

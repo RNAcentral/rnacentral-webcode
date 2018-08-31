@@ -10,6 +10,8 @@ var relatedProteins = {
     controller: ['$http', '$interpolate', 'routes',  function($http, $interpolate, routes) {
         var ctrl = this;
 
+        ctrl.help = '/help/rna-target-interactions';
+
         ctrl.onPageSizeChanged = function(newPageSize, oldPageSize) {
             oldPageSize = parseInt(oldPageSize);
 
