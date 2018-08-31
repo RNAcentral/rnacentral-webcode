@@ -42,7 +42,7 @@ pipeline {
                     } catch (err) {
                         currentBuild.result = 'UNSTABLE'
                     } finally {
-                        junit 'reports/junit.xml'
+                        junit 'rnacentral/reports/junit.xml'
                     }
                 }
             }
