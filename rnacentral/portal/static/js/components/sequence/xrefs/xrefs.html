@@ -305,6 +305,11 @@
             </span>
           </span>
 
+          <!-- TarBase -->
+          <span ng-switch-when="TarBase">
+            TarBase: <a ng-href="{{ 'http://carolina.imis.athena-innovation.gr/diana_tools/web/index.php?r=tarbasev8%2Findex&miRNAs%5B%5D=&miRNAs%5B%5D=' + xref.accession.external_id + '&genes%5B%5D=&sources%5B%5D=1&sources%5B%5D=7&sources%5B%5D=9&publication_year=&prediction_score=&sort_field=&sort_type=&query=1' }}" target="_blank">{{ xref.accession.external_id }}</a>
+          </span>
+
           <span ng-switch-default>
             {{ xref.accession.external_id }} {{ xref.accession.optional_id }}
           </span>
