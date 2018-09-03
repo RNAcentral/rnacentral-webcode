@@ -11,8 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+
 def baseurl(request):
     """
     Return a BASE_URL template context for the current request.
     """
-    return {'BASE_URL': 'http://' + request.get_host(),}
+    return {'BASE_URL': 'https://' + request.get_host(),}
