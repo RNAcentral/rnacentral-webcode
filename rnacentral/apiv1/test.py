@@ -124,6 +124,14 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         response = self._test_url(url, data={'page': page, 'page_size': page_size})
         self.assertTrue(len(response.data['results']), page_size)
 
+    def test_rna_sequence_features(self):
+        """Test RNA sequence features endpoint"""
+        upi = "URS00009BF201"
+        taxid = "9606"
+        url = reverse('rna-sequence-features', kwargs={'pk': upi, 'taxid': taxid})
+        response = self._test_url(url)
+        self.assertGreater(response.data['count'], 20)
+
 
 class NestedXrefsTestCase(ApiV1BaseClass):
     """Test flat/hyperlinked pagination."""
