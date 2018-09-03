@@ -142,6 +142,13 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         return $http.get(routes.apiRfamHitsView({upi: $scope.upi}), {params: {page_size: 10000000000}})
     };
 
+    $scope.fetchSequenceFeatures = function() {
+        return $http.get(
+            routes.apiSequenceFeaturesView({upi: $scope.upi, taxid: $scope.taxid}),
+            {params: {page_size: 10000000000}}
+        )
+    };
+
     // View functionality
     // ------------------
 
@@ -402,6 +409,43 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                 console.log('failed to fetch Rfam hits');
             }
         );
+
+        // show CRS features, found in this RNA
+        $scope.fetchSequenceFeatures().then(
+            function(response){
+                var features = response.data.results;
+
+                // sort features by start
+                features.sort(function(a, b) {return a.start - b.start});
+
+                // trim start/stop of each feature to make sure it's not out of sequence bounds
+                var data = features.map(function(feature) {
+                    return {
+                        x: feature.start >= 0 ? feature.start : 0,
+                        y: feature.end < $scope.rna.sequence.length ? feature.end : $scope.rna.sequence.length - 1,
+                        description: 'Conserved_rna_structure ' + feature.metadata.crs_id
+                    }
+                });
+
+                var addFeature = function() {
+                    if ($scope.featureViewer) {
+                        $scope.featureViewer.addFeature({
+                            id: "crs",
+                            data: data,
+                            name: "CRS",
+                            className: "crs",
+                            color: "#365569",
+                            type: "rect",
+                            filter: "type1"
+                        })
+                    } else {
+                        $timeout(addFeature, 1000)
+                    }
+                };
+
+                addFeature();
+            }
+        )
     });
 
     if ($scope.taxid) {
