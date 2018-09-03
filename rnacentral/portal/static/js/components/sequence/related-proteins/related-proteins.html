@@ -51,6 +51,7 @@
       <tr ng-if="$ctrl.status === 'success'" ng-repeat="protein in $ctrl.displayedProteins">
         <td>
           <a ng-href="{{ $ctrl.proteinAccessionToUrl(protein.target_accession) }}" target="_blank">{{ protein.target_accession.split(":")[1] }}</a> <span ng-if="protein.label">{{ protein.label }}</span>
+          <a href="search?q=interacting_protein:&quot;{{ protein.target_accession.split(':')[1] }}&quot;" class="margin-left-5px ng-scope" uib-tooltip="Find other miRNAs targeting this protein"><i class="fa fa-search"></i></a>
         </td>
         <td>
           <a ng-href="{{ $ctrl.tarbaseUrl(protein) }}" target="_blank">View in TarBase</a>
