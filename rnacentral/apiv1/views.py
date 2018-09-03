@@ -35,11 +35,12 @@ from rest_framework_yaml.renderers import YAMLRenderer
 from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, XrefSerializer, \
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
                               RnaSpeciesSpecificSerializer, ExpertDatabaseStatsSerializer, \
-                              RawPublicationSerializer, RnaSecondaryStructureSerializer, RfamHitSerializer, \
+                              RawPublicationSerializer, RnaSecondaryStructureSerializer,\
+                              RfamHitSerializer, SequenceFeatureSerializer, \
                               EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
-    EnsemblInsdcMapping, GenomeMapping, GenomicCoordinates, GoAnnotation, url2db, db2url
+    EnsemblInsdcMapping, GenomeMapping, GenomicCoordinates, GoAnnotation, SequenceFeature, url2db, db2url
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination
 
@@ -750,6 +751,18 @@ class RfamHitsAPIViewSet(generics.ListAPIView):
     def get_queryset(self):
         upi = self.kwargs['pk']
         return RfamHit.objects.filter(upi=upi).select_related('rfam_model')
+
+
+class SequenceFeaturesAPIViewSet(generics.ListAPIView):
+    """API endpoint with CRS sequence features"""
+    permission_classes = (AllowAny, )
+    serializer_class = SequenceFeatureSerializer
+    pagination_class = Pagination
+
+    def get_queryset(self):
+        upi = self.kwargs['pk']
+        taxid = self.kwargs['taxid']
+        return SequenceFeature.objects.filter(upi=upi, taxid=taxid)
 
 
 class EnsemblInsdcMappingView(APIView):

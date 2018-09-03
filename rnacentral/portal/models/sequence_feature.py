@@ -19,9 +19,10 @@ class SequenceFeature(models.Model):
     id = models.AutoField(primary_key=True, db_column='rnc_sequence_features_id')
     accession = models.OneToOneField(
         'Accession',
-        db_column='rnc_accession_id',
+        db_column='accession',
         to_field='accession',
         related_name='sequence_features',
+        null=True
     )
     feature_name = models.CharField(max_length=50)
     metadata = JSONField()
@@ -30,6 +31,8 @@ class SequenceFeature(models.Model):
     taxid = models.IntegerField()
     upi = models.ForeignKey(
         'RNA',
+        db_column='upi',
+        to_field='upi',
         related_name='sequence_features'
     )
 
