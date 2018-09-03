@@ -1,25 +1,20 @@
 
-## RNA-target interactions <i class="fa fa-bullseye"></i>
+## <i class="fa fa-bullseye"></i> RNA-target interactions
 
 ### miRNAs targeting mRNAs
 
 miRNAs regulate protein gene expression by [interacting with target mRNAs](https://doi.org/10.1016/j.cell.2018.03.006).
+These interactions are cataloged in [TarBase](/expert-database/tarbase)
+and can be viewed and searched in RNAcentral.
 
-RNAcentral now imports protein target interactions from [TarBase](/expert-database/tarbase).
+#### Examples
 
-The data can be searched:
-
-- Browse [human miRNAs with known protein targets](/search)
-- Browse [mouse miRNAs with known protein targets](/search)
-- Search for [protein targets identified using HITS-CLIP](/search)
+- Browse [human miRNAs with protein targets](/search?q=has_interacting_proteins:"True"%20AND%20TAXONOMY:"9606")
+- Browse [mouse miRNAs with protein targets](/search?q=has_interacting_proteins:"True"%20AND%20TAXONOMY:"10090")
+- Search for [miRNA-protein interactions identified using HITS-CLIP](/search)
 
 The protein targets are not searchable by default to avoid spurious matches
 but can be searched using the special syntax:
 
-- [target:"ENSG"](/search)
-- [experimental_method:"hits-clip"](/search)
-
-### miRNAs targeting long non-coding RNAs
-
-RNAcentral will import data from [LncBase](http://carolina.imis.athena-innovation.gr/diana_tools/web/index.php?r=lncbasev2%2Findex)
-in one of the next releases.
+- [interacting_protein:"ENSG00000277791"](/search?q=interacting_protein:"ENSG00000277791")
+- [evidence_for_interaction:"HITS-CLIP"](/search?q=evidence_for_interaction:"hits-clip")
