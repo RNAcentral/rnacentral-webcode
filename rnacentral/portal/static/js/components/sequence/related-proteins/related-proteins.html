@@ -50,14 +50,16 @@
 
       <tr ng-if="$ctrl.status === 'success'" ng-repeat="protein in $ctrl.displayedProteins">
         <td>
-          <a ng-href="{{ $ctrl.proteinAccessionToUrl(protein.target_accession) }}" target="_blank">{{ protein.target_accession.split(":")[1] }}</a> <span ng-if="protein.label">{{ protein.label }}</span>
+          <a ng-href="{{ $ctrl.proteinAccessionToUrl(protein.target_accession) }}" target="_blank">
+            {{ protein.target_accession.split(":")[1] }}
+          </a> 
           <a href="search?q=interacting_protein:&quot;{{ protein.target_accession.split(':')[1] }}&quot;" class="margin-left-5px ng-scope" uib-tooltip="Find other miRNAs targeting this protein"><i class="fa fa-search"></i></a>
         </td>
         <td>
           <a ng-href="{{ $ctrl.tarbaseUrl(protein) }}" target="_blank" uib-tooltip="Explore supporting publications, tissues, cell lines, and more">View in TarBase</a>
         </td>
         <td>
-          {{ protein.description.split(" [")[0] }}
+          {{ protein.description.split(" [")[0] }}&nbsp;<span ng-if="protein.label">({{ protein.label }})</span>
         </td>
         <td>
           <span ng-repeat="method in protein.methods">{{ method }}<span ng-show="!$last">, </span></span>
