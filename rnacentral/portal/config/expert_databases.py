@@ -755,7 +755,7 @@ expert_dbs = [
         'url': 'http://www.microrna.gr/tarbase',
         'description': 'a collection of manually curated experimentally validated miRNA-gene interactions',
         'hint': 'TarBase is a collection of manually curated experimentally validated miRNA-gene interactions',
-        'tags': ['curated', 'experimentally determined', 'miRNA', 'gene', 'interactions'],
+        'tags': ['curated', 'miRNA', 'gene', 'interactions'],
         'abbreviation': '',
         'examples': [
             {'upi': 'URS0000021B51', 'taxid': 10090},
