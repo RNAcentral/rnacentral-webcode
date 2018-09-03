@@ -1,4 +1,4 @@
-<div>
+<div ng-if="$ctrl.genomes">
   <h2>
     Target proteins
     <small>{{ $ctrl.total | number }} total</small>
@@ -49,7 +49,7 @@
         </tr>
         <tr ng-if="$ctrl.status === 'success'" ng-repeat="protein in $ctrl.displayedProteins">
           <td class="col-lg-2">
-            <a ng-href="{{ $ctrl.proteinAccessionToUrl(protein.target_accession) }}">{{ protein.target_accession.split(":")[1] }}</a>
+            <a ng-href="{{ $ctrl.ensemblUrl(protein) }}">{{ protein.target_accession.split(":")[1] }}</a>
             <a href="search?q=interacting_protein:&quot;{{ protein.target_accession.split(':')[1] }}&quot;" class="margin-left-5px ng-scope" uib-tooltip="Find other miRNAs targeting this protein"><i class="fa fa-search"></i></a>
           </td>
           <td class="col-lg-2">
