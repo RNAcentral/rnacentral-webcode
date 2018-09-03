@@ -1,6 +1,6 @@
 <div>
   <h2>
-    Protein targets
+    Target proteins
     <small>{{ $ctrl.total | number }} total</small>
     <small>
       <a ng-href="{{ $ctrl.help }}" uib-tooltip="Learn more about protein targets &rarr;" style="color:inherit;"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
@@ -24,7 +24,7 @@
     <thead>
       <tr>
         <th>Protein accession</th>
-        <th>Label</th>
+        <th>TarBase</th>
         <th>Description</th>
         <th>Methods</th>
       </tr>
@@ -50,10 +50,10 @@
 
       <tr ng-if="$ctrl.status === 'success'" ng-repeat="protein in $ctrl.displayedProteins">
         <td>
-          <a ng-href="{{ $ctrl.proteinAccessionToUrl(protein.target_accession) }}">{{ protein.target_accession.split(":")[1] }}</a>
+          <a ng-href="{{ $ctrl.proteinAccessionToUrl(protein.target_accession) }}" target="_blank">{{ protein.target_accession.split(":")[1] }}</a> <span ng-if="protein.label">{{ protein.label }}</span>
         </td>
         <td>
-          <a ng-href="{{ $ctrl.tarbaseUrl(protein) }}">{{ protein.label }}</a>
+          <a ng-href="{{ $ctrl.tarbaseUrl(protein) }}" target="_blank">View in TarBase</a>
         </td>
         <td>
           {{ protein.description.split(" [")[0] }}
