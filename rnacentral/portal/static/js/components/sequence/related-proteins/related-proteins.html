@@ -19,55 +19,52 @@
     <span id="annotations-datatables-filter"></span>
   </h2>
 
-  <table class="table table-hover table-condensed" id="annotations-table">
+  <div class="table-responsive">
+    <table class="table table-hover table-condensed" id="related-proteins-table">
+      <thead>
+        <tr>
+          <th>Protein</th>
+          <th>TarBase</th>
+          <th>Description</th>
+          <th>Methods</th>
+        </tr>
+      </thead>
 
-    <thead>
-      <tr>
-        <th>Protein</th>
-        <th>TarBase</th>
-        <th>Description</th>
-        <th>Methods</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <tr ng-if="$ctrl.status === 'loading'">
-        <td colspan="4" style="text-align: center;">
-          <span>
-            <i class="fa fa-spinner fa-spin fa-2x"></i>
-            Loading data on protein targets ...
-          </span>
-        </td>
-      </tr>
-      <tr ng-if="$ctrl.status === 'error'">
-        <td colspan="4" style="text-align: center;">
-          <span>
-            <i class="fa fa-exclamation-circle fa-2x"></i>
-            Failed to load data from server
-          </span>
-        </td>
-      </tr>
-
-      <tr ng-if="$ctrl.status === 'success'" ng-repeat="protein in $ctrl.displayedProteins">
-        <td>
-          <a ng-href="{{ $ctrl.proteinAccessionToUrl(protein.target_accession) }}" target="_blank">
-            {{ protein.target_accession.split(":")[1] }}
-          </a> 
-          <a href="search?q=interacting_protein:&quot;{{ protein.target_accession.split(':')[1] }}&quot;" class="margin-left-5px ng-scope" uib-tooltip="Find other miRNAs targeting this protein"><i class="fa fa-search"></i></a>
-        </td>
-        <td>
-          <a ng-href="{{ $ctrl.tarbaseUrl(protein) }}" target="_blank" uib-tooltip="Explore supporting publications, tissues, cell lines, and more">View in TarBase</a>
-        </td>
-        <td>
-          {{ protein.description.split(" [")[0] }}&nbsp;<span ng-if="protein.label">({{ protein.label }})</span>
-        </td>
-        <td>
-          <span ng-repeat="method in protein.methods">{{ method }}<span ng-show="!$last">, </span></span>
-        </td>
-      </tr>
-    </tbody>
-
-  </table>
+      <tbody>
+        <tr ng-if="$ctrl.status === 'loading'">
+          <td colspan="4" style="text-align: center;">
+            <span>
+              <i class="fa fa-spinner fa-spin fa-2x"></i>
+              Loading data on protein targets...
+            </span>
+          </td>
+        </tr>
+        <tr ng-if="$ctrl.status === 'error'">
+          <td colspan="4" style="text-align: center;">
+            <span>
+              <i class="fa fa-exclamation-circle fa-2x"></i>
+              Failed to load data from server
+            </span>
+          </td>
+        </tr>
+        <tr ng-if="$ctrl.status === 'success'" ng-repeat="protein in $ctrl.displayedProteins">
+          <td class="col-lg-2">
+            <a ng-href="{{ $ctrl.proteinAccessionToUrl(protein.target_accession) }}">{{ protein.target_accession.split(":")[1] }}</a>
+            <a href="search?q=interacting_protein:&quot;{{ protein.target_accession.split(':')[1] }}&quot;" class="margin-left-5px ng-scope" uib-tooltip="Find other miRNAs targeting this protein"><i class="fa fa-search"></i></a>
+          </td>
+          <td class="col-lg-2">
+            <a ng-href="{{ $ctrl.tarbaseUrl(protein) }}" target="_blank" uib-tooltip="Explore supporting publications, tissues, cell lines, and more"><span ng-if="protein.label">{{ protein.label }}</span><span ng-if="!protein.label">unknown</span></a>
+          </td>
+          <td class="col-lg-6">
+            {{ protein.description.split(" [")[0] }}
+          </td>
+          <td class="col-lg-2">
+            <span ng-repeat="method in protein.methods">{{ method }}<span ng-show="!$last">, </span></span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
   <!-- Pagination: pages list and page size select -->
   <div ng-if="$ctrl.status == 'success'" style="margin-top: 5px; margin-left: 5px; margin-right: 5px;">
