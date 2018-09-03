@@ -31,7 +31,7 @@ var useCasesService = function() {
             "pubmed_id": 26917558,
             "doi": "10.1261/rna.055301.115",
             "pub_id": "",
-            "image": "http://rnajournal.cshlp.org/content/22/5/667/F4.large.jpg",
+            "image": "/static/img/use-cases/go-curation.jpg", // "http://rnajournal.cshlp.org/content/22/5/667/F4.large.jpg",
             "caption": "RNAcentral identifiers used to annotate ncRNAs with Gene Ontology terms",
             "category": "literature-curation",
             "category_header": "Stable identifiers for ncRNAs"
@@ -44,7 +44,7 @@ var useCasesService = function() {
             "pubmed_id": 28701522,
             "doi": "10.1261/rna.060996.117",
             "pub_id": "",
-            "image": "http://rnajournal.cshlp.org/content/23/10/1479/F2.small.gif",
+            "image": "/static/img/use-cases/yeast-curation.gif", // "http://rnajournal.cshlp.org/content/23/10/1479/F2.small.gif",
             "caption": "RNAcentral identifiers used to annotate ncRNA interactions in yeast",
             "category": "literature-curation",
             "category_header": "Stable identifiers for ncRNAs"
@@ -68,7 +68,7 @@ var useCasesService = function() {
             "pubmed_id": 29871895,
             "doi": "10.1261/rna.065565.118",
             "pub_id": "",
-            "image": "http://rnajournal.cshlp.org/content/24/8/1005/F2.large.jpg",
+            "image": "/static/img/use-cases/expanding-horizons.jpg", // "http://rnajournal.cshlp.org/content/24/8/1005/F2.large.jpg",
             "caption": "RNAcentral identifiers used to annotate ncRNAs with Gene Ontology terms",
             "category": "literature-curation",
             "category_header": "Stable identifiers for ncRNAs"
