@@ -27,25 +27,20 @@ Help: Genomic mapping
     <h2>Species with genomic mapping <a style="cursor: pointer" id="species-with-genomic-mapping" ng-click="scrollTo('species-with-genomic-mapping')" name="species-with-genomic-mapping" class="text-muted smaller"><i class="fa fa-link"></i></a></h2>
 
     <p>
-      Genome locations are provided for sequences from the following species:
+      Genomic mapping is available for the following <strong>{{ assemblies | length }} species<strong>:
     </p>
 
-    <div class="row">
-    {% regroup assemblies by division as assemblies_by_division %}
-
-    {% for division in assemblies_by_division %}
-      <div class="col-md-4">
-        <h4>{{ division.grouper }}</h4>
-
-        <ol>
-        {% for assembly in division.list %}
-          <li>
-            <a href="" ng-click="search.search('TAXONOMY:&quot;{{ assembly.taxid }}&quot; AND has_genomic_coordinates:&quot;True&quot;')">{{ assembly.ensembl_url }}</a>
-          </li>
-        {% endfor %}
-        </ol>
-      </div>
-    {% endfor %}
+    <div style="max-height:400px; overflow:auto;">
+    <table class="table table-striped table-hover table-condensed">
+      <th>Species</th>
+      <th>Assembly</th>
+      {% for assembly in assemblies  %}
+        <tr>
+          <td><a href='/search?q=taxonomy:"{{ assembly.taxid }}"%20AND%20has_genomic_coordinates:"True"' class="help" title="Browse sequences">{{ assembly.get_human_readable_ensembl_url }}</a> {{ assembly.common_name }}</td>
+          <td><a href="{% url 'genome-browser'%}?species={{ assembly.ensembl_url }}" class="help" title="Open in RNAcentral genome browser">{{ assembly.assembly_full_name }}</a></td>
+        </tr>
+      {% endfor %}
+    </table>
     </div>
 
     {% load markdown_deux_tags %}

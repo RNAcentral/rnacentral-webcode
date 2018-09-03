@@ -178,6 +178,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    'django_jenkins',
     'corsheaders',
     'portal',
     'nhmmer',
@@ -293,6 +294,15 @@ REST_FRAMEWORK = {
     ),
 }
 
+# Jenkins integration config taken from here: https://sites.google.com/site/kmmbvnr/home/django-jenkins-tutorial
+JENKINS_TEST_RUNNER = "rnacentral.utils.test_runner.JenkinsTestRunner"
+JENKINS_TASKS = (
+    'django_jenkins.tasks.run_pep8',
+    'django_jenkins.tasks.run_pyflakes',
+    'django_jenkins.tasks.run_sloccount'
+)
+
+
 # django-debug-toolbar
 DEBUG_TOOLBAR_PANELS = (
     'debug_toolbar.panels.version.VersionDebugPanel',
@@ -342,7 +352,7 @@ SILENCED_SYSTEM_CHECKS = ['1_6.W001']
 
 EBI_SEARCH_ENDPOINT = 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
 
-RELEASE_ANNOUNCEMENT_URL = 'http://blog.rnacentral.org/2018/04/rnacentral-release-9.html'
+RELEASE_ANNOUNCEMENT_URL = 'https://blog.rnacentral.org/2018/08/rnacentral-release-10.html'
 
 # django compressor
 COMPRESS_ENABLED = True

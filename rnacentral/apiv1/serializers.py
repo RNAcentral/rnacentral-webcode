@@ -21,7 +21,7 @@ from rest_framework import serializers
 
 from portal.models import Rna, Xref, Reference,  Reference_map, ChemicalComponent, Database, DatabaseStats, Accession, \
     Release, Reference, Modification, RfamHit, RfamModel, RfamClan, \
-    EnsemblAssembly, EnsemblInsdcMapping, EnsemblKaryotype
+    EnsemblAssembly, EnsemblInsdcMapping, EnsemblKaryotype, GenomeMapping
 
 
 class RawPublicationSerializer(serializers.ModelSerializer):
@@ -436,6 +436,9 @@ class RfamHitSerializer(serializers.ModelSerializer):
 
 class EnsemblAssemblySerializer(serializers.ModelSerializer):
     human_readable_ensembl_url = serializers.SerializerMethodField()
+    example_chromosome = serializers.SerializerMethodField()
+    example_start = serializers.SerializerMethodField()
+    example_end = serializers.SerializerMethodField()
 
     class Meta:
         model = EnsemblAssembly
@@ -445,6 +448,24 @@ class EnsemblAssemblySerializer(serializers.ModelSerializer):
 
     def get_human_readable_ensembl_url(self, obj):
         return obj.ensembl_url.replace("_", " ").capitalize()
+
+    def get_example_chromosome(self, obj):
+        if obj.example_chromosome is not None:
+            return obj.example_chromosome
+        else:
+            return obj.chromosome
+
+    def get_example_start(self, obj):
+        if obj.example_chromosome is not None:
+            return obj.example_start
+        else:
+            return obj.start
+
+    def get_example_end(self, obj):
+        if obj.example_chromosome is not None:
+            return obj.example_end
+        else:
+            return obj.stop
 
 
 class EnsemblInsdcMappingSerializer(serializers.ModelSerializer):

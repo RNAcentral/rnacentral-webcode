@@ -1,8 +1,8 @@
 var textSearchResults = {
     bindings: {},
     templateUrl: '/static/js/components/text-search/text-search-results/text-search-results.html',
-    controller: ['$interpolate', '$location', '$http', '$timeout', '$scope', '$filter', '$q', 'search', 'routes', 'normalizeExpertDbName',
-    function($interpolate, $location, $http, $timeout, $scope, $filter, $q, search, routes, normalizeExpertDbName) {
+    controller: ['$http', '$timeout', '$scope', '$filter', '$q', 'search', 'routes', 'normalizeExpertDbName',
+    function($http, $timeout, $scope, $filter, $q, search, routes, normalizeExpertDbName) {
         var ctrl = this;
 
         ctrl.$onInit = function() {
@@ -18,9 +18,9 @@ var textSearchResults = {
             ctrl.normalizeExpertDbName = normalizeExpertDbName;
 
             // slider that allows users to set range of sequence lengths
-            ctrl.setLengthSlider(search.query); // initial value
+            ctrl.setLengthSlider(); // initial value
 
-            search.registerSearchCallback(function() { ctrl.setLengthSlider(search.query); });
+            search.registerSearchCallback(function() { ctrl.setLengthSlider(); });
 
             // retrieve expert_dbs json for display in tooltips
             $http.get(routes.expertDbsApi({ expertDbName: '' })).then(
@@ -44,13 +44,13 @@ var textSearchResults = {
 
         /**
          * Sets new value of length slider upon init or search.
-         * @param newQuery
-         * @param oldQuery
          */
-        ctrl.setLengthSlider = function(query) {
+        ctrl.setLengthSlider = function() {
+            var query = ctrl.search.query;
+
             var min, max, floor, ceil;
-            var lengthClause = 'length\\:\\[(\\d+) to (\\d+)\\]';
-            var lengthRegexp = new RegExp('length\\:\\[(\\d+) to (\\d+)\\]', 'i');
+            var lengthClause = 'length\\:\\[(\\d+) TO (\\d+)\\]';
+            var lengthRegexp = new RegExp('length\\:\\[(\\d+) TO (\\d+)\\]', 'i');
 
             // remove length clause in different contexts
             var filteredQuery = query;
@@ -151,15 +151,15 @@ var textSearchResults = {
          * Edge case of facet search with length field applied.
          */
         ctrl.lengthSearch = function () {
-            ctrl.facetSearch('length', '[' + ctrl.lengthSlider.min + ' to ' + ctrl.lengthSlider.max + ']', true)
+            ctrl.facetSearch('length', '[' + ctrl.lengthSlider.min + ' TO ' + ctrl.lengthSlider.max + ']', true)
         };
 
         /**
          * Resets slider to default value
          */
         ctrl.resetSlider = function() {
-            var lengthClause = 'length\\:\\[(\\d+) to (\\d+)\\]';
-            var lengthRegexp = new RegExp('length\\:\\[(\\d+) to (\\d+)\\]', 'i');
+            var lengthClause = 'length\\:\\[(\\d+) TO (\\d+)\\]';
+            var lengthRegexp = new RegExp('length\\:\\[(\\d+) TO (\\d+)\\]', 'i');
 
             // remove length clause in different contexts
             var filteredQuery = search.query;
@@ -203,7 +203,7 @@ var textSearchResults = {
                     newQuery = search.query + ' AND ' + facet; // add new facet
                 }
             } else {
-                var lengthClause = 'length\\:\\[\\d+ to \\d+\\]';
+                var lengthClause = 'length\\:\\[\\d+ TO \\d+\\]';
 
                 // remove length clause in different contexts
                 newQuery = newQuery.replace(new RegExp(' AND ' + lengthClause + ' AND '), ' AND ', 'i');
@@ -242,7 +242,7 @@ var textSearchResults = {
          * - open the results page in a new window.
          */
         ctrl.exportResults = function(format) {
-            $http.get(ctrl.routes.submitQuery() + '?q=' + ctrl.search.result._query + '&format=' + format).then(
+            $http.get(ctrl.routes.submitQuery() + '?q=' + ctrl.search.query + '&format=' + format).then(
                 function(response) {
                     ctrl.showExportError = false;
                     window.location.href = ctrl.routes.resultsPage() + '?job=' + response.data.job_id;
@@ -323,24 +323,16 @@ var textSearchResults = {
          * Are there any highlighted snippets in search results at all?
          */
         ctrl.anyHighlights = function(fields) {
-            for (var fieldName in fields) {
-                if (fields.hasOwnProperty(fieldName) && ctrl.anyHighlightsInField(fields[fieldName])) {
-                    return true;
-                }
-            }
-            return false;
+            return Object.keys(fields).some(function(fieldName) {
+                return (fields.hasOwnProperty(fieldName) && ctrl.anyHighlightsInField(fields[fieldName]));
+            });
         };
 
         /**
          * Does the given field contain any highlighted text snippets?
          */
         ctrl.anyHighlightsInField = function(field) {
-            for (var i=0; i < field.length; i++) {
-                if (field[i].indexOf('text-search-highlights') !== -1) {
-                    return true;
-                }
-            }
-            return false;
+            return field.some(function(el) { return el.indexOf('text-search-highlights') !== -1 });
         };
     }]
 };

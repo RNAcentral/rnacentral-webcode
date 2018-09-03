@@ -15,7 +15,7 @@ The development of RNAcentral is coordinated by the
 1. Clone Git repository:
 
   ```
-  git clone --recursive https://github.com/RNAcentral/rnacentral-webcode.git
+  git clone https://github.com/RNAcentral/rnacentral-webcode.git
   ```
 
 2. Edit database connection parameters in `rnacentral/local_settings.py`
@@ -165,5 +165,3 @@ or get in touch using the [Contact form](https://rnacentral.org/contact) on our 
 * [Redis](http://redis.io/)
 * [Supervisor](http://supervisord.org/)
 * [Docker](https://www.docker.com)
-
-

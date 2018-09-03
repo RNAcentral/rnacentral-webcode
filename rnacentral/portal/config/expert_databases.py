@@ -38,7 +38,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '133',
+        'version': '136',
     },
     {
         'name': 'PDBe',
@@ -63,7 +63,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'as of October 20th, 2016',
+        'version': 'as of June 11th, 2018',
     },
     {
         'name': 'FlyBase',
@@ -87,8 +87,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
-        'version': 'FB2017_04',
+        'status': 'updated',
+        'version': 'fb_2018_03',
     },
     {
         'name': 'Ensembl',
@@ -119,7 +119,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '90',
+        'version': '92',
     },
     {
         'name': 'GENCODE',
@@ -166,12 +166,6 @@ expert_dbs = [
                 'journal': 'Nucleic Acids Res. 2017 (Accepted)',
                 'pubmed_id': '29112718',
             },
-            {
-                'title': 'Rfam 12.0: updates to the RNA families database',
-                'authors': 'Nawrocki EP, Burge SW, Bateman A, Daub J, Eberhardt RY, Eddy SR, Floden EW, Gardner PP, Jones TA, Tate J, Finn RD',
-                'journal': 'Nucleic Acids Res. 2015 Jan 28;43(Database issue):D130-7',
-                'pubmed_id': '25392425',
-            },
         ],
         'imported': True,
         'status': '',
@@ -198,15 +192,15 @@ expert_dbs = [
                 'pubmed_id': '21037258',
             },
             {
-                'title': '',
+                'title': 'miRBase: microRNA sequences, targets and gene nomenclature',
                 'authors': 'Griffiths-Jones S, Grocock RJ, van Dongen S, Bateman A, Enright AJ',
                 'journal': 'Nucleic Acids Res. 34(Database issue):D140-4 (2006 Jan1)',
                 'pubmed_id': '16381832'
             }
         ],
         'imported': True,
-        'status': '',
-        'version': '21 (a subset of species)',
+        'status': 'updated',
+        'version': '22',
     },
     {
         'name': 'Vega',
@@ -354,7 +348,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'updated',
+        'status': '',
         'version': '2.1',
     },
     {
@@ -513,8 +507,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
-        'version': '3.1',
+        'status': 'updated',
+        'version': '5.0',
     },
     {
         'name': 'Modomics',
@@ -807,9 +801,9 @@ expert_dbs = [
         'tags': ['curated', 'model organism', 'nematode', 'Caenorhabditis elegans'],
         'abbreviation': '',
         'examples': [
-            {'upi': 'URS000022A09E', 'taxid': 6239}, # miRNA
-            {'upi': 'URS00001218EE', 'taxid': 6239}, # rRNA
-            {'upi': 'URS00003E1CE3', 'taxid': 6239}, # snoRNA
+            {'upi': 'URS000022A09E', 'taxid': 6239},  # miRNA
+            {'upi': 'URS00001218EE', 'taxid': 6239},  # rRNA
+            {'upi': 'URS00003E1CE3', 'taxid': 6239},  # snoRNA
         ],
         'references': [
             {
@@ -821,7 +815,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'WS251',
+        'version': 'WS265',
     },
     {
         'name': 'MGI',
@@ -857,9 +851,9 @@ expert_dbs = [
         'tags': ['curated', 'model organism', 'rat', 'Rattus norvegicus'],
         'abbreviation': 'Rat Genome Database',
         'examples': [
-            {'upi': 'URS000075AA07', 'taxid': 10116}, # Miat
-            {'upi': 'URS00004B2C76', 'taxid': 10116}, # 5.8S rRNA
-            {'upi': 'URS000075C796', 'taxid': 10116}, # SRP
+            {'upi': 'URS000075AA07', 'taxid': 10116},  # Miat
+            {'upi': 'URS00004B2C76', 'taxid': 10116},  # 5.8S rRNA
+            {'upi': 'URS000075C796', 'taxid': 10116},  # SRP
         ],
         'references': [
             {
@@ -870,7 +864,7 @@ expert_dbs = [
             }
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': 'as of March 2018',
     },
     {

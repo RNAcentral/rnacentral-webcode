@@ -58,7 +58,6 @@ var genoverse = {
                         url         : ctrl.genoverseUtils.urls.genes(),
                         model       : Genoverse.Track.Model.Gene.Ensembl,
                         view        : Genoverse.Track.View.Gene.Ensembl,
-                        100000      : false,
                         populateMenu: ctrl.genoverseUtils.genesPopulateMenu,
                         resizable   : 'auto',
                         autoHeight  : true,
@@ -71,7 +70,6 @@ var genoverse = {
                         url         : ctrl.genoverseUtils.urls.transcripts(),
                         model       : Genoverse.Track.Model.Transcript.Ensembl,
                         view        : Genoverse.Track.View.Transcript.Ensembl,
-                        100000      : false,
                         populateMenu: ctrl.genoverseUtils.transcriptsPopulateMenu,
                         resizable   : 'auto',
                         autoHeight  : true,
@@ -83,7 +81,6 @@ var genoverse = {
                         url         : ctrl.genoverseUtils.urls.RNAcentral(),
                         model       : Genoverse.Track.Model.Gene.Ensembl.extend({parseData: ctrl.genoverseUtils.RNAcentralParseData}),
                         view        : Genoverse.Track.View.Transcript.Ensembl,
-                        100000      : false,
                         populateMenu: ctrl.genoverseUtils.RNAcentralPopulateMenu,
                         resizable   : 'auto',
                         autoHeight  : true,
@@ -271,7 +268,7 @@ var genoverse = {
                     ctrl.start = ctrl.genoverseUtils.exampleLocations[ctrl.genome].start;
                     ctrl.end = ctrl.genoverseUtils.exampleLocations[ctrl.genome].end;
                 } else {
-                    alert("Can't find example location for genome ", ctrl.genome);
+                    console.log("Can't find example location for genome ", ctrl.genome);
                 }
 
                 ctrl.render(); // create a new instance of browser

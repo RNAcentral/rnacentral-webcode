@@ -26,13 +26,16 @@ RNAcentral: The non-coding RNA sequence database
 {% endblock %}
 
 {% block content %}
-
+<div ng-controller="HomepageController">
   <div class="row well well-sm homepage-callout" id="homepage-callout">
 
     <div class="homepage-callout-overlay">
       <h2 class="text-center">
         RNAcentral: The non-coding RNA sequence database
       </h2>
+      <p class="text-center" style="opacity: 0.7;">
+        a comprehensive ncRNA sequence collection representing all ncRNA types from a broad range of organisms
+      </p>
       <p class="text-center">
         <a href="{% url 'about' %}">More about RNAcentral &rarr;</a>
       </p>
@@ -49,7 +52,7 @@ RNAcentral: The non-coding RNA sequence database
         <div class="panel-body text-center">
           <h2 class="text-center"><i class="fa fa-search"></i> Text search</h2>
           <p class="text-center">
-            Search by <em>gene, species, ncRNA type</em> or any other keyword
+            Search by <em>gene, species, ncRNA type, accession</em>, or any other keyword
           </p>
           <a class="btn btn-primary" href="{% url 'text-search' %}?q=RNA" id="btn-browse-sequences">Browse sequences</a>
         </div>
@@ -77,7 +80,7 @@ RNAcentral: The non-coding RNA sequence database
           <p class="text-center">
             Explore RNAcentral sequences in your favorite genome locations
           </p>
-          <a class="btn btn-primary" id="btn-genome-browser" href="{% url 'genome-browser' %}" role="button">Browse genomes</a>
+          <a class="btn btn-primary" id="btn-genome-browser" href="{% url 'genome-browser' %}" role="button">Explore genomes</a>
         </div>
       </div>
     </div>
@@ -87,7 +90,7 @@ RNAcentral: The non-coding RNA sequence database
   <div class="row well well-sm">
 
     <p class="lead text-center margin-bottom-0px">
-      ncRNA data provided by {{ context.databases|length }} databases:
+      Data provided by <a href="{% url 'expert-databases' %}">{{ context.databases|length }} databases</a>
     </p>
 
     <div id="expert-databases">
@@ -118,18 +121,20 @@ RNAcentral: The non-coding RNA sequence database
 
   </div>
 
-  <div class="row" ng-controller="HomepageController">
+  <div class="row">
     <h2 class="text-center margin-bottom-0px" style="margin-top: 0px;"><a href="/use-cases" class="rnacentral-gold">Featured use cases</a></h2>
 
     <div class="col-md-4">
       <div class="panel panel-default">
-        <h3 class="text-center"><a href="{% url 'use-cases' %}#reference-ncrna-set" class="rnacentral-gold">Reference ncRNA set</a></h3>
+        <h3 class="text-center"><a href="{% url 'use-cases' %}#{% verbatim %}{{ randomExamples[0].category }}{% endverbatim %}" class="rnacentral-gold">{% verbatim %}{{ randomExamples[0].category_header }}{% endverbatim %}</a></h3>
         <div class="panel-body">
           <p>
-            <img src="https://upload.wikimedia.org/wikipedia/commons/b/b1/Lake_Washington_Ship_Canal_Fish_Ladder_pamphlet_-_male_freshwater_phase_Steelhead.jpg">
-            <h4>RNAcentral was used as a reference data set to discover novel ncRNA in trout and Bovine Leukemia Virus</h4>
+            {% verbatim %}
+              <img ng-src="{{ randomExamples[0].image }}">
+              <h4>{{ randomExamples[0].caption }}</h4>
+            {% endverbatim %}
             <blockquote>
-              <publication publication="rainbowTroutPublication"></publication>
+              <publication publication="randomExamples[0]"></publication>
             </blockquote>
           </p>
         </div>
@@ -138,13 +143,15 @@ RNAcentral: The non-coding RNA sequence database
 
     <div class="col-md-4">
       <div class="panel panel-default">
-        <h3 class="text-center"><a href="{% url 'use-cases' %}#literature-curation" class="rnacentral-gold">Stable identifiers for ncRNAs</a></h3>
+        <h3 class="text-center"><a href="{% url 'use-cases' %}#{% verbatim %}{{ randomExamples[1].category }}{% endverbatim %}" class="rnacentral-gold">{% verbatim %}{{ randomExamples[1].category_header }}{% endverbatim %}</a></h3>
         <div class="panel-body">
           <p>
-            <img src="https://pbs.twimg.com/profile_images/378800000553445763/e58f95d5139e075ad62514b88e97b6ac_400x400.png" style="height: 120px; margin: auto; display: block;">
-            <h4>Stable RNAcentral ids used to annotate human miRNAs with Gene Ontology terms</h4>
+            {% verbatim %}
+              <img ng-src="{{ randomExamples[1].image }}" style="height: 120px; margin: auto; display: block;">
+              <h4>{{ randomExamples[1].caption }}</h4>
+            {% endverbatim %}
             <blockquote>
-              <publication publication="goCurationPublication"></publication>
+              <publication publication="randomExamples[1]"></publication>
             </blockquote>
           </p>
         </div>
@@ -153,21 +160,23 @@ RNAcentral: The non-coding RNA sequence database
 
     <div class="col-md-4">
       <div class="panel panel-default">
-        <h3 class="text-center"><a href="{% url 'use-cases' %}#programmatic-information-retrieval" class="rnacentral-gold">Programmatic information retrieval</a></h3>
+        <h3 class="text-center"><a href="{% url 'use-cases' %}#{% verbatim %}{{ randomExamples[2].category }}{% endverbatim %}" class="rnacentral-gold">{% verbatim %}{{ randomExamples[2].category_header }}{% endverbatim %}</a></h3>
         <div class="panel-body">
           <p>
-            <img src="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4595900/bin/btv372f1p.jpg" style="height: 150px; margin: auto; display: block;">
-            <h4>Source of sequences for secondary structure prediction</h4>
+            {% verbatim %}
+              <img ng-src="{{ randomExamples[2].image }}" style="height: 150px; margin: auto; display: block;">
+              <h4>{{ randomExamples[2].caption }}</h4>
+            {% endverbatim %}
           </p>
           <blockquote>
-            <publication publication="secondaryStructurePredictionPublication"></publication>
+            <publication publication="randomExamples[2]"></publication>
           </blockquote>
         </div>
       </div>
     </div>
 
-  <div class="clearfix"></div>
-  <div class="text-center" style="margin-right: 20px; margin-bottom: 20px;"><a href="/use-cases">More examples &rarr;</a></div>
+    <div class="clearfix"></div>
+    <div class="text-center" style="margin-right: 20px; margin-bottom: 20px;"><a href="/use-cases">More use cases &rarr;</a></div>
 
   </div>
 
@@ -205,18 +214,18 @@ RNAcentral: The non-coding RNA sequence database
           <h3 class="text-center margin-bottom-0px"><i class="fa fa-bullhorn"></i> Announcements</h3>
           <div class="panel-body">
             <ul class="list-inline margin-top-5px">
-              <li><a href="http://blog.rnacentral.org" target="_blank"><i class="fa fa-bookmark-o"></i> RNAcentral Blog</a></li>
-              <li><a href="http://blog.rnacentral.org/feeds/posts/default" target="_blank"><i class="fa fa-rss"></i> RSS feed</a></li>
+              <li><a href="https://blog.rnacentral.org" target="_blank"><i class="fa fa-bookmark-o"></i> RNAcentral Blog</a></li>
+              <li><a href="https://blog.rnacentral.org/feeds/posts/default" target="_blank"><i class="fa fa-rss"></i> RSS feed</a></li>
             </ul>
 
             <p class="margin-top-5px">
               <a href="{{ context.blog_url }}" class="thumbnail">
-                <img src="{% static "img/timeline/release-v9.png" %}" alt="Release 9 announcement">
+                <img src="{% static "img/timeline/release-v10.png" %}" alt="Release 10 announcement">
               </a>
             </p>
 
             <p>
-              <a href="{{ context.blog_url }}">Release 9 announcement &rarr;</a>
+              <a href="{{ context.blog_url }}">Release 10 announcement &rarr;</a>
             </p>
 
             <p class="margin-top-5px">
@@ -232,24 +241,17 @@ RNAcentral: The non-coding RNA sequence database
         <div class="panel panel-default">
           <h3 class="text-center margin-bottom-0px"><i class="fa fa-pencil"></i> Citing RNAcentral</h3>
           <div class="panel-body">
-            <p>
-              If you use RNAcentral,
-              please cite the following paper:
-              <blockquote class="callout-info">
-                <p>RNAcentral: a comprehensive database of non-coding RNA sequences</p>
-                <footer>The RNAcentral Consortium, 2017</footer>
-                <footer><em>Nucleic Acids Research (Database Issue)</em></footer>
-              </blockquote>
-            </p>
-            <a href="http://nar.oxfordjournals.org/content/45/D1/D128.full" target="_blank">NAR</a> |
-            <a href="http://europepmc.org/abstract/MED/27794554" target="_blank">EuropePMC</a> |
-            <a href="http://www.ncbi.nlm.nih.gov/pubmed/27794554" target="_blank">Pubmed</a>
+            If you use RNAcentral,
+            please cite the following paper:
+            <blockquote class="callout-info">
+              <publication publication="RNAcentralPublication"></publication>
+            </blockquote>
           </div>
         </div>
       </div>
 
   </div>
-
+</div>
 {% endblock content %}
 
 {% block extra_js_uncompressed %}

@@ -131,12 +131,17 @@ class Rna(CachingMixin, models.Model):
         expert_db_publications = []
         non_expert_db_publications = []
 
+        titles = []
         for publication in queryset:
-            if publication.pubmed in references:
+            if not publication.title:
+                publication.title = ''
+            if publication.pubmed in references and publication.title.lower() not in titles:
                 expert_db_publications.append(publication)
+                titles.append(publication.title.lower())
                 publication.expert_db = True  # flags that it's an expert_db, UI should display a special label
-            else:
+            elif publication.title.lower() not in titles:
                 non_expert_db_publications.append(publication)
+                titles.append(publication.title.lower())
                 publication.expert_db = False
 
         return non_expert_db_publications + expert_db_publications

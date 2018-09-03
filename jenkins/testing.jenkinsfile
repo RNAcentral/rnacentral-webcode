@@ -1,49 +1,125 @@
-node {
-    build()
-    try {
-        runBackendUnitTests()
-    } catch (ex) {
-        currentBuild.result = 'UNSTABLE'
-    }
-    deploy()
-}
+// ---------------------------------------------------------------------------------------------------------------------
+//
+// There's a caveat in this Jenkinsfile:
+// Its build and unit-test steps are running in Jenkins environment and are
+// using the branch that is configured in Jenkins interface (usually, 'master'),
+// while deploy step is using filesystem environment and is running whatever
+// branch is currently deployed there.
+//
+// ---------------------------------------------------------------------------------------------------------------------
 
-private void build() {
-    stage("Build for testing") {
-        checkout scm
-        withCredentials([file(credentialsId: 'local_settings_testing', variable: 'LOCAL_SETTINGS'), file(credentialsId: 'env_sh', variable: 'ENV_SH')]) {
-            sh 'cat $LOCAL_SETTINGS > rnacentral/rnacentral/local_settings.py'
-            sh 'cat $ENV_SH > rnacentral/scripts/env.sh'
+pipeline {
+    agent any
+    stages {
+        stage("Build for testing") {
+            environment {
+                LOCAL_SETTINGS = credentials('local_settings_testing')
+                ENV_SH = credentials('env_sh')
+            }
+            steps {
+                sh 'cat $LOCAL_SETTINGS > rnacentral/rnacentral/local_settings.py'
+                sh 'cat $ENV_SH > rnacentral/scripts/env.sh'
+                sh '''
+                    virtualenv ENV --python=/net/isilonP/public/rw/homes/xfm_adm/src/python/bin/python
+                    source ENV/bin/activate
+                    source rnacentral/scripts/env.sh
+                    pip install --upgrade pip
+                    pip install --upgrade -r rnacentral/requirements.txt
+                '''
+            }
         }
-        sh '''
-            virtualenv ENV --python=/net/isilonP/public/rw/homes/xfm_adm/src/python/bin/python
-            source ENV/bin/activate
-            source rnacentral/scripts/env.sh
-            pip install --upgrade pip
-            pip install --upgrade -r rnacentral/requirements.txt
-        '''
+        stage("Run backend unit-tests") {
+            steps {
+                // see: https://medium.com/ordergroove-engineering/continuous-deployment-of-django-applications-part-1-e3bc332bcbaf
+                script {
+                    try {
+                        sh '''
+                            source ENV/bin/activate
+                            source rnacentral/scripts/env.sh
+                            cd rnacentral
+                            python manage.py jenkins --enable-coverage --keepdb apiv1
+                        '''
+                    } catch (err) {
+                        currentBuild.result = 'UNSTABLE'
+                    } finally {
+                        junit 'rnacentral/reports/junit.xml'
+                    }
+                }
+            }
+        }
+        stage("Deploy") {
+            steps {
+                sh '''
+                    cd /nfs/public/rw/xfam/rnacentral/test
+                    source local/virtualenvs/RNAcentral/bin/activate
+                    cd rnacentral-webcode/rnacentral
+                    source scripts/env.sh
+                    fab localhost deploy
+                '''
+            }
+        }
     }
 }
 
-private void runBackendUnitTests() {
-    stage("Run backend unit-tests") {
-        sh '''
-            source ENV/bin/activate
-            source rnacentral/scripts/env.sh
-            cd rnacentral
-            python manage.py test apiv1
-        '''
-    }
-}
 
-private void deploy() {
-    stage("Deploy") {
-        sh '''
-            cd /nfs/public/rw/xfam/rnacentral/test
-            source local/virtualenvs/RNAcentral/bin/activate
-            cd rnacentral-webcode/rnacentral
-            source scripts/env.sh
-            fab localhost deploy
-        '''
-    }
-}
+// ---------------------------------------------------------------------------------------------------------------------
+//
+// There are 2 versions of syntax for Jenkins pipelines: scripted and declarative
+// (https://jenkins.io/doc/book/pipeline/syntax/).
+//
+// Previously this Jenkinsfile was written as a scripted pipeline. Then I re-written it in a newer
+// declarative syntax.
+//
+// I'll keep the declarative pipeline below just for reference to declarative syntax constructs:
+//
+// ---------------------------------------------------------------------------------------------------------------------
+//
+// node {
+//     build()
+//     try {
+//         runBackendUnitTests()
+//     } catch (ex) {
+//         currentBuild.result = 'UNSTABLE'
+//     }
+//     deploy()
+// }
+//
+// private void build() {
+//     stage("Build for testing") {
+//         checkout scm
+//         withCredentials([file(credentialsId: 'local_settings_testing', variable: 'LOCAL_SETTINGS'), file(credentialsId: 'env_sh', variable: 'ENV_SH')]) {
+//             sh 'cat $LOCAL_SETTINGS > rnacentral/rnacentral/local_settings.py'
+//             sh 'cat $ENV_SH > rnacentral/scripts/env.sh'
+//         }
+//         sh '''
+//             virtualenv ENV --python=/net/isilonP/public/rw/homes/xfm_adm/src/python/bin/python
+//             source ENV/bin/activate
+//             source rnacentral/scripts/env.sh
+//             pip install --upgrade pip
+//             pip install --upgrade -r rnacentral/requirements.txt
+//         '''
+//     }
+// }
+//
+// private void runBackendUnitTests() {
+//     stage("Run backend unit-tests") {
+//         sh '''
+//             source ENV/bin/activate
+//             source rnacentral/scripts/env.sh
+//             cd rnacentral
+//             python manage.py jenkins --enable-coverage apiv1
+//         '''
+//     }
+// }
+//
+// private void deploy() {
+//     stage("Deploy") {
+//         sh '''
+//             cd /nfs/public/rw/xfam/rnacentral/test
+//             source local/virtualenvs/RNAcentral/bin/activate
+//             cd rnacentral-webcode/rnacentral
+//             source scripts/env.sh
+//             fab localhost deploy
+//         '''
+//     }
+// }

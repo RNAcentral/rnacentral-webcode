@@ -29,6 +29,7 @@ For more options, run `fab help`.
 
 import os
 import json
+import re
 import requests
 
 from fabric.api import cd, env, lcd, local, prefix, run, warn_only
@@ -252,5 +253,75 @@ def test(base_url='http://localhost:8000/'):
     """
     with env.cd(settings.PROJECT_PATH):
         # env.run('python rnacentral/apiv1/tests.py --base_url=%s' % base_url)
-        env.run('python rnacentral/portal/tests/selenium_tests.py --base_url %s --driver=phantomjs' % base_url) # pylint: disable=C0301
-        env.run('python rnacentral/apiv1/search/sequence/tests.py --base_url %s' % base_url) # pylint: disable=C0301
+        env.run('python rnacentral/portal/tests/selenium_tests.py --base_url %s --driver=phantomjs' % base_url)  # pylint: disable=C0301
+        env.run('python rnacentral/apiv1/search/sequence/tests.py --base_url %s' % base_url)  # pylint: disable=C0301
+
+
+# VDBS refresh-related code
+
+def fb1(key):
+    """
+    Configures environment variables for running commands on fb1, e.g.:
+
+    fab fb1:key=/path/to/keyfile refresh_fb1
+    """
+    env.hosts = ['fb1-001.ebi.ac.uk']
+    env.user = 'burkov'
+    env.run = run
+    env.cd = cd
+    env.key_filename = key
+
+
+def pg():
+    """
+    Configures environment variables for running commands on pg, e.g.:
+
+    fab pg --password=mytopsecretpassword refresh_pg
+    """
+    env.hosts = ['pg-001.ebi.ac.uk']
+    env.user = 'burkov'
+    env.run = run
+    env.cd = cd
+
+
+def ebi_cli():
+    """
+    Configures environment variables for running commands on ebi-cli-001, e.g.:
+
+    fab pg --password=mytopsecretpassword refresh_dev
+    """
+    env.hosts = ['ebi-cli.ebi.ac.uk']
+    env.user = 'burkov'
+    env.run = run
+    env.cd = cd
+
+
+def refresh_fb1():
+    snapshot = env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_create_snapshot.sh -s pgsql-hxvm-038.ebi.ac.uk | tail -1")
+    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-010.ebi.ac.uk -S '%s'" % snapshot)
+    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_push_replication.sh -s pgsql-hxvm-038.ebi.ac.uk")
+
+    slack("Refreshed FB1 database from '%s' snapshot" % snapshot)
+
+
+def refresh_pg():
+    snapshot = env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_list_snapshots.sh -d pgsql-dlvmpub1-010.ebi.ac.uk | tail -1")
+    # bash curses about absence of /home directory, thus we have to filter out snapshot
+    snapshot = re.search("\d\d\d\d\-\d\d\-\d\d\s\d\d\:\d\d$", snapshot).group(0)  # e.g. 2018-06-26 11:16
+    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvmpub1-010.ebi.ac.uk -S '%s'" % snapshot)
+
+    slack("Refreshed PG database from '%s' snapshot" % snapshot)
+
+
+def refresh_dev():
+    snapshot = env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_list_snapshots.sh -d pgsql-dlvm-008.ebi.ac.uk | tail -1")
+    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-008.ebi.ac.uk -S '%s'" % snapshot)
+
+    slack("Refreshed DEV database from '%s' snapshot" % snapshot)
+
+
+def refresh_tst():
+    snapshot = env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_list_snapshots.sh -d pgsql-dlvm-009.ebi.ac.uk | tail -1")
+    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-009.ebi.ac.uk -S '%s'" % snapshot)
+
+    slack("Refreshed TST database from '%s' snapshot" % snapshot)

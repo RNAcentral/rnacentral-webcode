@@ -29,14 +29,6 @@ Downloads
   <div class="col-md-12">
     <h1><i class="fa fa-cloud-download"></i> Downloads</h1>
 
-    <h2>Downloading individual RNAcentral entries</h2>
-
-    <p>
-      Individual entries can be downloaded in several formats by
-      clicking on the <strong>Download dropdown</strong> available on each Unique RNAcentral Sequence page
-      (for example, <a href="/rna/URS000063A371">URS000063A371</a>).
-    </p>
-
     <h2>FTP Archive</h2>
 
     {% with rnacentral_ftp_url='ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral' %}
@@ -63,21 +55,6 @@ Downloads
     <p>
       <a href="{% url 'api-v1-root' %}" class="btn btn-primary">Browse the API</a>
     </p>
-
-    <h2>ENA Non-coding Product</h2>
-
-    <p>
-      The Non-coding product is the main feed source of sequence data for RNAcentral. It contains nucleotide sequences of non-coding features annotated in the <a href="http://www.ebi.ac.uk/ena/" target="_blank">EMBL nucleotide sequence database</a>.
-
-      The data are distributed in a <a href="ftp://ftp.ebi.ac.uk/pub/databases/embl/doc/usrman.txt" target="_blank">flat-file format</a>, similar to that of the EMBL database, but with each entry representing a single feature and with the sequence of only that entry.
-    </p>
-
-    <p>
-      <a class="btn btn-primary" role="button" href="ftp://ftp.ebi.ac.uk/pub/databases/ena/non-coding/release/" target="_blank">Latest release</a>
-      <a class="btn btn-primary margin-left-5px" role="button" href="ftp://ftp.ebi.ac.uk/pub/databases/ena/non-coding/update/" target="_blank">Latest updates</a>
-    </p>
-
-    <hr>
 
     <p>
       Feel free to <a href="{% url 'contact-us' %}">contact us</a> with any questions or requests.

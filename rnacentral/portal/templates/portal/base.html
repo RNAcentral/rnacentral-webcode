@@ -133,6 +133,9 @@ limitations under the License.
 
         </div> <!-- container -->
 
+        <div id="data-protection-message-configuration" data-message="This website requires cookies and limited processing of your personal data in order to function. By using this site you are agreeing to this as outlined in our <a class='white-color' href='https://www.ebi.ac.uk/data-protection/privacy-notice/rnacentral'>Privacy Policy</a> and <a href='https://www.ebi.ac.uk/about/terms-of-use'>Terms of Use</a>." data-service-id="myService" data-data-protection-version="0.1"></div>
+
+
         {% compress js %}
           {% block extra_js %}
             <script src="{% static "node_modules/jquery/dist/jquery.js" %}"></script>
@@ -194,6 +197,7 @@ limitations under the License.
             <script src="{% static "js/components/sequence/xrefs/xrefs.component.js" %}"></script>
             <script src="{% static "js/components/sequence/xrefs/xref-publications/xref-publications.component.js" %}"></script>
             <script src="{% static "js/components/sequence/2d/2d.component.js" %}"></script>
+            <script src="{% static "js/components/sequence/go-annotations/go-annotations.component.js" %}"></script>
 
             <script src="{% static "js/components/sequence-search/nhmmer.sequence.search.js" %}"></script>
 
@@ -211,6 +215,8 @@ limitations under the License.
             <script src="{% static "js/components/text-search/export-results.search.js" %}"></script>
             <script src="{% static "js/components/text-search/text-search-bar/text-search-bar.component.js" %}"></script>
             <script src="{% static "js/components/text-search/text-search-results/text-search-results.component.js" %}"></script>
+
+            <script src="{% static "js/components/ebiFrameworkNotificationBanner.js" %}"></script>
 
           {% endblock extra_js %}
         {% endcompress %}

@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 """
 Copyright [2009-2017] EMBL-European Bioinformatics Institute
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -99,8 +101,8 @@ def rna_view(request, upi, taxid=None):
     except Rna.DoesNotExist:
         raise Http404
 
-    # if taxid is given, but xrefs for it don't exist - redirect to non-taxon-filtered page with header
-    if taxid and not rna.xrefs.filter(taxid=taxid).exists():
+    # if taxid is given, but the RNA does not have annotations for this taxid, redirect to an error page
+    if taxid and not RnaPrecomputed.objects.filter(upi=upi, taxid=taxid).exists():
         response = redirect('unique-rna-sequence', upi=upi)
         response['Location'] += '?taxid-not-found={taxid}'.format(taxid=taxid)
         return response
@@ -116,7 +118,6 @@ def rna_view(request, upi, taxid=None):
         'taxid': taxid,
         'taxid_filtering': taxid_filtering,
         'taxid_not_found': request.GET.get('taxid-not-found', ''),
-        'single_species': get_single_species(rna, taxid, taxid_filtering),
         'description': rna.get_description(taxid) if taxid_filtering else rna.get_description(),
         'distinct_databases': rna.get_distinct_database_names(taxid),
         'publications': rna.get_publications(taxid) if taxid_filtering else rna.get_publications(),
@@ -130,23 +131,6 @@ def rna_view(request, upi, taxid=None):
     }
 
     return render(request, 'portal/sequence.html', {'rna': rna, 'context': context})
-
-
-def get_single_species(rna, taxid, taxid_filtering):
-    """Determine if the sequence has only one species or get the taxid species."""
-    if taxid_filtering:  # if taxid_filtering, taxid should be supplied - get a species name given that NCBI taxid
-        xref = Xref.default_objects.filter(taxid=taxid).select_related('accession')[:1].get()
-        return xref.accession.species if xref else None  # if not available for this species, return None
-    else:  # if filtering is not enabled, still, there might be only one species in references
-        if rna.count_distinct_organisms == 1:
-            queryset = rna.xrefs
-            results = queryset.filter(deleted='N')
-            if results.exists():
-                return results.first().accession.species
-            else:
-                return queryset.first().accession.species
-        else:
-            return None
 
 
 @cache_page(CACHE_TIMEOUT)
@@ -254,37 +238,49 @@ class GenomeBrowserView(TemplateView):
     def get(self, request, *args, **kwargs):
         self.template_name = 'portal/genome-browser.html'
 
-        # if current location is given in GET parameters - use it; otherwise, use defaults
-        if 'species' in request.GET and ('chromosome' in request.GET or 'chr' in request.GET) and 'start' in request.GET and 'end' in request.GET:
-            # security-wise it doesn't make sense to validate location:
-            # if user tinkers with it, she won't shoot anyone but herself
+        def get_assembly_with_example_location(species):
+            """
+            Helper function to retrieve species with example coordinates
+            :param species: EnsemblAssembly.ensembl_url of a species (e.g. "homo_sapiens")
+            :return: EnsemblAssembly as a raw queryset element
+            """
+            assemblies = EnsemblAssembly.get_assemblies_with_example_locations()
+            for assembly in assemblies:
+                if species == assembly.ensembl_url:
+                    if not assembly.example_start:
+                        assembly.example_start = assembly.start
+                    if not assembly.example_end:
+                        assembly.example_end = assembly.stop
+                    if not assembly.example_chromosome:
+                        assembly.example_chromosome = assembly.chromosome
+                    return assembly
+            return None
 
-            # find our genome in taxonomy, replace genome with a dict with taxonomy data
+        # if species is not defined - use homo_sapiens as default, if specified and wrong - 404
+        if 'species' in request.GET:
             kwargs['genome'] = request.GET['species']
-            if kwargs['genome'] is None:
+            ensembl_assembly = get_assembly_with_example_location(kwargs['genome'])
+            if not ensembl_assembly:
                 raise Http404
+        else:
+            kwargs['genome'] = 'homo_sapiens'
+            ensembl_assembly = get_assembly_with_example_location('homo_sapiens')
 
-            # 'chromosome' takes precedence over 'chr'
+        # require chromosome, start and end in kwargs or use default location for this species
+        if ('chromosome' in request.GET or 'chr' in request.GET) and 'start' in request.GET and 'end' in request.GET:
             if 'chromosome' in request.GET:
                 kwargs['chromosome'] = request.GET['chromosome']
-            else:
+            elif 'chr' in request.GET:
                 kwargs['chromosome'] = request.GET['chr']
-
             kwargs['start'] = request.GET['start']
             kwargs['end'] = request.GET['end']
         else:
-            ensembl_assembly = EnsemblAssembly.objects.get(ensembl_url='homo_sapiens')
-
-            kwargs['genome'] = 'homo_sapiens'
             kwargs['chromosome'] = ensembl_assembly.example_chromosome
             kwargs['start'] = ensembl_assembly.example_start
             kwargs['end'] = ensembl_assembly.example_end
 
         response = super(GenomeBrowserView, self).get(request, *args, **kwargs)
-        try:
-            return response.render()
-        except TemplateDoesNotExist:
-            raise Http404()
+        return response.render()
 
 
 class ContactView(FormView):

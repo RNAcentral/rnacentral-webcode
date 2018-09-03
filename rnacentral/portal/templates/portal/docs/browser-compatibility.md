@@ -9,5 +9,3 @@ RNAcentral is designed to work best in the following browsers:
 * Internet Explorer >=10
 
 To find what browsers are available for your computer, please visit [http://whatbrowser.org/](http://whatbrowser.org/).
-
-Cross-browser testing is powered by [BrowserStack](http://browserstack.com/) for Open Source projects.

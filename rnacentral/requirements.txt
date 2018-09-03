@@ -1,5 +1,5 @@
 Django==1.11.7
-PyMySQL
+PyMySQL==0.7.11
 PyYAML==3.10
 astroid==1.0.1
 attrs==17.2.0
@@ -24,15 +24,21 @@ six==1.8.0
 sqlparse==0.1.19
 versiontools==1.9.1
 
+# code style and test coverage reporting
+django-jenkins==0.110.0
+coverage==4.5.1
+pep8==1.7.1
+pyflakes==2.0.0
+
 # markdown support
 Markdown==2.3.1
 django-markdown-deux==1.0.5
-markdown2==2.3.1
+markdown2==2.3.5
 
 # fabric
 ecdsa==0.13
 Fabric==1.11.1
-paramiko==1.17.0
+paramiko==1.18.5
 
 # supervisord - commented-out because of python3 incompatibility - uncomment it if running on python2.
 supervisor==3.1.3

@@ -36,9 +36,6 @@ limitations under the License.
         <h1>
             Sequence {{ rna.upi }}
 
-            {% if not context.single_species %}
-                <small>{{ rna.count_distinct_organisms|intcomma }} species</small>
-            {% endif %}
             <small id="sequence-description-header">{{ context.description }}</small>
         </h1>
 
@@ -72,7 +69,7 @@ limitations under the License.
 
             <uib-tab index="0" heading="Overview" id="overview" deselect="checkTab($event, $selectedIndex)">
 
-                <xrefs upi="upi" taxid="taxid" timeout="500" page-size="5" on-activate-publications="activateTab('2'); $('html, body').animate({ scrollTop: $('#tabs').offset().top }, 1200);" on-create-modifications-feature="createModificationsFeature(modifications, accession)" on-activate-genome-browser="activateGenomeBrowser(start, end, chr, genome)" on-scroll-to-genome-browser="scrollToGenomeBrowser()"></xrefs>
+                <xrefs upi="upi" taxid="taxid" timeout="500" page-size="5" on-activate-publications="activatePublications()" on-create-modifications-feature="createModificationsFeature(modifications, accession)" on-activate-genome-browser="activateGenomeBrowser(start, end, chr, genome)" on-scroll-to-genome-browser="scrollToGenomeBrowser()"></xrefs>
 
                 <h2 ng-if="taxid">
                     Genome locations
@@ -94,7 +91,7 @@ limitations under the License.
                     <p ng-if="fetchGenomeLocationsStatus === 'success' && locations.length > 0">This sequence is found in <strong>{{ locations.length }}</strong> genome <ng-pluralize count="locations.length" when="{'one': 'location', 'other': 'locations'}"></ng-pluralize>:</p>
                     <div>
                         <div style="max-height: 300px; overflow: auto;">
-                            <table ng-if="fetchGenomeLocationsStatus === 'loading' || locations.length > 0" class="table table-hover table-condensed table-bordered table-responsive" style="margin-left: 9px; margin-right: 9px;">
+                            <table ng-if="fetchGenomeLocationsStatus === 'loading' || locations.length > 0" class="table table-hover table-condensed table-responsive" style="margin-left: 9px; margin-right: 9px;">
                                 <thead>
                                     <tr>
                                         <th>Go to location</th>
@@ -104,7 +101,7 @@ limitations under the License.
                                         <th>Strand</th>
                                         <th>Ensembl</th>
                                         <th>UCSC</th>
-                                        <th>Evidence</th>
+                                        <th>Sequence identity</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -160,10 +157,10 @@ limitations under the License.
                                             </span>
                                         </td>
                                         <td ng-if="genomeLocations.indexOf(location) !== -1">
-                                            <span>Literature <i uib-tooltip="This genome location is known from literature annotations (see 'Annotations' section)" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i></span>
+                                            <span>100% <i uib-tooltip="Imported from an Expert Database" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i></span>
                                         </td>
                                         <td ng-if="genomeMappings.indexOf(location) !== -1">
-                                            {{ location.identity * 100 | number:2 }}% <i uib-tooltip="This genome location is predicted by alignment of RNA sequence to the genome. Identity is {{ location.identity * 100 | number:2 }}%" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i>
+                                            <span>{{ location.identity * 100 | number:0 }}% <i uib-tooltip="Based on blat genome mapping" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -184,6 +181,51 @@ limitations under the License.
                   <p>
                 </div>
 
+
+              <div ng-hide="hideGoAnnotations" ng-if="taxid">
+                <h2>
+                  Gene Ontology annotations
+                  <small>
+                    <a href="{% url 'help-gene-ontology-annotations' %}" uib-tooltip="Learn more about Gene Ontology annotations in RNAcentral &rarr;" style="color:inherit;">
+                      <i class="fa fa-question-circle" aria-hidden="true"></i>
+                    </a>
+                  </small>
+                </h2>
+                <go-annotations upi="upi" taxid="taxid" show-go-annotations="showGOAnnotations()" on-toggle-go-modal="toggleGoModal(termId)"></go-annotations>
+
+                <div id='go-annotation-chart-modal' class='modal fade' tabindex=-1>
+                  <div class='modal-dialog modal-lg' role='document'>
+                    <div class='modal-content'>
+                      <div class="modal-header">
+                          <h3 class="modal-title">Ancestor Chart</h3>
+                      </div>
+                      <div class="modal-body">
+
+                        <span ng-if="goModalStatus === 'loading'">
+                          <i class="fa fa-spinner fa-spin fa-2x"></i>
+                          Loading ontology ancestors...
+                        </span>
+
+                        <span ng-if="goModalStatus === 'failed'">
+                          Failed to load QuickGO Ancestor chart
+                        </span>
+
+                        <span ng-if="goModalStatus === 'loaded'">
+                          {% verbatim %}
+                          <img ng-src="{{ goChartData }}" />
+                          {% endverbatim %}
+                        </span>
+
+                      </div>
+                      <div class="modal-footer">
+                          <button ng-click="toggleGoModal(null)" type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
                 <div>
                   <h2>
                     Rfam classification
@@ -192,7 +234,7 @@ limitations under the License.
                         {% if rna.get_rfam_hit_families|length != rna.get_rfam_hits|length %}
                           {{ rna.get_rfam_hit_families|length|intcomma }} families, {{ rna.get_rfam_hits|length|intcomma }} locations
                         {% else %}
-                          {{ rna.get_rfam_hits|length|intcomma }} total
+                          {{ rna.get_rfam_hits|length|intcomma }} families
                         {% endif %}
                       {% endif %}
                       <a href="{% url 'help-rfam-annotations' %}" uib-tooltip="Learn more about Rfam annotations in RNAcentral &rarr;" style="color:inherit;">
@@ -234,7 +276,7 @@ limitations under the License.
 
                       <div class="media-body">
                         <h4 class="media-heading" style='padding-left: 0px;'>
-                          <a href="{{ hit.rfam_model.url }}">
+                          <a href="{{ hit.rfam_model.url }}" class="no-icon">
                             {{ hit.rfam_model.long_name }}
                           </a>
                         </h4>
@@ -251,21 +293,14 @@ limitations under the License.
                             {% endif %}
                           </li>
                           <li>
-                            {% if hit.rfam_model.go_terms|length > 1 %}
                             <ul class="list-unstyled">
                               {% for go_term in hit.rfam_model.go_terms %}
                               <li>
-                                <a href="{{ go_term.quickgo_url }}" target="_blank">{{ go_term.go_term_id }}</a>
-                                <small>{{ go_term.name }}</small>
+                                <a href="{{ go_term.quickgo_url }}" target="_blank" class="no-icon" uib-tooltip="View {{ go_term.ontology_term_id }} in QuickGO">{{ go_term.name }}</a>
+                                <a class="btn btn-circle btn-default margin-left-5px" ng-click="toggleGoModal('{{ go_term.ontology_term_id }}')" type="button"><i class="fa fa-sitemap" uib-tooltip="View {{ go_term.ontology_term_id }} ancestor chart"></i></a>
                               </li>
                               {% endfor %}
                             </ul>
-                            {% else %}
-                              {% with hit.rfam_model.go_terms.0 as go_term %}
-                                <a href="{{ go_term.quickgo_url }}">{{ go_term.go_term_id }}</a>
-                                <small>{{ go_term.name }}</small>
-                              {% endwith %}
-                            {% endif %}
                           </li>
 
                           {% with hit.ranges as ranges %}
@@ -304,7 +339,7 @@ limitations under the License.
                 <h2>
                     Sequence
                     <small>
-                      <em>{{ rna.upi }}{% if context.single_species %}_{{ context.taxid }}{% endif %}</em>
+                      <em>{{ rna.upi }}{% if context.taxid %}_{{ context.taxid }}{% endif %}</em>
                     </small>
                 </h2>
 
@@ -358,7 +393,7 @@ limitations under the License.
                 </div>
             </uib-tab>
 
-            <uib-tab index="2" heading="2D" id="secondary-structures" deselect="checkTab($event, $selectedIndex)" ng-hide="hide2dTab">
+            <uib-tab index="2" heading="2D" id="secondary-structures" deselect="checkTab($event, $selectedIndex)" ng-hide="hide2dTab" ng-if="taxid">
                 <secondary-structures upi="upi" taxid="taxid" show-secondary-structure-tab="show2dTab()"></secondary-structures>
             </uib-tab>
 
@@ -372,9 +407,6 @@ limitations under the License.
                         <ul class="dropdown-menu" uib-dropdown-menu id="download-formats">
                             <li><a ng-click="download('fasta')">FASTA</a></li>
                             <li><a ng-click="download('json')">JSON</a></li>
-                            <li ng-if="enableGenomicFeatures"><a ng-click="download('bed')">BED</a></li>
-                            <li ng-if="enableGenomicFeatures"><a ng-click="download('gff')">GFF</a></li>
-                            <li ng-if="enableGenomicFeatures"><a ng-click="download('gff3')">GFF3</a></li>
                         </ul>
                     </span>
                 </uib-tab-heading>

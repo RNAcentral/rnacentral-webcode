@@ -38,9 +38,8 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, RfamHitSerializer, \
                               EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
-
 from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
-    EnsemblInsdcMapping, GenomeMapping, url2db, db2url
+    EnsemblInsdcMapping, GenomeMapping, GenomicCoordinates, GoAnnotation, url2db, db2url
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination
 
@@ -90,51 +89,100 @@ class GenomeAnnotations(APIView):
         return Response(features)
 
 
-def _species2taxid(species):
-    """This is a terribly indirect way to get taxid by species"""
-    accession = Accession.objects.filter(species=url2db(species)).first()
-    xrefs = Xref.default_objects.filter(accession=accession, deleted='N').all()
-    if len(xrefs) != 0:
-        taxid = xrefs[0].taxid
-    else:
-        xrefs = Xref.objects.filter(accession=accession).all()
-        taxid = xrefs[0].taxid
-
-    return taxid
-
-
 def features_from_xrefs(species, chromosome, start, end):
     try:
-        xrefs = Xref.default_objects.filter(
-            accession__coordinates__chromosome=chromosome,
-            accession__coordinates__primary_start__gte=start,
-            accession__coordinates__primary_end__lte=end,
-            accession__species=url2db(species),
-            deleted='N'
-        ).select_related('upi', 'accession', 'db').prefetch_related('upi__precomputed')
-    except Xref.DoesNotExist:
-        xrefs = []
+        assembly = EnsemblAssembly.objects.get(ensembl_url=species)
+    except EnsemblAssembly.DoesNotExist:
+        return Response([])
+
+    query = '''
+        WITH acc_coord AS (
+          SELECT DISTINCT
+          c.name,
+          c.strand,
+          c.primary_start,
+          c.primary_end,
+          c.accession
+          FROM {rnc_coordinates} c
+          JOIN {rnc_accessions} a on (a.accession = c.accession)
+          WHERE c.primary_start >= {start}
+          AND c.primary_end <= {end}
+          AND c.name = '{chromosome}'
+        )
+        SELECT
+        1 id,
+        xref.upi,
+        xref.taxid,
+        acc_coord.accession,
+        acc_coord.name,
+        acc_coord.strand,
+        acc_coord.primary_start,
+        acc_coord.primary_end
+        FROM xref
+        JOIN acc_coord ON (xref.ac = acc_coord.accession)
+        WHERE xref.deleted = 'N'
+        AND xref.taxid = {taxid};
+    '''.format(
+        xref=Xref._meta.db_table,
+        rnc_accessions=Accession._meta.db_table,
+        rnc_coordinates=GenomicCoordinates._meta.db_table,
+        rnc_rna_precomputed=RnaPrecomputed._meta.db_table,
+        taxid=assembly.taxid,
+        start=start,
+        end=end,
+        chromosome=chromosome
+    )
+
+    from django.db import connections
+    from psycopg2.extras import NamedTupleCursor
+    conn = connections['default']
+    conn.ensure_connection()
+    with conn.connection.cursor(cursor_factory=NamedTupleCursor) as cursor:
+        cursor.execute(query)
+        results = cursor.fetchall()
 
     upi2data = {}
     data = []
-    for i, xref in enumerate(xrefs):
-        upi = xref.upi.upi
+
+    ac2exons = {}  # { result.accession: [result, result, result]}
+    for result in results:
+        if result.accession not in ac2exons:
+            ac2exons[result.accession] = [result]
+        else:
+            ac2exons[result.accession].append(result)
+
+    for accession, exons in ac2exons.items():
+        upi = exons[0].upi
 
         # create only one transcript object per upi
         if upi not in upi2data:
-            taxid = _species2taxid(species)
-            xrefs = Xref.default_objects.filter(upi=upi, taxid=taxid, deleted='N').select_related('db').all()
-            databases = list(set([x.db.display_name for x in xrefs]))
+            xrefs_object = Xref.default_objects.filter(upi=upi, taxid=assembly.taxid, deleted='N').select_related('db').all()
+            databases = list(set([x.db.display_name for x in xrefs_object]))
             databases.sort()
-            coordinates = xref.get_genomic_coordinates()
+
+            # manually populate coordinates with what used to be xref.get_genomic_coordinates()
+            coordinates = {
+                'chromosome': GenomicCoordinates.objects.filter(accession=accession, chromosome__isnull=False).first().chromosome,
+                'strand': GenomicCoordinates.objects.filter(accession=accession, chromosome__isnull=False).first().strand,
+                'start': min([exon.primary_start for exon in exons]),
+                'end': max([exon.primary_end for exon in exons])
+            }
+            if re.match(r'\d+', coordinates['chromosome']) or coordinates['chromosome'] in ['X', 'Y']:
+                coordinates['ucsc_chromosome'] = 'chr' + coordinates['chromosome']
+            else:
+                coordinates['ucsc_chromosome'] = coordinates['chromosome']
+
             transcript_id = upi + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
-            biotype = xref.upi.precomputed.filter(taxid=xref.taxid)[0].rna_type  # used to be biotype = xref.accession.get_biotype()
-            description = xref.upi.precomputed.filter(taxid=xref.taxid)[0].description
+
+            # do N+1 requests on rna_precomputed per each upi, cause SQL join with it is dead slow for some reason
+            rna_precomputed = RnaPrecomputed.objects.get(upi=exons[0].upi, taxid=assembly.taxid)
+            biotype = rna_precomputed.rna_type  # used to be biotype = xref.accession.get_biotype()
+            description = rna_precomputed.description
 
             transcript = {
                 'ID': transcript_id,
                 'external_name': upi,
-                'taxid': xref.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
+                'taxid': exons[0].taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
                 'feature_type': 'transcript',
                 'logic_name': 'RNAcentral',  # required by Genoverse
                 'biotype': biotype,  # required by Genoverse
@@ -150,15 +198,14 @@ def features_from_xrefs(species, chromosome, start, end):
             data.append(transcript)
 
             # exons
-            exons = xref.accession.coordinates.all()
             for i, exon in enumerate(exons):
-                exon_id = '_'.join([xref.accession.accession, 'exon_' + str(i)])
-                if not exon.chromosome:
+                exon_id = '_'.join([accession, 'exon_' + str(i)])
+                if not exon.name:
                     continue  # some exons may not be mapped onto the genome (common in RefSeq)
                 data.append({
                     'external_name': exon_id,
                     'ID': exon_id,
-                    'taxid': xref.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
+                    'taxid': exons[0].taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
                     'feature_type': 'exon',
                     'Parent': transcript_id,
                     'logic_name': 'RNAcentral',  # required by Genoverse
@@ -173,7 +220,11 @@ def features_from_xrefs(species, chromosome, start, end):
 
 
 def features_from_mappings(species, chromosome, start, end):
-    taxid = _species2taxid(species)
+    try:
+        taxid = EnsemblAssembly.objects.get(ensembl_url=species).taxid
+    except EnsemblAssembly.DoesNotExist:
+        return Response([])
+
     mappings = GenomeMapping.objects.filter(taxid=taxid, chromosome=chromosome, start__gte=start, stop__lte=end)\
                                     .select_related('upi').prefetch_related('upi__precomputed')
 
@@ -192,7 +243,7 @@ def features_from_mappings(species, chromosome, start, end):
         JOIN rna
         ON mapping.upi=rna.upi
         JOIN (
-          SELECT * FROM {rna_precomputed} WHERE taxid={taxid}
+          SELECT * FROM {rna_precomputed} WHERE taxid={taxid} and is_active = true
         ) precomputed
         ON {rna}.upi=precomputed.upi
     '''.format(
@@ -506,32 +557,49 @@ class RnaGenomeLocations(generics.ListAPIView):
 
         rna = self.get_object()
         xrefs = rna.get_xrefs(taxid=taxid).filter(deleted='N')
+        # if assembly with this taxid is not found, just return empty locations list
+        try:
+            assembly = EnsemblAssembly.objects.get(taxid=taxid)  # this applies only to species-specific pages
+        except EnsemblAssembly.DoesNotExist:
+            return Response([])
+
         for xref in xrefs:
-            if xref.accession.coordinates.exists() and xref.accession.coordinates.all()[0].chromosome:
-                data = {
-                    'chromosome': xref.accession.coordinates.all()[0].chromosome,
-                    'strand': xref.accession.coordinates.all()[0].strand,
-                    'start': xref.accession.coordinates.all().aggregate(Min('primary_start'))['primary_start__min'],
-                    'end': xref.accession.coordinates.all().aggregate(Max('primary_end'))['primary_end__max'],
-                    'species': db2url(xref.accession.species),
-                    'ucsc_db_id': xref.get_ucsc_db_id(),
-                    'ensembl_division': xref.get_ensembl_division(),
-                    'ensembl_species_url': xref.accession.get_ensembl_species_url()
-                }
+            if xref.accession.coordinates.exists():
+                chromosomes = []
+                for entry in xref.accession.coordinates.all():
+                    if entry.chromosome not in chromosomes:
+                        chromosomes.append(entry.chromosome)
+                for chromosome in chromosomes:
+                    data = {
+                        'chromosome': chromosome,
+                        'strand': xref.accession.coordinates.filter(chromosome=chromosome).all()[0].strand,
+                        'start': xref.accession.coordinates.filter(chromosome=chromosome).all().aggregate(Min('primary_start'))['primary_start__min'],
+                        'end': xref.accession.coordinates.filter(chromosome=chromosome).all().aggregate(Max('primary_end'))['primary_end__max'],
+                        'species': assembly.ensembl_url,
+                        'ucsc_db_id': xref.get_ucsc_db_id(),
+                        'ensembl_division': xref.get_ensembl_division(),
+                        'ensembl_species_url': xref.accession.get_ensembl_species_url()
+                    }
 
-                exceptions = ['X', 'Y']
-                if re.match(r'\d+', data['chromosome']) or data['chromosome'] in exceptions:
-                    data['ucsc_chromosome'] = 'chr' + data['chromosome']
-                else:
-                    data['ucsc_chromosome'] = data['chromosome']
+                    exceptions = ['X', 'Y']
+                    if re.match(r'\d+', data['chromosome']) or data['chromosome'] in exceptions:
+                        data['ucsc_chromosome'] = 'chr' + data['chromosome']
+                    else:
+                        data['ucsc_chromosome'] = data['chromosome']
 
-                if data not in locations:
-                    locations.append(data)
+                    if data not in locations:
+                        locations.append(data)
 
         return Response(locations)
 
 
 class RnaGenomeMappings(generics.ListAPIView):
+    """
+    List of distinct genomic locations, where a specific RNA
+    was computationally mapped onto a specific genome location.
+
+    [API documentation](/api)
+    """
     queryset = Rna.objects.select_related().all()
 
     def get(self, request, pk=None, taxid=None, format=None):
@@ -540,7 +608,10 @@ class RnaGenomeMappings(generics.ListAPIView):
                                       .values('region_id', 'strand', 'chromosome', 'taxid', 'identity')\
                                       .annotate(Min('start'), Max('stop'))
 
-        assembly = EnsemblAssembly.objects.get(taxid=taxid)  # this applies only to species-specific pages
+        try:
+            assembly = EnsemblAssembly.objects.get(taxid=taxid)  # this applies only to species-specific pages
+        except EnsemblAssembly.DoesNotExist:
+            return Response([])
 
         output = []
         for mapping in mappings:
@@ -552,7 +623,10 @@ class RnaGenomeMappings(generics.ListAPIView):
                 'identity': mapping["identity"],
                 'species': assembly.ensembl_url,
                 'ucsc_db_id': assembly.assembly_ucsc,
-                'ensembl_division': assembly.division,
+                'ensembl_division': {
+                    'name': assembly.division,
+                    'url': 'http://' + assembly.subdomain
+                },
                 'ensembl_species_url': assembly.ensembl_url
             }
             output.append(data)
@@ -651,17 +725,20 @@ class ExpertDatabasesStatsViewSet(RetrieveModelMixin, ListModelMixin, GenericVie
     def list(self, request, *args, **kwargs):
         return super(ExpertDatabasesStatsViewSet, self).list(request, *args, **kwargs)
 
-    def get(self, request, *args, **kwargs):
+    def retrieve(self, request, *args, **kwargs):
         return super(ExpertDatabasesStatsViewSet, self).retrieve(request, *args, **kwargs)
 
 
-class GenomesAPIViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
+class GenomesAPIViewSet(ListModelMixin, GenericViewSet):
     """API endpoint, presenting all E! assemblies, available in RNAcentral."""
     permission_classes = (AllowAny, )
     serializer_class = EnsemblAssemblySerializer
     pagination_class = Pagination
-    queryset = EnsemblAssembly.objects.all().order_by('-ensembl_url')
+    # queryset = EnsemblAssembly.objects.prefetch_related('genome_mappings').all().order_by('-ensembl_url')
     lookup_field = 'ensembl_url'
+
+    def get_queryset(self):
+        return EnsemblAssembly.get_assemblies_with_example_locations()
 
 
 class RfamHitsAPIViewSet(generics.ListAPIView):
@@ -684,6 +761,34 @@ class EnsemblInsdcMappingView(APIView):
         mapping = EnsemblInsdcMapping.objects.all().select_related()
         serializer = EnsemblInsdcMappingSerializer(mapping, many=True, context={request: request})
         return Response(serializer.data)
+
+
+class RnaGoAnnotationsView(APIView):
+    permission_classes = (AllowAny, )
+    pagination_class = Pagination
+
+    def get(self, request, pk, taxid, **kwargs):
+        rna_id = pk + '_' + taxid
+        taxid = int(taxid)
+        annotations = GoAnnotation.objects.filter(rna_id=rna_id).\
+            select_related('ontology_term', 'evidence_code')
+
+        result = []
+        for annotation in annotations:
+            result.append({
+                'rna_id': annotation.rna_id,
+                'upi': pk,
+                'taxid': taxid,
+                'go_term_id': annotation.ontology_term.ontology_term_id,
+                'go_term_name': annotation.ontology_term.name,
+                'qualifier': annotation.qualifier,
+                'evidence_code_id': annotation.evidence_code.ontology_term_id,
+                'evidence_code_name': annotation.evidence_code.name,
+                'assigned_by': annotation.assigned_by,
+                'extensions': annotation.assigned_by or {},
+            })
+
+        return Response(result)
 
 
 class EnsemblKaryotypeAPIView(APIView):
