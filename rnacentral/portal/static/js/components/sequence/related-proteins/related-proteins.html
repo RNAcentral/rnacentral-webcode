@@ -23,7 +23,7 @@
 
     <thead>
       <tr>
-        <th>Protein accession</th>
+        <th>Protein</th>
         <th>TarBase</th>
         <th>Description</th>
         <th>Methods</th>
@@ -35,7 +35,7 @@
         <td colspan="4" style="text-align: center;">
           <span>
             <i class="fa fa-spinner fa-spin fa-2x"></i>
-            Loading data on related proteins...
+            Loading data on protein targets ...
           </span>
         </td>
       </tr>
@@ -54,7 +54,7 @@
           <a href="search?q=interacting_protein:&quot;{{ protein.target_accession.split(':')[1] }}&quot;" class="margin-left-5px ng-scope" uib-tooltip="Find other miRNAs targeting this protein"><i class="fa fa-search"></i></a>
         </td>
         <td>
-          <a ng-href="{{ $ctrl.tarbaseUrl(protein) }}" target="_blank">View in TarBase</a>
+          <a ng-href="{{ $ctrl.tarbaseUrl(protein) }}" target="_blank" uib-tooltip="Explore supporting publications, tissues, cell lines, and more">View in TarBase</a>
         </td>
         <td>
           {{ protein.description.split(" [")[0] }}
