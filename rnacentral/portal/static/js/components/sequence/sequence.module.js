@@ -422,7 +422,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                 var data = features.map(function(feature) {
                     return {
                         x: feature.start >= 0 ? feature.start : 0,
-                        y: feature.end < $scope.rna.sequence.length ? feature.end : $scope.rna.sequence.length - 1,
+                        y: feature.stop < $scope.rna.length ? feature.stop : $scope.rna.length - 1,
                         description: 'Conserved_rna_structure ' + feature.metadata.crs_id
                     }
                 });
