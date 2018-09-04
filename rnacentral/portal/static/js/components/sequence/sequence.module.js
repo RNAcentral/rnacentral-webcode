@@ -240,7 +240,6 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         } else {
             $('#go-annotation-chart-modal').modal('toggle');
         }
-        console.log($scope.goChartData);
     };
 
     /**
@@ -414,13 +413,10 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         if ($scope.taxid) {
             $scope.fetchSequenceFeatures().then(
                 function(response){
-                    var features = response.data.results;
-
-                    // sort features by start
-                    features.sort(function(a, b) {return a.start - b.start});
+                    $scope.features = response.data.results.sort(function(a, b) {return a.start - b.start});
 
                     // trim start/stop of each feature to make sure it's not out of sequence bounds
-                    var data = features.map(function(feature) {
+                    var data = $scope.features.map(function(feature) {
                         return {
                             x: feature.start >= 0 ? feature.start : 0,
                             y: feature.stop < $scope.rna.length ? feature.stop : $scope.rna.length - 1,
@@ -445,7 +441,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                     };
 
                     // for non-empty tracks, add CRS feature track
-                    if (features.length > 0) { addFeature(); }
+                    if ($scope.features.length > 0) { addFeature(); }
                 }
             )
         }
