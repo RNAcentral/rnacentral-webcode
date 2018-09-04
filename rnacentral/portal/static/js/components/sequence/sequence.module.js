@@ -410,42 +410,46 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
             }
         );
 
-        // show CRS features, found in this RNA
-        $scope.fetchSequenceFeatures().then(
-            function(response){
-                var features = response.data.results;
+        // for taxid-specific pages, show CRS features, found in this RNA
+        if ($scope.taxid) {
+            $scope.fetchSequenceFeatures().then(
+                function(response){
+                    var features = response.data.results;
 
-                // sort features by start
-                features.sort(function(a, b) {return a.start - b.start});
+                    // sort features by start
+                    features.sort(function(a, b) {return a.start - b.start});
 
-                // trim start/stop of each feature to make sure it's not out of sequence bounds
-                var data = features.map(function(feature) {
-                    return {
-                        x: feature.start >= 0 ? feature.start : 0,
-                        y: feature.stop < $scope.rna.length ? feature.stop : $scope.rna.length - 1,
-                        description: 'Conserved_rna_structure ' + feature.metadata.crs_id
-                    }
-                });
+                    // trim start/stop of each feature to make sure it's not out of sequence bounds
+                    var data = features.map(function(feature) {
+                        return {
+                            x: feature.start >= 0 ? feature.start : 0,
+                            y: feature.stop < $scope.rna.length ? feature.stop : $scope.rna.length - 1,
+                            description: 'Conserved_rna_structure ' + feature.metadata.crs_id
+                        }
+                    });
 
-                var addFeature = function() {
-                    if ($scope.featureViewer) {
-                        $scope.featureViewer.addFeature({
-                            id: "crs",
-                            data: data,
-                            name: "CRS",
-                            className: "crs",
-                            color: "#365569",
-                            type: "rect",
-                            filter: "type1"
-                        })
-                    } else {
-                        $timeout(addFeature, 1000)
-                    }
-                };
+                    var addFeature = function() {
+                        if ($scope.featureViewer) {
+                            $scope.featureViewer.addFeature({
+                                id: "crs",
+                                data: data,
+                                name: "CRS",
+                                className: "crs",
+                                color: "#365569",
+                                type: "rect",
+                                filter: "type1"
+                            })
+                        } else {
+                            $timeout(addFeature, 1000)
+                        }
+                    };
 
-                addFeature();
-            }
-        )
+                    // for non-empty tracks, add CRS feature track
+                    if (features.length > 0) { addFeature(); }
+                }
+            )
+        }
+
     });
 
     if ($scope.taxid) {
