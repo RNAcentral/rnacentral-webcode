@@ -12,7 +12,7 @@
     <ul ng-if="$ctrl.distinctFeatures.length > 0" class="media-list">
       <li ng-repeat="feature in $ctrl.distinctFeatures" ng-class="{ 'col-md-10 media': $ctrl.distinctFeatures.length === 1, 'col-md-6 media': $ctrl.distinctFeatures.length > 1 }" style="margin-bottom: 1.5em; padding-left: 5px;">
 
-        <div ng-class="{'col-md-2 media-left media-top': $ctrl.distinctFeatures.length == 1, 'col-md-4 col-lg-3 media-left media-top': $ctrl.distinctFeatures.length > 1}" style="padding-left: 0;"  uib-tooltip="Consensus secondary structure of Rfam model {{ feature.metadata.crs_id }}">
+        <div ng-class="{'col-md-2 media-left media-top': $ctrl.distinctFeatures.length == 1, 'col-md-4 col-lg-3 media-left media-top': $ctrl.distinctFeatures.length > 1}" style="padding-left: 0;" uib-tooltip="Consensus secondary structure of Rfam model {{ feature.metadata.crs_id }}">
           <a ng-href="{{ feature.rthPageUrl }}" class="no-icon">
             <img class="media-object thumbnail"
               ng-src="{{ feature.secondaryStructureUrl }}"
@@ -28,19 +28,7 @@
             </a>
           </h4>
           <ul>
-            <li ng-repeat="location in feature.locations">Matches at <span ng-if="locations.length === 1">:
-              <strong>{{ location.start }}-{{ location.stop }}</strong>
-              ({{ (location.stop - location.start) / rna.length * 100 }}% of the model)</span>
-              <a ng-if="locations.length > 1" data-toggle="collapse" href="#matchPositionsList-{{ $index }}" aria-expanded="false" aria-controls="matchPositionsList">
-                <i class="fa fa-list" aria-hidden="true"></i> {{ ranges|length }} locations
-              </a>
-              <ul class='collapse list-unstyled' id='matchPositionsList-{{ $index }}'>
-                <li style='padding-left: 1em;'>
-                  <strong>{{ location.start }}-{{ location.stop }}</strong>
-                  ({{ (location.stop - location.start) / rna.length * 100 }}% of the model)
-                </li>
-              </ul>
-            </li>
+            <li ng-repeat="location in feature.locations">Matches at:<strong>{{ location.start }}-{{ location.stop }}</strong></li>
           </ul>
         </div>
 

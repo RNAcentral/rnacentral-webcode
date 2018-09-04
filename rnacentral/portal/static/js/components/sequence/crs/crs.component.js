@@ -17,10 +17,10 @@ var crs = {
                 var featureClone = ctrl.distinctFeatures.find(function(el) { return el.metadata.crs_id === feature.metadata.crs_id });
                 if (!featureClone) {
                     featureClone = JSON.parse(JSON.stringify(feature));
-                    featureClone.locations = [{ start: feature.start, stop: feature.stop, chromosome: feature.chromosome }];
+                    featureClone.locations = [{ start: feature.start, stop: feature.stop }];
                     ctrl.distinctFeatures.push(featureClone);
                 } else {
-                    featureClone.locations.push({ start: feature.start, stop: feature.stop, chromosome: feature.chromosome });
+                    featureClone.locations.push({ start: feature.start, stop: feature.stop });
                 }
             });
 
@@ -30,7 +30,6 @@ var crs = {
                 feature.secondaryStructureUrl = $interpolate("https://rth.dk/resources/rnannotator/crs/vert/data/figure/structure_cons/hg38_17way/M1/{{ crs_id }}_ext_liftover_17way.ss.png")({ crs_id: feature.metadata.crs_id });
                 feature.alignmentUrl = $interpolate("https://rth.dk/resources/rnannotator/crs/vert/data/figure/alignment/hg38_17way/M1/{{ crs_id }}_ext_liftover_17way.aln.png")({ crs_id: feature.metadata.crs_id });
             });
-
 
         };
 
