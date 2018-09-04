@@ -15,7 +15,7 @@
         <div ng-class="{'col-md-2 media-left media-top': $ctrl.distinctFeatures.length == 1, 'col-md-4 col-lg-3 media-left media-top': $ctrl.distinctFeatures.length > 1}" style="padding-left: 0;"  uib-tooltip="Consensus secondary structure of Rfam model {{ feature.metadata.crs_id }}">
           <a ng-href="{{ feature.rthPageUrl }}" class="no-icon">
             <img class="media-object thumbnail"
-              src="{{ feature.rthSecondaryStructureUrl }}"
+              ng-src="{{ feature.secondaryStructureUrl }}"
               style="max-width: 120px; max-height: 120px;"
               alt="{{ feature.metadata.crs_id }} secondary structure">
           </a>
