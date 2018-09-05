@@ -1,4 +1,4 @@
-var rnaSequenceController = function($scope, $location, $window, $rootScope, $compile, $http, $q, $filter, $timeout, routes, GenoverseUtils) {
+var rnaSequenceController = function($scope, $location, $window, $rootScope, $compile, $http, $q, $filter, $timeout, $interpolate, routes, GenoverseUtils) {
     // Take upi and taxid from url. Note that $location.path() always starts with slash
     $scope.upi = $location.path().split('/')[2];
     $scope.taxid = $location.path().split('/')[3];  // TODO: this might not exist!
@@ -434,7 +434,16 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                                 color: "#365569",
                                 type: "rect",
                                 filter: "type1"
-                            })
+                            });
+
+                            // make clicks on this track open CRS page
+                            d3.selectAll("g.crsGroup")
+                              .on("click", function(element) {
+                                  var crs_id = element.description.split(" ")[1]; // typical description: "Conserved_rna_structure M0554307"
+                                  var pageUrl = $interpolate("https://rth.dk/resources/rnannotator/crs/vert/pages/cmf.data.collection.openallmenus.php?crs={{ crs_id }}")({ crs_id: crs_id });
+                                  $window.open(pageUrl);
+                              });
+
                         } else {
                             $timeout(addFeature, 1000)
                         }
@@ -489,7 +498,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     }
 };
 
-rnaSequenceController.$inject = ['$scope', '$location', '$window', '$rootScope', '$compile', '$http', '$q', '$filter', '$timeout', 'routes', 'GenoverseUtils'];
+rnaSequenceController.$inject = ['$scope', '$location', '$window', '$rootScope', '$compile', '$http', '$q', '$filter', '$timeout', '$interpolate', 'routes', 'GenoverseUtils'];
 
 
 /**
