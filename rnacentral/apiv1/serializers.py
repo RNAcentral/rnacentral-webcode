@@ -367,7 +367,7 @@ class RnaFastaSerializer(serializers.ModelSerializer):
         fields = ('fasta',)
 
 
-class RelatedProteinSerializer(serializers.ModelSerializer):
+class ProteinTargetsSerializer(serializers.ModelSerializer):
     target_accession = serializers.CharField()  # use non-null target_accession instead of nullable protein_accession
     source_accession = serializers.CharField()
     methods = serializers.ListField(serializers.CharField())

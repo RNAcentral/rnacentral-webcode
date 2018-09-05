@@ -132,7 +132,7 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         taxid = '9606'
         page = 1
         page_size = 1000
-        url = reverse('rna-related-proteins', kwargs={'pk': upi, 'taxid': taxid})
+        url = reverse('rnaprotein-targets', kwargs={'pk': upi, 'taxid': taxid})
         with Timer() as timer:
             c = APIClient()
             response = c.get(url, data={'page': page, 'page_size': page_size})
@@ -143,7 +143,7 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
     def test_related_proteins_pagination(self):
         upi = 'URS0000021B51'  # over 9000 entries =)
         taxid = '10090'
-        url = reverse('rna-related-proteins', kwargs={'pk': upi, 'taxid': taxid})
+        url = reverse('rna-protein-targets-targets', kwargs={'pk': upi, 'taxid': taxid})
         with Timer() as timer:
             c = APIClient()
             response = c.get(url, data={})  # pagination is enabled by default

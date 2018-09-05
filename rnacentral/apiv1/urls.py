@@ -47,7 +47,7 @@ urlpatterns = [
     # go annotations for RNA (species-specific)
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/go-annotations/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.RnaGoAnnotationsView.as_view()), name='rna-go-annotations'),
     # target proteins for RNA (species-specific)
-    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/related-proteins/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.RelatedProteinsView.as_view()), name='rna-related-proteins'),
+    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/protein-targets/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.ProteinTargetsView.as_view()), name='rna-protein-targets'),
     # literature citations associated with ENA records
     url(r'^accession/(?P<pk>.*?)/citations/?$', cache_page(CACHE_TIMEOUT)(views.CitationsView.as_view()), name='accession-citations'),
     # view for an individual cross-reference

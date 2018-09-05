@@ -1,4 +1,4 @@
-var relatedProteins = {
+var proteinTargets = {
     bindings: {
         upi: '<',
         taxid: '<',
@@ -40,7 +40,7 @@ var relatedProteins = {
 
         ctrl.getPageFromServerSide = function() {
             ctrl.status = 'loading';
-            $http.get(routes.apiRelatedProteinsView({ upi: ctrl.upi, taxid: ctrl.taxid }), {params: { page: ctrl.page, page_size: ctrl.pageSize }}).then(
+            $http.get(routes.apiProteinTargetsView({ upi: ctrl.upi, taxid: ctrl.taxid }), {params: { page: ctrl.page, page_size: ctrl.pageSize }}).then(
                 function(response) {
                     ctrl.status = 'success';
                     ctrl.displayedProteins = response.data.results;
@@ -61,7 +61,7 @@ var relatedProteins = {
             ctrl.timeout = parseInt(ctrl.timeout) || 5000;  // if (time of response) > timeout, paginate on server side
             ctrl.status = 'loading';  // {'loading', 'error' or 'success'} - display spinner, error message or xrefs table
 
-            $http.get(routes.apiRelatedProteinsView({ upi: ctrl.upi, taxid: ctrl.taxid }), { timeout: ctrl.timeout, params: { page: 1, page_size: 1000000000000 } }).then(
+            $http.get(routes.apiProteinTargetsView({ upi: ctrl.upi, taxid: ctrl.taxid }), { timeout: ctrl.timeout, params: { page: 1, page_size: 1000000000000 } }).then(
                 function(response) {
                     ctrl.status = 'success';
                     ctrl.proteins = response.data.results;
@@ -96,7 +96,7 @@ var relatedProteins = {
             return $interpolate(template)({ tarbaseId: tarbaseId, ensemblId: ensemblId });
         }
     }],
-    templateUrl: '/static/js/components/sequence/related-proteins/related-proteins.html'
+    templateUrl: '/static/js/components/sequence/protein-targets/protein-targets.html'
 };
 
-angular.module("rnaSequence").component("relatedProteins", relatedProteins);
+angular.module("rnaSequence").component("proteinTargets", proteinTargets);

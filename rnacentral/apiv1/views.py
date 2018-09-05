@@ -37,7 +37,7 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
                               RnaSpeciesSpecificSerializer, ExpertDatabaseStatsSerializer, \
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, RfamHitSerializer, \
-                              EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer, RelatedProteinSerializer
+                              EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer, ProteinTargetsSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
     EnsemblInsdcMapping, GenomeMapping, GenomicCoordinates, GoAnnotation, RelatedSequence, ProteinInfo, url2db, db2url
@@ -801,12 +801,12 @@ class EnsemblKaryotypeAPIView(APIView):
         return Response(assembly.karyotype.first().karyotype)
 
 
-class RelatedProteinsView(generics.ListAPIView):
+class ProteinTargetsView(generics.ListAPIView):
     """API endpoint, presenting ProteinInfo, related to given rna."""
     permission_classes = ()
     authentication_classes = ()
     pagination_class = Pagination
-    serializer_class = RelatedProteinSerializer
+    serializer_class = ProteinTargetsSerializer
 
     def get_queryset(self):
         pk = self.kwargs['pk']
