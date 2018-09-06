@@ -402,6 +402,14 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                         type: "rect",
                         filter: "type1"
                     });
+
+                    // make clicks on this track open CRS page
+                    d3.selectAll("g.rfamModelsGroup")
+                      .on("click", function(element) {
+                          var rfam_id = element.description.split(" ")[1]; // typical description: "Conserved_rna_structure M0554307"
+                          var pageUrl = $interpolate("http://rfam.org/family/{{ rfam_id }}")({ rfam_id: rfam_id });
+                          $window.open(pageUrl);
+                      });
                 }
             },
             function() {
