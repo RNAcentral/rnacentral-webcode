@@ -1,3 +1,4 @@
+from __future__ import print_function
 """
 Copyright [2009-2017] EMBL-European Bioinformatics Institute
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -36,12 +37,12 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
                               RnaSpeciesSpecificSerializer, ExpertDatabaseStatsSerializer, \
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, RfamHitSerializer, \
-                              EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer
+                              EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer, ProteinTargetsSerializer
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
-    EnsemblInsdcMapping, GenomeMapping, GenomicCoordinates, GoAnnotation, url2db, db2url
+    EnsemblInsdcMapping, GenomeMapping, GenomicCoordinates, GoAnnotation, RelatedSequence, ProteinInfo, url2db, db2url
 from portal.config.expert_databases import expert_dbs
-from rnacentral.utils.pagination import Pagination
+from rnacentral.utils.pagination import Pagination, PaginatedRawQuerySet
 
 """
 Docstrings of the classes exposed in urlpatterns support markdown.
@@ -803,3 +804,44 @@ class EnsemblKaryotypeAPIView(APIView):
             raise Http404
 
         return Response(assembly.karyotype.first().karyotype)
+
+
+class ProteinTargetsView(generics.ListAPIView):
+    """API endpoint, presenting ProteinInfo, related to given rna."""
+    permission_classes = ()
+    authentication_classes = ()
+    pagination_class = Pagination
+    serializer_class = ProteinTargetsSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        taxid = self.kwargs['taxid']
+
+        # we select redundant {protein_info}.protein_accession because
+        # otherwise django curses about lack of primary key in raw query
+        protein_info_query = '''
+            SELECT 
+                {related_sequence}.target_accession,
+                {related_sequence}.source_accession,
+                {related_sequence}.source_urs_taxid,
+                {related_sequence}.methods,
+                {protein_info}.protein_accession,
+                {protein_info}.description, 
+                {protein_info}.label, 
+                {protein_info}.synonyms
+            FROM {related_sequence}
+            LEFT JOIN {protein_info}
+            ON {protein_info}.protein_accession = {related_sequence}.target_accession
+            WHERE {related_sequence}.relationship_type = 'target_protein'
+              AND {related_sequence}.source_urs_taxid = '{pk}_{taxid}'
+        '''.format(
+            rna=Rna._meta.db_table,
+            rna_precomputed=RnaPrecomputed._meta.db_table,
+            related_sequence=RelatedSequence._meta.db_table,
+            protein_info=ProteinInfo._meta.db_table,
+            pk=pk,
+            taxid=taxid
+        )
+
+        queryset = PaginatedRawQuerySet(protein_info_query, model=ProteinInfo)  # was: ProteinInfo.objects.raw(protein_info_query)
+        return queryset

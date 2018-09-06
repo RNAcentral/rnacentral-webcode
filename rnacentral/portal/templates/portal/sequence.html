@@ -71,6 +71,8 @@ limitations under the License.
 
                 <xrefs upi="upi" taxid="taxid" timeout="500" page-size="5" on-activate-publications="activatePublications()" on-create-modifications-feature="createModificationsFeature(modifications, accession)" on-activate-genome-browser="activateGenomeBrowser(start, end, chr, genome)" on-scroll-to-genome-browser="scrollToGenomeBrowser()"></xrefs>
 
+                <protein-targets ng-if="taxid" upi="upi" taxid="taxid" timeout="500" page-size="5" genomes="genomes"></protein-targets>
+
                 <h2 ng-if="taxid">
                     Genome locations
                     <small>

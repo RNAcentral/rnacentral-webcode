@@ -176,6 +176,10 @@ var textSearchBar = {
                         'label': 'LNCipedia',
                         'search_string': 'expert_db:"LNCipedia"',
                     },
+                    {
+                        'label': 'TarBase',
+                        'search_string': 'expert_db:"TarBase"',
+                    },
                   ],
                     'accession': [
                     {

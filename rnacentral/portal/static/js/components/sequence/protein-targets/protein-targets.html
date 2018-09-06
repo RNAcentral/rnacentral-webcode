@@ -1,0 +1,85 @@
+<div ng-if="$ctrl.genomes">
+  <h2>
+    Target proteins
+    <small>{{ $ctrl.total | number }} total</small>
+    <small>
+      <a ng-href="{{ $ctrl.help }}" uib-tooltip="Learn more about protein targets &rarr;" style="color:inherit;"><i class="fa fa-question-circle" aria-hidden="true"></i></a>
+    </small>
+
+    <div class="btn-group btn-group-xs margin-left-5px btn-group-xref-sort" style="display:none">
+      <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+        Sort by<span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" role="menu">
+        <li><a id="sort-by-first-seen">first seen</a></li>
+        <li><a id="sort-by-last-seen">last seen</a></li>
+      </ul>
+    </div>
+
+    <span id="annotations-datatables-filter"></span>
+  </h2>
+
+  <div class="table-responsive">
+    <table class="table table-hover table-condensed" id="related-proteins-table">
+      <thead>
+        <tr>
+          <th>TarBase</th>
+          <th>Ensembl</th>
+          <th>Protein description</th>
+          <th>Methods</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr ng-if="$ctrl.status === 'loading'">
+          <td colspan="4" style="text-align: center;">
+            <span>
+              <i class="fa fa-spinner fa-spin fa-2x"></i>
+              Loading data on protein targets...
+            </span>
+          </td>
+        </tr>
+        <tr ng-if="$ctrl.status === 'error'">
+          <td colspan="4" style="text-align: center;">
+            <span>
+              <i class="fa fa-exclamation-circle fa-2x"></i>
+              Failed to load data from server
+            </span>
+          </td>
+        </tr>
+        <tr ng-if="$ctrl.status === 'success'" ng-repeat="protein in $ctrl.displayedProteins">
+          <td class="col-lg-2">
+            <a ng-href="{{ $ctrl.tarbaseUrl(protein) }}" target="_blank" uib-tooltip="Explore supporting publications, tissues, cell lines, and more"><span ng-if="protein.label">{{ protein.label }}</span><span ng-if="!protein.label">unknown</span></a>
+          </td>
+          <td class="col-lg-2">
+            <a ng-href="{{ $ctrl.ensemblUrl(protein) }}" target="_blank">{{ protein.target_accession.split(":")[1] }}</a>
+            <a href="search?q=interacting_protein:&quot;{{ protein.target_accession.split(':')[1] }}&quot;" class="margin-left-5px ng-scope" uib-tooltip="Find other miRNAs targeting this protein"><i class="fa fa-search"></i></a>
+          </td>
+          <td class="col-lg-6">
+            {{ protein.description.split(" [")[0] }}
+          </td>
+          <td class="col-lg-2">
+            <span ng-repeat="method in protein.methods">{{ method }}<span ng-show="!$last">, </span></span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination: pages list and page size select -->
+  <div ng-if="$ctrl.status == 'success'" style="margin-top: 5px; margin-left: 5px; margin-right: 5px;">
+    <ul ng-if="$ctrl.pages.length > 1" class="pagination pagination-sm" style="display:inline">
+      <li ng-if="$ctrl.page != 1" ng-click="$ctrl.onPageChanged(1)"><a href="">1</a></li>
+      <li ng-if="$ctrl.page > 3" ng-click="$ctrl.onPageChanged(1)"><a href="">&#8230;</a></li>
+      <li ng-if="$ctrl.page > 2" ng-click="$ctrl.onPageChanged($ctrl.page - 1)"><a href="">{{ $ctrl.page - 1 }}</a></li>
+      <li class="active"><a href="">{{ $ctrl.page }}</a></li>
+      <li ng-if="$ctrl.page < $ctrl.pages.length - 1" ng-click="$ctrl.onPageChanged($ctrl.page + 1)"><a href="">{{ $ctrl.page + 1 }}</a></li>
+      <li ng-if="$ctrl.page < $ctrl.pages.length - 2" ng-click="$ctrl.onPageChanged($ctrl.pages.length)"><a href="">&#8230;</a></li>
+      <li ng-if="$ctrl.page != $ctrl.pages.length" ng-click="$ctrl.onPageChanged($ctrl.pages.length)"><a href="">{{ $ctrl.pages.length }}</a></li>
+    </ul>
+    <span class="pull-right" ng-if="$ctrl.total > $ctrl.pageSize">
+      <select ng-model="$ctrl.pageSize" ng-change="$ctrl.onPageSizeChanged($ctrl.pageSize, '{{ $ctrl.pageSize }}')" ng-options="v.value as v.key for v in [{key:1, value:1}, {key: 5, value: 5}, {key: 10, value: 10}, {key: 20, value: 20}, {key: 50, value: 50}, {key: 'all', value: 1000000000000}]"></select> records per page
+    </span>
+    <div class="clearfix"></div>
+  </div>
+</div>
