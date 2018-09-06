@@ -373,6 +373,8 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         // show Rfam models, found in this RNA
         $scope.fetchRfamHits().then(
             function(response) {
+                $scope.rfamHits = response.data.results;
+
                 data = [];
                 for (var i = 0; i < response.data.results.length; i++) {
                     var direction, x, y;
