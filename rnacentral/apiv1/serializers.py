@@ -20,7 +20,7 @@ from django.db.models import Min, Max
 from rest_framework import serializers
 
 from portal.models import Rna, Xref, Reference,  Reference_map, ChemicalComponent, Database, DatabaseStats, Accession, \
-    Release, Reference, Modification, RfamHit, RfamModel, RfamClan, \
+    Release, Reference, Modification, RfamHit, RfamModel, RfamClan, SequenceFeature, \
     EnsemblAssembly, EnsemblInsdcMapping, EnsemblKaryotype, GenomeMapping, ProteinInfo
 
 
@@ -442,6 +442,12 @@ class RfamHitSerializer(serializers.ModelSerializer):
     class Meta:
         model = RfamHit
         fields = ('sequence_start', 'sequence_stop', 'sequence_completeness', 'rfam_model')
+
+
+class SequenceFeatureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SequenceFeature
+        fields = '__all__'
 
 
 class EnsemblAssemblySerializer(serializers.ModelSerializer):

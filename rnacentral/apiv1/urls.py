@@ -35,6 +35,8 @@ urlpatterns = [
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/2d/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.SecondaryStructureSpeciesSpecificList.as_view()), name='rna-2d-species-specific'),
     # rfam hits found in this RNAcentral id
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/rfam-hits/?$', cache_page(CACHE_TIMEOUT)(views.RfamHitsAPIViewSet.as_view()), name='rna-rfam-hits'),
+    # sequence features found in this RNAcentral
+    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/sequence-features/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.SequenceFeaturesAPIViewSet.as_view()), name='rna-sequence-features'),
     # all literature citations associated with an RNAcentral id
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/publications/?$', cache_page(CACHE_TIMEOUT)(views.RnaPublicationsView.as_view()), name='rna-publications'),
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/publications/(?P<taxid>\d+)/?$',cache_page(CACHE_TIMEOUT)(views.RnaPublicationsView.as_view()), name='rna-publications'),

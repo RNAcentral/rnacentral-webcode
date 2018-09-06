@@ -132,7 +132,7 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         taxid = '9606'
         page = 1
         page_size = 1000
-        url = reverse('rnaprotein-targets', kwargs={'pk': upi, 'taxid': taxid})
+        url = reverse('rna-protein-targets', kwargs={'pk': upi, 'taxid': taxid})
         with Timer() as timer:
             c = APIClient()
             response = c.get(url, data={'page': page, 'page_size': page_size})
@@ -152,6 +152,14 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         self.assertGreater(response.data['count'], 8000)  # well, not quite 'over 9000', but still many...
         self.assertEqual(response.status_code, 200)
         self.assertTrue(len(response.data['results']) == settings.REST_FRAMEWORK['PAGE_SIZE'])
+
+    def test_rna_sequence_features(self):
+        """Test RNA sequence features endpoint"""
+        upi = "URS00009BF201"
+        taxid = "9606"
+        url = reverse('rna-sequence-features', kwargs={'pk': upi, 'taxid': taxid})
+        response = self._test_url(url)
+        self.assertGreater(response.data['count'], 20)
 
 
 class NestedXrefsTestCase(ApiV1BaseClass):
