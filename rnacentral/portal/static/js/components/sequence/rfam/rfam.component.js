@@ -31,9 +31,6 @@ var rfam = {
                 }
 
             });
-
-            console.log(ctrl.groupedHits);
-            console.log(ctrl.rfamHits);
         };
 
     }],
