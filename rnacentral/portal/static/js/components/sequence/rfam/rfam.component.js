@@ -32,7 +32,8 @@ var rfam = {
 
             });
 
-            ctrl.rfamHitFamilies = ctrl.rfamHits.map(function(hit) { return hit.rfam_model; }).sort();
+            console.log(ctrl.groupedHits);
+            console.log(ctrl.rfamHits);
         };
 
     }],

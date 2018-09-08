@@ -3,11 +3,11 @@
     Rfam classification
     <small>
       <span ng-if="$ctrl.rfamHits.length > 1">
-        <span ng-if="$ctrl.rfamHitFamilies.length !== $ctrl.rfamHits.length">
-          {{ rna.rfamHitFamilies.length | number }} families, {{ rna.rfamHits.length | number }} locations
+        <span ng-if="$ctrl.groupedHits.length != $ctrl.rfamHits.length">
+          {{ $ctrl.groupedHits.length | number }} families, {{ $ctrl.rfamHits.length | number }} locations
         </span>
-        <span ng-if="$ctrl.rfamHitFamilies.length === $ctrl.rfamHits.length">
-          {{ rna.get_rfam_hits.length | number }} families
+        <span ng-if="$ctrl.groupedHits.length == $ctrl.rfamHits.length">
+          {{ $ctrl.groupedHits.length | number }} families
         </span>
       </span>
       <a ng-href="{{ $ctrl.help }}" uib-tooltip="Learn more about Rfam annotations in RNAcentral &rarr;" style="color:inherit;">
