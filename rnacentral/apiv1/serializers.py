@@ -20,7 +20,7 @@ from django.db.models import Min, Max
 from rest_framework import serializers
 
 from portal.models import Rna, Xref, Reference,  Reference_map, ChemicalComponent, Database, DatabaseStats, Accession, \
-    Release, Reference, Modification, RfamHit, RfamModel, RfamClan, SequenceFeature, \
+    Release, Reference, Modification, RfamHit, RfamModel, RfamClan, RfamGoTerm, OntologyTerm, SequenceFeature, \
     EnsemblAssembly, EnsemblInsdcMapping, EnsemblKaryotype, GenomeMapping, ProteinInfo
 
 
@@ -420,6 +420,15 @@ class ExpertDatabaseStatsSerializer(serializers.ModelSerializer):
         return json.loads(obj.taxonomic_lineage)
 
 
+class OntologyTermSerializer(serializers.ModelSerializer):
+    url = serializers.CharField(read_only=True)
+    quickgo_url = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = OntologyTerm
+        fields = ('ontology_term_id', 'ontology', 'name', 'definition', 'url', 'quickgo_url')
+
+
 class RfamClanSerializer(serializers.ModelSerializer):
     class Meta:
         model = RfamClan
@@ -428,12 +437,13 @@ class RfamClanSerializer(serializers.ModelSerializer):
 
 class RfamModelSerializer(serializers.ModelSerializer):
     rfam_clan = RfamClanSerializer(source='rfam_clan_id')
+    go_terms = OntologyTermSerializer(many=True)
 
     class Meta:
         model = RfamModel
         fields = ('rfam_model_id', 'short_name', 'long_name', 'description', 'rfam_clan',
                   'seed_count', 'full_count', 'length', 'is_suppressed', 'domain', 'rna_type',
-                  'rfam_rna_type')
+                  'rfam_rna_type', 'thumbnail_url', 'url', 'go_terms')
 
 
 class RfamHitSerializer(serializers.ModelSerializer):

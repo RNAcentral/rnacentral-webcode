@@ -85,6 +85,7 @@ class RfamModel(models.Model):
                                      filter(rfam_model_id=self.rfam_model_id)
         for result in mapping.all():
             terms.append(result.go_term)
+
         return terms
 
 
