@@ -753,7 +753,10 @@ class RfamHitsAPIViewSet(generics.ListAPIView):
 
     def get_queryset(self):
         upi = self.kwargs['pk']
-        return RfamHit.objects.filter(upi=upi).select_related('rfam_model')
+        return RfamHit.objects.filter(upi=upi).select_related('rfam_model').select_related('upi')
+
+    def get_serializer_context(self):
+        return {'taxid': self.kwargs['taxid']} if 'taxid' in self.kwargs else {}
 
 
 class SequenceFeaturesAPIViewSet(generics.ListAPIView):

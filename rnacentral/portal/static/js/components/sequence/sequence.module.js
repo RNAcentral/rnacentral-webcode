@@ -11,8 +11,6 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     // avoid a terrible bug with intercepted 2-way binding: https://github.com/RNAcentral/rnacentral-webcode/issues/308
     $scope.browserLocation = {start: undefined, end: undefined, chr: undefined, genome: undefined, domain: undefined};
 
-    $scope.rfamStatus = 'pending';
-
     // go modal handling
     $scope.goTermId = null;
     $scope.goChartData = '';
@@ -141,7 +139,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     };
 
     $scope.fetchRfamHits = function () {
-        return $http.get(routes.apiRfamHitsView({upi: $scope.upi}), {params: {page_size: 10000000000}})
+        return $http.get(routes.apiRfamHitsView({upi: $scope.upi, taxid: $scope.taxid}), {params: {page_size: 10000000000}})
     };
 
     $scope.fetchSequenceFeatures = function() {
@@ -415,12 +413,9 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                           $window.open(pageUrl);
                       });
                 }
-
-                $scope.rfamStatus = 'success';
             },
             function() {
                 console.log('failed to fetch Rfam hits');
-                $scope.rfamStatus = 'failed';
             }
         );
 

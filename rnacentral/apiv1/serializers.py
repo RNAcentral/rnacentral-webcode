@@ -448,10 +448,17 @@ class RfamModelSerializer(serializers.ModelSerializer):
 
 class RfamHitSerializer(serializers.ModelSerializer):
     rfam_model = RfamModelSerializer()
+    rfam_status = serializers.SerializerMethodField()
 
     class Meta:
         model = RfamHit
-        fields = ('sequence_start', 'sequence_stop', 'sequence_completeness', 'rfam_model')
+        fields = ('sequence_start', 'sequence_stop', 'sequence_completeness', 'rfam_model', 'rfam_status')
+
+    def get_rfam_status(self, obj):
+        if 'taxid' in self.context:
+            return json.loads(obj.upi.get_rfam_status(self.context['taxid']).as_json())
+        else:
+            return json.loads(obj.upi.get_rfam_status().as_json())
 
 
 class SequenceFeatureSerializer(serializers.ModelSerializer):

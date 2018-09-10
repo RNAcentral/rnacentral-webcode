@@ -16,15 +16,15 @@
     </small>
   </h2>
 
-  <ul ng-if="$ctrl.rfamStatus.hasIssue" class="list-inline" style="margin-top: 5px; margin-bottom: 1.5em;">
-    <li>
+  <ul ng-if="$ctrl.rfamHits.length > 0 && $ctrl.rfamHits[0].rfam_status.has_issue" class="list-inline" style="margin-top: 5px; margin-bottom: 1.5em;">
+    <li ng-repeat="message in $ctrl.rfamHits[0].rfam_status.problems">
       <div class="alert alert-warning" style="margin-bottom: 0px">
         <i class="fa fa-warning fa-2x pull-left text-danger" aria-hidden="true"></i>
-        <span ng-repeat="message in $ctrl.rfamStatus.messages">
-          <span>{{ message }}</span>
-          <br />
+        <span>
+          <span>{{ message.name }}</span>
         </span>
       </div>
+      <br />
     </li>
   </ul>
 
