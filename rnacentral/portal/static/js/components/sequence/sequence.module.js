@@ -375,6 +375,11 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
             function(response) {
                 $scope.rfamHits = response.data.results;
 
+                // wrap hit.rfam_model.thumbnail_url into our proxy to suppress http/https mixed content warning
+                $scope.rfamHits.forEach(function(hit) {
+                    hit.rfam_model.thumbnail_url = routes.proxy({url: encodeURIComponent(hit.rfam_model.thumbnail_url)});
+                });
+
                 data = [];
                 for (var i = 0; i < response.data.results.length; i++) {
                     var direction, x, y;

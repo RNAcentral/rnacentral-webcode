@@ -116,7 +116,7 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
         else {
             // get queryUrl ready
             var ebeyeUrl = routes.ebiAutocomplete({query: query});
-            var queryUrl = routes.ebiSearchProxy({ebeyeUrl: encodeURIComponent(ebeyeUrl)});
+            var queryUrl = routes.proxy({url: encodeURIComponent(ebeyeUrl)});
 
             $http.get(queryUrl, {ignoreLoadingBar: true}).then(
                 function(response) {
@@ -172,7 +172,7 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             start: start,
             sort: self.sort
         });
-        var queryUrl = routes.ebiSearchProxy({ebeyeUrl: encodeURIComponent(ebeyeUrl)});
+        var queryUrl = routes.proxy({url: encodeURIComponent(ebeyeUrl)});
 
         // perform search
         var overwriteResults = (start === 0);

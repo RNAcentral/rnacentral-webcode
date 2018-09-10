@@ -20,7 +20,7 @@ angular.module("routes", []).service('routes', ['$interpolate', function($interp
         expertDbLogo: '/static/img/expert-db-logos/{{ expertDbName }}.png',
         apiSecondaryStructuresView: '/api/v1/rna/{{ upi }}/2d/{{ taxid }}',
         genomesApi: '/api/v1/genomes/{{ ensemblAssembly }}',
-        ebiSearchProxy: '/api/internal/ebeye?url={{ ebeyeUrl }}',
+        proxy: '/api/internal/proxy?url={{ url }}',
         ebiSearch:
             '{{ ebiBaseUrl }}' +
             '?query={{ query }}' +

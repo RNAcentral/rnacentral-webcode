@@ -19,8 +19,13 @@ import re
 import requests
 import six
 
+if six.PY2:
+    from urlparse import urlparse
+elif six.PY3:
+    from urllib.parse import urlparse
+
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseForbidden
 from django.conf import settings
 from django.shortcuts import render, render_to_response, redirect
 from django.template import TemplateDoesNotExist
@@ -37,7 +42,7 @@ from portal.models import Rna, Database, Release, Xref, EnsemblAssembly
 from portal.models.database_stats import DatabaseStats
 from portal.models.rna_precomputed import RnaPrecomputed
 
-CACHE_TIMEOUT = 60 * 60 * 24 * 1 # per-view cache timeout in seconds
+CACHE_TIMEOUT = 60 * 60 * 24 * 1  # per-view cache timeout in seconds
 XREF_PAGE_SIZE = 1000
 
 ########################
@@ -201,17 +206,23 @@ def website_status_view(request):
 
 
 @cache_page(CACHE_TIMEOUT)
-def ebeye_proxy(request):
+def proxy(request):
     """
-    Internal API.
-    Get EBeye search URL from the client and send back the results.
-    Bypasses EBeye same-origin policy.
+    Internal API. Used for:
+     - EBeye search URL - bypasses EBeye same-origin policy.
+     - Rfam images - avoids mixed content warnings due to lack of https support in Rfam.
     """
     url = request.GET['url']
+
+    # check domain for security - we don't want someone to abuse this endpoint
+    domain = urlparse(url).netloc
+    if domain != 'www.ebi.ac.uk' and domain != 'wwwdev.ebi.ac.uk' and domain != 'rfam.org':
+        return HttpResponseForbidden("This proxy is for www.ebi.ac.uk, wwwdev.ebi.ac.uk or rfam.org only.")
+
     try:
-        ebeye_response = requests.get(url)
-        if ebeye_response.status_code == 200:
-            response = HttpResponse(ebeye_response.text)
+        proxied_response = requests.get(url)
+        if proxied_response.status_code == 200:
+            response = HttpResponse(proxied_response.text)
             return response
         else:
             raise Http404

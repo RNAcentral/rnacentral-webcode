@@ -121,8 +121,8 @@ var textSearchResults = {
             var ascendingEbeyeUrl = createEbeyeUrl(true);
             var descendingEbeyeUrl = createEbeyeUrl(false);
 
-            var ascendingQueryUrl = routes.ebiSearchProxy({ebeyeUrl: encodeURIComponent(ascendingEbeyeUrl)});
-            var descendingQueryUrl = routes.ebiSearchProxy({ebeyeUrl: encodeURIComponent(descendingEbeyeUrl)});
+            var ascendingQueryUrl = routes.proxy({url: encodeURIComponent(ascendingEbeyeUrl)});
+            var descendingQueryUrl = routes.proxy({url: encodeURIComponent(descendingEbeyeUrl)});
 
             return $q.all([$http.get(ascendingQueryUrl), $http.get(descendingQueryUrl)]);
         };

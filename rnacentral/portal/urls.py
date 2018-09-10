@@ -67,8 +67,8 @@ urlpatterns = [
     url(r'^status/?$', views.website_status_view, name='website-status'),
     # genome browser
     url(r'^genome-browser/?$', views.GenomeBrowserView.as_view(), {}, name='genome-browser'),
-    # search proxy
-    url(r'^api/internal/ebeye/?$', views.ebeye_proxy, name='ebeye-proxy'),
+    # proxy for ebeye search and rfam images
+    url(r'^api/internal/proxy/?$', views.proxy, name='proxy'),
 ]
 
 # internal API
