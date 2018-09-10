@@ -222,7 +222,10 @@ def proxy(request):
     try:
         proxied_response = requests.get(url)
         if proxied_response.status_code == 200:
-            response = HttpResponse(proxied_response.text)
+            if domain == 'rfam.org':  # for rfam images don't forget to set content-type header
+                response = HttpResponse(proxied_response.text, content_type="image/svg+xml")
+            else:
+                response = HttpResponse(proxied_response.text)
             return response
         else:
             raise Http404
