@@ -432,11 +432,15 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 
                     // trim start/stop of each feature to make sure it's not out of sequence bounds
                     var data = $scope.features.map(function(feature) {
-                        return {
+                        var datum = {
                             x: feature.start >= 0 ? feature.start : 0,
                             y: feature.stop < $scope.rna.length ? feature.stop : $scope.rna.length - 1,
                             description: 'Conserved_rna_structure ' + feature.metadata.crs_id
-                        }
+                        };
+
+                        if (feature.metadata.should_highlight) { datum.color = "#86A5B9"; }
+
+                        return datum;
                     });
 
                     var addFeature = function() {
