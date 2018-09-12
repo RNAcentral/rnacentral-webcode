@@ -184,49 +184,49 @@ limitations under the License.
                 </div>
 
 
-              <div ng-hide="hideGoAnnotations" ng-if="taxid">
-                <h2>
-                  Gene Ontology annotations
-                  <small>
-                    <a href="{% url 'help-gene-ontology-annotations' %}" uib-tooltip="Learn more about Gene Ontology annotations in RNAcentral &rarr;" style="color:inherit;">
-                      <i class="fa fa-question-circle" aria-hidden="true"></i>
-                    </a>
-                  </small>
-                </h2>
-                <go-annotations upi="upi" taxid="taxid" show-go-annotations="showGOAnnotations()" on-toggle-go-modal="toggleGoModal(termId)"></go-annotations>
+                <div ng-hide="hideGoAnnotations" ng-if="taxid">
+                  <h2>
+                    Gene Ontology annotations
+                    <small>
+                      <a href="{% url 'help-gene-ontology-annotations' %}" uib-tooltip="Learn more about Gene Ontology annotations in RNAcentral &rarr;" style="color:inherit;">
+                        <i class="fa fa-question-circle" aria-hidden="true"></i>
+                      </a>
+                    </small>
+                  </h2>
+                  <go-annotations upi="upi" taxid="taxid" show-go-annotations="showGOAnnotations()" on-toggle-go-modal="toggleGoModal(termId)"></go-annotations>
 
-                <div id='go-annotation-chart-modal' class='modal fade' tabindex=-1>
-                  <div class='modal-dialog modal-lg' role='document'>
-                    <div class='modal-content'>
-                      <div class="modal-header">
-                          <h3 class="modal-title">Ancestor Chart</h3>
-                      </div>
-                      <div class="modal-body">
+                  <div id='go-annotation-chart-modal' class='modal fade' tabindex=-1>
+                    <div class='modal-dialog modal-lg' role='document'>
+                      <div class='modal-content'>
+                        <div class="modal-header">
+                            <h3 class="modal-title">Ancestor Chart</h3>
+                        </div>
+                        <div class="modal-body">
 
-                        <span ng-if="goModalStatus === 'loading'">
-                          <i class="fa fa-spinner fa-spin fa-2x"></i>
-                          Loading ontology ancestors...
-                        </span>
+                          <span ng-if="goModalStatus === 'loading'">
+                            <i class="fa fa-spinner fa-spin fa-2x"></i>
+                            Loading ontology ancestors...
+                          </span>
 
-                        <span ng-if="goModalStatus === 'failed'">
-                          Failed to load QuickGO Ancestor chart
-                        </span>
+                          <span ng-if="goModalStatus === 'failed'">
+                            Failed to load QuickGO Ancestor chart
+                          </span>
 
-                        <span ng-if="goModalStatus === 'loaded'">
-                          {% verbatim %}
-                          <img ng-src="{{ goChartData }}" />
-                          {% endverbatim %}
-                        </span>
+                          <span ng-if="goModalStatus === 'loaded'">
+                            {% verbatim %}
+                            <img ng-src="{{ goChartData }}" />
+                            {% endverbatim %}
+                          </span>
 
-                      </div>
-                      <div class="modal-footer">
-                          <button ng-click="toggleGoModal(null)" type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                        <div class="modal-footer">
+                            <button ng-click="toggleGoModal(null)" type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
 
-              </div>
+                </div>
 
                 <rfam ng-if="rfamHits && rna" upi="upi" rna="rna" rfam-hits="rfamHits" rfam-status="rfamStatus" toggle-go-modal="toggleGoModal(term_id)"></rfam>
 
