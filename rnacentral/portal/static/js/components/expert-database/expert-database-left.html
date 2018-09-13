@@ -2,7 +2,7 @@
   <h2>Overview</h2>
   <ul>
     <li>
-      <strong>{{ $ctrl.expertDb.num_sequences | number }}</strong> distinct sequences
+      <strong>{{ $ctrl.expertDb.num_sequences | number }}</strong> RNA sequences
       from <strong>{{ $ctrl.expertDb.num_organisms | number }}</strong> <ng-pluralize count="$ctrl.expertDb.num_organisms" when="{'one': 'organism', 'other': 'organisms'}"></ng-pluralize>
       contributed to RNAcentral
     </li>
