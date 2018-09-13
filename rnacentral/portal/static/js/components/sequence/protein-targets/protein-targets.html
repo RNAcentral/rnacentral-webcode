@@ -1,4 +1,4 @@
-<div ng-if="$ctrl.genomes">
+<div ng-if="$ctrl.genomes && $ctrl.total > 0">
   <h2>
     Target proteins
     <small ng-if="$ctrl.total > 0">{{ $ctrl.total | number }} total</small>
