@@ -16,19 +16,16 @@ pipeline {
         stage("FB1 refresh") {
             environment {
                 KEYFILE = credentials('fb1-001-rsa')
-                ENV_SH = credentials('env_sh')
             }
             steps {
                 sh "cat $KEYFILE > fb1-001-rsa"
-                sh 'cat $ENV_SH > rnacentral/scripts/env.sh'
-                sh '''
-                    virtualenv ENV --python=/net/isilonP/public/rw/homes/xfm_adm/src/python/bin/python
-                    source ENV/bin/activate
-                    source rnacentral/scripts/env.sh
-                    pip install --upgrade pip
-                    pip install --upgrade -r rnacentral/requirements.txt
 
-                    cd rnacentral
+                // Note that we're using the virtualenv from .rnacentral-live virtualenv,
+                // which might get a bit crazy, but this is just for fabric python package.
+                sh '''
+                    pushd /nfs/public/rw/xfam/rnacentral/live
+                    source local/virtualenvs/RNAcentral/bin/activate
+                    popd
                     fab fb1:key=../fb1-001-rsa refresh_fb1
                 '''
             }
@@ -41,10 +38,9 @@ pipeline {
             }
             steps {
                 sh '''
-                    source ENV/bin/activate
-                    source rnacentral/scripts/env.sh
-
-                    cd rnacentral
+                    pushd /nfs/public/rw/xfam/rnacentral/live
+                    source local/virtualenvs/RNAcentral/bin/activate
+                    popd
                     fab pg --password=$PASSWORD refresh_pg
                 '''
             }
