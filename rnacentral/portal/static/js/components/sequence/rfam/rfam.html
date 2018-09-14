@@ -17,11 +17,11 @@
   </h2>
 
   <ul ng-if="$ctrl.rfamHits.length > 0 && $ctrl.rfamHits[0].rfam_status.has_issue" class="list-inline" style="margin-top: 5px; margin-bottom: 1.5em;">
-    <li ng-repeat="message in $ctrl.rfamHits[0].rfam_status.problems">
+    <li ng-repeat="problem in $ctrl.rfamHits[0].rfam_status.problems">
       <div class="alert alert-warning" style="margin-bottom: 0px">
         <i class="fa fa-warning fa-2x pull-left text-danger" aria-hidden="true"></i>
         <span>
-          <span>{{ message.name }}</span>
+          <span ng-bind-html="problem.message"></span>
         </span>
       </div>
     </li>

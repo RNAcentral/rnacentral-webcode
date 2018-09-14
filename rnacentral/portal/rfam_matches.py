@@ -86,7 +86,7 @@ class RfamMatchStatus(object):
         """
         return {
             'has_issue': self.has_issue,
-            'problems': [{'name': n} for n in self.names],
+            'problems': [{'name': n, 'message': self.messages[i]} for i, n in enumerate(self.names)],
         }
 
     def as_json(self):
