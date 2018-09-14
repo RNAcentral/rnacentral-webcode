@@ -242,7 +242,7 @@ var textSearchResults = {
          * - open the results page in a new window.
          */
         ctrl.exportResults = function(format) {
-            $http.get(ctrl.routes.submitQuery() + '?q=' + ctrl.search.query + '&format=' + format).then(
+            $http.get(ctrl.routes.submitQuery() + '?q=' + search.preprocessQuery(ctrl.search.query) + '&format=' + format).then(
                 function(response) {
                     ctrl.showExportError = false;
                     window.location.href = ctrl.routes.resultsPage() + '?job=' + response.data.job_id;
