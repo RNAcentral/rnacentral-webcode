@@ -34,7 +34,9 @@ urlpatterns = [
     # secondary structure for a species-specific entry
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/2d/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.SecondaryStructureSpeciesSpecificList.as_view()), name='rna-2d-species-specific'),
     # rfam hits found in this RNAcentral id
-    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/rfam-hits/?$', cache_page(CACHE_TIMEOUT)(views.RfamHitsAPIViewSet.as_view()), name='rna-rfam-hits'),
+    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/rfam-hits/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.RfamHitsAPIViewSet.as_view()), name='rna-rfam-hits'),
+    # sequence features found in this RNAcentral
+    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/sequence-features/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.SequenceFeaturesAPIViewSet.as_view()), name='rna-sequence-features'),
     # all literature citations associated with an RNAcentral id
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/publications/?$', cache_page(CACHE_TIMEOUT)(views.RnaPublicationsView.as_view()), name='rna-publications'),
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/publications/(?P<taxid>\d+)/?$',cache_page(CACHE_TIMEOUT)(views.RnaPublicationsView.as_view()), name='rna-publications'),
@@ -46,6 +48,8 @@ urlpatterns = [
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/genome-mappings/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.RnaGenomeMappings.as_view()), name='rna-genome-mappings'),
     # go annotations for RNA (species-specific)
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/go-annotations/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.RnaGoAnnotationsView.as_view()), name='rna-go-annotations'),
+    # target proteins for RNA (species-specific)
+    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/protein-targets/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.ProteinTargetsView.as_view()), name='rna-protein-targets'),
     # literature citations associated with ENA records
     url(r'^accession/(?P<pk>.*?)/citations/?$', cache_page(CACHE_TIMEOUT)(views.CitationsView.as_view()), name='accession-citations'),
     # view for an individual cross-reference
@@ -63,7 +67,7 @@ urlpatterns = [
     # mapping of ensembl assemblies to insdc submissions
     url(r'ensembl-insdc-mapping/$', views.EnsemblInsdcMappingView.as_view(), {}, name='ensembl-insdc-mapping'),
     # endpoint that returns karyotypes, downloaded from ensembl
-    url(r'karyotypes/(?P<ensembl_url>.*?)/?$', cache_page(CACHE_TIMEOUT)(views.EnsemblKaryotypeAPIView.as_view()), {}, name='ensembl-karyotype')
+    url(r'karyotypes/(?P<ensembl_url>.*?)/?$', cache_page(CACHE_TIMEOUT)(views.EnsemblKaryotypeAPIView.as_view()), {}, name='ensembl-karyotype'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'yaml', 'fasta', 'api', 'gff', 'gff3', 'bed'])

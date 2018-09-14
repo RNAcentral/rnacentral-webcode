@@ -15,6 +15,7 @@ import six
 
 import time
 
+from django.conf import settings
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase, APIClient
 
@@ -83,6 +84,7 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
     * /rna
     * /rna/id/xrefs
     * /rna/id/publications
+    * /rna/id/related-protein
     """
     def test_rna_list(self):
         """Test RNA list (hyperlinked response)."""
@@ -123,6 +125,41 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         url = reverse('rna-xrefs', kwargs={'pk': upi})
         response = self._test_url(url, data={'page': page, 'page_size': page_size})
         self.assertTrue(len(response.data['results']), page_size)
+
+    def test_related_proteins(self):
+        """Test RNA proteins endpoint."""
+        upi = 'URS0000013DD8'  # >270 related proteins
+        taxid = '9606'
+        page = 1
+        page_size = 1000
+        url = reverse('rna-protein-targets', kwargs={'pk': upi, 'taxid': taxid})
+        with Timer() as timer:
+            c = APIClient()
+            response = c.get(url, data={'page': page, 'page_size': page_size})
+        self.assertTrue(timer.timeout < 10)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(len(response.data['results']) > 200)
+
+    def test_related_proteins_pagination(self):
+        upi = 'URS0000021B51'  # over 9000 entries =)
+        taxid = '10090'
+        url = reverse('rna-protein-targets-targets', kwargs={'pk': upi, 'taxid': taxid})
+        with Timer() as timer:
+            c = APIClient()
+            response = c.get(url, data={})  # pagination is enabled by default
+        print(timer.timeout)
+        self.assertTrue(timer.timeout < 2)  # paginated request has to be fast
+        self.assertGreater(response.data['count'], 8000)  # well, not quite 'over 9000', but still many...
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(len(response.data['results']) == settings.REST_FRAMEWORK['PAGE_SIZE'])
+
+    def test_rna_sequence_features(self):
+        """Test RNA sequence features endpoint"""
+        upi = "URS00009BF201"
+        taxid = "9606"
+        url = reverse('rna-sequence-features', kwargs={'pk': upi, 'taxid': taxid})
+        response = self._test_url(url)
+        self.assertGreater(response.data['count'], 20)
 
 
 class NestedXrefsTestCase(ApiV1BaseClass):

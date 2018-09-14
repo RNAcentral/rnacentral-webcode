@@ -10,7 +10,9 @@ angular.module("routes", []).service('routes', ['$interpolate', function($interp
         apiRnaView: '/api/v1/rna/{{ upi }}',
         apiGenomeLocationsView: '/api/v1/rna/{{ upi }}/genome-locations/{{ taxid }}',
         apiGenomeMappingsView: '/api/v1/rna/{{ upi }}/genome-mappings/{{ taxid }}',
-        apiRfamHitsView: '/api/v1/rna/{{ upi }}/rfam-hits',
+        apiRfamHitsView: '/api/v1/rna/{{ upi }}/rfam-hits/{{ taxid }}',
+        apiProteinTargetsView: '/api/v1/rna/{{ upi }}/protein-targets/{{ taxid }}',
+        apiSequenceFeaturesView: '/api/v1/rna/{{ upi }}/sequence-features/{{ taxid }}',
         lineageView: '/rna/{{ upi }}/lineage',
         expertDbsApi: '/api/v1/expert-dbs/{{ expertDbName }}',
         expertDbStatsApi: '/api/v1/expert-db-stats/{{ expertDbName }}',
@@ -18,7 +20,7 @@ angular.module("routes", []).service('routes', ['$interpolate', function($interp
         expertDbLogo: '/static/img/expert-db-logos/{{ expertDbName }}.png',
         apiSecondaryStructuresView: '/api/v1/rna/{{ upi }}/2d/{{ taxid }}',
         genomesApi: '/api/v1/genomes/{{ ensemblAssembly }}',
-        ebiSearchProxy: '/api/internal/ebeye?url={{ ebeyeUrl }}',
+        proxy: '/api/internal/proxy?url={{ url }}',
         ebiSearch:
             '{{ ebiBaseUrl }}' +
             '?query={{ query }}' +

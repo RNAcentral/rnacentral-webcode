@@ -20,8 +20,8 @@ from django.db.models import Min, Max
 from rest_framework import serializers
 
 from portal.models import Rna, Xref, Reference,  Reference_map, ChemicalComponent, Database, DatabaseStats, Accession, \
-    Release, Reference, Modification, RfamHit, RfamModel, RfamClan, \
-    EnsemblAssembly, EnsemblInsdcMapping, EnsemblKaryotype, GenomeMapping
+    Release, Reference, Modification, RfamHit, RfamModel, RfamClan, RfamGoTerm, OntologyTerm, SequenceFeature, \
+    EnsemblAssembly, EnsemblInsdcMapping, EnsemblKaryotype, GenomeMapping, ProteinInfo
 
 
 class RawPublicationSerializer(serializers.ModelSerializer):
@@ -367,6 +367,16 @@ class RnaFastaSerializer(serializers.ModelSerializer):
         fields = ('fasta',)
 
 
+class ProteinTargetsSerializer(serializers.ModelSerializer):
+    target_accession = serializers.CharField()  # use non-null target_accession instead of nullable protein_accession
+    source_accession = serializers.CharField()
+    methods = serializers.ListField(serializers.CharField())
+
+    class Meta:
+        model = ProteinInfo
+        fields = ('target_accession', 'source_accession', 'description', 'label', 'synonyms', 'methods')
+
+
 class RnaGffSerializer(serializers.ModelSerializer):
     """Serializer for presenting genomic coordinates in GFF format"""
     gff = serializers.CharField(source='get_gff', read_only=True)
@@ -410,6 +420,15 @@ class ExpertDatabaseStatsSerializer(serializers.ModelSerializer):
         return json.loads(obj.taxonomic_lineage)
 
 
+class OntologyTermSerializer(serializers.ModelSerializer):
+    url = serializers.CharField(read_only=True)
+    quickgo_url = serializers.CharField(read_only=True)
+
+    class Meta:
+        model = OntologyTerm
+        fields = ('ontology_term_id', 'ontology', 'name', 'definition', 'url', 'quickgo_url')
+
+
 class RfamClanSerializer(serializers.ModelSerializer):
     class Meta:
         model = RfamClan
@@ -418,20 +437,34 @@ class RfamClanSerializer(serializers.ModelSerializer):
 
 class RfamModelSerializer(serializers.ModelSerializer):
     rfam_clan = RfamClanSerializer(source='rfam_clan_id')
+    go_terms = OntologyTermSerializer(many=True)
 
     class Meta:
         model = RfamModel
         fields = ('rfam_model_id', 'short_name', 'long_name', 'description', 'rfam_clan',
                   'seed_count', 'full_count', 'length', 'is_suppressed', 'domain', 'rna_type',
-                  'rfam_rna_type')
+                  'rfam_rna_type', 'thumbnail_url', 'url', 'go_terms')
 
 
 class RfamHitSerializer(serializers.ModelSerializer):
     rfam_model = RfamModelSerializer()
+    rfam_status = serializers.SerializerMethodField()
 
     class Meta:
         model = RfamHit
-        fields = ('sequence_start', 'sequence_stop', 'sequence_completeness', 'rfam_model')
+        fields = ('sequence_start', 'sequence_stop', 'sequence_completeness', 'rfam_model', 'rfam_status')
+
+    def get_rfam_status(self, obj):
+        if 'taxid' in self.context:
+            return json.loads(obj.upi.get_rfam_status(self.context['taxid']).as_json())
+        else:
+            return json.loads(obj.upi.get_rfam_status().as_json())
+
+
+class SequenceFeatureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SequenceFeature
+        fields = '__all__'
 
 
 class EnsemblAssemblySerializer(serializers.ModelSerializer):

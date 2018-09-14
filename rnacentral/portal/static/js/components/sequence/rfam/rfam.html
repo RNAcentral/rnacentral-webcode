@@ -1,0 +1,90 @@
+<div>
+  <h2>
+    Rfam classification
+    <small>
+      <span ng-if="$ctrl.rfamHits.length > 1">
+        <span ng-if="$ctrl.groupedHits.length != $ctrl.rfamHits.length">
+          {{ $ctrl.groupedHits.length | number }} families, {{ $ctrl.rfamHits.length | number }} locations
+        </span>
+        <span ng-if="$ctrl.groupedHits.length == $ctrl.rfamHits.length">
+          {{ $ctrl.groupedHits.length | number }} families
+        </span>
+      </span>
+      <a ng-href="{{ $ctrl.help }}" uib-tooltip="Learn more about Rfam annotations in RNAcentral &rarr;" style="color:inherit;">
+        <i class="fa fa-question-circle" aria-hidden="true"></i>
+      </a>
+    </small>
+  </h2>
+
+  <ul ng-if="$ctrl.rfamHits.length > 0 && $ctrl.rfamHits[0].rfam_status.has_issue" class="list-inline" style="margin-top: 5px; margin-bottom: 1.5em;">
+    <li ng-repeat="problem in $ctrl.rfamHits[0].rfam_status.problems">
+      <div class="alert alert-warning" style="margin-bottom: 0px">
+        <i class="fa fa-warning fa-2x pull-left text-danger" aria-hidden="true"></i>
+        <span>
+          <span ng-bind-html="problem.message"></span>
+        </span>
+      </div>
+    </li>
+  </ul>
+
+  <ul ng-if="$ctrl.groupedHits.length > 0" class="media-list">
+    <li ng-repeat="hit in $ctrl.groupedHits" ng-class="{ 'col-md-10 media': $ctrl.groupedHits.length === 1, 'col-md-6 media': $ctrl.groupedHits.length > 1 }" style="margin-bottom: 1.5em; padding-left: 5px;">
+
+      <div ng-class="{'col-md-2 media-left media-top': $ctrl.groupedHits.length == 1, 'col-md-4 col-lg-3 media-left media-top': $ctrl.groupedHits.length > 1}" style="padding-left: 0;" uib-tooltip="Consensus secondary structure of Rfam model {{ hit.rfam_model_id }}">
+        <a ng-href="http://rfam.org/family/{{ hit.rfam_model_id }}" class="no-icon">
+          <img class="media-object thumbnail"
+            ng-src="{{ hit.rfam_model.thumbnail_url }}"
+            style="max-width: 120px; max-height: 120px;"
+            alt="{{ hit.rfam_model_id }} secondary structure">
+        </a>
+      </div>
+
+      <div class="media-body">
+        <h4 class="media-heading" style='padding-left: 0px;'>
+          <a ng-href="{{ hit.rfam_model.url }}" class="no-icon">
+            {{ hit.rfam_model.long_name }}
+          </a>
+        </h4>
+
+        <ul class="list-unstyled">
+          <li>
+            {{ hit.rfam_model_id }}
+            | {{ hit.rfam_model.rfam_rna_type }}
+            <span ng-if="hit.rfam_model.domain != None">
+              | {{ hit.rfam_model.domain }}
+            </span>
+            <span ng-if="hit.rfam_model.rna_type != ''">
+              | <span class="badge">{{ hit.rfam_model.rna_type }}</span>
+            </span>
+          </li>
+          <li>
+            <ul class="list-unstyled">
+              <li ng-repeat="go_term in hit.rfam_model.go_terms">
+                <a ng-href="{{ go_term.quickgo_url }}" target="_blank" class="no-icon" uib-tooltip="View {{ go_term.ontology_term_id }} in QuickGO">{{ go_term.name }}</a>
+                <a class="btn btn-circle btn-default margin-left-5px" ng-click="$ctrl.toggleGoModal({term_id: go_term.ontology_term_id})" type="button"><i class="fa fa-sitemap" uib-tooltip="View {{ go_term.ontology_term_id }} ancestor chart"></i></a>
+              </li>
+            </ul>
+          </li>
+
+          <li>Matches at<span ng-if="hit.ranges.length == 1">:
+            <strong>{{ hit.ranges[0][0] + 1 | number }}-{{ hit.ranges[0][1] | number }}</strong>
+            ({{ hit.ranges[0][2] * 100 }}% of the model)</span>
+            <span ng-if="hit.ranges.length > 1">
+              <a data-toggle="collapse" ng-href="{{ '#matchPositionsList-' + $index }}" aria-expanded="false" aria-controls="matchPositionsList">
+                <i class="fa fa-list" aria-hidden="true"></i> {{ hit.ranges.length }} locations
+              </a>
+              <ul class='collapse list-unstyled' id='matchPositionsList-{{ $index }}'>
+                <li ng-repeat="range in hit.ranges" style='padding-left: 1em;'>
+                  <strong>{{ range[0] + 1 | number }}-{{ range[1] | number }}</strong>
+                  ({{ range[2] * 100 }}% of the model)
+                </li>
+              </ul>
+            </span>
+          </li>
+        </ul>
+      </div>
+
+    </li>
+  </ul>
+  <p ng-if="$ctrl.rfamHits.length == 0">The sequence did not match any Rfam families. <a ng-href="{{ $ctrl.help }}">Learn more &rarr;</a></p>
+</div>

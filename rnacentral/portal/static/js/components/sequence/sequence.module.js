@@ -1,4 +1,4 @@
-var rnaSequenceController = function($scope, $location, $window, $rootScope, $compile, $http, $q, $filter, $timeout, routes, GenoverseUtils) {
+var rnaSequenceController = function($scope, $location, $window, $rootScope, $compile, $http, $q, $filter, $timeout, $interpolate, routes, GenoverseUtils) {
     // Take upi and taxid from url. Note that $location.path() always starts with slash
     $scope.upi = $location.path().split('/')[2];
     $scope.taxid = $location.path().split('/')[3];  // TODO: this might not exist!
@@ -139,7 +139,14 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     };
 
     $scope.fetchRfamHits = function () {
-        return $http.get(routes.apiRfamHitsView({upi: $scope.upi}), {params: {page_size: 10000000000}})
+        return $http.get(routes.apiRfamHitsView({upi: $scope.upi, taxid: $scope.taxid}), {params: {page_size: 10000000000}})
+    };
+
+    $scope.fetchSequenceFeatures = function() {
+        return $http.get(
+            routes.apiSequenceFeaturesView({upi: $scope.upi, taxid: $scope.taxid}),
+            {params: {page_size: 10000000000}}
+        )
     };
 
     // View functionality
@@ -233,7 +240,6 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         } else {
             $('#go-annotation-chart-modal').modal('toggle');
         }
-        console.log($scope.goChartData);
     };
 
     /**
@@ -367,6 +373,13 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         // show Rfam models, found in this RNA
         $scope.fetchRfamHits().then(
             function(response) {
+                $scope.rfamHits = response.data.results;
+
+                // wrap hit.rfam_model.thumbnail_url into our proxy to suppress http/https mixed content warning
+                $scope.rfamHits.forEach(function(hit) {
+                    hit.rfam_model.thumbnail_url = routes.proxy({url: encodeURIComponent(hit.rfam_model.thumbnail_url)});
+                });
+
                 data = [];
                 for (var i = 0; i < response.data.results.length; i++) {
                     var direction, x, y;
@@ -396,12 +409,71 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                         type: "rect",
                         filter: "type1"
                     });
+
+                    // make clicks on this track open CRS page
+                    d3.selectAll("g.rfamModelsGroup")
+                      .on("click", function(element) {
+                          var rfam_id = element.description.split(" ")[1]; // typical description: "Conserved_rna_structure M0554307"
+                          var pageUrl = $interpolate("http://rfam.org/family/{{ rfam_id }}")({ rfam_id: rfam_id });
+                          $window.open(pageUrl);
+                      });
                 }
             },
             function() {
                 console.log('failed to fetch Rfam hits');
             }
         );
+
+        // for taxid-specific pages, show CRS features, found in this RNA
+        if ($scope.taxid) {
+            $scope.fetchSequenceFeatures().then(
+                function(response){
+                    $scope.features = response.data.results.sort(function(a, b) {return a.start - b.start});
+
+                    // trim start/stop of each feature to make sure it's not out of sequence bounds
+                    var data = $scope.features.map(function(feature) {
+                        var datum = {
+                            x: feature.start >= 0 ? feature.start : 0,
+                            y: feature.stop < $scope.rna.length ? feature.stop : $scope.rna.length - 1,
+                            description: 'Conserved_rna_structure ' + feature.metadata.crs_id
+                        };
+
+                        if (feature.metadata.should_highlight) { datum.color = "#86A5B9"; }
+
+                        return datum;
+                    });
+
+                    var addFeature = function() {
+                        if ($scope.featureViewer) {
+                            $scope.featureViewer.addFeature({
+                                id: "crs",
+                                data: data,
+                                name: "CRS",
+                                className: "crs",
+                                color: "#365569",
+                                type: "rect",
+                                filter: "type1"
+                            });
+
+                            // make clicks on this track open CRS page
+                            d3.selectAll("g.crsGroup")
+                              .on("click", function(element) {
+                                  var crs_id = element.description.split(" ")[1]; // typical description: "Conserved_rna_structure M0554307"
+                                  var pageUrl = $interpolate("https://rth.dk/resources/rnannotator/crs/vert/pages/cmf.data.collection.openallmenus.php?crs={{ crs_id }}")({ crs_id: crs_id });
+                                  $window.open(pageUrl);
+                              });
+
+                        } else {
+                            $timeout(addFeature, 1000)
+                        }
+                    };
+
+                    // for non-empty tracks, add CRS feature track
+                    if ($scope.features.length > 0) { addFeature(); }
+                }
+            )
+        }
+
     });
 
     if ($scope.taxid) {
@@ -445,7 +517,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     }
 };
 
-rnaSequenceController.$inject = ['$scope', '$location', '$window', '$rootScope', '$compile', '$http', '$q', '$filter', '$timeout', 'routes', 'GenoverseUtils'];
+rnaSequenceController.$inject = ['$scope', '$location', '$window', '$rootScope', '$compile', '$http', '$q', '$filter', '$timeout', '$interpolate', 'routes', 'GenoverseUtils'];
 
 
 /**

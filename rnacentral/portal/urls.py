@@ -44,6 +44,7 @@ urlpatterns = [
     url(r'^help/browser-compatibility/?$', views.StaticView.as_view(), {'page': 'help/browser-compatibility'}, name='help-browser-compatibility'),
     url(r'^help/text-search/?$', views.StaticView.as_view(), {'page': 'help/text-search'}, name='help-text-search'),
     url(r'^help/rfam-annotations/?$', views.StaticView.as_view(), {'page': 'help/rfam-annotations'}, name='help-rfam-annotations'),
+    url(r'^help/rna-target-interactions/?$', views.StaticView.as_view(), {'page': 'help/rna-target-interactions'}, name='help-rna-target-interactions'),
     url(r'^help/gene-ontology-annotations/?$', views.StaticView.as_view(), {'page': 'help/gene-ontology-annotations'}, name='help-gene-ontology-annotations'),
     url(r'^help/genomic-mapping/?$', views.StaticView.as_view(), {'page': 'help/genomic-mapping', 'assemblies': EnsemblAssembly.objects.all()}, name='help-genomic-mapping'),
     url(r'^help/link-to-rnacentral/?$', views.StaticView.as_view(), {'page': 'help/link-to-rnacentral'}, name='linking-to-rnacentral'),
@@ -66,8 +67,8 @@ urlpatterns = [
     url(r'^status/?$', views.website_status_view, name='website-status'),
     # genome browser
     url(r'^genome-browser/?$', views.GenomeBrowserView.as_view(), {}, name='genome-browser'),
-    # search proxy
-    url(r'^api/internal/ebeye/?$', views.ebeye_proxy, name='ebeye-proxy'),
+    # proxy for ebeye search and rfam images
+    url(r'^api/internal/proxy/?$', views.proxy, name='proxy'),
 ]
 
 # internal API

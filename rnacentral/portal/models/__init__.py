@@ -27,7 +27,11 @@ from .rfam import *
 from .rna import *
 from .rna_precomputed import *
 from .secondary_structure import *
+from .sequence_feature import *
 from .xref import *
 from .ensembl_assembly import *
 from .ensembl_insdc_mapping import *
 from .ensembl_karyotype import *
+from .protein_info import *
+from .related_sequences import *
+from .sequence_features import *
