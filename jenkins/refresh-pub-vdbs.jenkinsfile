@@ -20,6 +20,8 @@ pipeline {
             steps {
                 sh "cat $KEYFILE > fb1-001-rsa"
                 sh '''
+                    cd /nfs/public/rw/xfam/rnacentral/live
+                    source local/virtualenvs/RNAcentral/bin/activate
                     cd rnacentral
                     fab fb1:key=../fb1-001-rsa refresh_fb1
                 '''
@@ -33,6 +35,8 @@ pipeline {
             }
             steps {
                 sh '''
+                    cd /nfs/public/rw/xfam/rnacentral/live
+                    source local/virtualenvs/RNAcentral/bin/activate
                     cd rnacentral
                     fab pg --password=$PASSWORD refresh_pg
                 '''
