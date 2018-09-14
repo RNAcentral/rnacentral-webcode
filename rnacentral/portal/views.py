@@ -90,7 +90,7 @@ def expert_databases_view(request):
 @cache_page(CACHE_TIMEOUT)
 def rna_view_redirect(request, upi, taxid):
     """Redirect from urs_taxid to urs/taxid."""
-    return redirect('unique-rna-sequence', upi=upi, taxid=taxid)
+    return redirect('unique-rna-sequence', upi=upi, taxid=taxid, permanent=True)
 
 
 @cache_page(CACHE_TIMEOUT)
