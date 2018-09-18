@@ -267,7 +267,7 @@ expert_dbs = [
     {
         'name': 'SRPDB',
         'label': 'srpdb',
-        'url': 'http://rnp.uthscsa.edu/rnp/SRPDB/SRPDB.html',
+        'url': 'https://rth.dk/resources/rnp/SRPDB',
         'description': 'provides aligned, annotated and phylogenetically ordered sequences related to structure and function of SRP',
         'hint': 'SRPDB provides aligned, annotated and phylogenetically ordered sequences related to structure and function of SRP',
         'tags': ['curated', 'signal recognition particle'],
