@@ -68,7 +68,7 @@
 
           <li>Matches at<span ng-if="hit.ranges.length == 1">:
             <strong>{{ hit.ranges[0][0] + 1 | number }}-{{ hit.ranges[0][1] | number }}</strong>
-            ({{ hit.ranges[0][2] * 100 }}% of the model)</span>
+            ({{ hit.ranges[0][2] * 100 | number:1}}% of the model)</span>
             <span ng-if="hit.ranges.length > 1">
               <a data-toggle="collapse" ng-href="{{ '#matchPositionsList-' + $index }}" aria-expanded="false" aria-controls="matchPositionsList">
                 <i class="fa fa-list" aria-hidden="true"></i> {{ hit.ranges.length }} locations
