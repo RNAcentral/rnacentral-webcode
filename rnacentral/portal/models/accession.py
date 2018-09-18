@@ -155,7 +155,7 @@ class Accession(models.Model):
         """Get external url to expert database."""
         urls = {
             'RFAM': 'http://rfam.org/family/{id}',
-            'SRPDB': 'http://rnp.uthscsa.edu/rnp/SRPDB/rna/sequences/fasta/{id}',
+            'SRPDB': 'https://rth.dk/resources/rnp/SRPDB/rna/sequences/fasta/{id}',
             'MIRBASE': 'http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc={id}',
             'TMRNA_WEB': 'http://bioinformatics.sandia.gov/tmrna/seqs/{id}',
             'LNCRNADB': 'http://www.lncrnadb.org/{id}',
