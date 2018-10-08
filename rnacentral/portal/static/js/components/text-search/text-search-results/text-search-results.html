@@ -144,7 +144,7 @@
           <form class="form-inline font-size-14-px hidden-xs" style="padding-left: 0px">
             Sort by:
             <div class="form-group">
-              <select class="form-control small" ng-change="$ctrl.search.search($ctrl.search.query)" ng-model="$ctrl.search.sort" ng-options="item.value as item.label for item in $ctrl.search.config.sortableFields"></select>
+              <select id="sort-by-select" class="form-control small" ng-change="$ctrl.search.search($ctrl.search.query)" ng-model="$ctrl.search.sort" ng-options="item.value as item.label for item in $ctrl.search.config.sortableFields"></select>
             </div>
             <!--
             <div class="form-group">
