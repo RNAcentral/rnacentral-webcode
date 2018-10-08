@@ -815,6 +815,10 @@ button.load-more {
   display: none;
 }
 
+#sort-by-select {
+  padding: 0px;
+}
+
 /*------------------------------------------------------------------
 [5.8 Sequence search]
 */
