@@ -15,6 +15,7 @@ var secondary_structures = {
                 function(response) {
                     ctrl.secondaryStructures = response.data.data;
                     ctrl.numStructures = ctrl.secondaryStructures.secondary_structures.length;
+                    ctrl.SecondaryStructureUrl = routes.apiSecondaryStructuresView({ upi: ctrl.upi, taxid: ctrl.taxid });
                     ctrl.displayForna();
                 },
                 function(response) {
@@ -60,12 +61,16 @@ var secondary_structures = {
               '        Predicted using tRNAScan-SE 2.0 (source: <a href="{{ $ctrl.getSourceUrl() }}">GtRNAdb</a>).' +
               '      </p>' +
               '    </div>' +
+              '    <div class="col-md-6" ng-if="$ctrl.numStructures > 0">' +
+              '      <p>Structure in dot-bracket notation:</p>' +
+              '      <pre style="white-space: pre-wrap">{{ $ctrl.secondaryStructures.secondary_structures[0].secondary_structure }}</pre>' +
+              '    </div> ' +
               '    <div class="col-md-6" ng-if="$ctrl.numStructures === 0">' +
               '      <p>' +
               '        No secondary structures available' +
               '      </p>' +
               '    </div>' +
-              '      <div id="rna_ss" style="width: {{ $ctrl.fornaSize }}px; height: {{ $ctrl.fornaSize }}px; margin-left: 9px;"></div>' +
+              '    <div id="rna_ss" style="width: {{ $ctrl.fornaSize }}px; height: {{ $ctrl.fornaSize }}px; margin-left: 9px;"></div>' +
               '</div>'
 };
 
