@@ -53,6 +53,27 @@ var secondary_structures = {
             container.addRNA(options.structure, options);
             ctrl.showSecondaryStructureTab();
         };
+
+        /**
+         * Saves structure in dot-bracket notation as a file, code stolen from:
+         * https://stackoverflow.com/questions/3665115/create-a-file-in-memory-for-user-to-download-not-through-server
+         */
+        ctrl.save2D = function() {
+            var filename = ctrl.upi + '.dbn';
+            var blob = new Blob([ctrl.secondaryStructures.secondary_structures[0].secondary_structure], {type: 'text/plain'});
+            if(window.navigator.msSaveOrOpenBlob) {
+                window.navigator.msSaveBlob(blob, filename);
+            }
+            else{
+                var elem = window.document.createElement('a');
+                elem.href = window.URL.createObjectURL(blob);
+                elem.download = filename;
+                document.body.appendChild(elem);
+                elem.click();
+                document.body.removeChild(elem);
+            }
+        };
+
     }],
     template: '<div id="2d" style="min-height: 600px">' +
               '    <h2>Secondary structure</h2>'+
@@ -64,7 +85,8 @@ var secondary_structures = {
               '    <div class="col-md-6" ng-if="$ctrl.numStructures > 0">' +
               '      <p>Structure in dot-bracket notation:</p>' +
               '      <pre style="white-space: pre-wrap">{{ $ctrl.secondaryStructures.secondary_structures[0].secondary_structure }}</pre>' +
-              '    </div> ' +
+              '      <button class="btn btn-primary" ng-click="$ctrl.save2D()">Download</button>' +
+              '    </div>' +
               '    <div class="col-md-6" ng-if="$ctrl.numStructures === 0">' +
               '      <p>' +
               '        No secondary structures available' +
