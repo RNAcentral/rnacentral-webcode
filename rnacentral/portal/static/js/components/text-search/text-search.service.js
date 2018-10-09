@@ -21,8 +21,8 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             'organelle',
             'pub_title',
             'product',
-            'rfam_problem_found',
-            'rfam_problems',
+            'qc_warning_found',
+            'qc_warning',
             'rna_type',
             'standard_name',
             'tax_string'
@@ -65,7 +65,7 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             'standard_name': 'Standard name',
             'tax_string': 'Taxonomy'
         },
-        facetfields: ['length', 'rna_type', 'TAXONOMY', 'expert_db', 'rfam_problem_found', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
+        facetfields: ['length', 'rna_type', 'TAXONOMY', 'expert_db', 'qc_warning_found', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
         sortableFields: [
             { label: 'Popular species, Length ↓', value: 'boost:descending,length:descending' },
             // { label: 'Popular species ↑', value: 'boost:ascending' },
@@ -305,9 +305,9 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             return self.config.facetfields.indexOf(a.id) - self.config.facetfields.indexOf(b.id);
         });
 
-        // update rfam_problem_found labels from True/False to Yes/No
+        // update qc_warning_found labels from True/False to Yes/No
         data.facets.forEach(function(facet) {
-            if (facet.id === 'rfam_problem_found') {
+            if (facet.id === 'qc_warning_found') {
                 facet.facetValues.forEach(function(facetValue) {
                     if (facetValue.label === 'True') { facetValue.label = 'Yes'; }
                     else if (facetValue.label === 'False') { facetValue.label = 'No'; }

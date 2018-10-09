@@ -17,7 +17,7 @@ When an RNAcentral sequence matches only a **part of the Rfam covariance model**
 * [Partial Bacterial LSU sequence](/rna/URS00008D09BC/9606)
 * [Partial Bacterial SSU sequence](/rna/URS0000818FC1/77133)
 
-These sequences can be browsed by searching for [`rfam_problems:"incomplete_sequence"`](/search?q=rfam_problems:%22incomplete_sequence%22).
+These sequences can be browsed by searching for [`qc_warning:"incomplete_sequence"`](/search?q=qc_warning:%22incomplete_sequence%22).
 
 ### 2. Potential contamination
 
@@ -29,7 +29,7 @@ For example, when a **Eukaryotic sequence** matches an Rfam family that is only 
 * [Mouse rRNA matching Bacterial LSU model](/rna/URS000013EF30/10090)
 * [Archaeal RNA matching Bacterial SRP](/rna/URS000028B82D/374847)
 
-Sequences of this type can be browsed with [`rfam_problems:"possible_contamination"`](/search?q=rfam_problems:%22possible_contamination%22).
+Sequences of this type can be browsed with [`qc_warning:"possible_contamination"`](/search?q=qc_warning:%22possible_contamination%22).
 
 ### 3. Missing Rfam hits
 
@@ -41,7 +41,7 @@ The majority of RNAcentral sequences annotated as rRNA or tRNA match the corresp
 * [Sequence annotated as rRNA that matches a riboswitch](/rna/URS00002A4649/1151342)
 * [Sequence annotated as tRNA that matches SSU rRNA](/rna/URS00000A7AA6/114707)
 
-Browse all sequences with missing matches by searching for [`rfam_problems:"missing_rfam_match"`](/search?q=rfam_problems:%22missing_rfam_match%22).
+Browse all sequences with missing matches by searching for [`qc_warning:"missing_rfam_match"`](/search?q=qc_warning:%22missing_rfam_match%22).
 
 ## Why some sequences do not match any Rfam families
 
