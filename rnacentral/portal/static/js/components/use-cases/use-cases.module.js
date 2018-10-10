@@ -1,5 +1,17 @@
 var useCasesService = function() {
     return {
+        lebibiPublication: {
+            "title": "leBIBI-QBPP: a set of databases and a webtool for automatic phylogenetic analysis of prokaryotic sequences",
+            "authors": ["Flandrois JP", "Perrière G", "Gouy M"],
+            "publication": "BMC Bioinformatics. 2015 Aug 12;16:251",
+            "pubmed_id": 26264559,
+            "doi": "10.1186/s12859-015-0692-z",
+            "pub_id": "",
+            "image": "/static/img/use-cases/lebibi.png",
+            "caption": "leBIBI uses RNAcentral as a reference data set for reconstructing the phylogeny of archaeal or bacterial sequences",
+            "category": "reference-ncrna-set",
+            "category_header": "Reference ncRNA set"
+        },
         rainbowTroutPublication: {
             "title": "Genome-Wide Discovery of Long Non-Coding RNAs in Rainbow Trout.",
             "authors": ["Al-Tobasei R", "Paneru B", "Salem M"],
@@ -35,7 +47,6 @@ var useCasesService = function() {
             "caption": "RNAcentral identifiers used to annotate ncRNAs with Gene Ontology terms",
             "category": "literature-curation",
             "category_header": "Stable identifiers for ncRNAs"
-
         },
         yeastCurationPublication: {
             "title": "The yeast noncoding RNA interaction network.",
