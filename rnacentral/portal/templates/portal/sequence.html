@@ -310,4 +310,28 @@ limitations under the License.
         </div> <!-- .tabbable -->
     </div> <!-- .col-md-12 -->
 </div> <!-- .row -->
+
+{% if context.taxid %}
+<script type="application/ld+json">
+{
+    "@context": [
+        {
+            "@base": "http://schema.org"
+        }
+    ],
+    "@type": "DataRecord",
+    "url": "https://rnacentral.org/rna/{{ rna.upi }}/{{ context.taxid }}",
+    "mainEntity": {
+        "@type": [
+            "RNA",
+            "BioChemEntity"
+        ],
+        "@id": "http://identifiers.org/rnacentral:{{ rna.upi }}_{{context.taxid}}",
+        "identifier": "{{ rna.upi }}_{{ context.taxid }}",
+        "name": "{{ context.description }}",
+        "url": "https://rnacentral.org/rna/{{ rna.upi }}/{{ context.taxid }}"
+    }
+}
+</script>
+{% endif %}
 {% endblock content %}
