@@ -1002,4 +1002,29 @@ expert_dbs = [
         'status': '',
         'version': '',
     },
+    {
+        'name': 'ZWD',
+        'label': 'zwd',
+        'url': 'https://bitbucket.org/zashaw/zashaweinbergdata',
+        'description': 'is a git-based collection of non-coding RNA alignments maintained by Dr Zasha Weinberg',
+        'hint': 'ZWD is a git-based collection of non-coding RNA alignments maintained by Dr Zasha Weinberg',
+        'tags': ['metagenome', 'predicted', 'riboswitch'],
+        'abbreviation': '',
+        'examples': [
+            {'upi': 'URS000065A032', 'taxid': 224308},
+            {'upi': 'URS000067336D', 'taxid': 264730},
+            {'upi': 'URS0000D66279', 'taxid': 997891},
+        ],
+        'references': [
+            {
+                'title': 'Detection of 224 candidate structured RNAs by comparative analysis of specific subsets of intergenic regions',
+                'authors': 'Weinberg Z, Lunse CE, Corbino KA, Ames TD, Nelson JW, Roth A, Perkins KR, Sherlock ME, Breaker RR',
+                'journal': 'Nucleic Acids Res. 2017 Oct 13;45(18):10811-10823',
+                'pubmed_id': '28977401',
+            },
+        ],
+        'imported': True,
+        'status': 'new',
+        'version': '',
+    },
 ]
