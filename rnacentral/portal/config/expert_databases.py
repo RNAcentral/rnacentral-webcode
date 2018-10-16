@@ -96,7 +96,7 @@ expert_dbs = [
         'url': 'http://ensembl.org/',
         'description': 'is a genome browser for vertebrate genomes and model organisms that supports research in comparative genomics, evolution, sequence variation and transcriptional regulation',
         'hint': 'Ensembl is a genome browser for vertebrate genomes and model organisms that supports research in comparative genomics, evolution, sequence variation and transcriptional regulation',
-        'tags': ['curated', 'reference genomes'],
+        'tags': ['reference genomes'],
         'abbreviation': '',
         'examples': [
             {'upi': 'URS000025784F', 'taxid': 9606},
@@ -120,6 +120,31 @@ expert_dbs = [
         'imported': True,
         'status': 'updated',
         'version': '92',
+    },
+    {
+        'name': 'Ensembl Plants',
+        'label': 'e_plants',
+        'url': 'https://plants.ensembl.org/',
+        'description': 'Ensembl Plants is a genome browser for plant genomes that complements the Ensembl database',
+        'hint': 'Ensembl Plants is a genome browser for plant genomes that complements the Ensembl database',
+        'tags': ['reference genomes'],
+        'abbreviation': '',
+        'examples': [
+            {'upi': 'URS0000A77357', 'taxid': 3702},
+            {'upi': 'URS0000A7685E', 'taxid': 3702},
+            {'upi': 'URS00005391BB', 'taxid': 3702},
+        ],
+        'references': [
+            {
+                'title': 'Ensembl Genomes 2018: an integrated omics infrastructure for non-vertebrate species',
+                'authors': 'Kersey PJ, Allen JE, Allot A, Barba M, Boddu S, Bolt BJ, Carvalho-Silva D, et al.',
+                'journal': 'Nucleic Acids Res. 2018 Jan 4;46(D1):D802-D808',
+                'pubmed_id': '29092050',
+            },
+        ],
+        'imported': True,
+        'status': 'new',
+        'version': '41',
     },
     {
         'name': 'GENCODE',
