@@ -177,6 +177,7 @@ class Accession(models.Model):
             'HGNC': 'http://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id={id}',
             'ENSEMBL': 'http://www.ensembl.org/{species}/Transcript/Summary?t={id}',
             'GENCODE': 'http://www.ensembl.org/{species}/Transcript/Summary?t={id}',
+            'E_PLANTS': 'http://plants.ensembl.org/{species}/Gene/Summary?db=core;g=AT5G45472',
             'FLYBASE': 'http://flybase.org/reports/{id}',
             'MGI': 'http://www.informatics.jax.org/marker/{id}',
             'GTRNADB': '',
@@ -207,6 +208,8 @@ class Accession(models.Model):
             elif self.database == 'HGNC':
                 return urls[self.database].format(id=self.accession)
             elif self.database == 'ENSEMBL' or self.database == 'GENCODE':
+                return urls[self.database].format(id=self.external_id, species=self.get_ensembl_species_url())
+            elif self.database == 'E_PLANTS':
                 return urls[self.database].format(id=self.external_id, species=self.get_ensembl_species_url())
             return urls[self.database].format(id=self.external_id)
         else:

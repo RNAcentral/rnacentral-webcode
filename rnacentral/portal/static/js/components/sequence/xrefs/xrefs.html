@@ -139,6 +139,11 @@
               </span>
             </span>
 
+            <!-- Ensembl Plants -->
+            <span ng-switch-when="Ensembl Plants">
+              <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank" title="View the transcript in {{ xref.database }}">{{ xref.accession.external_id }}</a> {{ xref.accession.locus_tag }}
+            </span>
+
             <!-- FlyBase -->
             <span ng-switch-when="FlyBase">
               transcript <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> from gene <a target="_blank" href="http://flybase.org/reports/{{ xref.accession.gene }}">{{ xref.accession.gene }}</a>
