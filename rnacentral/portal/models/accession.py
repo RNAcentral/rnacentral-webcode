@@ -180,10 +180,11 @@ class Accession(models.Model):
             'FLYBASE': 'http://flybase.org/reports/{id}',
             'MGI': 'http://www.informatics.jax.org/marker/{id}',
             'GTRNADB': '',
-            'RGD': 'https://rgd.mcw.edu/rgdweb/report/gene/main.html?id={id}'
+            'RGD': 'https://rgd.mcw.edu/rgdweb/report/gene/main.html?id={id}',
+            'ZWD': '',
         }
         if self.database in urls.keys():
-            if self.database == 'GTRNADB':
+            if self.database in ['GTRNADB', 'ZWD']:
                 data = json.loads(self.note)
                 if 'url' in data:
                     return data['url']
