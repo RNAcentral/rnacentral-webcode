@@ -38,7 +38,8 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RnaSpeciesSpecificSerializer, ExpertDatabaseStatsSerializer, \
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, \
                               RfamHitSerializer, SequenceFeatureSerializer, \
-                              EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer, ProteinTargetsSerializer
+                              EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer, ProteinTargetsSerializer, \
+                              LncrnaTargetsSerializer
 
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
@@ -838,14 +839,14 @@ class ProteinTargetsView(generics.ListAPIView):
         # we select redundant {protein_info}.protein_accession because
         # otherwise django curses about lack of primary key in raw query
         protein_info_query = '''
-            SELECT 
+            SELECT
                 {related_sequence}.target_accession,
                 {related_sequence}.source_accession,
                 {related_sequence}.source_urs_taxid,
                 {related_sequence}.methods,
                 {protein_info}.protein_accession,
-                {protein_info}.description, 
-                {protein_info}.label, 
+                {protein_info}.description,
+                {protein_info}.label,
                 {protein_info}.synonyms
             FROM {related_sequence}
             LEFT JOIN {protein_info}
@@ -862,4 +863,49 @@ class ProteinTargetsView(generics.ListAPIView):
         )
 
         queryset = PaginatedRawQuerySet(protein_info_query, model=ProteinInfo)  # was: ProteinInfo.objects.raw(protein_info_query)
+        return queryset
+
+
+class LncrnaTargetsView(generics.ListAPIView):
+    """API endpoint, presenting lncRNAs targeted by a given rna."""
+    permission_classes = ()
+    authentication_classes = ()
+    pagination_class = Pagination
+    serializer_class = LncrnaTargetsSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        taxid = self.kwargs['taxid']
+
+        # we select redundant {protein_info}.protein_accession because
+        # otherwise django curses about lack of primary key in raw query
+        protein_info_query = '''
+            SELECT
+                {related_sequence}.source_accession,
+                {related_sequence}.source_urs_taxid,
+                {related_sequence}.methods,
+                {related_sequence}.target_urs_taxid,
+                {rna_precomputed}.description as target_rna_description,
+                {related_sequence}.target_accession,
+                {protein_info}.protein_accession,
+                {protein_info}.description as target_ensembl_description,
+                {protein_info}.label,
+                {protein_info}.synonyms
+            FROM {related_sequence}
+            LEFT JOIN {rna_precomputed}
+            ON target_urs_taxid = {rna_precomputed}.id
+            LEFT JOIN protein_info
+            ON {protein_info}.protein_accession = {related_sequence}.target_accession
+            WHERE {related_sequence}.relationship_type = 'target_rna'
+              AND {related_sequence}.source_urs_taxid = '{pk}_{taxid}'
+            ORDER BY target_urs_taxid
+        '''.format(
+            rna_precomputed=RnaPrecomputed._meta.db_table,
+            related_sequence=RelatedSequence._meta.db_table,
+            protein_info=ProteinInfo._meta.db_table,
+            pk=pk,
+            taxid=taxid
+        )
+
+        queryset = PaginatedRawQuerySet(protein_info_query, model=ProteinInfo)
         return queryset

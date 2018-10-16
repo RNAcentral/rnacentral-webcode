@@ -377,6 +377,26 @@ class ProteinTargetsSerializer(serializers.ModelSerializer):
         fields = ('target_accession', 'source_accession', 'description', 'label', 'synonyms', 'methods')
 
 
+class LncrnaTargetsSerializer(serializers.ModelSerializer):
+    target_accession = serializers.CharField()
+    source_accession = serializers.CharField()
+    target_urs_taxid = serializers.CharField()
+    methods = serializers.ListField(serializers.CharField())
+    description = serializers.SerializerMethodField('select_description')
+
+    def select_description(self, obj):
+        if hasattr(obj, 'target_rna_description'):
+            return obj.target_rna_description
+        elif hasattr(obj, 'target_ensembl_description'):
+            return obj.target_ensembl_description
+        else:
+            return ''
+
+    class Meta:
+        model = ProteinInfo
+        fields = ('target_accession', 'source_accession', 'description', 'label', 'synonyms', 'methods', 'description', 'target_urs_taxid')
+
+
 class RnaGffSerializer(serializers.ModelSerializer):
     """Serializer for presenting genomic coordinates in GFF format"""
     gff = serializers.CharField(source='get_gff', read_only=True)
