@@ -473,17 +473,28 @@ expert_dbs = [
     },
     {
         'name': 'LncBase',
-        'label': '',
+        'label': 'lncbase',
         'url': 'http://www.microrna.gr/LncBase',
         'description': 'experimentally verified and computationally predicted microRNA targets on long non-coding RNAs',
         'hint': 'LncBase provides experimentally verified and computationally predicted microRNA targets on long non-coding RNAs',
         'tags': ['automatic', 'curated', 'experimentally determined', 'miRNA', 'lncRNA'],
         'abbreviation': '',
-        'examples': '',
-        'references': [],
-        'imported': False,
-        'status': '',
-        'version': '',
+        'examples': [
+            {'upi': 'URS000075EAB0', 'taxid': 9606},
+            {'upi': 'URS00005A4DCF', 'taxid': 10090},
+            {'upi': 'URS00003B7674', 'taxid': 9606},
+        ],
+        'references': [
+            {
+                'title': 'DIANA-LncBase v2: indexing microRNA targets on non-coding transcripts',
+                'authors': 'Paraskevopoulou MD, Vlachos IS, Karagkouni D, Georgakilas G, Kanellos I, Vergoulis T, Zagganas K, Tsanakas P, Floros E, Dalamagas T, Hatzigeorgiou AG',
+                'journal': 'Nucleic Acids Res 44(d1):D231-8 (2016)',
+                'pubmed_id': '26612864',
+            }
+        ],
+        'imported': True,
+        'status': 'new',
+        'version': 'v2',
     },
     {
         'name': 'LNCipedia',
