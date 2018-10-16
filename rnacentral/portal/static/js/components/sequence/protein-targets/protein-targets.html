@@ -8,13 +8,13 @@
   </h2>
 
   <div ng-if="$ctrl.total > 0">
-    <div class="table-responsive">
+    <div class="table-responsive" style="overflow-y: auto; max-height: 300px;">
       <table class="table table-hover table-condensed" id="related-proteins-table">
         <thead>
           <tr>
-            <th>TarBase</th>
-            <th>Ensembl</th>
-            <th>Description</th>
+            <th>View in TarBase</th>
+            <th>View in Ensembl</th>
+            <th>Target description</th>
             <th>Methods</th>
           </tr>
         </thead>
