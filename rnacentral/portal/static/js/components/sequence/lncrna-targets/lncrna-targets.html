@@ -37,22 +37,22 @@
               </span>
             </td>
           </tr>
-          <tr ng-if="$ctrl.status === 'success'" ng-repeat="protein in $ctrl.displayedProteins">
+          <tr ng-if="$ctrl.status === 'success'" ng-repeat="target in $ctrl.displayedTargets">
             <td class="col-lg-2">
-              <a ng-href="{{ $ctrl.lncbaseUrl(protein) }}" target="_blank" uib-tooltip="Explore supporting publications, tissues, cell lines, and more"><span ng-if="protein.source_accession">{{ protein.source_accession.split(":")[1] }}</span><span ng-if="!protein.source_accession">unknown</span></a>
+              <a ng-href="{{ $ctrl.lncbaseUrl(target) }}" target="_blank" uib-tooltip="Explore supporting publications, tissues, cell lines, and more"><span ng-if="target.source_accession">{{ target.source_accession.split(":")[1] }}</span><span ng-if="!target.source_accession">unknown</span></a>
             </td>
             <td class="col-lg-2">
-              <a ng-href="{{ $ctrl.ensemblUrl(protein) }}" target="_blank">{{ protein.target_accession.split(":")[1] }}</a>
-              <a href="search?q=interacting_rna:&quot;{{ protein.target_accession.split(':')[1] }}&quot;" class="margin-left-5px ng-scope" uib-tooltip="Find other miRNAs targeting this lncRNA"><i class="fa fa-search"></i></a>
+              <a ng-href="{{ $ctrl.ensemblUrl(target) }}" target="_blank">{{ target.target_accession.split(":")[1] }}</a>
+              <a href="search?q=interacting_rna:&quot;{{ target.target_accession.split(':')[1] }}&quot;" class="margin-left-5px ng-scope" uib-tooltip="Find other miRNAs targeting this lncRNA"><i class="fa fa-search"></i></a>
             </td>
             <td>
-              <a ng-if="protein.target_urs_taxid" href="/rna/{{ protein.target_urs_taxid }}">{{ protein.target_urs_taxid }}</a>
+              <a ng-if="target.target_urs_taxid" href="/rna/{{ target.target_urs_taxid }}">{{ target.target_urs_taxid }}</a>
             </td>
             <td class="col-lg-6">
-              {{ protein.description.split(" [")[0] }}
+              {{ target.description.split(" [")[0] }}
             </td>
             <td class="col-lg-2">
-              <span ng-repeat="method in protein.methods">{{ method }}<span ng-show="!$last">, </span></span>
+              <span ng-repeat="method in target.methods">{{ method }}<span ng-show="!$last">, </span></span>
             </td>
           </tr>
         </tbody>
@@ -77,5 +77,5 @@
     </div>
   </div>
 
-  <p ng-if="$ctrl.total == 0">No protein targets are known for this sequence. <a ng-href="{{ $ctrl.help }}">Learn more &rarr;</a></p>
+  <p ng-if="$ctrl.total == 0">No lncRNA targets found for this sequence. <a ng-href="{{ $ctrl.help }}">Learn more &rarr;</a></p>
 </div>

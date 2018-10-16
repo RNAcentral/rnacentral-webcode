@@ -21,7 +21,7 @@ var lncrnaTargets = {
             ctrl.pages = _.range(1, Math.ceil(ctrl.total / ctrl.pageSize) + 1);
 
             if (ctrl.paginateOn === 'client') {
-                ctrl.displayedProteins = ctrl.proteins.slice((ctrl.page - 1) * ctrl.pageSize, ctrl.page * ctrl.pageSize);
+                ctrl.displayedTargets = ctrl.targets.slice((ctrl.page - 1) * ctrl.pageSize, ctrl.page * ctrl.pageSize);
             }
             else if (ctrl.paginateOn === 'server') {
                 ctrl.getPageFromServerSide();
@@ -31,7 +31,7 @@ var lncrnaTargets = {
         ctrl.onPageChanged = function(page) {
             ctrl.page = page;
             if (ctrl.paginateOn === 'client') {
-                ctrl.displayedProteins = ctrl.proteins.slice((ctrl.page - 1) * ctrl.pageSize, ctrl.page * ctrl.pageSize);
+                ctrl.displayedTargets = ctrl.targets.slice((ctrl.page - 1) * ctrl.pageSize, ctrl.page * ctrl.pageSize);
             }
             else if (ctrl.paginateOn === 'server') {
                 ctrl.getPageFromServerSide();
@@ -43,7 +43,7 @@ var lncrnaTargets = {
             $http.get(routes.apiLncrnaTargetsView({ upi: ctrl.upi, taxid: ctrl.taxid }), {params: { page: ctrl.page, page_size: ctrl.pageSize }}).then(
                 function(response) {
                     ctrl.status = 'success';
-                    ctrl.displayedProteins = response.data.results;
+                    ctrl.displayedTargets = response.data.results;
                     ctrl.total = response.data.count;
                     ctrl.pages = _.range(1, Math.ceil(ctrl.total / ctrl.pageSize) + 1);
                 },
@@ -64,8 +64,8 @@ var lncrnaTargets = {
             $http.get(routes.apiLncrnaTargetsView({ upi: ctrl.upi, taxid: ctrl.taxid }), { timeout: ctrl.timeout, params: { page: 1, page_size: 1000000000000 } }).then(
                 function(response) {
                     ctrl.status = 'success';
-                    ctrl.proteins = response.data.results;
-                    ctrl.displayedProteins = ctrl.proteins.slice(0, ctrl.pageSize);
+                    ctrl.targets = response.data.results;
+                    ctrl.displayedTargets = ctrl.targets.slice(0, ctrl.pageSize);
                     ctrl.total = response.data.count;
                     ctrl.pages = _.range(1, Math.ceil(ctrl.total / ctrl.pageSize) + 1);
                 },
@@ -83,17 +83,17 @@ var lncrnaTargets = {
             )
         };
 
-        ctrl.ensemblUrl = function(protein) {
-            var accession = protein.target_accession.split(":")[1];
+        ctrl.ensemblUrl = function(target) {
+            var accession = target.target_accession.split(":")[1];
             var species = ctrl.genomes.find(function(genome) { return genome.taxid.toString() == ctrl.taxid; }).ensembl_url;
             return $interpolate("https://www.ensembl.org/{{ species }}/Gene/Summary?g={{ accession }};")({ species: species, accession: accession });
         };
 
-        ctrl.lncbaseUrl = function(protein) {
-            var tarbaseId = protein.source_accession.split(":")[1];
-            var ensemblId = protein.target_accession.split(":")[1];
-            var template = "http://carolina.imis.athena-innovation.gr/diana_tools/web/index.php?r=lncbasev2%2Findex-experimental&miRNAs%5B%5D={{ tarbaseId }}&lncRNAs%5B%5D={{ ensemblId }}&filters=0"
-            return $interpolate(template)({ tarbaseId: tarbaseId, ensemblId: ensemblId });
+        ctrl.lncbaseUrl = function(target) {
+            var expertDatabaseId = target.source_accession.split(":")[1];
+            var ensemblId = target.target_accession.split(":")[1];
+            var template = "http://carolina.imis.athena-innovation.gr/diana_tools/web/index.php?r=lncbasev2%2Findex-experimental&miRNAs%5B%5D={{ expertDatabaseId }}&lncRNAs%5B%5D={{ ensemblId }}&filters=0"
+            return $interpolate(template)({ expertDatabaseId: expertDatabaseId, ensemblId: ensemblId });
         }
     }],
     templateUrl: '/static/js/components/sequence/lncrna-targets/lncrna-targets.html'
