@@ -12,6 +12,7 @@ angular.module("routes", []).service('routes', ['$interpolate', function($interp
         apiGenomeMappingsView: '/api/v1/rna/{{ upi }}/genome-mappings/{{ taxid }}',
         apiRfamHitsView: '/api/v1/rna/{{ upi }}/rfam-hits/{{ taxid }}',
         apiProteinTargetsView: '/api/v1/rna/{{ upi }}/protein-targets/{{ taxid }}',
+        apiLncrnaTargetsView: '/api/v1/rna/{{ upi }}/lncrna-targets/{{ taxid }}',
         apiSequenceFeaturesView: '/api/v1/rna/{{ upi }}/sequence-features/{{ taxid }}',
         lineageView: '/rna/{{ upi }}/lineage',
         expertDbsApi: '/api/v1/expert-dbs/{{ expertDbName }}',
