@@ -48,6 +48,7 @@ urlpatterns = [
     url(r'^help/gene-ontology-annotations/?$', views.StaticView.as_view(), {'page': 'help/gene-ontology-annotations'}, name='help-gene-ontology-annotations'),
     url(r'^help/genomic-mapping/?$', views.StaticView.as_view(), {'page': 'help/genomic-mapping', 'assemblies': EnsemblAssembly.objects.all()}, name='help-genomic-mapping'),
     url(r'^help/link-to-rnacentral/?$', views.StaticView.as_view(), {'page': 'help/link-to-rnacentral'}, name='linking-to-rnacentral'),
+    url(r'^help/conserved-motifs/?$', views.StaticView.as_view(), {'page': 'help/conserved-motifs'}, name='help-conserved-motifs'),
     # training
     url(r'^training/?$', views.StaticView.as_view(), {'page': 'training'}, name='training'),
     # about us
