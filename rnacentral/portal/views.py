@@ -133,6 +133,7 @@ def rna_view(request, upi, taxid=None):
         'xrefs_count': rna.count_xrefs(taxid) if taxid_filtering else rna.count_xrefs(),
         'precomputed': RnaPrecomputed.objects.filter(upi=upi, taxid=taxid).first(),
         'rfam_status': rna.get_rfam_status(taxid=taxid),
+        'mirna_regulators': rna.get_mirna_regulators(taxid=taxid),
     }
 
     return render(request, 'portal/sequence.html', {'rna': rna, 'context': context})
