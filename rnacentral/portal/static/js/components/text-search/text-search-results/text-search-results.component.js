@@ -17,8 +17,11 @@ var textSearchResults = {
             ctrl.routes = routes;
             ctrl.normalizeExpertDbName = normalizeExpertDbName;
 
-            // rfam help url
-            ctrl.rfamHelp = "https://rnacentral.org/help/rfam-annotations";
+            // help urls
+            ctrl.rfamHelp = "/help/rfam-annotations";
+            ctrl.crsHelp = "/help/conserved-motifs";
+            ctrl.goHelp = "/help/gene-ontology-annotations";
+            ctrl.genomeMappingHelp = "/help/genomic-mapping";
 
             // slider that allows users to set range of sequence lengths
             ctrl.setLengthSlider(); // initial value

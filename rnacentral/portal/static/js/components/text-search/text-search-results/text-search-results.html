@@ -158,7 +158,10 @@
         <li class="facet" ng-repeat="facet in $ctrl.search.result.facets">
           <h3>
             {{ facet.label }}
-            <small><a ng-if="facet.label === 'QC warning found'" ng-href="{{ $ctrl.rfamHelp }}" uib-tooltip="Learn more about Rfam annotations in RNAcentral &rarr;" style="color:inherit;"><i class="fa fa-question-circle" aria-hidden="true"></i></a></small>
+            <small><a ng-if="facet.id === 'qc_warning_found'" ng-href="{{ $ctrl.rfamHelp }}" uib-tooltip="Learn more about Rfam annotations in RNAcentral &rarr;" style="color:inherit;"><i class="fa fa-question-circle" aria-hidden="true"></i></a></small>
+            <small><a ng-if="facet.id === 'has_conserved_structure'" ng-href="{{ $ctrl.crsHelp }}" uib-tooltip="Learn more about conserved motifs &rarr;" style="color:inherit;"><i class="fa fa-question-circle" aria-hidden="true"></i></a></small>
+            <small><a ng-if="facet.id === 'has_go_annotations'" ng-href="{{ $ctrl.goHelp }}" uib-tooltip="Learn more about Gene Ontology annotations &rarr;" style="color:inherit;"><i class="fa fa-question-circle" aria-hidden="true"></i></a></small>
+            <small><a ng-if="facet.id === 'has_genomic_coordinates'" ng-href="{{ $ctrl.genomeMappingHelp }}" uib-tooltip="Learn more about genome mapping &rarr;" style="color:inherit;"><i class="fa fa-question-circle" aria-hidden="true"></i></a></small>
           </h3>
           <ul class="list-unstyled text-search-facet-values text-search-facet-overflow force-scrollbars" style="overflow-x: hidden;">
             <li ng-repeat="facetValue in facet.facetValues" ng-if="facet.id == 'expert_db'">
