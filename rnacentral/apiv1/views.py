@@ -885,7 +885,7 @@ class LncrnaTargetsView(generics.ListAPIView):
                 {related_sequence}.source_urs_taxid,
                 {related_sequence}.methods,
                 {related_sequence}.target_urs_taxid,
-                {rna_precomputed}.description as target_rna_description,
+                {rna_precomputed}.short_description as target_rna_description,
                 {related_sequence}.target_accession,
                 {protein_info}.protein_accession,
                 {protein_info}.description as target_ensembl_description,
@@ -906,6 +906,5 @@ class LncrnaTargetsView(generics.ListAPIView):
             pk=pk,
             taxid=taxid
         )
-
         queryset = PaginatedRawQuerySet(protein_info_query, model=ProteinInfo)
         return queryset

@@ -19,6 +19,7 @@ from collections import Counter, defaultdict
 from caching.base import CachingMixin, CachingManager
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.db import connection
 from django.db import models
 from django.db.models import Prefetch, Min, Max, Q
 from django.utils.functional import cached_property
@@ -27,6 +28,7 @@ from .database import Database
 from .genomic_coordinates import GenomicCoordinates
 from .modification import Modification
 from .rna_precomputed import RnaPrecomputed
+from .related_sequences import RelatedSequence
 from .reference import Reference
 from .xref import Xref
 from .rfam import RfamHit, RfamAnalyzedSequences
@@ -35,6 +37,15 @@ from .formatters import Gff3Formatter, GffFormatter, _xref_to_bed_format
 from portal.utils import descriptions as desc
 from portal.rfam_matches import check_issues
 from portal.config.expert_databases import expert_dbs
+
+
+def dictfetchall(cursor):
+    "Return all rows from a cursor as a dict"
+    columns = [col[0] for col in cursor.description]
+    return [
+        dict(zip(columns, row))
+        for row in cursor.fetchall()
+    ]
 
 
 class Rna(CachingMixin, models.Model):
@@ -567,3 +578,22 @@ class Rna(CachingMixin, models.Model):
 
         name = max(common_name or species_name, key=len)
         return (name, bool(common_name))
+
+    def get_mirna_regulators(self, taxid=None):
+        if not taxid:
+            return []
+        query = '''
+        SELECT DISTINCT t2.id AS urs_taxid, short_description
+        FROM {related_sequence} t1, rnc_rna_precomputed t2
+        WHERE target_urs_taxid = '{urs}_{taxid}'
+        AND relationship_type = 'target_rna'
+        AND t1.source_urs_taxid = t2.id
+        '''.format(urs=self.upi,
+                   taxid=taxid,
+                   rna_precomputed=RnaPrecomputed._meta.db_table,
+                   related_sequence=RelatedSequence._meta.db_table
+        )
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            data = dictfetchall(cursor)
+        return data
