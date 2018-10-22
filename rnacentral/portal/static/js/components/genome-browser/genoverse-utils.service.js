@@ -163,7 +163,13 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
 
         this.RNAcentralPopulateMenu = _.bind(function(feature) {
             var chrStartEnd = feature.seq_region_name + ':' + feature.start + '-' + feature.end; // string e.g. 'X:1-100000'
-            var location = '<a href="http://' + this.$scope.browserLocation.domain + '/' + this.$scope.browserLocation.genome + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
+
+            var location;
+            if (feature.taxid == 6239) {
+                location = '<a href="https://www.wormbase.org/tools/genome/jbrowse-simple/?data=data%2Fc_elegans_PRJNA13758&loc=' + feature.seq_region_name + ':' + feature.start + '..' + feature.end + '&tracks=Classical_alleles%2CPolymorphisms%2CCurated_Genes&highlight=">' + chrStartEnd + '</a>';
+            } else {
+                location = '<a href="http://' + this.$scope.browserLocation.domain + '/' + this.$scope.browserLocation.genome + '/Location/View?r=' + chrStartEnd + '" id="ensembl-link" target="_blank">' + chrStartEnd + '</a>';
+            }
 
             var strand;
             if (feature.strand == 1) {
