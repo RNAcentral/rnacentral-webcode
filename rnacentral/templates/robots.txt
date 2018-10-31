@@ -3,4 +3,7 @@ Disallow: /sequence-search/job-status
 Disallow: /sequence-search/cancel-job
 Disallow: /sequence-search/submit-query
 
+User-agent: AhrefsBot
+Disallow: /
+
 Sitemap: https://rnacentral.org/sitemap.xml
