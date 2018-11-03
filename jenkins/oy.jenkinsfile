@@ -2,16 +2,16 @@ pipeline {
     agent any
     parameters {
         choice(
-            choices: ['PRO', 'DEV', 'TEST', 'FB', 'HH'],
-            description: 'Which database instance to use?',
             defaultValue: 'PRO',
-            name: 'DATABASE'
+            name: 'DATABASE',
+            choices: ['PRO', 'DEV', 'TEST', 'FB', 'HH'],
+            description: 'Which database instance to use?'
         )
         choice(
-            choices: ['PRO', 'DEV'],
-            description: 'Which ebi search index to use?',
             defaultValue: 'PRO',
-            name: 'EBI_SEARCH_ENDPOINT'
+            name: 'EBI_SEARCH_ENDPOINT',
+            choices: ['PRO', 'DEV'],
+            description: 'Which ebi search index to use?'
         )
     }
     stages {
