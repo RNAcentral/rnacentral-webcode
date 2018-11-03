@@ -12,11 +12,60 @@ pipeline {
     agent any
     stages {
         stage("Build for testing") {
+            parameters {
+                choice(
+                    choices: ['PRO', 'DEV', 'TEST', 'FB', 'HH'],
+                    description: 'Which database instance to use?',
+                    defaultValue: 'TEST',
+                    name: 'DATABASE'
+                )
+                choice(
+                    choices: ['PRO', 'DEV'],
+                    description: 'Which ebi search index to use?',
+                    defaultValue: 'DEV',
+                    name: 'EBI_SEARCH_ENDPOINT'
+                )
+            }
             environment {
+                PRO = credentials('pro.py')
+                DEV = credentials('dev.py')
+                TEST = credentials('test.py')
+                FB = credentials('fb.py')
+                HH = credentials('hh.py')
+
+                EBI_SEARCH_ENDPOINT_PRO = credentials('ebi_search_endpoint_pro.py')
+                EBI_SEARCH_ENDPOINT_DEV = credentials('ebi_search_endpoint_dev.py')
+
                 LOCAL_SETTINGS = credentials('local_settings_testing')
                 ENV_SH = credentials('env_sh')
             }
             steps {
+                script {
+                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+
+                    if (${params.DATABASE} == 'PRO') {
+                        sh 'cat ${PRO} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                    } else if (${params.DATABASE} == 'DEV') {
+                        sh 'cat ${DEV} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                    } else if (${params.DATABASE} == 'TEST') {
+                        sh 'cat ${TEST} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                    } else if (${params.DATABASE} == 'FB') {
+                        sh 'cat ${FB} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                    } else if (${params.DATABASE} == 'HH') {
+                        sh 'cat ${HH} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                    }
+                }
+
+                script {
+                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoint.py'
+
+                    if (${params.EBI_SEARCH_ENDPOINT} == 'PRO') {
+                        sh 'cat ${EBI_SEARCH_ENDPOINT_PRO} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoint.py'
+                    } else if (${params.EBI_SEARCH_ENDPOINT} == 'DEV') {
+                        sh 'cat ${EBI_SEARCH_ENDPOINT_DEV} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoint.py'
+                    }
+                }
+
                 sh 'cat $LOCAL_SETTINGS > rnacentral/rnacentral/local_settings.py'
                 sh 'cat $ENV_SH > rnacentral/scripts/env.sh'
                 sh '''
