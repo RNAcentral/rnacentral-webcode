@@ -14,14 +14,14 @@ pipeline {
         choice(
             choices: ['PRO', 'DEV', 'TEST', 'FB', 'HH'],
             description: 'Which database instance to use?',
-            defaultValue: 'TEST',
-            name: 'DATABASE'
+            name: 'DATABASE',
+            defaultValue: 'TEST'
         )
         choice(
             choices: ['PRO', 'DEV'],
             description: 'Which ebi search index to use?',
-            defaultValue: 'DEV',
-            name: 'EBI_SEARCH_ENDPOINT'
+            name: 'EBI_SEARCH_ENDPOINT',
+            defaultValue: 'DEV'
         )
     }
     stages {
