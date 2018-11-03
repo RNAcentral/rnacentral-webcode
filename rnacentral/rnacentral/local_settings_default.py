@@ -13,6 +13,7 @@ limitations under the License.
 
 from utils import get_environment
 
+
 DEBUG = True
 COMPRESS_ENABLED = False
 
