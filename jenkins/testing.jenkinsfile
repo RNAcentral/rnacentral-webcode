@@ -10,22 +10,22 @@
 
 pipeline {
     agent any
+    parameters {
+        choice(
+            choices: ['PRO', 'DEV', 'TEST', 'FB', 'HH'],
+            description: 'Which database instance to use?',
+            defaultValue: 'TEST',
+            name: 'DATABASE'
+        )
+        choice(
+            choices: ['PRO', 'DEV'],
+            description: 'Which ebi search index to use?',
+            defaultValue: 'DEV',
+            name: 'EBI_SEARCH_ENDPOINT'
+        )
+    }
     stages {
         stage("Build for testing") {
-            parameters {
-                choice(
-                    choices: ['PRO', 'DEV', 'TEST', 'FB', 'HH'],
-                    description: 'Which database instance to use?',
-                    defaultValue: 'TEST',
-                    name: 'DATABASE'
-                )
-                choice(
-                    choices: ['PRO', 'DEV'],
-                    description: 'Which ebi search index to use?',
-                    defaultValue: 'DEV',
-                    name: 'EBI_SEARCH_ENDPOINT'
-                )
-            }
             environment {
                 PRO = credentials('pro.py')
                 DEV = credentials('dev.py')
