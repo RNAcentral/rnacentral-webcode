@@ -28,7 +28,7 @@ pipeline {
         )
         choice(
             name: 'COMPRESSOR',
-            choices: ['DEV', 'PRO'],
+            choices: ['PRO', 'DEV'],
             description: 'Shall we use django-compressor, PRO - yes, DEV - no?'
         )
     }
