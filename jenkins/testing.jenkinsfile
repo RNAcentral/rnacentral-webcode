@@ -71,6 +71,12 @@ pipeline {
                     }
                 }
 
+                sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/local_settings.py'
+                sh 'cat $LOCAL_SETTINGS > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/local_settings.py'
+
+                sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/env.sh'
+                sh 'cat $ENV_SH > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/env.sh'
+
                 sh 'cat $LOCAL_SETTINGS > rnacentral/rnacentral/local_settings.py'
                 sh 'cat $ENV_SH > rnacentral/scripts/env.sh'
                 sh '''
