@@ -20,19 +20,36 @@ pipeline {
             name: 'EBI_SEARCH_ENDPOINT',
             choices: ['DEV', 'PRO'],
             description: 'Which ebi search index to use?'
+        ),
+        choice(
+            name: 'RQ_QUEUE',
+            choices: ['LOCAL', 'OY', 'PG'],
+            description: 'Which redis queues settings to use?'
+        ),
+        choice(
+            name: 'COMPRESSOR',
+            choices: ['DEV', 'PRO'],
+            description: 'Shall we use django-compressor, DEV - yes, PRO - no?'
         )
     }
     stages {
         stage("Build for testing") {
             environment {
-                PRO = credentials('pro.py')
-                DEV = credentials('dev.py')
-                TEST = credentials('test.py')
-                FB = credentials('fb.py')
-                HH = credentials('hh.py')
+                DATABASE_PRO = credentials('pro.py')
+                DATABASE_DEV = credentials('dev.py')
+                DATABASE_TEST = credentials('test.py')
+                DATABASE_FB = credentials('fb.py')
+                DATABASE_HH = credentials('hh.py')
 
                 EBI_SEARCH_ENDPOINT_PRO = credentials('ebi_search_endpoint_pro.py')
                 EBI_SEARCH_ENDPOINT_DEV = credentials('ebi_search_endpoint_dev.py')
+
+                RQ_QUEUE_LOCAL = credentials('rq_queue_local.py')
+                RQ_QUEUE_OY = credentials('rq_queue_oy.py')
+                RQ_QUEUE_PG = credentials('rq_queue_pg.py')
+
+                COMPRESSOR_DEV = credentials('compressor_dev.py')
+                COMPRESSOR_PRO = credentials('compressor_pro.py')
 
                 LOCAL_SETTINGS = credentials('local_settings.py')
                 ENV_SH = credentials('env_sh')
@@ -68,6 +85,33 @@ pipeline {
                     } else if (params.EBI_SEARCH_ENDPOINT == 'DEV') {
                         sh 'cat ${EBI_SEARCH_ENDPOINT_DEV} > rnacentral/rnacentral/ebi_search_endpoints.py'
                         sh 'cat ${EBI_SEARCH_ENDPOINT_DEV} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoints.py'
+                    }
+                }
+
+                script {
+                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/rq_queues.py'
+
+                    if (params.RQ_QUEUE == 'LOCAL') {
+                        sh 'cat ${RQ_QUEUE_LOCAL} > rnacentral/rnacentral/rq_queues.py'
+                        sh 'cat ${RQ_QUEUE_LOCAL} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/rq_queues.py'
+                    } else if (params.RQ_QUEUE == 'OY') {
+                        sh 'cat ${RQ_QUEUE_OY} > rnacentral/rnacentral/rq_queues.py'
+                        sh 'cat ${RQ_QUEUE_OY} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/rq_queues.py'
+                    } else if (params.RQ_QUEUE == 'PG') {
+                        sh 'cat ${RQ_QUEUE_PG} > rnacentral/rnacentral/rq_queues.py'
+                        sh 'cat ${RQ_QUEUE_PG} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/rq_queues.py'
+                    }
+                }
+
+                script {
+                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
+
+                    if (params.COMPRESSOR == 'PRO') {
+                        sh 'cat ${COMPRESSOR_PRO} > rnacentral/rnacentral/compressor.py'
+                        sh 'cat ${COMPRESSOR_PRO} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
+                    } else if (params.COMPRESSOR == 'DEV') {
+                        sh 'cat ${COMPRESSOR_DEV} > rnacentral/rnacentral/compressor.py'
+                        sh 'cat ${COMPRESSOR_DEV} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
                     }
                 }
 

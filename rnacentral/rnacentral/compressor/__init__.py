@@ -1,1 +1,1 @@
-COMPRESS_ENABLED = False
+from .dev import *
