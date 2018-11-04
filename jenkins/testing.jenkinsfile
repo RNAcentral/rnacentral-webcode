@@ -20,26 +20,26 @@ pipeline {
             name: 'EBI_SEARCH_ENDPOINT',
             choices: ['DEV', 'PRO'],
             description: 'Which ebi search index to use?'
-        ),
+        )
         choice(
             name: 'RQ_QUEUE',
             choices: ['LOCAL', 'OY', 'PG'],
             description: 'Which redis queues settings to use?'
-        ),
+        )
         choice(
             name: 'COMPRESSOR',
             choices: ['DEV', 'PRO'],
-            description: 'Shall we use django-compressor, DEV - yes, PRO - no?'
+            description: 'Shall we use django-compressor, PRO - yes, DEV - no?'
         )
     }
     stages {
         stage("Build for testing") {
             environment {
-                DATABASE_PRO = credentials('pro.py')
-                DATABASE_DEV = credentials('dev.py')
-                DATABASE_TEST = credentials('test.py')
-                DATABASE_FB = credentials('fb.py')
-                DATABASE_HH = credentials('hh.py')
+                DATABASE_PRO = credentials('database_pro.py')
+                DATABASE_DEV = credentials('database_dev.py')
+                DATABASE_TEST = credentials('database_test.py')
+                DATABASE_FB = credentials('database_fb.py')
+                DATABASE_HH = credentials('database_hh.py')
 
                 EBI_SEARCH_ENDPOINT_PRO = credentials('ebi_search_endpoint_pro.py')
                 EBI_SEARCH_ENDPOINT_DEV = credentials('ebi_search_endpoint_dev.py')
