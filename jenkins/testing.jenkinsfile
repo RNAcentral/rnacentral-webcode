@@ -59,20 +59,20 @@ pipeline {
                     sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
 
                     if (params.DATABASE == 'PRO') {
-                        sh 'cat ${PRO} > rnacentral/rnacentral/databases.py'
-                        sh 'cat ${PRO} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_PRO} > rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_PRO} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
                     } else if (params.DATABASE == 'DEV') {
-                        sh 'cat ${DEV} > rnacentral/rnacentral/databases.py'
-                        sh 'cat ${DEV} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_DEV} > rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_DEV} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
                     } else if (params.DATABASE == 'TEST') {
-                        sh 'cat ${TEST} > rnacentral/rnacentral/databases.py'
-                        sh 'cat ${TEST} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_TEST} > rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_TEST} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
                     } else if (params.DATABASE == 'FB') {
-                        sh 'cat ${FB} > rnacentral/rnacentral/databases.py'
-                        sh 'cat ${FB} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_FB} > rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_FB} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
                     } else if (params.DATABASE == 'HH') {
-                        sh 'cat ${HH} > rnacentral/rnacentral/databases.py'
-                        sh 'cat ${HH} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_HH} > rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_HH} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
                     }
                 }
 
