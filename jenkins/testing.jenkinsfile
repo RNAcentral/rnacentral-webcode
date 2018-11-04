@@ -60,14 +60,14 @@ pipeline {
                 }
 
                 script {
-                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoint.py'
+                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoints.py'
 
                     if (params.EBI_SEARCH_ENDPOINT == 'PRO') {
-                        sh 'cat ${EBI_SEARCH_ENDPOINT_PRO} > rnacentral/rnacentral/ebi_search_endpoint.py'
-                        sh 'cat ${EBI_SEARCH_ENDPOINT_PRO} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoint.py'
+                        sh 'cat ${EBI_SEARCH_ENDPOINT_PRO} > rnacentral/rnacentral/ebi_search_endpoints.py'
+                        sh 'cat ${EBI_SEARCH_ENDPOINT_PRO} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoints.py'
                     } else if (params.EBI_SEARCH_ENDPOINT == 'DEV') {
-                        sh 'cat ${EBI_SEARCH_ENDPOINT_DEV} > rnacentral/rnacentral/ebi_search_endpoint.py'
-                        sh 'cat ${EBI_SEARCH_ENDPOINT_DEV} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoint.py'
+                        sh 'cat ${EBI_SEARCH_ENDPOINT_DEV} > rnacentral/rnacentral/ebi_search_endpoints.py'
+                        sh 'cat ${EBI_SEARCH_ENDPOINT_DEV} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoints.py'
                     }
                 }
 
