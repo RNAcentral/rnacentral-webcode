@@ -41,15 +41,15 @@ pipeline {
                 script {
                     sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
 
-                    if (${params.DATABASE} == 'PRO') {
+                    if (params.DATABASE == 'PRO') {
                         sh 'cat ${PRO} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
-                    } else if (${params.DATABASE} == 'DEV') {
+                    } else if (params.DATABASE == 'DEV') {
                         sh 'cat ${DEV} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
-                    } else if (${params.DATABASE} == 'TEST') {
+                    } else if (params.DATABASE == 'TEST') {
                         sh 'cat ${TEST} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
-                    } else if (${params.DATABASE} == 'FB') {
+                    } else if (params.DATABASE == 'FB') {
                         sh 'cat ${FB} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
-                    } else if (${params.DATABASE} == 'HH') {
+                    } else if (params.DATABASE == 'HH') {
                         sh 'cat ${HH} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
                     }
                 }
@@ -57,9 +57,9 @@ pipeline {
                 script {
                     sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoint.py'
 
-                    if (${params.EBI_SEARCH_ENDPOINT} == 'PRO') {
+                    if (params.EBI_SEARCH_ENDPOINT == 'PRO') {
                         sh 'cat ${EBI_SEARCH_ENDPOINT_PRO} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoint.py'
-                    } else if (${params.EBI_SEARCH_ENDPOINT} == 'DEV') {
+                    } else if (params.EBI_SEARCH_ENDPOINT == 'DEV') {
                         sh 'cat ${EBI_SEARCH_ENDPOINT_DEV} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoint.py'
                     }
                 }
