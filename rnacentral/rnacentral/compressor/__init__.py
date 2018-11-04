@@ -1,0 +1,1 @@
+COMPRESS_ENABLED = False

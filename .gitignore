@@ -93,6 +93,8 @@ nosetests.xml
 *.pyc
 rnacentral/databases/
 rnacentral/ebi_search_endpoints/
+rnacentral/rq_queues/
+rnacentral/compressor/
 local_settings.py
 fab.cfg
 
