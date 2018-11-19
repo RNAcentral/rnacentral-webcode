@@ -399,7 +399,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '65',
+        'version': '91',  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
     },
     {
         'name': 'RDP',
