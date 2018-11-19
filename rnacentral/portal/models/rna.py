@@ -195,13 +195,7 @@ class Rna(CachingMixin, models.Model):
 
     def get_xrefs(self, taxid=None):
         """Get all xrefs, show non-ENA annotations first."""
-        # Exclude source ENA entries that are associated with other expert db entries.
-        # For example, only fetch Vega xrefs and don't retrieve the ENA entries they are based on.
-        expert_db_projects = Database.objects.exclude(project_id__isnull=True)\
-                                             .values_list('project_id', flat=True)
-
         xrefs = self.xrefs.filter(deleted='N', upi=self.upi)\
-                          .filter(~Q(accession__project__in=expert_db_projects, db__id=1) | Q(accession__project__isnull=True))\
                           .order_by('-db__id')\
                           .select_related()\
                           .prefetch_related(
@@ -226,7 +220,6 @@ class Rna(CachingMixin, models.Model):
         # wrong annotations to hard-links to deleted sequences accessible from web.
         if not xrefs.exists():
             xrefs = self.xrefs.filter(deleted='Y')\
-                              .filter(~Q(accession__project__in=expert_db_projects, db__id=1) | Q(accession__project__isnull=True))\
                               .order_by('-db__id')\
                               .select_related()\
                               .prefetch_related(
@@ -248,7 +241,7 @@ class Rna(CachingMixin, models.Model):
 
     def count_xrefs(self, taxid=None):
         """Count the number of cross-references associated with the sequence."""
-        xrefs = self.xrefs.filter(db__project_id__isnull=True, deleted='N')
+        xrefs = self.xrefs.filter(deleted='N')
         if taxid:
             xrefs = xrefs.filter(taxid=taxid)
         return xrefs.count()
@@ -302,7 +295,7 @@ class Rna(CachingMixin, models.Model):
         To reduce redundancy, keep only xrefs from the source entries,
         not the entries added from the DR lines.
         """
-        xrefs = self.xrefs.filter(db__project_id__isnull=True).all()
+        xrefs = self.xrefs.all()
         gff = ''
         for xref in xrefs:
             gff += GffFormatter(xref)()
@@ -322,7 +315,7 @@ class Rna(CachingMixin, models.Model):
         Example:
         chr1    29554    31097    RNA000063C361    0    +   29554    31097    255,0,0    3    486,104,122    0,1009,1421
         """
-        xrefs = self.xrefs.filter(db__project_id__isnull=True).all()
+        xrefs = self.xrefs.all()
         bed = ''
         for xref in xrefs:
             bed += _xref_to_bed_format(xref)
