@@ -177,7 +177,7 @@ class Accession(models.Model):
             'HGNC': 'http://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id={id}',
             'ENSEMBL': 'http://www.ensembl.org/{species}/Transcript/Summary?t={id}',
             'GENCODE': 'http://www.ensembl.org/{species}/Transcript/Summary?t={id}',
-            'E_PLANTS': 'http://plants.ensembl.org/{species}/Gene/Summary?db=core;g=AT5G45472',
+            'E_PLANTS': 'http://plants.ensembl.org/{species}/Gene/Summary?db=core;g={id}',
             'FLYBASE': 'http://flybase.org/reports/{id}',
             'MGI': 'http://www.informatics.jax.org/marker/{id}',
             'GTRNADB': '',
