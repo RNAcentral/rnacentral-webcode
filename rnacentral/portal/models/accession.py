@@ -16,6 +16,8 @@ import re
 
 from django.db import models
 
+import portal.models
+
 
 class Accession(models.Model):
     accession = models.CharField(max_length=100, primary_key=True)
@@ -140,6 +142,10 @@ class Accession(models.Model):
         """Get species name in a format that can be used in Ensembl urls."""
         if self.species == 'Dictyostelium discoideum':
             species = 'Dictyostelium discoideum AX4'
+        elif self.species.count(' ') > 1:
+            reference = portal.models.EnsemblAssembly.filter(taxid=self.taxid).first()
+            if reference:
+                return reference.ensembl_url
         elif self.species.startswith('Mus musculus') and self.accession.startswith('MGP'):  # Ensembl mouse strain
             parts = self.accession.split('_')
             if len(parts) == 3:
