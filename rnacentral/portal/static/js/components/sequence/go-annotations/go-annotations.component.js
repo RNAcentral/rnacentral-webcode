@@ -17,12 +17,13 @@ var goAnnotations = {
             "goc": "http://geneontology.org",
             "aruk-ucl": "http://www.ucl.ac.uk/functional-gene-annotation/neurological",
             "parkinsonsuk-ucl": "http://www.ucl.ac.uk/functional-gene-annotation/neurological",
+            "dictybase": "http://dictybase.org/",
         };
 
         var annotationOrdering = function(annotation) {
             var qualifier = {
                 "involved_in": 10,
-                "enables": 20, 
+                "enables": 20,
                 "contributes_to": 30,
                 "colocalizes_with": 40,
                 "part_of": 50,
