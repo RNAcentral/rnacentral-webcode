@@ -235,6 +235,10 @@
             <!-- TAIR -->
             <span ng-switch-when="TAIR">
               {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> (locus {{ xref.accession.locus_tag }})
+
+            <!-- FOLD_ATLAS -->
+            <span ng-switch-when="FoldAtlas">
+              <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
             </span>
 
             <!-- WormBase -->
