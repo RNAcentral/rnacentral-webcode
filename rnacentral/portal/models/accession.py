@@ -143,9 +143,10 @@ class Accession(models.Model):
         if self.species == 'Dictyostelium discoideum':
             species = 'Dictyostelium discoideum AX4'
         elif self.species.count(' ') > 1:
-            reference = portal.models.EnsemblAssembly.filter(taxid=self.taxid).first()
-            if reference:
-                return reference.ensembl_url
+            xref = portal.models.Xref.objects.filter(accession__accession=self.accession).get()
+            ensembl_genome = portal.models.EnsemblAssembly.objects.filter(taxid=xref.taxid).first()
+            if ensembl_genome:
+                return ensembl_genome.ensembl_url
         elif self.species.startswith('Mus musculus') and self.accession.startswith('MGP'):  # Ensembl mouse strain
             parts = self.accession.split('_')
             if len(parts) == 3:
