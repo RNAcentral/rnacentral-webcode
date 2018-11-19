@@ -572,6 +572,8 @@ class RnaGenomeLocations(generics.ListAPIView):
             if xref.accession.coordinates.exists():
                 chromosomes = []
                 for entry in xref.accession.coordinates.all():
+                    if not entry.primary_start or not entry.primary_end:
+                        continue
                     if entry.chromosome not in chromosomes:
                         chromosomes.append(entry.chromosome)
                 for chromosome in chromosomes:
