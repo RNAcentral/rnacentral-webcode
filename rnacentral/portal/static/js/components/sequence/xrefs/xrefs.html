@@ -388,6 +388,10 @@
                   <span ng-if="xref.ucsc_db_id" class="margin-right-5px ucsc-link">
                     <a ng-href="{{ 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + xref.ucsc_db_id + '&position=' + xref.genomic_coordinates.ucsc_chromosome + ':' + xref.genomic_coordinates.start + '-' + xref.genomic_coordinates.end }}" target="_blank">UCSC</a>
                   </span>
+                  <!-- WormBase url for Caenorhabditis elegans -->
+                  <span ng-if="xref.accession.species === 'Caenorhabditis elegans'">
+                    <a href="{{ 'https://wormbase.org/tools/genome/jbrowse-simple/?tracks=Curated_Genes%2CClassical_alleles%2CYACs_Fosmids_Cosmids&loc=' + xref.genomic_coordinates.chromosome + '%3A' + xref.genomic_coordinates.start + '..' + xref.genomic_coordinates.end + '&data=data%2Fc_elegans_PRJNA13758' }}">WormBase genome browser</a>
+                  </span>
                 </small>
             </span>
 
