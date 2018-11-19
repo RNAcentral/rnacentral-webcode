@@ -171,7 +171,7 @@ class Accession(models.Model):
             'SNOPY': 'http://snoopy.med.miyazaki-u.ac.jp/snorna_db.cgi?mode=sno_info&id={id}',
             'PDBE': 'http://www.ebi.ac.uk/pdbe-srv/view/entry/{id}',
             'SGD': 'http://www.yeastgenome.org/locus/{id}/overview',
-            'TAIR': 'http://www.arabidopsis.org/servlets/TairObject?id={id}&type=locus',
+            'TAIR': 'http://www.arabidopsis.org/servlets/TairObject?name={id}&type=locus',
             'WORMBASE': 'http://www.wormbase.org/species/c_elegans/gene/{id}',
             'PLNCDB': 'http://chualab.rockefeller.edu/cgi-bin/gb2/gbrowse_details/arabidopsis?name={id}',
             'DICTYBASE': 'http://dictybase.org/gene/{id}',
@@ -219,6 +219,8 @@ class Accession(models.Model):
                 return urls[self.database].format(id=self.external_id, species=self.get_ensembl_species_url())
             elif self.database == 'E_PLANTS':
                 return urls[self.database].format(id=self.external_id, species=self.get_ensembl_species_url())
+            elif self.database == 'TAIR':
+                return urls[self.database].format(id=self.gene)
             return urls[self.database].format(id=self.external_id)
         else:
             return ''

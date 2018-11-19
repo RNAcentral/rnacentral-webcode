@@ -234,8 +234,6 @@
 
             <!-- TAIR -->
             <span ng-switch-when="TAIR">
-              {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> (locus {{ xref.accession.locus_tag }})
-
               {{ xref.database }}: locus <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
               <br>
               <i class="fa fa-angle-right"></i> View structure probing data in <a href="http://www.foldatlas.com/transcript/{{xref.accession.external_id}}">FoldAtlas</a>
