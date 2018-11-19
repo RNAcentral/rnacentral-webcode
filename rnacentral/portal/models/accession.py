@@ -182,7 +182,6 @@ class Accession(models.Model):
             'MGI': 'http://www.informatics.jax.org/marker/{id}',
             'GTRNADB': '',
             'RGD': 'https://rgd.mcw.edu/rgdweb/report/gene/main.html?id={id}',
-            'FOLD_ATLAS': 'http://www.foldatlas.com/transcript/AT3G26520.1',
             'ZWD': '',
         }
         if self.database in urls.keys():
