@@ -147,6 +147,8 @@ class Accession(models.Model):
             ensembl_genome = portal.models.EnsemblAssembly.objects.filter(taxid=xref.taxid).first()
             if ensembl_genome:
                 return ensembl_genome.ensembl_url
+            else:
+                species = self.species
         elif self.species.startswith('Mus musculus') and self.accession.startswith('MGP'):  # Ensembl mouse strain
             parts = self.accession.split('_')
             if len(parts) == 3:
