@@ -688,7 +688,7 @@ expert_dbs = [
         'url': 'https://www.arb-silva.de/',
         'description': 'is a comprehensive resource for quality checked and aligned ribosomal RNA sequence data',
         'hint': 'SILVA is a comprehensive resource for quality checked and aligned ribosomal RNA sequence data',
-        'tags': ['automatic', 'SSU rRNA', 'LSU rRNA'],
+        'tags': ['semi-automatic', 'SSU rRNA', 'LSU rRNA'],
         'abbreviation': '',
         'examples': [
             {'upi': 'URS00005A14E2', 'taxid': 9606},
