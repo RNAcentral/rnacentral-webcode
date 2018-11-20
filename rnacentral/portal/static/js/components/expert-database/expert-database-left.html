@@ -33,6 +33,11 @@
     <li><a href="{{ $ctrl.expertDb.url }}" target="_blank">{{ $ctrl.expertDb.name }} homepage</a></li>
     <li><a href="ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/">Mapping between {{ $ctrl.expertDb.name }} and  RNAcentral accessions</a>
     <li ng-if="$ctrl.expertDb.name === 'Vega'"><a href="http://www.gencodegenes.org/" target="_blank">GENCODE</a></li>
+
+    <span ng-repeat="database in ['FlyBase', 'GENCODE', 'LNCipedia', 'PomBase', 'TAIR', 'WormBase']">
+      <li ng-if="$ctrl.expertDb.name === database"><a href="/search?q=no_overlaps_with:%22{{ database }}%22">Feedback report: sequences that do not overlap with {{ database }}</a></li>
+      <li ng-if="$ctrl.expertDb.name === database"><a href="/search?q=overlaps_with:%22{{ database }}%22">Feedback report: non-{{ database }} sequences that overlap with {{ database }}</a></li>
+    </span>
   </ul>
 
   <div class="references">
