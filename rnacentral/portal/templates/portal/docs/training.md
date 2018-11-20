@@ -22,6 +22,15 @@ Watch a recording of an online webinar to see RNAcentral in action:
 RNAcentral has been described in several papers:
 
 <blockquote class="callout-info">
+  <p>RNAcentral: a hub of information for non-coding RNA sequences</p>
+  <footer>The RNAcentral Consortium, 2019</footer>
+  <footer><em>Nucleic Acids Research (Database issue)</em></footer>
+  <a href="https://doi.org/10.1093/nar/gky1034">NAR</a> |
+  <a href="http://europepmc.org/abstract/MED/30395267">EuropePMC</a> |
+  <a href="http://www.ncbi.nlm.nih.gov/pubmed/30395267">Pubmed</a>
+</blockquote>
+
+<blockquote>
   <p>RNAcentral: a comprehensive database of non-coding RNA sequences</p>
   <footer>The RNAcentral Consortium, 2017</footer>
   <footer><em>Nucleic Acids Research (Database issue)</em></footer>
