@@ -126,7 +126,7 @@ Example code:
 
 <h3> RNAcentral icons <img src="/static/img/logo/rnacentral-logo-32x32.png"></h3>
 
-Here are RNAcentral logo icons in different resolutions:
+<p>RNAcentral icons:</p>
 
 * <a target="_blank" href="https://rnacentral.org/static/img/logo/rnacentral-logo-16x16.png">16x16</a>
 * <a target="_blank" href="https://rnacentral.org/static/img/logo/rnacentral-logo-24x24.png">24x24</a>
@@ -134,6 +134,12 @@ Here are RNAcentral logo icons in different resolutions:
 * <a target="_blank" href="https://rnacentral.org/static/img/logo/rnacentral-logo-64x64.png">64x64</a>
 * <a target="_blank" href="https://rnacentral.org/static/img/logo/rnacentral-logo-128x128.png">128x128</a>
 * <a target="_blank" href="https://rnacentral.org/static/img/logo/rnacentral-logo.png">530x530</a>
+
+<p>RNAcentral logos:</p>
+
+* <a target="_blank" href="/static/img/logo/rnacentral_logo_white.png">White version</a>
+* <a target="_blank" href="/static/img/logo/rnacentral_logo_dark_grey.png">Dark grey version</a>
+* <a target="_blank" href="/static/img/logo/rnacentral_logo_light_grey.png">Light grey version</a>
 
 ---
 
