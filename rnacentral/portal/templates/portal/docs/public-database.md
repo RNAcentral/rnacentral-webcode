@@ -1,12 +1,12 @@
 
 # <i class="fa fa-database"></i> Public Postgres database
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/2/29/Postgresql_elephant.svg" class="img-responsive pull-left" style="width: 100px; margin-right: 20px; margin-down: 5px;">
+<img src="https://upload.wikimedia.org/wikipedia/commons/2/29/Postgresql_elephant.svg" class="img-responsive pull-left" style="width: 100px; margin-right: 20px;">
 
 In addition to [downloadable files](/downloads), an [API](/api),
 and the [text search](/search?q=RNA), RNAcentral provides a public
 [Postgres](https://en.wikipedia.org/wiki/PostgreSQL) database that can be used
-to query the data using SQL syntax. The database is updated every RNAcentral release
+to query the data using SQL syntax. The database is updated with every RNAcentral release
 and contains a copy of the data available through the [RNAcentral website](/).
 
 ## Connection details
@@ -17,18 +17,20 @@ and contains a copy of the data available through the [RNAcentral website](/).
 - User: `reader`
 - Password: `NWDMCE5xdipIjRr`
 
+## Connecting to the database
+
 To connect to the database using **command line**:
 
-```
-psql postgres://reader:NWDMCE5xdipIjRr@pgsql-hhvm-001.ebi.ac.uk:5432/pfmegrnargs
-```
+  ```
+  psql postgres://reader:NWDMCE5xdipIjRr@pgsql-hhvm-001.ebi.ac.uk:5432/pfmegrnargs
+  ```
 
 **Pro tip**: if you don't have `psql` installed on your machine, consider using [Docker](https://www.docker.com/) to get started with a pre-configured Postgres image:
 
-```
-docker pull postgres
-docker run -it postgres psql postgres://reader:NWDMCE5xdipIjRr@pgsql-hhvm-001.ebi.ac.uk:5432/pfmegrnargs
-```
+  ```
+  docker pull postgres
+  docker run -it postgres psql postgres://reader:NWDMCE5xdipIjRr@pgsql-hhvm-001.ebi.ac.uk:5432/pfmegrnargs
+  ```
 
 Alternatively, you can use a **Postgres client** like [DBeaver](https://dbeaver.io) or [PgAdmin](https://pgadmin.org).
 
@@ -89,7 +91,7 @@ If you need to export more sequences, you can use the following workflow:
       AND rna_type = 'rRNA'
   ```
 
-1. Run the following query against the RNAcentral database:
+1. Run the following command to execute the query:
 
   ```
   docker run -v `pwd`:/rnacentral -it postgres /bin/sh -c 'cd /rnacentral && psql -t -A -f query.sql psql postgres://reader:NWDMCE5xdipIjRr@pgsql-hhvm-001.ebi.ac.uk:5432/pfmegrnargs > ids.txt'  
@@ -99,9 +101,9 @@ If you need to export more sequences, you can use the following workflow:
 
 1. Download the following RNAcentral FASTA file:
 
-  ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/sequences/rnacentral_species_specific_ids.fasta.gz
+  [ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/sequences/rnacentral_species_specific_ids.fasta.gz]()
 
-1. Extract the sequences using [seqkit](https://bioinf.shenwei.me/seqkit/)
+1. Extract the sequences using [seqkit](https://bioinf.shenwei.me/seqkit/):
 
   ```
   seqkit grep -f ids.txt rnacentral_species_specific_ids.fasta.gz > output.fasta
@@ -117,7 +119,7 @@ Requires [psycopg2](http://initd.org/psycopg/) to connect to Postgres:
 pip install psycopg2
 ```
 
-<embed>
+<script src="https://gist.github.com/AntonPetrov/ec248312feff6acc07a82b4bfb595440.js"></script>
 
 ## Contributing to the RNAcentral website
 
