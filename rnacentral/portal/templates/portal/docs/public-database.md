@@ -20,15 +20,14 @@ and contains a copy of the data available through the [RNAcentral website](/).
 To connect to the database using **command line**:
 
 ```
-PGPASSWORD=NWDMCE5xdipIjRr psql -U reader 'postgresql://pgsql-hhvm-001.ebi.ac.uk:5432/pfmegrnargs'
+psql postgres://reader:NWDMCE5xdipIjRr@pgsql-hhvm-001.ebi.ac.uk:5432/pfmegrnargs
 ```
 
 **Pro tip**: if you don't have `psql` installed on your machine, consider using [Docker](https://www.docker.com/) to get started with a pre-configured Postgres image:
 
 ```
 docker pull postgres
-docker run -it postgres bash
-psql
+docker run -it postgres psql postgres://reader:NWDMCE5xdipIjRr@pgsql-hhvm-001.ebi.ac.uk:5432/pfmegrnargs
 ```
 
 Alternatively, you can use a **Postgres client** like [DBeaver](https://dbeaver.io) or [PgAdmin](https://pgadmin.org).
@@ -36,6 +35,9 @@ Alternatively, you can use a **Postgres client** like [DBeaver](https://dbeaver.
 <i class="fa fa-warning"></i> If your computer is behind a firewall, please ensure that outgoing TCP/IP connections to the corresponding ports are allowed.
 
 ## Main tables
+
+The entire RNAcentral schema contains more than 40 tables, but the following tables
+are good starting points for exploring the data:
 
 - `rna` - contains RNA sequences and URS identifiers
 - `xref` - contains cross-references to [Expert Databases](/expert-databases)
@@ -69,10 +71,10 @@ URS00000A54A6	9606	OTTHUMT00000416802.1
 
 ## Example workflow to extract all bacterial rRNA sequences
 
-The RNAcentral text search can only export up to 250,000 entries after the search is complete.
-When you need to export more sequences, we suggest the following workflow:
+The RNAcentral text search can only export up to 250,000 search results.
+If you need to export more sequences, you can use the following workflow:
 
-1. Get RNAcentral identifiers
+1. Create a file `query.sql`:
 
   ```
   SELECT
@@ -84,26 +86,28 @@ When you need to export more sequences, we suggest the following workflow:
   WHERE
       tax.lineage LIKE 'cellular organisms; Bacteria; %'
       AND precomputed.is_active = true    -- exclude sequences without active cross-references
-  LIMIT 100
+      AND rna_type = 'rRNA'
   ```
 
-  Example output:
-  ```
-  URS00000A753F_1158518
-  URS00003D4707_243274
-  URS00003D470D_261292
-  ```
-
-2. Extract the identifiers from the RNAcentral FASTA file:
-
-  [seqkit](https://bioinf.shenwei.me/seqkit/)
+1. Run the following query against the RNAcentral database:
 
   ```
-  psql -f query.sql $DATABASE > ids
-  esl-sfetch --index rnacentral.fasta
-  esl-sfetch -f rnacentral.fasta ids > found.fasta
-  seqkit grep --pattern-file id.txt duplicated-reads.fq.gz > duplicated-reads.subset.fq.gz
+  docker run -v `pwd`:/rnacentral -it postgres /bin/sh -c 'cd /rnacentral && psql -t -A -f query.sql psql postgres://reader:NWDMCE5xdipIjRr@pgsql-hhvm-001.ebi.ac.uk:5432/pfmegrnargs > ids.txt'  
   ```
+
+  The command will create a file `ids.txt` with a list of RNAcentral identifiers.
+
+1. Download the following RNAcentral FASTA file:
+
+  ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/sequences/rnacentral_species_specific_ids.fasta.gz
+
+1. Extract the sequences using [seqkit](https://bioinf.shenwei.me/seqkit/)
+
+  ```
+  seqkit grep -f ids.txt rnacentral_species_specific_ids.fasta.gz > output.fasta
+  ```
+
+  The file `output.fasta` will contain the desired subset of RNAcentral sequences in FASTA format.
 
 ## Example Python script
 
@@ -114,7 +118,6 @@ pip install psycopg2
 ```
 
 <embed>
-
 
 ## Contributing to the RNAcentral website
 
