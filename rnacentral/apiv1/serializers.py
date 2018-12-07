@@ -269,6 +269,7 @@ class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
     sequence = serializers.CharField(source='get_sequence', read_only=True)
     rnacentral_id = serializers.SerializerMethodField('get_species_specific_id')
     description = serializers.SerializerMethodField('get_species_specific_description')
+    short_description = serializers.SerializerMethodField('get_short_description_name')
     species = serializers.SerializerMethodField('get_species_name')
     genes = serializers.SerializerMethodField()
     ncrna_types = serializers.SerializerMethodField()
@@ -278,7 +279,7 @@ class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Rna
-        fields = ('rnacentral_id', 'sequence', 'length', 'description',
+        fields = ('rnacentral_id', 'sequence', 'length', 'description', 'short_description',
                   'species', 'taxid', 'genes', 'ncrna_types', 'is_active',
                   'distinct_databases')
 
@@ -293,6 +294,10 @@ class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
     def get_species_specific_description(self, obj):
         """Get species-specific description of the RNA sequence."""
         return obj.get_description(self.context['taxid'])
+
+    def get_short_description_name(self, obj):
+        """Get description without species name"""
+        return obj.get_short_description(self.context['taxid'])
 
     def get_species_name(self, obj):
         """Get the name of the species based on taxid."""

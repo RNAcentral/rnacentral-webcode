@@ -26,6 +26,7 @@ class RnaPrecomputed(models.Model):
     upi = models.ForeignKey('Rna', db_column='upi', to_field='upi', related_name='precomputed')
     taxid = models.IntegerField(db_index=True, null=True)
     description = models.CharField(max_length=250)
+    short_description = models.CharField(max_length=250)
     rna_type = models.CharField(max_length=250)
     update_date = models.DateField(null=False, default=datetime.date(1970, 1, 1))
 

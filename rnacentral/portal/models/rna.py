@@ -355,6 +355,20 @@ class Rna(CachingMixin, models.Model):
         xrefs = self.find_valid_xrefs(taxid=taxid)
         return desc.get_rna_type(self, xrefs, taxid=taxid)
 
+    def get_short_description(self, taxid=None):
+        """
+        Retrieve sequence description without species name.
+        """
+        if taxid:
+            queryset = RnaPrecomputed.objects.filter(taxid=taxid)
+        else:
+            queryset = RnaPrecomputed.objects.filter(taxid__isnull=True)
+        try:
+            obj = queryset.get(upi=self.upi)
+            return obj.short_description
+        except ObjectDoesNotExist:
+            pass
+
     def get_description(self, taxid=None, recompute=False):
         """
         Compute the description of this sequence. The description is intented
