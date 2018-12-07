@@ -134,6 +134,7 @@ def rna_view(request, upi, taxid=None):
         'precomputed': RnaPrecomputed.objects.filter(upi=upi, taxid=taxid).first(),
         'rfam_status': rna.get_rfam_status(taxid=taxid),
         'mirna_regulators': rna.get_mirna_regulators(taxid=taxid),
+        'annotations_from_other_species': rna.get_annotations_from_other_species(taxid=taxid),
     }
 
     return render(request, 'portal/sequence.html', {'rna': rna, 'context': context})

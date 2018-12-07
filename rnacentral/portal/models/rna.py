@@ -590,3 +590,25 @@ class Rna(CachingMixin, models.Model):
             cursor.execute(query)
             data = dictfetchall(cursor)
         return data
+
+    def get_annotations_from_other_species(self, taxid=None):
+        if not taxid:
+            return []
+        query = '''
+        SELECT t1.id AS urs_taxid, t1.short_description, t2.name as species_name
+        FROM {rna_precomputed} t1, rnc_taxonomy t2
+        WHERE t1.upi = '{urs}'
+        AND t1.taxid != {taxid}
+        AND t1.is_active is True
+        AND t1.taxid is not NULL
+        AND t1.taxid = t2.id
+        ORDER BY description
+        LIMIT 10000
+        '''.format(urs=self.upi,
+                   taxid=taxid,
+                   rna_precomputed=RnaPrecomputed._meta.db_table
+        )
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            data = dictfetchall(cursor)
+        return data

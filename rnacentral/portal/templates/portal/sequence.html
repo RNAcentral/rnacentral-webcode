@@ -306,6 +306,20 @@ limitations under the License.
                         <taxonomy upi="upi" taxid="taxid"></taxonomy>
                     </div>
                 </div>
+
+                {% if context.annotations_from_other_species %}
+                <div>
+                  <h3>This sequence is found in {{ rna.count_distinct_organisms|add:"-1"|intcomma }} other species</h3>
+                  <div style="max-height: 400px; overflow:auto;" class="force-scrollbars">
+                    <ol>
+                    {% for entry in context.annotations_from_other_species %}
+                      <li>{{ entry.species_name }} <a href="/rna/{{ entry.urs_taxid }}">{{ entry.short_description }}</a></li>
+                    {% endfor %}
+                    </ol>
+                  </div>
+                </div>
+                {% endif %}
+
             </uib-tab>
 
             <uib-tab index="2" heading="2D" id="secondary-structures" deselect="checkTab($event, $selectedIndex)" ng-hide="hide2dTab" ng-if="taxid">
