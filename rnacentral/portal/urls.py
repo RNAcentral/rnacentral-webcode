@@ -39,6 +39,8 @@ urlpatterns = [
     url(r'^(?P<page>coming-soon)/?$', views.StaticView.as_view(), name='coming-soon'),
     # downloads
     url(r'^downloads/?$', views.StaticView.as_view(), {'page': 'downloads'}, name='downloads'),
+    # external link
+    url(r'^link/(?P<expert_db>[-\w]+)\:(?P<external_id>.+?)/?$', views.external_link, name='external-link'),
     # help centre
     url(r'^help/?$', views.StaticView.as_view(), {'page': 'help/faq'}, name='help'),
     url(r'^help/browser-compatibility/?$', views.StaticView.as_view(), {'page': 'help/browser-compatibility'}, name='help-browser-compatibility'),

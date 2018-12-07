@@ -234,6 +234,28 @@ def proxy(request):
     except:
         raise Http404
 
+
+def external_link(request, expert_db, external_id):
+    """
+    Provide a flexible way to link to RNAcentral by providing a database and external URL.
+    """
+    search_url = '{base_url}?query=expert_db:"{expert_db}" "{external_id}"&format=json'.format(
+        base_url=settings.EBI_SEARCH_ENDPOINT,
+        expert_db=expert_db,
+        external_id=external_id)
+    try:
+        response = requests.get(search_url)
+        if response.status_code == 200:
+            data = response.json()
+            if data['hitCount'] == 1:
+                upi, taxid = data['entries'][0]['id'].split('_')
+                return redirect('unique-rna-sequence', upi=upi, taxid=int(taxid))
+            else:
+                return redirect('/search?q=expert_db:"{}" "{}"'.format(expert_db, external_id))
+    except:
+        return redirect('/search?q=expert_db:"{}" "{}"'.format(expert_db, external_id))
+
+
 #####################
 # Class-based views #
 #####################
