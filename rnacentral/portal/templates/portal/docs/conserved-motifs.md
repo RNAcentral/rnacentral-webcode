@@ -9,4 +9,4 @@ Conserved RNA motifs or conserved RNA structures (CRS) have been identified in t
 
 > [DOI: 10.1101/gr.208652.116](https://doi.org/10.1101/gr.208652.116)
 
-For more information, see https://rth.dk/resources/rnannotator/crs/vert/.
+For more information, see [https://rth.dk/resources/rnannotator/crs/vert/](https://rth.dk/resources/rnannotator/crs/vert/).
