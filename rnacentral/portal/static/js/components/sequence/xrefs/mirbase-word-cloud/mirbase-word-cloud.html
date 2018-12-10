@@ -1,0 +1,5 @@
+<div class="col-md-1" style="padding-left: 0;">
+  <span class="thumbnail" style="cursor: pointer; margin-bottom: 0;" uib-tooltip="Click to expand word cloud"> {{ctrl.mirbaseid}} {{$ctrl.mirbaseid}}
+    <img onerror="this.parentNode.parentNode.style.display = 'none'" ng-src="{{ $ctrl.getMirbaseWordCloudUrl() }}" ng-click="$ctrl.openMirbaseModal()" alt="miRBase word cloud">
+  </span>
+</div>

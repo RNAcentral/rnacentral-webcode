@@ -212,20 +212,22 @@ def proxy(request):
     """
     Internal API. Used for:
      - EBeye search URL - bypasses EBeye same-origin policy.
-     - Rfam images - avoids mixed content warnings due to lack of https support in Rfam.
+     - Rfam and miRBase images - avoids mixed content warnings due to lack of https support in Rfam.
     """
     url = request.GET['url']
 
     # check domain for security - we don't want someone to abuse this endpoint
     domain = urlparse(url).netloc
-    if domain != 'www.ebi.ac.uk' and domain != 'wwwdev.ebi.ac.uk' and domain != 'rfam.org':
-        return HttpResponseForbidden("This proxy is for www.ebi.ac.uk, wwwdev.ebi.ac.uk or rfam.org only.")
+    if domain != 'www.ebi.ac.uk' and domain != 'wwwdev.ebi.ac.uk' and domain != 'rfam.org' and domain != 'www.mirbase.org':
+        return HttpResponseForbidden("This proxy is for www.ebi.ac.uk, wwwdev.ebi.ac.uk, mirbase.org or rfam.org only.")
 
     try:
         proxied_response = requests.get(url)
         if proxied_response.status_code == 200:
             if domain == 'rfam.org':  # for rfam images don't forget to set content-type header
                 response = HttpResponse(proxied_response.text, content_type="image/svg+xml")
+            elif 'mirbase.org' in domain:
+                response = HttpResponse(proxied_response.content, content_type="image/png")
             else:
                 response = HttpResponse(proxied_response.text)
             return response
