@@ -80,8 +80,10 @@ def homepage(request):
 @cache_page(CACHE_TIMEOUT)
 def expert_databases_view(request):
     """List of RNAcentral expert databases."""
+    expert_dbs.sort(key=lambda x: x['name'].lower())
+    expert_dbs.sort(key=lambda x: x['imported'], reverse=True)
     context = {
-        'expert_dbs': sorted(expert_dbs, key=lambda x: x['name'].lower()),
+        'expert_dbs': expert_dbs,
         'num_imported': len([x for x in expert_dbs if x['imported']]),
     }
     return render(request, 'portal/expert-databases.html', {'context': context})
