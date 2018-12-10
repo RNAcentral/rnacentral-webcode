@@ -156,25 +156,23 @@
         </li>
         <hr />
         <li class="facet" ng-repeat="facet in $ctrl.search.result.facets">
-          <h3>
-            {{ facet.label }}
-            <small><a ng-if="facet.id === 'qc_warning_found'" ng-href="{{ $ctrl.rfamHelp }}" uib-tooltip="Learn more about Rfam annotations in RNAcentral &rarr;" style="color:inherit;"><i class="fa fa-question-circle" aria-hidden="true"></i></a></small>
-            <small><a ng-if="facet.id === 'has_conserved_structure'" ng-href="{{ $ctrl.crsHelp }}" uib-tooltip="Learn more about conserved motifs &rarr;" style="color:inherit;"><i class="fa fa-question-circle" aria-hidden="true"></i></a></small>
-            <small><a ng-if="facet.id === 'has_go_annotations'" ng-href="{{ $ctrl.goHelp }}" uib-tooltip="Learn more about Gene Ontology annotations &rarr;" style="color:inherit;"><i class="fa fa-question-circle" aria-hidden="true"></i></a></small>
-            <small><a ng-if="facet.id === 'has_genomic_coordinates'" ng-href="{{ $ctrl.genomeMappingHelp }}" uib-tooltip="Learn more about genome mapping &rarr;" style="color:inherit;"><i class="fa fa-question-circle" aria-hidden="true"></i></a></small>
-          </h3>
-          <ul class="list-unstyled text-search-facet-values text-search-facet-overflow force-scrollbars" style="overflow-x: hidden;">
-            <li ng-repeat="facetValue in facet.facetValues" ng-if="facet.id == 'expert_db'">
-              <!-- This is expert_dbs facet -->
-              <input type="checkbox" name="facet.label" ng-checked="$ctrl.isFacetApplied(facet.id, facetValue.value)" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)">
-              <a href="" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)" class="text-search-facet-link" uib-tooltip-template="'/static/js/components/text-search/text-search-results/expert-database-tooltip-template.html'" tooltip-placement="bottom-left">{{ facetValue.label }} <small>({{ facetValue.count | number }})</small></a>
-            </li>
-            <li ng-repeat="facetValue in facet.facetValues" ng-if="facet.id != 'expert_db'">
-              <input type="checkbox" name="facet.label" ng-checked="$ctrl.isFacetApplied(facet.id, facetValue.value)" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)">
-              <a href="" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)" class="text-search-facet-link">{{ facetValue.label }} <small>({{ facetValue.count | number }})</small></a>
-            </li>
-            <small ng-if="facet.label == 'Organisms' && facet.facetValues.length > 10" class="text-muted">Showing top {{ facet.facetValues.length }} organisms</small>
-          </ul>
+          <div ng-if="facet.label === 'Organisms' || facet.label === 'RNA types' || facet.label === 'Expert databases'">
+            <h3>
+              {{ facet.label }}
+            </h3>
+            <ul class="list-unstyled text-search-facet-values text-search-facet-overflow force-scrollbars" style="overflow-x: hidden;">
+              <li ng-repeat="facetValue in facet.facetValues" ng-if="facet.id == 'expert_db'">
+                <!-- This is expert_dbs facet -->
+                <input type="checkbox" name="facet.label" ng-checked="$ctrl.isFacetApplied(facet.id, facetValue.value)" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)">
+                <a href="" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)" class="text-search-facet-link" uib-tooltip-template="'/static/js/components/text-search/text-search-results/expert-database-tooltip-template.html'" tooltip-placement="bottom-left">{{ facetValue.label }} <small>({{ facetValue.count | number }})</small></a>
+              </li>
+              <li ng-repeat="facetValue in facet.facetValues" ng-if="facet.id != 'expert_db'">
+                <input type="checkbox" name="facet.label" ng-checked="$ctrl.isFacetApplied(facet.id, facetValue.value)" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)">
+                <a href="" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)" class="text-search-facet-link">{{ facetValue.label }} <small>({{ facetValue.count | number }})</small></a>
+              </li>
+              <small ng-if="facet.label == 'Organisms' && facet.facetValues.length > 10" class="text-muted">Showing top {{ facet.facetValues.length }} organisms</small>
+            </ul>
+          </div>
         </li>
         <li class="facet" ng-if="$ctrl.lengthSlider">
           <h3>Length&nbsp;&nbsp;&nbsp;<small><a href="" ng-click="$ctrl.resetSlider()">reset length filter</a></small></h3>
@@ -182,8 +180,38 @@
             <rzslider class="custom-slider" rz-slider-model="$ctrl.lengthSlider.min" rz-slider-high="$ctrl.lengthSlider.max" rz-slider-options="$ctrl.lengthSlider.options"></rzslider> <!-- ceil: $ctrl.search.results.facets['length'] -->
           </div>
         </li>
+        <div>
+        <li class="facet" ng-repeat="facet in $ctrl.search.result.facets">
+          <uib-accordion ng-if="facet.label == 'Conserved motifs' || facet.label == 'QC warnings' || facet.label == 'GO annotations' || facet.label == 'Genomic mapping'" class="text-search-foldable-facets">
+            <div uib-accordion-group is-open="$ctrl.search.isFacetOpen[facet.id]">
+              <uib-accordion-heading>
+                <h3>
+                  <small><i class="pull-left fa" ng-class="{'fa-minus': $ctrl.search.isFacetOpen[facet.id], 'fa-plus': !$ctrl.search.isFacetOpen[facet.id]}"></i></small>
+                  {{ facet.label }}
+                </h3>
+              </uib-accordion-heading>
+              <ul class="list-unstyled text-search-facet-values text-search-facet-overflow force-scrollbars" style="overflow-x: hidden;">
+                <li ng-repeat="facetValue in facet.facetValues" ng-if="facet.id != 'expert_db'">
+                  <input type="checkbox" name="facet.label" ng-checked="$ctrl.isFacetApplied(facet.id, facetValue.value)" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)">
+                  <a href="" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)" class="text-search-facet-link">{{ facetValue.label }} <small>({{ facetValue.count | number }})</small></a>
+                </li>
+                <small ng-if="facet.id === 'qc_warning_found'">
+                  <a class="text-search-facet-help text-muted" ng-href="{{ $ctrl.rfamHelp }}"><i class="fa fa-question-circle" aria-hidden="true"></i> Learn more about Rfam annotations in RNAcentral &rarr;</a>
+                </small>
+                <small ng-if="facet.id === 'has_conserved_structure'" >
+                  <a class="text-search-facet-help text-muted" ng-href="{{ $ctrl.crsHelp }}"><i class="fa fa-question-circle" aria-hidden="true"></i> Learn more about conserved motifs &rarr;</a>
+                </small>
+                <small ng-if="facet.id === 'has_go_annotations'">
+                  <a class="text-search-facet-help text-muted" ng-href="{{ $ctrl.goHelp }}"><i class="fa fa-question-circle" aria-hidden="true"></i> Learn more about Gene Ontology annotations &rarr;</a>
+                </small>
+                <small ng-if="facet.id === 'has_genomic_coordinates'">
+                  <a class="text-search-facet-help text-muted" ng-href="{{ $ctrl.genomeMappingHelp }}"><i class="fa fa-question-circle" aria-hidden="true"></i> Learn more about genome mapping &rarr;</a>
+                </small>
+              </ul>
+          </uib-accordion>
+        </li>
+        </div>
       </ul>
-      <hr>
       <small class="text-muted">
         Powered by <a href="http://www.ebi.ac.uk/ebisearch/" target="_blank">EBI Search</a>
       </small>
