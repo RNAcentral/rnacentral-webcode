@@ -11,7 +11,7 @@ and contains a copy of the data available through the [RNAcentral website](/).
 
 ## Connection details
 
-- Hostname: `pgsql-hhvm-001.ebi.ac.uk`
+- Hostname: `hh-pgsql-public.ebi.ac.uk`
 - Port: `5432`
 - Database: `pfmegrnargs`
 - User: `reader`
@@ -22,14 +22,14 @@ and contains a copy of the data available through the [RNAcentral website](/).
 To connect to the database using **command line**:
 
   ```
-  psql postgres://reader:NWDMCE5xdipIjRrpr@pgsql-hhvm-001.ebi.ac.uk:5432/pfmegrnargs
+  psql postgres://reader:NWDMCE5xdipIjRrpr@hh-pgsql-public.ebi.ac.uk:5432/pfmegrnargs
   ```
 
 **Pro tip**: if you don't have `psql` installed on your machine, consider using [Docker](https://www.docker.com/) to get started with a pre-configured Postgres image:
 
   ```
   docker pull postgres
-  docker run -it postgres psql postgres://reader:NWDMCE5xdipIjRrpr@pgsql-hhvm-001.ebi.ac.uk:5432/pfmegrnargs
+  docker run -it postgres psql postgres://reader:NWDMCE5xdipIjRrpr@hh-pgsql-public.ebi.ac.uk:5432/pfmegrnargs
   ```
 
 Alternatively, you can use a **Postgres client** like [DBeaver](https://dbeaver.io) or [PgAdmin](https://pgadmin.org).
@@ -94,7 +94,7 @@ If you need to export more sequences, you can use the following workflow:
 1. Run the following command to execute the query:
 
   ```
-  docker run -v `pwd`:/rnacentral -it postgres /bin/sh -c 'cd /rnacentral && psql -t -A -f query.sql postgres://reader:NWDMCE5xdipIjRrpr@pgsql-hhvm-001.ebi.ac.uk:5432/pfmegrnargs > ids.txt'  
+  docker run -v `pwd`:/rnacentral -it postgres /bin/sh -c 'cd /rnacentral && psql -t -A -f query.sql postgres://reader:NWDMCE5xdipIjRrpr@hh-pgsql-public.ebi.ac.uk:5432/pfmegrnargs > ids.txt'  
   ```
 
   The command will create a file `ids.txt` with a list of RNAcentral identifiers.
