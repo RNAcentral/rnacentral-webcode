@@ -63,9 +63,6 @@ pipeline {
                 ENV_SH = credentials('env_sh')
             }
             steps {
-                when {
-                    expression { params.QUICK == 'False' }
-                }
                 script {
                     sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
 
