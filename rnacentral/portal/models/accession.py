@@ -143,7 +143,7 @@ class Accession(models.Model):
         if self.species == 'Dictyostelium discoideum':
             species = 'Dictyostelium discoideum AX4'
         elif self.species.count(' ') > 1:
-            xref = portal.models.Xref.objects.filter(accession__accession=self.accession).get()
+            xref = portal.models.Xref.objects.filter(accession__accession=self.accession, deleted='N').get()
             ensembl_genome = portal.models.EnsemblAssembly.objects.filter(taxid=xref.taxid).first()
             if ensembl_genome:
                 return ensembl_genome.ensembl_url
