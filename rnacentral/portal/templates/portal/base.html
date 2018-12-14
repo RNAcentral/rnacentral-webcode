@@ -33,7 +33,7 @@ limitations under the License.
             {% block title %} RNAcentral {% endblock %}
         </title>
 
-        <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/genoverse.css" %}">
+        <link rel="stylesheet" href="{% static "node_modules/@rnacentral/genoverse/dist/css/genoverse.css" %}">
         {% compress css %}
             {% block stylesheets %}
                 <!-- warning: feature viewer css conflicts with bootstrap for navbar etc. -->
@@ -51,12 +51,12 @@ limitations under the License.
                 <link rel="stylesheet" href="{% static "node_modules/angular-loading-bar/build/loading-bar.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/timelinejs3/compiled/css/timeline.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/timelinejs3/compiled/css/fonts/font.bevan-pontanosans.css" %}">
-                <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/controlPanel.css" %}">
-                <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/fileDrop.css" %}">
-                <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/karyotype.css" %}">
-                <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/resizer.css" %}">
-                <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/trackControls.css" %}">
-                <link rel="stylesheet" href="{% static "node_modules/@burkov/genoverse/dist/css/tooltips.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/@rnacentral/genoverse/dist/css/controlPanel.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/@rnacentral/genoverse/dist/css/fileDrop.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/@rnacentral/genoverse/dist/css/karyotype.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/@rnacentral/genoverse/dist/css/resizer.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/@rnacentral/genoverse/dist/css/trackControls.css" %}">
+                <link rel="stylesheet" href="{% static "node_modules/@rnacentral/genoverse/dist/css/tooltips.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/angularjs-slider/dist/rzslider.css" %}">
             {% endblock stylesheets %}
         {% endcompress %}
@@ -151,15 +151,15 @@ limitations under the License.
             <script src="{% static "node_modules/underscore/underscore.js" %}"></script>
             <script src="{% static "node_modules/moment/moment.js" %}"></script>
             <script src="{% static "node_modules/js-md5/build/md5.min.js" %}"></script>
-            <script src="{% static "node_modules/@burkov/fornac/dist/scripts/fornac.js" %}"></script>
+            <script src="{% static "node_modules/@rnacentral/fornac/dist/scripts/fornac.js" %}"></script>
             <script src="{% static "node_modules/d3/d3.js" %}"></script>
             <script src="{% static "node_modules/clipboard/dist/clipboard.js" %}"></script>
             <script src="{% static "node_modules/timelinejs3/compiled/js/timeline.js" %}"></script>
             <script src="{% static "node_modules/angularjs-slider/dist/rzslider.js" %}"></script>
             <!-- warning, feature-viewer.bundle.js includes jquery, so it breaks slick and everything else -->
-            <script src="{% static "node_modules/@burkov/feature-viewer/src/feature-viewer.js" %}"></script>
+            <script src="{% static "node_modules/@rnacentral/feature-viewer/src/feature-viewer.js" %}"></script>
             <!-- Genoverse bundle contains jquery, avoid conflict with our jquery - let Genoverse go first -->
-            <script src="{% static "node_modules/@burkov/genoverse/dist/js/genoverse.concat.nodeps.js" %}"></script>
+            <script src="{% static "node_modules/@rnacentral/genoverse/dist/js/genoverse.concat.nodeps.js" %}"></script>
             <script src="{% static "node_modules/jquery-ui-bundle/jquery-ui.js" %}"></script>
             <script src="{% static "node_modules/jquery.mousehold/jquery.mousehold.js" %}"></script>
             <script src="{% static "node_modules/jquery.mousewheel/jquery.mousewheel.js" %}"></script>

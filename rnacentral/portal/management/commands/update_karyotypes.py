@@ -25,7 +25,7 @@ class Command(BaseCommand):
     Usage:
     python manage.py update_karyotypes
     python manage.py update_karyotypes --ensembl_url homo_sapiens
-    python manage.py update_karyotypes --path ./portal/static/node_modules/@burkov/genoverse/dist/js/genomes
+    python manage.py update_karyotypes --path ./portal/static/node_modules/@rnacentral/genoverse/dist/js/genomes
     """
     def add_arguments(self, parser):
         parser.add_argument(
