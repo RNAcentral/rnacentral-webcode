@@ -20,9 +20,9 @@
   },
   "homepage": "https://github.com/RNAcentral/rnacentral-webcode#readme",
   "dependencies": {
-    "@burkov/feature-viewer": "^1.1.1",
-    "@burkov/fornac": "^1.1.10",
-    "@burkov/genoverse": "^3.0.1",
+    "@rnacentral/feature-viewer": "^1.1.1",
+    "@rnacentral/fornac": "^1.1.10",
+    "@rnacentral/genoverse": "^3.0.1",
     "angular": "^1.6.4",
     "angular-animate": "^1.6.4",
     "angular-filter": "^0.5.17",
