@@ -34,6 +34,7 @@ import requests
 
 from fabric.api import cd, env, lcd, local, prefix, run, warn_only
 from fabric.contrib import django
+from simplecrypt import encrypt, decrypt
 
 # load Django settings
 django.settings_module('rnacentral.settings')
@@ -189,8 +190,14 @@ def rsync_local_files(dry_run=None):
 def slack(message):
     """
     Send message to slack RNAcentral channel.
+
+    Slack hook is encrypted with settings.SECRET_KEY by running:
+
+    from django.conf import settings
+    encrypted_slack_hook = encrypt(settings.SECRET_KEY, slack_hook)
     """
-    slack_hook = 'https://hooks.slack.com/services/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'
+    encrypted_slack_hook = "sc\x00\x02\xe6T\xa3Wm\x1c\x91\x95\xcb3m\xbd+) \xf9\x9d1o\x86NL\xc1\xea!\x94I\xdc\x8eo\xb6\xba\x85-\xaf\x1e \xad\xfa{E\x01[+>\xba\x1d\xc6hM\xc2\xf8uLk\x11\r>\xd1\x1dg\rB2\xc5\x9b\xcd}m-$*@\xe7\xc9iJ\xee\xe3/\xba=\xa9n\xbe~c\xcd\xad\\D\xe14\x0bh\xe5\xfd2\x85Ws\xc2i\xba\xd4\xb6\x0cj\x97z\xc4\xc2\xf8\xe8\xe0)\xe3:W\xae\x92\x19+'$z\x1a\xb3\xf0\xef\x8c\xab!T=\x17\xc6\xbf-\x8e="
+    slack_hook = decrypt(settings.SECRET_KEY, encrypted_slack_hook)
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
     requests.post(slack_hook, json.dumps({'text': message}), headers=headers)
 
@@ -252,6 +259,7 @@ def test(base_url='http://localhost:8000/'):
     Single entry point for all tests.
     """
     with env.cd(settings.PROJECT_PATH):
+
         # env.run('python rnacentral/apiv1/tests.py --base_url=%s' % base_url)
         env.run('python rnacentral/portal/tests/selenium_tests.py --base_url %s --driver=phantomjs' % base_url)  # pylint: disable=C0301
         env.run('python rnacentral/apiv1/search/sequence/tests.py --base_url %s' % base_url)  # pylint: disable=C0301
