@@ -196,6 +196,7 @@ def slack(message):
     from django.conf import settings
     encrypted_slack_hook = encrypt(settings.SECRET_KEY, slack_hook)
     """
+    print("Triggered Slack hook")
     encrypted_slack_hook = "sc\x00\x02\xe6T\xa3Wm\x1c\x91\x95\xcb3m\xbd+) \xf9\x9d1o\x86NL\xc1\xea!\x94I\xdc\x8eo\xb6\xba\x85-\xaf\x1e \xad\xfa{E\x01[+>\xba\x1d\xc6hM\xc2\xf8uLk\x11\r>\xd1\x1dg\rB2\xc5\x9b\xcd}m-$*@\xe7\xc9iJ\xee\xe3/\xba=\xa9n\xbe~c\xcd\xad\\D\xe14\x0bh\xe5\xfd2\x85Ws\xc2i\xba\xd4\xb6\x0cj\x97z\xc4\xc2\xf8\xe8\xe0)\xe3:W\xae\x92\x19+'$z\x1a\xb3\xf0\xef\x8c\xab!T=\x17\xc6\xbf-\x8e="
     slack_hook = decrypt(settings.SECRET_KEY, encrypted_slack_hook)
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
@@ -238,6 +239,7 @@ def deploy_remotely(git_branch=None, restart_url='https://rnacentral.org', quick
     if not git_branch:
         with env.cd(settings.PROJECT_PATH):
             git_branch = env.run('git rev-parse --abbrev-ref HEAD')
+
     slack("Deployed '%s' at %s: <https://rnacentral.org|rnacentral.org>" % (git_branch, env.host))
 
 
