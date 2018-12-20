@@ -180,21 +180,26 @@ pipeline {
                     source local/virtualenvs/RNAcentral/bin/activate
                     cd rnacentral-webcode/rnacentral
                     source scripts/env.sh
+                '''
 
-                    // checkout to the speficied branch
+                // checkout the specified branch
+                sh '''
                     git reset --hard
                     git checkout params.BRANCH
+                '''
 
-                    // sometimes package.json is left in a stale state
+                // sometimes package.json is left in a stale state
+                sh '''
                     pushd portal/static
                     npm install
                     popd
-
-                    // update python packages from requirements, if there's a need
-                    pip install -r requirements.txt
-
-                    fab localhost deploy:quick=params.QUICK,git_branch=params.BRANCH
                 '''
+
+                // update python packages from requirements, if there's a need
+                sh 'pip install -r requirements.txt'
+
+                // deploy with fabric
+                sh 'fab localhost deploy:quick=params.QUICK,git_branch=params.BRANCH'
             }
         }
     }
