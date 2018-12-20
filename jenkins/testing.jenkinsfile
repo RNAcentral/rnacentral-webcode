@@ -69,6 +69,7 @@ pipeline {
                 ENV_SH = credentials('env_sh')
             }
             steps {
+                git branch: "${params.BRANCH}", url: 'https://github.com/RNAcentral/rnacentral-webcode.git'
                 script {
                     sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
 
@@ -152,6 +153,9 @@ pipeline {
                 expression { params.QUICK == 'False' }
             }
             steps {
+                // see: https://support.cloudbees.com/hc/en-us/articles/115003945572-Pipeline-Build-with-git-step-on-a-specific-branch-is-triggered-by-a-different-branch
+                git branch: "${params.BRANCH}", url: 'https://github.com/RNAcentral/rnacentral-webcode.git'
+
                 // see: https://medium.com/ordergroove-engineering/continuous-deployment-of-django-applications-part-1-e3bc332bcbaf
                 script {
                     try {
@@ -171,13 +175,25 @@ pipeline {
         }
         stage("Deploy") {
             steps {
-                git branch: "${params.BRANCH}", url: 'https://github.com/RNAcentral/rnacentral-webcode.git'
                 sh '''
                     cd /nfs/public/rw/xfam/rnacentral/test
                     source local/virtualenvs/RNAcentral/bin/activate
                     cd rnacentral-webcode/rnacentral
                     source scripts/env.sh
-                    fab localhost deploy:quick=params.QUICK
+
+                    // checkout to the speficied branch
+                    git reset --hard
+                    git checkout params.BRANCH
+
+                    // sometimes package.json is left in a stale state
+                    pushd portal/static
+                    npm install
+                    popd
+
+                    // update python packages from requirements, if there's a need
+                    pip install -r requirements.txt
+
+                    fab localhost deploy:quick=params.QUICK,git_branch=params.BRANCH
                 '''
             }
         }

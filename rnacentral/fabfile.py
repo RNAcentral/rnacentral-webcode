@@ -25,7 +25,7 @@ To run remotely:
     fab -H server1,server2 production deploy
 
 To pass parameters in:
-    fab localhost deploy:quick=params.QUICK
+    fab localhost deploy:quick=params.QUICK,git_branch=params.BRANCH
 
 For more options, run `fab help`.
 """
