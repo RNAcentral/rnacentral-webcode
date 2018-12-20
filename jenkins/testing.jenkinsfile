@@ -36,6 +36,7 @@ pipeline {
             choices: ['False', 'True'],
             description: 'Fast rebuild: pull, collect (and compress) static, touch wsgi.py.'
         )
+        gitParameter branchFilter: 'origin/(.*)', defaultValue: 'master', name: 'BRANCH', type: 'PT_BRANCH'
     }
     stages {
         stage("Build for testing") {
@@ -165,6 +166,7 @@ pipeline {
         }
         stage("Deploy") {
             steps {
+                git branch: "${params.BRANCH}", url: 'https://github.com/RNAcentral/rnacentral-webcode.git'
                 sh '''
                     cd /nfs/public/rw/xfam/rnacentral/test
                     source local/virtualenvs/RNAcentral/bin/activate
