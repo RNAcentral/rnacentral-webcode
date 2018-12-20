@@ -188,20 +188,16 @@ pipeline {
 
                 // sometimes package.json is left in a stale state
                 sh '''
-                    pushd portal/static
+                    pushd /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/portal/static
                     npm install
                     popd
                 '''
 
                 // update python packages from requirements, if there's a need
-                sh '''
-                    pip install -r requirements.txt
-                '''
+                sh 'pip install -r requirements.txt'
 
                 // deploy with fabric
-                sh '''
-                    fab localhost deploy:quick=params.QUICK,git_branch=params.BRANCH
-                '''
+                sh "fab localhost deploy:quick=${params.QUICK},git_branch=${params.BRANCH}"
             }
         }
     }
