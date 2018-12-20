@@ -188,6 +188,7 @@ pipeline {
 
                 // sometimes package.json is left in a stale state
                 sh '''
+                    pwd
                     pushd /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/portal/static
                     npm install
                     popd
