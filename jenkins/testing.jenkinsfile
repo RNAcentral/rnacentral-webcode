@@ -183,10 +183,8 @@ pipeline {
                 '''
 
                 // checkout the specified branch
-                sh '''
-                    git reset --hard
-                    git checkout ${params.BRANCH}
-                '''
+                sh 'git reset --hard'
+                sh "git checkout ${params.BRANCH}"
 
                 // sometimes package.json is left in a stale state
                 sh '''
