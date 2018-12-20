@@ -185,7 +185,7 @@ pipeline {
                 // checkout the specified branch
                 sh '''
                     git reset --hard
-                    git checkout ${params.BRANCH}
+                    git checkout params.BRANCH
                 '''
 
                 // sometimes package.json is left in a stale state
@@ -196,10 +196,14 @@ pipeline {
                 '''
 
                 // update python packages from requirements, if there's a need
-                sh 'pip install -r requirements.txt'
+                sh '''
+                    pip install -r requirements.txt
+                '''
 
                 // deploy with fabric
-                sh 'fab localhost deploy:quick=${params.QUICK},git_branch=${params.BRANCH}'
+                sh '''
+                    fab localhost deploy:quick=params.QUICK,git_branch=params.BRANCH
+                '''
             }
         }
     }
