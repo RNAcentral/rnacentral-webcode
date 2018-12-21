@@ -21,6 +21,13 @@ pipeline {
             choices: ['PRO', 'DEV'],
             description: 'Shall we use django-compressor, PRO - yes, DEV - no?'
         )
+        gitParameter(
+            branchFilter: 'origin/(.*)',
+            defaultValue: 'master',
+            name: 'BRANCH',
+            type: 'PT_BRANCH',
+            description: 'Name of the branch to test and deploy'
+        )
     }
     stages {
         stage("deploy") {
@@ -100,13 +107,13 @@ pipeline {
                 sh 'rm -f /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/env.sh'
                 sh 'cat $ENV_SH > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/env.sh'
 
-                sh '''
+                sh """
                     cd /nfs/public/rw/xfam/rnacentral/live
                     source local/virtualenvs/RNAcentral/bin/activate
                     cd rnacentral-webcode/rnacentral
                     source scripts/env.sh
-                    fab -H ves-oy-a4 production deploy
-                '''
+                    fab -H ves-oy-a4 production deploy:git_branch=${params.BRANCH}
+                """
             }
         }
     }

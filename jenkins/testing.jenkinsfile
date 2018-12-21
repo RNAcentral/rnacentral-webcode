@@ -40,7 +40,8 @@ pipeline {
             branchFilter: 'origin/(.*)',
             defaultValue: 'master',
             name: 'BRANCH',
-            type: 'PT_BRANCH'
+            type: 'PT_BRANCH',
+            description: 'Name of the branch to test and deploy'
         )
     }
     stages {
@@ -175,26 +176,12 @@ pipeline {
         }
         stage("Deploy") {
             steps {
-                // checkout the specified branch
-                sh """
-                    cd /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/portal/static
-                    git reset --hard
-                    git checkout ${params.BRANCH}
-                """
-
-                // sometimes package.json is left in a stale state
-                sh '''
-                    cd /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/portal/static
-                    npm install
-                '''
-
                 // update python packages from requirements, if there's a need and deploy with fabric
                 sh """
                     cd /nfs/public/rw/xfam/rnacentral/test
                     source local/virtualenvs/RNAcentral/bin/activate
                     cd rnacentral-webcode/rnacentral
                     source scripts/env.sh
-                    pip install -r requirements.txt
                     fab localhost deploy:quick=${params.QUICK},git_branch=${params.BRANCH}
                 """
             }
