@@ -99,6 +99,7 @@ def update_npm():
     """
     path = os.path.join(settings.PROJECT_PATH, 'rnacentral', 'portal', 'static')
     with env.cd(path):
+        env.run('rm package-lock.json')
         env.run('npm update --loglevel info')
 
 
