@@ -271,69 +271,6 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
 
     GenoverseUtils.prototype.Genoverse = Genoverse;
 
-    GenoverseUtils.prototype.RNAcentralParseData = function(data) {
-        var model = this;
-        var featuresById = this.featuresById;
-        var ids = [];
-
-        data.filter(function (d) { return d.feature_type === 'transcript'; }).forEach(function (feature, i) {
-            if (!featuresById[feature.id]) {
-                // prepare a label
-                var label = feature.description || feature.external_name;
-                if (label.length > 50) {
-                    label = label.substr(0, 47) + "...";
-                }
-                if (feature.strand == 1) {
-                    label = label + " >";
-                }
-                else if (feature.strand == -1) {
-                    label = "< " + label;
-                }
-
-                feature.id = feature.ID;
-                feature.label = label; // used to be feature.external_name
-                feature.exons = {};
-                feature.subFeatures = [];
-                feature.cdsStart = Infinity;
-                feature.cdsEnd = -Infinity;
-                feature.chr = feature.seq_region_name;
-                feature.color = '#8B668B';
-
-                model.insertFeature(feature);
-
-                ids.push(feature.id);
-            }
-        });
-
-        data.filter(function (d) { return d.feature_type === 'exon' && featuresById[d.Parent] && !featuresById[d.Parent].exons[d.id]; }).forEach(function (feature) {
-            feature.id  = feature.ID;
-            feature.chr = feature.seq_region_name;
-
-            if (feature.end < featuresById[feature.Parent].cdsStart || feature.start > featuresById[feature.Parent].cdsEnd) {
-                feature.utr = true;
-            } else if (feature.start < featuresById[feature.Parent].cdsStart) {
-                featuresById[feature.Parent].subFeatures.push($.extend({ utr: true }, feature, { end: featuresById[feature.Parent].cdsStart }));
-
-                feature.start = featuresById[feature.Parent].cdsStart;
-            } else if (feature.end > featuresById[feature.Parent].cdsEnd) {
-                featuresById[feature.Parent].subFeatures.push($.extend({ utr: true }, feature, { start: featuresById[feature.Parent].cdsEnd }));
-
-                feature.end = featuresById[feature.Parent].cdsEnd;
-            }
-
-            featuresById[feature.Parent].subFeatures.push(feature);
-            featuresById[feature.Parent].exons[feature.id] = feature;
-
-            // set colors
-            feature.color = false;
-            feature.borderColor = '#8B668B';
-        });
-
-        ids.forEach(function (id) {
-            featuresById[id].subFeatures.sort(function (a, b) { return a.start - b.start; });
-        });
-    };
-
      /**
      * Dynamically determine whether to use E! or EG REST API based on species.
      * If species not in E!, use EG.
