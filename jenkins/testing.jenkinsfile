@@ -10,13 +10,134 @@
 
 pipeline {
     agent any
+    parameters {
+        choice(
+            name: 'DATABASE',
+            choices: ['PRO', 'DEV', 'TEST', 'FB', 'HH'],
+            description: 'Which database instance to use?'
+        )
+        choice(
+            name: 'EBI_SEARCH_ENDPOINT',
+            choices: ['DEV', 'PRO'],
+            description: 'Which ebi search index to use?'
+        )
+        choice(
+            name: 'RQ_QUEUE',
+            choices: ['LOCAL', 'OY', 'PG'],
+            description: 'Which redis queues settings to use?'
+        )
+        choice(
+            name: 'COMPRESSOR',
+            choices: ['PRO', 'DEV'],
+            description: 'Shall we use django-compressor, PRO - yes, DEV - no?'
+        )
+        choice(
+            name: 'QUICK',
+            choices: ['False', 'True'],
+            description: 'Fast rebuild: pull, collect (and compress) static, touch wsgi.py.'
+        )
+        gitParameter(
+            branchFilter: 'origin/(.*)',
+            defaultValue: 'master',
+            name: 'BRANCH',
+            type: 'PT_BRANCH',
+            description: 'Name of the branch to test and deploy'
+        )
+    }
     stages {
         stage("Build for testing") {
+            when {
+                expression { params.QUICK == 'False' }
+            }
             environment {
-                LOCAL_SETTINGS = credentials('local_settings_testing')
+                DATABASE_PRO = credentials('database_pro.py')
+                DATABASE_DEV = credentials('database_dev.py')
+                DATABASE_TEST = credentials('database_test.py')
+                DATABASE_FB = credentials('database_fb.py')
+                DATABASE_HH = credentials('database_hh.py')
+
+                EBI_SEARCH_ENDPOINT_PRO = credentials('ebi_search_endpoint_pro.py')
+                EBI_SEARCH_ENDPOINT_DEV = credentials('ebi_search_endpoint_dev.py')
+
+                RQ_QUEUE_LOCAL = credentials('rq_queue_local.py')
+                RQ_QUEUE_OY = credentials('rq_queue_oy.py')
+                RQ_QUEUE_PG = credentials('rq_queue_pg.py')
+
+                COMPRESSOR_DEV = credentials('compressor_dev.py')
+                COMPRESSOR_PRO = credentials('compressor_pro.py')
+
+                LOCAL_SETTINGS = credentials('local_settings.py')
                 ENV_SH = credentials('env_sh')
             }
             steps {
+                git branch: "${params.BRANCH}", url: 'https://github.com/RNAcentral/rnacentral-webcode.git'
+                script {
+                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+
+                    if (params.DATABASE == 'PRO') {
+                        sh 'cat ${DATABASE_PRO} > rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_PRO} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                    } else if (params.DATABASE == 'DEV') {
+                        sh 'cat ${DATABASE_DEV} > rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_DEV} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                    } else if (params.DATABASE == 'TEST') {
+                        sh 'cat ${DATABASE_TEST} > rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_TEST} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                    } else if (params.DATABASE == 'FB') {
+                        sh 'cat ${DATABASE_FB} > rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_FB} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                    } else if (params.DATABASE == 'HH') {
+                        sh 'cat ${DATABASE_HH} > rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_HH} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                    }
+                }
+
+                script {
+                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoints.py'
+
+                    if (params.EBI_SEARCH_ENDPOINT == 'PRO') {
+                        sh 'cat ${EBI_SEARCH_ENDPOINT_PRO} > rnacentral/rnacentral/ebi_search_endpoints.py'
+                        sh 'cat ${EBI_SEARCH_ENDPOINT_PRO} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoints.py'
+                    } else if (params.EBI_SEARCH_ENDPOINT == 'DEV') {
+                        sh 'cat ${EBI_SEARCH_ENDPOINT_DEV} > rnacentral/rnacentral/ebi_search_endpoints.py'
+                        sh 'cat ${EBI_SEARCH_ENDPOINT_DEV} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoints.py'
+                    }
+                }
+
+                script {
+                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/rq_queues.py'
+
+                    if (params.RQ_QUEUE == 'LOCAL') {
+                        sh 'cat ${RQ_QUEUE_LOCAL} > rnacentral/rnacentral/rq_queues.py'
+                        sh 'cat ${RQ_QUEUE_LOCAL} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/rq_queues.py'
+                    } else if (params.RQ_QUEUE == 'OY') {
+                        sh 'cat ${RQ_QUEUE_OY} > rnacentral/rnacentral/rq_queues.py'
+                        sh 'cat ${RQ_QUEUE_OY} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/rq_queues.py'
+                    } else if (params.RQ_QUEUE == 'PG') {
+                        sh 'cat ${RQ_QUEUE_PG} > rnacentral/rnacentral/rq_queues.py'
+                        sh 'cat ${RQ_QUEUE_PG} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/rq_queues.py'
+                    }
+                }
+
+                script {
+                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
+
+                    if (params.COMPRESSOR == 'PRO') {
+                        sh 'cat ${COMPRESSOR_PRO} > rnacentral/rnacentral/compressor.py'
+                        sh 'cat ${COMPRESSOR_PRO} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
+                    } else if (params.COMPRESSOR == 'DEV') {
+                        sh 'cat ${COMPRESSOR_DEV} > rnacentral/rnacentral/compressor.py'
+                        sh 'cat ${COMPRESSOR_DEV} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
+                    }
+                }
+
+                sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/local_settings.py'
+                sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/local_settings.pyc'
+                sh 'cat $LOCAL_SETTINGS > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/local_settings.py'
+
+                sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/env.sh'
+                sh 'cat $ENV_SH > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/env.sh'
+
                 sh 'cat $LOCAL_SETTINGS > rnacentral/rnacentral/local_settings.py'
                 sh 'cat $ENV_SH > rnacentral/scripts/env.sh'
                 sh '''
@@ -29,7 +150,13 @@ pipeline {
             }
         }
         stage("Run backend unit-tests") {
+            when {
+                expression { params.QUICK == 'False' }
+            }
             steps {
+                // see: https://support.cloudbees.com/hc/en-us/articles/115003945572-Pipeline-Build-with-git-step-on-a-specific-branch-is-triggered-by-a-different-branch
+                git branch: "${params.BRANCH}", url: 'https://github.com/RNAcentral/rnacentral-webcode.git'
+
                 // see: https://medium.com/ordergroove-engineering/continuous-deployment-of-django-applications-part-1-e3bc332bcbaf
                 script {
                     try {
@@ -49,13 +176,14 @@ pipeline {
         }
         stage("Deploy") {
             steps {
-                sh '''
+                // update python packages from requirements, if there's a need and deploy with fabric
+                sh """
                     cd /nfs/public/rw/xfam/rnacentral/test
                     source local/virtualenvs/RNAcentral/bin/activate
                     cd rnacentral-webcode/rnacentral
                     source scripts/env.sh
-                    fab localhost deploy
-                '''
+                    fab localhost deploy:quick=${params.QUICK},git_branch=${params.BRANCH}
+                """
             }
         }
     }
@@ -87,7 +215,7 @@ pipeline {
 // private void build() {
 //     stage("Build for testing") {
 //         checkout scm
-//         withCredentials([file(credentialsId: 'local_settings_testing', variable: 'LOCAL_SETTINGS'), file(credentialsId: 'env_sh', variable: 'ENV_SH')]) {
+//         withCredentials([file(credentialsId: 'local_settings.py', variable: 'LOCAL_SETTINGS'), file(credentialsId: 'env_sh', variable: 'ENV_SH')]) {
 //             sh 'cat $LOCAL_SETTINGS > rnacentral/rnacentral/local_settings.py'
 //             sh 'cat $ENV_SH > rnacentral/scripts/env.sh'
 //         }
