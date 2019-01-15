@@ -126,8 +126,8 @@ var genoverse = {
                     }
 
                     function loadPlugin(plugin) {
-                      var css      = '/static/node_modules/@burkov/genoverse/dist/' + 'css/'        + plugin + '.css';
-                      var js       = '/static/node_modules/@burkov/genoverse/dist/' + 'js/plugins/' + plugin + '.js';
+                      var css      = '/static/node_modules/@rnacentral/genoverse/dist/' + 'css/'        + plugin + '.css';
+                      var js       = '/static/node_modules/@rnacentral/genoverse/dist/' + 'js/plugins/' + plugin + '.js';
                       var deferred = $.Deferred();
 
                       function getCSS() {
