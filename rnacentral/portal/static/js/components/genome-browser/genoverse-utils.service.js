@@ -341,7 +341,11 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
      */
     GenoverseUtils.prototype.getEnsemblEndpoint = function(species, genomes) {
         var genomeObject = GenoverseUtils.prototype.getGenomeObject(species, genomes);
-        return genomeObject.division === 'Ensembl' ? 'https://rest.ensembl.org' : 'https://rest.ensemblgenomes.org';
+        if (genomeObject.division === 'Ensembl' || genomeObject.division === 'EnsemblVertebrates') {
+            return 'https://rest.ensembl.org';
+        } else {
+            return 'https://rest.ensemblgenomes.org';
+        }
     };
 
     /**
