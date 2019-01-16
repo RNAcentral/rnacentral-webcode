@@ -365,77 +365,25 @@ class RnaGenomeLocations(generics.ListAPIView):
     queryset = Rna.objects.select_related().all()
 
     def get(self, request, pk=None, taxid=None, format=None):
-        """Paginated list of genome locations"""
-        locations = []
-
-        rna = self.get_object()
-        xrefs = rna.get_xrefs(taxid=taxid).filter(deleted='N')
         # if assembly with this taxid is not found, just return empty locations list
         try:
             assembly = EnsemblAssembly.objects.get(taxid=taxid)  # this applies only to species-specific pages
         except EnsemblAssembly.DoesNotExist:
             return Response([])
 
-        for xref in xrefs:
-            if xref.accession.coordinates.exists():
-                chromosomes = []
-                for entry in xref.accession.coordinates.all():
-                    if not entry.primary_start or not entry.primary_end:
-                        continue
-                    if entry.chromosome not in chromosomes:
-                        chromosomes.append(entry.chromosome)
-                for chromosome in chromosomes:
-                    data = {
-                        'chromosome': chromosome,
-                        'strand': xref.accession.coordinates.filter(chromosome=chromosome).all()[0].strand,
-                        'start': xref.accession.coordinates.filter(chromosome=chromosome).all().aggregate(Min('primary_start'))['primary_start__min'],
-                        'end': xref.accession.coordinates.filter(chromosome=chromosome).all().aggregate(Max('primary_end'))['primary_end__max'],
-                        'species': assembly.ensembl_url,
-                        'ucsc_db_id': xref.get_ucsc_db_id(),
-                        'ensembl_division': xref.get_ensembl_division(),
-                        'ensembl_species_url': xref.accession.get_ensembl_species_url()
-                    }
-
-                    exceptions = ['X', 'Y']
-                    if re.match(r'\d+', data['chromosome']) or data['chromosome'] in exceptions:
-                        data['ucsc_chromosome'] = 'chr' + data['chromosome']
-                    else:
-                        data['ucsc_chromosome'] = data['chromosome']
-
-                    if data not in locations:
-                        locations.append(data)
-
-        return Response(locations)
-
-
-class RnaGenomeMappings(generics.ListAPIView):
-    """
-    List of distinct genomic locations, where a specific RNA
-    was computationally mapped onto a specific genome location.
-
-    [API documentation](/api)
-    """
-    queryset = Rna.objects.select_related().all()
-
-    def get(self, request, pk=None, taxid=None, format=None):
         rna = self.get_object()
-        mappings = rna.genome_mappings.filter(taxid=taxid)\
-                                      .values('region_id', 'strand', 'chromosome', 'taxid', 'identity')\
-                                      .annotate(Min('start'), Max('stop'))
+        rna_precomputed = RnaPrecomputed.objects.get(id=rna.upi + "_" + assembly.taxid)
 
-        try:
-            assembly = EnsemblAssembly.objects.get(taxid=taxid)  # this applies only to species-specific pages
-        except EnsemblAssembly.DoesNotExist:
-            return Response([])
+        regions = SequenceRegion.objects.filter(urs_taxid=rna_precomputed)
 
         output = []
-        for mapping in mappings:
-            data = {
-                'chromosome': mapping["chromosome"],
-                'strand': mapping["strand"],
-                'start': mapping["start__min"],
-                'end': mapping["stop__max"],
-                'identity': mapping["identity"],
+        for region in regions:
+            output.append({
+                'chromosome': region.chromosome,
+                'strand': region.strand,
+                'start': region.start,
+                'end': region.end,
+                'identity': region.identity,
                 'species': assembly.ensembl_url,
                 'ucsc_db_id': assembly.assembly_ucsc,
                 'ensembl_division': {
@@ -443,8 +391,13 @@ class RnaGenomeMappings(generics.ListAPIView):
                     'url': 'http://' + assembly.subdomain
                 },
                 'ensembl_species_url': assembly.ensembl_url
-            }
-            output.append(data)
+            })
+
+            exceptions = ['X', 'Y']
+            if re.match(r'\d+', output[-1]['chromosome']) or output[-1]['chromosome'] in exceptions:
+                output[-1]['ucsc_chromosome'] = 'chr' + output[-1]['chromosome']
+            else:
+                output[-1]['ucsc_chromosome'] = output[-1]['chromosome']
 
         return Response(output)
 
