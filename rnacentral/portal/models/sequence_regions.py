@@ -15,12 +15,18 @@ from django.db import models
 
 from django.contrib.postgres.fields import ArrayField
 
-from portal.models import EnsemblAssembly
+from portal.models import EnsemblAssembly, RnaPrecomputed
 
 
 class SequenceRegion(models.Model):
     id = models.AutoField(primary_key=True)
-    urs_taxid = models.TextField()
+    urs_taxid = models.ForeignKey(
+        RnaPrecomputed,
+        related_name='regions',
+        db_column='urs_taxid',
+        to_field='id',
+        on_delete=models.CASCADE
+    )
     region_name = models.TextField()
     chromosome = models.TextField()
     strand = models.IntegerField()

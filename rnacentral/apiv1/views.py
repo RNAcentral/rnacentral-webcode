@@ -70,83 +70,53 @@ class GenomeAnnotations(APIView):
         start = start.replace(',', '')
         end = end.replace(',', '')
 
-        # get features from xrefs and from genome mappings
-        xrefs_features = features_from_xrefs(species, chromosome, start, end)
-        mappings_features = features_from_mappings(species, chromosome, start, end)
-
-        # filter out features from genome mappings that duplicate features from xrefs
-        features = xrefs_features[:]
-        for mappings_feature in mappings_features:
-            duplicate = False  # flag
-            for xrefs_feature in xrefs_features:
-                if (xrefs_feature['start'] == mappings_feature['start'] and
-                   xrefs_feature['end'] == mappings_feature['end'] and
-                   str(xrefs_feature['strand']) == str(mappings_feature['strand']) and
-                   xrefs_feature['seq_region_name'] == mappings_feature['seq_region_name'] and
-                   xrefs_feature['taxid'] == mappings_feature['taxid'] and
-                   xrefs_feature['external_name'] == mappings_feature['external_name']):
-                    duplicate = True
-                    break
-
-            if not duplicate:
-                features.append(mappings_feature)
-
-        return Response(features)
-
-    def get(self, request, species, chromosome, start, end, format=None):
-        start = start.replace(',', '')
-        end = end.replace(',', '')
-
         try:
             assembly = EnsemblAssembly.objects.get(ensembl_url=species)
         except EnsemblAssembly.DoesNotExist:
             return Response([])
 
-        SequenceRegion.objects.filter(
+        regions = SequenceRegion.objects.filter(
             assembly=assembly,
             chromosome=chromosome,
             region_start__gte=start,
             region_end__lte=end
-        ).prefetch_related('exons')
+        ).select_related('urs_taxid')\
+         .prefetch_related('exons')
 
         features = []
-
-        transcript = {
-            'ID': transcript_id,
-            'external_name': upi,
-            'taxid': assembly.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
-            'feature_type': 'transcript',
-            'logic_name': 'RNAcentral',  # required by Genoverse
-            'biotype': biotype,  # required by Genoverse
-            'description': description,
-            'seq_region_name': chromosome,
-            'strand': coordinates['strand'],
-            'start': coordinates['start'],
-            'end': coordinates['end'],
-            'databases': databases
-        }
-
-        upi2data[upi] = transcript
-        data.append(transcript)
-
-        # exons
-        for i, exon in enumerate(exons):
-            exon_id = '_'.join([accession, 'exon_' + str(i)])
-            if not exon.name:
-                continue  # some exons may not be mapped onto the genome (common in RefSeq)
-            data.append({
-                'external_name': exon_id,
-                'ID': exon_id,
-                'taxid': exons[0].taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
-                'feature_type': 'exon',
-                'Parent': transcript_id,
+        for transcript in regions:
+            features.append({
+                'ID': transcript.region_name,
+                'external_name': transcript.urs_taxid.split('_'),
+                'taxid': assembly.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
+                'feature_type': 'transcript',
                 'logic_name': 'RNAcentral',  # required by Genoverse
-                'biotype': biotype,  # required by Genoverse
-                'seq_region_name': chromosome,
-                'strand': exon.strand,
-                'start': exon.primary_start,
-                'end': exon.primary_end,
+                'biotype': transcript.urs_taxid.rna_type,  # required by Genoverse
+                'description': transcript.urs_taxid.short_description,
+                'seq_region_name': transcript.chromosome,
+                'strand': transcript.strand,
+                'start': transcript.region_start,
+                'end': transcript.region_stop,
+                'databases': ",".join(transcript.providing_databases)
             })
+
+            # exons
+            for exon in transcript.exons:
+                features.append({
+                    'external_name': exon.id,
+                    'ID': exon.id,
+                    'taxid': assembly.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
+                    'feature_type': 'exon',
+                    'Parent': transcript.id,
+                    'logic_name': 'RNAcentral',  # required by Genoverse
+                    'biotype': transcript.urs_taxid.rna_type,  # required by Genoverse
+                    'seq_region_name': transcript.chromosome,
+                    'strand': exon.strand,
+                    'start': exon.exon_start,
+                    'end': exon.exon_stop,
+                })
+
+        return features
 
 
 
