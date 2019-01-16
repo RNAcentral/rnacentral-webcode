@@ -24,6 +24,9 @@ To run locally:
 To run remotely:
     fab -H server1,server2 production deploy
 
+To pass parameters in:
+    fab localhost deploy:quick=params.QUICK,git_branch=params.BRANCH
+
 For more options, run `fab help`.
 """
 
@@ -34,6 +37,7 @@ import requests
 
 from fabric.api import cd, env, lcd, local, prefix, run, warn_only
 from fabric.contrib import django
+from simplecrypt import encrypt, decrypt
 
 # load Django settings
 django.settings_module('rnacentral.settings')
@@ -73,6 +77,7 @@ def git_updates(git_branch=None):
     """
     with env.cd(settings.PROJECT_PATH):
         if git_branch:
+            env.run('git reset --hard')
             env.run('git checkout {branch}'.format(branch=git_branch))
         env.run('git pull')
         env.run('git submodule update')
@@ -94,6 +99,7 @@ def update_npm():
     """
     path = os.path.join(settings.PROJECT_PATH, 'rnacentral', 'portal', 'static')
     with env.cd(path):
+        env.run('rm -f package-lock.json')
         env.run('npm update --loglevel info')
 
 
@@ -189,8 +195,14 @@ def rsync_local_files(dry_run=None):
 def slack(message):
     """
     Send message to slack RNAcentral channel.
+
+    Slack hook is encrypted with settings.SECRET_KEY by running:
+
+    from django.conf import settings
+    encrypted_slack_hook = encrypt(settings.SECRET_KEY, slack_hook)
     """
-    slack_hook = 'https://hooks.slack.com/services/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'
+    encrypted_slack_hook = "sc\x00\x02\xe6T\xa3Wm\x1c\x91\x95\xcb3m\xbd+) \xf9\x9d1o\x86NL\xc1\xea!\x94I\xdc\x8eo\xb6\xba\x85-\xaf\x1e \xad\xfa{E\x01[+>\xba\x1d\xc6hM\xc2\xf8uLk\x11\r>\xd1\x1dg\rB2\xc5\x9b\xcd}m-$*@\xe7\xc9iJ\xee\xe3/\xba=\xa9n\xbe~c\xcd\xad\\D\xe14\x0bh\xe5\xfd2\x85Ws\xc2i\xba\xd4\xb6\x0cj\x97z\xc4\xc2\xf8\xe8\xe0)\xe3:W\xae\x92\x19+'$z\x1a\xb3\xf0\xef\x8c\xab!T=\x17\xc6\xbf-\x8e="
+    slack_hook = decrypt(settings.SECRET_KEY, encrypted_slack_hook)
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
     requests.post(slack_hook, json.dumps({'text': message}), headers=headers)
 
@@ -231,6 +243,7 @@ def deploy_remotely(git_branch=None, restart_url='https://rnacentral.org', quick
     if not git_branch:
         with env.cd(settings.PROJECT_PATH):
             git_branch = env.run('git rev-parse --abbrev-ref HEAD')
+
     slack("Deployed '%s' at %s: <https://rnacentral.org|rnacentral.org>" % (git_branch, env.host))
 
 
@@ -252,6 +265,7 @@ def test(base_url='http://localhost:8000/'):
     Single entry point for all tests.
     """
     with env.cd(settings.PROJECT_PATH):
+
         # env.run('python rnacentral/apiv1/tests.py --base_url=%s' % base_url)
         env.run('python rnacentral/portal/tests/selenium_tests.py --base_url %s --driver=phantomjs' % base_url)  # pylint: disable=C0301
         env.run('python rnacentral/apiv1/search/sequence/tests.py --base_url %s' % base_url)  # pylint: disable=C0301
