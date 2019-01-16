@@ -97,23 +97,19 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         return $q(function (resolve, reject) {
             $http.get(routes.apiGenomeLocationsView({ upi: $scope.upi, taxid: $scope.taxid })).then(
                 function (response) {
-                    $scope.genomeLocations = response.data;
-                    resolve(response.data);
-                },
-                function () {
-                    $scope.fetchGenomeLocationsStatus = 'error';
-                    reject();
-                }
-            );
-        });
-    };
+                    // sort genome locations in a biologically relevant way
+                    $scope.locations = response.data.sort(function(a, b) {
+                        if (a.chromosome !== b.chromosome) {  // sort by chromosome first
+                            if (isNaN(a.chromosome) && (!isNaN(b.chromosome))) return 1;
+                            else if (isNaN(b.chromosome) && (!isNaN(a.chromosome))) return -1;
+                            else if (isNaN(a.chromosome) && (isNaN(b.chromosome))) return a.chromosome > b.chromosome ? 1 : -1;
+                            else return (parseInt(a.chromosome) - parseInt(b.chromosome));
+                        } else {
+                            return a.start - b.start;  // sort by start within chromosome
+                        }
+                    });
 
-    $scope.fetchGenomeMappings = function() {
-        return $q(function (resolve, reject) {
-            $http.get(routes.apiGenomeMappingsView({upi: $scope.upi, taxid: $scope.taxid})).then(
-                function (response) {
-                    $scope.genomeMappings = response.data;
-                    resolve(response.data);
+                    resolve($scope.locations);
                 },
                 function () {
                     $scope.fetchGenomeLocationsStatus = 'error';
@@ -477,39 +473,16 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     });
 
     if ($scope.taxid) {
-        $q.all([$scope.fetchGenomeLocations(), $scope.fetchGenomeMappings()]).then(function() {
+        $scope.fetchGenomeLocations().then(function() {
             $scope.fetchGenomeLocationsStatus = 'success';
 
-            // filter out genome locations, known from literature, from genome mappings
-            $scope.genomeMappings = $scope.genomeMappings.filter(function(mapping) {
-                return !$scope.genomeLocations.some(function(location) {
-                    return location.start == mapping.start &&
-                           location.end  == mapping.end &&
-                           location.strand == mapping.strand &&
-                           location.chromosome == mapping.chromosome;
-                });
-            });
-
-            // if any locations/mappings, activate genome browser
-            if ($scope.genomeLocations.length > 0 || $scope.genomeMappings.length > 0) {
-                var location = $scope.genomeLocations.length ? $scope.genomeLocations[0] : $scope.genomeMappings[0];
+            // if any locations, activate genome browser
+            if ($scope.locations.length > 0) {
+                var location = $scope.locations[0];
                 $scope.fetchGenomes().then(function() {
                     $scope.activateGenomeBrowser(location.start, location.end, location.chromosome, location.species);
                 });
             }
-
-            // join genome locations and mappings and sort them in a biologically relevant way
-            $scope.locations = $scope.genomeMappings.concat($scope.genomeLocations);
-            $scope.locations = $scope.locations.sort(function(a, b) {
-                if (a.chromosome !== b.chromosome) {  // sort by chromosome first
-                    if (isNaN(a.chromosome) && (!isNaN(b.chromosome))) return 1;
-                    else if (isNaN(b.chromosome) && (!isNaN(a.chromosome))) return -1;
-                    else if (isNaN(a.chromosome) && (isNaN(b.chromosome))) return a.chromosome > b.chromosome ? 1 : -1;
-                    else return (parseInt(a.chromosome) - parseInt(b.chromosome));
-                } else {
-                    return a.start - b.start;  // sort by start within chromosome
-                }
-            });
 
         }, function() {
             $scope.fetchGenomeLocationsStatus = 'error';

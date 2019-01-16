@@ -372,7 +372,8 @@ class RnaGenomeLocations(generics.ListAPIView):
             return Response([])
 
         rna = self.get_object()
-        rna_precomputed = RnaPrecomputed.objects.get(id=rna.upi + "_" + assembly.taxid)
+        urs_taxid = rna.upi + "_" + str(assembly.taxid)
+        rna_precomputed = RnaPrecomputed.objects.get(id=urs_taxid)
 
         regions = SequenceRegion.objects.filter(urs_taxid=rna_precomputed)
 
@@ -381,8 +382,8 @@ class RnaGenomeLocations(generics.ListAPIView):
             output.append({
                 'chromosome': region.chromosome,
                 'strand': region.strand,
-                'start': region.start,
-                'end': region.end,
+                'start': region.region_start,
+                'end': region.region_stop,
                 'identity': region.identity,
                 'species': assembly.ensembl_url,
                 'ucsc_db_id': assembly.assembly_ucsc,

@@ -179,10 +179,10 @@ limitations under the License.
                                                 <a ng-href="{{ 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + location.ucsc_db_id + '&position=' + location.ucsc_chromosome + ':' + location.start + '-' + location.end }}" target="_blank">UCSC</a>
                                             </span>
                                         </td>
-                                        <td ng-if="genomeLocations.indexOf(location) !== -1">
+                                        <td ng-if="location.identity === null || location.identity === undefined">
                                             <span>100% <i uib-tooltip="Imported from an Expert Database" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i></span>
                                         </td>
-                                        <td ng-if="genomeMappings.indexOf(location) !== -1">
+                                        <td ng-if="location.identity !== null && location.identity !== undefined">
                                             <span>{{ location.identity * 100 | number:0 }}% <i uib-tooltip="Based on blat genome mapping" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i>
                                         </td>
                                     </tr>
@@ -198,7 +198,7 @@ limitations under the License.
                     <genoverse genome="browserLocation.genome" chr="browserLocation.chr" start="browserLocation.start" end="browserLocation.end" highlights="browserLocation.highlights" genoverse-utils="genoverseUtils"></genoverse>
                 </div>
 
-                <div ng-if="taxid && fetchGenomeLocationsStatus === 'success' && (genomeLocations.length + genomeMappings.length ) === 0">
+                <div ng-if="taxid && fetchGenomeLocationsStatus === 'success' && locations.length === 0">
                   <p>
                     No genome locations found for this sequence. <a href="{% url 'help-genomic-mapping' %}">Learn more &rarr;</a>
                   <p>
