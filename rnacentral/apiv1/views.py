@@ -44,7 +44,7 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
     EnsemblInsdcMapping, GenomeMapping, GenomicCoordinates, GoAnnotation, RelatedSequence, ProteinInfo, SequenceFeature,\
-    url2db, db2url
+    SequenceRegion
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination, PaginatedRawQuerySet
 
@@ -92,6 +92,63 @@ class GenomeAnnotations(APIView):
                 features.append(mappings_feature)
 
         return Response(features)
+
+    def get(self, request, species, chromosome, start, end, format=None):
+        start = start.replace(',', '')
+        end = end.replace(',', '')
+
+        try:
+            assembly = EnsemblAssembly.objects.get(ensembl_url=species)
+        except EnsemblAssembly.DoesNotExist:
+            return Response([])
+
+        SequenceRegion.objects.filter(
+            assembly=assembly,
+            chromosome=chromosome,
+            region_start__gte=start,
+            region_end__lte=end
+        ).prefetch_related('exons')
+
+        features = []
+
+        transcript = {
+            'ID': transcript_id,
+            'external_name': upi,
+            'taxid': assembly.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
+            'feature_type': 'transcript',
+            'logic_name': 'RNAcentral',  # required by Genoverse
+            'biotype': biotype,  # required by Genoverse
+            'description': description,
+            'seq_region_name': chromosome,
+            'strand': coordinates['strand'],
+            'start': coordinates['start'],
+            'end': coordinates['end'],
+            'databases': databases
+        }
+
+        upi2data[upi] = transcript
+        data.append(transcript)
+
+        # exons
+        for i, exon in enumerate(exons):
+            exon_id = '_'.join([accession, 'exon_' + str(i)])
+            if not exon.name:
+                continue  # some exons may not be mapped onto the genome (common in RefSeq)
+            data.append({
+                'external_name': exon_id,
+                'ID': exon_id,
+                'taxid': exons[0].taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
+                'feature_type': 'exon',
+                'Parent': transcript_id,
+                'logic_name': 'RNAcentral',  # required by Genoverse
+                'biotype': biotype,  # required by Genoverse
+                'seq_region_name': chromosome,
+                'strand': exon.strand,
+                'start': exon.primary_start,
+                'end': exon.primary_end,
+            })
+
+
 
 
 def features_from_xrefs(species, chromosome, start, end):
