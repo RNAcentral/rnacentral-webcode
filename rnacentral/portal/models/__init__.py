@@ -36,3 +36,4 @@ from .protein_info import *
 from .related_sequences import *
 from .sequence_features import *
 from .sequence_regions import *
+from .sequence_exons import *
