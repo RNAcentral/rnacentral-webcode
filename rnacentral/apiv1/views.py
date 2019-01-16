@@ -79,7 +79,7 @@ class GenomeAnnotations(APIView):
             assembly=assembly,
             chromosome=chromosome,
             region_start__gte=start,
-            region_end__lte=end
+            region_stop__lte=end
         ).select_related('urs_taxid')\
          .prefetch_related('exons')
 
@@ -87,7 +87,7 @@ class GenomeAnnotations(APIView):
         for transcript in regions:
             features.append({
                 'ID': transcript.region_name,
-                'external_name': transcript.urs_taxid.split('_'),
+                'external_name': transcript.urs_taxid.id.split('_')[0],
                 'taxid': assembly.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
                 'feature_type': 'transcript',
                 'logic_name': 'RNAcentral',  # required by Genoverse
@@ -97,245 +97,26 @@ class GenomeAnnotations(APIView):
                 'strand': transcript.strand,
                 'start': transcript.region_start,
                 'end': transcript.region_stop,
-                'databases': ",".join(transcript.providing_databases)
+                'databases': transcript.providing_databases
             })
 
             # exons
-            for exon in transcript.exons:
+            for exon in transcript.exons.all():
                 features.append({
                     'external_name': exon.id,
                     'ID': exon.id,
                     'taxid': assembly.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
                     'feature_type': 'exon',
-                    'Parent': transcript.id,
+                    'Parent': transcript.region_name,
                     'logic_name': 'RNAcentral',  # required by Genoverse
                     'biotype': transcript.urs_taxid.rna_type,  # required by Genoverse
                     'seq_region_name': transcript.chromosome,
-                    'strand': exon.strand,
+                    'strand': transcript.strand,
                     'start': exon.exon_start,
                     'end': exon.exon_stop,
                 })
 
-        return features
-
-
-
-
-def features_from_xrefs(species, chromosome, start, end):
-    try:
-        assembly = EnsemblAssembly.objects.get(ensembl_url=species)
-    except EnsemblAssembly.DoesNotExist:
-        return Response([])
-
-    query = '''
-        WITH acc_coord AS (
-          SELECT DISTINCT
-          c.name,
-          c.strand,
-          c.primary_start,
-          c.primary_end,
-          c.accession
-          FROM {rnc_coordinates} c
-          JOIN {rnc_accessions} a on (a.accession = c.accession)
-          WHERE c.primary_start >= {start}
-          AND c.primary_end <= {end}
-          AND c.name = '{chromosome}'
-        )
-        SELECT
-        1 id,
-        xref.upi,
-        xref.taxid,
-        acc_coord.accession,
-        acc_coord.name,
-        acc_coord.strand,
-        acc_coord.primary_start,
-        acc_coord.primary_end
-        FROM xref
-        JOIN acc_coord ON (xref.ac = acc_coord.accession)
-        WHERE xref.deleted = 'N'
-        AND xref.taxid = {taxid};
-    '''.format(
-        xref=Xref._meta.db_table,
-        rnc_accessions=Accession._meta.db_table,
-        rnc_coordinates=GenomicCoordinates._meta.db_table,
-        rnc_rna_precomputed=RnaPrecomputed._meta.db_table,
-        taxid=assembly.taxid,
-        start=start,
-        end=end,
-        chromosome=chromosome
-    )
-
-    from django.db import connections
-    from psycopg2.extras import NamedTupleCursor
-    conn = connections['default']
-    conn.ensure_connection()
-    with conn.connection.cursor(cursor_factory=NamedTupleCursor) as cursor:
-        cursor.execute(query)
-        results = cursor.fetchall()
-
-    upi2data = {}
-    data = []
-
-    ac2exons = {}  # { result.accession: [result, result, result]}
-    for result in results:
-        if result.accession not in ac2exons:
-            ac2exons[result.accession] = [result]
-        else:
-            ac2exons[result.accession].append(result)
-
-    for accession, exons in ac2exons.items():
-        upi = exons[0].upi
-
-        # create only one transcript object per upi
-        if upi not in upi2data:
-            xrefs_object = Xref.default_objects.filter(upi=upi, taxid=assembly.taxid, deleted='N').select_related('db').all()
-            databases = list(set([x.db.display_name for x in xrefs_object]))
-            databases.sort()
-
-            # manually populate coordinates with what used to be xref.get_genomic_coordinates()
-            coordinates = {
-                'chromosome': GenomicCoordinates.objects.filter(accession=accession, chromosome__isnull=False).first().chromosome,
-                'strand': GenomicCoordinates.objects.filter(accession=accession, chromosome__isnull=False).first().strand,
-                'start': min([exon.primary_start for exon in exons]),
-                'end': max([exon.primary_end for exon in exons])
-            }
-            if re.match(r'\d+', coordinates['chromosome']) or coordinates['chromosome'] in ['X', 'Y']:
-                coordinates['ucsc_chromosome'] = 'chr' + coordinates['chromosome']
-            else:
-                coordinates['ucsc_chromosome'] = coordinates['chromosome']
-
-            transcript_id = upi + '_' + coordinates['chromosome'] + ':' + str(coordinates['start']) + '-' + str(coordinates['end'])
-
-            # do N+1 requests on rna_precomputed per each upi, cause SQL join with it is dead slow for some reason
-            rna_precomputed = RnaPrecomputed.objects.get(upi=exons[0].upi, taxid=assembly.taxid)
-            biotype = rna_precomputed.rna_type  # used to be biotype = xref.accession.get_biotype()
-            description = rna_precomputed.description
-
-            transcript = {
-                'ID': transcript_id,
-                'external_name': upi,
-                'taxid': exons[0].taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
-                'feature_type': 'transcript',
-                'logic_name': 'RNAcentral',  # required by Genoverse
-                'biotype': biotype,  # required by Genoverse
-                'description': description,
-                'seq_region_name': chromosome,
-                'strand': coordinates['strand'],
-                'start': coordinates['start'],
-                'end': coordinates['end'],
-                'databases': databases
-            }
-
-            upi2data[upi] = transcript
-            data.append(transcript)
-
-            # exons
-            for i, exon in enumerate(exons):
-                exon_id = '_'.join([accession, 'exon_' + str(i)])
-                if not exon.name:
-                    continue  # some exons may not be mapped onto the genome (common in RefSeq)
-                data.append({
-                    'external_name': exon_id,
-                    'ID': exon_id,
-                    'taxid': exons[0].taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
-                    'feature_type': 'exon',
-                    'Parent': transcript_id,
-                    'logic_name': 'RNAcentral',  # required by Genoverse
-                    'biotype': biotype,  # required by Genoverse
-                    'seq_region_name': chromosome,
-                    'strand': exon.strand,
-                    'start': exon.primary_start,
-                    'end': exon.primary_end,
-                })
-
-    return data
-
-
-def features_from_mappings(species, chromosome, start, end):
-    try:
-        taxid = EnsemblAssembly.objects.get(ensembl_url=species).taxid
-    except EnsemblAssembly.DoesNotExist:
-        return Response([])
-
-    mappings = GenomeMapping.objects.filter(taxid=taxid, chromosome=chromosome, start__gte=start, stop__lte=end)\
-                                    .select_related('upi').prefetch_related('upi__precomputed')
-
-    transcripts_query = '''
-        SELECT 1 id, region_id, strand, chromosome, start, stop, mapping.taxid as taxid,
-          precomputed.rna_type as rna_type, precomputed.description as description, rna.upi as upi
-        FROM (
-          SELECT region_id, upi, strand, chromosome, taxid, MIN(start) as start, MAX(stop) as stop
-          FROM {genome_mapping}
-          GROUP BY region_id, upi, strand, chromosome, taxid
-          HAVING MIN(start) > {start}
-             AND MAX(stop) < {stop}
-             AND taxid = {taxid}
-             AND chromosome = '{chromosome}'
-        ) mapping
-        JOIN rna
-        ON mapping.upi=rna.upi
-        JOIN (
-          SELECT * FROM {rna_precomputed} WHERE taxid={taxid} and is_active = true
-        ) precomputed
-        ON {rna}.upi=precomputed.upi
-    '''.format(
-        genome_mapping=GenomeMapping._meta.db_table,
-        rna=Rna._meta.db_table,
-        rna_precomputed=RnaPrecomputed._meta.db_table,
-        taxid=taxid,
-        start=start,
-        stop=end,
-        chromosome=chromosome
-    )
-
-    try:
-        transcripts = GenomeMapping.objects.raw(transcripts_query)
-    except GenomeMapping.DoesNotExist:
-        transcripts = []
-
-    data = []
-    for transcript in transcripts:
-        xrefs = Xref.default_objects.filter(upi=transcript.upi.upi, taxid=taxid, deleted='N').select_related('db').all()
-        databases = list(set([xref.db.display_name for xref in xrefs]))
-        databases.sort()
-
-        data.append({
-            'ID': transcript.region_id,
-            'external_name': transcript.upi.upi,
-            'taxid': transcript.taxid,
-            'feature_type': 'transcript',
-            'logic_name': 'RNAcentral',
-            'biotype': transcript.rna_type,
-            'description': transcript.description,
-            'seq_region_name': transcript.chromosome,
-            'strand': transcript.strand,
-            'start': transcript.start,
-            'end': transcript.stop,
-            'databases': databases
-        })
-
-    for i, exon in enumerate(mappings):
-        try:
-            biotype = exon.upi.precomputed.get(taxid=taxid).rna_type
-        except exon.DoesNotExist:
-            biotype = exon.upi.precomputed.get(taxid__isnull=True).rna_type
-
-        exon_id = '_'.join([exon.region_id, 'exon_' + str(i)])
-        data.append({
-            'external_name': exon.region_id,
-            'ID': exon_id,
-            'taxid': exon.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
-            'feature_type': 'exon',
-            'Parent': exon.region_id,
-            'logic_name': 'RNAcentral',  # required by Genoverse
-            'biotype': biotype,  # required by Genoverse
-            'seq_region_name': exon.chromosome,
-            'strand': exon.strand,
-            'start': exon.start,
-            'end': exon.stop,
-        })
-
-    return data
+        return Response(features)
 
 
 class APIRoot(APIView):
