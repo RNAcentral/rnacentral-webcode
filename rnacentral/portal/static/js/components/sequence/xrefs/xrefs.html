@@ -368,34 +368,6 @@
               Source ENA entry: <a href="{{ xref.accession.ena_url }}" target="_blank" ng-attr-title="{{ xref.accession.non_coding_id }} at ENA">{{ xref.accession.non_coding_id }}</a>
             </span>
 
-            <!-- show genomic locations for non-human species -->
-            <span ng-if="xref.genomic_coordinates">
-              <br>
-              <i class="fa fa-angle-right"></i>
-                <button
-                    ng-if="!$ctrl.chromosomeIsScaffold(xref.genomic_coordinates.chromosome)"
-                    type="button"
-                    class="btn btn-default btn-xs genoverse-xref help margin-right-5px"
-                    ng-click="$ctrl.onActivateGenomeBrowser({ start: xref.genomic_coordinates.start, end: xref.genomic_coordinates.end, chr: xref.genomic_coordinates.chromosome, genome: xref.accession.species.replace(' ', '_').toLowerCase() }); $ctrl.onScrollToGenomeBrowser();"
-                    title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> {{ xref.genomic_coordinates.chromosome }} : {{ xref.genomic_coordinates.start | number }} - {{ xref.genomic_coordinates.end | number }} : {{ xref.genomic_coordinates.strand === 1 ? '+' : '-' }}
-                </button>
-                <li ng-if="$ctrl.chromosomeIsScaffold(xref.genomic_coordinates.chromosome)" class="badge">genomic location</li>
-                <small>
-                  <!-- Ensembl url -->
-                  <span class="margin-right-5px ensembl-link">
-                    <a ng-href="{{ xref.ensembl_division.url + '/' + xref.accession.ensembl_species_url + '/Location/View?r=' + xref.genomic_coordinates.chromosome + ':' + xref.genomic_coordinates.start + '-' + xref.genomic_coordinates.end }}" target="_blank">{{ xref.ensembl_division.name }}</a>
-                  </span>
-                  <!-- UCSC url -->
-                  <span ng-if="xref.ucsc_db_id" class="margin-right-5px ucsc-link">
-                    <a ng-href="{{ 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + xref.ucsc_db_id + '&position=' + xref.genomic_coordinates.ucsc_chromosome + ':' + xref.genomic_coordinates.start + '-' + xref.genomic_coordinates.end }}" target="_blank">UCSC</a>
-                  </span>
-                  <!-- WormBase url for Caenorhabditis elegans -->
-                  <span ng-if="xref.accession.species === 'Caenorhabditis elegans'">
-                    <a href="{{ 'https://wormbase.org/tools/genome/jbrowse-simple/?tracks=Curated_Genes%2CClassical_alleles%2CYACs_Fosmids_Cosmids&loc=' + xref.genomic_coordinates.chromosome + '%3A' + xref.genomic_coordinates.start + '..' + xref.genomic_coordinates.end + '&data=data%2Fc_elegans_PRJNA13758' }}">WormBase genome browser</a>
-                  </span>
-                </small>
-            </span>
-
             <span ng-if="xref.is_active == false">
               <br>
               <small><span class="label label-danger" title="This annotation was removed from the Expert Database">Removed from database</span></small>
