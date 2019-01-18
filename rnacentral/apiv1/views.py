@@ -75,13 +75,16 @@ class GenomeAnnotations(APIView):
         except EnsemblAssembly.DoesNotExist:
             return Response([])
 
-        regions = SequenceRegion.objects.filter(
-            assembly=assembly,
-            chromosome=chromosome,
-            region_start__gte=start,
-            region_stop__lte=end
-        ).select_related('urs_taxid')\
-         .prefetch_related('exons')
+        regions = SequenceRegion.objects\
+            .select_related('urs_taxid')\
+            .prefetch_related('exons')\
+            .filter(
+                assembly=assembly,
+                chromosome=chromosome,
+                region_start__gte=start,
+                region_stop__lte=end,
+                urs_taxid__is_active=True
+            )
 
         features = []
         for transcript in regions:
