@@ -533,7 +533,7 @@ class SequenceFeaturesAPIViewSet(generics.ListAPIView):
     def get_queryset(self):
         upi = self.kwargs['pk']
         taxid = self.kwargs['taxid']
-        return SequenceFeature.objects.filter(upi=upi, taxid=taxid)
+        return SequenceFeature.objects.filter(upi=upi, taxid=taxid, feature_name="conserved_rna_structure")
 
 
 class EnsemblInsdcMappingView(APIView):
