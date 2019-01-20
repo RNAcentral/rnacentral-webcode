@@ -122,8 +122,10 @@ pipeline {
                 script {
                     sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
 
+                    // for testing environment always use COMPRESSOR_DEV no matter what
+
                     if (params.COMPRESSOR == 'PRO') {
-                        sh 'cat ${COMPRESSOR_PRO} > rnacentral/rnacentral/compressor.py'
+                        sh 'cat ${COMPRESSOR_DEV} > rnacentral/rnacentral/compressor.py'  // this is not an error, we use DEV
                         sh 'cat ${COMPRESSOR_PRO} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
                     } else if (params.COMPRESSOR == 'DEV') {
                         sh 'cat ${COMPRESSOR_DEV} > rnacentral/rnacentral/compressor.py'
