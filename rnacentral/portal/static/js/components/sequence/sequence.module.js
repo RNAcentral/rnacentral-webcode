@@ -502,7 +502,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                                 var content = '<div class="media">';
                                 content += '<div class="media style="padding-left: 0;">';
                                 content += ' <img class="media-object thumbnail"';
-                                content += '   src="https://rth.dk/resources/rnannotator/crs/vert/data/figure/alignment/hg38_17way/M0/M0707028_ext_liftover_17way.aln.png"';
+                                content += '   src="https://rth.dk/resources/rnannotator/crs/vert/data/figure/alignment/hg38_17way/' + crs_id.slice(0,2) + '/' + crs_id + '_ext_liftover_17way.aln.png"';
                                 content += '   style="max-width: 550px; max-height: 550px;">';
                                 content += '</div>';
                                 content += '<div class="media-body">';
