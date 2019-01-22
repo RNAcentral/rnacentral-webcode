@@ -1469,3 +1469,7 @@ textarea {
   font-size: 12px;
   border-radius: 15px;
 }
+
+.rfamModelsGroup, .crsFeaturesGroup {
+  cursor: pointer;
+}

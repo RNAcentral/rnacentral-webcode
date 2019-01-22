@@ -265,8 +265,11 @@ limitations under the License.
                 </p>
                 {% endif %}
                 <div id="feature-viewer"></div>
-                <p class="text-muted"><b>To zoom in:</b> Left click to select area of interest; <b>To zoom out:</b> Right click to reset the scale</p>
-
+                <div id="feature-viewer-modal"></div>
+                <p class="text-muted">
+                  <span class="label label-success margin-right-5px">new</span><strong>Click</strong> features for more information
+                  <b>To zoom in:</b> Left click to select area of interest; <b>To zoom out:</b> Right click to reset the scale
+                </p>
                 <div style="padding-top: 10px; padding-bottom: 10px;">
                     <button class="btn btn-default" ng-click="showSequence = !showSequence"><i class="fa fa-align-justify" aria-hidden="true"></i> {% verbatim %}{{ showSequence ? "Hide sequence" : "Show sequence" }}{% endverbatim %}</button>
                     <div ng-if="rna" class="btn-group">
