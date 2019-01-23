@@ -112,6 +112,12 @@ pipeline {
                     source local/virtualenvs/RNAcentral/bin/activate
                     cd rnacentral-webcode/rnacentral
                     source scripts/env.sh
+
+                    # update repository to fetch the latest fabfile
+                    git reset --hard
+                    git checkout ${params.BRANCH}
+                    git pull
+
                     fab -H ves-pg-a4 production deploy:git_branch=${params.BRANCH}
                 """
             }

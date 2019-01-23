@@ -184,6 +184,12 @@ pipeline {
                     source local/virtualenvs/RNAcentral/bin/activate
                     cd rnacentral-webcode/rnacentral
                     source scripts/env.sh
+
+                    # update repository to fetch the latest fabfile
+                    git reset --hard
+                    git checkout ${params.BRANCH}
+                    git pull
+
                     fab localhost deploy:quick=${params.QUICK},git_branch=${params.BRANCH}
                 """
             }
