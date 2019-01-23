@@ -351,7 +351,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                     $scope.featureViewer.addFeature({
                         id: accession,
                         data: data,
-                        name: "Modified",  // in " + accession.substr(0, 8),
+                        name: "Modifications",
                         className: "modification",
                         color: "#005572",
                         type: "rect",
