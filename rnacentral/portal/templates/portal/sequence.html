@@ -266,9 +266,11 @@ limitations under the License.
                 {% endif %}
                 <div id="feature-viewer"></div>
                 <div id="feature-viewer-modal"></div>
-                <p class="text-muted">
-                  <span class="label label-success margin-right-5px">new</span><strong>Click</strong> features for more information
-                  <b>To zoom in:</b> Left click to select area of interest; <b>To zoom out:</b> Right click to reset the scale
+                <p class="text-muted small">
+                  <i class="fa fa-info-circle"></i>
+                  Sequence features are shown above as colored rectangles.
+                  <b>Zoom in</b> and <b>click</b> to view details, or
+                  <a class="btn btn-default btn-sm" ng-click="resetFeatureViewerZoom()"><i class="fa fa-undo"></i> Reset</a>
                 </p>
                 <div style="padding-top: 10px; padding-bottom: 10px;">
                     <button class="btn btn-default" ng-click="showSequence = !showSequence"><i class="fa fa-align-justify" aria-hidden="true"></i> {% verbatim %}{{ showSequence ? "Hide sequence" : "Show sequence" }}{% endverbatim %}</button>

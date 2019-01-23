@@ -301,6 +301,15 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     };
 
     /**
+     * Reset featureViewer
+     */
+    $scope.resetFeatureViewerZoom = function() {
+        if ($scope.featureViewer) {
+            $scope.featureViewer.resetZoom();
+        }
+    };
+
+    /**
      * featureViewer is rendered into $('#feature-viewer'),
      * which might not be present, if its tab was not initialized.
      */
@@ -358,7 +367,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     };
 
     $scope.createFeatureViewerModal = function(targetId, heading, content) {
-        var html =  '<div id="modalWindow" class="modal fade" style="display:none; top: 25%" tabindex="-1">';
+        var html =  '<div id="modalWindow" class="modal fade" style="display:none; top: 20%" tabindex="-1">';
         html += '<div class="modal-dialog" role="document">';
         html += '<div class="modal-content">';
         html += '<div class="modal-header">';
