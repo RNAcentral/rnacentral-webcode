@@ -108,7 +108,7 @@ limitations under the License.
                     </div>
                 </div>
 
-                <div ng-if="genomes && taxid && fetchGenomeLocationsStatus !== 'error'">
+                <div ng-if="taxid && fetchGenomeLocationsStatus !== 'error'">
 
                     {% verbatim %}
                     <p ng-if="fetchGenomeLocationsStatus === 'success' && locations.length > 0">This sequence is found in <strong>{{ locations.length }}</strong> genome <ng-pluralize count="locations.length" when="{'one': 'location', 'other': 'locations'}"></ng-pluralize>:</p>
@@ -149,12 +149,16 @@ limitations under the License.
                                     </tr>
                                     <tr ng-if="fetchGenomeLocationsStatus === 'success'" ng-repeat="location in locations" ng-class="{'active': isSelectedLocation(location) }">
                                         <td>
-                                            <button ng-if="!$ctrl.chromosomeIsScaffold(location.chromosome)"
+                                            <button ng-if="genomes && !$ctrl.chromosomeIsScaffold(location.chromosome)"
                                                     type="button"
                                                     class="btn btn-default btn-xs genoverse-xref help margin-right-5px"
                                                     ng-click="activateGenomeBrowser(location.start, location.end, location.chromosome, location.species); scrollToGenomeBrowser();"
                                                     title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> Go to location
                                             </button>
+                                            <span ng-if="!genomes">
+                                                <i class="fa fa-spinner fa-spin"></i>
+                                                <i class="text-muted">loading browser</i>
+                                            </span>
                                             <li ng-if="$ctrl.chromosomeIsScaffold(location.chromosome)" class="badge">Can't view - strange chromosome name</li>
                                         </td>
                                         <td>
