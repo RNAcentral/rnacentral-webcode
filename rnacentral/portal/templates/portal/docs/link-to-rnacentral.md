@@ -3,13 +3,13 @@
 
 On this page:
 
- * <a href="" ng-click="scrollTo('link-to-sequence')">Linking to RNAcentral sequences</a>
+ * <a href="" ng-click="scrollTo('link-to-sequence')">Linking to sequences</a>
  * <a href="" ng-click="scrollTo('link-to-genome-location')">Linking to genome locations</a>
- * <a href="" ng-click="scrollTo('downloads')">Downloads
+ * <a href="" ng-click="scrollTo('downloads')">Icons and logos</a>
 
 ---
 
-## Linking to RNAcentral sequences <a style="cursor: pointer" id="link-to-sequence" ng-click="scrollTo('link-to-sequence')" name="link-to-sequence" class="text-muted smaller"><i class="fa fa-link"></i></a>
+## Linking to sequences <a style="cursor: pointer" id="link-to-sequence" ng-click="scrollTo('link-to-sequence')" name="link-to-sequence" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 ### Link by external accession
 
@@ -126,7 +126,9 @@ Example code:
 ```
 ---
 
-## RNAcentral Expert Database badge <a style="cursor: pointer" id="expert-database-badge" ng-click="scrollTo('expert-database-badge')" name="expert-database-badge" class="text-muted smaller"><i class="fa fa-link"></i></a>
+## Downloads <a style="cursor: pointer" id="downloads" ng-click="scrollTo('downloads')" name="downloads" class="text-muted smaller"><i class="fa fa-link"></i></a>
+
+### RNAcentral Expert Database badge <a style="cursor: pointer" id="expert-database-badge" ng-click="scrollTo('expert-database-badge')" name="expert-database-badge" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Databases [integrated in RNAcentral](/expert-databases) can display
 an **RNAcentral Expert Database badge**:
@@ -149,10 +151,6 @@ The badge should link to the [RNAcentral homepage](https://rnacentral.org)
 or to the **landing page** of the member database within RNAcentral,
 such as [https://rnacentral.org/expert-database/flybase](https://rnacentral.org/expert-database/flybase) or
 [https://rnacentral.org/expert-database/gtrnadb](https://rnacentral.org/expert-database/gtrnadb).
-
----
-
-## Downloads <a style="cursor: pointer" id="downloads" ng-click="scrollTo('downloads')" name="downloads" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 <h3> RNAcentral icons <img src="/static/img/logo/rnacentral-logo-32x32.png"></h3>
 
