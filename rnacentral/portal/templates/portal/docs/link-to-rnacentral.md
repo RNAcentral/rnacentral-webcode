@@ -162,3 +162,9 @@ Here are RNAcentral logo icons in different resolutions:
 * <a target="_blank" href="/static/img/logo/rnacentral-logo-64x64.png">64x64</a>
 * <a target="_blank" href="/static/img/logo/rnacentral-logo-128x128.png">128x128</a>
 * <a target="_blank" href="/static/img/logo/rnacentral-logo.png">530x530</a>
+
+### RNAcentral logos
+
+* <a target="_blank" href="/static/img/logo/rnacentral_logo_white.png">White version</a>
+* <a target="_blank" href="/static/img/logo/rnacentral_logo_dark_grey.png">Dark grey version</a>
+* <a target="_blank" href="/static/img/logo/rnacentral_logo_light_grey.png">Light grey version</a>
