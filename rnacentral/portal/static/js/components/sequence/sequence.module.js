@@ -471,7 +471,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                     // trim start/stop of each feature to make sure it's not out of sequence bounds
                     var data = $scope.features.map(function(feature) {
                         var datum = {
-                            x: feature.start >= 0 ? feature.start : 0,
+                            x: feature.start >= 0 ? feature.start : 1,
                             y: feature.stop < $scope.rna.length ? feature.stop : $scope.rna.length - 1,
                             description: 'Conserved feature ' + feature.metadata.crs_id
                         };
