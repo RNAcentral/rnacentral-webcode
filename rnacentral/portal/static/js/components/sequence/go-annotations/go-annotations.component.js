@@ -53,6 +53,8 @@ var goAnnotations = {
                         var key = annotation.assigned_by.toLowerCase();
                         annotation.assigned_url = sourceUrls[key];
                         annotation.needs_explanation = annotation.evidence_code_id == 'ECO:0000307';
+                        var index_allowed = ['involved_in', 'part_of', 'enables', 'contributes_to', 'colocalizes_with'];
+                        annotation.can_search = index_allowed.find(function(q) { return q === annotation.qualifier; });
                         if (annotation.needs_explanation) {
                             annotation.explanation_url = 'http://wiki.geneontology.org/index.php/No_biological_Data_available_(ND)_evidence_code';
                         }
