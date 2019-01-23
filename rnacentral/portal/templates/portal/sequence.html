@@ -85,7 +85,7 @@ limitations under the License.
                   <p>
                     According to <a href="/expert-database/lncbase">LncBase</a>, this RNA is targeted by the following miRNAs:
                   </p>
-                  <div style="overflow-y: auto; max-height: 200px;">
+                  <div style="overflow-y: auto; max-height: 200px;" class="force-scrollbars">
                     <ul>
                     {% for seq in context.mirna_regulators %}
                       <li><a href="/rna/{{ seq.urs_taxid }}">{{ seq.short_description }}</a></li>
