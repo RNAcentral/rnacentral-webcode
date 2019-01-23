@@ -538,6 +538,9 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
             )
         }
 
+        // adjust feature viewer css
+        $('.header-position').css('margin-top', 0);
+        $('.header-zoom').css('margin-top', 0);
     });
 
     if ($scope.taxid) {

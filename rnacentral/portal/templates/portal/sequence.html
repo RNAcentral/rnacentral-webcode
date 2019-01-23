@@ -111,7 +111,7 @@ limitations under the License.
                 <div ng-if="taxid && fetchGenomeLocationsStatus !== 'error'">
 
                     {% verbatim %}
-                    <p ng-if="fetchGenomeLocationsStatus === 'success' && locations.length > 0">This sequence is found in <strong>{{ locations.length }}</strong> genome <ng-pluralize count="locations.length" when="{'one': 'location', 'other': 'locations'}"></ng-pluralize>:</p>
+                    <p ng-if="fetchGenomeLocationsStatus === 'success' && locations.length > 0" class="margin-bottom-0px">This sequence is found in <strong>{{ locations.length }}</strong> genome <ng-pluralize count="locations.length" when="{'one': 'location', 'other': 'locations'}"></ng-pluralize>:</p>
                     <div>
                         <div style="max-height: 300px; overflow: auto;">
                             <table ng-if="fetchGenomeLocationsStatus === 'loading' || locations.length > 0" class="table table-hover table-condensed table-responsive" style="margin-left: 9px; margin-right: 9px;">
@@ -255,7 +255,7 @@ limitations under the License.
 
                 <rfam ng-if="rfamHits && rna" upi="upi" rna="rna" rfam-hits="rfamHits" rfam-status="rfamStatus" toggle-go-modal="toggleGoModal(term_id)"></rfam>
 
-                <h2>
+                <h2 class="margin-bottom-0px">
                     Sequence
                     <small>
                       <em>{{ rna.upi }}{% if context.taxid %}_{{ context.taxid }}{% endif %}</em>
