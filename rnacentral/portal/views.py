@@ -280,33 +280,15 @@ class GenomeBrowserView(TemplateView):
     def get(self, request, *args, **kwargs):
         self.template_name = 'portal/genome-browser.html'
 
-        def get_assembly_with_example_location(species):
-            """
-            Helper function to retrieve species with example coordinates
-            :param species: EnsemblAssembly.ensembl_url of a species (e.g. "homo_sapiens")
-            :return: EnsemblAssembly as a raw queryset element
-            """
-            assemblies = EnsemblAssembly.get_assemblies_with_example_locations()
-            for assembly in assemblies:
-                if species == assembly.ensembl_url:
-                    if not assembly.example_start:
-                        assembly.example_start = assembly.start
-                    if not assembly.example_end:
-                        assembly.example_end = assembly.stop
-                    if not assembly.example_chromosome:
-                        assembly.example_chromosome = assembly.chromosome
-                    return assembly
-            return None
-
         # if species is not defined - use homo_sapiens as default, if specified and wrong - 404
         if 'species' in request.GET:
             kwargs['genome'] = request.GET['species']
-            ensembl_assembly = get_assembly_with_example_location(kwargs['genome'])
+            ensembl_assembly = EnsemblAssembly.objects.get(ensembl_url=kwargs['genome'])
             if not ensembl_assembly:
                 raise Http404
         else:
             kwargs['genome'] = 'homo_sapiens'
-            ensembl_assembly = get_assembly_with_example_location('homo_sapiens')
+            ensembl_assembly = EnsemblAssembly.objects.get(ensembl_url='homo_sapiens')
 
         # require chromosome, start and end in kwargs or use default location for this species
         if ('chromosome' in request.GET or 'chr' in request.GET) and 'start' in request.GET and 'end' in request.GET:
