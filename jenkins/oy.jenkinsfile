@@ -21,6 +21,11 @@ pipeline {
             choices: ['PRO', 'DEV'],
             description: 'Shall we use django-compressor, PRO - yes, DEV - no?'
         )
+        choice(
+            name: 'QUICK',
+            choices: ['False', 'True'],
+            description: 'Fast rebuild: pull, collect (and compress) static, touch wsgi.py.'
+        )
         gitParameter(
             branchFilter: 'origin/(.*)',
             defaultValue: 'master',
@@ -112,7 +117,20 @@ pipeline {
                     source local/virtualenvs/RNAcentral/bin/activate
                     cd rnacentral-webcode/rnacentral
                     source scripts/env.sh
-                    fab -H ves-oy-a4 production deploy:git_branch=${params.BRANCH}
+
+                    # update repository to fetch the latest fabfile
+                    git reset --hard
+                    git checkout ${params.BRANCH}
+                    git pull
+
+                    # update pip dependencies, if deployment is not quick;
+                    # otherwise fabfile imports django settings,
+                    # fails to import python dependencies and crashes
+                    if [ "${params.QUICK}" == "False" ]; then
+                      pip install --upgrade -r requirements.txt
+                    fi
+
+                    fab -H ves-oy-a4 production deploy:git_branch=${params.BRANCH},quick=${params.QUICK}
                 """
             }
         }

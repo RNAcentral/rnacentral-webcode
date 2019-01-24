@@ -76,8 +76,8 @@ def git_updates(git_branch=None):
     Perform git updates.
     """
     with env.cd(settings.PROJECT_PATH):
+        env.run('git reset --hard')
         if git_branch:
-            env.run('git reset --hard')
             env.run('git checkout {branch}'.format(branch=git_branch))
         env.run('git pull')
         env.run('git submodule update')

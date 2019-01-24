@@ -184,6 +184,19 @@ pipeline {
                     source local/virtualenvs/RNAcentral/bin/activate
                     cd rnacentral-webcode/rnacentral
                     source scripts/env.sh
+
+                    # update repository to fetch the latest fabfile
+                    git reset --hard
+                    git checkout ${params.BRANCH}
+                    git pull
+
+                    # update pip dependencies, if deployment is not quick;
+                    # otherwise fabfile imports django settings,
+                    # fails to import python dependencies and crashes
+                    if [ "${params.QUICK}" == "False" ]; then
+                      pip install --upgrade -r requirements.txt
+                    fi
+
                     fab localhost deploy:quick=${params.QUICK},git_branch=${params.BRANCH}
                 """
             }
