@@ -125,7 +125,7 @@ pipeline {
 
                     # update pip dependencies, if deployment is not quick
                     if [ "${params.QUICK}" == "False" ]; then
-                      pip install --upgrade -r rnacentral/requirements.txt
+                      pip install --upgrade -r requirements.txt
                     fi
 
                     fab -H ves-oy-a4 production deploy:git_branch=${params.BRANCH},quick=${params.QUICK}
