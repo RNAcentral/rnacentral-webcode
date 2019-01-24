@@ -545,13 +545,12 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 
     if ($scope.taxid) {
         $scope.fetchGenomeLocations().then(function() {
-            $scope.fetchGenomeLocationsStatus = 'success';
-
             // if any locations, activate genome browser
             if ($scope.locations.length > 0) {
                 var location = $scope.locations[0];
                 $scope.fetchGenomes().then(function() {
                     $scope.activateGenomeBrowser(location.start, location.end, location.chromosome, location.species);
+                    $scope.fetchGenomeLocationsStatus = 'success';
                 });
             }
 
