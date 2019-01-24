@@ -777,11 +777,39 @@ ul.affix-bottom {
 
 .text-search-facet-overflow {
   overflow: auto;
-  max-height: 250px;
+  max-height: 150px;
 }
 
 .text-search-results {
   border-left: 1px solid #eeeeee;
+}
+
+.text-search-foldable-facets .panel-heading {
+  padding: 0;
+}
+
+.text-search-foldable-facets h4.panel-title {
+  padding-left: 0;
+}
+
+.text-search-foldable-facets a {
+  text-decoration: none;
+}
+
+.text-search-foldable-facets h3 {
+  margin-top: 5px;
+}
+
+.text-search-foldable-facets .panel-group {
+  margin-bottom: 5px;
+}
+
+.text-search-foldable-facets .panel-body {
+  padding-left: 0;
+}
+
+.text-search-facet-help {
+  white-space: normal;
 }
 
 .text-search-results h4, .text-search-results ul li ul li, .text-search-facets h3 {
@@ -1440,4 +1468,8 @@ textarea {
   padding: 0px 0;
   font-size: 12px;
   border-radius: 15px;
+}
+
+.rfamModelsGroup, .crsFeaturesGroup {
+  cursor: pointer;
 }

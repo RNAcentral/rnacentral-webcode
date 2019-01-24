@@ -96,7 +96,7 @@ expert_dbs = [
         'url': 'http://ensembl.org/',
         'description': 'is a genome browser for vertebrate genomes and model organisms that supports research in comparative genomics, evolution, sequence variation and transcriptional regulation',
         'hint': 'Ensembl is a genome browser for vertebrate genomes and model organisms that supports research in comparative genomics, evolution, sequence variation and transcriptional regulation',
-        'tags': ['curated', 'reference genomes'],
+        'tags': ['reference genomes'],
         'abbreviation': '',
         'examples': [
             {'upi': 'URS000025784F', 'taxid': 9606},
@@ -120,6 +120,31 @@ expert_dbs = [
         'imported': True,
         'status': 'updated',
         'version': '92',
+    },
+    {
+        'name': 'Ensembl Plants',
+        'label': 'e_plants',
+        'url': 'https://plants.ensembl.org/',
+        'description': 'Ensembl Plants is a genome browser for plant genomes that complements the Ensembl database',
+        'hint': 'Ensembl Plants is a genome browser for plant genomes that complements the Ensembl database',
+        'tags': ['reference genomes'],
+        'abbreviation': '',
+        'examples': [
+            {'upi': 'URS0000A77357', 'taxid': 3702},
+            {'upi': 'URS0000A7685E', 'taxid': 3702},
+            {'upi': 'URS00005391BB', 'taxid': 3702},
+        ],
+        'references': [
+            {
+                'title': 'Ensembl Genomes 2018: an integrated omics infrastructure for non-vertebrate species',
+                'authors': 'Kersey PJ, Allen JE, Allot A, Barba M, Boddu S, Bolt BJ, Carvalho-Silva D, et al.',
+                'journal': 'Nucleic Acids Res. 2018 Jan 4;46(D1):D802-D808',
+                'pubmed_id': '29092050',
+            },
+        ],
+        'imported': True,
+        'status': 'new',
+        'version': '41',
     },
     {
         'name': 'GENCODE',
@@ -374,7 +399,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '65',
+        'version': '91',  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
     },
     {
         'name': 'RDP',
@@ -473,17 +498,28 @@ expert_dbs = [
     },
     {
         'name': 'LncBase',
-        'label': '',
+        'label': 'lncbase',
         'url': 'http://www.microrna.gr/LncBase',
         'description': 'experimentally verified and computationally predicted microRNA targets on long non-coding RNAs',
         'hint': 'LncBase provides experimentally verified and computationally predicted microRNA targets on long non-coding RNAs',
         'tags': ['automatic', 'curated', 'experimentally determined', 'miRNA', 'lncRNA'],
         'abbreviation': '',
-        'examples': '',
-        'references': [],
-        'imported': False,
-        'status': '',
-        'version': '',
+        'examples': [
+            {'upi': 'URS000075EAB0', 'taxid': 9606},
+            {'upi': 'URS00005A4DCF', 'taxid': 10090},
+            {'upi': 'URS00003B7674', 'taxid': 9606},
+        ],
+        'references': [
+            {
+                'title': 'DIANA-LncBase v2: indexing microRNA targets on non-coding transcripts',
+                'authors': 'Paraskevopoulou MD, Vlachos IS, Karagkouni D, Georgakilas G, Kanellos I, Vergoulis T, Zagganas K, Tsanakas P, Floros E, Dalamagas T, Hatzigeorgiou AG',
+                'journal': 'Nucleic Acids Res 44(d1):D231-8 (2016)',
+                'pubmed_id': '26612864',
+            }
+        ],
+        'imported': True,
+        'status': 'new',
+        'version': 'v2',
     },
     {
         'name': 'LNCipedia',
@@ -652,7 +688,7 @@ expert_dbs = [
         'url': 'https://www.arb-silva.de/',
         'description': 'is a comprehensive resource for quality checked and aligned ribosomal RNA sequence data',
         'hint': 'SILVA is a comprehensive resource for quality checked and aligned ribosomal RNA sequence data',
-        'tags': ['automatic', 'SSU rRNA', 'LSU rRNA'],
+        'tags': ['semi-automatic', 'SSU rRNA', 'LSU rRNA'],
         'abbreviation': '',
         'examples': [
             {'upi': 'URS00005A14E2', 'taxid': 9606},
@@ -989,6 +1025,31 @@ expert_dbs = [
         ],
         'imported': False,
         'status': '',
+        'version': '',
+    },
+    {
+        'name': 'ZWD',
+        'label': 'zwd',
+        'url': 'https://bitbucket.org/zashaw/zashaweinbergdata',
+        'description': 'is a git-based collection of non-coding RNA alignments maintained by Dr Zasha Weinberg',
+        'hint': 'ZWD is a git-based collection of non-coding RNA alignments maintained by Dr Zasha Weinberg',
+        'tags': ['metagenome', 'predicted', 'riboswitch'],
+        'abbreviation': '',
+        'examples': [
+            {'upi': 'URS000065A032', 'taxid': 224308},
+            {'upi': 'URS000067336D', 'taxid': 264730},
+            {'upi': 'URS0000D66279', 'taxid': 997891},
+        ],
+        'references': [
+            {
+                'title': 'Detection of 224 candidate structured RNAs by comparative analysis of specific subsets of intergenic regions',
+                'authors': 'Weinberg Z, Lunse CE, Corbino KA, Ames TD, Nelson JW, Roth A, Perkins KR, Sherlock ME, Breaker RR',
+                'journal': 'Nucleic Acids Res. 2017 Oct 13;45(18):10811-10823',
+                'pubmed_id': '28977401',
+            },
+        ],
+        'imported': True,
+        'status': 'new',
         'version': '',
     },
 ]

@@ -195,16 +195,9 @@ RNAcentral: The non-coding RNA sequence database
                    data-show-count="true"
                    data-show-screen-name="false"
                    data-lang="en">Follow</a>
-                <script>window.twttr=(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],t=window.twttr||{};if(d.getElementById(id))return t;js=d.createElement(s);js.id=id;js.src="https://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);t._e=[];t.ready=function(f){t._e.push(f);};return t;}(document,"script","twitter-wjs"));</script>
+                <a class="twitter-timeline" data-height="300" data-chrome="noheader nofooter noborders" data-dnt="true" href="https://twitter.com/RNAcentral?ref_src=twsrc%5Etfw">Tweets by RNAcentral</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
               </li>
             </ul>
-            <br>
-            <a class="twitter-timeline"
-              data-widget-id="687988869359382529"
-              href="https://twitter.com/rnacentral"
-              data-chrome="noheader nofooter noborders">
-            Tweets by @RNAcentral
-            </a>
           </div>
         </div>
       </div>
@@ -213,20 +206,15 @@ RNAcentral: The non-coding RNA sequence database
         <div class="panel panel-default">
           <h3 class="text-center margin-bottom-0px"><i class="fa fa-bullhorn"></i> Announcements</h3>
           <div class="panel-body">
+            <p class="margin-top-5px">
+              <a href="https://blog.rnacentral.org/2019/01/rnacentral-release-11.html" class="thumbnail">
+                <img src="{% static 'img/timeline/release-v11.png' %}" alt="Release 11 announcement">
+              </a>
+            </p>
             <ul class="list-inline margin-top-5px">
               <li><a href="https://blog.rnacentral.org" target="_blank"><i class="fa fa-bookmark-o"></i> RNAcentral Blog</a></li>
               <li><a href="https://blog.rnacentral.org/feeds/posts/default" target="_blank"><i class="fa fa-rss"></i> RSS feed</a></li>
             </ul>
-
-            <p class="margin-top-5px">
-              <a href="{{ context.blog_url }}" class="thumbnail">
-                <img src="{% static "img/timeline/release-v10.png" %}" alt="Release 10 announcement">
-              </a>
-            </p>
-
-            <p>
-              <a href="{{ context.blog_url }}">Release 10 announcement &rarr;</a>
-            </p>
 
             <p class="margin-top-5px">
               Explore the <a href="http://www.ebi.ac.uk/training/online/course/rnacentral-exploring-non-coding-rna-sequences">Train Online course</a>
@@ -242,7 +230,7 @@ RNAcentral: The non-coding RNA sequence database
           <h3 class="text-center margin-bottom-0px"><i class="fa fa-pencil"></i> Citing RNAcentral</h3>
           <div class="panel-body">
             If you use RNAcentral,
-            please cite the following paper:
+            please cite our latest paper:
             <blockquote class="callout-info">
               <publication publication="RNAcentralPublication"></publication>
             </blockquote>

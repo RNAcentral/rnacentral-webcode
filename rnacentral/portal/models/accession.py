@@ -16,6 +16,8 @@ import re
 
 from django.db import models
 
+import portal.models
+
 
 class Accession(models.Model):
     accession = models.CharField(max_length=100, primary_key=True)
@@ -140,6 +142,13 @@ class Accession(models.Model):
         """Get species name in a format that can be used in Ensembl urls."""
         if self.species == 'Dictyostelium discoideum':
             species = 'Dictyostelium discoideum AX4'
+        elif self.species.count(' ') > 1:
+            xref = portal.models.Xref.objects.filter(accession__accession=self.accession, deleted='N').get()
+            ensembl_genome = portal.models.EnsemblAssembly.objects.filter(taxid=xref.taxid).first()
+            if ensembl_genome:
+                return ensembl_genome.ensembl_url
+            else:
+                species = self.species
         elif self.species.startswith('Mus musculus') and self.accession.startswith('MGP'):  # Ensembl mouse strain
             parts = self.accession.split('_')
             if len(parts) == 3:
@@ -164,7 +173,7 @@ class Accession(models.Model):
             'SNOPY': 'http://snoopy.med.miyazaki-u.ac.jp/snorna_db.cgi?mode=sno_info&id={id}',
             'PDBE': 'http://www.ebi.ac.uk/pdbe-srv/view/entry/{id}',
             'SGD': 'http://www.yeastgenome.org/locus/{id}/overview',
-            'TAIR': 'http://www.arabidopsis.org/servlets/TairObject?id={id}&type=locus',
+            'TAIR': 'http://www.arabidopsis.org/servlets/TairObject?name={id}&type=locus',
             'WORMBASE': 'http://www.wormbase.org/species/c_elegans/gene/{id}',
             'PLNCDB': 'http://chualab.rockefeller.edu/cgi-bin/gb2/gbrowse_details/arabidopsis?name={id}',
             'DICTYBASE': 'http://dictybase.org/gene/{id}',
@@ -177,13 +186,15 @@ class Accession(models.Model):
             'HGNC': 'http://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id={id}',
             'ENSEMBL': 'http://www.ensembl.org/{species}/Transcript/Summary?t={id}',
             'GENCODE': 'http://www.ensembl.org/{species}/Transcript/Summary?t={id}',
+            'E_PLANTS': 'http://plants.ensembl.org/{species}/Gene/Summary?db=core;g={id}',
             'FLYBASE': 'http://flybase.org/reports/{id}',
             'MGI': 'http://www.informatics.jax.org/marker/{id}',
             'GTRNADB': '',
-            'RGD': 'https://rgd.mcw.edu/rgdweb/report/gene/main.html?id={id}'
+            'RGD': 'https://rgd.mcw.edu/rgdweb/report/gene/main.html?id={id}',
+            'ZWD': '',
         }
         if self.database in urls.keys():
-            if self.database == 'GTRNADB':
+            if self.database in ['GTRNADB', 'ZWD']:
                 data = json.loads(self.note)
                 if 'url' in data:
                     return data['url']
@@ -208,6 +219,10 @@ class Accession(models.Model):
                 return urls[self.database].format(id=self.accession)
             elif self.database == 'ENSEMBL' or self.database == 'GENCODE':
                 return urls[self.database].format(id=self.external_id, species=self.get_ensembl_species_url())
+            elif self.database == 'E_PLANTS':
+                return urls[self.database].format(id=self.external_id, species=self.get_ensembl_species_url())
+            elif self.database == 'TAIR':
+                return urls[self.database].format(id=self.gene)
             return urls[self.database].format(id=self.external_id)
         else:
             return ''

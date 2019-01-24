@@ -15,7 +15,7 @@
           <td>{{ annotation.qualifier }}</td>
           <td>
             <a class="btn btn-circle btn-default btn-sm" ng-click="$ctrl.openGoModal(annotation.go_term_id)" type="button"><i class="fa fa-sitemap" uib-tooltip="View {{annotation.go_term_id}} ancestor chart"></i></a>
-            <a class="btn btn-sm" href='/search?q={{ annotation.qualifier }}:"{{ annotation.go_term_id }}"'><i class="fa fa-search" uib-tooltip="Search for sequences annotated with {{annotation.go_term_id}}"></i></a>
+            <a ng-if="annotation.can_search" class="btn btn-sm" href='/search?q={{ annotation.qualifier }}:"{{ annotation.go_term_id }}"'><i class="fa fa-search" uib-tooltip="Search for sequences annotated with {{annotation.go_term_id}}"></i></a>
             <a href="http://www.ebi.ac.uk/QuickGO/term/{{ annotation.go_term_id }}" class="no-icon">{{ annotation.go_term_name }}</a>
           </td>
           <td>

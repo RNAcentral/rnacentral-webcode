@@ -3,14 +3,20 @@
 
 <nav class="panel hidden-print" role="complementary">
   <ul class="nav">
+    <strong>About RNAcentral</strong>
     <li><a href="{% url 'help' %}">Frequently Asked Questions</a></li>
+    <li><a href="{% url 'help-scientific-advisory-board' %}">Scientific Advisory Board</a></li>
+    <li><a href="{% url 'training' %}">Training resources</a></li>
+    <li><a href="{% url 'linking-to-rnacentral' %}">Linking to RNAcentral</a></li>
+    <strong>Data Access</strong>
     <li><a href="{% url 'help-text-search' %}">Text search</a></li>
+    <li><a href="{% url 'api-docs' %}">API documentation</a></li>
+    <li><a href="{% url 'help-public-database' %}">Public Postgres database <span class="label label-success">New<span></a></li>
+    <strong>Functional annotations</strong>
+    <li><a href="{% url 'help-genomic-mapping' %}">Genomic mapping</a></li>
     <li><a href="{% url 'help-rfam-annotations' %}">Rfam annotations</a></li>
     <li><a href="{% url 'help-gene-ontology-annotations' %}">Gene Ontology annotations</a></li>
     <li><a href="{% url 'help-rna-target-interactions' %}">RNA-target interactions</a></li>
-    <li><a href="{% url 'help-genomic-mapping' %}">Genomic mapping</a></li>
-    <li><a href="{% url 'api-docs' %}">API documentation</a></li>
-    <li><a href="{% url 'training' %}">Training resources</a></li>
-    <li><a href="{% url 'linking-to-rnacentral' %}">Linking to RNAcentral</a></li>
+    <li><a href="{% url 'help-conserved-motifs' %}">Conserved RNA motifs</a></li>
   </ul>
 </nav>

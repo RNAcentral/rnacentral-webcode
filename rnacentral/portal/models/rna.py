@@ -19,6 +19,7 @@ from collections import Counter, defaultdict
 from caching.base import CachingMixin, CachingManager
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
+from django.db import connection
 from django.db import models
 from django.db.models import Prefetch, Min, Max, Q
 from django.utils.functional import cached_property
@@ -27,6 +28,7 @@ from .database import Database
 from .genomic_coordinates import GenomicCoordinates
 from .modification import Modification
 from .rna_precomputed import RnaPrecomputed
+from .related_sequences import RelatedSequence
 from .reference import Reference
 from .xref import Xref
 from .rfam import RfamHit, RfamAnalyzedSequences
@@ -35,6 +37,15 @@ from .formatters import Gff3Formatter, GffFormatter, _xref_to_bed_format
 from portal.utils import descriptions as desc
 from portal.rfam_matches import check_issues
 from portal.config.expert_databases import expert_dbs
+
+
+def dictfetchall(cursor):
+    "Return all rows from a cursor as a dict"
+    columns = [col[0] for col in cursor.description]
+    return [
+        dict(zip(columns, row))
+        for row in cursor.fetchall()
+    ]
 
 
 class Rna(CachingMixin, models.Model):
@@ -184,13 +195,7 @@ class Rna(CachingMixin, models.Model):
 
     def get_xrefs(self, taxid=None):
         """Get all xrefs, show non-ENA annotations first."""
-        # Exclude source ENA entries that are associated with other expert db entries.
-        # For example, only fetch Vega xrefs and don't retrieve the ENA entries they are based on.
-        expert_db_projects = Database.objects.exclude(project_id__isnull=True)\
-                                             .values_list('project_id', flat=True)
-
         xrefs = self.xrefs.filter(deleted='N', upi=self.upi)\
-                          .filter(~Q(accession__project__in=expert_db_projects, db__id=1) | Q(accession__project__isnull=True))\
                           .order_by('-db__id')\
                           .select_related()\
                           .prefetch_related(
@@ -215,7 +220,6 @@ class Rna(CachingMixin, models.Model):
         # wrong annotations to hard-links to deleted sequences accessible from web.
         if not xrefs.exists():
             xrefs = self.xrefs.filter(deleted='Y')\
-                              .filter(~Q(accession__project__in=expert_db_projects, db__id=1) | Q(accession__project__isnull=True))\
                               .order_by('-db__id')\
                               .select_related()\
                               .prefetch_related(
@@ -237,7 +241,7 @@ class Rna(CachingMixin, models.Model):
 
     def count_xrefs(self, taxid=None):
         """Count the number of cross-references associated with the sequence."""
-        xrefs = self.xrefs.filter(db__project_id__isnull=True, deleted='N')
+        xrefs = self.xrefs.filter(deleted='N')
         if taxid:
             xrefs = xrefs.filter(taxid=taxid)
         return xrefs.count()
@@ -291,7 +295,7 @@ class Rna(CachingMixin, models.Model):
         To reduce redundancy, keep only xrefs from the source entries,
         not the entries added from the DR lines.
         """
-        xrefs = self.xrefs.filter(db__project_id__isnull=True).all()
+        xrefs = self.xrefs.all()
         gff = ''
         for xref in xrefs:
             gff += GffFormatter(xref)()
@@ -311,7 +315,7 @@ class Rna(CachingMixin, models.Model):
         Example:
         chr1    29554    31097    RNA000063C361    0    +   29554    31097    255,0,0    3    486,104,122    0,1009,1421
         """
-        xrefs = self.xrefs.filter(db__project_id__isnull=True).all()
+        xrefs = self.xrefs.all()
         bed = ''
         for xref in xrefs:
             bed += _xref_to_bed_format(xref)
@@ -350,6 +354,20 @@ class Rna(CachingMixin, models.Model):
 
         xrefs = self.find_valid_xrefs(taxid=taxid)
         return desc.get_rna_type(self, xrefs, taxid=taxid)
+
+    def get_short_description(self, taxid=None):
+        """
+        Retrieve sequence description without species name.
+        """
+        if taxid:
+            queryset = RnaPrecomputed.objects.filter(taxid=taxid)
+        else:
+            queryset = RnaPrecomputed.objects.filter(taxid__isnull=True)
+        try:
+            obj = queryset.get(upi=self.upi)
+            return obj.short_description
+        except ObjectDoesNotExist:
+            pass
 
     def get_description(self, taxid=None, recompute=False):
         """
@@ -567,3 +585,44 @@ class Rna(CachingMixin, models.Model):
 
         name = max(common_name or species_name, key=len)
         return (name, bool(common_name))
+
+    def get_mirna_regulators(self, taxid=None):
+        if not taxid:
+            return []
+        query = '''
+        SELECT DISTINCT t2.id AS urs_taxid, short_description
+        FROM {related_sequence} t1, rnc_rna_precomputed t2
+        WHERE target_urs_taxid = '{urs}_{taxid}'
+        AND relationship_type = 'target_rna'
+        AND t1.source_urs_taxid = t2.id
+        '''.format(urs=self.upi,
+                   taxid=taxid,
+                   rna_precomputed=RnaPrecomputed._meta.db_table,
+                   related_sequence=RelatedSequence._meta.db_table
+        )
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            data = dictfetchall(cursor)
+        return data
+
+    def get_annotations_from_other_species(self, taxid=None):
+        if not taxid:
+            return []
+        query = '''
+        SELECT t1.id AS urs_taxid, t1.short_description, t2.name as species_name
+        FROM {rna_precomputed} t1, rnc_taxonomy t2
+        WHERE t1.upi = '{urs}'
+        AND t1.taxid != {taxid}
+        AND t1.is_active is True
+        AND t1.taxid is not NULL
+        AND t1.taxid = t2.id
+        ORDER BY description
+        LIMIT 10000
+        '''.format(urs=self.upi,
+                   taxid=taxid,
+                   rna_precomputed=RnaPrecomputed._meta.db_table
+        )
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            data = dictfetchall(cursor)
+        return data

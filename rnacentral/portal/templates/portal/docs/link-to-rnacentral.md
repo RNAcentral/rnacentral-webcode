@@ -3,43 +3,50 @@
 
 On this page:
 
- * <a href="" ng-click="scrollTo('link-to-sequence')">RNAcentral Expert Database badge</a>
- * <a href="" ng-click="scrollTo('link-to-genome-location')">Linking to RNAcentral sequences</a>
- * <a href="" ng-click="scrollTo('expert-database-badge')">Linking to genome locations</a>
- * <a href="" ng-click="scrollTo('downloads')">Downloads
- * <a href="" ng-click="scrollTo('citing-rnacentral')">Citing RNAcentral</a>
+ * <a href="" ng-click="scrollTo('link-to-sequence')">Linking to sequences</a>
+ * <a href="" ng-click="scrollTo('link-to-genome-location')">Linking to genome locations</a>
+ * <a href="" ng-click="scrollTo('downloads')">Icons and logos</a>
 
 ---
 
-## RNAcentral Expert Database badge <a style="cursor: pointer" id="expert-database-badge" ng-click="scrollTo('expert-database-badge')" name="expert-database-badge" class="text-muted smaller"><i class="fa fa-link"></i></a>
+## Linking to sequences <a style="cursor: pointer" id="link-to-sequence" ng-click="scrollTo('link-to-sequence')" name="link-to-sequence" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
-Databases [integrated in RNAcentral](/expert-databases) can display
-an **RNAcentral Expert Database badge**:
+### Link by external accession
 
-<a href="https://rnacentral.org" style="text-decoration: none;">
-  <img src="/static/img/logo/rnacentral-expert-database.svg"
-  style="width: 140px;">
-</a>
-<a class="btn btn-default" style="margin-left: 20px;" target="_blank" href="https://rnacentral.org/static/img/logo/rnacentral-expert-database.svg">Download (svg)</a>
+<span class="label label-success text-small">New!</span>
+It is possible to link to RNAcentral without knowing the RNAcentral accession
+using a URL in the following format:
 
-Example code:
+`https://rnacentral.org/link/<database>:<accession>`
 
-```
-<a href="https://rnacentral.org">
-  <img src="https://rnacentral.org/static/img/logo/rnacentral-expert-database.svg" style="width: 140px">
-</a>
-```
+where `database` is one of the RNAcentral [Expert Databases](/expert-databases),
+and `accession` is an identifier from that database (see examples below).
+Both parameters are **case-insensitive**.
 
-The badge should link to the [RNAcentral homepage](https://rnacentral.org)
-or to the **landing page** of the member database within RNAcentral,
-such as [https://rnacentral.org/expert-database/flybase](https://rnacentral.org/expert-database/flybase) or
-[https://rnacentral.org/expert-database/gtrnadb](https://rnacentral.org/expert-database/gtrnadb).
+This functionality relies on the RNAcentral [text search](/help/text-search).
+If only 1 sequence matches the database and accession, then the link will redirect to that sequence.
+If several sequences match, then the link will show a search result listing all matching sequences.
 
----
+**Examples**
 
-## Linking to RNAcentral sequences <a style="cursor: pointer" id="link-to-sequence" ng-click="scrollTo('link-to-sequence')" name="link-to-sequence" class="text-muted smaller"><i class="fa fa-link"></i></a>
+- [/link/dictybase:ddb_g0294413](/link/dictybase:ddb_g0294413)
+- [/link/ensembl:ensg00000202354.1](/link/ensembl:ensg00000202354.1)
+- [/link/ensembl:enst00000365484](/link/ensembl:enst00000365484)
+- [/link/flybase:FBtr0304468](/link/flybase:FBtr0304468)
+- [/link/hgnc:mir1-1](/link/hgnc:mir1-1)
+- [/link/lncipedia:hotairm1:8](/link/lncipedia:hotairm1:8)
+- [/link/mgi:mgi:1918911](/link/mgi:mgi:1918911)
+- [/link/mirbase:hsa-mir-7161-3p](/link/mirbase:hsa-mir-7161-3p)
+- [/link/noncode:nonhsag044375.2](/link/noncode:nonhsag044375.2)
+- [/link/noncode:nonhsat114014.2](/link/noncode:nonhsat114014.2)
+- [/link/pombase:spncrna.1293](/link/pombase:spncrna.1293)
+- [/link/refseq:nr_004392.1](/link/pombase:spncrna.1293)
+- [/link/rgd:7567380](/link/rgd:7567380)
+- [/link/snopy:homo_sapiens300433](/link/snopy:homo_sapiens300433)
+- [/link/tair:at1g32385.1](/link/tair:at1g32385.1)
+- [/link/wormbase:egap1.2b](/link/wormbase:egap1.2b)
 
-### Link format
+### Direct link format
 
 Please use the following format to link to RNAcentral sequences:
 
@@ -92,8 +99,6 @@ please use the mapping files found in FTP archive:
 
 ## Linking to genome locations <a style="cursor: pointer" id="link-to-genome-location" ng-click="scrollTo('link-to-genome-location')" name="link-to-genome-location" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
-## Link format <a style="cursor: pointer" id="link-format" ng-click="scrollTo('link-format')" name="link-format" class="text-muted smaller"><i class="fa fa-link"></i></a>
-
 You can link to a genome location of interest within the RNAcentral genome browser using links like this:
 
 `https://rnacentral.org/genome-browser?species=<species>&chromosome=<chromosome>&start=<start>&end=<end>`
@@ -119,40 +124,47 @@ Example code:
   <a href="https://rnacentral.org/genome-browser?species=homo_sapiens&chromosome=X&start=73819307&end=73856333">Human XIST gene</a>
 </p>
 ```
-
 ---
 
 ## Downloads <a style="cursor: pointer" id="downloads" ng-click="scrollTo('downloads')" name="downloads" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
+### RNAcentral Expert Database badge <a style="cursor: pointer" id="expert-database-badge" ng-click="scrollTo('expert-database-badge')" name="expert-database-badge" class="text-muted smaller"><i class="fa fa-link"></i></a>
+
+Databases [integrated in RNAcentral](/expert-databases) can display
+an **RNAcentral Expert Database badge**:
+
+<a href="https://rnacentral.org" style="text-decoration: none;">
+  <img src="/static/img/logo/rnacentral-expert-database.svg"
+  style="width: 140px;">
+</a>
+<a class="btn btn-default" style="margin-left: 20px;" target="_blank" href="https://rnacentral.org/static/img/logo/rnacentral-expert-database.svg">Download (svg)</a>
+
+Example code:
+
+```
+<a href="https://rnacentral.org">
+  <img src="https://rnacentral.org/static/img/logo/rnacentral-expert-database.svg" style="width: 140px">
+</a>
+```
+
+The badge should link to the [RNAcentral homepage](https://rnacentral.org)
+or to the **landing page** of the member database within RNAcentral,
+such as [https://rnacentral.org/expert-database/flybase](https://rnacentral.org/expert-database/flybase) or
+[https://rnacentral.org/expert-database/gtrnadb](https://rnacentral.org/expert-database/gtrnadb).
+
 <h3> RNAcentral icons <img src="/static/img/logo/rnacentral-logo-32x32.png"></h3>
 
-<p>RNAcentral icons:</p>
+Here are RNAcentral logo icons in different resolutions:
 
-* <a target="_blank" href="https://rnacentral.org/static/img/logo/rnacentral-logo-16x16.png">16x16</a>
-* <a target="_blank" href="https://rnacentral.org/static/img/logo/rnacentral-logo-24x24.png">24x24</a>
-* <a target="_blank" href="https://rnacentral.org/static/img/logo/rnacentral-logo-32x32.png">32x32</a>
-* <a target="_blank" href="https://rnacentral.org/static/img/logo/rnacentral-logo-64x64.png">64x64</a>
-* <a target="_blank" href="https://rnacentral.org/static/img/logo/rnacentral-logo-128x128.png">128x128</a>
-* <a target="_blank" href="https://rnacentral.org/static/img/logo/rnacentral-logo.png">530x530</a>
+* <a target="_blank" href="/static/img/logo/rnacentral-logo-16x16.png">16x16</a>
+* <a target="_blank" href="/static/img/logo/rnacentral-logo-24x24.png">24x24</a>
+* <a target="_blank" href="/static/img/logo/rnacentral-logo-32x32.png">32x32</a>
+* <a target="_blank" href="/static/img/logo/rnacentral-logo-64x64.png">64x64</a>
+* <a target="_blank" href="/static/img/logo/rnacentral-logo-128x128.png">128x128</a>
+* <a target="_blank" href="/static/img/logo/rnacentral-logo.png">530x530</a>
 
-<p>RNAcentral logos:</p>
+### RNAcentral logos
 
 * <a target="_blank" href="/static/img/logo/rnacentral_logo_white.png">White version</a>
 * <a target="_blank" href="/static/img/logo/rnacentral_logo_dark_grey.png">Dark grey version</a>
 * <a target="_blank" href="/static/img/logo/rnacentral_logo_light_grey.png">Light grey version</a>
-
----
-
-## Citing RNAcentral <a style="cursor: pointer" id="citing-rnacentral" ng-click="scrollTo('citing-rnacentral')" name="citing-rnacentral" class="text-muted smaller"><i class="fa fa-link"></i></a>
-
-If your website links to RNAcentral, consider citing the most recent
-RNAcentral publication:
-
-<blockquote class="callout-info">
-  <p>RNAcentral: a comprehensive database of non-coding RNA sequences</p>
-  <footer>The RNAcentral Consortium, 2017</footer>
-  <footer><em>Nucleic Acids Research (Database issue)</em></footer>
-  <a href="http://nar.oxfordjournals.org/content/45/D1/D128.full">NAR</a> |
-  <a href="http://europepmc.org/abstract/MED/27794554">EuropePMC</a> |
-  <a href="http://www.ncbi.nlm.nih.gov/pubmed/27794554">Pubmed</a>
-</blockquote>

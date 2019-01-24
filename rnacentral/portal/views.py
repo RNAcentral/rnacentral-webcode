@@ -80,8 +80,10 @@ def homepage(request):
 @cache_page(CACHE_TIMEOUT)
 def expert_databases_view(request):
     """List of RNAcentral expert databases."""
+    expert_dbs.sort(key=lambda x: x['name'].lower())
+    expert_dbs.sort(key=lambda x: x['imported'], reverse=True)
     context = {
-        'expert_dbs': sorted(expert_dbs, key=lambda x: x['name'].lower()),
+        'expert_dbs': expert_dbs,
         'num_imported': len([x for x in expert_dbs if x['imported']]),
     }
     return render(request, 'portal/expert-databases.html', {'context': context})
@@ -133,6 +135,8 @@ def rna_view(request, upi, taxid=None):
         'xrefs_count': rna.count_xrefs(taxid) if taxid_filtering else rna.count_xrefs(),
         'precomputed': RnaPrecomputed.objects.filter(upi=upi, taxid=taxid).first(),
         'rfam_status': rna.get_rfam_status(taxid=taxid),
+        'mirna_regulators': rna.get_mirna_regulators(taxid=taxid),
+        'annotations_from_other_species': rna.get_annotations_from_other_species(taxid=taxid),
     }
 
     return render(request, 'portal/sequence.html', {'rna': rna, 'context': context})
@@ -210,20 +214,22 @@ def proxy(request):
     """
     Internal API. Used for:
      - EBeye search URL - bypasses EBeye same-origin policy.
-     - Rfam images - avoids mixed content warnings due to lack of https support in Rfam.
+     - Rfam and miRBase images - avoids mixed content warnings due to lack of https support in Rfam.
     """
     url = request.GET['url']
 
     # check domain for security - we don't want someone to abuse this endpoint
     domain = urlparse(url).netloc
-    if domain != 'www.ebi.ac.uk' and domain != 'wwwdev.ebi.ac.uk' and domain != 'rfam.org':
-        return HttpResponseForbidden("This proxy is for www.ebi.ac.uk, wwwdev.ebi.ac.uk or rfam.org only.")
+    if domain != 'www.ebi.ac.uk' and domain != 'wwwdev.ebi.ac.uk' and domain != 'rfam.org' and domain != 'www.mirbase.org':
+        return HttpResponseForbidden("This proxy is for www.ebi.ac.uk, wwwdev.ebi.ac.uk, mirbase.org or rfam.org only.")
 
     try:
         proxied_response = requests.get(url)
         if proxied_response.status_code == 200:
             if domain == 'rfam.org':  # for rfam images don't forget to set content-type header
                 response = HttpResponse(proxied_response.text, content_type="image/svg+xml")
+            elif 'mirbase.org' in domain:
+                response = HttpResponse(proxied_response.content, content_type="image/png")
             else:
                 response = HttpResponse(proxied_response.text)
             return response
@@ -231,6 +237,28 @@ def proxy(request):
             raise Http404
     except:
         raise Http404
+
+
+def external_link(request, expert_db, external_id):
+    """
+    Provide a flexible way to link to RNAcentral by providing a database and external URL.
+    """
+    search_url = '{base_url}?query=expert_db:"{expert_db}" "{external_id}"&format=json'.format(
+        base_url=settings.EBI_SEARCH_ENDPOINT,
+        expert_db=expert_db,
+        external_id=external_id)
+    try:
+        response = requests.get(search_url)
+        if response.status_code == 200:
+            data = response.json()
+            if data['hitCount'] == 1:
+                upi, taxid = data['entries'][0]['id'].split('_')
+                return redirect('unique-rna-sequence', upi=upi, taxid=int(taxid))
+            else:
+                return redirect('/search?q=expert_db:"{}" "{}"'.format(expert_db, external_id))
+    except:
+        return redirect('/search?q=expert_db:"{}" "{}"'.format(expert_db, external_id))
+
 
 #####################
 # Class-based views #

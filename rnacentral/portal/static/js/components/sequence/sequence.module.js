@@ -97,23 +97,19 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         return $q(function (resolve, reject) {
             $http.get(routes.apiGenomeLocationsView({ upi: $scope.upi, taxid: $scope.taxid })).then(
                 function (response) {
-                    $scope.genomeLocations = response.data;
-                    resolve(response.data);
-                },
-                function () {
-                    $scope.fetchGenomeLocationsStatus = 'error';
-                    reject();
-                }
-            );
-        });
-    };
+                    // sort genome locations in a biologically relevant way
+                    $scope.locations = response.data.sort(function(a, b) {
+                        if (a.chromosome !== b.chromosome) {  // sort by chromosome first
+                            if (isNaN(a.chromosome) && (!isNaN(b.chromosome))) return 1;
+                            else if (isNaN(b.chromosome) && (!isNaN(a.chromosome))) return -1;
+                            else if (isNaN(a.chromosome) && (isNaN(b.chromosome))) return a.chromosome > b.chromosome ? 1 : -1;
+                            else return (parseInt(a.chromosome) - parseInt(b.chromosome));
+                        } else {
+                            return a.start - b.start;  // sort by start within chromosome
+                        }
+                    });
 
-    $scope.fetchGenomeMappings = function() {
-        return $q(function (resolve, reject) {
-            $http.get(routes.apiGenomeMappingsView({upi: $scope.upi, taxid: $scope.taxid})).then(
-                function (response) {
-                    $scope.genomeMappings = response.data;
-                    resolve(response.data);
+                    resolve($scope.locations);
                 },
                 function () {
                     $scope.fetchGenomeLocationsStatus = 'error';
@@ -280,7 +276,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                 toolbar: true,
                 // bubbleHelp: true,
                 zoomMax: 20,
-                tooltipFontSize: '12px'
+                tooltipFontSize: '14px',
             }
         );
 
@@ -301,6 +297,15 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                 type: "rect",
                 filter: "type1"
             });
+        }
+    };
+
+    /**
+     * Reset featureViewer
+     */
+    $scope.resetFeatureViewerZoom = function() {
+        if ($scope.featureViewer) {
+            $scope.featureViewer.resetZoom();
         }
     };
 
@@ -346,7 +351,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                     $scope.featureViewer.addFeature({
                         id: accession,
                         data: data,
-                        name: "Modified",  // in " + accession.substr(0, 8),
+                        name: "Modifications",
                         className: "modification",
                         color: "#005572",
                         type: "rect",
@@ -359,6 +364,26 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 
             addModifications()
         }
+    };
+
+    $scope.createFeatureViewerModal = function(targetId, heading, content) {
+        var html =  '<div id="modalWindow" class="modal fade" style="display:none; top: 20%" tabindex="-1">';
+        html += '<div class="modal-dialog" role="document">';
+        html += '<div class="modal-content">';
+        html += '<div class="modal-header">';
+        html += '<a class="close" data-dismiss="modal">×</a>';
+        html += '<h2>' + heading + '</h2>'
+        html += '</div>'; // modal-header
+        html += '<div class="modal-body">';
+        html += '<p>';
+        html += content;
+        html += '</p>';
+        html += '</div>'; // modal-body
+        html += '</div>'; // modal-content
+        html += '</div>'; // modal-dialog
+        html += '</div>';  // modalWindow
+        $("#" + targetId).html(html);
+        $("#modalWindow").modal('toggle');
     };
 
     // Initialization
@@ -394,7 +419,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                     }
 
                     data.push({
-                        x: x,
+                        x: x + 1,
                         y: y,
                         description: direction + " " + response.data.results[i].rfam_model.rfam_model_id + " " + response.data.results[i].rfam_model.long_name
                     })
@@ -403,20 +428,42 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                 if (data.length > 0) { // add Rfam feature track, only if there are any data
                     $scope.featureViewer.addFeature({
                         data: data,
-                        name: "Rfam models",
+                        name: "Rfam families",
                         className: "rfamModels",
                         color: "#d28068",
                         type: "rect",
-                        filter: "type1"
+                        filter: "type1",
+                        height: 16,
                     });
 
-                    // make clicks on this track open CRS page
-                    d3.selectAll("g.rfamModelsGroup")
-                      .on("click", function(element) {
-                          var rfam_id = element.description.split(" ")[1]; // typical description: "Conserved_rna_structure M0554307"
-                          var pageUrl = $interpolate("http://rfam.org/family/{{ rfam_id }}")({ rfam_id: rfam_id });
-                          $window.open(pageUrl);
-                      });
+                    $('svg .rfamModelsGroup text').css('fill', 'white').css('font-size', 'small');
+
+                    $('svg g.rfamModelsGroup').on('click', function(){
+                        var text = $(this).find('text').text().split(" ");
+                        var rfam_id = text[1];
+                        var description = text.slice(2).join(' ');
+
+                        var content = '<div class="media">';
+                        content += '<div class="media-left style="padding-left: 0;">';
+                        content += '  <a href="http://rfam.org/family/' + rfam_id + '" class="no-icon">';
+                        content += '    <img class="media-object thumbnail"';
+                        content += '      src="/api/internal/proxy?url=http%3A%2F%2Frfam.org%2Ffamily%2F' + rfam_id + '%2Fthumbnail"';
+                        content += '      style="max-width: 350px; max-height: 350px;"';
+                        content += '      title="Consensus secondary structure"';
+                        content += '      alt="' + rfam_id + ' secondary structure">';
+                        content += '  </a>';
+                        content += '</div>';
+                        content += '<div class="media-body">';
+                        content += '  <p>' + description + '<br>';
+                        content += '    <a href="http://rfam.org/family/' + rfam_id + '" class="no-icon" target="_blank">';
+                        content += '      Learn more in Rfam &rarr; ';
+                        content += '    </a>';
+                        content += '  </p>';
+                        content += '</div>';
+                        content += '</div>';
+
+                        $scope.createFeatureViewerModal('feature-viewer-modal', 'Rfam family ' + rfam_id, content);
+                    });
                 }
             },
             function() {
@@ -433,12 +480,12 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                     // trim start/stop of each feature to make sure it's not out of sequence bounds
                     var data = $scope.features.map(function(feature) {
                         var datum = {
-                            x: feature.start >= 0 ? feature.start : 0,
+                            x: feature.start >= 0 ? feature.start : 1,
                             y: feature.stop < $scope.rna.length ? feature.stop : $scope.rna.length - 1,
-                            description: 'Conserved_rna_structure ' + feature.metadata.crs_id
+                            description: 'Conserved feature ' + feature.metadata.crs_id
                         };
 
-                        if (feature.metadata.should_highlight) { datum.color = "#86A5B9"; }
+                        // if (feature.metadata.should_highlight) { datum.color = "#86A5B9"; }
 
                         return datum;
                     });
@@ -448,21 +495,38 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                             $scope.featureViewer.addFeature({
                                 id: "crs",
                                 data: data,
-                                name: "CRS",
-                                className: "crs",
+                                name: "Conserved features",
+                                className: "crsFeatures",
                                 color: "#365569",
                                 type: "rect",
-                                filter: "type1"
+                                filter: "type1",
+                                height: 16,
                             });
 
-                            // make clicks on this track open CRS page
-                            d3.selectAll("g.crsGroup")
-                              .on("click", function(element) {
-                                  var crs_id = element.description.split(" ")[1]; // typical description: "Conserved_rna_structure M0554307"
-                                  var pageUrl = $interpolate("https://rth.dk/resources/rnannotator/crs/vert/pages/cmf.data.collection.openallmenus.php?crs={{ crs_id }}")({ crs_id: crs_id });
-                                  $window.open(pageUrl);
-                              });
+                            $('svg .crsFeaturesGroup text').css('fill', 'white').css('font-size', 'small');
 
+                            $('svg g.crsFeaturesGroup').on('click', function(){
+                                var text = $(this).find('text').text().split(" ");
+                                var crs_id = text[text.length-1];
+                                var content = '<div class="media">';
+                                content += '<div class="media style="padding-left: 0;">';
+                                content += ' <img class="media-object thumbnail"';
+                                content += '   src="https://rth.dk/resources/rnannotator/crs/vert/data/figure/alignment/hg38_17way/' + crs_id.slice(0,2) + '/' + crs_id + '_ext_liftover_17way.aln.png"';
+                                content += '   style="max-width: 550px; max-height: 550px;">';
+                                content += '</div>';
+                                content += '<div class="media-body">';
+                                content += '  <ul class="list-unstyled">';
+                                content += '    <li><a href="https://rth.dk/resources/rnannotator/crs/vert/pages/cmf.data.collection.openallmenus.php?crs=' + crs_id + '" class="no-icon" style="font-size:larger;" target="_blank">';
+                                content += '      Learn more in CRS database &rarr; ';
+                                content += '    </a></li>';
+                                content += '    <li><i class="fa fa-search"></i> <a href="/search?q=conserved_structure:%22' + crs_id + '%22">Find other sequences with this feature</a></li>'
+                                content += '    <li><i class="fa fa-question-circle"></i> <a href="/help/conserved-motifs">What are conserved features?</a></li>';
+                                content += '  </ul>';
+                                content += '</div>';
+                                content += '</div>';
+
+                                $scope.createFeatureViewerModal('feature-viewer-modal', 'Conserved feature ' + crs_id, content);
+                            });
                         } else {
                             $timeout(addFeature, 1000)
                         }
@@ -474,42 +538,21 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
             )
         }
 
+        // adjust feature viewer css
+        $('.header-position').css('margin-top', 0);
+        $('.header-zoom').css('margin-top', 0);
     });
 
     if ($scope.taxid) {
-        $q.all([$scope.fetchGenomeLocations(), $scope.fetchGenomeMappings()]).then(function() {
-            $scope.fetchGenomeLocationsStatus = 'success';
-
-            // filter out genome locations, known from literature, from genome mappings
-            $scope.genomeMappings = $scope.genomeMappings.filter(function(mapping) {
-                return !$scope.genomeLocations.some(function(location) {
-                    return location.start == mapping.start &&
-                           location.end  == mapping.end &&
-                           location.strand == mapping.strand &&
-                           location.chromosome == mapping.chromosome;
-                });
-            });
-
-            // if any locations/mappings, activate genome browser
-            if ($scope.genomeLocations.length > 0 || $scope.genomeMappings.length > 0) {
-                var location = $scope.genomeLocations.length ? $scope.genomeLocations[0] : $scope.genomeMappings[0];
+        $scope.fetchGenomeLocations().then(function() {
+            // if any locations, activate genome browser
+            if ($scope.locations.length > 0) {
+                var location = $scope.locations[0];
                 $scope.fetchGenomes().then(function() {
                     $scope.activateGenomeBrowser(location.start, location.end, location.chromosome, location.species);
+                    $scope.fetchGenomeLocationsStatus = 'success';
                 });
             }
-
-            // join genome locations and mappings and sort them in a biologically relevant way
-            $scope.locations = $scope.genomeMappings.concat($scope.genomeLocations);
-            $scope.locations = $scope.locations.sort(function(a, b) {
-                if (a.chromosome !== b.chromosome) {  // sort by chromosome first
-                    if (isNaN(a.chromosome) && (!isNaN(b.chromosome))) return 1;
-                    else if (isNaN(b.chromosome) && (!isNaN(a.chromosome))) return -1;
-                    else if (isNaN(a.chromosome) && (isNaN(b.chromosome))) return a.chromosome > b.chromosome ? 1 : -1;
-                    else return (parseInt(a.chromosome) - parseInt(b.chromosome));
-                } else {
-                    return a.start - b.start;  // sort by start within chromosome
-                }
-            });
 
         }, function() {
             $scope.fetchGenomeLocationsStatus = 'error';

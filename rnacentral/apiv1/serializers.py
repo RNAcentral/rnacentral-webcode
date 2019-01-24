@@ -115,7 +115,6 @@ class ModificationSerializer(serializers.ModelSerializer):
 class XrefSerializer(serializers.HyperlinkedModelSerializer):
     """Serializer class for all cross-references associated with an RNAcentral id."""
     database = serializers.CharField(source='db.display_name')
-    is_expert_db = serializers.SerializerMethodField('is_expert_xref')
     is_active = serializers.BooleanField(read_only=True)
     first_seen = serializers.CharField(source='created.release_date')
     last_seen = serializers.CharField(source='last.release_date')
@@ -145,7 +144,7 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Xref
         fields = (
-            'database', 'is_expert_db', 'is_active', 'first_seen', 'last_seen', 'taxid', 'accession',
+            'database', 'is_active', 'first_seen', 'last_seen', 'taxid', 'accession',
             'modifications',  # used to send ~100 queries, optimized to 1
             'is_rfam_seed', 'ncbi_gene_id', 'ndb_external_url',
             'mirbase_mature_products', 'mirbase_precursor',
@@ -157,9 +156,6 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
             'ensembl_division', 'ucsc_db_id',  # 200-400 ms, no requests
             'genomic_coordinates'  # used to send ~100 queries, optimized down to 1
         )
-
-    def is_expert_xref(self, obj):
-        return True if obj.accession.non_coding_id else False
 
     def upis_to_urls(self, upis):
         """
@@ -273,6 +269,7 @@ class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
     sequence = serializers.CharField(source='get_sequence', read_only=True)
     rnacentral_id = serializers.SerializerMethodField('get_species_specific_id')
     description = serializers.SerializerMethodField('get_species_specific_description')
+    short_description = serializers.SerializerMethodField('get_short_description_name')
     species = serializers.SerializerMethodField('get_species_name')
     genes = serializers.SerializerMethodField()
     ncrna_types = serializers.SerializerMethodField()
@@ -282,7 +279,7 @@ class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Rna
-        fields = ('rnacentral_id', 'sequence', 'length', 'description',
+        fields = ('rnacentral_id', 'sequence', 'length', 'description', 'short_description',
                   'species', 'taxid', 'genes', 'ncrna_types', 'is_active',
                   'distinct_databases')
 
@@ -297,6 +294,10 @@ class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
     def get_species_specific_description(self, obj):
         """Get species-specific description of the RNA sequence."""
         return obj.get_description(self.context['taxid'])
+
+    def get_short_description_name(self, obj):
+        """Get description without species name"""
+        return obj.get_short_description(self.context['taxid'])
 
     def get_species_name(self, obj):
         """Get the name of the species based on taxid."""
@@ -375,6 +376,26 @@ class ProteinTargetsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProteinInfo
         fields = ('target_accession', 'source_accession', 'description', 'label', 'synonyms', 'methods')
+
+
+class LncrnaTargetsSerializer(serializers.ModelSerializer):
+    target_accession = serializers.CharField()
+    source_accession = serializers.CharField()
+    target_urs_taxid = serializers.CharField()
+    methods = serializers.ListField(serializers.CharField())
+    description = serializers.SerializerMethodField('select_description')
+
+    def select_description(self, obj):
+        if hasattr(obj, 'target_rna_description'):
+            return obj.target_rna_description
+        elif hasattr(obj, 'target_ensembl_description'):
+            return obj.target_ensembl_description
+        else:
+            return ''
+
+    class Meta:
+        model = ProteinInfo
+        fields = ('target_accession', 'source_accession', 'description', 'label', 'synonyms', 'methods', 'description', 'target_urs_taxid')
 
 
 class RnaGffSerializer(serializers.ModelSerializer):

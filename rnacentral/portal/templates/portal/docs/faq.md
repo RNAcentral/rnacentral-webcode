@@ -12,12 +12,6 @@ maintained by [expert databases]({% url 'expert-databases' %}).
 
 [More about RNAcentral &rarr;]({% url 'about' %})
 
-### What sequences are excluded from RNAcentral? <a style="cursor: pointer" id="excluded-sequences" ng-click="scrollTo('excluded-sequences')" name="excluded-sequences" class="text-muted smaller"><i class="fa fa-link"></i></a>
-
-* sequences shorter than **10 nucleotides**
-
-* sequences with **more than 10% of unknown characters** (Ns).
-
 ### What are RNAcentral identifiers? <a style="cursor: pointer" id="rnacentral-identifiers" ng-click="scrollTo('rnacentral-identifiers')" name="rnacentral-identifiers" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Each sequence in RNAcentral is assigned a **U**nique **R**NA **S**equence identifier (**URS**).
@@ -30,7 +24,7 @@ Example identifiers: URS0000000001, URS00000478B7.
 
 **Species-specific identifiers** also include NCBI taxid, for example: [URS00000478B7_9606](/rna/URS00000478B7_9606) or [URS00000478B7/9606](/rna/URS00000478B7/9606).
 
-### How do I find RNAcentral identifiers for an RNA sequence? <a style="cursor: pointer" id="how-to-find-rnacentral-id" ng-click="scrollTo('how-to-find-rnacentral-id')" name="how-to-find-rnacentral-id" class="text-muted smaller"><i class="fa fa-link"></i></a>
+### How do I find an RNAcentral identifier for an RNA sequence? <a style="cursor: pointer" id="how-to-find-rnacentral-id" ng-click="scrollTo('how-to-find-rnacentral-id')" name="how-to-find-rnacentral-id" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 To find an RNAcentral identifier for a **single sequence**, one can use RNAcentral
 [sequence search]({% url 'nhmmer-sequence-search' %}).
@@ -45,6 +39,12 @@ between [md5](http://en.wikipedia.org/wiki/MD5) values and RNAcentral ids;
 
 * download a [mapping file](ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/)
 with correspondences between external database identifiers and RNAcentral ids.
+
+### What sequences are excluded from RNAcentral? <a style="cursor: pointer" id="excluded-sequences" ng-click="scrollTo('excluded-sequences')" name="excluded-sequences" class="text-muted smaller"><i class="fa fa-link"></i></a>
+
+* sequences shorter than **10 nucleotides**
+
+* sequences with **more than 10% of unknown characters** (Ns).
 
 ### How do I submit sequences to RNAcentral? <a style="cursor: pointer" id="how-to-submit" ng-click="scrollTo('how-to-submit')" name="how-to-submit" class="text-muted smaller"><i class="fa fa-link"></i></a>
 

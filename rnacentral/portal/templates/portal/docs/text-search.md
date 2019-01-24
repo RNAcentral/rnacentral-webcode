@@ -1,6 +1,8 @@
 
 # <i class="fa fa-search"></i> Text search
 
+RNAcentral text search supports advanced queries using the following syntax:
+
 ### Exact matching <a style="cursor: pointer" id="exact-matching" ng-click="scrollTo('exact-matching')" name="exact-matching" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Use double quotes (**""**) to search for exact matches.

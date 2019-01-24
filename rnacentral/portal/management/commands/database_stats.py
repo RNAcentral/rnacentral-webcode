@@ -106,19 +106,12 @@ class Command(BaseCommand):
     python manage.py database_stats
     """
 
-    ########################
-    # Command line options #
-    ########################
-
-    option_list = BaseCommand.option_list + (
-        make_option('-d',
-            default='',
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--database',
             dest='database',
-            help='[Optional] Expert Database that needs to be recomputed'),
-    )
-    # shown with -h, --help
-    help = ('Calculate per-database statistics used for Expert Database '
-            'landing pages')
+            help='Specify expert database to update',
+        )
 
     def handle(self, *args, **options):
         """

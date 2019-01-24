@@ -39,6 +39,8 @@ urlpatterns = [
     url(r'^(?P<page>coming-soon)/?$', views.StaticView.as_view(), name='coming-soon'),
     # downloads
     url(r'^downloads/?$', views.StaticView.as_view(), {'page': 'downloads'}, name='downloads'),
+    # external link
+    url(r'^link/(?P<expert_db>[-\w]+)\:(?P<external_id>.+?)/?$', views.external_link, name='external-link'),
     # help centre
     url(r'^help/?$', views.StaticView.as_view(), {'page': 'help/faq'}, name='help'),
     url(r'^help/browser-compatibility/?$', views.StaticView.as_view(), {'page': 'help/browser-compatibility'}, name='help-browser-compatibility'),
@@ -48,6 +50,9 @@ urlpatterns = [
     url(r'^help/gene-ontology-annotations/?$', views.StaticView.as_view(), {'page': 'help/gene-ontology-annotations'}, name='help-gene-ontology-annotations'),
     url(r'^help/genomic-mapping/?$', views.StaticView.as_view(), {'page': 'help/genomic-mapping', 'assemblies': EnsemblAssembly.objects.all()}, name='help-genomic-mapping'),
     url(r'^help/link-to-rnacentral/?$', views.StaticView.as_view(), {'page': 'help/link-to-rnacentral'}, name='linking-to-rnacentral'),
+    url(r'^help/conserved-motifs/?$', views.StaticView.as_view(), {'page': 'help/conserved-motifs'}, name='help-conserved-motifs'),
+    url(r'^help/public-database/?$', views.StaticView.as_view(), {'page': 'help/public-database'}, name='help-public-database'),
+    url(r'^help/scientific-advisory-board/?$', views.StaticView.as_view(), {'page': 'help/sab'}, name='help-scientific-advisory-board'),
     # training
     url(r'^training/?$', views.StaticView.as_view(), {'page': 'training'}, name='training'),
     # about us
