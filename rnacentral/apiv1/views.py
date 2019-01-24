@@ -506,11 +506,8 @@ class GenomesAPIViewSet(ListModelMixin, GenericViewSet):
     permission_classes = (AllowAny, )
     serializer_class = EnsemblAssemblySerializer
     pagination_class = Pagination
-    # queryset = EnsemblAssembly.objects.prefetch_related('genome_mappings').all().order_by('-ensembl_url')
+    queryset = EnsemblAssembly.objects.all().order_by('-ensembl_url')
     lookup_field = 'ensembl_url'
-
-    def get_queryset(self):
-        return EnsemblAssembly.get_assemblies_with_example_locations()
 
 
 class RfamHitsAPIViewSet(generics.ListAPIView):
