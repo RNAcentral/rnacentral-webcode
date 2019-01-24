@@ -55,7 +55,7 @@ urlpatterns = [
     # view for an individual cross-reference
     url(r'^accession/(?P<pk>.*?)/info/?$', cache_page(CACHE_TIMEOUT)(views.AccessionView.as_view()), name='accession-detail'),
     # Ensembl-like genome coordinates endpoint
-    url(r'^(feature|overlap)/region/(?P<species>\w+)/(?P<chromosome>\w+(\.\d+)?)\:(?P<start>(\d|,)+)-(?P<end>(\d|,)+)/?$',
+    url(r'^(feature|overlap)/region/(?P<species>\w+)/(?P<chromosome>[\w\.]+)\:(?P<start>(\d|,)+)-(?P<end>(\d|,)+)/?$',
         cache_page(CACHE_TIMEOUT)(views.GenomeAnnotations.as_view()), name='human-genome-coordinates'),
     # expert databases as stored in config dict
     url(r'^expert-dbs/$', views.ExpertDatabasesAPIView.as_view(), {}, name='expert-dbs-api'),
