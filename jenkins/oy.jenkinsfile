@@ -84,7 +84,7 @@ pipeline {
                 }
 
                 script {
-                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/rq_queues.py'
+                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/rq_queues.py'
 
                     if (params.RQ_QUEUE == 'LOCAL') {
                         sh 'cat ${RQ_QUEUE_LOCAL} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/rq_queues.py'
@@ -96,7 +96,7 @@ pipeline {
                 }
 
                 script {
-                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
+                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
 
                     if (params.COMPRESSOR == 'PRO') {
                         sh 'cat ${COMPRESSOR_PRO} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/compressor.py'

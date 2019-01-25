@@ -84,24 +84,24 @@ pipeline {
                 }
 
                 script {
-                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/rq_queues.py'
+                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/rq_queues.py'
 
                     if (params.RQ_QUEUE == 'LOCAL') {
-                        sh 'cat ${RQ_QUEUE_LOCAL} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/rq_queues.py'
+                        sh 'cat ${RQ_QUEUE_LOCAL} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/rq_queues.py'
                     } else if (params.RQ_QUEUE == 'OY') {
-                        sh 'cat ${RQ_QUEUE_OY} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/rq_queues.py'
+                        sh 'cat ${RQ_QUEUE_OY} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/rq_queues.py'
                     } else if (params.RQ_QUEUE == 'PG') {
-                        sh 'cat ${RQ_QUEUE_PG} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/rq_queues.py'
+                        sh 'cat ${RQ_QUEUE_PG} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/rq_queues.py'
                     }
                 }
 
                 script {
-                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
+                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
 
                     if (params.COMPRESSOR == 'PRO') {
-                        sh 'cat ${COMPRESSOR_PRO} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
+                        sh 'cat ${COMPRESSOR_PRO} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
                     } else if (params.COMPRESSOR == 'DEV') {
-                        sh 'cat ${COMPRESSOR_DEV} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
+                        sh 'cat ${COMPRESSOR_DEV} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
                     }
                 }
 
