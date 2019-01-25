@@ -232,7 +232,20 @@ def deploy_remotely(git_branch=None, restart_url='https://rnacentral.org', quick
     Run deployment remotely.
     """
     git_updates(git_branch)
-    update_npm()
+    if env.host == 'ves-pg-a4':
+        cmd = 'rsync -av {path}/ {host}:{path}'.format(
+            path=os.path.join(
+                settings.PROJECT_PATH,
+                'rnacentral',
+                'portal',
+                'static',
+                'node_modules'
+            ),
+            host='ves-pg-a4',
+        )
+        local(cmd)
+    else:
+        update_npm()
     if not quick:
         rsync_local_files()
     collect_static_files()
