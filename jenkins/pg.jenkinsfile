@@ -58,59 +58,58 @@ pipeline {
             }
             steps {
                 script {
-                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/databases.py'
-
                     if (params.DATABASE == 'PRO') {
-                        sh 'cat ${DATABASE_PRO} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_PRO} > tmp'
                     } else if (params.DATABASE == 'DEV') {
-                        sh 'cat ${DATABASE_DEV} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_DEV} > tmp'
                     } else if (params.DATABASE == 'TEST') {
-                        sh 'cat ${DATABASE_TEST} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_TEST} > tmp'
                     } else if (params.DATABASE == 'FB') {
-                        sh 'cat ${DATABASE_FB} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_FB} > tmp'
                     } else if (params.DATABASE == 'HH') {
-                        sh 'cat ${DATABASE_HH} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_HH} > tmp'
                     }
+
+                    sh 'rsync -av tmp ves-pg-a4:/nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/databases.py'
                 }
 
                 script {
-                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoints.py'
-
                     if (params.EBI_SEARCH_ENDPOINT == 'PRO') {
-                        sh 'cat ${EBI_SEARCH_ENDPOINT_PRO} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoints.py'
+                        sh 'cat ${EBI_SEARCH_ENDPOINT_PRO} > tmp'
                     } else if (params.EBI_SEARCH_ENDPOINT == 'DEV') {
-                        sh 'cat ${EBI_SEARCH_ENDPOINT_DEV} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoints.py'
+                        sh 'cat ${EBI_SEARCH_ENDPOINT_DEV} > tmp'
                     }
+
+                    sh 'rsync -av tmp ves-pg-a4:/nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoints.py'
                 }
 
                 script {
-                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/rq_queues.py'
-
                     if (params.RQ_QUEUE == 'LOCAL') {
-                        sh 'cat ${RQ_QUEUE_LOCAL} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/rq_queues.py'
+                        sh 'cat ${RQ_QUEUE_LOCAL} > tmp'
                     } else if (params.RQ_QUEUE == 'OY') {
-                        sh 'cat ${RQ_QUEUE_OY} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/rq_queues.py'
+                        sh 'cat ${RQ_QUEUE_OY} > tmp'
                     } else if (params.RQ_QUEUE == 'PG') {
-                        sh 'cat ${RQ_QUEUE_PG} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/rq_queues.py'
+                        sh 'cat ${RQ_QUEUE_PG} > tmp'
                     }
+
+                    sh 'rsync -av tmp ves-pg-a4:/nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/rq_queues.py'
                 }
 
                 script {
-                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
-
                     if (params.COMPRESSOR == 'PRO') {
-                        sh 'cat ${COMPRESSOR_PRO} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
+                        sh 'cat ${COMPRESSOR_PRO} > tmp'
                     } else if (params.COMPRESSOR == 'DEV') {
-                        sh 'cat ${COMPRESSOR_DEV} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
+                        sh 'cat ${COMPRESSOR_DEV} > tmp'
                     }
+
+                    sh 'rsync -av tmp ves-pg-a4:/nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
                 }
 
-                sh 'rm -f /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/local_settings.py'
-                sh 'rm -f /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/local_settings.pyc'
-                sh 'cat $LOCAL_SETTINGS > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/local_settings.py'
+                sh 'cat $LOCAL_SETTINGS > tmp'
+                sh 'rsync -av tmp ves-pg-a4:/nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/local_settings.py'
 
-                sh 'rm -f /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/env.sh'
-                sh 'cat $ENV_SH > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/env.sh'
+                sh 'cat $ENV_SH > tmp'
+                sh 'rsync -av tmp ves-pg-a4:/nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/env.sh'
 
                 sh """
                     cd /nfs/public/rw/xfam/rnacentral/live
