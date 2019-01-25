@@ -12,7 +12,17 @@
 
 pipeline {
     agent any
+    parameters {
+        choice(
+            name: 'DATABASE',
+            choices: ['FB1', 'PG', 'BOTH'],
+            description: 'Which database instance to use?'
+        )
+    }
     stages {
+        when {
+            expression { params.DATABASE == 'FB1' || params.DATABASE == 'BOTH' }
+        }
         stage("FB1 refresh") {
             environment {
                 KEYFILE = credentials('fb1-001-rsa')
@@ -32,6 +42,9 @@ pipeline {
             }
         }
         stage("PG refresh") {
+            when {
+                expression { params.DATABASE == 'PG' || params.DATABASE == 'BOTH' }
+            }
             environment {
                 USERPASSWORD = credentials('refresh_vdbs_login')
                 USER = "${env.USERPASSWORD_USR}"
