@@ -20,10 +20,10 @@ pipeline {
         )
     }
     stages {
-        when {
-            expression { params.DATABASE == 'FB1' || params.DATABASE == 'BOTH' }
-        }
         stage("FB1 refresh") {
+            when {
+                expression { params.DATABASE == 'FB1' || params.DATABASE == 'BOTH' }
+            }
             environment {
                 KEYFILE = credentials('fb1-001-rsa')
             }
