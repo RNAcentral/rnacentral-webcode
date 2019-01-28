@@ -550,10 +550,9 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                 var location = $scope.locations[0];
                 $scope.fetchGenomes().then(function() {
                     $scope.activateGenomeBrowser(location.start, location.end, location.chromosome, location.species);
-                    $scope.fetchGenomeLocationsStatus = 'success';
                 });
             }
-
+            $scope.fetchGenomeLocationsStatus = 'success';
         }, function() {
             $scope.fetchGenomeLocationsStatus = 'error';
         });
