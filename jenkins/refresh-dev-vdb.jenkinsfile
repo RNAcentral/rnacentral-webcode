@@ -1,6 +1,22 @@
 pipeline {
     agent any
     stages {
+        stage("Copy local settings to Jenkins environment") {
+            environment {
+                LOCAL_SETTINGS = credentials('local_settings.py')
+                DATABASE = credentials('database_pro.py')
+                EBI_SEARCH_ENDPOINT = credentials('ebi_search_endpoint_pro.py')
+                RQ_QUEUE = credentials('rq_queue_pg.py')
+                COMPRESSOR = credentials('compressor_pro.py')
+            }
+            steps {
+                sh 'cat $LOCAL_SETTINGS > rnacentral/rnacentral/local_settings.py'
+                sh 'cat $DATABASE > rnacentral/rnacentral/databases.py'
+                sh 'cat $EBI_SEARCH_ENDPOINT > rnacentral/rnacentral/ebi_search_endpoints.py'
+                sh 'cat $RQ_QUEUE > rnacentral/rnacentral/rq_queues.py'
+                sh 'cat $COMPRESSOR > rnacentral/rnacentral/compressor.py'
+            }
+        }
         stage("refresh DEV from last snapshot") {
             environment {
                 USERPASSWORD = credentials('refresh_vdbs_login')
