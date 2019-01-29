@@ -297,15 +297,43 @@ $(document).ready(function() {
 </script>
 
 <script type="application/ld+json">
-{
-  "@context": "http://schema.org",
-  "@type": "WebSite",
-  "url": "https://rnacentral.org/",
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": "https://rnacentral.org/search?q={search_term_string}",
-    "query-input": "required name=search_term_string"
-  }
-}
+[
+    {
+      "@context": "http://schema.org",
+      "@type": "WebSite",
+      "url": "https://rnacentral.org/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://rnacentral.org/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@context" : "http://schema.org",
+      "@type" : "DataCatalog",
+      "description" : "RNAcentral is a comprehensive database of non-coding RNA sequences that represents all types of ncRNA from a broad range of organisms",
+      "keywords" : "non-coding RNA, ncRNA",
+      "name" : "RNAcentral database",
+      "url" : "https://rnacentral.org",
+      "publication" : [ {
+        "@type" : "PublicationEvent",
+        "name" : "RNAcentral: a comprehensive database of non-coding RNA sequences ",
+        "url" : "http://identifiers.org/pubmed:27794554"
+      } ],
+      "provider" : {
+        "@type" : "Organization",
+        "name" : "RNAcentral"
+      },
+      "sourceOrganization" : {
+        "@type" : "Organization",
+        "name" : "The European Bioinformatics Institute (EMBL-EBI)",
+        "url" : "https://www.ebi.ac.uk/"
+      },
+      "dataset" : [ {
+        "@type" : "Dataset",
+        "@id" : "https://rnacentral.org/downloads"
+      } ]
+    }
+]
 </script>
 {% endblock %}
