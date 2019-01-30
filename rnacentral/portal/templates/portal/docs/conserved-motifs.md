@@ -1,7 +1,10 @@
 
 ## What are Conserved Motifs?
 
-Conserved RNA motifs or conserved RNA structures (CRS) have been identified based on multi-species vertebrate alignments in the following study:
+Conserved RNA motifs or conserved RNA structures (CRS) are structured elements
+of RNA molecules that are conserved across species.
+They have been computationally identified in multi-species vertebrate alignments
+from **structure-based**, rather than sequence-based, alignments in the following study:
 
 > The identification and functional annotation of RNA structures conserved in vertebrates.
 
@@ -9,12 +12,17 @@ Conserved RNA motifs or conserved RNA structures (CRS) have been identified base
 
 > [DOI: 10.1101/gr.208652.116](https://doi.org/10.1101/gr.208652.116)
 
-<a href='/search?q=has_conserved_structure:"True"' class="btn btn-primary">Browse sequences with conserved motifs</a>
-
-RNAcentral displays CRS motifs as features in the sequence features viewer
+RNAcentral collected non-overlapping CRS motifs that were additionally filtered for Rfam overlap.
+RNAcentral displays them as features in the **feature viewer** on sequence report pages
 and provides links to the [RTH Database](https://rth.dk/resources/rnannotator/crs/vert/)
 where additional information can be found, including multiple sequence alignments,
 secondary structure, and tissue expression.
+
+<a href="/rna/URS0000BC44D5/9606" class="thumbnail">
+  <img src="https://lh3.googleusercontent.com/Sz1L0RMwkG66C5R3qk4Zc1kVEBnyYh5YQ21KH3K_QmP9pvJ11SECqd_QTJxIhlyHnHfRyJAfw9c89zsNmNyhyITyZXQTsAmo8TY6nQt7Rv7Z23XRbFMKbQdqwmtwvva0vXTWneDw" alt="Example CRS">
+</a>
+
+<a href='/search?q=has_conserved_structure:"True"' class="btn btn-primary">Browse sequences with conserved motifs</a>
 
 ### Examples
 
