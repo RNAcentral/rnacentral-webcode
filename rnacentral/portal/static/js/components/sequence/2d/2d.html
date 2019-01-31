@@ -9,7 +9,7 @@
     </div>
 
     <div ng-if="!$ctrl.secondaryStructures.useForna"> 
-      <div class="col-md-8" ng-if="$ctrl.numStructures > 0">
+      <div class="col-md-12" ng-if="$ctrl.numStructures > 0">
         <p>
           Secondary structure generated using <a href="https://github.com/RNAcentral/auto-traveler">auto-traveler</a>
           using the {{ $ctrl.secondaryStructures.secondary_structures[0].model }} model.
@@ -17,7 +17,7 @@
       </div>
     </div>
 
-    <div class="col-md-6" ng-if="$ctrl.numStructures === 0">
+    <div class="col-md-12" ng-if="$ctrl.numStructures === 0">
       <p>
         No secondary structures available
       </p>
