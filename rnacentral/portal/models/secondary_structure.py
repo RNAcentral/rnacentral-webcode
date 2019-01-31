@@ -28,3 +28,20 @@ class SecondaryStructure(models.Model):
     class Meta:
         db_table = 'rnc_secondary_structure'
         unique_together = (('accession', 'md5'),)
+
+
+class SecondarStructureWithLayout(models.Model):
+    id = models.AutoField(primary_key=True)
+    secondary_structure = models.TextField()
+    urs = models.OneToOneField(
+        'Rna',
+        db_column='urs',
+        to_field='upi',
+        related_name='secondary_structure_layout',
+    )
+    model = models.TextField()
+    layout = models.TextField()
+
+    class Meta:
+        db_table = 'rnc_secondary_structure_layout'
+        unique_together = (('urs',),)

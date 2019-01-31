@@ -1,0 +1,23 @@
+<div id="2d" style="min-height: 600px">
+  <div ng-if="$ctrl.secondaryStructures.useForna" >
+    <h2>Secondary structure</h2>'+
+    <div class="col-md-6" ng-if="$ctrl.numStructures > 0">
+      <p>
+        Predicted using tRNAScan-SE 2.0 (source: <a href="{{ $ctrl.getSourceUrl() }}">GtRNAdb</a>).
+      </p>
+    </div>
+    <div class="col-md-6" ng-if="$ctrl.numStructures > 0">
+      <p>Structure in dot-bracket notation:</p>
+      <pre style="white-space: pre-wrap">{{ $ctrl.secondaryStructures.secondary_structures[0].secondary_structure }}</pre>
+      <button class="btn btn-primary" ng-click="$ctrl.save2D()">Download</button>
+    </div>
+    <div class="col-md-6" ng-if="$ctrl.numStructures === 0">
+      <p>
+        No secondary structures available
+      </p>
+    </div>
+    <div id="rna_ss" style="width: {{ $ctrl.fornaSize }}px; height: {{ $ctrl.fornaSize }}px; margin-left: 9px;"></div>
+  </div>
+
+  <div id='rna_ss' ng-if="!$ctrl.secondaryStructures.useForna"> </div>
+</div>
