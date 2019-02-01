@@ -595,6 +595,7 @@ class Rna(CachingMixin, models.Model):
         WHERE target_urs_taxid = '{urs}_{taxid}'
         AND relationship_type = 'target_rna'
         AND t1.source_urs_taxid = t2.id
+        ORDER BY short_description
         '''.format(urs=self.upi,
                    taxid=taxid,
                    rna_precomputed=RnaPrecomputed._meta.db_table,
