@@ -252,6 +252,9 @@ var genoverse = {
 
         this.$onInit = function() {
             ctrl.render();
+            setTimeout(function() {
+                ctrl.setGenoverseWidth();
+            }, 1000);
         };
 
         ctrl.$doCheck = function() {
