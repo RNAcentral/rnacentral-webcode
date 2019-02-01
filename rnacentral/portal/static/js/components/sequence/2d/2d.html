@@ -1,30 +1,34 @@
 <div id="2d" style="min-height: 600px">
-  <h2>Secondary structure</h2>
 
-  <div>
-    <div ng-if="$ctrl.secondaryStructures.useForna" class="col-md-6" ng-if="$ctrl.numStructures > 0">
+  <div class="col-md-12">
+    <h2>Secondary structure</h2>
+
+    <div ng-if="$ctrl.secondaryStructures.useForna" ng-if="$ctrl.numStructures > 0">
       <p>
         Predicted using tRNAScan-SE 2.0 (source: <a href="{{ $ctrl.getSourceUrl() }}">GtRNAdb</a>).
       </p>
+
+      <div id="rna_ss" style="width: {{ $ctrl.fornaSize }}px; height: {{ $ctrl.fornaSize }}px; margin-left: 9px;"></div>
     </div>
 
     <div ng-if="!$ctrl.secondaryStructures.useForna"> 
-      <div class="col-md-12" ng-if="$ctrl.numStructures > 0">
+      <div ng-if="$ctrl.numStructures > 0">
         <p>
-          Secondary structure generated using <a href="https://github.com/RNAcentral/auto-traveler">auto-traveler</a>
-          using the {{ $ctrl.secondaryStructures.secondary_structures[0].model }} model.
+         Generated using 
+         <a href="https://github.com/RNAcentral/auto-traveler">auto-traveler</a>
+         using the {{ $ctrl.secondaryStructures.secondary_structures[0].model }}
+         model.
         </p>
       </div>
+
+      <div id="rna_ss"></div>
     </div>
 
-    <div class="col-md-12" ng-if="$ctrl.numStructures === 0">
+    <div ng-if="$ctrl.numStructures === 0">
       <p>
         No secondary structures available
       </p>
     </div>
-
-    <div ng-if="$ctrl.secondaryStructures.useForna" id="rna_ss" style="width: {{ $ctrl.fornaSize }}px; height: {{ $ctrl.fornaSize }}px; margin-left: 9px;"></div>
-    <div ng-if="!$ctrl.secondaryStructures.useForna" id="rna_ss"></div>
 
     <div class="col-md-12" ng-if="$ctrl.numStructures > 0">
       <p>Structure in dot-bracket notation:</p>

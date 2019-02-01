@@ -70,6 +70,13 @@ var secondary_structures = {
         ctrl.displayLayout = function() {
             console.log(ctrl.secondaryStructures);
             document.getElementById('rna_ss').innerHTML = ctrl.secondaryStructures.svg;
+            var svg = document.querySelector('#rna_ss svg'); 
+            if (svg) {
+                svg.classList.remove('black');
+                svg.style['stroke'] = null;
+                svg.style['font-family'] = 'Tahoma,Geneva,sans-serif';
+                svg.style['font-size'] = '6 px';
+            }
             ctrl.showSecondaryStructureTab();
         };
 
