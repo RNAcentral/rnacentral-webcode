@@ -576,7 +576,7 @@ class Rna(CachingMixin, models.Model):
         return data
 
     def get_layout_secondary(self):
-        layout = self.secondary_structure_layout
+        layout = getattr(self, 'secondary_structure_layout', None)
         if not layout:
             return {}
 
