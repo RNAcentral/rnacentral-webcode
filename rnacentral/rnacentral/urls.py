@@ -13,7 +13,7 @@ limitations under the License.
 
 import socket
 
-from django.conf.urls import url, include
+from django.conf.urls import url, include, handler500
 from django.views.generic import TemplateView
 
 
@@ -26,9 +26,10 @@ urlpatterns = [
     # export text search results
     url(r'^export/', include('export.urls')),
     # sequence search
-    url(r'^sequence-search/', include('nhmmer.urls')),
+    # url(r'^sequence-search/', include('nhmmer.urls')),
 ]
 
+# robots.txt extras
 if 'hx' in socket.gethostname():
     additional_settings = [
       url(r'^robots\.txt$', TemplateView.as_view(template_name='robots-test.txt', content_type='text/plain')),
@@ -39,3 +40,9 @@ else:
     ]
 
 urlpatterns += additional_settings
+
+
+# Override 500 page, so that in case of an error, we still display our error page with normal response status
+# and EBI load balancer still proxies to our website instead of showing an EBI 'service down' page
+handler500 = 'portal.views.handler500'
+

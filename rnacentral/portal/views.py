@@ -74,6 +74,7 @@ def homepage(request):
         'databases': list(Database.objects.filter(alive='Y').order_by('?').all()),
         'blog_url': settings.RELEASE_ANNOUNCEMENT_URL,
     }
+
     return render(request, 'portal/homepage.html', {'context': context})
 
 
@@ -418,3 +419,16 @@ def _get_json_lineage_tree(xrefs):
     nodes = get_nested_dict(lineages)
     json_lineage_tree = get_nested_tree(nodes, {})
     return json.dumps(json_lineage_tree)
+
+
+def handler500(request, *args, **argv):
+    """
+    Customized version of handler500 with status_code = 200 in order
+    to make EBI load balancer to proxy pass to this view, instead of displaying 500.
+
+    https://stackoverflow.com/questions/17662928/django-creating-a-custom-500-404-error-page
+    """
+    # warning: in django2 signature of this function has changed
+    response = render_to_response("500.html", {})
+    response.status_code = 200
+    return response
