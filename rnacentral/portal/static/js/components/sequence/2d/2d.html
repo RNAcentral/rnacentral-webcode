@@ -22,6 +22,22 @@
       </div>
 
       <div id="rna_ss_traveler"></div>
+
+      <div class="panel panel-default traveler-legend">
+        <div class="panel-body">
+          <strong>Colours</strong>
+          <ul class="list-unstyled">
+            <li><span class="traveler-green traveler-key"></span> Edited nucleotides - if the template and the sequence do not match</li>
+            <li><span class="traveler-red traveler-key"></span> Inserted nucleotides</li>
+            <li><span class="traveler-blue traveler-key"></span> Re-inserted nucleotides</li>
+            <li><span class="traveler-brown traveler-key"></span> Rotated nucleotides</li>
+          </ul>
+          <p>
+            <strong>Tip:</strong> Hover over the structure to see nucleotide numbers and differences compared to the template.
+          </p>
+        </div>
+      </div>
+
     </div>
 
     <div ng-if="$ctrl.numStructures === 0">
@@ -30,7 +46,7 @@
       </p>
     </div>
 
-    <div class="col-md-12" ng-if="$ctrl.numStructures > 0">
+    <div class="col-md-12" ng-if="$ctrl.numStructures > 0" style="margin-bottom: 20px;">
       <p>Structure in dot-bracket notation:</p>
       <pre style="white-space: pre-wrap">{{ $ctrl.secondaryStructures.secondary_structures[0].secondary_structure }}</pre>
       <button class="btn btn-primary" ng-click="$ctrl.save2D()">Download</button>

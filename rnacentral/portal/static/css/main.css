@@ -1579,3 +1579,26 @@ textarea {
   stroke: rgb(0, 0, 0);
   fill: none;
 }
+
+.traveler-red {
+  background-color: rgb(255, 0, 0);
+}
+
+.traveler-green {
+  background-color: rgb(0, 255, 0);
+}
+
+.traveler-blue {
+  background-color: rgb(0, 0, 255);
+}
+
+.traveler-brown {
+  background-color: rgb(211.65, 104.55, 30.6);
+}
+
+.traveler-key {
+  height: 12px;
+  width: 12px;
+  float: left;
+  margin-right: 8px;
+}
