@@ -34,9 +34,9 @@ limitations under the License.
     </div>
     <div ng-if="rna" class="col-md-12">
         <h1>
-            Sequence {{ rna.upi }}
+            {{ context.description }}
 
-            <small id="sequence-description-header">{{ context.description }}</small>
+            <!-- <small id="sequence-description-header">{{ context.description }}</small> -->
         </h1>
 
         {% if context.taxid_not_found %}
@@ -47,7 +47,7 @@ limitations under the License.
 
         <ul class="list-inline" id="sequence-overview">
             <li><strong>{{ rna.length|intcomma }}</strong> nucleotides</li>
-            <li>
+            <li ng-if="taxid">
                 {% with dbs=context.distinct_databases %}
                 <strong>{{ dbs|length|intcomma }}</strong> database{{ dbs|length|pluralize }}
                 <small>
@@ -57,9 +57,10 @@ limitations under the License.
                 </small>
                 {% endwith %}
             </li>
-            <li>
+            <li ng-if="taxid">
                 Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab" ng-click="activateTab('1')">species</a>
             </li>
+            <li uib-tooltip="Unique RNA Sequence identifier assigned by RNAcentral">{{rna.upi}}{% if context.taxid %}_{{ context.taxid }}{% endif %}</li>
             <li class="badge" style="padding-left: 7px; padding-right: 7px;">{{ context.precomputed.rna_type }}</li>
         </ul>
 
@@ -69,11 +70,34 @@ limitations under the License.
 
             <uib-tab index="0" heading="Overview" id="overview" deselect="checkTab($event, $selectedIndex)">
 
-                <xrefs upi="upi" taxid="taxid" timeout="500" page-size="5" on-activate-publications="activatePublications()" on-create-modifications-feature="createModificationsFeature(modifications, accession)" on-activate-genome-browser="activateGenomeBrowser(start, end, chr, genome)" on-scroll-to-genome-browser="scrollToGenomeBrowser()"></xrefs>
+                <xrefs ng-if="taxid" upi="upi" taxid="taxid" timeout="500" page-size="5" on-activate-publications="activatePublications()" on-create-modifications-feature="createModificationsFeature(modifications, accession)" on-activate-genome-browser="activateGenomeBrowser(start, end, chr, genome)" on-scroll-to-genome-browser="scrollToGenomeBrowser()"></xrefs>
 
                 <protein-targets ng-if="taxid" upi="upi" taxid="taxid" timeout="500" page-size="5" genomes="genomes"></protein-targets>
 
                 <lncrna-targets ng-if="taxid" upi="upi" taxid="taxid" timeout="500" page-size="5" genomes="genomes"></lncrna-targets>
+
+                {% if context.annotations_from_other_species and not context.taxid %}
+                <div>
+                  <h2>Found in {{ rna.count_distinct_organisms|intcomma }} species</h2>
+                  <p>
+                    View <strong>species-specific</strong> information:
+                  </p>
+                  <div style="max-height: 400px; overflow:auto;" class="force-scrollbars">
+                    <ol>
+                    {% for entry in context.annotations_from_other_species %}
+                      <li>{{ entry.species_name }} <a href="/rna/{{ entry.urs_taxid }}">{{ entry.short_description }}</a></li>
+                    {% endfor %}
+                    </ol>
+                  </div>
+                </div>
+                {% endif %}
+
+                <h2 ng-if="!taxid">Taxonomic tree</h2>
+                <div class="panel panel-default d3-species" ng-if="!taxid">
+                    <div class="tab-pane panel-body d3-species force-scrollbars d3-species-tree-tab">
+                        <taxonomy upi="upi" taxid="taxid"></taxonomy>
+                    </div>
+                </div>
 
                 {% if context.mirna_regulators %}
                   <h2>Targeting miRNAs
@@ -257,9 +281,9 @@ limitations under the License.
 
                 <h2 class="margin-bottom-0px">
                     Sequence
-                    <small>
+                    <!-- <small>
                       <em>{{ rna.upi }}{% if context.taxid %}_{{ context.taxid }}{% endif %}</em>
-                    </small>
+                    </small> -->
                 </h2>
 
                 {% if context.non_canonical_base_counts %}
@@ -293,11 +317,10 @@ limitations under the License.
 
                 <pre ng-if="showSequence" class="pre-scrollable" id="rna-sequence">{{ rna.get_sequence }}</pre>
 
-                <publications upi="upi" taxid="taxid"></publications>
-
+                <publications ng-if="taxid" upi="upi" taxid="taxid"></publications>
             </uib-tab>
 
-            <uib-tab index="1" heading="Taxonomy" deselect="checkTab($event, $selectedIndex)">
+            <uib-tab ng-if="taxid" index="1" heading="Taxonomy" deselect="checkTab($event, $selectedIndex)">
                 <h2>Taxonomic tree</h2>
 
                 <p>
