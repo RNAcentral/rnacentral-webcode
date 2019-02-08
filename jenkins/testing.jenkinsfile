@@ -187,6 +187,7 @@ pipeline {
 
                     # update repository to fetch the latest fabfile
                     git reset --hard
+                    git fetch --all
                     git checkout ${params.BRANCH}
                     git pull
 
