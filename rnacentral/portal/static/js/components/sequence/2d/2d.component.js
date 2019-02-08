@@ -57,7 +57,7 @@ var secondary_structures = {
             var container = new fornac.FornaContainer("#rna_ss", {
                 'applyForce': false,
                 'allowPanningAndZooming': true,
-                'initialSize':[ctrl.fornaSize, ctrl.fornaSize],
+                'initialSize': [ctrl.fornaSize, ctrl.fornaSize],
             });
             var options = {
                 'structure': ctrl.secondaryStructures.secondary_structures[0].secondary_structure,
@@ -68,14 +68,17 @@ var secondary_structures = {
         };
 
         ctrl.displayLayout = function() {
-            console.log(ctrl.secondaryStructures);
-            document.getElementById('rna_ss').innerHTML = ctrl.secondaryStructures.svg;
-            var svg = document.querySelector('#rna_ss svg'); 
+            document.getElementById('rna_ss_traveler').innerHTML = ctrl.secondaryStructures.svg;
+            var svg = document.querySelector('#rna_ss_traveler svg');
             if (svg) {
                 svg.classList.remove('black');
-                svg.style['stroke'] = null;
-                svg.style['font-family'] = 'Tahoma,Geneva,sans-serif';
-                svg.style['font-size'] = '6 px';
+                svg.classList.add('traveler-secondary-structure-svg');
+                // delete inline svg styles to prevent style leakage
+                var style = svg.getElementsByTagName('style');
+                if (style.length > 0) {
+                    var parent = style[0].parentNode;
+                    parent.removeChild(style[0]);
+                }
             }
             ctrl.showSecondaryStructureTab();
         };
