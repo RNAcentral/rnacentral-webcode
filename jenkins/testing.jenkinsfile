@@ -45,10 +45,7 @@ pipeline {
         )
     }
     stages {
-        stage("Build for testing") {
-            when {
-                expression { params.QUICK == 'False' }
-            }
+        stage("Update settings") {
             environment {
                 DATABASE_PRO = credentials('database_pro.py')
                 DATABASE_DEV = credentials('database_dev.py')
@@ -142,6 +139,13 @@ pipeline {
 
                 sh 'cat $LOCAL_SETTINGS > rnacentral/rnacentral/local_settings.py'
                 sh 'cat $ENV_SH > rnacentral/scripts/env.sh'
+            }
+        }
+        stage("Update pip packages") {
+            when {
+                expression { params.QUICK == 'False' }
+            }
+            steps {
                 sh '''
                     virtualenv ENV --python=/net/isilonP/public/rw/homes/xfm_adm/src/python/bin/python
                     source ENV/bin/activate
