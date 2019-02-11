@@ -10,12 +10,12 @@ var goAnnotations = {
         var ctrl = this;
 
         var sourceUrls = {
-            "bhf-ucl": "https://www.ucl.ac.uk/functional-gene-annotation/cardiovascular/projects",
+            "bhf-ucl": "https://www.ucl.ac.uk/cardiovascular/research/pre-clinical-and-fundamental-science/functional-gene-annotation/cardiovascular-gene",
             "sgd": "https://www.yeastgenome.org/",
             "mgi": "http://www.informatics.jax.org",
             "uniprot": "http://www.uniprot.org",
             "goc": "http://geneontology.org",
-            "aruk-ucl": "http://www.ucl.ac.uk/functional-gene-annotation/neurological",
+            "aruk-ucl": "https://www.ucl.ac.uk/cardiovascular/research/pre-clinical-and-fundamental-science/functional-gene-annotation/neurological-gene-2",
             "parkinsonsuk-ucl": "http://www.ucl.ac.uk/functional-gene-annotation/neurological",
             "dictybase": "http://dictybase.org/",
         };
