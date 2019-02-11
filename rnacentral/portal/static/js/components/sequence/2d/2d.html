@@ -1,6 +1,5 @@
 <div id="2d" style="min-height: 600px">
 
-  <div class="col-md-12">
     <h2>Secondary structure</h2>
 
     <div ng-show="$ctrl.secondaryStructures.useForna && $ctrl.numStructures > 0">
@@ -21,7 +20,7 @@
         </p>
       </div>
 
-      <div id="rna_ss_traveler"></div>
+      <div id="rna_ss_traveler" class="thumbnail col-md-12 col-sm-12 col-xs-12" style="overflow: auto;"></div>
 
       <div class="panel panel-default traveler-legend">
         <div class="panel-body">
@@ -52,6 +51,4 @@
       <button class="btn btn-primary" ng-click="$ctrl.save2D()">Download</button>
     </div>
 
-
-  </div>
 </div>

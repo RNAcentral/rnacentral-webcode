@@ -9,6 +9,7 @@ var secondary_structures = {
 
         ctrl.fornaSize = 500;
         ctrl.numStructures = 0;
+        ctrl.panZoom;
 
         ctrl.$onInit = function() {
             ctrl.fetchSecondaryStructures().then(
@@ -78,8 +79,21 @@ var secondary_structures = {
                 if (style.length > 0) {
                     var parent = style[0].parentNode;
                     parent.removeChild(style[0]);
+                    var parent2 = parent.parentNode;
+                    parent2.removeChild(parent);
                 }
             }
+
+            ctrl.panZoom = svgPanZoom('#rna_ss_traveler svg', {
+              controlIconsEnabled: true,
+              fit: false, // see https://github.com/ariutta/svg-pan-zoom/issues/100
+            });
+
+            // fix the svg control position
+            $('#svg-pan-zoom-controls').attr('transform', '');
+            // increase the font size
+            $('.traveler-secondary-structure-svg').css('font-size', '11px');
+
             ctrl.showSecondaryStructureTab();
         };
 
