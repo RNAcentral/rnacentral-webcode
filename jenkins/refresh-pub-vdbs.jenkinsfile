@@ -57,6 +57,23 @@ pipeline {
                 '''
             }
         }
+        stage("Push replication from FB1 to PG") {
+            environment {
+                KEYFILE = credentials('fb1-001-rsa')
+            }
+            steps {
+                // always run this stage
+                sh '''
+                    pushd /nfs/public/rw/xfam/rnacentral/live
+                    source local/virtualenvs/RNAcentral/bin/activate
+                    popd
+                    cd rnacentral
+                    fab fb1:key=../fb1-001-rsa push_replication
+                '''
+
+            }
+        }
+
         stage("PG refresh") {
             when {
                 expression { params.DATABASE == 'PG' || params.DATABASE == 'BOTH' }

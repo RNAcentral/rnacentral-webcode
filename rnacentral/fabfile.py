@@ -326,9 +326,13 @@ def ebi_cli():
 def refresh_fb1():
     snapshot = env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_create_snapshot.sh -s pgsql-hxvm-038.ebi.ac.uk | tail -1")
     env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-010.ebi.ac.uk -S '%s'" % snapshot)
-    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_push_replication.sh -s pgsql-hxvm-038.ebi.ac.uk")
 
     slack("Refreshed FB1 database from '%s' snapshot" % snapshot)
+
+
+def push_replication():
+    """Login to the FB machine and push replication of HX snapshot from it to HH"""
+    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_push_replication.sh -s pgsql-hxvm-038.ebi.ac.uk")
 
 
 def refresh_pg():
