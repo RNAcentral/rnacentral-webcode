@@ -211,6 +211,7 @@ def deploy_locally(git_branch=None, restart_url='https://rnacentral.org', quick=
     """
     Run deployment locally.
     """
+    slack("Starting deployment of '%s' at ves-hx-a4" % git_branch)
     git_updates(git_branch)
     update_npm()
     collect_static_files()
@@ -231,6 +232,7 @@ def deploy_remotely(git_branch=None, restart_url='https://rnacentral.org', quick
     """
     Run deployment remotely.
     """
+    slack("Starting deployment of '%s' at %s" % (git_branch, env.host))
     git_updates(git_branch)
     if env.host == 'ves-pg-a4':
         cmd = 'rsync -av {path}/ {host}:{path}'.format(
