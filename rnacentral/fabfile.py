@@ -213,7 +213,8 @@ def deploy_locally(git_branch=None, restart_url='https://rnacentral.org', quick=
     """
     slack("Starting deployment of '%s' at ves-hx-a4" % git_branch)
     git_updates(git_branch)
-    update_npm()
+    if not quick:
+        update_npm()
     collect_static_files()
     compress_static_files()
     if not quick:
@@ -234,20 +235,24 @@ def deploy_remotely(git_branch=None, restart_url='https://rnacentral.org', quick
     """
     slack("Starting deployment of '%s' at %s" % (git_branch, env.host))
     git_updates(git_branch)
-    if env.host == 'ves-pg-a4':
-        cmd = 'rsync -av {path}/ {host}:{path}'.format(
-            path=os.path.join(
-                settings.PROJECT_PATH,
-                'rnacentral',
-                'portal',
-                'static',
-                'node_modules'
-            ),
-            host='ves-pg-a4',
-        )
-        local(cmd)
-    else:
-        update_npm()
+
+    # on PG machine npm was unable to download node_modules, so we rsync them from OY
+    if not quick:
+        if env.host == 'ves-pg-a4':
+            cmd = 'rsync -av {path}/ {host}:{path}'.format(
+                path=os.path.join(
+                    settings.PROJECT_PATH,
+                    'rnacentral',
+                    'portal',
+                    'static',
+                    'node_modules'
+                ),
+                host='ves-pg-a4',
+            )
+            local(cmd)
+        else:
+            update_npm()
+
     if not quick:
         rsync_local_files()
     collect_static_files()
