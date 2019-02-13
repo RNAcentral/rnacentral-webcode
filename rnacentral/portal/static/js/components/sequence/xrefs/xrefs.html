@@ -148,6 +148,8 @@
             <!-- FlyBase -->
             <span ng-switch-when="FlyBase">
               transcript <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> from gene <a target="_blank" href="http://flybase.org/reports/{{ xref.accession.gene }}">{{ xref.accession.gene }}</a>
+              <br>
+              <i class="fa fa-angle-right"></i> View {{ xref.accession.locus_tag }} annotations at <a ng-href="https://www.alliancegenome.org/gene/FB:{{ xref.accession.gene }}" target="_blank">Alliance of Genome Resources</a>
             </span>
 
             <!-- MGI -->
@@ -244,6 +246,8 @@
             <span ng-switch-when="WormBase">
               {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> <span class="small text-muted">(gene)</span> |
               <a ng-href="{{ 'http://www.wormbase.org/species/c_elegans/transcript/' + xref.accession.standard_name }}" target="_blank">{{ xref.accession.standard_name }}</a> <span class="small text-muted">(transcript)</span>
+              <br>
+              <i class="fa fa-angle-right"></i> View {{ xref.accession.gene }} annotations at <a ng-href="https://www.alliancegenome.org/gene/WB:{{ xref.accession.external_id }}" target="_blank">Alliance of Genome Resources</a>
             </span>
 
             <!-- PLncDB -->
