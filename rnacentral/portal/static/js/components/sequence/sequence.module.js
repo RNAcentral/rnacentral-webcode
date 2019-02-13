@@ -145,6 +145,13 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         )
     };
 
+    $scope.fetchMatureMirnaFeatures = function() {
+      return $http.get(
+          routes.apiMatureMirnaFeaturesView({upi: $scope.upi, taxid: $scope.taxid}),
+          {params: {page_size: 10000000000}}
+      )
+    };
+
     // View functionality
     // ------------------
 
@@ -306,6 +313,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     $scope.resetFeatureViewerZoom = function() {
         if ($scope.featureViewer) {
             $scope.featureViewer.resetZoom();
+            $('.selectedRect').hide();
         }
     };
 
@@ -534,6 +542,54 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                     };
 
                     // for non-empty tracks, add CRS feature track
+                    if ($scope.features.length > 0) { addFeature(); }
+                }
+            )
+        }
+
+        if ($scope.taxid) {
+            $scope.fetchMatureMirnaFeatures().then(
+
+                function(response){
+                    $scope.features = response.data.results.sort(function(a, b) {return a.start - b.start});
+
+                    // trim start/stop of each feature to make sure it's not out of sequence bounds
+                    var data = $scope.features.map(function(feature) {
+                        var datum = {
+                            x: feature.start >= 0 ? feature.start + 1 : 1,
+                            y: feature.stop < $scope.rna.length ? feature.stop + 1 : $scope.rna.length,
+                            description: 'Mature miRNA ' + feature.metadata.related.replace('MIRBASE:', '')
+                        };
+
+                        return datum;
+                    });
+
+                    var addFeature = function() {
+                        if ($scope.featureViewer) {
+                            $scope.featureViewer.addFeature({
+                                id: "mature-mirna",
+                                data: data,
+                                name: "Mature miRNA",
+                                className: "matureMirnaFeatures",
+                                color: "#660099", // one of University of Manchester colors
+                                type: "rect",
+                                filter: "type1",
+                                height: 16,
+                            });
+
+                            $('svg .matureMirnaFeaturesGroup text').css('fill', 'white').css('font-size', 'small');
+
+                            $('svg g.matureMirnaFeaturesGroup').on('click', function(){
+                                var text = $(this).find('text').text().split(" ");
+                                var mature_product_id = text[text.length-1];
+                                window.open('/link/mirbase:' + mature_product_id, '_blank');
+                            });
+                        } else {
+                            $timeout(addFeature, 1000)
+                        }
+                    };
+
+                    // for non-empty tracks, add mature miRNA feature track
                     if ($scope.features.length > 0) { addFeature(); }
                 }
             )

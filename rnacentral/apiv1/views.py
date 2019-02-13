@@ -536,6 +536,18 @@ class SequenceFeaturesAPIViewSet(generics.ListAPIView):
         return SequenceFeature.objects.filter(upi=upi, taxid=taxid, feature_name="conserved_rna_structure")
 
 
+class MatureMirnaFeaturesAPIViewSet(generics.ListAPIView):
+    """API endpoint with miRNA mature product sequence features"""
+    permission_classes = (AllowAny, )
+    serializer_class = SequenceFeatureSerializer
+    pagination_class = Pagination
+
+    def get_queryset(self):
+        upi = self.kwargs['pk']
+        taxid = self.kwargs['taxid']
+        return SequenceFeature.objects.filter(upi=upi, taxid=taxid, feature_name="mature_product")
+
+
 class EnsemblInsdcMappingView(APIView):
     """API endpoint, presenting mapping between E! and INSDC chromosome names."""
     permission_classes = ()
