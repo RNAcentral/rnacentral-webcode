@@ -39,12 +39,12 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, \
                               RfamHitSerializer, SequenceFeatureSerializer, \
                               EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer, ProteinTargetsSerializer, \
-                              LncrnaTargetsSerializer
+                              LncrnaTargetsSerializer, EnsemblComparaSerializer
 
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
     EnsemblInsdcMapping, GenomeMapping, GenomicCoordinates, GoAnnotation, RelatedSequence, ProteinInfo, SequenceFeature,\
-    SequenceRegion
+    SequenceRegion, EnsemblCompara
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination, PaginatedRawQuerySet
 
@@ -672,3 +672,19 @@ class LncrnaTargetsView(generics.ListAPIView):
         )
         queryset = PaginatedRawQuerySet(protein_info_query, model=ProteinInfo)
         return queryset
+
+
+class EnsemblComparaAPIViewSet(generics.ListAPIView):
+    """API endpoint for related sequences identified by Ensembl Compara"""
+    permission_classes = (AllowAny, )
+    serializer_class = EnsemblComparaSerializer
+    pagination_class = Pagination
+
+    def get_queryset(self):
+        upi = self.kwargs['pk']
+        taxid = self.kwargs['taxid']
+        urs_taxid = EnsemblCompara.objects.filter(urs_taxid__id=upi+'_'+taxid).first()
+        if urs_taxid:
+            return EnsemblCompara.objects.filter(homology_id=urs_taxid.homology_id).all()
+        else:
+            return []

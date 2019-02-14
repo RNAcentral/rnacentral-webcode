@@ -14,11 +14,13 @@ limitations under the License.
 from caching.base import CachingMixin, CachingManager
 from django.db import models
 
+from portal.models import RnaPrecomputed
+
 
 class EnsemblCompara(CachingMixin, models.Model):
     id = models.IntegerField(primary_key=True)
     ensembl_transcript_id = models.TextField()
-    urs_taxid = models.ForeignKey(models.RnaPrecomputed, to_field='id')
+    urs_taxid = models.ForeignKey(RnaPrecomputed, to_field='id', db_column='urs_taxid')
     homology_id = models.IntegerField()
 
     objects = CachingManager()
