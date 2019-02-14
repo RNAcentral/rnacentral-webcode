@@ -1,0 +1,37 @@
+<div ng-if="$ctrl.ensembl_compara.length > 0 && !$ctrl.error">
+
+    <h2>
+      Ensembl Compara
+      <small>
+        <span>{{ $ctrl.count }} total</span>
+
+        <a href="" uib-tooltip="Learn more about Ensembl Compara annotations in RNAcentral &rarr;" style="color:inherit;">
+          <i class="fa fa-question-circle" aria-hidden="true"></i>
+        </a>
+      </small>
+    </h2>
+
+    <div class="force-scrollbars" style="max-height: 300px; overflow-y: scroll;">
+
+      <ul>
+        <li ng-repeat="entry in $ctrl.ensembl_compara">
+          <a href="/rna/{{ entry.rnacentral_id.id }}">{{ entry.rnacentral_id.description }}</a>
+        </li>
+      </ul>
+
+      <a href="" class="btn btn-default btn-sm" ng-click="$ctrl.loadMoreResults()" ng-if="$ctrl.count != $ctrl.ensembl_compara.length">Load more</a>
+
+      <span ng-if="$ctrl.error">
+        <i class="fa fa-exclamation-circle fa-2x"></i>
+        Failed to load data from server
+      </span>
+
+    </div>
+
+    <span>
+      View tree in
+      <a href="http://www.ensembl.org/Nomascus_leucogenys/Gene/Compara_Tree?g=ENSNLEG00000021462;r=1a:22821011-22821081;t=ENSNLET00000026487" target="_blank">Ensembl</a>
+      <!-- http://www.ensembl.org/Nomascus_leucogenys/Gene/Compara_Tree?t=<transcript_id> -->
+    </span>
+
+</div>

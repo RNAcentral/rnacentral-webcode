@@ -674,17 +674,21 @@ class LncrnaTargetsView(generics.ListAPIView):
         return queryset
 
 
+class LargerPagination(Pagination):
+    page_size = 50
+
+
 class EnsemblComparaAPIViewSet(generics.ListAPIView):
     """API endpoint for related sequences identified by Ensembl Compara"""
     permission_classes = (AllowAny, )
     serializer_class = EnsemblComparaSerializer
-    pagination_class = Pagination
+    pagination_class = LargerPagination
 
     def get_queryset(self):
         upi = self.kwargs['pk']
         taxid = self.kwargs['taxid']
         urs_taxid = EnsemblCompara.objects.filter(urs_taxid__id=upi+'_'+taxid).first()
         if urs_taxid:
-            return EnsemblCompara.objects.filter(homology_id=urs_taxid.homology_id).all()
+            return EnsemblCompara.objects.filter(homology_id=urs_taxid.homology_id).order_by('urs_taxid__description').all()
         else:
             return []
