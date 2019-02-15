@@ -60,7 +60,7 @@ limitations under the License.
             <li ng-if="taxid">
                 Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab" ng-click="activateTab('1')">species</a>
             </li>
-            <li uib-tooltip="Unique RNA Sequence identifier assigned by RNAcentral">{{rna.upi}}{% if context.taxid %}_{{ context.taxid }}{% endif %}</li>
+            <li uib-tooltip="Unique RNA Sequence identifier assigned by RNAcentral"><abbr>{{rna.upi}}{% if context.taxid %}_{{ context.taxid }}{% endif %}</abbr></li>
             <li class="badge" style="padding-left: 7px; padding-right: 7px;">{{ context.precomputed.rna_type }}</li>
         </ul>
 
