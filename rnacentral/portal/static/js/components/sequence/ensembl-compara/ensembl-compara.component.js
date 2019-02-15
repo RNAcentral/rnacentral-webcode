@@ -45,6 +45,14 @@ var ensemblCompara = {
         ctrl.loadMoreResults = function() {
             ctrl.displayResults(ctrl.next_page);
         };
+
+        ctrl.has_same_urs = function(rnacentral_id) {
+            if (rnacentral_id.indexOf(ctrl.upi) === -1) {
+                return false;
+            } else {
+                return true;
+            }
+        }
     }],
 
     templateUrl: '/static/js/components/sequence/ensembl-compara/ensembl-compara.html'

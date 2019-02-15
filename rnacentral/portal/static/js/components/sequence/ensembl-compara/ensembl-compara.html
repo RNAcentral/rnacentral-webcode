@@ -1,7 +1,7 @@
 <div ng-if="$ctrl.ensembl_compara.length > 0 && !$ctrl.error">
 
     <h2>
-      Related sequences
+      Related RNAs in other species
       <small>
         <a href="https://www.ensembl.org/info/genome/compara/ncRNA_methods.html" class="no-icon" uib-tooltip="Learn about Ensembl Compara ncRNA trees &rarr;" style="color:inherit;" target="_blank">
           <i class="fa fa-question-circle" aria-hidden="true"></i>
@@ -26,6 +26,7 @@
       <ul class="margin-bottom-5px">
         <li ng-repeat="entry in $ctrl.ensembl_compara">
           <a href="/rna/{{ entry.rnacentral_id.id }}">{{ entry.rnacentral_id.description }}</a>
+          <span class="badge" ng-if="$ctrl.has_same_urs(entry.rnacentral_id.id)">identical sequence</span>
         </li>
       </ul>
 
