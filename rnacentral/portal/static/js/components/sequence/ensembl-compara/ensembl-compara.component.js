@@ -22,7 +22,7 @@ var ensemblCompara = {
                 function(response) {
                     ctrl.ensembl_compara = ctrl.ensembl_compara.concat(response.data.results);
                     ctrl.count = response.data.count;
-                    ctrl.next_page = response.data.next;
+                    ctrl.next_page = response.data.links.next;
                     ctrl.ensembl_compara_url = response.data.ensembl_compara_url;
                 },
                 function(response) {
