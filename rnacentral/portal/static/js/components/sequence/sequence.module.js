@@ -1,6 +1,6 @@
 var rnaSequenceController = function($scope, $location, $window, $rootScope, $compile, $http, $q, $filter, $timeout, $interpolate, routes, GenoverseUtils) {
     // Take upi and taxid from url. Note that $location.path() always starts with slash
-    $scope.upi = $location.path().split('/')[2];
+    $scope.upi = $location.path().split('/')[2].toUpperCase();
     $scope.taxid = $location.path().split('/')[3];  // TODO: this might not exist!
     $scope.hide2dTab = true;
     $scope.hideGoAnnotations = true;
