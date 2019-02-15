@@ -700,10 +700,14 @@ class EnsemblComparaAPIViewSet(generics.ListAPIView):
     def get_queryset(self):
         upi = self.kwargs['pk']
         taxid = self.kwargs['taxid']
-        urs_taxid = EnsemblCompara.objects.filter(urs_taxid__id=upi+'_'+taxid).first()
+        self_urs_taxid = upi + '_' + taxid
+        urs_taxid = EnsemblCompara.objects.filter(urs_taxid__id=self_urs_taxid).first()
         if urs_taxid:
             self.ensembl_transcript_id = urs_taxid.ensembl_transcript_id
-            return EnsemblCompara.objects.filter(homology_id=urs_taxid.homology_id).order_by('urs_taxid__description').all()
+            return EnsemblCompara.objects.filter(homology_id=urs_taxid.homology_id)\
+                                         .exclude(urs_taxid=self_urs_taxid)\
+                                         .order_by('urs_taxid__description')\
+                                         .all()
         else:
             return []
 
