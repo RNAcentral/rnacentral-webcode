@@ -676,6 +676,18 @@ class LncrnaTargetsView(generics.ListAPIView):
 
 class LargerPagination(Pagination):
     page_size = 50
+    ensembl_compara_url = None
+
+    def get_paginated_response(self, data):
+        return Response({
+            'links': {
+               'next': self.get_next_link(),
+               'previous': self.get_previous_link()
+            },
+            'count': self.page.paginator.count,
+            'results': data,
+            "ensembl_compara_url": self.ensembl_compara_url,
+        })
 
 
 class EnsemblComparaAPIViewSet(generics.ListAPIView):
@@ -683,12 +695,36 @@ class EnsemblComparaAPIViewSet(generics.ListAPIView):
     permission_classes = (AllowAny, )
     serializer_class = EnsemblComparaSerializer
     pagination_class = LargerPagination
+    ensembl_transcript_id = None
 
     def get_queryset(self):
         upi = self.kwargs['pk']
         taxid = self.kwargs['taxid']
         urs_taxid = EnsemblCompara.objects.filter(urs_taxid__id=upi+'_'+taxid).first()
         if urs_taxid:
+            self.ensembl_transcript_id = urs_taxid.ensembl_transcript_id
             return EnsemblCompara.objects.filter(homology_id=urs_taxid.homology_id).order_by('urs_taxid__description').all()
         else:
             return []
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+
+        self.pagination_class.ensembl_compara_url = self.get_ensembl_compara_url()
+        page = self.paginate_queryset(queryset)
+
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+
+        return Response({'data': serializer.data})
+
+    def get_ensembl_compara_url(self):
+        urs_taxid = self.kwargs['pk']+ '_' + self.kwargs['taxid']
+        genome_region = SequenceRegion.objects.filter(urs_taxid__id=urs_taxid).first()
+        if genome_region:
+            return 'http://www.ensembl.org/' + genome_region.assembly.ensembl_url + '/Gene/Compara_Tree?t=' + self.ensembl_transcript_id
+        else:
+            return ''
