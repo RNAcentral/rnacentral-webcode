@@ -155,11 +155,15 @@
             <!-- MGI -->
             <span ng-switch-when="MGI">
               <a class="mgi-external-url" ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+              <br>
+              <i class="fa fa-angle-right"></i> View {{ xref.accession.gene }} annotations at <a ng-href="https://www.alliancegenome.org/gene/{{ xref.accession.external_id }}" target="_blank">Alliance of Genome Resources</a>
             </span>
 
             <!-- RGD -->
             <span ng-switch-when="RGD">
               <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">RRID:RGD_{{ xref.accession.external_id }}</a>
+              <br>
+              <i class="fa fa-angle-right"></i> View {{ xref.accession.gene }} annotations at <a ng-href="https://www.alliancegenome.org/gene/RGD:{{ xref.accession.external_id }}" target="_blank">Alliance of Genome Resources</a>
             </span>
 
             <!-- tmRNA Website -->
@@ -233,6 +237,8 @@
             <!-- SGD -->
             <span ng-switch-when="SGD">
               {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }})
+              <br>
+              <i class="fa fa-angle-right"></i> View {{ xref.accession.locus_tag }} annotations at <a ng-href="https://www.alliancegenome.org/gene/SGD:{{ xref.accession.external_id }}" target="_blank">Alliance of Genome Resources</a>
             </span>
 
             <!-- TAIR -->
