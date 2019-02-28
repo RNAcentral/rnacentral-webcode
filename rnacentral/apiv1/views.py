@@ -687,7 +687,7 @@ class LargerPagination(Pagination):
             },
             'count': self.page.paginator.count,
             'results': data,
-            "ensembl_compara_url": self.ensembl_compara_url,
+            'ensembl_compara_url': self.ensembl_compara_url,
             'ensembl_compara_status': self.ensembl_compara_status,
         })
 
@@ -697,7 +697,7 @@ class EnsemblComparaAPIViewSet(generics.ListAPIView):
     permission_classes = (AllowAny, )
     serializer_class = EnsemblComparaSerializer
     pagination_class = LargerPagination
-    ensembl_transcript_id = None
+    ensembl_transcript_id = ''
 
     def get_queryset(self):
         upi = self.kwargs['pk']
@@ -731,10 +731,10 @@ class EnsemblComparaAPIViewSet(generics.ListAPIView):
     def get_ensembl_compara_url(self):
         urs_taxid = self.kwargs['pk']+ '_' + self.kwargs['taxid']
         genome_region = SequenceRegion.objects.filter(urs_taxid__id=urs_taxid).first()
-        if genome_region:
+        if genome_region and self.ensembl_transcript_id:
             return 'http://www.ensembl.org/' + genome_region.assembly.ensembl_url + '/Gene/Compara_Tree?t=' + self.ensembl_transcript_id
         else:
-            return ''
+            return None
 
     def get_ensembl_compara_status(self):
         urs_taxid = self.kwargs['pk']+ '_' + self.kwargs['taxid']
