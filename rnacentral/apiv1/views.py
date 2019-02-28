@@ -677,6 +677,7 @@ class LncrnaTargetsView(generics.ListAPIView):
 class LargerPagination(Pagination):
     page_size = 50
     ensembl_compara_url = None
+    compara_status = None
 
     def get_paginated_response(self, data):
         return Response({
@@ -687,6 +688,7 @@ class LargerPagination(Pagination):
             'count': self.page.paginator.count,
             'results': data,
             "ensembl_compara_url": self.ensembl_compara_url,
+            'ensembl_compara_status': self.ensembl_compara_status,
         })
 
 
@@ -715,6 +717,7 @@ class EnsemblComparaAPIViewSet(generics.ListAPIView):
         queryset = self.get_queryset()
 
         self.pagination_class.ensembl_compara_url = self.get_ensembl_compara_url()
+        self.pagination_class.ensembl_compara_status = self.get_ensembl_compara_status()
         page = self.paginate_queryset(queryset)
 
         if page is not None:
@@ -732,3 +735,22 @@ class EnsemblComparaAPIViewSet(generics.ListAPIView):
             return 'http://www.ensembl.org/' + genome_region.assembly.ensembl_url + '/Gene/Compara_Tree?t=' + self.ensembl_transcript_id
         else:
             return ''
+
+    def get_ensembl_compara_status(self):
+        urs_taxid = self.kwargs['pk']+ '_' + self.kwargs['taxid']
+
+        rna_precomputed = RnaPrecomputed.objects.get(id=urs_taxid)
+        if 'Ensembl' not in rna_precomputed.databases:
+            return 'analysis not available'
+
+        compara = EnsemblCompara.objects.filter(urs_taxid=urs_taxid).first()
+        if compara:
+            compara_count = EnsemblCompara.objects.filter(homology_id=compara.homology_id).count()
+
+        if not compara or compara_count == 0:
+            return 'RNA type not supported'
+
+        if compara_count == 1:
+            return 'not found'
+
+        return 'found'

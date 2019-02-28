@@ -12,6 +12,7 @@ var ensemblCompara = {
         ctrl.next_page = null;
         ctrl.ensembl_compara = [];
         ctrl.ensembl_compara_url = '';
+        ctrl.ensembl_compara_status = '';
 
         ctrl.$onInit = function() {
             ctrl.displayResults();
@@ -24,6 +25,7 @@ var ensemblCompara = {
                     ctrl.count = response.data.count;
                     ctrl.next_page = response.data.links.next;
                     ctrl.ensembl_compara_url = response.data.ensembl_compara_url;
+                    ctrl.ensembl_compara_status = response.data.ensembl_compara_status;
                 },
                 function(response) {
                     ctrl.error = "Failed to fetch Ensembl Compara annotations";

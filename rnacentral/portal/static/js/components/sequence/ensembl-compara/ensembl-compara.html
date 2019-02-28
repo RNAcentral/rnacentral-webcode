@@ -1,13 +1,34 @@
-<div ng-if="$ctrl.ensembl_compara.length > 0 && !$ctrl.error">
+<h2>
+  Related RNAs in other species
+  <small>
+    <a href="https://www.ensembl.org/info/genome/compara/ncRNA_methods.html" class="no-icon" uib-tooltip="Learn about Ensembl Compara ncRNA trees &rarr;" style="color:inherit;" target="_blank">
+      <i class="fa fa-question-circle" aria-hidden="true"></i>
+    </a>
+  </small>
+</h2>
 
-    <h2>
-      Related RNAs in other species
-      <small>
-        <a href="https://www.ensembl.org/info/genome/compara/ncRNA_methods.html" class="no-icon" uib-tooltip="Learn about Ensembl Compara ncRNA trees &rarr;" style="color:inherit;" target="_blank">
-          <i class="fa fa-question-circle" aria-hidden="true"></i>
-        </a>
-      </small>
-    </h2>
+<div ng-if="!$ctrl.ensembl_compara_status && !$ctrl.error">
+    <span>
+        <i class="fa fa-spinner fa-spin fa-2x"></i>
+        Loading related sequences...
+    </span>
+</div>
+
+<div ng-if="$ctrl.ensembl_compara.length === 0 && !$ctrl.error">
+  <p ng-if="$ctrl.ensembl_compara_status === 'analysis not available'">
+      This information is only available for <strong>Ensembl</strong> sequences
+      from certain RNA types annotated by <strong>Rfam</strong>
+      and <strong>miRBase</strong>.
+  </p>
+  <p ng-if="$ctrl.ensembl_compara_status === 'RNA type not supported'">
+      This information is not available for this RNA type.
+  </p>
+  <p ng-if="$ctrl.ensembl_compara_status === 'not found'">
+      No related sequences found.
+  </p>
+</div>
+
+<div ng-if="$ctrl.ensembl_compara.length > 0 && !$ctrl.error">
 
     <p class="text-muted">
       This RNA has <strong>{{ $ctrl.count }}</strong> ortholog/paralog
