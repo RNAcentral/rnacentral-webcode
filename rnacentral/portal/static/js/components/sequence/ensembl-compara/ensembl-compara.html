@@ -48,6 +48,7 @@
         <li ng-repeat="entry in $ctrl.ensembl_compara">
           <a href="/rna/{{ entry.rnacentral_id.id }}">{{ entry.rnacentral_id.description }}</a>
           <span class="badge" ng-if="$ctrl.has_same_urs(entry.rnacentral_id.id)">identical sequence</span>
+          <span class="label label-success" ng-if="$ctrl.is_paralog(entry.rnacentral_id.id)">paralog</span>
         </li>
       </ul>
 

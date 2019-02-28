@@ -54,7 +54,16 @@ var ensemblCompara = {
             } else {
                 return true;
             }
-        }
+        };
+
+        ctrl.is_paralog = function(rnacentral_id) {
+            taxid = rnacentral_id.split('_')[1];
+            if (taxid === ctrl.taxid) {
+                return true;
+            } else {
+                return false;
+            }
+        };
     }],
 
     templateUrl: '/static/js/components/sequence/ensembl-compara/ensembl-compara.html'
