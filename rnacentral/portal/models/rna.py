@@ -570,8 +570,10 @@ class Rna(CachingMixin, models.Model):
             data.append({
                 'secondary_structure': secondary_structure,
                 'source': sources,
-                'model': None,
+                'model_id': None,
                 'layout': None,
+                'template_species': None,
+                'template_lineage': None,
             })
         return data
 
@@ -583,8 +585,10 @@ class Rna(CachingMixin, models.Model):
         return {
             'secondary_structure': layout.secondary_structure,
             'source': 'traveler',
-            'model': layout.model,
+            'model_id': layout.template.model_name,
             'layout': layout.layout,
+            'template_species': layout.template.taxid.name,
+            'template_lineage': layout.template.taxid.lineage,
         }
 
     def get_organism_name(self, taxid):
