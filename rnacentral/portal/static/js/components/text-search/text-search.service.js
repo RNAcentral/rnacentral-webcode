@@ -7,7 +7,6 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
 
     this.config = {
         fields: [
-            'active',
             'author',
             'common_name',
             'description',
@@ -16,6 +15,7 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             'gene',
             'gene_synonym',
             'has_genomic_coordinates',
+            'has_secondary_structure',
             'length',
             'locus_tag',
             'organelle',
@@ -28,7 +28,6 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             'tax_string'
         ],
         fieldWeights: {
-            'active': 0,
             'author': 2,
             'common_name': 3,
             'description': 2,
@@ -37,6 +36,7 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             'gene': 4,
             'gene_synonym': 3,
             'has_genomic_coordinates': 0,
+            'has_secondary_structure': 0,
             'length': 0,
             'locus_tag': 2,
             'organelle': 3,
@@ -47,7 +47,6 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             'tax_string': 2,
         },
         fieldVerboseNames: {
-            'active': 'Active',
             'author': 'Author',
             'common_name': 'Species',
             'description': 'Description',
@@ -65,7 +64,7 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             'standard_name': 'Standard name',
             'tax_string': 'Taxonomy'
         },
-        facetfields: ['rna_type', 'TAXONOMY', 'expert_db', 'qc_warning_found', 'has_go_annotations', 'has_conserved_structure', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
+        facetfields: ['rna_type', 'TAXONOMY', 'expert_db', 'has_secondary_structure', 'qc_warning_found', 'has_go_annotations', 'has_conserved_structure', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
         foldableFacets: ['qc_warning_found', 'has_go_annotations', 'has_conserved_structure', 'has_genomic_coordinates'],
         sortableFields: [
             { label: 'Popular species, Length ↓', value: 'boost:descending,length:descending' },
@@ -347,6 +346,13 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
                 facet.facetValues.forEach(function(facetValue) {
                     if (facetValue.label === 'Yes') { facetValue.label = 'Warnings found'; }
                     else if (facetValue.label === 'No') { facetValue.label = 'No warnings'; }
+                });
+            }
+            if (facet.id === 'has_secondary_structure') {
+                facet.label = 'Secondary structure';
+                facet.facetValues.forEach(function(facetValue) {
+                    if (facetValue.label === 'True') { facetValue.label = 'Available'; }
+                    else if (facetValue.label === 'False') { facetValue.label = 'Not available'; }
                 });
             }
         });
