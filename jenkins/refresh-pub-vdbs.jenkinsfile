@@ -69,7 +69,7 @@ pipeline {
                     source local/virtualenvs/RNAcentral/bin/activate
                     popd
                     cd rnacentral
-                    fab fb1:key=../fb1-001-rsa push_replication
+                    fab fb1 --password=$PASSWORD push_replication
                 '''
 
             }
