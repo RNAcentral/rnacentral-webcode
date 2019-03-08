@@ -60,7 +60,9 @@ pipeline {
         }
         stage("Push replication from FB1 to PG") {
             environment {
-                KEYFILE = credentials('fb1-001-rsa')
+                USERPASSWORD = credentials('refresh_vdbs_login')
+                USER = "${env.USERPASSWORD_USR}"
+                PASSWORD = "${env.USERPASSWORD_PSW}"
             }
             steps {
                 // always run this stage
