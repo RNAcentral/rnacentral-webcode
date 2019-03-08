@@ -293,17 +293,16 @@ def test(base_url='http://localhost:8000/'):
 
 # VDBS refresh-related code
 
-def fb1(key):
+def fb1():
     """
     Configures environment variables for running commands on fb1, e.g.:
 
     fab fb1:key=/path/to/keyfile refresh_fb1
     """
     env.hosts = ['fb1-001.ebi.ac.uk']
-    env.user = 'burkov'
+    env.user = 'apetrov'
     env.run = run
     env.cd = cd
-    env.key_filename = key
 
 
 def pg():
@@ -313,7 +312,7 @@ def pg():
     fab pg --password=mytopsecretpassword refresh_pg
     """
     env.hosts = ['pg-001.ebi.ac.uk']
-    env.user = 'burkov'
+    env.user = 'apetrov'
     env.run = run
     env.cd = cd
 
