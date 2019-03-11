@@ -1,0 +1,70 @@
+<h2>
+  Related RNAs in other species
+  <small>
+    <a href="https://www.ensembl.org/info/genome/compara/ncRNA_methods.html" class="no-icon" uib-tooltip="Learn about Ensembl Compara ncRNA trees &rarr;" style="color:inherit;" target="_blank">
+      <i class="fa fa-question-circle" aria-hidden="true"></i>
+    </a>
+  </small>
+</h2>
+
+<div ng-if="!$ctrl.ensembl_compara_status && !$ctrl.error">
+    <span>
+        <i class="fa fa-spinner fa-spin fa-2x"></i>
+        Loading related sequences...
+    </span>
+</div>
+
+<div ng-if="$ctrl.ensembl_compara.length === 0 && !$ctrl.error">
+  <p ng-if="$ctrl.ensembl_compara_status === 'analysis not available'">
+      This information is only available for <strong>Ensembl</strong> sequences
+      from certain RNA types annotated by <strong>Rfam</strong>
+      and <strong>miRBase</strong>.
+  </p>
+  <p ng-if="$ctrl.ensembl_compara_status === 'RNA type not supported'">
+      This information is not available for this RNA type.
+  </p>
+  <p ng-if="$ctrl.ensembl_compara_status === 'not found'">
+      No related sequences found.
+  </p>
+</div>
+
+<div ng-if="$ctrl.ensembl_compara.length > 0 && !$ctrl.error">
+
+    <p>
+      This RNA has <strong>{{ $ctrl.count }}</strong> ortholog/paralog
+      <ng-pluralize count="$ctrl.count"
+                    when="{'1': 'sequence',
+                           'other': 'sequences'}">
+      </ng-pluralize>
+      identified by <strong>Ensembl Compara</strong>
+      <a ng-if="$ctrl.ensembl_compara_url" class="btn btn-sm btn-default margin-left-5px" href="{{ $ctrl.ensembl_compara_url }}" target="_blank">
+        <i class="fa fa-sitemap"></i> View ncRNA tree
+      </a>
+    </p>
+
+    <div class="force-scrollbars" style="max-height: 300px; overflow-y: scroll;">
+
+      <ul class="margin-bottom-5px">
+        <li ng-repeat="entry in $ctrl.ensembl_compara">
+          <a href="/rna/{{ entry.rnacentral_id.id }}">{{ entry.rnacentral_id.description }}</a>
+          <span class="badge" ng-if="$ctrl.has_same_urs(entry.rnacentral_id.id)">identical sequence</span>
+          <span class="label label-success" ng-if="$ctrl.is_paralog(entry.rnacentral_id.id)">paralog</span>
+        </li>
+      </ul>
+
+      <a href="" class="btn btn-default btn-sm" ng-click="$ctrl.loadMoreResults()" ng-if="$ctrl.count != $ctrl.ensembl_compara.length">Load more</a>
+
+      <span ng-if="$ctrl.error">
+        <i class="fa fa-exclamation-circle fa-2x"></i>
+        Failed to load data from server
+      </span>
+
+    </div>
+
+</div>
+
+<div ng-if="$ctrl.error" class="alert alert-danger">
+  <p>
+      {{ $ctrl.error }}
+  </p>
+</div>

@@ -39,12 +39,12 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, \
                               RfamHitSerializer, SequenceFeatureSerializer, \
                               EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer, ProteinTargetsSerializer, \
-                              LncrnaTargetsSerializer
+                              LncrnaTargetsSerializer, EnsemblComparaSerializer
 
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
     EnsemblInsdcMapping, GenomeMapping, GenomicCoordinates, GoAnnotation, RelatedSequence, ProteinInfo, SequenceFeature,\
-    SequenceRegion
+    SequenceRegion, EnsemblCompara
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination, PaginatedRawQuerySet
 
@@ -672,3 +672,85 @@ class LncrnaTargetsView(generics.ListAPIView):
         )
         queryset = PaginatedRawQuerySet(protein_info_query, model=ProteinInfo)
         return queryset
+
+
+class LargerPagination(Pagination):
+    page_size = 50
+    ensembl_compara_url = None
+    compara_status = None
+
+    def get_paginated_response(self, data):
+        return Response({
+            'links': {
+               'next': self.get_next_link(),
+               'previous': self.get_previous_link()
+            },
+            'count': self.page.paginator.count,
+            'results': data,
+            'ensembl_compara_url': self.ensembl_compara_url,
+            'ensembl_compara_status': self.ensembl_compara_status,
+        })
+
+
+class EnsemblComparaAPIViewSet(generics.ListAPIView):
+    """API endpoint for related sequences identified by Ensembl Compara"""
+    permission_classes = (AllowAny, )
+    serializer_class = EnsemblComparaSerializer
+    pagination_class = LargerPagination
+    ensembl_transcript_id = ''
+
+    def get_queryset(self):
+        upi = self.kwargs['pk']
+        taxid = self.kwargs['taxid']
+        self_urs_taxid = upi + '_' + taxid
+        urs_taxid = EnsemblCompara.objects.filter(urs_taxid__id=self_urs_taxid).first()
+        if urs_taxid:
+            self.ensembl_transcript_id = urs_taxid.ensembl_transcript_id
+            return EnsemblCompara.objects.filter(homology_id=urs_taxid.homology_id)\
+                                         .exclude(urs_taxid=self_urs_taxid)\
+                                         .order_by('urs_taxid__description')\
+                                         .all()
+        else:
+            return []
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+
+        self.pagination_class.ensembl_compara_url = self.get_ensembl_compara_url()
+        self.pagination_class.ensembl_compara_status = self.get_ensembl_compara_status()
+        page = self.paginate_queryset(queryset)
+
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+
+        return Response({'data': serializer.data})
+
+    def get_ensembl_compara_url(self):
+        urs_taxid = self.kwargs['pk']+ '_' + self.kwargs['taxid']
+        genome_region = SequenceRegion.objects.filter(urs_taxid__id=urs_taxid).first()
+        if genome_region and self.ensembl_transcript_id:
+            return 'http://www.ensembl.org/' + genome_region.assembly.ensembl_url + '/Gene/Compara_Tree?t=' + self.ensembl_transcript_id
+        else:
+            return None
+
+    def get_ensembl_compara_status(self):
+        urs_taxid = self.kwargs['pk']+ '_' + self.kwargs['taxid']
+
+        rna_precomputed = RnaPrecomputed.objects.get(id=urs_taxid)
+        if 'Ensembl' not in rna_precomputed.databases:
+            return 'analysis not available'
+
+        compara = EnsemblCompara.objects.filter(urs_taxid=urs_taxid).first()
+        if compara:
+            compara_count = EnsemblCompara.objects.filter(homology_id=compara.homology_id).count()
+
+        if not compara or compara_count == 0:
+            return 'RNA type not supported'
+
+        if compara_count == 1:
+            return 'not found'
+
+        return 'found'
