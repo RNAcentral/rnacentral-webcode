@@ -4,7 +4,7 @@ var ensemblCompara = {
         taxid: '=',
     },
 
-    controller: ['$http', 'routes', function($http, routes) {
+    controller: ['$http', 'routes', '$location', function($http, routes, $location) {
         var ctrl = this;
 
         ctrl.error = null;
@@ -18,8 +18,16 @@ var ensemblCompara = {
             ctrl.displayResults();
         };
 
+        // DRF URLs use http which don't work when the site is loaded over https
+        ctrl.enforce_https_url = function(url) {
+            if (typeof(url) !== 'undefined' && $location.protocol() === 'https' && url.indexOf('https') === -1) {
+                url = url.replace('http', 'https');
+            }
+            return url;
+        }
+
         ctrl.displayResults = function(next_page_url) {
-            ctrl.fetchEnsemblCompara(next_page_url).then(
+            ctrl.fetchEnsemblCompara(ctrl.enforce_https_url(next_page_url)).then(
                 function(response) {
                     ctrl.ensembl_compara = ctrl.ensembl_compara.concat(response.data.results);
                     ctrl.count = response.data.count;
