@@ -104,7 +104,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
      * DRF URLs use http which don't work when the site is loaded over https
      */
     var enforce_https_url = function(url) {
-        if (typeof(url) !== 'undefined' && $location.protocol() === 'https' && url.indexOf('https') === -1) {
+        if (typeof(url) === 'string' && $location.protocol() === 'https' && url.indexOf('https') === -1) {
             url = url.replace('http', 'https');
         }
         return url;
