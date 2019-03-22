@@ -84,6 +84,8 @@ var secondary_structures = {
                 }
             }
 
+            ctrl.showSecondaryStructureTab();
+
             ctrl.panZoom = svgPanZoom('#rna_ss_traveler svg', {
               controlIconsEnabled: true,
               fit: false, // see https://github.com/ariutta/svg-pan-zoom/issues/100
@@ -93,8 +95,6 @@ var secondary_structures = {
             $('#svg-pan-zoom-controls').attr('transform', '');
             // increase the font size
             $('.traveler-secondary-structure-svg').css('font-size', '11px');
-
-            ctrl.showSecondaryStructureTab();
         };
 
         /**
