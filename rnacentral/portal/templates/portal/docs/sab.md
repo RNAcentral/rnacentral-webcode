@@ -4,7 +4,7 @@
 ### Current members
 
 [RNAcentral](/) and [Rfam](http://rfam.org) share a Scientific Advisory Board (SAB)
-which includes six RNA biologists covering a wide range of expertise from wet lab to computational research.
+which includes five RNA biologists covering a wide range of expertise from wet lab to computational research.
 
 - [Michelle Meyer](https://scholar.google.com/citations?user=Hf7WbasAAAAJ&hl=en&oi=sra) Boston College
 - [Manja Marz](http://www.rna.uni-jena.de/en/members/manja-marz/) Friedrich Schiller University Jena
