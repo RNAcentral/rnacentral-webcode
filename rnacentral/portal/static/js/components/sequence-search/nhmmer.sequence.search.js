@@ -117,10 +117,10 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
         $scope.params.search_in_progress = true;
         $scope.params.status_message = $scope.defaults.messages.get_results;
         id = id || $location.search().id;
-        next_page = enforce_https_url(next_page) || false;
+        next_page = next_page || false;
 
         $http({
-            url: next_page ? $scope.results.next_page : $scope.defaults.results_endpoint,
+            url: next_page ? enforce_https_url($scope.results.next_page) : $scope.defaults.results_endpoint,
             method: 'GET',
             params: {
                 id: id,
