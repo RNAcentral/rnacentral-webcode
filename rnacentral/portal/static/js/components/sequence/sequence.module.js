@@ -439,7 +439,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 
                     $('svg .rfamModelsGroup text').css('fill', 'white').css('font-size', 'small');
 
-                    $('svg g.rfamModelsGroup').on('click', function(){
+                    $('svg g.rfamModelsGroup').on('click', function() {
                         var text = $(this).find('text').text().split(" ");
                         var rfam_id = text[1];
                         var description = text.slice(2).join(' ');
@@ -510,7 +510,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 
                             $('svg .crsFeaturesGroup text').css('fill', 'white').css('font-size', 'small');
 
-                            $('svg g.crsFeaturesGroup').on('click', function(){
+                            $('svg g.crsFeaturesGroup').on('click', function() {
                                 var text = $(this).find('text').text().split(" ");
                                 var crs_id = text[text.length-1];
                                 var content = '<div class="media">';
