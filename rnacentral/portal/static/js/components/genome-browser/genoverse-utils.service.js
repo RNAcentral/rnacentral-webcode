@@ -272,17 +272,13 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
     GenoverseUtils.prototype.Genoverse = Genoverse;
 
      /**
-     * Dynamically determine whether to use E! or EG REST API based on species.
-     * If species not in E!, use EG.
-     * Ensembl species list: http://www.ensembl.org/info/about/species.html
+     * Used to dynamically determine whether to use E! or EG REST API based on species.
+     * (if species was not in E!, use EG; Ensembl species list: http://www.ensembl.org/info/about/species.html)
+     *
+     * Starting from 8 April, 2019, E! migrated to
      */
     GenoverseUtils.prototype.getEnsemblEndpoint = function(species, genomes) {
-        var genomeObject = GenoverseUtils.prototype.getGenomeObject(species, genomes);
-        if (genomeObject.division === 'Ensembl' || genomeObject.division === 'EnsemblVertebrates') {
-            return 'https://rest.ensembl.org';
-        } else {
-            return 'https://rest.ensemblgenomes.org';
-        }
+        return 'https://rest.ensembl.org';
     };
 
     /**
