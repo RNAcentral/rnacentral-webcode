@@ -278,7 +278,7 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
      * Starting from 8 April, 2019, E! migrated to
      */
     GenoverseUtils.prototype.getEnsemblEndpoint = function(species, genomes) {
-        return 'https://test.rest.ensembl.org';
+        return 'https://rest.ensembl.org';
     };
 
     /**
