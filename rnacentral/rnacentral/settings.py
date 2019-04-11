@@ -182,6 +182,7 @@ INSTALLED_APPS = (
     'corsheaders',
     'portal',
     'nhmmer',
+    'sequence_search',
     'apiv1',
     'django_filters',  # required by DRF3.5+
     'rest_framework',

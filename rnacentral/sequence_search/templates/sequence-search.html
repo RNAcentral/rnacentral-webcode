@@ -1,0 +1,326 @@
+<!--
+Copyright [2009-2017] EMBL-European Bioinformatics Institute
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+{% extends "portal/base.html" %}
+{% load staticfiles %}
+
+{% block meta_tags %}
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="@RNAcentral">
+  <meta name="twitter:creator" content="@RNAcentral">
+  <meta name="twitter:title" content="RNAcentral">
+  <meta name="twitter:image" content="https://rnacentral.org{% static "img/logo/rnacentral-logo.png" %}">
+  <meta name="robots" content="noindex">
+{% endblock meta_tags %}
+
+{% block title %}
+Sequence search
+{% endblock %}
+
+{% block content %}
+{% verbatim %}
+<div ng-app="nhmmerSearch" ng-controller="NhmmerResultsListCtrl" class="ng-cloak" ng-cloak>
+
+  <h1>
+    <i class="fa fa-search"></i> Sequence search
+    <small ng-class="(params.search_in_progress && !params.error_message) ? '' : 'hidden'">
+      <i class="fa fa-spinner fa-spin"></i>
+    </small>
+    <small id="sequence-search-status">
+      {{params.status_message}}
+    </small>
+  </h1>
+
+  <span class="col-md-9 small text-muted">
+    <span>
+      <i class="fa fa-info-circle"></i> Local alignment using <a href="http://www.ncbi.nlm.nih.gov/pubmed/23842809" target="_blank" class="help" data-toggle="tooltip" title="Wheeler and Eddy, 2013">nhmmer</a>.
+    </span>
+
+    <em class="pull-right">
+      <span ng-class="((params.status_message === 'Done' || params.status_message === 'Error')) && (!isNaN(query.ended_at) && !isNaN(query.enqueued_at)) ? '' : 'hidden'">
+        search took {{ query.ended_at - query.enqueued_at | date:"m 'min' s 's'" }}
+      </span>
+
+      <span ng-bind="'elapsed '+ (get_time_elapsed() | date:&quot;m 'min' s 's'&quot;)" ng-class="(params.status_message === defaults.messages.queued || params.status_message === defaults.messages.started) ? '' : 'hidden'"></span>
+    </em>
+  </span>
+
+  <div class="row sequence-search-input" >
+      <form name="seqQueryForm" novalidate>
+
+        <div class="col-md-9 form-group">
+          <textarea class="form-control force-scrollbars"
+                    rows="6"
+                    placeholder="Enter RNA/DNA sequence (with an optional description in FASTA format) or an RNAcentral ID"
+                    name="sequence"
+                    id="query-sequence"
+                    ng-model="query.sequence"
+                    ng-minlength="{% endverbatim %}{{MIN_LENGTH}}{% verbatim %}"
+                    ng-maxlength="{% endverbatim %}{{MAX_LENGTH}}{% verbatim %}"
+                    ng-pattern="/^(>.+?[\n\r])*?[acgtunwsmkrybdhvx\s]+$|^URS[A-Fa-f0-9]{10}$/i"
+                    tabindex="2"
+                    required
+                    autofocus></textarea>
+
+            <span class="help-block">
+              <em>Examples:</em>
+              <a href="" ng-click="sequence_search('>miRNA hsa-let-7a-1 (URS000004F5D8)\nCUAUACAAUCUACUGUCUUUC')">miRNA hsa-let-7a-1</a>
+              <span class="small">(URS000004F5D8)</span>,
+              <a href="" ng-click="sequence_search('UGCCUGGCGGCCGUAGCGCGGUGGUCCCACCUGACCCCAUGCCGAACUCAGAAGUGAAACGCCGUAGCGCCGAUGGUAGUGUGGGGUCUCCCCAUGCGAGAGUAGGGAACUGCCAGGCAU')">5S rRNA</a>
+              <span class="small">(URS0000049E57)</span>,
+              <a href="" ng-click="sequence_search('URS00008120E1')">NKILA lncRNA</a>
+              <span class="small">(URS00008120E1)</span>
+              <em>
+                <span class="small pull-right" ng-show="seqQueryForm.sequence.$valid && get_query_length() > 0">{{get_query_length()}} nts</span>
+              </em>
+            </span>
+
+            <div class="form-group" ng-class="(seqQueryForm.sequence.$invalid) ? 'has-error' : ''">
+              <label class="control-label"
+                     for="query-sequence" ng-show="query.submit_attempted && seqQueryForm.sequence.$error.minlength">
+                The sequence cannot be shorter than {% endverbatim %}{{MIN_LENGTH}}{% verbatim %} nucleotides
+              </label>
+
+              <label class="control-label"
+                     for="query-sequence" ng-show="seqQueryForm.sequence.$error.maxlength">
+                The sequence cannot be longer than {% endverbatim %}{{MAX_LENGTH}}{% verbatim %} nucleotides
+              </label>
+
+              <label class="control-label"
+                     for="query-sequence" ng-show="seqQueryForm.sequence.$error.pattern">
+                Please check your input
+              </label>
+            </div>
+        </div>
+
+        <div class="col-md-2">
+          <button type="submit" class="btn btn-primary" tabindex="3" ng-click="submit_query()" ng-disabled="params.search_in_progress && !params.error_message">
+            <i class="fa fa-search" ng-show="!params.search_in_progress"></i>
+            <i class="fa fa-spinner fa-spin" ng-class="(params.search_in_progress && !params.error_message) ? '' : 'hidden'"></i> Search
+          </button>
+
+          <br>
+
+          <button class="btn btn-default" tabindex="3" ng-click="reset()" ng-show="!params.search_in_progress">
+            <i class="fa fa-trash-o"></i>
+            Clear
+          </button>
+        </div>
+
+      </form><!-- /form -->
+  </div><!-- /row -->
+
+  <div class="row">
+    <div class="col-md-4">
+      <div ng-show="results.exact_match"> <!-- Pulse animation cannot be on the same element as ng-show -->
+        <div class="alert alert-success animated pulse margin-bottom-5px" role="alert">
+          Exact sequence match: <a href="/rna/{{results.exact_match}}" target="_blank" class="external-link">{{results.exact_match}}</a>
+        </div>
+      </div>
+
+      <div class="well well-sm border-color-white" ng-show="params.search_in_progress">
+        <span class="margin-left-5px" ng-show="!results.exact_match">Searching...</span>
+        <span class="margin-left-5px" ng-show="results.exact_match">Searching for more matches...</span>
+        <button class="btn btn-default btn-sm margin-left-5px" ng-click="cancel_job();" ng-show="params.search_in_progress && !params.error_message">
+          <i class="fa fa-times"></i>
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" ng-show="params.error_message">
+    <div class="col-md-7">
+      <div class="alert alert-danger">
+        {{params.error_message}}
+      </div>
+    </div>
+  </div>
+
+  <div class="row" ng-show="params.status_message === defaults.messages.cancelled">
+    <div class="col-md-4">
+      <div class="alert alert-warning">
+        {{params.status_message}}
+      </div>
+    </div>
+  </div>
+
+  <div class="row" ng-show="results.count===0">
+    <div class="col-md-4">
+      <div class="alert alert-warning">
+        <strong>No results</strong>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <h2>Suggestions</h2>
+      <ul>
+        <li>
+          <p>
+            Is your sequence in the 3' to 5' direction? <a href="" ng-click="reverse_and_repeat_search();">Reverse the sequence and search again</a>
+          </p>
+        </li>
+        <li>
+          <p>
+            If you believe that there should be results, please <a href="{% endverbatim %}{% url 'contact-us' %}{% verbatim %}">send us</a> the job id <code>{{ results.id }}</code>
+          </p>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="row" id="affix-parent">
+
+    <div class="col-md-9" id="affix-sibling">
+
+      <h2 ng-show="results.count > 0">
+        Results
+        <small>
+          <span ng-if="results.count == 1">1 alignment</span>
+          <span ng-if="results.count > 1">{{results.count | number}} alignments</span>
+        </small>
+      </h2>
+
+      <ul  class="list-unstyled sequence-search-results">
+        <li ng-class="result.rnacentral_id === results.exact_match ? 'result alert alert-success' : 'result'" ng-repeat="result in results.alignments">
+            <h4>
+              <a href="/rna/{{result.rnacentral_id}}" target="_blank">{{result.description}}</a>
+              <small>{{result.rnacentral_id}}</small>
+            </h4>
+
+            <div class="table-responsive">
+              <table class="table table-condensed small">
+                <tr class="table-header">
+                  <td>
+                    <span class="help" data-placement="right" title="The likelihood of finding this alignment by chance (lower is better)">E-value <i class="fa fa-info-circle text-muted"></i></span>
+                  </td>
+                  <td>
+                    <span class="help" data-placement="top" title="Percentage of identical nucleotides">Identity <i class="fa fa-info-circle text-muted"></i></span>
+                  </td>
+                  <td>
+                    <span class="help" data-placement="top" title="Percentage of the query sequence covered by the alignment">Query coverage <i class="fa fa-info-circle text-muted"></i></span>
+                  </td>
+                  <td>
+                    <span class="help" data-placement="top" title="Percentage of the target sequence covered by the alignment">Target coverage <i class="fa fa-info-circle text-muted"></i></span>
+                  </td>
+                  <td>
+                    <span class="help" data-placement="left" title="Percentage of gaps in the alignment">Gaps <i class="fa fa-info-circle text-muted"></i></span>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>{{format_evalue(result.e_value)}}</strong>
+                  </td>
+                  <td>
+                    <strong>{{result.identity | number:1}}%</strong> ({{result.match_count}}/{{result.alignment_length}})
+                  </td>
+                  <td>
+                    <strong>{{result.query_coverage | number:1}}%</strong> ({{result.nts_count1}}/{{result.query_length}})
+                  </td>
+                  <td>
+                    <strong>{{result.target_coverage | number:1}}%</strong> ({{result.nts_count2}}/{{result.target_length}})
+                  </td>
+                  <td>
+                    <strong>{{result.gaps | number:1}}%</strong> ({{result.gap_count}}/{{result.alignment_length}})
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <pre ng-show="params.show_alignments" class="force-scrollbars">{{result.alignment}}</pre>
+        </li>
+      </ul>
+
+      <p>
+        <small ng-if="results.count > results.alignments.length" class="text-muted">Displaying {{results.alignments.length}} out of {{results.count | number}} alignments</small>
+      </p>
+
+      <button class="btn btn-default load-more col-md-3" ng-click="load_more_results()" ng-show="results.count > results.alignments.length"><i ng-class="search_in_progress ? 'fa fa-spinner fa-spin' : 'hidden'"></i> Load more</button>
+    </div> <!--/col-md-9 -->
+
+    <div class="col-md-3 small sequence-search-toolbar hidden-xs hidden-sm" ng-show="params.status_message === 'Done' && results.count > 0">
+
+      <div class="panel panel-default" data-spy="affix" data-offset-top="330" id="affix">
+
+        <div class="panel-heading">
+          <h3 class="panel-title"><i class="fa fa-wrench"></i> Tools</h3>
+        </div>
+
+        <div class="panel-body">
+          <form>
+
+            <div class="form-group">
+              Sort by:
+              <select class="form-control" ng-change="update_ordering(); get_results();" ng-model="params.selectedOrdering" ng-options="item.label for item in ordering track by item.label"></select>
+            </div>
+
+            <div class="form-group">
+              <button id="toggle-alignments" ng-click="toggle_alignments()" class="btn btn-default btn-sm"><i class="fa fa-align-justify"></i> Hide alignments</button>
+            </div>
+
+            <div class="form-group">
+              <a href="" ng-click="scroll_to_top();" class="text-muted" style="display:block; width: 100%;"><strong>Back to top</strong></a>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+    </div>
+
+  </div><!--/row -->
+
+</div><!--/ng-controller -->
+
+{% endverbatim %}
+{% endblock content %}
+
+{% block extra_js_uncompressed %}
+<script>
+
+  /**
+   * Pass common sequence search parameters
+   * from Django to Javascript using a global variable.
+   */
+  var SEQ_SEARCH_PARAMS = {
+    'min_length': {{ MIN_LENGTH }},
+    'max_length': {{ MAX_LENGTH }},
+    'submit_endpoint': '{% url "nhmmer-submit-job" %}',
+    'job_status_endpoint': '{% url "nhmmer-job-status" %}',
+    'results_endpoint': '{% url "nhmmer-job-results" %}',
+    'query_info_endpoint': '{% url "nhmmer-query-info" %}',
+    'md5_endpoint': '{% url "rna-sequences" %}',
+    'cancel_job_endpoint': '{% url "nhmmer-cancel-job" %}',
+  };
+
+  /**
+   * Keep toolbar width constant on all screen sizes.
+   */
+  $(document).ready(function () {
+      var affix = $('#affix'),
+          parent = $('#affix-parent'),
+          sibling = $('#affix-sibling');
+      var resizeFn = function () {
+          var affixWidth = parent.width() - sibling.width() - 2*parseInt(sibling.css('paddingLeft')) - 2*parseInt(sibling.css('paddingRight')) - parseInt(sibling.css('marginLeft')) - parseInt(sibling.css('marginRight')) - parseInt(sibling.css('borderLeftWidth')) - parseInt(sibling.css('borderRightWidth'));
+          affix.css('width', affixWidth);
+      };
+
+      resizeFn();
+      $(window).resize(resizeFn);
+  });
+
+</script>
+
+{% endblock extra_js_uncompressed %}
