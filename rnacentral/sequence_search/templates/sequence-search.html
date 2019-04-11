@@ -289,17 +289,6 @@ Sequence search
 
 {% block extra_js_uncompressed %}
 <script>
-
-  /**
-   * Pass common sequence search parameters
-   * from Django to Javascript using a global variable.
-   */
-  var SEQ_SEARCH_PARAMS = {
-    'min_length': {{ MIN_LENGTH }},
-    'max_length': {{ MAX_LENGTH }},
-    'query_info_endpoint': '{% url "nhmmer-query-info" %}',
-  };
-
   /**
    * Keep toolbar width constant on all screen sizes.
    */

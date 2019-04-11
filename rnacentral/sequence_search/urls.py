@@ -14,46 +14,25 @@ from django.conf.urls import url
 from django.views.generic.base import TemplateView
 
 from .views import *
-from .settings import MIN_LENGTH, MAX_LENGTH
 
 
-class SequenceSearchUIView(TemplateView):
-    """
-    Class-based view for displaying sequence search
-    user interface.
-    """
-    template_name = 'sequence-search.html'
-
-    def get_context_data(self, **kwargs):
-        """
-        Override the default method in order to pass
-        additional data to the template.
-        """
-        context = super(TemplateView, self).get_context_data(**kwargs)
-        context.update({
-            'MIN_LENGTH': MIN_LENGTH,
-            'MAX_LENGTH': MAX_LENGTH,
-        })
-        return context
-
-
-# nhmmer sequence search urls
+# sequence search urls
 urlpatterns = [
-    # launch nhmmer search
+    # launch search
     url(r'^submit-job/?$',
         SubmitJob.as_view(),
         name='sequence-search-submit-job'),
 
-    # get nhmmer search job status
+    # get job status
     url(r'^job-status/?$',
         JobStatus.as_view(),
         name='sequence-search-job-status'),
 
-    # get nhmmer results
-    url(r'^results/?$',
+    # get job results
+    url(r'^job-results/?$',
         Results.as_view(),
-        name='sequence-search-results'),
+        name='sequence-search-job-results'),
 
     # user interface
-    url(r'^$', SequenceSearchUIView.as_view(), name='sequence-search'),
+    url(r'^$', TemplateView.as_view(template_name='sequence-search.html'), name='sequence-search'),
 ]

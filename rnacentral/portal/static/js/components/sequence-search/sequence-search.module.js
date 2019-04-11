@@ -4,9 +4,9 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     $scope.defaults = {
         polling_interval: 1000, // milliseconds
 
-        // global variables defined in the Django template
-        min_length: SEQ_SEARCH_PARAMS.min_length,
-        query_info_endpoint: SEQ_SEARCH_PARAMS.query_info_endpoint,
+        // global variables duplicated with Django backend
+        min_length: 10,
+        max_length: 10000,
 
         messages: {
             get_results: 'Loading results',
@@ -412,28 +412,28 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
      * the query sequence into the search box.
      */
     function get_query_info(query_id) {
-        $http({
-            url: $scope.defaults.query_info_endpoint,
-            method: 'GET',
-            params: {
-                id: query_id,
-            },
-        }).then(
-            function(response) {
-                if (response.data.description) {
-                    $scope.query.sequence = '>' + response.data.description + '\n' + response.data.sequence;
-                } else {
-                    $scope.query.sequence = response.data.sequence;
-                }
-                $scope.query.enqueued_at = moment(response.data.enqueued_at).utc();
-                $scope.query.ended_at = moment(response.data.ended_at).utc();
-                retrieve_exact_match(response.data.sequence);
-            },
-            function(response) {
-                $scope.params.status_message = $scope.defaults.messages.failed;
-                $scope.params.error_message = $scope.defaults.messages.results_failed;
-            }
-        );
+        // $http({
+        //     url: $scope.defaults.query_info_endpoint,
+        //     method: 'GET',
+        //     params: {
+        //         id: query_id,
+        //     },
+        // }).then(
+        //     function(response) {
+        //         if (response.data.description) {
+        //             $scope.query.sequence = '>' + response.data.description + '\n' + response.data.sequence;
+        //         } else {
+        //             $scope.query.sequence = response.data.sequence;
+        //         }
+        //         $scope.query.enqueued_at = moment(response.data.enqueued_at).utc();
+        //         $scope.query.ended_at = moment(response.data.ended_at).utc();
+        //         retrieve_exact_match(response.data.sequence);
+        //     },
+        //     function(response) {
+        //         $scope.params.status_message = $scope.defaults.messages.failed;
+        //         $scope.params.error_message = $scope.defaults.messages.results_failed;
+        //     }
+        // );
     }
 
     /**
@@ -482,7 +482,8 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             initialize_ordering();
             $scope.results.id = $location.search().id;
             check_job_status($location.search().id);
-            get_query_info($location.search().id);
+            // TODO: re-write this functionality using new data
+            // get_query_info($location.search().id);
             $scope.params.initial_page_size = $location.search().page_size || null;
         } else if ($location.search().q) {
             // start sequence search
