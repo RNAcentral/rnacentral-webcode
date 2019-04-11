@@ -6,12 +6,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
 
         // global variables defined in the Django template
         min_length: SEQ_SEARCH_PARAMS.min_length,
-        submit_endpoint: SEQ_SEARCH_PARAMS.submit_endpoint,
-        job_status_endpoint: SEQ_SEARCH_PARAMS.job_status_endpoint,
-        results_endpoint: SEQ_SEARCH_PARAMS.results_endpoint,
         query_info_endpoint: SEQ_SEARCH_PARAMS.query_info_endpoint,
-        md5_endpoint: SEQ_SEARCH_PARAMS.md5_endpoint,
-        cancel_job_endpoint: SEQ_SEARCH_PARAMS.cancel_job_endpoint,
 
         messages: {
             get_results: 'Loading results',
@@ -27,7 +22,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             submitting: 'Submitting query',
             loading_more_results: 'Loading more results',
             too_short: 'The sequence cannot be shorter than ' + SEQ_SEARCH_PARAMS.min_length + ' nucleotides',
-        },
+        }
     };
 
     $scope.ordering = [
@@ -83,11 +78,12 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         id = id || $location.search().id;
         next_page = next_page || false;
 
+        // TODO: next_page won't work just like that
+
         $http({
-            url: next_page ? $scope.results.next_page : $scope.defaults.results_endpoint,
+            url: next_page ? $scope.results.next_page : routes.sequenceSearchResults({ jobId: id }),
             method: 'GET',
             params: {
-                id: id,
                 ordering: $scope.params.selectedOrdering.sort_field + ',result_id',
                 page_size: $scope.params.initial_page_size || 10,
             },
@@ -117,33 +113,12 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     };
 
     /**
-     * Cancel remote job and stop polling for results.
-     */
-     $scope.cancel_job = function(){
-        clearTimeout(timeout);
-        $http({
-            url: $scope.defaults.cancel_job_endpoint,
-            method: 'GET',
-            params: {
-                id: $location.search().id,
-            },
-        }).then(function(response) {
-            $scope.params.search_in_progress = false;
-            $scope.params.status_message = $scope.defaults.messages.cancelled;
-            update_page_title();
-        });
-     };
-
-    /**
      * Check job status using REST API.
      */
     var check_job_status = function(id) {
         $http({
-            url: $scope.defaults.job_status_endpoint,
+            url: routes.sequenceSearchJobStatus({ jobId: id }),
             method: 'GET',
-            params: {
-                id: id,
-            },
             ignoreLoadingBar: true,
         }).then(
             function(response) {
@@ -186,7 +161,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
      */
     $scope.get_time_elapsed = function() {
         return moment().diff($scope.query.enqueued_at);
-    }
+    };
 
     /**
      * Initiate sequence search.
@@ -205,9 +180,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         function parse_rnacentral_id(sequence) {
             var deferred = $q.defer();
             if (sequence.match(/^URS[A-Fa-f0-9]{10}$/i)) {
-                $http({
-                    url: $scope.defaults.md5_endpoint + '/' + sequence,
-                }).then(function(response){
+                $http({ url: routes.apiRnaView({ upi: sequence }) }).then(function(response){
                     $scope.query.sequence = '>' + response.data.rnacentral_id + '\n' + response.data.sequence;
                     deferred.resolve($scope.query.sequence);
                 });
@@ -234,7 +207,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             retrieve_exact_match(sequence);
 
             return $http({
-                url: $scope.defaults.submit_endpoint,
+                url: routes.sequenceSearchSubmitJob({}),
                 method: 'POST',
                 data: $.param({
                     q: input.sequence,

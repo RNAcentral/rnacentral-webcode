@@ -55,5 +55,5 @@ urlpatterns = [
         name='sequence-search-results'),
 
     # user interface
-    url(r'^$', SequenceSearchUIView.as_view(), name='nhmmer-sequence-search'),
+    url(r'^$', SequenceSearchUIView.as_view(), name='sequence-search'),
 ]

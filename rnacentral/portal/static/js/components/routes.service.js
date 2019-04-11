@@ -20,6 +20,10 @@ angular.module("routes", []).service('routes', ['$interpolate', function($interp
         textSearch: 'search',
         expertDbLogo: '/static/img/expert-db-logos/{{ expertDbName }}.png',
         apiSecondaryStructuresView: '/api/v1/rna/{{ upi }}/2d/{{ taxid }}',
+        sequenceSearchSubmitJob: '/sequence-search/submit-job',
+        sequenceSearchJobStatus: '/sequence-search/job-status/{{ jobId }}',
+        sequenceSearchResults: '/sequence-search/results/{{ jobId }}',
+        sequenceSearchMD5: '',
         genomesApi: '/api/v1/genomes/{{ ensemblAssembly }}',
         proxy: '/api/internal/proxy?url={{ url }}',
         ebiSearch:

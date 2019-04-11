@@ -297,12 +297,7 @@ Sequence search
   var SEQ_SEARCH_PARAMS = {
     'min_length': {{ MIN_LENGTH }},
     'max_length': {{ MAX_LENGTH }},
-    'submit_endpoint': '{% url "nhmmer-submit-job" %}',
-    'job_status_endpoint': '{% url "nhmmer-job-status" %}',
-    'results_endpoint': '{% url "nhmmer-job-results" %}',
     'query_info_endpoint': '{% url "nhmmer-query-info" %}',
-    'md5_endpoint': '{% url "rna-sequences" %}',
-    'cancel_job_endpoint': '{% url "nhmmer-cancel-job" %}',
   };
 
   /**
