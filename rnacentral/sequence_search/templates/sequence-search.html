@@ -32,7 +32,7 @@ Sequence search
 
 {% block content %}
 {% verbatim %}
-<div ng-app="nhmmerSearch" ng-controller="NhmmerResultsListCtrl" class="ng-cloak" ng-cloak>
+<div ng-app="sequenceSearch" ng-controller="SequenceSearchController" class="ng-cloak" ng-cloak>
 
   <h1>
     <i class="fa fa-search"></i> Sequence search
@@ -193,7 +193,7 @@ Sequence search
         </small>
       </h2>
 
-      <ul  class="list-unstyled sequence-search-results">
+      <ul class="list-unstyled sequence-search-results">
         <li ng-class="result.rnacentral_id === results.exact_match ? 'result alert alert-success' : 'result'" ng-repeat="result in results.alignments">
             <h4>
               <a href="/rna/{{result.rnacentral_id}}" target="_blank">{{result.description}}</a>
