@@ -263,7 +263,7 @@ Sequence search
 
             <div class="form-group">
               Sort by:
-              <select class="form-control" ng-change="update_ordering(); get_results();" ng-model="params.selectedOrdering" ng-options="item.label for item in ordering track by item.label"></select>
+              <select class="form-control" ng-change="update_ordering(); fetch_results();" ng-model="params.selectedOrdering" ng-options="item.label for item in ordering track by item.label"></select>
             </div>
 
             <div class="form-group">

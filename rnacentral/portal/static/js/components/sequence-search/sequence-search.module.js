@@ -1,5 +1,10 @@
 var sequenceSearchController = function($scope, $http, $timeout, $location, $q, $window, routes) {
-    $scope.query = query_init();
+    $scope.query = {
+        sequence: '',
+        submit_attempted: false,
+        enqueued_at: moment(null).utc(),
+        ended_at: moment(null).utc()
+    };
 
     $scope.defaults = {
         polling_interval: 1000, // milliseconds
@@ -21,7 +26,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             poll_job_status: 'Waiting for results',
             submitting: 'Submitting query',
             loading_more_results: 'Loading more results',
-            too_short: 'The sequence cannot be shorter than ' + SEQ_SEARCH_PARAMS.min_length + ' nucleotides',
+            too_short: 'The sequence cannot be shorter than ' + SEQ_SEARCH_PARAMS.min_length + ' nucleotides'
         }
     };
 
@@ -33,7 +38,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         { sort_field: '-query_coverage', label: 'Query coverage: (max to min)' },
         { sort_field: 'query_coverage', label: 'Query coverage: (min to max)' },
         { sort_field: '-target_coverage', label: 'Target coverage: (max to min)' },
-        { sort_field: 'target_coverage', label: 'Target coverage: (min to max)' },
+        { sort_field: 'target_coverage', label: 'Target coverage: (min to max)' }
     ];
 
     $scope.params = {
@@ -42,51 +47,41 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         status_message: '',
         show_alignments: true,
         selectedOrdering: $scope.ordering[0],
-        initial_page_size: null,
+        initial_page_size: null
     };
 
-    $scope.results = results_init();
+    $scope.results = {
+        id: null,
+        alignments: [],
+        count: null,
+        next_page: null,
+        exact_match: null
+    };
 
     var timeout;
 
-    /**
-     * Update the `ordering` url parameter
-     * based on the current user selection.
-     */
-    $scope.update_ordering = function() {
-        $location.search($.extend($location.search(), {
-            ordering: $scope.params.selectedOrdering.sort_field,
-        }));
-    };
-
-    /**
-     * Update the `page_size` url parameter
-     * based on the number of currently loaded alignments.
-     */
-    var update_page_size = function() {
-        $location.search($.extend($location.search(), {
-            page_size: $scope.results.alignments.length,
-        }));
-    };
+    // ########################################################################
+    // #                        Data access functions                         #
+    // ########################################################################
 
     /**
      * Retrieve results given a results url.
      */
-    $scope.get_results = function(id, next_page) {
+    $scope.fetch_job_results = function(id, next_page) {
         $scope.params.search_in_progress = true;
         $scope.params.status_message = $scope.defaults.messages.get_results;
         id = id || $location.search().id;
         next_page = next_page || false;
 
-        // TODO: next_page won't work just like that
-
         $http({
-            url: next_page ? $scope.results.next_page : routes.sequenceSearchResults({ jobId: id }),
+            url: routes.sequenceSearchResults({ jobId: id }),
             method: 'GET',
             params: {
-                ordering: $scope.params.selectedOrdering.sort_field + ',result_id',
+                // ordering: $scope.params.selectedOrdering.sort_field + ',result_id',
+                start: 0,
+                size: 20,
                 page_size: $scope.params.initial_page_size || 10,
-            },
+            }
         }).then(
             function(response) {
                 $scope.results.count = response.data.count;
@@ -109,13 +104,14 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 $scope.params.status_message = $scope.defaults.messages.failed;
                 $scope.params.error_message = $scope.defaults.messages.results_failed;
                 update_page_title();
-        });
+            }
+        );
     };
 
     /**
      * Check job status using REST API.
      */
-    var check_job_status = function(id) {
+    var fetch_job_status = function(id) {
         $http({
             url: routes.sequenceSearchJobStatus({ jobId: id }),
             method: 'GET',
@@ -126,7 +122,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 $scope.query.enqueued_at = moment(response.data.enqueued_at).utc();
 
                 if (response.data.status === 'finished') {
-                    $scope.get_results(response.data.id);
+                    $scope.fetch_job_results(response.data.id);
                 }
                 else if (response.data.status === 'failed') {
                     $scope.params.search_in_progress = false;
@@ -144,7 +140,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                         $scope.params.status_message = '';
                     }
                     timeout = setTimeout(function() {
-                        check_job_status(id);
+                        fetch_job_status(id);
                         update_page_title();
                     }, $scope.defaults.polling_interval);
                 }
@@ -157,17 +153,16 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     };
 
     /**
-     * Get current time.
-     */
-    $scope.get_time_elapsed = function() {
-        return moment().diff($scope.query.enqueued_at);
-    };
-
-    /**
      * Initiate sequence search.
      */
     var search = function(sequence) {
-        $scope.results = results_init();
+        $scope.results = {
+            id: null,
+            alignments: [],
+            count: null,
+            next_page: null,
+            exact_match: null
+        };
 
         var deferred = $q.defer();
         var promise = deferred.promise;
@@ -204,7 +199,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             $scope.params.error_message = '';
             $scope.params.status_message = $scope.defaults.messages.submitting;
 
-            retrieve_exact_match(sequence);
+            fetch_exact_match(sequence);
 
             return $http({
                 url: routes.sequenceSearchSubmitJob({}),
@@ -223,7 +218,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                     // update url
                     $location.search({'id': response.data.id});
                     // begin polling for results
-                    check_job_status(response.data.id);
+                    fetch_job_status(response.data.id);
                     update_page_title();
                 },
                 function(response) {
@@ -250,70 +245,46 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     };
 
     /**
-     * Public method for submitting the query.
+     * Retrieve query information in order to load
+     * the query sequence into the search box.
      */
-    $scope.submit_query = function() {
-        $scope.query.submit_attempted = true;
-        if (!$scope.seqQueryForm.$valid) {
-            return;
-        }
-        search($scope.query.sequence);
-    };
-
-    /**
-     * Load more results.
-     */
-    $scope.load_more_results = function() {
-        var next_page = true;
-        $scope.get_results($scope.results.id, next_page);
-    };
-
-    /**
-     * Scroll page to the top.
-     */
-    $scope.scroll_to_top = function() {
-        $("html, body").animate({ scrollTop: "0px" });
-    };
-
-    /**
-     * Initialize results object.
-     */
-    function results_init() {
-        return {
-            id: null,
-            alignments: [],
-            count: null,
-            next_page: null,
-            exact_match: null,
-        };
-    }
-
-    /**
-     * Initialize query object.
-     */
-    function query_init() {
-        return {
-            sequence: '',
-            submit_attempted: false,
-            enqueued_at: moment(null).utc(),
-            ended_at: moment(null).utc(),
-        };
+    function fetch_query_info(query_id) {
+        // $http({
+        //     url: $scope.defaults.query_info_endpoint,
+        //     method: 'GET',
+        //     params: {
+        //         id: query_id,
+        //     },
+        // }).then(
+        //     function(response) {
+        //         if (response.data.description) {
+        //             $scope.query.sequence = '>' + response.data.description + '\n' + response.data.sequence;
+        //         } else {
+        //             $scope.query.sequence = response.data.sequence;
+        //         }
+        //         $scope.query.enqueued_at = moment(response.data.enqueued_at).utc();
+        //         $scope.query.ended_at = moment(response.data.ended_at).utc();
+        //         fetch_exact_match(response.data.sequence);
+        //     },
+        //     function(response) {
+        //         $scope.params.status_message = $scope.defaults.messages.failed;
+        //         $scope.params.error_message = $scope.defaults.messages.results_failed;
+        //     }
+        // );
     }
 
     /**
      * Use RNAcentral API to retrieve an exact match
      * to the query sequence.
      */
-    function retrieve_exact_match(sequence) {
+    function fetch_exact_match(sequence) {
         input = parse_input(sequence);
         var md5_hash = md5(input.sequence.toUpperCase().replace(/U/g, 'T'));
         var url = $scope.defaults.md5_endpoint + '?md5=' + md5_hash;
         $http({
             url: url,
             method: 'GET',
-            params: {
-                md5: md5_hash,
-            }
+            params: { md5: md5_hash }
         }).then(function(response) {
             if (response.data.count > 0) {
                 $scope.results.exact_match = response.data.results[0].rnacentral_id;
@@ -321,14 +292,35 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         });
     }
 
+    // ########################################################################
+    // #         Controller functions to be called from html template         #
+    // ########################################################################
+
+    /**
+     * Add standard Javascript isNaN function to the scope
+     * so that it can be used in the template.
+     */
+    $scope.isNaN = isNaN;
+
     /**
      * Reset the form.
      */
     $scope.reset = function() {
         $location.search({});
         $scope.params.search_in_progress = false;
-        $scope.query = query_init();
-        $scope.results = results_init();
+        $scope.query = {
+            sequence: '',
+            submit_attempted: false,
+            enqueued_at: moment(null).utc(),
+            ended_at: moment(null).utc()
+        };
+        $scope.results = {
+            id: null,
+            alignments: [],
+            count: null,
+            next_page: null,
+            exact_match: null
+        };
         $scope.params.status_message = '';
         $scope.params.error_message = '';
         $('textarea').focus();
@@ -390,6 +382,53 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     };
 
     /**
+     * Update the `ordering` url parameter
+     * based on the current user selection.
+     */
+    $scope.update_ordering = function() {
+        $location.search($.extend($location.search(), {
+            ordering: $scope.params.selectedOrdering.sort_field,
+        }));
+    };
+
+    /**
+     * Public method for submitting the query.
+     */
+    $scope.submit_query = function() {
+        $scope.query.submit_attempted = true;
+        if (!$scope.seqQueryForm.$valid) {
+            return;
+        }
+        search($scope.query.sequence);
+    };
+
+    /**
+     * Load more results.
+     */
+    $scope.load_more_results = function() {
+        var next_page = true;
+        $scope.fetch_job_results($scope.results.id, next_page);
+    };
+
+    /**
+     * Scroll page to the top.
+     */
+    $scope.scroll_to_top = function() {
+        $("html, body").animate({ scrollTop: "0px" });
+    };
+
+    // ########################################################################
+    // #                         Utility functions                            #
+    // ########################################################################
+
+    /**
+     * Get current time.
+     */
+    $scope.get_time_elapsed = function() {
+        return moment().diff($scope.query.enqueued_at);
+    };
+
+    /**
      * Parse fasta header, remove whitespace characters.
      */
     function parse_input(sequence) {
@@ -402,51 +441,8 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         } else {
             return {
                 sequence: '',
-                description: '',
+                description: ''
             };
-        }
-    }
-
-    /**
-     * Retrieve query information in order to load
-     * the query sequence into the search box.
-     */
-    function get_query_info(query_id) {
-        // $http({
-        //     url: $scope.defaults.query_info_endpoint,
-        //     method: 'GET',
-        //     params: {
-        //         id: query_id,
-        //     },
-        // }).then(
-        //     function(response) {
-        //         if (response.data.description) {
-        //             $scope.query.sequence = '>' + response.data.description + '\n' + response.data.sequence;
-        //         } else {
-        //             $scope.query.sequence = response.data.sequence;
-        //         }
-        //         $scope.query.enqueued_at = moment(response.data.enqueued_at).utc();
-        //         $scope.query.ended_at = moment(response.data.ended_at).utc();
-        //         retrieve_exact_match(response.data.sequence);
-        //     },
-        //     function(response) {
-        //         $scope.params.status_message = $scope.defaults.messages.failed;
-        //         $scope.params.error_message = $scope.defaults.messages.results_failed;
-        //     }
-        // );
-    }
-
-    /**
-     * Set results ordering based on the url parameter.
-     */
-    function initialize_ordering() {
-        if ($location.search().ordering) {
-            var ordering = $location.search().ordering;
-            for (var i=0, len=$scope.ordering.length; i < len; i++) {
-                if ($scope.ordering[i].sort_field === ordering) {
-                    $scope.params.selectedOrdering = $scope.ordering[i];
-                }
-            }
         }
     }
 
@@ -466,10 +462,18 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     }
 
     /**
-     * Add standard Javascript isNaN function to the scope
-     * so that it can be used in the template.
+     * Update the `page_size` url parameter
+     * based on the number of currently loaded alignments.
      */
-    $scope.isNaN = isNaN;
+    var update_page_size = function() {
+        $location.search($.extend($location.search(), {
+            page_size: $scope.results.alignments.length,
+        }));
+    };
+
+    // ########################################################################
+    // #                          Initialization                              #
+    // ########################################################################
 
     /**
      * When the controller is first created:
@@ -478,12 +482,23 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
      */
     (function() {
         if ($location.url().indexOf("id=") > -1) {
-            // load results
-            initialize_ordering();
+            // load results, set their ordering based on the url parameter
+            if ($location.search().ordering) {
+                var ordering = $location.search().ordering;
+                for (var i=0, len=$scope.ordering.length; i < len; i++) {
+                    if ($scope.ordering[i].sort_field === ordering) {
+                        $scope.params.selectedOrdering = $scope.ordering[i];
+                    }
+                }
+            }
+
             $scope.results.id = $location.search().id;
-            check_job_status($location.search().id);
+
+            fetch_job_status($location.search().id);
+
             // TODO: re-write this functionality using new data
-            // get_query_info($location.search().id);
+            // fetch_query_info($location.search().id);
+
             $scope.params.initial_page_size = $location.search().page_size || null;
         } else if ($location.search().q) {
             // start sequence search
@@ -494,7 +509,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         $('body').tooltip({
             selector: '.help',
             delay: { show: 200, hide: 100 },
-            container: 'body',
+            container: 'body'
         });
     })();
 };
