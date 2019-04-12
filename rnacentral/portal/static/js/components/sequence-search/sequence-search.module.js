@@ -30,7 +30,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         job_failed: 'There was a problem with your query. Please try again later or get in touch if the error persists.',
         results_failed: 'There was a problem retrieving the results. Please try again later or get in touch if the error persists.',
         cancelled: 'The search was cancelled',
-        queued: 'Queued',
+        pending: 'Pending',
         started: 'Running',
         poll_job_status: 'Waiting for results',
         submitting: 'Submitting query',
@@ -121,10 +121,10 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 $scope.query.ended_at = moment(response.data.ended_at).utc();
                 $scope.query.enqueued_at = moment(response.data.enqueued_at).utc();
 
-                if (response.data.status === 'finished') {
+                if (response.data.status === 'success' || response.data.status === 'partial_success' ) {
                     $scope.fetch_job_results(response.data.id);
                 }
-                else if (response.data.status === 'failed') {
+                else if (response.data.status === 'error') {
                     $scope.params.search_in_progress = false;
                     $scope.params.status_message = $scope.messages.failed;
                     $scope.params.error_message = $scope.messages.job_failed;
@@ -132,8 +132,8 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 }
                 else {
                     $scope.params.search_in_progress = true;
-                    if (response.data.status === 'queued') {
-                        $scope.params.status_message = $scope.messages.queued;
+                    if (response.data.status === 'pending') {
+                        $scope.params.status_message = $scope.messages.pending;
                     } else if (response.data.status === 'started') {
                         $scope.params.status_message = $scope.messages.started;
                     } else {
@@ -173,35 +173,27 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
      * Post query to run a job.
      */
     function submit_job(input) {
-        return $http({
-            url: routes.sequenceSearchSubmitJob({}),
-            method: 'POST',
-            data: $.param({
-                q: input.sequence,
-                description: input.description
-            }),
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        }).then(
-            function(response) {
-                // save query id
-                $scope.results.id = response.data.id;
+        return $http.post(
+            routes.sequenceSearchSubmitJob({}),
+            { query: input.sequence, databases: []}
+        ).then(function(response) {
+            var id = response.data.job_id;
 
-                // update url
-                $location.search({'id': response.data.id});
+            // save job id
+            $scope.results.id = id;
 
-                // begin polling for results
-                fetch_job_status(response.data.id);
-                update_page_title();
-            },
-            function(response) {
-                $scope.params.error_message = $scope.messages.submit_failed;
-                $scope.params.status_message = $scope.messages.failed;
-                $scope.params.search_in_progress = false;
-                update_page_title();
-            }
-        );
+            // update url
+            $location.search({ 'id': id });
+
+            // begin polling for results
+            fetch_job_status(id);
+            update_page_title();
+        }, function(response) {
+            $scope.params.error_message = $scope.messages.submit_failed;
+            $scope.params.status_message = $scope.messages.failed;
+            $scope.params.search_in_progress = false;
+            update_page_title();
+        });
     }
 
     /**

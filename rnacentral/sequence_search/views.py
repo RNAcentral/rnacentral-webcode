@@ -27,9 +27,8 @@ from .settings import SEQUENCE_SEARCH_ENDPOINT
 def submit_job(request):
     """Submit a job to sequence search service."""
     url = SEQUENCE_SEARCH_ENDPOINT + '/api/submit-job'
-    json_data = request.data.dict()
-    response = requests.post(url, json=json_data)
-    return Response(response.content, status=response.status_code)
+    response = requests.post(url, json=request.data)
+    return Response(response.json(), status=response.status_code)
 
 
 @never_cache
@@ -37,9 +36,9 @@ def submit_job(request):
 @permission_classes([AllowAny])
 def job_status(request, job_id):
     """Displays status of a job."""
-    url = SEQUENCE_SEARCH_ENDPOINT + '/api/job_status/' + job_id
+    url = SEQUENCE_SEARCH_ENDPOINT + '/api/job-status/' + job_id
     response = requests.get(url)
-    return Response(response.content, status=response.status_code)
+    return Response(response.json(), status=response.status_code)
 
 
 @never_cache
@@ -47,6 +46,6 @@ def job_status(request, job_id):
 @permission_classes([AllowAny])
 def job_results(request, job_id):
     """Displays results of a finished job."""
-    url = SEQUENCE_SEARCH_ENDPOINT + '/api/results/' + job_id
+    url = SEQUENCE_SEARCH_ENDPOINT + '/api/result/' + job_id
     response = requests.get(url)
-    return Response(response.content, status=response.status_code)
+    return Response(response.json(), status=response.status_code)

@@ -54,7 +54,7 @@ Sequence search
         search took {{ query.ended_at - query.enqueued_at | date:"m 'min' s 's'" }}
       </span>
 
-      <span ng-bind="'elapsed '+ (get_time_elapsed() | date:&quot;m 'min' s 's'&quot;)" ng-class="(params.status_message === messages.queued || params.status_message === messages.started) ? '' : 'hidden'"></span>
+      <span ng-bind="'elapsed '+ (get_time_elapsed() | date:&quot;m 'min' s 's'&quot;)" ng-class="(params.status_message === messages.pending || params.status_message === messages.started) ? '' : 'hidden'"></span>
     </em>
   </span>
 

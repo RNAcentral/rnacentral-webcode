@@ -24,12 +24,12 @@ urlpatterns = [
         name='sequence-search-submit-job'),
 
     # get job status
-    url(r'^job-status/?$',
+    url(r'^job-status/(?P<job_id>[A-Za-z0-9_-]+)/?$',
         job_status,
         name='sequence-search-job-status'),
 
     # get job results
-    url(r'^job-results/?$',
+    url(r'^job-results/(?P<job_id>[A-Za-z0-9_-]+)/?$',
         job_results,
         name='sequence-search-job-results'),
 
