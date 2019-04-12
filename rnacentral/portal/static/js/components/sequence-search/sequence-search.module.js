@@ -6,28 +6,36 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         ended_at: moment(null).utc()
     };
 
+    $scope.results = {
+        id: null,
+        alignments: [],
+        count: null,
+        next_page: null,
+        exact_match: null
+    };
+
     $scope.defaults = {
         polling_interval: 1000, // milliseconds
 
         // global variables duplicated with Django backend
         min_length: 10,
-        max_length: 10000,
+        max_length: 10000
+    };
 
-        messages: {
-            get_results: 'Loading results',
-            done: 'Done',
-            failed: 'Error',
-            submit_failed: 'There was a problem submitting your query. Please try again later or get in touch if the error persists.',
-            job_failed: 'There was a problem with your query. Please try again later or get in touch if the error persists.',
-            results_failed: 'There was a problem retrieving the results. Please try again later or get in touch if the error persists.',
-            cancelled: 'The search was cancelled',
-            queued: 'Queued',
-            started: 'Running',
-            poll_job_status: 'Waiting for results',
-            submitting: 'Submitting query',
-            loading_more_results: 'Loading more results',
-            too_short: 'The sequence cannot be shorter than ' + SEQ_SEARCH_PARAMS.min_length + ' nucleotides'
-        }
+    $scope.defaults['messages'] = {
+        get_results: 'Loading results',
+        done: 'Done',
+        failed: 'Error',
+        submit_failed: 'There was a problem submitting your query. Please try again later or get in touch if the error persists.',
+        job_failed: 'There was a problem with your query. Please try again later or get in touch if the error persists.',
+        results_failed: 'There was a problem retrieving the results. Please try again later or get in touch if the error persists.',
+        cancelled: 'The search was cancelled',
+        queued: 'Queued',
+        started: 'Running',
+        poll_job_status: 'Waiting for results',
+        submitting: 'Submitting query',
+        loading_more_results: 'Loading more results',
+        too_short: 'The sequence cannot be shorter than ' + $scope.defaults['min_length'].toString() + ' nucleotides'
     };
 
     $scope.ordering = [
@@ -48,14 +56,6 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         show_alignments: true,
         selectedOrdering: $scope.ordering[0],
         initial_page_size: null
-    };
-
-    $scope.results = {
-        id: null,
-        alignments: [],
-        count: null,
-        next_page: null,
-        exact_match: null
     };
 
     var timeout;
@@ -80,7 +80,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 // ordering: $scope.params.selectedOrdering.sort_field + ',result_id',
                 start: 0,
                 size: 20,
-                page_size: $scope.params.initial_page_size || 10,
+                page_size: $scope.params.initial_page_size || 10
             }
         }).then(
             function(response) {
@@ -115,7 +115,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         $http({
             url: routes.sequenceSearchJobStatus({ jobId: id }),
             method: 'GET',
-            ignoreLoadingBar: true,
+            ignoreLoadingBar: true
         }).then(
             function(response) {
                 $scope.query.ended_at = moment(response.data.ended_at).utc();
@@ -153,6 +153,58 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     };
 
     /**
+     * Retrieve sequence given an RNAcentral id using promises.
+     */
+    function fetch_rnacentral_sequence(sequenceOrUpi) {
+        var deferred = $q.defer();
+        if (sequenceOrUpi.match(/^URS[A-Fa-f0-9]{10}$/i)) {
+            $http({ url: routes.apiRnaView({ upi: sequenceOrUpi }) }).then(function(response){
+                $scope.query.sequence = '>' + response.data.rnacentral_id + '\n' + response.data.sequence;
+                deferred.resolve($scope.query.sequence);
+            });
+        } else {
+            deferred.resolve(sequenceOrUpi);
+            return deferred.promise;
+        }
+        return deferred.promise;
+    }
+
+    /**
+     * Post query to run a job.
+     */
+    function submit_job(input) {
+        return $http({
+            url: routes.sequenceSearchSubmitJob({}),
+            method: 'POST',
+            data: $.param({
+                q: input.sequence,
+                description: input.description
+            }),
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(
+            function(response) {
+                // save query id
+                $scope.results.id = response.data.id;
+
+                // update url
+                $location.search({'id': response.data.id});
+
+                // begin polling for results
+                fetch_job_status(response.data.id);
+                update_page_title();
+            },
+            function(response) {
+                $scope.params.error_message = $scope.defaults.messages.submit_failed;
+                $scope.params.status_message = $scope.defaults.messages.failed;
+                $scope.params.search_in_progress = false;
+                update_page_title();
+            }
+        );
+    }
+
+    /**
      * Initiate sequence search.
      */
     var search = function(sequence) {
@@ -164,33 +216,9 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             exact_match: null
         };
 
-        var deferred = $q.defer();
-        var promise = deferred.promise;
-        promise = promise.then(parse_rnacentral_id).then(run_search);
-        deferred.resolve(sequence);
-
-        /**
-         * Retrieve sequence given an RNAcentral id using promises.
-         */
-        function parse_rnacentral_id(sequence) {
-            var deferred = $q.defer();
-            if (sequence.match(/^URS[A-Fa-f0-9]{10}$/i)) {
-                $http({ url: routes.apiRnaView({ upi: sequence }) }).then(function(response){
-                    $scope.query.sequence = '>' + response.data.rnacentral_id + '\n' + response.data.sequence;
-                    deferred.resolve($scope.query.sequence);
-                });
-            } else {
-                deferred.resolve(sequence);
-                return deferred.promise;
-            }
-            return deferred.promise;
-        }
-
-        /**
-         * Submit query and begin checking whether the results
-         * are ready.
-         */
-        function run_search(sequence) {
+        // if sequence contains an rnacental_id/upi/urs, fetch the actual sequence
+        fetch_rnacentral_sequence(sequence).then(function(sequence) {
+            // Submit query and begin checking whether the results are ready.
             input = parse_input(sequence);
             if (!is_valid_sequence(input.sequence)) {
                 return;
@@ -200,48 +228,8 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             $scope.params.status_message = $scope.defaults.messages.submitting;
 
             fetch_exact_match(sequence);
-
-            return $http({
-                url: routes.sequenceSearchSubmitJob({}),
-                method: 'POST',
-                data: $.param({
-                    q: input.sequence,
-                    description: input.description,
-                }),
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-            }).then(
-                function(response) {
-                    // save query id
-                    $scope.results.id = response.data.id;
-                    // update url
-                    $location.search({'id': response.data.id});
-                    // begin polling for results
-                    fetch_job_status(response.data.id);
-                    update_page_title();
-                },
-                function(response) {
-                    $scope.params.error_message = $scope.defaults.messages.submit_failed;
-                    $scope.params.status_message = $scope.defaults.messages.failed;
-                    $scope.params.search_in_progress = false;
-                    update_page_title();
-                }
-            );
-        }
-
-        /**
-         * Check sequence length once the fasta header line is removed.
-         */
-        function is_valid_sequence(sequence) {
-            if (sequence.length < $scope.defaults.min_length) {
-                $scope.params.error_message = $scope.defaults.messages.too_short;
-                $scope.params.status_message = $scope.defaults.messages.failed;
-                return false;
-            } else {
-                return true;
-            }
-        }
+            submit_job(input);
+        });
     };
 
     /**
@@ -249,28 +237,28 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
      * the query sequence into the search box.
      */
     function fetch_query_info(query_id) {
-        // $http({
-        //     url: $scope.defaults.query_info_endpoint,
-        //     method: 'GET',
-        //     params: {
-        //         id: query_id,
-        //     },
-        // }).then(
-        //     function(response) {
-        //         if (response.data.description) {
-        //             $scope.query.sequence = '>' + response.data.description + '\n' + response.data.sequence;
-        //         } else {
-        //             $scope.query.sequence = response.data.sequence;
-        //         }
-        //         $scope.query.enqueued_at = moment(response.data.enqueued_at).utc();
-        //         $scope.query.ended_at = moment(response.data.ended_at).utc();
-        //         fetch_exact_match(response.data.sequence);
-        //     },
-        //     function(response) {
-        //         $scope.params.status_message = $scope.defaults.messages.failed;
-        //         $scope.params.error_message = $scope.defaults.messages.results_failed;
-        //     }
-        // );
+        $http({
+            url: $scope.defaults.query_info_endpoint,
+            method: 'GET',
+            params: {
+                id: query_id
+            }
+        }).then(
+            function(response) {
+                if (response.data.description) {
+                    $scope.query.sequence = '>' + response.data.description + '\n' + response.data.sequence;
+                } else {
+                    $scope.query.sequence = response.data.sequence;
+                }
+                $scope.query.enqueued_at = moment(response.data.enqueued_at).utc();
+                $scope.query.ended_at = moment(response.data.ended_at).utc();
+                fetch_exact_match(response.data.sequence);
+            },
+            function(response) {
+                $scope.params.status_message = $scope.defaults.messages.failed;
+                $scope.params.error_message = $scope.defaults.messages.results_failed;
+            }
+        );
     }
 
     /**
@@ -387,7 +375,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
      */
     $scope.update_ordering = function() {
         $location.search($.extend($location.search(), {
-            ordering: $scope.params.selectedOrdering.sort_field,
+            ordering: $scope.params.selectedOrdering.sort_field
         }));
     };
 
@@ -422,29 +410,36 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     // ########################################################################
 
     /**
-     * Get current time.
-     */
-    $scope.get_time_elapsed = function() {
-        return moment().diff($scope.query.enqueued_at);
-    };
-
-    /**
      * Parse fasta header, remove whitespace characters.
      */
     function parse_input(sequence) {
         var match = /(^>(.+)[\n\r])?([\s\S]+)/.exec(sequence);
         if (match) {
-            return {
-                description: match[2] || '',
-                sequence: match[3].replace(/\s/g, ''),
-            };
+            return { sequence: match[3].replace(/\s/g, ''), description: match[2] || '' };
         } else {
-            return {
-                sequence: '',
-                description: ''
-            };
+            return { sequence: '', description: '' };
         }
     }
+
+    /**
+     * Check sequence length once the fasta header line is removed.
+     */
+    function is_valid_sequence(sequence) {
+        if (sequence.length < $scope.defaults.min_length) {
+            $scope.params.error_message = $scope.defaults.messages.too_short;
+            $scope.params.status_message = $scope.defaults.messages.failed;
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Get current time.
+     */
+    $scope.get_time_elapsed = function() {
+        return moment().diff($scope.query.enqueued_at);
+    };
 
     /**
      * Show progress in page title.
