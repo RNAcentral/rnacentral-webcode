@@ -2,8 +2,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     $scope.query = {
         sequence: '',
         submit_attempted: false,
-        enqueued_at: moment(null).utc(),
-        ended_at: moment(null).utc()
+        elapsedTime: 0
     };
 
     $scope.results = {
@@ -118,8 +117,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             ignoreLoadingBar: true
         }).then(
             function(response) {
-                $scope.query.ended_at = moment(response.data.ended_at).utc();
-                $scope.query.enqueued_at = moment(response.data.enqueued_at).utc();
+                $scope.query.elapsedTime = response.data.elapsedTime;
 
                 if (response.data.status === 'success' || response.data.status === 'partial_success' ) {
                     $scope.fetch_job_results(response.data.id);
@@ -245,8 +243,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 } else {
                     $scope.query.sequence = response.data.sequence;
                 }
-                $scope.query.enqueued_at = moment(response.data.enqueued_at).utc();
-                $scope.query.ended_at = moment(response.data.ended_at).utc();
+
                 fetch_exact_match(response.data.sequence);
             },
             function(response) {
@@ -294,8 +291,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         $scope.query = {
             sequence: '',
             submit_attempted: false,
-            enqueued_at: moment(null).utc(),
-            ended_at: moment(null).utc()
+            elapsedTime: 0
         };
         $scope.results = {
             id: null,
@@ -416,13 +412,6 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             return { sequence: '', description: '' };
         }
     }
-
-    /**
-     * Get current time.
-     */
-    $scope.get_time_elapsed = function() {
-        return moment().diff($scope.query.enqueued_at);
-    };
 
     /**
      * Show progress in page title.
