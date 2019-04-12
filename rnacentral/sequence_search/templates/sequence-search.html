@@ -54,7 +54,7 @@ Sequence search
         search took {{ query.ended_at - query.enqueued_at | date:"m 'min' s 's'" }}
       </span>
 
-      <span ng-bind="'elapsed '+ (get_time_elapsed() | date:&quot;m 'min' s 's'&quot;)" ng-class="(params.status_message === defaults.messages.queued || params.status_message === defaults.messages.started) ? '' : 'hidden'"></span>
+      <span ng-bind="'elapsed '+ (get_time_elapsed() | date:&quot;m 'min' s 's'&quot;)" ng-class="(params.status_message === messages.queued || params.status_message === messages.started) ? '' : 'hidden'"></span>
     </em>
   </span>
 
@@ -150,7 +150,7 @@ Sequence search
     </div>
   </div>
 
-  <div class="row" ng-show="params.status_message === defaults.messages.cancelled">
+  <div class="row" ng-show="params.status_message === messages.cancelled">
     <div class="col-md-4">
       <div class="alert alert-warning">
         {{params.status_message}}

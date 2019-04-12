@@ -22,7 +22,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         max_length: 10000
     };
 
-    $scope.defaults['messages'] = {
+    $scope.messages = {
         get_results: 'Loading results',
         done: 'Done',
         failed: 'Error',
@@ -69,7 +69,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
      */
     $scope.fetch_job_results = function(id, next_page) {
         $scope.params.search_in_progress = true;
-        $scope.params.status_message = $scope.defaults.messages.get_results;
+        $scope.params.status_message = $scope.messages.get_results;
         id = id || $location.search().id;
         next_page = next_page || false;
 
@@ -95,14 +95,14 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 }
                 $scope.results.next_page = response.data.next;
                 $scope.params.search_in_progress = false;
-                $scope.params.status_message = $scope.defaults.messages.done;
+                $scope.params.status_message = $scope.messages.done;
                 update_page_size();
                 update_page_title();
             },
             function() {
                 $scope.params.search_in_progress = false;
-                $scope.params.status_message = $scope.defaults.messages.failed;
-                $scope.params.error_message = $scope.defaults.messages.results_failed;
+                $scope.params.status_message = $scope.messages.failed;
+                $scope.params.error_message = $scope.messages.results_failed;
                 update_page_title();
             }
         );
@@ -111,7 +111,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     /**
      * Check job status using REST API.
      */
-    var fetch_job_status = function(id) {
+    function fetch_job_status(id) {
         $http({
             url: routes.sequenceSearchJobStatus({ jobId: id }),
             method: 'GET',
@@ -126,16 +126,16 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 }
                 else if (response.data.status === 'failed') {
                     $scope.params.search_in_progress = false;
-                    $scope.params.status_message = $scope.defaults.messages.failed;
-                    $scope.params.error_message = $scope.defaults.messages.job_failed;
+                    $scope.params.status_message = $scope.messages.failed;
+                    $scope.params.error_message = $scope.messages.job_failed;
                     update_page_title();
                 }
                 else {
                     $scope.params.search_in_progress = true;
                     if (response.data.status === 'queued') {
-                        $scope.params.status_message = $scope.defaults.messages.queued;
+                        $scope.params.status_message = $scope.messages.queued;
                     } else if (response.data.status === 'started') {
-                        $scope.params.status_message = $scope.defaults.messages.started;
+                        $scope.params.status_message = $scope.messages.started;
                     } else {
                         $scope.params.status_message = '';
                     }
@@ -146,14 +146,14 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 }
             },
             function(response) {
-                $scope.params.status_message = $scope.defaults.messages.failed;
-                $scope.params.error_message = $scope.defaults.messages.results_failed;
+                $scope.params.status_message = $scope.messages.failed;
+                $scope.params.error_message = $scope.messages.results_failed;
             }
         );
-    };
+    }
 
     /**
-     * Retrieve sequence given an RNAcentral id using promises.
+     * If sequenceOrUpi is upi, fetch and return the actual sequence from backend.
      */
     function fetch_rnacentral_sequence(sequenceOrUpi) {
         var deferred = $q.defer();
@@ -196,8 +196,8 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 update_page_title();
             },
             function(response) {
-                $scope.params.error_message = $scope.defaults.messages.submit_failed;
-                $scope.params.status_message = $scope.defaults.messages.failed;
+                $scope.params.error_message = $scope.messages.submit_failed;
+                $scope.params.status_message = $scope.messages.failed;
                 $scope.params.search_in_progress = false;
                 update_page_title();
             }
@@ -207,7 +207,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     /**
      * Initiate sequence search.
      */
-    var search = function(sequence) {
+    function search(sequence) {
         $scope.results = {
             id: null,
             alignments: [],
@@ -220,17 +220,21 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         fetch_rnacentral_sequence(sequence).then(function(sequence) {
             // Submit query and begin checking whether the results are ready.
             input = parse_input(sequence);
-            if (!is_valid_sequence(input.sequence)) {
-                return;
-            }
-            $scope.params.search_in_progress = true;
-            $scope.params.error_message = '';
-            $scope.params.status_message = $scope.defaults.messages.submitting;
 
-            fetch_exact_match(sequence);
-            submit_job(input);
+            if (input.sequence.length < $scope.defaults.min_length) {
+                $scope.params.error_message = $scope.messages.too_short;
+                $scope.params.status_message = $scope.messages.failed;
+            } else {
+                $scope.params.error_message = '';
+                $scope.params.status_message = $scope.messages.submitting;
+                $scope.params.search_in_progress = true;
+
+                // run md5 fetch and actual job submission concurrently
+                fetch_exact_match(sequence);
+                submit_job(input);
+            }
         });
-    };
+    }
 
     /**
      * Retrieve query information in order to load
@@ -255,8 +259,8 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 fetch_exact_match(response.data.sequence);
             },
             function(response) {
-                $scope.params.status_message = $scope.defaults.messages.failed;
-                $scope.params.error_message = $scope.defaults.messages.results_failed;
+                $scope.params.status_message = $scope.messages.failed;
+                $scope.params.error_message = $scope.messages.results_failed;
             }
         );
     }
@@ -422,19 +426,6 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     }
 
     /**
-     * Check sequence length once the fasta header line is removed.
-     */
-    function is_valid_sequence(sequence) {
-        if (sequence.length < $scope.defaults.min_length) {
-            $scope.params.error_message = $scope.defaults.messages.too_short;
-            $scope.params.status_message = $scope.defaults.messages.failed;
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    /**
      * Get current time.
      */
     $scope.get_time_elapsed = function() {
@@ -445,11 +436,11 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
      * Show progress in page title.
      */
     function update_page_title() {
-        if ($scope.params.status_message === $scope.defaults.messages.failed) {
+        if ($scope.params.status_message === $scope.messages.failed) {
             $window.document.title = 'Search failed';
         } else if ($scope.params.search_in_progress) {
             $window.document.title = 'Searching...';
-        } else if ($scope.params.status_message === $scope.defaults.messages.done) {
+        } else if ($scope.params.status_message === $scope.messages.done) {
             $window.document.title = 'Search done';
         } else {
             $window.document.title = 'Sequence search';
@@ -462,7 +453,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
      */
     var update_page_size = function() {
         $location.search($.extend($location.search(), {
-            page_size: $scope.results.alignments.length,
+            page_size: $scope.results.alignments.length
         }));
     };
 
