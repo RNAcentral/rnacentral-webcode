@@ -13,29 +13,40 @@ limitations under the License.
 
 import requests
 
-from rest_framework.views import APIView
+from django.views.decorators.cache import never_cache
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 
 from .settings import SEQUENCE_SEARCH_ENDPOINT
 
 
-class SubmitJob(APIView):
+@never_cache
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def submit_job(request):
     """Submit a job to sequence search service."""
-    def post(self, request, format=None):
-        response = requests.post(SEQUENCE_SEARCH_ENDPOINT + '/submit_job', data=request.data)
-        return Response(response.content, status=response.status_code)
+    url = SEQUENCE_SEARCH_ENDPOINT + '/api/submit-job'
+    json_data = request.data.dict()
+    response = requests.post(url, json=json_data)
+    return Response(response.content, status=response.status_code)
 
 
-class JobStatus(APIView):
+@never_cache
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def job_status(request, job_id):
     """Displays status of a job."""
-    def get(self, request, job_id, format=None):
-        response = requests.get(SEQUENCE_SEARCH_ENDPOINT + '/job_status/' + job_id)
-        return Response(response.content, status=response.status_code)
+    url = SEQUENCE_SEARCH_ENDPOINT + '/api/job_status/' + job_id
+    response = requests.get(url)
+    return Response(response.content, status=response.status_code)
 
 
-class Results(APIView):
+@never_cache
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def job_results(request, job_id):
     """Displays results of a finished job."""
-    def get(self, request, job_id, format=None):
-        response = requests.get(SEQUENCE_SEARCH_ENDPOINT + '/results/' + job_id)
-        return Response(response.content, status=response.status_code)
+    url = SEQUENCE_SEARCH_ENDPOINT + '/api/results/' + job_id
+    response = requests.get(url)
+    return Response(response.content, status=response.status_code)

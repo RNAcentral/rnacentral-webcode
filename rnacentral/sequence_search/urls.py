@@ -20,17 +20,17 @@ from .views import *
 urlpatterns = [
     # launch search
     url(r'^submit-job/?$',
-        SubmitJob.as_view(),
+        submit_job,
         name='sequence-search-submit-job'),
 
     # get job status
     url(r'^job-status/?$',
-        JobStatus.as_view(),
+        job_status,
         name='sequence-search-job-status'),
 
     # get job results
     url(r'^job-results/?$',
-        Results.as_view(),
+        job_results,
         name='sequence-search-job-results'),
 
     # user interface
