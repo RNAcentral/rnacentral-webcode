@@ -46,6 +46,6 @@ def job_status(request, job_id):
 @permission_classes([AllowAny])
 def job_results(request, job_id):
     """Displays results of a finished job."""
-    url = SEQUENCE_SEARCH_ENDPOINT + '/api/result/' + job_id
+    url = SEQUENCE_SEARCH_ENDPOINT + '/api/facets-search/' + job_id
     response = requests.get(url)
     return Response(response.json(), status=response.status_code)

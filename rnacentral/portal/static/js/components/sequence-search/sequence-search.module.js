@@ -8,18 +8,16 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
 
     $scope.results = {
         id: null,
-        alignments: [],
-        count: null,
+        entries: [],
+        hitCount: null,
         next_page: null,
         exact_match: null
     };
 
     $scope.defaults = {
         polling_interval: 1000, // milliseconds
-
-        // global variables duplicated with Django backend
-        min_length: 10,
-        max_length: 10000
+        min_length: 10, // nucleotides
+        max_length: 10000 // nucleotides
     };
 
     $scope.messages = {
@@ -79,24 +77,31 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             params: {
                 // ordering: $scope.params.selectedOrdering.sort_field + ',result_id',
                 start: 0,
-                size: 20,
-                page_size: $scope.params.initial_page_size || 10
+                size: 20
             }
         }).then(
             function(response) {
-                $scope.results.count = response.data.count;
+                $scope.results.hitCount = response.data.hitCount;
+
                 if (next_page) {
-                    $scope.results.alignments = $scope.results.alignments.concat(response.data.results);
+                    $scope.results.entries = $scope.results.entries.concat(response.data.entries);
                 } else {
-                    $scope.results.alignments = response.data.results;
+                    $scope.results.entries = response.data.entries;
                 }
+
                 if ($scope.params.initial_page_size) {
                     $scope.params.initial_page_size = null;
                 }
+
                 $scope.results.next_page = response.data.next;
                 $scope.params.search_in_progress = false;
                 $scope.params.status_message = $scope.messages.done;
-                update_page_size();
+
+                // update page size
+                $location.search($.extend($location.search(), {
+                    page_size: $scope.results.entries.length
+                }));
+
                 update_page_title();
             },
             function() {
@@ -202,7 +207,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     function search(sequence) {
         $scope.results = {
             id: null,
-            alignments: [],
+            entries: [],
             count: null,
             next_page: null,
             exact_match: null
@@ -300,7 +305,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         };
         $scope.results = {
             id: null,
-            alignments: [],
+            entries: [],
             count: null,
             next_page: null,
             exact_match: null
@@ -438,16 +443,6 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             $window.document.title = 'Sequence search';
         }
     }
-
-    /**
-     * Update the `page_size` url parameter
-     * based on the number of currently loaded alignments.
-     */
-    var update_page_size = function() {
-        $location.search($.extend($location.search(), {
-            page_size: $scope.results.alignments.length
-        }));
-    };
 
     // ########################################################################
     // #                          Initialization                              #
