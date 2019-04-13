@@ -263,9 +263,10 @@ Sequence search
 
       <ul class="list-unstyled sequence-search-results">
         <li ng-class="result.rnacentral_id === results.exact_match ? 'result alert alert-success' : 'result'" ng-repeat="result in results.entries">
-            <h4>
+            <h4 class="clearfix">
               <a href="/rna/{{result.rnacentral_id}}" target="_blank">{{result.description}}</a>
               <small>{{result.rnacentral_id}}</small>
+              <small class="pull-right"><a href class="text-muted" ng-click="scroll_to_top();"><i class="fa fa-arrow-circle-o-up"></i> Back to top</a></small>
             </h4>
 
             <div class="table-responsive">
