@@ -58,7 +58,7 @@ Sequence search
     </em>
   </span>
 
-  <div class="row sequence-search-input" >
+  <div class="row sequence-search-input">
       <form name="seqQueryForm" novalidate>
 
         <div class="col-md-10 form-group">
@@ -91,12 +91,12 @@ Sequence search
             <div class="form-group" ng-class="(seqQueryForm.sequence.$invalid) ? 'has-error' : ''">
               <label class="control-label"
                      for="query-sequence" ng-show="query.submit_attempted && seqQueryForm.sequence.$error.minlength">
-                The sequence cannot be shorter than {% endverbatim %}{{MIN_LENGTH}}{% verbatim %} nucleotides
+                The sequence cannot be shorter than {{ defaults.min_length }} nucleotides
               </label>
 
               <label class="control-label"
                      for="query-sequence" ng-show="seqQueryForm.sequence.$error.maxlength">
-                The sequence cannot be longer than {% endverbatim %}{{MAX_LENGTH}}{% verbatim %} nucleotides
+                The sequence cannot be longer than {{ defaults.max_length }} nucleotides
               </label>
 
               <label class="control-label"
@@ -130,16 +130,18 @@ Sequence search
           Exact sequence match: <a href="/rna/{{results.exact_match}}" target="_blank" class="external-link">{{results.exact_match}}</a>
         </div>
       </div>
+    </div>
+  </div>
 
-      <div class="well well-sm border-color-white" ng-show="params.search_in_progress">
-        <span class="margin-left-5px" ng-show="!results.exact_match">Searching...</span>
-        <span class="margin-left-5px" ng-show="results.exact_match">Searching for more matches...</span>
-        <button class="btn btn-default btn-sm margin-left-5px" ng-click="cancel_job();" ng-show="params.search_in_progress && !params.error_message">
-          <i class="fa fa-times"></i>
-          Cancel
-        </button>
+  <div class="well well-sm border-color-white" ng-show="params.search_in_progress">
+    <div class="progress">
+      <div class="progress-bar progress-bar-primary progress-bar-striped active" role="progressbar" aria-valuenow="83"
+      aria-valuemin="0" aria-valuemax="100" style="width:{{ params.progress }}%">
+        <span class="margin-left-5px" ng-show="!results.exact_match">Searching... {{ params.progress }}%</span>
+        <span class="margin-left-5px" ng-show="results.exact_match">Searching for more matches... {{ params.progress }}%</span>
       </div>
     </div>
+
   </div>
 
   <div class="row" ng-show="params.error_message">
@@ -183,7 +185,7 @@ Sequence search
 
   <div class="row" id="affix-parent">
 
-    <div class="col-xs-3 text-search-facets">
+    <div class="col-xs-3 text-search-facets" ng-show="results.hitCount > 0">
       <ul class="list-unstyled">
         <li class="facet" style="margin-top: 20px;">
           <div>Sort by:</div>

@@ -58,6 +58,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
 
     $scope.params = {
         search_in_progress: false,
+        progress: 0,
         error_message: '',
         status_message: '',
         show_alignments: true,
@@ -129,6 +130,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 $scope.query.elapsedTime = response.data.elapsedTime;
 
                 if (response.data.status === 'success' || response.data.status === 'partial_success' ) {
+                    $scope.params.progress = 100;
                     $scope.fetch_job_results(response.data.id);
                 }
                 else if (response.data.status === 'error') {
@@ -141,8 +143,10 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                     $scope.params.search_in_progress = true;
                     if (response.data.status === 'pending') {
                         $scope.params.status_message = $scope.messages.pending;
+                        $scope.params.progress = 0;
                     } else if (response.data.status === 'started') {
                         $scope.params.status_message = $scope.messages.started;
+                        $scope.params.progress = estimateProgress(response.data.chunks);
                     } else {
                         $scope.params.status_message = '';
                     }
@@ -200,41 +204,6 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             $scope.params.status_message = $scope.messages.failed;
             $scope.params.search_in_progress = false;
             update_page_title();
-        });
-    }
-
-    /**
-     * Initiate sequence search.
-     */
-    function search(sequence) {
-        $scope.results = {
-            id: null,
-            entries: [],
-            facets: [],
-            selectedFacets: {},
-            hitCount: null,
-            start: 0,
-            size: 20,
-            exact_match: null
-        };
-
-        // if sequence contains an rnacental_id/upi/urs, fetch the actual sequence
-        fetch_rnacentral_sequence(sequence).then(function(sequence) {
-            // Submit query and begin checking whether the results are ready.
-            var input = parse_input(sequence);
-
-            if (input.sequence.length < $scope.defaults.min_length) {
-                $scope.params.error_message = $scope.messages.too_short;
-                $scope.params.status_message = $scope.messages.failed;
-            } else {
-                $scope.params.error_message = '';
-                $scope.params.status_message = $scope.messages.submitting;
-                $scope.params.search_in_progress = true;
-
-                // run md5 fetch and actual job submission concurrently
-                fetch_exact_match(sequence);
-                submit_job(input);
-            }
         });
     }
 
@@ -441,6 +410,44 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     // ########################################################################
 
     /**
+     * Initiate sequence search.
+     */
+    function search(sequence) {
+        $scope.results = {
+            id: null,
+            entries: [],
+            facets: [],
+            selectedFacets: {},
+            hitCount: null,
+            start: 0,
+            size: 20,
+            exact_match: null
+        };
+
+        // set progress to zero
+        $scope.params.progress = 0;
+
+        // if sequence contains an rnacental_id/upi/urs, fetch the actual sequence
+        fetch_rnacentral_sequence(sequence).then(function(sequence) {
+            // Submit query and begin checking whether the results are ready.
+            var input = parse_input(sequence);
+
+            if (input.sequence.length < $scope.defaults.min_length) {
+                $scope.params.error_message = $scope.messages.too_short;
+                $scope.params.status_message = $scope.messages.failed;
+            } else {
+                $scope.params.error_message = '';
+                $scope.params.status_message = $scope.messages.submitting;
+                $scope.params.search_in_progress = true;
+
+                // run md5 fetch and actual job submission concurrently
+                fetch_exact_match(sequence);
+                submit_job(input);
+            }
+        });
+    }
+
+    /**
      * Parse fasta header, remove whitespace characters.
      */
     function parse_input(sequence) {
@@ -485,7 +492,22 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
 
         outputText = outputClauses.join(" AND ");
         return outputText;
-      }
+    }
+
+    /**
+     * Given jobChunks from jobStatus view, estimates the search progress.
+     */
+    function estimateProgress(chunks) {
+        var progress = 0;
+        chunks.map(function(chunk) {
+            if (chunk.status === 'pending') { ; } // empty statment
+            else if (chunk.status === 'started') { progress += 0.5 * (100.0 / chunks.length); }
+            else { progress += (100.0 / chunks.length); }
+        });
+
+        progress = Math.ceil(progress);
+        return progress
+    }
 
     // ########################################################################
     // #                          Initialization                              #
