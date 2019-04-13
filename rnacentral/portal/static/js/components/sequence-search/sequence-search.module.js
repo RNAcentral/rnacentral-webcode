@@ -80,10 +80,6 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         nextPage = nextPage || false;
         query = query || "rna";
 
-        if (nextPage && $scope.results.entries.length < $scope.hitCount) {
-            $scope.results.start = $scope.results.start + $scope.results.size;
-        }
-
         $http({
             url: routes.sequenceSearchResults({ jobId: id }),
             method: 'GET',
@@ -105,7 +101,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
 
                 $scope.results.facets = response.data.facets;
 
-                $scope.results.start = $scope.results.entries.length;
+                if (nextPage) { $scope.results.start = $scope.results.entries.length }
                 $scope.params.search_in_progress = false;
                 $scope.params.status_message = $scope.messages.done;
 
