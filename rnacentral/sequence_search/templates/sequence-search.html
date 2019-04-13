@@ -203,12 +203,12 @@ Sequence search
             <ul class="list-unstyled text-search-facet-values text-search-facet-overflow force-scrollbars" style="overflow-x: hidden;">
               <li ng-repeat="facetValue in facet.facetValues" ng-if="facet.id == 'expert_db'">
                 <!-- This is expert_dbs facet -->
-                <input type="checkbox" name="facet.label" ng-checked="$ctrl.isFacetApplied(facet.id, facetValue.value)" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)">
-                <a href="" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)" class="text-search-facet-link" uib-tooltip-template="'/static/js/components/text-search/text-search-results/expert-database-tooltip-template.html'" tooltip-placement="bottom-left">{{ facetValue.label }} <small>({{ facetValue.count | number }})</small></a>
+                <input type="checkbox" name="facet.label" ng-checked="isFacetApplied(facet.id, facetValue.value)" ng-click="facetToggled(facet.id, facetValue.value)">
+                <a href="" ng-click="facetToggled(facet.id, facetValue.value)" class="text-search-facet-link" uib-tooltip-template="'/static/js/components/text-search/text-search-results/expert-database-tooltip-template.html'" tooltip-placement="bottom-left">{{ facetValue.label }} <small>({{ facetValue.count | number }})</small></a>
               </li>
               <li ng-repeat="facetValue in facet.facetValues" ng-if="facet.id != 'expert_db'">
-                <input type="checkbox" name="facet.label" ng-checked="$ctrl.isFacetApplied(facet.id, facetValue.value)" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)">
-                <a href="" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)" class="text-search-facet-link">{{ facetValue.label }} <small>({{ facetValue.count | number }})</small></a>
+                <input type="checkbox" name="facet.label" ng-checked="isFacetApplied(facet.id, facetValue.value)" ng-click="facetToggled(facet.id, facetValue.value)">
+                <a href="" ng-click="facetToggled(facet.id, facetValue.value)" class="text-search-facet-link">{{ facetValue.label }} <small>({{ facetValue.count | number }})</small></a>
               </li>
               <small ng-if="facet.label == 'Organisms' && facet.facetValues.length > 10" class="text-muted">Showing top {{ facet.facetValues.length }} organisms</small>
             </ul>
@@ -226,8 +226,8 @@ Sequence search
               </uib-accordion-heading>
               <ul class="list-unstyled text-search-facet-values text-search-facet-overflow force-scrollbars" style="overflow-x: hidden;">
                 <li ng-repeat="facetValue in facet.facetValues" ng-if="facet.id != 'expert_db'">
-                  <input type="checkbox" name="facet.label" ng-checked="$ctrl.isFacetApplied(facet.id, facetValue.value)" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)">
-                  <a href="" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)" class="text-search-facet-link">{{ facetValue.label }} <small>({{ facetValue.count | number }})</small></a>
+                  <input type="checkbox" name="facet.label" ng-checked="isFacetApplied(facet.id, facetValue.value)" ng-click="facetToggled(facet.id, facetValue.value)">
+                  <a href="" ng-click="facetToggled(facet.id, facetValue.value)" class="text-search-facet-link">{{ facetValue.label }} <small>({{ facetValue.count | number }})</small></a>
                 </li>
                 <small ng-if="facet.id === 'qc_warning_found'">
                   <a class="text-search-facet-help text-muted" ng-href="{{ help.rfam }}"><i class="fa fa-question-circle" aria-hidden="true"></i> Learn more about Rfam annotations in RNAcentral &rarr;</a>

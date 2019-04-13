@@ -9,6 +9,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         id: null,
         entries: [],
         facets: [],
+        selectedFacets: {}, // e.g. { facetId1: [facetValue1.value, facetValue2.value], facetId2: [facetValue3.value] }
         hitCount: null,
         start: 0,
         size: 20,
@@ -72,11 +73,12 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     /**
      * Retrieve results given a results url.
      */
-    $scope.fetch_job_results = function(id, nextPage) {
+    $scope.fetch_job_results = function(id, nextPage, query) {
         $scope.params.search_in_progress = true;
         $scope.params.status_message = $scope.messages.get_results;
         id = id || $location.search().id;
         nextPage = nextPage || false;
+        query = query || "rna";
 
         if (nextPage && $scope.results.entries.length < $scope.hitCount) {
             $scope.results.start = $scope.results.start + $scope.results.size;
@@ -88,7 +90,8 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             params: {
                 // ordering: $scope.params.selectedOrdering.sort_field + ',result_id',
                 start: $scope.results.start,
-                size: $scope.results.size
+                size: $scope.results.size,
+                query: query
             }
         }).then(
             function(response) {
@@ -212,6 +215,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             id: null,
             entries: [],
             facets: [],
+            selectedFacets: {},
             hitCount: null,
             start: 0,
             size: 20,
@@ -308,6 +312,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             id: null,
             entries: [],
             facets: [],
+            selectedFacets: {},
             hitCount: null,
             start: 0,
             size: 20,
@@ -409,6 +414,32 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         $("html, body").animate({ scrollTop: "0px" });
     };
 
+    /**
+     * For each facet checks, if it is applied.
+     */
+    $scope.isFacetApplied = function(facetId, facetValueValue) {
+        return $scope.results.selectedFacets.hasOwnProperty(facetId) && $scope.results.selectedFacets[facetId].indexOf(facetValueValue) !== -1;
+    };
+
+    /**
+     * Event handler, fired when a facet is toggled/
+     */
+    $scope.facetToggled = function(facetId, facetValueValue) {
+        if ($scope.results.selectedFacets.hasOwnProperty(facetId)) {
+            var index = $scope.results.selectedFacets[facetId].indexOf(facetValueValue);
+            if (index === -1) {
+                $scope.results.selectedFacets[facetId].push(facetValueValue);
+            } else {
+                $scope.results.selectedFacets[facetId].splice(index, 1);
+            }
+        } else {
+            $scope.results.selectedFacets[facetId] = [ facetValueValue ];
+        }
+
+        var query = buildQuery();
+        $scope.fetch_job_results($scope.results.id, false, query);
+    };
+
     // ########################################################################
     // #                         Utility functions                            #
     // ########################################################################
@@ -439,6 +470,26 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             $window.document.title = 'Sequence search';
         }
     }
+
+    /**
+     * Constructs a text search query from to pass to facets search endpoint.
+     */
+    function buildQuery() {
+        var outputText, outputClauses = [];
+
+        Object.keys($scope.results.selectedFacets).map(function(facetId) {
+            var facetText, facetClauses = [];
+            $scope.results.selectedFacets[facetId].map(function(facetValueValue) {
+                facetClauses.push(facetId + ':"' + facetValueValue + '"');
+            });
+            facetText = facetClauses.join(" OR ");
+
+            if (facetText !== "") outputClauses.push("(" + facetText + ")");
+        });
+
+        outputText = outputClauses.join(" AND ");
+        return outputText;
+      }
 
     // ########################################################################
     // #                          Initialization                              #
