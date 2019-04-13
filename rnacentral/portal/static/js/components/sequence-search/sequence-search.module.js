@@ -129,6 +129,12 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             function(response) {
                 $scope.query.elapsedTime = response.data.elapsedTime;
 
+                if (response.data.description) {
+                    $scope.query.sequence = '>' + response.data.description + '\n' + response.data.sequence;
+                } else {
+                    $scope.query.sequence = response.data.sequence;
+                }
+
                 if (response.data.status === 'success' || response.data.status === 'partial_success' ) {
                     $scope.params.progress = 100;
                     $scope.fetch_job_results(response.data.id);
@@ -205,32 +211,6 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             $scope.params.search_in_progress = false;
             update_page_title();
         });
-    }
-
-    /**
-     * Retrieve query information in order to load
-     * the query sequence into the search box.
-     */
-    function fetch_query_info(query_id) {
-        $http({
-            url: $scope.defaults.query_info_endpoint,
-            method: 'GET',
-            params: { id: query_id }
-        }).then(
-            function(response) {
-                if (response.data.description) {
-                    $scope.query.sequence = '>' + response.data.description + '\n' + response.data.sequence;
-                } else {
-                    $scope.query.sequence = response.data.sequence;
-                }
-
-                fetch_exact_match(response.data.sequence);
-            },
-            function(response) {
-                $scope.params.status_message = $scope.messages.failed;
-                $scope.params.error_message = $scope.messages.results_failed;
-            }
-        );
     }
 
     /**
@@ -475,7 +455,8 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     }
 
     /**
-     * Constructs a text search query from to pass to facets search endpoint.
+     * Constructs a text search (! not sequence search) query
+     * from facets for EBI text search to use and display facets.
      */
     function buildQuery() {
         var outputText, outputClauses = [];
@@ -533,9 +514,6 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             $scope.results.id = $location.search().id;
 
             fetch_job_status($location.search().id);
-
-            // TODO: re-write this functionality using new data
-            // fetch_query_info($location.search().id);
         } else if ($location.search().q) {
             // start sequence search
             $scope.query.sequence = $location.search().q;
