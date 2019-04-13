@@ -191,7 +191,7 @@ Sequence search
             <select class="form-control" ng-change="update_ordering(); fetch_results();" ng-model="params.selectedOrdering" ng-options="item.label for item in ordering track by item.label"></select>
           </div>
           <div class="form-group">
-            <button id="toggle-alignments" ng-click="toggle_alignments()" class="btn btn-default btn-block"><span style="overflow: hidden;"><i class="fa fa-align-justify"></i> Hide alignments</span></button>
+            <button id="toggle-alignments" ng-click="toggle_alignments()" class="btn btn-default btn-block"><span style="overflow: hidden; white-space: normal;"><i class="fa fa-align-justify"></i> Hide alignments</span></button>
           </div>
         </li>
         <hr />
@@ -321,25 +321,3 @@ Sequence search
 
 {% endverbatim %}
 {% endblock content %}
-
-{% block extra_js_uncompressed %}
-<script>
-  /**
-   * Keep toolbar width constant on all screen sizes.
-   */
-  $(document).ready(function () {
-      var affix = $('#affix'),
-          parent = $('#affix-parent'),
-          sibling = $('#affix-sibling');
-      var resizeFn = function () {
-          var affixWidth = parent.width() - sibling.width() - 2*parseInt(sibling.css('paddingLeft')) - 2*parseInt(sibling.css('paddingRight')) - parseInt(sibling.css('marginLeft')) - parseInt(sibling.css('marginRight')) - parseInt(sibling.css('borderLeftWidth')) - parseInt(sibling.css('borderRightWidth'));
-          affix.css('width', affixWidth);
-      };
-
-      resizeFn();
-      $(window).resize(resizeFn);
-  });
-
-</script>
-
-{% endblock extra_js_uncompressed %}
