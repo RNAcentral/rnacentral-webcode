@@ -8,6 +8,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     $scope.results = {
         id: null,
         entries: [],
+        facets: [],
         hitCount: null,
         start: 0,
         size: 20,
@@ -91,6 +92,8 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 } else {
                     $scope.results.entries = response.data.entries;
                 }
+
+                $scope.results.facets = response.data.facets;
 
                 $scope.results.start = $scope.results.entries.length;
                 $scope.params.search_in_progress = false;
@@ -201,6 +204,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         $scope.results = {
             id: null,
             entries: [],
+            facets: [],
             hitCount: null,
             start: 0,
             size: 20,
@@ -296,6 +300,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         $scope.results = {
             id: null,
             entries: [],
+            facets: [],
             hitCount: null,
             start: 0,
             size: 20,
