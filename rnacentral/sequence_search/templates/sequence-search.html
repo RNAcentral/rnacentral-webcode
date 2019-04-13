@@ -214,8 +214,9 @@ Sequence search
             </ul>
           </div>
         </li>
+        <br/>
         <li class="facet" ng-repeat="facet in results.facets">
-          <uib-accordion ng-if="facet.label == 'Conserved motifs' || facet.label == 'QC warnings' || facet.label == 'GO annotations' || facet.label == 'Genomic mapping'" class="text-search-foldable-facets">
+          <uib-accordion ng-if="facet.label == 'Has Conserved structure' || facet.label == 'QC warning found' || facet.label == 'Has GO annotation' || facet.label == 'Genomic mapping'" class="text-search-foldable-facets">
             <div uib-accordion-group is-open="$ctrl.search.isFacetOpen[facet.id]">
               <uib-accordion-heading>
                 <h3>
