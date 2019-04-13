@@ -37,6 +37,13 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         too_short: 'The sequence cannot be shorter than ' + $scope.defaults['min_length'].toString() + ' nucleotides'
     };
 
+    $scope.help = {
+        rfam: "/help/rfam-annotations",
+        crs: "/help/conserved-motifs",
+        go: "/help/gene-ontology-annotations",
+        genomeMapping: "/help/genomic-mapping"
+    };
+
     $scope.ordering = [
         { sort_field: 'e_value', label: 'E-value (min to max) - default'},
         { sort_field: '-e_value', label: 'E-value (max to min)'},

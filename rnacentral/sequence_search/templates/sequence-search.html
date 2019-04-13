@@ -230,16 +230,16 @@ Sequence search
                   <a href="" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)" class="text-search-facet-link">{{ facetValue.label }} <small>({{ facetValue.count | number }})</small></a>
                 </li>
                 <small ng-if="facet.id === 'qc_warning_found'">
-                  <a class="text-search-facet-help text-muted" ng-href="{{ $ctrl.rfamHelp }}"><i class="fa fa-question-circle" aria-hidden="true"></i> Learn more about Rfam annotations in RNAcentral &rarr;</a>
+                  <a class="text-search-facet-help text-muted" ng-href="{{ help.rfam }}"><i class="fa fa-question-circle" aria-hidden="true"></i> Learn more about Rfam annotations in RNAcentral &rarr;</a>
                 </small>
                 <small ng-if="facet.id === 'has_conserved_structure'" >
-                  <a class="text-search-facet-help text-muted" ng-href="{{ $ctrl.crsHelp }}"><i class="fa fa-question-circle" aria-hidden="true"></i> Learn more about conserved motifs &rarr;</a>
+                  <a class="text-search-facet-help text-muted" ng-href="{{ help.crs }}"><i class="fa fa-question-circle" aria-hidden="true"></i> Learn more about conserved motifs &rarr;</a>
                 </small>
                 <small ng-if="facet.id === 'has_go_annotations'">
-                  <a class="text-search-facet-help text-muted" ng-href="{{ $ctrl.goHelp }}"><i class="fa fa-question-circle" aria-hidden="true"></i> Learn more about Gene Ontology annotations &rarr;</a>
+                  <a class="text-search-facet-help text-muted" ng-href="{{ help.go }}"><i class="fa fa-question-circle" aria-hidden="true"></i> Learn more about Gene Ontology annotations &rarr;</a>
                 </small>
                 <small ng-if="facet.id === 'has_genomic_coordinates'">
-                  <a class="text-search-facet-help text-muted" ng-href="{{ $ctrl.genomeMappingHelp }}"><i class="fa fa-question-circle" aria-hidden="true"></i> Learn more about genome mapping &rarr;</a>
+                  <a class="text-search-facet-help text-muted" ng-href="{{ help.genomeMapping }}"><i class="fa fa-question-circle" aria-hidden="true"></i> Learn more about genome mapping &rarr;</a>
                 </small>
               </ul>
             </div>
