@@ -130,9 +130,9 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 $scope.query.elapsedTime = response.data.elapsedTime;
 
                 if (response.data.description) {
-                    $scope.query.sequence = '>' + response.data.description + '\n' + response.data.sequence;
+                    $scope.query.sequence = '>' + response.data.description + '\n' + response.data.query;
                 } else {
-                    $scope.query.sequence = response.data.sequence;
+                    $scope.query.sequence = response.data.query;
                 }
 
                 if (response.data.status === 'success' || response.data.status === 'partial_success' ) {
