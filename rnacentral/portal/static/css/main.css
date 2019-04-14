@@ -978,6 +978,12 @@ textarea {
   max-height: 20000px;
 }
 
+/* Scrollable facets */
+
+.scrollable-facet {
+  overflow: scroll;
+}
+
 /*------------------------------------------------------------------
 [5.9 D3 expert database treemap]
 */

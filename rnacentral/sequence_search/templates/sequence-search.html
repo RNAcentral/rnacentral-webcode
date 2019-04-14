@@ -197,7 +197,7 @@ Sequence search
           </div>
         </li>
         <hr />
-        <li class="facet" ng-repeat="facet in results.facets">
+        <li class="facet scrollable-facet" ng-repeat="facet in results.facets">
           <div ng-if="facet.label === 'Organisms' || facet.label === 'RNA types' || facet.label === 'Expert databases'">
             <h3>
               {{ facet.label }}
@@ -217,7 +217,7 @@ Sequence search
           </div>
         </li>
         <br/>
-        <li class="facet" ng-repeat="facet in results.facets">
+        <li class="facet scrollable-facet" ng-repeat="facet in results.facets">
           <uib-accordion ng-if="facet.label == 'Has Conserved structure' || facet.label == 'QC warning found' || facet.label == 'Has GO annotation' || facet.label == 'Genomic mapping'" class="text-search-foldable-facets">
             <div uib-accordion-group is-open="$ctrl.search.isFacetOpen[facet.id]">
               <uib-accordion-heading>
@@ -234,7 +234,7 @@ Sequence search
                 <small ng-if="facet.id === 'qc_warning_found'">
                   <a class="text-search-facet-help text-muted" ng-href="{{ help.rfam }}"><i class="fa fa-question-circle" aria-hidden="true"></i> Learn more about Rfam annotations in RNAcentral &rarr;</a>
                 </small>
-                <small ng-if="facet.id === 'has_conserved_structure'" >
+                <small ng-if="facet.id === 'has_conserved_structure'">
                   <a class="text-search-facet-help text-muted" ng-href="{{ help.crs }}"><i class="fa fa-question-circle" aria-hidden="true"></i> Learn more about conserved motifs &rarr;</a>
                 </small>
                 <small ng-if="facet.id === 'has_go_annotations'">
