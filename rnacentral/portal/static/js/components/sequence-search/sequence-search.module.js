@@ -85,7 +85,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             url: routes.sequenceSearchResults({ jobId: id }),
             method: 'GET',
             params: {
-                // ordering: $scope.params.selectedOrdering.sort_field + ',result_id',
+                ordering: $scope.params.selectedOrdering.sort_field,
                 start: $scope.results.start,
                 size: $scope.results.size,
                 query: query

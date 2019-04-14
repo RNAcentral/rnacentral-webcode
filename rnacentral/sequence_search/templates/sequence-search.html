@@ -190,7 +190,7 @@ Sequence search
         <li class="facet" style="margin-top: 20px;">
           <div>Sort by:</div>
           <div class="form-group">
-            <select class="form-control" ng-change="update_ordering(); fetch_results();" ng-model="params.selectedOrdering" ng-options="item.label for item in ordering track by item.label"></select>
+            <select class="form-control" ng-change="update_ordering(); fetch_job_results();" ng-model="params.selectedOrdering" ng-options="item.label for item in ordering track by item.label"></select>
           </div>
           <div class="form-group">
             <button id="toggle-alignments" ng-click="toggle_alignments()" class="btn btn-default btn-block"><span style="overflow: hidden; white-space: normal;"><i class="fa fa-align-justify"></i> Hide alignments</span></button>
