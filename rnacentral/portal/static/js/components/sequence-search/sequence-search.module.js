@@ -121,7 +121,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
      * Check job status using REST API.
      */
     function fetch_job_status(id) {
-        $http({
+        return $http({
             url: routes.sequenceSearchJobStatus({ jobId: id }),
             method: 'GET',
             ignoreLoadingBar: true
@@ -220,7 +220,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     function fetch_exact_match(sequence) {
         input = parse_input(sequence);
         var md5_hash = md5(input.sequence.toUpperCase().replace(/U/g, 'T'));
-        var url = $scope.defaults.md5_endpoint + '?md5=' + md5_hash;
+        var url = routes.apiRnaView({upi: ""}) + '?md5=' + md5_hash;
         $http({
             url: url,
             method: 'GET',
@@ -513,7 +513,9 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
 
             $scope.results.id = $location.search().id;
 
-            fetch_job_status($location.search().id);
+            fetch_job_status($location.search().id).then(function() {
+                fetch_exact_match($scope.query.sequence);
+            });
         } else if ($location.search().q) {
             // start sequence search
             $scope.query.sequence = $location.search().q;
