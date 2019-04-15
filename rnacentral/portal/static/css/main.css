@@ -981,7 +981,7 @@ textarea {
 /* Scrollable facets */
 
 .scrollable-facet {
-  overflow: scroll;
+  overflow: auto;
 }
 
 /*------------------------------------------------------------------

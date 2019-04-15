@@ -426,7 +426,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
      * @returns {boolean}
      */
     $scope.expertDbHasStar = function(db) {
-        return $scope.expertDbsObject[db].tags.indexOf('curated') != -1 && $scope.expertDbsObject[db].tags.indexOf('automatic') == -1;
+        return $scope.expertDbsObject[db].tags.indexOf('curated') !== -1 && $scope.expertDbsObject[db].tags.indexOf('automatic') === -1;
     };
 
     // ########################################################################
