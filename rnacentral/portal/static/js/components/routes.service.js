@@ -23,6 +23,7 @@ angular.module("routes", []).service('routes', ['$interpolate', function($interp
         sequenceSearchSubmitJob: '/sequence-search/submit-job',
         sequenceSearchJobStatus: '/sequence-search/job-status/{{ jobId }}',
         sequenceSearchResults: '/sequence-search/job-results/{{ jobId }}',
+        apiEnsemblComparaView: '/api/v1/rna/{{ upi }}/ensembl-compara/{{ taxid }}',
         genomesApi: '/api/v1/genomes/{{ ensemblAssembly }}',
         proxy: '/api/internal/proxy?url={{ url }}',
         ebiSearch:

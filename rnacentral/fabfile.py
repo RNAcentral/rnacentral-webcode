@@ -207,7 +207,7 @@ def slack(message):
     requests.post(slack_hook, json.dumps({'text': message}), headers=headers)
 
 
-def deploy_locally(git_branch=None, restart_url='https://rnacentral.org', quick=False):
+def deploy_locally(git_branch=None, restart_url='https://rnacentral.org', quick=False, compress=True):
     """
     Run deployment locally.
     """
@@ -216,7 +216,8 @@ def deploy_locally(git_branch=None, restart_url='https://rnacentral.org', quick=
     if not quick:
         update_npm()
     collect_static_files()
-    compress_static_files()
+    if compress:
+        compress_static_files()
     if not quick:
         install_django_requirements()
     flush_memcached()
@@ -229,7 +230,7 @@ def deploy_locally(git_branch=None, restart_url='https://rnacentral.org', quick=
     slack("Deployed '%s' at ves-hx-a4: <https://test.rnacentral.org|test.rnacentral.org>" % git_branch)
 
 
-def deploy_remotely(git_branch=None, restart_url='https://rnacentral.org', quick=False):
+def deploy_remotely(git_branch=None, restart_url='https://rnacentral.org', quick=False, compress=True):
     """
     Run deployment remotely.
     """
@@ -256,7 +257,8 @@ def deploy_remotely(git_branch=None, restart_url='https://rnacentral.org', quick
     if not quick:
         rsync_local_files()
     collect_static_files()
-    compress_static_files()
+    if compress:
+        compress_static_files()
     flush_memcached()
     restart_django(restart_url)
 
@@ -267,15 +269,15 @@ def deploy_remotely(git_branch=None, restart_url='https://rnacentral.org', quick
     slack("Deployed '%s' at %s: <https://rnacentral.org|rnacentral.org>" % (git_branch, env.host))
 
 
-def deploy(git_branch=None, restart_url='https://rnacentral.org', quick=False):
+def deploy(git_branch=None, restart_url='https://rnacentral.org', quick=False, compress=True):
     """
     Deployment function wrapper that launches local or remote deployment
     based on the environment.
     """
     if env.deployment == 'remote':
-        deploy_remotely(git_branch, restart_url, quick)
+        deploy_remotely(git_branch, restart_url, quick, compress)
     elif env.deployment == 'local':
-        deploy_locally(git_branch, restart_url, quick)
+        deploy_locally(git_branch, restart_url, quick, compress)
     else:
         print('Check usage')
 

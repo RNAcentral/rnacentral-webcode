@@ -101,6 +101,16 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
     };
 
     /**
+     * DRF URLs use http which don't work when the site is loaded over https
+     */
+    var enforce_https_url = function(url) {
+        if (typeof(url) === 'string' && $location.protocol() === 'https' && url.indexOf('https') === -1) {
+            url = url.replace('http', 'https');
+        }
+        return url;
+    }
+
+    /**
      * Retrieve results given a results url.
      */
     $scope.get_results = function(id, next_page) {
@@ -110,7 +120,7 @@ angular.module('nhmmerSearch', ['chieffancypants.loadingBar', 'ngAnimate']);
         next_page = next_page || false;
 
         $http({
-            url: next_page ? $scope.results.next_page : $scope.defaults.results_endpoint,
+            url: next_page ? enforce_https_url($scope.results.next_page) : $scope.defaults.results_endpoint,
             method: 'GET',
             params: {
                 id: id,

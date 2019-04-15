@@ -21,7 +21,8 @@ from rest_framework import serializers
 
 from portal.models import Rna, Xref, Reference,  Reference_map, ChemicalComponent, Database, DatabaseStats, Accession, \
     Release, Reference, Modification, RfamHit, RfamModel, RfamClan, RfamGoTerm, OntologyTerm, SequenceFeature, \
-    EnsemblAssembly, EnsemblInsdcMapping, EnsemblKaryotype, GenomeMapping, ProteinInfo
+    EnsemblAssembly, EnsemblInsdcMapping, EnsemblKaryotype, GenomeMapping, \
+    ProteinInfo, EnsemblCompara, RnaPrecomputed, SequenceRegion
 
 
 class RawPublicationSerializer(serializers.ModelSerializer):
@@ -534,3 +535,17 @@ class EnsemblKaryotypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = EnsemblKaryotype
         fields = ('karyotype', )
+
+
+class RnaPrecomputedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RnaPrecomputed
+        fields = ('id', 'rna_type', 'description', 'databases')
+
+
+class EnsemblComparaSerializer(serializers.ModelSerializer):
+    rnacentral_id = RnaPrecomputedSerializer(source='urs_taxid')
+
+    class Meta:
+        model = EnsemblCompara
+        fields = ('ensembl_transcript_id', 'rnacentral_id')

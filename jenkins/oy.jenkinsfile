@@ -18,8 +18,8 @@ pipeline {
         )
         choice(
             name: 'COMPRESSOR',
-            choices: ['PRO', 'DEV'],
-            description: 'Shall we use django-compressor, PRO - yes, DEV - no?'
+            choices: ['True', 'False'],
+            description: 'Shall we use django-compressor?'
         )
         choice(
             name: 'QUICK',
@@ -98,9 +98,9 @@ pipeline {
                 script {
                     sh 'rm -f /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
 
-                    if (params.COMPRESSOR == 'PRO') {
+                    if (params.COMPRESSOR == 'True') {
                         sh 'cat ${COMPRESSOR_PRO} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
-                    } else if (params.COMPRESSOR == 'DEV') {
+                    } else if (params.COMPRESSOR == 'False') {
                         sh 'cat ${COMPRESSOR_DEV} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
                     }
                 }
@@ -131,7 +131,7 @@ pipeline {
                       pip install --upgrade -r requirements.txt
                     fi
 
-                    fab -H ves-oy-a4 production deploy:git_branch=${params.BRANCH},quick=${params.QUICK}
+                    fab -H ves-oy-a4 production deploy:git_branch=${params.BRANCH},quick=${params.QUICK},compress=${params.COMPRESSOR}
                 """
             }
         }
