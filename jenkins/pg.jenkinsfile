@@ -18,8 +18,8 @@ pipeline {
         )
         choice(
             name: 'COMPRESSOR',
-            choices: ['PRO', 'DEV'],
-            description: 'Shall we use django-compressor, PRO - yes, DEV - no?'
+            choices: ['True', 'False'],
+            description: 'Shall we use django-compressor?'
         )
         choice(
             name: 'QUICK',
@@ -96,9 +96,9 @@ pipeline {
                 }
 
                 script {
-                    if (params.COMPRESSOR == 'PRO') {
+                    if (params.COMPRESSOR == 'True') {
                         sh 'cat ${COMPRESSOR_PRO} > tmp'
-                    } else if (params.COMPRESSOR == 'DEV') {
+                    } else if (params.COMPRESSOR == 'False') {
                         sh 'cat ${COMPRESSOR_DEV} > tmp'
                     }
 
@@ -123,7 +123,7 @@ pipeline {
                     git checkout ${params.BRANCH}
                     git pull
 
-                    fab -H ves-pg-a4 production deploy:git_branch=${params.BRANCH},quick=${params.QUICK}
+                    fab -H ves-pg-a4 production deploy:git_branch=${params.BRANCH},quick=${params.QUICK},compress=${params.COMPRESSOR}
                 """
             }
         }
