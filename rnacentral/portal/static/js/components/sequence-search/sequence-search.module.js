@@ -1,4 +1,4 @@
-var sequenceSearchController = function($scope, $http, $timeout, $location, $q, $window, routes) {
+var sequenceSearchController = function($scope, $http, $timeout, $location, $q, $window, routes, normalizeExpertDbName) {
     $scope.query = {
         sequence: '',
         submit_attempted: false,
@@ -35,7 +35,8 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         poll_job_status: 'Waiting for results',
         submitting: 'Submitting query',
         loading_more_results: 'Loading more results',
-        too_short: 'The sequence cannot be shorter than ' + $scope.defaults['min_length'].toString() + ' nucleotides'
+        too_short: 'The sequence cannot be shorter than ' + $scope.defaults['min_length'].toString() + ' nucleotides',
+        expert_dbs_error: ''
     };
 
     $scope.help = {
@@ -62,7 +63,8 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         error_message: '',
         status_message: '',
         show_alignments: true,
-        selectedOrdering: $scope.ordering[0]
+        selectedOrdering: $scope.ordering[0],
+        showExpertDbError: false
     };
 
     var timeout;
@@ -234,6 +236,28 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         });
     }
 
+    /**
+     *
+     */
+    function fetch_expert_dbs() {
+        // retrieve expert_dbs json for display in tooltips
+        $http.get(routes.expertDbsApi({ expertDbName: '' })).then(
+            function(response) {
+                $scope.expertDbs = response.data;
+
+                // expertDbsObject has lowerCase db names as keys
+                $scope.expertDbsObject = {};
+                for (var i=0; i < $scope.expertDbs.length; i++) {
+                    $scope.expertDbsObject[$scope.expertDbs[i].name.toLowerCase()] = $scope.expertDbs[i];
+                }
+            },
+            function(response) {
+                $scope.params.showExpertDbError = true;
+            }
+        );
+    }
+
+
     // ########################################################################
     // #         Controller functions to be called from html template         #
     // ########################################################################
@@ -243,6 +267,11 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
      * so that it can be used in the template.
      */
     $scope.isNaN = isNaN;
+
+    /**
+     * Expose normalizeExpertDbName service to the template.
+     */
+    $scope.normalizeExpertDbName = normalizeExpertDbName;
 
     /**
      * Reset the form.
@@ -387,6 +416,15 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         $scope.fetch_job_results($scope.results.id, false, query);
     };
 
+    /**
+     * We assign a star only to those expert_dbs that have a curated tag and don't have automatic tag at the same time.
+     * @param db {String} - name of expert_db as a key in expertDbsObject
+     * @returns {boolean}
+     */
+    $scope.expertDbHasStar = function(db) {
+        return $scope.expertDbsObject[db].tags.indexOf('curated') != -1 && $scope.expertDbsObject[db].tags.indexOf('automatic') == -1;
+    };
+
     // ########################################################################
     // #                         Utility functions                            #
     // ########################################################################
@@ -502,6 +540,8 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
      * - retrieve search results if necessary
      */
     (function() {
+        fetch_expert_dbs();
+
         if ($location.url().indexOf("id=") > -1) {
             // load results, set their ordering based on the url parameter
             if ($location.search().ordering) {
@@ -532,5 +572,5 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     })();
 };
 
-angular.module("sequenceSearch", ['chieffancypants.loadingBar', 'ngResource', 'ngAnimate', 'ui.bootstrap'])
-    .controller("SequenceSearchController", ['$scope', '$http', '$timeout', '$location', '$q', '$window', 'routes', sequenceSearchController]);
+angular.module("sequenceSearch", ['chieffancypants.loadingBar', 'ngResource', 'ngAnimate', 'ui.bootstrap', 'expertDatabase'])
+    .controller("SequenceSearchController", ['$scope', '$http', '$timeout', '$location', '$q', '$window', 'routes', 'normalizeExpertDbName', sequenceSearchController]);

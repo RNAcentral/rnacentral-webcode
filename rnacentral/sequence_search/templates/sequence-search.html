@@ -204,7 +204,7 @@ Sequence search
               <li ng-repeat="facetValue in facet.facetValues" ng-if="facet.id == 'expert_db'">
                 <!-- This is expert_dbs facet -->
                 <input type="checkbox" name="facet.label" ng-checked="isFacetApplied(facet.id, facetValue.value)" ng-click="facetToggled(facet.id, facetValue.value)">
-                <a href="" ng-click="facetToggled(facet.id, facetValue.value)" class="text-search-facet-link" uib-tooltip-template="'/static/js/components/text-search/text-search-results/expert-database-tooltip-template.html'" tooltip-placement="bottom-left">{{ facetValue.label }} <small>({{ facetValue.count | number }})</small></a>
+                <a href="" ng-click="facetToggled(facet.id, facetValue.value)" class="text-search-facet-link" uib-tooltip-template="'/static/js/components/sequence-search/expert-database-tooltip-template.html'" tooltip-placement="bottom-left">{{ facetValue.label }} <small>({{ facetValue.count | number }})</small></a>
               </li>
               <li ng-repeat="facetValue in facet.facetValues" ng-if="facet.id != 'expert_db'">
                 <input type="checkbox" name="facet.label" ng-checked="isFacetApplied(facet.id, facetValue.value)" ng-click="facetToggled(facet.id, facetValue.value)">
