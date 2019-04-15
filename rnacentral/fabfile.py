@@ -12,6 +12,7 @@ limitations under the License.
 """
 
 from __future__ import print_function
+from distutils.util import strtobool
 
 """
 RNAcentral deployment script.
@@ -25,7 +26,7 @@ To run remotely:
     fab -H server1,server2 production deploy
 
 To pass parameters in:
-    fab localhost deploy:quick=params.QUICK,git_branch=params.BRANCH
+    fab localhost deploy:quick=params.QUICK,git_branch=params.BRANCH,compress=params.COMPRESS
 
 For more options, run `fab help`.
 """
@@ -274,6 +275,9 @@ def deploy(git_branch=None, restart_url='https://rnacentral.org', quick=False, c
     Deployment function wrapper that launches local or remote deployment
     based on the environment.
     """
+    quick = strtobool(quick)
+    compress = strtobool(compress)
+
     if env.deployment == 'remote':
         deploy_remotely(git_branch, restart_url, quick, compress)
     elif env.deployment == 'local':
