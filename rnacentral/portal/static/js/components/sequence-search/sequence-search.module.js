@@ -23,21 +23,21 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     };
 
     $scope.messages = {
-        get_results: 'Loading results',
+        getResuts: 'Loading results',
         done: 'Done',
         failed: 'Error',
-        submit_failed: 'There was a problem submitting your query. Please try again later or get in touch if the error persists.',
-        job_failed: 'There was a problem with your query. Please try again later or get in touch if the error persists.',
-        results_failed: 'There was a problem retrieving the results. Please try again later or get in touch if the error persists.',
-        not_found_failed: 'Job with the specified id was not found',
+        submitFailed: 'There was a problem submitting your query. Please try again later or get in touch if the error persists.',
+        jobFailed: 'There was a problem with your query. Please try again later or get in touch if the error persists.',
+        resultsFailed: 'There was a problem retrieving the results. Please try again later or get in touch if the error persists.',
+        notFoundFailed: 'Job with the specified id was not found',
         cancelled: 'The search was cancelled',
         pending: 'Pending',
         started: 'Running',
-        poll_job_status: 'Waiting for results',
+        pollJobStatus: 'Waiting for results',
         submitting: 'Submitting query',
-        loading_more_results: 'Loading more results',
-        too_short: 'The sequence cannot be shorter than ' + $scope.defaults['min_length'].toString() + ' nucleotides',
-        expert_dbs_error: ''
+        loadingMoreResults: 'Loading more results',
+        tooShort: 'The sequence cannot be shorter than ' + $scope.defaults['min_length'].toString() + ' nucleotides',
+        expertDbsError: 'Failed to retrieve the list of expert databases'
     };
 
     $scope.help = {
@@ -79,7 +79,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
      */
     $scope.fetch_job_results = function(id, nextPage, query) {
         $scope.params.search_in_progress = true;
-        $scope.params.status_message = $scope.messages.get_results;
+        $scope.params.status_message = $scope.messages.getResuts;
         id = id || $location.search().id;
 
         nextPage = nextPage || false;
@@ -121,9 +121,9 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 $scope.params.search_in_progress = false;
                 $scope.params.status_message = $scope.messages.failed;
                 if (response.status === 404) {
-                    $scope.params.error_message = $scope.messages.not_found_failed;
+                    $scope.params.error_message = $scope.messages.notFoundFailed;
                 } else {
-                    $scope.params.error_message = $scope.messages.results_failed;
+                    $scope.params.error_message = $scope.messages.resultsFailed;
                 }
                 update_page_title();
             }
@@ -155,7 +155,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 else if (response.data.status === 'error') {
                     $scope.params.search_in_progress = false;
                     $scope.params.status_message = $scope.messages.failed;
-                    $scope.params.error_message = $scope.messages.job_failed;
+                    $scope.params.error_message = $scope.messages.jobFailed;
                     update_page_title();
                 }
                 else {
@@ -178,9 +178,9 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             function(response) {
                 $scope.params.status_message = $scope.messages.failed;
                 if (response.status === 404) {
-                    $scope.params.error_message = $scope.messages.not_found_failed;
+                    $scope.params.error_message = $scope.messages.notFoundFailed;
                 } else {
-                    $scope.params.error_message = $scope.messages.results_failed;
+                    $scope.params.error_message = $scope.messages.resultsFailed;
                 }
             }
         );
@@ -223,7 +223,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             fetch_job_status(id);
             update_page_title();
         }, function(response) {
-            $scope.params.error_message = $scope.messages.submit_failed;
+            $scope.params.error_message = $scope.messages.submitFailed;
             $scope.params.status_message = $scope.messages.failed;
             $scope.params.search_in_progress = false;
             update_page_title();
@@ -466,7 +466,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             var input = parse_input(sequence);
 
             if (input.sequence.length < $scope.defaults.min_length) {
-                $scope.params.error_message = $scope.messages.too_short;
+                $scope.params.error_message = $scope.messages.tooShort;
                 $scope.params.status_message = $scope.messages.failed;
             } else {
                 $scope.params.error_message = '';
