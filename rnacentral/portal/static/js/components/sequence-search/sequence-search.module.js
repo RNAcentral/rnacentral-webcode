@@ -209,10 +209,10 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     /**
      * Post query to run a job.
      */
-    function submitJob(input) {
+    function submitJob(sequence) {
         return $http.post(
             routes.sequenceSearchSubmitJob({}),
-            { query: input.sequence, databases: []}
+            { query: sequence, databases: []}
         ).then(function(response) {
             var id = response.data.job_id;
 
@@ -483,7 +483,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
 
                 // run md5 fetch and actual job submission concurrently
                 fetchExactMatch(sequence);
-                submitJob(input);
+                submitJob(sequence);
             }
         });
     }
