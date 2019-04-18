@@ -265,7 +265,10 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 }
             },
             function(response) {
-                $scope.params.showExpertDbError = true;
+                $scope.params.error_message = $scope.messages.expertDbsError;
+                $scope.params.status_message = $scope.messages.failed;
+                $scope.params.search_in_progress = false;
+                update_page_title();
             }
         );
     }
