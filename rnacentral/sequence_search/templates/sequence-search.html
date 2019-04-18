@@ -68,8 +68,8 @@ Sequence search
                     name="sequence"
                     id="query-sequence"
                     ng-model="query.sequence"
-                    ng-minlength="defaults.min_length"
-                    ng-maxlength="defaults.max_length"
+                    ng-minlength="defaults.minLength"
+                    ng-maxlength="defaults.maxLength"
                     ng-pattern="/^(>.+?[\n\r])*?[acgtunwsmkrybdhvx\s]+$|^URS[A-Fa-f0-9]{10}$/i"
                     tabindex="2"
                     required
@@ -90,13 +90,13 @@ Sequence search
 
             <div class="form-group" ng-class="(seqQueryForm.sequence.$invalid) ? 'has-error' : ''">
               <label class="control-label"
-                     for="query-sequence" ng-show="query.submit_attempted && seqQueryForm.sequence.$error.minlength">
-                The sequence cannot be shorter than {{ defaults.min_length }} nucleotides
+                     for="query-sequence" ng-show="query.submitAttempted && seqQueryForm.sequence.$error.minlength">
+                The sequence cannot be shorter than {{ defaults.minLength }} nucleotides
               </label>
 
               <label class="control-label"
                      for="query-sequence" ng-show="seqQueryForm.sequence.$error.maxlength">
-                The sequence cannot be longer than {{ defaults.max_length }} nucleotides
+                The sequence cannot be longer than {{ defaults.maxLength }} nucleotides
               </label>
 
               <label class="control-label"
@@ -125,9 +125,9 @@ Sequence search
 
   <div class="row">
     <div class="col-md-4">
-      <div ng-show="results.exact_match"> <!-- Pulse animation cannot be on the same element as ng-show -->
+      <div ng-show="results.exactMatch"> <!-- Pulse animation cannot be on the same element as ng-show -->
         <div class="alert alert-success animated pulse margin-bottom-5px" role="alert">
-          Exact sequence match: <a href="/rna/{{results.exact_match}}" target="_blank" class="external-link">{{results.exact_match}}</a>
+          Exact sequence match: <a href="/rna/{{results.exactMatch}}" target="_blank" class="external-link">{{results.exactMatch}}</a>
         </div>
       </div>
     </div>
@@ -136,8 +136,8 @@ Sequence search
   <div class="progress" ng-show="params.searchInProgress">
     <div class="progress-bar progress-bar-primary active" role="progressbar" aria-valuenow="83"
     aria-valuemin="0" aria-valuemax="100" style="width:{{ params.progress }}%">
-      <span class="margin-left-5px" ng-show="!results.exact_match">Searching... {{ params.progress }}%</span>
-      <span class="margin-left-5px" ng-show="results.exact_match">Searching for more matches... {{ params.progress }}%</span>
+      <span class="margin-left-5px" ng-show="!results.exactMatch">Searching... {{ params.progress }}%</span>
+      <span class="margin-left-5px" ng-show="results.exactMatch">Searching for more matches... {{ params.progress }}%</span>
     </div>
   </div>
 
@@ -262,7 +262,7 @@ Sequence search
       </h2>
 
       <ul class="list-unstyled sequence-search-results">
-        <li ng-class="result.rnacentral_id.split('_')[0] === results.exact_match ? 'result alert alert-success' : 'result'" ng-repeat="result in results.entries">
+        <li ng-class="result.rnacentral_id.split('_')[0] === results.exactMatch ? 'result alert alert-success' : 'result'" ng-repeat="result in results.entries">
           <h4 class="clearfix">
             <a href="/rna/{{result.rnacentral_id}}" target="_blank">{{result.description}}</a>
             <small>{{result.rnacentral_id}}</small>

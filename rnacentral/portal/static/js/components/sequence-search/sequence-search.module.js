@@ -1,7 +1,7 @@
 var sequenceSearchController = function($scope, $http, $timeout, $location, $q, $window, routes, normalizeExpertDbName) {
     $scope.query = {
         sequence: '',
-        submit_attempted: false,
+        submitAttempted: false,
         elapsedTime: 0
     };
 
@@ -13,13 +13,13 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         hitCount: null,
         start: 0,
         size: 20,
-        exact_match: null
+        exactMatch: null
     };
 
     $scope.defaults = {
-        polling_interval: 1000, // milliseconds
-        min_length: 10, // nucleotides
-        max_length: 10000 // nucleotides
+        pollingInterval: 1000, // milliseconds
+        minLength: 10, // nucleotides
+        maxLength: 10000 // nucleotides
     };
 
     $scope.messages = {
@@ -36,7 +36,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         pollJobStatus: 'Waiting for results',
         submitting: 'Submitting query',
         loadingMoreResults: 'Loading more results',
-        tooShort: 'The sequence cannot be shorter than ' + $scope.defaults['min_length'].toString() + ' nucleotides',
+        tooShort: 'The sequence cannot be shorter than ' + $scope.defaults['minLength'].toString() + ' nucleotides',
         expertDbsError: 'Failed to retrieve the list of expert databases'
     };
 
@@ -48,14 +48,14 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     };
 
     $scope.ordering = [
-        { sort_field: 'e_value', label: 'E-value (min to max) - default'},
-        { sort_field: '-e_value', label: 'E-value (max to min)'},
-        { sort_field: '-identity', label: 'Identity (max to min)' },
-        { sort_field: 'identity', label: 'Identity: (min to max)' },
-        { sort_field: '-query_coverage', label: 'Query coverage: (max to min)' },
-        { sort_field: 'query_coverage', label: 'Query coverage: (min to max)' },
-        { sort_field: '-target_coverage', label: 'Target coverage: (max to min)' },
-        { sort_field: 'target_coverage', label: 'Target coverage: (min to max)' }
+        { sortField: 'e_value', label: 'E-value (min to max) - default'},
+        { sortField: '-e_value', label: 'E-value (max to min)'},
+        { sortField: '-identity', label: 'Identity (max to min)' },
+        { sortField: 'identity', label: 'Identity: (min to max)' },
+        { sortField: '-query_coverage', label: 'Query coverage: (max to min)' },
+        { sortField: 'query_coverage', label: 'Query coverage: (min to max)' },
+        { sortField: '-target_coverage', label: 'Target coverage: (max to min)' },
+        { sortField: 'target_coverage', label: 'Target coverage: (min to max)' }
     ];
 
     $scope.params = {
@@ -92,7 +92,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             url: routes.sequenceSearchResults({ jobId: id }),
             method: 'GET',
             params: {
-                ordering: $scope.params.selectedOrdering.sort_field,
+                ordering: $scope.params.selectedOrdering.sortField,
                 start: $scope.results.start,
                 size: $scope.results.size,
                 query: query
@@ -172,7 +172,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                     timeout = setTimeout(function() {
                         fetch_job_status(id);
                         update_page_title();
-                    }, $scope.defaults.polling_interval);
+                    }, $scope.defaults.pollingInterval);
                 }
             },
             function(response) {
@@ -244,7 +244,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             params: { md5: md5_hash }
         }).then(function(response) {
             if (response.data.count > 0) {
-                $scope.results.exact_match = response.data.results[0].rnacentral_id;
+                $scope.results.exactMatch = response.data.results[0].rnacentral_id;
             }
         });
     }
@@ -297,7 +297,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         $scope.params.searchInProgress = false;
         $scope.query = {
             sequence: '',
-            submit_attempted: false,
+            submitAttempted: false,
             elapsedTime: 0
         };
         $scope.results = {
@@ -308,7 +308,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             hitCount: null,
             start: 0,
             size: 20,
-            exact_match: null
+            exactMatch: null
         };
         $scope.params.statusMessage = '';
         $scope.params.errorMessage = '';
@@ -376,7 +376,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
      */
     $scope.update_ordering = function() {
         $location.search($.extend($location.search(), {
-            ordering: $scope.params.selectedOrdering.sort_field
+            ordering: $scope.params.selectedOrdering.sortField
         }));
     };
 
@@ -384,7 +384,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
      * Public method for submitting the query.
      */
     $scope.submit_query = function() {
-        $scope.query.submit_attempted = true;
+        $scope.query.submitAttempted = true;
         if (!$scope.seqQueryForm.$valid) {
             return;
         }
@@ -457,7 +457,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             hitCount: null,
             start: 0,
             size: 20,
-            exact_match: null
+            exactMatch: null
         };
 
         // set progress to zero
@@ -468,7 +468,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             // Submit query and begin checking whether the results are ready.
             var input = parse_input(sequence);
 
-            if (input.sequence.length < $scope.defaults.min_length) {
+            if (input.sequence.length < $scope.defaults.minLength) {
                 $scope.params.errorMessage = $scope.messages.tooShort;
                 $scope.params.statusMessage = $scope.messages.failed;
             } else {
@@ -563,7 +563,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             if ($location.search().ordering) {
                 var ordering = $location.search().ordering;
                 for (var i=0, len=$scope.ordering.length; i < len; i++) {
-                    if ($scope.ordering[i].sort_field === ordering) {
+                    if ($scope.ordering[i].sortField === ordering) {
                         $scope.params.selectedOrdering = $scope.ordering[i];
                     }
                 }
