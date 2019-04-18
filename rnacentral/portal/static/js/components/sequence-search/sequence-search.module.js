@@ -13,7 +13,8 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         hitCount: null,
         start: 0,
         size: 20,
-        exactMatch: null
+        exactMatch: null,
+        textSearchError: false
     };
 
     $scope.defaults = {
@@ -29,7 +30,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         submitFailed: 'There was a problem submitting your query. Please try again later or get in touch if the error persists.',
         jobFailed: 'There was a problem with your query. Please try again later or get in touch if the error persists.',
         resultsFailed: 'There was a problem retrieving the results. Please try again later or get in touch if the error persists.',
-        notFoundFailed: 'Job with the specified id was not found',
+        notFoundFailed: 'Job with the specified id was not found.',
         cancelled: 'The search was cancelled',
         pending: 'Pending',
         started: 'Running',
@@ -37,7 +38,8 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         submitting: 'Submitting query',
         loadingMoreResults: 'Loading more results',
         tooShort: 'The sequence cannot be shorter than ' + $scope.defaults['minLength'].toString() + ' nucleotides',
-        expertDbsError: 'Failed to retrieve the list of expert databases'
+        expertDbsError: 'Failed to retrieve the list of expert databases.',
+        textSearchError: 'Failed to retrieve text search facets from EBI search.'
     };
 
     $scope.help = {
@@ -65,7 +67,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         statusMessage: '',
         showAlignments: true,
         selectedOrdering: $scope.ordering[0],
-        showExpertDbError: false
+        textSearchError: false
     };
 
     var timeout;
@@ -110,6 +112,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 $scope.results.start = $scope.results.entries.length;
 
                 $scope.results.facets = response.data.facets;
+                $scope.results.textSearchError = response.data.textSearchError;
 
                 $scope.params.searchInProgress = false;
                 $scope.params.statusMessage = $scope.messages.done;
@@ -308,7 +311,8 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             hitCount: null,
             start: 0,
             size: 20,
-            exactMatch: null
+            exactMatch: null,
+            textSearchError: false
         };
         $scope.params.statusMessage = '';
         $scope.params.errorMessage = '';
@@ -457,7 +461,8 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             hitCount: null,
             start: 0,
             size: 20,
-            exactMatch: null
+            exactMatch: null,
+            textSearchError: false
         };
 
         // set progress to zero

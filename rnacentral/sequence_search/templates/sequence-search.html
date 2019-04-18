@@ -195,6 +195,9 @@ Sequence search
           </div>
         </li>
         <hr />
+        <li ng-if="results.textSearchError" class="facet" style="white-space: pre-wrap;">
+          <div class="alert alert-warning">{{ messages.textSearchError }}</div>
+        </li>
         <li class="facet scrollable-facet" ng-repeat="facet in results.facets">
           <div ng-if="facet.label === 'Organisms' || facet.label === 'RNA types' || facet.label === 'Expert databases'">
             <h3>
