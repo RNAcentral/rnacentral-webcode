@@ -77,14 +77,14 @@ Sequence search
 
             <span class="help-block">
               <em>Examples:</em>
-              <a href="" ng-click="sequence_search('>miRNA hsa-let-7a-1 (URS000004F5D8)\nCUAUACAAUCUACUGUCUUUC')">miRNA hsa-let-7a-1</a>
+              <a href="" ng-click="sequenceSearch('>miRNA hsa-let-7a-1 (URS000004F5D8)\nCUAUACAAUCUACUGUCUUUC')">miRNA hsa-let-7a-1</a>
               <span class="small">(URS000004F5D8)</span>,
-              <a href="" ng-click="sequence_search('UGCCUGGCGGCCGUAGCGCGGUGGUCCCACCUGACCCCAUGCCGAACUCAGAAGUGAAACGCCGUAGCGCCGAUGGUAGUGUGGGGUCUCCCCAUGCGAGAGUAGGGAACUGCCAGGCAU')">5S rRNA</a>
+              <a href="" ng-click="sequenceSearch('UGCCUGGCGGCCGUAGCGCGGUGGUCCCACCUGACCCCAUGCCGAACUCAGAAGUGAAACGCCGUAGCGCCGAUGGUAGUGUGGGGUCUCCCCAUGCGAGAGUAGGGAACUGCCAGGCAU')">5S rRNA</a>
               <span class="small">(URS0000049E57)</span>,
-              <a href="" ng-click="sequence_search('URS00008120E1')">NKILA lncRNA</a>
+              <a href="" ng-click="sequenceSearch('URS00008120E1')">NKILA lncRNA</a>
               <span class="small">(URS00008120E1)</span>
               <em>
-                <span class="small pull-right" ng-show="seqQueryForm.sequence.$valid && get_query_length() > 0">{{get_query_length()}} nts</span>
+                <span class="small pull-right" ng-show="seqQueryForm.sequence.$valid && getQueryLength() > 0">{{getQueryLength()}} nts</span>
               </em>
             </span>
 
@@ -107,7 +107,7 @@ Sequence search
         </div>
 
         <div class="col-md-2">
-          <button type="submit" class="btn btn-primary" tabindex="3" ng-click="submit_query()" ng-disabled="params.searchInProgress && !params.errorMessage">
+          <button type="submit" class="btn btn-primary" tabindex="3" ng-click="submitQuery()" ng-disabled="params.searchInProgress && !params.errorMessage">
             <i class="fa fa-search" ng-show="!params.searchInProgress"></i>
             <i class="fa fa-spinner fa-spin" ng-class="(params.searchInProgress && !params.errorMessage) ? '' : 'hidden'"></i> Search
           </button>
@@ -169,7 +169,7 @@ Sequence search
       <ul>
         <li>
           <p>
-            Is your sequence in the 3' to 5' direction? <a href="" ng-click="reverse_and_repeat_search();">Reverse the sequence and search again</a>
+            Is your sequence in the 3' to 5' direction? <a href="" ng-click="reverseAndRepeatSearch();">Reverse the sequence and search again</a>
           </p>
         </li>
         <li>
@@ -188,10 +188,10 @@ Sequence search
         <li class="facet" style="margin-top: 20px;">
           <div>Sort by:</div>
           <div class="form-group">
-            <select class="form-control" ng-change="update_ordering(); fetch_job_results();" ng-model="params.selectedOrdering" ng-options="item.label for item in ordering track by item.label"></select>
+            <select class="form-control" ng-change="updateOrdering(); fetchJobResults();" ng-model="params.selectedOrdering" ng-options="item.label for item in ordering track by item.label"></select>
           </div>
           <div class="form-group">
-            <button id="toggle-alignments" ng-click="toggle_alignments()" class="btn btn-default btn-block" style="overflow: hidden;"><span><i class="fa fa-align-justify"></i> Hide alignments</span></button>
+            <button id="toggle-alignments" ng-click="toggleAlignments()" class="btn btn-default btn-block" style="overflow: hidden;"><span><i class="fa fa-align-justify"></i> Hide alignments</span></button>
           </div>
         </li>
         <hr />
@@ -266,7 +266,7 @@ Sequence search
           <h4 class="clearfix">
             <a href="/rna/{{result.rnacentral_id}}" target="_blank">{{result.description}}</a>
             <small>{{result.rnacentral_id}}</small>
-            <small class="pull-right"><a href class="text-muted" ng-click="scroll_to_top();"><i class="fa fa-arrow-circle-o-up"></i> Back to top</a></small>
+            <small class="pull-right"><a href class="text-muted" ng-click="scrollToTop();"><i class="fa fa-arrow-circle-o-up"></i> Back to top</a></small>
           </h4>
 
           <div class="table-responsive">
@@ -290,7 +290,7 @@ Sequence search
               </tr>
               <tr>
                 <td>
-                  <strong>{{format_evalue(result.e_value)}}</strong>
+                  <strong>{{formatEvalue(result.e_value)}}</strong>
                 </td>
                 <td>
                   <strong>{{result.identity | number:1}}%</strong> ({{result.match_count}}/{{result.alignment_length}})
@@ -315,7 +315,7 @@ Sequence search
       <p>
         <small ng-if="results.hitCount > results.entries.length" class="text-muted">Displaying {{results.entries.length}} out of {{results.hitCount | number}} entries</small>
       </p>
-      <button class="btn btn-default load-more col-md-3" ng-click="load_more_results()" ng-show="results.hitCount > results.entries.length"><i ng-class="searchInProgress ? 'fa fa-spinner fa-spin' : 'hidden'"></i> Load more</button>
+      <button class="btn btn-default load-more col-md-3" ng-click="loadMoreResults()" ng-show="results.hitCount > results.entries.length"><i ng-class="searchInProgress ? 'fa fa-spinner fa-spin' : 'hidden'"></i> Load more</button>
       <br />
     </div> <!--/col-md-9 -->
   </div><!--/row -->

@@ -77,7 +77,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     /**
      * Retrieve results given a results url.
      */
-    $scope.fetch_job_results = function(id, nextPage, query) {
+    $scope.fetchJobResults = function(id, nextPage, query) {
         $scope.params.searchInProgress = true;
         $scope.params.statusMessage = $scope.messages.getResuts;
         id = id || $location.search().id;
@@ -114,8 +114,8 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 $scope.params.searchInProgress = false;
                 $scope.params.statusMessage = $scope.messages.done;
 
-                $scope.update_ordering();
-                update_page_title();
+                $scope.updateOrdering();
+                updatePageTitle();
             },
             function(response) {
                 $scope.params.searchInProgress = false;
@@ -125,7 +125,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 } else {
                     $scope.params.errorMessage = $scope.messages.resultsFailed;
                 }
-                update_page_title();
+                updatePageTitle();
             }
         );
     };
@@ -133,7 +133,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     /**
      * Check job status using REST API.
      */
-    function fetch_job_status(id) {
+    function fetchJobStatus(id) {
         return $http({
             url: routes.sequenceSearchJobStatus({ jobId: id }),
             method: 'GET',
@@ -150,13 +150,13 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
 
                 if (response.data.status === 'success' || response.data.status === 'partial_success' ) {
                     $scope.params.progress = 100;
-                    $scope.fetch_job_results(response.data.id);
+                    $scope.fetchJobResults(response.data.id);
                 }
                 else if (response.data.status === 'error') {
                     $scope.params.searchInProgress = false;
                     $scope.params.statusMessage = $scope.messages.failed;
                     $scope.params.errorMessage = $scope.messages.jobFailed;
-                    update_page_title();
+                    updatePageTitle();
                 }
                 else {
                     $scope.params.searchInProgress = true;
@@ -170,8 +170,8 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                         $scope.params.statusMessage = '';
                     }
                     timeout = setTimeout(function() {
-                        fetch_job_status(id);
-                        update_page_title();
+                        fetchJobStatus(id);
+                        updatePageTitle();
                     }, $scope.defaults.pollingInterval);
                 }
             },
@@ -189,7 +189,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     /**
      * If sequenceOrUpi is upi, fetch and return the actual sequence from backend.
      */
-    function fetch_rnacentral_sequence(sequenceOrUpi) {
+    function fetchRnacentralSequence(sequenceOrUpi) {
         var deferred = $q.defer();
         if (sequenceOrUpi.match(/^URS[A-Fa-f0-9]{10}$/i)) {
             $http({ url: routes.apiRnaView({ upi: sequenceOrUpi }) }).then(function(response){
@@ -206,7 +206,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     /**
      * Post query to run a job.
      */
-    function submit_job(input) {
+    function submitJob(input) {
         return $http.post(
             routes.sequenceSearchSubmitJob({}),
             { query: input.sequence, databases: []}
@@ -220,13 +220,13 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             $location.search({ 'id': id });
 
             // begin polling for results
-            fetch_job_status(id);
-            update_page_title();
+            fetchJobStatus(id);
+            updatePageTitle();
         }, function(response) {
             $scope.params.errorMessage = $scope.messages.submitFailed;
             $scope.params.statusMessage = $scope.messages.failed;
             $scope.params.searchInProgress = false;
-            update_page_title();
+            updatePageTitle();
         });
     }
 
@@ -234,14 +234,14 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
      * Use RNAcentral API to retrieve an exact match
      * to the query sequence.
      */
-    function fetch_exact_match(sequence) {
-        input = parse_input(sequence);
-        var md5_hash = md5(input.sequence.toUpperCase().replace(/U/g, 'T'));
-        var url = routes.apiRnaView({upi: ""}) + '?md5=' + md5_hash;
+    function fetchExactMatch(sequence) {
+        input = parseInput(sequence);
+        var md5Hash = md5(input.sequence.toUpperCase().replace(/U/g, 'T'));
+        var url = routes.apiRnaView({upi: ""}) + '?md5=' + md5Hash;
         $http({
             url: url,
             method: 'GET',
-            params: { md5: md5_hash }
+            params: { md5: md5Hash }
         }).then(function(response) {
             if (response.data.count > 0) {
                 $scope.results.exactMatch = response.data.results[0].rnacentral_id;
@@ -250,9 +250,9 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     }
 
     /**
-     *
+     * Fetch rnacentral databases data for displaying tootips on databases facet.
      */
-    function fetch_expert_dbs() {
+    function fetchExpertDbs() {
         // retrieve expert_dbs json for display in tooltips
         $http.get(routes.expertDbsApi({ expertDbName: '' })).then(
             function(response) {
@@ -268,7 +268,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 $scope.params.errorMessage = $scope.messages.expertDbsError;
                 $scope.params.statusMessage = $scope.messages.failed;
                 $scope.params.searchInProgress = false;
-                update_page_title();
+                updatePageTitle();
             }
         );
     }
@@ -313,28 +313,28 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         $scope.params.statusMessage = '';
         $scope.params.errorMessage = '';
         $('textarea').focus();
-        update_page_title();
+        updatePageTitle();
     };
 
     /**
      * Launch the search from template.
      */
-    $scope.sequence_search = function(sequence) {
+    $scope.sequenceSearch = function(sequence) {
         $scope.query.sequence = sequence;
         search(sequence);
     };
 
     /**
-     * Format e_value.
+     * Format e-value.
      */
-    $scope.format_evalue = function(e_value) {
-        return parseFloat(e_value).toExponential(2);
+    $scope.formatEvalue = function(eValue) {
+        return parseFloat(eValue).toExponential(2);
     };
 
     /**
      * Toggle alignments button.
      */
-    $scope.toggle_alignments = function() {
+    $scope.toggleAlignments = function() {
         $scope.params.showAlignments = !$scope.params.showAlignments;
         $('#toggle-alignments').html(function(i, text){
           var icon = '<i class="fa fa-align-justify"></i> ';
@@ -346,12 +346,12 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
      * Calculate query sequence length
      * (without whitespace and fasta header).
      */
-    $scope.get_query_length = function() {
+    $scope.getQueryLength = function() {
         var text = document.getElementById("query-sequence").value;
         if (text.match(/^URS[A-Fa-f0-9]{10}$/)) {
             return 0;
         }
-        input = parse_input(text);
+        input = parseInput(text);
         return input.sequence.length || 0;
     };
 
@@ -359,14 +359,14 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
      * Reverse the query sequence in place and repeat the search.
      * This is helpful when the user accidentally types the sequence in 3' to 5' direction.
      */
-    $scope.reverse_and_repeat_search = function() {
-        var input = parse_input($scope.query.sequence);
-        var reversed_sequence = input.sequence.split("").reverse().join("");
-        var description_line = '';
+    $scope.reverseAndRepeatSearch = function() {
+        var input = parseInput($scope.query.sequence);
+        var reversedSequence = input.sequence.split("").reverse().join("");
+        var descriptionLine = '';
         if (input.description) {
-          description_line = '>' + input.description + '\n';
+          descriptionLine = '>' + input.description + '\n';
         }
-        $scope.query.sequence = description_line + reversed_sequence;
+        $scope.query.sequence = descriptionLine + reversedSequence;
         search($scope.query.sequence);
     };
 
@@ -374,7 +374,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
      * Update the `ordering` url parameter
      * based on the current user selection.
      */
-    $scope.update_ordering = function() {
+    $scope.updateOrdering = function() {
         $location.search($.extend($location.search(), {
             ordering: $scope.params.selectedOrdering.sortField
         }));
@@ -383,7 +383,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     /**
      * Public method for submitting the query.
      */
-    $scope.submit_query = function() {
+    $scope.submitQuery = function() {
         $scope.query.submitAttempted = true;
         if (!$scope.seqQueryForm.$valid) {
             return;
@@ -394,15 +394,15 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     /**
      * Load more results.
      */
-    $scope.load_more_results = function() {
+    $scope.loadMoreResults = function() {
         var nextPage = true;
-        $scope.fetch_job_results($scope.results.id, nextPage);
+        $scope.fetchJobResults($scope.results.id, nextPage);
     };
 
     /**
      * Scroll page to the top.
      */
-    $scope.scroll_to_top = function() {
+    $scope.scrollToTop = function() {
         $("html, body").animate({ scrollTop: "0px" });
     };
 
@@ -429,12 +429,12 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         }
 
         var query = buildQuery();
-        $scope.fetch_job_results($scope.results.id, false, query);
+        $scope.fetchJobResults($scope.results.id, false, query);
     };
 
     /**
-     * We assign a star only to those expert_dbs that have a curated tag and don't have automatic tag at the same time.
-     * @param db {String} - name of expert_db as a key in expertDbsObject
+     * We assign a star only to those expertDbs that have a curated tag and don't have automatic tag at the same time.
+     * @param db {String} - name of expertDb as a key in expertDbsObject
      * @returns {boolean}
      */
     $scope.expertDbHasStar = function(db) {
@@ -464,9 +464,9 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         $scope.params.progress = 0;
 
         // if sequence contains an rnacental_id/upi/urs, fetch the actual sequence
-        fetch_rnacentral_sequence(sequence).then(function(sequence) {
+        fetchRnacentralSequence(sequence).then(function(sequence) {
             // Submit query and begin checking whether the results are ready.
-            var input = parse_input(sequence);
+            var input = parseInput(sequence);
 
             if (input.sequence.length < $scope.defaults.minLength) {
                 $scope.params.errorMessage = $scope.messages.tooShort;
@@ -477,8 +477,8 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 $scope.params.searchInProgress = true;
 
                 // run md5 fetch and actual job submission concurrently
-                fetch_exact_match(sequence);
-                submit_job(input);
+                fetchExactMatch(sequence);
+                submitJob(input);
             }
         });
     }
@@ -486,7 +486,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     /**
      * Parse fasta header, remove whitespace characters.
      */
-    function parse_input(sequence) {
+    function parseInput(sequence) {
         var match = /(^>(.+)[\n\r])?([\s\S]+)/.exec(sequence);
         if (match) {
             return { sequence: match[3].replace(/\s/g, ''), description: match[2] || '' };
@@ -498,7 +498,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     /**
      * Show progress in page title.
      */
-    function update_page_title() {
+    function updatePageTitle() {
         if ($scope.params.statusMessage === $scope.messages.failed) {
             $window.document.title = 'Search failed';
         } else if ($scope.params.searchInProgress) {
@@ -556,7 +556,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
      * - retrieve search results if necessary
      */
     (function() {
-        fetch_expert_dbs();
+        fetchExpertDbs();
 
         if ($location.url().indexOf("id=") > -1) {
             // load results, set their ordering based on the url parameter
@@ -571,8 +571,8 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
 
             $scope.results.id = $location.search().id;
 
-            fetch_job_status($location.search().id).then(function() {
-                fetch_exact_match($scope.query.sequence);
+            fetchJobStatus($location.search().id).then(function() {
+                fetchExactMatch($scope.query.sequence);
             });
         } else if ($location.search().q) {
             // start sequence search
