@@ -29,6 +29,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         submit_failed: 'There was a problem submitting your query. Please try again later or get in touch if the error persists.',
         job_failed: 'There was a problem with your query. Please try again later or get in touch if the error persists.',
         results_failed: 'There was a problem retrieving the results. Please try again later or get in touch if the error persists.',
+        not_found_failed: 'Job with the specified id was not found',
         cancelled: 'The search was cancelled',
         pending: 'Pending',
         started: 'Running',
@@ -116,10 +117,14 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 $scope.update_ordering();
                 update_page_title();
             },
-            function() {
+            function(response) {
                 $scope.params.search_in_progress = false;
                 $scope.params.status_message = $scope.messages.failed;
-                $scope.params.error_message = $scope.messages.results_failed;
+                if (response.status === 404) {
+                    $scope.params.error_message = $scope.messages.not_found_failed;
+                } else {
+                    $scope.params.error_message = $scope.messages.results_failed;
+                }
                 update_page_title();
             }
         );
@@ -172,7 +177,11 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             },
             function(response) {
                 $scope.params.status_message = $scope.messages.failed;
-                $scope.params.error_message = $scope.messages.results_failed;
+                if (response.status === 404) {
+                    $scope.params.error_message = $scope.messages.not_found_failed;
+                } else {
+                    $scope.params.error_message = $scope.messages.results_failed;
+                }
             }
         );
     }
