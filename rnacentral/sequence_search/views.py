@@ -36,17 +36,33 @@ elif settings.ENVIRONMENT == 'PG':
     }
 
 
+def proxy_request(request, url, method):
+    if method == 'POST':
+        if proxies:
+            response = requests.post(url, json=request.data, proxies=proxies)
+        else:
+            response = requests.post(url, json=request.data)
+    elif method == 'GET':
+        if proxies:
+            response = requests.get(url, proxies=proxies)
+        else:
+            response = requests.get(url)
+    else:
+        raise ValueError("Unknown method: %s" % method)
+
+    if response.status_code < 400:
+        return Response(response.json(), status=response.status_code)
+    else:
+        return Response(response.content, status=response.status_code)
+
+
 @never_cache
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def submit_job(request):
     """Submit a job to sequence search service."""
     url = SEQUENCE_SEARCH_ENDPOINT + '/api/submit-job'
-    if proxies:
-        response = requests.post(url, json=request.data, proxies=proxies)
-    else:
-        response = requests.post(url, json=request.data)
-    return Response(response.json(), status=response.status_code)
+    return proxy_request(request, url, 'POST')
 
 
 @never_cache
@@ -55,11 +71,7 @@ def submit_job(request):
 def job_status(request, job_id):
     """Displays status of a job."""
     url = SEQUENCE_SEARCH_ENDPOINT + '/api/job-status/' + job_id
-    if proxies:
-        response = requests.get(url, proxies=proxies)
-    else:
-        response = requests.get(url)
-    return Response(response.json(), status=response.status_code)
+    return proxy_request(request, url, 'GET')
 
 
 @never_cache
@@ -68,8 +80,4 @@ def job_status(request, job_id):
 def job_results(request, job_id):
     """Displays results of a finished job."""
     url = SEQUENCE_SEARCH_ENDPOINT + '/api/facets-search/' + job_id
-    if proxies:
-        response = requests.get(url, params=request.query_params, proxies=proxies)
-    else:
-        response = requests.get(url, params=request.query_params)
-    return Response(response.json(), status=response.status_code)
+    return proxy_request(request, url, 'GET')
