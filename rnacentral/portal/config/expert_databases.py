@@ -88,7 +88,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'fb_2018_03',
+        'version': 'fb_2018_05',
     },
     {
         'name': 'Ensembl',
