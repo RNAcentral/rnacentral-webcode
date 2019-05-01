@@ -125,12 +125,6 @@ or get in touch using the [Contact form](https://rnacentral.org/contact) on our 
 * [Animate.css](https://daneden.github.io/animate.css/)
 * see [LICENSE](LICENSE) for more details
 
-### Testing
-* [Selenium](http://www.seleniumhq.org/)
-* [PhantomJS](http://phantomjs.org/)
-* [Jenkins](https://rnacentral.org)
-* [BrowserStack](http://browserstack.com)
-
 ### Other
 * [Memcached](http://memcached.org/)
 * [Redis](http://redis.io/)
