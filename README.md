@@ -36,35 +36,6 @@ docker ps
 docker exec -it <container_id> bash
 ```
 
-## Testing
-
-### Selenium tests
-
-1. Install `selenium` and `requests` using [virtualenv](https://virtualenv.pypa.io):
-
-  ```
-  virtualenv /path/to/testing/virtualenv
-  source /path/to/testing/virtualenv/bin/activate
-  pip install requests selenium
-  ```
-
-1. Install [Gecko Driver](https://github.com/mozilla/geckodriver/releases) and add it to the `PATH`:
-
-  ```
-  export PATH=$PATH:/path/to/geckodriver
-  ```
-
-1. Start the website locally using Docker (see above).
-
-1. Launch tests against the local RNAcentral website:
-
-  ```sh
-  cd $RNACENTRAL_HOME
-  python rnacentral/portal/tests/selenium_tests.py
-  ```
-
-These tests run automatically using [Travis](https://travis-ci.org/RNAcentral/rnacentral-webcode).
-
 ### API tests
 
 1. Login to the running Docker container (see above).
