@@ -54,7 +54,7 @@ pipeline {
                     source local/virtualenvs/RNAcentral/bin/activate
                     popd
                     cd rnacentral
-                    fab fb1 --password=$PASSWORD refresh_fb1
+                    fab fb1 --user=$USER --password=$PASSWORD refresh_fb1
                 '''
             }
         }
@@ -71,7 +71,7 @@ pipeline {
                     source local/virtualenvs/RNAcentral/bin/activate
                     popd
                     cd rnacentral
-                    fab fb1 --password=$PASSWORD push_replication
+                    fab fb1 --user=$USER --password=$PASSWORD push_replication
                 '''
 
             }
@@ -92,7 +92,7 @@ pipeline {
                     source local/virtualenvs/RNAcentral/bin/activate
                     popd
                     cd rnacentral
-                    fab pg --password=$PASSWORD refresh_pg
+                    fab pg --user=$USER --password=$PASSWORD refresh_pg
                 '''
             }
         }
