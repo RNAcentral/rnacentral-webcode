@@ -303,10 +303,13 @@ def fb1():
     """
     Configures environment variables for running commands on fb1, e.g.:
 
+    fab fb1 --user=myuser --password=mytopsecretpassword refresh_fb1
+
+    Previously this used to work with an ssh key pair:
+
     fab fb1:key=/path/to/keyfile refresh_fb1
     """
     env.hosts = ['fb1-001.ebi.ac.uk']
-    env.user = 'apetrov'
     env.run = run
     env.cd = cd
 
@@ -315,10 +318,9 @@ def pg():
     """
     Configures environment variables for running commands on pg, e.g.:
 
-    fab pg --password=mytopsecretpassword refresh_pg
+    fab pg --user=myuser --password=mytopsecretpassword refresh_pg
     """
     env.hosts = ['pg-001.ebi.ac.uk']
-    env.user = 'apetrov'
     env.run = run
     env.cd = cd
 
@@ -327,10 +329,9 @@ def ebi_cli():
     """
     Configures environment variables for running commands on ebi-cli-001, e.g.:
 
-    fab pg --password=mytopsecretpassword refresh_dev
+    fab pg --user=myuser --password=mytopsecretpassword refresh_dev
     """
     env.hosts = ['ebi-cli.ebi.ac.uk']
-    env.user = 'burkov'
     env.run = run
     env.cd = cd
 

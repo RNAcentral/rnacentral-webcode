@@ -26,7 +26,7 @@ pipeline {
             steps {
                 sh '''
                     cd rnacentral
-                    fab ebi_cli --password=$PASSWORD refresh_dev
+                    fab ebi_cli --user=$USER --password=$PASSWORD refresh_dev
                 '''
             }
         }
