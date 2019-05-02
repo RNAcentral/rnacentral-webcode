@@ -2,9 +2,8 @@
 //
 // There's a caveat in this Jenkinsfile:
 // Its build and unit-test steps are running in Jenkins environment and are
-// using the branch that is configured in Jenkins interface (usually, 'master'),
-// while deploy step is using filesystem environment and is running whatever
-// branch is currently deployed there.
+// using the branch that is configured in Jenkins interface,
+// while deploy step is running in the filesystem environment and checks out and updates that branch.
 //
 // ---------------------------------------------------------------------------------------------------------------------
 
