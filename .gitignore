@@ -121,3 +121,4 @@ dump.rdb
 
 # default location of search export results
 rnacentral/export/results
+.gitsecret/keys/random_seed
