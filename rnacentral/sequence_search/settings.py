@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-SEQUENCE_SEARCH_ENDPOINT = 'http://193.62.55.80:8002'  # 'http://localhost:8002'
+SEQUENCE_SEARCH_ENDPOINT = 'http://193.62.55.45'  # 'http://localhost:8002', 'http://193.62.55.80:8002'
 
 # minimum query sequence length
 MIN_LENGTH = 10
