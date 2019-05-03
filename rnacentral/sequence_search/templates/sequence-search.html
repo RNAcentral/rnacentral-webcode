@@ -78,11 +78,11 @@ Sequence search
             <span class="help-block">
               <em>Examples:</em>
               <a href="" ng-click="sequenceSearch('>miRNA hsa-let-7a-1 (URS000004F5D8)\nCUAUACAAUCUACUGUCUUUC')">miRNA hsa-let-7a-1</a>
-              <span class="small">(URS000004F5D8)</span>,
+              <span class="small">URS000004F5D8</span>,
               <a href="" ng-click="sequenceSearch('UGCCUGGCGGCCGUAGCGCGGUGGUCCCACCUGACCCCAUGCCGAACUCAGAAGUGAAACGCCGUAGCGCCGAUGGUAGUGUGGGGUCUCCCCAUGCGAGAGUAGGGAACUGCCAGGCAU')">5S rRNA</a>
-              <span class="small">(URS0000049E57)</span>,
+              <span class="small">URS0000049E57</span>,
               <a href="" ng-click="sequenceSearch('URS00008120E1')">NKILA lncRNA</a>
-              <span class="small">(URS00008120E1)</span>
+              <span class="small">URS00008120E1</span>
               <em>
                 <span class="small pull-right" ng-show="seqQueryForm.sequence.$valid && getQueryLength() > 0">{{getQueryLength()}} nts</span>
               </em>
@@ -191,7 +191,7 @@ Sequence search
         <li class="facet" style="margin-top: 20px;">
           <div>Sort by:</div>
           <div class="form-group">
-            <select class="form-control" ng-change="updateOrdering(); fetchJobResults();" ng-model="params.selectedOrdering" ng-options="item.label for item in ordering track by item.label"></select>
+            <select class="form-control font-size-14px" ng-change="updateOrdering(); fetchJobResults();" ng-model="params.selectedOrdering" ng-options="item.label for item in ordering track by item.label"></select>
           </div>
           <div class="form-group">
             <button id="toggle-alignments" ng-click="toggleAlignments()" class="btn btn-default btn-block" style="overflow: hidden;"><span><i class="fa fa-align-justify"></i> Hide alignments</span></button>
@@ -268,30 +268,30 @@ Sequence search
       </h2>
 
       <ul class="list-unstyled sequence-search-results">
-        <li ng-class="result.rnacentral_id.split('_')[0] === results.exactMatch ? 'result alert alert-success' : 'result'" ng-repeat="result in results.entries">
+        <li ng-class="result.rnacentral_id.split('_')[0] === results.exactMatch.urs_id ? 'result alert alert-success' : 'result'" ng-repeat="result in results.entries">
           <h4 class="clearfix">
             <a href="/rna/{{result.rnacentral_id}}" target="_blank">{{result.description}}</a>
             <small>{{result.rnacentral_id}}</small>
             <small class="pull-right"><a href class="text-muted" ng-click="scrollToTop();"><i class="fa fa-arrow-circle-o-up"></i> Back to top</a></small>
           </h4>
 
-          <div class="table-responsive">
+          <div>
             <table class="table table-condensed small">
               <tr class="table-header">
                 <td>
-                  <span class="help" data-placement="right" title="The likelihood of finding this alignment by chance (lower is better)">E-value <i class="fa fa-info-circle text-muted"></i></span>
+                  <span class="help" data-placement="right" title="The likelihood of finding this alignment by chance (lower is better)">E-value</span>
                 </td>
                 <td>
-                  <span class="help" data-placement="top" title="Percentage of identical nucleotides">Identity <i class="fa fa-info-circle text-muted"></i></span>
+                  <span class="help" data-placement="top" title="Percentage of identical nucleotides">Identity</span>
                 </td>
                 <td>
-                  <span class="help" data-placement="top" title="Percentage of the query sequence covered by the alignment">Query coverage <i class="fa fa-info-circle text-muted"></i></span>
+                  <span class="help" data-placement="top" title="Percentage of the query sequence covered by the alignment">Query coverage</span>
                 </td>
                 <td>
-                  <span class="help" data-placement="top" title="Percentage of the target sequence covered by the alignment">Target coverage <i class="fa fa-info-circle text-muted"></i></span>
+                  <span class="help" data-placement="top" title="Percentage of the target sequence covered by the alignment">Target coverage</span>
                 </td>
                 <td>
-                  <span class="help" data-placement="left" title="Percentage of gaps in the alignment">Gaps <i class="fa fa-info-circle text-muted"></i></span>
+                  <span class="help" data-placement="left" title="Percentage of gaps in the alignment">Gaps</span>
                 </td>
               </tr>
               <tr>
