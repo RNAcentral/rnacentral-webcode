@@ -39,6 +39,13 @@ angular.module("routes", []).service('routes', ['$interpolate', function($interp
             '&hlpretag=<span class=text-search-highlights>' +
             '&hlposttag=</span>'
         ,
+        ebiMd5Lookup:
+            '{{ ebiBaseUrl }}' +
+            '?query={{ md5 }}' +
+            '&fields=description' +
+            '&format=json' +
+            '&sort=boost'
+        ,
         ebiAutocomplete: 'http://www.ebi.ac.uk/ebisearch/ws/rest/RNAcentral/autocomplete?term={{ query }}&format=json',
         apiGoTermsView: '/api/v1/rna/{{ upi }}/go-annotations/{{ taxid }}',
         quickGoSummaryPage: 'https://www.ebi.ac.uk/QuickGO/term/{{ term_id }}',

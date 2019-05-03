@@ -13,7 +13,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         hitCount: null,
         start: 0,
         size: 20,
-        exactMatch: null,
+        exactMatch: {},
         textSearchError: false
     };
 
@@ -240,14 +240,18 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     function fetchExactMatch(sequence) {
         input = parseInput(sequence);
         var md5Hash = md5(input.sequence.toUpperCase().replace(/U/g, 'T'));
-        var url = routes.apiRnaView({upi: ""}) + '?md5=' + md5Hash;
+        var url = routes.ebiMd5Lookup({md5: md5Hash, ebiBaseUrl: global_settings.EBI_SEARCH_ENDPOINT});
         $http({
             url: url,
             method: 'GET',
-            params: { md5: md5Hash }
         }).then(function(response) {
-            if (response.data.count > 0) {
-                $scope.results.exactMatch = response.data.results[0].rnacentral_id;
+            if (response.data.hitCount > 0) {
+                $scope.results.exactMatch = {
+                    'description': response.data.entries[0].fields.description[0],
+                    'rnacental_id': response.data.entries[0].id,
+                    'count': response.data.hitCount,
+                    'urs_id': response.data.entries[0].id.split('_')[0],
+                }
             }
         });
     }
@@ -311,7 +315,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             hitCount: null,
             start: 0,
             size: 20,
-            exactMatch: null,
+            exactMatch: {},
             textSearchError: false
         };
         $scope.params.statusMessage = '';
@@ -461,7 +465,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             hitCount: null,
             start: 0,
             size: 20,
-            exactMatch: null,
+            exactMatch: {},
             textSearchError: false
         };
 
