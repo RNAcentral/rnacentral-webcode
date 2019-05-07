@@ -9,4 +9,5 @@ services:
     volumes:
       - ${RNACENTRAL_HOME}:/rnacentral/rnacentral-webcode
     ports:
-      - "8000:8000"
+      - "9000:8000"
+      - "8002:8002"
