@@ -38,15 +38,17 @@ elif settings.ENVIRONMENT == 'PG':
 
 def proxy_request(request, url, method):
     if method == 'POST':
+        params = request.POST
         if proxies:
-            response = requests.post(url, json=request.data, proxies=proxies)
+            response = requests.post(url, params=params, json=request.data, proxies=proxies)
         else:
-            response = requests.post(url, json=request.data)
+            response = requests.post(url, params=params, json=request.data)
     elif method == 'GET':
+        params = request.GET
         if proxies:
-            response = requests.get(url, proxies=proxies)
+            response = requests.get(url, params=params, proxies=proxies)
         else:
-            response = requests.get(url)
+            response = requests.get(url, params=params)
     else:
         raise ValueError("Unknown method: %s" % method)
 
