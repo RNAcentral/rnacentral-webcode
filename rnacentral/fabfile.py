@@ -101,7 +101,7 @@ def update_npm():
     path = os.path.join(settings.PROJECT_PATH, 'rnacentral', 'portal', 'static')
     with env.cd(path):
         env.run('rm -f package-lock.json')
-        env.run('npm update --loglevel info')
+        env.run('npm update --loglevel info --no-optional --only=prod')
 
 
 def collect_static_files():
