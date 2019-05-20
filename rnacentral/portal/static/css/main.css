@@ -38,6 +38,7 @@ Master Stylesheet for the RNAcentral Portal
 5.15 Tooltip customization
 5.16 Slider customization
 5.17 Sequence page
+5.18 Traveler secondary structures
 
 -------------------------------------------------------------------*/
 
@@ -1472,4 +1473,132 @@ textarea {
 
 .rfamModelsGroup, .crsFeaturesGroup, .matureMirnaFeaturesGroup {
   cursor: pointer;
+}
+
+
+/*------------------------------------------------------------------
+[5.18 Traveler secondary structures]
+*/
+.traveler-secondary-structure-svg {
+  font-family: 'Tahoma,Geneva,sans-serif';
+  font-size: '6 px';
+  stroke: null;
+}
+
+.traveler-secondary-structure-svg text.red {
+  stroke: rgb(255, 0, 0);
+}
+
+.traveler-secondary-structure-svg text.green {
+  stroke: rgb(0, 255, 0);
+}
+
+.traveler-secondary-structure-svg text.blue {
+  stroke: rgb(0, 0, 255);
+}
+
+.traveler-secondary-structure-svg text.black {
+  stroke: rgb(0, 0, 0);
+}
+
+.traveler-secondary-structure-svg text.gray {
+  stroke: rgb(204, 204, 204);
+}
+
+.traveler-secondary-structure-svg text.brown {
+  stroke: rgb(211.65, 104.55, 30.6);
+}
+
+.traveler-secondary-structure-svg text {
+  stroke: rgb(0, 0, 0);
+  fill: none;
+  text-anchor: middle;
+  baseline-shift: sub;
+}
+
+.traveler-secondary-structure-svg circle.red {
+  stroke: rgb(255, 0, 0);
+  fill: none;
+}
+
+.traveler-secondary-structure-svg circle.green {
+  stroke: rgb(0, 255, 0);
+  fill: none;
+}
+
+.traveler-secondary-structure-svg circle.blue {
+  stroke: rgb(0, 0, 255);
+  fill: none;
+}
+
+.traveler-secondary-structure-svg circle.black {
+  stroke: rgb(0, 0, 0);
+  fill: none;
+}
+
+.traveler-secondary-structure-svg circle.gray {
+  stroke: rgb(204, 204, 204);
+  fill: none;
+}
+
+.traveler-secondary-structure-svg circle.brown {
+  stroke: rgb(211.65, 104.55, 30.6);
+  fill: none;
+}
+
+.traveler-secondary-structure-svg circle {
+  stroke: rgb(0, 0, 0);
+  fill: none;
+}
+
+.traveler-secondary-structure-svg line.red {
+  stroke: rgb(255, 0, 0);
+}
+
+.traveler-secondary-structure-svg line.green {
+  stroke: rgb(0, 255, 0);
+}
+
+.traveler-secondary-structure-svg line.blue {
+  stroke: rgb(0, 0, 255);
+}
+
+.traveler-secondary-structure-svg line.black {
+  stroke: rgb(0, 0, 0);
+}
+
+.traveler-secondary-structure-svg line.gray {
+  stroke: rgb(204, 204, 204);
+}
+
+.traveler-secondary-structure-svg line.brown {
+  stroke: rgb(211.65, 104.55, 30.6);
+}
+
+.traveler-secondary-structure-svg line {
+  stroke: rgb(0, 0, 0);
+  fill: none;
+}
+
+.traveler-red {
+  background-color: rgb(255, 0, 0);
+}
+
+.traveler-green {
+  background-color: rgb(0, 255, 0);
+}
+
+.traveler-blue {
+  background-color: rgb(0, 0, 255);
+}
+
+.traveler-brown {
+  background-color: rgb(211.65, 104.55, 30.6);
+}
+
+.traveler-key {
+  height: 12px;
+  width: 12px;
+  float: left;
+  margin-right: 8px;
 }

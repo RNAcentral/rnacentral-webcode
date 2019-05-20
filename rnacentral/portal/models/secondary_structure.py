@@ -28,3 +28,39 @@ class SecondaryStructure(models.Model):
     class Meta:
         db_table = 'rnc_secondary_structure'
         unique_together = (('accession', 'md5'),)
+
+
+class SecondaryStructureWithLayout(models.Model):
+    id = models.AutoField(primary_key=True)
+    secondary_structure = models.TextField()
+    urs = models.OneToOneField(
+        'Rna',
+        db_column='urs',
+        to_field='upi',
+        related_name='secondary_structure_layout',
+    )
+    template = models.OneToOneField(
+        'SecondaryStructureLayout',
+        db_column='model_id',
+        to_field='id'
+    )
+    layout = models.TextField()
+
+    class Meta:
+        db_table = 'rnc_secondary_structure_layout'
+        unique_together = (('urs',),)
+
+
+class SecondaryStructureLayout(models.Model):
+    id = models.AutoField(primary_key=True)
+    model_name = models.TextField()
+    taxid = models.OneToOneField(
+        'Taxonomy',
+        db_column='taxid',
+        to_field='id'
+    )
+    cellular_location = models.TextField()
+    rna_type = models.TextField()
+
+    class Meta:
+        db_table = 'rnc_secondary_structure_layout_models'
