@@ -303,6 +303,11 @@
               gene <a ng-href="{{ 'http://www.noncode.org/show_gene.php?id=' + xref.accession.optional_id.replace('.1', '').replace('.2', '') }}" target="_blank">{{ xref.accession.optional_id }}</a>
             </span>
 
+            <!-- LncBook -->
+            <span ng-switch-when="LncBook">
+              {{ xref.database }}: transcript <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+            </span>
+
             <!-- LNCipedia -->
             <span ng-switch-when="LNCipedia">
               {{ xref.database }}: transcript <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>,
