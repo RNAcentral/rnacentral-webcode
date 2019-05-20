@@ -32,7 +32,7 @@ pipeline {
         )
         choice(
             name: 'QUICK',
-            choices: ['False', 'True'],
+            choices: ['True', 'False'],
             description: 'Fast rebuild: pull, collect (and compress) static, touch wsgi.py.'
         )
         gitParameter(
