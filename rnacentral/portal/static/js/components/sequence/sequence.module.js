@@ -1,6 +1,6 @@
 var rnaSequenceController = function($scope, $location, $window, $rootScope, $compile, $http, $q, $filter, $timeout, $interpolate, routes, GenoverseUtils) {
     // Take upi and taxid from url. Note that $location.path() always starts with slash
-    $scope.upi = $location.path().split('/')[2];
+    $scope.upi = $location.path().split('/')[2].toUpperCase();
     $scope.taxid = $location.path().split('/')[3];  // TODO: this might not exist!
     $scope.hide2dTab = true;
     $scope.hideGoAnnotations = true;
@@ -306,6 +306,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     $scope.resetFeatureViewerZoom = function() {
         if ($scope.featureViewer) {
             $scope.featureViewer.resetZoom();
+            $('.selectedRect').hide();
         }
     };
 
@@ -438,7 +439,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 
                     $('svg .rfamModelsGroup text').css('fill', 'white').css('font-size', 'small');
 
-                    $('svg g.rfamModelsGroup').on('click', function(){
+                    $('svg g.rfamModelsGroup').on('click', function() {
                         var text = $(this).find('text').text().split(" ");
                         var rfam_id = text[1];
                         var description = text.slice(2).join(' ');
@@ -479,16 +480,20 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 
                     // trim start/stop of each feature to make sure it's not out of sequence bounds
                     var data = $scope.features.map(function(feature) {
-                        var datum = {
-                            x: feature.start >= 0 ? feature.start : 1,
-                            y: feature.stop < $scope.rna.length ? feature.stop : $scope.rna.length - 1,
-                            description: 'Conserved feature ' + feature.metadata.crs_id
-                        };
-
+                        if (feature.feature_name === 'conserved_rna_structure') {
+                            var datum = {
+                                x: feature.start >= 0 ? feature.start : 1,
+                                y: feature.stop < $scope.rna.length ? feature.stop : $scope.rna.length - 1,
+                                description: 'Conserved feature ' + feature.metadata.crs_id
+                            };
+                            return datum;
+                        } else {
+                           return null;
+                        }
                         // if (feature.metadata.should_highlight) { datum.color = "#86A5B9"; }
-
-                        return datum;
                     });
+                    // filter out null values
+                    data = data.filter(x => x);
 
                     var addFeature = function() {
                         if ($scope.featureViewer) {
@@ -505,7 +510,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 
                             $('svg .crsFeaturesGroup text').css('fill', 'white').css('font-size', 'small');
 
-                            $('svg g.crsFeaturesGroup').on('click', function(){
+                            $('svg g.crsFeaturesGroup').on('click', function() {
                                 var text = $(this).find('text').text().split(" ");
                                 var crs_id = text[text.length-1];
                                 var content = '<div class="media">';
@@ -521,7 +526,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                                 content += '    </a></li>';
                                 content += '    <li><i class="fa fa-search"></i> <a href="/search?q=conserved_structure:%22' + crs_id + '%22">Find other sequences with this feature</a></li>'
                                 content += '    <li><i class="fa fa-question-circle"></i> <a href="/help/conserved-motifs">What are conserved features?</a></li>';
-                                content += '    <li><i class="fa fa-book"></i> <a href="https://doi.org/10.1101/gr.208652.116" target="_blank">Paper by <i>Seeman et al</i> about the method</a></li>';
+                                content += '    <li><i class="fa fa-book"></i> <a href="https://doi.org/10.1101/gr.208652.116" target="_blank">Paper by <i>Seemann et al</i> about the method</a></li>';
                                 content += '  </ul>';
                                 content += '</div>';
                                 content += '</div>';
@@ -534,7 +539,59 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                     };
 
                     // for non-empty tracks, add CRS feature track
-                    if ($scope.features.length > 0) { addFeature(); }
+                    if (data.length > 0) { addFeature(); }
+                }
+            )
+        }
+
+        if ($scope.taxid) {
+            $scope.fetchSequenceFeatures().then(
+
+                function(response){
+                    $scope.features = response.data.results.sort(function(a, b) {return a.start - b.start});
+
+                    // trim start/stop of each feature to make sure it's not out of sequence bounds
+                    var data = $scope.features.map(function(feature) {
+                        if (feature.feature_name === 'mature_product') {
+                            var datum = {
+                                x: feature.start >= 0 ? feature.start + 1 : 1,
+                                y: feature.stop < $scope.rna.length ? feature.stop + 1 : $scope.rna.length,
+                                description: 'Mature miRNA ' + feature.metadata.related.replace('MIRBASE:', '')
+                            };
+
+                            return datum;
+                        }
+                    });
+                    // filter out null values
+                    data = data.filter(x => x);
+
+                    var addFeature = function() {
+                        if ($scope.featureViewer) {
+                            $scope.featureViewer.addFeature({
+                                id: "mature-mirna",
+                                data: data,
+                                name: "Mature miRNA",
+                                className: "matureMirnaFeatures",
+                                color: "#660099", // one of University of Manchester colors
+                                type: "rect",
+                                filter: "type1",
+                                height: 16,
+                            });
+
+                            $('svg .matureMirnaFeaturesGroup text').css('fill', 'white').css('font-size', 'small');
+
+                            $('svg g.matureMirnaFeaturesGroup').on('click', function(){
+                                var text = $(this).find('text').text().split(" ");
+                                var mature_product_id = text[text.length-1];
+                                window.open('/link/mirbase:' + mature_product_id, '_blank');
+                            });
+                        } else {
+                            $timeout(addFeature, 1000)
+                        }
+                    };
+
+                    // for non-empty tracks, add mature miRNA feature track
+                    if (data.length > 0) { addFeature(); }
                 }
             )
         }

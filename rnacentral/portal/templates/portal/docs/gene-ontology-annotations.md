@@ -8,7 +8,8 @@ For more information about Gene Ontology, see [GO Help](http://www.geneontology.
 ## How are GO terms added to RNAcentral sequences?
 
 RNAcentral sequences are **manually annotated** with GO terms by several teams, including
-[BHF-UCL](https://www.ucl.ac.uk/functional-gene-annotation/cardiovascular/projects)
+[BHF-UCL](https://www.ucl.ac.uk/cardiovascular/research/pre-clinical-and-fundamental-science/functional-gene-annotation/cardiovascular-gene),
+[ARUK-UCL](https://www.ucl.ac.uk/cardiovascular/research/pre-clinical-and-fundamental-science/functional-gene-annotation/neurological-gene-2),
 and [SGD](https://www.yeastgenome.org/). Find out more about literature curation using RNAcentral identifiers in the following paper:
 
 > Guidelines for the functional annotation of microRNAs using the Gene Ontology
@@ -32,11 +33,13 @@ In addition, RNAcentral sequences are **automatically** annotated with GO terms 
 
 The GO annotations are searchable using the text search, for example:
 
-- Find all sequences with annotations: [`has_go_annotations:"True"`](/search?q=has_go_annotations:%22True%22)
+- Find all sequences with annotations: [has_go_annotations:"True"](/search?q=has_go_annotations:%22True%22)
 
-- Find all sequences annotated by BHF-UCL: [`go_annotation_source:"BHF-UCL"`](/search?q=go_annotation_source:%22BHF-UCL%22)
+- Find all sequences annotated by BHF-UCL: [go_annotation_source:"BHF-UCL"](/search?q=go_annotation_source:%22BHF-UCL%22)
 
-- Search by qualifier, for example: [`involved_in:"GO:0043410"`](/search?q=involved_in:%22GO:0043410%22), [`involved_in:"GO:2000352"`](/search?q=involved_in:%22GO:2000352%22), [`enables:"GO:0005515"`](/search?q=enables:%22GO:0005515%22) or by searching with the name of the GO term like: [`enables:"protein binding"`](/search?q=enables:%22protein binding%22).
+- Find all sequences annotated by ARUK-UCL: [go_annotation_source:"ARUK-UCL"](/search?q=go_annotation_source:"ARUK-UCL")
+
+- Search by qualifier, for example: [involved_in:"GO:0043410"](/search?q=involved_in:%22GO:0043410%22), [involved_in:"GO:2000352"](/search?q=involved_in:%22GO:2000352%22), [enables:"GO:0005515"](/search?q=enables:%22GO:0005515%22) or by searching with the name of the GO term like: [enables:"protein binding"](/search?q=enables:%22protein binding%22).
 
 The following qualifiers are supported: `part_of`, `involved_in`, `enables`, `contributes_to`, and `colocalizes_with`.
 

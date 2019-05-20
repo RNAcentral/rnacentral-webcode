@@ -2,9 +2,8 @@
 //
 // There's a caveat in this Jenkinsfile:
 // Its build and unit-test steps are running in Jenkins environment and are
-// using the branch that is configured in Jenkins interface (usually, 'master'),
-// while deploy step is using filesystem environment and is running whatever
-// branch is currently deployed there.
+// using the branch that is configured in Jenkins interface,
+// while deploy step is running in the filesystem environment and checks out and updates that branch.
 //
 // ---------------------------------------------------------------------------------------------------------------------
 
@@ -28,12 +27,12 @@ pipeline {
         )
         choice(
             name: 'COMPRESSOR',
-            choices: ['PRO', 'DEV'],
-            description: 'Shall we use django-compressor, PRO - yes, DEV - no?'
+            choices: ['True', 'False'],
+            description: 'Shall we use django-compressor?'
         )
         choice(
             name: 'QUICK',
-            choices: ['False', 'True'],
+            choices: ['True', 'False'],
             description: 'Fast rebuild: pull, collect (and compress) static, touch wsgi.py.'
         )
         gitParameter(
@@ -45,10 +44,7 @@ pipeline {
         )
     }
     stages {
-        stage("Build for testing") {
-            when {
-                expression { params.QUICK == 'False' }
-            }
+        stage("Update settings") {
             environment {
                 DATABASE_PRO = credentials('database_pro.py')
                 DATABASE_DEV = credentials('database_dev.py')
@@ -124,10 +120,10 @@ pipeline {
 
                     // for testing environment always use COMPRESSOR_DEV no matter what
 
-                    if (params.COMPRESSOR == 'PRO') {
+                    if (params.COMPRESSOR == 'True') {
                         sh 'cat ${COMPRESSOR_DEV} > rnacentral/rnacentral/compressor.py'  // this is not an error, we use DEV
                         sh 'cat ${COMPRESSOR_PRO} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
-                    } else if (params.COMPRESSOR == 'DEV') {
+                    } else if (params.COMPRESSOR == 'False') {
                         sh 'cat ${COMPRESSOR_DEV} > rnacentral/rnacentral/compressor.py'
                         sh 'cat ${COMPRESSOR_DEV} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
                     }
@@ -142,6 +138,13 @@ pipeline {
 
                 sh 'cat $LOCAL_SETTINGS > rnacentral/rnacentral/local_settings.py'
                 sh 'cat $ENV_SH > rnacentral/scripts/env.sh'
+            }
+        }
+        stage("Update pip packages") {
+            when {
+                expression { params.QUICK == 'False' }
+            }
+            steps {
                 sh '''
                     virtualenv ENV --python=/net/isilonP/public/rw/homes/xfm_adm/src/python/bin/python
                     source ENV/bin/activate
@@ -187,6 +190,7 @@ pipeline {
 
                     # update repository to fetch the latest fabfile
                     git reset --hard
+                    git fetch --all
                     git checkout ${params.BRANCH}
                     git pull
 
@@ -197,7 +201,7 @@ pipeline {
                       pip install --upgrade -r requirements.txt
                     fi
 
-                    fab localhost deploy:quick=${params.QUICK},git_branch=${params.BRANCH}
+                    fab localhost deploy:quick=${params.QUICK},git_branch=${params.BRANCH},compress=${params.COMPRESSOR}
                 """
             }
         }

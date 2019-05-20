@@ -12,6 +12,7 @@ limitations under the License.
 """
 
 from __future__ import print_function
+from distutils.util import strtobool
 
 """
 RNAcentral deployment script.
@@ -25,7 +26,7 @@ To run remotely:
     fab -H server1,server2 production deploy
 
 To pass parameters in:
-    fab localhost deploy:quick=params.QUICK,git_branch=params.BRANCH
+    fab localhost deploy:quick=params.QUICK,git_branch=params.BRANCH,compress=params.COMPRESS
 
 For more options, run `fab help`.
 """
@@ -207,14 +208,17 @@ def slack(message):
     requests.post(slack_hook, json.dumps({'text': message}), headers=headers)
 
 
-def deploy_locally(git_branch=None, restart_url='https://rnacentral.org', quick=False):
+def deploy_locally(git_branch=None, restart_url='https://rnacentral.org', quick=False, compress=True):
     """
     Run deployment locally.
     """
+    slack("Starting deployment of '%s' at ves-hx-a4" % git_branch)
     git_updates(git_branch)
-    update_npm()
+    if not quick:
+        update_npm()
     collect_static_files()
-    compress_static_files()
+    if compress:
+        compress_static_files()
     if not quick:
         install_django_requirements()
     flush_memcached()
@@ -227,29 +231,35 @@ def deploy_locally(git_branch=None, restart_url='https://rnacentral.org', quick=
     slack("Deployed '%s' at ves-hx-a4: <https://test.rnacentral.org|test.rnacentral.org>" % git_branch)
 
 
-def deploy_remotely(git_branch=None, restart_url='https://rnacentral.org', quick=False):
+def deploy_remotely(git_branch=None, restart_url='https://rnacentral.org', quick=False, compress=True):
     """
     Run deployment remotely.
     """
+    slack("Starting deployment of '%s' at %s" % (git_branch, env.host))
     git_updates(git_branch)
-    if env.host == 'ves-pg-a4':
-        cmd = 'rsync -av {path}/ {host}:{path}'.format(
-            path=os.path.join(
-                settings.PROJECT_PATH,
-                'rnacentral',
-                'portal',
-                'static',
-                'node_modules'
-            ),
-            host='ves-pg-a4',
-        )
-        local(cmd)
-    else:
-        update_npm()
+
+    # on PG machine npm was unable to download node_modules, so we rsync them from OY
+    if not quick:
+        if env.host == 'ves-pg-a4':
+            cmd = 'rsync -av {path}/ {host}:{path}'.format(
+                path=os.path.join(
+                    settings.PROJECT_PATH,
+                    'rnacentral',
+                    'portal',
+                    'static',
+                    'node_modules'
+                ),
+                host='ves-pg-a4',
+            )
+            local(cmd)
+        else:
+            update_npm()
+
     if not quick:
         rsync_local_files()
     collect_static_files()
-    compress_static_files()
+    if compress:
+        compress_static_files()
     flush_memcached()
     restart_django(restart_url)
 
@@ -260,15 +270,18 @@ def deploy_remotely(git_branch=None, restart_url='https://rnacentral.org', quick
     slack("Deployed '%s' at %s: <https://rnacentral.org|rnacentral.org>" % (git_branch, env.host))
 
 
-def deploy(git_branch=None, restart_url='https://rnacentral.org', quick=False):
+def deploy(git_branch=None, restart_url='https://rnacentral.org', quick=False, compress=True):
     """
     Deployment function wrapper that launches local or remote deployment
     based on the environment.
     """
+    quick = strtobool(quick)
+    compress = strtobool(compress)
+
     if env.deployment == 'remote':
-        deploy_remotely(git_branch, restart_url, quick)
+        deploy_remotely(git_branch, restart_url, quick, compress)
     elif env.deployment == 'local':
-        deploy_locally(git_branch, restart_url, quick)
+        deploy_locally(git_branch, restart_url, quick, compress)
     else:
         print('Check usage')
 
@@ -286,27 +299,28 @@ def test(base_url='http://localhost:8000/'):
 
 # VDBS refresh-related code
 
-def fb1(key):
+def fb1():
     """
     Configures environment variables for running commands on fb1, e.g.:
+
+    fab fb1 --user=myuser --password=mytopsecretpassword refresh_fb1
+
+    Previously this used to work with an ssh key pair:
 
     fab fb1:key=/path/to/keyfile refresh_fb1
     """
     env.hosts = ['fb1-001.ebi.ac.uk']
-    env.user = 'burkov'
     env.run = run
     env.cd = cd
-    env.key_filename = key
 
 
 def pg():
     """
     Configures environment variables for running commands on pg, e.g.:
 
-    fab pg --password=mytopsecretpassword refresh_pg
+    fab pg --user=myuser --password=mytopsecretpassword refresh_pg
     """
     env.hosts = ['pg-001.ebi.ac.uk']
-    env.user = 'burkov'
     env.run = run
     env.cd = cd
 
@@ -315,10 +329,9 @@ def ebi_cli():
     """
     Configures environment variables for running commands on ebi-cli-001, e.g.:
 
-    fab pg --password=mytopsecretpassword refresh_dev
+    fab pg --user=myuser --password=mytopsecretpassword refresh_dev
     """
     env.hosts = ['ebi-cli.ebi.ac.uk']
-    env.user = 'burkov'
     env.run = run
     env.cd = cd
 
@@ -326,9 +339,13 @@ def ebi_cli():
 def refresh_fb1():
     snapshot = env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_create_snapshot.sh -s pgsql-hxvm-038.ebi.ac.uk | tail -1")
     env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-010.ebi.ac.uk -S '%s'" % snapshot)
-    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_push_replication.sh -s pgsql-hxvm-038.ebi.ac.uk")
 
     slack("Refreshed FB1 database from '%s' snapshot" % snapshot)
+
+
+def push_replication():
+    """Login to the FB machine and push replication of HX snapshot from it to HH"""
+    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_push_replication.sh -s pgsql-hxvm-038.ebi.ac.uk")
 
 
 def refresh_pg():

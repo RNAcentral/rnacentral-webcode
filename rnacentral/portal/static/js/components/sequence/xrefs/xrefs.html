@@ -148,16 +148,22 @@
             <!-- FlyBase -->
             <span ng-switch-when="FlyBase">
               transcript <a href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> from gene <a target="_blank" href="http://flybase.org/reports/{{ xref.accession.gene }}">{{ xref.accession.gene }}</a>
+              <br>
+              <i class="fa fa-angle-right"></i> View {{ xref.accession.locus_tag }} annotations at <a ng-href="https://www.alliancegenome.org/gene/FB:{{ xref.accession.gene }}" target="_blank">Alliance of Genome Resources</a>
             </span>
 
             <!-- MGI -->
             <span ng-switch-when="MGI">
               <a class="mgi-external-url" ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+              <br>
+              <i class="fa fa-angle-right"></i> View {{ xref.accession.gene }} annotations at <a ng-href="https://www.alliancegenome.org/gene/{{ xref.accession.external_id }}" target="_blank">Alliance of Genome Resources</a>
             </span>
 
             <!-- RGD -->
             <span ng-switch-when="RGD">
               <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">RRID:RGD_{{ xref.accession.external_id }}</a>
+              <br>
+              <i class="fa fa-angle-right"></i> View {{ xref.accession.gene }} annotations at <a ng-href="https://www.alliancegenome.org/gene/RGD:{{ xref.accession.external_id }}" target="_blank">Alliance of Genome Resources</a>
             </span>
 
             <!-- tmRNA Website -->
@@ -231,6 +237,8 @@
             <!-- SGD -->
             <span ng-switch-when="SGD">
               {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> ({{ xref.accession.optional_id }})
+              <br>
+              <i class="fa fa-angle-right"></i> View {{ xref.accession.locus_tag }} annotations at <a ng-href="https://www.alliancegenome.org/gene/SGD:{{ xref.accession.external_id }}" target="_blank">Alliance of Genome Resources</a>
             </span>
 
             <!-- TAIR -->
@@ -244,6 +252,8 @@
             <span ng-switch-when="WormBase">
               {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a> <span class="small text-muted">(gene)</span> |
               <a ng-href="{{ 'http://www.wormbase.org/species/c_elegans/transcript/' + xref.accession.standard_name }}" target="_blank">{{ xref.accession.standard_name }}</a> <span class="small text-muted">(transcript)</span>
+              <br>
+              <i class="fa fa-angle-right"></i> View {{ xref.accession.gene }} annotations at <a ng-href="https://www.alliancegenome.org/gene/WB:{{ xref.accession.external_id }}" target="_blank">Alliance of Genome Resources</a>
             </span>
 
             <!-- PLncDB -->
@@ -291,6 +301,11 @@
             <span ng-switch-when="NONCODE">
               {{ xref.database }}: transcript <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>,
               gene <a ng-href="{{ 'http://www.noncode.org/show_gene.php?id=' + xref.accession.optional_id.replace('.1', '').replace('.2', '') }}" target="_blank">{{ xref.accession.optional_id }}</a>
+            </span>
+
+            <!-- LncBook -->
+            <span ng-switch-when="LncBook">
+              {{ xref.database }}: transcript <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
             </span>
 
             <!-- LNCipedia -->

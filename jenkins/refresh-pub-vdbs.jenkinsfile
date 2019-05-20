@@ -21,6 +21,7 @@ pipeline {
     }
     stages {
         stage("Copy local settings to Jenkins environment") {
+            // This is really stupid, but otherwise Django would miss settings and wouldn't boot
             environment {
                 LOCAL_SETTINGS = credentials('local_settings.py')
                 DATABASE = credentials('database_pro.py')
@@ -41,11 +42,11 @@ pipeline {
                 expression { params.DATABASE == 'FB1' || params.DATABASE == 'BOTH' }
             }
             environment {
-                KEYFILE = credentials('fb1-001-rsa')
+                USERPASSWORD = credentials('refresh_vdbs_login')
+                USER = "${env.USERPASSWORD_USR}"
+                PASSWORD = "${env.USERPASSWORD_PSW}"
             }
             steps {
-                sh "cat $KEYFILE > fb1-001-rsa"
-
                 // Note that we're using the virtualenv from .rnacentral-live virtualenv,
                 // which might get a bit crazy, but this is just for fabric python package.
                 sh '''
@@ -53,10 +54,29 @@ pipeline {
                     source local/virtualenvs/RNAcentral/bin/activate
                     popd
                     cd rnacentral
-                    fab fb1:key=../fb1-001-rsa refresh_fb1
+                    fab fb1 --user=$USER --password=$PASSWORD refresh_fb1
                 '''
             }
         }
+        stage("Push replication from FB1 to PG") {
+            environment {
+                USERPASSWORD = credentials('refresh_vdbs_login')
+                USER = "${env.USERPASSWORD_USR}"
+                PASSWORD = "${env.USERPASSWORD_PSW}"
+            }
+            steps {
+                // always run this stage
+                sh '''
+                    pushd /nfs/public/rw/xfam/rnacentral/live
+                    source local/virtualenvs/RNAcentral/bin/activate
+                    popd
+                    cd rnacentral
+                    fab fb1 --user=$USER --password=$PASSWORD push_replication
+                '''
+
+            }
+        }
+
         stage("PG refresh") {
             when {
                 expression { params.DATABASE == 'PG' || params.DATABASE == 'BOTH' }
@@ -72,7 +92,7 @@ pipeline {
                     source local/virtualenvs/RNAcentral/bin/activate
                     popd
                     cd rnacentral
-                    fab pg --password=$PASSWORD refresh_pg
+                    fab pg --user=$USER --password=$PASSWORD refresh_pg
                 '''
             }
         }

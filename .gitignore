@@ -91,9 +91,7 @@ nosetests.xml
 *.log*
 *.pot
 *.pyc
-rnacentral/rnacentral/compressor
 rnacentral/rnacentral/databases
-rnacentral/rnacentral/ebi_search_endpoints
 rnacentral/rnacentral/rq_queues
 local_settings.py
 fab.cfg
@@ -121,3 +119,4 @@ dump.rdb
 
 # default location of search export results
 rnacentral/export/results
+.gitsecret/keys/random_seed

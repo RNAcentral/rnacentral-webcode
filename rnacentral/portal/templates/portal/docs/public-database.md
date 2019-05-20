@@ -36,6 +36,12 @@ Alternatively, you can use a **Postgres client** like [DBeaver](https://dbeaver.
 
 <i class="fa fa-warning"></i> If your computer is behind a firewall, please ensure that outgoing TCP/IP connections to the corresponding ports are allowed.
 
+## Database Schema (as of release 11)
+
+<a href="/static/img/rnacentral_release_11_schema.png">
+  <img src="/static/img/rnacentral_release_11_schema.png" class="img-responsive">
+</a>
+
 ## Main tables
 
 The entire RNAcentral schema contains more than 40 tables, but the following tables
