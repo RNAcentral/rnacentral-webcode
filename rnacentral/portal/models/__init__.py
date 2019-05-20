@@ -38,3 +38,4 @@ from .sequence_features import *
 from .sequence_regions import *
 from .sequence_exons import *
 from .taxonomy import *
+from .ensembl_compara import *
