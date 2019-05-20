@@ -10,4 +10,3 @@ services:
       - ${RNACENTRAL_HOME}:/rnacentral/rnacentral-webcode
     ports:
       - "9000:8000"
-      - "8002:8002"
