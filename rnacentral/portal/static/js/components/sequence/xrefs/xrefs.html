@@ -305,7 +305,8 @@
 
             <!-- LncBook -->
             <span ng-switch-when="LncBook">
-              {{ xref.database }}: transcript <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+              {{ xref.database }}: transcript <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>,
+              gene <a ng-href="{{ 'http://bigd.big.ac.cn/lncbook/gene?geneid=' +  xref.accession.gene }}" target="_blank">{{ xref.accession.gene }}</a>
             </span>
 
             <!-- LNCipedia -->
