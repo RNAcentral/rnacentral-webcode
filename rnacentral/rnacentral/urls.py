@@ -25,10 +25,10 @@ urlpatterns = [
     url(r'^api/v1/', include('apiv1.urls')),
     # export text search results
     url(r'^export/', include('export.urls')),
-    # sequence search
-    url(r'^nhmmer/', include('nhmmer.urls')),
+    # old sequence search
+    url(r'^sequence-search-beta/', include('sequence_search.urls')),
     # new sequence search
-    url(r'^sequence-search/', include('sequence_search.urls')),
+    url(r'^sequence-search/', include('nhmmer.urls')),
 ]
 
 # robots.txt extras
@@ -47,4 +47,3 @@ urlpatterns += additional_settings
 # Override 500 page, so that in case of an error, we still display our error page with normal response status
 # and EBI load balancer still proxies to our website instead of showing an EBI 'service down' page
 handler500 = 'portal.views.handler500'
-
