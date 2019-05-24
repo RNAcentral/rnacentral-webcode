@@ -1010,8 +1010,8 @@ expert_dbs = [
         'name': 'LncBook',
         'label': 'lncbook',
         'url': 'http://bigd.big.ac.cn/lncbook',
-        'description': 'a curated knowledgebase of human long non-coding RNAs',
-        'hint': 'LncBook is a a curated knowledgebase of human long non-coding RNAs',
+        'description': 'is a curated knowledgebase of human long non-coding RNAs',
+        'hint': 'LncBook is a curated knowledgebase of human long non-coding RNAs',
         'tags': ['community curated', 'human', 'lncRNA'],
         'abbreviation': '',
         'examples': [
