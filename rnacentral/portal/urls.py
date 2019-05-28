@@ -53,6 +53,7 @@ urlpatterns = [
     url(r'^help/conserved-motifs/?$', views.StaticView.as_view(), {'page': 'help/conserved-motifs'}, name='help-conserved-motifs'),
     url(r'^help/public-database/?$', views.StaticView.as_view(), {'page': 'help/public-database'}, name='help-public-database'),
     url(r'^help/scientific-advisory-board/?$', views.StaticView.as_view(), {'page': 'help/sab'}, name='help-scientific-advisory-board'),
+    url(r'^help/secondary-structure/?$', views.StaticView.as_view(), {'page': 'help/secondary-structure'}, name='help-secondary-structure'),
     # training
     url(r'^training/?$', views.StaticView.as_view(), {'page': 'training'}, name='training'),
     # about us

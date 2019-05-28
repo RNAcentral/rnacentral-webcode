@@ -7,6 +7,8 @@ var secondary_structures = {
     controller: ['$http', '$interpolate', 'routes', function($http, $interpolate, routes) {
         var ctrl = this;
 
+        ctrl.help = "/help/secondary-structure";
+
         ctrl.fornaSize = 500;
         ctrl.numStructures = 0;
         ctrl.panZoom;
