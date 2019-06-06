@@ -26,9 +26,9 @@ def update_example_locations():
             print(assembly.assembly_id, region.chromosome, region.region_start, region.region_stop)
             assembly.example_chromosome = region.chromosome
             assembly.example_start = region.region_start
-            assembly.example_stop = region.region_stop
+            assembly.example_end = region.region_stop
             assembly.save()
-        except:
+        except SequenceRegion.DoesNotExist:
             print(assembly.assembly_id + ' does not exist')
 
 
