@@ -256,7 +256,7 @@ var genoverse = {
             ctrl.render();
             setTimeout(function() {
                 ctrl.setGenoverseWidth();
-            }, 1000);
+            }, 2000);
         };
 
         ctrl.$doCheck = function() {
