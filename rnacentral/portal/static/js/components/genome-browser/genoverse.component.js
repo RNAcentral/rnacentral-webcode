@@ -241,7 +241,9 @@ var genoverse = {
         ctrl.setGenoverseWidth = function() {
             // if $scope.container passed, makes browser width responsive
             var width = $('.genoverse-wrap').width();
-            ctrl.browser.setWidth(width);
+            if (ctrl.browser.hasOwnProperty('setWidth')) {
+                ctrl.browser.setWidth(width);
+            }
 
             // resize might change viewport location - digest these changes
             $timeout(angular.noop)
