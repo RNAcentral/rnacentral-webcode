@@ -260,6 +260,9 @@ var genoverse = {
         };
 
         ctrl.$doCheck = function() {
+            if (!ctrl.genome || !ctrl.chr || !ctrl.start || !ctrl.end) {
+                return;
+            }
             if (ctrl.genome !== ctrl.oldGenome) {
                 // destroy the old instance of browser and watches
                 if (ctrl.browser) {
