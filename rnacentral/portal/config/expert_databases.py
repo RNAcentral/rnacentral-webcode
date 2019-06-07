@@ -38,7 +38,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '136',
+        'version': '139',
     },
     {
         'name': 'PDBe',
@@ -63,7 +63,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'as of June 11th, 2018',
+        'version': 'as of May 11th, 2019',
     },
     {
         'name': 'FlyBase',
@@ -88,7 +88,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'fb_2018_05',
+        'version': 'FB2019_02',
     },
     {
         'name': 'Ensembl',
@@ -119,7 +119,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '92',
+        'version': '96',
     },
     {
         'name': 'Ensembl Plants',
@@ -144,7 +144,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'new',
-        'version': '41',
+        'version': '43',
     },
     {
         'name': 'GENCODE',
@@ -194,7 +194,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': '',
-        'version': '13.0',
+        'version': '14.1',
     },
     {
         'name': 'miRBase',
@@ -225,7 +225,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '22',
+        'version': '22.1',
     },
     {
         'name': 'Vega',
@@ -399,7 +399,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '91',  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
+        'version': '94',  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
     },
     {
         'name': 'RDP',
@@ -543,8 +543,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'updated',
-        'version': '5.0',
+        'status': '',
+        'version': '5.2',
     },
     {
         'name': 'Modomics',
@@ -862,7 +862,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'WS265',
+        'version': 'WS270',
     },
     {
         'name': 'MGI',
