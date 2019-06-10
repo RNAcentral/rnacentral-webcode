@@ -17,9 +17,6 @@ var secondary_structures = {
             ctrl.fetchSecondaryStructures().then(
                 function(response) {
                     ctrl.secondaryStructures = response.data.data;
-                    if (!ctrl.secondaryStructures.secondary_structure) {
-                        return;
-                    }
                     ctrl.secondaryStructures.useForna = !ctrl.secondaryStructures.secondary_structures[0].layout;
                     if (!ctrl.useForna) {
                         ctrl.secondaryStructures.svg = ctrl.secondaryStructures.secondary_structures[0].layout;
