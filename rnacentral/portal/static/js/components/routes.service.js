@@ -20,6 +20,9 @@ angular.module("routes", []).service('routes', ['$interpolate', function($interp
         textSearch: 'search',
         expertDbLogo: '/static/img/expert-db-logos/{{ expertDbName }}.png',
         apiSecondaryStructuresView: '/api/v1/rna/{{ upi }}/2d/{{ taxid }}',
+        sequenceSearchSubmitJob: '/sequence-search-beta/submit-job',
+        sequenceSearchJobStatus: '/sequence-search-beta/job-status/{{ jobId }}',
+        sequenceSearchResults: '/sequence-search-beta/job-results/{{ jobId }}',
         apiEnsemblComparaView: '/api/v1/rna/{{ upi }}/ensembl-compara/{{ taxid }}',
         genomesApi: '/api/v1/genomes/{{ ensemblAssembly }}',
         proxy: '/api/internal/proxy?url={{ url }}',
@@ -35,6 +38,13 @@ angular.module("routes", []).service('routes', ['$interpolate', function($interp
             '&sort={{ sort }}' +
             '&hlpretag=<span class=text-search-highlights>' +
             '&hlposttag=</span>'
+        ,
+        ebiMd5Lookup:
+            '{{ ebiBaseUrl }}' +
+            '?query={{ md5 }}' +
+            '&fields=description' +
+            '&format=json' +
+            '&sort=boost'
         ,
         ebiAutocomplete: 'http://www.ebi.ac.uk/ebisearch/ws/rest/RNAcentral/autocomplete?term={{ query }}&format=json',
         apiGoTermsView: '/api/v1/rna/{{ upi }}/go-annotations/{{ taxid }}',

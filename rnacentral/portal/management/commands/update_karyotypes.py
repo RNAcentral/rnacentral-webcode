@@ -43,15 +43,10 @@ class Command(BaseCommand):
     def fetch_ensembl_karyotype(self, assembly):
         ensembl_url = assembly.ensembl_url
 
-        if assembly.division == 'Ensembl':
-            domain = 'ensembl'
-        else:
-            domain = 'ensemblgenomes'
-
-        print("Retrieving kartyotype for: %s from %s" % (ensembl_url, domain))
+        print("Retrieving kartyotype for: %s" % ensembl_url)
 
         response = requests.get(
-            'http://rest.%s.org/info/assembly/%s?bands=1' % (domain, ensembl_url),
+            'http://rest.ensembl.org/info/assembly/%s?bands=1' % (ensembl_url),
             headers={'Content-Type': 'application/json'}
         )
 

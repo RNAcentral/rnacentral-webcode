@@ -38,7 +38,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '136',
+        'version': '139',
     },
     {
         'name': 'PDBe',
@@ -63,7 +63,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'as of June 11th, 2018',
+        'version': 'as of May 11th, 2019',
     },
     {
         'name': 'FlyBase',
@@ -88,7 +88,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'fb_2018_05',
+        'version': 'FB2019_02',
     },
     {
         'name': 'Ensembl',
@@ -119,7 +119,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '92',
+        'version': '96',
     },
     {
         'name': 'Ensembl Plants',
@@ -144,7 +144,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'new',
-        'version': '41',
+        'version': '43',
     },
     {
         'name': 'GENCODE',
@@ -194,7 +194,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': '',
-        'version': '13.0',
+        'version': '14.1',
     },
     {
         'name': 'miRBase',
@@ -225,7 +225,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '22',
+        'version': '22.1',
     },
     {
         'name': 'Vega',
@@ -399,7 +399,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '91',  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
+        'version': '94',  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
     },
     {
         'name': 'RDP',
@@ -543,8 +543,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'updated',
-        'version': '5.0',
+        'status': '',
+        'version': '5.2',
     },
     {
         'name': 'Modomics',
@@ -862,7 +862,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'WS265',
+        'version': 'WS270',
     },
     {
         'name': 'MGI',
@@ -1007,24 +1007,28 @@ expert_dbs = [
         'version': '',
     },
     {
-        'name': 'LncRNAWiki',
-        'label': 'lncrnawiki',
-        'url': 'http://lncrna.big.ac.cn',
-        'description': 'is a wiki-based, publicly editable platform for community curation of human long non-coding RNAs',
-        'hint': 'LncRNAWiki is a wiki-based, publicly editable platform for community curation of human long non-coding RNAs',
+        'name': 'LncBook',
+        'label': 'lncbook',
+        'url': 'http://bigd.big.ac.cn/lncbook',
+        'description': 'is a curated knowledgebase of human long non-coding RNAs',
+        'hint': 'LncBook is a curated knowledgebase of human long non-coding RNAs',
         'tags': ['community curated', 'human', 'lncRNA'],
         'abbreviation': '',
-        'examples': [],
+        'examples': [
+            {'upi': 'URS00003E9E7E', 'taxid': 9606},
+            {'upi': 'URS000075E1E7', 'taxid': 9606},
+            {'upi': 'URS0000050347', 'taxid': 9606},
+        ],
         'references': [
             {
-                'title': 'LncRNAWiki: harnessing community knowledge in collaborative curation of human long non-coding RNAs',
-                'authors': 'Ma L, Li A, Zou D, Xu X, Xia L, Yu J, Bajic VB, Zhang Z',
-                'journal': 'Nucleic Acids Res. 2015 Jan;43(Database issue):D187-92',
-                'pubmed_id': '25399417',
+                'title': 'LncBook: a curated knowledgebase of human long non-coding RNAs',
+                'authors': 'Ma L,  Cao J, Liu L, Du Q, Li Z, Zou D, Bajic VB, Zhang Z',
+                'journal': 'Nucleic Acids Res. 2019 Jan 8;47(D1):D128-D134',
+                'pubmed_id': '30329098',
             },
         ],
-        'imported': False,
-        'status': '',
+        'imported': True,
+        'status': 'new',
         'version': '',
     },
     {

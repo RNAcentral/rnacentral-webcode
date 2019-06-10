@@ -182,6 +182,7 @@ INSTALLED_APPS = (
     'corsheaders',
     'portal',
     'nhmmer',
+    'sequence_search',
     'apiv1',
     'django_filters',  # required by DRF3.5+
     'rest_framework',
@@ -352,7 +353,7 @@ SILENCED_SYSTEM_CHECKS = ['1_6.W001']
 
 EBI_SEARCH_ENDPOINT = 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
 
-RELEASE_ANNOUNCEMENT_URL = 'https://blog.rnacentral.org/2019/01/rnacentral-release-11.html'
+RELEASE_ANNOUNCEMENT_URL = 'https://blog.rnacentral.org/2019/06/rnacentral-release-12.html'
 
 # django compressor
 COMPRESS_ENABLED = True

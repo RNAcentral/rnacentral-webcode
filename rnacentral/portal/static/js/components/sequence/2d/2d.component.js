@@ -7,16 +7,24 @@ var secondary_structures = {
     controller: ['$http', '$interpolate', 'routes', function($http, $interpolate, routes) {
         var ctrl = this;
 
+        ctrl.help = "/help/secondary-structure";
+
         ctrl.fornaSize = 500;
         ctrl.numStructures = 0;
+        ctrl.panZoom;
 
         ctrl.$onInit = function() {
             ctrl.fetchSecondaryStructures().then(
                 function(response) {
                     ctrl.secondaryStructures = response.data.data;
+                    ctrl.secondaryStructures.useForna = !ctrl.secondaryStructures.secondary_structures[0].layout;
+                    if (!ctrl.useForna) {
+                        ctrl.secondaryStructures.svg = ctrl.secondaryStructures.secondary_structures[0].layout;
+                    }
+
                     ctrl.numStructures = ctrl.secondaryStructures.secondary_structures.length;
                     ctrl.SecondaryStructureUrl = routes.apiSecondaryStructuresView({ upi: ctrl.upi, taxid: ctrl.taxid });
-                    ctrl.displayForna();
+                    ctrl.displaySecondary();
                 },
                 function(response) {
                     ctrl.error = "Failed to download secondary structures";
@@ -37,14 +45,22 @@ var secondary_structures = {
             return ctrl.secondaryStructures.secondary_structures[0].source[0].url;
         };
 
-        ctrl.displayForna = function() {
+        ctrl.displaySecondary = function() {
             if (ctrl.numStructures === 0) {
                 return;
             }
+
+            if (ctrl.secondaryStructures.useForna) {
+                return ctrl.displayForna();
+            }
+            return ctrl.displayLayout();
+        };
+
+        ctrl.displayForna = function() {
             var container = new fornac.FornaContainer("#rna_ss", {
                 'applyForce': false,
                 'allowPanningAndZooming': true,
-                'initialSize':[ctrl.fornaSize, ctrl.fornaSize],
+                'initialSize': [ctrl.fornaSize, ctrl.fornaSize],
             });
             var options = {
                 'structure': ctrl.secondaryStructures.secondary_structures[0].secondary_structure,
@@ -52,6 +68,35 @@ var secondary_structures = {
             };
             container.addRNA(options.structure, options);
             ctrl.showSecondaryStructureTab();
+        };
+
+        ctrl.displayLayout = function() {
+            document.getElementById('rna_ss_traveler').innerHTML = ctrl.secondaryStructures.svg;
+            var svg = document.querySelector('#rna_ss_traveler svg');
+            if (svg) {
+                svg.classList.remove('black');
+                svg.classList.add('traveler-secondary-structure-svg');
+                // delete inline svg styles to prevent style leakage
+                var style = svg.getElementsByTagName('style');
+                if (style.length > 0) {
+                    var parent = style[0].parentNode;
+                    parent.removeChild(style[0]);
+                    var parent2 = parent.parentNode;
+                    parent2.removeChild(parent);
+                }
+            }
+
+            ctrl.showSecondaryStructureTab();
+
+            ctrl.panZoom = svgPanZoom('#rna_ss_traveler svg', {
+              controlIconsEnabled: true,
+              fit: false, // see https://github.com/ariutta/svg-pan-zoom/issues/100
+            });
+
+            // fix the svg control position
+            $('#svg-pan-zoom-controls').attr('transform', '');
+            // increase the font size
+            $('.traveler-secondary-structure-svg').css('font-size', '11px');
         };
 
         /**
@@ -75,25 +120,8 @@ var secondary_structures = {
         };
 
     }],
-    template: '<div id="2d" style="min-height: 600px">' +
-              '    <h2>Secondary structure</h2>'+
-              '    <div class="col-md-6" ng-if="$ctrl.numStructures > 0">' +
-              '      <p>' +
-              '        Predicted using tRNAScan-SE 2.0 (source: <a href="{{ $ctrl.getSourceUrl() }}">GtRNAdb</a>).' +
-              '      </p>' +
-              '    </div>' +
-              '    <div class="col-md-6" ng-if="$ctrl.numStructures > 0">' +
-              '      <p>Structure in dot-bracket notation:</p>' +
-              '      <pre style="white-space: pre-wrap">{{ $ctrl.secondaryStructures.secondary_structures[0].secondary_structure }}</pre>' +
-              '      <button class="btn btn-primary" ng-click="$ctrl.save2D()">Download</button>' +
-              '    </div>' +
-              '    <div class="col-md-6" ng-if="$ctrl.numStructures === 0">' +
-              '      <p>' +
-              '        No secondary structures available' +
-              '      </p>' +
-              '    </div>' +
-              '    <div id="rna_ss" style="width: {{ $ctrl.fornaSize }}px; height: {{ $ctrl.fornaSize }}px; margin-left: 9px;"></div>' +
-              '</div>'
+
+    templateUrl: '/static/js/components/sequence/2d/2d.html'
 };
 
 angular.module("rnaSequence").component("secondaryStructures", secondary_structures);

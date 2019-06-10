@@ -284,7 +284,7 @@ class GenomeBrowserView(TemplateView):
         # if species is not defined - use homo_sapiens as default, if specified and wrong - 404
         if 'species' in request.GET:
             kwargs['genome'] = request.GET['species']
-            ensembl_assembly = EnsemblAssembly.objects.get(ensembl_url=kwargs['genome'])
+            ensembl_assembly = EnsemblAssembly.objects.filter(ensembl_url=kwargs['genome']).all()[0]
             if not ensembl_assembly:
                 raise Http404
         else:

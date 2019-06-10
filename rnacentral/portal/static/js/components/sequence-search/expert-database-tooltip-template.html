@@ -1,0 +1,3 @@
+<h5><i ng-if="expertDbHasStar(facetValue.value.toLowerCase())" class="fa fa-star">  </i>{{ expertDbsObject[facetValue.value.toLowerCase()].name }} <img style="width: 50px; float: right; margin-left: 5px; margin-bottom: 5px;" class="img-thumbnail" ng-src="{{ normalizeExpertDbName.nameToImageUrl(facetValue.value) }}"></h5>
+<p>{{ expertDbsObject[facetValue.value.toLowerCase()].hint }}</p>
+<div><span ng-repeat="tag in expertDbsObject[facetValue.value.toLowerCase()].tags" class="rnacentral-tag label label-default">{{ tag.split(" ").join("&nbsp;") }}</span></div>

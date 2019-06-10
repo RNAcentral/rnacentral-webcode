@@ -534,11 +534,25 @@ class Rna(CachingMixin, models.Model):
         return sorted(set(hit.rfam_model for hit in hits))
 
     def get_secondary_structures(self, taxid=None):
+        data = []
+        known = self.get_layout_secondary()
+        if known:
+            data.append(known)
+        data.extend(self.get_dotbracket_secondary(taxid=taxid))
+
+        return {
+            'sequence': self.get_sequence(),
+            'secondary_structures': data,
+        }
+
+    def get_dotbracket_secondary(self, taxid=None):
         """
         Get secondary structures associated with a sequence.
         """
+
         queryset = Xref.default_objects.select_related('db', 'accession','accession__secondary_structure').\
-                                        filter(upi=self.upi, deleted='N')
+            filter(upi=self.upi, deleted='N')
+
         if taxid:
             queryset = queryset.filter(taxid=taxid)
         queryset = queryset.filter(accession__secondary_structure__md5__isnull=False)
@@ -550,15 +564,31 @@ class Rna(CachingMixin, models.Model):
                 'database': result.db.display_name,
                 'url': result.accession.get_expert_db_external_url(),
             })
+
         data = []
         for secondary_structure, sources in six.iteritems(temp):
             data.append({
                 'secondary_structure': secondary_structure,
                 'source': sources,
+                'model_id': None,
+                'layout': None,
+                'template_species': None,
+                'template_lineage': None,
             })
+        return data
+
+    def get_layout_secondary(self):
+        layout = getattr(self, 'secondary_structure_layout', None)
+        if not layout:
+            return {}
+
         return {
-            'sequence': self.get_sequence(),
-            'secondary_structures': data,
+            'secondary_structure': layout.secondary_structure,
+            'source': 'traveler',
+            'model_id': layout.template.model_name,
+            'layout': layout.layout,
+            'template_species': layout.template.taxid.name,
+            'template_lineage': layout.template.taxid.lineage,
         }
 
     def get_organism_name(self, taxid):

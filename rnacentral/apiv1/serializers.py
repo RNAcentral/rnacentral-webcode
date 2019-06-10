@@ -505,22 +505,13 @@ class EnsemblAssemblySerializer(serializers.ModelSerializer):
         return obj.ensembl_url.replace("_", " ").capitalize()
 
     def get_example_chromosome(self, obj):
-        if obj.example_chromosome is not None:
-            return obj.example_chromosome
-        else:
-            return obj.chromosome
+        return obj.example_chromosome
 
     def get_example_start(self, obj):
-        if obj.example_chromosome is not None:
-            return obj.example_start
-        else:
-            return obj.start
+        return obj.example_start
 
     def get_example_end(self, obj):
-        if obj.example_chromosome is not None:
-            return obj.example_end
-        else:
-            return obj.stop
+        return obj.example_end
 
 
 class EnsemblInsdcMappingSerializer(serializers.ModelSerializer):

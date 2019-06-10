@@ -37,7 +37,7 @@ limitations under the License.
         <span class="icon-bar"></span>
       </button>
       <p class="navbar-text">
-        <span class="badge release-number">v11</span>
+        <span class="badge release-number">v12</span>
       </p>
     </div>
     <div class="navbar-collapse collapse">
@@ -51,14 +51,14 @@ limitations under the License.
                 {% if forloop.first %}
                   <div class="col-sm-5">
                     <ul class="multi-column-dropdown">
-                {% elif forloop.counter0 == 15 %}
+                {% elif forloop.counter0 == 16 %}
                   <div class="col-sm-7">
                     <ul class="multi-column-dropdown">
                 {% endif %}
                 <li>
                   <a href="{% url 'expert-database' expert_db_name=expert_db.label %}">{{ expert_db.name }}</a>
                 </li>
-                {% if forloop.counter0 == 14 or forloop.last %}
+                {% if forloop.counter0 == 15 or forloop.last %}
                     </ul>
                   </div>
                 {% endif %}
@@ -79,7 +79,7 @@ limitations under the License.
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" href="">Tools<b class="caret"></b></a>
           <ul class="dropdown-menu">
-            <li><a href="{% url 'nhmmer-sequence-search' %}">Sequence search</a></li>
+            <li><a href="{% url 'sequence-search' %}">Sequence search</a></li>
             <li><a href="{% url 'help-public-database' %}">Public Postgres database</a></li>
             <li><a href="{% url 'genome-browser' %}">Genome browser</a></li>
           </ul>

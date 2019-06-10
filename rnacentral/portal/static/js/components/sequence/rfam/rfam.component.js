@@ -10,7 +10,7 @@ var rfam = {
         var ctrl = this;
 
         ctrl.$onInit = function() {
-            ctrl.help = "https://rnacentral.org/help/rfam-annotations";
+            ctrl.help = "/help/rfam-annotations";
 
             // group hits with same rfam_model_id
             ctrl.groupedHits = [];

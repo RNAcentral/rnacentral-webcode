@@ -294,6 +294,9 @@ angular.module("genomeBrowser").factory('GenoverseUtils', ['$filter', function($
     */
     GenoverseUtils.prototype.getGenomeObject = function(genome, genomes) {
         // get genome object from Genomes
+        if (genome === undefined) {
+            return null;
+        }
         var genomeObject;
         for (var i = 0; i < genomes.length; i++) {
             if (genome === genomes[i].ensembl_url) {

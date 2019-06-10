@@ -48,6 +48,7 @@
     "moment": "^2.18.1",
     "query": "^0.2.0",
     "slick-carousel": "^1.8.1",
+    "svg-pan-zoom": "^3.6.0",
     "timelinejs3": "^3.4.0",
     "tipsy-1a": "^1.0.0",
     "underscore": "^1.8.3"

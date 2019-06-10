@@ -241,7 +241,9 @@ var genoverse = {
         ctrl.setGenoverseWidth = function() {
             // if $scope.container passed, makes browser width responsive
             var width = $('.genoverse-wrap').width();
-            ctrl.browser.setWidth(width);
+            if (ctrl.browser.hasOwnProperty('setWidth')) {
+                ctrl.browser.setWidth(width);
+            }
 
             // resize might change viewport location - digest these changes
             $timeout(angular.noop)
@@ -251,13 +253,22 @@ var genoverse = {
         // -----
 
         this.$onInit = function() {
-            ctrl.render();
+
+            var timer = setInterval(function () {
+                if (ctrl.genome && ctrl.chr && ctrl.start && ctrl.end && !ctrl.browser) {
+                    clearInterval(timer);
+                    ctrl.render();
+                }
+            }, 100);
             setTimeout(function() {
                 ctrl.setGenoverseWidth();
-            }, 1000);
+            }, 2000);
         };
 
         ctrl.$doCheck = function() {
+            if (!ctrl.genome || !ctrl.chr || !ctrl.start || !ctrl.end) {
+                return;
+            }
             if (ctrl.genome !== ctrl.oldGenome) {
                 // destroy the old instance of browser and watches
                 if (ctrl.browser) {

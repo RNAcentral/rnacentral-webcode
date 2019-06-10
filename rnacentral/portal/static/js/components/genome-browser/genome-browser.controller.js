@@ -23,37 +23,42 @@ angular.module('genomeBrowser').controller('GenoverseGenomeBrowser', ['$scope', 
         $scope.Genoverse = Genoverse;
         $scope.genoverseUtils = new GenoverseUtils($scope);
 
-        $scope.browserLocation = {
-            genome: genome,
-            chromosome: chromosome,
-            start: start,
-            end: end,
-            domain: $scope.genoverseUtils.getGenomeObject(genome, $scope.genomes).subdomain
-        };
+        var timer = setInterval(function () {
+            if (genome && chromosome && start && end) {
+                clearInterval(timer);
 
-        $scope.$location = $location;
+                $scope.browserLocation = {
+                    genome: genome,
+                    chromosome: chromosome,
+                    start: start,
+                    end: end,
+                    domain: $scope.genoverseUtils.getGenomeObject(genome, $scope.genomes).subdomain
+                };
 
+                $scope.$location = $location;
 
-        // Event handlers
-        // --------------
+                // Event handlers
+                // --------------
 
-        // handle copy to clipboard button
-        new Clipboard('#copy-genome-location', {
-            "text": function () {
-                return document.location.href;
+                // handle copy to clipboard button
+                new Clipboard('#copy-genome-location', {
+                    "text": function () {
+                        return document.location.href;
+                    }
+                });
+
+                // initialize a tooltip on the share button
+                $('#copy-genome-location').tipsy();
+
+                // reflect any changes in genome in address bar
+                $scope.$watch('browserLocation.genome', setUrl);
+                $scope.$watch('browserLocation.chromosome', setUrl);
+                $scope.$watch('browserLocation.start', setUrl);
+                $scope.$watch('browserLocation.end', setUrl);
+
+                $scope.$watch('browserLocation.genome', setDomain);
             }
-        });
-
-        // initialize a tooltip on the share button
-        $('#copy-genome-location').tipsy();
-
-        // reflect any changes in genome in address bar
-        $scope.$watch('browserLocation.genome', setUrl);
-        $scope.$watch('browserLocation.chromosome', setUrl);
-        $scope.$watch('browserLocation.start', setUrl);
-        $scope.$watch('browserLocation.end', setUrl);
-
-        $scope.$watch('browserLocation.genome', setDomain);
+        }, 10);
 
         /**
          * Sets the url in address bar to reflect the changes in browser location
