@@ -202,12 +202,16 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     };
 
     $scope.isSelectedLocation = function (location) {
-        var isSelected = location.species === $scope.selectedLocation.genome &&
-                         location.chromosome === $scope.selectedLocation.chr &&
-                         location.start === $scope.selectedLocation.start &&
-                         location.end === $scope.selectedLocation.end;
+        if ($scope.selectedLocation && $scope.selectedLocation.genome && $scope.selectedLocation.chr && $scope.selectedLocation.start && $scope.selectedLocation.end) {
+            var isSelected = location.species === $scope.selectedLocation.genome &&
+                             location.chromosome === $scope.selectedLocation.chr &&
+                             location.start === $scope.selectedLocation.start &&
+                             location.end === $scope.selectedLocation.end;
 
-        return isSelected;
+            return isSelected;
+        } else {
+            return false;
+        }
     };
 
     /**
