@@ -28,7 +28,7 @@ pipeline {
         choice(
             name: 'COMPRESSOR',
             choices: ['True', 'False'],
-            description: 'Shall we use django-compressor?'
+            description: 'Compress static assests using django-compressor?'
         )
         choice(
             name: 'QUICK',
@@ -58,9 +58,6 @@ pipeline {
                 RQ_QUEUE_LOCAL = credentials('rq_queue_local.py')
                 RQ_QUEUE_OY = credentials('rq_queue_oy.py')
                 RQ_QUEUE_PG = credentials('rq_queue_pg.py')
-
-                COMPRESSOR_DEV = credentials('compressor_dev.py')
-                COMPRESSOR_PRO = credentials('compressor_pro.py')
 
                 LOCAL_SETTINGS = credentials('local_settings.py')
                 ENV_SH = credentials('env_sh')
@@ -121,11 +118,11 @@ pipeline {
                     // for testing environment always use COMPRESSOR_DEV no matter what
 
                     if (params.COMPRESSOR == 'True') {
-                        sh 'cat ${COMPRESSOR_DEV} > rnacentral/rnacentral/compressor.py'  // this is not an error, we use DEV
-                        sh 'cat ${COMPRESSOR_PRO} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
+                        sh 'echo "COMPRESS_ENABLED = False" > rnacentral/rnacentral/compressor.py'  // this is not an error, we use DEV
+                        sh 'echo "COMPRESS_ENABLED = True" > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
                     } else if (params.COMPRESSOR == 'False') {
-                        sh 'cat ${COMPRESSOR_DEV} > rnacentral/rnacentral/compressor.py'
-                        sh 'cat ${COMPRESSOR_DEV} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
+                        sh 'echo "COMPRESS_ENABLED = False" > rnacentral/rnacentral/compressor.py'
+                        sh 'echo "COMPRESS_ENABLED = False" > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
                     }
                 }
 
