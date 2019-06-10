@@ -334,7 +334,10 @@ limitations under the License.
 
             </uib-tab>
 
-            <uib-tab index="2" heading="2D" id="secondary-structures" deselect="checkTab($event, $selectedIndex)" ng-hide="hide2dTab" ng-if="taxid">
+            <uib-tab index="2" id="secondary-structures" deselect="checkTab($event, $selectedIndex)" ng-hide="hide2dTab" ng-if="taxid">
+                <uib-tab-heading>
+                  <span class="label label-success">New</span> 2D
+                </uib-tab-heading>
                 <secondary-structures upi="upi" taxid="taxid" show-secondary-structure-tab="show2dTab()"></secondary-structures>
             </uib-tab>
 
