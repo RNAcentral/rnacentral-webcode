@@ -74,9 +74,9 @@ expert_dbs = [
         'tags': ['curated', 'model organism', 'Drosophila'],
         'abbreviation': '',
         'examples': [
-            {'upi': 'URS0000061376', 'taxid': 7238},
             {'upi': 'URS00007F7879', 'taxid': 7227},
             {'upi': 'URS00007EBD0C', 'taxid': 7227},
+            {'upi': 'URS0000150035', 'taxid': 46245},
         ],
         'references': [
             {
