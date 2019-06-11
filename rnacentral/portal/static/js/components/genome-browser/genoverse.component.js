@@ -253,13 +253,7 @@ var genoverse = {
         // -----
 
         this.$onInit = function() {
-
-            var timer = setInterval(function () {
-                if (ctrl.genome && ctrl.chr && ctrl.start && ctrl.end && !ctrl.browser) {
-                    clearInterval(timer);
-                    ctrl.render();
-                }
-            }, 100);
+            ctrl.render();
             setTimeout(function() {
                 ctrl.setGenoverseWidth();
             }, 2000);
