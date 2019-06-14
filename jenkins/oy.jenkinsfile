@@ -3,7 +3,7 @@ pipeline {
     parameters {
         choice(
             name: 'DATABASE',
-            choices: ['HH', 'FB', 'PRO', 'DEV', 'TEST'],
+            choices: ['FB', 'HH', 'PRO', 'DEV', 'TEST'],
             description: 'Which database instance to use?'
         )
         choice(
@@ -23,7 +23,7 @@ pipeline {
         )
         choice(
             name: 'QUICK',
-            choices: ['False', 'True'],
+            choices: ['True', 'False'],
             description: 'Fast rebuild: pull, collect (and compress) static, touch wsgi.py.'
         )
         gitParameter(
@@ -49,9 +49,6 @@ pipeline {
                 RQ_QUEUE_LOCAL = credentials('rq_queue_local.py')
                 RQ_QUEUE_OY = credentials('rq_queue_oy.py')
                 RQ_QUEUE_PG = credentials('rq_queue_pg.py')
-
-                COMPRESSOR_DEV = credentials('compressor_dev.py')
-                COMPRESSOR_PRO = credentials('compressor_pro.py')
 
                 LOCAL_SETTINGS = credentials('local_settings.py')
                 ENV_SH = credentials('env_sh')
@@ -99,9 +96,9 @@ pipeline {
                     sh 'rm -f /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
 
                     if (params.COMPRESSOR == 'True') {
-                        sh 'cat ${COMPRESSOR_PRO} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
+                        sh 'echo "COMPRESS_ENABLED = True" > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
                     } else if (params.COMPRESSOR == 'False') {
-                        sh 'cat ${COMPRESSOR_DEV} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
+                        sh 'echo "COMPRESS_ENABLED = False" > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
                     }
                 }
 
