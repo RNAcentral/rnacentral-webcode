@@ -1029,7 +1029,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'new',
-        'version': '',
+        'version': '1.0',
     },
     {
         'name': 'ZWD',
