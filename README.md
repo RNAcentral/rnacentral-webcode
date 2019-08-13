@@ -1,6 +1,6 @@
 # RNAcentral Website
 
-[![Build Status](http://jenkins.rnacentral.org/buildStatus/icon?job=rnacentral_testing)](http://jenkins.rnacentral.org/job/rnacentral_testing/)
+[![Build Status](http://jenkins.rnacentral.org/buildStatus/icon?job=Update_test.rnacentral.org)](http://jenkins.rnacentral.org/job/rnacentral_testing/)
 
 ## About
 
