@@ -18,7 +18,7 @@ The development of RNAcentral is coordinated by the
   git clone --recursive https://github.com/RNAcentral/rnacentral-webcode.git
   ```
 
-2. Edit database connection parameters in `rnacentral/local_settings.py`
+2. Edit database connection parameters in `rnacentral/local_settings.py`. Use the [public postgres database](https://rnacentral.org/help/public-database) when developing outside the EBI network.
 
 3. Run the app using [Docker](https://www.docker.com):
 
