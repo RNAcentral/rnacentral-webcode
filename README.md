@@ -47,52 +47,6 @@ docker exec -it <container_id> bash
   python rnacentral/apiv1/tests.py
   ```
 
-### Application-specific tests
-
-Using Django test runner:
-
-```sh
-cd $RNACENTRAL_HOME
-python manage.py test portal.tests.description_tests
-```
-
-Using [py.test](http://docs.pytest.org/en/latest/) requires creating a file `rnacentral/conftest.py`:
-
-```python
-import django
-import pytest
-
-django.setup()
-
-
-@pytest.fixture(scope='session')
-def django_db_setup():
-    """Avoid creating/setting up the test database"""
-    pass
-
-
-@pytest.fixture
-def db_access_without_rollback_and_truncate(request, django_db_setup,
-                                            django_db_blocker):
-    django_db_blocker.unblock()
-    request.addfinalizer(django_db_blocker.restore)
-```
-
-The following file is also required:
-
-```sh
-$ cat pytest.ini
-[pytest]
-DJANGO_SETTINGS_MODULE = rnacentral.settings
-```
-
-Tests can then be run with:
-
-```sh
-cd $RNACENTRAL_HOME
-py.test portal/tests/description_tests.py
-```
-
 ## Feedback
 
 Feel free to give feedback using [GitHub issues](https://github.com/RNAcentral/rnacentral-webcode/issues)
