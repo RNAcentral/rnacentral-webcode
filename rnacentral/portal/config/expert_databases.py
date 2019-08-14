@@ -123,7 +123,7 @@ expert_dbs = [
     },
     {
         'name': 'Ensembl Plants',
-        'label': 'e_plants',
+        'label': 'ensembl_plants',
         'url': 'https://plants.ensembl.org/',
         'description': 'Ensembl Plants is a genome browser for plant genomes that complements the Ensembl database',
         'hint': 'Ensembl Plants is a genome browser for plant genomes that complements the Ensembl database',
