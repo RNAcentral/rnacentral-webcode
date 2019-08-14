@@ -20,10 +20,13 @@
             uib-tooltip="Browse other sequences matching this template">
            {{ $ctrl.secondaryStructures.secondary_structures[0].model_id }}
          </a>
-         template provided by <a href="http://www.rna.ccbb.utexas.edu/" target="_blank">CRW</a>.
+         template provided by
+         <a ng-if="$ctrl.secondaryStructures.secondary_structures[0].model_id.indexOf('RF0') === -1" href="http://www.rna.ccbb.utexas.edu/" target="_blank">CRW</a>
+         <a ng-if="$ctrl.secondaryStructures.secondary_structures[0].model_id.indexOf('RF0') !== -1" href="http://rfam.org/" target="_blank">Rfam</a>
+         .
          <a href="{{ $ctrl.help }}">Learn more &rarr;</a>
         <p>
-        <p class="text-muted small">
+        <p ng-if="$ctrl.secondaryStructures.secondary_structures[0].model_id.indexOf('RF0') === -1" class="text-muted small">
          Template lineage: {{ $ctrl.secondaryStructures.secondary_structures[0].template_lineage }}
         </p>
       </div>
