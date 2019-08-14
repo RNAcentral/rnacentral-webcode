@@ -39,7 +39,7 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, \
                               RfamHitSerializer, SequenceFeatureSerializer, \
                               EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer, ProteinTargetsSerializer, \
-                              LncrnaTargetsSerializer, EnsemblComparaSerializer
+                              LncrnaTargetsSerializer, EnsemblComparaSerializer, SecondaryStructureSVGImageSerializer
 
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
@@ -353,6 +353,21 @@ class SecondaryStructureSpeciesSpecificList(generics.ListAPIView):
         """Get a paginated list of cross-references"""
         rna = self.get_object()
         serializer = RnaSecondaryStructureSerializer(rna, context={
+            'taxid': taxid,
+        })
+        return Response(serializer.data)
+
+
+class SecondaryStructureSVGImage(generics.ListAPIView):
+    """
+    SVG image for a particular RNA sequence.
+    """
+    queryset = Rna.objects.all()
+
+    def get(self, request, pk=None, taxid=None, format=None):
+        """Get a paginated list of cross-references"""
+        rna = self.get_object()
+        serializer = SecondaryStructureSVGImageSerializer(rna, context={
             'taxid': taxid,
         })
         return Response(serializer.data)

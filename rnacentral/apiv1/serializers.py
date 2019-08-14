@@ -261,6 +261,19 @@ class RnaSecondaryStructureSerializer(serializers.ModelSerializer):
         return obj.get_secondary_structures(taxid=self.context['taxid'])
 
 
+class SecondaryStructureSVGImageSerializer(serializers.ModelSerializer):
+    """Serializer for presenting SVG image"""
+    image = serializers.SerializerMethodField('get_svg_image')
+
+    class Meta:
+        model = Rna
+        fields = ('image', )
+
+    def get_svg_image(self, obj):
+        """Return SVG image according to taxid."""
+        return obj.get_svg_image(taxid=self.context['taxid'])
+
+
 class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
     """
     Serializer class for species-specific RNAcentral ids.
