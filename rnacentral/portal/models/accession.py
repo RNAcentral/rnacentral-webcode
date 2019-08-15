@@ -187,7 +187,10 @@ class Accession(models.Model):
             'HGNC': 'http://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id={id}',
             'ENSEMBL': 'http://www.ensembl.org/{species}/Transcript/Summary?t={id}',
             'GENCODE': 'http://www.ensembl.org/{species}/Transcript/Summary?t={id}',
-            'ENSEMBL_PLANTS': 'http://plants.ensembl.org/{species}/Gene/Summary?db=core;g={id}',
+            'ENSEMBL_PLANTS': 'http://plants.ensembl.org/{species}/Transcript/Summary?db=core;t={id}',
+            'ENSEMBL_FUNGI': 'http://fungi.ensembl.org/{species}/Transcript/Summary?db=core;t={id}',
+            'ENSEMBL_METAZOA': 'http://metazoa.ensembl.org/{species}/Transcript/Summary?db=core;t={id}',
+            'ENSEMBL_PROTISTS': 'http://protists.ensembl.org/{species}/Transcript/Summary?db=core;t={id}',
             'FLYBASE': 'http://flybase.org/reports/{id}',
             'MGI': 'http://www.informatics.jax.org/marker/{id}',
             'GTRNADB': '',
@@ -220,7 +223,7 @@ class Accession(models.Model):
                 return urls[self.database].format(id=self.accession)
             elif self.database == 'ENSEMBL' or self.database == 'GENCODE':
                 return urls[self.database].format(id=self.external_id, species=self.get_ensembl_species_url())
-            elif self.database == 'ENSEMBL_PLANTS':
+            elif self.database in ['ENSEMBL_PLANTS', 'ENSEMBL_METAZOA', 'ENSEMBL_FUNGI', 'ENSEMBL_PROTISTS']:
                 return urls[self.database].format(id=self.external_id, species=self.get_ensembl_species_url())
             elif self.database == 'TAIR':
                 return urls[self.database].format(id=self.gene)
