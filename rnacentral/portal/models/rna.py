@@ -535,10 +535,11 @@ class Rna(CachingMixin, models.Model):
 
     def get_secondary_structures(self, taxid=None):
         data = []
-        known = self.get_layout_secondary()
+        known = self.get_dotbracket_secondary(taxid=taxid)
         if known:
-            data.append(known)
-        data.extend(self.get_dotbracket_secondary(taxid=taxid))
+            data.extend(known)
+        else:
+            data.append(self.get_layout_secondary())
 
         return {
             'sequence': self.get_sequence(),
