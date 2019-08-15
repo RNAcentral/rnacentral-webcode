@@ -45,6 +45,25 @@ var secondary_structures = {
             return ctrl.secondaryStructures.secondary_structures[0].source[0].url;
         };
 
+        ctrl.toggleColors = function() {
+            var colours = ['green', 'red', 'blue'];
+            colours.forEach(function(colour, index) {
+                var colourOn = document.querySelectorAll('svg.traveler-secondary-structure-svg .' + colour);
+                if (colourOn.length > 0) {
+                    for (var i = colourOn.length - 1; i >= 0; i--) {
+                        colourOn[i].classList.add('ex-' + colour);
+                        colourOn[i].classList.remove(colour);
+                    }
+                } else {
+                    var colourOff = document.querySelectorAll('svg.traveler-secondary-structure-svg .ex-' + colour);
+                    for (var i = colourOff.length - 1; i >= 0; i--) {
+                        colourOff[i].classList.add(colour);
+                        colourOff[i].classList.remove('ex-' + colour);
+                    }
+                }
+            });
+        };
+
         ctrl.displaySecondary = function() {
             if (ctrl.numStructures === 0) {
                 return;
