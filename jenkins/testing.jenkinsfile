@@ -196,6 +196,8 @@ pipeline {
                     # fails to import python dependencies and crashes
                     if [ "${params.QUICK}" == "False" ]; then
                       pip install --upgrade -r requirements.txt
+                      cd /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/portal/static
+                      npm update
                     fi
 
                     fab localhost deploy:quick=${params.QUICK},git_branch=${params.BRANCH},compress=${params.COMPRESSOR}
