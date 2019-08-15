@@ -47,6 +47,7 @@
     "json3": "^3.3.2",
     "moment": "^2.18.1",
     "query": "^0.2.0",
+    "save-svg-as-png": "^1.4.14",
     "slick-carousel": "^1.8.1",
     "svg-pan-zoom": "^3.6.0",
     "timelinejs3": "^3.4.0",

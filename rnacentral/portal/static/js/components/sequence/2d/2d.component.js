@@ -64,6 +64,13 @@ var secondary_structures = {
             });
         };
 
+        ctrl.downloadPng = function() {
+            document.getElementById('svg-pan-zoom-controls').setAttribute('visibility', 'hidden');
+            saveSvgAsPng(document.querySelector("#rna_ss_traveler svg"), "2D diagram.png").then(function(){
+                document.getElementById('svg-pan-zoom-controls').setAttribute('visibility', 'visible');
+            });
+        }
+
         ctrl.displaySecondary = function() {
             if (ctrl.numStructures === 0) {
                 return;
