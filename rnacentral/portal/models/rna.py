@@ -545,7 +545,7 @@ class Rna(CachingMixin, models.Model):
             'secondary_structures': data,
         }
 
-    def get_svg_image(self, taxid=None):
+    def get_svg_image(self):
         layout = getattr(self, 'secondary_structure_layout', None)
         return layout.layout if layout else None
 

@@ -270,8 +270,7 @@ class SecondaryStructureSVGImageSerializer(serializers.ModelSerializer):
         fields = ('image', )
 
     def get_svg_image(self, obj):
-        """Return SVG image according to taxid."""
-        return obj.get_svg_image(taxid=self.context['taxid'])
+        return obj.get_svg_image()
 
 
 class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):

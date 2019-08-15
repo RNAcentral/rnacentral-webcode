@@ -79,7 +79,7 @@ class RnaBedRenderer(renderers.BaseRenderer):
 
 class SVGRenderer(renderers.BaseRenderer):
     """
-    Render SVG image for a particular RNA sequence.
+    Render SVG image for an RNA sequence.
     """
     media_type = 'image/svg+xml'
     format = 'svg'

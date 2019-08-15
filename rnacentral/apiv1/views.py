@@ -360,17 +360,14 @@ class SecondaryStructureSpeciesSpecificList(generics.ListAPIView):
 
 class SecondaryStructureSVGImage(generics.ListAPIView):
     """
-    SVG image for a particular RNA sequence.
+    SVG image for an RNA sequence.
     """
     queryset = Rna.objects.all()
     renderer_classes = (SVGRenderer,)
 
-    def get(self, request, pk=None, taxid=None, format=None):
-        """Get a paginated list of cross-references"""
+    def get(self, request, pk=None, format=None):
         rna = self.get_object()
-        serializer = SecondaryStructureSVGImageSerializer(rna, context={
-            'taxid': taxid,
-        })
+        serializer = SecondaryStructureSVGImageSerializer(rna)
         return Response(serializer.data['image'])
 
 

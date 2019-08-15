@@ -34,7 +34,7 @@ urlpatterns = [
     # secondary structure for a species-specific entry
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/2d/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.SecondaryStructureSpeciesSpecificList.as_view()), name='rna-2d-species-specific'),
     # svg image for a species-specific entry
-    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/svg/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.SecondaryStructureSVGImage.as_view()), name='rna-svg-species-specific'),
+    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/2d/svg/?$', cache_page(CACHE_TIMEOUT)(views.SecondaryStructureSVGImage.as_view()), name='rna-svg-species-specific'),
     # rfam hits found in this RNAcentral id
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/rfam-hits(/(?P<taxid>\d+))?/?$', cache_page(CACHE_TIMEOUT)(views.RfamHitsAPIViewSet.as_view()), name='rna-rfam-hits'),
     # sequence features found in a sequence (CRS, mature miRNA products etc)
