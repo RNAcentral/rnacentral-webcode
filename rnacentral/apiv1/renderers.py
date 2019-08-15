@@ -75,3 +75,14 @@ class RnaBedRenderer(renderers.BaseRenderer):
         if not text:
             text = '# Genomic coordinates not available'
         return text
+
+
+class SVGRenderer(renderers.BaseRenderer):
+    """
+    Render SVG image for a particular RNA sequence.
+    """
+    media_type = 'image/svg+xml'
+    format = 'svg'
+
+    def render(self, data, media_type=None, renderer_context=None):
+        return data

@@ -41,7 +41,7 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer, ProteinTargetsSerializer, \
                               LncrnaTargetsSerializer, EnsemblComparaSerializer, SecondaryStructureSVGImageSerializer
 
-from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
+from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer, SVGRenderer
 from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
     EnsemblInsdcMapping, GenomeMapping, GenomicCoordinates, GoAnnotation, RelatedSequence, ProteinInfo, SequenceFeature,\
     SequenceRegion, EnsemblCompara
@@ -363,6 +363,7 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
     SVG image for a particular RNA sequence.
     """
     queryset = Rna.objects.all()
+    renderer_classes = (SVGRenderer,)
 
     def get(self, request, pk=None, taxid=None, format=None):
         """Get a paginated list of cross-references"""
@@ -370,7 +371,7 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
         serializer = SecondaryStructureSVGImageSerializer(rna, context={
             'taxid': taxid,
         })
-        return Response(serializer.data)
+        return Response(serializer.data['image'])
 
 
 class RnaGenomeLocations(generics.ListAPIView):
