@@ -22,7 +22,7 @@ from rest_framework import serializers
 from portal.models import Rna, Xref, Reference,  Reference_map, ChemicalComponent, Database, DatabaseStats, Accession, \
     Release, Reference, Modification, RfamHit, RfamModel, RfamClan, RfamGoTerm, OntologyTerm, SequenceFeature, \
     EnsemblAssembly, EnsemblInsdcMapping, EnsemblKaryotype, GenomeMapping, \
-    ProteinInfo, EnsemblCompara, RnaPrecomputed, SequenceRegion
+    ProteinInfo, EnsemblCompara, RnaPrecomputed, SequenceRegion, SecondaryStructureWithLayout
 
 
 class RawPublicationSerializer(serializers.ModelSerializer):
@@ -259,6 +259,12 @@ class RnaSecondaryStructureSerializer(serializers.ModelSerializer):
     def get_secondary_structures(self, obj):
         """Return secondary structures filtered by taxid."""
         return obj.get_secondary_structures(taxid=self.context['taxid'])
+
+
+class SecondaryStructureSVGImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SecondaryStructureWithLayout
+        fields = ('layout',)
 
 
 class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):

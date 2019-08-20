@@ -16,11 +16,10 @@ import warnings
 from itertools import chain
 
 from django.db.models import Min, Max, Prefetch
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
-from rest_framework import generics
-from rest_framework import renderers
+from rest_framework import generics, renderers, status
 from rest_framework.mixins import RetrieveModelMixin, ListModelMixin
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -39,12 +38,12 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, \
                               RfamHitSerializer, SequenceFeatureSerializer, \
                               EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer, ProteinTargetsSerializer, \
-                              LncrnaTargetsSerializer, EnsemblComparaSerializer
+                              LncrnaTargetsSerializer, EnsemblComparaSerializer, SecondaryStructureSVGImageSerializer
 
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
     EnsemblInsdcMapping, GenomeMapping, GenomicCoordinates, GoAnnotation, RelatedSequence, ProteinInfo, SequenceFeature,\
-    SequenceRegion, EnsemblCompara
+    SequenceRegion, EnsemblCompara, SecondaryStructureWithLayout
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination, PaginatedRawQuerySet
 
@@ -356,6 +355,23 @@ class SecondaryStructureSpeciesSpecificList(generics.ListAPIView):
             'taxid': taxid,
         })
         return Response(serializer.data)
+
+
+class SecondaryStructureSVGImage(generics.ListAPIView):
+    """
+    SVG image for an RNA sequence.
+    """
+    serializer_class = SecondaryStructureSVGImageSerializer
+    permission_classes = (AllowAny,)
+
+    def get(self, request, pk=None, format=None):
+        try:
+            rna = self.kwargs['pk']
+            image = SecondaryStructureWithLayout.objects.get(urs=rna)
+        except SecondaryStructureWithLayout.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return HttpResponse(image.layout, content_type='image/svg+xml')
 
 
 class RnaGenomeLocations(generics.ListAPIView):
