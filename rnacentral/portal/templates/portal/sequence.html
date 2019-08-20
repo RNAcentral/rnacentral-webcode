@@ -67,7 +67,7 @@ limitations under the License.
                 {% endwith %}
             </li>
             <li>
-                Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab" ng-click="activateTab('1')">species</a>
+                Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab" ng-click="activateTaxonomyTab()">species</a>
             </li>
             <li class="badge" style="padding-left: 7px; padding-right: 7px;">{{ context.precomputed.rna_type }}</li>
         </ul>
@@ -310,7 +310,7 @@ limitations under the License.
 
             </uib-tab>
 
-            <uib-tab index="1" heading="Taxonomy" deselect="checkTab($event, $selectedIndex)">
+            <uib-tab index="1" id="taxonomy" heading="Taxonomy" deselect="checkTab($event, $selectedIndex)">
                 <h2>Taxonomic tree</h2>
 
                 <p>
