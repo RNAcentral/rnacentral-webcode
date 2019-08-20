@@ -222,9 +222,18 @@
       <ul class="list-unstyled">
         <li class="result" ng-repeat="rna in $ctrl.search.result.entries">
           <div class="text-search-result">
-            <h4 style="margin-bottom: 0">
+            <h4 style="margin-bottom: 0; margin-top: 0;">
               <a href="/rna/{{rna.id_with_slash}}" ng-bind-html="rna.fields.description[0] | sanitize"></a>
             </h4>
+
+            <div class="media">
+              <div class="media-left media-middle" ng-show="rna.fields.has_secondary_structure[0].toLowerCase().indexOf('true') !== -1">
+                <a href="/rna/{{rna.id_with_slash}}">
+                  <img style="max-width:140px; max-height:100px;" class="media-object img-thumbnail" src="/api/v1/rna/{{$ctrl.getURS(rna.id)}}/2d/svg/">
+                </a>
+              </div>
+              <div class="media-body">
+
             <small class="text-muted">{{rna.id}}</small>
             <div ng-show="$ctrl.anyHighlights(rna.fields)" style="margin-bottom: 3px; margin-top: 1px; color: #545454;" class="small">
               <span ng-if="$ctrl.highlight(rna.fields).fieldName">
@@ -248,6 +257,8 @@
               <li style="display: inline-block;" ng-repeat="expert_db in rna.fields.expert_db | plaintext | orderBy:expert_db:false:$ctrl.expertDbHasStarComparator"><img class="desaturate" style="cursor: help; height: 16px; vertical-align: top;" uib-tooltip-template="'/static/js/components/text-search/text-search-results/expert-database-tooltip-on-image.html'" tooltip-placement="bottom" ng-src="{{ $ctrl.normalizeExpertDbName.nameToImageUrl(expert_db) }}">&nbsp;&nbsp;</li>
             </ul>
           </div>
+          </div>
+          </div>
         </li>
       </ul>
 
@@ -258,6 +269,7 @@
       </div>
 
       <button class="btn btn-default load-more col-md-3" ng-click="$ctrl.search.loadMoreResults()" ng-show="$ctrl.search.result.hitCount > $ctrl.search.result.entries.length"><i ng-class="$ctrl.search.status === 'in progress' ? 'fa fa-spinner fa-spin' : 'hidden'"></i> Load more</button>
+      </div>
     </div>
 
   </div><!--/row-->

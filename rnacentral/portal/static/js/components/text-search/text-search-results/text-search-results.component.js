@@ -340,6 +340,10 @@ var textSearchResults = {
         ctrl.anyHighlightsInField = function(field) {
             return field.some(function(el) { return el.indexOf('text-search-highlights') !== -1 });
         };
+
+        ctrl.getURS = function(urs_taxid) {
+            return urs_taxid.replace(/_\d+/, '');
+        }
     }]
 };
 
