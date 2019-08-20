@@ -24,6 +24,7 @@ six==1.8.0
 sqlparse==0.1.19
 versiontools==1.9.1
 simple-crypt==4.1.7
+colorhash==1.0.2
 
 # code style and test coverage reporting
 django-jenkins==0.110.0

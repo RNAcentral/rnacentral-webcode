@@ -47,6 +47,9 @@ from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, Databa
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination, PaginatedRawQuerySet
 
+from colorhash import ColorHash
+
+
 """
 Docstrings of the classes exposed in urlpatterns support markdown.
 """
@@ -366,12 +369,21 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
 
     def get(self, request, pk=None, format=None):
         try:
-            rna = self.kwargs['pk']
-            image = SecondaryStructureWithLayout.objects.get(urs=rna)
+            upi = self.kwargs['pk']
+            image = SecondaryStructureWithLayout.objects.get(urs=upi)
         except SecondaryStructureWithLayout.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        return HttpResponse(image.layout, content_type='image/svg+xml')
+        return HttpResponse(self.preprocess_svg_thumbnail(image.layout, upi), content_type='image/svg+xml')
+
+    def preprocess_svg_thumbnail(self, image, upi):
+        return image.replace('class="green"', '').\
+                     replace('class="red"', '').\
+                     replace('class="blue"', '').\
+                     replace('text {stroke: rgb(0, 0, 0); fill: none;',
+                             'text {{stroke: rgb(0, 0, 0); fill: {color}}};'.format(color=ColorHash(upi).hex)).\
+                     replace('style="font-size: 8px;',
+                             'style="font-size: 20px;') # increase font size
 
 
 class RnaGenomeLocations(generics.ListAPIView):
