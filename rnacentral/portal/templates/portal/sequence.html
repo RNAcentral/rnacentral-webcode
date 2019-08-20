@@ -32,12 +32,21 @@ limitations under the License.
             <i class="fa fa-exclamation-triangle"></i> Sorry, there was a problem loading sequence from server. Please try again and contact us if the problem persists.
         </div>
     </div>
-    <div ng-if="rna" class="col-md-12">
-        <h1>
-            Sequence {{ rna.upi }}
 
-            <small id="sequence-description-header">{{ context.description }}</small>
-        </h1>
+    <div ng-if="rna" class="col-md-12">
+        {% if rna.has_secondary_structure %}
+        <div class="media">
+          <div class="media-left media-middle">
+            <a href="" ng-click="activate2dTab()">
+              <img style="max-width:140px; max-height:120px; margin: 10px;" class="media-object img-thumbnail hvr-grow" src="/api/v1/rna/{{ rna.upi }}/2d/svg/" alt="{{ context.description }} secondary structure diagram">
+            </a>
+          </div>
+          <div class="media-body">
+        {% endif %}
+        <h2>
+            {{ context.description }}
+            <small>{{ rna.upi }}{% if context.taxid %}_{{ context.taxid }}{% endif %}</small>
+        </h2>
 
         {% if context.taxid_not_found %}
             <div class="alert alert-danger">
@@ -62,6 +71,7 @@ limitations under the License.
             </li>
             <li class="badge" style="padding-left: 7px; padding-right: 7px;">{{ context.precomputed.rna_type }}</li>
         </ul>
+        {% if rna.has_secondary_structure %}</div><!-- media-body --></div><!-- media -->{% endif %}
 
         <div class="tabbable">
 
