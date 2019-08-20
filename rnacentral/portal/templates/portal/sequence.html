@@ -344,12 +344,14 @@ limitations under the License.
 
             </uib-tab>
 
-            <uib-tab index="2" id="secondary-structures" deselect="checkTab($event, $selectedIndex)" ng-hide="hide2dTab" ng-if="taxid">
+            {% if rna.has_secondary_structure %}
+            <uib-tab index="2" id="secondary-structures" deselect="checkTab($event, $selectedIndex)" ng-if="taxid">
                 <uib-tab-heading>
-                  <span class="label label-success">New</span> 2D
+                  2D structure <span class="label label-success">New</span>
                 </uib-tab-heading>
-                <secondary-structures upi="upi" taxid="taxid" show-secondary-structure-tab="show2dTab()"></secondary-structures>
+                <secondary-structures upi="upi" taxid="taxid" show-secondary-structure-tab="true"></secondary-structures>
             </uib-tab>
+            {% endif %}
 
             <uib-tab index="3" class="dropdown pull-right hidden-xs">
                 <uib-tab-heading>
