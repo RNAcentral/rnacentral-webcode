@@ -16,7 +16,7 @@ import warnings
 from itertools import chain
 
 from django.db.models import Min, Max, Prefetch
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
 from rest_framework import generics, renderers, status
@@ -40,7 +40,7 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer, ProteinTargetsSerializer, \
                               LncrnaTargetsSerializer, EnsemblComparaSerializer, SecondaryStructureSVGImageSerializer
 
-from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer, SVGRenderer
+from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
     EnsemblInsdcMapping, GenomeMapping, GenomicCoordinates, GoAnnotation, RelatedSequence, ProteinInfo, SequenceFeature,\
     SequenceRegion, EnsemblCompara, SecondaryStructureWithLayout
@@ -363,16 +363,15 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
     """
     serializer_class = SecondaryStructureSVGImageSerializer
     permission_classes = (AllowAny,)
-    renderer_classes = (SVGRenderer,)
 
     def get(self, request, pk=None, format=None):
-        rna = self.kwargs['pk']
         try:
+            rna = self.kwargs['pk']
             image = SecondaryStructureWithLayout.objects.get(urs=rna)
         except SecondaryStructureWithLayout.DoesNotExist:
-            return Response({}, status=status.HTTP_404_NOT_FOUND)
+            return Response(status=status.HTTP_404_NOT_FOUND)
 
-        return Response(image.layout)
+        return HttpResponse(image.layout, content_type='image/svg+xml')
 
 
 class RnaGenomeLocations(generics.ListAPIView):
