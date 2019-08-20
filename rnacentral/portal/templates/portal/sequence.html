@@ -79,7 +79,7 @@ limitations under the License.
 
             <uib-tab index="0" heading="Overview" id="overview" deselect="checkTab($event, $selectedIndex)">
 
-                <xrefs upi="upi" taxid="taxid" timeout="500" page-size="5" on-activate-publications="activatePublications()" on-create-modifications-feature="createModificationsFeature(modifications, accession)" on-activate-genome-browser="activateGenomeBrowser(start, end, chr, genome)" on-scroll-to-genome-browser="scrollToGenomeBrowser()"></xrefs>
+                <xrefs upi="upi" taxid="taxid" page-size="5" on-activate-publications="activatePublications()" on-create-modifications-feature="createModificationsFeature(modifications, accession)" on-activate-genome-browser="activateGenomeBrowser(start, end, chr, genome)" on-scroll-to-genome-browser="scrollToGenomeBrowser()"></xrefs>
 
                 <protein-targets ng-if="taxid" upi="upi" taxid="taxid" timeout="500" page-size="5" genomes="genomes"></protein-targets>
 
@@ -270,9 +270,6 @@ limitations under the License.
 
                 <h2 class="margin-bottom-0px">
                     Sequence
-                    <small>
-                      <em>{{ rna.upi }}{% if context.taxid %}_{{ context.taxid }}{% endif %}</em>
-                    </small>
                 </h2>
 
                 {% if context.non_canonical_base_counts %}
