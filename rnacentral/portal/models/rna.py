@@ -257,12 +257,15 @@ class Rna(CachingMixin, models.Model):
 
     def get_distinct_database_names(self, taxid=None):
         """Get a non-redundant list of databases referencing the sequence."""
-        databases = self.xrefs.filter(deleted='N')
         if taxid:
-            databases = databases.filter(taxid=taxid)
-        databases = list(databases.values_list('db__display_name', flat=True).distinct())
-        databases = sorted(databases, key=lambda s: s.lower())  # case-insensitive
-        return databases
+            queryset = RnaPrecomputed.objects.filter(taxid=taxid)
+        else:
+            queryset = RnaPrecomputed.objects.filter(taxid__isnull=True)
+        try:
+            obj = queryset.get(upi=self.upi)
+            return obj.databases.split(',')
+        except ObjectDoesNotExist:
+            pass
 
     @cached_property
     def first_seen(self):
