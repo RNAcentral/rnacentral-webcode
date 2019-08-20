@@ -19,8 +19,7 @@ from django.db.models import Min, Max, Prefetch
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
-from rest_framework import generics
-from rest_framework import renderers
+from rest_framework import generics, renderers, status
 from rest_framework.mixins import RetrieveModelMixin, ListModelMixin
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -44,7 +43,7 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer, SVGRenderer
 from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
     EnsemblInsdcMapping, GenomeMapping, GenomicCoordinates, GoAnnotation, RelatedSequence, ProteinInfo, SequenceFeature,\
-    SequenceRegion, EnsemblCompara
+    SequenceRegion, EnsemblCompara, SecondaryStructureWithLayout
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination, PaginatedRawQuerySet
 
@@ -362,13 +361,18 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
     """
     SVG image for an RNA sequence.
     """
-    queryset = Rna.objects.all()
+    serializer_class = SecondaryStructureSVGImageSerializer
+    permission_classes = (AllowAny,)
     renderer_classes = (SVGRenderer,)
 
     def get(self, request, pk=None, format=None):
-        rna = self.get_object()
-        serializer = SecondaryStructureSVGImageSerializer(rna)
-        return Response(serializer.data['image'])
+        rna = self.kwargs['pk']
+        try:
+            image = SecondaryStructureWithLayout.objects.get(urs=rna)
+        except SecondaryStructureWithLayout.DoesNotExist:
+            return Response({}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response(image.layout)
 
 
 class RnaGenomeLocations(generics.ListAPIView):

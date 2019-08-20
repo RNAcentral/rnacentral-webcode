@@ -22,7 +22,7 @@ from rest_framework import serializers
 from portal.models import Rna, Xref, Reference,  Reference_map, ChemicalComponent, Database, DatabaseStats, Accession, \
     Release, Reference, Modification, RfamHit, RfamModel, RfamClan, RfamGoTerm, OntologyTerm, SequenceFeature, \
     EnsemblAssembly, EnsemblInsdcMapping, EnsemblKaryotype, GenomeMapping, \
-    ProteinInfo, EnsemblCompara, RnaPrecomputed, SequenceRegion
+    ProteinInfo, EnsemblCompara, RnaPrecomputed, SequenceRegion, SecondaryStructureWithLayout
 
 
 class RawPublicationSerializer(serializers.ModelSerializer):
@@ -262,15 +262,9 @@ class RnaSecondaryStructureSerializer(serializers.ModelSerializer):
 
 
 class SecondaryStructureSVGImageSerializer(serializers.ModelSerializer):
-    """Serializer for presenting SVG image"""
-    image = serializers.SerializerMethodField('get_svg_image')
-
     class Meta:
-        model = Rna
-        fields = ('image', )
-
-    def get_svg_image(self, obj):
-        return obj.get_svg_image()
+        model = SecondaryStructureWithLayout
+        fields = ('layout',)
 
 
 class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
