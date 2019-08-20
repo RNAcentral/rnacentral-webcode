@@ -17,6 +17,7 @@ import itertools as it
 from collections import Counter, defaultdict
 
 from caching.base import CachingMixin, CachingManager
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.db import connection
@@ -37,6 +38,8 @@ from .formatters import Gff3Formatter, GffFormatter, _xref_to_bed_format
 from portal.utils import descriptions as desc
 from portal.rfam_matches import check_issues
 from portal.config.expert_databases import expert_dbs
+
+import requests
 
 
 def dictfetchall(cursor):
@@ -535,6 +538,26 @@ class Rna(CachingMixin, models.Model):
     def get_rfam_hit_families(self, **kwargs):
         hits = self.get_rfam_hits(**kwargs)
         return sorted(set(hit.rfam_model for hit in hits))
+
+    def has_secondary_structure(self):
+        """
+        Use EBI search index to determine if a secondary structure is available.
+        The API request is used instead of an SQL query because the 2D tables
+        are subject to frequent updates.
+        """
+        url = settings.EBI_SEARCH_ENDPOINT + '?query={upi}_*&fields=has_secondary_structure&format=json'.format(upi=self.upi)
+        request = requests.get(url)
+        data = request.json()
+        if 'hitCount' in data and data['hitCount'] > 0:
+            try:
+                if data['entries'][0]['fields']['has_secondary_structure'][0] == 'True':
+                    return True
+                else:
+                    return False
+            except:
+                return False
+        else:
+            return False
 
     def get_secondary_structures(self, taxid=None):
         data = []
