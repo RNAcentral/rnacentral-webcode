@@ -96,7 +96,7 @@ RNAcentral: The non-coding RNA sequence database
           <div class="panel-body text-center">
             <a href="/rna/{{ item.uid }}/{{ item.taxid }}">
               <h4 class="text-center rnacentral-gold">{{ item.description }}</h4>
-              <img style="max-width:200px; max-height:180px;" class="img-responsive center-block hvr-grow" src="http://127.0.0.1:9000/api/v1/rna/{{ item.uid }}/2d/svg/" alt="{{ item.description }} secondary structure diagram">
+              <img style="max-width:200px; max-height:180px;" class="img-responsive center-block hvr-grow" src="/api/v1/rna/{{ item.uid }}/2d/svg/" alt="{{ item.description }} secondary structure diagram">
             </a>
           </div>
         </div>
