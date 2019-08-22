@@ -66,7 +66,7 @@ var secondary_structures = {
 
         ctrl.downloadPng = function() {
             document.getElementById('svg-pan-zoom-controls').setAttribute('visibility', 'hidden');
-            saveSvgAsPng(document.querySelector("#rna_ss_traveler svg"), "2D diagram.png").then(function(){
+            saveSvgAsPng(document.querySelector("#rna_ss_traveler svg"), ctrl.upi + "_" + ctrl.taxid + " 2D diagram.png", {backgroundColor: 'white'}).then(function(){
                 document.getElementById('svg-pan-zoom-controls').setAttribute('visibility', 'visible');
             });
         }
