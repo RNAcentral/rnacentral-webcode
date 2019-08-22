@@ -88,6 +88,57 @@ RNAcentral: The non-coding RNA sequence database
   </div>
 
   <div class="row well well-sm">
+    <h2 class="text-center margin-bottom-0px" style="margin-top: 0px;">Featured secondary structures</h2>
+
+    <div class="col-md-3 col-sm-3 col-xs-12">
+      <div class="panel panel-default">
+        <div class="panel-body text-center">
+          <a href="/rna/{{ context.svg_images.0.uid }}/{{ context.svg_images.0.taxid }}">
+            <h4 class="text-center" style="color: #BF8E3E">{{ context.svg_images.0.description }}</h4>
+            <img style="max-width:200px; max-height:180px;" class="img-responsive center-block hvr-grow" src="http://127.0.0.1:9000/api/v1/rna/{{ context.svg_images.0.uid }}/2d/svg/" alt="{{ context.svg_images.0.description }} secondary structure diagram">
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-sm-3 col-xs-12">
+      <div class="panel panel-default">
+        <div class="panel-body text-center">
+          <a href="/rna/{{ context.svg_images.1.uid }}/{{ context.svg_images.1.taxid }}">
+            <h4 class="text-center" style="color: #BF8E3E">{{ context.svg_images.1.description }}</h4>
+            <img style="max-width:200px; max-height:180px;" class="img-responsive center-block hvr-grow" src="/api/v1/rna/{{ context.svg_images.1.uid }}/2d/svg/" alt="{{ context.svg_images.1.description }} secondary structure diagram">
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-sm-3 col-xs-12">
+      <div class="panel panel-default">
+        <div class="panel-body text-center">
+          <a href="/rna/{{ context.svg_images.2.uid }}/{{ context.svg_images.2.taxid }}">
+            <h4 class="text-center" style="color: #BF8E3E">{{ context.svg_images.2.description }}</h4>
+            <img style="max-width:200px; max-height:180px;" class="img-responsive center-block hvr-grow" src="/api/v1/rna/{{ context.svg_images.2.uid }}/2d/svg/" alt="{{ context.svg_images.2.description }} secondary structure diagram">
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3 col-sm-3 col-xs-12">
+      <div class="panel panel-default">
+        <div class="panel-body text-center">
+          <a href="/rna/{{ context.svg_images.3.uid }}/{{ context.svg_images.3.taxid }}">
+            <h4 class="text-center" style="color: #BF8E3E">{{ context.svg_images.3.description }}</h4>
+            <img style="max-width:200px; max-height:180px;" class="img-responsive center-block hvr-grow" src="/api/v1/rna/{{ context.svg_images.3.uid }}/2d/svg/" alt="{{ context.svg_images.3.description }} secondary structure diagram">
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="clearfix"></div>
+      <div class="text-center" style="margin-right: 20px; margin-bottom: 20px;"><a href='/search?q=has_secondary_structure:"True"'>Browse all 2Ds</a> or <a href="/help/secondary-structure">learn more about secondary structure</a></div>
+  </div>
+
+  <div class="row">
 
     <p class="lead text-center margin-bottom-0px">
       Data provided by <a href="{% url 'expert-databases' %}">{{ context.databases|length }} databases</a>
@@ -121,7 +172,7 @@ RNAcentral: The non-coding RNA sequence database
 
   </div>
 
-  <div class="row">
+  <div class="row well well-sm">
     <h2 class="text-center margin-bottom-0px" style="margin-top: 0px;"><a href="/use-cases" class="rnacentral-gold">Featured use cases</a></h2>
 
     <div class="col-md-4">
@@ -181,7 +232,7 @@ RNAcentral: The non-coding RNA sequence database
   </div>
 
 
-  <div class="row well well-sm">
+  <div class="row">
     <h2 class="text-center margin-bottom-0px">News</h2>
       <div class="col-md-4">
         <div class="panel panel-default">

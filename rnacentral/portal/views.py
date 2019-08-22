@@ -18,6 +18,7 @@ import math
 import re
 import requests
 import six
+import random
 
 if six.PY2:
     from urlparse import urlparse
@@ -41,6 +42,7 @@ from portal.forms import ContactForm
 from portal.models import Rna, Database, Release, Xref, EnsemblAssembly
 from portal.models.database_stats import DatabaseStats
 from portal.models.rna_precomputed import RnaPrecomputed
+from portal.config.svg_images import examples
 
 CACHE_TIMEOUT = 60 * 60 * 24 * 1  # per-view cache timeout in seconds
 XREF_PAGE_SIZE = 1000
@@ -70,9 +72,11 @@ def get_sequence_lineage(request, upi):
 @cache_page(60)
 def homepage(request):
     """RNAcentral homepage."""
+    svg_images = random.sample(examples, 4)
     context = {
         'databases': list(Database.objects.filter(alive='Y').order_by('?').all()),
         'blog_url': settings.RELEASE_ANNOUNCEMENT_URL,
+        'svg_images': svg_images,
     }
 
     return render(request, 'portal/homepage.html', {'context': context})
