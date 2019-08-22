@@ -142,7 +142,7 @@ class Accession(models.Model):
         """Get species name in a format that can be used in Ensembl urls."""
         if self.species == 'Dictyostelium discoideum':
             species = 'Dictyostelium discoideum AX4'
-        elif self.species.count(' ') > 1:
+        elif self.species.count(' ') > 1 or self.species.count('-') > 0:
             xref = portal.models.Xref.objects.filter(accession__accession=self.accession, deleted='N').get()
             ensembl_genome = portal.models.EnsemblAssembly.objects.filter(taxid=xref.taxid).first()
             if ensembl_genome:
