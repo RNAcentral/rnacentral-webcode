@@ -34,7 +34,7 @@ var secondary_structures = {
 
         ctrl.fetchSecondaryStructures = function() {
             return $http.get(routes.apiSecondaryStructuresView({ upi: ctrl.upi, taxid: ctrl.taxid }),
-                { timeout: 5000 }
+                { timeout: 10000 }
             )
         };
 
