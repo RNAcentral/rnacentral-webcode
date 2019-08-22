@@ -1612,3 +1612,7 @@ textarea {
   float: left;
   margin-right: 8px;
 }
+
+#rna_ss_traveler svg {
+  cursor: grab;
+}
