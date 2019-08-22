@@ -125,6 +125,16 @@ var secondary_structures = {
             $('.traveler-secondary-structure-svg').css('font-size', '11px');
         };
 
+        ctrl.feedback = function() {
+            document.querySelector('.doorbell-feedback').click()
+        }
+
+        ctrl.copy2D = function() {
+            var rnaClipboard = new Clipboard('#copy-dot-bracket-notation', {
+                "text": function () { return ctrl.secondaryStructures.secondary_structures[0].secondary_structure; }
+            });
+        };
+
         /**
          * Saves structure in dot-bracket notation as a file, code stolen from:
          * https://stackoverflow.com/questions/3665115/create-a-file-in-memory-for-user-to-download-not-through-server
