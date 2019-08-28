@@ -38,5 +38,4 @@ such as [GtRNAdb](/expert-database/gtrnadb). These structures are displayed usin
 ## Acknowledgements
 
 We would like to thank [David Hoksza](https://github.com/davidhoksza)
-for help with the [Traveler](https://github.com/davidhoksza/traveler) software
-and [Robin Gutell](http://www.rna.ccbb.utexas.edu) for providing the rRNA templates.
+for help with the [Traveler](https://github.com/davidhoksza/traveler) software, [Robin Gutell](http://www.rna.ccbb.utexas.edu) for providing the rRNA templates, [Eric Nawrocki](https://github.com/nawrockie) for help with the ribotyper software, and [Anton S. Petrov](http://cool.gatech.edu/people/petrov-anton) for the LSU templates.
