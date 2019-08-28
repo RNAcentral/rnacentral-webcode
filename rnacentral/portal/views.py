@@ -142,6 +142,9 @@ def rna_view(request, upi, taxid=None):
     response = render(request, 'portal/sequence.html', {'rna': rna, 'context': context})
     # define canonical URL for Google
     response['Link'] = '<{}>; rel="canonical"'.format(request.build_absolute_uri()).replace('http://', 'https://')
+    # ask Google not to index non-species specific pages
+    if not taxid:
+        response['X-Robots-Tag'] = 'noindex'
     return response
 
 
