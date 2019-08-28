@@ -98,6 +98,7 @@ class Command(BaseCommand):
                 def __init__(self, page_number, rna_paginator):
                     self.page_number = page_number
                     self.rna_paginator = rna_paginator
+                    self.protocol = 'https'
 
                 @property
                 def paginator(self):
