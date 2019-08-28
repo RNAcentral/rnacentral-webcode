@@ -29,7 +29,7 @@ from portal.models import RnaPrecomputed, Database
 
 
 # Queryset for Rna sections; include only Human and Mouse rnas for now.
-rna_queryset = RnaPrecomputed.objects.filter(taxid__in=[9606, 10090], upi__xrefs__db__descr="HGNC").order_by('upi')  # RnaPrecomputed.objects.filter(taxid__isnull=False).all().order_by('upi')
+rna_queryset = RnaPrecomputed.objects.filter(taxid__in=[9606, 10090]).filter(databases__contains='HGNC').order_by('upi')  # RnaPrecomputed.objects.filter(taxid__isnull=False).all().order_by('upi')
 rna_paginator = Paginator(rna_queryset, Sitemap.limit)
 
 
