@@ -139,8 +139,9 @@ def rna_view(request, upi, taxid=None):
         'mirna_regulators': rna.get_mirna_regulators(taxid=taxid),
         'annotations_from_other_species': rna.get_annotations_from_other_species(taxid=taxid),
     }
-
-    return render(request, 'portal/sequence.html', {'rna': rna, 'context': context})
+    response = render(request, 'portal/sequence.html', {'rna': rna, 'context': context})
+    response['Link'] = '<{}>; rel="canonical"'.format(request.build_absolute_uri())
+    return response
 
 
 @cache_page(CACHE_TIMEOUT)
