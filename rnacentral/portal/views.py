@@ -140,7 +140,8 @@ def rna_view(request, upi, taxid=None):
         'annotations_from_other_species': rna.get_annotations_from_other_species(taxid=taxid),
     }
     response = render(request, 'portal/sequence.html', {'rna': rna, 'context': context})
-    response['Link'] = '<{}>; rel="canonical"'.format(request.build_absolute_uri())
+    # define canonical URL for Google
+    response['Link'] = '<{}>; rel="canonical"'.format(request.build_absolute_uri()).replace('http://', 'https://')
     return response
 
 
