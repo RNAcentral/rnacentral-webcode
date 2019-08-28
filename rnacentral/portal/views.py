@@ -69,7 +69,7 @@ def get_sequence_lineage(request, upi):
     return HttpResponse(json_lineage_tree, content_type="application/json")
 
 
-@cache_page(60)
+@cache_page(1)
 def homepage(request):
     """RNAcentral homepage."""
     svg_images = random.sample(examples, 4)
