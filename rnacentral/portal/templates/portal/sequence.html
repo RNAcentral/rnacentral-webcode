@@ -17,8 +17,12 @@ limitations under the License.
 
 {% block meta_tags %}
     {{ block.super }}
-    <meta name="description" content="{{ context.description }} | {{ rna.upi }}"/>
-    <meta name="twitter:description" content="{{ context.description }} | {{ rna.upi }}">
+    {% if context.summary %}
+    <meta name="description" content="{{ context.summary }}"/>
+    {% else %}
+    <meta name="description" content="{{ context.description }}"/>
+    {% endif %}
+    <meta name="twitter:description" content="{{ context.description }}">
 {% endblock %}
 
 {% block title %}
@@ -72,6 +76,12 @@ limitations under the License.
             <li class="badge" style="padding-left: 7px; padding-right: 7px;">{{ context.precomputed.rna_type }}</li>
         </ul>
         {% if rna.has_secondary_structure %}</div><!-- media-body --></div><!-- media -->{% endif %}
+
+        {% if context.summary %}
+        <p class="small text-muted">
+          <strong>Automated summary:</strong> {{ context.summary }}
+        </p>
+        {% endif %}
 
         <div class="tabbable">
 

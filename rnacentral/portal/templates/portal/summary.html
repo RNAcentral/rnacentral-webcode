@@ -1,0 +1,35 @@
+{% load humanize %}
+
+This {{ rna_type }} sequence is {{ length|intcomma }} nucleotides long and is found in {{ species }}.
+Annotated by {{ database_count }} database{{ database_count|pluralize }} ({{ databases|join:", " }}).
+Described in {{ citations_count }} paper{{ citations_count|pluralize}}.
+
+{% if has_secondary_structure == 'True' %}
+Has a conserved secondary structure or a structured region.
+{% endif %}
+
+{% if 'PDBe' in databases %}
+Has an experimentally determined 3D structure.
+{% endif %}
+
+{% if rfam_count == 1 %}
+Matches 1 Rfam family ({{ rfam_family_name.0 }}, {{ rfam_id.0 }}).
+{% elif rfam_count > 1 %}
+Matches {{ rfam_count }} Rfam families ({{ rfam_family_name|join:", " }}).
+{% endif %}
+
+{% if genes %}
+{{ description }} sequence is a product of {{ genes|join:", " }} gene{{ genes|pluralize }}.
+{% endif %}
+
+{% if has_genomic_coordinates == 'True' %}
+Found in the {% if common_name %}{{ common_name }}{% else %}{{ species }}{% endif %} reference genome.
+{% endif %}
+
+{% if has_interacting_rnas == 'True' %}
+Interacts with lncRNAs, such as ({{ interacting_rnas|slice:":10"|join:", " }}).
+{% endif %}
+
+{% if has_interacting_proteins == 'True' %}
+Interacts with protein gene{{interacting_proteins|length|pluralize}}, including {{ interacting_proteins|slice:":10"|join:", " }}.
+{% endif %}

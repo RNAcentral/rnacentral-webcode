@@ -30,6 +30,7 @@ from django.http import Http404, HttpResponse, HttpResponseForbidden
 from django.conf import settings
 from django.shortcuts import render, render_to_response, redirect
 from django.template import TemplateDoesNotExist
+from django.template.loader import render_to_string
 from django.views.decorators.cache import cache_page, never_cache
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
@@ -43,6 +44,7 @@ from portal.models import Rna, Database, Release, Xref, EnsemblAssembly
 from portal.models.database_stats import DatabaseStats
 from portal.models.rna_precomputed import RnaPrecomputed
 from portal.config.svg_images import examples
+from rna_summary import RnaSummary
 
 CACHE_TIMEOUT = 60 * 60 * 24 * 1  # per-view cache timeout in seconds
 XREF_PAGE_SIZE = 1000
@@ -124,6 +126,11 @@ def rna_view(request, upi, taxid=None):
     symbol_counts = rna.count_symbols()
     non_canonical_base_counts = {key: symbol_counts[key] for key in symbol_counts if key not in ['A', 'U', 'G', 'C']}
 
+    if taxid_filtering:
+        summary = RnaSummary(upi, taxid, settings.EBI_SEARCH_ENDPOINT)
+        summary_text = render_to_string('portal/summary.html', vars(summary))
+        summary_text = re.sub(r'\s+', ' ', summary_text.strip())
+
     context = {
         'symbol_counts': symbol_counts,
         'non_canonical_base_counts': non_canonical_base_counts,
@@ -133,6 +140,7 @@ def rna_view(request, upi, taxid=None):
         'description': rna.get_description(taxid) if taxid_filtering else rna.get_description(),
         'distinct_databases': rna.get_distinct_database_names(taxid),
         'publications': rna.get_publications(taxid) if taxid_filtering else rna.get_publications(),
+        'summary': summary_text if taxid_filtering else '',
         'tab': request.GET.get('tab', ''),
         'xref_pages': six.moves.range(1, int(math.ceil(rna.count_xrefs()/float(XREF_PAGE_SIZE))) + 1),
         'xref_page_size': XREF_PAGE_SIZE,
