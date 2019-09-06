@@ -227,7 +227,7 @@
             </h4>
 
             <div class="media">
-              <div class="media-left media-middle" ng-show="rna.fields.has_secondary_structure[0].toLowerCase().indexOf('true') !== -1">
+              <div class="media-left media-middle" ng-if="rna.fields.has_secondary_structure[0].toLowerCase().indexOf('true') !== -1">
                 <a href="/rna/{{rna.id_with_slash}}">
                   <img style="max-width:140px; max-height:100px;" class="media-object img-thumbnail" src="/api/v1/rna/{{$ctrl.getURS(rna.id)}}/2d/svg/">
                 </a>
