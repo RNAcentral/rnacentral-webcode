@@ -16,11 +16,10 @@ import warnings
 from itertools import chain
 
 from django.db.models import Min, Max, Prefetch
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
-from rest_framework import generics
-from rest_framework import renderers
+from rest_framework import generics, renderers, status
 from rest_framework.mixins import RetrieveModelMixin, ListModelMixin
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -39,14 +38,17 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, \
                               RfamHitSerializer, SequenceFeatureSerializer, \
                               EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer, ProteinTargetsSerializer, \
-                              LncrnaTargetsSerializer, EnsemblComparaSerializer
+                              LncrnaTargetsSerializer, EnsemblComparaSerializer, SecondaryStructureSVGImageSerializer
 
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
     EnsemblInsdcMapping, GenomeMapping, GenomicCoordinates, GoAnnotation, RelatedSequence, ProteinInfo, SequenceFeature,\
-    SequenceRegion, EnsemblCompara
+    SequenceRegion, EnsemblCompara, SecondaryStructureWithLayout
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination, PaginatedRawQuerySet
+
+from colorhash import ColorHash
+
 
 """
 Docstrings of the classes exposed in urlpatterns support markdown.
@@ -356,6 +358,32 @@ class SecondaryStructureSpeciesSpecificList(generics.ListAPIView):
             'taxid': taxid,
         })
         return Response(serializer.data)
+
+
+class SecondaryStructureSVGImage(generics.ListAPIView):
+    """
+    SVG image for an RNA sequence.
+    """
+    serializer_class = SecondaryStructureSVGImageSerializer
+    permission_classes = (AllowAny,)
+
+    def get(self, request, pk=None, format=None):
+        try:
+            upi = self.kwargs['pk']
+            image = SecondaryStructureWithLayout.objects.get(urs=upi)
+        except SecondaryStructureWithLayout.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        return HttpResponse(self.preprocess_svg_thumbnail(image.layout, upi), content_type='image/svg+xml')
+
+    def preprocess_svg_thumbnail(self, image, upi):
+        return image.replace('class="green"', '').\
+                     replace('class="red"', '').\
+                     replace('class="blue"', '').\
+                     replace('text {stroke: rgb(0, 0, 0); fill: none;',
+                             'text {{stroke: rgb(0, 0, 0); fill: {color}}};'.format(color=ColorHash(upi).hex)).\
+                     replace('style="font-size: 8px;',
+                             'style="font-size: 20px;') # increase font size
 
 
 class RnaGenomeLocations(generics.ListAPIView):

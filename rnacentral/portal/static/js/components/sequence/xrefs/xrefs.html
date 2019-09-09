@@ -140,9 +140,12 @@
               </span>
             </span>
 
-            <!-- Ensembl Plants -->
-            <span ng-switch-when="Ensembl Plants">
-              <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank" title="View the transcript in {{ xref.database }}">{{ xref.accession.external_id }}</a> {{ xref.accession.locus_tag }}
+            <!-- Ensembl Plants/Fungi/Protists/Metazoa -->
+            <span ng-switch-when="Ensembl Fungi|Ensembl Protists|Ensembl Metazoa|Ensembl Plants" ng-switch-when-separator="|">
+              transcript
+              <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank" title="View the transcript in {{ xref.database }}">{{ xref.accession.external_id }}</a>,
+              gene
+              <a ng-if="xref.accession.gene" href="{{ xref.ensembl_division.url }}/{{ xref.accession.ensembl_species_url }}/Gene/Summary?g={{ xref.accession.gene }}" target="_blank">{{ xref.accession.gene }}</a>
             </span>
 
             <!-- FlyBase -->
@@ -245,7 +248,7 @@
             <span ng-switch-when="TAIR">
               {{ xref.database }}: locus <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
               <br>
-              <i class="fa fa-angle-right"></i> View structure probing data in <a href="http://www.foldatlas.com/transcript/{{xref.accession.external_id}}">FoldAtlas</a>
+              <i class="fa fa-angle-right"></i> View structure probing data in <a href="http://www.foldatlas.com/transcript/{{xref.accession.external_id}}" target="_blank">FoldAtlas</a>
             </span>
 
             <!-- WormBase -->

@@ -89,6 +89,26 @@ RNAcentral: The non-coding RNA sequence database
   </div>
 
   <div class="row well well-sm">
+    <h2 class="text-center" style="margin-top: 2px; margin-bottom: 2px;">Featured secondary structures</h2>
+
+    {% for item in context.svg_images %}
+      <div class="col-md-3 col-sm-3 col-xs-12">
+        <div class="panel panel-default secondary-structure-homepage-card">
+          <div class="panel-body text-center">
+            <a href="/rna/{{ item.uid }}/{{ item.taxid }}" class="rnacentral-gold ng-binding">
+              <h4 class="text-center">{{ item.description }}</h4>
+              <img style="max-width:200px; max-height:180px;" class="img-responsive center-block" src="/api/v1/rna/{{ item.uid }}/2d/svg/" alt="{{ item.description }} secondary structure diagram">
+            </a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+
+    <div class="clearfix"></div>
+    <div class="text-center" style="margin-right: 10px; margin-bottom: 10px; font-size: large;"><a href='/search?q=has_secondary_structure:"True"'>Browse over 7 million structures</a> or <a href="/help/secondary-structure">learn more &rarr;</a></div>
+  </div>
+
+  <div class="row">
 
     <p class="lead text-center margin-bottom-0px">
       Data provided by <a href="{% url 'expert-databases' %}">{{ context.databases|length }} databases</a>
@@ -122,8 +142,8 @@ RNAcentral: The non-coding RNA sequence database
 
   </div>
 
-  <div class="row">
-    <h2 class="text-center margin-bottom-0px" style="margin-top: 0px;"><a href="/use-cases" class="rnacentral-gold">Featured use cases</a></h2>
+  <div class="row well well-sm">
+    <h2 class="text-center" style="margin-top: 2px; margin-bottom: 2px;"><a href="/use-cases" class="rnacentral-gold">Featured use cases</a></h2>
 
     <div class="col-md-4">
       <div class="panel panel-default">
@@ -177,12 +197,12 @@ RNAcentral: The non-coding RNA sequence database
     </div>
 
     <div class="clearfix"></div>
-    <div class="text-center" style="margin-right: 20px; margin-bottom: 20px;"><a href="/use-cases">More use cases &rarr;</a></div>
+    <div class="text-center" style="margin-right: 10px; margin-bottom: 10px; font-size: large;"><a href="/use-cases">More use cases &rarr;</a></div>
 
   </div>
 
 
-  <div class="row well well-sm">
+  <div class="row">
     <h2 class="text-center margin-bottom-0px">News</h2>
       <div class="col-md-4">
         <div class="panel panel-default">
@@ -209,7 +229,7 @@ RNAcentral: The non-coding RNA sequence database
           <div class="panel-body">
             <p class="margin-top-5px">
               <a href="{{ context.blog_url }}" class="thumbnail">
-                <img src="{% static 'img/timeline/release-v12.png' %}" alt="Release 12 announcement">
+                <img class="hvr-grow" src="{% static 'img/timeline/release-v13.png' %}" alt="Release 13 announcement">
               </a>
             </p>
             <ul class="list-inline margin-top-5px">

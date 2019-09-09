@@ -20,10 +20,13 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     // ------------
 
     // programmatically switch tabs
-    $scope.activeTab = 0;
-    $scope.activateTab = function (index) {
-        $scope.activeTab = parseInt(index);  // have to convert index to string
-    };
+    $scope.activate2dTab = function() {
+        document.querySelector('#secondary-structures > a').click();
+    }
+
+    $scope.activateTaxonomyTab = function () {
+        document.querySelector('#taxonomy > a').click();
+    }
 
     // Downloads tab shouldn't be clickable
     $scope.checkTab = function ($event, $selectedIndex) {

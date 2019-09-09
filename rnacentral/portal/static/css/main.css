@@ -1083,6 +1083,7 @@ textarea {
   transition-property: transform;
 }
 .homepage-card:hover a,
+.secondary-structure-homepage-card:hover img,
 .homepage-callout-overlay:hover .btn,
 .hvr-grow:hover, .hvr-grow:focus, .hvr-grow:active {
   -webkit-transform: scale(1.1);
@@ -1598,13 +1599,21 @@ textarea {
   background-color: rgb(0, 0, 255);
 }
 
+.traveler-black {
+  background-color: rgb(0, 0, 0);
+}
+
 .traveler-brown {
   background-color: rgb(211.65, 104.55, 30.6);
 }
 
 .traveler-key {
-  height: 12px;
-  width: 12px;
+  height: 20px;
+  width: 20px;
   float: left;
   margin-right: 8px;
+}
+
+#rna_ss_traveler svg {
+  cursor: grab;
 }

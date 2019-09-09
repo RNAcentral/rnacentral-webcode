@@ -34,7 +34,7 @@ var secondary_structures = {
 
         ctrl.fetchSecondaryStructures = function() {
             return $http.get(routes.apiSecondaryStructuresView({ upi: ctrl.upi, taxid: ctrl.taxid }),
-                { timeout: 5000 }
+                { timeout: 10000 }
             )
         };
 
@@ -44,6 +44,32 @@ var secondary_structures = {
             }
             return ctrl.secondaryStructures.secondary_structures[0].source[0].url;
         };
+
+        ctrl.toggleColors = function() {
+            var colours = ['green', 'red', 'blue'];
+            colours.forEach(function(colour, index) {
+                var colourOn = document.querySelectorAll('svg.traveler-secondary-structure-svg .' + colour);
+                if (colourOn.length > 0) {
+                    for (var i = colourOn.length - 1; i >= 0; i--) {
+                        colourOn[i].classList.add('ex-' + colour);
+                        colourOn[i].classList.remove(colour);
+                    }
+                } else {
+                    var colourOff = document.querySelectorAll('svg.traveler-secondary-structure-svg .ex-' + colour);
+                    for (var i = colourOff.length - 1; i >= 0; i--) {
+                        colourOff[i].classList.add(colour);
+                        colourOff[i].classList.remove('ex-' + colour);
+                    }
+                }
+            });
+        };
+
+        ctrl.downloadPng = function() {
+            document.getElementById('svg-pan-zoom-controls').setAttribute('visibility', 'hidden');
+            saveSvgAsPng(document.querySelector("#rna_ss_traveler svg"), ctrl.upi + "_" + ctrl.taxid + " 2D diagram.png", {backgroundColor: 'white'}).then(function(){
+                document.getElementById('svg-pan-zoom-controls').setAttribute('visibility', 'visible');
+            });
+        }
 
         ctrl.displaySecondary = function() {
             if (ctrl.numStructures === 0) {
@@ -97,6 +123,16 @@ var secondary_structures = {
             $('#svg-pan-zoom-controls').attr('transform', '');
             // increase the font size
             $('.traveler-secondary-structure-svg').css('font-size', '11px');
+        };
+
+        ctrl.feedback = function() {
+            document.querySelector('.doorbell-feedback').click()
+        }
+
+        ctrl.copy2D = function() {
+            var rnaClipboard = new Clipboard('#copy-dot-bracket-notation', {
+                "text": function () { return ctrl.secondaryStructures.secondary_structures[0].secondary_structure; }
+            });
         };
 
         /**

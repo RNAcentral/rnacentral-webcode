@@ -17,8 +17,12 @@ limitations under the License.
 
 {% block meta_tags %}
     {{ block.super }}
-    <meta name="description" content="{{ context.description }} | {{ rna.upi }}"/>
-    <meta name="twitter:description" content="{{ context.description }} | {{ rna.upi }}">
+    {% if context.summary %}
+    <meta name="description" content="{{ context.summary }}"/>
+    {% else %}
+    <meta name="description" content="{{ context.description }}"/>
+    {% endif %}
+    <meta name="twitter:description" content="{{ context.description }}">
 {% endblock %}
 
 {% block title %}
@@ -32,12 +36,21 @@ limitations under the License.
             <i class="fa fa-exclamation-triangle"></i> Sorry, there was a problem loading sequence from server. Please try again and contact us if the problem persists.
         </div>
     </div>
-    <div ng-if="rna" class="col-md-12">
-        <h1>
-            Sequence {{ rna.upi }}
 
-            <small id="sequence-description-header">{{ context.description }}</small>
-        </h1>
+    <div ng-if="rna" class="col-md-12">
+        {% if rna.has_secondary_structure %}
+        <div class="media">
+          <div class="media-left media-middle">
+            <a href="" ng-click="activate2dTab()">
+              <img style="max-width:140px; max-height:120px; margin: 10px;" class="media-object img-thumbnail hvr-grow" src="/api/v1/rna/{{ rna.upi }}/2d/svg/" alt="{{ context.description }} secondary structure diagram">
+            </a>
+          </div>
+          <div class="media-body">
+        {% endif %}
+        <h2>
+            {{ context.description }}
+            <small>{{ rna.upi }}{% if context.taxid %}_{{ context.taxid }}{% endif %}</small>
+        </h2>
 
         {% if context.taxid_not_found %}
             <div class="alert alert-danger">
@@ -58,10 +71,17 @@ limitations under the License.
                 {% endwith %}
             </li>
             <li>
-                Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab" ng-click="activateTab('1')">species</a>
+                Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab" ng-click="activateTaxonomyTab()">species</a>
             </li>
             <li class="badge" style="padding-left: 7px; padding-right: 7px;">{{ context.precomputed.rna_type }}</li>
         </ul>
+        {% if rna.has_secondary_structure %}</div><!-- media-body --></div><!-- media -->{% endif %}
+
+        {% if context.summary %}
+        <p class="small text-muted">
+          <strong>Automated summary:</strong> {{ context.summary }}
+        </p>
+        {% endif %}
 
         <div class="tabbable">
 
@@ -69,7 +89,7 @@ limitations under the License.
 
             <uib-tab index="0" heading="Overview" id="overview" deselect="checkTab($event, $selectedIndex)">
 
-                <xrefs upi="upi" taxid="taxid" timeout="500" page-size="5" on-activate-publications="activatePublications()" on-create-modifications-feature="createModificationsFeature(modifications, accession)" on-activate-genome-browser="activateGenomeBrowser(start, end, chr, genome)" on-scroll-to-genome-browser="scrollToGenomeBrowser()"></xrefs>
+                <xrefs upi="upi" taxid="taxid" page-size="5" on-activate-publications="activatePublications()" on-create-modifications-feature="createModificationsFeature(modifications, accession)" on-activate-genome-browser="activateGenomeBrowser(start, end, chr, genome)" on-scroll-to-genome-browser="scrollToGenomeBrowser()"></xrefs>
 
                 <protein-targets ng-if="taxid" upi="upi" taxid="taxid" timeout="500" page-size="5" genomes="genomes"></protein-targets>
 
@@ -260,9 +280,6 @@ limitations under the License.
 
                 <h2 class="margin-bottom-0px">
                     Sequence
-                    <small>
-                      <em>{{ rna.upi }}{% if context.taxid %}_{{ context.taxid }}{% endif %}</em>
-                    </small>
                 </h2>
 
                 {% if context.non_canonical_base_counts %}
@@ -300,7 +317,7 @@ limitations under the License.
 
             </uib-tab>
 
-            <uib-tab index="1" heading="Taxonomy" deselect="checkTab($event, $selectedIndex)">
+            <uib-tab index="1" id="taxonomy" heading="Taxonomy" deselect="checkTab($event, $selectedIndex)">
                 <h2>Taxonomic tree</h2>
 
                 <p>
@@ -334,12 +351,14 @@ limitations under the License.
 
             </uib-tab>
 
-            <uib-tab index="2" id="secondary-structures" deselect="checkTab($event, $selectedIndex)" ng-hide="hide2dTab" ng-if="taxid">
+            {% if rna.has_secondary_structure %}
+            <uib-tab index="2" id="secondary-structures" deselect="checkTab($event, $selectedIndex)" ng-if="taxid">
                 <uib-tab-heading>
-                  <span class="label label-success">New</span> 2D
+                  2D structure <span class="label label-success">New</span>
                 </uib-tab-heading>
-                <secondary-structures upi="upi" taxid="taxid" show-secondary-structure-tab="show2dTab()"></secondary-structures>
+                <secondary-structures upi="upi" taxid="taxid" show-secondary-structure-tab="true"></secondary-structures>
             </uib-tab>
+            {% endif %}
 
             <uib-tab index="3" class="dropdown pull-right hidden-xs">
                 <uib-tab-heading>

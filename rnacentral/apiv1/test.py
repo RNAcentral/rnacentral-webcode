@@ -35,6 +35,7 @@ class ApiV1BaseClass(APITestCase):
     """Base class for API tests."""
     upi = 'URS0000000001'
     upi_with_genomic_coordinates = 'URS00000B15DA'
+    upi_with_svg = 'URS0000704D22'
     md5 = '6bba097c8c39ed9a0fdf02273ee1c79a'  # URS0000000001
     accession = 'Y09527.1:2562..2627:tRNA'
     timeout = 60  # seconds
@@ -85,6 +86,7 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
     * /rna/id/xrefs
     * /rna/id/publications
     * /rna/id/related-protein
+    * /rna/id/2d/svg
     """
     def test_rna_list(self):
         """Test RNA list (hyperlinked response)."""
@@ -115,7 +117,7 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         """Test RNA publications endpoint."""
         url = reverse('rna-publications', kwargs={'pk': self.upi})
         response = self._test_url(url)
-        self.assertEqual(len(response.data['results']), 1)
+        self.assertGreaterEqual(len(response.data['results']), 1)
 
     def test_xref_pagination(self):
         """Ensure that xrefs can be paginated."""
@@ -159,6 +161,16 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         url = reverse('rna-sequence-features', kwargs={'pk': upi, 'taxid': taxid})
         response = self._test_url(url)
         self.assertGreater(response.data['count'], 0)
+
+    def test_rna_svg_image(self):
+        """Test SVG endpoint."""
+        url = reverse('rna-2d-svg', kwargs={'pk': self.upi_with_svg})
+        self._test_url(url)
+
+    def test_rna_svg_image_404(self):
+        """Test endpoint for 404 status code."""
+        response = self.client.get(reverse('rna-2d-svg', kwargs={'pk': self.upi}))
+        self.assertEqual(response.status_code, 404)
 
 
 class NestedXrefsTestCase(ApiV1BaseClass):
