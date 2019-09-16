@@ -33,6 +33,16 @@ urlpatterns = [
         job_results,
         name='sequence-search-job-results'),
 
+    # show searches
+    url(r'^show-searches/?$',
+        show_searches,
+        name='sequence-search-show-searches'),
+
+    # dashboard
+    url(r'^dashboard/?$',
+        dashboard,
+        name='sequence-search-dashboard'),
+
     # user interface
     url(r'^$', TemplateView.as_view(template_name='sequence-search.html'), name='nhmmer-sequence-search'),
 ]
