@@ -230,7 +230,7 @@ def download_search_result_file(request):
         Construct a descriptive name for the downloadable file.
         Use a standard Django function for making valid filenames.
         """
-        max_length = 50
+        max_length = 100
         query = job.meta['query']
         extension = os.path.splitext(job.result)[1]
         if len(query) > max_length:
