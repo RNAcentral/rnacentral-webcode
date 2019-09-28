@@ -47,7 +47,7 @@ At this time the search is not ontology-aware, so only the GO terms from the que
 
 ## Downloading GO annotations
 
-The GO annotations can be downloaded from **QuickGO**:
+The GO annotations can be [downloaded](https://www.ebi.ac.uk/GOA/downloads) or browsed in **QuickGO**.
 
 <a class="btn btn-default no-icon" href='https://www.ebi.ac.uk/QuickGO/annotations?assignedBy=RNAcentral'>Browse annotations in QuickGO</a>
 
