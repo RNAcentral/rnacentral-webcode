@@ -12,8 +12,8 @@ limitations under the License.
 """
 
 # SEQUENCE_SEARCH_ENDPOINT = 'http://193.62.55.45' # running remotely with a proxy
-# SEQUENCE_SEARCH_ENDPOINT = 'http://193.62.55.123:8002' # running remotely without a proxy
-SEQUENCE_SEARCH_ENDPOINT = 'http://193.62.55.44:8002' # running remotely without a proxy
+SEQUENCE_SEARCH_ENDPOINT = 'http://193.62.55.123:8002' # running remotely without a proxy
+# SEQUENCE_SEARCH_ENDPOINT = 'http://193.62.55.44:8002' # running remotely without a proxy
 # SEQUENCE_SEARCH_ENDPOINT = 'http://host.docker.internal:8002' # running locally
 
 # minimum query sequence length
