@@ -38,7 +38,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '139',
+        'version': '140',
     },
     {
         'name': 'PDBe',
@@ -88,7 +88,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'FB2019_02',
+        'version': 'FB2019_04',
     },
     {
         'name': 'Ensembl',
@@ -119,7 +119,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '96',
+        'version': '97',
     },
     {
         'name': 'Ensembl Plants',
