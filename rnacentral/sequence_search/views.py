@@ -14,6 +14,7 @@ limitations under the License.
 import requests
 
 from django.conf import settings
+from django.shortcuts import render
 from django.views.decorators.cache import never_cache
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
@@ -83,3 +84,51 @@ def job_results(request, job_id):
     """Displays results of a finished job."""
     url = SEQUENCE_SEARCH_ENDPOINT + '/api/facets-search/' + job_id
     return proxy_request(request, url, 'GET')
+
+
+@never_cache
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def show_searches(request):
+    """Displays info about searches."""
+    url = SEQUENCE_SEARCH_ENDPOINT + '/api/show-searches'
+    return proxy_request(request, url, 'GET')
+
+
+def dashboard(request):
+    """Info about searches in rnacentral-sequence-search."""
+    all_searches, searches_last_24_hours, searches_last_week = 0, 0, 0
+    average_all_searches, average_last_24_hours, average_last_week = 0, 0, 0
+    show_searches_url = SEQUENCE_SEARCH_ENDPOINT + '/api/show-searches'
+
+    try:
+        response_url = requests.get(show_searches_url)
+        if response_url.status_code == 200:
+            data = response_url.json()
+
+            for item in data:
+                if item['search'] == 'all':
+                    all_searches = item['count']
+                    average_all_searches = item['avg_time']
+
+                elif item['search'] == 'last-24-hours':
+                    searches_last_24_hours = item['count']
+                    average_last_24_hours = item['avg_time']
+
+                elif item['search'] == 'last-week':
+                    searches_last_week = item['count']
+                    average_last_week = item['avg_time']
+
+    except requests.exceptions.HTTPError as err:
+        raise err
+
+    context = {
+        'all_searches': all_searches,
+        'searches_last_24_hours': searches_last_24_hours,
+        'searches_last_week': searches_last_week,
+        'average_all_searches': average_all_searches,
+        'average_last_24_hours': average_last_24_hours,
+        'average_last_week': average_last_week
+    }
+
+    return render(request, 'dashboard.html', {'context': context})
