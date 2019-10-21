@@ -74,5 +74,5 @@ class SequenceSearchUIView(TemplateView):
 
 urlpatterns += [
     # user interface
-    url(r'^$', SequenceSearchUIView.as_view(), name='sequence-search'),
+    url(r'^$', SequenceSearchUIView.as_view(), name='sequence-search-legacy'),
 ]

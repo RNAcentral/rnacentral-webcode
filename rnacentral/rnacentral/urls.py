@@ -25,10 +25,10 @@ urlpatterns = [
     url(r'^api/v1/', include('apiv1.urls')),
     # export text search results
     url(r'^export/', include('export.urls')),
-    # old sequence search
-    url(r'^sequence-search-beta/', include('sequence_search.urls')),
     # new sequence search
-    url(r'^sequence-search/', include('nhmmer.urls')),
+    url(r'^sequence-search/', include('sequence_search.urls')),
+    # old sequence search
+    url(r'^sequence-search-legacy/', include('nhmmer.urls')),
 ]
 
 # robots.txt extras
