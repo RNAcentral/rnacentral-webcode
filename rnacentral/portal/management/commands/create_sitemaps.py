@@ -80,7 +80,7 @@ class Command(BaseCommand):
                 def items(self):
                     return [
                         'homepage', 'about', 'contact-us', 'downloads', 'training',
-                        'expert-databases', 'sequence-search', 'api-docs',
+                        'expert-databases', 'new-sequence-search', 'api-docs',
                         'help', 'help-text-search', 'help-genomic-mapping', 'help-genomic-mapping',
                     ]
 

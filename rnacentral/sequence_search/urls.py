@@ -44,5 +44,5 @@ urlpatterns = [
         name='sequence-search-dashboard'),
 
     # user interface
-    url(r'^$', TemplateView.as_view(template_name='sequence-search.html'), name='sequence-search'),
+    url(r'^$', TemplateView.as_view(template_name='sequence-search.html'), name='new-sequence-search'),
 ]

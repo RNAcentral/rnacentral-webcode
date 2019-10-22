@@ -14,11 +14,11 @@ class SequenceSearchTest(TestCase):
         ]
 
     def test_show_searches_url(self):
-        view = resolve('/sequence-search/show-searches')
+        view = resolve('/new-sequence-search/show-searches')
         self.assertEquals(view.func, show_searches)
 
     def test_dashboard_url(self):
-        view = resolve('/sequence-search/dashboard')
+        view = resolve('/new-sequence-search/dashboard')
         self.assertEquals(view.func, dashboard)
 
     @patch('requests.get')
