@@ -53,12 +53,14 @@ var secondary_structures = {
                     for (var i = colourOn.length - 1; i >= 0; i--) {
                         colourOn[i].classList.add('ex-' + colour);
                         colourOn[i].classList.remove(colour);
+                        ctrl.secondaryStructures.svg = ctrl.secondaryStructures.svg.replace('text.' + colour, 'ex-' + colour);
                     }
                 } else {
                     var colourOff = document.querySelectorAll('svg.traveler-secondary-structure-svg .ex-' + colour);
                     for (var i = colourOff.length - 1; i >= 0; i--) {
                         colourOff[i].classList.add(colour);
                         colourOff[i].classList.remove('ex-' + colour);
+                        ctrl.secondaryStructures.svg = ctrl.secondaryStructures.svg.replace('ex-' + colour, 'text.' + colour);
                     }
                 }
             });
@@ -136,12 +138,12 @@ var secondary_structures = {
         };
 
         /**
-         * Saves structure in dot-bracket notation as a file, code stolen from:
+         * Saves structure in SVG format as a file, code from:
          * https://stackoverflow.com/questions/3665115/create-a-file-in-memory-for-user-to-download-not-through-server
          */
-        ctrl.save2D = function() {
-            var filename = ctrl.upi + '.dbn';
-            var blob = new Blob([ctrl.secondaryStructures.secondary_structures[0].secondary_structure], {type: 'text/plain'});
+        ctrl.downloadSvg = function() {
+            var filename = ctrl.upi + '.svg';
+            var blob = new Blob([ctrl.secondaryStructures.svg], {type: 'text/plain'});
             if(window.navigator.msSaveOrOpenBlob) {
                 window.navigator.msSaveBlob(blob, filename);
             }
