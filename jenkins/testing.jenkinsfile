@@ -12,7 +12,7 @@ pipeline {
     parameters {
         choice(
             name: 'DATABASE',
-            choices: ['PRO', 'DEV', 'TEST', 'FB', 'HH'],
+            choices: ['PRO', 'DEV', 'TEST', 'FB', 'HH', 'PRO-PG10', 'DEV-PG10', 'TEST-PG10', 'FB-PG10', 'HH-PG10'],
             description: 'Which database instance to use?'
         )
         choice(
@@ -51,6 +51,11 @@ pipeline {
                 DATABASE_TEST = credentials('database_test.py')
                 DATABASE_FB = credentials('database_fb.py')
                 DATABASE_HH = credentials('database_hh.py')
+                DATABASE_PRO_PG10 = credentials('database_pro_pg10.py')
+                DATABASE_DEV_PG10 = credentials('database_dev_pg10.py')
+                DATABASE_TEST_PG10 = credentials('database_test_pg10.py')
+                DATABASE_FB_PG10 = credentials('database_fb_pg10.py')
+                DATABASE_HH_PG10 = credentials('database_hh_pg10.py')
 
                 EBI_SEARCH_ENDPOINT_PRO = credentials('ebi_search_endpoint_pro.py')
                 EBI_SEARCH_ENDPOINT_DEV = credentials('ebi_search_endpoint_dev.py')
@@ -82,6 +87,21 @@ pipeline {
                     } else if (params.DATABASE == 'HH') {
                         sh 'cat ${DATABASE_HH} > rnacentral/rnacentral/databases.py'
                         sh 'cat ${DATABASE_HH} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                    } else if (params.DATABASE == 'PRO-PG10') {
+                        sh 'cat ${DATABASE_PRO_PG10} > rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_PRO_PG10} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                    } else if (params.DATABASE == 'DEV-PG10') {
+                        sh 'cat ${DATABASE_DEV_PG10} > rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_DEV_PG10} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                    } else if (params.DATABASE == 'TEST-PG10') {
+                        sh 'cat ${DATABASE_TEST_PG10} > rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_TEST_PG10} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                    } else if (params.DATABASE == 'FB-PG10') {
+                        sh 'cat ${DATABASE_FB_PG10} > rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_FB_PG10} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                    } else if (params.DATABASE == 'HH-PG10') {
+                        sh 'cat ${DATABASE_HH_PG10} > rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_HH_PG10} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
                     }
                 }
 
