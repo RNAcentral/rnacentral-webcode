@@ -39,7 +39,7 @@ django-markdown-deux==1.0.5
 markdown2==2.3.5
 
 # fabric
-ecdsa==0.13
+ecdsa==0.13.3
 Fabric==1.11.1
 paramiko==1.18.5
 
