@@ -287,39 +287,26 @@ Sequence search
           </h4>
 
           <div>
-            <table class="table table-condensed small">
-              <tr class="table-header">
-                <td>
-                  <span class="help" data-placement="right" title="The likelihood of finding this alignment by chance (lower is better)">E-value</span>
-                </td>
-                <td>
-                  <span class="help" data-placement="top" title="Percentage of identical nucleotides">Identity</span>
-                </td>
-                <td>
-                  <span class="help" data-placement="top" title="Percentage of the query sequence covered by the alignment">Query coverage</span>
-                </td>
-                <td>
-                  <span class="help" data-placement="top" title="Percentage of the target sequence covered by the alignment">Target coverage</span>
-                </td>
-                <td>
-                  <span class="help" data-placement="left" title="Percentage of gaps in the alignment">Gaps</span>
-                </td>
-              </tr>
               <tr>
                 <td>
-                  <strong>{{formatEvalue(result.e_value)}}</strong>
+                  <abbr class="help" data-placement="right" title="The likelihood of finding this alignment by chance (lower is better)">E-value</abbr>
+                  {{formatEvalue(result.e_value)}}
                 </td>
                 <td>
-                  <strong>{{result.identity | number:1}}%</strong> ({{result.match_count}}/{{result.alignment_length}})
+                  <abbr class="help" data-placement="top" title="Percentage of identical nucleotides">Identity</abbr>
+                  {{result.identity | number:1}}% <small>({{result.match_count}}/{{result.alignment_length}})</small>
                 </td>
                 <td>
-                  <strong>{{result.query_coverage | number:1}}%</strong> ({{result.nts_count1}}/{{result.query_length}})
+                  <abbr class="help" data-placement="top" title="Percentage of the query sequence covered by the alignment">Query coverage</abbr>
+                  {{result.query_coverage | number:1}}% <small>({{result.nts_count1}}/{{result.query_length}})</<small>
                 </td>
                 <td>
-                  <strong>{{result.target_coverage | number:1}}%</strong> ({{result.nts_count2}}/{{result.target_length}})
+                  <abbr class="help" data-placement="top" title="Percentage of the target sequence covered by the alignment">Subject coverage</abbr>
+                  {{result.target_coverage | number:1}}% <small>({{result.nts_count2}}/{{result.target_length}})</small>
                 </td>
                 <td>
-                  <strong>{{result.gaps | number:1}}%</strong> ({{result.gap_count}}/{{result.alignment_length}})
+                  <abbr class="help" data-placement="left" title="Percentage of gaps in the alignment">Gaps</abbr>
+                  {{result.gaps | number:1}}% <small>({{result.gap_count}}/{{result.alignment_length}})</small>
                 </td>
               </tr>
             </table>
