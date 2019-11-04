@@ -47,5 +47,5 @@ urlpatterns = [
     url(r'^help/?$', TemplateView.as_view(template_name='sequence-search-help.html'), name='help-sequence-search'),
 
     # user interface
-    url(r'^$', TemplateView.as_view(template_name='sequence-search.html'), name='new-sequence-search'),
+    url(r'^$', TemplateView.as_view(template_name='sequence-search.html'), name='sequence-search'),
 ]

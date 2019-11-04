@@ -26,9 +26,9 @@ urlpatterns = [
     # export text search results
     url(r'^export/', include('export.urls')),
     # new sequence search
-    url(r'^new-sequence-search/', include('sequence_search.urls')),
+    url(r'^sequence-search/', include('sequence_search.urls')),
     # old sequence search
-    url(r'^sequence-search/', include('nhmmer.urls')),
+    url(r'^legacy-sequence-search/', include('nhmmer.urls')),
 ]
 
 # robots.txt extras
