@@ -283,7 +283,7 @@ Sequence search
           <h4 class="clearfix">
             <a href="/rna/{{result.rnacentral_id}}" target="_blank">{{result.description}}</a>
             <small>{{result.rnacentral_id}}</small>
-            <small class="pull-right"><a href class="text-muted" ng-click="scrollToTop();"><i class="fa fa-arrow-circle-o-up"></i> Back to top</a></small>
+            <small ng-if="!$first && $index % 5 === 0" class="pull-right"><a href class="text-muted" ng-click="scrollToTop();"><i class="fa fa-arrow-circle-o-up"></i> Back to top</a></small>
           </h4>
 
           <div>
