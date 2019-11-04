@@ -44,7 +44,7 @@ angular.module("routes", []).service('routes', ['$interpolate', function($interp
             '?query={{ md5 }}' +
             '&fields=description' +
             '&format=json' +
-            '&sort=boost'
+            '&sort=boost:descending'
         ,
         ebiAutocomplete: 'http://www.ebi.ac.uk/ebisearch/ws/rest/RNAcentral/autocomplete?term={{ query }}&format=json',
         apiGoTermsView: '/api/v1/rna/{{ upi }}/go-annotations/{{ taxid }}',
