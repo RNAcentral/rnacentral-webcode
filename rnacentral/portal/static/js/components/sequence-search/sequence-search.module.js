@@ -248,7 +248,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             if (response.data.hitCount > 0) {
                 $scope.results.exactMatch = {
                     'description': response.data.entries[0].fields.description[0],
-                    'rnacental_id': response.data.entries[0].id,
+                    'rnacentral_id': response.data.entries[0].id,
                     'count': response.data.hitCount,
                     'urs_id': response.data.entries[0].id.split('_')[0],
                 }

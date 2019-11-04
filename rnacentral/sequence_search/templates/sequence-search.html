@@ -138,8 +138,9 @@ Sequence search
     <div class="col-md-10">
       <div ng-show="results.exactMatch.count > 0"> <!-- Pulse animation cannot be on the same element as ng-show -->
         <div class="alert alert-success animated pulse margin-bottom-5px" role="alert">
-          Exact match: <a href="/rna/{{ results.exactMatch.rnacental_id }}" target="_blank">{{results.exactMatch.description}}</a>
           <span ng-if="results.exactMatch.count > 0">and
+          Exact match: <a href="/rna/{{ results.exactMatch.rnacentral_id }}" target="_blank">{{results.exactMatch.description}}</a>
+          <span ng-if="results.exactMatch.count > 1">and
             <a href="/search?q={{ results.exactMatch.urs_id }}*" target="_blank">{{ results.exactMatch.count - 1 | number }} other sequences</a>
           </span>
         </div>
