@@ -282,11 +282,17 @@ Sequence search
         <li ng-class="result.rnacentral_id.split('_')[0] === results.exactMatch.urs_id ? 'result alert alert-success' : 'result'" ng-repeat="result in results.entries">
           <h4 class="clearfix">
             <a href="/rna/{{result.rnacentral_id}}" target="_blank">{{result.description}}</a>
-            <small>{{result.rnacentral_id}}</small>
             <small ng-if="!$first && $index % 5 === 0" class="pull-right"><a href class="text-muted" ng-click="scrollToTop();"><i class="fa fa-arrow-circle-o-up"></i> Back to top</a></small>
           </h4>
 
           <div>
+            <ul class="list-inline small" style="padding-left: 9px;">
+              <li style="margin-bottom: 5px;" class="text-muted">{{result.rnacentral_id}}</li>
+              <li style="display: inline-block; margin-bottom: 5px;" ng-repeat="expert_db in result.fields.expert_db | plaintext">
+                <img class="desaturate" style="height: 16px; vertical-align: top;" ng-src="{{ normalizeExpertDbName.nameToImageUrl(expert_db) }}">
+              </li>
+            </ul>
+            <table class="table table-condensed table-borderless small">
               <tr>
                 <td>
                   <abbr class="help" data-placement="right" title="The likelihood of finding this alignment by chance (lower is better)">E-value</abbr>
