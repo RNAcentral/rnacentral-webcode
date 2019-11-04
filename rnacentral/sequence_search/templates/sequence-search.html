@@ -43,7 +43,7 @@ Sequence search
     </small>
   </h1>
 
-  <div class="alert alert-info">
+  <div class="well well-sm">
     <p>
       This is a <strong>new version</strong> of the sequence search.
       <strong>Attention:</strong> the number of entries may differ from the legacy version, see why <a href="/new-sequence-search/help">here &rarr;</a>
@@ -87,7 +87,7 @@ Sequence search
                     autofocus></textarea>
 
             <span class="help-block">
-              <em>Examples:</em>
+              Examples:
               <a href="" ng-click="sequenceSearch('>miRNA hsa-let-7a-1 (URS000004F5D8)\nCUAUACAAUCUACUGUCUUUC')">miRNA hsa-let-7a-1</a>
               <span class="small">URS000004F5D8</span>,
               <a href="" ng-click="sequenceSearch('UGCCUGGCGGCCGUAGCGCGGUGGUCCCACCUGACCCCAUGCCGAACUCAGAAGUGAAACGCCGUAGCGCCGAUGGUAGUGUGGGGUCUCCCCAUGCGAGAGUAGGGAACUGCCAGGCAU')">5S rRNA</a>
@@ -138,7 +138,6 @@ Sequence search
     <div class="col-md-10">
       <div ng-show="results.exactMatch.count > 0"> <!-- Pulse animation cannot be on the same element as ng-show -->
         <div class="alert alert-success animated pulse margin-bottom-5px" role="alert">
-          <span ng-if="results.exactMatch.count > 0">and
           Exact match: <a href="/rna/{{ results.exactMatch.rnacentral_id }}" target="_blank">{{results.exactMatch.description}}</a>
           <span ng-if="results.exactMatch.count > 1">and
             <a href="/search?q={{ results.exactMatch.urs_id }}*" target="_blank">{{ results.exactMatch.count - 1 | number }} other sequences</a>
