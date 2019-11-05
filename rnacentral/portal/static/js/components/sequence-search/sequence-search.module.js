@@ -50,14 +50,14 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     };
 
     $scope.ordering = [
-        { sortField: 'e_value', label: 'E-value (min to max) - default'},
-        { sortField: '-e_value', label: 'E-value (max to min)'},
-        { sortField: '-identity', label: 'Identity (max to min)' },
-        { sortField: 'identity', label: 'Identity: (min to max)' },
-        { sortField: '-query_coverage', label: 'Query coverage: (max to min)' },
-        { sortField: 'query_coverage', label: 'Query coverage: (min to max)' },
-        { sortField: '-target_coverage', label: 'Target coverage: (max to min)' },
-        { sortField: 'target_coverage', label: 'Target coverage: (min to max)' }
+        { sortField: 'e_value', label: 'E-value (low to high)'},
+        { sortField: '-e_value', label: 'E-value (high to low)'},
+        { sortField: '-identity', label: 'Identity ↓' },
+        { sortField: 'identity', label: 'Identity ↑' },
+        { sortField: '-query_coverage', label: 'Query coverage ↓' },
+        { sortField: 'query_coverage', label: 'Query coverage ↑' },
+        { sortField: '-target_coverage', label: 'Target coverage ↓' },
+        { sortField: 'target_coverage', label: 'Target coverage ↑' }
     ];
 
     $scope.params = {
