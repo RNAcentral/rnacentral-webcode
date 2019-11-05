@@ -738,14 +738,6 @@ h2.alert,h3.alert,h4.alert {
   color: #FFB3CA;
 }
 
-h2.alert:before,h3.alert:before,h4.alert:before {
-  font-family: 'EBI-Generic';
-  font-size: 100%;
-  content: "l";
-  margin: 0
-0.3em 0 0;
-}
-
 html.ie8 h2.alert:before,
 html.ie8 h3.alert:before,
 html.ie8 h4.alert:before {

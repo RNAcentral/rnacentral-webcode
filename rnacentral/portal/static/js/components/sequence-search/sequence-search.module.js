@@ -2,6 +2,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     $scope.query = {
         sequence: '',
         submitAttempted: false,
+        filter: '',
         elapsedTime: 0
     };
 
@@ -66,6 +67,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         errorMessage: '',
         statusMessage: '',
         showAlignments: true,
+        showAlignmentStatistics: false,
         selectedOrdering: $scope.ordering[0],
         textSearchError: false
     };
@@ -383,15 +385,41 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     };
 
     /**
-     * Toggle alignments button.
+     * Check if the results filtering is on. This is used to enable or disable
+     * the Cancel filtering button.
      */
-    $scope.toggleAlignments = function() {
-        $scope.params.showAlignments = !$scope.params.showAlignments;
-        $('#toggle-alignments').html(function(i, text){
-          var icon = '<i class="fa fa-align-justify"></i> ';
-          return icon + (text.indexOf("Show alignments") > -1 ? "Hide alignments" : "Show alignments");
-        });
-    };
+    $scope.isFilterEnabled = function() {
+        if ($scope.query.filter) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    /**
+     * Clear the results filtering input.
+     */
+    $scope.clearFilter = function() {
+        if ($scope.query.filter) {
+            $scope.query.filter = '';
+            $scope.filterResults();
+        }
+    }
+
+    /**
+     * Event handler, fired when a results are filtered
+     */
+    $scope.filterResults = function() {
+        var query = buildQuery();
+        $scope.fetchJobResults($scope.results.id, false, query);
+    }
+
+    /**
+     * Open Doorbell feedback form.
+     */
+    $scope.feedback = function() {
+        document.querySelector('.doorbell-feedback').click();
+    }
 
     /**
      * Calculate query sequence length
@@ -567,7 +595,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
      * from facets for EBI text search to use and display facets.
      */
     function buildQuery() {
-        var outputText, outputClauses = [];
+        var outputText = '', outputClauses = [];
 
         Object.keys($scope.results.selectedFacets).map(function(facetId) {
             var facetText, facetClauses = [];
@@ -579,7 +607,11 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             if (facetText !== "") outputClauses.push("(" + facetText + ")");
         });
 
-        outputText = outputClauses.join(" AND ");
+        if ($scope.query.filter) {
+            outputText = $scope.query.filter + '* '; // add wildcard
+        }
+
+        outputText += outputClauses.join(" AND ");
         return outputText;
     }
 
