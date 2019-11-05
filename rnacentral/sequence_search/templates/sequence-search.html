@@ -192,43 +192,47 @@ Sequence search
 
   <div class="row" ng-show="(params.statusMessage === messages.done && results.hitCount > 0) || query.filter" style="margin-top: 10px;">
     <div class="col-md-12">
-      <form ng-submit="filterResults()" style="display: inline-flex;">
-
+      <form ng-submit="filterResults()">
         <div class="form-group">
-          <div class="input-group">
-            <input type="text" class="form-control col-md-5" ng-model="query.filter" id="queryFilter" placeholder="Filter results">
-            <div class="input-group-btn">
-              <button type="submit" class="btn btn-default help" title="Search within results">
-                <i style="width: 15px;"></i>
-                <span><i class="fa fa-filter"></i> Filter</span>
-              </button>
-              <button class="btn btn-default help" data-ng-disabled="isFilterEnabled()" ng-click="clearFilter()" title="Clear results filtering">
-                <i style="width: 15px;"></i>
-                <span><i class="fa fa-ban"></i> Cancel</span>
-              </button>
+          <div class="col-md-4" style="padding-left: 0;">
+            <div class="input-group">
+              <input type="text" class="form-control" ng-model="query.filter" id="queryFilter" placeholder="Filter results">
+              <div class="input-group-btn">
+                <button type="submit" class="btn btn-default help" title="Search within results">
+                  <i style="width: 15px;"></i>
+                  <span><i class="fa fa-filter"></i> Filter</span>
+                </button>
+                <button class="btn btn-default help" data-ng-disabled="isFilterEnabled()" ng-click="clearFilter()" title="Clear results filtering">
+                  <i style="width: 15px;"></i>
+                  <span><i class="fa fa-ban"></i> Cancel</span>
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="btn-toolbar margin-bottom-10px" style="margin-left: 5px;" role="toolbar">
-          <div class="btn-group" role="group">
-            <a class="btn btn-default help" ng-click="params.showAlignments = !params.showAlignments" title="Alignments between query and hit sequences">
-              <span ng-if="params.showAlignments">Hide</span>
-              <span ng-if="!params.showAlignments">Show</span>
-              alignments
-            </a>
-            <a class="btn btn-default help" ng-click="params.showAlignmentStatistics = !params.showAlignmentStatistics" title="E-value, identity and other information about the hits">
-              <span ng-if="params.showAlignmentStatistics">Hide</span>
-              <span ng-if="!params.showAlignmentStatistics">Show</span>
-              search statistics
-            </a>
+          <div class="col-md-8 margin-bottom-10px" style="padding-left: 0;">
+          <div class="btn-toolbar" role="toolbar">
+            <div class="btn-group" role="group">
+              <a class="btn btn-default help" ng-click="params.showAlignments = !params.showAlignments" title="Alignments between query and hit sequences">
+                <span ng-if="params.showAlignments">Hide</span>
+                <span ng-if="!params.showAlignments">Show</span>
+                alignments
+              </a>
+              <a class="btn btn-default help" ng-click="params.showAlignmentStatistics = !params.showAlignmentStatistics" title="E-value, identity and other information about the hits">
+                <span ng-if="params.showAlignmentStatistics">Hide</span>
+                <span ng-if="!params.showAlignmentStatistics">Show</span>
+                search statistics
+              </a>
+            </div>
+            <div class="btn-group" role="group">
+              <a class="btn btn-default help" ng-click="feedback()" title="Send feedback about the search"><i class="fa fa-comment-o" aria-hidden="true"></i> Did the search work as expected?</a>
+            </div>
+            <div class="btn-group" role="group">
+              <a class="btn btn-default help hidden-xs hidden-sm" disabled title="Coming soon"><i class="fa fa-download" aria-hidden="true"></i> Download</a>
+            </div>
           </div>
-          <div class="btn-group" role="group">
-            <a class="btn btn-default help" ng-click="feedback()" title="Send feedback about the search"><i class="fa fa-comment-o" aria-hidden="true"></i> Did the search work as expected?</a>
           </div>
-          <div class="btn-group" role="group">
-            <a class="btn btn-default help" disabled title="Coming soon"><i class="fa fa-download" aria-hidden="true"></i> Download</a>
-          </div>
+
         </div>
       </form>
     </div>
