@@ -119,6 +119,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
 
                 $scope.updateOrdering();
                 updatePageTitle();
+                updateFacetMetadata();
             },
             function(response) {
                 $scope.params.searchInProgress = false;
@@ -278,6 +279,48 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 updatePageTitle();
             }
         );
+    }
+
+    /**
+     * Tweak facet labels and values.
+     */
+    function updateFacetMetadata() {
+        $scope.results.facets.forEach(function(facet) {
+            if (facet.id === 'qc_warning_found') {
+                facet.facetValues.forEach(function(facetValue) {
+                    if (facetValue.label === 'True') { facetValue.label = 'Yes'; }
+                    else if (facetValue.label === 'False') { facetValue.label = 'No'; }
+                });
+            }
+            if (facet.id === 'has_conserved_structure') {
+                facet.label = 'Conserved motifs';
+                facet.facetValues.forEach(function(facetValue) {
+                    if (facetValue.label === 'True') { facetValue.label = 'Found'; }
+                    else if (facetValue.label === 'False') { facetValue.label = 'Not found'; }
+                });
+            }
+            if (facet.id === 'has_go_annotations') {
+                facet.label = 'GO annotations';
+                facet.facetValues.forEach(function(facetValue) {
+                    if (facetValue.label === 'True') { facetValue.label = 'Found'; }
+                    else if (facetValue.label === 'False') { facetValue.label = 'Not found'; }
+                });
+            }
+            if (facet.id === 'qc_warning_found') {
+                facet.label = 'QC warnings';
+                facet.facetValues.forEach(function(facetValue) {
+                    if (facetValue.label === 'Yes') { facetValue.label = 'Warnings found'; }
+                    else if (facetValue.label === 'No') { facetValue.label = 'No warnings'; }
+                });
+            }
+            if (facet.id === 'has_secondary_structure') {
+                facet.label = 'Secondary structure';
+                facet.facetValues.forEach(function(facetValue) {
+                    if (facetValue.label === 'True') { facetValue.label = 'Available'; }
+                    else if (facetValue.label === 'False') { facetValue.label = 'Not available'; }
+                });
+            }
+        });
     }
 
 
