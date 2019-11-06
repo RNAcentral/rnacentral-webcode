@@ -249,13 +249,12 @@ Sequence search
       </small>
     </h2>
 
-    <div class="col-sm-3 col-md-3 hidden-xs text-search-facets" ng-show="results.hitCount > 0">
+    <div class="col-sm-4 col-md-3 hidden-xs text-search-facets" ng-show="results.hitCount > 0">
       <ul class="list-unstyled">
-        <li class="facet" style="margin-top: 20px;">
-
-          <form class="form-inline font-size-14-px hidden-xs margin-bottom-10px" style="padding-left: 0px;">
+        <li class="facet">
+          <form class="form-inline font-size-14-px hidden-xs " style="padding-left: 0px;">
             Sort by:
-            <div class="form-group" style="padding-left: 10px;">
+            <div class="form-group">
               <select class="form-control small" ng-change="updateOrdering(); fetchJobResults();" ng-model="params.selectedOrdering" ng-options="item.label for item in ordering track by item.label"></select>
             </div>
           </form>
@@ -320,7 +319,7 @@ Sequence search
       </small>
     </div>
 
-    <div id="affix-sibling" class="col-xs-12 col-sm-9 col-md-9">
+    <div id="affix-sibling" class="col-xs-12 col-sm-8 col-md-9">
 
       <ul class="list-unstyled sequence-search-results">
         <li ng-repeat="result in results.entries">
