@@ -390,9 +390,9 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
      */
     $scope.isFilterEnabled = function() {
         if ($scope.query.filter) {
-            return false;
-        } else {
             return true;
+        } else {
+            return false;
         }
     }
 

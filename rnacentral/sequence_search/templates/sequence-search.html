@@ -176,6 +176,11 @@ Sequence search
     <div class="col-md-12">
       <h2>Suggestions</h2>
       <ul>
+        <li ng-if="isFilterEnabled()">
+          <p>
+            <a href="" ng-click="clearFilter()">Cancel results filtering</a> to view all results
+          </p>
+        </li>
         <li>
           <p>
             Is your sequence in the 3' to 5' direction? <a href="" ng-click="reverseAndRepeatSearch();">Reverse the sequence and search again</a>
@@ -202,7 +207,7 @@ Sequence search
                   <i style="width: 15px;"></i>
                   <span><i class="fa fa-filter"></i> Filter</span>
                 </button>
-                <button class="btn btn-default help" data-ng-disabled="isFilterEnabled()" ng-click="clearFilter()" title="Clear results filtering">
+                <button class="btn btn-default help" data-ng-disabled="!isFilterEnabled()" ng-click="clearFilter()" title="Clear results filtering">
                   <i style="width: 15px;"></i>
                   <span><i class="fa fa-ban"></i> Cancel</span>
                 </button>
