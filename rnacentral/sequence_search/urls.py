@@ -12,6 +12,8 @@ limitations under the License.
 """
 from django.conf.urls import url
 from django.views.generic.base import TemplateView
+from django.core.urlresolvers import reverse_lazy
+from django.views.generic import RedirectView
 
 from .views import *
 
@@ -44,8 +46,7 @@ urlpatterns = [
         name='sequence-search-dashboard'),
 
     # help page
-    url(r'^help/?$', TemplateView.as_view(template_name='sequence-search-help.html'), name='help-sequence-search'),
-
+    url(r'^help/?$', RedirectView.as_view(url=reverse_lazy('help-sequence-search'), permanent=False)),
     # user interface
     url(r'^$', TemplateView.as_view(template_name='sequence-search.html'), name='sequence-search'),
 ]
