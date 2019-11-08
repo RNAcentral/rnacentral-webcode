@@ -255,6 +255,13 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                     'count': response.data.hitCount,
                     'urs_id': response.data.entries[0].id.split('_')[0],
                 }
+            } else {
+                 $scope.results.exactMatch = {
+                     'description': '',
+                     'rnacentral_id': '',
+                     'count': 0,
+                     'urs_id': '',
+                 }
             }
         });
     }
@@ -519,6 +526,10 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     $scope.expertDbHasStar = function(db) {
         return $scope.expertDbsObject[db].tags.indexOf('curated') !== -1 && $scope.expertDbsObject[db].tags.indexOf('automatic') === -1;
     };
+
+    $scope.sequenceLookUp = function() {
+        fetchExactMatch($scope.query.sequence);
+    }
 
     // ########################################################################
     // #                         Utility functions                            #

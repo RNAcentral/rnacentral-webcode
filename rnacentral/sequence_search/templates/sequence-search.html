@@ -74,6 +74,7 @@ Sequence search
                     placeholder="Enter RNA/DNA sequence (with an optional description in FASTA format) or an RNAcentral ID"
                     name="sequence"
                     id="query-sequence"
+                    ng-change="sequenceLookUp()"
                     ng-model="query.sequence"
                     ng-minlength="defaults.minLength"
                     ng-maxlength="defaults.maxLength"
