@@ -664,10 +664,10 @@ expert_dbs = [
         ],
         'references': [
             {
-                'title': 'MODOMICS: a database of RNA modification pathways--2013 update',
-                'authors': 'Machnicka MA, Milanowska K, Osman Oglou O, Purta E, Kurkowska M, Olchowik A, Januszewski W, Kalinowski S, Dunin-Horkawicz S, Rother KM, Helm M, Bujnicki JM, Grosjean H',
-                'journal': 'Nucleic Acids Res. 2013 Jan;41(Database issue):D262-7',
-                'pubmed_id': '23118484',
+                'title': 'MODOMICS: a database of RNA modification pathways. 2017 update',
+                'authors': 'Boccaletto P, Machnicka MA, Purta E, Piatkowski P, Baginski B, Wirecki TK, de Crecy-Lagard V, Ross R, Limbach PA, Kotter A, Helm M, Bujnicki JM',
+                'journal': 'Nucleic Acids Res. 2018 Jan 4;46(D1):D303-D307',
+                'pubmed_id': '29106616',
             },
         ],
         'imported': True,
@@ -1075,7 +1075,10 @@ expert_dbs = [
         'hint': '5SrRNAdb is an information resource for 5S ribosomal RNAs',
         'tags': ['curated', '5S', 'rRNA'],
         'abbreviation': '',
-        'examples': [],
+        'examples': [
+            {'upi': 'URS000002B0D5', 'taxid': 9606},
+            {'upi': 'URS000002B0D5', 'taxid': 10090},
+        ],
         'references': [
             {
                 'title': '5SRNAdb: an information resource for 5S ribosomal RNAs',
@@ -1085,8 +1088,8 @@ expert_dbs = [
             },
         ],
         'imported': False,
-        'status': '',
-        'version': '',
+        'status': 'new',
+        'version': '17',
     },
     {
         'name': 'miRTarBase',
