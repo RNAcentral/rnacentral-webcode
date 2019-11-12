@@ -1,4 +1,4 @@
-Django==1.11.7
+Django==1.11.23
 PyMySQL==0.7.11
 PyYAML==3.10
 astroid==1.0.1
