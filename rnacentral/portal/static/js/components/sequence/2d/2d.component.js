@@ -123,8 +123,6 @@ var secondary_structures = {
 
             // fix the svg control position
             $('#svg-pan-zoom-controls').attr('transform', '');
-            // increase the font size
-            $('.traveler-secondary-structure-svg').css('font-size', '11px');
         };
 
         ctrl.feedback = function() {
