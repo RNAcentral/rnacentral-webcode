@@ -196,9 +196,11 @@ class Accession(models.Model):
             'GTRNADB': '',
             'RGD': 'https://rgd.mcw.edu/rgdweb/report/gene/main.html?id={id}',
             'ZWD': '',
+            'snoDB': '',
+            'MIRGENEDB': '',
         }
         if self.database in urls.keys():
-            if self.database in ['GTRNADB', 'ZWD']:
+            if self.database in ['GTRNADB', 'ZWD', 'SNODB', 'MIRGENEDB']:
                 data = json.loads(self.note)
                 if 'url' in data:
                     return data['url']
