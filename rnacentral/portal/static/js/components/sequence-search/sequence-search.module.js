@@ -2,6 +2,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     $scope.query = {
         sequence: '',
         submitAttempted: false,
+        filter: '',
         elapsedTime: 0
     };
 
@@ -50,14 +51,14 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     };
 
     $scope.ordering = [
-        { sortField: 'e_value', label: 'E-value (min to max) - default'},
-        { sortField: '-e_value', label: 'E-value (max to min)'},
-        { sortField: '-identity', label: 'Identity (max to min)' },
-        { sortField: 'identity', label: 'Identity: (min to max)' },
-        { sortField: '-query_coverage', label: 'Query coverage: (max to min)' },
-        { sortField: 'query_coverage', label: 'Query coverage: (min to max)' },
-        { sortField: '-target_coverage', label: 'Target coverage: (max to min)' },
-        { sortField: 'target_coverage', label: 'Target coverage: (min to max)' }
+        { sortField: 'e_value', label: 'E-value (low to high)'},
+        { sortField: '-e_value', label: 'E-value (high to low)'},
+        { sortField: '-identity', label: 'Identity ↓' },
+        { sortField: 'identity', label: 'Identity ↑' },
+        { sortField: '-query_coverage', label: 'Query coverage ↓' },
+        { sortField: 'query_coverage', label: 'Query coverage ↑' },
+        { sortField: '-target_coverage', label: 'Target coverage ↓' },
+        { sortField: 'target_coverage', label: 'Target coverage ↑' }
     ];
 
     $scope.params = {
@@ -66,6 +67,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         errorMessage: '',
         statusMessage: '',
         showAlignments: true,
+        showAlignmentStatistics: false,
         selectedOrdering: $scope.ordering[0],
         textSearchError: false
     };
@@ -119,6 +121,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
 
                 $scope.updateOrdering();
                 updatePageTitle();
+                updateFacetMetadata();
             },
             function(response) {
                 $scope.params.searchInProgress = false;
@@ -248,10 +251,17 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             if (response.data.hitCount > 0) {
                 $scope.results.exactMatch = {
                     'description': response.data.entries[0].fields.description[0],
-                    'rnacental_id': response.data.entries[0].id,
+                    'rnacentral_id': response.data.entries[0].id,
                     'count': response.data.hitCount,
                     'urs_id': response.data.entries[0].id.split('_')[0],
                 }
+            } else {
+                 $scope.results.exactMatch = {
+                     'description': '',
+                     'rnacentral_id': '',
+                     'count': 0,
+                     'urs_id': '',
+                 }
             }
         });
     }
@@ -278,6 +288,48 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 updatePageTitle();
             }
         );
+    }
+
+    /**
+     * Tweak facet labels and values.
+     */
+    function updateFacetMetadata() {
+        $scope.results.facets.forEach(function(facet) {
+            if (facet.id === 'qc_warning_found') {
+                facet.facetValues.forEach(function(facetValue) {
+                    if (facetValue.label === 'True') { facetValue.label = 'Yes'; }
+                    else if (facetValue.label === 'False') { facetValue.label = 'No'; }
+                });
+            }
+            if (facet.id === 'has_conserved_structure') {
+                facet.label = 'Conserved motifs';
+                facet.facetValues.forEach(function(facetValue) {
+                    if (facetValue.label === 'True') { facetValue.label = 'Found'; }
+                    else if (facetValue.label === 'False') { facetValue.label = 'Not found'; }
+                });
+            }
+            if (facet.id === 'has_go_annotations') {
+                facet.label = 'GO annotations';
+                facet.facetValues.forEach(function(facetValue) {
+                    if (facetValue.label === 'True') { facetValue.label = 'Found'; }
+                    else if (facetValue.label === 'False') { facetValue.label = 'Not found'; }
+                });
+            }
+            if (facet.id === 'qc_warning_found') {
+                facet.label = 'QC warnings';
+                facet.facetValues.forEach(function(facetValue) {
+                    if (facetValue.label === 'Yes') { facetValue.label = 'Warnings found'; }
+                    else if (facetValue.label === 'No') { facetValue.label = 'No warnings'; }
+                });
+            }
+            if (facet.id === 'has_secondary_structure') {
+                facet.label = 'Secondary structure';
+                facet.facetValues.forEach(function(facetValue) {
+                    if (facetValue.label === 'True') { facetValue.label = 'Available'; }
+                    else if (facetValue.label === 'False') { facetValue.label = 'Not available'; }
+                });
+            }
+        });
     }
 
 
@@ -340,15 +392,41 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     };
 
     /**
-     * Toggle alignments button.
+     * Check if the results filtering is on. This is used to enable or disable
+     * the Cancel filtering button.
      */
-    $scope.toggleAlignments = function() {
-        $scope.params.showAlignments = !$scope.params.showAlignments;
-        $('#toggle-alignments').html(function(i, text){
-          var icon = '<i class="fa fa-align-justify"></i> ';
-          return icon + (text.indexOf("Show alignments") > -1 ? "Hide alignments" : "Show alignments");
-        });
-    };
+    $scope.isFilterEnabled = function() {
+        if ($scope.query.filter) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * Clear the results filtering input.
+     */
+    $scope.clearFilter = function() {
+        if ($scope.query.filter) {
+            $scope.query.filter = '';
+            $scope.filterResults();
+        }
+    }
+
+    /**
+     * Event handler, fired when a results are filtered
+     */
+    $scope.filterResults = function() {
+        var query = buildQuery();
+        $scope.fetchJobResults($scope.results.id, false, query);
+    }
+
+    /**
+     * Open Doorbell feedback form.
+     */
+    $scope.feedback = function() {
+        document.querySelector('.doorbell-feedback').click();
+    }
 
     /**
      * Calculate query sequence length
@@ -449,6 +527,10 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         return $scope.expertDbsObject[db].tags.indexOf('curated') !== -1 && $scope.expertDbsObject[db].tags.indexOf('automatic') === -1;
     };
 
+    $scope.sequenceLookUp = function() {
+        fetchExactMatch($scope.query.sequence);
+    }
+
     // ########################################################################
     // #                         Utility functions                            #
     // ########################################################################
@@ -524,7 +606,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
      * from facets for EBI text search to use and display facets.
      */
     function buildQuery() {
-        var outputText, outputClauses = [];
+        var outputText = '', outputClauses = [];
 
         Object.keys($scope.results.selectedFacets).map(function(facetId) {
             var facetText, facetClauses = [];
@@ -536,7 +618,11 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             if (facetText !== "") outputClauses.push("(" + facetText + ")");
         });
 
-        outputText = outputClauses.join(" AND ");
+        if ($scope.query.filter) {
+            outputText = $scope.query.filter + '* '; // add wildcard
+        }
+
+        outputText += outputClauses.join(" AND ");
         return outputText;
     }
 

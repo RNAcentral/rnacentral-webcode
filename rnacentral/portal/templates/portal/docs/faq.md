@@ -27,7 +27,7 @@ Example identifiers: URS0000000001, URS00000478B7.
 ### How do I find an RNAcentral identifier for an RNA sequence? <a style="cursor: pointer" id="how-to-find-rnacentral-id" ng-click="scrollTo('how-to-find-rnacentral-id')" name="how-to-find-rnacentral-id" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 To find an RNAcentral identifier for a **single sequence**, one can use RNAcentral
-[sequence search]({% url 'nhmmer-sequence-search' %}).
+[sequence search]({% url 'sequence-search' %}).
 
 For a **large number of sequences**, one can:
 

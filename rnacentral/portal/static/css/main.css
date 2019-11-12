@@ -520,6 +520,15 @@ h3.panel-title {
   margin-bottom: 5px;
 }
 
+.table-borderless > tbody > tr > td,
+.table-borderless > tbody > tr > th,
+.table-borderless > tfoot > tr > td,
+.table-borderless > tfoot > tr > th,
+.table-borderless > thead > tr > td,
+.table-borderless > thead > tr > th {
+    border: none;
+}
+
 .pagination {
   margin: 5px 0;
 }
@@ -869,7 +878,7 @@ textarea {
 }
 
 .sequence-search-results li {
-  margin-bottom: 25px;
+  margin-bottom: 15px;
 }
 
 .sequence-search-results h2 {

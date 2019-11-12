@@ -18,12 +18,13 @@ limitations under the License.
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width">
-  <meta name="twitter:card" content="summary">
+  <meta name="description" content="RNAcentral sequence similarity search enables searching against a comprehensive collection of non-coding RNA sequences from a consortium of RNA databases"/>
+  <meta name="twitter:description" content="RNAcentral sequence similarity search enables searching against a comprehensive collection of non-coding RNA sequences from a consortium of RNA databases"/>
+  <meta name="twitter:card" content="RNAcentral sequence similarity search">
   <meta name="twitter:site" content="@RNAcentral">
   <meta name="twitter:creator" content="@RNAcentral">
   <meta name="twitter:title" content="RNAcentral">
   <meta name="twitter:image" content="https://rnacentral.org{% static "img/logo/rnacentral-logo.png" %}">
-  <meta name="robots" content="noindex">
 {% endblock meta_tags %}
 
 {% block title %}
@@ -44,21 +45,17 @@ Sequence search
     </small>
   </h1>
 
-  <div class="alert alert-info">
+  <div class="well well-sm col-md-10">
     <p>
-      This is a <strong>beta version</strong> of the sequence search.
-      Please leave <a class="doorbell-feedback"><strong>feedback</strong></a>
-      to help improve the search.
-    </p>
-
-    <p>
-      Go back to the <a href="/sequence-search">current version &rarr;</a>
+      Welcome to the new RNAcentral sequence search.
+      Find out <a href={% endverbatim %}"{% url 'help-sequence-search' %}"{% verbatim %}>what's new</a> or
+      go back to the <a href="{% endverbatim %}{% url 'legacy-sequence-search' %}{% verbatim %}">legacy version</a>
     </p>
   </div>
 
   <span class="col-md-10 small text-muted clearfix">
     <span>
-      <i class="fa fa-info-circle"></i> Local alignment using <a href="http://www.ncbi.nlm.nih.gov/pubmed/23842809" target="_blank" class="help" data-toggle="tooltip" title="Wheeler and Eddy, 2013">nhmmer</a>.
+       Local alignment using <a href="http://www.ncbi.nlm.nih.gov/pubmed/23842809" target="_blank" class="help no-icon" data-toggle="tooltip" title="Wheeler and Eddy, 2013">nhmmer</a>
     </span>
 
     <em class="pull-right">
@@ -79,6 +76,7 @@ Sequence search
                     placeholder="Enter RNA/DNA sequence (with an optional description in FASTA format) or an RNAcentral ID"
                     name="sequence"
                     id="query-sequence"
+                    ng-change="sequenceLookUp()"
                     ng-model="query.sequence"
                     ng-minlength="defaults.minLength"
                     ng-maxlength="defaults.maxLength"
@@ -88,7 +86,7 @@ Sequence search
                     autofocus></textarea>
 
             <span class="help-block">
-              <em>Examples:</em>
+              Examples:
               <a href="" ng-click="sequenceSearch('>miRNA hsa-let-7a-1 (URS000004F5D8)\nCUAUACAAUCUACUGUCUUUC')">miRNA hsa-let-7a-1</a>
               <span class="small">URS000004F5D8</span>,
               <a href="" ng-click="sequenceSearch('UGCCUGGCGGCCGUAGCGCGGUGGUCCCACCUGACCCCAUGCCGAACUCAGAAGUGAAACGCCGUAGCGCCGAUGGUAGUGUGGGGUCUCCCCAUGCGAGAGUAGGGAACUGCCAGGCAU')">5S rRNA</a>
@@ -139,8 +137,8 @@ Sequence search
     <div class="col-md-10">
       <div ng-show="results.exactMatch.count > 0"> <!-- Pulse animation cannot be on the same element as ng-show -->
         <div class="alert alert-success animated pulse margin-bottom-5px" role="alert">
-          Exact match: <a href="/rna/{{ results.exactMatch.rnacental_id }}" target="_blank">{{results.exactMatch.description}}</a>
-          <span ng-if="results.exactMatch.count > 0">and
+          Exact match: <a href="/rna/{{ results.exactMatch.rnacentral_id }}" target="_blank">{{results.exactMatch.description}}</a>
+          <span ng-if="results.exactMatch.count > 1">and
             <a href="/search?q={{ results.exactMatch.urs_id }}*" target="_blank">{{ results.exactMatch.count - 1 | number }} other sequences</a>
           </span>
         </div>
@@ -151,8 +149,7 @@ Sequence search
   <div class="progress" ng-show="params.searchInProgress && params.progress != 100">
     <div class="progress-bar progress-bar-primary active" role="progressbar" aria-valuenow="83"
     aria-valuemin="0" aria-valuemax="100" style="width:{{ params.progress }}%">
-      <span class="margin-left-5px" ng-show="!results.exactMatch">Searching... {{ params.progress }}%</span>
-      <span class="margin-left-5px" ng-show="results.exactMatch">Searching for more matches... {{ params.progress }}%</span>
+      <span class="margin-left-5px">Searching... {{ params.progress }}%</span>
     </div>
   </div>
 
@@ -182,6 +179,11 @@ Sequence search
     <div class="col-md-12">
       <h2>Suggestions</h2>
       <ul>
+        <li ng-if="isFilterEnabled()">
+          <p>
+            <a href="" ng-click="clearFilter()">Cancel results filtering</a> to view all results
+          </p>
+        </li>
         <li>
           <p>
             Is your sequence in the 3' to 5' direction? <a href="" ng-click="reverseAndRepeatSearch();">Reverse the sequence and search again</a>
@@ -189,25 +191,81 @@ Sequence search
         </li>
         <li>
           <p>
-            If you believe that there should be results, please <a href="{% endverbatim %}{% url 'contact-us' %}{% verbatim %}">send us</a> the job id <code>{{ results.id }}</code>
+            If you believe that there should be results, please <a href="" ng-click="feedback()">send us</a> the job id <code>{{ results.id }}</code>
           </p>
         </li>
       </ul>
     </div>
   </div>
 
-  <div class="row" id="affix-parent">
+  <div class="row" ng-show="(params.statusMessage === messages.done && results.hitCount > 0) || query.filter" style="margin-top: 10px;">
+    <div class="col-md-12">
+      <form ng-submit="filterResults()">
+        <div class="form-group">
+          <div class="col-md-4" style="padding-left: 0;">
+            <div class="input-group">
+              <input type="text" class="form-control" ng-model="query.filter" id="queryFilter" placeholder="Filter results">
+              <div class="input-group-btn">
+                <button type="submit" class="btn btn-default help" title="Search within results" data-ng-disabled="!query.filter">
+                  <i style="width: 15px;"></i>
+                  <span><i class="fa fa-filter"></i> Filter</span>
+                </button>
+                <button class="btn btn-default help" data-ng-disabled="!isFilterEnabled()" ng-click="clearFilter()" title="Clear results filtering">
+                  <i style="width: 15px;"></i>
+                  <span><i class="fa fa-ban"></i> Cancel</span>
+                </button>
+              </div>
+            </div>
+          </div>
 
-    <div class="col-xs-3 text-search-facets" ng-show="results.hitCount > 0">
+          <div class="col-md-8 margin-bottom-10px" style="padding-left: 0;">
+          <div class="btn-toolbar" role="toolbar">
+            <div class="btn-group" role="group">
+              <a class="btn btn-default help" ng-click="params.showAlignments = !params.showAlignments" title="Alignments between query and hit sequences">
+                <span ng-if="params.showAlignments">Hide</span>
+                <span ng-if="!params.showAlignments">Show</span>
+                alignments
+              </a>
+              <a class="btn btn-default help" ng-click="params.showAlignmentStatistics = !params.showAlignmentStatistics" title="E-value, identity and other information about the hits">
+                <span ng-if="params.showAlignmentStatistics">Hide</span>
+                <span ng-if="!params.showAlignmentStatistics">Show</span>
+                search statistics
+              </a>
+            </div>
+            <div class="btn-group" role="group">
+              <a class="btn btn-default" ng-click="feedback()"><i class="fa fa-comment-o" aria-hidden="true"></i> Send feedback</a>
+            </div>
+            <div class="btn-group" role="group">
+              <a class="btn btn-default help hidden-xs hidden-sm" disabled title="Coming soon"><i class="fa fa-download" aria-hidden="true"></i> Download</a>
+            </div>
+          </div>
+          </div>
+
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="row" id="affix-parent">
+    <div class="col-md-12">
+
+    <h2 ng-show="results.hitCount > 0">
+      Results
+      <small>
+        <span ng-if="results.hitCount == 1">1 sequence</span>
+        <span ng-if="results.hitCount > 1">{{ results.entries.length }} out of {{ results.hitCount | number }} sequences</span>
+      </small>
+    </h2>
+
+    <div class="col-sm-4 col-md-3 hidden-xs text-search-facets" ng-show="results.hitCount > 0">
       <ul class="list-unstyled">
-        <li class="facet" style="margin-top: 20px;">
-          <div>Sort by:</div>
-          <div class="form-group">
-            <select class="form-control font-size-14px" ng-change="updateOrdering(); fetchJobResults();" ng-model="params.selectedOrdering" ng-options="item.label for item in ordering track by item.label"></select>
-          </div>
-          <div class="form-group">
-            <button id="toggle-alignments" ng-click="toggleAlignments()" class="btn btn-default btn-block" style="overflow: hidden;"><span><i class="fa fa-align-justify"></i> Hide alignments</span></button>
-          </div>
+        <li class="facet">
+          <form class="form-inline font-size-14-px hidden-xs " style="padding-left: 0px;">
+            Sort by:
+            <div class="form-group">
+              <select class="form-control small" ng-change="updateOrdering(); fetchJobResults();" ng-model="params.selectedOrdering" ng-options="item.label for item in ordering track by item.label"></select>
+            </div>
+          </form>
         </li>
         <hr />
         <li ng-if="results.textSearchError" class="facet" style="white-space: pre-wrap;">
@@ -234,7 +292,7 @@ Sequence search
         </li>
         <br/>
         <li class="facet scrollable-facet" ng-repeat="facet in results.facets">
-          <uib-accordion ng-if="facet.label == 'Has Conserved structure' || facet.label == 'QC warning found' || facet.label == 'Has GO annotation' || facet.label == 'Genomic mapping'" class="text-search-foldable-facets">
+          <uib-accordion ng-if="facet.id == 'has_conserved_structure' || facet.id == 'qc_warning_found' || facet.id == 'has_go_annotations' || facet.id == 'has_genomic_coordinates'" class="text-search-foldable-facets">
             <div uib-accordion-group is-open="$ctrl.search.isFacetOpen[facet.id]">
               <uib-accordion-heading>
                 <h3>
@@ -269,64 +327,58 @@ Sequence search
       </small>
     </div>
 
-    <div class="col-xs-9" id="affix-sibling">
-
-      <h2 ng-show="results.hitCount > 0">
-        Results
-        <small>
-          <span ng-if="results.hitCount == 1">1 entry</span>
-          <span ng-if="results.hitCount > 1">{{results.hitCount | number}} entries</span>
-        </small>
-      </h2>
+    <div id="affix-sibling" class="col-xs-12 col-sm-8 col-md-9">
 
       <ul class="list-unstyled sequence-search-results">
-        <li ng-class="result.rnacentral_id.split('_')[0] === results.exactMatch.urs_id ? 'result alert alert-success' : 'result'" ng-repeat="result in results.entries">
-          <h4 class="clearfix">
+        <li ng-repeat="result in results.entries">
+
+          <div class="row">
+
+          <h4 ng-show="result.rnacentral_id.split('_')[0] === results.exactMatch.urs_id" class="result alert alert-success help" title="Identical to the query (exact match)" style="padding-left: 0; margin-left: 0; margin-top: 0; margin-bottom: 5px;">
             <a href="/rna/{{result.rnacentral_id}}" target="_blank">{{result.description}}</a>
-            <small>{{result.rnacentral_id}}</small>
-            <small class="pull-right"><a href class="text-muted" ng-click="scrollToTop();"><i class="fa fa-arrow-circle-o-up"></i> Back to top</a></small>
           </h4>
 
-          <div>
-            <table class="table table-condensed small">
-              <tr class="table-header">
-                <td>
-                  <span class="help" data-placement="right" title="The likelihood of finding this alignment by chance (lower is better)">E-value</span>
-                </td>
-                <td>
-                  <span class="help" data-placement="top" title="Percentage of identical nucleotides">Identity</span>
-                </td>
-                <td>
-                  <span class="help" data-placement="top" title="Percentage of the query sequence covered by the alignment">Query coverage</span>
-                </td>
-                <td>
-                  <span class="help" data-placement="top" title="Percentage of the target sequence covered by the alignment">Target coverage</span>
-                </td>
-                <td>
-                  <span class="help" data-placement="left" title="Percentage of gaps in the alignment">Gaps</span>
-                </td>
-              </tr>
-              <tr>
-                <td>
-                  <strong>{{formatEvalue(result.e_value)}}</strong>
-                </td>
-                <td>
-                  <strong>{{result.identity | number:1}}%</strong> ({{result.match_count}}/{{result.alignment_length}})
-                </td>
-                <td>
-                  <strong>{{result.query_coverage | number:1}}%</strong> ({{result.nts_count1}}/{{result.query_length}})
-                </td>
-                <td>
-                  <strong>{{result.target_coverage | number:1}}%</strong> ({{result.nts_count2}}/{{result.target_length}})
-                </td>
-                <td>
-                  <strong>{{result.gaps | number:1}}%</strong> ({{result.gap_count}}/{{result.alignment_length}})
-                </td>
-              </tr>
-            </table>
-          </div>
+          <h4 ng-show="result.rnacentral_id.split('_')[0] !== results.exactMatch.urs_id" class="result" style="padding-left: 0; margin-left: 0; margin-bottom: 5px; margin-top: 0;">
+            <a href="/rna/{{result.rnacentral_id}}" target="_blank">{{result.description}}</a>
+          </h4>
 
-          <pre ng-show="params.showAlignments" class="force-scrollbars">{{result.alignment}}</pre>
+          <ul class="list-inline small" style="padding-left: 0; margin-left: 0;">
+            <li style="margin-bottom: 5px; margin-left: 0; padding-left: 0;" class="text-muted">{{result.rnacentral_id}}</li>
+            <li style="display: inline-block; margin-bottom: 5px;" ng-repeat="expert_db in result.fields.expert_db | plaintext">
+              <img class="desaturate" style="height: 16px; vertical-align: top;" ng-src="{{ normalizeExpertDbName.nameToImageUrl(expert_db) }}">
+            </li>
+            <li ng-if="!$first && $index % 5 === 0" class="pull-right" style="margin-bottom: 0;">
+              <a href class="text-muted" ng-click="scrollToTop();"><i class="fa fa-arrow-circle-o-up"></i> Back to top</a>
+            </li>
+          </ul>
+
+          <table class="table table-condensed table-borderless small" ng-show="params.showAlignmentStatistics" style="margin: 0;">
+            <tr>
+              <td style="padding-left: 0px;">
+                <abbr class="help" data-placement="right" title="The likelihood of finding this alignment by chance (lower is better)">E-value</abbr>
+                {{formatEvalue(result.e_value)}}
+              </td>
+              <td>
+                <abbr class="help" data-placement="top" title="Percentage of identical nucleotides">Identity</abbr>
+                {{result.identity | number:1}}% <small>({{result.match_count}}/{{result.alignment_length}})</small>
+              </td>
+              <td>
+                <abbr class="help" data-placement="top" title="Percentage of the query sequence covered by the alignment">Query coverage</abbr>
+                {{result.query_coverage | number:1}}% <small>({{result.nts_count1}}/{{result.query_length}})</<small>
+              </td>
+              <td>
+                <abbr class="help" data-placement="top" title="Percentage of the target sequence covered by the alignment">Subject coverage</abbr>
+                {{result.target_coverage | number:1}}% <small>({{result.nts_count2}}/{{result.target_length}})</small>
+              </td>
+              <td>
+                <abbr class="help" data-placement="left" title="Percentage of gaps in the alignment">Gaps</abbr>
+                {{result.gaps | number:1}}% <small>({{result.gap_count}}/{{result.alignment_length}})</small>
+              </td>
+            </tr>
+          </table>
+
+            <pre ng-show="params.showAlignments" class="force-scrollbars small col-md-12" style="background-color: #FFFFFF; max-height: 160px; word-wrap: initial;">{{result.alignment}}</pre>
+          </div>
         </li>
       </ul>
 
@@ -336,6 +388,7 @@ Sequence search
       <button class="btn btn-default load-more col-md-3" ng-click="loadMoreResults()" ng-show="results.hitCount > results.entries.length"><i ng-class="searchInProgress ? 'fa fa-spinner fa-spin' : 'hidden'"></i> Load more</button>
       <br />
     </div> <!--/col-md-9 -->
+  </div><!-- col-md-12 -->
   </div><!--/row -->
 </div><!--/ng-controller -->
 

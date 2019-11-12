@@ -42,7 +42,7 @@ def nhmmer_proxy(request):
     which is not accessible from outside networks.
     """
     if socket.gethostname() not in NHMMER_SERVER:
-        nhmmer_url = NHMMER_SERVER + request.get_full_path()
+        nhmmer_url = NHMMER_SERVER + request.get_full_path().replace('legacy-', '')
         if request.method == 'POST':
             response = requests.post(nhmmer_url, data=request.POST)
         elif request.method == 'GET':
