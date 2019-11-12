@@ -9,7 +9,7 @@ django-debug-toolbar==1.4.0  # toolbar 1.4 requires sqlparse <2, current latest 
 django-filter==1.1.0
 django-maintenancemode==0.10
 django-rq==0.9.6
-djangorestframework==3.5.3  # rollback from 3.6.4
+djangorestframework==3.9.1  # rollback from 3.6.4
 djangorestframework-xml
 djangorestframework-yaml
 djangorestframework-jsonp
