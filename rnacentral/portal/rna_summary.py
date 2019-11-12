@@ -30,6 +30,10 @@ class RnaSummary(object):
         self.taxid = taxid
         self.endpoint = endpoint
         raw_data = self.get_raw_data(urs, taxid)
+        if len(raw_data['entries']) == 0:
+            self.entry_found = False
+            return
+        self.entry_found = True
         self.citations_count = raw_data['entries'][0]['fields']['n_citations'][0]
         self.common_name = raw_data['entries'][0]['fields']['common_name'][0] if raw_data['entries'][0]['fields']['common_name'] else ''
         self.databases = raw_data['entries'][0]['fields']['expert_db']
