@@ -142,17 +142,17 @@ class Accession(models.Model):
         """Get species name in a format that can be used in Ensembl urls."""
         if self.species == 'Dictyostelium discoideum':
             species = 'Dictyostelium discoideum AX4'
+        elif self.species.startswith('Mus musculus') and self.accession.startswith('MGP'):  # Ensembl mouse strain
+            parts = self.accession.split('_')
+            if len(parts) == 3:
+                species = 'Mus musculus ' + parts[1]
+            else:
+                species = self.species
         elif self.species.count(' ') > 1 or self.species.count('-') > 0:
             xref = portal.models.Xref.objects.filter(accession__accession=self.accession, deleted='N').get()
             ensembl_genome = portal.models.EnsemblAssembly.objects.filter(taxid=xref.taxid).first()
             if ensembl_genome:
                 return ensembl_genome.ensembl_url
-            else:
-                species = self.species
-        elif self.species.startswith('Mus musculus') and self.accession.startswith('MGP'):  # Ensembl mouse strain
-            parts = self.accession.split('_')
-            if len(parts) == 3:
-                species = 'Mus musculus ' + parts[1]
             else:
                 species = self.species
         else:
