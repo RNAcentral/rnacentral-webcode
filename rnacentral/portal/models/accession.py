@@ -149,12 +149,15 @@ class Accession(models.Model):
             else:
                 species = self.species
         elif self.species.count(' ') > 1 or self.species.count('-') > 0:
-            xref = portal.models.Xref.objects.filter(accession__accession=self.accession, deleted='N').get()
-            ensembl_genome = portal.models.EnsemblAssembly.objects.filter(taxid=xref.taxid).first()
-            if ensembl_genome:
-                return ensembl_genome.ensembl_url
-            else:
-                species = self.species
+            try:
+                xref = portal.models.Xref.objects.filter(accession__accession=self.accession, deleted='N').get()
+                ensembl_genome = portal.models.EnsemblAssembly.objects.filter(taxid=xref.taxid).first()
+                if ensembl_genome:
+                    return ensembl_genome.ensembl_url
+                else:
+                    species = self.species
+            except portal.models.Xref.DoesNotExist:
+                return None
         else:
             species = self.species
 
@@ -219,14 +222,19 @@ class Accession(models.Model):
             elif self.database == 'REFSEQ':
                 return urls[self.database].format(id=self.external_id, version=self.seq_version)
             elif self.database == 'NONCODE':
-                noncode_id, version = self.external_id.split('.')
-                return urls[self.database].format(id=noncode_id, version=version)
+                if '.' in self.external_id:
+                    noncode_id, version = self.external_id.split('.')
+                    return urls[self.database].format(id=noncode_id, version=version)
+                else:
+                    return urls[self.database].format(id=self.external_id, version=1)
             elif self.database == 'HGNC':
                 return urls[self.database].format(id=self.accession)
             elif self.database == 'ENSEMBL' or self.database == 'GENCODE':
-                return urls[self.database].format(id=self.external_id, species=self.get_ensembl_species_url())
+                species = self.get_ensembl_species_url()
+                return urls[self.database].format(id=self.external_id, species=species) if species else None
             elif self.database in ['ENSEMBL_PLANTS', 'ENSEMBL_METAZOA', 'ENSEMBL_FUNGI', 'ENSEMBL_PROTISTS']:
-                return urls[self.database].format(id=self.external_id, species=self.get_ensembl_species_url())
+                species = self.get_ensembl_species_url()
+                return urls[self.database].format(id=self.external_id, species=species) if species else None
             elif self.database == 'TAIR':
                 return urls[self.database].format(id=self.gene)
             return urls[self.database].format(id=self.external_id)
