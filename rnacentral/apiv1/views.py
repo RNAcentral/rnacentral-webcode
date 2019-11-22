@@ -382,8 +382,8 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
                      replace('class="blue"', '').\
                      replace('text {stroke: rgb(0, 0, 0); fill: none;',
                              'text {{stroke: rgb(0, 0, 0); fill: {color}}};'.format(color=ColorHash(upi).hex)).\
-                     replace('style="font-size: 8px;',
-                             'style="font-size: 20px;') # increase font size
+                     replace('style="font-size: 8px;', 'style="font-size: 20px;').\
+                     replace('style="font-size: 4px;', 'style="font-size: 10px;') # increase font size
 
 
 class RnaGenomeLocations(generics.ListAPIView):
