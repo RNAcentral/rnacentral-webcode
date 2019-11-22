@@ -191,7 +191,7 @@ class Rna(CachingMixin, models.Model):
     def count_symbols(self):
         """
         Returns the number of occurrences of all symbols in RNA,
-        including non-canonical nucleotides and random garbage.
+        including non-canonical nucleotides.
         :return: dict {'A': 1, 'T': 2, 'C': 3, 'G': 4, 'N': 5, 'I': 6, '*': 7}
         """
         return dict(Counter(self.get_sequence()))
@@ -260,12 +260,11 @@ class Rna(CachingMixin, models.Model):
 
     def get_distinct_database_names(self, taxid=None):
         """Get a non-redundant list of databases referencing the sequence."""
-        databases = self.xrefs.filter(deleted='N')
-        if taxid:
-            databases = databases.filter(taxid=taxid)
-        databases = list(databases.values_list('db__display_name', flat=True).distinct())
-        databases = sorted(databases, key=lambda s: s.lower())  # case-insensitive
-        return databases
+        try:
+            dbs = RnaPrecomputed.objects.filter(upi=self.upi, taxid=taxid).get()
+        except RnaPrecomputed.DoesNotExist:
+            return ''
+        return sorted(dbs.databases.split(','), key=lambda s: s.lower())  # case-insensitive
 
     @cached_property
     def first_seen(self):
