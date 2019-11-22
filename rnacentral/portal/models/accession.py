@@ -195,7 +195,7 @@ class Accession(models.Model):
             'MGI': 'http://www.informatics.jax.org/marker/{id}',
             'RGD': 'https://rgd.mcw.edu/rgdweb/report/gene/main.html?id={id}',
         }
-        if self.database in ['GTRNADB', 'ZWD', 'SNODB', 'MIRGENEDB']:
+        if self.database in ['GTRNADB', 'ZWD', 'SNODB', 'MIRGENEDB', '5SRRNADB']:
             data = json.loads(self.note)
             if 'url' in data:
                 return data['url']
