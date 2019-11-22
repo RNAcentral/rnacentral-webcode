@@ -195,7 +195,7 @@ limitations under the License.
                                         </td>
                                         <td><!-- Ensembl url -->
                                             <span ng-if="location.ensembl_division && location.ensembl_species_url" class="margin-right-5px ensembl-link">
-                                                <a ng-href="{{ location.ensembl_division.url + '/' + location.ensembl_species_url + '/Location/View?r=' + location.chromosome + ':' + location.start + '-' + location.end }}" target="_blank">{{ location.ensembl_division.name }}</a>
+                                                <a ng-href="{{ location.ensembl_division.url + '/' + location.ensembl_species_url + '/Location/View?r=' + location.chromosome + ':' + location.start + '-' + location.end }}" target="_blank">{{ location.ensembl_division.name.replace('EnsemblVertebrates', 'Ensembl') }}</a>
                                             </span>
                                         </td>
                                         <td><!-- UCSC url -->
