@@ -91,6 +91,10 @@ RNAcentral: The non-coding RNA sequence database
   <div class="row well well-sm">
     <h2 class="text-center" style="margin-top: 2px; margin-bottom: 2px;">Featured secondary structures</h2>
 
+    <p class="text-center">
+      RNAcentral contains ><a href='/search?q=has_secondary_structure:"True"'>8 million</a> secondary structures displayed using standard layouts. <a href="/help/secondary-structure">Learn more &rarr;</a>
+    </p>
+
     {% for item in context.svg_images %}
       <div class="col-md-3 col-sm-3 col-xs-12">
         <div class="panel panel-default secondary-structure-homepage-card">
@@ -105,7 +109,7 @@ RNAcentral: The non-coding RNA sequence database
     {% endfor %}
 
     <div class="clearfix"></div>
-    <div class="text-center" style="margin-right: 10px; margin-bottom: 10px; font-size: large;"><a href='/search?q=has_secondary_structure:"True"'>Browse over 7 million structures</a> or <a href="/help/secondary-structure">learn more &rarr;</a></div>
+    <div class="text-center" style="margin-right: 10px; margin-bottom: 10px; font-size: large;"><a class="btn btn-primary" href='/search?q=has_secondary_structure:"True"'>Explore structures</a></div>
   </div>
 
   <div class="row">
