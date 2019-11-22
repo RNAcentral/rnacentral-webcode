@@ -193,20 +193,14 @@ class Accession(models.Model):
             'ENSEMBL_PROTISTS': 'http://protists.ensembl.org/{species}/Transcript/Summary?db=core;t={id}',
             'FLYBASE': 'http://flybase.org/reports/{id}',
             'MGI': 'http://www.informatics.jax.org/marker/{id}',
-            'GTRNADB': '',
             'RGD': 'https://rgd.mcw.edu/rgdweb/report/gene/main.html?id={id}',
-            'ZWD': '',
-            'snoDB': '',
-            'MIRGENEDB': '',
         }
+        if self.database in ['GTRNADB', 'ZWD', 'SNODB', 'MIRGENEDB']:
+            data = json.loads(self.note)
+            if 'url' in data:
+                return data['url']
         if self.database in urls.keys():
-            if self.database in ['GTRNADB', 'ZWD', 'SNODB', 'MIRGENEDB']:
-                data = json.loads(self.note)
-                if 'url' in data:
-                    return data['url']
-                else:
-                    return ''
-            elif self.database == 'LNCRNADB':
+            if self.database == 'LNCRNADB':
                 return urls[self.database].format(id=self.optional_id.replace(' ', ''))
             elif self.database == 'VEGA':
                 return urls[self.database].format(id=self.optional_id,
