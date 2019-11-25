@@ -18,7 +18,7 @@ import os
 EXPIRATION = 60*60*24*7 # seconds
 
 # maximum time to run the job
-MAX_RUN_TIME = 60*60*2 # seconds
+MAX_RUN_TIME = 60*60*12  # seconds
 
 # maximum number of entries that can be paginated over in EBI search
 MAX_OUTPUT = 250000
