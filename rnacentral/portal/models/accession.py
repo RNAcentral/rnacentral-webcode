@@ -202,45 +202,43 @@ class Accession(models.Model):
             'snoDB': '',
             'MIRGENEDB': '',
         }
+
         if self.database in urls.keys():
-            try:
-                if self.database in ['GTRNADB', 'ZWD', 'SNODB', 'MIRGENEDB']:
-                    data = json.loads(self.note)
-                    if 'url' in data:
-                        return data['url']
-                    else:
-                        return ''
-                elif self.database == 'LNCRNADB':
-                    return urls[self.database].format(id=self.optional_id.replace(' ', ''))
-                elif self.database == 'VEGA':
-                    return urls[self.database].format(id=self.optional_id,
-                        species=self.species.replace(' ', '_'))
-                elif self.database == 'SILVA':
-                    return urls[self.database].format(id=self.optional_id,
-                        lsu_ssu='ssu' if 'small' in self.product else 'lsu')
-                elif self.database == 'GREENGENES':
-                    return urls[self.database].format(id=self.parent_ac, version=self.seq_version)
-                elif self.database == 'REFSEQ':
-                    return urls[self.database].format(id=self.external_id, version=self.seq_version)
-                elif self.database == 'NONCODE':
-                    if '.' in self.external_id:
-                        noncode_id, version = self.external_id.split('.')
-                        return urls[self.database].format(id=noncode_id, version=version)
-                    else:
-                        return urls[self.database].format(id=self.external_id, version=1)
-                elif self.database == 'HGNC':
-                    return urls[self.database].format(id=self.accession)
-                elif self.database == 'ENSEMBL' or self.database == 'GENCODE':
-                    species = self.get_ensembl_species_url()
-                    return urls[self.database].format(id=self.external_id, species=species) if species else None
-                elif self.database in ['ENSEMBL_PLANTS', 'ENSEMBL_METAZOA', 'ENSEMBL_FUNGI', 'ENSEMBL_PROTISTS']:
-                    species = self.get_ensembl_species_url()
-                    return urls[self.database].format(id=self.external_id, species=species) if species else None
-                elif self.database == 'TAIR':
-                    return urls[self.database].format(id=self.gene)
-                return urls[self.database].format(id=self.external_id)
-            except ValueError:
-                return ''
+            if self.database in ['GTRNADB', 'ZWD', 'SNODB', 'MIRGENEDB']:
+                data = json.loads(self.note)
+                if 'url' in data:
+                    return data['url']
+                else:
+                    return ''
+            elif self.database == 'LNCRNADB':
+                return urls[self.database].format(id=self.optional_id.replace(' ', ''))
+            elif self.database == 'VEGA':
+                return urls[self.database].format(id=self.optional_id,
+                    species=self.species.replace(' ', '_'))
+            elif self.database == 'SILVA':
+                return urls[self.database].format(id=self.optional_id,
+                    lsu_ssu='ssu' if 'small' in self.product else 'lsu')
+            elif self.database == 'GREENGENES':
+                return urls[self.database].format(id=self.parent_ac, version=self.seq_version)
+            elif self.database == 'REFSEQ':
+                return urls[self.database].format(id=self.external_id, version=self.seq_version)
+            elif self.database == 'NONCODE':
+                if '.' in self.external_id:
+                    noncode_id, version = self.external_id.split('.')
+                    return urls[self.database].format(id=noncode_id, version=version)
+                else:
+                    return urls[self.database].format(id=self.external_id, version=1)
+            elif self.database == 'HGNC':
+                return urls[self.database].format(id=self.accession)
+            elif self.database == 'ENSEMBL' or self.database == 'GENCODE':
+                species = self.get_ensembl_species_url()
+                return urls[self.database].format(id=self.external_id, species=species) if species else None
+            elif self.database in ['ENSEMBL_PLANTS', 'ENSEMBL_METAZOA', 'ENSEMBL_FUNGI', 'ENSEMBL_PROTISTS']:
+                species = self.get_ensembl_species_url()
+                return urls[self.database].format(id=self.external_id, species=species) if species else None
+            elif self.database == 'TAIR':
+                return urls[self.database].format(id=self.gene)
+            return urls[self.database].format(id=self.external_id)
         else:
             return ''
 
