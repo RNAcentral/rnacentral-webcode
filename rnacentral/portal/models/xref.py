@@ -601,18 +601,26 @@ class Xref(CachingMixin, models.Model):
         {"transcript_id": ["GENCODE:ENSMUST00000160979.8"]}
         """
         if self.db.display_name == 'GENCODE':
-            return self.accession.accession.split(':')[1]
+            if self.accession.accession.startswith('GENCODE:'):
+                return self.accession.accession.split(':')[1]
+            elif self.accession.accession.startswith('ENSMUST'):
+                return self.accession.accession
+            else:
+                return None
         else:
             return None
 
     def get_gencode_ensembl_url(self):
         """Get Ensembl URL for GENCODE transcripts."""
         ensembl_transcript_id = self.get_gencode_transcript_id()
-        url = 'http://ensembl.org/{species}/Transcript/Summary?db=core;t={id}'.format(
-            id=ensembl_transcript_id,
-            species=self.accession.species.replace(' ', '_')
-        )
-        return url
+        if ensembl_transcript_id:
+            url = 'http://ensembl.org/{species}/Transcript/Summary?db=core;t={id}'.format(
+                id=ensembl_transcript_id,
+                species=self.accession.species.replace(' ', '_')
+            )
+            return url
+        else:
+            return None
 
     def get_ensembl_division(self):
         """Get Ensembl or Ensembl Genomes division for the cross-reference."""

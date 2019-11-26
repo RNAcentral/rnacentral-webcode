@@ -348,6 +348,16 @@
               {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
             </span>
 
+            <!-- snoDB -->
+            <span ng-switch-when="snoDB">
+              {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+            </span>
+
+            <!-- MirGeneDB -->
+            <span ng-switch-when="MirGeneDB">
+              {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+            </span>
+
             <span ng-switch-default>
               {{ xref.accession.external_id }} {{ xref.accession.optional_id }}
             </span>

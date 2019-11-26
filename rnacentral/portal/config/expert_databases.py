@@ -14,6 +14,34 @@ limitations under the License.
 """
 Expert databases.
 """
+
+# new database template
+    # {
+    #     'name': '',
+    #     'label': '',
+    #     'url': '',
+    #     'description': '',
+    #     'hint': '',
+    #     'tags': ['', '', ''],
+    #     'abbreviation': '',
+    #     'examples': [
+    #         {'upi': '', 'taxid': 0},
+    #         {'upi': '', 'taxid': 0},
+    #         {'upi': '', 'taxid': 0},
+    #     ],
+    #     'references': [
+    #         {
+    #             'title': '',
+    #             'authors': '',
+    #             'journal': '',
+    #             'pubmed_id': '',
+    #         },
+    #     ],
+    #     'imported': True,
+    #     'status': 'new',
+    #     'version': '',
+    # },
+
 expert_dbs = [
     {
         'name': 'ENA',
@@ -636,10 +664,10 @@ expert_dbs = [
         ],
         'references': [
             {
-                'title': 'MODOMICS: a database of RNA modification pathways--2013 update',
-                'authors': 'Machnicka MA, Milanowska K, Osman Oglou O, Purta E, Kurkowska M, Olchowik A, Januszewski W, Kalinowski S, Dunin-Horkawicz S, Rother KM, Helm M, Bujnicki JM, Grosjean H',
-                'journal': 'Nucleic Acids Res. 2013 Jan;41(Database issue):D262-7',
-                'pubmed_id': '23118484',
+                'title': 'MODOMICS: a database of RNA modification pathways. 2017 update',
+                'authors': 'Boccaletto P, Machnicka MA, Purta E, Piatkowski P, Baginski B, Wirecki TK, de Crecy-Lagard V, Ross R, Limbach PA, Kotter A, Helm M, Bujnicki JM',
+                'journal': 'Nucleic Acids Res. 2018 Jan 4;46(D1):D303-D307',
+                'pubmed_id': '29106616',
             },
         ],
         'imported': True,
@@ -1047,7 +1075,10 @@ expert_dbs = [
         'hint': '5SrRNAdb is an information resource for 5S ribosomal RNAs',
         'tags': ['curated', '5S', 'rRNA'],
         'abbreviation': '',
-        'examples': [],
+        'examples': [
+            {'upi': 'URS000002B0D5', 'taxid': 9606},
+            {'upi': 'URS000002B0D5', 'taxid': 10090},
+        ],
         'references': [
             {
                 'title': '5SRNAdb: an information resource for 5S ribosomal RNAs',
@@ -1057,8 +1088,8 @@ expert_dbs = [
             },
         ],
         'imported': False,
-        'status': '',
-        'version': '',
+        'status': 'new',
+        'version': '17',
     },
     {
         'name': 'miRTarBase',
@@ -1130,5 +1161,55 @@ expert_dbs = [
         'imported': True,
         'status': 'new',
         'version': '',
+    },
+    {
+        'name': 'snoDB',
+        'label': 'snodb',
+        'url': 'http://scottgroup.med.usherbrooke.ca/snoDB/',
+        'description': 'is an interactive database of human snoRNA sequences, abundance and interactions',
+        'hint': 'snoDB is an interactive database of human snoRNA sequences, abundance and interactions',
+        'tags': ['snoRNA', 'curated', 'human'],
+        'abbreviation': '',
+        'examples': [
+            {'upi': 'URS000071F072', 'taxid': 9606},
+            {'upi': 'URS0000726F61', 'taxid': 9606},
+            {'upi': 'URS00005D7632', 'taxid': 9606},
+        ],
+        'references': [
+            {
+                'title': 'snoDB: an interactive database of human snoRNA sequences, abundance and interactions',
+                'authors': 'Bouchard-Bourelle P, Desjardins-Henri C, Mathurin-St-Pierre D, Deschamps-Francoeur G, Fafard-Couture E, Garant JM, Elela SA, Scott MS',
+                'journal': 'Nucleic Acids Res. 2019 Oct 10. pii: gkz884',
+                'pubmed_id': '31598696',
+            },
+        ],
+        'imported': True,
+        'status': 'new',
+        'version': '1.0.0',
+    },
+    {
+        'name': 'MirGeneDB',
+        'label': 'mirgenedb',
+        'url': 'https://mirgenedb.org',
+        'description': 'is a microRNA gene database covering 45 organisms',
+        'hint': 'MirGeneDB is a microRNA gene database covering 45 organisms',
+        'tags': ['miRNA', 'curated'],
+        'abbreviation': '',
+        'examples': [
+            {'upi': 'URS00000157F5', 'taxid': 9606},
+            {'upi': 'URS000075DE8D', 'taxid': 10090},
+            {'upi': 'URS0000416056', 'taxid': 7955},
+        ],
+        'references': [
+            {
+                'title': 'MirGeneDB 2.0: the metazoan microRNA complement',
+                'authors': 'Fromm B, Domanska D, Hoye E, Ovchinnikov V, Kang W, Aparicio-Puerta E, Johansen M, Flatmark K, Mathelier A, Hovig E, Hackenberg M, Friedlander MR, Peterson KJ',
+                'journal': 'Nucleic Acids Res. 2019 Oct 23',
+                'pubmed_id': '31642479',
+            },
+        ],
+        'imported': True,
+        'status': 'new',
+        'version': '2.0',
     },
 ]

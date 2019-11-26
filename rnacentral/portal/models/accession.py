@@ -142,19 +142,22 @@ class Accession(models.Model):
         """Get species name in a format that can be used in Ensembl urls."""
         if self.species == 'Dictyostelium discoideum':
             species = 'Dictyostelium discoideum AX4'
-        elif self.species.count(' ') > 1 or self.species.count('-') > 0:
-            xref = portal.models.Xref.objects.filter(accession__accession=self.accession, deleted='N').get()
-            ensembl_genome = portal.models.EnsemblAssembly.objects.filter(taxid=xref.taxid).first()
-            if ensembl_genome:
-                return ensembl_genome.ensembl_url
-            else:
-                species = self.species
         elif self.species.startswith('Mus musculus') and self.accession.startswith('MGP'):  # Ensembl mouse strain
             parts = self.accession.split('_')
             if len(parts) == 3:
                 species = 'Mus musculus ' + parts[1]
             else:
                 species = self.species
+        elif self.species.count(' ') > 1 or self.species.count('-') > 0:
+            try:
+                xref = portal.models.Xref.objects.filter(accession__accession=self.accession, deleted='N').get()
+                ensembl_genome = portal.models.EnsemblAssembly.objects.filter(taxid=xref.taxid).first()
+                if ensembl_genome:
+                    return ensembl_genome.ensembl_url
+                else:
+                    species = self.species
+            except portal.models.Xref.DoesNotExist:
+                return None
         else:
             species = self.species
 
@@ -196,9 +199,12 @@ class Accession(models.Model):
             'GTRNADB': '',
             'RGD': 'https://rgd.mcw.edu/rgdweb/report/gene/main.html?id={id}',
             'ZWD': '',
+            'snoDB': '',
+            'MIRGENEDB': '',
         }
+
         if self.database in urls.keys():
-            if self.database in ['GTRNADB', 'ZWD']:
+            if self.database in ['GTRNADB', 'ZWD', 'SNODB', 'MIRGENEDB']:
                 data = json.loads(self.note)
                 if 'url' in data:
                     return data['url']
@@ -217,14 +223,19 @@ class Accession(models.Model):
             elif self.database == 'REFSEQ':
                 return urls[self.database].format(id=self.external_id, version=self.seq_version)
             elif self.database == 'NONCODE':
-                noncode_id, version = self.external_id.split('.')
-                return urls[self.database].format(id=noncode_id, version=version)
+                if '.' in self.external_id:
+                    noncode_id, version = self.external_id.split('.')
+                    return urls[self.database].format(id=noncode_id, version=version)
+                else:
+                    return urls[self.database].format(id=self.external_id, version=1)
             elif self.database == 'HGNC':
                 return urls[self.database].format(id=self.accession)
             elif self.database == 'ENSEMBL' or self.database == 'GENCODE':
-                return urls[self.database].format(id=self.external_id, species=self.get_ensembl_species_url())
+                species = self.get_ensembl_species_url()
+                return urls[self.database].format(id=self.external_id, species=species) if species else None
             elif self.database in ['ENSEMBL_PLANTS', 'ENSEMBL_METAZOA', 'ENSEMBL_FUNGI', 'ENSEMBL_PROTISTS']:
-                return urls[self.database].format(id=self.external_id, species=self.get_ensembl_species_url())
+                species = self.get_ensembl_species_url()
+                return urls[self.database].format(id=self.external_id, species=species) if species else None
             elif self.database == 'TAIR':
                 return urls[self.database].format(id=self.gene)
             return urls[self.database].format(id=self.external_id)
