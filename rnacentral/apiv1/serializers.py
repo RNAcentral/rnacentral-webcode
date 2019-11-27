@@ -546,3 +546,14 @@ class EnsemblComparaSerializer(serializers.ModelSerializer):
     class Meta:
         model = EnsemblCompara
         fields = ('ensembl_transcript_id', 'rnacentral_id')
+
+
+class RnaPrecomputedJsonSerializer(serializers.ModelSerializer):
+    """Serializer class for the Json download."""
+    sequence = serializers.CharField(source='get_sequence', read_only=True)
+
+    class Meta:
+        model = RnaPrecomputed
+        fields = (
+            'id', 'rna_type', 'description', 'databases', 'sequence'
+        )
