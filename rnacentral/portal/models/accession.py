@@ -205,10 +205,10 @@ class Accession(models.Model):
 
         if self.database in urls.keys():
             if self.database in ['GTRNADB', 'ZWD', 'SNODB', 'MIRGENEDB']:
-                data = json.loads(self.note)
-                if 'url' in data:
-                    return data['url']
-                else:
+                try:
+                    data = json.loads(self.note)
+                    return data['url'] if 'url' in data else ''
+                except ValueError:
                     return ''
             elif self.database == 'LNCRNADB':
                 return urls[self.database].format(id=self.optional_id.replace(' ', ''))
