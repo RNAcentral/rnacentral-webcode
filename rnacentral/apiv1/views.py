@@ -377,11 +377,15 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
         return HttpResponse(self.preprocess_svg_thumbnail(image.layout, upi), content_type='image/svg+xml')
 
     def preprocess_svg_thumbnail(self, image, upi):
+        color = ColorHash(upi).hex
         return image.replace('class="green"', '').\
                      replace('class="red"', '').\
                      replace('class="blue"', '').\
-                     replace('text {stroke: rgb(0, 0, 0); fill: none;',
-                             'text {{stroke: rgb(0, 0, 0); fill: {color}}};'.format(color=ColorHash(upi).hex)).\
+                     replace('class="brown"', '').\
+                     replace('rgb(0, 0, 0);',
+                             '{color};'.format(color=color)).\
+                     replace('fill: none;',
+                             'fill: {color};'.format(color=color)).\
                      replace('style="font-size: 8px;', 'style="font-size: 20px;').\
                      replace('style="font-size: 4px;', 'style="font-size: 10px;') # increase font size
 
