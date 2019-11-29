@@ -77,9 +77,7 @@ def export_search_results(query, _format, hits):
             return '\n'.join(rnacentral_ids) + '\n'
         elif _format == 'json':
             # filter queryset to hold only specific rnacentral ids
-            rnacentral_ids = [re.sub(r'_\d+', '', x) for x in rnacentral_ids]
-            queryset = RnaPrecomputed.objects.filter(upi__in=rnacentral_ids, taxid__isnull=False).iterator()
-
+            queryset = RnaPrecomputed.objects.filter(id__in=rnacentral_ids).iterator()
             factory = APIRequestFactory()
             fake_request = factory.get('/')
             serializer_context = {'request': fake_request}
@@ -158,6 +156,7 @@ def export_search_results(query, _format, hits):
             f = tempfile.NamedTemporaryFile(delete=True, dir=EXPORT_RESULTS_DIR)
 
         while start < hits:
+            print(hits)
             max_end = start + page_size
             end = min(max_end, hits)
             rnacentral_ids = get_results_page(start, end)
@@ -170,6 +169,7 @@ def export_search_results(query, _format, hits):
                 archive.write(text)
             if _format == 'json' and end != hits:
                 # join batches with commas except for the last iteration
+                print('teste...')
                 archive.write(',\n')
             start = end
 
