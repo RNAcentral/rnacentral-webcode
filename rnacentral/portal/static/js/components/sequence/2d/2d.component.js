@@ -4,7 +4,7 @@ var secondary_structures = {
         taxid: '<?',
         showSecondaryStructureTab: '&'
     },
-    controller: ['$http', '$interpolate', 'routes', function($http, $interpolate, routes) {
+    controller: ['$http', '$interpolate', 'routes', '$interval', function($http, $interpolate, routes, $interval) {
         var ctrl = this;
 
         ctrl.help = "/help/secondary-structure";
@@ -98,10 +98,31 @@ var secondary_structures = {
             ctrl.showSecondaryStructureTab();
         };
 
+        ctrl.resize2D = function() {
+            var maxWidth = document.querySelector('#secondary_structure').clientWidth;
+            document.querySelector('#rna_ss_traveler svg').setAttribute('width', maxWidth);
+
+            var height = document.querySelector('#rna_ss_traveler svg').getAttribute('height');
+            document.querySelector('#rna_ss_traveler svg').setAttribute('height', Math.max(height, 500));
+
+            ctrl.panZoom = svgPanZoom('#rna_ss_traveler svg', {
+              controlIconsEnabled: true,
+              contain: true,
+            });
+
+            // fix the svg control position
+            $('#svg-pan-zoom-controls').attr('transform', '');
+        }
+
         ctrl.displayLayout = function() {
+            ctrl.secondaryStructures.svg = ctrl.secondaryStructures.svg.replace('bold', 'normal').replace('4px', '3px').replace('Helvetica', 'Arial');
             document.getElementById('rna_ss_traveler').innerHTML = ctrl.secondaryStructures.svg;
-            var svg = document.querySelector('#rna_ss_traveler svg');
-            if (svg) {
+            // wait until the SVG is drawn and ready
+            stop = $interval(function() {
+              var maxWidth = document.querySelector('#secondary_structure').clientWidth;
+              if (maxWidth !== 0) {
+                $interval.cancel(stop);
+                var svg = document.querySelector('#rna_ss_traveler svg');
                 svg.classList.remove('black');
                 svg.classList.add('traveler-secondary-structure-svg');
                 // delete inline svg styles to prevent style leakage
@@ -112,17 +133,10 @@ var secondary_structures = {
                     var parent2 = parent.parentNode;
                     parent2.removeChild(parent);
                 }
-            }
-
-            ctrl.showSecondaryStructureTab();
-
-            ctrl.panZoom = svgPanZoom('#rna_ss_traveler svg', {
-              controlIconsEnabled: true,
-              fit: false, // see https://github.com/ariutta/svg-pan-zoom/issues/100
-            });
-
-            // fix the svg control position
-            $('#svg-pan-zoom-controls').attr('transform', '');
+                ctrl.resize2D();
+                ctrl.showSecondaryStructureTab();
+              }
+            }, 100);
         };
 
         ctrl.feedback = function() {
