@@ -156,7 +156,6 @@ def export_search_results(query, _format, hits):
             f = tempfile.NamedTemporaryFile(delete=True, dir=EXPORT_RESULTS_DIR)
 
         while start < hits:
-            print(hits)
             max_end = start + page_size
             end = min(max_end, hits)
             rnacentral_ids = get_results_page(start, end)
@@ -169,7 +168,6 @@ def export_search_results(query, _format, hits):
                 archive.write(text)
             if _format == 'json' and end != hits:
                 # join batches with commas except for the last iteration
-                print('teste...')
                 archive.write(',\n')
             start = end
 
