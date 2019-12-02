@@ -377,6 +377,15 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
         return HttpResponse(self.preprocess_svg_thumbnail(image.layout, upi), content_type='image/svg+xml')
 
     def preprocess_svg_thumbnail(self, image, upi):
+        match = re.search(r'style="font-size:\s+(\d+)px;', image)
+        if match:
+            font_size = int(match.group(1))
+            if font_size >= 4:
+                new_font_size = 12
+            else:
+                new_font_size = 8
+            image = image.replace('style="font-size: {}px;'.format(font_size),
+                                  'style="font-size: {}px;'.format(new_font_size))
         color = ColorHash(upi).hex
         return image.replace('class="green"', '').\
                      replace('class="red"', '').\
@@ -385,9 +394,7 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
                      replace('rgb(0, 0, 0);',
                              '{color};'.format(color=color)).\
                      replace('fill: none;',
-                             'fill: {color};'.format(color=color)).\
-                     replace('style="font-size: 8px;', 'style="font-size: 20px;').\
-                     replace('style="font-size: 4px;', 'style="font-size: 10px;') # increase font size
+                             'fill: {color};'.format(color=color))
 
 
 class RnaGenomeLocations(generics.ListAPIView):
