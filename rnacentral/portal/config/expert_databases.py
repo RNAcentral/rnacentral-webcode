@@ -1185,7 +1185,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'new',
-        'version': '1.0.0',
+        'version': '1.1.0',
     },
     {
         'name': 'MirGeneDB',
