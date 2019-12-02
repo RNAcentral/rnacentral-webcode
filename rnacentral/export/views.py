@@ -19,7 +19,6 @@ import gzip
 import json
 import logging
 import os
-import re
 import requests
 import subprocess as sub
 import tempfile
@@ -54,41 +53,32 @@ def export_search_results(query, _format, hits):
         """
         Retrieve a page of search results and return RNAcentral ids.
         """
-        rnacentral_ids = []
         page_size = end - start
         url = ''.join([settings.EBI_SEARCH_ENDPOINT,
-                      '?query={query}',
-                      '&start={start}',
-                      '&size={page_size}',
-                      '&format=json']).format(query=query, start=start,
-                                              page_size=page_size)
+                       '?query={query}',
+                       '&start={start}',
+                       '&size={page_size}',
+                       '&format=json']).format(query=query, start=start, page_size=page_size)
         data = json.loads(requests.get(url).text)
-        for entry in data['entries']:
-            rnacentral_ids.append(entry['id'])
-        return rnacentral_ids
+        return [entry['id'] for entry in data['entries']]
 
     def format_output(rnacentral_ids):
         """
-        Given a list of RNAcentral ids, return the results
-        in the specified format.
+        Given a list of RNAcentral ids, return the results.
         """
-        output = []
-        if _format == 'list':
-            return '\n'.join(rnacentral_ids) + '\n'
-        elif _format == 'json':
-            # filter queryset to hold only specific rnacentral ids
-            queryset = RnaPrecomputed.objects.filter(id__in=rnacentral_ids).iterator()
-            factory = APIRequestFactory()
-            fake_request = factory.get('/')
-            serializer_context = {'request': fake_request}
-            serializer = RnaPrecomputedJsonSerializer(queryset, context=serializer_context, many=True)
+        # filter queryset to hold only specific rnacentral ids
+        queryset = RnaPrecomputed.objects.filter(id__in=rnacentral_ids).iterator()
+        factory = APIRequestFactory()
+        fake_request = factory.get('/')
+        serializer_context = {'request': fake_request}
+        serializer = RnaPrecomputedJsonSerializer(queryset, context=serializer_context, many=True)
 
-            renderer = renderers.JSONRenderer()
-            output = renderer.render(serializer.data)
-            # omit opening and closing square brackets for easy concatenation
-            output = output[1:-1]
-            # make relative urls absolute
-            # output = output.replace('"/api/v1/', '"https://rnacentral.org/api/v1/')
+        renderer = renderers.JSONRenderer()
+        output = renderer.render(serializer.data)
+        # omit opening and closing square brackets for easy concatenation
+        output = output[1:-1]
+        # make relative urls absolute
+        # output = output.replace('"/api/v1/', '"https://rnacentral.org/api/v1/')
         return output
 
     def check_ssi_file():
@@ -146,7 +136,7 @@ def export_search_results(query, _format, hits):
         filename = os.path.join(EXPORT_RESULTS_DIR,
                                 '%s.%s.gz' % (job.id, _format))
         start = 0
-        page_size = 100 # max EBI search page size
+        page_size = 100  # max EBI search page size
 
         if _format in ['json', 'list']:
             archive = gzip.open(filename, 'wb')
@@ -163,12 +153,15 @@ def export_search_results(query, _format, hits):
                 # write out RNAcentral ids to a temporary file
                 for _id in rnacentral_ids:
                     f.write('{0}\n'.format(_id))
-            if _format in ['json', 'list']:
+            if _format == 'list':
+                text = '\n'.join(rnacentral_ids) + '\n'
+                archive.write(text)
+            if _format == 'json':
                 text = format_output(rnacentral_ids)
                 archive.write(text)
-            if _format == 'json' and end != hits:
                 # join batches with commas except for the last iteration
-                archive.write(',\n')
+                if text and end != hits:
+                    archive.write(',\n')
             start = end
 
             job.meta['progress'] = min(round(float(start) * 100 / hits, 2), 85)
@@ -389,10 +382,10 @@ def submit_export_job(request):
         Get the total number of results to be exported.
         """
         url = ''.join([settings.EBI_SEARCH_ENDPOINT,
-                      '?query={query}',
-                      '&start=0',
-                      '&size=0',
-                      '&format=json']).format(query=query)
+                       '?query={query}',
+                       '&start=0',
+                       '&size=0',
+                       '&format=json']).format(query=query)
         results = requests.get(url).json()
         hits = min(results['hitCount'], MAX_OUTPUT)
         return hits
@@ -418,16 +411,17 @@ def submit_export_job(request):
         queue = django_rq.get_queue()
         hits = get_hit_count(query)
 
-        job = queue.enqueue_call(func=export_search_results,
-                                 args=(query, _format, hits),
-                                 timeout=MAX_RUN_TIME,
-                                 result_ttl=EXPIRATION)
+        job = queue.enqueue_call(
+            func=export_search_results,
+            args=(query, _format, hits),
+            timeout=MAX_RUN_TIME,
+            result_ttl=EXPIRATION
+        )
         job.meta['progress'] = 0
         job.meta['query'] = query
         job.meta['format'] = _format
         job.meta['hits'] = hits
-        job.meta['expiration'] = datetime.datetime.now() + \
-                                 datetime.timedelta(seconds=EXPIRATION)
+        job.meta['expiration'] = datetime.datetime.now() + datetime.timedelta(seconds=EXPIRATION)
         job.save()
         return JsonResponse({'job_id': job.id})
     except Exception as e:
