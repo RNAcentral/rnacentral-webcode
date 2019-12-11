@@ -137,6 +137,10 @@ var textSearchBar = {
                         'search_string': 'Escherichia coli',
                     },
                     {
+                        'label': 'mammals',
+                        'search_string': 'Mammalia',
+                    },
+                    {
                         'label': 'Alphaproteobacteria',
                         'search_string': 'tax_string:"Alphaproteobacteria"',
                     },
@@ -153,6 +157,22 @@ var textSearchBar = {
                     {
                         'label': 'snoRNA',
                         'search_string': 'rna_type:"snoRNA"',
+                    },
+                    {
+                        'label': 'snRNA',
+                        'search_string': 'rna_type:"snRNA"',
+                    },
+                    {
+                        'label': '5S rRNA',
+                        'search_string': 'RF00001 AND has_secondary_structure:"True" AND expert_db:"5SrRNAdb"',
+                    },
+                    {
+                        'label': 'LSU rRNA',
+                        'search_string': '(RF02541 OR RF02543 OR RF02540) has_secondary_structure:"True" AND length:[1000 TO 10000]',
+                    },
+                    {
+                        'label': 'SSU rRNA',
+                        'search_string': '(RF00177 OR RF01960 OR RF01959) has_secondary_structure:"True" AND length:[1000 TO 3000]',
                     },
                 ],
                 'expert_db': [
@@ -179,6 +199,10 @@ var textSearchBar = {
                     {
                         'label': 'TarBase',
                         'search_string': 'expert_db:"TarBase"',
+                    },
+                    {
+                        'label': 'PDBe',
+                        'search_string': 'expert_db:"PDBe"',
                     },
                   ],
                     'accession': [
