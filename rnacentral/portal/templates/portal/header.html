@@ -51,14 +51,14 @@ limitations under the License.
                 {% if forloop.first %}
                   <div class="col-sm-5">
                     <ul class="multi-column-dropdown">
-                {% elif forloop.counter0 == 16 %}
+                {% elif forloop.counter0 == 19 %}
                   <div class="col-sm-7">
                     <ul class="multi-column-dropdown">
                 {% endif %}
                 <li>
                   <a href="{% url 'expert-database' expert_db_name=expert_db.label %}">{{ expert_db.name }}</a>
                 </li>
-                {% if forloop.counter0 == 15 or forloop.last %}
+                {% if forloop.counter0 == 18 or forloop.last %}
                     </ul>
                   </div>
                 {% endif %}
