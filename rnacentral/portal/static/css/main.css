@@ -1579,6 +1579,7 @@ textarea {
 
 .traveler-secondary-structure-svg line.black {
   stroke: rgb(0, 0, 0);
+  stroke-width: 0.6;
 }
 
 .traveler-secondary-structure-svg line.gray {
