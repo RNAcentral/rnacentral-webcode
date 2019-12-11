@@ -53,7 +53,7 @@ class RnaSummary(object):
         self.rfam_id = raw_data['entries'][0]['fields']['rfam_id']
         self.rfam_count = len(self.rfam_id)
         self.rna_type = raw_data['entries'][0]['fields']['rna_type'][0]
-        self.species = raw_data['entries'][0]['fields']['species'][0]
+        self.species = raw_data['entries'][0]['fields']['species'][0] if len(raw_data['entries'][0]['fields']['species']) > 0 else ''
 
 
     def get_raw_data(self, urs, taxid):
