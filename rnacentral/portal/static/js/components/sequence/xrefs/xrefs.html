@@ -363,6 +363,16 @@
               <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
             </span>
 
+            <!-- GeneCards -->
+            <span ng-switch-when="GeneCards">
+              {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.gene }}</a> gene
+            </span>
+
+            <!-- MalaCards -->
+            <span ng-switch-when="MalaCards">
+              {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">view human diseases</a> associated with {{ xref.accession.gene }}
+            </span>
+
             <span ng-switch-default>
               {{ xref.accession.external_id }} {{ xref.accession.optional_id }}
             </span>

@@ -194,6 +194,8 @@ class Accession(models.Model):
             'FLYBASE': 'http://flybase.org/reports/{id}',
             'MGI': 'http://www.informatics.jax.org/marker/{id}',
             'RGD': 'https://rgd.mcw.edu/rgdweb/report/gene/main.html?id={id}',
+            'MALACARDS': 'https://www.genecards.org/cgi-bin/carddisp.pl?gene={id}#diseases',
+            'GENECARDS': 'https://www.genecards.org/cgi-bin/carddisp.pl?gene={id}',
         }
         if self.database in ['GTRNADB', 'ZWD', 'SNODB', 'MIRGENEDB', '5SRRNADB']:
             data = json.loads(self.note)
@@ -222,6 +224,8 @@ class Accession(models.Model):
             elif self.database in ['ENSEMBL_PLANTS', 'ENSEMBL_METAZOA', 'ENSEMBL_FUNGI', 'ENSEMBL_PROTISTS']:
                 return urls[self.database].format(id=self.external_id, species=self.get_ensembl_species_url())
             elif self.database == 'TAIR':
+                return urls[self.database].format(id=self.gene)
+            elif self.database in ['GENECARDS', 'MALACARDS']:
                 return urls[self.database].format(id=self.gene)
             return urls[self.database].format(id=self.external_id)
         else:
