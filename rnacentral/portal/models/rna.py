@@ -228,7 +228,7 @@ class Rna(CachingMixin, models.Model):
     @cached_property
     def count_distinct_organisms(self):
         """Count the number of distinct taxids referenced by the sequence."""
-        queryset = self.xrefs.values('accession__species')
+        queryset = self.xrefs.values('taxid')
         results = queryset.filter(deleted='N').distinct().count()
         if not results:
             results = queryset.distinct().count()
