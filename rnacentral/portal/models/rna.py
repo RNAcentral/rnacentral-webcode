@@ -26,7 +26,6 @@ from django.db.models import Prefetch, Min, Max, Q
 from django.utils.functional import cached_property
 
 from .database import Database
-from .genomic_coordinates import GenomicCoordinates
 from .modification import Modification
 from .rna_precomputed import RnaPrecomputed
 from .related_sequences import RelatedSequence
@@ -165,17 +164,6 @@ class Rna(CachingMixin, models.Model):
         values_list = self.xrefs.values_list('deleted', flat=True)
         return 'N' in self.xrefs.values_list('deleted', flat=True).distinct()  # deleted xrefs are marked with N
 
-    def has_genomic_coordinates(self, taxid=None):
-        """Return True if at least one cross-reference has genomic coordinates."""
-        xrefs = self.xrefs
-        if taxid:
-            xrefs = xrefs.filter(taxid=taxid)
-        chromosomes = xrefs.all().values_list('accession__coordinates__chromosome', flat=True)
-        for chromosome in chromosomes:
-            if chromosome:
-                return True
-        return False
-
     def get_sequence(self):
         """
         Sequences of up to 4000 nucleotides are stored in seq_short, while the
@@ -206,12 +194,6 @@ class Rna(CachingMixin, models.Model):
                                   'modifications',
                                   queryset=Modification.objects.select_related('modification_id')
                               )
-                          )\
-                          .prefetch_related(
-                              Prefetch(
-                                  'accession__coordinates',
-                                  queryset=GenomicCoordinates.objects.filter(chromosome__isnull=False)
-                              )
                           )
 
         if taxid:
@@ -229,12 +211,6 @@ class Rna(CachingMixin, models.Model):
                                   Prefetch(
                                       'modifications',
                                       queryset=Modification.objects.select_related('modification_id')
-                                  )
-                              )\
-                              .prefetch_related(
-                                  Prefetch(
-                                      'accession__coordinates',
-                                      queryset=GenomicCoordinates.objects.filter(chromosome__isnull=False)
                                   )
                               )
             if taxid:
@@ -290,38 +266,6 @@ class Rna(CachingMixin, models.Model):
         description = self.get_description()
         fasta = ">%s %s\n%s" % (self.upi, description, split_seq)
         return fasta
-
-    def get_gff(self):
-        """
-        Format genomic coordinates from all xrefs into a single file in GFF2 format.
-        To reduce redundancy, keep only xrefs from the source entries,
-        not the entries added from the DR lines.
-        """
-        xrefs = self.xrefs.all()
-        gff = ''
-        for xref in xrefs:
-            gff += GffFormatter(xref)()
-        return gff
-
-    def get_gff3(self):
-        """Format genomic coordinates from all xrefs into a single file in GFF3 format."""
-        xrefs = self.xrefs.filter(deleted='N').all()
-        gff = '##gff-version 3\n'
-        for xref in xrefs:
-            gff += Gff3Formatter(xref)()
-        return gff
-
-    def get_ucsc_bed(self):
-        """
-        Format genomic coordinates from all xrefs into a single file in UCSC BED format.
-        Example:
-        chr1    29554    31097    RNA000063C361    0    +   29554    31097    255,0,0    3    486,104,122    0,1009,1421
-        """
-        xrefs = self.xrefs.all()
-        bed = ''
-        for xref in xrefs:
-            bed += _xref_to_bed_format(xref)
-        return bed
 
     def get_rna_type(self, taxid=None, recompute=False):
         """Determine the rna type for the given sequence. This will use the

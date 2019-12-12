@@ -15,9 +15,6 @@ from .accession import *
 from .chemical_component import *
 from .database import *
 from .database_stats import *
-from .formatters import *
-from .genomic_coordinates import *
-from .genome_mapping import *
 from .go_terms import *
 from .modification import *
 from .reference import *
@@ -30,7 +27,6 @@ from .secondary_structure import *
 from .sequence_feature import *
 from .xref import *
 from .ensembl_assembly import *
-from .ensembl_insdc_mapping import *
 from .ensembl_karyotype import *
 from .protein_info import *
 from .related_sequences import *

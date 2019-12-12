@@ -21,7 +21,7 @@ from rest_framework import serializers
 
 from portal.models import Rna, Xref, Reference,  Reference_map, ChemicalComponent, Database, DatabaseStats, Accession, \
     Release, Reference, Modification, RfamHit, RfamModel, RfamClan, RfamGoTerm, OntologyTerm, SequenceFeature, \
-    EnsemblAssembly, EnsemblInsdcMapping, EnsemblKaryotype, GenomeMapping, \
+    EnsemblAssembly, EnsemblKaryotype, \
     ProteinInfo, EnsemblCompara, RnaPrecomputed, SequenceRegion, SecondaryStructureWithLayout
 
 
@@ -512,14 +512,6 @@ class EnsemblAssemblySerializer(serializers.ModelSerializer):
 
     def get_example_end(self, obj):
         return obj.example_end
-
-
-class EnsemblInsdcMappingSerializer(serializers.ModelSerializer):
-    assembly = EnsemblAssemblySerializer(source='assembly_id')
-
-    class Meta:
-        model = EnsemblInsdcMapping
-        fields = ('insdc', 'ensembl_name', 'assembly')
 
 
 class EnsemblKaryotypeSerializer(serializers.ModelSerializer):

@@ -37,12 +37,12 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RnaSpeciesSpecificSerializer, ExpertDatabaseStatsSerializer, \
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, \
                               RfamHitSerializer, SequenceFeatureSerializer, \
-                              EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer, ProteinTargetsSerializer, \
+                              EnsemblAssemblySerializer, ProteinTargetsSerializer, \
                               LncrnaTargetsSerializer, EnsemblComparaSerializer, SecondaryStructureSVGImageSerializer
 
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
-    EnsemblInsdcMapping, GenomeMapping, GenomicCoordinates, GoAnnotation, RelatedSequence, ProteinInfo, SequenceFeature,\
+    GoAnnotation, RelatedSequence, ProteinInfo, SequenceFeature,\
     SequenceRegion, EnsemblCompara, SecondaryStructureWithLayout
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination, PaginatedRawQuerySet
@@ -573,17 +573,6 @@ class SequenceFeaturesAPIViewSet(generics.ListAPIView):
         upi = self.kwargs['pk']
         taxid = self.kwargs['taxid']
         return SequenceFeature.objects.filter(upi=upi, taxid=taxid, feature_name__in=["conserved_rna_structure", "mature_product"])
-
-
-class EnsemblInsdcMappingView(APIView):
-    """API endpoint, presenting mapping between E! and INSDC chromosome names."""
-    permission_classes = ()
-    authentication_classes = ()
-
-    def get(self, request, format=None):
-        mapping = EnsemblInsdcMapping.objects.all().select_related()
-        serializer = EnsemblInsdcMappingSerializer(mapping, many=True, context={request: request})
-        return Response(serializer.data)
 
 
 class RnaGoAnnotationsView(APIView):

@@ -20,7 +20,6 @@ from caching.base import CachingMixin, CachingManager
 
 from .accession import Accession
 from .ensembl_assembly import EnsemblAssembly
-from .genomic_coordinates import GenomicCoordinates
 from .formatters import Gff3Formatter, GffFormatter, _xref_to_bed_format
 
 
@@ -454,18 +453,6 @@ class Xref(CachingMixin, models.Model):
         else:
             return None
 
-    def get_ucsc_bed(self):
-        """Format genomic coordinates in BED format."""
-        return _xref_to_bed_format(self)
-
-    def get_gff(self):
-        """Format genomic coordinates in GFF format."""
-        return GffFormatter(self)()
-
-    def get_gff3(self):
-        """Format genomic coordinates in GFF3 format."""
-        return Gff3Formatter(self)()
-
     def is_mirbase_mirna_precursor(self):
         """True if the accession is a miRBase precursor miRNA."""
         return self.accession.feature_name == 'precursor_RNA' and self.accession.database == 'MIRBASE'
@@ -629,59 +616,3 @@ class Xref(CachingMixin, models.Model):
             return genome.assembly_ucsc
         except EnsemblAssembly.DoesNotExist:
             return None
-
-    def has_genomic_coordinates(self):
-        """Determine whether an xref has genomic coordinates."""
-        chromosomes = self.accession.coordinates.values_list('chromosome', flat=True)
-        for chromosome in chromosomes:
-            if chromosome:
-                return True
-        return False
-
-    def get_genomic_coordinates_if_any(self):
-        return self.get_genomic_coordinates() if self.has_genomic_coordinates() else None
-
-    def get_genomic_coordinates(self):
-        """Mirror the existing API while using the new GenomicCoordinates model."""
-        data = {
-            'chromosome': self.get_feature_chromosome(),
-            'strand': self.get_feature_strand(),
-            'start': self.get_feature_start(),
-            'end': self.get_feature_end(),
-        }
-        exceptions = ['X', 'Y']
-        if re.match(r'\d+', data['chromosome']) or data['chromosome'] in exceptions:
-            data['ucsc_chromosome'] = 'chr' + data['chromosome']
-        else:
-            data['ucsc_chromosome'] = data['chromosome']
-        return data
-
-    def get_feature_chromosome(self):
-        """
-        Get the chromosome name for the genomic location.
-        The name represents a toplevel accession as defined
-        by the Ensembl API and can include patch/scaffold names etc.
-        """
-        return GenomicCoordinates.objects\
-                                 .filter(accession=self.accession.accession,
-                                         chromosome__isnull=False)\
-                                 .first()\
-                                 .chromosome
-
-    def get_feature_strand(self):
-        """Return 1 or -1 to indicate the forward and reverse strands respectively."""
-        return GenomicCoordinates.objects\
-                                 .filter(accession=self.accession.accession,
-                                         chromosome__isnull=False, )\
-                                 .first()\
-                                 .strand
-
-    def get_feature_start(self):
-        """Get the `start` coordinates of the genomic feature."""
-        data = self.accession.coordinates.aggregate(min_feature_start=Min('primary_start'))
-        return data['min_feature_start']
-
-    def get_feature_end(self):
-        """Get the `end` coordinates of the genomic feature."""
-        data = self.accession.coordinates.aggregate(max_feature_end=Max('primary_end'))
-        return data['max_feature_end']
