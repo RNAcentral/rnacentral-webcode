@@ -160,6 +160,16 @@ class Accession(models.Model):
 
         return species.replace(' ', '_').lower()
 
+    def get_malacards_diseases(self):
+        try:
+            data = json.loads(self.note)
+            if 'diseases' in data:
+                return data['diseases']
+            else:
+                return None
+        except ValueError as e:
+            return None
+
     def get_expert_db_external_url(self):
         """Get external url to expert database."""
         urls = {

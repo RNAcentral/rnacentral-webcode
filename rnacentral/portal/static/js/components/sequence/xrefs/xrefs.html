@@ -370,7 +370,8 @@
 
             <!-- MalaCards -->
             <span ng-switch-when="MalaCards">
-              {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">view human diseases</a> associated with {{ xref.accession.gene }}
+              <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.malacards_diseases.length }} human diseases</a> associated with {{ xref.accession.gene }}
+              (<span ng-repeat="disease in xref.accession.malacards_diseases">{{ disease }}{{$last ? '' : '; '}}</span>)
             </span>
 
             <span ng-switch-default>

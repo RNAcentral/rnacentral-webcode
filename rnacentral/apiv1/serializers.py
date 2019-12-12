@@ -80,7 +80,7 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
             'citations', 'expert_db_url', 'standard_name',
             'pdb_entity_id', 'pdb_structured_note', 'hgnc_enembl_id', 'hgnc_id',
             'biotype', 'rna_type', 'srpdb_id', 'ena_url',
-            'ensembl_species_url'
+            'ensembl_species_url', 'malacards_diseases'
         )
 
 
