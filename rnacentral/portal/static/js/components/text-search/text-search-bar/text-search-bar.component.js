@@ -168,7 +168,7 @@ var textSearchBar = {
                     },
                     {
                         'label': 'LSU rRNA',
-                        'search_string': '(RF02541 OR RF02543 OR RF02540) has_secondary_structure:"True" AND length:[1000 TO 10000]',
+                        'search_string': '(RF02541 OR RF02543 OR RF02540) has_secondary_structure:"True" AND length:[1000 TO 6000]',
                     },
                     {
                         'label': 'SSU rRNA',
