@@ -137,11 +137,6 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
     # tmrna_type = serializers.ReadOnlyField(source='get_tmrna_type')
     gencode_transcript_id = serializers.CharField(source='get_gencode_transcript_id', read_only=True)
     gencode_ensembl_url = serializers.CharField(source='get_gencode_ensembl_url', read_only=True)
-    ensembl_division = serializers.DictField(source='get_ensembl_division', read_only=True)
-    ucsc_db_id = serializers.CharField(source='get_ucsc_db_id', read_only=True)
-    genomic_coordinates = serializers.SerializerMethodField()
-
-    # statistics on species
 
     class Meta:
         model = Xref
@@ -154,9 +149,7 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
             'refseq_splice_variants', 'ensembl_splice_variants',
             # 'tmrna_mate_upi',
             # 'tmrna_type',
-            'gencode_transcript_id', 'gencode_ensembl_url',
-            'ensembl_division', 'ucsc_db_id',  # 200-400 ms, no requests
-            'genomic_coordinates'  # used to send ~100 queries, optimized down to 1
+            'gencode_transcript_id', 'gencode_ensembl_url'
         )
 
     def upis_to_urls(self, upis):
