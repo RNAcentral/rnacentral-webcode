@@ -70,6 +70,7 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
     srpdb_id = serializers.ReadOnlyField(source='get_srpdb_id')
     ena_url = serializers.ReadOnlyField(source='get_ena_url')
     ensembl_species_url = serializers.ReadOnlyField(source='get_ensembl_species_url')
+    malacards_diseases = serializers.ReadOnlyField(source='get_malacards_diseases')
 
     class Meta:
         model = Accession
