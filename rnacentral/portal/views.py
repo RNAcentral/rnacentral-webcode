@@ -115,8 +115,13 @@ def rna_view(request, upi, taxid=None):
     except Rna.DoesNotExist:
         raise Http404
 
+    try:
+        precomputed = RnaPrecomputed.objects.filter(upi=upi, taxid=taxid).get()
+    except RnaPrecomputed.DoesNotExist:
+        precomputed = None
+
     # if taxid is given, but the RNA does not have annotations for this taxid, redirect to an error page
-    if taxid and not RnaPrecomputed.objects.filter(upi=upi, taxid=taxid).exists():
+    if taxid and not precomputed:
         response = redirect('unique-rna-sequence', upi=upi)
         response['Location'] += '?taxid-not-found={taxid}'.format(taxid=taxid)
         return response
@@ -137,17 +142,9 @@ def rna_view(request, upi, taxid=None):
         'taxid': taxid,
         'taxid_filtering': taxid_filtering,
         'taxid_not_found': request.GET.get('taxid-not-found', ''),
-        'description': rna.get_description(taxid) if taxid_filtering else rna.get_description(),
-        'distinct_databases': rna.get_distinct_database_names(taxid),
         'publications': rna.get_publications(taxid) if taxid_filtering else rna.get_publications(),
         'summary': summary_text if taxid_filtering else '',
-        'tab': request.GET.get('tab', ''),
-        'xref_pages': six.moves.range(1, int(math.ceil(rna.count_xrefs()/float(XREF_PAGE_SIZE))) + 1),
-        'xref_page_size': XREF_PAGE_SIZE,
-        'xref_page_num': int(request.GET.get('xref-page')) if request.GET.get('xref-page') else 1,
-        'xrefs_count': rna.count_xrefs(taxid) if taxid_filtering else rna.count_xrefs(),
-        'precomputed': RnaPrecomputed.objects.filter(upi=upi, taxid=taxid).first(),
-        'rfam_status': rna.get_rfam_status(taxid=taxid),
+        'precomputed': precomputed,
         'mirna_regulators': rna.get_mirna_regulators(taxid=taxid),
         'annotations_from_other_species': rna.get_annotations_from_other_species(taxid=taxid),
     }

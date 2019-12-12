@@ -20,13 +20,13 @@ limitations under the License.
     {% if context.summary %}
     <meta name="description" content="{{ context.summary }}"/>
     {% else %}
-    <meta name="description" content="{{ context.description }}"/>
+    <meta name="description" content="{{ context.precomputed.description }}"/>
     {% endif %}
-    <meta name="twitter:description" content="{{ context.description }}">
+    <meta name="twitter:description" content="{{ context.precomputed.description }}">
 {% endblock %}
 
 {% block title %}
-  {{ context.description }} | {{ rna.upi }}
+  {{ context.precomputed.description }} | {{ rna.upi }}
 {% endblock %}
 
 {% block content %}
@@ -42,13 +42,13 @@ limitations under the License.
         <div class="media">
           <div class="media-left media-middle">
             <a href="" ng-click="activate2dTab()">
-              <img style="max-width:140px; max-height:120px; margin: 10px;" class="media-object img-thumbnail hvr-grow" src="/api/v1/rna/{{ rna.upi }}/2d/svg/" alt="{{ context.description }} secondary structure diagram">
+              <img style="max-width:140px; max-height:120px; margin: 10px;" class="media-object img-thumbnail hvr-grow" src="/api/v1/rna/{{ rna.upi }}/2d/svg/" alt="{{ context.precomputed.description }} secondary structure diagram">
             </a>
           </div>
           <div class="media-body">
         {% endif %}
         <h2>
-            {{ context.description }}
+            {{ context.precomputed.description }}
             <small>{{ rna.upi }}{% if context.taxid %}_{{ context.taxid }}{% endif %}</small>
         </h2>
 
@@ -61,7 +61,7 @@ limitations under the License.
         <ul class="list-inline" id="sequence-overview">
             <li><strong>{{ rna.length|intcomma }}</strong> nucleotides</li>
             <li>
-                {% with dbs=context.distinct_databases %}
+                {% with dbs=context.precomputed.get_databases %}
                 <strong>{{ dbs|length|intcomma }}</strong> database{{ dbs|length|pluralize }}
                 <small>
                     {% for db in dbs %}
@@ -397,7 +397,7 @@ limitations under the License.
         ],
         "@id": "http://identifiers.org/rnacentral:{{ rna.upi }}_{{context.taxid}}",
         "identifier": "{{ rna.upi }}_{{ context.taxid }}",
-        "name": "{{ context.description }}",
+        "name": "{{ context.precomputed.description }}",
         "url": "https://rnacentral.org/rna/{{ rna.upi }}/{{ context.taxid }}"
     }
 }
