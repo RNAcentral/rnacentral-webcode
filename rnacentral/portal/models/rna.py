@@ -33,7 +33,6 @@ from .reference import Reference
 from .xref import Xref
 from .rfam import RfamHit, RfamAnalyzedSequences
 from .accession import Accession
-from .formatters import Gff3Formatter, GffFormatter, _xref_to_bed_format
 from portal.utils import descriptions as desc
 from portal.rfam_matches import check_issues
 from portal.config.expert_databases import expert_dbs

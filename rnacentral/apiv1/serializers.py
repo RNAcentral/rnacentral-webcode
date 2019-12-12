@@ -189,8 +189,6 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
         return self.upis_to_urls(obj.tmrna_mate_upi) if hasattr(obj, "tmrna_mate_upi") else None
 
     def get_genomic_coordinates(self, obj):
-        """Mirror the existing API while using the new GenomicCoordinates model."""
-
         # In Django1.9+ we could try removing obj.accession.coordinates.exists() check and
         # replace obj.accession.coordinates.all()[0] with obj.accession.coordinates.first(),
         # but currently this prevents re-use of related queryset and created N+1 requests:

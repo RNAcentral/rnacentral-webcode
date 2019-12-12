@@ -20,7 +20,6 @@ from caching.base import CachingMixin, CachingManager
 
 from .accession import Accession
 from .ensembl_assembly import EnsemblAssembly
-from .formatters import Gff3Formatter, GffFormatter, _xref_to_bed_format
 
 
 class RawSqlQueryset(models.QuerySet):
