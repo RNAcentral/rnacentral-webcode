@@ -48,7 +48,7 @@ RNAcentral: The non-coding RNA sequence database
 
     <h2 class="text-center margin-bottom-0px" style="margin-top: 0px;">Getting started</h2>
 
-    <div class="col-md-4 col-sm-4 col-xs-12">
+    <div class="col-md-4 col-sm-4 col-xs-12" onclick="location.href='{% url 'text-search' %}?q=RNA';" style="cursor: pointer;">
       <div class="panel panel-default homepage-card">
         <div class="panel-body text-center">
           <h2 class="text-center"><i class="fa fa-search"></i> Text search</h2>
@@ -60,7 +60,7 @@ RNAcentral: The non-coding RNA sequence database
       </div>
     </div>
 
-    <div class="col-md-4 col-sm-4 col-xs-12">
+    <div class="col-md-4 col-sm-4 col-xs-12" onclick="location.href='{% url 'sequence-search' %}';" style="cursor: pointer;">
       <div class="panel panel-default homepage-card">
         <div class="panel-body text-center">
           <h2 class="text-center"><i class="fa fa-puzzle-piece"></i> Sequence search</h2>
@@ -74,7 +74,7 @@ RNAcentral: The non-coding RNA sequence database
       </div>
     </div>
 
-    <div class="col-md-4 col-sm-4 col-xs-12">
+    <div class="col-md-4 col-sm-4 col-xs-12" onclick="location.href='{% url 'genome-browser' %}';" style="cursor: pointer;">
       <div class="panel panel-default homepage-card">
         <div class="panel-body text-center">
           <h2 class="text-center"><i class="fa fa-map-marker"></i> Genome browser</h2>
