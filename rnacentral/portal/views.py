@@ -142,7 +142,6 @@ def rna_view(request, upi, taxid=None):
         'taxid': taxid,
         'taxid_filtering': taxid_filtering,
         'taxid_not_found': request.GET.get('taxid-not-found', ''),
-        'publications': rna.get_publications(taxid) if taxid_filtering else rna.get_publications(),
         'summary': summary_text if taxid_filtering else '',
         'precomputed': precomputed,
         'mirna_regulators': rna.get_mirna_regulators(taxid=taxid),
