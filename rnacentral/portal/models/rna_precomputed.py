@@ -43,3 +43,6 @@ class RnaPrecomputed(models.Model):
 
     def get_databases(self):
         return self.databases.split(',')
+
+    def get_sequence(self):
+        return self.upi.get_sequence()

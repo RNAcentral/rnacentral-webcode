@@ -530,3 +530,18 @@ class EnsemblComparaSerializer(serializers.ModelSerializer):
     class Meta:
         model = EnsemblCompara
         fields = ('ensembl_transcript_id', 'rnacentral_id')
+
+
+class RnaPrecomputedJsonSerializer(serializers.ModelSerializer):
+    """Serializer class for the Json download."""
+    sequence = serializers.CharField(source='get_sequence', read_only=True)
+    databases = serializers.SerializerMethodField()
+
+    class Meta:
+        model = RnaPrecomputed
+        fields = (
+            'id', 'rna_type', 'description', 'databases', 'sequence'
+        )
+
+    def get_databases(self, obj):
+        return [database for database in obj.databases.split(',')] if obj.databases else []
