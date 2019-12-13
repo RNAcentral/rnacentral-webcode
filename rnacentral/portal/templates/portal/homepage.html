@@ -89,24 +89,26 @@ RNAcentral: The non-coding RNA sequence database
   </div>
 
   <div class="row well well-sm">
-    <h2 class="text-center" style="margin-top: 2px; margin-bottom: 2px;">Featured secondary structures</h2>
+    <h2 class="text-center" style="margin-top: 2px; margin-bottom: 2px;">Secondary structures</h2>
 
-    <p class="text-center">
-      RNAcentral contains ><a href='/search?q=has_secondary_structure:"True"'>8 million</a> secondary structures displayed using standard layouts. <a href="/help/secondary-structure">Learn more &rarr;</a>
-    </p>
+    <div class="row">
+      <p class="text-center col-md-8 col-md-offset-2">
+        RNAcentral contains <a href='/search?q=has_secondary_structure:"True"'><strong>over 8 million secondary structures</strong></a> displayed using standard layouts, including SSU and LSU rRNA, and over 2,000 Rfam families. <a href="/help/secondary-structure">Learn more &rarr;</a>
+      </p>
+    </div>
 
+    <div id="featured-secondary-structures">
     {% for item in context.svg_images %}
-      <div class="col-md-3 col-sm-3 col-xs-12">
+      <div class="col-md-3 col-sm-4 col-xs-12" onclick="location.href='/rna/{{ item.uid }}/{{ item.taxid }}';" style="cursor: pointer;">
         <div class="panel panel-default secondary-structure-homepage-card">
           <div class="panel-body text-center">
-            <a href="/rna/{{ item.uid }}/{{ item.taxid }}" class="rnacentral-gold ng-binding">
-              <h4 class="text-center">{{ item.description }}</h4>
-              <img style="max-width:200px; max-height:180px;" class="img-responsive center-block" src="/api/v1/rna/{{ item.uid }}/2d/svg/" alt="{{ item.description }} secondary structure diagram">
-            </a>
+              <h4 class="text-center rnacentral-gold">{{ item.description }}</h4>
+              <img class="img-responsive center-block" src="/api/v1/rna/{{ item.uid }}/2d/svg/" alt="{{ item.description }} secondary structure diagram">
           </div>
         </div>
       </div>
     {% endfor %}
+    </div>
 
     <div class="clearfix"></div>
     <div class="text-center" style="margin-right: 10px; margin-bottom: 10px; font-size: large;"><a class="btn btn-primary" href='/search?q=has_secondary_structure:"True"'>Explore secondary structures</a></div>
@@ -317,7 +319,59 @@ $(document).ready(function() {
                 }
             }
         ]
+    });
+
+    $('#featured-secondary-structures').slick({
+        draggable: true,
+        rows: 1,
+        dots: true,
+        // adaptiveHeight: true,
+        infinite: true,
+        lazyLoad: 'ondemand',
+        slidesToShow: 4,
+        slidesToScroll: 4,
+        arrows: true,
+        responsive: [
+            {
+                breakpoint: 1024,
+                settings: {
+                    slidesToShow: 4,
+                    slidesToScroll: 4
+                }
+            },
+            {
+                breakpoint: 992,
+                settings: {
+                    slidesToShow: 4,
+                    slidesToScroll: 4
+                }
+            },
+            {
+                breakpoint: 768,
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 3
+                }
+            },
+            {
+                breakpoint: 480,
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 3
+                }
+            },
+            {
+                breakpoint: 320,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1
+                }
+            }
+        ]
     })
+
+
+
 });
 </script>
 

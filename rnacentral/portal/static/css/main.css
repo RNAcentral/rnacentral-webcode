@@ -1190,7 +1190,7 @@ textarea {
 
 /* Extra Small Devices, Phones */
 @media only screen and (min-width : 480px) {
-  .expert-db-logo img {
+  .expert-db-logo img, .secondary-structure-homepage-card img {
     max-width: 130px;
     max-height: 100px;
   }
@@ -1202,7 +1202,7 @@ textarea {
     height: 250px;
   }
 
-  .expert-db-logo img {
+  .expert-db-logo img, .secondary-structure-homepage-card img {
     max-width: 130px;
     max-height: 100px;
   }
@@ -1223,6 +1223,11 @@ textarea {
     max-height: 70px;
   }
 
+  .secondary-structure-homepage-card img {
+    max-width:200px;
+    max-height:180px;
+  }
+
 }
 
 /* Large Devices, Wide Screens */
@@ -1235,6 +1240,12 @@ textarea {
     max-width: 130px;
     max-height: 100px;
   }
+
+  .secondary-structure-homepage-card img {
+    max-width:200px;
+    max-height:180px;
+  }
+
 }
 
 #expert-databases {

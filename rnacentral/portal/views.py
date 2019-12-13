@@ -74,11 +74,11 @@ def get_sequence_lineage(request, upi):
 @cache_page(1)
 def homepage(request):
     """RNAcentral homepage."""
-    svg_images = random.sample(examples, 4)
+    random.shuffle(examples)
     context = {
         'databases': list(Database.objects.filter(alive='Y').order_by('?').all()),
         'blog_url': settings.RELEASE_ANNOUNCEMENT_URL,
-        'svg_images': svg_images,
+        'svg_images': examples,
     }
 
     return render(request, 'portal/homepage.html', {'context': context})
