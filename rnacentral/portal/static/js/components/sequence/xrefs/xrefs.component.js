@@ -34,7 +34,7 @@ var xrefs = {
             ctrl.page = Math.floor(((ctrl.page - 1) * oldPageSize) / newPageSize) + 1;
             ctrl.pageSize = newPageSize;
             ctrl.pages = _.range(1, Math.ceil(ctrl.total / ctrl.pageSize) + 1);
-            
+
             if (ctrl.paginateOn === 'client') {
                 ctrl.displayedXrefs = ctrl.xrefs.slice((ctrl.page - 1) * ctrl.pageSize, ctrl.page * ctrl.pageSize);
             }
@@ -58,7 +58,7 @@ var xrefs = {
             $http.get(ctrl.dataEndpoint, {params: { page: ctrl.page, page_size: ctrl.pageSize }}).then(
                 function(response) {
                     ctrl.status = 'success';
-                    ctrl.displayedXrefs = ctrl.orderByModificationsOrCoordinates(response.data.results);
+                    ctrl.displayedXrefs = ctrl.orderXrefs(response.data.results);
                     ctrl.total = response.data.count;
                     ctrl.pages = _.range(1, Math.ceil(ctrl.total / ctrl.pageSize) + 1);
 
@@ -76,24 +76,23 @@ var xrefs = {
         };
 
         /**
-         * Given results from data json, create a new results array, sorted so that entries
-         *  with modifications or genome coordinates go first.
+         * Custom logic for prioritising xrefs.
          *
          * @param {Array} results - e.g. [{ database: "Ensembl", is_expert_db: false, accession: {...} ... }, ...]
          * @returns {Array} - sorted copy of results
          */
-        ctrl.orderByModificationsOrCoordinates = function(results) {
-            var output = [];
-
-            for (var i = 0; i < results.length; i++) {
-                if (results[i].modifications.length || results[i].genomic_coordinates) {
-                    output.unshift(results[i]);
-                } else {
-                    output.push(results[i]);
-                }
+        ctrl.orderXrefs = function(results) {
+            new_results = [];
+            to_append = [];
+            for (var x = 0; x < results.length; x++) {
+              if (results[x].database == "GeneCards") {
+                  to_append.push(results[x]);
+              } else {
+                  new_results.push(results[x]);
+              }
             }
-
-            return output;
+            new_results = new_results.concat(to_append);
+            return new_results;
         };
 
         /**
@@ -120,7 +119,7 @@ var xrefs = {
             $http.get(ctrl.dataEndpoint, { timeout: ctrl.timeout, params: { page: 1, page_size: 1000000000000 } }).then(
                 function(response) {
                     ctrl.status = 'success';
-                    ctrl.xrefs = ctrl.orderByModificationsOrCoordinates(response.data.results);
+                    ctrl.xrefs = ctrl.orderXrefs(response.data.results);
                     ctrl.displayedXrefs = ctrl.xrefs.slice(0, ctrl.pageSize);
                     ctrl.total = response.data.count;
                     ctrl.pages = _.range(1, Math.ceil(ctrl.total / ctrl.pageSize) + 1);
