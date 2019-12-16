@@ -17,7 +17,7 @@ limitations under the License.
 
 {% block meta_tags %}
     {{ block.super }}
-    <meta name="description" content="RNAcentral is a comprehensive database of non-coding RNA sequences that represents all types of ncRNA from a broad range of organisms"/>
+    <meta name="description" content="RNAcentral is a comprehensive database of non-coding RNA sequences that represents all types of ncRNA from a broad range of organisms. RNAcentral is the world's largest RNA secondary structure database."/>
     <meta name="twitter:description" content="RNAcentral is a comprehensive database of non-coding RNA sequences"/>
     <meta name="google-site-verification" content="iOJSgHgc8S6CsvqzBJvkORDZnX_-PsPhueJ9dA98zA8" />
 {% endblock %}
@@ -117,7 +117,7 @@ RNAcentral: The non-coding RNA sequence database
   <div class="row">
 
     <p class="lead text-center margin-bottom-0px">
-      Data provided by <a href="{% url 'expert-databases' %}">{{ context.databases|length }} databases</a>
+      Data from <a href="{% url 'expert-databases' %}">{{ context.databases|length }} databases</a>
     </p>
 
     <div id="expert-databases">
@@ -149,6 +149,63 @@ RNAcentral: The non-coding RNA sequence database
   </div>
 
   <div class="row well well-sm">
+    <h2 class="text-center margin-bottom-0px">News</h2>
+      <div class="col-md-4">
+        <div class="panel panel-default">
+          <h3 class="text-center margin-bottom-0px"><i class="fa fa-twitter"></i> Tweets</h3>
+          <div class="panel-body">
+            <ul class="list-inline margin-top-5px">
+              <li class="twitter-follow-button-list">
+                <a class="twitter-follow-button text-center"
+                   href="https://twitter.com/rnacentral"
+                   data-dnt="true"
+                   data-show-count="true"
+                   data-show-screen-name="false"
+                   data-lang="en">Follow</a>
+                <a class="twitter-timeline" data-height="300" data-width="500" data-chrome="noheader nofooter noborders" data-dnt="true" href="https://twitter.com/RNAcentral?ref_src=twsrc%5Etfw">Tweets by RNAcentral</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="panel panel-default">
+          <h3 class="text-center margin-bottom-0px"><i class="fa fa-bullhorn"></i> Announcements</h3>
+          <div class="panel-body">
+            <p class="margin-top-5px">
+              <a href="{{ context.blog_url }}" class="thumbnail">
+                <img class="hvr-grow" src="{% static 'img/timeline/release-v14.png' %}" alt="Release 14 announcement">
+              </a>
+            </p>
+            <ul class="list-inline margin-top-5px" style="margin-left: 5px;">
+              <li><a href="https://blog.rnacentral.org" target="_blank"><i class="fa fa-bookmark-o"></i> RNAcentral Blog</a></li>
+              <li><a href="https://blog.rnacentral.org/feeds/posts/default" target="_blank"><i class="fa fa-rss"></i> RSS feed</a></li>
+            </ul>
+
+            <p class="margin-top-5px">
+              Try the new RNAcentral <a href="{% url 'sequence-search' %}">sequence search</a>, <a href="/search?q=has_secondary_structure:%22True%22">browse secondary structures</a>, or read about the <a href="https://blog.rnacentral.org">new member databases</a> on the blog.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="panel panel-default">
+          <h3 class="text-center margin-bottom-0px"><i class="fa fa-pencil"></i> Citing RNAcentral</h3>
+          <div class="panel-body">
+            If you use RNAcentral,
+            please cite our latest paper:
+            <blockquote class="callout-info">
+              <publication publication="RNAcentralPublication"></publication>
+            </blockquote>
+          </div>
+        </div>
+      </div>
+
+  </div>
+
+  <div class="row">
     <h2 class="text-center" style="margin-top: 2px; margin-bottom: 2px;"><a href="/use-cases" class="rnacentral-gold">Featured use cases</a></h2>
 
     <div class="col-md-4">
@@ -207,65 +264,6 @@ RNAcentral: The non-coding RNA sequence database
 
   </div>
 
-
-  <div class="row">
-    <h2 class="text-center margin-bottom-0px">News</h2>
-      <div class="col-md-4">
-        <div class="panel panel-default">
-          <h3 class="text-center margin-bottom-0px"><i class="fa fa-twitter"></i> Tweets</h3>
-          <div class="panel-body">
-            <ul class="list-inline margin-top-5px">
-              <li class="twitter-follow-button-list">
-                <a class="twitter-follow-button text-center"
-                   href="https://twitter.com/rnacentral"
-                   data-dnt="true"
-                   data-show-count="true"
-                   data-show-screen-name="false"
-                   data-lang="en">Follow</a>
-                <a class="twitter-timeline" data-height="300" data-width="500" data-chrome="noheader nofooter noborders" data-dnt="true" href="https://twitter.com/RNAcentral?ref_src=twsrc%5Etfw">Tweets by RNAcentral</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4">
-        <div class="panel panel-default">
-          <h3 class="text-center margin-bottom-0px"><i class="fa fa-bullhorn"></i> Announcements</h3>
-          <div class="panel-body">
-            <p class="margin-top-5px">
-              <a href="{{ context.blog_url }}" class="thumbnail">
-                <img class="hvr-grow" src="{% static 'img/timeline/release-v14.png' %}" alt="Release 14 announcement">
-              </a>
-            </p>
-            <ul class="list-inline margin-top-5px">
-              <li><a href="https://blog.rnacentral.org" target="_blank"><i class="fa fa-bookmark-o"></i> RNAcentral Blog</a></li>
-              <li><a href="https://blog.rnacentral.org/feeds/posts/default" target="_blank"><i class="fa fa-rss"></i> RSS feed</a></li>
-            </ul>
-
-            <p class="margin-top-5px">
-              Explore the <a href="http://www.ebi.ac.uk/training/online/course/rnacentral-exploring-non-coding-rna-sequences">Train Online course</a>
-              to find more information about RNAcentral as well as exercises, tips, a quiz, and more.
-            </p>
-
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4">
-        <div class="panel panel-default">
-          <h3 class="text-center margin-bottom-0px"><i class="fa fa-pencil"></i> Citing RNAcentral</h3>
-          <div class="panel-body">
-            If you use RNAcentral,
-            please cite our latest paper:
-            <blockquote class="callout-info">
-              <publication publication="RNAcentralPublication"></publication>
-            </blockquote>
-          </div>
-        </div>
-      </div>
-
-  </div>
 </div>
 {% endblock content %}
 
