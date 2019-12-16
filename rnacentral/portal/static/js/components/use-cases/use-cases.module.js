@@ -91,7 +91,7 @@ var useCasesService = function() {
             "pubmed_id": "",
             "doi": "10.1101/027714",
             "pub_id": "",
-            "image": "https://era7bioinformatics.com/en/download_area_image.cfm?id=464",
+            "image": "/static/img/use-cases/mg7.png",
             "caption": "RNAcentral is used to build a reference database for metagenomics analysis using the MG7 pipeline",
             "category": "reference-ncrna-set",
             "category_header": "Reference ncRNA set"
