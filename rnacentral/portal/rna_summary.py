@@ -29,6 +29,9 @@ class RnaSummary(object):
         self.urs = urs
         self.taxid = taxid
         self.endpoint = endpoint
+        self.count_distinct_organisms = self.get_species_count(urs)
+        if not self.taxid:
+            return
         raw_data = self.get_raw_data(urs, taxid)
         if len(raw_data['entries']) == 0:
             self.entry_found = False
@@ -85,3 +88,14 @@ class RnaSummary(object):
         )
         data = requests.get(url)
         return data.json()
+
+    def get_species_count(self, urs):
+        url = '{endpoint}?query={urs}*&format=json'.format(
+            urs=urs,
+            endpoint=self.endpoint
+        )
+        try:
+            data = requests.get(url)
+            return data.json()['hitCount']
+        except:
+            return 1

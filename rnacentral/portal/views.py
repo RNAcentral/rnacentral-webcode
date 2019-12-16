@@ -131,8 +131,8 @@ def rna_view(request, upi, taxid=None):
     symbol_counts = rna.count_symbols()
     non_canonical_base_counts = {key: symbol_counts[key] for key in symbol_counts if key not in ['A', 'U', 'G', 'C']}
 
+    summary = RnaSummary(upi, taxid, settings.EBI_SEARCH_ENDPOINT)
     if taxid_filtering:
-        summary = RnaSummary(upi, taxid, settings.EBI_SEARCH_ENDPOINT)
         summary_text = render_to_string('portal/summary.html', vars(summary))
         summary_text = re.sub(r'\s+', ' ', summary_text.strip())
 
@@ -142,7 +142,8 @@ def rna_view(request, upi, taxid=None):
         'taxid': taxid,
         'taxid_filtering': taxid_filtering,
         'taxid_not_found': request.GET.get('taxid-not-found', ''),
-        'summary': summary_text if taxid_filtering else '',
+        'summary_text': summary_text if taxid_filtering else '',
+        'summary': summary,
         'precomputed': precomputed,
         'mirna_regulators': rna.get_mirna_regulators(taxid=taxid),
         'annotations_from_other_species': rna.get_annotations_from_other_species(taxid=taxid),

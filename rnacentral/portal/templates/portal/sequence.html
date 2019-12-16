@@ -17,8 +17,8 @@ limitations under the License.
 
 {% block meta_tags %}
     {{ block.super }}
-    {% if context.summary %}
-    <meta name="description" content="{{ context.summary }}"/>
+    {% if context.summary_text %}
+    <meta name="description" content="{{ context.summary_text }}"/>
     {% else %}
     <meta name="description" content="{{ context.precomputed.description }}"/>
     {% endif %}
@@ -71,15 +71,15 @@ limitations under the License.
                 {% endwith %}
             </li>
             <li>
-                Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab" ng-click="activateTaxonomyTab()">species</a>
+                Found in <strong>{{ context.summary.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab" ng-click="activateTaxonomyTab()">species</a>
             </li>
             <li class="badge" style="padding-left: 7px; padding-right: 7px;">{{ context.precomputed.rna_type }}</li>
         </ul>
         {% if rna.has_secondary_structure %}</div><!-- media-body --></div><!-- media -->{% endif %}
 
-        {% if context.summary %}
+        {% if context.summary_text %}
         <p class="small text-muted">
-          <strong>Automated summary:</strong> {{ context.summary }}
+          <strong>Automated summary:</strong> {{ context.summary_text }}
         </p>
         {% endif %}
 
@@ -338,7 +338,7 @@ limitations under the License.
 
                 {% if context.annotations_from_other_species %}
                 <div>
-                  <h3>This sequence is found in {{ rna.count_distinct_organisms|add:"-1"|intcomma }} other species</h3>
+                  <h3>This sequence is found in {{ context.summary.count_distinct_organisms|add:"-1"|intcomma }} other species</h3>
                   <div style="max-height: 400px; overflow:auto;" class="force-scrollbars">
                     <ol>
                     {% for entry in context.annotations_from_other_species %}
