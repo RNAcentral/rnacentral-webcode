@@ -142,6 +142,7 @@ def rna_view(request, upi, taxid=None):
         'taxid': taxid,
         'taxid_filtering': taxid_filtering,
         'taxid_not_found': request.GET.get('taxid-not-found', ''),
+        'activeTab': 2 if request.GET.get('tab', '').lower() == '2d' else 0,
         'summary_text': summary_text if taxid_filtering else '',
         'summary': summary,
         'precomputed': precomputed,

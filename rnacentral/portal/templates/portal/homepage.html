@@ -99,7 +99,7 @@ RNAcentral: The non-coding RNA sequence database
 
     <div id="featured-secondary-structures">
     {% for item in context.svg_images %}
-      <div class="col-md-3 col-sm-4 col-xs-12" onclick="location.href='/rna/{{ item.uid }}/{{ item.taxid }}';" style="cursor: pointer;">
+      <div class="col-md-3 col-sm-4 col-xs-12" onclick="location.href='/rna/{{ item.uid }}/{{ item.taxid }}?tab=2d';" style="cursor: pointer;">
         <div class="panel panel-default secondary-structure-homepage-card">
           <div class="panel-body text-center">
               <h4 class="text-center rnacentral-gold">{{ item.description }}</h4>
