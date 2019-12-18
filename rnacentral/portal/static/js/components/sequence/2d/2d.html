@@ -45,7 +45,7 @@
         </div>
       </div>
 
-      <div id="rna_ss_traveler" class="thumbnail col-md-12 col-sm-12 col-xs-12" style="overflow: auto;"></div>
+      <div id="rna_ss_traveler" ng-hide="$ctrl.numStructures === 0" class="thumbnail col-md-12 col-sm-12 col-xs-12" style="overflow: auto;"></div>
 
       <div class="panel panel-default traveler-legend" ng-if="$ctrl.numStructures > 0">
         <div class="panel-body">
@@ -67,7 +67,7 @@
 
     <div ng-if="$ctrl.numStructures === 0">
       <p>
-        <i class='fa fa-spinner fa-spin'></i> Loading...
+        <i class='fa fa-spinner fa-spin fa-2x'></i> Loading...
       </p>
     </div>
 
