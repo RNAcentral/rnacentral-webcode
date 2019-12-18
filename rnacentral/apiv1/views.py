@@ -374,27 +374,33 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
         except SecondaryStructureWithLayout.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        return HttpResponse(self.preprocess_svg_thumbnail(image.layout, upi), content_type='image/svg+xml')
+        return HttpResponse(self.generate_thumbnail(image.layout, upi), content_type='image/svg+xml')
 
-    def preprocess_svg_thumbnail(self, image, upi):
-        match = re.search(r'style="font-size:\s+(\d+)px;', image)
-        if match:
-            font_size = int(match.group(1))
-            if font_size >= 4:
-                new_font_size = 12
-            else:
-                new_font_size = 8
-            image = image.replace('style="font-size: {}px;'.format(font_size),
-                                  'style="font-size: {}px;'.format(new_font_size))
+    def generate_thumbnail(self, image, upi):
+        move_to_start_position = None
         color = ColorHash(upi).hex
-        return image.replace('class="green"', '').\
-                     replace('class="red"', '').\
-                     replace('class="blue"', '').\
-                     replace('class="brown"', '').\
-                     replace('rgb(0, 0, 0);',
-                             '{color};'.format(color=color)).\
-                     replace('fill: none;',
-                             'fill: {color};'.format(color=color))
+        points = []
+        for i, line in enumerate(image.split('\n')):
+            if i == 0:
+                width = re.findall(r'width="(\d+(\.\d+)?)"', line)
+                height = re.findall(r'height="(\d+(\.\d+)?)"', line)
+            for nt in re.finditer('<text x="(\d+)(\.\d+)?" y="(\d+)(\.\d+)?"', line):
+                if not move_to_start_position:
+                    move_to_start_position = 'M{} {} '.format(nt.group(1), nt.group(3))
+                points.append('L{} {}'.format(nt.group(1), nt.group(3)))
+        if len(points) < 200:
+            stroke_width = '3'
+        elif len(points) < 500:
+            stroke_width = '4'
+        elif len(points) < 3000:
+            stroke_width = '4'
+        else:
+            stroke_width = '2'
+        thumbnail = '<svg xmlns="http://www.w3.org/2000/svg" width="{}" height="{}"><path style="stroke:{};stroke-width:{}px;fill:none;" d="'.format(width[0][0], height[0][0], color, stroke_width)
+        thumbnail += move_to_start_position
+        thumbnail += ' '.join(points)
+        thumbnail += '"/></svg>'
+        return thumbnail
 
 
 class RnaGenomeLocations(generics.ListAPIView):
