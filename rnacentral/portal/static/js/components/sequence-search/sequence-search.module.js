@@ -21,7 +21,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     $scope.defaults = {
         pollingInterval: 1000, // milliseconds
         minLength: 10, // nucleotides
-        maxLength: 10000 // nucleotides
+        maxLength: 7000 // nucleotides
     };
 
     $scope.messages = {
