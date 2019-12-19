@@ -66,7 +66,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '140',
+        'version': '141',
     },
     {
         'name': 'PDBe',
@@ -91,7 +91,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'as of May 11th, 2019',
+        'version': 'as of December 10th, 2019',
     },
     {
         'name': 'FlyBase',
@@ -116,7 +116,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'FB2019_04',
+        'version': 'FB2019_05',
     },
     {
         'name': 'Ensembl',
@@ -147,7 +147,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '97',
+        'version': '98',
     },
     {
         'name': 'Ensembl Plants',
@@ -172,7 +172,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '44',
+        'version': '45',
     },
     {
         'name': 'Ensembl Fungi',
@@ -197,7 +197,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '44',
+        'version': '45',
     },
     {
         'name': 'Ensembl Metazoa',
@@ -222,7 +222,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '44',
+        'version': '45',
     },
     {
         'name': 'Ensembl Protists',
@@ -247,7 +247,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '44',
+        'version': '45',
     },
     {
         'name': 'GENCODE',
@@ -502,7 +502,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '94',  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
+        'version': '97',  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
     },
     {
         'name': 'RDP',
