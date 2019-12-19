@@ -94,4 +94,24 @@ examples = [
       'taxid': '9823',
       'description': 'Pig 12S rRNA',
   },
+  {
+      'uid': 'URS0000ABD82A',
+      'taxid': '9606',
+      'description': 'Human LSU rRNA',
+  },
+  {
+      'uid': 'URS0000ABBF1E',
+      'taxid': '4896',
+      'description': 'S. pombe LSU rRNA',
+  },
+  {
+      'uid': 'URS000095D50B',
+      'taxid': '9598',
+      'description': 'Chimpanzee LSU rRNA',
+  },
+  {
+      'uid': 'URS0000C4E362',
+      'taxid': '5908',
+      'description': 'T. pyriformis LSU rRNA',
+  },
 ]

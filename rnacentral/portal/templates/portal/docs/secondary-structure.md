@@ -7,10 +7,11 @@ visualises RNA structure using standard layouts or templates (*manuscript in pre
 
 ## 2D templates
 
-Two types of secondary structure templates are used:
+Three types of secondary structure templates are used:
 
 1. Small rRNA subunit (SSU) and 5S rRNA templates from the [Comparative RNA Website](http://www.rna.ccbb.utexas.edu) (CRW);
-2. [Rfam](http://rfam.org) consensus secondary structures for all other RNA types.
+2. [Rfam](http://rfam.org) consensus secondary structures for all other RNA types;
+3. Large rRNA subunit (LSU) templates from [RiboVision](http://apollo.chemistry.gatech.edu/RiboVision/).
 
 For each sequence the **auto-traveler pipeline** automatically selects the template using a custom set of covariance models,
 folds the sequence into the template structure using [Infernal](http://eddylab.org/infernal),

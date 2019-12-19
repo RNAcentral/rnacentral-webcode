@@ -353,7 +353,7 @@ SILENCED_SYSTEM_CHECKS = ['1_6.W001']
 
 EBI_SEARCH_ENDPOINT = 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
 
-RELEASE_ANNOUNCEMENT_URL = 'https://blog.rnacentral.org/2019/09/rnacentral-release-13.html'
+RELEASE_ANNOUNCEMENT_URL = 'https://blog.rnacentral.org/2019/12/rnacentral-release-14.html'
 
 # django compressor
 COMPRESS_ENABLED = True

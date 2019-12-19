@@ -17,7 +17,7 @@ limitations under the License.
 
 {% block meta_tags %}
     {{ block.super }}
-    <meta name="description" content="RNAcentral is a comprehensive database of non-coding RNA sequences that represents all types of ncRNA from a broad range of organisms"/>
+    <meta name="description" content="RNAcentral is a comprehensive database of non-coding RNA sequences that represents all types of ncRNA from a broad range of organisms. RNAcentral is the world's largest RNA secondary structure database."/>
     <meta name="twitter:description" content="RNAcentral is a comprehensive database of non-coding RNA sequences"/>
     <meta name="google-site-verification" content="iOJSgHgc8S6CsvqzBJvkORDZnX_-PsPhueJ9dA98zA8" />
 {% endblock %}
@@ -48,7 +48,7 @@ RNAcentral: The non-coding RNA sequence database
 
     <h2 class="text-center margin-bottom-0px" style="margin-top: 0px;">Getting started</h2>
 
-    <div class="col-md-4 col-sm-4 col-xs-12">
+    <div class="col-md-4 col-sm-4 col-xs-12" onclick="location.href='{% url 'text-search' %}?q=RNA';" style="cursor: pointer;">
       <div class="panel panel-default homepage-card">
         <div class="panel-body text-center">
           <h2 class="text-center"><i class="fa fa-search"></i> Text search</h2>
@@ -60,21 +60,21 @@ RNAcentral: The non-coding RNA sequence database
       </div>
     </div>
 
-    <div class="col-md-4 col-sm-4 col-xs-12">
+    <div class="col-md-4 col-sm-4 col-xs-12" onclick="location.href='{% url 'sequence-search' %}';" style="cursor: pointer;">
       <div class="panel panel-default homepage-card">
         <div class="panel-body text-center">
-          <h2 class="text-center"><i class="fa fa-puzzle-piece"></i> Sequence search</h2>
+          <h2 class="text-center"> 🆕 Sequence search</h2>
           <p class="text-center">
-            Search for similar sequences
+            Search for similar sequences -
             <br>
-            or look up your sequence in RNAcentral
+            <em class="text-primary">now with a faster, faceted interface</em>
           </p>
           <a class="btn btn-primary" id="btn-sequence-search" href="{% url 'sequence-search' %}" role="button">Search by sequence</a>
         </div>
       </div>
     </div>
 
-    <div class="col-md-4 col-sm-4 col-xs-12">
+    <div class="col-md-4 col-sm-4 col-xs-12" onclick="location.href='{% url 'genome-browser' %}';" style="cursor: pointer;">
       <div class="panel panel-default homepage-card">
         <div class="panel-body text-center">
           <h2 class="text-center"><i class="fa fa-map-marker"></i> Genome browser</h2>
@@ -89,29 +89,35 @@ RNAcentral: The non-coding RNA sequence database
   </div>
 
   <div class="row well well-sm">
-    <h2 class="text-center" style="margin-top: 2px; margin-bottom: 2px;">Featured secondary structures</h2>
+    <h2 class="text-center" style="margin-top: 2px; margin-bottom: 2px;">Secondary structures</h2>
 
+    <div class="row">
+      <p class="text-center col-md-8 col-md-offset-2">
+        RNAcentral contains <a href='/search?q=has_secondary_structure:"True"'><strong>over 8 million secondary structures</strong></a> displayed using standard layouts, including SSU and LSU rRNA, and over 2,000 Rfam families. <a href="/help/secondary-structure">Learn more &rarr;</a>
+      </p>
+    </div>
+
+    <div id="featured-secondary-structures">
     {% for item in context.svg_images %}
-      <div class="col-md-3 col-sm-3 col-xs-12">
+      <div class="col-md-3 col-sm-4 col-xs-12" onclick="location.href='/rna/{{ item.uid }}/{{ item.taxid }}?tab=2d';" style="cursor: pointer;">
         <div class="panel panel-default secondary-structure-homepage-card">
           <div class="panel-body text-center">
-            <a href="/rna/{{ item.uid }}/{{ item.taxid }}" class="rnacentral-gold ng-binding">
-              <h4 class="text-center">{{ item.description }}</h4>
-              <img style="max-width:200px; max-height:180px;" class="img-responsive center-block" src="/api/v1/rna/{{ item.uid }}/2d/svg/" alt="{{ item.description }} secondary structure diagram">
-            </a>
+              <h4 class="text-center rnacentral-gold">{{ item.description }}</h4>
+              <img class="img-responsive center-block" src="/api/v1/rna/{{ item.uid }}/2d/svg/" alt="{{ item.description }} secondary structure diagram">
           </div>
         </div>
       </div>
     {% endfor %}
+    </div>
 
     <div class="clearfix"></div>
-    <div class="text-center" style="margin-right: 10px; margin-bottom: 10px; font-size: large;"><a href='/search?q=has_secondary_structure:"True"'>Browse over 7 million structures</a> or <a href="/help/secondary-structure">learn more &rarr;</a></div>
+    <div class="text-center" style="margin-right: 10px; margin-bottom: 10px; font-size: large;"><a class="btn btn-primary" href='/search?q=has_secondary_structure:"True"'>Explore secondary structures</a></div>
   </div>
 
   <div class="row">
 
     <p class="lead text-center margin-bottom-0px">
-      Data provided by <a href="{% url 'expert-databases' %}">{{ context.databases|length }} databases</a>
+      Data from <a href="{% url 'expert-databases' %}">{{ context.databases|length }} databases</a>
     </p>
 
     <div id="expert-databases">
@@ -143,6 +149,63 @@ RNAcentral: The non-coding RNA sequence database
   </div>
 
   <div class="row well well-sm">
+    <h2 class="text-center margin-bottom-0px">News</h2>
+      <div class="col-md-4">
+        <div class="panel panel-default">
+          <h3 class="text-center margin-bottom-0px"><i class="fa fa-twitter"></i> Tweets</h3>
+          <div class="panel-body">
+            <ul class="list-inline margin-top-5px">
+              <li class="twitter-follow-button-list">
+                <a class="twitter-follow-button text-center"
+                   href="https://twitter.com/rnacentral"
+                   data-dnt="true"
+                   data-show-count="true"
+                   data-show-screen-name="false"
+                   data-lang="en">Follow</a>
+                <a class="twitter-timeline" data-height="300" data-width="500" data-chrome="noheader nofooter noborders" data-dnt="true" href="https://twitter.com/RNAcentral?ref_src=twsrc%5Etfw">Tweets by RNAcentral</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="panel panel-default">
+          <h3 class="text-center margin-bottom-0px"><i class="fa fa-bullhorn"></i> Announcements</h3>
+          <div class="panel-body">
+            <p class="margin-top-5px">
+              <a href="{{ context.blog_url }}" class="thumbnail">
+                <img class="hvr-grow" src="{% static 'img/timeline/release-v14.png' %}" alt="Release 14 announcement">
+              </a>
+            </p>
+            <ul class="list-inline margin-top-5px" style="margin-left: 5px;">
+              <li><a href="https://blog.rnacentral.org" target="_blank"><i class="fa fa-bookmark-o"></i> RNAcentral Blog</a></li>
+              <li><a href="https://blog.rnacentral.org/feeds/posts/default" target="_blank"><i class="fa fa-rss"></i> RSS feed</a></li>
+            </ul>
+
+            <p class="margin-top-5px">
+              Try the new RNAcentral <a href="{% url 'sequence-search' %}">sequence search</a>, <a href="/search?q=has_secondary_structure:%22True%22">browse secondary structures</a>, or read about the <a href="https://blog.rnacentral.org">new member databases</a> on the blog.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="panel panel-default">
+          <h3 class="text-center margin-bottom-0px"><i class="fa fa-pencil"></i> Citing RNAcentral</h3>
+          <div class="panel-body">
+            If you use RNAcentral,
+            please cite our latest paper:
+            <blockquote class="callout-info">
+              <publication publication="RNAcentralPublication"></publication>
+            </blockquote>
+          </div>
+        </div>
+      </div>
+
+  </div>
+
+  <div class="row">
     <h2 class="text-center" style="margin-top: 2px; margin-bottom: 2px;"><a href="/use-cases" class="rnacentral-gold">Featured use cases</a></h2>
 
     <div class="col-md-4">
@@ -201,65 +264,6 @@ RNAcentral: The non-coding RNA sequence database
 
   </div>
 
-
-  <div class="row">
-    <h2 class="text-center margin-bottom-0px">News</h2>
-      <div class="col-md-4">
-        <div class="panel panel-default">
-          <h3 class="text-center margin-bottom-0px"><i class="fa fa-twitter"></i> Tweets</h3>
-          <div class="panel-body">
-            <ul class="list-inline margin-top-5px">
-              <li class="twitter-follow-button-list">
-                <a class="twitter-follow-button text-center"
-                   href="https://twitter.com/rnacentral"
-                   data-dnt="true"
-                   data-show-count="true"
-                   data-show-screen-name="false"
-                   data-lang="en">Follow</a>
-                <a class="twitter-timeline" data-height="300" data-width="500" data-chrome="noheader nofooter noborders" data-dnt="true" href="https://twitter.com/RNAcentral?ref_src=twsrc%5Etfw">Tweets by RNAcentral</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4">
-        <div class="panel panel-default">
-          <h3 class="text-center margin-bottom-0px"><i class="fa fa-bullhorn"></i> Announcements</h3>
-          <div class="panel-body">
-            <p class="margin-top-5px">
-              <a href="{{ context.blog_url }}" class="thumbnail">
-                <img class="hvr-grow" src="{% static 'img/timeline/release-v13.png' %}" alt="Release 13 announcement">
-              </a>
-            </p>
-            <ul class="list-inline margin-top-5px">
-              <li><a href="https://blog.rnacentral.org" target="_blank"><i class="fa fa-bookmark-o"></i> RNAcentral Blog</a></li>
-              <li><a href="https://blog.rnacentral.org/feeds/posts/default" target="_blank"><i class="fa fa-rss"></i> RSS feed</a></li>
-            </ul>
-
-            <p class="margin-top-5px">
-              Explore the <a href="http://www.ebi.ac.uk/training/online/course/rnacentral-exploring-non-coding-rna-sequences">Train Online course</a>
-              to find more information about RNAcentral as well as exercises, tips, a quiz, and more.
-            </p>
-
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-4">
-        <div class="panel panel-default">
-          <h3 class="text-center margin-bottom-0px"><i class="fa fa-pencil"></i> Citing RNAcentral</h3>
-          <div class="panel-body">
-            If you use RNAcentral,
-            please cite our latest paper:
-            <blockquote class="callout-info">
-              <publication publication="RNAcentralPublication"></publication>
-            </blockquote>
-          </div>
-        </div>
-      </div>
-
-  </div>
 </div>
 {% endblock content %}
 
@@ -313,7 +317,59 @@ $(document).ready(function() {
                 }
             }
         ]
+    });
+
+    $('#featured-secondary-structures').slick({
+        draggable: true,
+        rows: 1,
+        dots: true,
+        // adaptiveHeight: true,
+        infinite: true,
+        lazyLoad: 'ondemand',
+        slidesToShow: 4,
+        slidesToScroll: 4,
+        arrows: true,
+        responsive: [
+            {
+                breakpoint: 1024,
+                settings: {
+                    slidesToShow: 4,
+                    slidesToScroll: 4
+                }
+            },
+            {
+                breakpoint: 992,
+                settings: {
+                    slidesToShow: 4,
+                    slidesToScroll: 4
+                }
+            },
+            {
+                breakpoint: 768,
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 3
+                }
+            },
+            {
+                breakpoint: 480,
+                settings: {
+                    slidesToShow: 3,
+                    slidesToScroll: 3
+                }
+            },
+            {
+                breakpoint: 320,
+                settings: {
+                    slidesToShow: 1,
+                    slidesToScroll: 1
+                }
+            }
+        ]
     })
+
+
+
 });
 </script>
 

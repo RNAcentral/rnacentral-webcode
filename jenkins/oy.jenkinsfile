@@ -3,7 +3,7 @@ pipeline {
     parameters {
         choice(
             name: 'DATABASE',
-            choices: ['FB', 'HH', 'PRO', 'DEV', 'TEST', 'FB-PG10', 'HH-PG10', 'PRO-PG10', 'DEV-PG10', 'TEST-PG10'],
+            choices: ['FB-PG10', 'HH-PG10', 'PRO-PG10', 'DEV-PG10', 'TEST-PG10', 'FB', 'HH', 'PRO', 'DEV', 'TEST'],
             description: 'Which database instance to use?'
         )
         choice(

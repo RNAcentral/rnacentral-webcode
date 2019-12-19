@@ -76,7 +76,7 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             // { label: 'Annotations number ↓', value: 'n_xrefs:descending' },
             // { label: 'Annotations number ↑', value: 'n_xrefs:ascending' }
         ],
-        facetcount: 30,
+        facetcount: 50,
         pagesize: 15,
     };
 

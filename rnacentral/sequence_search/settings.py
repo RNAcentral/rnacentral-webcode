@@ -12,13 +12,13 @@ limitations under the License.
 """
 
 # SEQUENCE_SEARCH_ENDPOINT = 'http://193.62.55.45' # running remotely with a proxy
-# SEQUENCE_SEARCH_ENDPOINT = 'http://193.62.55.123:8002' # running remotely without a proxy
+SEQUENCE_SEARCH_ENDPOINT = 'http://193.62.55.123:8002' # running remotely without a proxy
 # SEQUENCE_SEARCH_ENDPOINT = 'http://193.62.55.44:8002' # running remotely without a proxy
 # SEQUENCE_SEARCH_ENDPOINT = 'http://host.docker.internal:8002' # running locally
-SEQUENCE_SEARCH_ENDPOINT = 'https://search.rnacentral.org'
+# SEQUENCE_SEARCH_ENDPOINT = 'https://search.rnacentral.org'
 
 # minimum query sequence length
 MIN_LENGTH = 10
 
 # maximum query sequence length
-MAX_LENGTH = 10000
+MAX_LENGTH = 7000

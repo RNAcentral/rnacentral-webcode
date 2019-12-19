@@ -337,35 +337,35 @@ def ebi_cli():
 
 
 def refresh_fb1():
-    snapshot = env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_create_snapshot.sh -s pgsql-hxvm-038.ebi.ac.uk | tail -1")
-    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-010.ebi.ac.uk -S '%s'" % snapshot)
+    snapshot = env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_create_snapshot.sh -s pgsql-hxvm-010.ebi.ac.uk | tail -1")
+    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-021.ebi.ac.uk -S '%s'" % snapshot)
 
     slack("Refreshed FB1 database from '%s' snapshot" % snapshot)
 
 
 def push_replication():
     """Login to the FB machine and push replication of HX snapshot from it to HH"""
-    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_push_replication.sh -s pgsql-hxvm-038.ebi.ac.uk")
+    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_push_replication.sh -s pgsql-hxvm-010.ebi.ac.uk")
 
 
 def refresh_pg():
-    snapshot = env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_list_snapshots.sh -d pgsql-dlvmpub1-010.ebi.ac.uk | tail -1")
+    snapshot = env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_list_snapshots.sh -d pgsql-dlvmpub1-021.ebi.ac.uk | tail -1")
     # bash curses about absence of /home directory, thus we have to filter out snapshot
     snapshot = re.search("\d\d\d\d\-\d\d\-\d\d\s\d\d\:\d\d$", snapshot).group(0)  # e.g. 2018-06-26 11:16
-    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvmpub1-010.ebi.ac.uk -S '%s'" % snapshot)
+    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvmpub1-021.ebi.ac.uk -S '%s'" % snapshot)
 
     slack("Refreshed PG database from '%s' snapshot" % snapshot)
 
 
 def refresh_dev():
-    snapshot = env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_list_snapshots.sh -d pgsql-dlvm-008.ebi.ac.uk | tail -1")
-    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-008.ebi.ac.uk -S '%s'" % snapshot)
+    snapshot = env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_list_snapshots.sh -d pgsql-dlvm-022.ebi.ac.uk | tail -1")
+    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-022.ebi.ac.uk -S '%s'" % snapshot)
 
     slack("Refreshed DEV database from '%s' snapshot" % snapshot)
 
 
 def refresh_tst():
-    snapshot = env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_list_snapshots.sh -d pgsql-dlvm-009.ebi.ac.uk | tail -1")
-    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-009.ebi.ac.uk -S '%s'" % snapshot)
+    snapshot = env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_list_snapshots.sh -d pgsql-dlvm-023.ebi.ac.uk| tail -1")
+    env.run("sudo -u dxrnacen /nfs/dbtools/delphix/postgres/ebi_refresh_vdb.sh -d pgsql-dlvm-023.ebi.ac.uk-S '%s'" % snapshot)
 
     slack("Refreshed TST database from '%s' snapshot" % snapshot)

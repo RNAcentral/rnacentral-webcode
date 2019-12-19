@@ -140,6 +140,8 @@ class Accession(models.Model):
 
     def get_ensembl_species_url(self):
         """Get species name in a format that can be used in Ensembl urls."""
+        if 'ENSEMBL' not in self.database:
+            return ''
         if self.species == 'Dictyostelium discoideum':
             species = 'Dictyostelium discoideum AX4'
         elif self.species.startswith('Mus musculus') and self.accession.startswith('MGP'):  # Ensembl mouse strain
@@ -162,6 +164,16 @@ class Accession(models.Model):
             species = self.species
 
         return species.replace(' ', '_').lower()
+
+    def get_malacards_diseases(self):
+        try:
+            data = json.loads(self.note)
+            if 'diseases' in data:
+                return data['diseases']
+            else:
+                return None
+        except ValueError as e:
+            return None
 
     def get_expert_db_external_url(self):
         """Get external url to expert database."""
@@ -196,21 +208,18 @@ class Accession(models.Model):
             'ENSEMBL_PROTISTS': 'http://protists.ensembl.org/{species}/Transcript/Summary?db=core;t={id}',
             'FLYBASE': 'http://flybase.org/reports/{id}',
             'MGI': 'http://www.informatics.jax.org/marker/{id}',
-            'GTRNADB': '',
             'RGD': 'https://rgd.mcw.edu/rgdweb/report/gene/main.html?id={id}',
-            'ZWD': '',
-            'snoDB': '',
-            'MIRGENEDB': '',
+            'MALACARDS': 'https://www.genecards.org/cgi-bin/carddisp.pl?gene={id}#diseases',
+            'GENECARDS': 'https://www.genecards.org/cgi-bin/carddisp.pl?gene={id}',
         }
-
-        if self.database in urls.keys():
-            if self.database in ['GTRNADB', 'ZWD', 'SNODB', 'MIRGENEDB']:
+        if self.database in ['GTRNADB', 'ZWD', 'SNODB', 'MIRGENEDB', '5SRRNADB']:
                 try:
                     data = json.loads(self.note)
                     return data['url'] if 'url' in data else ''
                 except ValueError:
                     return ''
-            elif self.database == 'LNCRNADB':
+        if self.database in urls.keys():
+            if self.database == 'LNCRNADB':
                 return urls[self.database].format(id=self.optional_id.replace(' ', ''))
             elif self.database == 'VEGA':
                 return urls[self.database].format(id=self.optional_id,
@@ -237,6 +246,8 @@ class Accession(models.Model):
                 species = self.get_ensembl_species_url()
                 return urls[self.database].format(id=self.external_id, species=species) if species else None
             elif self.database == 'TAIR':
+                return urls[self.database].format(id=self.gene)
+            elif self.database in ['GENECARDS', 'MALACARDS']:
                 return urls[self.database].format(id=self.gene)
             return urls[self.database].format(id=self.external_id)
         else:

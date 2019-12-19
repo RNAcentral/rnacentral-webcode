@@ -21,7 +21,7 @@ from rest_framework import serializers
 
 from portal.models import Rna, Xref, Reference,  Reference_map, ChemicalComponent, Database, DatabaseStats, Accession, \
     Release, Reference, Modification, RfamHit, RfamModel, RfamClan, RfamGoTerm, OntologyTerm, SequenceFeature, \
-    EnsemblAssembly, EnsemblInsdcMapping, EnsemblKaryotype, GenomeMapping, \
+    EnsemblAssembly, EnsemblKaryotype, \
     ProteinInfo, EnsemblCompara, RnaPrecomputed, SequenceRegion, SecondaryStructureWithLayout
 
 
@@ -70,6 +70,7 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
     srpdb_id = serializers.ReadOnlyField(source='get_srpdb_id')
     ena_url = serializers.ReadOnlyField(source='get_ena_url')
     ensembl_species_url = serializers.ReadOnlyField(source='get_ensembl_species_url')
+    malacards_diseases = serializers.ReadOnlyField(source='get_malacards_diseases')
 
     class Meta:
         model = Accession
@@ -80,7 +81,7 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
             'citations', 'expert_db_url', 'standard_name',
             'pdb_entity_id', 'pdb_structured_note', 'hgnc_enembl_id', 'hgnc_id',
             'biotype', 'rna_type', 'srpdb_id', 'ena_url',
-            'ensembl_species_url'
+            'ensembl_species_url', 'malacards_diseases'
         )
 
 
@@ -136,11 +137,6 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
     # tmrna_type = serializers.ReadOnlyField(source='get_tmrna_type')
     gencode_transcript_id = serializers.CharField(source='get_gencode_transcript_id', read_only=True)
     gencode_ensembl_url = serializers.CharField(source='get_gencode_ensembl_url', read_only=True)
-    ensembl_division = serializers.DictField(source='get_ensembl_division', read_only=True)
-    ucsc_db_id = serializers.CharField(source='get_ucsc_db_id', read_only=True)
-    genomic_coordinates = serializers.SerializerMethodField()
-
-    # statistics on species
 
     class Meta:
         model = Xref
@@ -153,9 +149,7 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
             'refseq_splice_variants', 'ensembl_splice_variants',
             # 'tmrna_mate_upi',
             # 'tmrna_type',
-            'gencode_transcript_id', 'gencode_ensembl_url',
-            'ensembl_division', 'ucsc_db_id',  # 200-400 ms, no requests
-            'genomic_coordinates'  # used to send ~100 queries, optimized down to 1
+            'gencode_transcript_id', 'gencode_ensembl_url'
         )
 
     def upis_to_urls(self, upis):
@@ -195,8 +189,6 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
         return self.upis_to_urls(obj.tmrna_mate_upi) if hasattr(obj, "tmrna_mate_upi") else None
 
     def get_genomic_coordinates(self, obj):
-        """Mirror the existing API while using the new GenomicCoordinates model."""
-
         # In Django1.9+ we could try removing obj.accession.coordinates.exists() check and
         # replace obj.accession.coordinates.all()[0] with obj.accession.coordinates.first(),
         # but currently this prevents re-use of related queryset and created N+1 requests:
@@ -518,14 +510,6 @@ class EnsemblAssemblySerializer(serializers.ModelSerializer):
 
     def get_example_end(self, obj):
         return obj.example_end
-
-
-class EnsemblInsdcMappingSerializer(serializers.ModelSerializer):
-    assembly = EnsemblAssemblySerializer(source='assembly_id')
-
-    class Meta:
-        model = EnsemblInsdcMapping
-        fields = ('insdc', 'ensembl_name', 'assembly')
 
 
 class EnsemblKaryotypeSerializer(serializers.ModelSerializer):

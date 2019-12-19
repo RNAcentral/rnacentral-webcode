@@ -17,16 +17,16 @@ limitations under the License.
 
 {% block meta_tags %}
     {{ block.super }}
-    {% if context.summary %}
-    <meta name="description" content="{{ context.summary }}"/>
+    {% if context.summary_text %}
+    <meta name="description" content="{{ context.summary_text }}"/>
     {% else %}
-    <meta name="description" content="{{ context.description }}"/>
+    <meta name="description" content="{{ context.precomputed.description }}"/>
     {% endif %}
-    <meta name="twitter:description" content="{{ context.description }}">
+    <meta name="twitter:description" content="{{ context.precomputed.description }}">
 {% endblock %}
 
 {% block title %}
-  {{ context.description }} | {{ rna.upi }}
+  {{ context.precomputed.description }} | {{ rna.upi }}
 {% endblock %}
 
 {% block content %}
@@ -42,13 +42,13 @@ limitations under the License.
         <div class="media">
           <div class="media-left media-middle">
             <a href="" ng-click="activate2dTab()">
-              <img style="max-width:140px; max-height:120px; margin: 10px;" class="media-object img-thumbnail hvr-grow" src="/api/v1/rna/{{ rna.upi }}/2d/svg/" alt="{{ context.description }} secondary structure diagram">
+              <img style="max-width:140px; max-height:120px; margin: 10px;" class="media-object img-thumbnail hvr-grow" src="/api/v1/rna/{{ rna.upi }}/2d/svg/" alt="{{ context.precomputed.description }} secondary structure diagram">
             </a>
           </div>
           <div class="media-body">
         {% endif %}
         <h2>
-            {{ context.description }}
+            {{ context.precomputed.description }}
             <small>{{ rna.upi }}{% if context.taxid %}_{{ context.taxid }}{% endif %}</small>
         </h2>
 
@@ -61,7 +61,7 @@ limitations under the License.
         <ul class="list-inline" id="sequence-overview">
             <li><strong>{{ rna.length|intcomma }}</strong> nucleotides</li>
             <li>
-                {% with dbs=context.distinct_databases %}
+                {% with dbs=context.precomputed.get_databases %}
                 <strong>{{ dbs|length|intcomma }}</strong> database{{ dbs|length|pluralize }}
                 <small>
                     {% for db in dbs %}
@@ -71,21 +71,21 @@ limitations under the License.
                 {% endwith %}
             </li>
             <li>
-                Found in <strong>{{ rna.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab" ng-click="activateTaxonomyTab()">species</a>
+                Found in <strong>{{ context.summary.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab" ng-click="activateTaxonomyTab()">species</a>
             </li>
             <li class="badge" style="padding-left: 7px; padding-right: 7px;">{{ context.precomputed.rna_type }}</li>
         </ul>
         {% if rna.has_secondary_structure %}</div><!-- media-body --></div><!-- media -->{% endif %}
 
-        {% if context.summary %}
+        {% if context.summary_text %}
         <p class="small text-muted">
-          <strong>Automated summary:</strong> {{ context.summary }}
+          <strong>Automated summary:</strong> {{ context.summary_text }}
         </p>
         {% endif %}
 
         <div class="tabbable">
 
-        <uib-tabset class="tab-animation" active="activeTab">
+        <uib-tabset class="tab-animation" active="{{ context.activeTab }}">
 
             <uib-tab index="0" heading="Overview" id="overview" deselect="checkTab($event, $selectedIndex)">
 
@@ -195,7 +195,7 @@ limitations under the License.
                                         </td>
                                         <td><!-- Ensembl url -->
                                             <span ng-if="location.ensembl_division && location.ensembl_species_url" class="margin-right-5px ensembl-link">
-                                                <a ng-href="{{ location.ensembl_division.url + '/' + location.ensembl_species_url + '/Location/View?r=' + location.chromosome + ':' + location.start + '-' + location.end }}" target="_blank">{{ location.ensembl_division.name }}</a>
+                                                <a ng-href="{{ location.ensembl_division.url + '/' + location.ensembl_species_url + '/Location/View?r=' + location.chromosome + ':' + location.start + '-' + location.end }}" target="_blank">{{ location.ensembl_division.name.replace('EnsemblVertebrates', 'Ensembl') }}</a>
                                             </span>
                                         </td>
                                         <td><!-- UCSC url -->
@@ -338,7 +338,7 @@ limitations under the License.
 
                 {% if context.annotations_from_other_species %}
                 <div>
-                  <h3>This sequence is found in {{ rna.count_distinct_organisms|add:"-1"|intcomma }} other species</h3>
+                  <h3>This sequence is found in {{ context.summary.count_distinct_organisms|add:"-1"|intcomma }} other species</h3>
                   <div style="max-height: 400px; overflow:auto;" class="force-scrollbars">
                     <ol>
                     {% for entry in context.annotations_from_other_species %}
@@ -397,7 +397,7 @@ limitations under the License.
         ],
         "@id": "http://identifiers.org/rnacentral:{{ rna.upi }}_{{context.taxid}}",
         "identifier": "{{ rna.upi }}_{{ context.taxid }}",
-        "name": "{{ context.description }}",
+        "name": "{{ context.precomputed.description }}",
         "url": "https://rnacentral.org/rna/{{ rna.upi }}/{{ context.taxid }}"
     }
 }

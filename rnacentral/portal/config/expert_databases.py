@@ -66,7 +66,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '140',
+        'version': '141',
     },
     {
         'name': 'PDBe',
@@ -91,7 +91,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'as of May 11th, 2019',
+        'version': 'as of December 10th, 2019',
     },
     {
         'name': 'FlyBase',
@@ -116,7 +116,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'FB2019_04',
+        'version': 'FB2019_05',
     },
     {
         'name': 'Ensembl',
@@ -147,7 +147,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '97',
+        'version': '98',
     },
     {
         'name': 'Ensembl Plants',
@@ -172,7 +172,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '44',
+        'version': '45',
     },
     {
         'name': 'Ensembl Fungi',
@@ -196,8 +196,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
-        'version': '44',
+        'status': 'updated',
+        'version': '45',
     },
     {
         'name': 'Ensembl Metazoa',
@@ -221,8 +221,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
-        'version': '44',
+        'status': 'updated',
+        'version': '45',
     },
     {
         'name': 'Ensembl Protists',
@@ -246,8 +246,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
-        'version': '44',
+        'status': 'updated',
+        'version': '45',
     },
     {
         'name': 'GENCODE',
@@ -502,7 +502,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '94',  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
+        'version': '97',  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
     },
     {
         'name': 'RDP',
@@ -621,7 +621,7 @@ expert_dbs = [
             }
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': 'v2',
     },
     {
@@ -857,7 +857,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'updated',
+        'status': '',
         'version': '',
     },
     {
@@ -910,7 +910,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'New',
+        'status': '',
         'version': 'v8',
     },
     {
@@ -1087,7 +1087,7 @@ expert_dbs = [
                 'pubmed_id': '26490961',
             },
         ],
-        'imported': False,
+        'imported': True,
         'status': 'new',
         'version': '17',
     },
@@ -1134,7 +1134,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': '1.0',
     },
     {
@@ -1159,7 +1159,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': '',
     },
     {
@@ -1185,7 +1185,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'new',
-        'version': '1.0.0',
+        'version': '1.1.0',
     },
     {
         'name': 'MirGeneDB',
@@ -1211,5 +1211,55 @@ expert_dbs = [
         'imported': True,
         'status': 'new',
         'version': '2.0',
+    },
+    {
+        'name': 'MalaCards',
+        'label': 'malacards',
+        'url': 'https://www.malacards.org/',
+        'description': 'is an integrated database of human diseases and their annotations',
+        'hint': 'MalaCards is an integrated database of human diseases and their annotations',
+        'tags': ['disease', 'human'],
+        'abbreviation': '',
+        'examples': [
+            {'upi': 'URS0000EBFCE3', 'taxid': 9606},
+            {'upi': 'URS0000EBF55E', 'taxid': 9606},
+            {'upi': 'URS0000EBF67F', 'taxid': 9606},
+        ],
+        'references': [
+            {
+                'title': 'MalaCards: an amalgamated human disease compendium with diverse clinical and genetic annotation and structured search',
+                'authors': 'Rappaport N, Twik M, Plaschkes I, Nudel R, Iny Stein T, Levitt J, Gershoni M, Morrey CP, Safran M, Lancet D',
+                'journal': 'Nucleic Acids Res. 2017 Jan 4;45(D1):D877-D887',
+                'pubmed_id': '27899610',
+            },
+        ],
+        'imported': True,
+        'status': 'new',
+        'version': '4.12',
+    },
+    {
+        'name': 'GeneCards',
+        'label': 'genecards',
+        'url': 'https://www.genecards.org/',
+        'description': 'is a searchable, integrative database that provides comprehensive, user-friendly information on all annotated and predicted human genes',
+        'hint': 'GeneCards is a searchable, integrative database that provides comprehensive, user-friendly information on all annotated and predicted human genes',
+        'tags': ['human', 'RNA gene'],
+        'abbreviation': '',
+        'examples': [
+            {'upi': 'URS0000EBFCE3', 'taxid': 9606},
+            {'upi': 'URS0000EBF55E', 'taxid': 9606},
+            {'upi': 'URS0000EBF67F', 'taxid': 9606},
+        ],
+        'references': [
+            {
+                'title': 'The GeneCards Suite: From Gene Data Mining to Disease Genome Sequence Analyses',
+                'authors': 'Stelzer G, Rosen N, Plaschkes I, Zimmerman S, Twik M, Fishilevich S, Stein T, Nudel R, Lieder I, Mazor Y, Kaplan S, Dahary D, Warshawsky D, Guan-Golan Y, Kohn A, Rappaport N, Safran M, Lancet D',
+                'journal': 'Curr Protoc Bioinformatics. 2016 Jun 20;54:1.30.1-1.30.33',
+                'pubmed_id': '27322403',
+            },
+        ],
+        'imported': True,
+        'status': 'new',
+        'version': '4.12',
     },
 ]

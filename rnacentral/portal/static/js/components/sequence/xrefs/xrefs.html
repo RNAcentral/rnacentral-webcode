@@ -350,12 +350,28 @@
 
             <!-- snoDB -->
             <span ng-switch-when="snoDB">
-              {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+              <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">View interactions and expression</a>
             </span>
 
             <!-- MirGeneDB -->
             <span ng-switch-when="MirGeneDB">
               {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+            </span>
+
+            <!-- 5SrRNAdb -->
+            <span ng-switch-when="5SrRNAdb">
+              <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+            </span>
+
+            <!-- GeneCards -->
+            <span ng-switch-when="GeneCards">
+              {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.gene }}</a> gene
+            </span>
+
+            <!-- MalaCards -->
+            <span ng-switch-when="MalaCards">
+              <a ng-href="{{ xref.accession.expert_db_url }}" class="no-icon" target="_blank">{{ xref.accession.malacards_diseases.length }} human <ng-pluralize count="xref.accession.malacards_diseases.length" when="{1: 'disease', 'other': 'diseases'}"></ng-pluralize></a> associated with {{ xref.accession.gene }}
+              (<span ng-repeat="disease in xref.accession.malacards_diseases"><a href="{{ disease.url }}" target="_blank" class="no-icon">{{ disease.name }}</a>{{$last ? '' : '; '}}</span>)
             </span>
 
             <span ng-switch-default>

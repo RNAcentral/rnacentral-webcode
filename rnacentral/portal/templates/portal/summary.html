@@ -33,7 +33,7 @@ Interacts with lncRNAs, such as ({{ interacting_rnas|slice:":10"|join:", " }}).
 {% endif %}
 
 {% if has_interacting_proteins == 'True' %}
-Interacts with protein gene{{interacting_proteins|length|pluralize}}, including {{ interacting_proteins|slice:":10"|join:", " }}.
+Interacts with protein-coding gene{{interacting_proteins|length|pluralize}}, including {{ interacting_proteins|slice:":10"|join:", " }}.
 {% endif %}
 
 {% endif %}

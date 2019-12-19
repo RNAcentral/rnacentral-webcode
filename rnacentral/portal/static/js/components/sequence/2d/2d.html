@@ -1,4 +1,4 @@
-<div id="2d" style="min-height: 600px">
+<div id="secondary_structure" style="min-height: 600px">
 
     <h2>Secondary structure</h2>
 
@@ -21,8 +21,10 @@
            {{ $ctrl.secondaryStructures.secondary_structures[0].model_id }}
          </a>
          template provided by
-         <a ng-if="$ctrl.secondaryStructures.secondary_structures[0].model_id.indexOf('RF0') === -1" href="http://www.rna.ccbb.utexas.edu/" target="_blank">CRW</a>
-         <a ng-if="$ctrl.secondaryStructures.secondary_structures[0].model_id.indexOf('RF0') !== -1" href="http://rfam.org/" target="_blank">Rfam</a>
+         <a ng-if="$ctrl.secondaryStructures.secondary_structures[0].source === 'CRW'" href="http://www.rna.ccbb.utexas.edu/" target="_blank">CRW</a>
+         <a ng-if="$ctrl.secondaryStructures.secondary_structures[0].source === 'Rfam'" href="https://rfam.org/" target="_blank">Rfam</a>
+         <a ng-if="$ctrl.secondaryStructures.secondary_structures[0].source === 'RiboVision'" href="http://apollo.chemistry.gatech.edu/RiboVision/" target="_blank">RiboVision</a>
+         <a ng-if="$ctrl.secondaryStructures.secondary_structures[0].source === 'GtRNAdb'" href="http://gtrnadb.ucsc.edu/" target="_blank">GtRNAdb</a>
          .
          <a href="{{ $ctrl.help }}">Learn more &rarr;</a>
         <p>
@@ -31,7 +33,7 @@
         </p>
       </div>
 
-      <div class="btn-toolbar margin-bottom-10px" role="toolbar">
+      <div class="btn-toolbar margin-bottom-10px" role="toolbar" ng-if="$ctrl.numStructures > 0">
         <div class="btn-group" role="group">
           <a class="btn btn-default" id="2d-traveler-toggle-colors" ng-click="$ctrl.toggleColors()"><i class="fa fa-paint-brush" aria-hidden="true"></i> Toggle colours</a>
           <a class="btn btn-default" id="2d-traveler-download-png" ng-click="$ctrl.downloadPng()"><i class="fa fa-file-image-o" aria-hidden="true"></i> Save PNG</a>
@@ -43,15 +45,15 @@
         </div>
       </div>
 
-      <div id="rna_ss_traveler" class="thumbnail col-md-12 col-sm-12 col-xs-12" style="overflow: auto;"></div>
+      <div id="rna_ss_traveler" ng-hide="$ctrl.numStructures === 0" class="thumbnail col-md-12 col-sm-12 col-xs-12" style="overflow: auto;"></div>
 
-      <div class="panel panel-default traveler-legend">
+      <div class="panel panel-default traveler-legend" ng-if="$ctrl.numStructures > 0">
         <div class="panel-body">
           <strong>Colour legend</strong>
           <ul class="list-unstyled">
             <li><span class="traveler-black traveler-key"></span> Same as the template</li>
             <li>
-              <span class="traveler-green traveler-key"></span> Not the same as the template
+              <span class="traveler-green traveler-key"></span> Not the same as the template.
               <strong>Tip:</strong> Hover over green nucleotides for more details
             </li>
             <li><span class="traveler-red traveler-key"></span> Inserted nucleotides</li>
@@ -65,13 +67,13 @@
 
     <div ng-if="$ctrl.numStructures === 0">
       <p>
-        No secondary structures available
+        <i class='fa fa-spinner fa-spin fa-2x'></i> Loading...
       </p>
     </div>
 
     <div class="col-md-12" ng-if="$ctrl.numStructures > 0" style="margin-bottom: 20px;">
       <h4>Dot-bracket notation</h4>
-      <pre style="white-space: pre-wrap">{{ $ctrl.secondaryStructures.secondary_structures[0].secondary_structure }}</pre>
+      <pre style="white-space: pre-wrap; max-height: 150px;" class="force-scrollbars">{{ $ctrl.secondaryStructures.secondary_structures[0].secondary_structure }}</pre>
     </div>
 
 </div>

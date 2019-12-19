@@ -37,12 +37,12 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RnaSpeciesSpecificSerializer, ExpertDatabaseStatsSerializer, \
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, \
                               RfamHitSerializer, SequenceFeatureSerializer, \
-                              EnsemblAssemblySerializer, EnsemblInsdcMappingSerializer, ProteinTargetsSerializer, \
+                              EnsemblAssemblySerializer, ProteinTargetsSerializer, \
                               LncrnaTargetsSerializer, EnsemblComparaSerializer, SecondaryStructureSVGImageSerializer
 
 from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
 from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
-    EnsemblInsdcMapping, GenomeMapping, GenomicCoordinates, GoAnnotation, RelatedSequence, ProteinInfo, SequenceFeature,\
+    GoAnnotation, RelatedSequence, ProteinInfo, SequenceFeature,\
     SequenceRegion, EnsemblCompara, SecondaryStructureWithLayout
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination, PaginatedRawQuerySet
@@ -374,16 +374,33 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
         except SecondaryStructureWithLayout.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        return HttpResponse(self.preprocess_svg_thumbnail(image.layout, upi), content_type='image/svg+xml')
+        return HttpResponse(self.generate_thumbnail(image.layout, upi), content_type='image/svg+xml')
 
-    def preprocess_svg_thumbnail(self, image, upi):
-        return image.replace('class="green"', '').\
-                     replace('class="red"', '').\
-                     replace('class="blue"', '').\
-                     replace('text {stroke: rgb(0, 0, 0); fill: none;',
-                             'text {{stroke: rgb(0, 0, 0); fill: {color}}};'.format(color=ColorHash(upi).hex)).\
-                     replace('style="font-size: 8px;',
-                             'style="font-size: 20px;') # increase font size
+    def generate_thumbnail(self, image, upi):
+        move_to_start_position = None
+        color = ColorHash(upi).hex
+        points = []
+        for i, line in enumerate(image.split('\n')):
+            if i == 0:
+                width = re.findall(r'width="(\d+(\.\d+)?)"', line)
+                height = re.findall(r'height="(\d+(\.\d+)?)"', line)
+            for nt in re.finditer('<text x="(\d+)(\.\d+)?" y="(\d+)(\.\d+)?"', line):
+                if not move_to_start_position:
+                    move_to_start_position = 'M{} {} '.format(nt.group(1), nt.group(3))
+                points.append('L{} {}'.format(nt.group(1), nt.group(3)))
+        if len(points) < 200:
+            stroke_width = '3'
+        elif len(points) < 500:
+            stroke_width = '4'
+        elif len(points) < 3000:
+            stroke_width = '4'
+        else:
+            stroke_width = '2'
+        thumbnail = '<svg xmlns="http://www.w3.org/2000/svg" width="{}" height="{}"><path style="stroke:{};stroke-width:{}px;fill:none;" d="'.format(width[0][0], height[0][0], color, stroke_width)
+        thumbnail += move_to_start_position
+        thumbnail += ' '.join(points)
+        thumbnail += '"/></svg>'
+        return thumbnail
 
 
 class RnaGenomeLocations(generics.ListAPIView):
@@ -562,17 +579,6 @@ class SequenceFeaturesAPIViewSet(generics.ListAPIView):
         upi = self.kwargs['pk']
         taxid = self.kwargs['taxid']
         return SequenceFeature.objects.filter(upi=upi, taxid=taxid, feature_name__in=["conserved_rna_structure", "mature_product"])
-
-
-class EnsemblInsdcMappingView(APIView):
-    """API endpoint, presenting mapping between E! and INSDC chromosome names."""
-    permission_classes = ()
-    authentication_classes = ()
-
-    def get(self, request, format=None):
-        mapping = EnsemblInsdcMapping.objects.all().select_related()
-        serializer = EnsemblInsdcMappingSerializer(mapping, many=True, context={request: request})
-        return Response(serializer.data)
 
 
 class RnaGoAnnotationsView(APIView):
