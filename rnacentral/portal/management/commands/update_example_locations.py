@@ -128,7 +128,7 @@ example_locations = {
 def update_example_locations():
     """
     """
-    for assembly in EnsemblAssembly.objects.filter(division__in=['EnsemblVertebrates', 'EnsemblPlants']).all():
+    for assembly in EnsemblAssembly.objects.filter().all():
         print(assembly.ensembl_url)
         if assembly.ensembl_url in example_locations:
             assembly.example_chromosome = example_locations[assembly.ensembl_url]['chromosome']
