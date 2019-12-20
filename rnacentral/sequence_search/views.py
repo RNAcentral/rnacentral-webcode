@@ -20,8 +20,10 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 
-from .settings import SEQUENCE_SEARCH_ENDPOINT
-
+try:
+    from rnacentral.local_settings import SEQUENCE_SEARCH_ENDPOINT
+except ImportError:
+    SEQUENCE_SEARCH_ENDPOINT = 'https://search.rnacentral.org'
 
 if settings.ENVIRONMENT == 'DEV':
     proxies = None
