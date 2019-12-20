@@ -93,7 +93,11 @@ class Command(BaseCommand):
         return result
 
     def process_ensembl_karyotype(self, assembly, path):
-        karyotype = self.fetch_ensembl_karyotype(assembly=assembly)
+        try:
+            karyotype = self.fetch_ensembl_karyotype(assembly=assembly)
+        except:
+            print('Error retrieving karyotype {}'.format(assembly.assembly_id))
+            return
         if not path:
             EnsemblKaryotype.objects.filter(assembly=assembly).delete()
             EnsemblKaryotype.objects.create(assembly=assembly, karyotype=karyotype)
@@ -108,4 +112,5 @@ class Command(BaseCommand):
             self.process_ensembl_karyotype(assembly, options['path'])
         else:
             for assembly in EnsemblAssembly.objects.all():
-                self.process_ensembl_karyotype(assembly, options['path'])
+                if not EnsemblKaryotype.objects.filter(assembly=assembly).exists():
+                    self.process_ensembl_karyotype(assembly, options['path'])
