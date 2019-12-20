@@ -23,13 +23,14 @@ from django.contrib.sitemaps.views import index as sitemap_index, sitemap as sit
 from django.core.management.base import BaseCommand
 from django.core.paginator import Paginator
 from django.core.urlresolvers import reverse, resolve
+from django.db.models import Q
 from django.http import HttpRequest
 
 from portal.models import RnaPrecomputed, Database
 
 
 # Queryset for Rna sections; include only Human and Mouse rnas for now.
-rna_queryset = RnaPrecomputed.objects.filter(taxid__in=[9606, 10090]).filter(databases__contains='HGNC').order_by('upi')  # RnaPrecomputed.objects.filter(taxid__isnull=False).all().order_by('upi')
+rna_queryset = RnaPrecomputed.objects.filter(Q(databases__contains='HGNC') | Q(databases__contains='PDBe') | Q(databases__contains='RefSeq')).filter(taxid__isnull=False).order_by('upi')
 rna_paginator = Paginator(rna_queryset, Sitemap.limit)
 
 
@@ -77,22 +78,45 @@ class Command(BaseCommand):
             return self._sitemaps
         else:
             class StaticViewSitemap(Sitemap):
+                def __init__(self):
+                    self.protocol = 'https'
+
                 def items(self):
                     return [
-                        'homepage', 'about', 'contact-us', 'downloads', 'training',
-                        'expert-databases', 'sequence-search', 'api-docs',
-                        'help', 'help-text-search', 'help-genomic-mapping', 'help-genomic-mapping',
+                        'about',
+                        'api-docs',
+                        'contact-us',
+                        'downloads',
+                        'expert-databases',
+                        'help-conserved-motifs',
+                        'help-gene-ontology-annotations',
+                        'help-genomic-mapping',
+                        'help-public-database',
+                        'help-rfam-annotations',
+                        'help-rna-target-interactions',
+                        'help-scientific-advisory-board',
+                        'help-secondary-structure',
+                        'help-sequence-search',
+                        'help-text-search',
+                        'help',
+                        'homepage',
+                        'linking-to-rnacentral',
+                        'sequence-search',
+                        'training',
                     ]
 
                 def location(self, item):
                     return reverse(item)
 
             class ExpertDatabasesSitemap(Sitemap):
+                def __init__(self):
+                    self.protocol = 'https'
+
                 def items(self):
                     return Database.objects.filter(alive='Y').all()
 
                 def location(self, item):
-                    return reverse('expert-database', kwargs={'expert_db_name': item.descr})
+                    return reverse('expert-database', kwargs={'expert_db_name': item.label})
 
             class RnaSitemap(Sitemap):
                 def __init__(self, page_number, rna_paginator):
