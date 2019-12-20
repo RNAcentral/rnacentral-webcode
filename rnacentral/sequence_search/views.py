@@ -21,7 +21,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 
 try:
-    from rnacentral.local_settings import SEQUENCE_SEARCH_ENDPOINT
+    from rnacentral.sequence_search_endpoints import SEQUENCE_SEARCH_ENDPOINT
 except ImportError:
     SEQUENCE_SEARCH_ENDPOINT = 'https://search.rnacentral.org'
 
