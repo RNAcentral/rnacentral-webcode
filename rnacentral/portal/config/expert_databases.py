@@ -1191,8 +1191,8 @@ expert_dbs = [
         'name': 'MirGeneDB',
         'label': 'mirgenedb',
         'url': 'https://mirgenedb.org',
-        'description': 'is a microRNA gene database covering 45 organisms',
-        'hint': 'MirGeneDB is a microRNA gene database covering 45 organisms',
+        'description': 'is a curated microRNA gene database covering 45 metazoan organisms',
+        'hint': 'MirGeneDB is a curated microRNA gene database covering 45 metazoan organisms',
         'tags': ['miRNA', 'curated'],
         'abbreviation': '',
         'examples': [
