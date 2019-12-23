@@ -41,7 +41,7 @@ limitations under the License.
         {% if rna.has_secondary_structure %}
         <div class="media">
           <div class="media-left media-middle">
-            <img ng-click="activate2dTab()" style="max-width:140px; max-height:120px; margin: 10px; cursor: pointer;" class="media-object img-thumbnail hvr-grow" src="/api/v1/rna/{{ rna.upi }}/2d/svg/" alt="{{ context.precomputed.description }} secondary structure diagram">
+            <img onclick="document.querySelector('#secondary-structures > a').click()" style="max-width:140px; max-height:120px; margin: 10px; cursor: pointer;" class="media-object img-thumbnail hvr-grow" src="/api/v1/rna/{{ rna.upi }}/2d/svg/" alt="{{ context.precomputed.description }} secondary structure diagram">
           </div>
           <div class="media-body">
         {% endif %}
