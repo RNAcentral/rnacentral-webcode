@@ -1,0 +1,105 @@
+<!--
+Copyright [2009-present] EMBL-European Bioinformatics Institute
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+     http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+
+{% extends "portal/base.html" %}
+{% load staticfiles %}
+{% load humanize %}
+
+{% block meta_tags %}
+    {{ block.super }}
+    {% if context.summary_text %}
+    <meta name="description" content="{{ context.precomputed.description }}"/>
+    {% else %}
+    <meta name="description" content="{{ context.precomputed.description }}"/>
+    {% endif %}
+    <meta name="twitter:description" content="{{ context.precomputed.description }}">
+{% endblock %}
+
+{% block title %}
+  {{ rna.upi }}
+{% endblock %}
+
+{% block content %}
+<div class="row" ng-controller="rnaSequenceController">
+    <div ng-if="fetchRnaError" class="col-md-12">
+        <div class="alert alert-danger">
+            <i class="fa fa-exclamation-triangle"></i> Sorry, there was a problem loading sequence from server. Please try again and contact us if the problem persists.
+        </div>
+    </div>
+
+    <div ng-if="rna" class="col-md-12">
+        {% if rna.has_secondary_structure %}
+        <div class="media">
+          <div class="media-left media-middle">
+            <img style="max-width:140px; max-height:120px; margin: 10px;" class="media-object img-thumbnail hvr-grow" src="/api/v1/rna/{{ rna.upi }}/2d/svg/" alt="{{ context.precomputed.description }} secondary structure diagram">
+          </div>
+          <div class="media-body">
+        {% endif %}
+        <h2>
+            {{ context.precomputed.description }}
+            <small>{{ rna.upi }}</small>
+        </h2>
+
+        <ul class="list-inline" id="sequence-overview">
+            <li><strong>{{ rna.length|intcomma }}</strong> nucleotides</li>
+        </ul>
+        {% if rna.has_secondary_structure %}</div><!-- media-body --></div><!-- media -->{% endif %}
+
+        <h2>View detailed species-specific annotations</h2>
+        <p class="small text-muted">
+          This sequence is found in the following species (click to view Rfam classification, secondary structure, and other annotations):
+        </p>
+        <div style="max-height: 400px; overflow:auto;" class="force-scrollbars">
+          <ul>
+          {% for entry in context.annotations_from_other_species %}
+            <li>
+              <a href="/rna/{{ entry.urs_taxid }}">{{ entry.species_name }}</a>
+              <ul class="list-inline small" style="display: inline; margin-left: 5px;">
+                {% for database in entry.databases %}
+                <li>{{ database }}</li>
+                {% endfor %}
+              </ul>
+
+            </li>
+          {% endfor %}
+          </ul>
+        </div>
+
+        <div class="panel panel-default d3-species" style="margin-top:10px;">
+            <div class="tab-pane panel-body d3-species force-scrollbars d3-species-tree-tab">
+                <taxonomy upi="upi" taxid="taxid"></taxonomy>
+            </div>
+        </div>
+
+        <h2>Sequence</h2>
+
+        <div style="padding-top: 10px; padding-bottom: 10px;">
+            <button class="btn btn-default" ng-click="showSequence = !showSequence"><i class="fa fa-align-justify" aria-hidden="true"></i> {% verbatim %}{{ showSequence ? "Hide sequence" : "Show sequence" }}{% endverbatim %}</button>
+            <div ng-if="rna" class="btn-group">
+                <button class="btn btn-default" id="copy-as-rna">
+                  <i class="fa fa-copy" aria-hidden="true"></i> Copy as RNA
+                </button>
+                <button class="btn btn-default" id="copy-as-dna">
+                  <i class="fa fa-copy" aria-hidden="true"></i> Copy as DNA
+                </button>
+            </div>
+            <a class="btn btn-default" href="{% url 'sequence-search' %}?q={{ rna.upi }}" class="margin-left-5px">
+              <i class="fa fa-search" aria-hidden="true"></i> Search for similar sequences
+            </a>
+        </div>
+
+        <pre ng-if="showSequence" class="pre-scrollable" id="rna-sequence">{{ rna.get_sequence }}</pre>
+    </div> <!-- .col-md-12 -->
+</div> <!-- .row -->
+
+{% endblock content %}

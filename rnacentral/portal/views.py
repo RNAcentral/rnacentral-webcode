@@ -26,6 +26,7 @@ elif six.PY3:
     from urllib.parse import urlparse
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.core.exceptions import MultipleObjectsReturned
 from django.http import Http404, HttpResponse, HttpResponseForbidden
 from django.conf import settings
 from django.shortcuts import render, render_to_response, redirect
@@ -103,7 +104,7 @@ def rna_view_redirect(request, upi, taxid):
 
 
 @cache_page(CACHE_TIMEOUT)
-def rna_view(request, upi, taxid=None):
+def rna_view(request, upi, taxid):
     """
     Unique RNAcentral Sequence view.
     Display all annotations or customize the page using the taxid (optional).
@@ -155,6 +156,39 @@ def rna_view(request, upi, taxid=None):
     # ask Google not to index non-species specific pages
     if not taxid:
         response['X-Robots-Tag'] = 'noindex'
+    return response
+
+
+@cache_page(CACHE_TIMEOUT)
+def rna_urs_view(request, upi):
+    upi = upi.upper()
+    try:
+        rna = Rna.objects.get(upi=upi)
+    except Rna.DoesNotExist:
+        raise Http404
+
+    try:
+        single_taxid = RnaPrecomputed.objects.filter(upi=upi, taxid__isnull=False, is_active=True).get()
+    except MultipleObjectsReturned:
+        single_taxid = None
+    if single_taxid:
+        return redirect('unique-rna-sequence', upi=upi, taxid=single_taxid.taxid)
+
+    try:
+        precomputed = RnaPrecomputed.objects.filter(upi=upi, taxid__isnull=True, is_active=True).get()
+    except RnaPrecomputed.DoesNotExist:
+        precomputed = None
+
+    species = rna.get_annotations_from_other_species()
+    for i, _ in enumerate(species):
+        species[i]['databases'] = species[i]['databases'].split(',')
+        species[i]['urs_taxid'] = species[i]['urs_taxid'].replace('_', '/')
+    context = {
+        'precomputed': precomputed,
+        'annotations_from_other_species': species,
+    }
+    response = render(request, 'portal/sequence-no-species.html', {'rna': rna, 'context': context})
+    response['X-Robots-Tag'] = 'noindex'
     return response
 
 
