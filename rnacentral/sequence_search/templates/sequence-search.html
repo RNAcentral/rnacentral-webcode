@@ -299,7 +299,7 @@ Sequence search
       </div>
     </div>
 
-    <div class="col-sm-4 col-md-3 hidden-xs text-search-facets" ng-show="params.statusMessage === messages.done && results.hitCount > 0">
+    <div class="col-sm-4 col-md-3 hidden-xs text-search-facets" ng-show="params.statusMessage === messages.done && results.hitCount > 0" style="position: sticky; top: 0;">
       <ul class="list-unstyled">
         <li ng-if="results.textSearchError" class="facet" style="white-space: pre-wrap;">
           <div class="alert alert-warning">{{ messages.textSearchError }}</div>
