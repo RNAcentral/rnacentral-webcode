@@ -35,6 +35,16 @@ urlpatterns = [
         job_results,
         name='sequence-search-job-results'),
 
+    # get job status
+    url(r'^infernal-job-status/(?P<job_id>[A-Za-z0-9_-]+)/?$',
+        infernal_job_status,
+        name='sequence-search-infernal-job-status'),
+
+    # get job results
+    url(r'^infernal-results/(?P<job_id>[A-Za-z0-9_-]+)/?$',
+        infernal_job_results,
+        name='sequence-search-infernal-job-results'),
+
     # show searches
     url(r'^show-searches/?$',
         show_searches,
