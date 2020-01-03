@@ -37,23 +37,23 @@ Sequence search
 
   <h1>
     <i class="fa fa-search"></i> Sequence search
-    <small ng-class="(params.searchInProgress && !params.errorMessage) ? '' : 'hidden'">
+    <!-- <small ng-class="(params.searchInProgress && !params.errorMessage) ? '' : 'hidden'">
       <i class="fa fa-spinner fa-spin"></i>
     </small>
     <small id="sequence-search-status">
       {{params.statusMessage}}
-    </small>
+    </small> -->
   </h1>
 
   <div class="well well-sm col-md-10">
     <p>
       Welcome to the new RNAcentral sequence search.
-      Find out <a href={% endverbatim %}"{% url 'help-sequence-search' %}"{% verbatim %}>what's new</a> or
-      go back to the <a href="{% endverbatim %}{% url 'legacy-sequence-search' %}{% verbatim %}">legacy version</a>
+      Find out <a href="{{ params.help }}">what's new</a> or
+      go to the <a href="{% endverbatim %}{% url 'legacy-sequence-search' %}{% verbatim %}">legacy version</a>
     </p>
   </div>
 
-  <span class="col-md-10 small text-muted clearfix">
+  <span class="col-md-10 small text-muted clearfix" style="padding-left: 0;">
     <span>
        Local alignment using <a href="http://www.ncbi.nlm.nih.gov/pubmed/23842809" target="_blank" class="help no-icon" data-toggle="tooltip" title="Wheeler and Eddy, 2013">nhmmer</a>
     </span>
@@ -70,7 +70,7 @@ Sequence search
   <div class="row sequence-search-input">
       <form name="seqQueryForm" novalidate>
 
-        <div class="col-md-10 form-group">
+        <div class="col-md-10 form-group margin-bottom-5px" style="padding-left: 5px;">
           <textarea class="form-control force-scrollbars"
                     rows="6"
                     placeholder="Enter RNA/DNA sequence (with an optional description in FASTA format) or an RNAcentral ID"
@@ -85,7 +85,7 @@ Sequence search
                     required
                     autofocus></textarea>
 
-            <span class="help-block">
+            <span class="help-block margin-bottom-5px">
               Examples:
               <a href="" ng-click="sequenceSearch('>miRNA hsa-let-7a-1 (URS000004F5D8)\nCUAUACAAUCUACUGUCUUUC')">miRNA hsa-let-7a-1</a>
               <span class="small">URS000004F5D8</span>,
@@ -98,7 +98,7 @@ Sequence search
               </em>
             </span>
 
-            <div class="form-group" ng-class="(seqQueryForm.sequence.$invalid) ? 'has-error' : ''">
+            <div class="form-group margin-bottom-0px" ng-class="(seqQueryForm.sequence.$invalid) ? 'has-error' : ''">
               <label class="control-label"
                      for="query-sequence" ng-show="query.submitAttempted && seqQueryForm.sequence.$error.minlength">
                 The sequence cannot be shorter than {{ defaults.minLength }} nucleotides
@@ -133,23 +133,66 @@ Sequence search
       </form><!-- /form -->
   </div><!-- /row -->
 
-  <div class="row">
+  <div class="row" ng-show="results.exactMatch.count > 0"><!-- Pulse animation cannot be on the same element as ng-show -->
     <div class="col-md-10">
-      <div ng-show="results.exactMatch.count > 0"> <!-- Pulse animation cannot be on the same element as ng-show -->
-        <div class="alert alert-success animated pulse margin-bottom-5px" role="alert">
-          Exact match: <a href="/rna/{{ results.exactMatch.rnacentral_id }}" target="_blank">{{results.exactMatch.description}}</a>
-          <span ng-if="results.exactMatch.count > 1">and
-            <a href="/search?q={{ results.exactMatch.urs_id }}*" target="_blank">{{ results.exactMatch.count - 1 | number }} other sequences</a>
-          </span>
-        </div>
+      <div class="alert alert-success animated pulse margin-bottom-5px" role="alert">
+        Exact match: <a href="/rna/{{ results.exactMatch.rnacentral_id }}" target="_blank">{{results.exactMatch.description}}</a>
+        <span ng-if="results.exactMatch.count > 1">and
+          <a href="/search?q={{ results.exactMatch.urs_id }}*" target="_blank">{{ results.exactMatch.count - 1 | number }} other sequences</a>
+        </span>
       </div>
     </div>
   </div>
 
-  <div class="progress" ng-show="params.searchInProgress && params.progress != 100">
+  <div class="row" ng-show="results.infernal.length > 0 && params.infernalSearchDone">
+    <div class="col-md-10 margin-bottom-5px">
+      <h2 class="margin-bottom-0px">
+        Rfam classification
+        <small>
+          <a href="{{ params.help }}" style="color:inherit;" target="_blank">
+            <i class="fa fa-question-circle-o" aria-hidden="true"></i>
+          </a>
+        </small>
+      </h2>
+
+      <div class="table-responsive">
+        <table class="table table-hover table-condensed" style="padding-left: 10px; margin-top: 0px;">
+          <thead>
+            <th><abbr class="help" data-placement="top" title="Rfam family">Family</abbr></th>
+            <th><abbr class="help" data-placement="top" title="Rfam accession">Accession</abbr></th>
+            <th><abbr class="help" data-placement="top" title="First nucleotide matching Rfam family">Start</abbr></th>
+            <th><abbr class="help" data-placement="top" title="Last nucleotide matching Rfam family">End</abbr></th>
+            <th><abbr class="help" data-placement="top" title="A measure of similarity between the sequence and the Rfam model (higher is better)">Bit score</abbr></th>
+            <th><abbr class="help" data-placement="top" title="The likelihood of getting this match by chance (lower is better)">E-value</abbr></th>
+            <th><abbr class="help" data-placement="top" title="+ or - depending on whether the sequence matched in forward or reverse orientation">Strand</abbr></th>
+          </thead>
+          <tr ng-repeat="rfam_hit in results.infernal">
+            <td><a href="https://rfam.org/family/{{ rfam_hit.target_name }}" target="_blank" title="View Rfam family" class="no-icon">{{ rfam_hit.description }}</td>
+            <td><a href="https://rfam.org/family/{{ rfam_hit.accession_rfam }}" target="_blank" title="View Rfam family" class="no-icon">{{ rfam_hit.accession_rfam }}</td>
+            <td>{{ rfam_hit.seq_from }}</td>
+            <td>{{ rfam_hit.seq_to }}</td>
+            <td>{{ rfam_hit.score }}</td>
+            <td>{{ rfam_hit.e_value }}</td>
+            <td>{{ rfam_hit.strand }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="row" ng-show="results.infernal.length === 0 && params.infernalSearchDone">
+    <div class="col-md-10">
+      <p style="margin-top: 10px; margin-bottom: 10px; padding-left: 0;">
+        <img src="/static/img/expert-db-logos/rfam.png" class="desaturate" style="width: 80px; vertical-align: bottom; margin-right: 5px;">
+        The query sequence did not match any Rfam families. <a href="{{ params.help }}" target="_blank">Learn more &rarr;</a>
+      </p>
+    </div>
+  </div>
+
+  <div class="progress" ng-show="params.searchInProgress && params.progress != 100 && params.statusMessage !== messages.submitting" style="margin-top: 10px; margin-bottom: 10px;">
     <div class="progress-bar progress-bar-primary active" role="progressbar" aria-valuenow="83"
     aria-valuemin="0" aria-valuemax="100" style="width:{{ params.progress }}%">
-      <span class="margin-left-5px">Searching... {{ params.progress }}%</span>
+      <span class="margin-left-5px">Searching...</span>
     </div>
   </div>
 
@@ -198,85 +241,83 @@ Sequence search
     </div>
   </div>
 
-  <div class="row" ng-show="(params.statusMessage === messages.done && results.hitCount > 0) || query.filter" style="margin-top: 10px;">
-    <div class="col-md-12">
-      <form ng-submit="filterResults()">
-        <div class="form-group">
-          <div class="col-md-4" style="padding-left: 0;">
-            <div class="input-group">
-              <input type="text" class="form-control" ng-model="query.filter" id="queryFilter" placeholder="Filter results">
-              <div class="input-group-btn">
-                <button type="submit" class="btn btn-default help" title="Search within results" data-ng-disabled="!query.filter">
-                  <i style="width: 15px;"></i>
-                  <span><i class="fa fa-filter"></i> Filter</span>
-                </button>
-                <button class="btn btn-default help" data-ng-disabled="!isFilterEnabled()" ng-click="clearFilter()" title="Clear results filtering">
-                  <i style="width: 15px;"></i>
-                  <span><i class="fa fa-ban"></i> Cancel</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-md-8 margin-bottom-10px" style="padding-left: 0;">
-          <div class="btn-toolbar" role="toolbar">
-            <div class="btn-group" role="group">
-              <a class="btn btn-default help" ng-click="params.showAlignments = !params.showAlignments" title="Alignments between query and hit sequences">
-                <span ng-if="params.showAlignments">Hide</span>
-                <span ng-if="!params.showAlignments">Show</span>
-                alignments
-              </a>
-              <a class="btn btn-default help" ng-click="params.showAlignmentStatistics = !params.showAlignmentStatistics" title="E-value, identity and other information about the hits">
-                <span ng-if="params.showAlignmentStatistics">Hide</span>
-                <span ng-if="!params.showAlignmentStatistics">Show</span>
-                search statistics
-              </a>
-            </div>
-            <div class="btn-group" role="group">
-              <a class="btn btn-default" ng-click="feedback()"><i class="fa fa-comment-o" aria-hidden="true"></i> Send feedback</a>
-            </div>
-            <div class="btn-group" role="group">
-              <a class="btn btn-default help hidden-xs hidden-sm" disabled title="Coming soon"><i class="fa fa-download" aria-hidden="true"></i> Download</a>
-            </div>
-          </div>
-          </div>
-
-        </div>
-      </form>
-    </div>
-  </div>
-
   <div class="row" id="affix-parent">
     <div class="col-md-12">
 
-    <h2 ng-show="results.hitCount > 0">
-      Results
+    <div class="alert col-md-4" ng-if="params.statusMessage === messages.getResuts">
+      <i class="fa fa-2x fa-spinner fa-spin"></i>
+      {{params.statusMessage}}
+    </div>
+
+    <h2 ng-show="params.statusMessage === messages.done && results.hitCount > 0" class="margin-bottom-0px margin-top-5px">
+      Similar sequences
       <small>
         <span ng-if="results.hitCount == 1">1 sequence</span>
-        <span ng-if="results.hitCount > 1">{{ results.entries.length }} out of {{ results.hitCount | number }} sequences</span>
+        <span ng-if="results.hitCount > 1">{{ results.entries.length }} out of {{ results.hitCount | number }}</span>
       </small>
     </h2>
 
-    <div class="col-sm-4 col-md-3 hidden-xs text-search-facets" ng-show="results.hitCount > 0">
-      <ul class="list-unstyled">
-        <li class="facet">
-          <form class="form-inline font-size-14-px hidden-xs " style="padding-left: 0px;">
-            Sort by:
-            <div class="form-group">
-              <select class="form-control small" ng-change="updateOrdering(); fetchJobResults();" ng-model="params.selectedOrdering" ng-options="item.label for item in ordering track by item.label"></select>
+    <div class="row" ng-show="(params.statusMessage === messages.done && results.hitCount > 0) || query.filter" style="margin-bottom: 15px;">
+      <div class="col-md-12">
+        <form ng-submit="filterResults()">
+          <div class="form-group">
+            <div class="col-md-4" style="padding-left: 0;">
+              <div class="input-group">
+                <input type="text" class="form-control" ng-model="query.filter" id="queryFilter" placeholder="Search within results">
+                <div class="input-group-btn">
+                  <button type="submit" class="btn btn-default help" title="Search within results" data-ng-disabled="!query.filter">
+                    <span>Filter</span>
+                  </button>
+                  <button class="btn btn-default help" data-ng-disabled="!isFilterEnabled()" ng-click="clearFilter()" title="Clear results filtering">
+                    <i style="width: 15px;"></i>
+                    <span>Cancel</span>
+                  </button>
+                </div>
+              </div>
             </div>
-          </form>
-        </li>
-        <hr />
+
+            <div class="col-md-8" style="padding-left: 0;">
+              <div class="btn-toolbar" role="toolbar">
+                <div class="btn-group" role="group">
+                  <a class="btn btn-default help" ng-click="params.showAlignments = !params.showAlignments" title="Alignments between query and hit sequences">
+                    <span ng-if="params.showAlignments">Hide</span>
+                    <span ng-if="!params.showAlignments">Show</span>
+                    alignments
+                  </a>
+                  <a class="btn btn-default help" ng-click="params.showAlignmentStatistics = !params.showAlignmentStatistics" title="E-value, identity and other information about the hits">
+                    <span ng-if="params.showAlignmentStatistics">Hide</span>
+                    <span ng-if="!params.showAlignmentStatistics">Show</span>
+                    search statistics
+                  </a>
+                </div>
+                <div class="btn-group" role="group">
+                  <a class="btn btn-default" ng-click="feedback()"><i class="fa fa-comment-o" aria-hidden="true"></i> Send feedback</a>
+                </div>
+                <form class="form-inline font-size-14-px hidden-xs col-md-2">
+                  <span style="margin-left: 5px;">Sort by:<span>
+                  <div class="form-group" style="display: inline-block;">
+                    <select class="form-control small" ng-change="updateOrdering(); fetchJobResults();" ng-model="params.selectedOrdering" ng-options="item.label for item in ordering track by item.label"></select>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-sm-4 col-md-3 hidden-xs text-search-facets" ng-show="params.statusMessage === messages.done && results.hitCount > 0">
+      <ul class="list-unstyled">
         <li ng-if="results.textSearchError" class="facet" style="white-space: pre-wrap;">
           <div class="alert alert-warning">{{ messages.textSearchError }}</div>
         </li>
         <li class="facet scrollable-facet" ng-repeat="facet in results.facets">
           <div ng-if="facet.label === 'Organisms' || facet.label === 'RNA types' || facet.label === 'Expert databases'">
-            <h3>
+            <h3 style="margin-top: 0;">
               {{ facet.label }}
             </h3>
-            <ul class="list-unstyled text-search-facet-values text-search-facet-overflow force-scrollbars" style="overflow-x: hidden;">
+            <ul class="list-unstyled text-search-facet-values text-search-facet-overflow force-scrollbars" style="overflow-x: hidden; margin-bottom: 15px;">
               <li ng-repeat="facetValue in facet.facetValues" ng-if="facet.id == 'expert_db'">
                 <!-- This is expert_dbs facet -->
                 <input type="checkbox" name="facet.label" ng-checked="isFacetApplied(facet.id, facetValue.value)" ng-click="facetToggled(facet.id, facetValue.value)">
@@ -327,7 +368,7 @@ Sequence search
       </small>
     </div>
 
-    <div id="affix-sibling" class="col-xs-12 col-sm-8 col-md-9">
+    <div id="affix-sibling" class="col-xs-12 col-sm-8 col-md-9" ng-show="params.statusMessage === messages.done && results.hitCount > 0">
 
       <ul class="list-unstyled sequence-search-results">
         <li ng-repeat="result in results.entries">
@@ -335,7 +376,7 @@ Sequence search
           <div class="row">
 
           <h4 ng-show="result.rnacentral_id.split('_')[0] === results.exactMatch.urs_id" class="result alert alert-success help" title="Identical to the query (exact match)" style="padding-left: 0; margin-left: 0; margin-top: 0; margin-bottom: 5px;">
-            <a href="/rna/{{result.rnacentral_id}}" target="_blank">{{result.description}}</a>
+            <a href="/rna/{{result.rnacentral_id}}" target="_blank" title="This sequence is identical to the query">{{result.description}}</a>
           </h4>
 
           <h4 ng-show="result.rnacentral_id.split('_')[0] !== results.exactMatch.urs_id" class="result" style="padding-left: 0; margin-left: 0; margin-bottom: 5px; margin-top: 0;">
