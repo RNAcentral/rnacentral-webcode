@@ -261,47 +261,39 @@ Sequence search
       <div class="col-md-12">
         <form ng-submit="filterResults()">
           <div class="form-group">
-            <div class="col-md-4" style="padding-left: 0;">
-              <div class="input-group">
-                <input type="text" class="form-control" ng-model="query.filter" id="queryFilter" placeholder="Search within results">
-                <div class="input-group-btn">
-                  <button type="submit" class="btn btn-default help" title="Search within results" data-ng-disabled="!query.filter">
-                    <span>Filter</span>
-                  </button>
-                  <button class="btn btn-default help" data-ng-disabled="!isFilterEnabled()" ng-click="clearFilter()" title="Clear results filtering">
-                    <i style="width: 15px;"></i>
-                    <span>Cancel</span>
-                  </button>
-                </div>
+            <div class="input-group col-md-4 col-sm-12" style="float: left;">
+              <input type="text" class="form-control" ng-model="query.filter" id="queryFilter" placeholder="Search within results">
+              <div class="input-group-btn">
+                <button type="submit" class="btn btn-default help" title="Search within results" data-ng-disabled="!query.filter">
+                  <span>Filter</span>
+                </button>
+                <button class="btn btn-default help" data-ng-disabled="!isFilterEnabled()" ng-click="clearFilter()" title="Clear results filtering">
+                  <i style="width: 15px;"></i>
+                  <span>Cancel</span>
+                </button>
               </div>
             </div>
 
-            <div class="col-md-8" style="padding-left: 0;">
-              <div class="btn-toolbar" role="toolbar">
-                <div class="btn-group" role="group">
-                  <a class="btn btn-default help" ng-click="params.showAlignments = !params.showAlignments" title="Alignments between query and hit sequences">
-                    <span ng-if="params.showAlignments">Hide</span>
-                    <span ng-if="!params.showAlignments">Show</span>
-                    alignments
-                  </a>
-                  <a class="btn btn-default help" ng-click="params.showAlignmentStatistics = !params.showAlignmentStatistics" title="E-value, identity and other information about the hits">
-                    <span ng-if="params.showAlignmentStatistics">Hide</span>
-                    <span ng-if="!params.showAlignmentStatistics">Show</span>
-                    search statistics
-                  </a>
-                </div>
-                <div class="btn-group" role="group">
-                  <a class="btn btn-default" ng-click="feedback()"><i class="fa fa-comment-o" aria-hidden="true"></i> Send feedback</a>
-                </div>
-                <form class="form-inline font-size-14-px hidden-xs col-md-2">
-                  <span style="margin-left: 5px;">Sort by:<span>
-                  <div class="form-group" style="display: inline-block;">
-                    <select class="form-control small" ng-change="updateOrdering(); fetchJobResults();" ng-model="params.selectedOrdering" ng-options="item.label for item in ordering track by item.label"></select>
-                  </div>
-                </form>
+            <div class="btn-toolbar col-md-8 col-sm-12" role="toolbar">
+              <div class="btn-group" role="group">
+                <a class="btn btn-default help" ng-click="params.showAlignments = !params.showAlignments" title="Alignments between query and hit sequences">
+                  <span ng-if="params.showAlignments">Hide</span>
+                  <span ng-if="!params.showAlignments">Show</span>
+                  alignments
+                </a>
+                <a class="btn btn-default help" ng-click="params.showAlignmentStatistics = !params.showAlignmentStatistics" title="E-value, identity and other information about the hits">
+                  <span ng-if="params.showAlignmentStatistics">Hide</span>
+                  <span ng-if="!params.showAlignmentStatistics">Show</span>
+                  details
+                </a>
+              </div>
+              <div class="btn-group">
+                <select class="form-control" ng-change="updateOrdering(); fetchJobResults();" ng-model="params.selectedOrdering" ng-options="item.label for item in ordering track by item.label"></select>
+              </div>
+              <div class="btn-group" role="group">
+                <a class="btn btn-default" ng-click="feedback()"><i class="fa fa-comment-o" aria-hidden="true"></i> Feedback</a>
               </div>
             </div>
-
           </div>
         </form>
       </div>
