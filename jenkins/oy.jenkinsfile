@@ -3,13 +3,18 @@ pipeline {
     parameters {
         choice(
             name: 'DATABASE',
-            choices: ['FB-PG10', 'HH-PG10', 'PRO-PG10', 'DEV-PG10', 'TEST-PG10', 'FB', 'HH', 'PRO', 'DEV', 'TEST'],
+            choices: ['FB-PG10', 'HH-PG10', 'PRO-PG10', 'DEV-PG10', 'TEST-PG10'],
             description: 'Which database instance to use?'
         )
         choice(
             name: 'EBI_SEARCH_ENDPOINT',
             choices: ['PRO', 'DEV'],
             description: 'Which ebi search index to use?'
+        )
+        choice(
+            name: 'SEQUENCE_SEARCH_ENDPOINT',
+            choices: ['DEFAULT', 'TEST'],
+            description: 'Which sequence search environment to use?'
         )
         choice(
             name: 'RQ_QUEUE',
@@ -37,11 +42,6 @@ pipeline {
     stages {
         stage("deploy") {
             environment {
-                DATABASE_PRO = credentials('database_pro.py')
-                DATABASE_DEV = credentials('database_dev.py')
-                DATABASE_TEST = credentials('database_test.py')
-                DATABASE_FB = credentials('database_fb.py')
-                DATABASE_HH = credentials('database_hh.py')
                 DATABASE_PRO_PG10 = credentials('database_pro_pg10.py')
                 DATABASE_DEV_PG10 = credentials('database_dev_pg10.py')
                 DATABASE_TEST_PG10 = credentials('database_test_pg10.py')
@@ -50,6 +50,9 @@ pipeline {
 
                 EBI_SEARCH_ENDPOINT_PRO = credentials('ebi_search_endpoint_pro.py')
                 EBI_SEARCH_ENDPOINT_DEV = credentials('ebi_search_endpoint_dev.py')
+
+                SEQUENCE_SEARCH_TEST = credentials('sequence_search_test.py')
+                SEQUENCE_SEARCH_DEFAULT = credentials('sequence_search_default.py')
 
                 RQ_QUEUE_LOCAL = credentials('rq_queue_local.py')
                 RQ_QUEUE_OY = credentials('rq_queue_oy.py')
@@ -62,17 +65,7 @@ pipeline {
                 script {
                     sh 'rm -f /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/databases.py'
 
-                    if (params.DATABASE == 'PRO') {
-                        sh 'cat ${DATABASE_PRO} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/databases.py'
-                    } else if (params.DATABASE == 'DEV') {
-                        sh 'cat ${DATABASE_DEV} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/databases.py'
-                    } else if (params.DATABASE == 'TEST') {
-                        sh 'cat ${DATABASE_TEST} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/databases.py'
-                    } else if (params.DATABASE == 'FB') {
-                        sh 'cat ${DATABASE_FB} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/databases.py'
-                    } else if (params.DATABASE == 'HH') {
-                        sh 'cat ${DATABASE_HH} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/databases.py'
-                    } else if (params.DATABASE == 'PRO-PG10') {
+                    if (params.DATABASE == 'PRO-PG10') {
                         sh 'cat ${DATABASE_PRO_PG10} > rnacentral/rnacentral/databases.py'
                         sh 'cat ${DATABASE_PRO_PG10} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
                     } else if (params.DATABASE == 'DEV-PG10') {
@@ -97,6 +90,16 @@ pipeline {
                         sh 'cat ${EBI_SEARCH_ENDPOINT_PRO} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoints.py'
                     } else if (params.EBI_SEARCH_ENDPOINT == 'DEV') {
                         sh 'cat ${EBI_SEARCH_ENDPOINT_DEV} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoints.py'
+                    }
+                }
+
+                script {
+                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/sequence_search_endpoints.py'
+
+                    if (params.SEQUENCE_SEARCH_ENDPOINT == 'DEFAULT') {
+                        sh 'cat ${SEQUENCE_SEARCH_DEFAULT} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/sequence_search_endpoints.py'
+                    } else if (params.SEQUENCE_SEARCH_ENDPOINT == 'TEST') {
+                        sh 'cat ${SEQUENCE_SEARCH_TEST} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/sequence_search_endpoints.py'
                     }
                 }
 
