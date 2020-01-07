@@ -87,6 +87,23 @@ def job_results(request, job_id):
     url = SEQUENCE_SEARCH_ENDPOINT + '/api/facets-search/' + job_id
     return proxy_request(request, url, 'GET')
 
+@never_cache
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def infernal_job_status(request, job_id):
+    """Displays status of infernal job."""
+    url = SEQUENCE_SEARCH_ENDPOINT + '/api/infernal-status/' + job_id
+    return proxy_request(request, url, 'GET')
+
+
+@never_cache
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def infernal_job_results(request, job_id):
+    """Displays results of a finished infernal job."""
+    url = SEQUENCE_SEARCH_ENDPOINT + '/api/infernal-result/' + job_id
+    return proxy_request(request, url, 'GET')
+
 
 @never_cache
 @api_view(['GET'])

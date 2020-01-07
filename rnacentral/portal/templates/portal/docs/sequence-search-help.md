@@ -7,6 +7,8 @@ The RNAcentral [sequence similarity search](/sequence-search) enables searches a
 
 The original sequence search was [implemented in 2015](https://blog.rnacentral.org/2015/06/rnacentral-release-3.html) when RNAcentral was much smaller than it is today. As the database grew, some searches were taking too long, so a new sequence search was developed in 2019.
 
+<i class="fa fa-cloud fa-3x pull-left" style="margin-right: 20px;"></i>
+
 The new version runs on a [cloud infrastructure](https://www.embassycloud.org), where each search can be **parallelised** making it much faster. The new user interface allows filtering the results using the same **facets** as the RNAcentral [text search](/help/text-search).
 
 ⚠️ The original sequence search is [still available](/legacy-sequence-search) but will be shut down in early 2020.
@@ -17,7 +19,13 @@ Please be aware that results now show **species-specific identifiers** which inc
 
 ### Exact sequence matches <a style="cursor: pointer" id="exact-matches" ng-click="scrollTo('exact-matches')" name="exact-matches" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
-Whenever a sequence is entered in the search input box, the query is compared with all RNAcentral sequences and if there is an **exact match**, the links to the entries matching the query are displayed in a green box. This is very quick because only identical matches are considered. You can submit the search to see all similar sequences.
+Whenever a sequence is entered in the search input box, the query is compared with all RNAcentral sequences and if there is an **exact match**, the links to the entries matching the query are displayed in a green box. This is very quick because only identical matches are considered. To see all similar sequences, just click Submit.
+
+### Rfam classification <a style="cursor: pointer" id="rfam" ng-click="scrollTo('rfam')" name="rfam" class="text-muted smaller"><i class="fa fa-link"></i></a>
+
+<img src="/static/img/expert-db-logos/rfam.png" class="img-responsive pull-left" style="width: 140px; margin-right: 20px;">
+
+In addition to nhmmer searches against RNAcentral, every query is automatically compared with the [Rfam](https://rfam.org) library of RNA families. The searches are done using the [Infernal](http://eddylab.org/infernal) cmscan program coupled with a [post-processing step](https://github.com/nawrockie/cmsearch_tblout_deoverlap). The post-processing removes any hits that overlap Rfam families from the same clan (a clan is a set of homologous families, for example LSU_rRNA_archaea, LSU_rRNA_bacteria and LSU_rRNA_eukarya). This is a unique functionality not available on the [Rfam website](https://rfam.org) or the [EBI cmscan service](https://www.ebi.ac.uk/Tools/rna/infernal_cmscan/) that report all matching families, including the redundant overlapping hits from the same clan.
 
 ### Searching for ribosomal RNAs <a style="cursor: pointer" id="rrna" ng-click="scrollTo('rrna')" name="rrna" class="text-muted smaller"><i class="fa fa-link"></i></a>
 

@@ -15,7 +15,8 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         start: 0,
         size: 20,
         exactMatch: {},
-        textSearchError: false
+        textSearchError: false,
+        infernal: [],
     };
 
     $scope.defaults = {
@@ -31,7 +32,9 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         submitFailed: 'There was a problem submitting your query. Please try again later or get in touch if the error persists.',
         jobFailed: 'There was a problem with your query. Please try again later or get in touch if the error persists.',
         resultsFailed: 'There was a problem retrieving the results. Please try again later or get in touch if the error persists.',
+        infernalResultsFailed: 'There was a problem retrieving Rfam search results',
         notFoundFailed: 'Job with the specified id was not found.',
+        infernalNotFoundFailed: 'Rfam job was not found.',
         cancelled: 'The search was cancelled',
         pending: 'Pending',
         started: 'Running',
@@ -40,7 +43,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         loadingMoreResults: 'Loading more results',
         tooShort: 'The sequence cannot be shorter than ' + $scope.defaults['minLength'].toString() + ' nucleotides',
         expertDbsError: 'Failed to retrieve the list of expert databases.',
-        textSearchError: 'Failed to retrieve text search facets from EBI search.'
+        textSearchError: 'Failed to retrieve text search facets from EBI search.',
     };
 
     $scope.help = {
@@ -51,25 +54,27 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     };
 
     $scope.ordering = [
-        { sortField: 'e_value', label: 'E-value (low to high)'},
-        { sortField: '-e_value', label: 'E-value (high to low)'},
-        { sortField: '-identity', label: 'Identity ↓' },
-        { sortField: 'identity', label: 'Identity ↑' },
-        { sortField: '-query_coverage', label: 'Query coverage ↓' },
-        { sortField: 'query_coverage', label: 'Query coverage ↑' },
-        { sortField: '-target_coverage', label: 'Target coverage ↓' },
-        { sortField: 'target_coverage', label: 'Target coverage ↑' }
+        { sortField: 'e_value', label: 'Sort by E-value (low to high)'},
+        { sortField: '-e_value', label: 'Sort by E-value (high to low)'},
+        { sortField: '-identity', label: 'Sort by Identity ↓' },
+        { sortField: 'identity', label: 'Sort by Identity ↑' },
+        { sortField: '-query_coverage', label: 'Sort by Query coverage ↓' },
+        { sortField: 'query_coverage', label: 'Sort by Query coverage ↑' },
+        { sortField: '-target_coverage', label: 'Sort by Target coverage ↓' },
+        { sortField: 'target_coverage', label: 'Sort by Target coverage ↑' }
     ];
 
     $scope.params = {
         searchInProgress: false,
+        infernalSearchDone: false,
         progress: 0,
         errorMessage: '',
         statusMessage: '',
         showAlignments: true,
         showAlignmentStatistics: false,
         selectedOrdering: $scope.ordering[0],
-        textSearchError: false
+        textSearchError: false,
+        help: '/help/sequence-search',
     };
 
     var timeout;
@@ -136,6 +141,32 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
         );
     };
 
+    $scope.fetchInfernalJobResults = function(id) {
+        id = id || $location.search().id;
+
+        $http({
+            url: routes.sequenceSearchInfernalResults({ jobId: id }),
+            method: 'GET',
+        }).then(
+            function(response) {
+                $scope.results.infernal = response.data.sort(function(a, b) {
+                    if ( a.seq_from < b.seq_from ){
+                      return -1;
+                    }
+                    if ( a.seq_from > b.seq_from ){
+                      return 1;
+                    }
+                    return 0;
+                });
+                $scope.params.infernalSearchDone = true;
+            },
+            function(response) {
+                $scope.params.infernalSearchDone = false;
+                $scope.params.errorMessage = $scope.messages.infernalResultsFailed;
+            }
+        );
+    };
+
     /**
      * Check job status using REST API.
      */
@@ -190,7 +221,36 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 }
             }
         );
-    }
+
+      };
+
+      function fetchInfernalJobStatus(id) {
+          return $http({
+              url: routes.sequenceSearchInfernalJobStatus({ jobId: id }),
+              method: 'GET',
+              ignoreLoadingBar: true
+          }).then(
+              function(response) {
+                  if (response.data.status === 'success') {
+                      $scope.fetchInfernalJobResults(response.data.id);
+                  }
+                  else {
+                      timeout = setTimeout(function() {
+                          fetchInfernalJobStatus(id);
+                      }, $scope.defaults.pollingInterval);
+                  }
+              },
+              function(response) {
+                  $scope.params.statusMessage = $scope.messages.failed;
+                  if (response.status === 404) {
+                      $scope.params.errorMessage = $scope.messages.infernalNotFoundFailed;
+                  } else {
+                      $scope.params.errorMessage = $scope.messages.infernalResultsFailed;
+                  }
+              }
+          );
+      };
+
 
     /**
      * If sequenceOrUpi is upi, fetch and return the actual sequence from backend.
@@ -227,11 +287,13 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
 
             // begin polling for results
             fetchJobStatus(id);
+            fetchInfernalJobStatus(id);
             updatePageTitle();
         }, function(response) {
             $scope.params.errorMessage = $scope.messages.submitFailed;
             $scope.params.statusMessage = $scope.messages.failed;
             $scope.params.searchInProgress = false;
+            $scope.params.infernalSearchDone = false;
             updatePageTitle();
         });
     }
@@ -354,6 +416,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
     $scope.reset = function() {
         $location.search({});
         $scope.params.searchInProgress = false;
+        $scope.params.infernalSearchDone = false;
         $scope.query = {
             sequence: '',
             submitAttempted: false,
@@ -368,7 +431,8 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
             start: 0,
             size: 20,
             exactMatch: {},
-            textSearchError: false
+            textSearchError: false,
+            infernal: [],
         };
         $scope.params.statusMessage = '';
         $scope.params.errorMessage = '';
@@ -566,6 +630,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                 $scope.params.errorMessage = '';
                 $scope.params.statusMessage = $scope.messages.submitting;
                 $scope.params.searchInProgress = true;
+                $scope.params.infernalSearchDone = false;
 
                 // run md5 fetch and actual job submission concurrently
                 fetchExactMatch(sequence);
@@ -666,8 +731,9 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
 
             $scope.results.id = $location.search().id;
 
-            fetchJobStatus($location.search().id).then(function() {
+            fetchJobStatus($scope.results.id).then(function() {
                 fetchExactMatch($scope.query.sequence);
+                fetchInfernalJobStatus($scope.results.id);
             });
         } else if ($location.search().q) {
             // start sequence search
