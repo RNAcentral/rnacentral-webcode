@@ -3,13 +3,18 @@ pipeline {
     parameters {
         choice(
             name: 'DATABASE',
-            choices: ['HH-PG10', 'FB-PG10', 'PRO-PG10', 'DEV-PG10', 'TEST-PG10', 'HH', 'FB', 'PRO', 'DEV', 'TEST'],
+            choices: ['HH-PG10', 'FB-PG10', 'PRO-PG10', 'DEV-PG10', 'TEST-PG10'],
             description: 'Which database instance to use?'
         )
         choice(
             name: 'EBI_SEARCH_ENDPOINT',
             choices: ['PRO', 'DEV'],
             description: 'Which ebi search index to use?'
+        )
+        choice(
+            name: 'SEQUENCE_SEARCH_ENDPOINT',
+            choices: ['DEFAULT', 'TEST'],
+            description: 'Which sequence search environment to use?'
         )
         choice(
             name: 'RQ_QUEUE',
@@ -37,11 +42,6 @@ pipeline {
     stages {
         stage("deploy") {
             environment {
-                DATABASE_PRO = credentials('database_pro.py')
-                DATABASE_DEV = credentials('database_dev.py')
-                DATABASE_TEST = credentials('database_test.py')
-                DATABASE_FB = credentials('database_fb.py')
-                DATABASE_HH = credentials('database_hh.py')
                 DATABASE_PRO_PG10 = credentials('database_pro_pg10.py')
                 DATABASE_DEV_PG10 = credentials('database_dev_pg10.py')
                 DATABASE_TEST_PG10 = credentials('database_test_pg10.py')
@@ -50,6 +50,9 @@ pipeline {
 
                 EBI_SEARCH_ENDPOINT_PRO = credentials('ebi_search_endpoint_pro.py')
                 EBI_SEARCH_ENDPOINT_DEV = credentials('ebi_search_endpoint_dev.py')
+
+                SEQUENCE_SEARCH_TEST = credentials('sequence_search_test.py')
+                SEQUENCE_SEARCH_DEFAULT = credentials('sequence_search_default.py')
 
                 RQ_QUEUE_LOCAL = credentials('rq_queue_local.py')
                 RQ_QUEUE_OY = credentials('rq_queue_oy.py')
@@ -60,17 +63,7 @@ pipeline {
             }
             steps {
                 script {
-                    if (params.DATABASE == 'PRO') {
-                        sh 'cat ${DATABASE_PRO} > tmp'
-                    } else if (params.DATABASE == 'DEV') {
-                        sh 'cat ${DATABASE_DEV} > tmp'
-                    } else if (params.DATABASE == 'TEST') {
-                        sh 'cat ${DATABASE_TEST} > tmp'
-                    } else if (params.DATABASE == 'FB') {
-                        sh 'cat ${DATABASE_FB} > tmp'
-                    } else if (params.DATABASE == 'HH') {
-                        sh 'cat ${DATABASE_HH} > tmp'
-                    } else if (params.DATABASE == 'PRO-PG10') {
+                    if (params.DATABASE == 'PRO-PG10') {
                         sh 'cat ${DATABASE_PRO_PG10} > tmp'
                     } else if (params.DATABASE == 'DEV-PG10') {
                         sh 'cat ${DATABASE_DEV_PG10} > tmp'
@@ -93,6 +86,16 @@ pipeline {
                     }
 
                     sh 'rsync -av tmp ves-pg-a4:/nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoints.py'
+                }
+
+                script {
+                    if (params.SEQUENCE_SEARCH_ENDPOINT == 'DEFAULT') {
+                        sh 'cat ${SEQUENCE_SEARCH_DEFAULT} > tmp'
+                    } else if (params.SEQUENCE_SEARCH_ENDPOINT == 'TEST') {
+                        sh 'cat ${SEQUENCE_SEARCH_TEST} > tmp'
+                    }
+
+                    sh 'rsync -av tmp ves-pg-a4:/nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/sequence_search_endpoints.py'
                 }
 
                 script {
