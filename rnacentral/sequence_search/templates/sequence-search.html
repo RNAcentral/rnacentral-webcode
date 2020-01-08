@@ -87,12 +87,12 @@ Sequence search
 
             <span class="help-block margin-bottom-5px">
               Examples:
-              <a href="" ng-click="sequenceSearch('>miRNA hsa-let-7a-1 (URS000004F5D8)\nCUAUACAAUCUACUGUCUUUC')">miRNA hsa-let-7a-1</a>
-              <span class="small">URS000004F5D8</span>,
-              <a href="" ng-click="sequenceSearch('UGCCUGGCGGCCGUAGCGCGGUGGUCCCACCUGACCCCAUGCCGAACUCAGAAGUGAAACGCCGUAGCGCCGAUGGUAGUGUGGGGUCUCCCCAUGCGAGAGUAGGGAACUGCCAGGCAU')">5S rRNA</a>
-              <span class="small">URS0000049E57</span>,
+              <a href="" ng-click="sequenceSearch('>miRNA hsa-let-7a-1 (URS000004F5D8)\nCUAUACAAUCUACUGUCUUUC')">miRNA hsa-let-7a-1</a>,
+              <a href="" ng-click="sequenceSearch('URS000053962A')">SNORD3A</a>,
+                            <a href="" ng-click="sequenceSearch('URS000080DFA3')">lysine riboswitch</a>,
+              <a href="" ng-click="sequenceSearch('>5S rRNA (URS0000049E57)\nUGCCUGGCGGCCGUAGCGCGGUGGUCCCACCUGACCCCAUGCCGAACUCAGAAGUGAAACGCCGUAGCGCCGAUGGUAGUGUGGGGUCUCCCCAUGCGAGAGUAGGGAACUGCCAGGCAU')">5S rRNA</a>,
+              <a href="" ng-click="sequenceSearch('URS000080DDDF')">16S rRNA</a>,
               <a href="" ng-click="sequenceSearch('URS00008120E1')">NKILA lncRNA</a>
-              <span class="small">URS00008120E1</span>
               <em>
                 <span class="small pull-right" ng-show="seqQueryForm.sequence.$valid && getQueryLength() > 0">{{getQueryLength()}} nts</span>
               </em>
