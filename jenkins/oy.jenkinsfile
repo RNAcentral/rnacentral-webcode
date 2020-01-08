@@ -66,20 +66,15 @@ pipeline {
                     sh 'rm -f /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/databases.py'
 
                     if (params.DATABASE == 'PRO-PG10') {
-                        sh 'cat ${DATABASE_PRO_PG10} > rnacentral/rnacentral/databases.py'
-                        sh 'cat ${DATABASE_PRO_PG10} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_PRO_PG10} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/databases.py'
                     } else if (params.DATABASE == 'DEV-PG10') {
-                        sh 'cat ${DATABASE_DEV_PG10} > rnacentral/rnacentral/databases.py'
-                        sh 'cat ${DATABASE_DEV_PG10} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_DEV_PG10} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/databases.py'
                     } else if (params.DATABASE == 'TEST-PG10') {
-                        sh 'cat ${DATABASE_TEST_PG10} > rnacentral/rnacentral/databases.py'
-                        sh 'cat ${DATABASE_TEST_PG10} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_TEST_PG10} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/databases.py'
                     } else if (params.DATABASE == 'FB-PG10') {
-                        sh 'cat ${DATABASE_FB_PG10} > rnacentral/rnacentral/databases.py'
-                        sh 'cat ${DATABASE_FB_PG10} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_FB_PG10} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/databases.py'
                     } else if (params.DATABASE == 'HH-PG10') {
-                        sh 'cat ${DATABASE_HH_PG10} > rnacentral/rnacentral/databases.py'
-                        sh 'cat ${DATABASE_HH_PG10} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/databases.py'
+                        sh 'cat ${DATABASE_HH_PG10} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/databases.py'
                     }
                 }
 
