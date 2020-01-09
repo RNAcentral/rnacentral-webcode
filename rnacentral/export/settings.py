@@ -21,7 +21,7 @@ EXPIRATION = 60*60*24*7  # seconds
 MAX_RUN_TIME = 60*60*24  # seconds
 
 # maximum number of entries that can be paginated over in EBI search
-MAX_OUTPUT = 250000
+MAX_OUTPUT = pow(10, 6)
 
 # path to esl-sfetch binary, part of Infernal package
 ESLSFETCH = os.path.join(os.environ.get('RNACENTRAL_LOCAL', ''), 'infernal-1.1.1', 'bin', 'esl-sfetch')
