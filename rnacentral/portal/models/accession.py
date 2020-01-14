@@ -160,6 +160,10 @@ class Accession(models.Model):
                     species = self.species
             except portal.models.Xref.DoesNotExist:
                 return None
+            except portal.models.EnsemblAssembly.DoesNotExist:
+                return None
+            except Exception:
+                return None
         else:
             species = self.species
 
