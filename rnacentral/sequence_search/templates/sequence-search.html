@@ -264,10 +264,10 @@ Sequence search
             <div class="input-group col-md-4 col-sm-12" style="float: left;">
               <input type="text" class="form-control" ng-model="query.filter" id="queryFilter" placeholder="Search within results">
               <div class="input-group-btn">
-                <button type="submit" class="btn btn-default help" title="Search within results" data-ng-disabled="!query.filter">
+                <button type="submit" class="btn btn-default help" data-container="body" title="Search within results" data-ng-disabled="!query.filter">
                   <span>Filter</span>
                 </button>
-                <button class="btn btn-default help" data-ng-disabled="!isFilterEnabled()" ng-click="clearFilter()" title="Clear results filtering">
+                <button class="btn btn-default help" data-container="body" data-ng-disabled="!isFilterEnabled()" ng-click="clearFilter()" title="Clear results filtering">
                   <i style="width: 15px;"></i>
                   <span>Cancel</span>
                 </button>
@@ -276,12 +276,12 @@ Sequence search
 
             <div class="btn-toolbar col-md-8 col-sm-12" role="toolbar">
               <div class="btn-group" role="group">
-                <a class="btn btn-default help" ng-click="params.showAlignments = !params.showAlignments" title="Alignments between query and hit sequences">
+                <a class="btn btn-default help" data-container="body" ng-click="params.showAlignments = !params.showAlignments" title="Alignments between query and hit sequences">
                   <span ng-if="params.showAlignments">Hide</span>
                   <span ng-if="!params.showAlignments">Show</span>
                   alignments
                 </a>
-                <a class="btn btn-default help" ng-click="params.showAlignmentStatistics = !params.showAlignmentStatistics" title="E-value, identity and other information about the hits">
+                <a class="btn btn-default help" data-container="body" ng-click="params.showAlignmentStatistics = !params.showAlignmentStatistics" title="E-value, identity and other information about the hits">
                   <span ng-if="params.showAlignmentStatistics">Hide</span>
                   <span ng-if="!params.showAlignmentStatistics">Show</span>
                   details
