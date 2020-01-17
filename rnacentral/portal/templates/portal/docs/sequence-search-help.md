@@ -3,6 +3,8 @@
 
 The RNAcentral [sequence similarity search](/sequence-search) enables searches against a comprehensive collection of non-coding RNA sequences from a consortium of [RNA databases](/expert-databases). The search is powered by the [nhmmer](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3777106/) software which is more sensitive than *blastn* but is comparable in speed.
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/2H4--NfjIsI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ### Sequence search versions <a style="cursor: pointer" id="legacy-search" ng-click="scrollTo('legacy-search')" name="legacy-search" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The original sequence search was [implemented in 2015](https://blog.rnacentral.org/2015/06/rnacentral-release-3.html) when RNAcentral was much smaller than it is today. As the database grew, some searches were taking too long, so a new sequence search was developed in 2019.
