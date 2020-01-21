@@ -91,7 +91,7 @@ Responses containing **multiple entries** have the following fields:
 Responses containing just a **single entry** don't have the extra navigation fields:
 
 ```
-{{ BASE_URL }}api/v1/rna/URS0000000001
+{{ BASE_URL }}/api/v1/rna/URS0000000001
 {
     "url": "{{ BASE_URL }}/api/v1/rna/URS0000000001",
     "rnacentral_id": "URS0000000001",
