@@ -384,7 +384,9 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
             if i == 0:
                 width = re.findall(r'width="(\d+(\.\d+)?)"', line)
                 height = re.findall(r'height="(\d+(\.\d+)?)"', line)
-            for nt in re.finditer('<text x="(\d+)(\.\d+)?" y="(\d+)(\.\d+)?"', line):
+            for nt in re.finditer('<text x="(\d+)(\.\d+)?" y="(\d+)(\.\d+)?".*?</text>', line):
+                if 'numbering-label' in nt.group(0):
+                    continue
                 if not move_to_start_position:
                     move_to_start_position = 'M{} {} '.format(nt.group(1), nt.group(3))
                 points.append('L{} {}'.format(nt.group(1), nt.group(3)))
