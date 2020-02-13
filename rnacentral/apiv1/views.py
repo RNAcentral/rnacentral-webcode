@@ -352,11 +352,9 @@ class SecondaryStructureSpeciesSpecificList(generics.ListAPIView):
     queryset = Rna.objects.all()
 
     def get(self, request, pk=None, taxid=None, format=None):
-        """Get a paginated list of cross-references"""
+        """Get a list of secondary structures"""
         rna = self.get_object()
-        serializer = RnaSecondaryStructureSerializer(rna, context={
-            'taxid': taxid,
-        })
+        serializer = RnaSecondaryStructureSerializer(rna)
         return Response(serializer.data)
 
 
