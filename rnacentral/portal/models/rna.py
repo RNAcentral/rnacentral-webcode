@@ -548,19 +548,21 @@ class Rna(CachingMixin, models.Model):
         if not layout:
             return {}
 
-        model_name = layout.template.model_name
-        if model_name.count('.') >= 2:
-            template_source = 'CRW'
-        elif model_name.startswith('RF0'):
-            template_source = 'Rfam'
-        elif model_name.count('_') == 2:
-            template_source = 'RiboVision'
-        else:
-            template_source = 'auto-traveler'
+        # model_name = layout.template.model_name
+        # if model_name.count('.') >= 2:
+        #     template_source = 'CRW'
+        # elif model_name.startswith('RF0'):
+        #     template_source = 'Rfam'
+        # elif layout.template.model_source == 'gtrnadb':
+        #     template_source = 'GtRNAdb'
+        # elif model_name.count('_') == 2:
+        #     template_source = 'RiboVision'
+        # else:
+        #     template_source = 'auto-traveler'
 
         return {
             'secondary_structure': layout.secondary_structure,
-            'source': template_source,
+            'source': layout.template.model_source,
             'model_id': layout.template.model_name,
             'layout': layout.layout,
             'template_species': layout.template.taxid.name,

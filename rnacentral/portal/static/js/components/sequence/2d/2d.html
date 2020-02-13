@@ -21,10 +21,10 @@
            {{ $ctrl.secondaryStructures.secondary_structures[0].model_id }}
          </a>
          template provided by
-         <a ng-if="$ctrl.secondaryStructures.secondary_structures[0].source === 'CRW'" href="http://www.rna.ccbb.utexas.edu/" target="_blank">CRW</a>
-         <a ng-if="$ctrl.secondaryStructures.secondary_structures[0].source === 'Rfam'" href="https://rfam.org/" target="_blank">Rfam</a>
-         <a ng-if="$ctrl.secondaryStructures.secondary_structures[0].source === 'RiboVision'" href="http://apollo.chemistry.gatech.edu/RiboVision/" target="_blank">RiboVision</a>
-         <a ng-if="$ctrl.secondaryStructures.secondary_structures[0].source === 'GtRNAdb'" href="http://gtrnadb.ucsc.edu/" target="_blank">GtRNAdb</a>
+         <a ng-if="$ctrl.secondaryStructures.source === 'crw'" href="http://www.rna.ccbb.utexas.edu/" target="_blank">CRW</a>
+         <a ng-if="$ctrl.secondaryStructures.source === 'rfam'" href="https://rfam.org/" target="_blank">Rfam</a>
+         <a ng-if="$ctrl.secondaryStructures.source === 'ribovision'" href="http://apollo.chemistry.gatech.edu/RiboVision/" target="_blank">RiboVision</a>
+         <a ng-if="$ctrl.secondaryStructures.source === 'gtrnadb'" href="http://gtrnadb.ucsc.edu/" target="_blank">GtRNAdb</a>
          .
          <a href="{{ $ctrl.help }}">Learn more &rarr;</a>
         <p>

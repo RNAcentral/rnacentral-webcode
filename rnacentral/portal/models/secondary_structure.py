@@ -59,6 +59,7 @@ class SecondaryStructureLayout(models.Model):
         db_column='taxid',
         to_field='id'
     )
+    model_source = models.TextField()
     cellular_location = models.TextField()
     rna_type = models.TextField()
 
