@@ -154,6 +154,7 @@ def export_search_results(query, _format, hits):
                 for _id in rnacentral_ids:
                     f.write('{0}\n'.format(_id))
             if _format == 'list':
+                archive.write('RNAcentral Ids: \n')
                 text = '\n'.join(rnacentral_ids) + '\n'
                 archive.write(text)
             if _format == 'json':
