@@ -213,6 +213,8 @@
             <!-- PDBe -->
             <span ng-switch-when="PDBe">
               PDB: {{ xref.accession.external_id }}, chain {{ xref.accession.optional_id }}
+              <a href="" class="btn btn-sm btn-default margin-left-5px" ng-click="$ctrl.show3D($event, xref.accession.external_id, xref.accession.optional_id, xref.accession.pdb_entity_id);">View in 3D</a>
+              <span class="margin-left-5px" style="display: none;" id="label-{{ xref.accession.external_id }}-{{ xref.accession.optional_id }}"><i class="fa fa-spinner fa-spin"></i></span>
               <br>
               <i class="fa fa-angle-right"></i>
               <a href="http://www.ebi.ac.uk/pdbe/entry/pdb/{{ xref.accession.external_id }}/RNA/{{ xref.accession.pdb_entity_id }}" target="_blank" title="Protein Data Bank in Europe" class="help">PDBe</a> |
@@ -230,6 +232,7 @@
                 <small>resolution:</small> {{ xref.accession.pdb_structured_note.resolution }} Å |
               </span>
               <small>release date:</small> {{ xref.accession.pdb_structured_note.releaseDate }}
+              <div id="molstarViewer-{{ xref.accession.external_id }}-{{ xref.accession.optional_id }}" style="width:550px; height: 550px; position: relative; display: none;"></div>
             </span>
 
             <!-- snOPY -->
