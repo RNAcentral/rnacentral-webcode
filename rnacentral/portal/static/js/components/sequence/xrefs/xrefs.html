@@ -217,21 +217,22 @@
               <span class="margin-left-5px" style="display: none;" id="label-{{ xref.accession.external_id }}-{{ xref.accession.optional_id }}"><i class="fa fa-spinner fa-spin"></i></span>
               <br>
               <i class="fa fa-angle-right"></i>
-              <a href="http://www.ebi.ac.uk/pdbe/entry/pdb/{{ xref.accession.external_id }}/RNA/{{ xref.accession.pdb_entity_id }}" target="_blank" title="Protein Data Bank in Europe" class="help">PDBe</a> |
-              <a href="http://www.rcsb.org/pdb/explore/explore.do?structureId={{ xref.accession.external_id }}" target="_blank" title="Protein Data Bank USA" class="help">RCSB PDB</a> |
-              <a href="http://pdbj.org/mine/summary/{{ xref.accession.external_id }}" target="_blank" title="Protein Data Bank Japan" class="help">PDBj</a> |
-              <a href="{{ xref.ndb_external_url }}" target="_blank" title="Nucleic Acids Database" class="help">NDB</a>
+              <a href="http://www.ebi.ac.uk/pdbe/entry/pdb/{{ xref.accession.external_id }}/RNA/{{ xref.accession.pdb_entity_id }}" target="_blank" title="Protein Data Bank in Europe" class="help margin-left-5px margin-right-5px">PDBe</a> |
+              <a href="http://www.rcsb.org/pdb/explore/explore.do?structureId={{ xref.accession.external_id }}" target="_blank" title="Protein Data Bank USA" class="help margin-left-5px margin-right-5px">RCSB PDB</a> |
+              <a href="http://pdbj.org/mine/summary/{{ xref.accession.external_id }}" target="_blank" title="Protein Data Bank Japan" class="help margin-left-5px margin-right-5px">PDBj</a> |
+              <a href="{{ xref.ndb_external_url }}" target="_blank" title="Nucleic Acids Database" class="help margin-left-5px margin-right-5px">NDB</a> |
+              <a href="http://rna.bgsu.edu/rna3dhub/pdb/{{ xref.accession.external_id }}" target="_blank" title="BGSU RNA Group database" class="help margin-left-5px margin-right-5px">RNA 3D Hub</a>
               <br>
               <i class="fa fa-angle-right"></i>
-              <small>Structure title:</small> {{ xref.accession.pdb_structured_note.structureTitle }}
+              <em>Structure title:</em> {{ xref.accession.pdb_structured_note.structureTitle }}
               <br>
               <i class="fa fa-angle-right"></i>
-              <small>Method:</small> {{ xref.accession.pdb_structured_note.experimentalTechnique }} |
+              <em>Method:</em> {{ xref.accession.pdb_structured_note.experimentalTechnique }} |
               <span ng-if="xref.accession.pdb_structured_note.resolution">
                 <!-- NMR structures do not have resolution -->
-                <small>resolution:</small> {{ xref.accession.pdb_structured_note.resolution }} Å |
+                <em>resolution:</em> {{ xref.accession.pdb_structured_note.resolution }} Å |
               </span>
-              <small>release date:</small> {{ xref.accession.pdb_structured_note.releaseDate }}
+              <em>release date:</em> {{ xref.accession.pdb_structured_note.releaseDate }}
               <div id="molstarViewer-{{ xref.accession.external_id }}-{{ xref.accession.optional_id }}" style="width:550px; height: 550px; position: relative; display: none;"></div>
             </span>
 
@@ -399,7 +400,7 @@
                   </span>
                 </span>
               </span>
-              <span class="small" ng-if="xref.modifications.length == 0">
+              <span ng-if="xref.modifications.length == 0">
                 No modified nucleotides.
               </span>
             </span>
