@@ -94,6 +94,7 @@ var secondary_structures = {
         ctrl.displayLayout = function() {
             ctrl.secondaryStructures.svg = ctrl.secondaryStructures.svg.replace('bold', 'normal').replace('4px', '3px').replace('Helvetica', 'Arial');
             document.getElementById('rna_ss_traveler').innerHTML = ctrl.secondaryStructures.svg;
+            hideNumberingLinesAndLabels();
             // wait until the SVG is drawn and ready
             stop = $interval(function() {
               var maxWidth = document.querySelector('#secondary_structure').clientWidth;
@@ -118,7 +119,7 @@ var secondary_structures = {
         };
 
         ctrl.feedback = function() {
-            document.querySelector('.doorbell-feedback').click()
+            document.querySelector('.doorbell-feedback').click();
         }
 
         ctrl.copy2D = function() {
@@ -144,6 +145,20 @@ var secondary_structures = {
                 document.body.appendChild(elem);
                 elem.click();
                 document.body.removeChild(elem);
+            }
+        };
+
+        hideNumberingLinesAndLabels = function() {
+            if (ctrl.secondaryStructures.source !== 'gtrnadb') {
+                return;
+            }
+            var labels = document.querySelectorAll('#rna_ss_traveler svg .numbering-label');
+            for (var i = labels.length - 1; i >= 0; i--) {
+                labels[i].style.display = 'none';
+            }
+            var lines = document.querySelectorAll('#rna_ss_traveler svg .numbering-line');
+            for (var i = lines.length - 1; i >= 0; i--) {
+                lines[i].style.display = 'none';
             }
         };
 
