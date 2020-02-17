@@ -25,6 +25,13 @@ limitations under the License.
     <meta name="twitter:description" content="{{ context.precomputed.description }}">
 {% endblock %}
 
+{% block extra_head %}
+{% if 'PDBe' in context.precomputed.get_databases %}
+<!-- MolStar cannot be installed from npm -->
+<link rel="stylesheet" type="text/css" href="https://www.ebi.ac.uk/pdbe/pdb-component-library/css/pdbe-molstar-0.1.0.css">
+{% endif %}
+{% endblock %}
+
 {% block title %}
   {{ context.precomputed.description }} | {{ rna.upi }}
 {% endblock %}
@@ -401,4 +408,13 @@ limitations under the License.
 }
 </script>
 {% endif %}
+
+{% block extra_js_uncompressed %}
+{% if 'PDBe' in context.precomputed.get_databases %}
+<!-- MolStar cannot be installed from npm -->
+<script src="https://www.ebi.ac.uk/pdbe/pdb-component-library/js/pdbe-molstar-plugin-0.1.0.js"></script>
+{% endif %}
+{% endblock %}
+
+
 {% endblock content %}
