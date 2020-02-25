@@ -91,7 +91,7 @@ def expert_databases_view(request):
     expert_dbs.sort(key=lambda x: x['imported'], reverse=True)
     context = {
         'expert_dbs': expert_dbs,
-        'num_imported': len([x for x in expert_dbs if x['imported']]),
+        'num_imported': len([x for x in expert_dbs if x['imported']]) - 1, # CRS
     }
     return render(request, 'portal/expert-databases.html', {'context': context})
 
@@ -161,41 +161,20 @@ def rna_view(request, upi, taxid=None):
 @cache_page(CACHE_TIMEOUT)
 def expert_database_view(request, expert_db_name):
     """Expert database view."""
-    def _normalize_expert_db_name(expert_db_name):
-        """Expert_db_name should match RNACEN.RNC_DATABASE.DESCR."""
-        dbs = Database.objects.values_list('descr', flat=True)
-        dbs_coming_soon = ()
-        if re.match('tmrna-website', expert_db_name, flags=re.IGNORECASE):
-            expert_db_name = 'TMRNA_WEB'
-        else:
-            expert_db_name = expert_db_name.upper()
-        if expert_db_name in dbs:
-            return expert_db_name
-        elif expert_db_name in dbs_coming_soon:
-            return 'coming_soon'
-        else:
-            return False
+    expert_db_name = expert_db_name.upper()
+    expert_db = None
+    for db in expert_dbs:
+        if db['name'].upper() == expert_db_name and db['imported']:
+            expert_db = db
+        elif expert_db_name == 'TMRNA-WEBSITE' and db['label'].upper() == expert_db_name:
+            expert_db = db
 
-    expert_db_name = _normalize_expert_db_name(expert_db_name)
-    if expert_db_name and expert_db_name != 'coming_soon':
-        expert_db = Database.objects.get(descr=expert_db_name)
-        expert_db_stats = DatabaseStats.objects.get(database=expert_db_name)
-        if expert_db_name == 'LNCRNADB':
-            lncrnadb = Rna.objects.filter(xrefs__accession__database=expert_db_name).\
-                                   order_by('-length').\
-                                   all()
-        else:
-            lncrnadb = []
-        return render_to_response('portal/expert-database.html', {
-            'expert_db': expert_db,
-            'expert_db_stats': expert_db_stats,
-            'lncrnadb': lncrnadb,
-            'no_sunburst': ['ENA', 'RFAM', 'SILVA', 'GREENGENES'],
-        })
-    elif expert_db_name == 'coming_soon':
-        return render_to_response('portal/coming-soon.html')
-    else:
+    if not expert_db:
         raise Http404()
+
+    return render_to_response('portal/expert-database.html', {
+        'expert_db': expert_db,
+    })
 
 
 @never_cache

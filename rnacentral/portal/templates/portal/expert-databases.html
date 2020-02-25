@@ -65,7 +65,11 @@ RNAcentral Expert Databases
           {% if expert_db.status != 'archived'%}
           <tr>
             <td>
+              {% if expert_db.label == 'crs' %}
+              <a href="{{ expert_db.url }}" class="no-icon">{{ expert_db.name}}</a>
+              {% else %}
               <a href="{% if expert_db.imported %}{% url 'expert-database' expert_db.label %}{% else %}{{ expert_db.url }}{% endif %}">{{ expert_db.name}}</a>
+              {% endif %}
             </td>
             <td style="text-align: center">
               {% if expert_db.imported %}
