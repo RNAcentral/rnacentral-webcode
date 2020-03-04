@@ -1,7 +1,7 @@
 
 # <i class="fa fa-database"></i> Public Postgres database
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/2/29/Postgresql_elephant.svg" class="img-responsive pull-left" style="width: 100px; margin-right: 20px;">
+<img src="https://upload.wikimedia.org/wikipedia/commons/2/29/Postgresql_elephant.svg" class="img-responsive pull-right" style="width: 100px; margin-right: 20px;">
 
 In addition to [downloadable files](/downloads), an [API](/api),
 and the [text search](/search?q=RNA), RNAcentral provides a public
@@ -11,11 +11,41 @@ and contains a copy of the data available through the [RNAcentral website](/).
 
 ## Connection details
 
+**Main database**
+
 - Hostname: `hh-pgsql-public.ebi.ac.uk`
 - Port: `5432`
 - Database: `pfmegrnargs`
 - User: `reader`
 - Password: `NWDMCE5xdipIjRrp`
+
+<br>
+<div class="alert alert-warning">
+
+<p>
+<span style="font-size: 30px; margin-right: 10px;">⚠️</span> Please be aware that the main Postgres database will be <strong>unavailable from March 12 until March 27th</strong>. During this period please use the following backup database:
+</p>
+
+<br>
+
+<ul>
+<li>Hostname: <code>pgsql-hxvm-030.ebi.ac.uk</code></li>
+<li>Port: <code>5433</code></li>
+</ul>
+
+<br>
+
+<p>
+The database, user, and password are the same as in the main database.
+</p>
+
+<br>
+
+<p>
+Please <a href="/contact">get in touch</a> if you have any questions of concerns. We apologise for any inconvenience.
+</p>
+
+</div>
 
 ## Connecting to the database
 
@@ -36,7 +66,9 @@ Alternatively, you can use a **Postgres client** like [DBeaver](https://dbeaver.
 
 <i class="fa fa-warning"></i> If your computer is behind a firewall, please ensure that outgoing TCP/IP connections to the corresponding ports are allowed.
 
-## Database Schema (as of release 11)
+## Database Schema
+
+The following diagram was generated based on RNAcentral release 11.
 
 <a href="/static/img/rnacentral_release_11_schema.png">
   <img src="/static/img/rnacentral_release_11_schema.png" class="img-responsive">

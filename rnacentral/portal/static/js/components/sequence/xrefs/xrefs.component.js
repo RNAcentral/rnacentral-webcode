@@ -27,6 +27,48 @@ var xrefs = {
             }
         };
 
+        /**
+         * Display 3D structure using MolStar
+         */
+        ctrl.show3D = function($event, pdbId, chainId, entityId) {
+            // prevent errors by disablign the button so it cannot be clicked again
+            $event.target.classList.add('disabled');
+            // show spinner
+            var label = document.getElementById('label-' + pdbId + '-' + chainId);
+            label.style.display = 'inline';
+            // launch MolStar
+            var viewerInstance = new PDBeMolstarPlugin();
+            var options = {
+                moleculeId: pdbId.toLowerCase(),
+            };
+            var viewerContainer = document.getElementById('molstarViewer-' + pdbId + '-' + chainId);
+            var struct_asym_id = chainId; // fallback to chainId in case struct_asym_id cannot be found
+            jQuery(viewerContainer).slideDown('fast', function(){
+                viewerInstance.render(viewerContainer, options);
+                viewerInstance.canvas.toggleControls(false);
+                // get struct_asym_id (chainId is not enough)
+                // https://www.ebi.ac.uk/pdbe/api/pdb/entry/residue_listing/3J9M/chain/AA
+                jQuery.get('https://www.ebi.ac.uk/pdbe/api/pdb/entry/residue_listing/' + pdbId + '/chain/' + chainId, function(data) {
+                    var molecules = data[pdbId.toLowerCase()]['molecules'];
+                    for (i = 0, lenMolecules = molecules.length; i < lenMolecules; i++) {
+                        if (molecules[i]['entity_id'] == entityId) {
+                            var chains = molecules[i]['chains'];
+                            for (j = 0, lenChains = chains.length; j < lenChains; j++) {
+                                if (chains[j]['chain_id'] === chainId) {
+                                    struct_asym_id = chains[j]['struct_asym_id'];
+                                }
+                            }
+                        }
+                    }
+                }, 'json');
+                viewerInstance.events.loadComplete.subscribe(function (e) {
+                    viewerInstance.visual.selection([{struct_asym_id: struct_asym_id, color:{r:68,g:143,b:182}}], {r:255,g:255,b:255}, true);
+                    // update label
+                    label.innerHTML = 'Chain ' + chainId + ':' + struct_asym_id + ' is shown in blue';
+      	        });
+            });
+        }
+
         ctrl.onPageSizeChanged = function(newPageSize, oldPageSize) {
             oldPageSize = parseInt(oldPageSize);
 

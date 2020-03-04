@@ -219,7 +219,11 @@ class Accession(models.Model):
         if self.database in ['GTRNADB', 'ZWD', 'SNODB', 'MIRGENEDB', '5SRRNADB']:
                 try:
                     data = json.loads(self.note)
-                    return data['url'] if 'url' in data else ''
+                    url = data['url'] if 'url' in data else ''
+                    if self.database == 'MIRGENEDB':
+                        # replace trailing star character for MirGeneDB
+                        url = re.sub(r'\*$', '', url)
+                    return url
                 except ValueError:
                     return ''
         if self.database in urls.keys():

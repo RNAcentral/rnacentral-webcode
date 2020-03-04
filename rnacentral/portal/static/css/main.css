@@ -341,6 +341,7 @@ a[href^="http://rnacentral.org"]:after,
 a[href^="https://rnacentral.org"]:after,
 a[href^="https://blog.rnacentral.org"]:after,
 a[href^="https://blog.rnacentral.org"]:after,
+a.msp-pdbe-link::after,
 a.no-icon:after {
   content: "" !important;
   padding-left: 0;

@@ -1262,4 +1262,28 @@ expert_dbs = [
         'status': 'new',
         'version': '4.12',
     },
+    {
+        'name': 'CRS',
+        'label': 'crs',
+        'url': 'https://rth.dk/resources/rnannotator/crs/vert/',
+        'description': 'is a database of conserved RNA motifs identified computationally in multi-species vertebrate alignments using 2D structure',
+        'hint': 'CRS is a database of conserved RNA motifs identified computationally in multi-species vertebrate alignments using 2D structure',
+        'tags': ['predicted'],
+        'abbreviation': '',
+        'examples': [
+            {'upi': 'URS0000759F81', 'taxid': 9606},
+            {'upi': 'URS0000A7D0F3', 'taxid': 10090},
+        ],
+        'references': [
+            {
+                'title': 'The identification and functional annotation of RNA structures conserved in vertebrates',
+                'authors': 'Seemann SE, Mirza AH, Hansen C, Bang-Berthelsen CH, Garde C, Christensen-Dalsgaard M, Torarinsson E, Yao Z, Workman CT, Pociot F, Nielsen H, Tommerup N, Ruzzo WL, Gorodkin J',
+                'journal': 'Genome Res. 2017 Aug;27(8):1371-1383',
+                'pubmed_id': '28487280',
+            },
+        ],
+        'imported': True,
+        'status': '',
+        'version': '2.0',
+    },
 ]
