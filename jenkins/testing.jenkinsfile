@@ -154,7 +154,6 @@ pipeline {
                 script {
                     sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/portal/templates/portal/message'
                     if (params.MESSAGE) {
-                        echo "${params.MESSAGE}"
                         sh "echo ${params.MESSAGE} > rnacentral/portal/templates/portal/message"
                         sh "echo ${params.MESSAGE} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/portal/templates/portal/message"
                     }
