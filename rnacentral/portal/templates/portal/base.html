@@ -120,9 +120,11 @@ limitations under the License.
             </noscript>
 
             <div ng-show="!displaySearchInterface">
-              <div id="show-message">
-                  {% include "portal/message" %}
-              </div>
+              {% if "portal/message"|template_exists %}
+                  <div id="show-message">
+                      {% include "portal/message" %}
+                  </div>
+              {% endif %}
               {% block content %}{% endblock %}
             </div>
             <text-search-results ng-if="displaySearchInterface"></text-search-results>
