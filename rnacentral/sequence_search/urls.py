@@ -55,6 +55,11 @@ urlpatterns = [
         dashboard,
         name='sequence-search-dashboard'),
 
+    # embeddable react component
+    url(r'^embed/?$',
+        TemplateView.as_view(template_name='embed.html'),
+        name='embed'),
+
     # help page
     url(r'^help/?$', RedirectView.as_view(url=reverse_lazy('help-sequence-search'), permanent=False)),
     # user interface
