@@ -155,7 +155,11 @@ def rna_view(request, upi, taxid=None):
     # ask Google not to index non-species specific pages
     if not taxid:
         response['X-Robots-Tag'] = 'noindex'
-    response.headers.add('Access-Control-Allow-Origin', '*')
+    # if the request comes from the API URL, add the header to allow cross domain request
+    try:
+        response.headers.add('Access-Control-Allow-Origin', '*')
+    except AttributeError:
+        pass
     return response
 
 
