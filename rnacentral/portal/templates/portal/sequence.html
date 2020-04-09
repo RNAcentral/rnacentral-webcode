@@ -311,9 +311,6 @@ limitations under the License.
                           <i class="fa fa-copy" aria-hidden="true"></i> Copy as DNA
                         </button>
                     </div>
-                    <a class="btn btn-default" href="{% url 'sequence-search' %}?q={{ rna.upi }}" class="margin-left-5px">
-                      <i class="fa fa-search" aria-hidden="true"></i> Search for similar sequences
-                    </a>
                 </div>
 
                 <pre ng-if="showSequence" class="pre-scrollable" id="rna-sequence">{{ rna.get_sequence }}</pre>
