@@ -154,8 +154,8 @@ pipeline {
                 script {
                     sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/portal/templates/portal/message'
                     if (params.MESSAGE) {
-                        sh 'echo ${params.MESSAGE}' > rnacentral/portal/templates/portal/message
-                        sh 'echo ${params.MESSAGE}' > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/portal/templates/portal/message
+                        sh "echo ${params.MESSAGE} > rnacentral/portal/templates/portal/message"
+                        sh "echo ${params.MESSAGE} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/portal/templates/portal/message"
                     }
                 }
 
@@ -232,6 +232,10 @@ pipeline {
                       cd /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/portal/static
                       npm update
                     fi
+
+                    # update the embeddable component of the sequence search
+                    cd /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/sequence_search/static/rnacentral-sequence-search-embed
+                    git pull
 
                     fab localhost deploy:quick=${params.QUICK},git_branch=${params.BRANCH},compress=${params.COMPRESSOR}
                 """

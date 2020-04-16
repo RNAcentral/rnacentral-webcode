@@ -307,6 +307,11 @@ div#local-search form fieldset, form#local-search fieldset {
   width: 140px;
 }
 
+.wellcome-img {
+  height: 70px;
+  width: 70px;
+}
+
 footer a:hover {
   text-decoration: none;
 }

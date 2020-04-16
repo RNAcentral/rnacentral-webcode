@@ -38,6 +38,11 @@ pipeline {
             type: 'PT_BRANCH',
             description: 'Name of the branch to test and deploy'
         )
+        string(
+            name: 'MESSAGE',
+            defaultValue: '',
+            description: 'Message to show on the website'
+        )
     }
     stages {
         stage("deploy") {
@@ -117,6 +122,13 @@ pipeline {
                         sh 'echo "COMPRESS_ENABLED = True" > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
                     } else if (params.COMPRESSOR == 'False') {
                         sh 'echo "COMPRESS_ENABLED = False" > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
+                    }
+                }
+
+                script {
+                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/portal/templates/portal/message'
+                    if (params.MESSAGE) {
+                        sh "echo ${params.MESSAGE} > /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/portal/templates/portal/message"
                     }
                 }
 
