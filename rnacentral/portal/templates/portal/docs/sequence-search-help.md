@@ -13,8 +13,6 @@ The original sequence search was [implemented in 2015](https://blog.rnacentral.o
 
 The new version runs on a [cloud infrastructure](https://www.embassycloud.org), where each search can be **parallelised** making it much faster. The new user interface allows filtering the results using the same **facets** as the RNAcentral [text search](/help/text-search).
 
-⚠️ The original sequence search is [still available](/legacy-sequence-search) but will be shut down in early 2020.
-
 ### What is different about the new sequence search? <a style="cursor: pointer" id="differences" ng-click="scrollTo('differences')" name="differences" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Please be aware that results now show **species-specific identifiers** which include NCBI taxonomy ids (for example [URS00000478B7_9606](/rna/URS00000478B7_9606), human 7SL RNA) while the old search results included only the unique RNA sequence identifiers (for example [URS00000478B7](/rna/URS00000478B7), SRP RNA from 5 species). This can increase the total number of results (in this example, the old search showed only 1 entry but the new one shows 5). This change enables the user to clearly see which species the sequence results are coming from.
