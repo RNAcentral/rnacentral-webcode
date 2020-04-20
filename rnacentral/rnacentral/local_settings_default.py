@@ -16,13 +16,3 @@ from .compressor import *
 
 # print("IP Address for debug-toolbar: " + request.META['REMOTE_ADDR']) in views
 INTERNAL_IPS = ('127.0.0.1', '192.168.99.1')
-
-# databases settings
-DATABASES['nhmmer_db'] = {
-    'NAME': '',
-    'ENGINE': '',
-    'USER': '',
-    'PASSWORD': '',
-    'HOST': '',
-    'PORT': 3306
-}

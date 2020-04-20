@@ -43,7 +43,6 @@ DATABASES = {
     }
 }
 CONN_MAX_AGE = 300
-DATABASE_ROUTERS = ['nhmmer.db_router.NhmmerRouter']
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
@@ -181,7 +180,6 @@ INSTALLED_APPS = (
     'django_jenkins',
     'corsheaders',
     'portal',
-    'nhmmer',
     'sequence_search',
     'apiv1',
     'django_filters',  # required by DRF3.5+
