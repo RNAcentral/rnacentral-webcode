@@ -347,6 +347,11 @@
               LncBase: <a ng-href="{{ 'http://carolina.imis.athena-innovation.gr/diana_tools/web/index.php?r=lncbasev2%2Findex-experimental&miRNAs%5B%5D=' + xref.accession.external_id + '&lncRNAs%5B%5D=&filters=0' }}" target="_blank">{{ xref.accession.external_id }}</a>
             </span>
 
+            <!-- IntAct -->
+            <span ng-switch-when="IntAct">
+              IntAct: <a ng-href="{{ 'https://ebi.ac.uk/intact' }}" target="_blank">{{ xref.accession.external_id }}</a>
+            </span>
+
             <!-- ZWD -->
             <span ng-switch-when="ZWD">
               {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
