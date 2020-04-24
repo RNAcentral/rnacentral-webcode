@@ -38,6 +38,11 @@ pipeline {
             type: 'PT_BRANCH',
             description: 'Name of the branch to test and deploy'
         )
+        string(
+            name: 'MESSAGE',
+            defaultValue: '',
+            description: 'Message to show on the website'
+        )
     }
     stages {
         stage("deploy") {
@@ -118,6 +123,13 @@ pipeline {
                     }
 
                     sh 'rsync -av tmp ves-pg-a4:/nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/compressor.py'
+                }
+
+                script {
+                    sh 'rm -f ves-pg-a4:/nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/portal/templates/portal/message'
+                    if (params.MESSAGE) {
+                        sh "echo ${params.MESSAGE} > ves-pg-a4:/nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/portal/templates/portal/message"
+                    }
                 }
 
                 sh 'cat $LOCAL_SETTINGS > tmp'
