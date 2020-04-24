@@ -13,6 +13,7 @@ limitations under the License.
 
 from django import template
 from django.conf import settings
+from django.template.defaultfilters import stringfilter
 from portal.config.expert_databases import expert_dbs
 
 register = template.Library()
@@ -46,3 +47,13 @@ def get_ebi_search_endpoint():
     passed to javascript.
     """
     return settings.EBI_SEARCH_ENDPOINT
+
+
+@register.filter
+@stringfilter
+def template_exists(value):
+    try:
+        template.loader.get_template(value)
+        return True
+    except template.TemplateDoesNotExist:
+        return False

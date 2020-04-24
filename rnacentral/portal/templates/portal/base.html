@@ -58,6 +58,7 @@ limitations under the License.
                 <link rel="stylesheet" href="{% static "node_modules/@rnacentral/genoverse/dist/css/trackControls.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/@rnacentral/genoverse/dist/css/tooltips.css" %}">
                 <link rel="stylesheet" href="{% static "node_modules/angularjs-slider/dist/rzslider.css" %}">
+                <link rel="stylesheet" href="{% static "css/show-message.css" %}">
             {% endblock stylesheets %}
         {% endcompress %}
 
@@ -98,7 +99,7 @@ limitations under the License.
         {% block extra_head %}{% endblock %}
     </head>
 
-    <body class="level2" ng-controller="MainContent">
+    <body class="level2" ng-controller="MainContent" onload="showMessage()">
         <header>
         {% include "portal/header.html" %}
         </header>
@@ -119,6 +120,11 @@ limitations under the License.
             </noscript>
 
             <div ng-show="!displaySearchInterface">
+              {% if "portal/message"|template_exists %}
+                  <div id="show-message">
+                      {% include "portal/message" %}
+                  </div>
+              {% endif %}
               {% block content %}{% endblock %}
             </div>
             <text-search-results ng-if="displaySearchInterface"></text-search-results>
@@ -243,6 +249,16 @@ limitations under the License.
             });
             if(!window.console){ window.console = {log: function(){} }; }
             console.log('Welcome to the RNAcentral javascript console!');
+        </script>
+
+        <script>
+            function showMessage() {
+              let x = document.getElementById("show-message");
+              x.className = "show";
+
+              // After 5 seconds, remove the show class from DIV
+              setTimeout(function(){ x.className = x.className.replace("show", ""); }, 5000);
+            }
         </script>
 
       <!--[if lte IE 8]>
