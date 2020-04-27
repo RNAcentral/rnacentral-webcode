@@ -65,8 +65,8 @@ pipeline {
                 EBI_SEARCH_ENDPOINT_PRO = credentials('ebi_search_endpoint_pro.py')
                 EBI_SEARCH_ENDPOINT_DEV = credentials('ebi_search_endpoint_dev.py')
 
-                SEQUENCE_SEARCH_TEST = credentials('sequence_search_test.py')
-                SEQUENCE_SEARCH_DEFAULT = credentials('sequence_search_default.py')
+                SEQUENCE_SEARCH_TEST = "REACT_APP_BRANCH='dev'"
+                SEQUENCE_SEARCH_DEFAULT = ""
 
                 RQ_QUEUE_LOCAL = credentials('rq_queue_local.py')
                 RQ_QUEUE_OY = credentials('rq_queue_oy.py')
@@ -111,14 +111,13 @@ pipeline {
                 }
 
                 script {
-                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/sequence_search_endpoints.py'
-
+                    sh 'rm -f /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/sequence_search/static/rnacentral-sequence-search-embed/.env'
                     if (params.SEQUENCE_SEARCH_ENDPOINT == 'DEFAULT') {
-                        sh 'cat ${SEQUENCE_SEARCH_DEFAULT} > rnacentral/rnacentral/sequence_search_endpoints.py'
-                        sh 'cat ${SEQUENCE_SEARCH_DEFAULT} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/sequence_search_endpoints.py'
+                        sh 'cat ${SEQUENCE_SEARCH_DEFAULT} > rnacentral/sequence_search/static/rnacentral-sequence-search-embed/.env'
+                        sh 'cat ${SEQUENCE_SEARCH_DEFAULT} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/sequence_search/satic/rnacentral-sequence-search-embed/.env'
                     } else if (params.SEQUENCE_SEARCH_ENDPOINT == 'TEST') {
-                        sh 'cat ${SEQUENCE_SEARCH_TEST} > rnacentral/rnacentral/sequence_search_endpoints.py'
-                        sh 'cat ${SEQUENCE_SEARCH_TEST} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/sequence_search_endpoints.py'
+                        sh 'cat ${SEQUENCE_SEARCH_TEST} > rnacentral/sequence_search/static/rnacentral-sequence-search-embed/.env'
+                        sh 'cat ${SEQUENCE_SEARCH_TEST} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/sequence_search/satic/rnacentral-sequence-search-embed/.env'
                     }
                 }
 
