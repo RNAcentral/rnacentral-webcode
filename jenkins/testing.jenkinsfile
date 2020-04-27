@@ -111,9 +111,9 @@ pipeline {
 
                 script {
                     if (params.SEQUENCE_SEARCH_ENDPOINT == 'DEFAULT') {
-                        sh 'echo "" > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/sequence_search/satic/rnacentral-sequence-search-embed/.env'
+                        sh 'echo "" > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/sequence_search/static/rnacentral-sequence-search-embed/.env'
                     } else if (params.SEQUENCE_SEARCH_ENDPOINT == 'TEST') {
-                        sh 'cat ${SEQUENCE_SEARCH_TEST} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/sequence_search/satic/rnacentral-sequence-search-embed/.env'
+                        sh 'cat ${SEQUENCE_SEARCH_TEST} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/sequence_search/static/rnacentral-sequence-search-embed/.env'
                     }
                 }
 
