@@ -49,5 +49,5 @@ urlpatterns = [
     url(r'^help/?$', RedirectView.as_view(url=reverse_lazy('help-sequence-search'), permanent=False)),
 
     # user interface - embeddable react component
-    url(r'^$', TemplateView.as_view(template_name='sequence-search-embed.html'), name='sequence-search'),
+    url(r'^$', sequence_search, name='sequence-search'),
 ]

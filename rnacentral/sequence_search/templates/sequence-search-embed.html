@@ -39,5 +39,9 @@
           "hideRnacentral": "true"
         }'
     />
-    <script type="text/javascript" src="{% static "rnacentral-sequence-search-embed/dist/RNAcentral-sequence-search.js" %}"></script>
+    {% if plugin_installed %}
+        <script type="text/javascript" src="{% static "rnacentral-sequence-search-embed/dist/RNAcentral-sequence-search.js" %}"></script>
+    {% else %}
+        <script type="text/javascript" src="https://rnacentral.github.io/rnacentral-sequence-search-embed/dist/RNAcentral-sequence-search.js"></script>
+    {% endif %}
 {% endblock %}
