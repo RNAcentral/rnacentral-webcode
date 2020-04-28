@@ -21,11 +21,6 @@ pipeline {
             description: 'Which ebi search index to use?'
         )
         choice(
-            name: 'SEQUENCE_SEARCH_ENDPOINT',
-            choices: ['TEST', 'DEFAULT'],
-            description: 'Which sequence search environment to use?'
-        )
-        choice(
             name: 'RQ_QUEUE',
             choices: ['LOCAL', 'OY', 'PG'],
             description: 'Which redis queues settings to use?'
@@ -64,8 +59,6 @@ pipeline {
 
                 EBI_SEARCH_ENDPOINT_PRO = credentials('ebi_search_endpoint_pro.py')
                 EBI_SEARCH_ENDPOINT_DEV = credentials('ebi_search_endpoint_dev.py')
-
-                SEQUENCE_SEARCH_TEST = credentials('dev_embeddable_component')
 
                 RQ_QUEUE_LOCAL = credentials('rq_queue_local.py')
                 RQ_QUEUE_OY = credentials('rq_queue_oy.py')
@@ -106,14 +99,6 @@ pipeline {
                     } else if (params.EBI_SEARCH_ENDPOINT == 'DEV') {
                         sh 'cat ${EBI_SEARCH_ENDPOINT_DEV} > rnacentral/rnacentral/ebi_search_endpoints.py'
                         sh 'cat ${EBI_SEARCH_ENDPOINT_DEV} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoints.py'
-                    }
-                }
-
-                script {
-                    if (params.SEQUENCE_SEARCH_ENDPOINT == 'DEFAULT') {
-                        sh 'echo "" > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/sequence_search/static/rnacentral-sequence-search-embed/.env'
-                    } else if (params.SEQUENCE_SEARCH_ENDPOINT == 'TEST') {
-                        sh 'echo ${SEQUENCE_SEARCH_TEST} > /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/sequence_search/static/rnacentral-sequence-search-embed/.env'
                     }
                 }
 
