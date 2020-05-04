@@ -13,12 +13,6 @@ limitations under the License.
 
 import os
 
-try:
-    import pymysql
-    pymysql.install_as_MySQLdb()
-except ImportError:
-    pass
-
 
 DEBUG = False
 
