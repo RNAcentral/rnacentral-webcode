@@ -19,34 +19,6 @@ and contains a copy of the data available through the [RNAcentral website](/).
 - User: `reader`
 - Password: `NWDMCE5xdipIjRrp`
 
-<br>
-<div class="alert alert-warning">
-
-<p>
-<span style="font-size: 30px; margin-right: 10px;">⚠️</span> Please be aware that the main Postgres database will be <strong>unavailable from March 12 until March 27th</strong>. During this period please use the following backup database:
-</p>
-
-<br>
-
-<ul>
-<li>Hostname: <code>pgsql-hxvm-030.ebi.ac.uk</code></li>
-<li>Port: <code>5433</code></li>
-</ul>
-
-<br>
-
-<p>
-The database, user, and password are the same as in the main database.
-</p>
-
-<br>
-
-<p>
-Please <a href="/contact">get in touch</a> if you have any questions of concerns. We apologise for any inconvenience.
-</p>
-
-</div>
-
 ## Connecting to the database
 
 To connect to the database using **command line**:
