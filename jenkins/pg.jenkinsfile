@@ -12,11 +12,6 @@ pipeline {
             description: 'Which ebi search index to use?'
         )
         choice(
-            name: 'SEQUENCE_SEARCH_ENDPOINT',
-            choices: ['DEFAULT', 'TEST'],
-            description: 'Which sequence search environment to use?'
-        )
-        choice(
             name: 'RQ_QUEUE',
             choices: ['PG', 'OY', 'LOCAL'],
             description: 'Which redis queues settings to use?'
@@ -56,9 +51,6 @@ pipeline {
                 EBI_SEARCH_ENDPOINT_PRO = credentials('ebi_search_endpoint_pro.py')
                 EBI_SEARCH_ENDPOINT_DEV = credentials('ebi_search_endpoint_dev.py')
 
-                SEQUENCE_SEARCH_TEST = credentials('sequence_search_test.py')
-                SEQUENCE_SEARCH_DEFAULT = credentials('sequence_search_default.py')
-
                 RQ_QUEUE_LOCAL = credentials('rq_queue_local.py')
                 RQ_QUEUE_OY = credentials('rq_queue_oy.py')
                 RQ_QUEUE_PG = credentials('rq_queue_pg.py')
@@ -91,16 +83,6 @@ pipeline {
                     }
 
                     sh 'rsync -av tmp ves-pg-a4:/nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/ebi_search_endpoints.py'
-                }
-
-                script {
-                    if (params.SEQUENCE_SEARCH_ENDPOINT == 'DEFAULT') {
-                        sh 'cat ${SEQUENCE_SEARCH_DEFAULT} > tmp'
-                    } else if (params.SEQUENCE_SEARCH_ENDPOINT == 'TEST') {
-                        sh 'cat ${SEQUENCE_SEARCH_TEST} > tmp'
-                    }
-
-                    sh 'rsync -av tmp ves-pg-a4:/nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/rnacentral/sequence_search_endpoints.py'
                 }
 
                 script {
@@ -148,6 +130,10 @@ pipeline {
                     git reset --hard
                     git fetch --all
                     git checkout ${params.BRANCH}
+                    git pull
+
+                    # update the embeddable component of the sequence search
+                    cd /nfs/public/rw/xfam/rnacentral/live/rnacentral-webcode/rnacentral/sequence_search/static/rnacentral-sequence-search-embed
                     git pull
 
                     fab -H ves-pg-a4 production deploy:git_branch=${params.BRANCH},quick=${params.QUICK},compress=${params.COMPRESSOR}
