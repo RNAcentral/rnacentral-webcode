@@ -10,7 +10,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
+import os
 import requests
 
 from django.conf import settings
@@ -112,6 +112,24 @@ def show_searches(request):
     """Displays info about searches."""
     url = SEQUENCE_SEARCH_ENDPOINT + '/api/show-searches'
     return proxy_request(request, url, 'GET')
+
+
+def sequence_search(request):
+    """Sequence search main page"""
+    path = os.path.join(
+        settings.PROJECT_PATH,
+        'rnacentral',
+        'sequence_search',
+        'static',
+        'rnacentral-sequence-search-embed',
+        'dist',
+        'RNAcentral-sequence-search.js'
+    )
+    # Check if the embeddable component is installed
+    plugin_installed = True if os.path.isfile(path) else False
+
+    context = {'plugin_installed': plugin_installed}
+    return render(request, 'sequence-search-embed.html', {'context': context})
 
 
 def dashboard(request):

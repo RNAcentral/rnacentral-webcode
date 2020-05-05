@@ -21,42 +21,33 @@ from .views import *
 # sequence search urls
 urlpatterns = [
     # launch search
-    url(r'^submit-job/?$',
-        submit_job,
-        name='sequence-search-submit-job'),
+    url(r'^submit-job/?$', submit_job, name='sequence-search-submit-job'),
 
     # get job status
-    url(r'^job-status/(?P<job_id>[A-Za-z0-9_-]+)/?$',
-        job_status,
-        name='sequence-search-job-status'),
+    url(r'^job-status/(?P<job_id>[A-Za-z0-9_-]+)/?$', job_status, name='sequence-search-job-status'),
 
     # get job results
-    url(r'^job-results/(?P<job_id>[A-Za-z0-9_-]+)/?$',
-        job_results,
-        name='sequence-search-job-results'),
+    url(r'^job-results/(?P<job_id>[A-Za-z0-9_-]+)/?$', job_results, name='sequence-search-job-results'),
 
-    # get job status
+    # get infernal status
     url(r'^infernal-job-status/(?P<job_id>[A-Za-z0-9_-]+)/?$',
         infernal_job_status,
         name='sequence-search-infernal-job-status'),
 
-    # get job results
+    # get infernal results
     url(r'^infernal-results/(?P<job_id>[A-Za-z0-9_-]+)/?$',
         infernal_job_results,
         name='sequence-search-infernal-job-results'),
 
     # show searches
-    url(r'^show-searches/?$',
-        show_searches,
-        name='sequence-search-show-searches'),
+    url(r'^show-searches/?$', show_searches, name='sequence-search-show-searches'),
 
     # dashboard
-    url(r'^dashboard/?$',
-        dashboard,
-        name='sequence-search-dashboard'),
+    url(r'^dashboard/?$', dashboard, name='sequence-search-dashboard'),
 
     # help page
     url(r'^help/?$', RedirectView.as_view(url=reverse_lazy('help-sequence-search'), permanent=False)),
-    # user interface
-    url(r'^$', TemplateView.as_view(template_name='sequence-search.html'), name='sequence-search'),
+
+    # user interface - embeddable react component
+    url(r'^$', sequence_search, name='sequence-search'),
 ]
