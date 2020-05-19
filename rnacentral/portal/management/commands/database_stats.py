@@ -20,7 +20,7 @@ from django.db.models import Min, Max, Count, Avg
 import json
 
 import psycopg2
-from portal.management.commands.common_exporters.database_connection import get_db_connection
+from portal.management.commands.database_connection import get_db_connection
 
 ####################
 # Export functions #
