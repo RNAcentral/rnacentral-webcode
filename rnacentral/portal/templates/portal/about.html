@@ -684,7 +684,7 @@ About RNAcentral
                     },
                     "text": {
                         "headline": "Release 14",
-                        "text": "RNAcentral now contains LSU rRNA secondary structures and imports 5 new databases (5SrRNAdb, GeneCards, MalaCards, MirGeneDB, and snoDB) <br> <a href='{{ blog_url }}'>Release announcement</a>"
+                        "text": "RNAcentral now contains LSU rRNA secondary structures and imports 5 new databases (5SrRNAdb, GeneCards, MalaCards, MirGeneDB, and snoDB) <br> <a href='https://blog.rnacentral.org/2019/12/rnacentral-release-14.html'>Release announcement</a>"
                     }
                 },
                 {
@@ -705,6 +705,27 @@ About RNAcentral
                     "text": {
                         "headline": "Wellcome grant",
                         "text": "RNAcentral and Rfam are funded by a grant from <a href='https://wellcome.ac.uk'>Wellcome</a>."
+                    }
+                },
+                {
+                    "media": {
+                        "url": "{% static "img/timeline/release-v15.png" %}",
+                        "caption": "Release 15 features",
+                        "credit": "RNAcentral"
+                    },
+                    "start_date": {
+                        "month": "05",
+                        "day": "21",
+                        "year": "2020"
+                    },
+                    "end_date": {
+                        "month": "05",
+                        "day": "21",
+                        "year": "2020"
+                    },
+                    "text": {
+                        "headline": "Release 15",
+                        "text": "RNAcentral has been updated with the latest data including links to interactions from the IntAct database <br> <a href='{{ blog_url }}'>Release announcement</a>"
                     }
                 },
             ]
@@ -806,22 +827,29 @@ About RNAcentral
     },
     {
       'date': '10-06-19',
-      'sequence_count': 16136780,
+      'sequence_count': 15110234,
       'expert_databases': 32,
       'label': 'release 12',
     },
     {
       'date': '09-09-19',
-      'sequence_count': 16652833,
+      'sequence_count': 15412364,
       'expert_databases': 35,
       'label': 'release 13',
     },
     {
       'date': '18-12-19',
-      'sequence_count': 18504147,
+      'sequence_count': 15680101,
       'expert_databases': 40,
       'label': 'release 14',
     },
+    {
+      'date': '21-05-20',
+      'sequence_count': 16115365,
+      'expert_databases': 41,
+      'label': 'release 15',
+    },
+    // select count(*) from rnc_rna_precomputed rrp where taxid is not null and is_active is true and is_fragment is false;
   ];
 
   /**
