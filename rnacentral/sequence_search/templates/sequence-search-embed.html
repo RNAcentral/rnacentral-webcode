@@ -40,7 +40,7 @@
           "trackingID": "UA-51212613-1"
         }'
     />
-    {% if plugin_installed %}
+    {% if context.plugin_installed %}
         <script type="text/javascript" src="{% static "rnacentral-sequence-search-embed/dist/RNAcentral-sequence-search.js" %}"></script>
     {% else %}
         <script type="text/javascript" src="https://rnacentral.github.io/rnacentral-sequence-search-embed/dist/RNAcentral-sequence-search.js"></script>
