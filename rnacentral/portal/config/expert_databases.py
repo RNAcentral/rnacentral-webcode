@@ -66,7 +66,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '141',
+        'version': '143',
     },
     {
         'name': 'PDBe',
@@ -116,7 +116,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'FB2019_05',
+        'version': 'FB2020_02',
     },
     {
         'name': 'Ensembl',
@@ -172,7 +172,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '45',
+        'version': '47',
     },
     {
         'name': 'Ensembl Fungi',
@@ -197,7 +197,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '45',
+        'version': '47',
     },
     {
         'name': 'Ensembl Metazoa',
@@ -222,7 +222,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '45',
+        'version': '47',
     },
     {
         'name': 'Ensembl Protists',
@@ -247,7 +247,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '45',
+        'version': '47',
     },
     {
         'name': 'GENCODE',
