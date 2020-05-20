@@ -148,6 +148,7 @@ def rna_view(request, upi, taxid=None):
         'precomputed': precomputed,
         'mirna_regulators': rna.get_mirna_regulators(taxid=taxid),
         'annotations_from_other_species': rna.get_annotations_from_other_species(taxid=taxid),
+        'intact': rna.get_intact(taxid),
     }
     response = render(request, 'portal/sequence.html', {'rna': rna, 'context': context})
     # define canonical URL for Google
