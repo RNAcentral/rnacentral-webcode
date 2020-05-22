@@ -36,6 +36,10 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         }
     };
 
+    $scope.clearUrlParams = function() {
+        $location.search('tab', null);
+    }
+
     // This is terribly annoying quirk of ui-bootstrap that costed me a whole day of debugging.
     // When it transcludes uib-tab-heading, it creates the following link:
     //

@@ -240,7 +240,7 @@ class RnaNestedSerializer(serializers.HyperlinkedModelSerializer):
         )
 
 
-class RnaSecondaryStructureSerializer(serializers.ModelSerializer):
+class RnaSecondaryStructureSerializer(serializers.HyperlinkedModelSerializer):
     """Serializer for presenting RNA secondary structures"""
     data = serializers.SerializerMethodField('get_secondary_structures')
 
@@ -250,7 +250,7 @@ class RnaSecondaryStructureSerializer(serializers.ModelSerializer):
 
     def get_secondary_structures(self, obj):
         """Return secondary structures filtered by taxid."""
-        return obj.get_secondary_structures(taxid=self.context['taxid'])
+        return obj.get_layout_secondary()
 
 
 class SecondaryStructureSVGImageSerializer(serializers.ModelSerializer):
