@@ -43,7 +43,7 @@ class Command(BaseCommand):
     def fetch_ensembl_karyotype(self, assembly):
         ensembl_url = assembly.ensembl_url
 
-        print("Retrieving kartyotype for: %s" % ensembl_url)
+        print("Retrieving karyotype for: %s" % ensembl_url)
 
         response = requests.get(
             'http://rest.ensembl.org/info/assembly/%s?bands=1' % (ensembl_url),
