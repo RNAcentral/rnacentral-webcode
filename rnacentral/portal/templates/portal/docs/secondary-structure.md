@@ -5,13 +5,16 @@ RNAcentral generates secondary structure (2D) diagrams using
 the [auto-traveler](https://github.com/RNAcentral/auto-traveler) software that
 visualises RNA structure using standard layouts or templates (*manuscript in preparation*).
 
+<iframe width="560" height="315" src="https://www.youtube.com/embed/La7HA8i_h5I" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## 2D templates
 
-Three types of secondary structure templates are used:
+Four types of secondary structure templates are used:
 
 1. Small rRNA subunit (SSU) and 5S rRNA templates from the [Comparative RNA Website](http://www.rna.ccbb.utexas.edu) (CRW);
 2. [Rfam](http://rfam.org) consensus secondary structures for all other RNA types;
-3. Large rRNA subunit (LSU) templates from [RiboVision](http://apollo.chemistry.gatech.edu/RiboVision/).
+3. Small and large rRNA subunit (LSU) templates from [RiboVision](http://apollo.chemistry.gatech.edu/RiboVision/);
+4. Isotype-specific tRNA templates from [GtRNAdb](http://gtrnadb.ucsc.edu).
 
 For each sequence the **auto-traveler pipeline** automatically selects the template using a custom set of covariance models,
 folds the sequence into the template structure using [Infernal](http://eddylab.org/infernal),
@@ -32,11 +35,7 @@ depending on whether it's an insertion (red) or modification (green):
   <img src="/static/img/2d-example.png">
 </a>
 
-Some secondary structures are also provided by Expert Databases,
-such as [GtRNAdb](/expert-database/gtrnadb). These structures are displayed using
-[Forna](http://rna.tbi.univie.ac.at/forna/) without the 2D templates.
-
 ## Acknowledgements
 
 We would like to thank [David Hoksza](https://github.com/davidhoksza)
-for help with the [Traveler](https://github.com/davidhoksza/traveler) software, [Robin Gutell](http://www.rna.ccbb.utexas.edu) for providing the rRNA templates, [Eric Nawrocki](https://github.com/nawrockie) for help with the ribotyper software, and [Anton S. Petrov](http://cool.gatech.edu/people/petrov-anton) for the LSU templates.
+for help with the [Traveler](https://github.com/davidhoksza/traveler) software, [Robin Gutell](http://www.rna.ccbb.utexas.edu) for providing the rRNA templates, [Eric Nawrocki](https://github.com/nawrockie) for help with the ribotyper software, [Anton S. Petrov](http://cool.gatech.edu/people/petrov-anton) for the LSU templates, as well as [Patricia Chan](https://www.soe.ucsc.edu/people/pchan) and [Todd Lowe](https://www.soe.ucsc.edu/people/lowe) for providing the tRNA templates.
