@@ -66,7 +66,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '141',
+        'version': '143',
     },
     {
         'name': 'PDBe',
@@ -116,7 +116,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'FB2019_05',
+        'version': 'FB2020_02',
     },
     {
         'name': 'Ensembl',
@@ -172,7 +172,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '45',
+        'version': '47',
     },
     {
         'name': 'Ensembl Fungi',
@@ -197,7 +197,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '45',
+        'version': '47',
     },
     {
         'name': 'Ensembl Metazoa',
@@ -222,7 +222,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '45',
+        'version': '47',
     },
     {
         'name': 'Ensembl Protists',
@@ -247,7 +247,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '45',
+        'version': '47',
     },
     {
         'name': 'GENCODE',
@@ -1285,5 +1285,30 @@ expert_dbs = [
         'imported': True,
         'status': '',
         'version': '2.0',
+    },
+    {
+        'name': 'IntAct',
+        'label': 'intact',
+        'url': 'https://www.ebi.ac.uk/intact',
+        'description': 'provides a freely available, open source database system and analysis tools for molecular interaction data. All interactions are derived from literature curation or direct user submissions',
+        'hint': 'IntAct provides a freely available, open source database system and analysis tools for molecular interaction data. All interactions are derived from literature curation or direct user submissions',
+        'tags': ['curated', 'interaction', 'RNA-protein'],
+        'abbreviation': '',
+        'examples': [
+            {'upi': 'URS000075DAEC', 'taxid': 9606}, # human NEAT1
+            {'upi': 'URS0000723DBB', 'taxid': 10090}, # mouse miRNA
+            {'upi': 'URS00002BC0C6', 'taxid': 559292}, # yeast snoRNA
+        ],
+        'references': [
+            {
+                'title': 'The MIntAct project--IntAct as a common curation platform for 11 molecular interaction databases',
+                'authors': 'Orchard S, Ammari M, Aranda B, Breuza L, Briganti L, Broackes-Carter F, Campbell NH, Chavali G, Chen C, del-Toro N et al.',
+                'journal': 'Nucleic Acids Res. 2014 Jan;42(Database issue):D358-63',
+                'pubmed_id': '24234451',
+            },
+        ],
+        'imported': True,
+        'status': 'new',
+        'version': '',
     },
 ]

@@ -1607,6 +1607,14 @@ textarea {
   stroke: rgb(211.65, 104.55, 30.6);
 }
 
+.traveler-secondary-structure-svg line.numbering-line {
+  stroke: rgb(204, 204, 204);
+}
+
+.traveler-secondary-structure-svg text.numbering-label {
+  fill: rgb(204, 204, 204);
+}
+
 .traveler-secondary-structure-svg line {
   stroke: rgb(0, 0, 0);
   fill: none;

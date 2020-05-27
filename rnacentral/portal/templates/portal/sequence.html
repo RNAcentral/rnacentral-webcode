@@ -92,7 +92,7 @@ limitations under the License.
 
         <uib-tabset class="tab-animation" active="{{ context.activeTab }}">
 
-            <uib-tab index="0" heading="Overview" id="overview" deselect="checkTab($event, $selectedIndex)">
+            <uib-tab index="0" heading="Overview" id="overview" deselect="checkTab($event, $selectedIndex)" select="clearUrlParams()">
 
                 <xrefs upi="upi" taxid="taxid" page-size="5" on-activate-publications="activatePublications()" on-create-modifications-feature="createModificationsFeature(modifications, accession)" on-activate-genome-browser="activateGenomeBrowser(start, end, chr, genome)" on-scroll-to-genome-browser="scrollToGenomeBrowser()"></xrefs>
 
@@ -117,6 +117,47 @@ limitations under the License.
                     {% endfor %}
                     </ul>
                   </div>
+                {% endif %}
+
+                {% if context.intact %}
+                <div ng-if="taxid">
+                  <h2>Interactions
+                    <small>
+                      {{ context.intact|length }}
+                    </small>
+                  </h2>
+                  <p>
+                    According to <a href="https://www.ebi.ac.uk/intact" target="_blank">IntAct</a>, {{ context.precomputed.description }} interacts with:
+                  </p>
+                  <div style="overflow-y: auto; max-height: 200px;" class="force-scrollbars">
+                    <table class="table table-condensed table-hover table-responsive" style="margin-left: 10px; width: 95%;">
+                        <thead>
+                          <th>IntAct ID</th>
+                          <th>Participant</th>
+                          <th>Synonyms</th>
+                        </thead>
+                    {% for interaction in context.intact %}
+                      <tr>
+                        <td style="white-space: nowrap;">
+                          <a href="https://www.ebi.ac.uk/intact/interaction/{{ interaction.intact_id }}" target="_blank">{{ interaction.intact_id }}</a>
+                        </td>
+                        <td>
+                          {% if interaction.url %}
+                            <a href="{{ interaction.url }}" target="_blank">{{ interaction.participant }}</a>
+                          {% else %}
+                            {{ interaction.participant }}
+                          {% endif %}
+                        </td>
+                        <td>
+                          {% for name in interaction.names %}
+                            {{ name }}
+                          {% endfor %}
+                        </td>
+                      </tr>
+                    {% endfor %}
+                    </table>
+                  </div>
+                </div>
                 {% endif %}
 
                 <h2 ng-if="taxid">
@@ -319,7 +360,7 @@ limitations under the License.
 
             </uib-tab>
 
-            <uib-tab index="1" id="taxonomy" heading="Taxonomy" deselect="checkTab($event, $selectedIndex)">
+            <uib-tab index="1" id="taxonomy" heading="Taxonomy" deselect="checkTab($event, $selectedIndex)" select="clearUrlParams()">
                 <h2>Taxonomic tree</h2>
 
                 <p>

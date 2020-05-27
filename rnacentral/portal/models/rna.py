@@ -15,6 +15,7 @@ import six
 import operator as op
 import itertools as it
 from collections import Counter, defaultdict
+import re
 
 from caching.base import CachingMixin, CachingManager
 from django.conf import settings
@@ -498,17 +499,9 @@ class Rna(CachingMixin, models.Model):
         else:
             return False
 
-    def get_secondary_structures(self, taxid=None):
-        data = []
-        known = self.get_dotbracket_secondary(taxid=taxid)
-        if known:
-            data.extend(known)
-        else:
-            data.append(self.get_layout_secondary())
-
+    def get_secondary_structures(self):
         return {
-            'sequence': self.get_sequence(),
-            'secondary_structures': data,
+            self.get_layout_secondary(),
         }
 
     def get_dotbracket_secondary(self, taxid=None):
@@ -548,19 +541,21 @@ class Rna(CachingMixin, models.Model):
         if not layout:
             return {}
 
-        model_name = layout.template.model_name
-        if model_name.count('.') >= 2:
-            template_source = 'CRW'
-        elif model_name.startswith('RF0'):
-            template_source = 'Rfam'
-        elif model_name.count('_') == 2:
-            template_source = 'RiboVision'
-        else:
-            template_source = 'auto-traveler'
+        # model_name = layout.template.model_name
+        # if model_name.count('.') >= 2:
+        #     template_source = 'CRW'
+        # elif model_name.startswith('RF0'):
+        #     template_source = 'Rfam'
+        # elif layout.template.model_source == 'gtrnadb':
+        #     template_source = 'GtRNAdb'
+        # elif model_name.count('_') == 2:
+        #     template_source = 'RiboVision'
+        # else:
+        #     template_source = 'auto-traveler'
 
         return {
             'secondary_structure': layout.secondary_structure,
-            'source': template_source,
+            'source': layout.template.model_source,
             'model_id': layout.template.model_name,
             'layout': layout.layout,
             'template_species': layout.template.taxid.name,
@@ -632,4 +627,30 @@ class Rna(CachingMixin, models.Model):
         with connection.cursor() as cursor:
             cursor.execute(query)
             data = dictfetchall(cursor)
+        return data
+
+    def get_intact(self, taxid):
+        if not taxid:
+            return []
+        query = '''
+        SELECT intact_id, interacting_id, names
+        FROM rnc_interactions
+        WHERE urs_taxid  = '{urs_taxid}'
+        ORDER BY interacting_id
+        '''.format(urs_taxid=self.upi + '_' + taxid)
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            data = dictfetchall(cursor)
+        for interaction in data:
+            match = re.search(r'URS[0-9A-Fa-f]{10}[_-]\d+', ''.join(interaction['names']))
+            if match:
+                interaction['url'] = '/rna/' + match.group()
+                interaction['participant'] = match.group()
+            elif 'uniprotkb:' in interaction['interacting_id']:
+                uniprot_id = interaction['interacting_id'].replace('uniprotkb:', '')
+                interaction['url'] = 'https://www.uniprot.org/uniprot/' + uniprot_id
+                interaction['participant'] = uniprot_id
+            else:
+                interaction['participant'] = interaction['interacting_id']
+                interaction['url'] = ''
         return data

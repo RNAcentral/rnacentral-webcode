@@ -152,7 +152,7 @@ def update_example_locations():
 class Command(BaseCommand):
     """
     Usage:
-    python manage.py update_ensembl_assembly
+    python manage.py update_example_locations
     """
     def handle(self, *args, **options):
         """Main function, called by django."""

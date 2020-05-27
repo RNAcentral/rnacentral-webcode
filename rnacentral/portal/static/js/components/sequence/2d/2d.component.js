@@ -9,7 +9,6 @@ var secondary_structures = {
 
         ctrl.help = "/help/secondary-structure";
 
-        ctrl.fornaSize = 500;
         ctrl.numStructures = 0;
         ctrl.panZoom;
 
@@ -17,12 +16,8 @@ var secondary_structures = {
             ctrl.fetchSecondaryStructures().then(
                 function(response) {
                     ctrl.secondaryStructures = response.data.data;
-                    ctrl.secondaryStructures.useForna = !ctrl.secondaryStructures.secondary_structures[0].layout;
-                    if (!ctrl.useForna) {
-                        ctrl.secondaryStructures.svg = ctrl.secondaryStructures.secondary_structures[0].layout;
-                    }
-
-                    ctrl.numStructures = ctrl.secondaryStructures.secondary_structures.length;
+                    ctrl.secondaryStructures.svg = ctrl.secondaryStructures.layout;
+                    ctrl.numStructures = 1;
                     ctrl.SecondaryStructureUrl = routes.apiSecondaryStructuresView({ upi: ctrl.upi, taxid: ctrl.taxid });
                     ctrl.displaySecondary();
                 },
@@ -42,7 +37,7 @@ var secondary_structures = {
             if (ctrl.numStructures === 0) {
                 return '';
             }
-            return ctrl.secondaryStructures.secondary_structures[0].source[0].url;
+            return ctrl.secondaryStructures.source[0].url;
         };
 
         ctrl.toggleColors = function() {
@@ -77,25 +72,7 @@ var secondary_structures = {
             if (ctrl.numStructures === 0) {
                 return;
             }
-
-            if (ctrl.secondaryStructures.useForna) {
-                return ctrl.displayForna();
-            }
             return ctrl.displayLayout();
-        };
-
-        ctrl.displayForna = function() {
-            var container = new fornac.FornaContainer("#rna_ss", {
-                'applyForce': false,
-                'allowPanningAndZooming': true,
-                'initialSize': [ctrl.fornaSize, ctrl.fornaSize],
-            });
-            var options = {
-                'structure': ctrl.secondaryStructures.secondary_structures[0].secondary_structure,
-                'sequence': ctrl.secondaryStructures.sequence,
-            };
-            container.addRNA(options.structure, options);
-            ctrl.showSecondaryStructureTab();
         };
 
         ctrl.resize2D = function() {
@@ -117,6 +94,7 @@ var secondary_structures = {
         ctrl.displayLayout = function() {
             ctrl.secondaryStructures.svg = ctrl.secondaryStructures.svg.replace('bold', 'normal').replace('4px', '3px').replace('Helvetica', 'Arial');
             document.getElementById('rna_ss_traveler').innerHTML = ctrl.secondaryStructures.svg;
+            hideNumberingLinesAndLabels();
             // wait until the SVG is drawn and ready
             stop = $interval(function() {
               var maxWidth = document.querySelector('#secondary_structure').clientWidth;
@@ -125,6 +103,7 @@ var secondary_structures = {
                 var svg = document.querySelector('#rna_ss_traveler svg');
                 svg.classList.remove('black');
                 svg.classList.add('traveler-secondary-structure-svg');
+                document.getElementById('rna_ss_traveler').classList.add('thumbnail');
                 // delete inline svg styles to prevent style leakage
                 var style = svg.getElementsByTagName('style');
                 if (style.length > 0) {
@@ -140,12 +119,12 @@ var secondary_structures = {
         };
 
         ctrl.feedback = function() {
-            document.querySelector('.doorbell-feedback').click()
+            document.querySelector('.doorbell-feedback').click();
         }
 
         ctrl.copy2D = function() {
             var rnaClipboard = new Clipboard('#copy-dot-bracket-notation', {
-                "text": function () { return ctrl.secondaryStructures.secondary_structures[0].secondary_structure; }
+                "text": function () { return ctrl.secondaryStructures.secondary_structure; }
             });
         };
 
@@ -166,6 +145,20 @@ var secondary_structures = {
                 document.body.appendChild(elem);
                 elem.click();
                 document.body.removeChild(elem);
+            }
+        };
+
+        hideNumberingLinesAndLabels = function() {
+            if (ctrl.secondaryStructures.source !== 'gtrnadb') {
+                return;
+            }
+            var labels = document.querySelectorAll('#rna_ss_traveler svg .numbering-label');
+            for (var i = labels.length - 1; i >= 0; i--) {
+                labels[i].style.display = 'none';
+            }
+            var lines = document.querySelectorAll('#rna_ss_traveler svg .numbering-line');
+            for (var i = lines.length - 1; i >= 0; i--) {
+                lines[i].style.display = 'none';
             }
         };
 
