@@ -171,8 +171,8 @@ class Accession(models.Model):
 
     def get_malacards_diseases(self):
         try:
-            data = json.loads(self.note)
-            if 'diseases' in data:
+            data = json.loads(self.note) if self.note else None
+            if data and 'diseases' in data:
                 return data['diseases']
             else:
                 return None
