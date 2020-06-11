@@ -117,8 +117,9 @@ class RawSqlQueryset(models.QuerySet):
         return output_dict
 
     def get_mirbase_mature_products(self, taxid=None):
-        if self.accession.database != 'mirbase'.upper():
-            return None
+        if hasattr(self, 'accession'):
+            if self.accession.database != 'mirbase'.upper():
+                return None
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
         # _fetch_all() has already been called by now
@@ -153,8 +154,9 @@ class RawSqlQueryset(models.QuerySet):
         return self._xrefs_raw_queryset_to_dict(raw_queryset)
 
     def get_mirbase_precursor(self, taxid=None):
-        if self.accession.database != 'mirbase'.upper():
-            return None
+        if hasattr(self, 'accession'):
+            if self.accession.database != 'mirbase'.upper():
+                return None
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
         # _fetch_all() has already been called by now
