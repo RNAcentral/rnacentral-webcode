@@ -770,7 +770,7 @@ class EnsemblComparaAPIViewSet(generics.ListAPIView):
         urs_taxid = self.kwargs['pk']+ '_' + self.kwargs['taxid']
 
         rna_precomputed = RnaPrecomputed.objects.get(id=urs_taxid)
-        if 'Ensembl' not in rna_precomputed.databases:
+        if rna_precomputed.databases and 'Ensembl' not in rna_precomputed.databases:
             return 'analysis not available'
 
         compara = EnsemblCompara.objects.filter(urs_taxid=urs_taxid).first()
