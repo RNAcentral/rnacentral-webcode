@@ -73,7 +73,7 @@ class GenomeAnnotations(APIView):
         end = end.replace(',', '')
 
         try:
-            assembly = EnsemblAssembly.objects.get(ensembl_url=species)
+            assembly = EnsemblAssembly.objects.filter(ensembl_url=species).first()
         except EnsemblAssembly.DoesNotExist:
             return Response([])
 
