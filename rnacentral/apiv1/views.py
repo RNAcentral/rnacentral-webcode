@@ -12,18 +12,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 import re
-import warnings
 from itertools import chain
 
-from django.db.models import Min, Max, Prefetch
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
 from rest_framework import generics, renderers, status
 from rest_framework.mixins import RetrieveModelMixin, ListModelMixin
-from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 
@@ -40,7 +36,7 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               EnsemblAssemblySerializer, ProteinTargetsSerializer, \
                               LncrnaTargetsSerializer, EnsemblComparaSerializer, SecondaryStructureSVGImageSerializer
 
-from apiv1.renderers import RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer
+from apiv1.renderers import RnaFastaRenderer
 from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
     GoAnnotation, RelatedSequence, ProteinInfo, SequenceFeature,\
     SequenceRegion, EnsemblCompara, SecondaryStructureWithLayout
@@ -73,7 +69,7 @@ class GenomeAnnotations(APIView):
         end = end.replace(',', '')
 
         try:
-            assembly = EnsemblAssembly.objects.get(ensembl_url=species)
+            assembly = EnsemblAssembly.objects.filter(ensembl_url=species).first()
         except EnsemblAssembly.DoesNotExist:
             return Response([])
 
@@ -262,9 +258,9 @@ class RnaDetail(RnaMixin, generics.RetrieveAPIView):
     """
     # the above docstring appears on the API website
     queryset = Rna.objects.all()
-    renderer_classes = (renderers.JSONRenderer, JSONPRenderer,
-                        renderers.BrowsableAPIRenderer, YAMLRenderer,
-                        RnaFastaRenderer, RnaGffRenderer, RnaGff3Renderer, RnaBedRenderer)
+    renderer_classes = (
+        renderers.JSONRenderer, JSONPRenderer, renderers.BrowsableAPIRenderer, YAMLRenderer, RnaFastaRenderer
+    )
 
     def get_object(self):
         """
@@ -774,7 +770,7 @@ class EnsemblComparaAPIViewSet(generics.ListAPIView):
         urs_taxid = self.kwargs['pk']+ '_' + self.kwargs['taxid']
 
         rna_precomputed = RnaPrecomputed.objects.get(id=urs_taxid)
-        if 'Ensembl' not in rna_precomputed.databases:
+        if rna_precomputed.databases and 'Ensembl' not in rna_precomputed.databases:
             return 'analysis not available'
 
         compara = EnsemblCompara.objects.filter(urs_taxid=urs_taxid).first()
