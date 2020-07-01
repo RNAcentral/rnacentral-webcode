@@ -77,6 +77,8 @@ urlpatterns = [
     url(r'^genome-browser/?$', views.GenomeBrowserView.as_view(), {}, name='genome-browser'),
     # proxy for ebeye search and rfam images
     url(r'^api/internal/proxy/?$', views.proxy, name='proxy'),
+    # r2dt-web
+    url(r'^r2dt/?$', views.TemplateView.as_view(template_name='portal/r2dt.html'), name='text-search'),
 ]
 
 # internal API
