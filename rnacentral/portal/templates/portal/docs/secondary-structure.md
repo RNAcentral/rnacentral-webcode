@@ -2,7 +2,7 @@
 # Secondary structure
 
 RNAcentral generates secondary structure (2D) diagrams using
-the [auto-traveler](https://github.com/RNAcentral/auto-traveler) software that
+the [R2DT](https://github.com/RNAcentral/R2DT) software that
 visualises RNA structure using standard layouts or templates (*manuscript in preparation*).
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/La7HA8i_h5I" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -16,7 +16,7 @@ Four types of secondary structure templates are used:
 3. Small and large rRNA subunit (LSU) templates from [RiboVision](http://apollo.chemistry.gatech.edu/RiboVision/);
 4. Isotype-specific tRNA templates from [GtRNAdb](http://gtrnadb.ucsc.edu).
 
-For each sequence the **auto-traveler pipeline** automatically selects the template using a custom set of covariance models,
+For each sequence the **R2DT pipeline** automatically selects the template using a custom set of covariance models,
 folds the sequence into the template structure using [Infernal](http://eddylab.org/infernal),
 and visualises it using [Traveler](https://github.com/davidhoksza/traveler).
 
