@@ -70,7 +70,7 @@
               Rfam <a ng-href="{{'http://rfam.org/accession/' +  xref.accession.parent_ac + '.' + xref.accession.seq_version + '?seq_start=' + xref.accession.feature_start + '&seq_end=' + xref.accession.feature_end }}" target="_blank">sequence summary</a>
               <br>
               <i class="fa fa-angle-right"></i>
-              Source ENA entry: <a ng-href="{{ 'http://www.ebi.ac.uk/ena/data/view/' +  xref.accession.parent_ac + '.' + xref.accession.seq_version }}" target="_blank">{{ xref.accession.parent_ac }}.{{ xref.accession.seq_version }}</a>
+              Source ENA entry: <a ng-href="{{ 'https://www.ebi.ac.uk/ena/browser/view/' +  xref.accession.parent_ac + '.' + xref.accession.seq_version }}" target="_blank">{{ xref.accession.parent_ac }}.{{ xref.accession.seq_version }}</a>
               (nucleotides {{ xref.accession.feature_start | number }}:{{ xref.accession.feature_end | number }})
             </span>
             <!-- SRPDB -->
@@ -433,12 +433,12 @@
             <!-- Greengenes inferred taxonomy -->
             <span ng-if="xref.database == 'Greengenes'">
               INSDC classification:
-              <a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank" title="{{ xref.accession.classification }}"><em>{{ xref.accession.species }}</em></a>
+              <a href="https://www.ebi.ac.uk/ena/browser/view/Taxon:{{ xref.taxid }}" target="_blank" title="{{ xref.accession.classification }}"><em>{{ xref.accession.species }}</em></a>
               <br>
               Greengenes classification: <em>{{ xref.accession.inference }}</em>
             </span>
             <span ng-if="!(xref.database == 'Greengenes')">
-              <a href="http://www.ebi.ac.uk/ena/data/view/Taxon:{{ xref.taxid }}" target="_blank" title="{{ xref.accession.classification }}"><em>{{ xref.accession.species }}</em></a>
+              <a href="https://www.ebi.ac.uk/ena/browser/view/Taxon:{{ xref.taxid }}" target="_blank" title="{{ xref.accession.classification }}"><em>{{ xref.accession.species }}</em></a>
             </span>
           </td>
         </tr>

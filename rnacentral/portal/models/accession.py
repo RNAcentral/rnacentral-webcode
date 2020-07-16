@@ -132,7 +132,7 @@ class Accession(models.Model):
         """
         if self.database in ['RFAM', 'PDBE', 'REFSEQ', 'RDP', 'GtRNAdb', 'lncRNAdb', 'miRBase', 'pombase', 'Dictybase', 'SGD', 'snopy', 'Srpdb', 'tair', 'tmRNA website']:
             return ''  # no ENA source links for these entries
-        ena_base_url = "http://www.ebi.ac.uk/ena/data/view/Non-coding:"
+        ena_base_url = "https://www.ebi.ac.uk/ena/browser/view/Non-coding:"
         if self.is_composite == 'Y':
             return ena_base_url + self.non_coding_id
         else:
@@ -198,7 +198,7 @@ class Accession(models.Model):
             'DICTYBASE': 'http://dictybase.org/gene/{id}',
             'SILVA': 'http://www.arb-silva.de/browser/{lsu_ssu}/silva/{id}',
             'POMBASE': 'http://www.pombase.org/spombe/result/{id}',
-            'GREENGENES': 'http://www.ebi.ac.uk/ena/data/view/{id}.{version}',
+            'GREENGENES': 'https://www.ebi.ac.uk/ena/browser/view/{id}.{version}',
             'NONCODE': 'http://www.noncode.org/show_rna.php?id={id}&version={version}',
             'LNCIPEDIA': 'http://www.lncipedia.org/db/transcript/{id}',
             'LNCBOOK': 'http://bigd.big.ac.cn/lncbook/transcript?transid={id}',
