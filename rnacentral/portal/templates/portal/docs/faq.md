@@ -49,7 +49,7 @@ with correspondences between external database identifiers and RNAcentral ids.
 ### How do I submit sequences to RNAcentral? <a style="cursor: pointer" id="how-to-submit" ng-click="scrollTo('how-to-submit')" name="how-to-submit" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Once an ncRNA sequence is submitted to an [INSDC](http://www.insdc.org/) database,
-including [ENA](http://www.ebi.ac.uk/ena), [GenBank](http://www.ncbi.nlm.nih.gov/Genbank/index.html),
+including [ENA](https://www.ebi.ac.uk/ena/browser), [GenBank](http://www.ncbi.nlm.nih.gov/Genbank/index.html),
 and [DDBJ](http://www.ddbj.nig.ac.jp/), it will automatically
 appear in a subsequent RNAcentral release.
 

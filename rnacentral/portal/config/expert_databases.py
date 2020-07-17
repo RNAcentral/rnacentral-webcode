@@ -46,7 +46,7 @@ expert_dbs = [
     {
         'name': 'ENA',
         'label': 'ena',
-        'url': 'http://www.ebi.ac.uk/ena/',
+        'url': 'https://www.ebi.ac.uk/ena/browser/',
         'description': "provides a comprehensive record of the world's nucleotide sequencing information",
         'hint': "ENA is a comprehensive record of the world's nucleotide sequencing information",
         'tags': ['all ncRNA types', 'sequence archive'],
