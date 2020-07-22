@@ -225,6 +225,11 @@ var textSearchResults = {
             search.search(newQuery);
         };
 
+        ctrl.facetSoTermSearch = function(facets, facetId, facetValue) {
+          facet = '&facets=so_rna_type:ncRNA/rRNA/small_subunit_rRNA';
+          search.search(search.query, null, facet);
+        };
+
         /**
          * Show/hide search facets to save screen space.
          * Uses jQuery for simplicity.

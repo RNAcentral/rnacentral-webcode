@@ -64,7 +64,7 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             'standard_name': 'Standard name',
             'tax_string': 'Taxonomy'
         },
-        facetfields: ['rna_type', 'TAXONOMY', 'expert_db', 'has_secondary_structure', 'qc_warning_found', 'has_go_annotations', 'has_conserved_structure', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
+        facetfields: ['so_rna_type', 'rna_type', 'TAXONOMY', 'expert_db', 'has_secondary_structure', 'qc_warning_found', 'has_go_annotations', 'has_conserved_structure', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
         foldableFacets: ['qc_warning_found', 'has_go_annotations', 'has_conserved_structure', 'has_genomic_coordinates'],
         sortableFields: [
             { label: 'Popular species, Length ↓', value: 'boost:descending,length:descending' },
@@ -147,8 +147,9 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
      * @param start - determines the range of the results to be returned.
      * @creates self.promise
      */
-    this.search = function (query, start) {
+    this.search = function (query, start, facets) {
         start = start || 0;
+        facets = facets || '';
 
         // hopscotch.endTour(); // end guided tour when a search is launched
         self.autocompleteDeferred && self.autocompleteDeferred.reject(); // if autocompletion was launched - reject it
@@ -179,6 +180,10 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             start: start,
             sort: self.sort
         });
+        if (facets) {
+          ebeyeUrl += facets;
+          console.log(ebeyeUrl);
+        }
         var queryUrl = routes.proxy({url: encodeURIComponent(ebeyeUrl)});
 
         // perform search

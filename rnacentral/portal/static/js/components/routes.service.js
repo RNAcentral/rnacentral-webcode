@@ -34,6 +34,7 @@ angular.module("routes", []).service('routes', ['$interpolate', function($interp
             '&hlfields={{ hlfields }}' +
             '&facetcount={{ facetcount }}' +
             '&facetfields={{ facetfields }}' +
+            '&facetdepth=10' +
             '&size={{ pagesize }}' +
             '&start={{ start }}' +
             '&sort={{ sort }}' +
