@@ -217,6 +217,10 @@ pipeline {
                     cd /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/sequence_search/static/rnacentral-sequence-search-embed
                     git pull
 
+                    # update R2DT-Web
+                    cd /nfs/public/rw/xfam/rnacentral/test/rnacentral-webcode/rnacentral/portal/static/r2dt-web
+                    git pull
+
                     fab localhost deploy:quick=${params.QUICK},git_branch=${params.BRANCH},compress=${params.COMPRESSOR}
                 """
             }
