@@ -108,10 +108,10 @@ expert_dbs = [
         ],
         'references': [
             {
-                'title': 'FlyBase at 25: looking to the future',
+                'title': 'FlyBase 2.0: the next generation',
                 'authors': 'The FlyBase Consortium',
-                'journal': 'Nucleic Acids Res. 2017 Jan 4;45(D1):D663-D671',
-                'pubmed_id': '27799470',
+                'journal': 'Nucleic Acids Res. 2019;47(D1):D759-D765',
+                'pubmed_id': '30364959',
             },
         ],
         'imported': True,
