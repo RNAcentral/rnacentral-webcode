@@ -78,7 +78,7 @@ urlpatterns = [
     # proxy for ebeye search and rfam images
     url(r'^api/internal/proxy/?$', views.proxy, name='proxy'),
     # r2dt-web
-    url(r'^r2dt/?$', views.TemplateView.as_view(template_name='portal/r2dt.html'), name='r2dt'),
+    url(r'^r2dt/?$', views.r2dt, name='r2dt'),
 ]
 
 # internal API

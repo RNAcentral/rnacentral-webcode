@@ -40,5 +40,9 @@
           "hideRnacentral": "true"
         }'
     />
-    <script type="text/javascript" src="https://rnacentral.github.io/r2dt-web/dist/r2dt-web.js"></script>
+    {% if context.plugin_installed %}
+        <script type="text/javascript" src="{% static "r2dt-web/dist/r2dt-web.js" %}"></script>
+    {% else %}
+        <script type="text/javascript" src="https://rnacentral.github.io/r2dt-web/dist/r2dt-web.js"></script>
+    {% endif %}
 {% endblock %}
