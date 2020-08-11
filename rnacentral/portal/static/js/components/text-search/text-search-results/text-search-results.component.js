@@ -225,9 +225,9 @@ var textSearchResults = {
             search.search(newQuery);
         };
 
-        ctrl.facetSoTermSearch = function(facets, facetId, facetValue) {
-          facet = '&facets=so_rna_type:ncRNA/rRNA/small_subunit_rRNA';
-          search.search(search.query, null, facet);
+        ctrl.facetSoTermSearch = function(label) {
+          search.query += ' AND so_rna_type_name:"' + label + '"';
+          search.search(search.query, null);
         };
 
         /**
