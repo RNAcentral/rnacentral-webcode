@@ -216,7 +216,7 @@ class Accession(models.Model):
             'MALACARDS': 'https://www.genecards.org/cgi-bin/carddisp.pl?gene={id}#diseases',
             'GENECARDS': 'https://www.genecards.org/cgi-bin/carddisp.pl?gene={id}',
         }
-        if self.database in ['GTRNADB', 'ZWD', 'SNODB', 'MIRGENEDB', '5SRRNADB']:
+        if self.database in ['GTRNADB', 'ZWD', 'SNODB', 'MIRGENEDB', '5SRRNADB', 'SNORNADB']:
                 try:
                     data = json.loads(self.note)
                     url = data['url'] if 'url' in data else ''
