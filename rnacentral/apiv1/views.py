@@ -11,9 +11,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+import base64
 import re
 from itertools import chain
 
+import requests
+
+from django.conf import settings
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
@@ -362,13 +366,21 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
     permission_classes = (AllowAny,)
 
     def get(self, request, pk=None, format=None):
-        try:
-            upi = self.kwargs['pk']
-            image = SecondaryStructureWithLayout.objects.get(urs=upi)
-        except SecondaryStructureWithLayout.DoesNotExist:
+        upi = self.kwargs['pk']
+        ENDPOINT="https://rna-central.ebionedata.org/cdmi/Protein-Sequences/secondary-structure/{}.svg"
+        headers = {
+            'X-Auth-Token': settings.ONEDATA_ACCESS_TOKEN,
+            'X-CDMI-Specification-Version': '1.1.1',
+        }
+        url = ENDPOINT.format(upi)
+        data = requests.get(url, headers=headers)
+        if not data.status_code == 200:
             return Response(status=status.HTTP_404_NOT_FOUND)
-
-        return HttpResponse(self.generate_thumbnail(image.layout, upi), content_type='image/svg+xml')
+        try:
+            svg = base64.b64decode(data.json()['value'])
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        return HttpResponse(self.generate_thumbnail(svg, upi), content_type='image/svg+xml')
 
     def generate_thumbnail(self, image, upi):
         move_to_start_position = None

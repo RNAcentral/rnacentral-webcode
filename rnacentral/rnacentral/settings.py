@@ -361,4 +361,6 @@ COMPRESS_CSS_FILTERS = [
 # Use a simplified runner to prevent any modifications to the database.
 TEST_RUNNER = 'portal.tests.runner.FixedRunner'
 
+ONEDATA_ACCESS_TOKEN = ''
+
 from .local_settings import *  # pylint: disable=W0401, W0614
