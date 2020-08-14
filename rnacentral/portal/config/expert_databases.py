@@ -530,15 +530,26 @@ expert_dbs = [
         'version': '',
     },
     {
-        'name': 'CRW Site',
-        'label': '',
+        'name': 'CRW',
+        'label': 'crw',
         'url': 'http://www.rna.ccbb.utexas.edu/',
-        'description': 'comparative sequence and structure information for ribosomal, intron, and other RNAs',
-        'hint': 'CRW Site comparative sequence and structure information for ribosomal, intron, and other RNAs',
-        'tags': ['curated', 'rRNA'],
+        'description': 'provides comparative sequence and structure information for ribosomal, intron, and other RNAs',
+        'hint': 'CRW provides comparative sequence and structure information for ribosomal, intron, and other RNAs',
+        'tags': ['curated', 'SSU rRNA', '5S rRNA'],
         'abbreviation': 'Comparative RNA Website',
-        'examples': '',
-        'references': [],
+        'examples': [
+            {'upi': 'URS00000ABFE9', 'taxid': 511145}, # E.coli SSU
+            {'upi': 'URS00001C0ED1', 'taxid': 9606}, # Human SSU
+            {'upi': 'URS00000F9D45', 'taxid': 9606}, # Human 5S
+        ],
+        'references': [
+            {
+                'title': 'The comparative RNA web (CRW) site: an online database of comparative sequence and structure information for ribosomal, intron, and other RNAs',
+                'authors': 'Jamie J Cannone, Sankar Subramanian, Murray N Schnare, James R Collett, Lisa M DSouza, Yushi Du, Brian Feng, Nan Lin, Lakshmi V Madabusi, Kirsten M Muller, Nupur Pande, Zhidi Shang, Nan Yu, Robin R Gutell',
+                'journal': 'BMC Bioinformatics. 2002;3:2',
+                'pubmed_id': '11869452',
+            },
+        ],
         'imported': False,
         'status': '',
         'version': '',
