@@ -1357,4 +1357,28 @@ expert_dbs = [
         'status': 'new',
         'version': '',
     },
+    {
+        'name': 'Zfin',
+        'label': 'zfin',
+        'url': 'https://zfin.org',
+        'description': 'is the database of genetic and genomic data for the zebrafish (Danio rerio) as a model organism',
+        'hint': 'The Zebrafish Information Network (ZFIN) is the database of genetic and genomic data for the zebrafish (Danio rerio) as a model organism',
+        'tags': ['curated', 'model organism', 'zebrafish'],
+        'abbreviation': 'The Zebrafish Information Network',
+        'examples': [
+            {'upi': 'URS000075AF4B', 'taxid': 7955}, # miRNA
+            {'upi': 'URS00008E3972', 'taxid': 7955}, # linc.alien
+        ],
+        'references': [
+            {
+                'title': 'The Zebrafish Information Network: new support for non-coding genes, richer Gene Ontology annotations and the Alliance of Genome Resources',
+                'authors': 'Leyla Ruzicka, Douglas G Howe, Sridhar Ramachandran, Sabrina Toro, Ceri E Van Slyke, Yvonne M Bradford, Anne Eagle, David Fashena, Ken Frazer, Patrick Kalita, Prita Mani, Ryan Martin, Sierra Taylor Moxon, Holly Paddock, Christian Pich, Kevin Schaper, Xiang Shao, Amy Singer, Monte Westerfield',
+                'journal': 'Nucleic Acids Res. 2019 Jan 8;47(D1):D867-D873',
+                'pubmed_id': '30407545',
+            },
+        ],
+        'imported': False,
+        'status': '',
+        'version': '',
+    },
 ]
