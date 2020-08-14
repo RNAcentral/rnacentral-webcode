@@ -26,10 +26,10 @@ def get_expert_databases_columns():
     """
     dbs = sorted(expert_dbs, key=lambda x: x['name'].lower())
     return [
-        dbs[:13],
-        dbs[13:26],
-        dbs[26:39],
-        dbs[39:],
+        dbs[:14],
+        dbs[14:27],
+        dbs[27:40],
+        dbs[40:],
     ]
 
 
