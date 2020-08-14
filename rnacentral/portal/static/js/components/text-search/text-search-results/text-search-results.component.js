@@ -189,6 +189,14 @@ var textSearchResults = {
         };
 
         /**
+         * Determine if the facet has already been applied.
+         */
+        ctrl.isSoFacetApplied = function(facetLabel) {
+            var facetQuery = new RegExp('so_rna_type_name' + '\\:"' + facetLabel + '"', 'i');
+            return !!search.query.match(facetQuery);
+        };
+
+        /**
          * Run a search with a facet enabled.
          * The facet will be toggled on and off in the repeated calls with the same
          * parameters.
@@ -223,11 +231,6 @@ var textSearchResults = {
             }
 
             search.search(newQuery);
-        };
-
-        ctrl.facetSoTermSearch = function(label) {
-          search.query += ' AND so_rna_type_name:"' + label + '"';
-          search.search(search.query, null);
         };
 
         /**
