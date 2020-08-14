@@ -367,7 +367,7 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
 
     def get(self, request, pk=None, format=None):
         upi = self.kwargs['pk']
-        ENDPOINT="https://rna-central.ebionedata.org/cdmi/Protein-Sequences/secondary-structure/{}.svg"
+        ENDPOINT="https://rna-central.ebionedata.org/cdmi/Rna-Sequences/secondary-structure/{}.svg"
         headers = {
             'X-Auth-Token': settings.ONEDATA_ACCESS_TOKEN,
             'X-CDMI-Specification-Version': '1.1.1',
