@@ -197,6 +197,24 @@ var textSearchResults = {
         };
 
         /**
+         * Clean up SO term labels.
+         */
+        ctrl.prettySoLabel = function(facetLabel) {
+            var exceptions = ['RNase_P_RNA', 'SRP_RNA', 'Y_RNA', 'RNase_MRP_RNA'];
+            if (exceptions.indexOf(facetLabel) === -1) {
+                facetLabel = facetLabel.charAt(0).toLowerCase() + facetLabel.slice(1);
+            }
+            if (facetLabel === 'lnc_RNA') {
+                facetLabel = 'lncRNA';
+            } else if (facetLabel === 'pre_miRNA') {
+                facetLabel = 'pre-miRNA';
+            } else {
+                facetLabel = facetLabel.replace(/_/g, ' ');
+            }
+            return facetLabel;
+        }
+
+        /**
          * Run a search with a facet enabled.
          * The facet will be toggled on and off in the repeated calls with the same
          * parameters.

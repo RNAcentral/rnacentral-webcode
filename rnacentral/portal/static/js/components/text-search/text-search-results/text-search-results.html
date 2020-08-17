@@ -163,19 +163,19 @@
             <ul class="list-unstyled text-search-facet-values text-search-facet-overflow force-scrollbars" style="overflow-x: hidden; max-height: 300px;">
               <li ng-repeat="facetValue in facet.facetValues">
                 <input type="checkbox" name="facet.label" ng-checked="$ctrl.isFacetApplied('so_rna_type_name', facetValue.label)" ng-click="$ctrl.facetSearch('so_rna_type_name', facetValue.label)">
-                <a href="" ng-click="$ctrl.facetSearch('so_rna_type_name', facetValue.label)" class="text-search-facet-link">{{ facetValue.label }} <small>({{ facetValue.count | number }})</small></a>
+                <a href="" ng-click="$ctrl.facetSearch('so_rna_type_name', facetValue.label)" class="text-search-facet-link">{{ $ctrl.prettySoLabel(facetValue.label) }} <small>({{ facetValue.count | number }})</small></a>
                 <ul ng-if="facetValue.children.length > 0" ng-repeat="child in facetValue.children">
                   <li style="list-style-type: none;">
                     <input type="checkbox" name="child.label" ng-checked="$ctrl.isFacetApplied('so_rna_type_name', child.label)" ng-click="$ctrl.facetSearch('so_rna_type_name', child.label)">
-                    <a href="" ng-click="$ctrl.facetSearch('so_rna_type_name', child.label)" class="text-search-facet-link">{{ child.label }} <small>({{ child.count | number }})</small></a>
+                    <a href="" ng-click="$ctrl.facetSearch('so_rna_type_name', child.label)" class="text-search-facet-link">{{ $ctrl.prettySoLabel(child.label) }} <small>({{ child.count | number }})</small></a>
                     <ul ng-if="child.children.length > 0" ng-repeat="child2 in child.children">
                       <li style="list-style-type: none;">
                         <input type="checkbox" name="child2.label" ng-checked="$ctrl.isFacetApplied('so_rna_type_name', child2.label)" ng-click="$ctrl.facetSearch('so_rna_type_name', child2.label)">
-                        <a href="" ng-click="$ctrl.facetSearch('so_rna_type_name', child2.label)" class="text-search-facet-link">{{ child2.label }} <small>({{ child2.count | number }})</small></a>
+                        <a href="" ng-click="$ctrl.facetSearch('so_rna_type_name', child2.label)" class="text-search-facet-link">{{ $ctrl.prettySoLabel(child2.label) }} <small>({{ child2.count | number }})</small></a>
                         <ul ng-if="child.children.length > 0" ng-repeat="child3 in child2.children">
                           <li style="list-style-type: none;">
                             <input type="checkbox" name="child3.label" ng-checked="$ctrl.isFacetApplied('so_rna_type_name', child3.label)" ng-click="$ctrl.facetSearch('so_rna_type_name', child3.label)">
-                            <a href="" ng-click="$ctrl.facetSearch('so_rna_type_name', child3.label)" class="text-search-facet-link">{{ child3.label }} <small>({{ child3.count | number }})</small></a>
+                            <a href="" ng-click="$ctrl.facetSearch('so_rna_type_name', child3.label)" class="text-search-facet-link">{{ $ctrl.prettySoLabel(child3.label) }} <small>({{ child3.count | number }})</small></a>
                           </li>
                         </ul>
                       </li>
