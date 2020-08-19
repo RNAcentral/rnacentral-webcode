@@ -1329,8 +1329,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
-        'version': '2.0',
+        'status': 'updated',
+        'version': '2.1',
     },
     {
         'name': 'IntAct',
