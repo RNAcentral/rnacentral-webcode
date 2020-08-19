@@ -551,7 +551,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
+        'status': 'new',
         'version': '',
     },
     {
@@ -1134,7 +1134,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': '17',
     },
     {
@@ -1230,7 +1230,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': '1.1.0',
     },
     {
@@ -1255,7 +1255,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': '2.0',
     },
     {
@@ -1280,7 +1280,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': '4.12',
     },
     {
@@ -1305,7 +1305,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': '4.12',
     },
     {
@@ -1354,7 +1354,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': '',
     },
     {
