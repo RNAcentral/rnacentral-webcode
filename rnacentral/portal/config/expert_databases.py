@@ -538,9 +538,9 @@ expert_dbs = [
         'tags': ['curated', 'SSU rRNA', '5S rRNA'],
         'abbreviation': 'Comparative RNA Website',
         'examples': [
-            {'upi': 'URS00000ABFE9', 'taxid': 511145}, # E.coli SSU
-            {'upi': 'URS00001C0ED1', 'taxid': 9606}, # Human SSU
-            {'upi': 'URS00000F9D45', 'taxid': 9606}, # Human 5S
+            {'upi': 'URS0001BCA6C0', 'taxid': 562}, # E.coli SSU
+            {'upi': 'URS0001BCA4A9', 'taxid': 9606}, # Human SSU
+            {'upi': 'URS0001BCA572', 'taxid': 9606}, # Human 5S
         ],
         'references': [
             {
