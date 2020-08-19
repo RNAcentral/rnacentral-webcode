@@ -16,8 +16,8 @@ limitations under the License.
 
 {% block meta_tags %}
     {{ block.super }}
-    <meta name="description" content="{{ context.expert_dbs|length }} RNA resources participate in RNAcentral, including {{ context.num_imported }} that already contributed the data"/>
-    <meta name="twitter:description" content="View {{ context.expert_dbs|length }} RNAcentral Expert Databases">
+    <meta name="description" content="{{ context.num_dbs }} RNA resources participate in RNAcentral, including {{ context.num_imported }} that already contributed the data"/>
+    <meta name="twitter:description" content="View {{ context.num_dbs }} RNAcentral Expert Databases">
 {% endblock %}
 
 {% block title %}
@@ -37,7 +37,7 @@ RNAcentral Expert Databases
 
     <div class="col-md-6">
       <p>
-        Currently the RNAcentral Consortium is formed by <strong>{{ context.expert_dbs|length }}</strong> Expert Databases,
+        Currently the RNAcentral Consortium is formed by <strong>{{ context.num_dbs }}</strong> Expert Databases,
         <strong>{{ context.num_imported }}</strong> of which have already been imported into RNAcentral.
       </p>
       <p>
@@ -65,11 +65,7 @@ RNAcentral Expert Databases
           {% if expert_db.status != 'archived'%}
           <tr>
             <td>
-              {% if expert_db.label == 'crs' %}
               <a href="{{ expert_db.url }}" class="no-icon">{{ expert_db.name}}</a>
-              {% else %}
-              <a href="{% if expert_db.imported %}{% url 'expert-database' expert_db.label %}{% else %}{{ expert_db.url }}{% endif %}">{{ expert_db.name}}</a>
-              {% endif %}
             </td>
             <td style="text-align: center">
               {% if expert_db.imported %}

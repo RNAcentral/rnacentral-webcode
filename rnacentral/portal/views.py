@@ -91,7 +91,8 @@ def expert_databases_view(request):
     expert_dbs.sort(key=lambda x: x['imported'], reverse=True)
     context = {
         'expert_dbs': expert_dbs,
-        'num_imported': len([x for x in expert_dbs if x['imported']]) - 1, # CRS
+        'num_dbs': len(expert_dbs) - 1, # Vega is archived
+        'num_imported': len([x for x in expert_dbs if x['imported']]) - 1, # Vega
     }
     return render(request, 'portal/expert-databases.html', {'context': context})
 
