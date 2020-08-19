@@ -67,7 +67,7 @@ RNAcentral: The non-coding RNA sequence database
           <p class="text-center">
             Search for similar sequences -
             <br>
-            <em class="text-primary">now with a faster, faceted interface</em>
+            <em class="text-primary">now with facets and 2D diagrams</em>
           </p>
           <a class="btn btn-primary" id="btn-sequence-search" href="{% url 'sequence-search' %}" role="button">Search by sequence</a>
         </div>
@@ -111,7 +111,10 @@ RNAcentral: The non-coding RNA sequence database
     </div>
 
     <div class="clearfix"></div>
-    <div class="text-center" style="margin-right: 10px; margin-bottom: 10px; font-size: large;"><a class="btn btn-primary" href='/search?q=has_secondary_structure:"True"'>Explore secondary structures</a></div>
+    <div class="text-center" style="margin-right: 10px; margin-bottom: 10px; font-size: large;">
+      <a class="btn btn-primary" href='/search?q=has_secondary_structure:"True"'>Explore secondary structures</a>
+      <a class="btn btn-default" href='/r2dt' style="margin-left: 20px;">Visualise your sequence with R2DT</a>
+    </div>
   </div>
 
   <div class="row">
