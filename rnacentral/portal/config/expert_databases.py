@@ -1358,7 +1358,7 @@ expert_dbs = [
         'version': '',
     },
     {
-        'name': 'Zfin',
+        'name': 'ZFIN',
         'label': 'zfin',
         'url': 'https://zfin.org',
         'description': 'is the database of genetic and genomic data for the zebrafish (Danio rerio) as a model organism',
@@ -1366,7 +1366,7 @@ expert_dbs = [
         'tags': ['curated', 'model organism', 'zebrafish'],
         'abbreviation': 'The Zebrafish Information Network',
         'examples': [
-            {'upi': 'URS000075AF4B', 'taxid': 7955}, # miRNA
+            {'upi': 'URS00003B6A21', 'taxid': 7955}, # mir196c
             {'upi': 'URS00008E3972', 'taxid': 7955}, # linc.alien
             {'upi': 'URS0000A8261D', 'taxid': 7955}, # dre-let-7a-1
         ],
