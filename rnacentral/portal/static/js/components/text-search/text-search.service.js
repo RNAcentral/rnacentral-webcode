@@ -64,8 +64,8 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             'standard_name': 'Standard name',
             'tax_string': 'Taxonomy'
         },
-        facetfields: ['so_rna_type', 'rna_type', 'TAXONOMY', 'expert_db', 'has_secondary_structure', 'qc_warning_found', 'has_go_annotations', 'has_conserved_structure', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
-        foldableFacets: ['qc_warning_found', 'has_go_annotations', 'has_conserved_structure', 'has_genomic_coordinates'],
+        facetfields: ['rna_type', 'so_rna_type', 'TAXONOMY', 'expert_db', 'has_secondary_structure', 'qc_warning_found', 'has_go_annotations', 'has_conserved_structure', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
+        foldableFacets: ['rna_type', 'qc_warning_found', 'has_go_annotations', 'has_conserved_structure', 'has_genomic_coordinates'],
         sortableFields: [
             { label: 'Popular species, Length ↓', value: 'boost:descending,length:descending' },
             // { label: 'Popular species ↑', value: 'boost:ascending' },
@@ -192,7 +192,6 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
         self.promise = $http.get(queryUrl).then(
             function(response) {
                 var data = self.preprocessResults(response.data);
-
                 // expand foldable facets if any checkboxes are clicked
                 for (var i = 0; i < self.config.foldableFacets.length; i++) {
                   if (query.indexOf(self.config.foldableFacets[i]) !== -1) {
