@@ -296,8 +296,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
-        'version': '14.1',
+        'status': 'updated',
+        'version': '14.2',
     },
     {
         'name': 'miRBase',
@@ -327,7 +327,7 @@ expert_dbs = [
             }
         ],
         'imported': True,
-        'status': 'updated',
+        'status': '',
         'version': '22.1',
     },
     {
@@ -502,7 +502,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '97',  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
+        'version': '201',  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
     },
     {
         'name': 'RDP',
@@ -818,8 +818,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
-        'version': '122',
+        'status': 'updated',
+        'version': 'r138',
     },
     {
         'name': 'SGD',
@@ -1205,7 +1205,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
+        'status': 'updated',
         'version': '',
     },
     {
@@ -1306,7 +1306,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': '',
-        'version': '4.12',
+        'version': '4.14',
     },
     {
         'name': 'CRS',
