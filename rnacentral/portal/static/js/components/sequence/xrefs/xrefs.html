@@ -394,6 +394,11 @@
               from gene <a ng-href="https://zfin.org/{{ xref.accession.gene }}" target="_blank">{{ xref.accession.gene }}</a>
             </span>
 
+            <!-- CRW -->
+            <span ng-switch-when="CRW">
+              <a ng-href="https://github.com/RNAcentral/R2DT/blob/master/data/crw-pdf/{{ xref.accession.external_id.replace('CRW:', '') + '.pdf'}}" target="_blank">View 2D structure {{ xref.accession.external_id.replace('CRW:', '') }}</a>
+            </span>
+
             <span ng-switch-default>
               {{ xref.accession.external_id }} {{ xref.accession.optional_id }}
             </span>
