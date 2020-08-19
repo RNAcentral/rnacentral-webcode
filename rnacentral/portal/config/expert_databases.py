@@ -1368,6 +1368,7 @@ expert_dbs = [
         'examples': [
             {'upi': 'URS000075AF4B', 'taxid': 7955}, # miRNA
             {'upi': 'URS00008E3972', 'taxid': 7955}, # linc.alien
+            {'upi': 'URS0000A8261D', 'taxid': 7955}, # dre-let-7a-1
         ],
         'references': [
             {
@@ -1378,7 +1379,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
+        'status': 'new',
         'version': '',
     },
 ]

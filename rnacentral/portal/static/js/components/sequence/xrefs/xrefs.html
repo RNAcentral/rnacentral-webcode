@@ -388,6 +388,12 @@
               <!-- (<span ng-repeat="disease in xref.accession.malacards_diseases"><a href="{{ disease.url }}" target="_blank" class="no-icon">{{ disease.name }}</a>{{$last ? '' : '; '}}</span>) -->
             </span>
 
+            <!-- Zfin -->
+            <span ng-switch-when="ZFIN">
+              {{ xref.database }}: transcript <a ng-href="https://zfin.org/{{ xref.accession.external_id }}" target="_blank">{{ xref.accession.external_id }}</a>
+              from gene <a ng-href="https://zfin.org/{{ xref.accession.gene }}" target="_blank">{{ xref.accession.gene }}</a>
+            </span>
+
             <span ng-switch-default>
               {{ xref.accession.external_id }} {{ xref.accession.optional_id }}
             </span>
