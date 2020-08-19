@@ -1,15 +1,15 @@
 <div class="col-md-6">
   <h2>Overview</h2>
   <ul>
-    <li>
+    <li ng-if="$ctrl.expertDb.num_organisms">
       <strong>{{ $ctrl.expertDb.num_sequences | number }}</strong> RNA sequences
       from <strong>{{ $ctrl.expertDb.num_organisms | number }}</strong> <ng-pluralize count="$ctrl.expertDb.num_organisms" when="{'one': 'organism', 'other': 'organisms'}"></ng-pluralize>
       contributed to RNAcentral
     </li>
-    <li>
+    <li ng-if="$ctrl.expertDb.min_length">
       the shortest sequence has <strong>{{ $ctrl.expertDb.min_length | number }}</strong> nucleotides, the longest <strong>{{ $ctrl.expertDb.max_length | number }}</strong>
     </li>
-    <li>
+    <li ng-if="$ctrl.expertDb.avg_length">
       the average length is <strong>{{ $ctrl.expertDb.avg_length | number:0 }}</strong> <ng-pluralize count="$ctrl.expertDb.avg_length" when="{'one': 'nucleotide', 'other': 'nucleotides'}"></ng-pluralize>
     </li>
       <li ng-if="$ctrl.expertDb.version">

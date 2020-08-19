@@ -38,7 +38,7 @@ var expertDatabaseRight = {
                     }
                 },
                 function(response) {
-                    ctrl.onError();
+                    console.log("Database stats could not be loaded");
                 }
             );
         };
