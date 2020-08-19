@@ -216,7 +216,7 @@ class Accession(models.Model):
             'MALACARDS': 'https://www.genecards.org/cgi-bin/carddisp.pl?gene={id}#diseases',
             'GENECARDS': 'https://www.genecards.org/cgi-bin/carddisp.pl?gene={id}',
         }
-        if self.database in ['GTRNADB', 'ZWD', 'SNODB', 'MIRGENEDB', '5SRRNADB', 'SNORNADB', 'ZFIN']:
+        if self.database in ['GTRNADB', 'ZWD', 'SNODB', 'MIRGENEDB', '5SRRNADB', 'SILVA', 'SNORNADB', 'ZFIN']:
                 try:
                     data = json.loads(self.note)
                     url = data['url'] if 'url' in data else ''
@@ -232,9 +232,6 @@ class Accession(models.Model):
             elif self.database == 'VEGA':
                 return urls[self.database].format(id=self.optional_id,
                     species=self.species.replace(' ', '_'))
-            elif self.database == 'SILVA':
-                return urls[self.database].format(id=self.optional_id,
-                    lsu_ssu='ssu' if 'small' in self.product else 'lsu')
             elif self.database == 'GREENGENES':
                 return urls[self.database].format(id=self.parent_ac, version=self.seq_version)
             elif self.database == 'REFSEQ':

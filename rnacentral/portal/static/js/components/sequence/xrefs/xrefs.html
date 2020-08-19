@@ -280,13 +280,15 @@
 
             <!-- SILVA -->
             <span ng-switch-when="SILVA">
-              {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+              <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id.replace('SILVA:', '') }}</a>
               <span ng-if="xref.accession.feature_start < xref.accession.feature_end">
                 nucleotides ({{ xref.accession.feature_start | number }} - {{ xref.accession.feature_end | number }})
               </span>
               <span ng-if="xref.accession.feature_start >= xref.accession.feature_end">
                 nucleotides ({{ xref.accession.feature_end | number }} - {{ xref.accession.feature_start | number }})
               </span>
+              <br>
+              <span ng-if="xref.accession.inference">inferred lineage: <em>{{ xref.accession.inference }}</em></span>
             </span>
 
             <!-- Greengenes -->
