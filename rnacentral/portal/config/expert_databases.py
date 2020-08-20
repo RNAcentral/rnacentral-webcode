@@ -147,7 +147,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '98',
+        'version': '100',
     },
     {
         'name': 'Ensembl Plants',
@@ -872,11 +872,11 @@ expert_dbs = [
         'version': '',
     },
     {
-        'name': 'snoRNAdb',
-        'label': 'snornadb',
+        'name': 'snoRNA Database',
+        'label': 'snorna_database',
         'url': 'http://lowelab.ucsc.edu/snoRNAdb/',
-        'description': 'predicted snoRNA genes',
-        'hint': 'snoRNA database contains predicted snoRNA genes',
+        'description': 'The Lowe Lab C/D box snoRNA Database',
+        'hint': 'The Lowe Lab C/D box snoRNA Database',
         'tags': ['automatic', 'curated', 'snoRNA'],
         'abbreviation': '',
         'examples': [
