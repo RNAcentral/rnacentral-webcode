@@ -129,6 +129,18 @@ var textSearchBar = {
                         'search_string': 'TAXONOMY:"7227"',
                     },
                     {
+                        'label': 'C. elegans',
+                        'search_string': 'TAXONOMY:"6239"',
+                    },
+                    {
+                        'label': 'S. pombe',
+                        'search_string': 'TAXONOMY:"4896"',
+                    },
+                    {
+                        'label': 'Rat',
+                        'search_string': 'TAXONOMY:"10116"',
+                    },
+                    {
                         'label': 'primates',
                         'search_string': 'tax_string:"primates"',
                     },
@@ -138,7 +150,7 @@ var textSearchBar = {
                     },
                     {
                         'label': 'mammals',
-                        'search_string': 'Mammalia',
+                        'search_string': 'tax_string:"Mammalia"',
                     },
                     {
                         'label': 'Alphaproteobacteria',
