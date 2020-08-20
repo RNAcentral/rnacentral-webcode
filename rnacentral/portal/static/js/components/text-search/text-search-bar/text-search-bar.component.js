@@ -148,19 +148,19 @@ var textSearchBar = {
                 'rna_type': [
                     {
                         'label': 'lncRNA',
-                        'search_string': 'rna_type:"lncRNA"',
+                        'search_string': 'so_rna_type_name:"lnc_RNA"',
                     },
                     {
                         'label': 'miRNA',
-                        'search_string': 'rna_type:"miRNA"',
+                        'search_string': 'so_rna_type_name:"miRNA"',
                     },
                     {
                         'label': 'snoRNA',
-                        'search_string': 'rna_type:"snoRNA"',
+                        'search_string': 'so_rna_type_name:"snoRNA"',
                     },
                     {
                         'label': 'snRNA',
-                        'search_string': 'rna_type:"snRNA"',
+                        'search_string': 'so_rna_type_name:"snRNA"',
                     },
                     {
                         'label': '5S rRNA',
