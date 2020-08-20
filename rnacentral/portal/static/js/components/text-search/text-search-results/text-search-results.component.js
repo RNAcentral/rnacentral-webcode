@@ -252,6 +252,16 @@ var textSearchResults = {
         };
 
         /**
+         * Show/hide hierarchical subfacets.
+         * Uses jQuery for simplicity.
+         */
+        ctrl.toggleSubFacets = function(label) {
+          var $toggle = $('#toggle-' + label);
+          $toggle.siblings('ul').toggle();
+          $toggle.children('i').toggleClass('fa-minus fa-plus');
+        }
+
+        /**
          * Show/hide search facets to save screen space.
          * Uses jQuery for simplicity.
          * Activated only on mobile devices.
