@@ -15,8 +15,9 @@ to sequences. That is it can find if the sequence and Rfam domain conflict, or
 if the sequence is only a partial sequence
 """
 
-import requests
+import re
 
+import requests
 
 
 class RnaSummary(object):
@@ -58,6 +59,8 @@ class RnaSummary(object):
         self.rfam_count = len(self.rfam_id)
         self.rna_type = entry['rna_type'][0]
         self.species = entry['species'][0] if len(entry['species']) > 0 else ''
+        self.pretty_so_rna_type_name = self.parse_so_rna_type_name(entry['so_rna_type_name'][0]) if len(entry['so_rna_type_name']) > 0 else ''
+        self.so_rna_type_name = self.convert_string_to_array(entry['so_rna_type_name'][0]) if len(entry['so_rna_type_name']) > 0 else ''
 
 
     def get_raw_data(self, urs, taxid):
@@ -80,6 +83,7 @@ class RnaSummary(object):
             'rfam_id',
             'rna_type',
             'species',
+            'so_rna_type_name',
         ]
         url = '{endpoint}/entry/{urs}_{taxid}?format=json&fields={fields}'.format(
             urs=urs,
@@ -91,12 +95,46 @@ class RnaSummary(object):
         return data.json()
 
     def get_species_count(self, urs):
-        url = '{endpoint}?query={urs}*&format=json'.format(
+        url = '{endpoint}?query={urs}* NOT TAXONOMY:"{taxid}"&format=json'.format(
             urs=urs,
-            endpoint=self.endpoint
+            endpoint=self.endpoint,
+            taxid=self.taxid
         )
         try:
             data = requests.get(url)
-            return data.json()['hitCount']
+            return max(int(data.json()['hitCount']), 1)
         except:
             return 1
+
+    def convert_string_to_array(self, target):
+        so_terms = re.sub(r'[\[\]\'\s]', '', target)
+        if not so_terms:
+            return None
+        so_terms = so_terms.split(',')
+        if len(so_terms) > 1:
+            so_terms.remove('ncRNA')
+        return so_terms
+
+    def pretty_so_terms(self, so_term):
+        exceptions = ['RNase_P_RNA', 'SRP_RNA', 'Y_RNA', 'RNase_MRP_RNA']
+        if so_term not in exceptions:
+            so_term = so_term[0].lower() + so_term[1:]
+        if so_term == 'lnc_RNA':
+            so_term = 'lncRNA'
+        elif so_term == 'pre_miRNA':
+            so_term = 'pre-miRNA'
+        else:
+            so_term = so_term.replace('_', ' ')
+        return so_term
+
+    def parse_so_rna_type_name(self, so_rna_type_name):
+        """
+        Turn "['ncRNA', 'lnc_RNA']" into an array of strings.
+        """
+        so_terms = self.convert_string_to_array(so_rna_type_name)
+        if not so_terms:
+            return ''
+        pretty_so_terms = []
+        for so_term in so_terms:
+            pretty_so_terms.append(self.pretty_so_terms(so_term))
+        return pretty_so_terms
