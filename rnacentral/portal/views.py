@@ -175,6 +175,8 @@ def expert_database_view(request, expert_db_name):
     for db in expert_dbs:
         if db['name'].upper() == expert_db_name and db['imported']:
             expert_db = db
+        elif db['label'].upper() == expert_db_name.upper() and db['imported']:
+            expert_db = db
         elif expert_db_name == 'TMRNA-WEBSITE' and db['label'].upper() == expert_db_name:
             expert_db = db
 
