@@ -159,6 +159,9 @@
           <div ng-if="facet.label === 'SO RNA types'">
             <h3>
               RNA types
+              <small class="text-search-facet-help text-muted">
+                <i class="fa fa-question-circle" style="cursor: pointer;" aria-hidden="true" uib-tooltip="Classified using Sequence Ontology"></i>
+              </small>
             </h3>
             <ul class="list-unstyled text-search-facet-values text-search-facet-overflow force-scrollbars" style="overflow-x: hidden; max-height: 300px;">
               <li ng-repeat="facetValue in facet.facetValues">
