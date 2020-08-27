@@ -221,7 +221,8 @@
                 <uib-accordion-heading>
                   <h3>
                     <small><i class="pull-left fa" ng-class="{'fa-minus': $ctrl.search.isFacetOpen[facet.id], 'fa-plus': !$ctrl.search.isFacetOpen[facet.id]}"></i></small>
-                    {{ facet.label }}
+                    <span ng-if="facet.label !== 'RNA types'">{{ facet.label }}</span>
+                    <span ng-if="facet.label === 'RNA types'">RNA types <small>INSDC</small></span>
                   </h3>
                 </uib-accordion-heading>
                 <ul class="list-unstyled text-search-facet-values text-search-facet-overflow force-scrollbars" style="overflow-x: hidden;">
