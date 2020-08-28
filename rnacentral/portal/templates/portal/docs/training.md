@@ -25,7 +25,7 @@ RNAcentral has been described in several papers:
   <p>Exploring non‐coding RNAs in RNAcentral</p>
   <footer>Sweeney, B. A., Tagmazian, A. A., Ribas, C. E., Finn, R. D., Bateman, A., & Petrov, A. I., 2020</footer>
   <footer><em>Current Protocols in Bioinformatics</em></footer>
-  <a href="https://doi.org/10.1002/cpbi.104">CPB</a>
+  <a href="https://currentprotocols.onlinelibrary.wiley.com/doi/full/10.1002/cpbi.104">CPB</a>
 </blockquote>
 
 <blockquote>
