@@ -30,7 +30,44 @@ limitations under the License.
       <li>Last 24 hours: {{ context.average_last_24_hours }}</li>
       <li>Last 7 days: {{ context.average_last_week }}</li>
     </ul>
+    {% if context.searches_per_month %}
+      <br>
+      <p>Number of searches per month:</p>
+      <div id="chart_div"></div>
+    {% endif %}
   </div>
 </div>
 
 {% endblock %}
+
+{% block extra_js_uncompressed %}
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        // Set chart values
+        var data = google.visualization.arrayToDataTable([
+          ['Month', 'Searches'],
+          {% for dict in context.searches_per_month %}
+            {% for key, value in dict.items %}
+              ['{{ key }}', {{ value }}],
+            {% endfor %}
+          {% endfor %}
+        ]);
+
+        // Set chart options
+        var options = {
+           vAxis: { title: 'Number of searches' },
+           legend: { position: "none" },
+           'width':800,
+           'height':400
+        };
+
+        // Instantiate and draw the chart.
+        var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+    </script>
+{% endblock extra_js_uncompressed %}

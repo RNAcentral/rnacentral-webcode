@@ -20,9 +20,10 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 
-try:
-    from rnacentral.sequence_search_endpoints import SEQUENCE_SEARCH_ENDPOINT
-except ImportError:
+
+if settings.ENVIRONMENT == 'HX':
+    SEQUENCE_SEARCH_ENDPOINT = 'http://193.62.55.123:8002'
+else:
     SEQUENCE_SEARCH_ENDPOINT = 'https://search.rnacentral.org'
 
 if settings.ENVIRONMENT == 'DEV':
@@ -136,6 +137,7 @@ def dashboard(request):
     """Info about searches in rnacentral-sequence-search."""
     all_searches, searches_last_24_hours, searches_last_week = 0, 0, 0
     average_all_searches, average_last_24_hours, average_last_week = 0, 0, 0
+    searches_per_month = None
     show_searches_url = SEQUENCE_SEARCH_ENDPOINT + '/api/show-searches'
 
     try:
@@ -144,7 +146,10 @@ def dashboard(request):
             data = response_url.json()
 
             for item in data:
-                if item['search'] == 'all':
+                if isinstance(item, list):
+                    searches_per_month = item
+
+                elif item['search'] == 'all':
                     all_searches = item['count']
                     average_all_searches = item['avg_time']
 
@@ -165,7 +170,8 @@ def dashboard(request):
         'searches_last_week': searches_last_week,
         'average_all_searches': average_all_searches,
         'average_last_24_hours': average_last_24_hours,
-        'average_last_week': average_last_week
+        'average_last_week': average_last_week,
+        'searches_per_month': searches_per_month
     }
 
     return render(request, 'dashboard.html', {'context': context})
