@@ -532,7 +532,7 @@ expert_dbs = [
     {
         'name': 'CRW',
         'label': 'crw',
-        'url': 'http://www.rna.ccbb.utexas.edu/',
+        'url': 'http://crw-site.chemistry.gatech.edu/',
         'description': 'provides comparative sequence and structure information for ribosomal, intron, and other RNAs',
         'hint': 'CRW provides comparative sequence and structure information for ribosomal, intron, and other RNAs',
         'tags': ['curated', 'SSU rRNA', '5S rRNA'],
