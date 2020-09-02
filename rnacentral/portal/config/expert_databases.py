@@ -1382,4 +1382,18 @@ expert_dbs = [
         'status': 'new',
         'version': '',
     },
+    {
+        'name': 'snoRNA Atlas',
+        'label': 'snoatlas',
+        'url': 'http://snoatlas.bioinf.uni-leipzig.de/',
+        'description': '',
+        'hint': 'snoRNA Atlas is a database of human snoRNAs',
+        'tags': ['', '', ''],
+        'abbreviation': '',
+        'examples': [],
+        'references': [],
+        'imported': False,
+        'status': '',
+        'version': '',
+    },
 ]
