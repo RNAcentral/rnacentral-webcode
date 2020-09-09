@@ -16,6 +16,7 @@ import operator as op
 import itertools as it
 from collections import Counter, defaultdict
 import re
+import zlib
 
 from caching.base import CachingMixin, CachingManager
 from django.conf import settings
@@ -541,6 +542,23 @@ class Rna(CachingMixin, models.Model):
         if not layout:
             return {}
 
+        # added for release-16. Layout comes from the FTP
+        ftp = "http://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/.secondary-structure/secondary-structure/{}.svg.gz"
+        upi = list(self.pk)
+        upi_path = "".join(upi[0:3]) + "/" \
+                   + "".join(upi[3:5]) + "/" \
+                   + "".join(upi[5:7]) + "/" \
+                   + "".join(upi[7:9]) + "/" \
+                   + "".join(upi[9:11]) + "/"
+        url = ftp.format(upi_path + "".join(upi))
+
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            svg = zlib.decompress(response.content, zlib.MAX_WBITS | 32)
+        except requests.exceptions.HTTPError as e:
+            return {}
+
         # model_name = layout.template.model_name
         # if model_name.count('.') >= 2:
         #     template_source = 'CRW'
@@ -557,7 +575,7 @@ class Rna(CachingMixin, models.Model):
             'secondary_structure': layout.secondary_structure,
             'source': layout.template.model_source,
             'model_id': layout.template.model_name,
-            'layout': layout.layout,
+            'layout': svg,
             'template_species': layout.template.taxid.name,
             'template_lineage': layout.template.taxid.lineage,
         }
