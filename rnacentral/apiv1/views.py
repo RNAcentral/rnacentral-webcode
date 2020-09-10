@@ -376,11 +376,22 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
         try:
             response = requests.get(url)
             response.raise_for_status()
-            svg = zlib.decompress(response.content, zlib.MAX_WBITS | 32)
+            svg_ftp = zlib.decompress(response.content, zlib.MAX_WBITS | 32)
         except requests.exceptions.HTTPError as e:
+            svg_ftp = None
+
+        try:
+            svg_bd = SecondaryStructureWithLayout.objects.get(urs="".join(upi))
+            svg_bd = svg_bd.layout
+        except SecondaryStructureWithLayout.DoesNotExist:
+            svg_bd = None
+
+        if not svg_ftp and not svg_bd:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        return HttpResponse(self.generate_thumbnail(svg, "".join(upi)), content_type='image/svg+xml')
+        return HttpResponse(
+            self.generate_thumbnail(svg_ftp if svg_ftp else svg_bd, "".join(upi)), content_type='image/svg+xml'
+        )
 
     def generate_thumbnail(self, image, upi):
         move_to_start_position = None

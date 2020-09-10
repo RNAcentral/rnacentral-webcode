@@ -557,7 +557,7 @@ class Rna(CachingMixin, models.Model):
             response.raise_for_status()
             svg = zlib.decompress(response.content, zlib.MAX_WBITS | 32)
         except requests.exceptions.HTTPError as e:
-            return {}
+            svg = None
 
         # model_name = layout.template.model_name
         # if model_name.count('.') >= 2:
@@ -575,7 +575,7 @@ class Rna(CachingMixin, models.Model):
             'secondary_structure': layout.secondary_structure,
             'source': layout.template.model_source,
             'model_id': layout.template.model_name,
-            'layout': svg,
+            'layout': svg if svg else layout.layout,
             'template_species': layout.template.taxid.name,
             'template_lineage': layout.template.taxid.lineage,
         }
