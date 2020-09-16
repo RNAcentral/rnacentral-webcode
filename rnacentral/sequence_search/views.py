@@ -138,6 +138,7 @@ def dashboard(request):
     all_searches, searches_last_24_hours, searches_last_week = 0, 0, 0
     average_all_searches, average_last_24_hours, average_last_week = 0, 0, 0
     searches_per_month = None
+    expert_db_results = None
     show_searches_url = SEQUENCE_SEARCH_ENDPOINT + '/api/show-searches'
 
     try:
@@ -145,21 +146,14 @@ def dashboard(request):
         if response_url.status_code == 200:
             data = response_url.json()
 
-            for item in data:
-                if isinstance(item, list):
-                    searches_per_month = item
-
-                elif item['search'] == 'all':
-                    all_searches = item['count']
-                    average_all_searches = item['avg_time']
-
-                elif item['search'] == 'last-24-hours':
-                    searches_last_24_hours = item['count']
-                    average_last_24_hours = item['avg_time']
-
-                elif item['search'] == 'last-week':
-                    searches_last_week = item['count']
-                    average_last_week = item['avg_time']
+            all_searches = data['all_searches_result']['count']
+            average_all_searches = data['all_searches_result']['avg_time']
+            searches_last_24_hours = data['last_24_hours_result']['count']
+            average_last_24_hours = data['last_24_hours_result']['avg_time']
+            searches_last_week = data['last_week_result']['count']
+            average_last_week = data['last_week_result']['avg_time']
+            searches_per_month = data['searches_per_month']
+            expert_db_results = data['expert_db_results']
 
     except requests.exceptions.HTTPError as err:
         raise err
@@ -171,7 +165,8 @@ def dashboard(request):
         'average_all_searches': average_all_searches,
         'average_last_24_hours': average_last_24_hours,
         'average_last_week': average_last_week,
-        'searches_per_month': searches_per_month
+        'searches_per_month': searches_per_month,
+        'expert_db_results': expert_db_results
     }
 
     return render(request, 'dashboard.html', {'context': context})

@@ -13,35 +13,96 @@ limitations under the License.
 
 {% extends "portal/base.html" %}
 {% block content %}
+    <div class="row">
+      <div class="col-md-12">
+        <h1><i class="fa fa-tachometer"></i> Sequence Search Dashboard</h1>
+      </div>
+    </div>
 
-<div class="row">
-  <div class="col-md-8">
-    <h1><i class="fa fa-tachometer"></i> Sequence Search Dashboard</h1>
-    <p>Number of searches:</p>
-    <ul>
-      <li>All searches: {{ context.all_searches }}</li>
-      <li>Last 24 hours: {{ context.searches_last_24_hours }}</li>
-      <li>Last 7 days: {{ context.searches_last_week }}</li>
-    </ul>
-    <br>
-    <p>Average search time:</p>
-    <ul>
-      <li>All searches: {{ context.average_all_searches }}</li>
-      <li>Last 24 hours: {{ context.average_last_24_hours }}</li>
-      <li>Last 7 days: {{ context.average_last_week }}</li>
-    </ul>
-    {% if context.searches_per_month %}
-      <br>
-      <p>Number of searches per month:</p>
-      <div id="chart_div"></div>
+    <div class="row">
+      <div class="col-md-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <p class="panel-title">Number of searches and average time</p>
+        </div>
+        <div class="panel-body">
+          <div class="col-md-6">
+            <ul class="list-group">
+              <li class="list-group-item">
+                <span class="badge">{{ context.all_searches }}</span>Total number of searches
+              </li>
+              <li class="list-group-item">
+                <span class="badge">{{ context.searches_last_24_hours }}</span>Number of searches in the last 24 hours
+              </li>
+              <li class="list-group-item">
+                <span class="badge">{{ context.searches_last_week }}</span>Number of searches in the last 7 days
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <ul class="list-group">
+              <li class="list-group-item">
+                <span class="badge">{{ context.average_all_searches }}</span>Average search time
+              </li>
+              <li class="list-group-item">
+                <span class="badge">{{ context.average_last_24_hours }}</span>Average search time in the last 24 hours
+              </li>
+              <li class="list-group-item">
+                <span class="badge">{{ context.average_last_week }}</span>Average search time in the last 7 days
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+
+    {% if context.expert_db_results %}
+      <div class="row">
+        <div class="col-md-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <p class="panel-title">Current month</p>
+            </div>
+            <div class="panel-body">
+              <div id="current-month-searches" style="width: 500px; height: 300px;"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <p class="panel-title">Last month</p>
+            </div>
+            <div class="panel-body">
+              <div id="last-month-searches" style="width: 500px; height: 300px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
     {% endif %}
-  </div>
-</div>
+
+    {% if context.searches_per_month %}
+      <div class="row">
+        <div class="col-md-12">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <p class="panel-title">Number of searches per month</p>
+            </div>
+            <div class="panel-body">
+              <div id="chart_div"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
 
 {% endblock %}
 
 {% block extra_js_uncompressed %}
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+    {# Number of searches per month #}
     <script type="text/javascript">
       google.charts.load('current', {'packages':['corechart']});
       google.charts.setOnLoadCallback(drawChart);
@@ -59,7 +120,6 @@ limitations under the License.
 
         // Set chart options
         var options = {
-           vAxis: { title: 'Number of searches' },
            legend: { position: "none" },
            'width':800,
            'height':400
@@ -68,6 +128,60 @@ limitations under the License.
         // Instantiate and draw the chart.
         var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
         chart.draw(data, options);
+      }
+    </script>
+
+    {# Current month searches #}
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        // Set chart values
+        var data = google.visualization.arrayToDataTable([
+          ['Expert database', 'Number of searches'],
+          {% for dict in context.expert_db_results %}
+            {% for key, value in dict.items %}
+              {% if value %}
+                {% with value|last as last %}
+                  {% for item in last.items %}
+                    ['{{ key }}', {{ item.1 }}],
+                  {% endfor %}
+                {% endwith %}
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+        ]);
+
+        var chart = new google.visualization.PieChart(document.getElementById('current-month-searches'));
+        chart.draw(data);
+      }
+    </script>
+
+    {# Last month's searches #}
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        // Set chart values
+        var data = google.visualization.arrayToDataTable([
+          ['Expert database', 'Number of searches'],
+          {% for dict in context.expert_db_results %}
+            {% for key, value in dict.items %}
+              {% if value|slice:"-2:-1" %}
+                {% for item in value|slice:"-2:-1" %}
+                  {% for n in item.items %}
+                    ['{{ key }}', {{ n.1 }}],
+                  {% endfor %}
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
+          {% endfor %}
+        ]);
+
+        var chart = new google.visualization.PieChart(document.getElementById('last-month-searches'));
+        chart.draw(data);
       }
     </script>
 {% endblock extra_js_uncompressed %}
