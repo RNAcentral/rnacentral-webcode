@@ -21,39 +21,39 @@ limitations under the License.
 
     <div class="row">
       <div class="col-md-12">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <p class="panel-title">Number of searches and average time</p>
-        </div>
-        <div class="panel-body">
-          <div class="col-md-6">
-            <ul class="list-group">
-              <li class="list-group-item">
-                <span class="badge">{{ context.all_searches }}</span>Total number of searches
-              </li>
-              <li class="list-group-item">
-                <span class="badge">{{ context.searches_last_24_hours }}</span>Number of searches in the last 24 hours
-              </li>
-              <li class="list-group-item">
-                <span class="badge">{{ context.searches_last_week }}</span>Number of searches in the last 7 days
-              </li>
-            </ul>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <p class="panel-title">Number of searches and average time</p>
           </div>
-          <div class="col-md-6">
-            <ul class="list-group">
-              <li class="list-group-item">
-                <span class="badge">{{ context.average_all_searches }}</span>Average search time
-              </li>
-              <li class="list-group-item">
-                <span class="badge">{{ context.average_last_24_hours }}</span>Average search time in the last 24 hours
-              </li>
-              <li class="list-group-item">
-                <span class="badge">{{ context.average_last_week }}</span>Average search time in the last 7 days
-              </li>
-            </ul>
+          <div class="panel-body">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+                  <th scope="col">Number of searches</th>
+                  <th scope="col">Average search time</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">All searches</th>
+                  <td><span class="badge">{{ context.all_searches }}</span></td>
+                  <td><span class="badge">{{ context.average_all_searches }}</span></td>
+                </tr>
+                <tr>
+                  <th scope="row">Last 24 hours</th>
+                  <td><span class="badge">{{ context.searches_last_24_hours }}</span></td>
+                  <td><span class="badge">{{ context.average_last_24_hours }}</span></td>
+                </tr>
+                <tr>
+                  <th scope="row">Last 7 days</th>
+                  <td><span class="badge">{{ context.searches_last_week }}</span></td>
+                  <td><span class="badge">{{ context.average_last_week }}</span></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
-      </div>
       </div>
     </div>
 
