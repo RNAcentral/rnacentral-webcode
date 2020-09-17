@@ -91,7 +91,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'as of December 10th, 2019',
+        'version': 'as of July 20th, 2020',
     },
     {
         'name': 'FlyBase',
@@ -116,7 +116,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'FB2020_02',
+        'version': 'FB2020_03',
     },
     {
         'name': 'Ensembl',
@@ -875,8 +875,8 @@ expert_dbs = [
         'name': 'snoRNA Database',
         'label': 'snorna_database',
         'url': 'http://lowelab.ucsc.edu/snoRNAdb/',
-        'description': 'The Lowe Lab C/D box snoRNA Database',
-        'hint': 'The Lowe Lab C/D box snoRNA Database',
+        'description': 'is a curated collection of archaeal snoRNAs maintained by the Lowe Lab at UC Santa Cruz',
+        'hint': 'The snoRNA Database is a curated collection of archaeal snoRNAs maintained by the Lowe Lab at UC Santa Cruz',
         'tags': ['automatic', 'curated', 'snoRNA'],
         'abbreviation': '',
         'examples': [
@@ -1262,8 +1262,8 @@ expert_dbs = [
         'name': 'MalaCards',
         'label': 'malacards',
         'url': 'https://www.malacards.org/',
-        'description': 'is an integrated database of human diseases and their annotations',
-        'hint': 'MalaCards is an integrated database of human diseases and their annotations',
+        'description': 'integrates manually-curated and text-mining sources to associate genes, including ncRNAs, with diseases, and lists the supporting evidence',
+        'hint': 'MalaCards integrates manually-curated and text-mining sources to associate genes, including ncRNAs, with diseases, and lists the supporting evidence',
         'tags': ['disease', 'human'],
         'abbreviation': '',
         'examples': [
