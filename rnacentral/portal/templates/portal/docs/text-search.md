@@ -82,6 +82,14 @@ Use parentheses to group and nest logical terms.
 
 ---
 
+## RNAcentral CPB protocol
+
+Our latest article describes different ways of accessing the data. 
+
+<a href='https://currentprotocols.onlinelibrary.wiley.com/doi/full/10.1002/cpbi.104#cpbi104-fig-0003' class="btn btn-primary" target="_blank">See the text search section</a>
+
+---
+
 ## About RNAcentral search <a style="cursor: pointer" id="ebi-search" ng-click="scrollTo('ebi-search')" name="ebi-search" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 RNAcentral is powered by the [EBI search](http://www.ebi.ac.uk/ebisearch/),
