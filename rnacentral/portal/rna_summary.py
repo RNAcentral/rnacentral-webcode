@@ -18,7 +18,6 @@ if the sequence is only a partial sequence
 import requests
 
 
-
 class RnaSummary(object):
     """
     This objects retrieves the information required for generating an automated
@@ -36,27 +35,30 @@ class RnaSummary(object):
         if len(raw_data['entries']) == 0:
             self.entry_found = False
             return
+        entry = raw_data['entries'][0]['fields']
         self.entry_found = True
-        self.citations_count = raw_data['entries'][0]['fields']['n_citations'][0]
-        self.common_name = raw_data['entries'][0]['fields']['common_name'][0] if raw_data['entries'][0]['fields']['common_name'] else ''
-        self.databases = raw_data['entries'][0]['fields']['expert_db']
+        self.citations_count = entry['n_citations'][0]
+        self.common_name = entry['common_name'][0] if entry['common_name'] else ''
+        self.databases = entry['expert_db']
         self.database_count = len(self.databases)
-        self.description = raw_data['entries'][0]['fields']['description'][0]
-        self.genes = raw_data['entries'][0]['fields']['gene']
-        self.has_genomic_coordinates = raw_data['entries'][0]['fields']['has_genomic_coordinates'][0]
-        self.has_go_annotations = raw_data['entries'][0]['fields']['has_go_annotations'][0]
-        self.has_interacting_proteins = raw_data['entries'][0]['fields']['has_interacting_proteins'][0]
-        self.has_interacting_rnas = raw_data['entries'][0]['fields']['has_interacting_rnas'][0] if len(raw_data['entries'][0]['fields']['has_interacting_rnas']) > 0 else None
-        self.has_secondary_structure = raw_data['entries'][0]['fields']['has_secondary_structure'][0]
-        self.interacting_proteins = raw_data['entries'][0]['fields']['interacting_protein']
-        self.interacting_rnas = raw_data['entries'][0]['fields']['interacting_rna']
-        self.length = raw_data['entries'][0]['fields']['length'][0]
-        self.product = raw_data['entries'][0]['fields']['interacting_protein']
-        self.rfam_family_name = raw_data['entries'][0]['fields']['rfam_family_name']
-        self.rfam_id = raw_data['entries'][0]['fields']['rfam_id']
+        self.description = entry['description'][0] if len(entry['description']) > 0 else ''
+        self.genes = entry['gene']
+        self.has_genomic_coordinates = entry['has_genomic_coordinates'][0]
+        self.has_go_annotations = entry['has_go_annotations'][0]
+        self.has_interacting_proteins = entry['has_interacting_proteins'][0]
+        self.has_interacting_rnas = entry['has_interacting_rnas'][0] if len(entry['has_interacting_rnas']) > 0 else None
+        self.has_secondary_structure = entry['has_secondary_structure'][0]
+        self.interacting_proteins = entry['interacting_protein']
+        self.interacting_rnas = entry['interacting_rna']
+        self.length = entry['length'][0]
+        self.product = entry['interacting_protein']
+        self.rfam_family_name = entry['rfam_family_name']
+        self.rfam_id = entry['rfam_id']
         self.rfam_count = len(self.rfam_id)
-        self.rna_type = raw_data['entries'][0]['fields']['rna_type'][0]
-        self.species = raw_data['entries'][0]['fields']['species'][0] if len(raw_data['entries'][0]['fields']['species']) > 0 else ''
+        self.rna_type = entry['rna_type'][0]
+        self.species = entry['species'][0] if len(entry['species']) > 0 else ''
+        self.pretty_so_rna_type = self.parse_so_rna_type(entry['so_rna_type'][0]) if len(entry['so_rna_type']) > 0 else ''
+        self.so_rna_type = self.convert_string_to_array(entry['so_rna_type'][0]) if len(entry['so_rna_type']) > 0 else ''
 
 
     def get_raw_data(self, urs, taxid):
@@ -79,6 +81,7 @@ class RnaSummary(object):
             'rfam_id',
             'rna_type',
             'species',
+            'so_rna_type',
         ]
         url = '{endpoint}/entry/{urs}_{taxid}?format=json&fields={fields}'.format(
             urs=urs,
@@ -90,12 +93,41 @@ class RnaSummary(object):
         return data.json()
 
     def get_species_count(self, urs):
-        url = '{endpoint}?query={urs}*&format=json'.format(
+        url = '{endpoint}?query={urs}* NOT TAXONOMY:"{taxid}"&format=json'.format(
             urs=urs,
-            endpoint=self.endpoint
+            endpoint=self.endpoint,
+            taxid=self.taxid
         )
         try:
             data = requests.get(url)
-            return data.json()['hitCount']
+            return max(int(data.json()['hitCount']), 1)
         except:
             return 1
+
+    def convert_string_to_array(self, so_rna_type):
+        so_terms = so_rna_type.split('/')
+        so_terms.remove('')
+        if len(so_terms) > 1:
+            so_terms.remove('ncRNA')
+        return so_terms
+
+    def pretty_so_terms(self, so_term):
+        exceptions = ['RNase_P_RNA', 'SRP_RNA', 'Y_RNA', 'RNase_MRP_RNA']
+        if so_term not in exceptions:
+            so_term = so_term[0].lower() + so_term[1:]
+        if so_term == 'lnc_RNA':
+            so_term = 'lncRNA'
+        elif so_term == 'pre_miRNA':
+            so_term = 'pre-miRNA'
+        else:
+            so_term = so_term.replace('_', ' ')
+        return so_term
+
+    def parse_so_rna_type(self, so_rna_type):
+        so_terms = self.convert_string_to_array(so_rna_type)
+        if not so_terms:
+            return ''
+        pretty_so_terms = []
+        for so_term in so_terms:
+            pretty_so_terms.append(self.pretty_so_terms(so_term))
+        return pretty_so_terms

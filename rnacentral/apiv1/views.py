@@ -12,6 +12,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 import re
+import requests
+import zlib
 from itertools import chain
 
 from django.http import Http404, HttpResponse
@@ -362,21 +364,45 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
     permission_classes = (AllowAny,)
 
     def get(self, request, pk=None, format=None):
+        ftp = "http://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/.secondary-structure/secondary-structure/{}.svg.gz"
+        upi = list(self.kwargs['pk'])
+        upi_path = "".join(upi[0:3]) + "/" \
+                   + "".join(upi[3:5]) + "/" \
+                   + "".join(upi[5:7]) + "/" \
+                   + "".join(upi[7:9]) + "/" \
+                   + "".join(upi[9:11]) + "/"
+        url = ftp.format(upi_path + "".join(upi))
+
         try:
-            upi = self.kwargs['pk']
-            image = SecondaryStructureWithLayout.objects.get(urs=upi)
+            response = requests.get(url)
+            response.raise_for_status()
+            svg_ftp = zlib.decompress(response.content, zlib.MAX_WBITS | 32)
+        except requests.exceptions.HTTPError as e:
+            svg_ftp = None
+
+        try:
+            svg_bd = SecondaryStructureWithLayout.objects.get(urs="".join(upi))
+            svg_bd = svg_bd.layout
         except SecondaryStructureWithLayout.DoesNotExist:
+            svg_bd = None
+
+        if not svg_ftp and not svg_bd:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
-        return HttpResponse(self.generate_thumbnail(image.layout, upi), content_type='image/svg+xml')
+        return HttpResponse(
+            self.generate_thumbnail(svg_ftp if svg_ftp else svg_bd, "".join(upi)), content_type='image/svg+xml'
+        )
 
     def generate_thumbnail(self, image, upi):
         move_to_start_position = None
         color = ColorHash(upi).hex
         points = []
+        width = []
+        height = []
         for i, line in enumerate(image.split('\n')):
-            if i == 0:
+            if not width:
                 width = re.findall(r'width="(\d+(\.\d+)?)"', line)
+            if not height:
                 height = re.findall(r'height="(\d+(\.\d+)?)"', line)
             for nt in re.finditer('<text x="(\d+)(\.\d+)?" y="(\d+)(\.\d+)?".*?</text>', line):
                 if 'numbering-label' in nt.group(0):

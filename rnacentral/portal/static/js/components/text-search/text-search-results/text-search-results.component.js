@@ -189,6 +189,32 @@ var textSearchResults = {
         };
 
         /**
+         * Determine if the facet has already been applied.
+         */
+        ctrl.isSoFacetApplied = function(facetLabel) {
+            var facetQuery = new RegExp('so_rna_type_name' + '\\:"' + facetLabel + '"', 'i');
+            return !!search.query.match(facetQuery);
+        };
+
+        /**
+         * Clean up SO term labels.
+         */
+        ctrl.prettySoLabel = function(facetLabel) {
+            var exceptions = ['RNase_P_RNA', 'SRP_RNA', 'Y_RNA', 'RNase_MRP_RNA'];
+            if (exceptions.indexOf(facetLabel) === -1) {
+                facetLabel = facetLabel.charAt(0).toLowerCase() + facetLabel.slice(1);
+            }
+            if (facetLabel === 'lnc_RNA') {
+                facetLabel = 'lncRNA';
+            } else if (facetLabel === 'pre_miRNA') {
+                facetLabel = 'pre-miRNA';
+            } else {
+                facetLabel = facetLabel.replace(/_/g, ' ');
+            }
+            return facetLabel;
+        }
+
+        /**
          * Run a search with a facet enabled.
          * The facet will be toggled on and off in the repeated calls with the same
          * parameters.
@@ -224,6 +250,16 @@ var textSearchResults = {
 
             search.search(newQuery);
         };
+
+        /**
+         * Show/hide hierarchical subfacets.
+         * Uses jQuery for simplicity.
+         */
+        ctrl.toggleSubFacets = function(label) {
+          var $toggle = $('#toggle-' + label);
+          $toggle.siblings('ul').toggle();
+          $toggle.children('i').toggleClass('fa-minus fa-plus');
+        }
 
         /**
          * Show/hide search facets to save screen space.

@@ -241,6 +241,11 @@
               snOPY: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
             </span>
 
+            <!-- snoRNAdb -->
+            <span ng-switch-when="snoRNA Database">
+              <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+            </span>
+
             <!-- SGD -->
             <span ng-switch-when="SGD">
               {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
@@ -275,13 +280,15 @@
 
             <!-- SILVA -->
             <span ng-switch-when="SILVA">
-              {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+              <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id.replace('SILVA:', '') }}</a>
               <span ng-if="xref.accession.feature_start < xref.accession.feature_end">
                 nucleotides ({{ xref.accession.feature_start | number }} - {{ xref.accession.feature_end | number }})
               </span>
               <span ng-if="xref.accession.feature_start >= xref.accession.feature_end">
                 nucleotides ({{ xref.accession.feature_end | number }} - {{ xref.accession.feature_start | number }})
               </span>
+              <br>
+              <span ng-if="xref.accession.inference">inferred lineage: <em>{{ xref.accession.inference }}</em></span>
             </span>
 
             <!-- Greengenes -->
@@ -347,11 +354,6 @@
               LncBase: <a ng-href="{{ 'http://carolina.imis.athena-innovation.gr/diana_tools/web/index.php?r=lncbasev2%2Findex-experimental&miRNAs%5B%5D=' + xref.accession.external_id + '&lncRNAs%5B%5D=&filters=0' }}" target="_blank">{{ xref.accession.external_id }}</a>
             </span>
 
-            <!-- IntAct -->
-            <span ng-switch-when="IntAct">
-              IntAct: <a ng-href="{{ 'https://ebi.ac.uk/intact' }}" target="_blank">{{ xref.accession.external_id }}</a>
-            </span>
-
             <!-- ZWD -->
             <span ng-switch-when="ZWD">
               {{ xref.database }}: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
@@ -381,6 +383,17 @@
             <span ng-switch-when="MalaCards">
               <a ng-href="{{ xref.accession.expert_db_url }}" class="no-icon" target="_blank">{{ xref.accession.malacards_diseases.length }} human <ng-pluralize count="xref.accession.malacards_diseases.length" when="{1: 'disease', 'other': 'diseases'}"></ng-pluralize></a> associated with {{ xref.accession.gene }}
               <!-- (<span ng-repeat="disease in xref.accession.malacards_diseases"><a href="{{ disease.url }}" target="_blank" class="no-icon">{{ disease.name }}</a>{{$last ? '' : '; '}}</span>) -->
+            </span>
+
+            <!-- Zfin -->
+            <span ng-switch-when="ZFIN">
+              {{ xref.database }}: transcript <a ng-href="https://zfin.org/{{ xref.accession.external_id }}" target="_blank">{{ xref.accession.external_id }}</a>
+              from gene <a ng-href="https://zfin.org/{{ xref.accession.gene }}" target="_blank">{{ xref.accession.gene }}</a>
+            </span>
+
+            <!-- CRW -->
+            <span ng-switch-when="CRW">
+              <a ng-href="https://github.com/RNAcentral/R2DT/blob/master/data/crw-pdf/{{ xref.accession.external_id.replace('CRW:', '') + '.pdf'}}" target="_blank">View 2D structure {{ xref.accession.external_id.replace('CRW:', '') }}</a>
             </span>
 
             <span ng-switch-default>

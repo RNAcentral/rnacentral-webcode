@@ -63,11 +63,11 @@ RNAcentral: The non-coding RNA sequence database
     <div class="col-md-4 col-sm-4 col-xs-12" onclick="location.href='{% url 'sequence-search' %}';" style="cursor: pointer;">
       <div class="panel panel-default homepage-card">
         <div class="panel-body text-center">
-          <h2 class="text-center"> 🆕 Sequence search</h2>
+          <h2 class="text-center"> Sequence search</h2>
           <p class="text-center">
             Search for similar sequences -
             <br>
-            <em class="text-primary">now with a faster, faceted interface</em>
+            <em class="text-primary">now with facets and 2D diagrams</em>
           </p>
           <a class="btn btn-primary" id="btn-sequence-search" href="{% url 'sequence-search' %}" role="button">Search by sequence</a>
         </div>
@@ -93,7 +93,7 @@ RNAcentral: The non-coding RNA sequence database
 
     <div class="row">
       <p class="text-center col-md-8 col-md-offset-2">
-        RNAcentral contains <a href='/search?q=has_secondary_structure:"True"'><strong>over 8 million secondary structures</strong></a> displayed using standard layouts, including SSU and LSU rRNA, and over 2,000 Rfam families. <a href="/help/secondary-structure">Learn more &rarr;</a>
+        RNAcentral contains <a href='/search?q=has_secondary_structure:"True"'><strong>over 14 million secondary structures</strong></a> displayed using standard layouts, including SSU and LSU rRNA, and over 2,600 Rfam families. <a href="/help/secondary-structure">Learn more &rarr;</a>
       </p>
     </div>
 
@@ -111,7 +111,10 @@ RNAcentral: The non-coding RNA sequence database
     </div>
 
     <div class="clearfix"></div>
-    <div class="text-center" style="margin-right: 10px; margin-bottom: 10px; font-size: large;"><a class="btn btn-primary" href='/search?q=has_secondary_structure:"True"'>Explore secondary structures</a></div>
+    <div class="text-center" style="margin-right: 10px; margin-bottom: 10px; font-size: large;">
+      <a class="btn btn-primary" href='/search?q=has_secondary_structure:"True"'>Explore secondary structures</a>
+      <a class="btn btn-default" href='/r2dt' style="margin-left: 20px;">Visualise your sequence with R2DT</a>
+    </div>
   </div>
 
   <div class="row">
@@ -175,7 +178,7 @@ RNAcentral: The non-coding RNA sequence database
           <div class="panel-body">
             <p class="margin-top-5px">
               <a href="{{ context.blog_url }}" class="thumbnail">
-                <img class="hvr-grow" src="{% static 'img/timeline/release-v15.png' %}" alt="Release 15 announcement">
+                <img class="hvr-grow" src="{% static 'img/timeline/release-v16.png' %}" alt="Release announcement">
               </a>
             </p>
             <ul class="list-inline margin-top-5px" style="margin-left: 5px;">

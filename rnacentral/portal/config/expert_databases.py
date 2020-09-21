@@ -91,7 +91,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'as of December 10th, 2019',
+        'version': 'as of July 20th, 2020',
     },
     {
         'name': 'FlyBase',
@@ -116,7 +116,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'FB2020_02',
+        'version': 'FB2020_03',
     },
     {
         'name': 'Ensembl',
@@ -147,7 +147,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '98',
+        'version': '100',
     },
     {
         'name': 'Ensembl Plants',
@@ -296,8 +296,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
-        'version': '14.1',
+        'status': 'updated',
+        'version': '14.2',
     },
     {
         'name': 'miRBase',
@@ -327,7 +327,7 @@ expert_dbs = [
             }
         ],
         'imported': True,
-        'status': 'updated',
+        'status': '',
         'version': '22.1',
     },
     {
@@ -502,7 +502,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '97',  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
+        'version': '201',  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
     },
     {
         'name': 'RDP',
@@ -530,17 +530,28 @@ expert_dbs = [
         'version': '',
     },
     {
-        'name': 'CRW Site',
-        'label': '',
-        'url': 'http://www.rna.ccbb.utexas.edu/',
-        'description': 'comparative sequence and structure information for ribosomal, intron, and other RNAs',
-        'hint': 'CRW Site comparative sequence and structure information for ribosomal, intron, and other RNAs',
-        'tags': ['curated', 'rRNA'],
+        'name': 'CRW',
+        'label': 'crw',
+        'url': 'http://crw-site.chemistry.gatech.edu/',
+        'description': 'provides comparative sequence and structure information for ribosomal, intron, and other RNAs',
+        'hint': 'CRW provides comparative sequence and structure information for ribosomal, intron, and other RNAs',
+        'tags': ['curated', 'SSU rRNA', '5S rRNA'],
         'abbreviation': 'Comparative RNA Website',
-        'examples': '',
-        'references': [],
-        'imported': False,
-        'status': '',
+        'examples': [
+            {'upi': 'URS0001BCA6C0', 'taxid': 562}, # E.coli SSU
+            {'upi': 'URS0001BCA4A9', 'taxid': 9606}, # Human SSU
+            {'upi': 'URS0001BCA572', 'taxid': 9606}, # Human 5S
+        ],
+        'references': [
+            {
+                'title': 'The comparative RNA web (CRW) site: an online database of comparative sequence and structure information for ribosomal, intron, and other RNAs',
+                'authors': 'Jamie J Cannone, Sankar Subramanian, Murray N Schnare, James R Collett, Lisa M DSouza, Yushi Du, Brian Feng, Nan Lin, Lakshmi V Madabusi, Kirsten M Muller, Nupur Pande, Zhidi Shang, Nan Yu, Robin R Gutell',
+                'journal': 'BMC Bioinformatics. 2002;3:2',
+                'pubmed_id': '11869452',
+            },
+        ],
+        'imported': True,
+        'status': 'new',
         'version': '',
     },
     {
@@ -807,8 +818,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
-        'version': '122',
+        'status': 'updated',
+        'version': 'r138',
     },
     {
         'name': 'SGD',
@@ -862,16 +873,51 @@ expert_dbs = [
     },
     {
         'name': 'snoRNA Database',
-        'label': '',
+        'label': 'snorna_database',
         'url': 'http://lowelab.ucsc.edu/snoRNAdb/',
-        'description': 'predicted snoRNA genes',
-        'hint': 'snoRNA database contains predicted snoRNA genes',
+        'description': 'is a curated collection of archaeal snoRNAs maintained by the Lowe Lab at UC Santa Cruz',
+        'hint': 'The snoRNA Database is a curated collection of archaeal snoRNAs maintained by the Lowe Lab at UC Santa Cruz',
         'tags': ['automatic', 'curated', 'snoRNA'],
         'abbreviation': '',
-        'examples': '',
-        'references': [],
-        'imported': False,
-        'status': '',
+        'examples': [
+            {'upi': 'URS0000600702', 'taxid': 340102},
+            {'upi': 'URS000020B9CF', 'taxid': 698757},
+            {'upi': 'URS00000A48A9', 'taxid': 698757},
+        ],
+        'references': [
+            {
+                'title': 'Homologs of small nucleolar RNAs in Archaea',
+                'authors': 'A D Omer, T M Lowe, A G Russell, H Ebhardt, S R Eddy, P P Dennis',
+                'journal': 'Science. 2000 Apr 21;288(5465):517-22',
+                'pubmed_id': '10775111',
+            },
+            {
+                'title': 'Archaeal homologs of eukaryotic methylation guide small nucleolar RNAs: lessons from the Pyrococcus genomes',
+                'authors': 'C Gaspin, J Cavaille, G Erauso, J P Bachellerie',
+                'journal': 'J Mol Biol. 2000 Apr 7;297(4):895-906',
+                'pubmed_id': '10736225',
+            },
+            {
+                'title': 'Methylation guide RNA evolution in archaea: structure, function and genomic organization of 110 C/D box sRNA families across six Pyrobaculum species',
+                'authors': 'Lauren M Lui, Andrew V Uzilov, David L Bernick, Andrea Corredor, Todd M Lowe, Patrick P Dennis',
+                'journal': 'Nucleic Acids Res. 2018 Jun 20;46(11):5678-5691',
+                'pubmed_id': '29771354',
+            },
+            {
+                'title': 'Diversity of Antisense and Other Non-Coding RNAs in Archaea Revealed by Comparative Small RNA Sequencing in Four Pyrobaculum Species',
+                'authors': 'David L Bernick, Patrick P Dennis, Lauren M Lui, Todd M Lowe',
+                'journal': 'Front Microbiol. 2012 Jul 2;3:231',
+                'pubmed_id': '22783241',
+            },
+            {
+                'title': 'Complete genome sequence of Pyrobaculum oguniense',
+                'authors': 'David L Bernick, Kevin Karplus, Lauren M Lui, Joanna K C Coker, Julie N Murphy, Patricia P Chan, Aaron E Cozen, Todd M Lowe',
+                'journal': 'Stand Genomic Sci. 2012 Jul 30;6(3):336-45',
+                'pubmed_id': '23407329',
+            },
+        ],
+        'imported': True,
+        'status': 'new',
         'version': '',
     },
     {
@@ -1088,7 +1134,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': '17',
     },
     {
@@ -1159,7 +1205,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
+        'status': 'updated',
         'version': '',
     },
     {
@@ -1184,7 +1230,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': '1.1.0',
     },
     {
@@ -1209,15 +1255,15 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': '2.0',
     },
     {
         'name': 'MalaCards',
         'label': 'malacards',
         'url': 'https://www.malacards.org/',
-        'description': 'is an integrated database of human diseases and their annotations',
-        'hint': 'MalaCards is an integrated database of human diseases and their annotations',
+        'description': 'integrates manually-curated and text-mining sources to associate genes, including ncRNAs, with diseases, and lists the supporting evidence',
+        'hint': 'MalaCards integrates manually-curated and text-mining sources to associate genes, including ncRNAs, with diseases, and lists the supporting evidence',
         'tags': ['disease', 'human'],
         'abbreviation': '',
         'examples': [
@@ -1234,7 +1280,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': '4.12',
     },
     {
@@ -1259,8 +1305,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
-        'version': '4.12',
+        'status': '',
+        'version': '4.14',
     },
     {
         'name': 'CRS',
@@ -1283,8 +1329,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
-        'version': '2.0',
+        'status': 'updated',
+        'version': '2.1',
     },
     {
         'name': 'IntAct',
@@ -1308,7 +1354,46 @@ expert_dbs = [
             },
         ],
         'imported': True,
+        'status': '',
+        'version': '',
+    },
+    {
+        'name': 'ZFIN',
+        'label': 'zfin',
+        'url': 'https://zfin.org',
+        'description': 'is the database of genetic and genomic data for the zebrafish (Danio rerio) as a model organism',
+        'hint': 'The Zebrafish Information Network (ZFIN) is the database of genetic and genomic data for the zebrafish (Danio rerio) as a model organism',
+        'tags': ['curated', 'model organism', 'zebrafish'],
+        'abbreviation': 'The Zebrafish Information Network',
+        'examples': [
+            {'upi': 'URS00003B6A21', 'taxid': 7955}, # mir196c
+            {'upi': 'URS00008E3972', 'taxid': 7955}, # linc.alien
+            {'upi': 'URS0000A8261D', 'taxid': 7955}, # dre-let-7a-1
+        ],
+        'references': [
+            {
+                'title': 'The Zebrafish Information Network: new support for non-coding genes, richer Gene Ontology annotations and the Alliance of Genome Resources',
+                'authors': 'Leyla Ruzicka, Douglas G Howe, Sridhar Ramachandran, Sabrina Toro, Ceri E Van Slyke, Yvonne M Bradford, Anne Eagle, David Fashena, Ken Frazer, Patrick Kalita, Prita Mani, Ryan Martin, Sierra Taylor Moxon, Holly Paddock, Christian Pich, Kevin Schaper, Xiang Shao, Amy Singer, Monte Westerfield',
+                'journal': 'Nucleic Acids Res. 2019 Jan 8;47(D1):D867-D873',
+                'pubmed_id': '30407545',
+            },
+        ],
+        'imported': True,
         'status': 'new',
+        'version': '',
+    },
+    {
+        'name': 'snoRNA Atlas',
+        'label': 'snoatlas',
+        'url': 'http://snoatlas.bioinf.uni-leipzig.de/',
+        'description': '',
+        'hint': 'snoRNA Atlas is a database of human snoRNAs',
+        'tags': ['', '', ''],
+        'abbreviation': '',
+        'examples': [],
+        'references': [],
+        'imported': False,
+        'status': '',
         'version': '',
     },
 ]

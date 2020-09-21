@@ -99,7 +99,7 @@ limitations under the License.
         {% block extra_head %}{% endblock %}
     </head>
 
-    <body class="level2" ng-controller="MainContent" onload="showMessage()">
+    <body class="level2" ng-controller="MainContent">
         <header>
         {% include "portal/header.html" %}
         </header>
@@ -252,13 +252,14 @@ limitations under the License.
         </script>
 
         <script>
-            function showMessage() {
-              let x = document.getElementById("show-message");
-              x.className = "show";
-
-              // After 5 seconds, remove the show class from DIV
-              setTimeout(function(){ x.className = x.className.replace("show", ""); }, 5000);
-            }
+            (function(){
+              var x = document.getElementById("show-message");
+              if (x) {
+                  x.className = "show";
+                  // After 5 seconds, remove the show class from DIV
+                  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 5000);
+              }
+            })();
         </script>
 
       <!--[if lte IE 8]>

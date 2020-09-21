@@ -78,7 +78,22 @@ limitations under the License.
             <li>
                 Found in <strong>{{ context.summary.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab" ng-click="activateTaxonomyTab()">species</a>
             </li>
-            <li class="badge" style="padding-left: 7px; padding-right: 7px;">{{ context.precomputed.rna_type }}</li>
+            {% if context.summary.so_rna_type %}
+              {% if context.summary.pretty_so_rna_type|length > 1 %}
+                <li>
+                  <ol class="breadcrumb well well-sm" style="background-color: white; margin-bottom: 0;">
+                    {% for pretty_rna_type, rna_type in context.summary_so_terms %}
+                      <li><a href='/search?q=so_rna_type_name:"{{ rna_type }}"' uib-tooltip="Browse {{ pretty_rna_type }}">{{ pretty_rna_type }}</a></li>
+                    {% endfor %}
+                  </ol>
+                </li>
+              {% else %}
+                  <li><a href='/search?q=so_rna_type_name:"{{ context.summary.so_rna_type.0 }}"' uib-tooltip="Browse {{ context.summary.pretty_so_rna_type.0 }}">{{ context.summary.pretty_so_rna_type.0 }}</a></li>
+              {% endif %}
+            {% else %}
+              <li class="badge" style="padding-left: 7px; padding-right: 7px;">{{ context.precomputed.rna_type }}</li>
+            {% endif %}
+
         </ul>
         {% if rna.has_secondary_structure %}</div><!-- media-body --></div><!-- media -->{% endif %}
 

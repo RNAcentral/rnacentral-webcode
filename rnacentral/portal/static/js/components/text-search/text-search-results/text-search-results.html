@@ -156,7 +156,44 @@
         </li>
         <hr />
         <li class="facet" ng-repeat="facet in $ctrl.search.result.facets">
-          <div ng-if="facet.label === 'Organisms' || facet.label === 'RNA types' || facet.label === 'Expert databases' || facet.label === 'Secondary structure' || facet.id == 'has_secondary_structure' ">
+          <div ng-if="facet.label === 'SO RNA types'">
+            <h3>
+              RNA types
+              <small class="text-search-facet-help text-muted">
+                <i class="fa fa-question-circle" style="cursor: pointer;" aria-hidden="true" uib-tooltip="Classified using Sequence Ontology"></i>
+              </small>
+            </h3>
+            <ul class="list-unstyled text-search-facet-values text-search-facet-overflow force-scrollbars" style="overflow-x: hidden; max-height: 300px;">
+              <li ng-repeat="facetValue in facet.facetValues">
+                <input type="checkbox" name="facet.label" ng-checked="$ctrl.isFacetApplied('so_rna_type_name', facetValue.label)" ng-click="$ctrl.facetSearch('so_rna_type_name', facetValue.label)">
+                <a href="" ng-click="$ctrl.facetSearch('so_rna_type_name', facetValue.label)" class="text-search-facet-link">{{ $ctrl.prettySoLabel(facetValue.label) }} <small>({{ facetValue.count | number }})</small></a>
+                <span ng-if="facetValue.children.length > 0" ng-click="$ctrl.toggleSubFacets(facetValue.label)" id="toggle-{{facetValue.label}}" style="cursor: pointer;"><i class="fa fa-minus text-muted"></i></span>
+                <ul ng-if="facetValue.children.length > 0" ng-repeat="child in facetValue.children" style="padding-left: 14px;">
+                  <li style="list-style-type: none;">
+                    <input type="checkbox" name="child.label" ng-checked="$ctrl.isFacetApplied('so_rna_type_name', child.label)" ng-click="$ctrl.facetSearch('so_rna_type_name', child.label)">
+                    <a href="" ng-click="$ctrl.facetSearch('so_rna_type_name', child.label)" class="text-search-facet-link">{{ $ctrl.prettySoLabel(child.label) }} <small>({{ child.count | number }})</small></a>
+                    <span ng-if="child.children.length > 0" ng-click="$ctrl.toggleSubFacets(child.label)" id="toggle-{{child.label}}" style="cursor: pointer;"><i class="fa fa-minus text-muted"></i></span>
+                    <ul ng-if="child.children.length > 0" ng-repeat="child2 in child.children" style="padding-left: 14px;">
+                      <li style="list-style-type: none;">
+                        <input type="checkbox" name="child2.label" ng-checked="$ctrl.isFacetApplied('so_rna_type_name', child2.label)" ng-click="$ctrl.facetSearch('so_rna_type_name', child2.label)">
+                        <a href="" ng-click="$ctrl.facetSearch('so_rna_type_name', child2.label)" class="text-search-facet-link">{{ $ctrl.prettySoLabel(child2.label) }} <small>({{ child2.count | number }})</small></a>
+                        <span ng-if="child2.children.length > 0" ng-click="$ctrl.toggleSubFacets(child2.label)" id="toggle-{{child2.label}}" style="cursor: pointer;"><i class="fa fa-minus text-muted"></i></span>
+                        <ul ng-if="child.children.length > 0" ng-repeat="child3 in child2.children" style="padding-left: 14px;">
+                          <li style="list-style-type: none;">
+                            <input type="checkbox" name="child3.label" ng-checked="$ctrl.isFacetApplied('so_rna_type_name', child3.label)" ng-click="$ctrl.facetSearch('so_rna_type_name', child3.label)">
+                            <a href="" ng-click="$ctrl.facetSearch('so_rna_type_name', child3.label)" class="text-search-facet-link">{{ $ctrl.prettySoLabel(child3.label) }} <small>({{ child3.count | number }})</small></a>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </li>
+        <li class="facet" ng-repeat="facet in $ctrl.search.result.facets">
+          <div ng-if="facet.label === 'Organisms' || facet.label === 'Expert databases' || facet.label === 'Secondary structure' || facet.id == 'has_secondary_structure' ">
             <h3>
               {{ facet.label }}
             </h3>
@@ -182,16 +219,17 @@
         </li>
         <div>
           <li class="facet" ng-repeat="facet in $ctrl.search.result.facets">
-            <uib-accordion ng-if="facet.label == 'Conserved motifs' || facet.label == 'QC warnings' || facet.label == 'GO annotations' || facet.label == 'Genomic mapping'" class="text-search-foldable-facets">
+            <uib-accordion ng-if="facet.label == 'Conserved motifs' || facet.label == 'QC warnings' || facet.label == 'GO annotations' || facet.label == 'Genomic mapping' || facet.label == 'RNA types'" class="text-search-foldable-facets">
               <div uib-accordion-group is-open="$ctrl.search.isFacetOpen[facet.id]">
                 <uib-accordion-heading>
                   <h3>
                     <small><i class="pull-left fa" ng-class="{'fa-minus': $ctrl.search.isFacetOpen[facet.id], 'fa-plus': !$ctrl.search.isFacetOpen[facet.id]}"></i></small>
-                    {{ facet.label }}
+                    <span ng-if="facet.label !== 'RNA types'">{{ facet.label }}</span>
+                    <span ng-if="facet.label === 'RNA types'">RNA types <small>INSDC</small></span>
                   </h3>
                 </uib-accordion-heading>
                 <ul class="list-unstyled text-search-facet-values text-search-facet-overflow force-scrollbars" style="overflow-x: hidden;">
-                  <li ng-repeat="facetValue in facet.facetValues" ng-if="facet.id != 'expert_db'">
+                  <li ng-repeat="facetValue in facet.facetValues">
                     <input type="checkbox" name="facet.label" ng-checked="$ctrl.isFacetApplied(facet.id, facetValue.value)" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)">
                     <a href="" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)" class="text-search-facet-link">{{ facetValue.label }} <small>({{ facetValue.count | number }})</small></a>
                   </li>

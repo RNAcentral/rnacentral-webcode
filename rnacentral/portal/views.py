@@ -91,7 +91,8 @@ def expert_databases_view(request):
     expert_dbs.sort(key=lambda x: x['imported'], reverse=True)
     context = {
         'expert_dbs': expert_dbs,
-        'num_imported': len([x for x in expert_dbs if x['imported']]) - 1, # CRS
+        'num_dbs': len(expert_dbs) - 1, # Vega is archived
+        'num_imported': len([x for x in expert_dbs if x['imported']]) - 1, # Vega
     }
     return render(request, 'portal/expert-databases.html', {'context': context})
 
@@ -135,6 +136,7 @@ def rna_view(request, upi, taxid=None):
     if taxid_filtering:
         summary_text = render_to_string('portal/summary.html', vars(summary))
         summary_text = re.sub(r'\s+', ' ', summary_text.strip())
+        summary_so_terms = zip(summary.pretty_so_rna_type, summary.so_rna_type)
 
     context = {
         'symbol_counts': symbol_counts,
@@ -145,6 +147,7 @@ def rna_view(request, upi, taxid=None):
         'activeTab': 2 if request.GET.get('tab', '').lower() == '2d' else 0,
         'summary_text': summary_text if taxid_filtering else '',
         'summary': summary,
+        'summary_so_terms': summary_so_terms if taxid_filtering else '',
         'precomputed': precomputed,
         'mirna_regulators': rna.get_mirna_regulators(taxid=taxid),
         'annotations_from_other_species': rna.get_annotations_from_other_species(taxid=taxid),
@@ -171,6 +174,8 @@ def expert_database_view(request, expert_db_name):
     expert_db = None
     for db in expert_dbs:
         if db['name'].upper() == expert_db_name and db['imported']:
+            expert_db = db
+        elif db['label'].upper() == expert_db_name.upper() and db['imported']:
             expert_db = db
         elif expert_db_name == 'TMRNA-WEBSITE' and db['label'].upper() == expert_db_name:
             expert_db = db

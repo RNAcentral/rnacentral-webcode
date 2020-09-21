@@ -20,9 +20,9 @@ examples = [
       'description': 'Lysine riboswitch RNA from Thermotoga maritima',
   },
   {
-      'uid': 'URS0000A5F9D7',
-      'taxid': '511145',
-      'description': 'E. coli Moco riboswitch',
+      'uid': 'URS000080E29A',
+      'taxid': '32630',
+      'description': 'ykoK riboswitch from Bacillus subtilis',
   },
   {
       'uid': 'URS0000D6A50B',
