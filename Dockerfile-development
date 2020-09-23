@@ -71,16 +71,16 @@ RUN \
     cd virtualenvs && \
     $LOC/python-2.7.11/bin/virtualenv RNAcentral --python=$LOC/python-2.7.11/bin/python
 
-# Install Redis
+# Install Redis (the stable version of Redis requires GCC 4.9 or above, not available for centos 6)
 RUN \
     cd $LOC && \
-    curl -OL http://download.redis.io/redis-stable.tar.gz && \
-    tar -xvzf redis-stable.tar.gz && \
-    cd redis-stable && \
+    curl -OL http://download.redis.io/releases/redis-5.0.9.tar.gz && \
+    tar -xvzf redis-5.0.9.tar.gz && \
+    cd redis-5.0.9 && \
     make && \
     cd $LOC && \
-    rm redis-stable.tar.gz && \
-    mv redis-stable redis
+    rm redis-5.0.9.tar.gz && \
+    mv redis-5.0.9 redis
 
 # Install libevent (memcached requirement)
 RUN \
