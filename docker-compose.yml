@@ -5,8 +5,20 @@ services:
   web:
     build:
       context: .
-      dockerfile: Dockerfile-development
+      dockerfile: Dockerfile-kubernetes
     volumes:
-      - ${RNACENTRAL_HOME}:/rnacentral/rnacentral-webcode
+      - "rnacentral_data:/rnacentral"
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=${DB_PORT}
+      - SECRET_KEY=${SECRET_KEY}
+    stdin_open: true
+    tty: true
     ports:
       - "9000:8000"
+
+volumes:
+  rnacentral_data:
