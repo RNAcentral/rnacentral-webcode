@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------------------------------------
 
-FROM debian:latest
+FROM debian:buster-slim
 
 RUN apt-get update && apt-get install -y \
     g++ \
@@ -23,11 +23,11 @@ ARG RNACENTRAL_HOME=/srv/rnacentral
 ENV RNACENTRAL_HOME=$RNACENTRAL_HOME
 ENV RNACENTRAL_LOCAL=$RNACENTRAL_HOME/local
 
-RUN mkdir -p $RNACENTRAL_HOME/local
-RUN mkdir $RNACENTRAL_HOME/static
 
-# Install Infernal
+# Create folders. Install Infernal and node.js
 RUN \
+    mkdir -p $RNACENTRAL_HOME/local && \
+    mkdir $RNACENTRAL_HOME/static && \
     cd $RNACENTRAL_LOCAL && \
     curl -OL http://eddylab.org/infernal/infernal-1.1.1.tar.gz && \
     tar -xvzf infernal-1.1.1.tar.gz && \
@@ -38,25 +38,18 @@ RUN \
     cd easel && \
     make install && \
     cd $RNACENTRAL_LOCAL && \
-    rm infernal-1.1.1.tar.gz
+    rm infernal-1.1.1.tar.gz && \
+    curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
+    apt-get install -y nodejs
 
-# Download RNAcentral
+# Download RNAcentral, install requirements and node.js dependencies
 RUN \
     cd $RNACENTRAL_HOME && \
-    git clone https://github.com/RNAcentral/rnacentral-webcode.git
-
-# Install Django requirements
-RUN pip install -r $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/requirements.txt
-
-# Install node.js
-RUN curl -sL https://deb.nodesource.com/setup_12.x | bash -
-RUN apt-get install -y nodejs
-
-# Install node.js dependencies
-RUN cd $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/portal/static && npm install --only=production
+    git clone https://github.com/RNAcentral/rnacentral-webcode.git && \
+    pip install -r $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/requirements.txt && \
+    cd $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/portal/static && npm install --only=production
 
 COPY ./entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
 ENTRYPOINT [ "/entrypoint.sh" ]
 
 # Expose a container port where the website is served
