@@ -19,6 +19,29 @@ services:
     tty: true
     ports:
       - "9000:8000"
+    depends_on:
+      - redis
+    networks:
+      node_net:
+        ipv4_address: 192.168.1.2
+
+  # Redis server
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "8051:8051"
+    command: redis-server --port 8051
+    restart: always
+    networks:
+      node_net:
+        ipv4_address: 192.168.1.3
 
 volumes:
   rnacentral_data:
+
+networks:
+  node_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.1.0/24
