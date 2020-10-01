@@ -14,6 +14,9 @@ DB_PASSWORD=${DB_PASSWORD:-'NWDMCE5xdipIjRrp'}
 # RNAcentral specific settings
 SECRET_KEY=${SECRET_KEY:-'your_secret_key'}
 
+# Supervisor
+SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/etc/supervisor"}
+
 # Entrypoint variable
 RNACENTRAL_PROJECT_PATH="${RNACENTRAL_HOME}/rnacentral-webcode/rnacentral"
 
@@ -32,7 +35,7 @@ else
 		COMPRESS_ENABLED = False
 		RQ_QUEUES = {
         "default": {
-            "HOST": "localhost",
+            "HOST": "192.168.1.3",
             "PORT": 8051,
             "DB": 0,
             "DEFAULT_TIMEOUT": 360,
@@ -52,5 +55,36 @@ else
 	EOF
 	chown -R nobody "${RNACENTRAL_PROJECT_PATH}"/rnacentral/local_settings.py
 fi
+
+# Supervisor setup
+echo "INFO: Creating Supervisord configuration file"
+mkdir -p "$SUPERVISOR_CONF_DIR"
+cat <<-EOF > "${SUPERVISOR_CONF_DIR}"/supervisord.conf
+[supervisord]
+logfile=/var/log/supervisord.log
+logfile_maxbytes=50MB
+logfile_backups=2
+loglevel=info
+nodaemon=true
+
+[program:rqworkers]
+command=python $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/manage.py rqworker
+directory=$RNACENTRAL_HOME/rnacentral-webcode/rnacentral
+numprocs=2
+process_name=%(program_name)s_%(process_num)s
+autorestart=true
+autostart=true
+stderr_logfile=/var/log/rqworkers.err.log
+stdout_logfile=/var/log/rqworkers.out.log
+
+[program:rnacentral]
+command=python $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/manage.py runserver 0.0.0.0:8000
+user=nobody
+autostart=true
+autorestart=true
+stderr_logfile=/var/log/rnacentral.err.log
+stdout_logfile=/var/log/rnacentral.out.log
+environment=HOME="$RNACENTRAL_HOME"
+EOF
 
 exec "$@"

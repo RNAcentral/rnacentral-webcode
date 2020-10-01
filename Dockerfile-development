@@ -10,19 +10,17 @@ RUN apt-get update && apt-get install -y \
     g++ \
     build-essential \
     curl \
-    wget \
     tar \
     git \
     python2.7 \
     libpython2.7-dev \
     python-pip \
-    redis-server \
-    memcached
+    supervisor
 
 ARG RNACENTRAL_HOME=/srv/rnacentral
 ENV RNACENTRAL_HOME=$RNACENTRAL_HOME
 ENV RNACENTRAL_LOCAL=$RNACENTRAL_HOME/local
-
+ENV SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/etc/supervisor"}
 
 # Create folders. Install Infernal and node.js
 RUN \
@@ -55,5 +53,4 @@ ENTRYPOINT [ "/entrypoint.sh" ]
 # Expose a container port where the website is served
 EXPOSE 8000
 
-# Start up the app
-CMD python $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/manage.py runserver 0.0.0.0:8000
+CMD [ "/bin/sh", "-c", "/usr/bin/supervisord -c ${SUPERVISOR_CONF_DIR}/supervisord.conf" ]
