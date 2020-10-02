@@ -142,6 +142,7 @@ def rna_view(request, upi, taxid=None):
             summary_so_terms = ''
 
     context = {
+        'upi': upi,
         'symbol_counts': symbol_counts,
         'non_canonical_base_counts': non_canonical_base_counts,
         'taxid': taxid,
