@@ -1,13 +1,11 @@
-version: '2'
+version: '3.8'
 
 services:
   # RNAcentral website
-  web:
+  rnacentral:
     build:
       context: .
       dockerfile: Dockerfile-development
-    volumes:
-      - "rnacentral_data:/rnacentral"
     environment:
       - DB_HOST=${DB_HOST}
       - DB_NAME=${DB_NAME}
@@ -15,33 +13,37 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_PORT=${DB_PORT}
       - SECRET_KEY=${SECRET_KEY}
-    stdin_open: true
-    tty: true
-    ports:
-      - "9000:8000"
     depends_on:
       - redis
     networks:
-      node_net:
-        ipv4_address: 192.168.1.2
+      - redis_network
+      - nginx_network
 
   # Redis server
   redis:
-    image: "redis:alpine"
+    image: redis:6.0.8-alpine
     ports:
       - "8051:8051"
     command: redis-server --port 8051
     restart: always
     networks:
-      node_net:
-        ipv4_address: 192.168.1.3
+      - redis_network
 
-volumes:
-  rnacentral_data:
+  # Nginx server
+  nginx:
+    image: nginx:1.19.2-alpine
+    ports:
+      - 8000:80
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./rnacentral/portal/static/:/static
+    depends_on:
+      - rnacentral
+    networks:
+      - nginx_network
 
 networks:
-  node_net:
-    ipam:
-      driver: default
-      config:
-        - subnet: 192.168.1.0/24
+  redis_network:
+    driver: bridge
+  nginx_network:
+    driver: bridge
