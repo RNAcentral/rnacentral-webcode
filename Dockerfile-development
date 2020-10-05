@@ -17,15 +17,13 @@ RUN apt-get update && apt-get install -y \
     python-pip \
     supervisor
 
-ARG RNACENTRAL_HOME=/srv/rnacentral
-ENV RNACENTRAL_HOME=$RNACENTRAL_HOME
+ENV RNACENTRAL_HOME=/srv/rnacentral
 ENV RNACENTRAL_LOCAL=$RNACENTRAL_HOME/local
 ENV SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/etc/supervisor"}
 
 # Create folders. Install Infernal and node.js
 RUN \
     mkdir -p $RNACENTRAL_HOME/local && \
-    mkdir $RNACENTRAL_HOME/static && \
     cd $RNACENTRAL_LOCAL && \
     curl -OL http://eddylab.org/infernal/infernal-1.1.1.tar.gz && \
     tar -xvzf infernal-1.1.1.tar.gz && \
@@ -45,6 +43,7 @@ RUN \
     cd $RNACENTRAL_HOME && \
     git clone https://github.com/RNAcentral/rnacentral-webcode.git && \
     pip install -r $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/requirements.txt && \
+    pip install gunicorn && \
     cd $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/portal/static && npm install --only=production
 
 COPY ./entrypoint.sh /entrypoint.sh

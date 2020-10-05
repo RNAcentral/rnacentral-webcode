@@ -35,7 +35,7 @@ else
 		COMPRESS_ENABLED = False
 		RQ_QUEUES = {
         "default": {
-            "HOST": "192.168.1.3",
+            "HOST": "redis",
             "PORT": 8051,
             "DB": 0,
             "DEFAULT_TIMEOUT": 360,
@@ -78,7 +78,7 @@ stderr_logfile=/var/log/rqworkers.err.log
 stdout_logfile=/var/log/rqworkers.out.log
 
 [program:rnacentral]
-command=python $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/manage.py runserver 0.0.0.0:8000
+command=gunicorn --chdir $RNACENTRAL_HOME/rnacentral-webcode/rnacentral --bind 0.0.0.0:8000 rnacentral.wsgi:application
 user=nobody
 autostart=true
 autorestart=true
