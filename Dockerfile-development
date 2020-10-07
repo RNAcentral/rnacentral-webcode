@@ -15,11 +15,12 @@ RUN apt-get update && apt-get install -y \
     python2.7 \
     libpython2.7-dev \
     python-pip \
-    supervisor
+    supervisor && \
+    useradd -m -d /srv/rnacentral -s /bin/bash rnacentral
 
 ENV RNACENTRAL_HOME=/srv/rnacentral
 ENV RNACENTRAL_LOCAL=$RNACENTRAL_HOME/local
-ENV SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/etc/supervisor"}
+ENV SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/srv/rnacentral/supervisor"}
 
 # Create folders. Install Infernal and node.js
 RUN \
@@ -37,6 +38,8 @@ RUN \
     rm infernal-1.1.1.tar.gz && \
     curl -sL https://deb.nodesource.com/setup_12.x | bash - && \
     apt-get install -y nodejs
+
+USER rnacentral
 
 # Download RNAcentral, install requirements and node.js dependencies
 RUN \

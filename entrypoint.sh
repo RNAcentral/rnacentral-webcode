@@ -15,10 +15,11 @@ DB_PASSWORD=${DB_PASSWORD:-'NWDMCE5xdipIjRrp'}
 SECRET_KEY=${SECRET_KEY:-'your_secret_key'}
 
 # Supervisor
-SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/etc/supervisor"}
+SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/srv/rnacentral/supervisor"}
 
 # Entrypoint variable
 RNACENTRAL_PROJECT_PATH="${RNACENTRAL_HOME}/rnacentral-webcode/rnacentral"
+LOGS="${RNACENTRAL_HOME}/log"
 
 # Add local_settings file
 if [ -f "${RNACENTRAL_PROJECT_PATH}"/rnacentral/local_settings.py ]
@@ -53,38 +54,46 @@ else
         }
     }
 	EOF
-	chown -R nobody "${RNACENTRAL_PROJECT_PATH}"/rnacentral/local_settings.py
+	chown -R rnacentral "${RNACENTRAL_PROJECT_PATH}"/rnacentral/local_settings.py
 fi
 
 # Supervisor setup
-echo "INFO: Creating Supervisord configuration file"
-mkdir -p "$SUPERVISOR_CONF_DIR"
-cat <<-EOF > "${SUPERVISOR_CONF_DIR}"/supervisord.conf
-[supervisord]
-logfile=/var/log/supervisord.log
-logfile_maxbytes=50MB
-logfile_backups=2
-loglevel=info
-nodaemon=true
+if [ -f "${SUPERVISOR_CONF_DIR}"/supervisord.conf ]
+then
+	echo "INFO: Supervisord configuration file already provisioned"
+else
+	echo "INFO: Creating Supervisord configuration file"
+	mkdir -p "$SUPERVISOR_CONF_DIR"
+	mkdir -p "${LOGS}"
+	cat <<-EOF > "${SUPERVISOR_CONF_DIR}"/supervisord.conf
+		[supervisord]
+		pidfile=${SUPERVISOR_CONF_DIR}/supervisord.pid
+		logfile=${LOGS}/supervisord.log
+		user=rnacentral
+		logfile_maxbytes=50MB
+		logfile_backups=2
+		loglevel=info
+		nodaemon=true
 
-[program:rqworkers]
-command=python $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/manage.py rqworker
-directory=$RNACENTRAL_HOME/rnacentral-webcode/rnacentral
-numprocs=2
-process_name=%(program_name)s_%(process_num)s
-autorestart=true
-autostart=true
-stderr_logfile=/var/log/rqworkers.err.log
-stdout_logfile=/var/log/rqworkers.out.log
+		[program:rqworkers]
+		command=python $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/manage.py rqworker
+		directory=$RNACENTRAL_HOME/rnacentral-webcode/rnacentral
+		numprocs=4
+		process_name=%(program_name)s_%(process_num)s
+		autorestart=true
+		autostart=true
+		stderr_logfile=${LOGS}/rqworkers.err.log
+		stdout_logfile=${LOGS}/rqworkers.out.log
 
-[program:rnacentral]
-command=gunicorn --chdir $RNACENTRAL_HOME/rnacentral-webcode/rnacentral --bind 0.0.0.0:8000 rnacentral.wsgi:application
-user=nobody
-autostart=true
-autorestart=true
-stderr_logfile=/var/log/rnacentral.err.log
-stdout_logfile=/var/log/rnacentral.out.log
-environment=HOME="$RNACENTRAL_HOME"
-EOF
+		[program:rnacentral]
+		command=$RNACENTRAL_HOME/.local/bin/gunicorn --chdir $RNACENTRAL_HOME/rnacentral-webcode/rnacentral --bind 0.0.0.0:8000 rnacentral.wsgi:application
+		user=rnacentral
+		autostart=true
+		autorestart=true
+		stderr_logfile=${LOGS}/rnacentral.err.log
+		stdout_logfile=${LOGS}/rnacentral.out.log
+		environment=HOME="$RNACENTRAL_HOME"
+	EOF
+fi
 
 exec "$@"
