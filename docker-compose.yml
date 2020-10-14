@@ -1,11 +1,12 @@
-version: '3.8'
+version: '3'
 
 services:
   # RNAcentral website
   rnacentral:
     build:
       context: .
-      dockerfile: Dockerfile-development
+      args:
+        - RNACENTRAL_BRANCH=${RNACENTRAL_BRANCH}
     environment:
       - DB_HOST=${DB_HOST}
       - DB_NAME=${DB_NAME}
@@ -16,8 +17,9 @@ services:
     depends_on:
       - redis
     networks:
-      - redis_network
-      - nginx_network
+      - redis-network
+      - nginx-network
+      - memcached-network
 
   # Redis server
   redis:
@@ -27,7 +29,7 @@ services:
     command: redis-server --port 8051
     restart: always
     networks:
-      - redis_network
+      - redis-network
 
   # Nginx server
   nginx:
@@ -40,10 +42,23 @@ services:
     depends_on:
       - rnacentral
     networks:
-      - nginx_network
+      - nginx-network
+
+  # Memcached server
+  memcached:
+    image: memcached:1.6.7-alpine
+    ports:
+      - "8052:8052"
+    command: memcached -m 512m -p 8052
+    depends_on:
+      - rnacentral
+    networks:
+      - memcached-network
 
 networks:
-  redis_network:
+  redis-network:
     driver: bridge
-  nginx_network:
+  nginx-network:
+    driver: bridge
+  memcached-network:
     driver: bridge

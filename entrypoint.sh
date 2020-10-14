@@ -28,7 +28,7 @@ then
 else
 	echo "INFO: Creating RNAcentral local_settings.py file"
 	cat <<-EOF > "${RNACENTRAL_PROJECT_PATH}"/rnacentral/local_settings.py
-		from utils import get_environment
+		from .utils import get_environment
 		SECRET_KEY = "$SECRET_KEY"
 		DEBUG = True
 		ENVIRONMENT = get_environment()
