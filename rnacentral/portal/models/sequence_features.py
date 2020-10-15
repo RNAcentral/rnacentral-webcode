@@ -29,6 +29,7 @@ class SequenceFeatures(models.Model):
         db_column='upi',
         to_field='upi',
         related_name='features',
+        on_delete=models.CASCADE
     )
     taxid = models.IntegerField()
     accession = models.ForeignKey(
@@ -36,6 +37,7 @@ class SequenceFeatures(models.Model):
         db_column='accession',
         to_field='accession',
         max_length=100,
+        on_delete=models.CASCADE
     )
     start = models.IntegerField()
     stop = models.IntegerField()

@@ -27,7 +27,6 @@ from django.db import models
 from django.db.models import Prefetch, Min, Max, Q
 from django.utils.functional import cached_property
 
-from .database import Database
 from .modification import Modification
 from .rna_precomputed import RnaPrecomputed
 from .related_sequences import RelatedSequence

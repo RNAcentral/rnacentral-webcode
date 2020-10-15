@@ -25,7 +25,13 @@ class RnaPrecomputed(models.Model):
     id = models.CharField(max_length=22, primary_key=True)  # id = upi + taxid if taxid != Null else upi
     taxid = models.IntegerField(db_index=True, null=True)
     description = models.CharField(max_length=250, null=True)
-    upi = models.ForeignKey('Rna', db_column='upi', to_field='upi', related_name='precomputed')
+    upi = models.ForeignKey(
+        'Rna',
+        db_column='upi',
+        to_field='upi',
+        related_name='precomputed',
+        on_delete=models.CASCADE
+    )
     rna_type = models.CharField(max_length=250, null=True)
     rfam_problems = models.TextField(null=True)
     update_date = models.DateField(null=True)
@@ -39,7 +45,6 @@ class RnaPrecomputed(models.Model):
 
     class Meta:
         db_table = 'rnc_rna_precomputed'
-
 
     def get_databases(self):
         return self.databases.split(',') if self.databases else None

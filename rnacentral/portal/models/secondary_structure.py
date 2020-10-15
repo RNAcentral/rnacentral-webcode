@@ -21,6 +21,7 @@ class SecondaryStructure(models.Model):
         db_column='rnc_accession_id',
         to_field='accession',
         related_name='secondary_structure',
+        on_delete=models.CASCADE
     )
     secondary_structure = models.TextField()
     md5 = models.CharField(max_length=32, db_index=True)
@@ -38,11 +39,13 @@ class SecondaryStructureWithLayout(models.Model):
         db_column='urs',
         to_field='upi',
         related_name='secondary_structure_layout',
+        on_delete=models.CASCADE
     )
     template = models.OneToOneField(
         'SecondaryStructureLayout',
         db_column='model_id',
-        to_field='id'
+        to_field='id',
+        on_delete=models.CASCADE
     )
     layout = models.TextField()
 
@@ -57,7 +60,8 @@ class SecondaryStructureLayout(models.Model):
     taxid = models.OneToOneField(
         'Taxonomy',
         db_column='taxid',
-        to_field='id'
+        to_field='id',
+        on_delete=models.CASCADE
     )
     model_source = models.TextField()
     cellular_location = models.TextField()

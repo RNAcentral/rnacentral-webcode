@@ -52,6 +52,7 @@ class GoAnnotation(models.Model):
         to_field='ontology_term_id',
         null=False,
         related_name='go_annotations',
+        on_delete=models.CASCADE
     )
     evidence_code = models.ForeignKey(
         'OntologyTerm',
@@ -59,6 +60,7 @@ class GoAnnotation(models.Model):
         to_field='ontology_term_id',
         null=False,
         related_name='go_annotation_evidence',
+        on_delete=models.CASCADE
     )
     assigned_by = models.CharField(max_length=50)
     extensions = JSONField()
