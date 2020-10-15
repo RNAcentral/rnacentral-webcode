@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('insdc', models.CharField(max_length=255, db_index=True)),
                 ('ensembl_name', models.CharField(max_length=255, db_index=True)),
-                ('assembly_id', models.ForeignKey(related_name='assembly', to='portal.EnsemblAssembly')),
+                ('assembly_id', models.ForeignKey(related_name='assembly', to='portal.EnsemblAssembly', on_delete=models.CASCADE)),
             ],
             options={
                 'db_table': 'ensembl_insdc_mapping',

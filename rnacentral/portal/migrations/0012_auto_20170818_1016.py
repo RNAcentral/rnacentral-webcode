@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='secondarystructure',
             name='accession',
-            field=models.ForeignKey(related_name='secondary_structure', db_column=b'rnc_accession_id', to='portal.Accession'),
+            field=models.ForeignKey(related_name='secondary_structure', db_column=b'rnc_accession_id', to='portal.Accession', on_delete=models.CASCADE),
         ),
         migrations.AlterUniqueTogether(
             name='secondarystructure',

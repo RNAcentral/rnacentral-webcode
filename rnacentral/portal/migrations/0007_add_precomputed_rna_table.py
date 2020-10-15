@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
                 ('id', models.CharField(max_length=20, serialize=False, primary_key=True)),
                 ('taxid', models.IntegerField(db_index=True)),
                 ('description', models.CharField(max_length=250)),
-                ('upi', models.ForeignKey(related_name='precomputed', db_column=b'upi', to='portal.Rna')),
+                ('upi', models.ForeignKey(related_name='precomputed', db_column=b'upi', to='portal.Rna', on_delete=models.CASCADE)),
             ],
             options={
                 'db_table': 'rnc_rna_precomputed',

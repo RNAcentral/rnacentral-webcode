@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='RfamAnalyzedSequences',
             fields=[
-                ('upi', models.ForeignKey(primary_key=True, db_column=b'upi', serialize=False, to='portal.Rna')),
+                ('upi', models.ForeignKey(primary_key=True, db_column=b'upi', serialize=False, to='portal.Rna', on_delete=models.CASCADE)),
                 ('date', models.DateField()),
             ],
             options={
@@ -73,7 +73,7 @@ class Migration(migrations.Migration):
                 ('is_suppressed', models.BooleanField(default=False)),
                 ('domain', models.CharField(max_length=50, null=True)),
                 ('rna_type', models.CharField(max_length=250)),
-                ('rfam_clan_id', models.ForeignKey(db_column=b'rfam_clan_id', to='portal.RfamClan', null=True)),
+                ('rfam_clan_id', models.ForeignKey(db_column=b'rfam_clan_id', to='portal.RfamClan', null=True, on_delete=models.CASCADE)),
             ],
             options={
                 'db_table': 'rfam_models',
@@ -82,21 +82,21 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='rfaminitialannotations',
             name='rfam_model',
-            field=models.ForeignKey(to='portal.RfamModel', db_column=b'rfam_model_id'),
+            field=models.ForeignKey(to='portal.RfamModel', db_column=b'rfam_model_id', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='rfaminitialannotations',
             name='upi',
-            field=models.ForeignKey(to='portal.Rna', db_column=b'upi'),
+            field=models.ForeignKey(to='portal.Rna', db_column=b'upi', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='rfamhit',
             name='rfam_model',
-            field=models.ForeignKey(to='portal.RfamModel', db_column=b'rfam_model_id'),
+            field=models.ForeignKey(to='portal.RfamModel', db_column=b'rfam_model_id', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='rfamhit',
             name='upi',
-            field=models.ForeignKey(to='portal.Rna', db_column=b'upi'),
+            field=models.ForeignKey(to='portal.Rna', db_column=b'upi', on_delete=models.CASCADE),
         ),
     ]
