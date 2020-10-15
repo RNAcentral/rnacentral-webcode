@@ -19,7 +19,7 @@ from portal.config.expert_databases import expert_dbs
 register = template.Library()
 
 
-@register.assignment_tag
+@register.simple_tag
 def get_expert_databases_columns():
     """
     Return expert databases grouped and order for the website footer.
@@ -33,7 +33,7 @@ def get_expert_databases_columns():
     ]
 
 
-@register.assignment_tag
+@register.simple_tag
 def get_expert_databases_list():
     """Get an alphabetically sorted list of imported expert databases."""
     imported_dbs = [x for x in expert_dbs if x['imported'] and x['name'] != 'CRS']
