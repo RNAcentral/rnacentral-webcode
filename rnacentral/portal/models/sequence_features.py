@@ -18,31 +18,31 @@ from django.db import models
 from django.contrib.postgres.fields import JSONField
 
 
-class SequenceFeatures(models.Model):
-    id = models.AutoField(
-        primary_key=True,
-        db_column='rnc_sequence_features_id',
-    )
-
-    upi = models.ForeignKey(
-        'Rna',
-        db_column='upi',
-        to_field='upi',
-        related_name='features',
-        on_delete=models.CASCADE
-    )
-    taxid = models.IntegerField()
-    accession = models.ForeignKey(
-        'Accession',
-        db_column='accession',
-        to_field='accession',
-        max_length=100,
-        on_delete=models.CASCADE
-    )
-    start = models.IntegerField()
-    stop = models.IntegerField()
-    feature_name = models.CharField(max_length=50)
-    meatadata = JSONField(null=True)
-
-    class Meta:
-        db_table = 'rnc_sequence_features'
+# class SequenceFeatures(models.Model):
+#     id = models.AutoField(
+#         primary_key=True,
+#         db_column='rnc_sequence_features_id',
+#     )
+#
+#     upi = models.ForeignKey(
+#         'Rna',
+#         db_column='upi',
+#         to_field='upi',
+#         related_name='features',
+#         on_delete=models.CASCADE
+#     )
+#     taxid = models.IntegerField()
+#     accession = models.ForeignKey(
+#         'Accession',
+#         db_column='accession',
+#         to_field='accession',
+#         max_length=100,
+#         on_delete=models.CASCADE
+#     )
+#     start = models.IntegerField()
+#     stop = models.IntegerField()
+#     feature_name = models.CharField(max_length=50)
+#     meatadata = JSONField(null=True)
+#
+#     class Meta:
+#         db_table = 'rnc_sequence_features'
