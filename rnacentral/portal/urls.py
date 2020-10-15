@@ -24,11 +24,11 @@ urlpatterns = [
     # homepage
     url(r'^$', views.homepage, name='homepage'),
     # unique RNA sequence
-    url(r'^(?i)rna/(?P<upi>URS[0-9A-F]{10})/?$', views.rna_view, name='unique-rna-sequence'),
+    url(r'^rna/(?P<upi>URS[0-9A-F]{10})/?$', views.rna_view, name='unique-rna-sequence'),
     # species specific identifier with forward slash
-    url(r'^(?i)rna/(?P<upi>URS[0-9A-F]{10})/(?P<taxid>\d+)/?$', views.rna_view, name='unique-rna-sequence'),
+    url(r'^rna/(?P<upi>URS[0-9A-F]{10})/(?P<taxid>\d+)/?$', views.rna_view, name='unique-rna-sequence'),
     # species specific identifier with underscore
-    url(r'^(?i)rna/(?P<upi>URS[0-9A-F]{10})_(?P<taxid>\d+)/?$', views.rna_view_redirect, name='unique-rna-sequence-redirect'),
+    url(r'^rna/(?P<upi>URS[0-9A-F]{10})_(?P<taxid>\d+)/?$', views.rna_view_redirect, name='unique-rna-sequence-redirect'),
     # expert database
     url(r'^expert-database/(?P<expert_db_name>[-\w]+)/?$', views.expert_database_view, name='expert-database'),
     # expert databases
