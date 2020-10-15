@@ -22,7 +22,7 @@ from django.contrib.sitemaps import Sitemap
 from django.contrib.sitemaps.views import index as sitemap_index, sitemap as sitemap_section
 from django.core.management.base import BaseCommand
 from django.core.paginator import Paginator
-from django.core.urlresolvers import reverse, resolve
+from django.urls import reverse
 from django.db.models import Q
 from django.http import HttpRequest
 

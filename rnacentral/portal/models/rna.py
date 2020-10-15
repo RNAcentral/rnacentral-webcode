@@ -21,7 +21,7 @@ import zlib
 from caching.base import CachingMixin, CachingManager
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import connection
 from django.db import models
 from django.db.models import Prefetch, Min, Max, Q

@@ -15,14 +15,13 @@ import re
 import json
 
 from django.core.paginator import Paginator
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Min, Max
 from rest_framework import serializers
 
-from portal.models import Rna, Xref, Reference,  Reference_map, ChemicalComponent, Database, DatabaseStats, Accession, \
-    Release, Reference, Modification, RfamHit, RfamModel, RfamClan, RfamGoTerm, OntologyTerm, SequenceFeature, \
-    EnsemblAssembly, EnsemblKaryotype, \
-    ProteinInfo, EnsemblCompara, RnaPrecomputed, SequenceRegion, SecondaryStructureWithLayout
+from portal.models import Rna, Xref,  Reference_map, ChemicalComponent, DatabaseStats, Accession, Reference, \
+    Modification, RfamHit, RfamModel, RfamClan, OntologyTerm, SequenceFeature, EnsemblAssembly, EnsemblKaryotype, \
+    ProteinInfo, EnsemblCompara, RnaPrecomputed, SecondaryStructureWithLayout
 
 
 class RawPublicationSerializer(serializers.ModelSerializer):

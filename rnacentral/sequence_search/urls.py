@@ -11,8 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 from django.conf.urls import url
-from django.views.generic.base import TemplateView
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.views.generic import RedirectView
 
 from .views import *
