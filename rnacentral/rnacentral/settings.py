@@ -107,7 +107,7 @@ STATICFILES_FINDERS = (
 # Provide an initial value so that the site is functional with default settings
 SECRET_KEY = 'override this in local_settings.py'
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     # gzip
     'django.middleware.gzip.GZipMiddleware',
     # default
