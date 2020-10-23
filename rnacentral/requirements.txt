@@ -1,16 +1,15 @@
 Django==2.2.16
-PyYAML==3.10
+PyYAML==5.3.1
 astroid==1.0.1
 attrs==17.2.0
 psycopg2-binary==2.8
-django-cors-headers==2.0.0
+django-cors-headers==3.5.0
 django-debug-toolbar==3.1
 django-filter==2.4.0
 django-maintenancemode==0.11.3
 django-rq==2.0
-djangorestframework==3.9.4
-djangorestframework-xml
-djangorestframework-yaml
+djangorestframework==3.11.2
+djangorestframework-yaml==2.0.0
 djangorestframework-jsonp
 logilab-common==0.60.1
 pycrypto==2.6.1
@@ -44,11 +43,10 @@ paramiko==1.18.5
 
 # supervisord
 supervisor==4.2.1
-meld3==1.0.0
 
 # python-rq
 rq==1.0
-click==6.7
+click==7.1.2
 redis==3.5.3
 
 # django compressor
@@ -58,7 +56,7 @@ rcssmin==1.0.6
 rjsmin==1.0.12
 
 # django cache machine
-django-cache-machine==1.0.0
+django-cache-machine==1.1.0
 
 # django_performance_testing
 django-performance-testing==0.5.0
