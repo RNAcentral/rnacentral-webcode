@@ -32,9 +32,9 @@ pyflakes==2.0.0
 mock==3.0.5
 
 # markdown support
-Markdown==2.3.1
+Markdown==3.3.2
 django-markdown-deux==1.0.5
-markdown2==2.3.5
+markdown2==2.3.10
 
 # fabric
 ecdsa==0.13
