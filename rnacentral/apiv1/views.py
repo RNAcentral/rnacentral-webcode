@@ -682,7 +682,8 @@ class ProteinTargetsView(generics.ListAPIView):
             taxid=taxid
         )
 
-        queryset = PaginatedRawQuerySet(protein_info_query, model=ProteinInfo)  # was: ProteinInfo.objects.raw(protein_info_query)
+        # queryset = PaginatedRawQuerySet(protein_info_query, model=ProteinInfo)  # was: ProteinInfo.objects.raw(protein_info_query)
+        queryset = ProteinInfo.objects.raw(protein_info_query)
         return queryset
 
 
@@ -726,7 +727,8 @@ class LncrnaTargetsView(generics.ListAPIView):
             pk=pk,
             taxid=taxid
         )
-        queryset = PaginatedRawQuerySet(protein_info_query, model=ProteinInfo)
+        # queryset = PaginatedRawQuerySet(protein_info_query, model=ProteinInfo)
+        queryset = ProteinInfo.objects.raw(protein_info_query)
         return queryset
 
 
