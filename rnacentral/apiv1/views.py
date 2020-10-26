@@ -139,10 +139,10 @@ class APIRoot(APIView):
 
 class RnaFilter(filters.FilterSet):
     """Declare what fields can be filtered using django-filters"""
-    min_length = filters.NumberFilter(name="length", lookup_expr='gte')
-    max_length = filters.NumberFilter(name="length", lookup_expr='lte')
-    external_id = filters.CharFilter(name="xrefs__accession__external_id", distinct=True)
-    database = filters.CharFilter(name="xrefs__accession__database")
+    min_length = filters.NumberFilter(field_name="length", lookup_expr='gte')
+    max_length = filters.NumberFilter(field_name="length", lookup_expr='lte')
+    external_id = filters.CharFilter(field_name="xrefs__accession__external_id", distinct=True)
+    database = filters.CharFilter(field_name="xrefs__accession__database")
 
     class Meta:
         model = Rna
