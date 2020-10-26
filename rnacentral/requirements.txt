@@ -11,12 +11,11 @@ django-rq==2.0
 djangorestframework==3.11.2
 djangorestframework-yaml==2.0.0
 djangorestframework-jsonp
-logilab-common==0.60.1
+logilab-common==1.8.0
 pycrypto==2.6.1
-pylint==1.1.0
-python-dateutil==2.1
-python-memcached==1.58
-requests==2.18.1
+python-dateutil==2.8.1
+python-memcached==1.59
+requests==2.24.0
 selenium==3.4.3
 six==1.12.0
 sqlparse==0.4.1
@@ -29,6 +28,7 @@ django-jenkins==0.110.0
 coverage==4.5.1
 pep8==1.7.1
 pyflakes==2.0.0
+pylint==1.1.0
 mock==3.0.5
 
 # markdown support
