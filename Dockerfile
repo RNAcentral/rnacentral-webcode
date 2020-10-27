@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------------------------------------
 
-FROM debian:buster-slim
+FROM python:3.7-slim
 
 RUN apt-get update && apt-get install -y \
     g++ \
@@ -12,9 +12,6 @@ RUN apt-get update && apt-get install -y \
     curl \
     tar \
     git \
-    python3.7 \
-    libpython3.7-dev \
-    python3-pip \
     supervisor && \
     useradd -m -d /srv/rnacentral -s /bin/bash rnacentral
 
@@ -49,12 +46,11 @@ RUN \
     git clone -b "$BRANCH" https://github.com/RNAcentral/rnacentral-webcode.git && \
     pip3 install -r $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/requirements.txt && \
     pip3 install gunicorn && \
-    cd $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/portal/static && npm install --only=production
+    cd $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/portal/static && npm install --only=production && \
+    mkdir $RNACENTRAL_HOME/static
 
+WORKDIR $RNACENTRAL_HOME/rnacentral-webcode
 COPY ./entrypoint.sh /entrypoint.sh
 ENTRYPOINT [ "/entrypoint.sh" ]
-
-# Expose a container port where the website is served
-EXPOSE 8000
 
 CMD [ "/bin/sh", "-c", "/usr/bin/supervisord -c ${SUPERVISOR_CONF_DIR}/supervisord.conf" ]
