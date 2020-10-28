@@ -543,7 +543,7 @@ class Rna(CachingMixin, models.Model):
             return {}
 
         # added for release-16. Layout comes from the FTP
-        ftp = "http://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/.secondary-structure/secondary-structure/{}.svg.gz"
+        ftp = "http://ftp.ebi.ac.uk/pub/databases/RNAcentral/releases/15.0/.secondary-structure/secondary-structure/{}.svg.gz"
         upi = list(self.pk)
         upi_path = "".join(upi[0:3]) + "/" \
                    + "".join(upi[3:5]) + "/" \
