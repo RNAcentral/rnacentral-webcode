@@ -1,49 +1,12 @@
-version: '3.8'
+version: '2'
 
 services:
   # RNAcentral website
-  rnacentral:
+  web:
     build:
       context: .
-      dockerfile: Dockerfile-development
-    environment:
-      - DB_HOST=${DB_HOST}
-      - DB_NAME=${DB_NAME}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_PORT=${DB_PORT}
-      - SECRET_KEY=${SECRET_KEY}
-    depends_on:
-      - redis
-    networks:
-      - redis_network
-      - nginx_network
-
-  # Redis server
-  redis:
-    image: redis:6.0.8-alpine
-    ports:
-      - "8051:8051"
-    command: redis-server --port 8051
-    restart: always
-    networks:
-      - redis_network
-
-  # Nginx server
-  nginx:
-    image: nginx:1.19.2-alpine
-    ports:
-      - 8000:80
+      dockerfile: Dockerfile-development-backup
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./rnacentral/portal/static/:/static
-    depends_on:
-      - rnacentral
-    networks:
-      - nginx_network
-
-networks:
-  redis_network:
-    driver: bridge
-  nginx_network:
-    driver: bridge
+      - ${RNACENTRAL_HOME}:/rnacentral/rnacentral-webcode
+    ports:
+      - "9000:8000"
