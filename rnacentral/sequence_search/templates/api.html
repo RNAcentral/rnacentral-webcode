@@ -1,0 +1,85 @@
+{% extends "portal/base.html" %}
+{% load staticfiles %}
+
+{% block title %}
+    Sequence search API
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+      <div class="col-12">
+        <h1><i class="fa fa-book"></i> Sequence search API</h1>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <h2>Overview</h2>
+        <p>
+            The RNAcentral sequence similarity search API allows you to perform most of the same actions through
+            your own tools as you can through the web interface. Any tool capable of making HTTP requests can
+            communicate with this API, for example <a href="https://curl.se/" target="_blank">curl</a>.
+        </p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <h2>API Throttling</h2>
+        <p>
+            The maximum number of requests from the same IP address is limited to 50 requests per minute.
+        </p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <h2>Example script</h2>
+        <p>
+            An example of a Python script to perform searches for each record of a FASTA file is provided below.
+            It uses the biopython package and requires python >= 3.5.
+        </p>
+        <p>
+            You can use this script to search for sequences in the RNAcentral database or in one of the
+            <a href="/expert-databases">Expert Databases</a>.
+        </p>
+        <p>
+            The results will be organized into a new directory. For each record in the FASTA file, there must be a file
+            in JSON format containing the metadata and the search results. The file will be named with the sequence
+            description. Here is one example:
+        </p>
+        <p>
+            <code>
+                results<br />
+                |-- URS00001F7A66_9031 Gallus gallus (chicken) gga-let-7g-5p.json<br />
+                |-- ...
+            </code>
+        </p>
+        <table class="table table-borderless">
+          <thead>
+            <tr></tr>
+          </thead>
+          <tbody>
+            <tr><th><script src="https://gist.github.com/carlosribas/b2f4095df29a44116d5d0555d708b357.js"></script></th></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-12">
+        <h2>Swagger</h2>
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <p class="panel-title">Explore the API through Swagger</p>
+          </div>
+          <div class="panel-body">
+            <div class="embed-responsive embed-responsive-16by9">
+              <iframe class="embed-responsive-item" src="https://search.rnacentral.org/api/doc" frameborder="0" allowfullscreen></iframe>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+{% endblock %}

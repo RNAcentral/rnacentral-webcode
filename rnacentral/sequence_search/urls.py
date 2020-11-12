@@ -48,6 +48,9 @@ urlpatterns = [
     # help page
     url(r'^help/?$', RedirectView.as_view(url=reverse_lazy('help-sequence-search'), permanent=False)),
 
+    # API documentation
+    url(r'^api/?$', TemplateView.as_view(template_name='api.html'), name='sequence-search-api'),
+
     # user interface - embeddable react component
     url(r'^$', sequence_search, name='sequence-search'),
 ]
