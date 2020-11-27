@@ -89,6 +89,9 @@ STATIC_ROOT = os.path.join(os.path.dirname(PROJECT_PATH), 'static')
 # Example: "http://example.com/static/", "http://static.example.com/"
 STATIC_URL = '/static/'
 
+# WhiteNoise - compression and caching support
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # Additional locations of static files
 STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
@@ -108,6 +111,8 @@ STATICFILES_FINDERS = (
 SECRET_KEY = 'override this in local_settings.py'
 
 MIDDLEWARE = (
+    # WhiteNoise - serve static files
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     # gzip
     'django.middleware.gzip.GZipMiddleware',
     # default
