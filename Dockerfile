@@ -45,7 +45,6 @@ RUN \
     BRANCH="${RNACENTRAL_BRANCH:-master}" && \
     git clone -b "$BRANCH" https://github.com/RNAcentral/rnacentral-webcode.git && \
     pip3 install -r $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/requirements.txt && \
-    pip3 install gunicorn && \
     cd $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/portal/static && npm install --only=production && \
     mkdir $RNACENTRAL_HOME/static
 
