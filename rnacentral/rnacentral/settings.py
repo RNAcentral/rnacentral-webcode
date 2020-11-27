@@ -90,7 +90,7 @@ STATIC_ROOT = os.path.join(os.path.dirname(PROJECT_PATH), 'static')
 STATIC_URL = '/static/'
 
 # WhiteNoise - compression and caching support
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
