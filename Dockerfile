@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     tar \
     git \
+    vim \
     supervisor && \
     useradd -m -d /srv/rnacentral -s /bin/bash rnacentral
 
