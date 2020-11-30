@@ -36,7 +36,7 @@ else
 		COMPRESS_ENABLED = False
 		RQ_QUEUES = {
         "default": {
-            "HOST": "localhost",
+            "HOST": "redis",
             "PORT": 8051,
             "DB": 0,
             "DEFAULT_TIMEOUT": 360,
