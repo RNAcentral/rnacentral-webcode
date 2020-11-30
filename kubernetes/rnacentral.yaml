@@ -11,7 +11,7 @@ spec:
     protocol: TCP
     name: http
   selector:
-    app: nginx
+    app: rnacentral
 ---
 apiVersion: v1
 kind: Service
@@ -42,7 +42,7 @@ spec:
     targetPort: 8051
     name: redis-8051
   selector:
-    app: redis
+    app: rnacentral
 ---
 apiVersion: v1
 kind: Service
@@ -57,7 +57,7 @@ spec:
     targetPort: 8052
     name: memcached-8052
   selector:
-    app: memcached
+    app: rnacentral
 ---
 apiVersion: v1
 kind: ConfigMap
