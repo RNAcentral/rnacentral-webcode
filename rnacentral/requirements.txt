@@ -60,10 +60,8 @@ rjsmin==1.1.0
 django-cache-machine==1.1.0
 
 # django_performance_testing
-django-performance-testing==0.5.0
-
-# json schema
-jsonschema==2.6.0
+# No support for django 2. I kept it here to remember to change the tests
+# django-performance-testing==0.5.0
 
 # simplified static file serving for Python web apps
 whitenoise==5.2.0
