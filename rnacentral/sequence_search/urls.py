@@ -11,6 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 from django.conf.urls import url
+from django.views.generic.base import TemplateView
 from django.urls import reverse_lazy
 from django.views.generic import RedirectView
 
@@ -46,6 +47,9 @@ urlpatterns = [
 
     # help page
     url(r'^help/?$', RedirectView.as_view(url=reverse_lazy('help-sequence-search'), permanent=False)),
+
+    # API documentation
+    url(r'^api/?$', TemplateView.as_view(template_name='api.html'), name='sequence-search-api'),
 
     # user interface - embeddable react component
     url(r'^$', sequence_search, name='sequence-search'),
