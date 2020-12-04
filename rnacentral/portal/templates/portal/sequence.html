@@ -414,7 +414,15 @@ limitations under the License.
                 <uib-tab-heading>
                   2D structure <span class="label label-success">New</span>
                 </uib-tab-heading>
-                <secondary-structures upi="upi" taxid="taxid" show-secondary-structure-tab="true"></secondary-structures>
+                <r2dt-web
+                        search='{"urs": "{{ context.upi }}"}'
+                        customStyle='{"fixCss": "true", "titleColor": "#BF8E3E"}'
+                />
+                {% if context.plugin_installed %}
+                    <script type="text/javascript" src="{% static "r2dt-web/dist/r2dt-web.js" %}"></script>
+                {% else %}
+                    <script type="text/javascript" src="https://rnacentral.github.io/r2dt-web/dist/r2dt-web.js"></script>
+                {% endif %}
             </uib-tab>
             {% endif %}
 

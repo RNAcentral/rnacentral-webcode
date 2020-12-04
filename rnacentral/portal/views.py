@@ -137,7 +137,14 @@ def rna_view(request, upi, taxid=None):
         except AttributeError:
             summary_so_terms = ''
 
+    # Check if r2dt-web is installed
+    path = os.path.join(
+        settings.PROJECT_PATH, 'rnacentral', 'portal', 'static', 'r2dt-web', 'dist', 'r2dt-web.js'
+    )
+    plugin_installed = True if os.path.isfile(path) else False
+
     context = {
+        'upi': upi,
         'symbol_counts': symbol_counts,
         'non_canonical_base_counts': non_canonical_base_counts,
         'taxid': taxid,
@@ -151,6 +158,7 @@ def rna_view(request, upi, taxid=None):
         'mirna_regulators': rna.get_mirna_regulators(taxid=taxid),
         'annotations_from_other_species': rna.get_annotations_from_other_species(taxid=taxid),
         'intact': rna.get_intact(taxid),
+        'plugin_installed': plugin_installed,
     }
     response = render(request, 'portal/sequence.html', {'rna': rna, 'context': context})
     # define canonical URL for Google
