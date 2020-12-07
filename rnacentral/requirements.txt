@@ -7,7 +7,7 @@ django-cors-headers==3.5.0
 django-debug-toolbar==3.1
 django-filter==2.4.0
 django-maintenancemode==0.11.3
-django-rq==2.0
+django-rq==2.4.0
 djangorestframework==3.11.2  # 3.12 gives error in the protein-targets and lncrna-targets endpoints
 djangorestframework-yaml==2.0.0
 djangorestframework-jsonp
@@ -46,7 +46,7 @@ paramiko==1.18.5
 supervisor==4.2.1
 
 # python-rq
-rq==1.0
+rq==1.7.0
 click==7.1.2
 redis==3.5.3
 
