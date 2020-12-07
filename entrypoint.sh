@@ -28,12 +28,24 @@ then
 else
 	echo "INFO: Creating RNAcentral local_settings.py file"
 	cat <<-EOF > "${RNACENTRAL_PROJECT_PATH}"/rnacentral/local_settings.py
+		import os
 		from .utils import get_environment
 		SECRET_KEY = "$SECRET_KEY"
-		DEBUG = True
 		ENVIRONMENT = get_environment()
+		if ENVIRONMENT == 'DEV':
+		    DEBUG = True
 		INTERNAL_IPS = ('127.0.0.1', '192.168.99.1')
 		COMPRESS_ENABLED = False
+		CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+            "LOCATION": "memcached",
+        },
+        "sitemaps": {
+            "BACKEND": "rnacentral.utils.cache.SitemapsCache",
+            "LOCATION": os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'rnacentral', 'sitemaps')
+        }
+    }
 		RQ_QUEUES = {
         "default": {
             "HOST": "redis",
