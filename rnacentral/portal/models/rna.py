@@ -581,7 +581,7 @@ class Rna(CachingMixin, models.Model):
             'secondary_structure': layout.secondary_structure,
             'source': layout.template.model_source,
             'model_id': layout.template.model_name,
-            'layout': svg if svg else layout.layout,
+            'layout': svg,
             'template_species': layout.template.taxid.name,
             'template_lineage': layout.template.taxid.lineage,
         }

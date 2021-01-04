@@ -385,19 +385,10 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
         try:
             s3_svg = zlib.decompress(s3_obj.get()['Body'].read(), zlib.MAX_WBITS | 32)
         except s3.meta.client.exceptions.NoSuchKey:
-            s3_svg = None
-
-        try:
-            svg_bd = SecondaryStructureWithLayout.objects.get(urs="".join(upi))
-            svg_bd = svg_bd.layout
-        except SecondaryStructureWithLayout.DoesNotExist:
-            svg_bd = None
-
-        if not s3_svg and not svg_bd:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return HttpResponse(
-            self.generate_thumbnail(s3_svg if s3_svg else svg_bd, "".join(upi)), content_type='image/svg+xml'
+            self.generate_thumbnail(s3_svg, "".join(upi)), content_type='image/svg+xml'
         )
 
     def generate_thumbnail(self, image, upi):
