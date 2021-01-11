@@ -104,6 +104,18 @@ limitations under the License.
         {% include "portal/header.html" %}
         </header>
 
+        {% if request.path != '/' %}
+          <div class="container">
+            <div class="alert alert-warning alert-dismissible text-center" role="alert">
+              <strong>We really value your feedback.</strong> Please help us improve our services by taking this
+              <a href="https://www.surveymonkey.co.uk/r/LCSF3G7" target="_blank">short survey</a>.
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+          </div>
+        {% endif %}
+
         <div class="container">
 
           <div class="container-main">
