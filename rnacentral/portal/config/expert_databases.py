@@ -726,15 +726,28 @@ expert_dbs = [
     },
     {
         'name': 'piRBase',
-        'label': '',
+        'label': 'pirbase',
         'url': 'http://www.regulatoryrna.org/database/piRNA/',
-        'description': 'a web resource assisting piRNA functional study',
-        'hint': 'piRBase is a web resource assisting piRNA functional study',
+        'description': 'a database of various piRNA associated data to support piRNA functional study ',
+        'hint': 'piRBase is a database of various piRNA associated data to support piRNA functional study',
         'tags': ['automatic', 'curated', 'piRNA'],
         'abbreviation': '',
-        'examples': '',
-        'references': [],
-        'imported': False,
+        'examples': [
+            {'upi': 'URS0000061ED0', 'taxid': 9606},
+            {'upi': 'URS0000298B36', 'taxid': 10090},
+            {'upi': 'URS00000FDFAF', 'taxid': 7227},
+        ],
+        'references': [
+            {
+                'title': 'piRBase: a comprehensive database of piRNA sequences',
+                'authors': 'Wang J, Zhang P, Lu Y, Li Y, Zheng Y, Kan Y, Chen R, He S',
+                'journal': 'Nucleic Acids Res. 2019 Jan 8;47(D1):D175-D180',
+                'pubmed_id': '30371818',
+            },
+        ],
+        'imported': True,
+        'status': 'New',
+        'version': '2.0 (only sequences matching existing RNAcentral accessions have been imported)'
     },
     {
         'name': 'PLncDB',
