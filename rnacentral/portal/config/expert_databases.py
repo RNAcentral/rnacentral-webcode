@@ -250,8 +250,8 @@ expert_dbs = [
         'version': '47',
     },
     {
-        'name': 'GENCODE',
-        'label': 'gencode',
+        'name': 'Ensembl/GENCODE',
+        'label': 'ensembl_gencode',
         'url': 'http://gencodegenes.org/',
         'description': 'produces high quality reference gene annotation and experimental validation for human and mouse genomes',
         'hint': 'GENCODE produces high quality reference gene annotation and experimental validation for human and mouse genomes',
