@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx
+  labels:
+    app: nginx
+spec:
+  ports:
+  - port: {{ .Values.nginxPort }}
+    targetPort: {{ .Values.nginxTargetPort }}
+    protocol: TCP
+  selector:
+    app: rnacentral
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+data:
+  local.conf: |-
+    # Gunicorn application
+    upstream rnacentral {
+        server rnacentral:{{ .Values.rnacentralPort }};
+    }
+
+    server {
+        listen {{ .Values.nginxTargetPort }};
+
+        location /static/ {
+            autoindex on;
+            alias /srv/rnacentral/static/;
+        }
+
+        location / {
+            # everything is passed to Gunicorn
+            proxy_pass http://rnacentral;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header Host $host;
+            proxy_redirect off;
+        }
+    }
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  replicas: {{ .Values.nginxReplicas }}
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - image: nginx:1.17-alpine
+          name: nginx
+          resources:
+            requests:
+              memory: {{ .Values.nginxRequestsMemory }}
+              cpu: {{ .Values.nginxRequestsCPU }}
+            limits:
+              memory: {{ .Values.nginxLimitssMemory }}
+              cpu: {{ .Values.nginxLimitsCPU }}
+          ports:
+            - containerPort: {{ .Values.nginxTargetPort }}
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/conf.d/local.conf
+              subPath: local.conf
+            - name: static-volume
+              mountPath: /srv/rnacentral/static
+      restartPolicy: Always
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: nginx-config
+        - name: static-volume
+          persistentVolumeClaim:
+            claimName: static-volume

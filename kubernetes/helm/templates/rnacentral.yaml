@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rnacentral
+  labels:
+    app: rnacentral
+spec:
+  type: NodePort
+  ports:
+  - port: {{ .Values.rnacentralPort }}
+    targetPort: {{ .Values.rnacentralPort }}
+    protocol: TCP
+  selector:
+    app: rnacentral
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rnacentral
+spec:
+  replicas: {{ .Values.rnacentralReplicas }}
+  selector:
+    matchLabels:
+      app: rnacentral
+  template:
+    metadata:
+      labels:
+        app: rnacentral
+    spec:
+      containers:
+        - image: rnacentral/rnacentral-webcode:python3.7
+          name: rnacentral
+          ports:
+          - containerPort: {{ .Values.rnacentralPort }}
+          resources:
+            requests:
+              memory: {{ .Values.rnacentralRequestsMemory }}
+              cpu: {{ .Values.rnacentralRequestsCPU }}
+            limits:
+              memory: {{ .Values.rnacentralLimitssMemory }}
+              cpu: {{ .Values.rnacentralLimitsCPU }}
+          volumeMounts:
+            - name: static-volume
+              mountPath: /srv/rnacentral/static
+          envFrom:
+          - secretRef:
+              name: {{ .Values.database }}
+          - configMapRef:
+              name: {{ .Values.proxy }}
+      restartPolicy: Always
+      volumes:
+        - name: static-volume
+          persistentVolumeClaim:
+            claimName: static-volume
