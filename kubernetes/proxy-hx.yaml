@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: proxy-variables
+  name: proxy-hx
 data:
   HTTP_PROXY: http://hx-wwwcache.ebi.ac.uk:3128
   HTTPS_PROXY: http://hx-wwwcache.ebi.ac.uk:3128
