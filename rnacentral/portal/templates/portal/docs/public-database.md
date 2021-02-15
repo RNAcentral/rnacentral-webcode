@@ -111,7 +111,7 @@ If you need to export more sequences, you can use the following workflow:
 
 1. Download the following RNAcentral FASTA file:
 
-  [ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/sequences/rnacentral_species_specific_ids.fasta.gz]()
+  [http://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/sequences/rnacentral_species_specific_ids.fasta.gz](http://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/sequences/rnacentral_species_specific_ids.fasta.gz)
 
 1. Extract the sequences using [seqkit](https://bioinf.shenwei.me/seqkit/):
 
