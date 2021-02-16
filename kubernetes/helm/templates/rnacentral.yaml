@@ -28,7 +28,7 @@ spec:
         app: rnacentral
     spec:
       containers:
-        - image: rnacentral/rnacentral-webcode:python3.7
+        - image: rnacentral/rnacentral-webcode:{{ .Values.rnacentralBranch }}
           name: rnacentral
           ports:
           - containerPort: {{ .Values.rnacentralPort }}
