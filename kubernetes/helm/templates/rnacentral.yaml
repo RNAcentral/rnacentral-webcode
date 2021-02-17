@@ -5,7 +5,6 @@ metadata:
   labels:
     app: rnacentral
 spec:
-  type: NodePort
   ports:
   - port: {{ .Values.rnacentralPort }}
     targetPort: {{ .Values.rnacentralPort }}
