@@ -13,11 +13,15 @@ limitations under the License.
 
 import os
 
+from dotenv import load_dotenv
 
-DEBUG = False
+DEBUG = os.getenv('DJANGO_DEBUG', False)
 
 # project root directory
 PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # pylint: disable=C0301
+
+# read environment variables
+load_dotenv(os.path.join(PROJECT_PATH, '.env'))
 
 ADMINS = (
     ('RNAcentral Team', ''.join(['rnacentral', '@', 'gmail.com'])),
@@ -25,15 +29,15 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+# use the public Postgres database as the default value
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.',
-        'NAME': '',
-        # The following settings are not used with sqlite3:
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.getenv('DB_NAME', 'pfmegrnargs'),
+        'USER': os.getenv('DB_USERNAME', 'reader'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'NWDMCE5xdipIjRrp'),
+        'HOST': os.getenv('DB_HOST', 'hh-pgsql-public.ebi.ac.uk'),
+        'PORT': os.getenv('DB_PORT', 5432),
     }
 }
 CONN_MAX_AGE = 300
@@ -108,7 +112,7 @@ STATICFILES_FINDERS = (
 )
 
 # Provide an initial value so that the site is functional with default settings
-SECRET_KEY = 'override this in local_settings.py'
+SECRET_KEY = os.getenv('SECRET_KEY', 'use environment variable or override this in local_settings.py')
 
 MIDDLEWARE = (
     # WhiteNoise - serve static files
