@@ -104,17 +104,14 @@ limitations under the License.
         {% include "portal/header.html" %}
         </header>
 
-        {% if request.path != '/' %}
-          <div class="container">
-            <div class="alert alert-warning alert-dismissible text-center" role="alert">
-              <strong>We really value your feedback.</strong> Please help us improve our services by taking this
-              <a href="https://www.surveymonkey.co.uk/r/LCSF3G7" target="_blank">short survey</a>.
-              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
+        <div class="container" style="padding: 0; cursor: pointer;" onclick="window.open('https://www.surveymonkey.co.uk/r/LCSF3G7', '_blank');">
+          <div class="alert alert-success alert-dismissible text-center" style="margin-bottom: 0; border-radius: 0" role="alert">
+            <a href=""><span id="show-survey-message" style="font-size: large"></span></a>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
           </div>
-        {% endif %}
+        </div>
 
         <div class="container">
 
@@ -271,6 +268,23 @@ limitations under the License.
                   // After 5 seconds, remove the show class from DIV
                   setTimeout(function(){ x.className = x.className.replace("show", ""); }, 5000);
               }
+            })();
+        </script>
+
+        <script>
+            (function(){
+              var messages = [
+                'Want to improve RNAcentral? Fill out our survey to direct our efforts!',
+                'Help out RNAcentral by filling out this survey!',
+                'Found an issue, want to see something changed, fill out this survey!',
+                'Fill out this survey to help us build a better RNAcentral',
+                'Let us know how to improve RNAcentral, by clicking here',
+                'Help us decide the future of RNAcentral by filling out this survey',
+                'Does RNAcentral help your research, let us know here'
+              ];
+              var randomMessage = messages[~~(Math.random() * messages.length)];
+              var survey = document.getElementById("show-survey-message");
+              survey.innerHTML += randomMessage;
             })();
         </script>
 
