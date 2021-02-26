@@ -11,11 +11,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+import boto3
 import re
 import requests
 import zlib
 from itertools import chain
 
+from django.conf import settings
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
@@ -364,33 +366,29 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
     permission_classes = (AllowAny,)
 
     def get(self, request, pk=None, format=None):
-        ftp = "http://ftp.ebi.ac.uk/pub/databases/RNAcentral/releases/15.0/.secondary-structure/secondary-structure/{}.svg.gz"
+        s3 = boto3.resource(
+            's3',
+            aws_access_key_id=settings.S3_SERVER['KEY'],
+            aws_secret_access_key=settings.S3_SERVER['SECRET'],
+            endpoint_url=settings.S3_SERVER['HOST']
+        )
+
         upi = list(self.kwargs['pk'])
         upi_path = "".join(upi[0:3]) + "/" \
                    + "".join(upi[3:5]) + "/" \
                    + "".join(upi[5:7]) + "/" \
                    + "".join(upi[7:9]) + "/" \
                    + "".join(upi[9:11]) + "/"
-        url = ftp.format(upi_path + "".join(upi))
 
+        s3_file = "prod/" + upi_path + self.kwargs['pk'] + ".svg.gz"
+        s3_obj = s3.Object(settings.S3_SERVER['BUCKET'], s3_file)
         try:
-            response = requests.get(url)
-            response.raise_for_status()
-            svg_ftp = zlib.decompress(response.content, zlib.MAX_WBITS | 32)
-        except requests.exceptions.HTTPError as e:
-            svg_ftp = None
-
-        try:
-            svg_bd = SecondaryStructureWithLayout.objects.get(urs="".join(upi))
-            svg_bd = svg_bd.layout
-        except SecondaryStructureWithLayout.DoesNotExist:
-            svg_bd = None
-
-        if not svg_ftp and not svg_bd:
+            s3_svg = zlib.decompress(s3_obj.get()['Body'].read(), zlib.MAX_WBITS | 32)
+        except s3.meta.client.exceptions.NoSuchKey:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return HttpResponse(
-            self.generate_thumbnail(svg_ftp if svg_ftp else svg_bd, "".join(upi)), content_type='image/svg+xml'
+            self.generate_thumbnail(s3_svg, "".join(upi)), content_type='image/svg+xml'
         )
 
     def generate_thumbnail(self, image, upi):

@@ -65,3 +65,6 @@ django-performance-testing==0.5.0
 
 # json schema
 jsonschema==2.6.0
+
+# AWS SDK for Python
+boto3==1.16.24
