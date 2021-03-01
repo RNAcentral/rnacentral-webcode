@@ -1,0 +1,33 @@
+name: Building Docker containers
+
+on:
+  # Triggers the workflow on push, except for the master branch
+  push:
+    branches:
+      - '**'
+      - '!master'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: docker login
+        env:
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}   
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}  
+        run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+          
+      - name: Get branch name
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | tr / -)" >> $GITHUB_ENV
+
+      - name: docker build
+        if: env.BRANCH_NAME != ''
+        run: docker build -f Dockerfile-development -t rnacentral/rnacentral-webcode:${{ env.BRANCH_NAME }} .
+
+      - name: docker push
+        if: env.BRANCH_NAME != ''
+        run: docker push rnacentral/rnacentral-webcode:${{ env.BRANCH_NAME }}
