@@ -91,7 +91,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'as of July 20th, 2020',
+        'version': 'as of December 20th, 2020',
     },
     {
         'name': 'FlyBase',
@@ -116,7 +116,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'FB2020_03',
+        'version': 'FB2020_06',
     },
     {
         'name': 'Ensembl',
@@ -147,7 +147,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '100',
+        'version': '102',
     },
     {
         'name': 'Ensembl Plants',
@@ -172,7 +172,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '47',
+        'version': '49',
     },
     {
         'name': 'Ensembl Fungi',
@@ -197,7 +197,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '47',
+        'version': '49',
     },
     {
         'name': 'Ensembl Metazoa',
@@ -222,7 +222,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '47',
+        'version': '49',
     },
     {
         'name': 'Ensembl Protists',
@@ -247,7 +247,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '47',
+        'version': '49',
     },
     {
         'name': 'Ensembl/GENCODE',
@@ -272,7 +272,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'human 25/mouse M12',
+        'version': 'human 37/mouse M26',
     },
     {
         'name': 'Rfam',
@@ -502,7 +502,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '201',  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
+        'version': '204',  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
     },
     {
         'name': 'RDP',
@@ -551,7 +551,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': '',
     },
     {
@@ -930,7 +930,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': '',
     },
     {
@@ -1392,7 +1392,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': 'updated',
         'version': '',
     },
     {
