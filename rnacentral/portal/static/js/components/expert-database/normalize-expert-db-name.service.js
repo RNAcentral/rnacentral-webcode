@@ -7,7 +7,7 @@ angular.module("expertDatabase").service('normalizeExpertDbName', ['routes', fun
          */
         nameToImageUrl: function(name) {
             if (name === "tmRNA Website") name = 'tmrna-website';
-            else name = name.toLowerCase().replace(' ', '_');
+            else name = name.toLowerCase().replace(' ', '_').replace('/', '_');
 
             return routes.expertDbLogo({ expertDbName: name });
         },

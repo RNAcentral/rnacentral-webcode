@@ -91,6 +91,12 @@
               <a class="gtrnadb-external-url" ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.optional_id }}</a>
             </span>
 
+            <!-- piRBase -->
+            <span ng-switch-when="piRBase">
+              piRBase:
+              <a class="pirbase-external-url" ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+            </span>
+
             <!-- miRBase -->
             <span ng-switch-when="miRBase">
               miRBase:
