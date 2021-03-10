@@ -140,15 +140,9 @@ limitations under the License.
         // Set chart values
         var data = google.visualization.arrayToDataTable([
           ['Expert database', 'Number of searches'],
-          {% for dict in context.expert_db_results %}
+          {% for dict in context.current_month_pie_chart %}
             {% for key, value in dict.items %}
-              {% if value %}
-                {% with value|last as last %}
-                  {% for item in last.items %}
-                    ['{{ key }}', {{ item.1 }}],
-                  {% endfor %}
-                {% endwith %}
-              {% endif %}
+                ['{{ key }}', {{ value }}],
             {% endfor %}
           {% endfor %}
         ]);
@@ -167,15 +161,9 @@ limitations under the License.
         // Set chart values
         var data = google.visualization.arrayToDataTable([
           ['Expert database', 'Number of searches'],
-          {% for dict in context.expert_db_results %}
+          {% for dict in context.last_month_pie_chart %}
             {% for key, value in dict.items %}
-              {% if value|slice:"-2:-1" %}
-                {% for item in value|slice:"-2:-1" %}
-                  {% for n in item.items %}
-                    ['{{ key }}', {{ n.1 }}],
-                  {% endfor %}
-                {% endfor %}
-              {% endif %}
+                ['{{ key }}', {{ value }}],
             {% endfor %}
           {% endfor %}
         ]);
