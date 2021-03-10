@@ -14,7 +14,7 @@ which includes five RNA biologists covering a wide range of expertise from wet l
 
 The SAB oversees the progress of the project during annual face-to-face meetings.
 
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Thank you to our SAB members for useful feedback and great suggestions about <a href="https://twitter.com/RNAcentral?ref_src=twsrc%5Etfw">@RNAcentral</a> and <a href="https://twitter.com/RfamDB?ref_src=twsrc%5Etfw">@RfamDB</a>! <a href="https://t.co/enPAeydJDd">pic.twitter.com/enPAeydJDd</a></p>&mdash; RNAcentral (@RNAcentral) <a href="https://twitter.com/RNAcentral/status/1235937593679806471?ref_src=twsrc%5Etfw">March 6, 2020</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">A big thank you to our advisory board (<a href="https://twitter.com/stojic_lovorka?ref_src=twsrc%5Etfw">@stojic_lovorka</a>, <a href="https://twitter.com/YannPonty?ref_src=twsrc%5Etfw">@YannPonty</a>, Michelle Meyer, Manja Marz, and Eric Westhof) for great suggestions and feedback about <a href="https://twitter.com/RNAcentral?ref_src=twsrc%5Etfw">@RNAcentral</a> and <a href="https://twitter.com/RfamDB?ref_src=twsrc%5Etfw">@RfamDB</a>! <a href="https://t.co/ejfVYrX0m0">pic.twitter.com/ejfVYrX0m0</a></p>&mdash; RNAcentral (@RNAcentral) <a href="https://twitter.com/RNAcentral/status/1369334752524767233?ref_src=twsrc%5Etfw">March 9, 2021</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 
 ### Previous members
 
