@@ -13,6 +13,7 @@ limitations under the License.
 import os
 import requests
 
+from datetime import date, timedelta
 from django.conf import settings
 from django.shortcuts import render
 from django.views.decorators.cache import never_cache
@@ -158,6 +159,21 @@ def dashboard(request):
     except requests.exceptions.HTTPError as err:
         raise err
 
+    current_date = date.today()
+    current_month = current_date.strftime('%Y-%m')
+    last_month = (current_date.replace(day=1) - timedelta(days=1)).strftime('%Y-%m')
+    current_month_pie_chart = []
+    last_month_pie_chart = []
+
+    for index in range(len(expert_db_results)):
+        for key in expert_db_results[index]:
+            if expert_db_results[index][key][-1].keys()[0] == current_month:
+                current_month_pie_chart.append({key: expert_db_results[index][key][-1][current_month]})
+            if expert_db_results[index][key][-1].keys()[0] == last_month:
+                last_month_pie_chart.append({key: expert_db_results[index][key][-1][last_month]})
+            if expert_db_results[index][key][-2].keys()[0] == last_month:
+                last_month_pie_chart.append({key: expert_db_results[index][key][-2][last_month]})
+
     context = {
         'all_searches': all_searches,
         'searches_last_24_hours': searches_last_24_hours,
@@ -166,7 +182,9 @@ def dashboard(request):
         'average_last_24_hours': average_last_24_hours,
         'average_last_week': average_last_week,
         'searches_per_month': searches_per_month,
-        'expert_db_results': expert_db_results
+        'expert_db_results': expert_db_results,
+        'current_month_pie_chart': current_month_pie_chart,
+        'last_month_pie_chart': last_month_pie_chart
     }
 
     return render(request, 'dashboard.html', {'context': context})
