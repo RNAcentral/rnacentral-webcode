@@ -91,7 +91,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'as of July 20th, 2020',
+        'version': 'as of December 20th, 2020',
     },
     {
         'name': 'FlyBase',
@@ -116,7 +116,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'FB2020_03',
+        'version': 'FB2020_06',
     },
     {
         'name': 'Ensembl',
@@ -147,7 +147,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '100',
+        'version': '102',
     },
     {
         'name': 'Ensembl Plants',
@@ -172,7 +172,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '47',
+        'version': '49',
     },
     {
         'name': 'Ensembl Fungi',
@@ -197,7 +197,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '47',
+        'version': '49',
     },
     {
         'name': 'Ensembl Metazoa',
@@ -222,7 +222,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '47',
+        'version': '49',
     },
     {
         'name': 'Ensembl Protists',
@@ -247,11 +247,11 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '47',
+        'version': '49',
     },
     {
-        'name': 'GENCODE',
-        'label': 'gencode',
+        'name': 'Ensembl/GENCODE',
+        'label': 'ensembl_gencode',
         'url': 'http://gencodegenes.org/',
         'description': 'produces high quality reference gene annotation and experimental validation for human and mouse genomes',
         'hint': 'GENCODE produces high quality reference gene annotation and experimental validation for human and mouse genomes',
@@ -272,7 +272,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'human 25/mouse M12',
+        'version': 'human 37/mouse M26',
     },
     {
         'name': 'Rfam',
@@ -502,7 +502,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '201',  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
+        'version': '204',  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
     },
     {
         'name': 'RDP',
@@ -551,7 +551,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': '',
     },
     {
@@ -726,15 +726,28 @@ expert_dbs = [
     },
     {
         'name': 'piRBase',
-        'label': '',
+        'label': 'pirbase',
         'url': 'http://www.regulatoryrna.org/database/piRNA/',
-        'description': 'a web resource assisting piRNA functional study',
-        'hint': 'piRBase is a web resource assisting piRNA functional study',
+        'description': 'a database of various piRNA associated data to support piRNA functional study ',
+        'hint': 'piRBase is a database of various piRNA associated data to support piRNA functional study',
         'tags': ['automatic', 'curated', 'piRNA'],
         'abbreviation': '',
-        'examples': '',
-        'references': [],
-        'imported': False,
+        'examples': [
+            {'upi': 'URS0000061ED0', 'taxid': 9606},
+            {'upi': 'URS0000298B36', 'taxid': 10090},
+            {'upi': 'URS00000FDFAF', 'taxid': 7227},
+        ],
+        'references': [
+            {
+                'title': 'piRBase: a comprehensive database of piRNA sequences',
+                'authors': 'Wang J, Zhang P, Lu Y, Li Y, Zheng Y, Kan Y, Chen R, He S',
+                'journal': 'Nucleic Acids Res. 2019 Jan 8;47(D1):D175-D180',
+                'pubmed_id': '30371818',
+            },
+        ],
+        'imported': True,
+        'status': 'New',
+        'version': '2.0 (only sequences matching existing RNAcentral accessions have been imported)'
     },
     {
         'name': 'PLncDB',
@@ -917,7 +930,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': '',
         'version': '',
     },
     {
@@ -1379,7 +1392,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'new',
+        'status': 'updated',
         'version': '',
     },
     {
