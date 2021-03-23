@@ -40,10 +40,10 @@ Alternatively, you can use a **Postgres client** like [DBeaver](https://dbeaver.
 
 ## Database Schema
 
-The following diagram was generated based on RNAcentral release 11.
+The following diagram was generated based on RNAcentral release 16.
 
-<a href="/static/img/rnacentral_release_11_schema.png">
-  <img src="/static/img/rnacentral_release_11_schema.png" class="img-responsive">
+<a href="/static/img/rnacentral_release_16_schema.png">
+  <img src="/static/img/rnacentral_release_16_schema.png" class="img-responsive">
 </a>
 
 ## Main tables
@@ -111,7 +111,7 @@ If you need to export more sequences, you can use the following workflow:
 
 1. Download the following RNAcentral FASTA file:
 
-  [ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/sequences/rnacentral_species_specific_ids.fasta.gz]()
+  [http://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/sequences/rnacentral_species_specific_ids.fasta.gz](http://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/sequences/rnacentral_species_specific_ids.fasta.gz)
 
 1. Extract the sequences using [seqkit](https://bioinf.shenwei.me/seqkit/):
 
