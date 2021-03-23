@@ -29,7 +29,7 @@ Please note that "field value" **must be enclosed in double quotes**.
 | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **expert database**            | `expert_db:"tmrna website"`, `expert_db:"mirbase"`, search for `RNA` and look at the "Expert databases" facet                                      |
 | **NCBI taxonomic identifier**  | `taxonomy:"9606"` where [9606](http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606) is the NCBI taxonomy id for Homo sapiens           |
-| **taxonomy string**            | `tax_string:"primates"` - allows to search for taxonomic group                                                                                                                            |
+| **taxonomy string**            | `tax_string:"primates"` - allows to search for taxonomic group                                                                                     |
 | **scientific species name**    | `species:"Mus musculus"`                                                                                                                           |
 | **common species name**        | `common_name:"mouse"`                                                                                                                              |
 | **RNA type**                   | `rna_type:"pirna"`, search for `RNA` and look at the "RNA types" facet.                                                                            |
@@ -42,6 +42,8 @@ Please note that "field value" **must be enclosed in double quotes**.
 | **PubMed id**                  | `pubmed:"17881443"`                                                                                                                                |
 | **Digital Object Identifier**  | `doi:"10.1093/nar/19.22.6328"`                                                                                                                     |
 | **MD5**                        | `md5:"020711a90d35bb197e29e085595dd52e"` [MD5](http://en.wikipedia.org/wiki/MD5) hash value of uppercase DNA corresponding to RNAcentral sequence. |
+| **interacting proteins**       | `interacting_protein:"ENSG00000277791"`                                                                                                            |
+| **secondary structure**        | `has_secondary_structure:"True"`                                                                                                                   |
 
 ---
 
