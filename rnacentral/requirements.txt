@@ -15,7 +15,7 @@ logilab-common==1.8.0
 pycrypto==2.6.1
 python-dateutil==2.8.1
 python-memcached==1.59
-requests==2.24.0
+requests==2.25.1
 selenium==3.4.3
 six==1.12.0
 sqlparse==0.4.1
