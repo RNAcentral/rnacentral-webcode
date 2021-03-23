@@ -110,7 +110,7 @@ examples = [
       'description': 'Chimpanzee LSU rRNA',
   },
   {
-      'uid': 'URS0000C4E362',
+      'uid': 'URS0000215F9B',
       'taxid': '5908',
       'description': 'T. pyriformis LSU rRNA',
   },
