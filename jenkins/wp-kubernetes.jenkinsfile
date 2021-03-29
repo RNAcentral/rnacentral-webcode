@@ -14,12 +14,18 @@ pipeline {
                     if (params.CLUSTER == 'HX') {
                         withCredentials([file(credentialsId: 'HX-WP-Config', variable: 'config')]) {
                             sh """
+                                git checkout python3-version
+                                cd kubernetes/helm
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm list --all
                                 /net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig ${config} get namespace
                             """
                         }
                     } else if (params.CLUSTER == 'HH') {
                         withCredentials([file(credentialsId: 'HH-WP-Config', variable: 'config')]) {
                             sh """
+                                git checkout python3-version
+                                cd kubernetes/helm
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm list --all
                                 /net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig ${config} get namespace
                             """
                         }
