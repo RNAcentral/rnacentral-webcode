@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+    parameters {
+        choice(
+            name: 'CLUSTER',
+            choices: ['HX', 'HH'],
+            description: 'Which cluster config to use?'
+        )
+    }
+    stages {
+        stage("deploy") {
+            steps {
+                script {
+                    if (params.CLUSTER == 'HX') {
+                        withCredentials([file(credentialsId: 'HX-WP-Config', variable: 'config')]) {
+                            sh """
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig ${config} get namespace
+                            """
+                        }
+                    } else if (params.CLUSTER == 'HH') {
+                        withCredentials([file(credentialsId: 'HH-WP-Config', variable: 'config')]) {
+                            sh """
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig ${config} get namespace
+                            """
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
