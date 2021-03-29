@@ -16,7 +16,7 @@ pipeline {
                             sh """
                                 git checkout python3-version
                                 cd kubernetes/helm
-                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm list --all
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm --kubeconfig ${config} list --all
                                 /net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig ${config} get namespace
                             """
                         }
@@ -25,7 +25,7 @@ pipeline {
                             sh """
                                 git checkout python3-version
                                 cd kubernetes/helm
-                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm list --all
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm --kubeconfig ${config} list --all
                                 /net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig ${config} get namespace
                             """
                         }
