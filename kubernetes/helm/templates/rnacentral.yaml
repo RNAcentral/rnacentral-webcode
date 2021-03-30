@@ -25,6 +25,8 @@ spec:
     metadata:
       labels:
         app: rnacentral
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
     spec:
       containers:
         - image: rnacentral/rnacentral-webcode:{{ .Values.rnacentralBranch }}

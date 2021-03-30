@@ -53,6 +53,8 @@ spec:
     metadata:
       labels:
         app: nginx
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
     spec:
       containers:
         - image: nginx:1.17-alpine
