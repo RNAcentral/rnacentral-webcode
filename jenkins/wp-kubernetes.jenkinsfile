@@ -6,9 +6,47 @@ pipeline {
             choices: ['HX', 'HH'],
             description: 'Which cluster config to use?'
         )
+        choice(
+            name: 'WEB',
+            choices: ['TEST', 'PROD'],
+            description: 'Which website do you want to update?'
+        )
+        choice(
+            name: 'DATABASE',
+            choices: ['PRO', 'DEV', 'TEST', 'FB', 'HH'],
+            description: 'Which database instance to use?'
+        )
+        gitParameter(
+            branchFilter: 'origin/(.*)',
+            defaultValue: 'master',
+            name: 'BRANCH',
+            type: 'PT_BRANCH',
+            description: 'Name of the branch to test and deploy'
+        )
     }
     stages {
         stage("deploy") {
+            environment {
+                // set DB with the corresponding Secret file
+                if (params.DATABASE == 'PRO') {
+                    DB = "db-pro"
+                } else if (params.DATABASE == 'DEV') {
+                    DB = "db-dev"
+                } else if (params.DATABASE == 'TEST-PG10') {
+                    DB = "db-test"
+                } else if (params.DATABASE == 'FB-PG10') {
+                    DB = "db-fb"
+                } else if (params.DATABASE == 'HH-PG10') {
+                    DB = "db-hh"
+                }
+
+                // set RELEASE with the corresponding instance chart
+                if (params.WEB == 'TEST') {
+                    RELEASE = "full-dev"
+                } else if (params.WEB == 'PROD') {
+                    RELEASE = "full-prod"
+                }
+            }
             steps {
                 script {
                     if (params.CLUSTER == 'HX') {
@@ -16,8 +54,7 @@ pipeline {
                             sh """
                                 git checkout python3-version
                                 cd kubernetes/helm
-                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm --kubeconfig ${config} list --all
-                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig ${config} get namespace
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} . --kubeconfig ${config} --set proxy=proxy-hx,database=${DB},rnacentralBranch=${params.BRANCH}
                             """
                         }
                     } else if (params.CLUSTER == 'HH') {
@@ -25,8 +62,7 @@ pipeline {
                             sh """
                                 git checkout python3-version
                                 cd kubernetes/helm
-                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm --kubeconfig ${config} list --all
-                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig ${config} get namespace
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} . --kubeconfig ${config} --set proxy=proxy-hh,database=${DB},rnacentralBranch=${params.BRANCH}
                             """
                         }
                     }
