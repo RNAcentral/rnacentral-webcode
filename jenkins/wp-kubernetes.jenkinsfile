@@ -26,29 +26,37 @@ pipeline {
     }
     stages {
         stage("deploy") {
-            environment {
-                // set DB with the corresponding Secret file
-                if (params.DATABASE == 'PRO') {
-                    DB = "db-pro"
-                } else if (params.DATABASE == 'DEV') {
-                    DB = "db-dev"
-                } else if (params.DATABASE == 'TEST-PG10') {
-                    DB = "db-test"
-                } else if (params.DATABASE == 'FB-PG10') {
-                    DB = "db-fb"
-                } else if (params.DATABASE == 'HH-PG10') {
-                    DB = "db-hh"
-                }
-
-                // set RELEASE with the corresponding instance chart
-                if (params.WEB == 'TEST') {
-                    RELEASE = "full-dev"
-                } else if (params.WEB == 'PROD') {
-                    RELEASE = "full-prod"
-                }
-            }
             steps {
                 script {
+                    // set DB with the corresponding Secret file
+                    switch(params.DATABASE) {
+                        case 'PRO':
+                            env.DB = 'db-pro'
+                            break
+                        case 'DEV':
+                            env.DB = 'db-dev'
+                            break
+                        case 'TEST':
+                            env.DB = 'db-test'
+                            break
+                        case 'FB':
+                            env.DB = 'db-fb'
+                            break
+                        case 'HH':
+                            env.DB = 'db-hh'
+                            break
+                    }
+
+                    // set RELEASE with the corresponding instance chart
+                    switch(params.WEB) {
+                        case 'TEST':
+                            env.RELEASE = 'full-dev'
+                            break
+                        case 'PROD':
+                            env.RELEASE = 'full-prod'
+                            break
+                    }
+
                     if (params.CLUSTER == 'HX') {
                         withCredentials([file(credentialsId: 'HX-WP-Config', variable: 'config')]) {
                             sh """
