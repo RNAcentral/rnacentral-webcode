@@ -51,9 +51,11 @@ pipeline {
                     switch(params.WEB) {
                         case 'TEST':
                             env.RELEASE = 'full-dev'
+                            env.NAMESPACE = 'dev'
                             break
                         case 'PROD':
                             env.RELEASE = 'full-prod'
+                            env.NAMESPACE = 'prod'
                             break
                     }
 
@@ -62,7 +64,7 @@ pipeline {
                             sh """
                                 git checkout python3-version
                                 cd kubernetes/helm
-                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} . --kubeconfig ${config} --set proxy=proxy-hx,database=${DB},rnacentralBranch=${params.BRANCH}
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} . --kubeconfig ${config} --namespace ${NAMESPACE} --set proxy=proxy-hx,database=${DB},rnacentralBranch=${params.BRANCH}
                             """
                         }
                     } else if (params.CLUSTER == 'HH') {
@@ -70,7 +72,7 @@ pipeline {
                             sh """
                                 git checkout python3-version
                                 cd kubernetes/helm
-                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} . --kubeconfig ${config} --set proxy=proxy-hh,database=${DB},rnacentralBranch=${params.BRANCH}
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} . --kubeconfig ${config} --namespace ${NAMESPACE} --set proxy=proxy-hh,database=${DB},rnacentralBranch=${params.BRANCH}
                             """
                         }
                     }
