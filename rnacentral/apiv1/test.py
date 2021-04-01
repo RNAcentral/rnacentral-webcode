@@ -23,11 +23,11 @@ from rest_framework.test import APITestCase, APIClient
 class Timer(object):
     """Helper class for detecting long-running requests."""
     def __enter__(self):
-        self.start = time.clock()
+        self.start = time.perf_counter()
         return self
 
     def __exit__(self, *args):
-        self.end = time.clock()
+        self.end = time.perf_counter()
         self.timeout = self.end - self.start
 
 
