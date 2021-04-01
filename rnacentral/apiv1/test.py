@@ -521,7 +521,7 @@ class SpeciesSpecificIdsTestCase(ApiV1BaseClass):
         When there are no active xrefs for a taxid,
         the `is_active` field should be `False`.
         """
-        upi = 'URS0000516D2D'
+        upi = 'URS0000F97F96'
         url = reverse('rna-detail', kwargs={'pk': upi})
         c = APIClient()
         response = c.get(url)
