@@ -498,23 +498,22 @@ class SpeciesSpecificIdsTestCase(ApiV1BaseClass):
     upi = 'URS000047C79B'
     taxid = 9606
 
-    # TODO: can't resolve species-specific url
-    # def test_species_specific_id(self):
-    #     """Get an existing upi and taxid."""
-    #     url = reverse('rna-species-specific', kwargs={'pk': self.upi, 'taxid': str(self.taxid)})
-    #     c = APIClient()
-    #     response = c.get(url)
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertEqual(response.data['rnacentral_id'], '%s_%i' % (self.upi, self.taxid))
-    #     self.assertEqual(response.data['is_active'], True)
-    #
-    # def test_nonexistent_taxid(self):
-    #     """Non-existent taxid should return a 404 error."""
-    #     taxid = 00000
-    #     url = reverse('rna-species-specific', kwargs={'pk': self.upi, 'taxid': str(taxid)})
-    #     c = APIClient()
-    #     response = c.get(url)
-    #     self.assertEqual(response.status_code, 404)
+    def test_species_specific_id(self):
+        """Get an existing upi and taxid."""
+        url = reverse('rna-species-specific', kwargs={'pk': self.upi, 'taxid': str(self.taxid)})
+        c = APIClient()
+        response = c.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data['rnacentral_id'], '%s_%i' % (self.upi, self.taxid))
+        self.assertEqual(response.data['is_active'], True)
+
+    def test_nonexistent_taxid(self):
+        """Non-existent taxid should return a 404 error."""
+        taxid = 00000
+        url = reverse('rna-species-specific', kwargs={'pk': self.upi, 'taxid': str(taxid)})
+        c = APIClient()
+        response = c.get(url)
+        self.assertEqual(response.status_code, 404)
 
     def test_inactive_entry(self):
         """
