@@ -388,7 +388,7 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return HttpResponse(
-            self.generate_thumbnail(s3_svg, "".join(upi)), content_type='image/svg+xml'
+            self.generate_thumbnail(s3_svg.decode('utf-8'), "".join(upi)), content_type='image/svg+xml'
         )
 
     def generate_thumbnail(self, image, upi):
