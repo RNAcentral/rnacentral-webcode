@@ -93,6 +93,11 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         url = reverse('rna-sequences')
         self._test_url(url)
 
+    def test_rna_list_filter_by_database(self):
+        """Test filter by database (hyperlinked response)."""
+        url = reverse('rna-sequences')
+        self._test_url(url, data={'database': 'mirbase'})
+
     def test_rna_list_pagination(self):
         """Test paginated RNA list (hyperlinked response)."""
         page = 10
@@ -171,6 +176,51 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         """Test endpoint for 404 status code."""
         response = self.client.get(reverse('rna-2d-svg', kwargs={'pk': 'URS0000000002'}))
         self.assertEqual(response.status_code, 404)
+
+    def test_rna_xrefs_species_specific(self):
+        """Test rna-xrefs-species-specific endpoint."""
+        url = reverse('rna-xrefs-species-specific', kwargs={'pk': 'URS00006457C1', 'taxid': '10090'})
+        self._test_url(url)
+
+    def test_rna_2d_species_specific(self):
+        """Test rna-2d-species-specific endpoint."""
+        url = reverse('rna-2d-species-specific', kwargs={'pk': 'URS00006457C1', 'taxid': '10090'})
+        self._test_url(url)
+
+    def test_rna_rfam_hits(self):
+        """Test rna-rfam-hits endpoint."""
+        url = reverse('rna-rfam-hits', kwargs={'pk': 'URS00006457C1', 'taxid': '10090'})
+        self._test_url(url)
+
+    def test_rna_genome_locations(self):
+        """Test rna-genome-locations endpoint."""
+        url = reverse('rna-genome-locations', kwargs={'pk': 'URS00006457C1', 'taxid': '10090'})
+        self._test_url(url)
+
+    def test_rna_go_annotations(self):
+        """Test rna-go-annotations endpoint."""
+        url = reverse('rna-go-annotations', kwargs={'pk': 'URS00006457C1', 'taxid': '10090'})
+        self._test_url(url)
+
+    def test_ensembl_compara(self):
+        """Test ensembl-compara endpoint."""
+        url = reverse('rna-ensembl-compara', kwargs={'pk': 'URS00006457C1', 'taxid': '10090'})
+        self._test_url(url)
+
+    def test_rna_lncrna_targets(self):
+        """Test rna-lncrna-targets endpoint."""
+        url = reverse('rna-lncrna-targets', kwargs={'pk': 'URS00006457C1', 'taxid': '10090'})
+        self._test_url(url)
+
+    def test_expert_dbs_api(self):
+        """Test expert-dbs-api endpoint."""
+        url = reverse('expert-dbs-api')
+        self._test_url(url)
+
+    def test_ensembl_karyotype(self):
+        """Test ensembl-karyotype endpoint."""
+        url = reverse('ensembl-karyotype', kwargs={'ensembl_url': 'fusarium_verticillioides'})
+        self._test_url(url)
 
 
 class NestedXrefsTestCase(ApiV1BaseClass):
@@ -388,6 +438,10 @@ class OutputFormatsTestCase(ApiV1BaseClass):
                 self.assertIn('URS', annotation['Parent'])
             else:
                 self.assertEqual(0, 1, "Unknown genomic annotation type")
+
+    def test_genome_annotations_empty_data(self):
+        response = self._test_url('/api/v1/overlap/region/homo_sapiens/0:0,0,0-0,0,0')
+        self.assertEqual(len(response.data), 0)
 
 
 class FiltersTestCase(ApiV1BaseClass):
