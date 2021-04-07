@@ -7,11 +7,13 @@ from sequence_search.views import dashboard, show_searches
 
 class SequenceSearchTest(TestCase):
     def setUp(self):
-        self.data = [
-            {"count": 15, "avg_time": "0:02:47", "search": "all"},
-            {"count": 0, "avg_time": 0, "search": "last-24-hours"},
-            {"count": 3, "avg_time": "0:02:19", "search": "last-week"}
-        ]
+        self.data = {
+            "all_searches_result": {"count": 14602, "avg_time": "0:01:10"},
+            "last_24_hours_result": {"count": 118, "avg_time": "0:04:07"},
+            "last_week_result": {"count": 896, "avg_time": "0:00:46"},
+            "searches_per_month": [],
+            "expert_db_results": [{"RNAcentral": []}, {"Rfam": []}, {"miRBase": []}, {"snoDB": []}, {"GtRNAdb": []}]
+        }
 
     def test_show_searches_url(self):
         view = resolve('/sequence-search/show-searches')
