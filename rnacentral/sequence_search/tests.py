@@ -38,3 +38,27 @@ class SequenceSearchTest(TestCase):
         mock_get.return_value.json.return_value = self.data
         response = self.client.get(reverse('sequence-search-dashboard'))
         self.assertTemplateUsed(response, 'dashboard.html')
+
+    def test_help_page_status_code(self):
+        response = self.client.get(reverse('help-sequence-search'))
+        self.assertEquals(response.status_code, 200)
+
+    def test_help_page_template(self):
+        response = self.client.get(reverse('help-sequence-search'))
+        self.assertTemplateUsed(response, 'portal/help/sequence-search-help.html')
+
+    def test_sequence_search_api_status_code(self):
+        response = self.client.get(reverse('sequence-search-api'))
+        self.assertEquals(response.status_code, 200)
+
+    def test_sequence_search_api_template(self):
+        response = self.client.get(reverse('sequence-search-api'))
+        self.assertTemplateUsed(response, 'api.html')
+
+    def test_sequence_search_status_code(self):
+        response = self.client.get(reverse('sequence-search'))
+        self.assertEquals(response.status_code, 200)
+
+    def test_sequence_search_template(self):
+        response = self.client.get(reverse('sequence-search'))
+        self.assertTemplateUsed(response, 'sequence-search-embed.html')
