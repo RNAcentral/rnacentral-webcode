@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.urls import resolve, reverse
 from mock import patch, Mock
 
-from sequence_search.views import dashboard, show_searches
+from sequence_search.views import dashboard, sequence_search, show_searches
 
 
 class SequenceSearchTest(TestCase):
@@ -18,6 +18,10 @@ class SequenceSearchTest(TestCase):
     def test_show_searches_url(self):
         view = resolve('/sequence-search/show-searches')
         self.assertEquals(view.func, show_searches)
+
+    def test_show_searches_status_code(self):
+        response = self.client.get(reverse('sequence-search-show-searches'))
+        self.assertEquals(response.status_code, 200)
 
     def test_dashboard_url(self):
         view = resolve('/sequence-search/dashboard')
@@ -54,6 +58,10 @@ class SequenceSearchTest(TestCase):
     def test_sequence_search_api_template(self):
         response = self.client.get(reverse('sequence-search-api'))
         self.assertTemplateUsed(response, 'api.html')
+
+    def test_sequence_search_url(self):
+        view = resolve('/sequence-search/')
+        self.assertEquals(view.func, sequence_search)
 
     def test_sequence_search_status_code(self):
         response = self.client.get(reverse('sequence-search'))
