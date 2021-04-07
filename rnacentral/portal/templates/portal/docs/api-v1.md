@@ -141,8 +141,6 @@ The following output formats are supported for all endpoints:
 **JSON**, **JSONP** (for cross-origin Javascript requests), **YAML**, **HTML**.
 
 In addition, the data for individual RNA sequences can be downloaded in **FASTA** format.
-For those sequences that have genomic coordinates
-**[GFF2](http://www.sanger.ac.uk/resources/software/gff/spec.html)**, **[GFF3](http://www.sequenceontology.org/gff3.shtml)**, and **[BED](http://genome.ucsc.edu/FAQ/FAQformat.html)** formats are available.
 
 There are three ways of specifying the format:
 
@@ -151,18 +149,12 @@ There are three ways of specifying the format:
   * [{{ BASE_URL }}/api/v1/rna/URS0000000001/?format=fasta](/api/v1/rna/URS0000000001/?format=fasta)
   * [{{ BASE_URL }}/api/v1/rna/URS0000000001/?format=yaml](/api/v1/rna/URS0000000001/?format=yaml)
   * [{{ BASE_URL }}/api/v1/rna/URS0000000001/?format=api](/api/v1/rna/URS0000000001/?format=api)
-  * [{{ BASE_URL }}/api/v1/rna/URS000063A371/?format=bed](/api/v1/rna/URS000063A371/?format=bed)
-  * [{{ BASE_URL }}/api/v1/rna/URS000063A371/?format=gff](/api/v1/rna/URS000063A371/?format=gff)
-  * [{{ BASE_URL }}/api/v1/rna/URS000063A371/?format=gff3](/api/v1/rna/URS000063A371/?format=gff3)
 
 2. `.format` suffix
   * [{{ BASE_URL }}/api/v1/rna/URS0000000001.json](/api/v1/rna/URS0000000001.json)
   * [{{ BASE_URL }}/api/v1/rna/URS0000000001.fasta](/api/v1/rna/URS0000000001.fasta)
   * [{{ BASE_URL }}/api/v1/rna/URS0000000001.yaml](/api/v1/rna/URS0000000001.yaml)
   * [{{ BASE_URL }}/api/v1/rna/URS0000000001.api](/api/v1/rna/URS0000000001.api)
-  * [{{ BASE_URL }}/api/v1/rna/URS000063A371.bed](/api/v1/rna/URS000063A371.bed)
-  * [{{ BASE_URL }}/api/v1/rna/URS000063A371.gff](/api/v1/rna/URS000063A371.gff)
-  * [{{ BASE_URL }}/api/v1/rna/URS000063A371.gff3](/api/v1/rna/URS000063A371.gff3)
 
 3. [Accept headers](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html)
 
@@ -171,9 +163,6 @@ There are three ways of specifying the format:
   curl -H "Accept: text/fasta" {{ BASE_URL }}/api/v1/rna/URS0000000001
   curl -H "Accept: application/yaml" {{ BASE_URL }}/api/v1/rna/URS0000000001
   curl -H "Accept: text/html" {{ BASE_URL }}/api/v1/rna/URS0000000001
-  curl -H "Accept: text/bed" {{ BASE_URL }}/api/v1/rna/URS000063A371
-  curl -H "Accept: text/gff" {{ BASE_URL }}/api/v1/rna/URS000063A371
-  curl -H "Accept: text/gff3" {{ BASE_URL }}/api/v1/rna/URS000063A371
   ```
 
 In case there is a conflict between the Accept headers and the format parameter, an error message is returned, for example:
