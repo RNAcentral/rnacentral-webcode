@@ -89,6 +89,7 @@ def job_results(request, job_id):
     url = SEQUENCE_SEARCH_ENDPOINT + '/api/facets-search/' + job_id
     return proxy_request(request, url, 'GET')
 
+
 @never_cache
 @api_view(['GET'])
 @permission_classes([AllowAny])
