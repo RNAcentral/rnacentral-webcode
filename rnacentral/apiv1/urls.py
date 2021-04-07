@@ -72,4 +72,4 @@ urlpatterns = [
     url(r'karyotypes/(?P<ensembl_url>.*?)/?$', cache_page(CACHE_TIMEOUT)(views.EnsemblKaryotypeAPIView.as_view()), {}, name='ensembl-karyotype'),
 ]
 
-urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'yaml', 'fasta', 'api', 'gff', 'gff3', 'bed'])
+urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'yaml', 'fasta', 'api'])

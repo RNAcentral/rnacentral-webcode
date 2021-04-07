@@ -13,7 +13,6 @@ limitations under the License.
 """
 import boto3
 import re
-import requests
 import zlib
 from itertools import chain
 
@@ -33,7 +32,7 @@ from rest_framework_jsonp.renderers import JSONPRenderer
 from rest_framework_yaml.renderers import YAMLRenderer
 
 from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, XrefSerializer, \
-                              RnaFlatSerializer, RnaFastaSerializer, RnaGffSerializer, RnaGff3Serializer, RnaBedSerializer, \
+                              RnaFlatSerializer, RnaFastaSerializer, \
                               RnaSpeciesSpecificSerializer, ExpertDatabaseStatsSerializer, \
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, \
                               RfamHitSerializer, SequenceFeatureSerializer, \
@@ -41,11 +40,10 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               LncrnaTargetsSerializer, EnsemblComparaSerializer, SecondaryStructureSVGImageSerializer
 
 from apiv1.renderers import RnaFastaRenderer
-from portal.models import Rna, RnaPrecomputed, Accession, Xref, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
-    GoAnnotation, RelatedSequence, ProteinInfo, SequenceFeature,\
-    SequenceRegion, EnsemblCompara, SecondaryStructureWithLayout
+from portal.models import Rna, RnaPrecomputed, Accession, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
+    GoAnnotation, RelatedSequence, ProteinInfo, SequenceFeature, SequenceRegion, EnsemblCompara
 from portal.config.expert_databases import expert_dbs
-from rnacentral.utils.pagination import Pagination, PaginatedRawQuerySet
+from rnacentral.utils.pagination import Pagination
 
 from colorhash import ColorHash
 
@@ -157,12 +155,6 @@ class RnaMixin(object):
         """Determine a serializer for RnaSequences and RnaDetail views."""
         if self.request.accepted_renderer.format == 'fasta':
             return RnaFastaSerializer
-        elif self.request.accepted_renderer.format == 'gff':
-            return RnaGffSerializer
-        elif self.request.accepted_renderer.format == 'gff3':
-            return RnaGff3Serializer
-        elif self.request.accepted_renderer.format == 'bed':
-            return RnaBedSerializer
 
         flat = self.request.query_params.get('flat', 'false')
         if re.match('true', flat, re.IGNORECASE):
@@ -534,7 +526,7 @@ class ExpertDatabasesAPIView(APIView):
             return expert_db_label
 
         # e.g. { "TMRNA_WEB": {'name': 'tmRNA Website', 'label': 'tmrna-website', ...}}
-        databases = { db['descr']:db for db in Database.objects.values() }
+        databases = {db['descr']: db for db in Database.objects.values()}
 
         # update config.expert_databases json with Database table objects
         for db in expert_dbs:
@@ -793,7 +785,7 @@ class EnsemblComparaAPIViewSet(generics.ListAPIView):
             return None
 
     def get_ensembl_compara_status(self):
-        urs_taxid = self.kwargs['pk']+ '_' + self.kwargs['taxid']
+        urs_taxid = self.kwargs['pk'] + '_' + self.kwargs['taxid']
 
         rna_precomputed = RnaPrecomputed.objects.get(id=urs_taxid)
         if rna_precomputed.databases and 'Ensembl' not in rna_precomputed.databases:

@@ -393,34 +393,10 @@ class LncrnaTargetsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProteinInfo
-        fields = ('target_accession', 'source_accession', 'description', 'label', 'synonyms', 'methods', 'description', 'target_urs_taxid')
-
-
-class RnaGffSerializer(serializers.ModelSerializer):
-    """Serializer for presenting genomic coordinates in GFF format"""
-    gff = serializers.CharField(source='get_gff', read_only=True)
-
-    class Meta:
-        model = Rna
-        fields = ('gff',)
-
-
-class RnaGff3Serializer(serializers.ModelSerializer):
-    """Serializer for presenting genomic coordinates in GFF format"""
-    gff3 = serializers.CharField(source='get_gff3', read_only=True)
-
-    class Meta:
-        model = Rna
-        fields = ('gff3',)
-
-
-class RnaBedSerializer(serializers.ModelSerializer):
-    """Serializer for presenting genomic coordinates in UCSC BED format"""
-    bed = serializers.CharField(source='get_ucsc_bed', read_only=True)
-
-    class Meta:
-        model = Rna
-        fields = ('bed',)
+        fields = (
+            'target_accession', 'source_accession', 'description', 'label', 'synonyms', 'methods', 'description',
+            'target_urs_taxid'
+        )
 
 
 class ExpertDatabaseStatsSerializer(serializers.ModelSerializer):
