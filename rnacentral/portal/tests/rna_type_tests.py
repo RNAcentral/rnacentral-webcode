@@ -47,7 +47,7 @@ class MouseTests(GenericRnaTypeTest):
     def test_uses_lncrna_over_ncrna(self):
         self.assertRnaTypeIs(
             'lncRNA',
-            'URS0000A86584',
+            'URS000075E2B9',
             taxid=10090)
 
     @unittest.expectedFailure
