@@ -64,7 +64,6 @@ urlpatterns = [
     url(r'^use-cases/?$', views.StaticView.as_view(), {'page': 'use-cases'}, name='use-cases'),
     # API documentation
     url(r'^api/?$', views.StaticView.as_view(), {'page': 'help/api-v1'}, name='api-docs'),
-    url(r'^api/v2/?$', views.StaticView.as_view(), {'page': 'coming-soon'}, name='api-v2'),
     # contact us
     url(r'^contact/?$', views.ContactView.as_view(), name='contact-us'),
     # contact us success
