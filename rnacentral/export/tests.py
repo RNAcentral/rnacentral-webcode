@@ -11,30 +11,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import argparse
-import django
 import json
-import os
 import requests
-import sys
-import unittest
 
+from django.test import TestCase
 from django.urls import reverse
 
 
-class ExportSearchResultsTestCase(unittest.TestCase):
+class ExportSearchResultsTestCase(TestCase):
     """
     Base class for export search results testing.
-
-    Usage:
-
-    # test localhost
-    python export_results_tests.py
-
-    # test an RNAcentral instance
-    python export_results_tests.py --base_url https://test.rnacentral.org/
+    Using the test website because I don't want to run redis locally for now.
     """
-    base_url = ''
+    base_url = 'https://test.rnacentral.org/'
 
     def setUp(self):
         self.queries = {
@@ -140,49 +129,3 @@ class DownloadResultsTests(ExportSearchResultsTestCase):
                        '?job=%s' % job_id])
         r = requests.get(url)
         self.assertEqual(r.status_code, 404)
-
-
-def setup_django_environment():
-    """
-    Setup Django environment in order for `reverse` and other Django
-    functionality to work.
-    """
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'rnacentral.settings'
-    project_dir = os.path.dirname(
-                    os.path.dirname(
-                        os.path.realpath(__file__)))
-    sys.path.append(project_dir)
-    django.setup()
-
-def parse_arguments():
-    """
-    Parse arguments.
-    """
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--base_url', default='http://127.0.0.1:8000')
-    parser.add_argument('unittest_args', nargs='*')
-
-    args = parser.parse_args()
-
-    if args.base_url[-1] == '/':
-        args.base_url = args.base_url[:-1]
-    ExportSearchResultsTestCase.base_url = args.base_url
-
-    sys.argv[1:] = args.unittest_args
-
-def run_tests():
-    """
-    Organize and run the test suites.
-    """
-    suites = [
-        unittest.TestLoader().loadTestsFromTestCase(SubmitExportTests),
-        unittest.TestLoader().loadTestsFromTestCase(GetStatusTests),
-        unittest.TestLoader().loadTestsFromTestCase(DownloadResultsTests),
-    ]
-
-    unittest.TextTestRunner().run(unittest.TestSuite(suites))
-
-if __name__ == '__main__':
-    setup_django_environment()
-    parse_arguments()
-    run_tests()
