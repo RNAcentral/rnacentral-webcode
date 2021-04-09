@@ -129,3 +129,13 @@ class DownloadResultsTests(ExportSearchResultsTestCase):
                        '?job=%s' % job_id])
         r = requests.get(url)
         self.assertEqual(r.status_code, 404)
+
+
+class ResultsPageTests(ExportSearchResultsTestCase):
+    def test_results_status_code(self):
+        response = self.client.get(reverse('export-job-results'))
+        self.assertEquals(response.status_code, 200)
+
+    def test_results_template(self):
+        response = self.client.get(reverse('export-job-results'))
+        self.assertTemplateUsed(response, 'portal/search/export-job-results.html')
