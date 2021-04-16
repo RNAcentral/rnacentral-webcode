@@ -5,6 +5,7 @@ metadata:
   labels:
     app: rnacentral
 spec:
+  type: NodePort  # EBI asked to expose the service using NodePort
   ports:
   - port: {{ .Values.rnacentralPort }}
     targetPort: {{ .Values.rnacentralPort }}
