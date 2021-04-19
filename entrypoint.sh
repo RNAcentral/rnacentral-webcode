@@ -13,6 +13,10 @@ DB_PASSWORD=${DB_PASSWORD:-'NWDMCE5xdipIjRrp'}
 
 # RNAcentral specific settings
 SECRET_KEY=${SECRET_KEY:-'your_secret_key'}
+DJANGO_DEBUG=${DJANGO_DEBUG:-'False'}
+S3_HOST=${S3_HOST}
+S3_KEY=${S3_KEY}
+S3_SECRET=${S3_SECRET}
 
 # Supervisor
 SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/srv/rnacentral/supervisor"}
@@ -32,10 +36,14 @@ else
 		from .utils import get_environment
 		SECRET_KEY = "$SECRET_KEY"
 		ENVIRONMENT = get_environment()
-		if ENVIRONMENT == 'DEV':
-		    DEBUG = True
 		INTERNAL_IPS = ('127.0.0.1', '192.168.99.1')
 		COMPRESS_ENABLED = False
+		S3_SERVER = {
+        "HOST": "$S3_HOST",
+        "KEY": "$S3_KEY",
+        "SECRET": "$S3_SECRET",
+        "BUCKET": "ebi-rnacentral",
+    }
 		CACHES = {
         "default": {
             "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
@@ -66,6 +74,7 @@ else
         }
     }
 	EOF
+	sed -i "3 a DEBUG = ${DJANGO_DEBUG}" "${RNACENTRAL_PROJECT_PATH}"/rnacentral/local_settings.py
 	chown -R rnacentral "${RNACENTRAL_PROJECT_PATH}"/rnacentral/local_settings.py
 fi
 
