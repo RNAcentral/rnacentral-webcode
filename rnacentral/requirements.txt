@@ -1,10 +1,9 @@
-Django==2.2.16
+Django==2.2.19
 PyYAML==5.3.1
 astroid==1.0.1
 attrs==17.2.0
 psycopg2-binary==2.8.6
 django-cors-headers==3.5.0
-django-debug-toolbar==3.2
 django-filter==2.4.0
 django-maintenancemode==0.11.3
 django-rq==2.4.0
@@ -16,7 +15,6 @@ pycrypto==2.6.1
 python-dateutil==2.8.1
 python-memcached==1.59
 requests==2.25.1
-selenium==3.4.3
 six==1.12.0
 sqlparse==0.4.1
 versiontools==1.9.1
@@ -25,23 +23,10 @@ colorhash==1.0.2
 gunicorn==20.0.4
 python-dotenv==0.15.0
 
-# code style and test coverage reporting
-django-jenkins==0.110.0
-coverage==4.5.1
-pep8==1.7.1
-pyflakes==2.0.0
-pylint==1.1.0
-mock==3.0.5
-
 # markdown support
 Markdown==3.3.2
 django-markdown-deux==1.0.5
 markdown2==2.3.10
-
-# fabric
-ecdsa==0.13
-Fabric==1.11.1
-paramiko==1.18.5
 
 # supervisord
 supervisor==4.2.1
@@ -60,12 +45,8 @@ rjsmin==1.1.0
 # django cache machine
 django-cache-machine==1.1.0
 
-# django_performance_testing
-# No support for django 2. I kept it here to remember to change the tests
-# django-performance-testing==0.5.0
-
 # simplified static file serving for Python web apps
 whitenoise==5.2.0
 
 # AWS SDK for Python
-boto3==1.16.24
+boto3==1.17.54
