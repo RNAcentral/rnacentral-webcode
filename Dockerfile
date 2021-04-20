@@ -47,15 +47,12 @@ RUN \
     BRANCH="${RNACENTRAL_BRANCH:-master}" && \
     git clone -b "$BRANCH" https://github.com/RNAcentral/rnacentral-webcode.git && \
     pip3 install -r $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/requirements.txt && \
-    cd $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/portal/static && npm install --only=production && \
-    mkdir $RNACENTRAL_HOME/static
-
-# Install packages for local development if needed
-RUN \
     LOCAL_DEV="${LOCAL_DEVELOPMENT:-false}" && \
     if [ "$LOCAL_DEV" = "True" ] ; then \
     pip3 install -r $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/requirements_dev.txt ; \
-    fi
+    fi && \
+    cd $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/portal/static && npm install --only=production && \
+    mkdir $RNACENTRAL_HOME/static
 
 WORKDIR $RNACENTRAL_HOME/rnacentral-webcode
 COPY ./entrypoint.sh /entrypoint.sh
