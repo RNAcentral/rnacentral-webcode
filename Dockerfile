@@ -54,7 +54,7 @@ RUN \
 RUN \
     LOCAL_DEV="${LOCAL_DEVELOPMENT:-false}" && \
     if [ "$LOCAL_DEV" = "True" ] ; then \
-    pip3 install -r $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/requirements_dev.txt \
+    pip3 install -r $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/requirements_dev.txt ; \
     fi
 
 WORKDIR $RNACENTRAL_HOME/rnacentral-webcode
