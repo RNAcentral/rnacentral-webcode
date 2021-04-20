@@ -20,6 +20,7 @@ ENV RNACENTRAL_HOME=/srv/rnacentral
 ENV RNACENTRAL_LOCAL=$RNACENTRAL_HOME/local
 ENV SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/srv/rnacentral/supervisor"}
 ARG RNACENTRAL_BRANCH
+ARG LOCAL_DEVELOPMENT
 
 # Create folders. Install Infernal and node.js
 RUN \
@@ -48,6 +49,13 @@ RUN \
     pip3 install -r $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/requirements.txt && \
     cd $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/portal/static && npm install --only=production && \
     mkdir $RNACENTRAL_HOME/static
+
+# Install packages for local development if needed
+RUN \
+    LOCAL_DEV="${LOCAL_DEVELOPMENT:-false}" && \
+    if [ "$LOCAL_DEV" = "True" ] ; then \
+    pip3 install -r $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/requirements_dev.txt \
+    fi
 
 WORKDIR $RNACENTRAL_HOME/rnacentral-webcode
 COPY ./entrypoint.sh /entrypoint.sh
