@@ -6,7 +6,6 @@ services:
     build:
       context: .
       args:
-        - RNACENTRAL_BRANCH=${RNACENTRAL_BRANCH}
         - LOCAL_DEVELOPMENT=${LOCAL_DEVELOPMENT}
     environment:
       - DB_HOST=${DB_HOST}
