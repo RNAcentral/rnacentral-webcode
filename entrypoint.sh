@@ -22,16 +22,15 @@ S3_SECRET=${S3_SECRET}
 SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/srv/rnacentral/supervisor"}
 
 # Entrypoint variable
-RNACENTRAL_PROJECT_PATH="${RNACENTRAL_HOME}/rnacentral-webcode/rnacentral"
-LOGS="${RNACENTRAL_HOME}/log"
+LOGS=/srv/rnacentral/log
 
 # Add local_settings file
-if [ -f "${RNACENTRAL_PROJECT_PATH}"/rnacentral/local_settings.py ]
+if [ -f "${RNACENTRAL_HOME}"/rnacentral/local_settings.py ]
 then
 	echo "INFO: RNAcentral local_settings.py file already provisioned"
 else
 	echo "INFO: Creating RNAcentral local_settings.py file"
-	cat <<-EOF > "${RNACENTRAL_PROJECT_PATH}"/rnacentral/local_settings.py
+	cat <<-EOF > "${RNACENTRAL_HOME}"/rnacentral/local_settings.py
 		import os
 		from .utils import get_environment
 		SECRET_KEY = "$SECRET_KEY"
@@ -74,8 +73,8 @@ else
         }
     }
 	EOF
-	sed -i "3 a DEBUG = ${DJANGO_DEBUG}" "${RNACENTRAL_PROJECT_PATH}"/rnacentral/local_settings.py
-	chown -R rnacentral "${RNACENTRAL_PROJECT_PATH}"/rnacentral/local_settings.py
+	sed -i "3 a DEBUG = ${DJANGO_DEBUG}" "${RNACENTRAL_HOME}"/rnacentral/local_settings.py
+	chown -R rnacentral "${RNACENTRAL_HOME}"/rnacentral/local_settings.py
 fi
 
 # Supervisor setup
@@ -84,8 +83,6 @@ then
 	echo "INFO: Supervisord configuration file already provisioned"
 else
 	echo "INFO: Creating Supervisord configuration file"
-	mkdir -p "$SUPERVISOR_CONF_DIR"
-	mkdir -p "${LOGS}"
 	cat <<-EOF > "${SUPERVISOR_CONF_DIR}"/supervisord.conf
 		[supervisord]
 		pidfile=${SUPERVISOR_CONF_DIR}/supervisord.pid
@@ -97,9 +94,9 @@ else
 		nodaemon=true
 
 		[program:rqworkers]
-		command=python $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/manage.py rqworker
-		directory=$RNACENTRAL_HOME/rnacentral-webcode/rnacentral
-		numprocs=4
+		command=python $RNACENTRAL_HOME/manage.py rqworker
+		directory=$RNACENTRAL_HOME
+		numprocs=1
 		process_name=%(program_name)s_%(process_num)s
 		autorestart=true
 		autostart=true
@@ -107,7 +104,7 @@ else
 		stdout_logfile=${LOGS}/rqworkers.out.log
 
 		[program:rnacentral]
-		command=$RNACENTRAL_HOME/.local/bin/gunicorn --chdir $RNACENTRAL_HOME/rnacentral-webcode/rnacentral --bind 0.0.0.0:8000 rnacentral.wsgi:application
+		command=gunicorn --chdir $RNACENTRAL_HOME --bind 0.0.0.0:8000 rnacentral.wsgi:application
 		user=rnacentral
 		autostart=true
 		autorestart=true
@@ -115,6 +112,7 @@ else
 		stdout_logfile=${LOGS}/rnacentral.out.log
 		environment=HOME="$RNACENTRAL_HOME"
 	EOF
+	chown -R rnacentral "${SUPERVISOR_CONF_DIR}"/supervisord.conf
 fi
 
 exec "$@"
