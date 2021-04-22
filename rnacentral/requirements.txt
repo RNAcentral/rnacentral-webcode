@@ -1,7 +1,6 @@
 Django==2.2.19
 PyYAML==5.3.1
-astroid==1.0.1
-attrs==17.2.0
+attrs==20.3.0
 psycopg2-binary==2.8.6
 django-cors-headers==3.5.0
 django-filter==2.4.0
@@ -11,15 +10,12 @@ djangorestframework==3.11.2  # 3.12 gives error in the protein-targets and lncrn
 djangorestframework-yaml==2.0.0
 djangorestframework-jsonp
 logilab-common==1.8.0
-pycrypto==2.6.1
 python-dateutil==2.8.1
 python-memcached==1.59
 requests==2.25.1
 six==1.12.0
 sqlparse==0.4.1
-versiontools==1.9.1
-simple-crypt==4.1.7
-colorhash==1.0.2
+colorhash==1.0.3
 gunicorn==20.0.4
 python-dotenv==0.15.0
 
