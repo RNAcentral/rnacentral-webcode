@@ -22,6 +22,7 @@ services:
       - 8000
     volumes:
       - static_volume:/srv/rnacentral/static
+      - ./openssl/openssl.cnf:/etc/ssl/openssl.cnf
     depends_on:
       - redis
     networks:
