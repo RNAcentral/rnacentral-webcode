@@ -11,7 +11,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import debug_toolbar
 import socket
 
 from django.conf.urls import url, include
@@ -29,7 +28,6 @@ urlpatterns = [
     # new sequence search
     url(r'^sequence-search/', include('sequence_search.urls')),
     # Django Debug Toolbar
-    url(r'^__debug__/', include(debug_toolbar.urls)),
 ]
 
 # robots.txt extras

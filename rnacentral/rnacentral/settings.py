@@ -127,7 +127,6 @@ MIDDLEWARE = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     # django-debug-toolbar
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     # django-maintenance
     'maintenancemode.middleware.MaintenanceModeMiddleware',
 )
@@ -186,7 +185,6 @@ INSTALLED_APPS = (
     'apiv1',
     'django_filters',  # required by DRF3.5+
     'rest_framework',
-    'debug_toolbar',
     'compressor',
     'markdown_deux',
     'django_rq',

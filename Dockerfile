@@ -56,11 +56,6 @@ COPY rnacentral/requirements* .
 # Install requirements
 RUN pip3 install -r requirements.txt
 
-# Install packages for local development if needed
-RUN \
-    LOCAL_DEV="${LOCAL_DEVELOPMENT:-False}" && \
-    if [ "$LOCAL_DEV" = "True" ] ; then pip3 install -r requirements_dev.txt ; fi
-
 # Install NPM dependencies
 ADD rnacentral/portal/static/package.json rnacentral/portal/static/
 RUN cd rnacentral/portal/static && npm install --only=production
@@ -68,6 +63,17 @@ RUN cd rnacentral/portal/static && npm install --only=production
 # Copy and chown all the files to the rnacentral user
 COPY rnacentral/ $RNACENTRAL_HOME/
 RUN chown -R rnacentral:rnacentral /srv/rnacentral
+
+# Install and configure packages for local development if needed
+RUN \
+    LOCAL_DEV="${LOCAL_DEVELOPMENT:-False}" && \
+    if [ "$LOCAL_DEV" = "True" ] ; then \
+        pip3 install -r requirements_dev.txt ; \
+        sed -i "13 a import debug_toolbar" "${RNACENTRAL_HOME}"/rnacentral/urls.py ; \
+        sed -i "31 a \ \ \ \ url(r'^__debug__/', include(debug_toolbar.urls))," "${RNACENTRAL_HOME}"/rnacentral/urls.py ; \
+        sed -i "129 a \ \ \ \ 'debug_toolbar.middleware.DebugToolbarMiddleware'," "${RNACENTRAL_HOME}"/rnacentral/settings.py ; \
+        sed -i "188 a \ \ \ \ 'debug_toolbar'," "${RNACENTRAL_HOME}"/rnacentral/settings.py ; \
+    fi
 
 # Set user
 USER rnacentral
