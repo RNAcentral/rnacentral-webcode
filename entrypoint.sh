@@ -12,7 +12,7 @@ DB_PORT=${DB_PORT:-'5432'}
 DB_PASSWORD=${DB_PASSWORD:-'NWDMCE5xdipIjRrp'}
 
 # RNAcentral specific settings
-SECRET_KEY=${SECRET_KEY:-'your_secret_key'}
+SECRET_KEY=${SECRET_KEY:-$(python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())')}
 DJANGO_DEBUG=${DJANGO_DEBUG:-'False'}
 S3_HOST=${S3_HOST}
 S3_KEY=${S3_KEY}
