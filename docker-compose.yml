@@ -18,6 +18,7 @@ services:
       - S3_HOST=${S3_HOST}
       - S3_KEY=${S3_KEY}
       - S3_SECRET=${S3_SECRET}
+      - EBI_SEARCH_ENDPOINT=${EBI_SEARCH_ENDPOINT}
     expose:
       - 8000
     volumes:
