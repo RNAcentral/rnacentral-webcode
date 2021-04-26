@@ -43,7 +43,7 @@ spec:
               cpu: {{ .Values.rnacentralLimitsCPU }}
           volumeMounts:
             - name: static-volume
-              mountPath: /srv/rnacentral/static
+              mountPath: /srv/static
           envFrom:
           - secretRef:
               name: {{ .Values.database }}

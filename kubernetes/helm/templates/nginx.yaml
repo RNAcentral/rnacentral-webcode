@@ -28,7 +28,7 @@ data:
 
         location /static/ {
             autoindex on;
-            alias /srv/rnacentral/static/;
+            alias /srv/static/;
         }
 
         location / {
@@ -57,7 +57,7 @@ spec:
         rollme: {{ randAlphaNum 5 | quote }}
     spec:
       containers:
-        - image: nginx:1.17-alpine
+        - image: nginx:1.20-alpine
           name: nginx
           resources:
             requests:
@@ -73,7 +73,7 @@ spec:
               mountPath: /etc/nginx/conf.d/local.conf
               subPath: local.conf
             - name: static-volume
-              mountPath: /srv/rnacentral/static
+              mountPath: /srv/static
       restartPolicy: Always
       volumes:
         - name: nginx-config

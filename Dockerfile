@@ -62,7 +62,7 @@ RUN cd rnacentral/portal/static && npm install --only=production
 
 # Copy and chown all the files to the rnacentral user
 COPY rnacentral/ $RNACENTRAL_HOME/
-RUN chown -R rnacentral:rnacentral /srv/rnacentral
+RUN chown -R rnacentral:rnacentral /srv
 
 # Install and configure packages for local development if needed
 RUN \
