@@ -1,0 +1,83 @@
+pipeline {
+    agent any
+    parameters {
+        choice(
+            name: 'CLUSTER',
+            choices: ['HX', 'HH'],
+            description: 'Which cluster config to use?'
+        )
+        choice(
+            name: 'WEB',
+            choices: ['TEST', 'PROD'],
+            description: 'Which website do you want to update?'
+        )
+        choice(
+            name: 'DATABASE',
+            choices: ['PRO', 'DEV', 'TEST', 'FB', 'HH'],
+            description: 'Which database instance to use?'
+        )
+        gitParameter(
+            branchFilter: 'origin/(.*)',
+            defaultValue: 'master',
+            name: 'BRANCH',
+            type: 'PT_BRANCH',
+            description: 'Name of the branch to test and deploy'
+        )
+    }
+    stages {
+        stage("deploy") {
+            steps {
+                script {
+                    // set DB with the corresponding Secret file
+                    switch(params.DATABASE) {
+                        case 'PRO':
+                            env.DB = 'db-pro'
+                            break
+                        case 'DEV':
+                            env.DB = 'db-dev'
+                            break
+                        case 'TEST':
+                            env.DB = 'db-test'
+                            break
+                        case 'FB':
+                            env.DB = 'db-fb'
+                            break
+                        case 'HH':
+                            env.DB = 'db-hh'
+                            break
+                    }
+
+                    // set RELEASE with the corresponding instance chart
+                    switch(params.WEB) {
+                        case 'TEST':
+                            env.RELEASE = 'full-dev'
+                            env.NAMESPACE = 'dev'
+                            break
+                        case 'PROD':
+                            env.RELEASE = 'full-prod'
+                            env.NAMESPACE = 'prod'
+                            break
+                    }
+
+                    if (params.CLUSTER == 'HX') {
+                        withCredentials([file(credentialsId: 'HX-WP-Config', variable: 'config')]) {
+                            sh """
+                                git checkout python3-version
+                                cd kubernetes/helm
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} . --kubeconfig ${config} --namespace ${NAMESPACE} --set proxy=proxy-hx,database=${DB},rnacentralBranch=${params.BRANCH}
+                            """
+                        }
+                    } else if (params.CLUSTER == 'HH') {
+                        withCredentials([file(credentialsId: 'HH-WP-Config', variable: 'config')]) {
+                            sh """
+                                git checkout python3-version
+                                cd kubernetes/helm
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} . --kubeconfig ${config} --namespace ${NAMESPACE} --set proxy=proxy-hh,database=${DB},rnacentralBranch=${params.BRANCH}
+                            """
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
