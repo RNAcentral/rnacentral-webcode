@@ -25,6 +25,7 @@ RUN \
     mkdir -p $RNACENTRAL_LOCAL && \
     mkdir -p $SUPERVISOR_CONF_DIR && \
     mkdir /srv/rnacentral/log
+    mkdir /srv/static
 
 # Install Infernal and node.js
 RUN \
