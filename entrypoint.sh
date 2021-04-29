@@ -117,4 +117,8 @@ else
 	chown -R rnacentral "${SUPERVISOR_CONF_DIR}"/supervisord.conf
 fi
 
+# Run collectstatic
+echo "INFO: Copying the static files"
+python "${RNACENTRAL_HOME}"/manage.py collectstatic --noinput
+
 exec "$@"
