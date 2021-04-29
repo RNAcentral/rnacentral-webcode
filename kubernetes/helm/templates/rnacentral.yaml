@@ -422,7 +422,7 @@ spec:
               mountPath: /etc/ssl/openssl.cnf
               subPath: openssl.cnf
             - name: static-volume
-              mountPath: /srv/static
+              mountPath: /srv/rnacentral/static
           envFrom:
           - secretRef:
               name: {{ .Values.database }}

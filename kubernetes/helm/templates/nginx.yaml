@@ -28,7 +28,7 @@ data:
 
         location /static/ {
             autoindex on;
-            alias /srv/static/;
+            alias /srv/rnacentral/static/;
         }
 
         location / {
@@ -73,7 +73,7 @@ spec:
               mountPath: /etc/nginx/conf.d/local.conf
               subPath: local.conf
             - name: static-volume
-              mountPath: /srv/static
+              mountPath: /srv/rnacentral/static
       restartPolicy: Always
       volumes:
         - name: nginx-config

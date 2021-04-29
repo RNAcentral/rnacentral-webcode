@@ -22,7 +22,7 @@ services:
     expose:
       - 8000
     volumes:
-      - static_volume:/srv/static
+      - static_volume:/srv/rnacentral/static
       - ./openssl/openssl.cnf:/etc/ssl/openssl.cnf
     depends_on:
       - redis
@@ -48,7 +48,7 @@ services:
       - 8000:80
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
-      - static_volume:/srv/static
+      - static_volume:/srv/rnacentral/static
     depends_on:
       - rnacentral
     networks:

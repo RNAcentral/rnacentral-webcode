@@ -26,12 +26,12 @@ SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/srv/rnacentral/supervisor"}
 LOGS=/srv/rnacentral/log
 
 # Add local_settings file
-if [ -f "${RNACENTRAL_HOME}"/rnacentral/local_settings.py ]
+if [ -f "${RNACENTRAL_HOME}"/rnacentral/rnacentral/local_settings.py ]
 then
 	echo "INFO: RNAcentral local_settings.py file already provisioned"
 else
 	echo "INFO: Creating RNAcentral local_settings.py file"
-	cat <<-EOF > "${RNACENTRAL_HOME}"/rnacentral/local_settings.py
+	cat <<-EOF > "${RNACENTRAL_HOME}"/rnacentral/rnacentral/local_settings.py
 		import os
 		from .utils import get_environment
 		SECRET_KEY = "$SECRET_KEY"
@@ -75,8 +75,8 @@ else
         }
     }
 	EOF
-	sed -i "3 a DEBUG = ${DJANGO_DEBUG}" "${RNACENTRAL_HOME}"/rnacentral/local_settings.py
-	chown -R rnacentral "${RNACENTRAL_HOME}"/rnacentral/local_settings.py
+	sed -i "3 a DEBUG = ${DJANGO_DEBUG}" "${RNACENTRAL_HOME}"/rnacentral/rnacentral/local_settings.py
+	chown -R rnacentral "${RNACENTRAL_HOME}"/rnacentral/rnacentral/local_settings.py
 fi
 
 # Supervisor setup
@@ -96,8 +96,8 @@ else
 		nodaemon=true
 
 		[program:rqworkers]
-		command=python $RNACENTRAL_HOME/manage.py rqworker
-		directory=$RNACENTRAL_HOME
+		command=python $RNACENTRAL_HOME/rnacentral/manage.py rqworker
+		directory=$RNACENTRAL_HOME/rnacentral
 		numprocs=1
 		process_name=%(program_name)s_%(process_num)s
 		autorestart=true
@@ -106,7 +106,7 @@ else
 		stdout_logfile=${LOGS}/rqworkers.out.log
 
 		[program:rnacentral]
-		command=gunicorn --chdir $RNACENTRAL_HOME --bind 0.0.0.0:8000 rnacentral.wsgi:application
+		command=gunicorn --chdir $RNACENTRAL_HOME/rnacentral --bind 0.0.0.0:8000 rnacentral.wsgi:application
 		user=rnacentral
 		autostart=true
 		autorestart=true
@@ -119,6 +119,6 @@ fi
 
 # Run collectstatic
 echo "INFO: Copying the static files"
-python "${RNACENTRAL_HOME}"/manage.py collectstatic --noinput
+python "${RNACENTRAL_HOME}"/rnacentral/manage.py collectstatic --noinput
 
 exec "$@"

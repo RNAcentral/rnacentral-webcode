@@ -25,7 +25,7 @@ RUN \
     mkdir -p $RNACENTRAL_LOCAL && \
     mkdir -p $SUPERVISOR_CONF_DIR && \
     mkdir /srv/rnacentral/log && \
-    mkdir /srv/static
+    mkdir /srv/rnacentral/static
 
 # Install Infernal and node.js
 RUN \
@@ -62,7 +62,7 @@ ADD rnacentral/portal/static/package.json rnacentral/portal/static/
 RUN cd rnacentral/portal/static && npm install --only=production
 
 # Copy and chown all the files to the rnacentral user
-COPY rnacentral/ $RNACENTRAL_HOME/
+COPY rnacentral $RNACENTRAL_HOME/rnacentral
 RUN chown -R rnacentral:rnacentral /srv
 
 # Install and configure packages for local development if needed
