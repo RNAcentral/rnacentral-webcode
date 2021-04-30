@@ -61,6 +61,20 @@ RUN pip3 install -r requirements.txt
 ADD rnacentral/portal/static/package.json rnacentral/portal/static/
 RUN cd rnacentral/portal/static && npm install --only=production
 
+# Install R2DT-Web - used by test.rnacentral.org
+RUN \
+    cd rnacentral/portal/static && \
+    git clone https://github.com/RNAcentral/r2dt-web.git && \
+    cd r2dt-web && \
+    git checkout dev
+
+# Install rnacentral-sequence-search-embed - used by test.rnacentral.org
+RUN \
+    cd rnacentral/portal/static && \
+    git clone https://github.com/RNAcentral/rnacentral-sequence-search-embed.git && \
+    cd rnacentral-sequence-search-embed && \
+    git checkout dev
+
 # Copy and chown all the files to the rnacentral user
 COPY rnacentral $RNACENTRAL_HOME/rnacentral
 RUN chown -R rnacentral:rnacentral /srv
