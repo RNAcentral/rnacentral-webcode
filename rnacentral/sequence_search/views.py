@@ -117,24 +117,6 @@ def show_searches(request):
     return proxy_request(request, url, 'GET')
 
 
-def sequence_search(request):
-    """Sequence search main page"""
-    path = os.path.join(
-        settings.PROJECT_PATH,
-        'rnacentral',
-        'sequence_search',
-        'static',
-        'rnacentral-sequence-search-embed',
-        'dist',
-        'RNAcentral-sequence-search.js'
-    )
-    # Check if the embeddable component is installed
-    plugin_installed = True if os.path.isfile(path) else False
-
-    context = {'plugin_installed': plugin_installed}
-    return render(request, 'sequence-search-embed.html', {'context': context})
-
-
 def dashboard(request):
     """Info about searches in rnacentral-sequence-search."""
     all_searches, searches_last_24_hours, searches_last_week = 0, 0, 0
