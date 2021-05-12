@@ -3,19 +3,9 @@
 
 The RNAcentral [sequence similarity search](/sequence-search) enables searches against a comprehensive collection of non-coding RNA sequences from a consortium of [RNA databases](/expert-databases). The search is powered by the [nhmmer](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3777106/) software which is more sensitive than *blastn* but is comparable in speed.
 
+The current version runs on a cloud infrastructure, where each search can be parallelised making it much faster. The user interface allows filtering the results using the same facets as the RNAcentral text search. The search results are available for download in a compressed folder. This folder contains the *datapackage.json* file with the search metadata and a directory with three different files. The files *similar-sequence.json* and *similar-sequence.txt* contain the search results as shown in the web interface. The *similar-sequences.fasta* file contains a list of fasta sequences.
+
 <iframe width="560" height="315" src="https://www.youtube.com/embed/2H4--NfjIsI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-### Sequence search versions <a style="cursor: pointer" id="legacy-search" ng-click="scrollTo('legacy-search')" name="legacy-search" class="text-muted smaller"><i class="fa fa-link"></i></a>
-
-The original sequence search was [implemented in 2015](https://blog.rnacentral.org/2015/06/rnacentral-release-3.html) when RNAcentral was much smaller than it is today. As the database grew, some searches were taking too long, so a new sequence search was developed in 2019.
-
-<i class="fa fa-cloud fa-3x pull-left" style="margin-right: 20px;"></i>
-
-The new version runs on a [cloud infrastructure](https://www.embassycloud.org), where each search can be **parallelised** making it much faster. The new user interface allows filtering the results using the same **facets** as the RNAcentral [text search](/help/text-search).
-
-### What is different about the new sequence search? <a style="cursor: pointer" id="differences" ng-click="scrollTo('differences')" name="differences" class="text-muted smaller"><i class="fa fa-link"></i></a>
-
-Please be aware that results now show **species-specific identifiers** which include NCBI taxonomy ids (for example [URS00000478B7_9606](/rna/URS00000478B7_9606), human 7SL RNA) while the old search results included only the unique RNA sequence identifiers (for example [URS00000478B7](/rna/URS00000478B7), SRP RNA from 5 species). This can increase the total number of results (in this example, the old search showed only 1 entry but the new one shows 5). This change enables the user to clearly see which species the sequence results are coming from.
 
 ### API documentation <a style="cursor: pointer" id="sequence-search-api" ng-click="scrollTo('sequence-search-api')" name="sequence-search-api" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
