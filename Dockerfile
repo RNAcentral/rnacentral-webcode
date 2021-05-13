@@ -84,10 +84,10 @@ RUN \
     LOCAL_DEV="${LOCAL_DEVELOPMENT:-False}" && \
     if [ "$LOCAL_DEV" = "True" ] ; then \
         pip3 install -r requirements_dev.txt ; \
-        sed -i "13 a import debug_toolbar" "${RNACENTRAL_HOME}"/rnacentral/urls.py ; \
-        sed -i "31 a \ \ \ \ url(r'^__debug__/', include(debug_toolbar.urls))," "${RNACENTRAL_HOME}"/rnacentral/urls.py ; \
-        sed -i "129 a \ \ \ \ 'debug_toolbar.middleware.DebugToolbarMiddleware'," "${RNACENTRAL_HOME}"/rnacentral/settings.py ; \
-        sed -i "188 a \ \ \ \ 'debug_toolbar'," "${RNACENTRAL_HOME}"/rnacentral/settings.py ; \
+        sed -i "13 a import debug_toolbar" "${RNACENTRAL_HOME}"/rnacentral/rnacentral/urls.py ; \
+        sed -i "31 a \ \ \ \ url(r'^__debug__/', include(debug_toolbar.urls))," "${RNACENTRAL_HOME}"/rnacentral/rnacentral/urls.py ; \
+        sed -i "129 a \ \ \ \ 'debug_toolbar.middleware.DebugToolbarMiddleware'," "${RNACENTRAL_HOME}"/rnacentral/rnacentral/settings.py ; \
+        sed -i "188 a \ \ \ \ 'debug_toolbar'," "${RNACENTRAL_HOME}"/rnacentral/rnacentral/settings.py ; \
     fi
 
 # Set user
