@@ -52,7 +52,7 @@ RUN mkdir -p $RNACENTRAL_HOME
 WORKDIR $RNACENTRAL_HOME
 
 # Copy requirements
-COPY rnacentral/requirements* .
+COPY rnacentral/requirements.txt .
 
 # Install requirements
 RUN pip3 install -r requirements.txt
@@ -83,7 +83,7 @@ RUN chown -R rnacentral:rnacentral /srv
 RUN \
     LOCAL_DEV="${LOCAL_DEVELOPMENT:-False}" && \
     if [ "$LOCAL_DEV" = "True" ] ; then \
-        pip3 install -r requirements_dev.txt ; \
+        pip3 install -r rnacentral/requirements_dev.txt ; \
         sed -i "13 a import debug_toolbar" "${RNACENTRAL_HOME}"/rnacentral/rnacentral/urls.py ; \
         sed -i "31 a \ \ \ \ url(r'^__debug__/', include(debug_toolbar.urls))," "${RNACENTRAL_HOME}"/rnacentral/rnacentral/urls.py ; \
         sed -i "129 a \ \ \ \ 'debug_toolbar.middleware.DebugToolbarMiddleware'," "${RNACENTRAL_HOME}"/rnacentral/rnacentral/settings.py ; \
