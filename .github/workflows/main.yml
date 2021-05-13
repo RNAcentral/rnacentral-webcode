@@ -22,7 +22,7 @@ jobs:
 
       - name: docker build
         if: env.BRANCH_NAME != ''
-        run: docker build -f Dockerfile-development -t rnacentral/rnacentral-webcode:${{ env.BRANCH_NAME }} .
+        run: docker build -f Dockerfile -t rnacentral/rnacentral-webcode:${{ env.BRANCH_NAME }} .
 
       - name: docker push
         if: env.BRANCH_NAME != ''
