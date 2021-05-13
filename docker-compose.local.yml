@@ -1,0 +1,58 @@
+version: '3'
+
+services:
+  # RNAcentral website
+  rnacentral:
+    build:
+      context: .
+      dockerfile: Dockerfile-local
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=${DB_PORT}
+      - SECRET_KEY=${SECRET_KEY}
+      - DJANGO_DEBUG=${DJANGO_DEBUG}
+      - S3_HOST=${S3_HOST}
+      - S3_KEY=${S3_KEY}
+      - S3_SECRET=${S3_SECRET}
+      - EBI_SEARCH_ENDPOINT=${EBI_SEARCH_ENDPOINT}
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8000:8000
+    volumes:
+      - ./openssl/openssl.cnf:/etc/ssl/openssl.cnf
+      - ./rnacentral:/srv/rnacentral/rnacentral-webcode
+    depends_on:
+      - redis
+    networks:
+      - redis-network
+      - memcached-network
+
+  # Redis server
+  redis:
+    image: redis:6.0.8-alpine
+    ports:
+      - 8051:8051
+    command: redis-server --port 8051
+    restart: always
+    networks:
+      - redis-network
+
+  # Memcached server
+  memcached:
+    image: memcached:1.6.7-alpine
+    ports:
+      - 8052:8052
+    command: memcached -m 512m -p 8052
+    depends_on:
+      - rnacentral
+    networks:
+      - memcached-network
+
+networks:
+  redis-network:
+    driver: bridge
+  memcached-network:
+    driver: bridge
