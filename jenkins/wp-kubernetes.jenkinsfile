@@ -16,12 +16,11 @@ pipeline {
             choices: ['PRO', 'DEV', 'TEST', 'FB', 'HH'],
             description: 'Which database instance to use?'
         )
-        gitParameter(
-            branchFilter: 'origin/(.*)',
-            defaultValue: 'master',
-            name: 'BRANCH',
-            type: 'PT_BRANCH',
-            description: 'Name of the branch to test and deploy'
+        imageTag(
+            name: 'DOCKER_IMAGE',
+            description: 'Name of the tag from Docker Hub to test and deploy',
+            image: 'rnacentral/rnacentral-webcode',
+            filter: '.*',
         )
     }
     stages {
@@ -62,9 +61,11 @@ pipeline {
                     if (params.CLUSTER == 'HX') {
                         withCredentials([file(credentialsId: 'HX-WP-Config', variable: 'config')]) {
                             sh """
+                                echo "testing new Jenkins plugin"
+                                echo ${params.DOCKER_IMAGE_TAG}
                                 git checkout python3-version
                                 cd kubernetes/helm
-                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} . --kubeconfig ${config} --namespace ${NAMESPACE} --set proxy=proxy-hx,database=${DB},rnacentralBranch=${params.BRANCH}
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} . --kubeconfig ${config} --namespace ${NAMESPACE} --set proxy=proxy-hx,database=${DB},rnacentralBranch=${params.DOCKER_IMAGE_TAG}
                             """
                         }
                     } else if (params.CLUSTER == 'HH') {
@@ -72,7 +73,7 @@ pipeline {
                             sh """
                                 git checkout python3-version
                                 cd kubernetes/helm
-                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} . --kubeconfig ${config} --namespace ${NAMESPACE} --set proxy=proxy-hh,database=${DB},rnacentralBranch=${params.BRANCH}
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} . --kubeconfig ${config} --namespace ${NAMESPACE} --set proxy=proxy-hh,database=${DB},rnacentralBranch=${params.DOCKER_IMAGE_TAG}
                             """
                         }
                     }
