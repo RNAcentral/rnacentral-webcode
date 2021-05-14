@@ -34,12 +34,8 @@ if ! grep -q debug_toolbar "${RNACENTRAL_HOME}"/rnacentral/urls.py; then
 fi
 
 # Add local_settings file
-if [ -f "${RNACENTRAL_HOME}"/rnacentral/local_settings.py ]
-then
-	echo "INFO: RNAcentral local_settings.py file already provisioned"
-else
-	echo "INFO: Creating RNAcentral local_settings.py file"
-	cat <<-EOF > "${RNACENTRAL_HOME}"/rnacentral/local_settings.py
+echo "INFO: Creating RNAcentral local_settings.py file"
+cat <<-EOF > "${RNACENTRAL_HOME}"/rnacentral/local_settings.py
 		import os
 		from .utils import get_environment
 		SECRET_KEY = "$SECRET_KEY"
@@ -84,8 +80,7 @@ else
             "PORT": "$DB_PORT",
         }
     }
-	EOF
-fi
+EOF
 
 # Supervisor setup
 if [ -f "${SUPERVISOR_CONF_DIR}"/supervisord.conf ]
