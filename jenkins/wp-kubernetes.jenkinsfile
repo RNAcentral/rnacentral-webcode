@@ -18,9 +18,8 @@ pipeline {
         )
         imageTag(
             name: 'DOCKER_IMAGE',
-            description: 'Name of the tag from Docker Hub to test and deploy',
             image: 'rnacentral/rnacentral-webcode',
-            filter: '.*',
+            description: 'Name of the tag from Docker Hub to test and deploy'
         )
     }
     stages {
@@ -65,7 +64,7 @@ pipeline {
                                 echo ${params.DOCKER_IMAGE_TAG}
                                 git checkout python3-version
                                 cd kubernetes/helm
-                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} . --kubeconfig ${config} --namespace ${NAMESPACE} --set proxy=proxy-hx,database=${DB},rnacentralBranch=${params.DOCKER_IMAGE_TAG}
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} . --kubeconfig ${config} --namespace ${NAMESPACE} --set proxy=proxy-hx,database=${DB},rnacentralBranch=${params.imageTagParameterName_TAG}
                             """
                         }
                     } else if (params.CLUSTER == 'HH') {
@@ -73,7 +72,7 @@ pipeline {
                             sh """
                                 git checkout python3-version
                                 cd kubernetes/helm
-                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} . --kubeconfig ${config} --namespace ${NAMESPACE} --set proxy=proxy-hh,database=${DB},rnacentralBranch=${params.DOCKER_IMAGE_TAG}
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} . --kubeconfig ${config} --namespace ${NAMESPACE} --set proxy=proxy-hh,database=${DB},rnacentralBranch=${params.imageTagParameterName_TAG}
                             """
                         }
                     }
