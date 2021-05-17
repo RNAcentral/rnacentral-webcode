@@ -16,18 +16,18 @@ pipeline {
             choices: ['PRO', 'DEV', 'TEST', 'FB', 'HH'],
             description: 'Which database instance to use?'
         )
+        gitParameter(
+            branchFilter: 'origin/(.*)',
+            defaultValue: 'master',
+            name: 'BRANCH',
+            type: 'PT_BRANCH',
+            description: 'Name of the branch to test and deploy'
+        )
     }
     stages {
         stage("deploy") {
             steps {
                 script {
-                    // get Docker Hub tags
-                    def DOCKER_TAGS = sh (script: 'curl https://registry.hub.docker.com/v1/repositories/rnacentral/rnacentral-webcode/tags | grep -zoP "name\":\s*\K[^\s,]*(?=\s*,)" | sed -e "s/^\"//" -e "s/\"}$//"', returnStdout:true).trim()
-                    input(
-                        message: "Select a Docker Hub tag",
-                        parameters: [choice(name: "TAG", choices: "${DOCKER_TAGS}", description: "Docker Hub tag")]
-                    )
-
                     // set DB with the corresponding Secret file
                     switch(params.DATABASE) {
                         case 'PRO':
@@ -66,7 +66,7 @@ pipeline {
                                 echo ${params.DOCKER_IMAGE_TAG}
                                 git checkout python3-version
                                 cd kubernetes/helm
-                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} . --kubeconfig ${config} --namespace ${NAMESPACE} --set proxy=proxy-hx,database=${DB},rnacentralBranch=${TAG}
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} . --kubeconfig ${config} --namespace ${NAMESPACE} --set proxy=proxy-hx,database=${DB},rnacentralBranch=${params.BRANCH}
                             """
                         }
                     } else if (params.CLUSTER == 'HH') {
@@ -74,7 +74,7 @@ pipeline {
                             sh """
                                 git checkout python3-version
                                 cd kubernetes/helm
-                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} . --kubeconfig ${config} --namespace ${NAMESPACE} --set proxy=proxy-hh,database=${DB},rnacentralBranch=${TAG}
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} . --kubeconfig ${config} --namespace ${NAMESPACE} --set proxy=proxy-hh,database=${DB},rnacentralBranch=${params.BRANCH}
                             """
                         }
                     }
