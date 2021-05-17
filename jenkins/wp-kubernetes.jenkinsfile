@@ -22,7 +22,7 @@ pipeline {
             steps {
                 script {
                     // get Docker Hub tags
-                    def DOCKER_TAGS = sh (script: 'curl https://registry.hub.docker.com/v1/repositories/rnacentral/rnacentral-webcode/tags | python -c "import sys, json; result = json.load(sys.stdin); print('\n'.join(list(map(lambda x : x['name'], result))))"', returnStdout:true).trim()
+                    def DOCKER_TAGS = sh (script: 'curl https://registry.hub.docker.com/v1/repositories/rnacentral/rnacentral-webcode/tags | python -c "import sys, json; result = json.load(sys.stdin); print(\"\n\".join(list(map(lambda x : x[\"name\"], result))))"', returnStdout:true).trim()
                     input(
                         message: "Select a Docker Hub tag",
                         parameters: [choice(name: "TAG", choices: "${DOCKER_TAGS}", description: "Docker Hub tag")]
