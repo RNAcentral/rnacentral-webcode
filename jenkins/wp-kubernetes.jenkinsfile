@@ -29,7 +29,8 @@ pipeline {
             steps {
                 script {
                     // check if the tag exists
-                    def result = sh returnStatus: true, script: 'curl https://registry.hub.docker.com/v1/repositories/rnacentral/rnacentral-webcode/tags | grep ${params.BRANCH}'
+                    echo ${params.BRANCH}
+                    def result = sh returnStatus: true, script: '/bin/bash -c curl https://registry.hub.docker.com/v1/repositories/rnacentral/rnacentral-webcode/tags | grep ${params.BRANCH}'
                     if (result != 0) {
                         error('Failed to build')
                     }
