@@ -29,7 +29,7 @@ pipeline {
             steps {
                 script {
                     // check if the tag exists
-                    def command = '/bin/bash -c curl https://registry.hub.docker.com/v1/repositories/rnacentral/rnacentral-webcode/tags | grep ${params.BRANCH}'
+                    def command = 'curl https://registry.hub.docker.com/v1/repositories/rnacentral/rnacentral-webcode/tags | grep ${params.BRANCH}'
                     def result = sh(script: command, returnStatus: true)
                     echo "${result}"
 
