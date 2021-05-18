@@ -31,9 +31,10 @@ jobs:
   slack-notification:
     runs-on: ubuntu-latest
     steps:
-      - uses: rtCamp/action-slack-notify@v2
+      - uses: actions/checkout@v2
 
       - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_MESSAGE: 'Creating a new image in the Docker Hub'
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
