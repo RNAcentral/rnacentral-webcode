@@ -4,7 +4,7 @@ name: Building Docker containers
 on: [push, pull_request]
 
 jobs:
-  build:
+  create-docker-tag:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -27,3 +27,13 @@ jobs:
       - name: docker push
         if: env.BRANCH_NAME != ''
         run: docker push rnacentral/rnacentral-webcode:${{ env.BRANCH_NAME }}
+
+  slack-notification:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: rtCamp/action-slack-notify@v2
+
+      - name: Slack Notification
+        env:
+          SLACK_MESSAGE: 'Creating a new image in the Docker Hub'
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
