@@ -29,10 +29,17 @@ pipeline {
             steps {
                 script {
                     // check if the tag exists
-                    def result = sh returnStatus: true, script: '/bin/bash -c curl https://registry.hub.docker.com/v1/repositories/rnacentral/rnacentral-webcode/tags | grep params.BRANCH'
-                    if (result != 0) {
-                        error('Failed to build')
-                    }
+                    def command = '/bin/bash -c curl https://registry.hub.docker.com/v1/repositories/rnacentral/rnacentral-webcode/tags | grep ${params.BRANCH}'
+                    def result = sh(script: command, returnStatus: true)
+                    echo "${result}"
+
+                    def command2 = $/eval 'curl https://registry.hub.docker.com/v1/repositories/rnacentral/rnacentral-webcode/tags | grep ${params.BRANCH}'/$
+                    def result2 = sh(script: command, returnStdout: true)
+                    echo "${result2}"
+
+                    //if (result != 0) {
+                    //    error('Failed to build')
+                    //}
 
                     // set DB with the corresponding Secret file
                     switch(params.DATABASE) {
