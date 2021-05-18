@@ -29,7 +29,7 @@ pipeline {
             steps {
                 script {
                     // check if the tag exists
-                    def result = sh returnStatus: true, script: '/bin/bash -c curl https://registry.hub.docker.com/v1/repositories/rnacentral/rnacentral-webcode/tags | grep ${params.BRANCH}'
+                    def result = sh returnStatus: true, script: '/bin/bash -c curl https://registry.hub.docker.com/v1/repositories/rnacentral/rnacentral-webcode/tags | grep params.BRANCH'
                     if (result != 0) {
                         error('Failed to build')
                     }
@@ -69,6 +69,7 @@ pipeline {
                         withCredentials([file(credentialsId: 'HX-WP-Config', variable: 'config')]) {
                             sh """
                                 git checkout python3-version
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm uninstall ${RELEASE}
                                 /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} --kubeconfig ${config} --namespace ${NAMESPACE} --set proxy=proxy-hx,database=${DB},rnacentralBranch=${params.BRANCH} kubernetes/helm
                             """
                         }
@@ -76,6 +77,7 @@ pipeline {
                         withCredentials([file(credentialsId: 'HH-WP-Config', variable: 'config')]) {
                             sh """
                                 git checkout python3-version
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm uninstall ${RELEASE}
                                 /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} --kubeconfig ${config} --namespace ${NAMESPACE} --set proxy=proxy-hh,database=${DB},rnacentralBranch=${params.BRANCH} kubernetes/helm
                             """
                         }
