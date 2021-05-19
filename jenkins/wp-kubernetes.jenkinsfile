@@ -1,5 +1,8 @@
 pipeline {
     agent any
+    environment {
+        SLACK = credentials('slack-notification')
+    }
     parameters {
         choice(
             name: 'CLUSTER',
@@ -52,27 +55,41 @@ pipeline {
                         case 'TEST':
                             env.RELEASE = 'full-dev'
                             env.NAMESPACE = 'dev'
+                            env.VALUES = '--values=values.dev.yaml'
                             break
                         case 'PROD':
                             env.RELEASE = 'full-prod'
                             env.NAMESPACE = 'prod'
+                            env.VALUES = ''
                             break
                     }
 
                     if (params.CLUSTER == 'HX') {
                         withCredentials([file(credentialsId: 'HX-WP-Config', variable: 'config')]) {
                             sh """
+                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting the deployment of the ${params.BRANCH} image in ${params.WEB} of the ${params.CLUSTER} cluster"}' $SLACK
                                 git checkout python3-version
                                 cd kubernetes/helm
-                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} . --kubeconfig ${config} --namespace ${NAMESPACE} --set proxy=proxy-hx,database=${DB},rnacentralBranch=${params.BRANCH}
+                                echo 'Deleting pods'
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm uninstall ${RELEASE} --kubeconfig ${config} --namespace ${NAMESPACE}
+                                sleep 10
+                                echo 'Creating pods'
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} --kubeconfig ${config} --namespace ${NAMESPACE} ${VALUES} --set proxy=proxy-hx,database=${DB},rnacentralBranch=${params.BRANCH} .
+                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Finishing the deployment of the ${params.BRANCH} image in ${params.WEB} of the ${params.CLUSTER} cluster. This may take a few more seconds. "}' $SLACK
                             """
                         }
                     } else if (params.CLUSTER == 'HH') {
                         withCredentials([file(credentialsId: 'HH-WP-Config', variable: 'config')]) {
                             sh """
+                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting the deployment of the ${params.BRANCH} image in ${params.WEB} of the ${params.CLUSTER} cluster"}' $SLACK
                                 git checkout python3-version
                                 cd kubernetes/helm
-                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} . --kubeconfig ${config} --namespace ${NAMESPACE} --set proxy=proxy-hh,database=${DB},rnacentralBranch=${params.BRANCH}
+                                echo 'Deleting pods'
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm uninstall ${RELEASE} --kubeconfig ${config} --namespace ${NAMESPACE}
+                                sleep 10
+                                echo 'Creating pods'
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} --kubeconfig ${config} --namespace ${NAMESPACE} ${VALUES} --set proxy=proxy-hh,database=${DB},rnacentralBranch=${params.BRANCH} .
+                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Finishing the deployment of the ${params.BRANCH} image in ${params.WEB} of the ${params.CLUSTER} cluster. This may take a few more seconds. "}' $SLACK
                             """
                         }
                     }
