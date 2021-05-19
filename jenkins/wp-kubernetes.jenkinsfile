@@ -64,7 +64,6 @@ pipeline {
                     if (params.CLUSTER == 'HX') {
                         withCredentials([file(credentialsId: 'HX-WP-Config', variable: 'config')]) {
                             sh """
-                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting the deployment of the ${params.BRANCH} image in ${params.WEB} of the ${params.CLUSTER} cluster"}' https://hooks.slack.com/services/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
                                 git checkout python3-version
                                 cd kubernetes/helm
                                 echo 'Deleting pods'
@@ -72,13 +71,11 @@ pipeline {
                                 sleep 10
                                 echo 'Creating pods'
                                 /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} --kubeconfig ${config} --namespace ${NAMESPACE} ${VALUES} --set proxy=proxy-hx,database=${DB},rnacentralBranch=${params.BRANCH} .
-                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Finishing the deployment of the ${params.BRANCH} image in ${params.WEB} of the ${params.CLUSTER} cluster. This may take a few more seconds. "}' https://hooks.slack.com/services/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
                             """
                         }
                     } else if (params.CLUSTER == 'HH') {
                         withCredentials([file(credentialsId: 'HH-WP-Config', variable: 'config')]) {
                             sh """
-                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting the deployment of the ${params.BRANCH} image in ${params.WEB} of the ${params.CLUSTER} cluster"}' https://hooks.slack.com/services/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
                                 git checkout python3-version
                                 cd kubernetes/helm
                                 echo 'Deleting pods'
@@ -86,7 +83,6 @@ pipeline {
                                 sleep 10
                                 echo 'Creating pods'
                                 /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} --kubeconfig ${config} --namespace ${NAMESPACE} ${VALUES} --set proxy=proxy-hh,database=${DB},rnacentralBranch=${params.BRANCH} .
-                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Finishing the deployment of the ${params.BRANCH} image in ${params.WEB} of the ${params.CLUSTER} cluster. This may take a few more seconds. "}' https://hooks.slack.com/services/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
                             """
                         }
                     }
