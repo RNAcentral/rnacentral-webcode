@@ -104,15 +104,6 @@ limitations under the License.
         {% include "portal/header.html" %}
         </header>
 
-        <div class="container" style="padding: 0; cursor: pointer;" onclick="window.open('https://www.surveymonkey.co.uk/r/LCSF3G7', '_blank');">
-          <div class="alert alert-success alert-dismissible text-center" style="margin-bottom: 0; border-radius: 0" role="alert">
-            <a href=""><span id="show-survey-message" style="font-size: large"></span></a>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-        </div>
-
         <div class="container">
 
           <div class="container-main">
@@ -271,31 +262,14 @@ limitations under the License.
             })();
         </script>
 
-        <script>
-            (function(){
-              var messages = [
-                'Want to improve RNAcentral? Fill out our survey to direct our efforts!',
-                'Help out RNAcentral by filling out this survey!',
-                'Found an issue, want to see something changed, fill out this survey!',
-                'Fill out this survey to help us build a better RNAcentral',
-                'Let us know how to improve RNAcentral, by clicking here',
-                'Help us decide the future of RNAcentral by filling out this survey',
-                'Does RNAcentral help your research, let us know here'
-              ];
-              var randomMessage = messages[~~(Math.random() * messages.length)];
-              var survey = document.getElementById("show-survey-message");
-              survey.innerHTML += randomMessage;
-            })();
+        <!--[if lte IE 8]>
+        <script type="text/javascript">
+            // bootstrap angular.js manually on IE < 8
+            $(document).ready(function() {
+                angular.bootstrap(document);
+            });
         </script>
-
-      <!--[if lte IE 8]>
-      <script type="text/javascript">
-          // bootstrap angular.js manually on IE < 8
-          $(document).ready(function() {
-              angular.bootstrap(document);
-          });
-      </script>
-      <![endif]-->
+        <![endif]-->
 
         {% block extra_js_uncompressed %}
         {% endblock %}
