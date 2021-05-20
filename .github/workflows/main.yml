@@ -30,7 +30,9 @@ jobs:
 
       - name: Run tests
         run: |
-          python rnacentral/manage.py test
+          python rnacentral/manage.py test portal
+          python rnacentral/manage.py test sequence_search
+          python rnacentral/manage.py test apiv1
 
   initial-notification:
     runs-on: ubuntu-latest
