@@ -30,7 +30,7 @@ jobs:
 
       - name: Run tests
         run: |
-          python rnacentral/manage.py test sequence_search
+          python rnacentral/manage.py test
 
   initial-notification:
     runs-on: ubuntu-latest
