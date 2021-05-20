@@ -23,7 +23,7 @@ class ExportSearchResultsTestCase(TestCase):
     Base class for export search results testing.
     Using the test website because I don't want to run redis locally for now.
     """
-    base_url = 'https://test.rnacentral.org/'
+    base_url = 'https://test.rnacentral.org'
 
     def setUp(self):
         self.queries = {
