@@ -13,7 +13,12 @@ class RnaFastaRenderer(renderers.BaseRenderer):
         RnaFastaSerializer can return either a single entry or a list of entries.
         """
         if 'results' in data:  # list of entries
-            text = '# %i total entries, next page: %s, previous page: %s\n' % (data['count'], data['next'], data['previous'])
+            try:
+                text = '# %i total entries, next page: %s, previous page: %s\n' % (
+                    data['count'], data['next'], data['previous']
+                )
+            except KeyError:
+                text = '# next page: %s, previous page: %s\n' % (data['next'], data['previous'])
             for entry in data['results']:
                 text += entry['fasta']
             return text
