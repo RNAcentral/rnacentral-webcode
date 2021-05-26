@@ -411,7 +411,7 @@ class FiltersTestCase(ApiV1BaseClass):
         for filter in filters:
             url = reverse('rna-sequences')
             response = self._test_url(url, data=filter)
-            self.assertNotEqual(response.data['count'], 0)
+            self.assertNotEqual(response.data['results'], [])
 
     # TODO: check portal/models/database.py file, line 110. GENCODE was renamed.
     def _test_bad_database_filter(self):
@@ -433,7 +433,7 @@ class FiltersTestCase(ApiV1BaseClass):
         for external_id in external_ids:
             url = reverse('rna-sequences')
             response = self._test_url(url, data={'external_id': external_id})
-            self.assertNotEqual(response.data['count'], 0, 'Failed on %s' % url)
+            self.assertNotEqual(response.data['results'], [], 'Failed on %s' % url)
 
 
 class SpeciesSpecificIdsTestCase(ApiV1BaseClass):
