@@ -18,6 +18,7 @@ class CustomPaginatorClass(Paginator):
 class LargeTablePagination(PageNumberPagination):
     """Use this paginator class to avoid large table count query"""
     django_paginator_class = CustomPaginatorClass
+    page_size_query_param = 'page_size'
 
     def get_paginated_response(self, data):
         return Response({
