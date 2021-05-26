@@ -43,7 +43,7 @@ from apiv1.renderers import RnaFastaRenderer
 from portal.models import Rna, RnaPrecomputed, Accession, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
     GoAnnotation, RelatedSequence, ProteinInfo, SequenceFeature, SequenceRegion, EnsemblCompara
 from portal.config.expert_databases import expert_dbs
-from rnacentral.utils.pagination import Pagination
+from rnacentral.utils.pagination import Pagination, LargeTablePagination
 
 from colorhash import ColorHash
 
@@ -170,11 +170,11 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
     """
     # the above docstring appears on the API website
     permission_classes = (AllowAny,)
-    filter_class = RnaFilter
+    filterset_class = RnaFilter
     renderer_classes = (renderers.JSONRenderer, JSONPRenderer,
                         renderers.BrowsableAPIRenderer,
                         YAMLRenderer, RnaFastaRenderer)
-    pagination_class = Pagination
+    pagination_class = LargeTablePagination
 
     def list(self, request, *args, **kwargs):
         """
