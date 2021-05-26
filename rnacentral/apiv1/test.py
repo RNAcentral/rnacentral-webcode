@@ -226,7 +226,6 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         self._test_url(url)
 
 
-# TODO: These tests take too long to complete
 class NestedXrefsTestCase(ApiV1BaseClass):
     """Test flat/hyperlinked pagination."""
     def test_flat_response(self):
@@ -235,6 +234,7 @@ class NestedXrefsTestCase(ApiV1BaseClass):
         response = self._test_url(url, data={'flat': True})
         self.assertNotEqual(len(response.data['xrefs']), 0)
 
+    # TODO: tmrna_mates take too long to complete
     def test_large_nested_rna(self):
         """
         For nested responses only a subset of xrefs is included
