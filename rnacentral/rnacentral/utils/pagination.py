@@ -1,6 +1,30 @@
+import sys
+
+from django.core.paginator import Paginator
 from django.db.models.query import RawQuerySet
 from django.db.models import sql
+from django.utils.functional import cached_property
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
+
+
+class CustomPaginatorClass(Paginator):
+    """Use a large number to make sure that all results can be shown"""
+    @cached_property
+    def count(self):
+        return sys.maxsize
+
+
+class LargeTablePagination(PageNumberPagination):
+    """Use this paginator class to avoid large table count query"""
+    django_paginator_class = CustomPaginatorClass
+
+    def get_paginated_response(self, data):
+        return Response({
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'results': data
+        })
 
 
 class Pagination(PageNumberPagination):
