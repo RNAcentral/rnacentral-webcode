@@ -80,6 +80,20 @@ else
 	chown -R rnacentral "${RNACENTRAL_HOME}"/rnacentral/rnacentral/local_settings.py
 fi
 
+# Add local_settings file in the export app
+# /srv/rnacentral/fasta and /srv/rnacentral/export are k8 volumes in prod
+if [ -f "${RNACENTRAL_HOME}"/rnacentral/export/local_settings.py ]
+then
+	echo "INFO: The local_settings.py file for the export app has already been provisioned"
+else
+	echo "INFO: Creating local_settings.py file for the export app"
+	cat <<-EOF > "${RNACENTRAL_HOME}"/rnacentral/export/local_settings.py
+		FASTA_DB = '/srv/rnacentral/fasta/rnacentral_species_specific_ids.fasta'
+		EXPORT_RESULTS_DIR = '/srv/rnacentral/export'
+	EOF
+	chown rnacentral "${RNACENTRAL_HOME}"/rnacentral/export/local_settings.py
+fi
+
 # Supervisor setup
 if [ -f "${SUPERVISOR_CONF_DIR}"/supervisord.conf ]
 then
