@@ -113,7 +113,7 @@ else
 		[program:rqworkers]
 		command=python $RNACENTRAL_HOME/rnacentral/manage.py rqworker
 		directory=$RNACENTRAL_HOME/rnacentral
-		numprocs=1
+		numprocs=4
 		process_name=%(program_name)s_%(process_num)s
 		autorestart=true
 		autostart=true
