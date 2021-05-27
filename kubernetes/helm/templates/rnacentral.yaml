@@ -423,6 +423,10 @@ spec:
               subPath: openssl.cnf
             - name: static-volume
               mountPath: /srv/rnacentral/static
+            - name: rnacentral-species-specific-ids
+              mountPath: /srv/rnacentral/fasta
+            - name: export-results
+              mountPath: /srv/rnacentral/export
           envFrom:
           - secretRef:
               name: {{ .Values.database }}
@@ -438,3 +442,9 @@ spec:
         - name: static-volume
           persistentVolumeClaim:
             claimName: static-volume
+        - name: rnacentral-species-specific-ids
+          persistentVolumeClaim:
+            claimName: rnacentral-species-specific-ids
+        - name: export-results
+          persistentVolumeClaim:
+            claimName: export-results
