@@ -344,7 +344,7 @@ MARKDOWN_DEUX_STYLES = {
 
 SILENCED_SYSTEM_CHECKS = ['1_6.W001']
 
-EBI_SEARCH_ENDPOINT = os.getenv('EBI_SEARCH_ENDPOINT', 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral')
+EBI_SEARCH_ENDPOINT = os.getenv('EBI_SEARCH_ENDPOINT', 'https://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral')
 
 RELEASE_ANNOUNCEMENT_URL = 'https://blog.rnacentral.org/2021/03/rnacentral-release-17.html'
 
