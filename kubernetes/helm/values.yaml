@@ -4,6 +4,9 @@ database: db-pro
 # Proxy
 proxy: proxy-hh
 
+# EBI search index
+searchIndex: search-index-prod
+
 # Memcached
 memcachedPort: 8052
 memcachedReplicas: 2

@@ -434,6 +434,8 @@ spec:
               name: s3
           - configMapRef:
               name: {{ .Values.proxy }}
+          - configMapRef:
+              name: {{ .Values.searchIndex }}
       restartPolicy: Always
       volumes:
         - name: openssl-config

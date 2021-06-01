@@ -4,6 +4,9 @@ database: db-dev
 # Proxy
 proxy: proxy-hx
 
+# EBI search index
+searchIndex: search-index-dev
+
 # Memcached
 memcachedReplicas: 1
 memcachedRequestsMemory: "1024Mi"
