@@ -27,7 +27,7 @@ If you want to use another database, add the following environment variables: `D
 3. Run the app using [Docker](https://www.docker.com):
 
   ```
-  docker-compose up --build
+  docker-compose -f docker-compose.local.yml up --build
   ```
 
 ## Feedback
