@@ -59,6 +59,7 @@ RUN cd rnacentral/portal/static && npm install --only=production
 
 # Run entrypoint
 COPY ./entrypoint-local.sh /
+RUN chmod 744 /entrypoint-local.sh
 ENTRYPOINT ["/entrypoint-local.sh"]
 
 # Supervisor
