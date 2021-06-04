@@ -18,12 +18,13 @@ services:
       - S3_KEY=${S3_KEY}
       - S3_SECRET=${S3_SECRET}
       - EBI_SEARCH_ENDPOINT=${EBI_SEARCH_ENDPOINT}
-    command: python manage.py runserver 0.0.0.0:8000
+    command: python rnacentral/manage.py runserver 0.0.0.0:8000
     ports:
       - 8000:8000
     volumes:
       - ./openssl/openssl.cnf:/etc/ssl/openssl.cnf
-      - ./rnacentral:/srv/rnacentral/rnacentral-webcode
+      - ./rnacentral:/srv/rnacentral/rnacentral-webcode/rnacentral
+      - .env:/srv/rnacentral/rnacentral-webcode/.env
     depends_on:
       - redis
     networks:
