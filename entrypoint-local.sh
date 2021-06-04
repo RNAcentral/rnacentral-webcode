@@ -26,16 +26,16 @@ SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/srv/rnacentral/supervisor"}
 LOGS=/srv/rnacentral/log
 
 # Add debug_toolbar info
-if ! grep -q debug_toolbar "${RNACENTRAL_HOME}"/rnacentral/urls.py; then
-  sed -i "13 a import debug_toolbar" "${RNACENTRAL_HOME}"/rnacentral/urls.py ; \
-  sed -i "31 a \ \ \ \ url(r'^__debug__/', include(debug_toolbar.urls))," "${RNACENTRAL_HOME}"/rnacentral/urls.py ; \
-  sed -i "129 a \ \ \ \ 'debug_toolbar.middleware.DebugToolbarMiddleware'," "${RNACENTRAL_HOME}"/rnacentral/settings.py ; \
-  sed -i "188 a \ \ \ \ 'debug_toolbar'," "${RNACENTRAL_HOME}"/rnacentral/settings.py ; \
+if ! grep -q debug_toolbar "${RNACENTRAL_HOME}"/rnacentral/rnacentral/urls.py; then
+  sed -i "13 a import debug_toolbar" "${RNACENTRAL_HOME}"/rnacentral/rnacentral/urls.py ; \
+  sed -i "31 a \ \ \ \ url(r'^__debug__/', include(debug_toolbar.urls))," "${RNACENTRAL_HOME}"/rnacentral/rnacentral/urls.py ; \
+  sed -i "129 a \ \ \ \ 'debug_toolbar.middleware.DebugToolbarMiddleware'," "${RNACENTRAL_HOME}"/rnacentral/rnacentral/settings.py ; \
+  sed -i "188 a \ \ \ \ 'debug_toolbar'," "${RNACENTRAL_HOME}"/rnacentral/rnacentral/settings.py ; \
 fi
 
 # Add local_settings file
 echo "INFO: Creating RNAcentral local_settings.py file"
-cat <<-EOF > "${RNACENTRAL_HOME}"/rnacentral/local_settings.py
+cat <<-EOF > "${RNACENTRAL_HOME}"/rnacentral/rnacentral/local_settings.py
 		import os
 		from .utils import get_environment
 		SECRET_KEY = "$SECRET_KEY"
@@ -99,8 +99,8 @@ else
 		nodaemon=true
 
 		[program:rqworkers]
-		command=python $RNACENTRAL_HOME/manage.py rqworker
-		directory=$RNACENTRAL_HOME/rnacentral
+		command=python $RNACENTRAL_HOME/rnacentral/manage.py rqworker
+		directory=$RNACENTRAL_HOME/rnacentral/rnacentral
 		numprocs=1
 		process_name=%(program_name)s_%(process_num)s
 		autorestart=true
