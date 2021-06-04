@@ -82,8 +82,11 @@ pipeline {
                     if (params.CLUSTER == 'HX') {
                         withCredentials([file(credentialsId: 'HX-WP-Config', variable: 'config')]) {
                             sh """
-                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting the deployment of the ${params.BRANCH} image in ${params.WEB} of the ${params.CLUSTER} cluster"}' $SLACK
+                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting deployment of ${params.BRANCH} in ${params.WEB} - ${params.CLUSTER} cluster"}' $SLACK
                                 git checkout python3-version
+                                echo 'Flush the cache'
+                                POD=$(/net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig ${config} get pod -l app=memcached -o jsonpath="{.items[0].metadata.name}")
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig ${config} exec -it $POD -- sh -c "echo flush_all | nc localhost 11211"
                                 cd kubernetes/helm
                                 echo 'Deleting pods'
                                 /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm uninstall ${RELEASE} --kubeconfig ${config} --namespace ${NAMESPACE}
@@ -96,8 +99,11 @@ pipeline {
                     } else if (params.CLUSTER == 'HH') {
                         withCredentials([file(credentialsId: 'HH-WP-Config', variable: 'config')]) {
                             sh """
-                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting the deployment of the ${params.BRANCH} image in ${params.WEB} of the ${params.CLUSTER} cluster"}' $SLACK
+                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting deployment of ${params.BRANCH} in ${params.WEB} - ${params.CLUSTER} cluster"}' $SLACK
                                 git checkout python3-version
+                                echo 'Flush the cache'
+                                POD=$(/net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig ${config} get pod -l app=memcached -o jsonpath="{.items[0].metadata.name}")
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig ${config} exec -it $POD -- sh -c "echo flush_all | nc localhost 11211"
                                 cd kubernetes/helm
                                 echo 'Deleting pods'
                                 /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm uninstall ${RELEASE} --kubeconfig ${config} --namespace ${NAMESPACE}
