@@ -49,7 +49,7 @@ else
 		CACHES = {
         "default": {
             "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
-            "LOCATION": "memcached",
+            "LOCATION": "memcached:8052",
         },
         "sitemaps": {
             "BACKEND": "rnacentral.utils.cache.SitemapsCache",
