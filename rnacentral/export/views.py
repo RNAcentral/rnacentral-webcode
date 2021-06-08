@@ -133,14 +133,14 @@ def export_search_results(query, _format, hits):
         JSON requires special treatment in order to concatenate
         multiple batches
         """
-        filename = os.path.join(EXPORT_RESULTS_DIR,
-                                '%s.%s.gz' % (job.id, _format))
+        filename = os.path.join(EXPORT_RESULTS_DIR, '%s.%s.gz' % (job.id, _format))
         start = 0
         page_size = 100  # max EBI search page size
 
-        if _format in ['json', 'list']:
-            archive = gzip.open(filename, 'wb')
+        if _format == 'list':
+            archive = open(filename, 'wb')
         if _format == 'json':
+            archive = gzip.open(filename, 'wb')
             archive.write(b'[')
         if _format == 'fasta':
             f = tempfile.NamedTemporaryFile(delete=True, dir=EXPORT_RESULTS_DIR)
@@ -229,8 +229,11 @@ def download_search_result_file(request):
             name = query[:max_length] + '_etc'
         else:
             name = query
-        filename = name + '.' + job.meta['format'] + extension
-        return get_valid_filename(filename)
+
+        if job.meta['format'] == 'list':
+            return get_valid_filename(name + '.' + job.meta['format'])
+        else:
+            return get_valid_filename(name + '.' + job.meta['format'] + extension)
 
     def get_content_type():
         """
