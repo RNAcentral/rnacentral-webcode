@@ -5,18 +5,6 @@ The RNAcentral [sequence similarity search](/sequence-search) enables searches a
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/2H4--NfjIsI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-### Sequence search versions <a style="cursor: pointer" id="legacy-search" ng-click="scrollTo('legacy-search')" name="legacy-search" class="text-muted smaller"><i class="fa fa-link"></i></a>
-
-The original sequence search was [implemented in 2015](https://blog.rnacentral.org/2015/06/rnacentral-release-3.html) when RNAcentral was much smaller than it is today. As the database grew, some searches were taking too long, so a new sequence search was developed in 2019.
-
-<i class="fa fa-cloud fa-3x pull-left" style="margin-right: 20px;"></i>
-
-The new version runs on a [cloud infrastructure](https://www.embassycloud.org), where each search can be **parallelised** making it much faster. The new user interface allows filtering the results using the same **facets** as the RNAcentral [text search](/help/text-search).
-
-### What is different about the new sequence search? <a style="cursor: pointer" id="differences" ng-click="scrollTo('differences')" name="differences" class="text-muted smaller"><i class="fa fa-link"></i></a>
-
-Please be aware that results now show **species-specific identifiers** which include NCBI taxonomy ids (for example [URS00000478B7_9606](/rna/URS00000478B7_9606), human 7SL RNA) while the old search results included only the unique RNA sequence identifiers (for example [URS00000478B7](/rna/URS00000478B7), SRP RNA from 5 species). This can increase the total number of results (in this example, the old search showed only 1 entry but the new one shows 5). This change enables the user to clearly see which species the sequence results are coming from.
-
 ### API documentation <a style="cursor: pointer" id="sequence-search-api" ng-click="scrollTo('sequence-search-api')" name="sequence-search-api" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 See the [API documentation](/sequence-search/api) to learn how to start an asynchronous job using our REST based API.
@@ -33,11 +21,15 @@ In addition to nhmmer searches against RNAcentral, every query is automatically 
 
 ### Secondary structure <a style="cursor: pointer" id="r2dt" ng-click="scrollTo('r2dt')" name="r2dt" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
-The RNAcentral sequence similarity search also generates secondary structure (2D) diagrams using the [R2DT](https://github.com/RNAcentral/R2DT) software that visualises RNA structure using standard layouts or templates. Learn more about this new feature in the [R2DT preprint](https://www.biorxiv.org/content/10.1101/2020.09.10.290924v1). 
+The RNAcentral sequence similarity search also generates secondary structure (2D) diagrams using the [R2DT](https://github.com/RNAcentral/R2DT) software that visualises RNA structure using standard layouts or templates. Learn more about this new feature in the [R2DT paper](https://www.nature.com/articles/s41467-021-23555-5). 
 
 ### Number of similar sequences <a style="cursor: pointer" id="number" ng-click="scrollTo('number')" name="number" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Although the number of similar sequences can reach tens of thousands, for performance reasons, only the top 1000 results will be shown in each search.
+
+### Download search results <a style="cursor: pointer" id="download" ng-click="scrollTo('download')" name="download" class="text-muted smaller"><i class="fa fa-link"></i></a>
+
+The search results are available for download in a compressed folder. This folder contains the *datapackage.json* file with the search metadata and a directory with three different files. The *similar-sequence.json* and *similar-sequence.txt* files contain the search results. The *similar-sequences.fasta* file contains a list of fasta sequences.
 
 ### Searching for ribosomal RNAs <a style="cursor: pointer" id="rrna" ng-click="scrollTo('rrna')" name="rrna" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
