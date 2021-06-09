@@ -561,6 +561,7 @@ class Rna(CachingMixin, models.Model):
         s3_obj = s3.Object(settings.S3_SERVER['BUCKET'], s3_file)
         try:
             svg = zlib.decompress(s3_obj.get()['Body'].read(), zlib.MAX_WBITS | 32)
+            svg = svg.replace("rgb(255, 0, 0)", "rgb(255,0,255)")
         except s3.meta.client.exceptions.NoSuchKey:
             svg = None
 
