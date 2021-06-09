@@ -4,7 +4,7 @@
 RNAcentral generates secondary structure (2D) diagrams using
 the [R2DT](https://github.com/RNAcentral/R2DT) software that
 visualises RNA structure using standard layouts or templates.
-Learn more in the [R2DT preprint](https://www.biorxiv.org/content/10.1101/2020.09.10.290924v1)
+Learn more in the [R2DT paper](https://www.nature.com/articles/s41467-021-23555-5)
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/La7HA8i_h5I" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 

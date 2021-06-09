@@ -3,8 +3,6 @@
 
 The RNAcentral [sequence similarity search](/sequence-search) enables searches against a comprehensive collection of non-coding RNA sequences from a consortium of [RNA databases](/expert-databases). The search is powered by the [nhmmer](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3777106/) software which is more sensitive than *blastn* but is comparable in speed.
 
-The current version runs on a cloud infrastructure, where each search can be parallelised making it much faster. The user interface allows filtering the results using the same facets as the RNAcentral text search. The search results are available for download in a compressed folder. This folder contains the *datapackage.json* file with the search metadata and a directory with three different files. The files *similar-sequence.json* and *similar-sequence.txt* contain the search results as shown in the web interface. The *similar-sequences.fasta* file contains a list of fasta sequences.
-
 <iframe width="560" height="315" src="https://www.youtube.com/embed/2H4--NfjIsI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ### API documentation <a style="cursor: pointer" id="sequence-search-api" ng-click="scrollTo('sequence-search-api')" name="sequence-search-api" class="text-muted smaller"><i class="fa fa-link"></i></a>
@@ -23,11 +21,15 @@ In addition to nhmmer searches against RNAcentral, every query is automatically 
 
 ### Secondary structure <a style="cursor: pointer" id="r2dt" ng-click="scrollTo('r2dt')" name="r2dt" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
-The RNAcentral sequence similarity search also generates secondary structure (2D) diagrams using the [R2DT](https://github.com/RNAcentral/R2DT) software that visualises RNA structure using standard layouts or templates. Learn more about this new feature in the [R2DT preprint](https://www.biorxiv.org/content/10.1101/2020.09.10.290924v1). 
+The RNAcentral sequence similarity search also generates secondary structure (2D) diagrams using the [R2DT](https://github.com/RNAcentral/R2DT) software that visualises RNA structure using standard layouts or templates. Learn more about this new feature in the [R2DT paper](https://www.nature.com/articles/s41467-021-23555-5). 
 
 ### Number of similar sequences <a style="cursor: pointer" id="number" ng-click="scrollTo('number')" name="number" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Although the number of similar sequences can reach tens of thousands, for performance reasons, only the top 1000 results will be shown in each search.
+
+### Download search results <a style="cursor: pointer" id="download" ng-click="scrollTo('download')" name="download" class="text-muted smaller"><i class="fa fa-link"></i></a>
+
+The search results are available for download in a compressed folder. This folder contains the *datapackage.json* file with the search metadata and a directory with three different files. The *similar-sequence.json* and *similar-sequence.txt* files contain the search results. The *similar-sequences.fasta* file contains a list of fasta sequences.
 
 ### Searching for ribosomal RNAs <a style="cursor: pointer" id="rrna" ng-click="scrollTo('rrna')" name="rrna" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
