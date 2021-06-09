@@ -8,7 +8,7 @@ proxy: proxy-hh
 searchIndex: search-index-prod
 
 # Memcached
-memcachedPort: 8052
+memcachedPort: 11211
 memcachedReplicas: 2
 memcachedRequestsMemory: "2048Mi"
 memcachedRequestsCPU: "500m"

@@ -317,7 +317,7 @@ MAINTENANCE_MODE = False
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': 'localhost:8052',
+        'LOCATION': 'localhost:11211',
     },
     'sitemaps': {
         'BACKEND': 'rnacentral.utils.cache.SitemapsCache',

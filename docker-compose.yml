@@ -58,8 +58,8 @@ services:
   memcached:
     image: memcached:1.6.7-alpine
     ports:
-      - 8052:8052
-    command: memcached -m 512m -p 8052
+      - 11211:11211
+    command: memcached -m 512m
     depends_on:
       - rnacentral
     networks:
