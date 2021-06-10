@@ -108,7 +108,10 @@ class RnaSummary(object):
         so_terms = so_rna_type.split('/')
         so_terms.remove('')
         if len(so_terms) > 1:
-            so_terms.remove('ncRNA')
+            try:
+                so_terms.remove('ncRNA')
+            except ValueError:
+                pass
         return so_terms
 
     def pretty_so_terms(self, so_term):
