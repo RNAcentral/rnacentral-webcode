@@ -93,7 +93,8 @@ pipeline {
                                 sleep 10
                                 echo 'Creating pods'
                                 /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} --kubeconfig ${config} --namespace ${NAMESPACE} ${VALUES} --set proxy=proxy-hx,database=${DB},searchIndex=${SEARCH_INDEX},rnacentralBranch=${params.BRANCH} .
-                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Finishing the deployment of the ${params.BRANCH} image in ${params.WEB} of the ${params.CLUSTER} cluster. This may take a few more seconds. "}' $SLACK
+                                sleep 10
+                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployed ${params.BRANCH} in ${params.WEB} - ${params.CLUSTER} cluster. This may take a few more seconds."}' $SLACK
                             """
                         }
                     } else if (params.CLUSTER == 'HH') {
@@ -110,7 +111,8 @@ pipeline {
                                 sleep 10
                                 echo 'Creating pods'
                                 /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} --kubeconfig ${config} --namespace ${NAMESPACE} ${VALUES} --set proxy=proxy-hh,database=${DB},searchIndex=${SEARCH_INDEX},rnacentralBranch=${params.BRANCH} .
-                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Finishing the deployment of the ${params.BRANCH} image in ${params.WEB} of the ${params.CLUSTER} cluster. This may take a few more seconds. "}' $SLACK
+                                sleep 10
+                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployed ${params.BRANCH} in ${params.WEB} - ${params.CLUSTER} cluster. This may take a few more seconds."}' $SLACK
                             """
                         }
                     }
