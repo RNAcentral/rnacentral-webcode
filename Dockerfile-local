@@ -1,6 +1,6 @@
 #------------------------------------------------------------------------------
 #
-# This Dockerfile is meant for containerized deployment with Kubernetes.
+# This Dockerfile is meant for local development.
 #
 #-------------------------------------------------------------------------------
 
