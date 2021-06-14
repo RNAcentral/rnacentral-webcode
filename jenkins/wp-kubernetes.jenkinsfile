@@ -92,6 +92,8 @@ pipeline {
                                 /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm uninstall ${RELEASE} --kubeconfig ${config} --namespace ${NAMESPACE}
                                 sleep 10
                                 echo 'Creating pods'
+                                echo ${SEARCH_INDEX}
+                                echo ${DB}
                                 /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} --kubeconfig ${config} --namespace ${NAMESPACE} ${VALUES} --set proxy=proxy-hx,database=${DB},searchIndex=${SEARCH_INDEX},rnacentralBranch=${params.BRANCH} .
                                 sleep 10
                                 curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployed ${params.BRANCH} in ${params.WEB} - ${params.CLUSTER} cluster. This may take a few more seconds."}' $SLACK
