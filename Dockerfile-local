@@ -54,8 +54,8 @@ COPY rnacentral/requirements* .
 RUN pip3 install -r requirements.txt && pip3 install -r requirements_dev.txt
 
 # Install NPM dependencies
-ADD rnacentral/portal/static/package.json rnacentral/portal/static/
-RUN cd rnacentral/portal/static && npm install --only=production
+COPY rnacentral/portal/static/package.json .
+RUN npm install --only=production
 
 # Run entrypoint
 COPY ./entrypoint-local.sh /
