@@ -25,7 +25,6 @@ services:
       - ./openssl/openssl.cnf:/etc/ssl/openssl.cnf
       - ./rnacentral:/srv/rnacentral/rnacentral-webcode/rnacentral
       - .env:/srv/rnacentral/rnacentral-webcode/.env
-      - ./srv/rnacentral/rnacentral-webcode/rnacentral/portal/static/node_modules
     depends_on:
       - redis
     networks:
