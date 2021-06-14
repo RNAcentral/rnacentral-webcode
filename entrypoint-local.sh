@@ -33,6 +33,13 @@ if ! grep -q debug_toolbar "${RNACENTRAL_HOME}"/rnacentral/rnacentral/urls.py; t
   sed -i "188 a \ \ \ \ 'debug_toolbar'," "${RNACENTRAL_HOME}"/rnacentral/rnacentral/settings.py ; \
 fi
 
+# Create symbolic link to node_modules directory
+if [ ! -d "${RNACENTRAL_HOME}"/rnacentral/portal/static/node_modules ]
+then
+	echo "INFO: Creating symbolic link to node_modules directory"
+	ln -s "${RNACENTRAL_HOME}"/node_modules "${RNACENTRAL_HOME}"/rnacentral/portal/static
+fi
+
 # Add local_settings file
 echo "INFO: Creating RNAcentral local_settings.py file"
 cat <<-EOF > "${RNACENTRAL_HOME}"/rnacentral/rnacentral/local_settings.py
