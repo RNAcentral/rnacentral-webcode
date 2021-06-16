@@ -61,6 +61,3 @@ RUN npm install --only=production
 COPY ./entrypoint-local.sh /
 RUN chmod 744 /entrypoint-local.sh
 ENTRYPOINT ["/entrypoint-local.sh"]
-
-# Supervisor
-CMD [ "/bin/sh", "-c", "/usr/bin/supervisord -c ${SUPERVISOR_CONF_DIR}/supervisord.conf" ]

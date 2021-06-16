@@ -19,12 +19,6 @@ S3_HOST=${S3_HOST}
 S3_KEY=${S3_KEY}
 S3_SECRET=${S3_SECRET}
 
-# Supervisor
-SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/srv/rnacentral/supervisor"}
-
-# Entrypoint variable
-LOGS=/srv/rnacentral/log
-
 # Add debug_toolbar info
 if ! grep -q debug_toolbar "${RNACENTRAL_HOME}"/rnacentral/rnacentral/urls.py; then
   sed -i "13 a import debug_toolbar" "${RNACENTRAL_HOME}"/rnacentral/rnacentral/urls.py ; \
@@ -88,33 +82,5 @@ cat <<-EOF > "${RNACENTRAL_HOME}"/rnacentral/rnacentral/local_settings.py
         }
     }
 EOF
-
-# Supervisor setup
-if [ -f "${SUPERVISOR_CONF_DIR}"/supervisord.conf ]
-then
-	echo "INFO: Supervisord configuration file already provisioned"
-else
-	echo "INFO: Creating Supervisord configuration file"
-	cat <<-EOF > "${SUPERVISOR_CONF_DIR}"/supervisord.conf
-		[supervisord]
-		pidfile=${SUPERVISOR_CONF_DIR}/supervisord.pid
-		logfile=${LOGS}/supervisord.log
-		user=rnacentral
-		logfile_maxbytes=50MB
-		logfile_backups=2
-		loglevel=info
-		nodaemon=true
-
-		[program:rqworkers]
-		command=python $RNACENTRAL_HOME/rnacentral/manage.py rqworker
-		directory=$RNACENTRAL_HOME/rnacentral/rnacentral
-		numprocs=1
-		process_name=%(program_name)s_%(process_num)s
-		autorestart=true
-		autostart=true
-		stderr_logfile=${LOGS}/rqworkers.err.log
-		stdout_logfile=${LOGS}/rqworkers.out.log
-	EOF
-fi
 
 exec "$@"
