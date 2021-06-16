@@ -31,6 +31,32 @@ services:
       - redis-network
       - memcached-network
 
+  # rqworker - used to export search results
+  rqworker:
+    build:
+      context: .
+      dockerfile: Dockerfile-local
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=${DB_PORT}
+      - SECRET_KEY=${SECRET_KEY}
+      - DJANGO_DEBUG=${DJANGO_DEBUG}
+      - S3_HOST=${S3_HOST}
+      - S3_KEY=${S3_KEY}
+      - S3_SECRET=${S3_SECRET}
+      - EBI_SEARCH_ENDPOINT=${EBI_SEARCH_ENDPOINT}
+    command: python rnacentral/manage.py rqworker
+    volumes:
+      - ./rnacentral:/srv/rnacentral/rnacentral-webcode/rnacentral
+      - .env:/srv/rnacentral/rnacentral-webcode/.env
+    depends_on:
+      - redis
+    networks:
+      - redis-network
+
   # Redis server
   redis:
     image: redis:6.0.8-alpine
@@ -51,6 +77,19 @@ services:
       - rnacentral
     networks:
       - memcached-network
+
+  # rq-dashboard - used to monitor RQ queues
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile-rq
+    command: rq-dashboard --redis-host redis --redis-port 8051
+    ports:
+      - 9181:9181
+    depends_on:
+      - redis
+    networks:
+      - redis-network
 
 networks:
   redis-network:
