@@ -92,7 +92,7 @@ pipeline {
                                 git pull
 
                                 # send start message on Slack
-                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting deployment of ${params.BRANCH} in ${params.WEB} - ${params.CLUSTER} cluster"}' $SLACK
+                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting deployment of ${params.BRANCH} in ${params.WEB} - ${CLUSTER} cluster"}' $SLACK
 
                                 # clear the cache
                                 POD=`/net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config} get pod -l app=memcached -o jsonpath="{.items[0].metadata.name}"`
@@ -106,10 +106,10 @@ pipeline {
                                 sleep 10
 
                                 # send final message on Slack
-                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployed ${params.BRANCH} in ${params.WEB} - ${params.CLUSTER} cluster. This may take a few more seconds."}' $SLACK
+                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployed ${params.BRANCH} in ${params.WEB} - ${CLUSTER} cluster. This may take a few more seconds."}' $SLACK
                             """
                         }
-                    } else if ("${env.CLUSTER}" == "HH") {
+                    } else if ("${CLUSTER}" == "HH") {
                         withCredentials([file(credentialsId: 'HH-WP-Config', variable: 'config')]) {
                             sh """
                                 # update repository
@@ -119,7 +119,7 @@ pipeline {
                                 git pull
 
                                 # send start message on Slack
-                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting deployment of ${params.BRANCH} in ${params.WEB} - ${params.CLUSTER} cluster"}' $SLACK
+                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting deployment of ${params.BRANCH} in ${params.WEB} - ${CLUSTER} cluster"}' $SLACK
 
                                 # clear the cache
                                 POD=`/net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config} get pod -l app=memcached -o jsonpath="{.items[0].metadata.name}"`
@@ -133,7 +133,7 @@ pipeline {
                                 sleep 10
 
                                 # send final message on Slack
-                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployed ${params.BRANCH} in ${params.WEB} - ${params.CLUSTER} cluster. This may take a few more seconds."}' $SLACK
+                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployed ${params.BRANCH} in ${params.WEB} - ${CLUSTER} cluster. This may take a few more seconds."}' $SLACK
                             """
                         }
                     }
