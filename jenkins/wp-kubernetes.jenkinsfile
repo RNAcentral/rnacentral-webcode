@@ -82,7 +82,7 @@ pipeline {
                             break
                     }
 
-                    if (${CLUSTER} == 'HX') {
+                    if ("${CLUSTER}" == "HX") {
                         withCredentials([file(credentialsId: 'HX-WP-Config', variable: 'config')]) {
                             sh """
                                 # update repository
@@ -109,7 +109,7 @@ pipeline {
                                 curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployed ${params.BRANCH} in ${params.WEB} - ${params.CLUSTER} cluster. This may take a few more seconds."}' $SLACK
                             """
                         }
-                    } else if (${CLUSTER} == 'HH') {
+                    } else if ("${env.CLUSTER}" == "HH") {
                         withCredentials([file(credentialsId: 'HH-WP-Config', variable: 'config')]) {
                             sh """
                                 # update repository
