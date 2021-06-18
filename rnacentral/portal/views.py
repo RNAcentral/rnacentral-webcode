@@ -266,24 +266,6 @@ def external_link(request, expert_db, external_id):
         return redirect('/search?q=expert_db:"{}" "{}"'.format(expert_db, external_id))
 
 
-def r2dt(request):
-    """R2DT page"""
-    path = os.path.join(
-        settings.PROJECT_PATH,
-        'rnacentral',
-        'portal',
-        'static',
-        'r2dt-web',
-        'dist',
-        'r2dt-web.js'
-    )
-    # Check if the R2DT is installed
-    plugin_installed = True if os.path.isfile(path) else False
-
-    context = {'plugin_installed': plugin_installed}
-    return render(request, 'portal/r2dt.html', {'context': context})
-
-
 #####################
 # Class-based views #
 #####################

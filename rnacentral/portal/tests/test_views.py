@@ -2,7 +2,7 @@ import json
 from django.test import TestCase
 from django.urls import resolve, reverse
 
-from portal.views import homepage, rna_view, rna_view_redirect, expert_database_view, proxy, r2dt, get_sequence_lineage
+from portal.views import homepage, rna_view, rna_view_redirect, expert_database_view, proxy, get_sequence_lineage
 
 
 class PortalTest(TestCase):
@@ -259,10 +259,6 @@ class PortalTest(TestCase):
     ########################
     # r2dt
     ########################
-    def test_r2dt_view_url(self):
-        view = resolve('/r2dt')
-        self.assertEqual(view.func, r2dt)
-
     def test_r2dt_status_code(self):
         response = self.client.get(reverse('r2dt'))
         self.assertEqual(response.status_code, 200)
