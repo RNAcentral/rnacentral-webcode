@@ -16,6 +16,7 @@ import os
 from django.conf import settings
 from django.conf.urls import url
 from django.http import FileResponse, Http404
+from django.views.generic import TemplateView
 
 from portal import views
 from portal.models import EnsemblAssembly
@@ -77,7 +78,7 @@ urlpatterns = [
     # proxy for ebeye search and rfam images
     url(r'^api/internal/proxy/?$', views.proxy, name='proxy'),
     # r2dt-web
-    url(r'^r2dt/?$', views.r2dt, name='r2dt'),
+    url(r'^r2dt/?$', TemplateView.as_view(template_name='portal/r2dt.html'), name='r2dt'),
 ]
 
 # internal API
