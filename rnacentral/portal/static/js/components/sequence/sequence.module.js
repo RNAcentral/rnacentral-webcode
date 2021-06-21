@@ -30,15 +30,19 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 
     // Downloads tab shouldn't be clickable
     $scope.checkTab = function ($event, $selectedIndex) {
+        let getUrl = window.location.href.split("?");
+        let getTab = getUrl[1];
         if ($selectedIndex == 3) {
             // don't call $event.stopPropagation() - we need the link on the tab to open a dropdown;
             $event.preventDefault();
+        } else if ($selectedIndex == 0) {
+            // reload to avoid Genome Locations error when a page is initially opened in the 2D structure tab
+            window.location = getUrl[0];
+        } else if ($selectedIndex == 1 && typeof getTab !== "undefined") {
+            // remove tab paremeter
+            $location.search('tab', null);
         }
     };
-
-    $scope.clearUrlParams = function() {
-        $location.search('tab', null);
-    }
 
     // This is terribly annoying quirk of ui-bootstrap that costed me a whole day of debugging.
     // When it transcludes uib-tab-heading, it creates the following link:
