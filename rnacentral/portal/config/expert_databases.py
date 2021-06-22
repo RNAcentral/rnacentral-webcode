@@ -66,7 +66,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'as of 7 Jun, 2021',
+        'version': 'as of 7 June 2021',
     },
     {
         'name': 'PDBe',
