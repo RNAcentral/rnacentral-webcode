@@ -182,6 +182,13 @@
                           <li style="list-style-type: none;">
                             <input type="checkbox" name="child3.label" ng-checked="$ctrl.isFacetApplied('so_rna_type_name', child3.label)" ng-click="$ctrl.facetSearch('so_rna_type_name', child3.label)">
                             <a href="" ng-click="$ctrl.facetSearch('so_rna_type_name', child3.label)" class="text-search-facet-link">{{ $ctrl.prettySoLabel(child3.label) }} <small>({{ child3.count | number }})</small></a>
+                            <span ng-if="child3.children.length > 0" ng-click="$ctrl.toggleSubFacets(child3.label)" id="toggle-{{child3.label}}" style="cursor: pointer;"><i class="fa fa-minus text-muted"></i></span>
+                            <ul ng-if="child.children.length > 0" ng-repeat="child4 in child3.children" style="padding-left: 14px;">
+                              <li style="list-style-type: none;">
+                                <input type="checkbox" name="child4.label" ng-checked="$ctrl.isFacetApplied('so_rna_type_name', child4.label)" ng-click="$ctrl.facetSearch('so_rna_type_name', child4.label)">
+                                <a href="" ng-click="$ctrl.facetSearch('so_rna_type_name', child4.label)" class="text-search-facet-link">{{ $ctrl.prettySoLabel(child4.label) }} <small>({{ child4.count | number }})</small></a>
+                              </li>
+                            </ul>
                           </li>
                         </ul>
                       </li>
