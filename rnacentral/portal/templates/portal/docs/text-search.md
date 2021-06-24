@@ -84,6 +84,13 @@ Use parentheses to group and nest logical terms.
 
 ---
 
+## Download search results <a style="cursor: pointer" id="download" ng-click="scrollTo('download')" name="download" class="text-muted smaller"><i class="fa fa-link"></i></a>
+
+The RNAcentral text search can only export up to 1,000,000 search results.
+If you need to export more sequences, you can use the [public Postgres database](/help/public-database)
+
+---
+
 ## RNAcentral CPB protocol
 
 Our latest article describes different ways of accessing the data. 
