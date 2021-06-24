@@ -214,6 +214,7 @@ var textSearchResults = {
               'U4_snRNA',
               'U4atac_snRNA',
               'U5_snRNA',
+              'U6_snRNA',
               'U6atac_snRNA',
               'UTR_region',
               'Y_RNA',
