@@ -230,6 +230,8 @@ var textSearchResults = {
                 facetLabel = 'C/D box snoRNA';
             } else if (facetLabel === 'H_ACA_box_snoRNA') {
                 facetLabel = 'H/ACA box snoRNA';
+            } else if (facetLabel === 'RRNA_5_8S') {
+                facetLabel = 'rRNA 5.8S';
             } else {
                 facetLabel = facetLabel.replace(/_/g, ' ');
             }
