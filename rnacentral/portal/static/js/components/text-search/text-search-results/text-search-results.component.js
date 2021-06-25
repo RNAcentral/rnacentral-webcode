@@ -200,14 +200,38 @@ var textSearchResults = {
          * Clean up SO term labels.
          */
         ctrl.prettySoLabel = function(facetLabel) {
-            var exceptions = ['RNase_P_RNA', 'SRP_RNA', 'Y_RNA', 'RNase_MRP_RNA'];
-            if (exceptions.indexOf(facetLabel) === -1) {
+            var uppercase_exceptions = [
+              'C_D_box_snoRNA',
+              'H_ACA_box_snoRNA',
+              'RNase_MRP_RNA',
+              'RNase_P_RNA',
+              'SRP_RNA',
+              'U1_snRNA',
+              'U11_snRNA',
+              'U12_snRNA',
+              'U2_snRNA',
+              'U3_snoRNA',
+              'U4_snRNA',
+              'U4atac_snRNA',
+              'U5_snRNA',
+              'U6_snRNA',
+              'U6atac_snRNA',
+              'UTR_region',
+              'Y_RNA',
+            ];
+            if (uppercase_exceptions.indexOf(facetLabel) === -1) {
                 facetLabel = facetLabel.charAt(0).toLowerCase() + facetLabel.slice(1);
             }
             if (facetLabel === 'lnc_RNA') {
                 facetLabel = 'lncRNA';
             } else if (facetLabel === 'pre_miRNA') {
                 facetLabel = 'pre-miRNA';
+            } else if (facetLabel === 'C_D_box_snoRNA') {
+                facetLabel = 'C/D box snoRNA';
+            } else if (facetLabel === 'H_ACA_box_snoRNA') {
+                facetLabel = 'H/ACA box snoRNA';
+            } else if (facetLabel === 'RRNA_5_8S') {
+                facetLabel = 'rRNA 5.8S';
             } else {
                 facetLabel = facetLabel.replace(/_/g, ' ');
             }

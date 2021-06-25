@@ -107,7 +107,7 @@ limitations under the License.
 
         <uib-tabset class="tab-animation" active="{{ context.activeTab }}">
 
-            <uib-tab index="0" heading="Overview" id="overview" deselect="checkTab($event, $selectedIndex)" select="clearUrlParams()">
+            <uib-tab index="0" heading="Overview" id="overview" deselect="checkTab($event, $selectedIndex)">
 
                 <xrefs upi="upi" taxid="taxid" page-size="5" on-activate-publications="activatePublications()" on-create-modifications-feature="createModificationsFeature(modifications, accession)" on-activate-genome-browser="activateGenomeBrowser(start, end, chr, genome)" on-scroll-to-genome-browser="scrollToGenomeBrowser()"></xrefs>
 
@@ -375,7 +375,7 @@ limitations under the License.
 
             </uib-tab>
 
-            <uib-tab index="1" id="taxonomy" heading="Taxonomy" deselect="checkTab($event, $selectedIndex)" select="clearUrlParams()">
+            <uib-tab index="1" id="taxonomy" heading="Taxonomy" deselect="checkTab($event, $selectedIndex)">
                 <h2>Taxonomic tree</h2>
 
                 <p>
@@ -418,11 +418,7 @@ limitations under the License.
                         search='{"urs": "{{ context.upi }}"}'
                         customStyle='{"fixCss": "true", "titleColor": "#BF8E3E"}'
                 />
-                {% if context.plugin_installed %}
-                    <script type="text/javascript" src="{% static "r2dt-web/dist/r2dt-web.js" %}"></script>
-                {% else %}
-                    <script type="text/javascript" src="https://rnacentral.github.io/r2dt-web/dist/r2dt-web.js"></script>
-                {% endif %}
+                <script type="text/javascript" src="https://rnacentral.github.io/r2dt-web/dist/r2dt-web.js"></script>
             </uib-tab>
             {% endif %}
 
