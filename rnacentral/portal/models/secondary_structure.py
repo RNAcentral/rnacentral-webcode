@@ -47,7 +47,6 @@ class SecondaryStructureWithLayout(models.Model):
         to_field='id',
         on_delete=models.CASCADE
     )
-    layout = models.TextField()
 
     class Meta:
         db_table = 'rnc_secondary_structure_layout'
