@@ -66,7 +66,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '143',
+        'version': 'as of 7 June 2021',
     },
     {
         'name': 'PDBe',
@@ -91,7 +91,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'as of December 20th, 2020',
+        'version': 'as of 17 May 2021',
     },
     {
         'name': 'FlyBase',
@@ -116,7 +116,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'FB2020_06',
+        'version': 'FB2021_03',
     },
     {
         'name': 'Ensembl',
@@ -147,7 +147,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '102',
+        'version': '104',
     },
     {
         'name': 'Ensembl Plants',
@@ -172,7 +172,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '49',
+        'version': '51',
     },
     {
         'name': 'Ensembl Fungi',
@@ -197,7 +197,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '49',
+        'version': '51',
     },
     {
         'name': 'Ensembl Metazoa',
@@ -222,7 +222,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '49',
+        'version': '51',
     },
     {
         'name': 'Ensembl Protists',
@@ -247,7 +247,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '49',
+        'version': '51',
     },
     {
         'name': 'Ensembl/GENCODE',
@@ -272,7 +272,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'human 37/mouse M26',
+        'version': 'human 38/mouse M27',
     },
     {
         'name': 'Rfam',
@@ -296,7 +296,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'updated',
+        'status': '',
         'version': '14.2',
     },
     {
@@ -502,7 +502,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '204',  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
+        'version': '205',  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
     },
     {
         'name': 'RDP',
@@ -583,7 +583,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '',
+        'version': 'as of 17 May 2021',
     },
     {
         'name': 'Greengenes',
@@ -792,8 +792,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
-        'version': '',
+        'status': 'updated',
+        'version': 'as of 17 May 2021',
     },
     {
         'name': 'RNApathwaysDB',
@@ -832,7 +832,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'r138',
+        'version': 'r138.1',
     },
     {
         'name': 'SGD',
@@ -856,8 +856,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
-        'version': '',
+        'status': 'updated',
+        'version': 'as of 27 April 2021',
     },
     {
         'name': 'snOPY',
@@ -1219,7 +1219,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '',
+        'version': '1.1',
     },
     {
         'name': 'snoDB',
@@ -1293,8 +1293,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
-        'version': '4.12',
+        'status': 'updated',
+        'version': '5.2',
     },
     {
         'name': 'GeneCards',
@@ -1318,8 +1318,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
-        'version': '4.14',
+        'status': 'updated',
+        'version': '5.2',
     },
     {
         'name': 'CRS',
@@ -1342,7 +1342,7 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'updated',
+        'status': '',
         'version': '2.1',
     },
     {
@@ -1367,8 +1367,8 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
-        'version': '',
+        'status': 'updated',
+        'version': 'as of 17 May 2021',
     },
     {
         'name': 'ZFIN',
@@ -1393,7 +1393,7 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '',
+        'version': 'as of 22 April 2021',
     },
     {
         'name': 'snoRNA Atlas',
