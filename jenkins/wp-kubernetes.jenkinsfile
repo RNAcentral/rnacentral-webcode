@@ -5,13 +5,8 @@ pipeline {
     }
     parameters {
         choice(
-            name: 'CLUSTER',
-            choices: ['HX', 'HH'],
-            description: 'Which cluster config to use?'
-        )
-        choice(
             name: 'WEB',
-            choices: ['TEST', 'PROD'],
+            choices: ['TEST', 'PROD-HX', 'PROD-HH'],
             description: 'Which website do you want to update?'
         )
         choice(
@@ -36,7 +31,7 @@ pipeline {
         stage("deploy") {
             steps {
                 script {
-                    // set DB with the corresponding Secret file
+                    // set DB with the corresponding Secret file (from K8)
                     switch(params.DATABASE) {
                         case 'PRO':
                             env.DB = 'db-pro'
@@ -55,17 +50,25 @@ pipeline {
                             break
                     }
 
-                    // set RELEASE with the corresponding instance chart
+                    // set parameters
                     switch(params.WEB) {
                         case 'TEST':
                             env.RELEASE = 'full-dev'
                             env.NAMESPACE = 'dev'
                             env.VALUES = '--values=values.dev.yaml'
+                            env.CLUSTER = 'HX'
                             break
-                        case 'PROD':
+                        case 'PROD-HX':
                             env.RELEASE = 'full-prod'
                             env.NAMESPACE = 'prod'
                             env.VALUES = ''
+                            env.CLUSTER = 'HX'
+                            break
+                        case 'PROD-HH':
+                            env.RELEASE = 'full-prod'
+                            env.NAMESPACE = 'prod'
+                            env.VALUES = ''
+                            env.CLUSTER = 'HH'
                             break
                     }
 
@@ -79,32 +82,58 @@ pipeline {
                             break
                     }
 
-                    if (params.CLUSTER == 'HX') {
+                    if ("${CLUSTER}" == "HX") {
                         withCredentials([file(credentialsId: 'HX-WP-Config', variable: 'config')]) {
                             sh """
-                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting the deployment of the ${params.BRANCH} image in ${params.WEB} of the ${params.CLUSTER} cluster"}' $SLACK
-                                git checkout python3-version
+                                # update repository
+                                git reset --hard
+                                git fetch --all
+                                git checkout ${params.BRANCH}
+                                git pull
+
+                                # send start message on Slack
+                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting deployment of ${params.BRANCH} in ${params.WEB} - ${CLUSTER} cluster"}' $SLACK
+
+                                # clear the cache
+                                POD=`/net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config} get pod -l app=memcached -o jsonpath="{.items[0].metadata.name}"`
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config} exec -it \$POD -- sh -c "echo flush_all | nc localhost 11211"
+
+                                # reinstall everything
                                 cd kubernetes/helm
-                                echo 'Deleting pods'
                                 /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm uninstall ${RELEASE} --kubeconfig ${config} --namespace ${NAMESPACE}
                                 sleep 10
-                                echo 'Creating pods'
                                 /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} --kubeconfig ${config} --namespace ${NAMESPACE} ${VALUES} --set proxy=proxy-hx,database=${DB},searchIndex=${SEARCH_INDEX},rnacentralBranch=${params.BRANCH} .
-                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Finishing the deployment of the ${params.BRANCH} image in ${params.WEB} of the ${params.CLUSTER} cluster. This may take a few more seconds. "}' $SLACK
+                                sleep 10
+
+                                # send final message on Slack
+                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployed ${params.BRANCH} in ${params.WEB} - ${CLUSTER} cluster. This may take a few more seconds."}' $SLACK
                             """
                         }
-                    } else if (params.CLUSTER == 'HH') {
+                    } else if ("${CLUSTER}" == "HH") {
                         withCredentials([file(credentialsId: 'HH-WP-Config', variable: 'config')]) {
                             sh """
-                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting the deployment of the ${params.BRANCH} image in ${params.WEB} of the ${params.CLUSTER} cluster"}' $SLACK
-                                git checkout python3-version
+                                # update repository
+                                git reset --hard
+                                git fetch --all
+                                git checkout ${params.BRANCH}
+                                git pull
+
+                                # send start message on Slack
+                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting deployment of ${params.BRANCH} in ${params.WEB} - ${CLUSTER} cluster"}' $SLACK
+
+                                # clear the cache
+                                POD=`/net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config} get pod -l app=memcached -o jsonpath="{.items[0].metadata.name}"`
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config} exec -it \$POD -- sh -c "echo flush_all | nc localhost 11211"
+
+                                # reinstall everything
                                 cd kubernetes/helm
-                                echo 'Deleting pods'
                                 /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm uninstall ${RELEASE} --kubeconfig ${config} --namespace ${NAMESPACE}
                                 sleep 10
-                                echo 'Creating pods'
                                 /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} --kubeconfig ${config} --namespace ${NAMESPACE} ${VALUES} --set proxy=proxy-hh,database=${DB},searchIndex=${SEARCH_INDEX},rnacentralBranch=${params.BRANCH} .
-                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Finishing the deployment of the ${params.BRANCH} image in ${params.WEB} of the ${params.CLUSTER} cluster. This may take a few more seconds. "}' $SLACK
+                                sleep 10
+
+                                # send final message on Slack
+                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployed ${params.BRANCH} in ${params.WEB} - ${CLUSTER} cluster. This may take a few more seconds."}' $SLACK
                             """
                         }
                     }
