@@ -107,7 +107,10 @@ class Database(CachingMixin, models.Model):
 
     def __get_database_attribute(self, db_name, attribute):
         """An accessor method for retrieving attributes from a list."""
-        return [x[attribute] for x in rnacentral_expert_dbs if x['name'].lower() == db_name.lower()].pop()
+        try:
+            return [x[attribute] for x in rnacentral_expert_dbs if x['name'].lower() == db_name.lower()].pop()
+        except IndexError:
+            return None
 
     def get_absolute_url(self):
         """Get a URL for a Database object. Used for generating sitemaps."""
