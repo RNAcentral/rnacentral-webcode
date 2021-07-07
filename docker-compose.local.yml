@@ -1,5 +1,7 @@
+# Set the Docker Compose file format
 version: '3'
 
+# Define the services (containers) that make up the project
 services:
   # RNAcentral website
   rnacentral:
@@ -22,7 +24,6 @@ services:
     ports:
       - 8000:8000
     volumes:
-      - ./openssl/openssl.cnf:/etc/ssl/openssl.cnf
       - ./rnacentral:/srv/rnacentral/rnacentral-webcode/rnacentral
       - .env:/srv/rnacentral/rnacentral-webcode/.env
     depends_on:
@@ -91,6 +92,7 @@ services:
     networks:
       - redis-network
 
+# Define networks
 networks:
   redis-network:
     driver: bridge
