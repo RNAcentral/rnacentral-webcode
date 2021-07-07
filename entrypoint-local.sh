@@ -31,7 +31,7 @@ fi
 if [ ! -d "${RNACENTRAL_HOME}"/rnacentral/portal/static/node_modules ]
 then
 	echo "INFO: Creating symbolic link to node_modules directory"
-	ln -s "${RNACENTRAL_HOME}"/node_modules "${RNACENTRAL_HOME}"/rnacentral/portal/static
+	ln -s /srv/rnacentral/node_modules "${RNACENTRAL_HOME}"/rnacentral/portal/static
 fi
 
 # Add local_settings file
