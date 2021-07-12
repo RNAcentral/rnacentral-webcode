@@ -30,7 +30,7 @@ examples = [
       'description': 'Parcubacteria LOOT RNA',
   },
   {
-      'uid': 'URS0000D9E279',
+      'uid': 'URS0001BC256D',
       'taxid': '9606',
       'description': 'Human FGF-2 internal ribosome entry site',
   },
