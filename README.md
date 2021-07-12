@@ -19,14 +19,25 @@ The development of RNAcentral is coordinated by the
   git clone --recursive https://github.com/RNAcentral/rnacentral-webcode.git
   ```
 
-2. Edit database connection parameters in `rnacentral/local_settings.py`. Use the [public postgres database](https://rnacentral.org/help/public-database) when developing outside the EBI network.
+2. Using the `.env-example` file as a template, create the `.env` file and change the environment variables as desired. 
+The [public postgres database](https://rnacentral.org/help/public-database) is configured by default.  
+If you want to use another database, add the following environment variables: `DB_HOST`, `DB_NAME`, `DB_USER`, 
+`DB_PASSWORD`, and `DB_PORT`.
 
-3. Run the app using [Docker](https://www.docker.com):
+3. For Mac OS users, install [mutagen](https://mutagen.io/) (Docker on Mac has some performance issues)
 
   ```
-  export RNACENTRAL_HOME=/path/to/rnacentral/code
-  cd $RNACENTRAL_HOME
-  docker-compose up --build
+  brew install mutagen-io/mutagen/mutagen-beta
+  ```    
+ 
+4. Run the app using [Docker](https://www.docker.com):
+
+  ```
+  For Linux users:  
+  docker-compose -f docker-compose.local.yml up --build
+
+  For Mac OS users:
+  mutagen compose -f docker-compose.local.mac.yml up --build
   ```
 
 ## Feedback

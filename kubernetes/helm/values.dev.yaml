@@ -1,0 +1,36 @@
+# Database
+database: db-dev
+
+# Proxy
+proxy: proxy-hx
+
+# EBI search index
+searchIndex: search-index-dev
+
+# Memcached
+memcachedReplicas: 1
+memcachedRequestsMemory: "1024Mi"
+memcachedRequestsCPU: "250m"
+memcachedLimitssMemory: "2048Mi"
+memcachedLimitsCPU: "500m"
+
+# Redis
+redisReplicas: 1
+redisRequestsMemory: "1024Mi"
+redisRequestsCPU: "250m"
+redisLimitssMemory: "2048Mi"
+redisLimitsCPU: "500m"
+
+# Nginx
+nginxReplicas: 1
+nginxRequestsMemory: "512Mi"
+nginxRequestsCPU: "250m"
+nginxLimitssMemory: "1024Mi"
+nginxLimitsCPU: "500m"
+
+# RNAcentral
+rnacentralReplicas: 1
+rnacentralRequestsMemory: "1536Mi"
+rnacentralRequestsCPU: "250m"
+rnacentralLimitssMemory: "3072Mi"
+rnacentralLimitsCPU: "500m"

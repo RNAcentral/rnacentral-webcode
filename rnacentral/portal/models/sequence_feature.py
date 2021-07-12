@@ -22,7 +22,8 @@ class SequenceFeature(models.Model):
         db_column='accession',
         to_field='accession',
         related_name='sequence_features',
-        null=True
+        null=True,
+        on_delete=models.CASCADE
     )
     feature_name = models.CharField(max_length=50)
     metadata = JSONField()
@@ -33,7 +34,8 @@ class SequenceFeature(models.Model):
         'RNA',
         db_column='upi',
         to_field='upi',
-        related_name='sequence_features'
+        related_name='sequence_features',
+        on_delete=models.CASCADE
     )
 
     class Meta:

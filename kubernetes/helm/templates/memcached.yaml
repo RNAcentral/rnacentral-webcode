@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: memcached
+  labels:
+    app: memcached
+spec:
+  ports:
+  - port: {{ .Values.memcachedPort }}
+    protocol: TCP
+    targetPort: {{ .Values.memcachedPort }}
+  selector:
+    app: memcached
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: memcached
+spec:
+  replicas: {{ .Values.memcachedReplicas }}
+  selector:
+    matchLabels:
+      app: memcached
+  template:
+    metadata:
+      labels:
+        app: memcached
+    spec:
+      containers:
+        - image: memcached:1.6.7-alpine
+          name: memcached
+          resources:
+            requests:
+              memory: {{ .Values.memcachedRequestsMemory }}
+              cpu: {{ .Values.memcachedRequestsCPU }}
+            limits:
+              memory: {{ .Values.memcachedLimitssMemory }}
+              cpu: {{ .Values.memcachedLimitsCPU }}
+          args:
+            - "-m {{ .Values.memcachedRequestsCPU }} -p {{ .Values.memcachedPort }}"
+          ports:
+            - containerPort: {{ .Values.memcachedPort }}
+      restartPolicy: Always

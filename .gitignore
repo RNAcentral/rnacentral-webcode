@@ -124,3 +124,6 @@ rnacentral/export/results
 
 # environment variables
 .env
+
+# kubernetes
+kubernetes/secrets

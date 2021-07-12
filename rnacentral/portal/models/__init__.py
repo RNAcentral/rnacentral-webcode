@@ -30,7 +30,6 @@ from .ensembl_assembly import *
 from .ensembl_karyotype import *
 from .protein_info import *
 from .related_sequences import *
-from .sequence_features import *
 from .sequence_regions import *
 from .sequence_exons import *
 from .taxonomy import *

@@ -294,6 +294,7 @@
                 <span ng-repeat="warning in rna.fields.qc_warning | plaintext">
                   <span ng-if="warning==='has_issue'"></span>
                   <span ng-if="warning==='possible_contamination'">possible contamination</span>
+                  <span ng-if="warning==='possible_orf'">possible ORF</span>
                   <span ng-if="warning==='incomplete_sequence'">incomplete sequence</span>
                   <span ng-if="warning==='missing_rfam_match'">missing Rfam hit</span>{{$last || warning==='has_issue' ? '' : ', '}}
                 </span>

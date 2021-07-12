@@ -1,0 +1,6 @@
+# Debug toolbar
+django-debug-toolbar==3.2
+
+# Unit test packages
+coverage==5.5
+mock==4.0.3

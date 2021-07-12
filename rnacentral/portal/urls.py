@@ -16,6 +16,7 @@ import os
 from django.conf import settings
 from django.conf.urls import url
 from django.http import FileResponse, Http404
+from django.views.generic import TemplateView
 
 from portal import views
 from portal.models import EnsemblAssembly
@@ -24,11 +25,11 @@ urlpatterns = [
     # homepage
     url(r'^$', views.homepage, name='homepage'),
     # unique RNA sequence
-    url(r'^(?i)rna/(?P<upi>URS[0-9A-F]{10})/?$', views.rna_view, name='unique-rna-sequence'),
+    url(r'^rna/(?P<upi>URS[0-9A-F]{10})/?$', views.rna_view, name='unique-rna-sequence'),
     # species specific identifier with forward slash
-    url(r'^(?i)rna/(?P<upi>URS[0-9A-F]{10})/(?P<taxid>\d+)/?$', views.rna_view, name='unique-rna-sequence'),
+    url(r'^rna/(?P<upi>URS[0-9A-F]{10})/(?P<taxid>\d+)/?$', views.rna_view, name='unique-rna-sequence'),
     # species specific identifier with underscore
-    url(r'^(?i)rna/(?P<upi>URS[0-9A-F]{10})_(?P<taxid>\d+)/?$', views.rna_view_redirect, name='unique-rna-sequence-redirect'),
+    url(r'^rna/(?P<upi>URS[0-9A-F]{10})_(?P<taxid>\d+)/?$', views.rna_view_redirect, name='unique-rna-sequence-redirect'),
     # expert database
     url(r'^expert-database/(?P<expert_db_name>[-\w]+)/?$', views.expert_database_view, name='expert-database'),
     # expert databases
@@ -64,7 +65,6 @@ urlpatterns = [
     url(r'^use-cases/?$', views.StaticView.as_view(), {'page': 'use-cases'}, name='use-cases'),
     # API documentation
     url(r'^api/?$', views.StaticView.as_view(), {'page': 'help/api-v1'}, name='api-docs'),
-    url(r'^api/v2/?$', views.StaticView.as_view(), {'page': 'coming-soon'}, name='api-v2'),
     # contact us
     url(r'^contact/?$', views.ContactView.as_view(), name='contact-us'),
     # contact us success
@@ -78,7 +78,7 @@ urlpatterns = [
     # proxy for ebeye search and rfam images
     url(r'^api/internal/proxy/?$', views.proxy, name='proxy'),
     # r2dt-web
-    url(r'^r2dt/?$', views.r2dt, name='r2dt'),
+    url(r'^r2dt/?$', TemplateView.as_view(template_name='portal/r2dt.html'), name='r2dt'),
 ]
 
 # internal API

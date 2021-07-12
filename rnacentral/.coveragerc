@@ -1,5 +1,6 @@
 [run]
 omit =
-    # omit management commands and migrations
+    # omit management commands, migrations and old files
     portal/management/*
     portal/migrations/*
+    portal/tests_backup/*

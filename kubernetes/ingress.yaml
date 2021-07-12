@@ -1,0 +1,13 @@
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: rnacentral-ingress
+spec:
+  rules:
+  - host : k8.rnacentral.org
+    http:
+      paths:
+       - path: /
+         backend:
+           serviceName: rnacentral
+           servicePort: 8000

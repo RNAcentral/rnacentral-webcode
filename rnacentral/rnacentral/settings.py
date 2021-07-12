@@ -13,11 +13,15 @@ limitations under the License.
 
 import os
 
+from dotenv import load_dotenv
 
-DEBUG = False
+DEBUG = os.getenv('DJANGO_DEBUG', False)
 
 # project root directory
 PROJECT_PATH = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))  # pylint: disable=C0301
+
+# read environment variables
+load_dotenv(os.path.join(PROJECT_PATH, '.env'))
 
 ADMINS = (
     ('RNAcentral Team', ''.join(['rnacentral', '@', 'gmail.com'])),
@@ -25,15 +29,15 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+# use the public Postgres database as the default value
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.',
-        'NAME': '',
-        # The following settings are not used with sqlite3:
-        'USER': '',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.getenv('DB_NAME', 'pfmegrnargs'),
+        'USER': os.getenv('DB_USERNAME', 'reader'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'NWDMCE5xdipIjRrp'),
+        'HOST': os.getenv('DB_HOST', 'hh-pgsql-public.ebi.ac.uk'),
+        'PORT': os.getenv('DB_PORT', 5432),
     }
 }
 CONN_MAX_AGE = 300
@@ -89,6 +93,9 @@ STATIC_ROOT = os.path.join(os.path.dirname(PROJECT_PATH), 'static')
 # Example: "http://example.com/static/", "http://static.example.com/"
 STATIC_URL = '/static/'
 
+# WhiteNoise - compression and caching support
+# STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 # Additional locations of static files
 STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
@@ -105,9 +112,11 @@ STATICFILES_FINDERS = (
 )
 
 # Provide an initial value so that the site is functional with default settings
-SECRET_KEY = 'override this in local_settings.py'
+SECRET_KEY = os.getenv('SECRET_KEY', 'use environment variable or override this in local_settings.py')
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
+    # WhiteNoise - serve static files
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     # gzip
     'django.middleware.gzip.GZipMiddleware',
     # default
@@ -118,7 +127,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     # django-debug-toolbar
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     # django-maintenance
     'maintenancemode.middleware.MaintenanceModeMiddleware',
 )
@@ -171,14 +179,12 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
-    'django_jenkins',
     'corsheaders',
     'portal',
     'sequence_search',
     'apiv1',
     'django_filters',  # required by DRF3.5+
     'rest_framework',
-    'debug_toolbar',
     'compressor',
     'markdown_deux',
     'django_rq',
@@ -287,27 +293,22 @@ REST_FRAMEWORK = {
     ),
 }
 
-# Jenkins integration config taken from here: https://sites.google.com/site/kmmbvnr/home/django-jenkins-tutorial
-JENKINS_TEST_RUNNER = "rnacentral.utils.test_runner.JenkinsTestRunner"
-JENKINS_TASKS = (
-    'django_jenkins.tasks.run_pep8',
-    'django_jenkins.tasks.run_pyflakes',
-    # 'django_jenkins.tasks.run_sloccount'
-)
-
-
 # django-debug-toolbar
-DEBUG_TOOLBAR_PANELS = (
-    'debug_toolbar.panels.version.VersionDebugPanel',
-    'debug_toolbar.panels.timer.TimerDebugPanel',
-    # 'debug_toolbar.panels.settings_vars.SettingsVarsDebugPanel',
-    'debug_toolbar.panels.headers.HeaderDebugPanel',
-    'debug_toolbar.panels.request_vars.RequestVarsDebugPanel',
-    'debug_toolbar.panels.template.TemplateDebugPanel',
-    'debug_toolbar.panels.sql.SQLDebugPanel',
-    # 'debug_toolbar.panels.signals.SignalDebugPanel',
-    # 'debug_toolbar.panels.logger.LoggingPanel',
-)
+DEBUG_TOOLBAR_PANELS = [
+    'debug_toolbar.panels.versions.VersionsPanel',
+    'debug_toolbar.panels.timer.TimerPanel',
+    'debug_toolbar.panels.settings.SettingsPanel',
+    'debug_toolbar.panels.headers.HeadersPanel',
+    'debug_toolbar.panels.request.RequestPanel',
+    'debug_toolbar.panels.sql.SQLPanel',
+    'debug_toolbar.panels.staticfiles.StaticFilesPanel',
+    'debug_toolbar.panels.templates.TemplatesPanel',
+    'debug_toolbar.panels.cache.CachePanel',
+    'debug_toolbar.panels.signals.SignalsPanel',
+    'debug_toolbar.panels.logging.LoggingPanel',
+    'debug_toolbar.panels.redirects.RedirectsPanel',
+    'debug_toolbar.panels.profiling.ProfilingPanel',
+]
 
 # django-maintenance
 MAINTENANCE_MODE = False
@@ -316,7 +317,7 @@ MAINTENANCE_MODE = False
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': 'localhost:8052',
+        'LOCATION': 'localhost:11211',
     },
     'sitemaps': {
         'BACKEND': 'rnacentral.utils.cache.SitemapsCache',
@@ -343,7 +344,7 @@ MARKDOWN_DEUX_STYLES = {
 
 SILENCED_SYSTEM_CHECKS = ['1_6.W001']
 
-EBI_SEARCH_ENDPOINT = 'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral'
+EBI_SEARCH_ENDPOINT = os.getenv('EBI_SEARCH_ENDPOINT', 'https://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral')
 
 RELEASE_ANNOUNCEMENT_URL = 'https://blog.rnacentral.org/2021/06/rnacentral-release-18.html'
 
@@ -361,4 +362,7 @@ COMPRESS_CSS_FILTERS = [
 # Use a simplified runner to prevent any modifications to the database.
 TEST_RUNNER = 'portal.tests.runner.FixedRunner'
 
-from .local_settings import *  # pylint: disable=W0401, W0614
+try:
+    from .local_settings import *
+except ImportError:
+    pass
