@@ -167,11 +167,17 @@ def dashboard(request):
 
     for index in range(len(expert_db_results)):
         for key in expert_db_results[index]:
-            if expert_db_results[index][key][-1].keys()[0] == current_month:
+            get_current_month = list(expert_db_results[index][key][-1]) if list(expert_db_results[index][key]) else None
+            get_current_month = get_current_month.pop() if get_current_month else None
+
+            get_last_month = list(expert_db_results[index][key][-2]) if list(expert_db_results[index][key]) else None
+            get_last_month = get_last_month.pop() if get_last_month else None
+
+            if get_current_month == current_month:
                 current_month_pie_chart.append({key: expert_db_results[index][key][-1][current_month]})
-            if expert_db_results[index][key][-1].keys()[0] == last_month:
+            if get_current_month == last_month:
                 last_month_pie_chart.append({key: expert_db_results[index][key][-1][last_month]})
-            if expert_db_results[index][key][-2].keys()[0] == last_month:
+            if get_last_month == last_month:
                 last_month_pie_chart.append({key: expert_db_results[index][key][-2][last_month]})
 
     context = {
