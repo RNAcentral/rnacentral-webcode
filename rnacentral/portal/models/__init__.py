@@ -34,3 +34,4 @@ from .sequence_regions import *
 from .sequence_exons import *
 from .taxonomy import *
 from .ensembl_compara import *
+from .qa_status import *
