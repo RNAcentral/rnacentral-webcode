@@ -85,6 +85,8 @@ pipeline {
                     if ("${CLUSTER}" == "HX") {
                         withCredentials([file(credentialsId: 'HX-WP-Config', variable: 'config')]) {
                             sh """
+                                echo 'Updating HX'
+                                echo ${config}
                                 # update repository
                                 git reset --hard
                                 git fetch --all
@@ -112,6 +114,8 @@ pipeline {
                     } else if ("${CLUSTER}" == "HH") {
                         withCredentials([file(credentialsId: 'HH-WP-Config', variable: 'config')]) {
                             sh """
+                                echo 'Updating HH'
+                                echo ${config}
                                 # update repository
                                 git reset --hard
                                 git fetch --all
