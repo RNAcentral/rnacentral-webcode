@@ -23,8 +23,9 @@ memcachedLimitssMemory: "4096Mi"
 memcachedLimitsCPU: "1000m"
 
 # Redis
+# Using only one to avoid download errors.
 redisPort: 8051
-redisReplicas: 2
+redisReplicas: 1
 redisRequestsMemory: "2048Mi"
 redisRequestsCPU: "500m"
 redisLimitssMemory: "4096Mi"
