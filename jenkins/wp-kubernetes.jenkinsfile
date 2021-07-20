@@ -85,8 +85,6 @@ pipeline {
                     if ("${CLUSTER}" == "HX") {
                         withCredentials([file(credentialsId: 'HX-WP-Config', variable: 'config')]) {
                             sh """
-                                echo 'Updating HX'
-                                echo ${config}
                                 # update repository
                                 git reset --hard
                                 git fetch --all
@@ -94,7 +92,7 @@ pipeline {
                                 git pull
 
                                 # send start message on Slack
-                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting deployment of ${params.BRANCH} in ${params.WEB} - ${CLUSTER} cluster"}' $SLACK
+                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting deployment of ${params.BRANCH} in ${params.WEB}"}' $SLACK
 
                                 # clear the cache
                                 POD=`/net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config} get pod -l app=memcached -o jsonpath="{.items[0].metadata.name}"`
@@ -108,14 +106,12 @@ pipeline {
                                 sleep 10
 
                                 # send final message on Slack
-                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployed ${params.BRANCH} in ${params.WEB} - ${CLUSTER} cluster. This may take a few more seconds."}' $SLACK
+                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployed ${params.BRANCH} in ${params.WEB}. This may take a few more seconds."}' $SLACK
                             """
                         }
                     } else if ("${CLUSTER}" == "HH") {
                         withCredentials([file(credentialsId: 'HH-WP-Config', variable: 'config')]) {
                             sh """
-                                echo 'Updating HH'
-                                echo ${config}
                                 # update repository
                                 git reset --hard
                                 git fetch --all
@@ -123,7 +119,7 @@ pipeline {
                                 git pull
 
                                 # send start message on Slack
-                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting deployment of ${params.BRANCH} in ${params.WEB} - ${CLUSTER} cluster"}' $SLACK
+                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting deployment of ${params.BRANCH} in ${params.WEB}"}' $SLACK
 
                                 # clear the cache
                                 POD=`/net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config} get pod -l app=memcached -o jsonpath="{.items[0].metadata.name}"`
@@ -137,7 +133,7 @@ pipeline {
                                 sleep 10
 
                                 # send final message on Slack
-                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployed ${params.BRANCH} in ${params.WEB} - ${CLUSTER} cluster. This may take a few more seconds."}' $SLACK
+                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployed ${params.BRANCH} in ${params.WEB}. This may take a few more seconds."}' $SLACK
                             """
                         }
                     }
