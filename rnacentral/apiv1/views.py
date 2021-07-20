@@ -37,11 +37,13 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, \
                               RfamHitSerializer, SequenceFeatureSerializer, \
                               EnsemblAssemblySerializer, ProteinTargetsSerializer, \
-                              LncrnaTargetsSerializer, EnsemblComparaSerializer, SecondaryStructureSVGImageSerializer
+                              LncrnaTargetsSerializer, EnsemblComparaSerializer, SecondaryStructureSVGImageSerializer, \
+                              QaStatusSerializer
 
 from apiv1.renderers import RnaFastaRenderer
 from portal.models import Rna, RnaPrecomputed, Accession, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
-    GoAnnotation, RelatedSequence, ProteinInfo, SequenceFeature, SequenceRegion, EnsemblCompara
+    GoAnnotation, RelatedSequence, ProteinInfo, SequenceFeature, SequenceRegion, EnsemblCompara,\
+    QaStatus
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination, LargeTablePagination
 
@@ -720,6 +722,16 @@ class LncrnaTargetsView(generics.ListAPIView):
         # queryset = PaginatedRawQuerySet(protein_info_query, model=ProteinInfo)
         queryset = ProteinInfo.objects.raw(protein_info_query)
         return queryset
+
+
+class QaStatusView(APIView):
+    """API endpoint showing the QA status for a sequence"""
+
+    def get(self, _request, pk, taxid):
+        urs_taxid = f'{pk}_{taxid}'
+        status = QaStatus.objects.get(id=urs_taxid)
+        serializer = QaStatusSerializer(status)
+        return Response(serializer.data)
 
 
 class LargerPagination(Pagination):
