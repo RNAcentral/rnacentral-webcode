@@ -153,8 +153,11 @@ def dashboard(request):
             get_current_month = list(expert_db_results[index][key][-1]) if list(expert_db_results[index][key]) else None
             get_current_month = get_current_month.pop() if get_current_month else None
 
-            get_last_month = list(expert_db_results[index][key][-2]) if list(expert_db_results[index][key]) else None
-            get_last_month = get_last_month.pop() if get_last_month else None
+            try:
+                get_last_month = list(expert_db_results[index][key][-2]) if list(expert_db_results[index][key]) else None
+                get_last_month = get_last_month.pop() if get_last_month else None
+            except IndexError:
+                get_last_month = None
 
             if get_current_month == current_month:
                 current_month_pie_chart.append({key: expert_db_results[index][key][-1][current_month]})
