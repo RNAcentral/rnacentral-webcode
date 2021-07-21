@@ -726,6 +726,8 @@ class LncrnaTargetsView(generics.ListAPIView):
 
 class QaStatusView(APIView):
     """API endpoint showing the QA status for a sequence"""
+    permission_classes = ()
+    authentication_classes = ()
 
     def get(self, _request, pk, taxid):
         urs_taxid = f'{pk}_{taxid}'
