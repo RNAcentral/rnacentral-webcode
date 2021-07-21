@@ -1,0 +1,18 @@
+<div>
+  <h2 class="margin-bottom-0px">
+  QA Status
+  </h2>
+
+  <ul ng-if="$ctrl.qaStatus.has_issue" class="list-inline" style="margin-top: 5px; margin-bottom: 1.5em;">
+    <li ng-repeat="problem in $ctrl.qaStatus.messages">
+      <div class="alert alert-warning" style="margin-bottom: 0px">
+        <i class="fa fa-warning fa-2x pull-left text-danger" aria-hidden="true"></i>
+        <span>
+	    <span ng-bind-html="problem"></span>
+        </span>
+      </div>
+    </li>
+  </ul>
+
+  <span><span ng-if="!$ctrl.qaStatus.has_issue">No issues found</span></span>
+</div>

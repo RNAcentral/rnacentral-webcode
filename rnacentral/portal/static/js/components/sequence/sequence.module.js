@@ -149,6 +149,10 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         return $http.get(routes.apiRfamHitsView({upi: $scope.upi, taxid: $scope.taxid}), {params: {page_size: 10000000000}})
     };
 
+    $scope.fetchQaStatus = function() {
+        return $http.get(routes.qaStatusApi({upi: $scope.upi, taxid: $scope.taxid}), {params: {page_size: 10000000000}})
+    };
+
     $scope.fetchSequenceFeatures = function() {
         return $http.get(
             routes.apiSequenceFeaturesView({upi: $scope.upi, taxid: $scope.taxid}),
@@ -609,6 +613,12 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
                     if (data.length > 0) { addFeature(); }
                 }
             )
+        }
+
+        if ($scope.taxid) {
+          $scope.fetchQaStatus().then(function(response) {
+            $scope.qaStatus = response.data;
+          });
         }
 
         // adjust feature viewer css
