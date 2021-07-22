@@ -67,8 +67,11 @@ pipeline {
                             curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting deployment of ${params.BRANCH} in the development namespace - HX cluster"}' $SLACK
 
                             # clear the cache
-                            POD=`/net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config} get pod -l app=memcached -o jsonpath="{.items[0].metadata.name}"`
-                            /net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config} exec -it \$POD -- sh -c "echo flush_all | nc localhost 11211"
+                            MEMCACHED=`/net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config} get pod -n dev --no-headers | grep memcached`
+                            if [[ $MEMCACHED == memcached* ]] then
+                                POD=`/net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config} get pod -l app=memcached -o jsonpath="{.items[0].metadata.name}"`
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config} exec -it \$POD -- sh -c "echo flush_all | nc localhost 11211"
+                            fi
 
                             # reinstall everything
                             cd kubernetes/helm
