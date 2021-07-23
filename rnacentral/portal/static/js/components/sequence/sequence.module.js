@@ -616,9 +616,12 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         }
 
         if ($scope.taxid) {
+	  $scope.qaStatus = "pending";
           $scope.fetchQaStatus().then(function(response) {
             $scope.qaStatus = response.data;
-          });
+	  }, function(error) {
+	    $scope.qaStatus = "failed";
+	  });
         }
 
         // adjust feature viewer css
