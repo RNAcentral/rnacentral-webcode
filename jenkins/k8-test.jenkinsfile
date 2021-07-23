@@ -7,7 +7,7 @@ pipeline {
         choice(
             name: 'EBI_SEARCH_ENDPOINT',
             choices: ['DEV', 'PRO'],
-            description: 'Which ebi search index to use?'
+            description: 'Which EBI search index to use?'
         )
         choice(
             name: 'DATABASE',
@@ -19,6 +19,7 @@ pipeline {
             defaultValue: 'master',
             name: 'BRANCH',
             type: 'PT_BRANCH',
+            selectedValue: 'DEFAULT',
             description: 'Name of the branch to test and deploy'
         )
     }
