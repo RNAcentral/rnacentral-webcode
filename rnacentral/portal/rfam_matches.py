@@ -18,7 +18,7 @@ if the sequence is only a partial sequence
 import json
 import six
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 import attr
 from attr.validators import instance_of as is_a

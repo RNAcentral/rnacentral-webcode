@@ -1,0 +1,100 @@
+# Set the Docker Compose file format
+version: '3'
+
+# Define the services (containers) that make up the project
+services:
+  # RNAcentral website
+  rnacentral:
+    build:
+      context: .
+      dockerfile: Dockerfile-local
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=${DB_PORT}
+      - SECRET_KEY=${SECRET_KEY}
+      - DJANGO_DEBUG=${DJANGO_DEBUG}
+      - S3_HOST=${S3_HOST}
+      - S3_KEY=${S3_KEY}
+      - S3_SECRET=${S3_SECRET}
+      - EBI_SEARCH_ENDPOINT=${EBI_SEARCH_ENDPOINT}
+    command: python rnacentral/manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8000:8000
+    volumes:
+      - ./rnacentral:/srv/rnacentral/rnacentral-webcode/rnacentral
+      - .env:/srv/rnacentral/rnacentral-webcode/.env
+    depends_on:
+      - redis
+    networks:
+      - redis-network
+      - memcached-network
+
+  # rqworker - used to export search results
+  rqworker:
+    build:
+      context: .
+      dockerfile: Dockerfile-local
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_PORT=${DB_PORT}
+      - SECRET_KEY=${SECRET_KEY}
+      - DJANGO_DEBUG=${DJANGO_DEBUG}
+      - S3_HOST=${S3_HOST}
+      - S3_KEY=${S3_KEY}
+      - S3_SECRET=${S3_SECRET}
+      - EBI_SEARCH_ENDPOINT=${EBI_SEARCH_ENDPOINT}
+    command: python rnacentral/manage.py rqworker
+    volumes:
+      - ./rnacentral:/srv/rnacentral/rnacentral-webcode/rnacentral
+      - .env:/srv/rnacentral/rnacentral-webcode/.env
+    depends_on:
+      - redis
+    networks:
+      - redis-network
+
+  # Redis server
+  redis:
+    image: redis:6.0.8-alpine
+    ports:
+      - 8051:8051
+    command: redis-server --port 8051
+    restart: always
+    networks:
+      - redis-network
+
+  # Memcached server
+  memcached:
+    image: memcached:1.6.7-alpine
+    ports:
+      - 11211:11211
+    command: memcached -m 512m
+    depends_on:
+      - rnacentral
+    networks:
+      - memcached-network
+
+  # rq-dashboard - used to monitor RQ queues
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile-rq
+    command: rq-dashboard --redis-host redis --redis-port 8051
+    ports:
+      - 9181:9181
+    depends_on:
+      - redis
+    networks:
+      - redis-network
+
+# Define networks
+networks:
+  redis-network:
+    driver: bridge
+  memcached-network:
+    driver: bridge

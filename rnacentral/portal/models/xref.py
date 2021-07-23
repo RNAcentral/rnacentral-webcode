@@ -14,7 +14,6 @@ limitations under the License.
 import re
 
 from django.db import models
-from django.db.models import Min, Max
 from rest_framework.renderers import JSONRenderer
 from caching.base import CachingMixin, CachingManager
 
@@ -374,11 +373,23 @@ class RawSqlXrefManager(models.Manager):
 
 class Xref(CachingMixin, models.Model):
     id = models.AutoField(primary_key=True)
-    db = models.ForeignKey("Database", db_column='dbid', related_name='xrefs')
-    accession = models.ForeignKey("Accession", db_column='ac', to_field='accession', related_name='xrefs', unique=True)
-    created = models.ForeignKey("Release", db_column='created', related_name='release_created')
-    last = models.ForeignKey("Release", db_column='last', related_name='last_release')
-    upi = models.ForeignKey("Rna", db_column='upi', to_field='upi', related_name='xrefs')
+    db = models.ForeignKey("Database", db_column='dbid', related_name='xrefs', on_delete=models.CASCADE)
+    accession = models.ForeignKey(
+        "Accession",
+        db_column='ac',
+        to_field='accession',
+        related_name='xrefs',
+        unique=True,
+        on_delete=models.CASCADE
+    )
+    created = models.ForeignKey(
+        "Release",
+        db_column='created',
+        related_name='release_created',
+        on_delete=models.CASCADE
+    )
+    last = models.ForeignKey("Release", db_column='last', related_name='last_release', on_delete=models.CASCADE)
+    upi = models.ForeignKey("Rna", db_column='upi', to_field='upi', related_name='xrefs', on_delete=models.CASCADE)
     version_i = models.IntegerField()
     deleted = models.CharField(max_length=1)
     timestamp = models.DateTimeField()

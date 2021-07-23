@@ -25,8 +25,8 @@ class Migration(migrations.Migration):
             name='RfamGoTerm',
             fields=[
                 ('rfam_go_term_id', models.AutoField(serialize=False, primary_key=True)),
-                ('go_term', models.ForeignKey(to='portal.GoTerm', db_column=b'go_term_id')),
-                ('rfam_model', models.ForeignKey(to='portal.RfamModel', db_column=b'rfam_model_id')),
+                ('go_term', models.ForeignKey(to='portal.GoTerm', db_column=b'go_term_id', on_delete=models.CASCADE)),
+                ('rfam_model', models.ForeignKey(to='portal.RfamModel', db_column=b'rfam_model_id', on_delete=models.CASCADE)),
             ],
             options={
                 'db_table': 'rfam_go_terms',

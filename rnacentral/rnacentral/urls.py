@@ -13,7 +13,7 @@ limitations under the License.
 
 import socket
 
-from django.conf.urls import url, include, handler500
+from django.conf.urls import url, include
 from django.views.generic import TemplateView
 
 
@@ -27,6 +27,7 @@ urlpatterns = [
     url(r'^export/', include('export.urls')),
     # new sequence search
     url(r'^sequence-search/', include('sequence_search.urls')),
+    # Django Debug Toolbar
 ]
 
 # robots.txt extras

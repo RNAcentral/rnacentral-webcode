@@ -12,7 +12,7 @@ limitations under the License.
 """
 
 from caching.base import CachingMixin, CachingManager
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.utils.functional import cached_property
 

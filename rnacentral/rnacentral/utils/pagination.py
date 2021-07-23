@@ -1,7 +1,31 @@
+import sys
+
+from django.core.paginator import Paginator
 from django.db.models.query import RawQuerySet
 from django.db.models import sql
-from django.core.paginator import Paginator
+from django.utils.functional import cached_property
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
+
+
+class CustomPaginatorClass(Paginator):
+    """Use a large number to make sure that all results can be shown"""
+    @cached_property
+    def count(self):
+        return sys.maxsize
+
+
+class LargeTablePagination(PageNumberPagination):
+    """Use this paginator class to avoid large table count query"""
+    django_paginator_class = CustomPaginatorClass
+    page_size_query_param = 'page_size'
+
+    def get_paginated_response(self, data):
+        return Response({
+            'next': self.get_next_link(),
+            'previous': self.get_previous_link(),
+            'results': data
+        })
 
 
 class Pagination(PageNumberPagination):
@@ -20,6 +44,8 @@ class PaginatedRawQuerySet(RawQuerySet):
 
     https://stackoverflow.com/questions/32191853/best-way-to-paginate-a-raw-sql-query-in-a-django-rest-listapi-view/43921793#43921793
     https://gist.github.com/eltongo/d3e6bdef17b0b14384ba38edc76f25f6
+
+    Stopped working after Django migration, but will keep it just in case.
     """
     def __init__(self, raw_query, **kwargs):
         super(PaginatedRawQuerySet, self).__init__(raw_query, **kwargs)
@@ -99,35 +125,3 @@ class PaginatedRawQuerySet(RawQuerySet):
         clone = self.__class__(raw_query=self.raw_query, model=self.model, using=self._db, hints=self._hints,
                                query=self.query, params=self.params, translations=self.translations)
         return clone
-
-
-class RawQuerysetPaginator(Paginator):
-    """
-    This is a Django paginator, meant to adapt RawQueryset
-    to DRF pagination classes.
-
-    Stolen from:
-    https://stackoverflow.com/questions/2532475/django-paginator-raw-sql-query
-
-    Stopped using it in favor of PaginatedRawQueryset, but will keep it just in case.
-    """
-    def __init__(self, object_list, per_page, count=1, **kwargs):
-        super(RawQuerysetPaginator, self).__init__(object_list, per_page, **kwargs)
-        self._raw_count = count
-
-    @property
-    def count(self):
-        return self._raw_count
-
-    def page(self, number):
-        number = self.validate_number(number)
-        return self._get_page(self.object_list, number, self)
-
-
-class RawQuerysetPagination(Pagination):
-    """
-    DRF pagination_class for raw querysets.
-
-    Stopped using it in favor of PaginatedRawQueryset, but will keep it just in case.
-    """
-    django_paginator_class = RawQuerysetPaginator

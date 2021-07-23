@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='ensemblinsdcmapping',
             name='assembly_id',
-            field=models.ForeignKey(related_name='assembly', db_column=b'assembly_id', to='portal.EnsemblAssembly'),
+            field=models.ForeignKey(related_name='assembly', db_column=b'assembly_id', to='portal.EnsemblAssembly', on_delete=models.CASCADE),
         ),
     ]

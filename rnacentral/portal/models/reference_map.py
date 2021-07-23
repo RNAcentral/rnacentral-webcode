@@ -18,8 +18,18 @@ from portal.models.reference import Reference
 
 
 class Reference_map(models.Model):
-    accession = models.ForeignKey(Accession, db_column='accession', to_field='accession', related_name='refs')
-    data = models.ForeignKey(Reference, db_column='reference_id')
+    accession = models.ForeignKey(
+        Accession,
+        db_column='accession',
+        to_field='accession',
+        related_name='refs',
+        on_delete=models.CASCADE
+    )
+    data = models.ForeignKey(
+        Reference,
+        db_column='reference_id',
+        on_delete=models.CASCADE
+    )
 
     class Meta:
         db_table = 'rnc_reference_map'

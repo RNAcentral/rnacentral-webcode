@@ -12,7 +12,7 @@ limitations under the License.
 """
 from django.conf.urls import url
 from django.views.generic.base import TemplateView
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.views.generic import RedirectView
 
 from .views import *
@@ -52,5 +52,5 @@ urlpatterns = [
     url(r'^api/?$', TemplateView.as_view(template_name='api.html'), name='sequence-search-api'),
 
     # user interface - embeddable react component
-    url(r'^$', sequence_search, name='sequence-search'),
+    url(r'^$', TemplateView.as_view(template_name='sequence-search-embed.html'), name='sequence-search'),
 ]

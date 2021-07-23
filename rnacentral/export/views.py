@@ -100,7 +100,7 @@ def export_search_results(query, _format, hits):
             class EaselIndexError(Exception):
                 """Raise when Easel could not index the fasta database"""
                 pass
-            raise EaselIndexError(errors, output + '\n' + cmd, return_code)
+            raise EaselIndexError(errors, output + b'\n' + cmd.encode(), return_code)
 
     def run_easel(temp_file, filename):
         """
@@ -125,7 +125,7 @@ def export_search_results(query, _format, hits):
             class EaselError(Exception):
                 """Raise when Easel exits with a non-zero status"""
                 pass
-            raise EaselError(errors, output + '\n' + cmd, return_code)
+            raise EaselError(errors, output + b'\n' + cmd.encode(), return_code)
 
     def paginate_over_results():
         """
@@ -152,16 +152,17 @@ def export_search_results(query, _format, hits):
             if _format == 'fasta':
                 # write out RNAcentral ids to a temporary file
                 for _id in rnacentral_ids:
-                    f.write('{0}\n'.format(_id))
+                    line = str.encode(_id+'\n')
+                    f.write(line)
             if _format == 'list':
-                text = '\n'.join(rnacentral_ids) + '\n'
+                text = str.encode('\n'.join(rnacentral_ids) + '\n')
                 archive.write(text)
             if _format == 'json':
                 text = format_output(rnacentral_ids)
                 archive.write(text)
                 # join batches with commas except for the last iteration
                 if text and end != hits:
-                    archive.write(',\n')
+                    archive.write(b',\n')
             start = end
 
             job.meta['progress'] = min(round(float(start) * 100 / hits, 2), 85)
@@ -169,7 +170,7 @@ def export_search_results(query, _format, hits):
             job.save()
 
         if _format == 'json':
-            archive.write(']')
+            archive.write(b']')
             archive.close()
         if _format == 'fasta':
             run_easel(f, filename)
@@ -272,7 +273,7 @@ def download_search_result_file(request):
         """
         Stream a results file hosted on the local server.
         """
-        wrapper = FileWrapper(open(job.result, 'r'))
+        wrapper = FileWrapper(open(job.result, 'rb'))
         response = StreamingHttpResponse(wrapper, content_type=get_content_type())
         response['Content-Disposition'] = 'attachment; filename={0}'.format(
                                           get_download_filename())

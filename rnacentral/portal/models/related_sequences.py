@@ -28,6 +28,7 @@ class RelatedSequence(models.Model):
         to_field='id',
         null=True,
         related_name='related_sequences',
+        on_delete=models.CASCADE
     )
 
     target_accession = models.CharField(max_length=50)
@@ -36,6 +37,7 @@ class RelatedSequence(models.Model):
         db_column='target_urs_taxid',
         to_field='id',
         null=True,
+        on_delete=models.CASCADE
     )
     relationship_type = models.TextField()
     methods = ArrayField(models.TextField(), null=True)

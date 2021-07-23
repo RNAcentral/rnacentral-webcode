@@ -15,14 +15,13 @@ import re
 import json
 
 from django.core.paginator import Paginator
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Min, Max
 from rest_framework import serializers
 
-from portal.models import Rna, Xref, Reference,  Reference_map, ChemicalComponent, Database, DatabaseStats, Accession, \
-    Release, Reference, Modification, RfamHit, RfamModel, RfamClan, RfamGoTerm, OntologyTerm, SequenceFeature, \
-    EnsemblAssembly, EnsemblKaryotype, \
-    ProteinInfo, EnsemblCompara, RnaPrecomputed, SequenceRegion, SecondaryStructureWithLayout
+from portal.models import Rna, Xref,  Reference_map, ChemicalComponent, DatabaseStats, Accession, Reference, \
+    Modification, RfamHit, RfamModel, RfamClan, OntologyTerm, SequenceFeature, EnsemblAssembly, EnsemblKaryotype, \
+    ProteinInfo, EnsemblCompara, RnaPrecomputed, SecondaryStructureWithLayout
 
 
 class RawPublicationSerializer(serializers.ModelSerializer):
@@ -394,34 +393,10 @@ class LncrnaTargetsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ProteinInfo
-        fields = ('target_accession', 'source_accession', 'description', 'label', 'synonyms', 'methods', 'description', 'target_urs_taxid')
-
-
-class RnaGffSerializer(serializers.ModelSerializer):
-    """Serializer for presenting genomic coordinates in GFF format"""
-    gff = serializers.CharField(source='get_gff', read_only=True)
-
-    class Meta:
-        model = Rna
-        fields = ('gff',)
-
-
-class RnaGff3Serializer(serializers.ModelSerializer):
-    """Serializer for presenting genomic coordinates in GFF format"""
-    gff3 = serializers.CharField(source='get_gff3', read_only=True)
-
-    class Meta:
-        model = Rna
-        fields = ('gff3',)
-
-
-class RnaBedSerializer(serializers.ModelSerializer):
-    """Serializer for presenting genomic coordinates in UCSC BED format"""
-    bed = serializers.CharField(source='get_ucsc_bed', read_only=True)
-
-    class Meta:
-        model = Rna
-        fields = ('bed',)
+        fields = (
+            'target_accession', 'source_accession', 'description', 'label', 'synonyms', 'methods', 'description',
+            'target_urs_taxid'
+        )
 
 
 class ExpertDatabaseStatsSerializer(serializers.ModelSerializer):

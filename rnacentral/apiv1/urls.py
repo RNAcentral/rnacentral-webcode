@@ -36,7 +36,7 @@ urlpatterns = [
     # secondary structure thumbnail in SVG format
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/2d/svg/?$', cache_page(CACHE_TIMEOUT)(views.SecondaryStructureSVGImage.as_view()), name='rna-2d-svg'),
     # rfam hits found in this RNAcentral id
-    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/rfam-hits(/(?P<taxid>\d+))?/?$', cache_page(CACHE_TIMEOUT)(views.RfamHitsAPIViewSet.as_view()), name='rna-rfam-hits'),
+    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/rfam-hits/(?P<taxid>\d+)?/?$', cache_page(CACHE_TIMEOUT)(views.RfamHitsAPIViewSet.as_view()), name='rna-rfam-hits'),
     # sequence features found in a sequence (CRS, mature miRNA products etc)
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/sequence-features/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.SequenceFeaturesAPIViewSet.as_view()), name='rna-sequence-features'),
     # related sequences according to Ensembl Compara
@@ -45,7 +45,7 @@ urlpatterns = [
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/publications/?$', cache_page(CACHE_TIMEOUT)(views.RnaPublicationsView.as_view()), name='rna-publications'),
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/publications/(?P<taxid>\d+)/?$',cache_page(CACHE_TIMEOUT)(views.RnaPublicationsView.as_view()), name='rna-publications'),
     # species-specific RNAcentral id
-    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})(/|_)(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.RnaSpeciesSpecificView.as_view()), name='rna-species-specific'),
+    url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})[/_](?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.RnaSpeciesSpecificView.as_view()), name='rna-species-specific'),
     # genome locations for RNA (species-specific)
     url(r'^rna/(?P<pk>URS[0-9A-Fa-f]{10})/genome-locations/(?P<taxid>\d+)/?$', cache_page(CACHE_TIMEOUT)(views.RnaGenomeLocations.as_view()), name='rna-genome-locations'),
     # go annotations for RNA (species-specific)
@@ -72,4 +72,4 @@ urlpatterns = [
     url(r'karyotypes/(?P<ensembl_url>.*?)/?$', cache_page(CACHE_TIMEOUT)(views.EnsemblKaryotypeAPIView.as_view()), {}, name='ensembl-karyotype'),
 ]
 
-urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'yaml', 'fasta', 'api', 'gff', 'gff3', 'bed'])
+urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'yaml', 'fasta', 'api'])

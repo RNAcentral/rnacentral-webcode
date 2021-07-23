@@ -51,6 +51,7 @@ class RfamModel(models.Model):
         db_column='rfam_clan_id',
         to_field='rfam_clan_id',
         null=True,
+        on_delete=models.CASCADE
     )
 
     seed_count = models.PositiveIntegerField()
@@ -81,8 +82,7 @@ class RfamModel(models.Model):
 
     def go_terms(self):
         terms = []
-        mapping = RfamGoTerm.objects.select_related('go_term').\
-                                     filter(rfam_model_id=self.rfam_model_id)
+        mapping = RfamGoTerm.objects.select_related('go_term').filter(rfam_model_id=self.rfam_model_id)
         for result in mapping.all():
             terms.append(result.go_term)
 
@@ -98,7 +98,7 @@ class RfamHit(models.Model):
 
     rfam_hit_id = models.AutoField(primary_key=True)
 
-    upi = models.ForeignKey('Rna', db_column='upi', to_field='upi')
+    upi = models.ForeignKey('Rna', db_column='upi', to_field='upi', on_delete=models.CASCADE)
     sequence_start = models.PositiveIntegerField()
     sequence_stop = models.PositiveIntegerField()
     sequence_completeness = models.FloatField()
@@ -107,6 +107,7 @@ class RfamHit(models.Model):
         RfamModel,
         db_column='rfam_model_id',
         to_field='rfam_model_id',
+        on_delete=models.CASCADE
     )
     model_start = models.PositiveIntegerField()
     model_stop = models.PositiveIntegerField()
@@ -134,11 +135,12 @@ class RfamInitialAnnotations(models.Model):
     """
 
     rfam_initial_annotation_id = models.AutoField(primary_key=True)
-    upi = models.ForeignKey('Rna', db_column='upi', to_field='upi')
+    upi = models.ForeignKey('Rna', db_column='upi', to_field='upi', on_delete=models.CASCADE)
     rfam_model = models.ForeignKey(
         RfamModel,
         db_column='rfam_model_id',
         to_field='rfam_model_id',
+        on_delete=models.CASCADE
     )
 
     class Meta:
@@ -158,6 +160,7 @@ class RfamAnalyzedSequences(models.Model):
         db_column='upi',
         to_field='upi',
         primary_key=True,
+        on_delete=models.CASCADE
     )
     date = models.DateField()
 
@@ -171,12 +174,14 @@ class RfamGoTerm(models.Model):
         OntologyTerm,
         db_column='ontology_term_id',
         to_field='ontology_term_id',
-        related_name='go_term'
+        related_name='go_term',
+        on_delete=models.CASCADE
     )
     rfam_model = models.ForeignKey(
         RfamModel,
         db_column='rfam_model_id',
         to_field='rfam_model_id',
+        on_delete=models.CASCADE
     )
 
     class Meta:

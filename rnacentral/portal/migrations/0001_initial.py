@@ -99,7 +99,7 @@ class Migration(migrations.Migration):
                 ('primary_start', models.IntegerField()),
                 ('primary_end', models.IntegerField()),
                 ('strand', models.IntegerField()),
-                ('accession', models.ForeignKey(related_name=b'coordinates', db_column=b'accession', to='portal.Accession')),
+                ('accession', models.ForeignKey(related_name=b'coordinates', db_column=b'accession', to='portal.Accession', on_delete=models.CASCADE)),
             ],
             options={
                 'db_table': 'rnc_coordinates',
@@ -125,8 +125,8 @@ class Migration(migrations.Migration):
             name='Reference_map',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('accession', models.ForeignKey(related_name=b'refs', db_column=b'accession', to='portal.Accession')),
-                ('data', models.ForeignKey(to='portal.Reference', db_column=b'reference_id')),
+                ('accession', models.ForeignKey(related_name=b'refs', db_column=b'accession', to='portal.Accession', on_delete=models.CASCADE)),
+                ('data', models.ForeignKey(to='portal.Reference', db_column=b'reference_id', on_delete=models.CASCADE)),
             ],
             options={
                 'db_table': 'rnc_reference_map',
@@ -144,7 +144,7 @@ class Migration(migrations.Migration):
                 ('userstamp', models.CharField(max_length=30)),
                 ('descr', models.TextField()),
                 ('force_load', models.CharField(max_length=1)),
-                ('db', models.ForeignKey(related_name=b'db', db_column=b'dbid', to='portal.Database')),
+                ('db', models.ForeignKey(related_name=b'db', db_column=b'dbid', to='portal.Database', on_delete=models.CASCADE)),
             ],
             options={
                 'db_table': 'rnc_release',
@@ -179,11 +179,11 @@ class Migration(migrations.Migration):
                 ('userstamp', models.CharField(max_length=100)),
                 ('version', models.IntegerField()),
                 ('taxid', models.IntegerField()),
-                ('accession', models.ForeignKey(related_name=b'xrefs', db_column=b'ac', to='portal.Accession', unique=True)),
-                ('created', models.ForeignKey(related_name=b'release_created', db_column=b'created', to='portal.Release')),
-                ('db', models.ForeignKey(related_name=b'xrefs', db_column=b'dbid', to='portal.Database')),
-                ('last', models.ForeignKey(related_name=b'last_release', db_column=b'last', to='portal.Release')),
-                ('upi', models.ForeignKey(related_name=b'xrefs', db_column=b'upi', to='portal.Rna')),
+                ('accession', models.ForeignKey(related_name=b'xrefs', db_column=b'ac', to='portal.Accession', unique=True, on_delete=models.CASCADE)),
+                ('created', models.ForeignKey(related_name=b'release_created', db_column=b'created', to='portal.Release', on_delete=models.CASCADE)),
+                ('db', models.ForeignKey(related_name=b'xrefs', db_column=b'dbid', to='portal.Database', on_delete=models.CASCADE)),
+                ('last', models.ForeignKey(related_name=b'last_release', db_column=b'last', to='portal.Release', on_delete=models.CASCADE)),
+                ('upi', models.ForeignKey(related_name=b'xrefs', db_column=b'upi', to='portal.Rna', on_delete=models.CASCADE)),
             ],
             options={
                 'db_table': 'xref',
@@ -214,7 +214,7 @@ class Migration(migrations.Migration):
                 ('count_distinct_organisms', models.PositiveIntegerField(db_index=True)),
                 ('has_human_genomic_coordinates', models.NullBooleanField(db_index=True)),
                 ('N_symbols', models.PositiveSmallIntegerField(db_index=True)),
-                ('upi', models.OneToOneField(related_name=b'precomputed', db_column=b'upi', to='portal.Rna')),
+                ('upi', models.OneToOneField(related_name=b'precomputed', db_column=b'upi', to='portal.Rna', on_delete=models.CASCADE)),
             ],
             options={
                 'db_table': 'rnc_rna_precomputed_data',

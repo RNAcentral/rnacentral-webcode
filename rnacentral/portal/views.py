@@ -25,7 +25,6 @@ if six.PY2:
 elif six.PY3:
     from urllib.parse import urlparse
 
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.http import Http404, HttpResponse, HttpResponseForbidden
 from django.conf import settings
 from django.shortcuts import render, render_to_response, redirect
@@ -35,16 +34,12 @@ from django.views.decorators.cache import cache_page, never_cache
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
 from portal.config.expert_databases import expert_dbs
 from portal.forms import ContactForm
-from portal.models import Rna, Database, Release, Xref, EnsemblAssembly
-from portal.models.database_stats import DatabaseStats
+from portal.models import Rna, Database, Xref, EnsemblAssembly
 from portal.models.rna_precomputed import RnaPrecomputed
 from portal.config.svg_images import examples
-from rna_summary import RnaSummary
+from portal.rna_summary import RnaSummary
 
 CACHE_TIMEOUT = 60 * 60 * 24 * 1  # per-view cache timeout in seconds
 XREF_PAGE_SIZE = 1000
@@ -52,6 +47,7 @@ XREF_PAGE_SIZE = 1000
 ########################
 # Function-based views #
 ########################
+
 
 @cache_page(CACHE_TIMEOUT)
 def get_sequence_lineage(request, upi):
@@ -91,8 +87,8 @@ def expert_databases_view(request):
     expert_dbs.sort(key=lambda x: x['imported'], reverse=True)
     context = {
         'expert_dbs': expert_dbs,
-        'num_dbs': len(expert_dbs) - 1, # Vega is archived
-        'num_imported': len([x for x in expert_dbs if x['imported']]) - 1, # Vega
+        'num_dbs': len(expert_dbs) - 1,  # Vega is archived
+        'num_imported': len([x for x in expert_dbs if x['imported']]) - 1,  # Vega
     }
     return render(request, 'portal/expert-databases.html', {'context': context})
 
@@ -277,24 +273,6 @@ def external_link(request, expert_db, external_id):
         return redirect('/search?q=expert_db:"{}" "{}"'.format(expert_db, external_id))
 
 
-def r2dt(request):
-    """R2DT page"""
-    path = os.path.join(
-        settings.PROJECT_PATH,
-        'rnacentral',
-        'portal',
-        'static',
-        'r2dt-web',
-        'dist',
-        'r2dt-web.js'
-    )
-    # Check if the R2DT is installed
-    plugin_installed = True if os.path.isfile(path) else False
-
-    context = {'plugin_installed': plugin_installed}
-    return render(request, 'portal/r2dt.html', {'context': context})
-
-
 #####################
 # Class-based views #
 #####################
@@ -318,8 +296,9 @@ class GenomeBrowserView(TemplateView):
         # if species is not defined - use homo_sapiens as default, if specified and wrong - 404
         if 'species' in request.GET:
             kwargs['genome'] = request.GET['species']
-            ensembl_assembly = EnsemblAssembly.objects.filter(ensembl_url=kwargs['genome']).all()[0]
-            if not ensembl_assembly:
+            try:
+                ensembl_assembly = EnsemblAssembly.objects.filter(ensembl_url=kwargs['genome']).all()[0]
+            except IndexError:
                 raise Http404
         else:
             kwargs['genome'] = 'homo_sapiens'

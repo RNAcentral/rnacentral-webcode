@@ -89,6 +89,7 @@ def job_results(request, job_id):
     url = SEQUENCE_SEARCH_ENDPOINT + '/api/facets-search/' + job_id
     return proxy_request(request, url, 'GET')
 
+
 @never_cache
 @api_view(['GET'])
 @permission_classes([AllowAny])
@@ -114,24 +115,6 @@ def show_searches(request):
     """Displays info about searches."""
     url = SEQUENCE_SEARCH_ENDPOINT + '/api/show-searches'
     return proxy_request(request, url, 'GET')
-
-
-def sequence_search(request):
-    """Sequence search main page"""
-    path = os.path.join(
-        settings.PROJECT_PATH,
-        'rnacentral',
-        'sequence_search',
-        'static',
-        'rnacentral-sequence-search-embed',
-        'dist',
-        'RNAcentral-sequence-search.js'
-    )
-    # Check if the embeddable component is installed
-    plugin_installed = True if os.path.isfile(path) else False
-
-    context = {'plugin_installed': plugin_installed}
-    return render(request, 'sequence-search-embed.html', {'context': context})
 
 
 def dashboard(request):
@@ -170,8 +153,11 @@ def dashboard(request):
             get_current_month = list(expert_db_results[index][key][-1]) if list(expert_db_results[index][key]) else None
             get_current_month = get_current_month.pop() if get_current_month else None
 
-            get_last_month = list(expert_db_results[index][key][-2]) if list(expert_db_results[index][key]) else None
-            get_last_month = get_last_month.pop() if get_last_month else None
+            try:
+                get_last_month = list(expert_db_results[index][key][-2]) if list(expert_db_results[index][key]) else None
+                get_last_month = get_last_month.pop() if get_last_month else None
+            except IndexError:
+                get_last_month = None
 
             if get_current_month == current_month:
                 current_month_pie_chart.append({key: expert_db_results[index][key][-1][current_month]})

@@ -13,8 +13,6 @@ limitations under the License.
 
 from django.db import models
 
-from django.contrib.postgres.fields import ArrayField
-
 from portal.models import SequenceRegion
 
 

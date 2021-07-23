@@ -1,0 +1,41 @@
+# The HX cluster has 3 workers. Each k8s worker comes with 8 cores and 32GB of RAM.
+# The resources of this cluster will be divided as follows:
+# - Failover public website (2 workers)
+# - Test website (1 worker)
+
+# Database
+database: db-dev
+
+# Proxy
+proxy: proxy-hx
+
+# EBI search index
+searchIndex: search-index-dev
+
+# Memcached
+memcachedReplicas: 1
+memcachedRequestsMemory: "1024Mi"
+memcachedRequestsCPU: "500m"
+memcachedLimitssMemory: "2048Mi"
+memcachedLimitsCPU: "1000m"
+
+# Redis
+redisReplicas: 1
+redisRequestsMemory: "1024Mi"
+redisRequestsCPU: "500m"
+redisLimitssMemory: "2048Mi"
+redisLimitsCPU: "1000m"
+
+# Nginx
+nginxReplicas: 1
+nginxRequestsMemory: "512Mi"
+nginxRequestsCPU: "500m"
+nginxLimitssMemory: "1024Mi"
+nginxLimitsCPU: "1000m"
+
+# RNAcentral
+rnacentralReplicas: 1
+rnacentralRequestsMemory: "1536Mi"
+rnacentralRequestsCPU: "500m"
+rnacentralLimitssMemory: "3072Mi"
+rnacentralLimitsCPU: "1000m"

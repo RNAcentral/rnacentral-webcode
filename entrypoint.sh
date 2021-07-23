@@ -12,28 +12,50 @@ DB_PORT=${DB_PORT:-'5432'}
 DB_PASSWORD=${DB_PASSWORD:-'NWDMCE5xdipIjRrp'}
 
 # RNAcentral specific settings
-SECRET_KEY=${SECRET_KEY:-'your_secret_key'}
+SECRET_KEY=${SECRET_KEY:-$(python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())')}
+DJANGO_DEBUG=${DJANGO_DEBUG:-'False'}
+EBI_SEARCH_ENDPOINT=${EBI_SEARCH_ENDPOINT:-'http://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral'}
+S3_HOST=${S3_HOST}
+S3_KEY=${S3_KEY}
+S3_SECRET=${S3_SECRET}
 
 # Supervisor
 SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/srv/rnacentral/supervisor"}
 
 # Entrypoint variable
-RNACENTRAL_PROJECT_PATH="${RNACENTRAL_HOME}/rnacentral-webcode/rnacentral"
-LOGS="${RNACENTRAL_HOME}/log"
+LOGS=/srv/rnacentral/log
 
 # Add local_settings file
-if [ -f "${RNACENTRAL_PROJECT_PATH}"/rnacentral/local_settings.py ]
+if [ -f "${RNACENTRAL_HOME}"/rnacentral/rnacentral/local_settings.py ]
 then
 	echo "INFO: RNAcentral local_settings.py file already provisioned"
 else
 	echo "INFO: Creating RNAcentral local_settings.py file"
-	cat <<-EOF > "${RNACENTRAL_PROJECT_PATH}"/rnacentral/local_settings.py
-		from utils import get_environment
+	cat <<-EOF > "${RNACENTRAL_HOME}"/rnacentral/rnacentral/local_settings.py
+		import os
+		from .utils import get_environment
 		SECRET_KEY = "$SECRET_KEY"
-		DEBUG = True
+		EBI_SEARCH_ENDPOINT = "$EBI_SEARCH_ENDPOINT"
 		ENVIRONMENT = get_environment()
 		INTERNAL_IPS = ('127.0.0.1', '192.168.99.1')
+		DEBUG_TOOLBAR_CONFIG = {'SHOW_TOOLBAR_CALLBACK': lambda request: DEBUG}
 		COMPRESS_ENABLED = False
+		S3_SERVER = {
+        "HOST": "$S3_HOST",
+        "KEY": "$S3_KEY",
+        "SECRET": "$S3_SECRET",
+        "BUCKET": "ebi-rnacentral",
+    }
+		CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+            "LOCATION": "memcached:11211",
+        },
+        "sitemaps": {
+            "BACKEND": "rnacentral.utils.cache.SitemapsCache",
+            "LOCATION": os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'rnacentral', 'sitemaps')
+        }
+    }
 		RQ_QUEUES = {
         "default": {
             "HOST": "redis",
@@ -54,7 +76,22 @@ else
         }
     }
 	EOF
-	chown -R rnacentral "${RNACENTRAL_PROJECT_PATH}"/rnacentral/local_settings.py
+	sed -i "3 a DEBUG = ${DJANGO_DEBUG}" "${RNACENTRAL_HOME}"/rnacentral/rnacentral/local_settings.py
+	chown -R rnacentral "${RNACENTRAL_HOME}"/rnacentral/rnacentral/local_settings.py
+fi
+
+# Add local_settings file in the export app
+# /srv/rnacentral/fasta and /srv/rnacentral/export are k8 volumes in prod
+if [ -f "${RNACENTRAL_HOME}"/rnacentral/export/local_settings.py ]
+then
+	echo "INFO: The local_settings.py file for the export app has already been provisioned"
+else
+	echo "INFO: Creating local_settings.py file for the export app"
+	cat <<-EOF > "${RNACENTRAL_HOME}"/rnacentral/export/local_settings.py
+		FASTA_DB = '/srv/rnacentral/fasta/rnacentral_species_specific_ids.fasta'
+		EXPORT_RESULTS_DIR = '/srv/rnacentral/export'
+	EOF
+	chown rnacentral "${RNACENTRAL_HOME}"/rnacentral/export/local_settings.py
 fi
 
 # Supervisor setup
@@ -63,8 +100,6 @@ then
 	echo "INFO: Supervisord configuration file already provisioned"
 else
 	echo "INFO: Creating Supervisord configuration file"
-	mkdir -p "$SUPERVISOR_CONF_DIR"
-	mkdir -p "${LOGS}"
 	cat <<-EOF > "${SUPERVISOR_CONF_DIR}"/supervisord.conf
 		[supervisord]
 		pidfile=${SUPERVISOR_CONF_DIR}/supervisord.pid
@@ -76,8 +111,8 @@ else
 		nodaemon=true
 
 		[program:rqworkers]
-		command=python $RNACENTRAL_HOME/rnacentral-webcode/rnacentral/manage.py rqworker
-		directory=$RNACENTRAL_HOME/rnacentral-webcode/rnacentral
+		command=python $RNACENTRAL_HOME/rnacentral/manage.py rqworker
+		directory=$RNACENTRAL_HOME/rnacentral
 		numprocs=4
 		process_name=%(program_name)s_%(process_num)s
 		autorestart=true
@@ -86,7 +121,7 @@ else
 		stdout_logfile=${LOGS}/rqworkers.out.log
 
 		[program:rnacentral]
-		command=$RNACENTRAL_HOME/.local/bin/gunicorn --chdir $RNACENTRAL_HOME/rnacentral-webcode/rnacentral --bind 0.0.0.0:8000 rnacentral.wsgi:application
+		command=gunicorn --chdir $RNACENTRAL_HOME/rnacentral --bind 0.0.0.0:8000 rnacentral.wsgi:application
 		user=rnacentral
 		autostart=true
 		autorestart=true
@@ -94,6 +129,11 @@ else
 		stdout_logfile=${LOGS}/rnacentral.out.log
 		environment=HOME="$RNACENTRAL_HOME"
 	EOF
+	chown -R rnacentral "${SUPERVISOR_CONF_DIR}"/supervisord.conf
 fi
+
+# Run collectstatic
+echo "INFO: Copying the static files"
+python "${RNACENTRAL_HOME}"/rnacentral/manage.py collectstatic --noinput
 
 exec "$@"

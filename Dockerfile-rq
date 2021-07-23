@@ -1,0 +1,9 @@
+#------------------------------------------------------------------------------
+#
+# This Dockerfile is for installing rq-dashboard and monitoring RQ queues.
+#
+#-------------------------------------------------------------------------------
+
+FROM python:3.8-slim
+RUN pip install rq-dashboard
+RUN pip install click==7.1.2  # rq-dashboard==0.6.3 is incompatible with click==8.0.1

@@ -22,13 +22,12 @@ import zlib
 from caching.base import CachingMixin, CachingManager
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import connection
 from django.db import models
 from django.db.models import Prefetch, Min, Max, Q
 from django.utils.functional import cached_property
 
-from .database import Database
 from .modification import Modification
 from .rna_precomputed import RnaPrecomputed
 from .related_sequences import RelatedSequence
@@ -562,7 +561,7 @@ class Rna(CachingMixin, models.Model):
         s3_obj = s3.Object(settings.S3_SERVER['BUCKET'], s3_file)
         try:
             svg = zlib.decompress(s3_obj.get()['Body'].read(), zlib.MAX_WBITS | 32)
-            svg = svg.replace("rgb(255, 0, 0)", "rgb(255,0,255)")
+            svg = svg.replace(b"rgb(255, 0, 0)", b"rgb(255,0,255)")
         except s3.meta.client.exceptions.NoSuchKey:
             svg = None
 
