@@ -75,7 +75,7 @@ pipeline {
                             cd kubernetes/helm
                             /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm uninstall full-dev --kubeconfig ${config} --namespace dev
                             sleep 10
-                            /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install full-dev --kubeconfig ${config} --namespace dev --set proxy=proxy-hx,database=${DB},searchIndex=${SEARCH_INDEX},rnacentralBranch=${params.BRANCH} .
+                            /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install full-dev --kubeconfig ${config} --namespace dev --values=values.dev.yaml --set proxy=proxy-hx,database=${DB},searchIndex=${SEARCH_INDEX},rnacentralBranch=${params.BRANCH} .
                             sleep 10
 
                             # send final message on Slack
