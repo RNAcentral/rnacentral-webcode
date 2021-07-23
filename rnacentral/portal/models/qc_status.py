@@ -15,20 +15,20 @@ from django.db import models
 from django.contrib.postgres.fields import JSONField
 
 
-class QaStatus(models.Model):
+class QcStatus(models.Model):
     id = models.ForeignKey(
         'RnaPrecomputed',
         primary_key=True,
         db_column='rna_id',
         to_field='id',
-        related_name='qa_status',
+        related_name='qc_status',
         on_delete=models.CASCADE,
     )
     upi = models.ForeignKey(
         'Rna',
         db_column='upi',
         to_field='upi',
-        related_name='qa_statuses',
+        related_name='qc_statuses',
         on_delete=models.CASCADE,
     )
     taxid = models.IntegerField()

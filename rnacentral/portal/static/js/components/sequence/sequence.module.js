@@ -149,8 +149,8 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         return $http.get(routes.apiRfamHitsView({upi: $scope.upi, taxid: $scope.taxid}), {params: {page_size: 10000000000}})
     };
 
-    $scope.fetchQaStatus = function() {
-        return $http.get(routes.qaStatusApi({upi: $scope.upi, taxid: $scope.taxid}), {params: {page_size: 10000000000}})
+    $scope.fetchQcStatus = function() {
+        return $http.get(routes.qcStatusApi({upi: $scope.upi, taxid: $scope.taxid}), {params: {page_size: 10000000000}})
     };
 
     $scope.fetchSequenceFeatures = function() {
@@ -616,12 +616,12 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
         }
 
         if ($scope.taxid) {
-	  $scope.qaStatus = "pending";
-          $scope.fetchQaStatus().then(function(response) {
-            $scope.qaStatus = response.data;
-	  }, function(error) {
-	    $scope.qaStatus = "failed";
-	  });
+          $scope.qcStatus = "pending";
+                $scope.fetchQcStatus().then(function(response) {
+                  $scope.qcStatus = response.data;
+          }, function(error) {
+            $scope.qcStatus = "failed";
+          });
         }
 
         // adjust feature viewer css

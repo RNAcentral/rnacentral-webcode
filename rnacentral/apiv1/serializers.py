@@ -21,7 +21,7 @@ from rest_framework import serializers
 
 from portal.models import Rna, Xref,  Reference_map, ChemicalComponent, DatabaseStats, Accession, Reference, \
     Modification, RfamHit, RfamModel, RfamClan, OntologyTerm, SequenceFeature, EnsemblAssembly, EnsemblKaryotype, \
-    ProteinInfo, EnsemblCompara, RnaPrecomputed, SecondaryStructureWithLayout, QaStatus
+    ProteinInfo, EnsemblCompara, RnaPrecomputed, SecondaryStructureWithLayout, QcStatus
 
 
 class RawPublicationSerializer(serializers.ModelSerializer):
@@ -515,7 +515,7 @@ class RnaPrecomputedJsonSerializer(serializers.ModelSerializer):
         return [database for database in obj.databases.split(',')] if obj.databases else []
 
 
-class QaStatusSerializer(serializers.ModelSerializer):
+class QcStatusSerializer(serializers.ModelSerializer):
     class Meta:
-        model = QaStatus
+        model = QcStatus
         fields = '__all__'
