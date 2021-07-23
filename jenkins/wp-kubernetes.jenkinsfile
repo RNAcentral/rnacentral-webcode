@@ -83,7 +83,7 @@ pipeline {
                     }
 
                     if ("${CLUSTER}" == "HX") {
-                        withCredentials([file(credentialsId: 'HX-WP-Config', variable: 'config')]) {
+                        withCredentials([file(credentialsId: 'HX-WP-Config', variable: 'config-hx')]) {
                             sh """
                                 # update repository
                                 git reset --hard
@@ -92,25 +92,25 @@ pipeline {
                                 git pull
 
                                 # send start message on Slack
-                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting deployment of ${params.BRANCH} in ${params.WEB} - ${CLUSTER} cluster"}' $SLACK
+                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting deployment of ${params.BRANCH} in ${params.WEB}"}' $SLACK
 
                                 # clear the cache
-                                POD=`/net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config} get pod -l app=memcached -o jsonpath="{.items[0].metadata.name}"`
-                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config} exec -it \$POD -- sh -c "echo flush_all | nc localhost 11211"
+                                POD=`/net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config-hx} get pod -l app=memcached -o jsonpath="{.items[0].metadata.name}"`
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config-hx} exec -it \$POD -- sh -c "echo flush_all | nc localhost 11211"
 
                                 # reinstall everything
                                 cd kubernetes/helm
-                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm uninstall ${RELEASE} --kubeconfig ${config} --namespace ${NAMESPACE}
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm uninstall ${RELEASE} --kubeconfig ${config-hx} --namespace ${NAMESPACE}
                                 sleep 10
-                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} --kubeconfig ${config} --namespace ${NAMESPACE} ${VALUES} --set proxy=proxy-hx,database=${DB},searchIndex=${SEARCH_INDEX},rnacentralBranch=${params.BRANCH} .
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} --kubeconfig ${config-hx} --namespace ${NAMESPACE} ${VALUES} --set proxy=proxy-hx,database=${DB},searchIndex=${SEARCH_INDEX},rnacentralBranch=${params.BRANCH} .
                                 sleep 10
 
                                 # send final message on Slack
-                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployed ${params.BRANCH} in ${params.WEB} - ${CLUSTER} cluster. This may take a few more seconds."}' $SLACK
+                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployed ${params.BRANCH} in ${params.WEB}. This may take a few more seconds."}' $SLACK
                             """
                         }
                     } else if ("${CLUSTER}" == "HH") {
-                        withCredentials([file(credentialsId: 'HH-WP-Config', variable: 'config')]) {
+                        withCredentials([file(credentialsId: 'HH-WP-Config', variable: 'config-hh')]) {
                             sh """
                                 # update repository
                                 git reset --hard
@@ -119,21 +119,21 @@ pipeline {
                                 git pull
 
                                 # send start message on Slack
-                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting deployment of ${params.BRANCH} in ${params.WEB} - ${CLUSTER} cluster"}' $SLACK
+                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting deployment of ${params.BRANCH} in ${params.WEB}"}' $SLACK
 
                                 # clear the cache
-                                POD=`/net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config} get pod -l app=memcached -o jsonpath="{.items[0].metadata.name}"`
-                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config} exec -it \$POD -- sh -c "echo flush_all | nc localhost 11211"
+                                POD=`/net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config-hh} get pod -l app=memcached -o jsonpath="{.items[0].metadata.name}"`
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config-hh} exec -it \$POD -- sh -c "echo flush_all | nc localhost 11211"
 
                                 # reinstall everything
                                 cd kubernetes/helm
-                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm uninstall ${RELEASE} --kubeconfig ${config} --namespace ${NAMESPACE}
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm uninstall ${RELEASE} --kubeconfig ${config-hh} --namespace ${NAMESPACE}
                                 sleep 10
-                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} --kubeconfig ${config} --namespace ${NAMESPACE} ${VALUES} --set proxy=proxy-hh,database=${DB},searchIndex=${SEARCH_INDEX},rnacentralBranch=${params.BRANCH} .
+                                /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install ${RELEASE} --kubeconfig ${config-hh} --namespace ${NAMESPACE} ${VALUES} --set proxy=proxy-hh,database=${DB},searchIndex=${SEARCH_INDEX},rnacentralBranch=${params.BRANCH} .
                                 sleep 10
 
                                 # send final message on Slack
-                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployed ${params.BRANCH} in ${params.WEB} - ${CLUSTER} cluster. This may take a few more seconds."}' $SLACK
+                                curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployed ${params.BRANCH} in ${params.WEB}. This may take a few more seconds."}' $SLACK
                             """
                         }
                     }
