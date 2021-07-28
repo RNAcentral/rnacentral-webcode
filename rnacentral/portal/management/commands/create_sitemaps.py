@@ -92,7 +92,7 @@ class Command(BaseCommand):
                         'help-gene-ontology-annotations',
                         'help-genomic-mapping',
                         'help-public-database',
-                        'help-rfam-annotations',
+                        'help-qc',
                         'help-rna-target-interactions',
                         'help-scientific-advisory-board',
                         'help-secondary-structure',

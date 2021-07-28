@@ -127,7 +127,7 @@ class PortalTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_help_rfam_annotations_status_code(self):
-        response = self.client.get(reverse('help-rfam-annotations'))
+        response = self.client.get(reverse('help-qc'))
         self.assertEqual(response.status_code, 200)
 
     def test_help_rna_target_interactions_status_code(self):
