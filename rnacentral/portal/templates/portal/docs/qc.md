@@ -45,14 +45,14 @@ Browse all sequences with missing matches by searching for [`qc_warning:"missing
 
 ### 4. Possible ORFs
 
-
 Very few sequences contain open reading frames, however, it is worth noting which do as this may the function of the ncRNA.
 
 #### Examples
 
 * [Human lncRNA](/rna/URS00008D8914/9606)
 * [Fly rRNA](/rna/URS0000745350/7227)
-* [All sequences with ORFs](/search?q=qc_warning:%22possible_orf%22)
+
+Browse all sequences with possible ORFs by searching for [`qc_warning:"possible_orf"`](/search?q=qc_warning:%22possible_orf%22)
 
 ## Why some sequences do not match any Rfam families
 
