@@ -142,7 +142,9 @@ def export_search_results(query, _format, hits):
         page_size = 100  # max EBI search page size
 
         if _format == 'list':
-            archive = open(filename, 'wb')
+            filename = filename.replace('.gz', '')
+            uniq_ids = tempfile.NamedTemporaryFile(delete=True, dir=EXPORT_RESULTS_DIR)
+            archive = open(uniq_ids.name, 'w')
         if _format == 'json':
             archive = gzip.open(filename, 'wb')
             archive.write(b'[')
@@ -159,7 +161,7 @@ def export_search_results(query, _format, hits):
                     line = str.encode(_id+'\n')
                     f.write(line)
             if _format == 'list':
-                text = str.encode('\n'.join(rnacentral_ids) + '\n')
+                text = '\n'.join(rnacentral_ids) + '\n'
                 archive.write(text)
             if _format == 'json':
                 text = format_output(rnacentral_ids)
@@ -173,6 +175,13 @@ def export_search_results(query, _format, hits):
             # job.save_meta()
             job.save()
 
+        if _format == 'list':
+            archive.flush()
+            os.fsync(archive.fileno())
+            cmd = 'sort {} | uniq > {}'.format(uniq_ids.name, filename)
+            os.system(cmd)
+            uniq_ids.close()
+            archive.close()
         if _format == 'json':
             archive.write(b']')
             archive.close()
