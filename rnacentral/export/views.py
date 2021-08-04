@@ -112,15 +112,19 @@ def export_search_results(query, _format, hits):
         # make sure that temporary file is saved to disk
         temp_file.flush()
         os.fsync(temp_file.fileno())
+        # remove possible duplicate ids
+        uniq_ids = tempfile.NamedTemporaryFile(delete=True, dir=EXPORT_RESULTS_DIR)
+        os.system('sort {} | uniq > {}'.format(temp_file.name, uniq_ids.name))
         cmd = '{esl_binary} -f {fasta_db} {id_list} | gzip > {output}'.format(
             esl_binary=ESLSFETCH,
             fasta_db=FASTA_DB,
-            id_list=temp_file.name,
+            id_list=uniq_ids.name,
             output=filename)
         process = sub.Popen(cmd, stdout=sub.PIPE, stderr=sub.PIPE, shell=True)
         output, errors = process.communicate()
         return_code = process.returncode
         temp_file.close()
+        uniq_ids.close()
         if return_code != 0:
             class EaselError(Exception):
                 """Raise when Easel exits with a non-zero status"""
