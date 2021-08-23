@@ -32,10 +32,8 @@ from django.template import TemplateDoesNotExist
 from django.template.loader import render_to_string
 from django.views.decorators.cache import cache_page, never_cache
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import FormView
 
 from portal.config.expert_databases import expert_dbs
-from portal.forms import ContactForm
 from portal.models import Rna, Database, Xref, EnsemblAssembly
 from portal.models.rna_precomputed import RnaPrecomputed
 from portal.config.svg_images import examples
@@ -319,20 +317,6 @@ class GenomeBrowserView(TemplateView):
 
         response = super(GenomeBrowserView, self).get(request, *args, **kwargs)
         return response.render()
-
-
-class ContactView(FormView):
-    """Contact form view."""
-    template_name = 'portal/contact.html'
-    form_class = ContactForm
-
-    def form_valid(self, form):
-        # This method is called when valid form data has been POSTed.
-        # It should return an HttpResponse.
-        if form.send_email():
-            return redirect('contact-us-success')
-        else:
-            return redirect('error')
 
 
 ####################
