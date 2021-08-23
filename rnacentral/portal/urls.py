@@ -66,7 +66,7 @@ urlpatterns = [
     # API documentation
     url(r'^api/?$', views.StaticView.as_view(), {'page': 'help/api-v1'}, name='api-docs'),
     # contact us
-    url(r'^contact/?$', views.ContactView.as_view(), name='contact-us'),
+    url(r'^contact/?$', TemplateView.as_view(template_name='portal/contact.html'), name='contact-us'),
     # contact us success
     url(r'^thanks/?$', views.StaticView.as_view(), {'page': 'thanks'}, name='contact-us-success'),
     # error
