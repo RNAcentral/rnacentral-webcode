@@ -11,6 +11,9 @@ class SequenceSearchTest(TestCase):
             "all_searches_result": {"count": 14602, "avg_time": "0:01:10"},
             "last_24_hours_result": {"count": 118, "avg_time": "0:04:07"},
             "last_week_result": {"count": 896, "avg_time": "0:00:46"},
+            "high_priority_result": {"count": 9037, "avg_time": "0:00:40"},
+            "high_priority_24_hours_result": {"count": 735, "avg_time": "0:00:31"},
+            "high_priority_last_week_result": {"count": 702, "avg_time": "0:00:42"},
             "searches_per_month": [],
             "expert_db_results": [{"RNAcentral": []}, {"Rfam": []}, {"miRBase": []}, {"snoDB": []}, {"GtRNAdb": []}]
         }

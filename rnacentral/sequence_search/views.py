@@ -121,6 +121,7 @@ def dashboard(request):
     """Info about searches in rnacentral-sequence-search."""
     all_searches, searches_last_24_hours, searches_last_week = 0, 0, 0
     average_all_searches, average_last_24_hours, average_last_week = 0, 0, 0
+    average_high_priority_searches, average_last_24_hours_high_priority, average_last_week_high_priority = 0, 0, 0
     searches_per_month = None
     expert_db_results = None
     show_searches_url = SEQUENCE_SEARCH_ENDPOINT + '/api/show-searches'
@@ -132,10 +133,13 @@ def dashboard(request):
 
             all_searches = data['all_searches_result']['count']
             average_all_searches = data['all_searches_result']['avg_time']
+            average_high_priority_searches = data['high_priority_result']['avg_time']
             searches_last_24_hours = data['last_24_hours_result']['count']
             average_last_24_hours = data['last_24_hours_result']['avg_time']
+            average_last_24_hours_high_priority = data['high_priority_24_hours_result']['avg_time']
             searches_last_week = data['last_week_result']['count']
             average_last_week = data['last_week_result']['avg_time']
+            average_last_week_high_priority = data['high_priority_last_week_result']['avg_time']
             searches_per_month = data['searches_per_month']
             expert_db_results = data['expert_db_results']
 
@@ -173,6 +177,9 @@ def dashboard(request):
         'average_all_searches': average_all_searches,
         'average_last_24_hours': average_last_24_hours,
         'average_last_week': average_last_week,
+        'average_high_priority_searches': average_high_priority_searches,
+        'average_last_24_hours_high_priority': average_last_24_hours_high_priority,
+        'average_last_week_high_priority': average_last_week_high_priority,
         'searches_per_month': searches_per_month,
         'expert_db_results': expert_db_results,
         'current_month_pie_chart': current_month_pie_chart,
