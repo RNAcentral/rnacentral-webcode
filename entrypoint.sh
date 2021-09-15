@@ -39,7 +39,6 @@ else
 		ENVIRONMENT = get_environment()
 		INTERNAL_IPS = ('127.0.0.1', '192.168.99.1')
 		DEBUG_TOOLBAR_CONFIG = {'SHOW_TOOLBAR_CALLBACK': lambda request: DEBUG}
-		COMPRESS_ENABLED = False
 		S3_SERVER = {
         "HOST": "$S3_HOST",
         "KEY": "$S3_KEY",
@@ -135,5 +134,9 @@ fi
 # Run collectstatic
 echo "INFO: Copying the static files"
 python "${RNACENTRAL_HOME}"/rnacentral/manage.py collectstatic --noinput
+
+# Run django compressor
+echo "INFO: Running django compress"
+python "${RNACENTRAL_HOME}"/rnacentral/manage.py compress
 
 exec "$@"
