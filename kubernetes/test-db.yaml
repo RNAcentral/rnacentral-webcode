@@ -1,0 +1,14 @@
+# This pod uses an image from postgres and can be used to test the connection to the database.
+# Steps to run the test:
+# 1 - kubectl apply -f test-db.yaml
+# 2 - kubectl exec -it test-db -- /bin/bash
+# 3 - psql -c 'SELECT full_descr from rnacen.rnc_database' postgres://k8user:k8pass@host:5432/db_name > test
+# 4 - kubectl delete pod test-db
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-db
+spec:
+  containers:
+    - name: test-db
+      image: rnacentral/rnacentral-webcode:test-db
