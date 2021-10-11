@@ -12,4 +12,4 @@ in their genomic context using a light-weight **genome browser** powered by [Gen
 [Ensembl Genomes](http://ensemblgenomes.org), and [UCSC genome browser](http://genome.ucsc.edu/).
 
 The genomic coordinates of the RNAcentral entries can be **downloaded** in BED format
-from the [FTP site](ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/) or through the [REST API](http://rnacentral.org/api#v1-genome-annotations).
+from the [FTP site](https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/genome_coordinates/) or through the [REST API](http://rnacentral.org/api#v1-genome-annotations).

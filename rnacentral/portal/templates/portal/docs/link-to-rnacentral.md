@@ -90,10 +90,10 @@ If you need to perform a **large-scale mapping** between RNAcentral identifiers 
 please use the mapping files found in FTP archive:
 
 * Mapping between RNAcentral sequences and all Expert Databases in a **single file**:
-  [ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/](ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/)
+  [https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/](https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/)
 
 * Mapping between RNAcentral sequences and each Expert Databases in **separate files**:
-  [ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/](ftp://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/)
+  [https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/](https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/)
 
 ---
 
