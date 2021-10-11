@@ -33,7 +33,6 @@ class RnaPrecomputed(models.Model):
         on_delete=models.CASCADE
     )
     rna_type = models.CharField(max_length=250, null=True)
-    rfam_problems = models.TextField(null=True)
     update_date = models.DateField(null=True)
     has_coordinates = models.BooleanField()
     databases = models.TextField(null=True)
