@@ -141,6 +141,17 @@ def rna_view(request, upi, taxid=None):
     )
     plugin_installed = True if os.path.isfile(path) else False
 
+    # Interactions
+    intact_name = None
+    intact = rna.get_intact(taxid)
+    if intact and intact[0]['intact_id'].startswith('PSICQUIC'):
+        intact_name = 'PSICQUIC'
+        for item in intact:
+            split_data = item['intact_id'].split(':')
+            item['intact_id'] = split_data[1]
+    elif intact and intact[0]['intact_id'].startswith('EBI'):
+        intact_name = 'IntAct'
+
     context = {
         'upi': upi,
         'symbol_counts': symbol_counts,
@@ -155,7 +166,8 @@ def rna_view(request, upi, taxid=None):
         'precomputed': precomputed,
         'mirna_regulators': rna.get_mirna_regulators(taxid=taxid),
         'annotations_from_other_species': rna.get_annotations_from_other_species(taxid=taxid),
-        'intact': rna.get_intact(taxid),
+        'intact': intact,
+        'intact_name': intact_name,
         'plugin_installed': plugin_installed,
     }
     response = render(request, 'portal/sequence.html', {'rna': rna, 'context': context})

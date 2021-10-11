@@ -142,19 +142,23 @@ limitations under the License.
                     </small>
                   </h2>
                   <p>
-                    According to <a href="https://www.ebi.ac.uk/intact" target="_blank">IntAct</a>, {{ context.precomputed.description }} interacts with:
+                    According to {% if context.intact_name == 'PSICQUIC' %}<a href="http://www.ebi.ac.uk/Tools/webservices/psicquic/view/home.xhtml" target="_blank">{{ context.intact_name }}</a>{% else %}<a href="https://www.ebi.ac.uk/intact" target="_blank">{{ context.intact_name }}</a>{% endif %}, {{ context.precomputed.description }} interacts with:
                   </p>
                   <div style="overflow-y: auto; max-height: 200px;" class="force-scrollbars">
                     <table class="table table-condensed table-hover table-responsive" style="margin-left: 10px; width: 95%;">
                         <thead>
-                          <th>IntAct ID</th>
+                          <th>Interaction id</th>
                           <th>Participant</th>
                           <th>Synonyms</th>
                         </thead>
                     {% for interaction in context.intact %}
                       <tr>
                         <td style="white-space: nowrap;">
-                          <a href="https://www.ebi.ac.uk/intact/interaction/{{ interaction.intact_id }}" target="_blank">{{ interaction.intact_id }}</a>
+                          {% if context.intact_name == 'PSICQUIC' %}
+                            {{ interaction.intact_id }}
+                          {% else %}
+                            <a href="https://www.ebi.ac.uk/intact/interaction/{{ interaction.intact_id }}" target="_blank">{{ interaction.intact_id }}</a>
+                          {% endif %}
                         </td>
                         <td>
                           {% if interaction.url %}
