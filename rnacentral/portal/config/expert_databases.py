@@ -1409,4 +1409,22 @@ expert_dbs = [
         'status': '',
         'version': '',
     },
+    {
+            'name': 'PSICQUIC',
+            'label': 'psicquic',
+            'url': 'http://www.ebi.ac.uk/Tools/webservices/psicquic/view/home.xhtml',
+            'description': '',
+            'hint': 'A database of manually annotated human miRNA interactions',
+            'tags': ['curated', '', ''],
+            'abbreviation': 'PSICQUIC',
+            'examples': [
+                {'upi': 'URS00005A4DCF', 'taxid': 9606},  # hsa-miR-125a-5p
+                {'upi': 'URS00005BBC98', 'taxid': 9606},  # hsa-mir-183 precursor
+                {'upi': 'URS0000D54CAD', 'taxid': 9606},  # hsa-miR-155-5p
+            ],
+            'references': [],
+            'imported': True,
+            'status': 'new',
+            'version': '',
+    }
 ]
