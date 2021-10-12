@@ -129,6 +129,8 @@ var xrefs = {
             for (var x = 0; x < results.length; x++) {
               if (results[x].database == "GeneCards") {
                   to_append.push(results[x]);
+              } else if (results[x].database === "PSICQUIC") {
+                  /* do not add PSICQUIC to results */
               } else {
                   new_results.push(results[x]);
               }
