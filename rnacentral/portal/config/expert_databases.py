@@ -1413,7 +1413,11 @@ expert_dbs = [
             'name': 'PSICQUIC',
             'label': 'psicquic',
             'url': 'http://www.ebi.ac.uk/Tools/webservices/psicquic/view/home.xhtml',
-            'description': '',
+        # 'description': 'provides a freely available, open source database
+        # system and analysis tools for molecular interaction data. All
+        # interactions are derived from literature curation or direct user
+        # submissions',
+            'description': 'provides computational access to molecular-interaction data. miRNA annotations are a collaboration between the UCL functional gene annotation team and the UniProt-GOA group at the EBI and is funded by the British Heart Foundation.', 
             'hint': 'A database of manually annotated human miRNA interactions',
             'tags': ['curated', '', ''],
             'abbreviation': 'PSICQUIC',
@@ -1422,7 +1426,14 @@ expert_dbs = [
                 {'upi': 'URS00005BBC98', 'taxid': 9606},  # hsa-mir-183 precursor
                 {'upi': 'URS0000D54CAD', 'taxid': 9606},  # hsa-miR-155-5p
             ],
-            'references': [],
+            'references': [
+                {
+                    'title': 'A new reference implementation of the PSICQUIC web service',
+                    'authors': 'Noemi del-Toro, Marine Dumousseau, Sandra Orchard, Rafael C Jimenez, Eugenia Galeota, Guillaume Launay, Johannes Goll, Karin Breuer, Keiichiro Ono, Lukasz Salwinski, Henning Hermjakob',
+                    'journal': 'Nucleic Acids Res. 2013 Jul;41(Web Server issue):W601-6',
+                    'pubmed_id': '23671334',
+                }
+            ],
             'imported': True,
             'status': 'new',
             'version': '',
