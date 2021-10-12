@@ -1413,11 +1413,7 @@ expert_dbs = [
             'name': 'PSICQUIC',
             'label': 'psicquic',
             'url': 'http://www.ebi.ac.uk/Tools/webservices/psicquic/view/home.xhtml',
-        # 'description': 'provides a freely available, open source database
-        # system and analysis tools for molecular interaction data. All
-        # interactions are derived from literature curation or direct user
-        # submissions',
-            'description': 'provides computational access to molecular-interaction data. miRNA annotations are a collaboration between the UCL functional gene annotation team and the UniProt-GOA group at the EBI and is funded by the British Heart Foundation.', 
+            'description': 'provides computational access to molecular-interaction data. miRNA annotations are a collaboration between the UCL functional gene annotation team and the UniProt-GOA group at the EBI and is funded by the British Heart Foundation',
             'hint': 'A database of manually annotated human miRNA interactions',
             'tags': ['curated', '', ''],
             'abbreviation': 'PSICQUIC',
