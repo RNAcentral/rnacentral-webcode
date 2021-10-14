@@ -66,8 +66,9 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'as of 7 June 2021',
+        'version': 'as of 3 Sept 2021',
     },
+
     {
         'name': 'PDBe',
         'label': 'pdbe',
@@ -91,8 +92,9 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'as of 17 May 2021',
+        'version': 'as of 3 Sept 2021',
     },
+
     {
         'name': 'FlyBase',
         'label': 'flybase',
@@ -116,8 +118,9 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'FB2021_03',
+        'version': 'FB2021_04',
     },
+
     {
         'name': 'Ensembl',
         'label': 'ensembl',
@@ -146,9 +149,10 @@ expert_dbs = [
             }
         ],
         'imported': True,
-        'status': 'updated',
+        'status': '',
         'version': '104',
     },
+
     {
         'name': 'Ensembl Plants',
         'label': 'ensembl_plants',
@@ -171,9 +175,10 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'updated',
+        'status': '',
         'version': '51',
     },
+
     {
         'name': 'Ensembl Fungi',
         'label': 'ensembl_fungi',
@@ -196,9 +201,10 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'updated',
+        'status': '',
         'version': '51',
     },
+
     {
         'name': 'Ensembl Metazoa',
         'label': 'ensembl_metazoa',
@@ -221,9 +227,10 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'updated',
+        'status': '',
         'version': '51',
     },
+
     {
         'name': 'Ensembl Protists',
         'label': 'ensembl_protists',
@@ -246,9 +253,10 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'updated',
+        'status': '',
         'version': '51',
     },
+
     {
         'name': 'Ensembl/GENCODE',
         'label': 'ensembl_gencode',
@@ -271,9 +279,10 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'updated',
+        'status': '',
         'version': 'human 38/mouse M27',
     },
+
     {
         'name': 'Rfam',
         'label': 'rfam',
@@ -299,6 +308,7 @@ expert_dbs = [
         'status': '',
         'version': '14.2',
     },
+
     {
         'name': 'miRBase',
         'label': 'mirbase',
@@ -330,6 +340,7 @@ expert_dbs = [
         'status': '',
         'version': '22.1',
     },
+
     {
         'name': 'Vega',
         'label': 'vega',
@@ -361,6 +372,7 @@ expert_dbs = [
         'status': 'archived',
         'version': 'release 65',
     },
+
     {
         'name': 'tmRNA Website',
         'label': 'tmrna-website',
@@ -392,6 +404,7 @@ expert_dbs = [
         'status': '',
         'version': '',
     },
+
     {
         'name': 'SRPDB',
         'label': 'srpdb',
@@ -423,6 +436,7 @@ expert_dbs = [
         'status': '',
         'version': '',
     },
+
     {
         'name': 'lncRNAdb',
         'label': 'lncrnadb',
@@ -448,6 +462,7 @@ expert_dbs = [
         'status': '',
         'version': '',
     },
+
     {
         'name': 'GtRNAdb',
         'label': 'gtrnadb',
@@ -476,9 +491,10 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': '',
-        'version': '2.1',
+        'status': 'updated',
+        'version': 'release 19',
     },
+
     {
         'name': 'RefSeq',
         'label': 'refseq',
@@ -502,8 +518,9 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '205',  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
+        'version': '208',  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
     },
+
     {
         'name': 'RDP',
         'label': 'rdp',
@@ -529,6 +546,7 @@ expert_dbs = [
         'status': '',
         'version': '',
     },
+
     {
         'name': 'CRW',
         'label': 'crw',
@@ -554,6 +572,7 @@ expert_dbs = [
         'status': '',
         'version': '',
     },
+
     {
         'name': 'HGNC',
         'label': 'hgnc',
@@ -583,8 +602,9 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'as of 17 May 2021',
+        'version': 'as of 3 Sept 2021',
     },
+
     {
         'name': 'Greengenes',
         'label': 'greengenes',
@@ -610,6 +630,7 @@ expert_dbs = [
         'status': '',
         'version': '13.5',
     },
+
     {
         'name': 'LncBase',
         'label': 'lncbase',
@@ -635,6 +656,7 @@ expert_dbs = [
         'status': '',
         'version': 'v2',
     },
+
     {
         'name': 'LNCipedia',
         'label': 'lncipedia',
@@ -660,6 +682,7 @@ expert_dbs = [
         'status': '',
         'version': '5.2',
     },
+
     {
         'name': 'Modomics',
         'label': 'modomics',
@@ -685,6 +708,7 @@ expert_dbs = [
         'status': '',
         'version': '',
     },
+
     {
         'name': 'NONCODE',
         'label': 'noncode',
@@ -710,6 +734,7 @@ expert_dbs = [
         'status': '',
         'version': 'NONCODE2016',
     },
+
     {
         'name': 'NPInter',
         'label': '',
@@ -724,6 +749,7 @@ expert_dbs = [
         'status': '',
         'version': '',
     },
+
     {
         'name': 'piRBase',
         'label': 'pirbase',
@@ -746,9 +772,10 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'New',
+        'status': '',
         'version': '2.0 (only sequences matching existing RNAcentral accessions have been imported)'
     },
+
     {
         'name': 'PLncDB',
         'label': 'plncdb',
@@ -770,6 +797,7 @@ expert_dbs = [
         'status': '',
         'version': '',
     },
+
     {
         'name': 'PomBase',
         'label': 'pombase',
@@ -793,8 +821,9 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'as of 17 May 2021',
+        'version': 'as of 02 Sept 2021',
     },
+
     {
         'name': 'RNApathwaysDB',
         'label': '',
@@ -809,6 +838,7 @@ expert_dbs = [
         'status': '',
         'version': '',
     },
+
     {
         'name': 'SILVA',
         'label': 'silva',
@@ -831,9 +861,10 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'updated',
+        'status': '',
         'version': 'r138.1',
     },
+
     {
         'name': 'SGD',
         'label': 'sgd',
@@ -857,8 +888,9 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'as of 27 April 2021',
+        'version': 'as of 03 Sept 2021',
     },
+
     {
         'name': 'snOPY',
         'label': 'snopy',
@@ -884,6 +916,7 @@ expert_dbs = [
         'status': '',
         'version': '',
     },
+
     {
         'name': 'snoRNA Database',
         'label': 'snorna_database',
@@ -933,6 +966,7 @@ expert_dbs = [
         'status': '',
         'version': '',
     },
+
     {
         'name': 'sRNAmap',
         'label': '',
@@ -947,6 +981,7 @@ expert_dbs = [
         'status': '',
         'version': '',
     },
+
     {
         'name': 'TarBase',
         'label': 'tarbase',
@@ -972,6 +1007,7 @@ expert_dbs = [
         'status': '',
         'version': 'v8',
     },
+
     {
         'name': 'tmRDB',
         'label': '',
@@ -986,6 +1022,7 @@ expert_dbs = [
         'status': '',
         'version': '',
     },
+
     {
         'name': 'tRNAdb',
         'label': '',
@@ -1001,6 +1038,7 @@ expert_dbs = [
         'status': '',
         'version': '',
     },
+
     {
         'name': 'WormBase',
         'label': 'wormbase',
@@ -1026,6 +1064,7 @@ expert_dbs = [
         'status': 'updated',
         'version': 'WS270',
     },
+
     {
         'name': 'MGI',
         'label': 'mgi',
@@ -1051,6 +1090,7 @@ expert_dbs = [
         'status': '',
         'version': 'MGI 6.10',
     },
+
     {
         'name': 'RGD',
         'label': 'rgd',
@@ -1076,6 +1116,7 @@ expert_dbs = [
         'status': '',
         'version': 'as of March 2018',
     },
+
     {
         'name': 'TAIR',
         'label': 'tair',
@@ -1101,6 +1142,7 @@ expert_dbs = [
         'status': '',
         'version': 'TAIR10',
     },
+
     {
         'name': 'dictyBase',
         'label': 'dictybase',
@@ -1126,6 +1168,7 @@ expert_dbs = [
         'status': '',
         'version': '',
     },
+
     {
         'name': '5SrRNAdb',
         'label': '5srrnadb',
@@ -1150,6 +1193,7 @@ expert_dbs = [
         'status': '',
         'version': '17',
     },
+
     {
         'name': 'miRTarBase',
         'label': 'mirtarbase',
@@ -1171,6 +1215,7 @@ expert_dbs = [
         'status': '',
         'version': '',
     },
+
     {
         'name': 'LncBook',
         'label': 'lncbook',
@@ -1196,6 +1241,7 @@ expert_dbs = [
         'status': '',
         'version': '1.0',
     },
+
     {
         'name': 'ZWD',
         'label': 'zwd',
@@ -1219,8 +1265,9 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '1.1',
+        'version': '1.2',
     },
+
     {
         'name': 'snoDB',
         'label': 'snodb',
@@ -1246,6 +1293,7 @@ expert_dbs = [
         'status': '',
         'version': '1.1.0',
     },
+
     {
         'name': 'MirGeneDB',
         'label': 'mirgenedb',
@@ -1271,6 +1319,7 @@ expert_dbs = [
         'status': '',
         'version': '2.0',
     },
+
     {
         'name': 'MalaCards',
         'label': 'malacards',
@@ -1294,8 +1343,9 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '5.2',
+        'version': '5.5',
     },
+
     {
         'name': 'GeneCards',
         'label': 'genecards',
@@ -1319,8 +1369,9 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': '5.2',
+        'version': '5.5',
     },
+
     {
         'name': 'CRS',
         'label': 'crs',
@@ -1345,6 +1396,7 @@ expert_dbs = [
         'status': '',
         'version': '2.1',
     },
+
     {
         'name': 'IntAct',
         'label': 'intact',
@@ -1368,8 +1420,9 @@ expert_dbs = [
         ],
         'imported': True,
         'status': 'updated',
-        'version': 'as of 17 May 2021',
+        'version': 'as of 03 Sept 2021',
     },
+
     {
         'name': 'ZFIN',
         'label': 'zfin',
@@ -1392,9 +1445,10 @@ expert_dbs = [
             },
         ],
         'imported': True,
-        'status': 'updated',
+        'status': '',
         'version': 'as of 22 April 2021',
     },
+
     {
         'name': 'snoRNA Atlas',
         'label': 'snoatlas',
@@ -1409,6 +1463,7 @@ expert_dbs = [
         'status': '',
         'version': '',
     },
+
     {
             'name': 'PSICQUIC',
             'label': 'psicquic',
@@ -1431,7 +1486,7 @@ expert_dbs = [
                 }
             ],
             'imported': True,
-            'status': 'new',
-            'version': '',
+            'status': 'New',
+            'version': 'as of 03 Sept 2021',
     }
 ]
