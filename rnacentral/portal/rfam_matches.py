@@ -128,7 +128,7 @@ class DomainProblem(object):
                 match_domain=model.domain,
                 model_url=model.url,
                 model_name=model.short_name,
-                help_url=reverse('help-rfam-annotations'),
+                help_url=reverse('help-qc'),
             )
         )
 

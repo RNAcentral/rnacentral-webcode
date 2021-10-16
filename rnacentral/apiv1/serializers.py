@@ -21,7 +21,7 @@ from rest_framework import serializers
 
 from portal.models import Rna, Xref,  Reference_map, ChemicalComponent, DatabaseStats, Accession, Reference, \
     Modification, RfamHit, RfamModel, RfamClan, OntologyTerm, SequenceFeature, EnsemblAssembly, EnsemblKaryotype, \
-    ProteinInfo, EnsemblCompara, RnaPrecomputed, SecondaryStructureWithLayout
+    ProteinInfo, EnsemblCompara, RnaPrecomputed, SecondaryStructureWithLayout, QcStatus
 
 
 class RawPublicationSerializer(serializers.ModelSerializer):
@@ -443,17 +443,10 @@ class RfamModelSerializer(serializers.ModelSerializer):
 
 class RfamHitSerializer(serializers.ModelSerializer):
     rfam_model = RfamModelSerializer()
-    rfam_status = serializers.SerializerMethodField()
 
     class Meta:
         model = RfamHit
-        fields = ('sequence_start', 'sequence_stop', 'sequence_completeness', 'rfam_model', 'rfam_status')
-
-    def get_rfam_status(self, obj):
-        if 'taxid' in self.context:
-            return json.loads(obj.upi.get_rfam_status(self.context['taxid']).as_json())
-        else:
-            return json.loads(obj.upi.get_rfam_status().as_json())
+        fields = ('sequence_start', 'sequence_stop', 'sequence_completeness', 'rfam_model')
 
 
 class SequenceFeatureSerializer(serializers.ModelSerializer):
@@ -520,3 +513,9 @@ class RnaPrecomputedJsonSerializer(serializers.ModelSerializer):
 
     def get_databases(self, obj):
         return [database for database in obj.databases.split(',')] if obj.databases else []
+
+
+class QcStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = QcStatus
+        fields = '__all__'

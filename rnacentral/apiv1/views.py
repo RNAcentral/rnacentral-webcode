@@ -37,11 +37,13 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RawPublicationSerializer, RnaSecondaryStructureSerializer, \
                               RfamHitSerializer, SequenceFeatureSerializer, \
                               EnsemblAssemblySerializer, ProteinTargetsSerializer, \
-                              LncrnaTargetsSerializer, EnsemblComparaSerializer, SecondaryStructureSVGImageSerializer
+                              LncrnaTargetsSerializer, EnsemblComparaSerializer, SecondaryStructureSVGImageSerializer, \
+                              QcStatusSerializer
 
 from apiv1.renderers import RnaFastaRenderer
 from portal.models import Rna, RnaPrecomputed, Accession, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
-    GoAnnotation, RelatedSequence, ProteinInfo, SequenceFeature, SequenceRegion, EnsemblCompara
+    GoAnnotation, RelatedSequence, ProteinInfo, SequenceFeature, SequenceRegion, EnsemblCompara,\
+    QcStatus
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination, LargeTablePagination
 
@@ -590,7 +592,7 @@ class SequenceFeaturesAPIViewSet(generics.ListAPIView):
     def get_queryset(self):
         upi = self.kwargs['pk']
         taxid = self.kwargs['taxid']
-        return SequenceFeature.objects.filter(upi=upi, taxid=taxid, feature_name__in=["conserved_rna_structure", "mature_product"])
+        return SequenceFeature.objects.filter(upi=upi, taxid=taxid, feature_name__in=["conserved_rna_structure", "mature_product", "cpat_orf"])
 
 
 class RnaGoAnnotationsView(APIView):
@@ -720,6 +722,18 @@ class LncrnaTargetsView(generics.ListAPIView):
         # queryset = PaginatedRawQuerySet(protein_info_query, model=ProteinInfo)
         queryset = ProteinInfo.objects.raw(protein_info_query)
         return queryset
+
+
+class QcStatusView(APIView):
+    """API endpoint showing the QC status for a sequence"""
+    permission_classes = ()
+    authentication_classes = ()
+
+    def get(self, _request, pk, taxid):
+        urs_taxid = f'{pk}_{taxid}'
+        status = QcStatus.objects.get(id=urs_taxid)
+        serializer = QcStatusSerializer(status)
+        return Response(serializer.data)
 
 
 class LargerPagination(Pagination):

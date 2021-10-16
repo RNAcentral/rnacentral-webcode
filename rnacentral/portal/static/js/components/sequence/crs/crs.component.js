@@ -13,7 +13,7 @@ var crs = {
             ctrl.distinctFeatures = [];
 
             // aggregate features with same id and different locations
-            ctrl.features.forEach(function(feature) {
+            ctrl.features.conserved_rna_structure.features.forEach(function(feature) {
                 var featureClone = ctrl.distinctFeatures.find(function(el) { return el.metadata.crs_id === feature.metadata.crs_id });
                 if (!featureClone) {
                     featureClone = JSON.parse(JSON.stringify(feature));
