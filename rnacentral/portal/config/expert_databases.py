@@ -106,7 +106,7 @@ expert_dbs = [
         'examples': [
             {'upi': 'URS00007F7879', 'taxid': 7227},
             {'upi': 'URS00007EBD0C', 'taxid': 7227},
-            {'upi': 'URS0000150035', 'taxid': 46245},
+            {'upi': 'URS00002B64E6', 'taxid': 7227},
         ],
         'references': [
             {
