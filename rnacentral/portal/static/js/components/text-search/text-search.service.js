@@ -282,6 +282,10 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
         if (lengthClause) {
           query = query.replace(placeholder + '*', lengthClause[0]);
         }
+
+        if (!query.match(/entry_type\:/i)) {
+          query += ' AND entry_type:"Sequence"'
+        }
         return query;
 
         /**

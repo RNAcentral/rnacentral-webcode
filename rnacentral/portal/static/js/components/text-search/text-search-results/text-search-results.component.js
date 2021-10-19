@@ -69,7 +69,7 @@ var textSearchResults = {
             var groups = lengthRegexp.exec(query);
             ctrl.getFloorCeil(filteredQuery).then(
                 function(floorceil) {
-                    floor = parseInt(floorceil[0].data.entries[0].highlights.length);
+                    floor = parseInt(floorceil[0].data.entries[0].highlights.length) ? parseInt(floorceil[0].data.entries[0].highlights.length) : 10;
                     ceil = parseInt(floorceil[1].data.entries[0].highlights.length);
 
                     if (groups) {

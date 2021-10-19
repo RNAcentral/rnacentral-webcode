@@ -10,7 +10,7 @@ var rfam = {
         var ctrl = this;
 
         ctrl.$onInit = function() {
-            ctrl.help = "/help/rfam-annotations";
+            ctrl.help = "/help/qc";
 
             // group hits with same rfam_model_id
             ctrl.groupedHits = [];

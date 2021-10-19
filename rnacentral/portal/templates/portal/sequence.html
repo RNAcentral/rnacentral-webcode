@@ -134,27 +134,39 @@ limitations under the License.
                   </div>
                 {% endif %}
 
-                {% if context.intact %}
+                {% if context.interactions %}
                 <div ng-if="taxid">
                   <h2>Interactions
                     <small>
-                      {{ context.intact|length }}
+                      {{ context.interactions|length }}
                     </small>
                   </h2>
                   <p>
-                    According to <a href="https://www.ebi.ac.uk/intact" target="_blank">IntAct</a>, {{ context.precomputed.description }} interacts with:
+                    According to
+                    {% if context.psicquic and context.intact %}
+                      <a href="http://www.ebi.ac.uk/Tools/webservices/psicquic/view/home.xhtml" target="_blank">PSICQUIC</a> and <a href="https://www.ebi.ac.uk/intact" target="_blank">IntAct</a>,
+                    {% elif context.psicquic %}
+                      <a href="http://www.ebi.ac.uk/Tools/webservices/psicquic/view/home.xhtml" target="_blank">PSICQUIC</a>,
+                    {% elif context.intact %}
+                      <a href="https://www.ebi.ac.uk/intact" target="_blank">IntAct</a>,
+                    {% endif %}
+                    {{ context.precomputed.description }} interacts with:
                   </p>
                   <div style="overflow-y: auto; max-height: 200px;" class="force-scrollbars">
                     <table class="table table-condensed table-hover table-responsive" style="margin-left: 10px; width: 95%;">
                         <thead>
-                          <th>IntAct ID</th>
+                          <th>Interaction id</th>
                           <th>Participant</th>
                           <th>Synonyms</th>
                         </thead>
-                    {% for interaction in context.intact %}
+                    {% for interaction in context.interactions %}
                       <tr>
                         <td style="white-space: nowrap;">
-                          <a href="https://www.ebi.ac.uk/intact/interaction/{{ interaction.intact_id }}" target="_blank">{{ interaction.intact_id }}</a>
+                          {% if interaction.intact_id|first in 'U' %}
+                            {{ interaction.intact_id }}
+                          {% else %}
+                            <a href="https://www.ebi.ac.uk/intact/interaction/{{ interaction.intact_id }}" target="_blank">{{ interaction.intact_id }}</a>
+                          {% endif %}
                         </td>
                         <td>
                           {% if interaction.url %}
@@ -336,6 +348,8 @@ limitations under the License.
                   </div>
 
                 </div>
+
+                <qc-status qc-status="qcStatus"></qc-status>
 
                 <rfam ng-if="rfamHits && rna" upi="upi" rna="rna" rfam-hits="rfamHits" rfam-status="rfamStatus" toggle-go-modal="toggleGoModal(term_id)"></rfam>
 

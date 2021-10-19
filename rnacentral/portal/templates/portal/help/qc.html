@@ -15,12 +15,12 @@ limitations under the License.
 
 {% block meta_tags %}
     {{ block.super }}
-    <meta name="description" content="Using Rfam annotations in RNAcentral"/>
-    <meta name="twitter:description" content="Using Rfam annotations in RNAcentral"/>
+    <meta name="description" content="Using QC checks in RNAcentral"/>
+    <meta name="twitter:description" content="Using QC checks in RNAcentral"/>
 {% endblock %}
 
 {% block title %}
-Help: Rfam annotations
+Help: QC checks
 {% endblock %}
 
 {% block content %}
@@ -28,16 +28,16 @@ Help: Rfam annotations
 <div class="row">
   <div class="col-md-8" role="main">
 
-    <h1><i class="fa fa-map-marker"></i> Rfam annotations</h1>
+    <h1><i class="fa fa-map-marker"></i> Quality Control</h1>
 
     {% load markdown_deux_tags %}
     {% markdown %}
-      {% include  'portal/docs/rfam-annotations.md' %}
+      {% include  'portal/docs/qc.md' %}
     {% endmarkdown %}
 
     <hr>
 
-    <a class="btn btn-default btn-sm" title="Edit on GitHub" href="https://github.com/RNAcentral/rnacentral-webcode/edit/master/rnacentral/portal/templates/portal/docs/rfam-annotations.md" target="_blank"><i class="fa fa-pencil-square-o"></i> Improve this page</a>
+    <a class="btn btn-default btn-sm" title="Edit on GitHub" href="https://github.com/RNAcentral/rnacentral-webcode/edit/master/rnacentral/portal/templates/portal/docs/qc.md" target="_blank"><i class="fa fa-pencil-square-o"></i> Improve this page</a>
   </div>
 
   <div class="col-md-4">
