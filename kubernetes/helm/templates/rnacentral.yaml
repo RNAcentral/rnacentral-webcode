@@ -404,6 +404,10 @@ spec:
       annotations:
         rollme: {{ randAlphaNum 5 | quote }}
     spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       containers:
         - image: rnacentral/rnacentral-webcode:{{ .Values.rnacentralBranch }}
           name: rnacentral
