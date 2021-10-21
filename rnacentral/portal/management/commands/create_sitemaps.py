@@ -212,4 +212,4 @@ class Command(BaseCommand):
         """Writes HttpResponse into a file"""
         filename = os.path.join(settings.PROJECT_PATH, 'rnacentral', 'sitemaps', 'sitemap%s.xml' % section)
         response.render()
-        open(filename, 'w').write(response.content)
+        open(filename, 'wb').write(response.content)
