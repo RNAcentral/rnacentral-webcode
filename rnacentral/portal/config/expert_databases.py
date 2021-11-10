@@ -919,7 +919,7 @@ expert_dbs = [
 
     {
         'name': 'snoRNA Database',
-        'label': 'snorna_database',
+        'label': 'snornadb',
         'url': 'http://lowelab.ucsc.edu/snoRNAdb/',
         'description': 'is a curated collection of archaeal snoRNAs maintained by the Lowe Lab at UC Santa Cruz',
         'hint': 'The snoRNA Database is a curated collection of archaeal snoRNAs maintained by the Lowe Lab at UC Santa Cruz',
