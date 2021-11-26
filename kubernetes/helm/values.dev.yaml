@@ -14,9 +14,9 @@ searchIndex: search-index-dev
 
 # Memcached
 memcachedReplicas: 1
-memcachedRequestsMemory: "1024Mi"
+memcachedRequestsMemory: "512Mi"
 memcachedRequestsCPU: "500m"
-memcachedLimitssMemory: "2048Mi"
+memcachedLimitssMemory: "1024Mi"
 memcachedLimitsCPU: "1000m"
 
 # Redis
@@ -35,7 +35,7 @@ nginxLimitsCPU: "1000m"
 
 # RNAcentral
 rnacentralReplicas: 1
-rnacentralRequestsMemory: "1536Mi"
+rnacentralRequestsMemory: "2048Mi"
 rnacentralRequestsCPU: "500m"
-rnacentralLimitssMemory: "3072Mi"
+rnacentralLimitssMemory: "4096Mi"
 rnacentralLimitsCPU: "1000m"
