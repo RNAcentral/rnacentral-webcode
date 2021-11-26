@@ -75,7 +75,7 @@ pipeline {
                             cd kubernetes/helm
                             /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm uninstall full-prod --kubeconfig ${config} --namespace prod
                             sleep 10
-                            /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install full-prod --kubeconfig ${config} --namespace prod --set proxy=proxy-hx,database=${DB},searchIndex=${SEARCH_INDEX},rnacentralBranch=${params.BRANCH} .
+                            /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install full-prod --kubeconfig ${config} --namespace prod --set proxy=proxy-hx,rnacentralReplicas=2,database=${DB},searchIndex=${SEARCH_INDEX},rnacentralBranch=${params.BRANCH} .
                             sleep 20
                             /net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config} rollout status deployment rnacentral --watch --timeout=5m
 
