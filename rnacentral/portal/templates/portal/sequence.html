@@ -385,7 +385,11 @@ limitations under the License.
 
                 <pre ng-if="showSequence" class="pre-scrollable" id="rna-sequence">{{ rna.get_sequence }}</pre>
 
-                <publications upi="upi" taxid="taxid"></publications>
+                <rnacentral-references
+                        search='{"urs_taxid": "{{ rna.upi }}_{{ context.taxid }}"}'
+                        customStyle='{"fixCss": "true", "articleTitleSize": "16px"}'
+                />
+                <script type="text/javascript" src="https://rnacentral.github.io/rnacentral-references-embed/dist/rnacentral-references-embed.js"></script>
 
             </uib-tab>
 
