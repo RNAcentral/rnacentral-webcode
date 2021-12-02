@@ -93,6 +93,9 @@ limitations under the License.
             {% else %}
               <li class="badge" style="padding-left: 7px; padding-right: 7px;">{{ context.precomputed.rna_type }}</li>
             {% endif %}
+            {% if context.publications %}
+                <li><strong>{{ context.publications }}</strong> <a href="{{ request.get_full_path }}#publications">publications</a> <span class="label label-success">New</span></li>
+            {% endif %}
 
         </ul>
         {% if rna.has_secondary_structure %}</div><!-- media-body --></div><!-- media -->{% endif %}
@@ -385,6 +388,7 @@ limitations under the License.
 
                 <pre ng-if="showSequence" class="pre-scrollable" id="rna-sequence">{{ rna.get_sequence }}</pre>
 
+                <div id="publications"></div>
                 <rnacentral-references
                         search='{"urs_taxid": "{{ rna.upi }}_{{ context.taxid }}"}'
                         customStyle='{"fixCss": "true", "articleTitleSize": "16px"}'
@@ -430,7 +434,7 @@ limitations under the License.
             {% if rna.has_secondary_structure %}
             <uib-tab index="2" id="secondary-structures" deselect="checkTab($event, $selectedIndex)" ng-if="taxid">
                 <uib-tab-heading>
-                  2D structure <span class="label label-success">New</span>
+                  2D structure
                 </uib-tab-heading>
                 <r2dt-web
                         search='{"urs": "{{ context.upi }}"}'
