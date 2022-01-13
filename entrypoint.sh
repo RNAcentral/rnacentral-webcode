@@ -132,8 +132,8 @@ else
 fi
 
 # Run create_sitemaps
-echo "INFO: Creating sitemaps"
-python "${RNACENTRAL_HOME}"/rnacentral/manage.py create_sitemaps
+#echo "INFO: Creating sitemaps"
+#python "${RNACENTRAL_HOME}"/rnacentral/manage.py create_sitemaps
 
 # Run collectstatic
 echo "INFO: Copying the static files"
