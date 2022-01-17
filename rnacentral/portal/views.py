@@ -154,6 +154,13 @@ def rna_view(request, upi, taxid=None):
         else:
             intact = True
 
+    # Publications
+    server = "https://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral"  # settings.EBI_SEARCH_ENDPOINT is set to prod
+    query = f'?query=entry_type:Publication%20AND%20urs_taxid:{upi + "_" + taxid}&format=json'
+    response = requests.get(server + query)
+    publications = response.json()
+    publications = publications['hitCount']
+
     context = {
         'upi': upi,
         'symbol_counts': symbol_counts,
@@ -172,6 +179,7 @@ def rna_view(request, upi, taxid=None):
         'intact': intact,
         'psicquic': psicquic,
         'plugin_installed': plugin_installed,
+        'publications': publications,
     }
     response = render(request, 'portal/sequence.html', {'rna': rna, 'context': context})
     # define canonical URL for Google
