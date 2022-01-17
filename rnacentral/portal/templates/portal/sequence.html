@@ -94,9 +94,8 @@ limitations under the License.
               <li class="badge" style="padding-left: 7px; padding-right: 7px;">{{ context.precomputed.rna_type }}</li>
             {% endif %}
             {% if context.pub_count %}
-                <li><strong>{{ context.pub_count }}</strong> <a href="{{ request.get_full_path }}#publications">publications</a> <span class="label label-success">New</span></li>
+                <li><strong>{{ context.pub_count }}</strong> publications</li>
             {% endif %}
-
         </ul>
         {% if rna.has_secondary_structure %}</div><!-- media-body --></div><!-- media -->{% endif %}
 
@@ -387,14 +386,6 @@ limitations under the License.
                 </div>
 
                 <pre ng-if="showSequence" class="pre-scrollable" id="rna-sequence">{{ rna.get_sequence }}</pre>
-
-                <div id="publications"></div>
-                <rnacentral-references
-                        search='{{ context.pub_ids }}'
-                        customStyle='{"fixCss": "true", "articleTitleSize": "16px"}'
-                />
-                <script type="text/javascript" src="https://rnacentral.github.io/rnacentral-references-embed/dist/rnacentral-references-embed.js"></script>
-
             </uib-tab>
 
             <uib-tab index="1" id="taxonomy" heading="Taxonomy" deselect="checkTab($event, $selectedIndex)">
@@ -441,6 +432,19 @@ limitations under the License.
                         customStyle='{"fixCss": "true", "titleColor": "#BF8E3E"}'
                 />
                 <script type="text/javascript" src="https://rnacentral.github.io/r2dt-web/dist/r2dt-web.js"></script>
+            </uib-tab>
+            {% endif %}
+
+            {% if context.pub_count %}
+            <uib-tab index="4" id="publications" deselect="checkTab($event, $selectedIndex)">
+                <uib-tab-heading>
+                  Publications <span class="label label-success">New</span>
+                </uib-tab-heading>
+                <rnacentral-references
+                            search='{{ context.pub_ids }}'
+                            customStyle='{"fixCss": "true", "articleTitleSize": "16px"}'
+                />
+                <script type="text/javascript" src="https://rnacentral.github.io/rnacentral-references-embed/dist/rnacentral-references-embed.js"></script>
             </uib-tab>
             {% endif %}
 
