@@ -93,8 +93,8 @@ limitations under the License.
             {% else %}
               <li class="badge" style="padding-left: 7px; padding-right: 7px;">{{ context.precomputed.rna_type }}</li>
             {% endif %}
-            {% if context.publications %}
-                <li><strong>{{ context.publications }}</strong> <a href="{{ request.get_full_path }}#publications">publications</a> <span class="label label-success">New</span></li>
+            {% if context.pub_count %}
+                <li><strong>{{ context.pub_count }}</strong> <a href="{{ request.get_full_path }}#publications">publications</a> <span class="label label-success">New</span></li>
             {% endif %}
 
         </ul>
@@ -390,7 +390,7 @@ limitations under the License.
 
                 <div id="publications"></div>
                 <rnacentral-references
-                        search='{"urs_taxid": "{{ rna.upi }}_{{ context.taxid }}"}'
+                        search='{{ context.pub_ids }}'
                         customStyle='{"fixCss": "true", "articleTitleSize": "16px"}'
                 />
                 <script type="text/javascript" src="https://rnacentral.github.io/rnacentral-references-embed/dist/rnacentral-references-embed.js"></script>
