@@ -144,11 +144,10 @@ class RnaFilter(filters.FilterSet):
     min_length = filters.NumberFilter(field_name="length", lookup_expr='gte')
     max_length = filters.NumberFilter(field_name="length", lookup_expr='lte')
     external_id = filters.CharFilter(field_name="xrefs__accession__external_id", distinct=True)
-    database = filters.CharFilter(field_name="xrefs__accession__database")
 
     class Meta:
         model = Rna
-        fields = ['upi', 'md5', 'length', 'min_length', 'max_length', 'external_id', 'database']
+        fields = ['upi', 'md5', 'length', 'min_length', 'max_length', 'external_id']
 
 
 class RnaMixin(object):
@@ -224,27 +223,13 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
         return Response(serializer.data)
         # end DRF base code
 
-    def _get_database_id(self, db_name):
-        """Map the `database` parameter from the url to internal database ids"""
-        for expert_database in Database.objects.all():
-            if re.match(expert_database.label, db_name, re.IGNORECASE):
-                return expert_database.id
-        return None
-
     def get_queryset(self):
         """
-        Manually filter against the `database` query parameter,
-        use RnaFilter for other filtering operations.
+        The `database` query parameter filter has been removed to prevent queries,
+        most likely made by crawlers, from overloading the service
         """
-        db_name = self.request.query_params.get('database', None)
         # `seq_long` **must** be deferred in order for filters to work
         queryset = Rna.objects.defer('seq_long')
-        if db_name:
-            db_id = self._get_database_id(db_name)
-            if db_id:
-                return queryset.filter(xrefs__db=db_id).distinct().all()
-            else:
-                return Rna.objects.none()
         return queryset.all()
 
 
