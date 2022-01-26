@@ -6,7 +6,7 @@
 [RNAcentral](/) and [Rfam](https://rfam.org) share a Scientific Advisory Board (SAB)
 which includes six RNA biologists covering a wide range of expertise from wet lab to computational research.
 
-- [Manja Marz](http://www.rna.uni-jena.de/en/members/manja-marz/) Friedrich Schiller University Jena, Germany
+- [Manja Marz](http://www.rna.uni-jena.de/members/manja-marz/) Friedrich Schiller University Jena, Germany
 - [Yann Ponty](http://www.lix.polytechnique.fr/~ponty/) CNRS École Politechnique, France
 - [Lovorka Stojic](https://www.bartscancer.london/staff/dr-lovorka-stojic/) Barts Centre CRUK, UK
 - [Yiliang Ding](https://www.jic.ac.uk/people/yilliang-ding/) John Innes Centre, UK
