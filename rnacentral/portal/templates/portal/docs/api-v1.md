@@ -191,23 +191,6 @@ There are 3 url parameters: `length`, `min_length` (greater or equal length), an
 * [{{ BASE_URL }}/api/v1/rna/?max_length=10](/api/v1/rna/?max_length=10)
 * [{{ BASE_URL }}/api/v1/rna/?min_length=1&max_length=4](/api/v1/rna/?min_length=1&max_length=4)
 
-### Filtering by database <a style="cursor: pointer" id="v1-filtering-by-database" ng-click="scrollTo('v1-filtering-by-database')" name="v1-filtering-by-database" class="text-muted smaller"><i class="fa fa-link"></i></a>
-
-The expert database can be specified by setting the `database` url parameter
-(possible values: *srpdb*, *mirbase*, *tmrna-website*, *lncrnadb*, *gtrnadb*, *ena*, *rdp*, *rfam*, *refseq*, *snopy*, *pdbe*).
-
-#### Examples
-
-* [{{ BASE_URL }}/api/v1/rna/?database=srpdb](/api/v1/rna/?database=srpdb)
-* [{{ BASE_URL }}/api/v1/rna/?database=mirbase](/api/v1/rna/?database=mirbase)
-* [{{ BASE_URL }}/api/v1/rna/?database=tmrna-website](/api/v1/rna/?database=tmrna-website)
-* [{{ BASE_URL }}/api/v1/rna/?database=lncrnadb](/api/v1/rna/?database=lncrnadb)
-* [{{ BASE_URL }}/api/v1/rna/?database=gtrnadb](/api/v1/rna/?database=gtrnadb)
-* [{{ BASE_URL }}/api/v1/rna/?database=ena](/api/v1/rna/?database=ena)
-* [{{ BASE_URL }}/api/v1/rna/?database=rdp](/api/v1/rna/?database=rdp)
-* [{{ BASE_URL }}/api/v1/rna/?database=rfam](/api/v1/rna/?database=rfam)
-* [{{ BASE_URL }}/api/v1/rna/?database=refseq](/api/v1/rna/?database=refseq)
-
 ### Filtering by external ids <a style="cursor: pointer" id="v1-filtering-by-external-ids" ng-click="scrollTo('v1-filtering-by-external-ids')" name="v1-filtering-by-external-ids" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The external id is an id assigned to a sequence in one of the Expert Databases,
@@ -227,9 +210,8 @@ The external id can be specified by setting the `external_id` url parameter.
 Any filters can be combined to narrow down the query using the `&` symbol as a separator,
 which acts as the logical `AND` operator. More logical operators will be supported in the future.
 
-#### Examples
+#### Example
 
-* [{{ BASE_URL }}/api/v1/rna/?database=srpdb&min_length=200](/api/v1/rna/?database=srpdb&min_length=200)
 * [{{ BASE_URL }}/api/v1/rna/?min_length=1&max_length=4](/api/v1/rna/?min_length=1&max_length=4)
 
 ## Genome annotations <a style="cursor: pointer" id="v1-genome-annotations" ng-click="scrollTo('v1-genome-annotations')" name="v1-genome-annotations" class="text-muted smaller"><i class="fa fa-link"></i></a>

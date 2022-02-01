@@ -4,11 +4,14 @@
 ### Current members
 
 [RNAcentral](/) and [Rfam](https://rfam.org) share a Scientific Advisory Board (SAB)
-which includes three RNA biologists covering a wide range of expertise from wet lab to computational research.
+which includes six RNA biologists covering a wide range of expertise from wet lab to computational research.
 
-- [Manja Marz](http://www.rna.uni-jena.de/en/members/manja-marz/) Friedrich Schiller University Jena
-- [Yann Ponty](http://www.lix.polytechnique.fr/~ponty/) CNRS École Politechnique
-- [Lovorka Stojic](https://www.bartscancer.london/staff/dr-lovorka-stojic/) Barts Centre, CRUK
+- [Manja Marz](http://www.rna.uni-jena.de/members/manja-marz/) Friedrich Schiller University Jena, Germany
+- [Yann Ponty](http://www.lix.polytechnique.fr/~ponty/) CNRS École Politechnique, France
+- [Lovorka Stojic](https://www.bartscancer.london/staff/dr-lovorka-stojic/) Barts Centre CRUK, UK
+- [Yiliang Ding](https://www.jic.ac.uk/people/yilliang-ding/) John Innes Centre, UK
+- [Alain Laederach](https://ribosnitch.bio.unc.edu/) UNC Chapel Hill, USA
+- [Madeline Sherlock](https://profiles.ucdenver.edu/display/20414874) University of Colorado Denver, USA
 
 The SAB oversees the progress of the project during annual meetings.
 
