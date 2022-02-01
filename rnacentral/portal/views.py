@@ -156,7 +156,22 @@ def rna_view(request, upi, taxid=None):
 
     # Publications
     # get ids
-    pub_list = summary.genes + summary.rfam_family_name + summary.rfam_id
+    try:
+        get_genes = summary.genes
+    except AttributeError:
+        get_genes = []
+
+    try:
+        get_rfam_family_name = summary.rfam_family_name
+    except AttributeError:
+        get_rfam_family_name = []
+
+    try:
+        get_rfam_id = summary.rfam_id
+    except AttributeError:
+        get_rfam_id = []
+
+    pub_list = get_genes + get_rfam_family_name + get_rfam_id
     pub_ids = json.dumps(pub_list)
 
     # get number of articles
