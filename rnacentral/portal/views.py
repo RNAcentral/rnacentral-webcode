@@ -155,8 +155,12 @@ def rna_view(request, upi, taxid=None):
             intact = True
 
     # Publications
-    pub_ids = json.dumps(summary.genes)
-    query_ids = ['job_id:' + item for item in summary.genes]
+    # get ids
+    pub_list = summary.genes + summary.rfam_family_name + summary.rfam_id
+    pub_ids = json.dumps(pub_list)
+
+    # get number of articles
+    query_ids = ['job_id:' + item for item in pub_list]
     query_ids = '%20OR%20'.join(query_ids)
     server = "https://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral"  # settings.EBI_SEARCH_ENDPOINT is set to prod
     query = f'?query=entry_type:Publication%20AND%20({query_ids})&format=json'
