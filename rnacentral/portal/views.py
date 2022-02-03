@@ -246,8 +246,11 @@ def proxy(request):
 
     # check domain for security - we don't want someone to abuse this endpoint
     domain = urlparse(url).netloc
-    if domain != 'www.ebi.ac.uk' and domain != 'wwwdev.ebi.ac.uk' and domain != 'rfam.org' and domain != 'www.mirbase.org':
-        return HttpResponseForbidden("This proxy is for www.ebi.ac.uk, wwwdev.ebi.ac.uk, mirbase.org or rfam.org only.")
+    domain_list = ['www.ebi.ac.uk', 'wwwdev.ebi.ac.uk', 'rfam.org', 'www.mirbase.org', 'rna.bgsu.edu']
+    if domain not in domain_list:
+        return HttpResponseForbidden(
+            "This proxy is for www.ebi.ac.uk, wwwdev.ebi.ac.uk, mirbase.org, rfam.org or rna.bgsu.edu only."
+        )
 
     try:
         proxied_response = requests.get(url)
