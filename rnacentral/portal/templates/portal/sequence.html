@@ -94,7 +94,7 @@ limitations under the License.
               <li class="badge" style="padding-left: 7px; padding-right: 7px;">{{ context.precomputed.rna_type }}</li>
             {% endif %}
             {% if context.pub_count %}
-                <li><strong>{{ context.pub_count }}</strong> publications</li>
+                <li><strong>{{ context.pub_count }}</strong> <a href="/rna/{{ rna.upi }}{% if context.taxid %}/{{ context.taxid }}{% endif %}?tab=pub">publications</a></li>
             {% endif %}
         </ul>
         {% if rna.has_secondary_structure %}</div><!-- media-body --></div><!-- media -->{% endif %}
@@ -107,7 +107,7 @@ limitations under the License.
 
         <div class="tabbable">
 
-        <uib-tabset class="tab-animation" active="{{ context.activeTab }}">
+        <uib-tabset class="tab-animation" active="{{ context.active_tab }}">
 
             <uib-tab index="0" heading="Overview" id="overview" deselect="checkTab($event, $selectedIndex)">
 

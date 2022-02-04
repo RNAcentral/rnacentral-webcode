@@ -186,6 +186,15 @@ def rna_view(request, upi, taxid=None):
     except KeyError:
         pub_count = None
 
+    # get tab
+    tab = request.GET.get('tab', '').lower()
+    if tab == '2d':
+        active_tab = 2
+    elif tab == 'pub':
+        active_tab = 3
+    else:
+        active_tab = 0
+
     context = {
         'upi': upi,
         'symbol_counts': symbol_counts,
@@ -193,7 +202,7 @@ def rna_view(request, upi, taxid=None):
         'taxid': taxid,
         'taxid_filtering': taxid_filtering,
         'taxid_not_found': request.GET.get('taxid-not-found', ''),
-        'activeTab': 2 if request.GET.get('tab', '').lower() == '2d' else 0,
+        'active_tab': active_tab,
         'summary_text': summary_text if taxid_filtering else '',
         'summary': summary,
         'summary_so_terms': summary_so_terms if taxid_filtering else '',
