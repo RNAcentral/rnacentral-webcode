@@ -57,6 +57,7 @@ urlpatterns = [
     url(r'^help/secondary-structure/?$', views.StaticView.as_view(), {'page': 'help/secondary-structure'}, name='help-secondary-structure'),
     url(r'^help/sequence-search/?$', views.StaticView.as_view(), {'page': 'help/sequence-search-help'}, name='help-sequence-search'),
     url(r'^help/galaxy/?$', views.StaticView.as_view(), {'page': 'help/galaxy'}, name='help-galaxy'),
+    url(r'^help/publications/?$', views.StaticView.as_view(), {'page': 'help/publications'}, name='help-publications'),
     # training
     url(r'^training/?$', views.StaticView.as_view(), {'page': 'training'}, name='training'),
     # about us
