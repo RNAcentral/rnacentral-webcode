@@ -1494,5 +1494,28 @@ expert_dbs = [
             'imported': True,
             'status': 'New',
             'version': 'as of 03 Sept 2021',
-    }
+    },
+
+    {
+            'name': 'RiboVision',
+            'label': 'ribovision',
+            'url': 'http://apollo.chemistry.gatech.edu/RiboVision/',
+            'description': 'a modern open-source ribosome-information viewer website',
+            'hint': 'A database of ribosomal annotations',
+            'tags': ['curated', '', ''],
+            'abbreviation': 'RIBOVISION',
+            'examples': [
+            ],
+            'references': [
+                {
+                    'title': 'RiboVision suite for visualization and analysis of ribosomes ',
+                    'authors': 'Bernier CR, Petrov AS, Waterbury CC, Jett J, Li F, Freil LE, Xiong X, Wang L, Migliozzi BL, Hershkovits E, Xue Y, Hsiao C, Bowman JC, Harvey SC, Grover MA, Wartell ZJ, Williams LD',
+                    'journal': 'Faraday Discussions, 28 May 2014',
+                    'pubmed_id': '25340471',
+                }
+            ],
+            'imported': True,
+            'status': 'New',
+            'version': 'as of 09 Feb 2022',
+    },
 ]
