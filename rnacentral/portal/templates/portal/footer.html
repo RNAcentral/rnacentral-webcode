@@ -60,9 +60,16 @@ limitations under the License.
         <li><a href="{% url 'contact-us' %}">Contact us</a></li>
         <li><a href="{% url 'website-status' %}">Website status</a></li>
         <li><a class="no-icon" href="https://github.com/RNAcentral/" target="_blank">Code on GitHub</a></li>
-        <li><a class="no-icon" href="https://creativecommons.org/share-your-work/public-domain/cc0/" target="_blank">License</a></li>
+        <li><a href="{% url 'license' %}">License</a></li>
       </ul>
-      <a class="no-icon" href="https://creativecommons.org/share-your-work/public-domain/cc0/" target="_blank"><img src="{% static "img/icons/CC0.png" %}" alt="CC0 license icon"></a>
+    </div>
+
+    <div class="col-md-12">
+      <p class="text-muted text-center">
+        <br>
+        <a class="no-icon" href="https://creativecommons.org/share-your-work/public-domain/cc0/" target="_blank"><img src="{% static "img/icons/CC0.png" %}" alt="CC0 license icon"></a>
+        <small>This site is freely available under the Creative Commons Zero license (CC0)</small>
+      </p>
     </div>
 
   </nav>

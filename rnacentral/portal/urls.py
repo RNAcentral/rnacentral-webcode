@@ -80,6 +80,8 @@ urlpatterns = [
     url(r'^api/internal/proxy/?$', views.proxy, name='proxy'),
     # r2dt-web
     url(r'^r2dt/?$', TemplateView.as_view(template_name='portal/r2dt.html'), name='r2dt'),
+    # license
+    url(r'^license/?$', views.StaticView.as_view(), {'page': 'license'}, name='license'),
 ]
 
 # internal API
