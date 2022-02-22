@@ -39,26 +39,12 @@ If your article is on Europe PMC but not on RNAcentral, this could be because:
 In the first case, it is only a matter of time before your article is listed on RNAcentral. For the second case, 
 you can see the list of Ids or check if a certain Id was used by exploring an API, as explained below.
 
-## How can I know which Ids of a given database were used?
-
-The list of Ids can be accessed programmatically. An example of a Python script to get a list of ids is available 
-at the bottom of this page. 
-
-To know all the Rfam Ids that were searched, one can access 
-> [https://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral?query=entry_type:metadata AND database:rfam&fields=job_id](https://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral?query=entry_type:metadata%20AND%20database:rfam&fields=job_id)
-
-By default, a response in XML format is returned, but it is possible to get a json using
-> [https://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral?query=entry_type:metadata AND database:rfam&fields=job_id&format=json](https://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral?query=entry_type:metadata%20AND%20database:rfam&fields=job_id&format=json)
-
-If not specified, the first 15 results will be displayed, but it is possible to display up to 100 using
-> [https://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral?query=entry_type:metadata AND database:rfam&fields=job_id&size=100](https://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral?query=entry_type:metadata%20AND%20database:rfam&fields=job_id&size=100)
-
-To implement pagination, <em>size</em> and <em>start</em> parameters are needed. The next 100 results can be obtained with
-> [https://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral?query=entry_type:metadata AND database:rfam&fields=job_id&size=100&start=100](https://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral?query=entry_type:metadata%20AND%20database:rfam&fields=job_id&size=100&start=100)
-
 ## How can I know if a certain Id was used to search for articles?
 
 Using RF00001 as an example, one can check this by accessing a url like 
 > [https://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral?query=entry_type:metadata AND job_id:rf00001&fields=number_of_articles](https://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral?query=entry_type:metadata%20AND%20job_id:rf00001&fields=number_of_articles)
 
-## Example script
+## How can I know which Ids of a given database were used?
+
+The list of Ids can be accessed programmatically. An example of a Python script to get a list of ids is available 
+below.
