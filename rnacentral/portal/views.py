@@ -155,35 +155,32 @@ def rna_view(request, upi, taxid=None):
             intact = True
 
     # Publications
-    # get ids
-    try:
-        get_genes = summary.genes
-    except AttributeError:
-        get_genes = []
+    # get IDs related to the accessed URS
+    server = "https://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral"  # settings.EBI_SEARCH_ENDPOINT is set to prod
+    query_jobs = f'?query=entry_type:metadata%20AND%20primary_id:"{upi}_{taxid}"%20AND%20database:rnacentral&fields=job_id&format=json'
+    pub_list = []
 
     try:
-        get_rfam_family_name = summary.rfam_family_name
-    except AttributeError:
-        get_rfam_family_name = []
-
-    try:
-        get_rfam_id = summary.rfam_id
-    except AttributeError:
-        get_rfam_id = []
-
-    pub_list = get_genes + get_rfam_family_name + get_rfam_id
-    pub_ids = json.dumps(pub_list)
+        response = requests.get(server + query_jobs).json()
+        entries = response['entries']
+        for entry in entries:
+            pub_list.append(entry['fields']['job_id'][0])
+    except KeyError:
+        pass
 
     # get number of articles
-    query_ids = ['job_id:"' + item + '"' for item in pub_list]
-    query_ids = '%20OR%20'.join(query_ids)
-    server = "https://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral"  # settings.EBI_SEARCH_ENDPOINT is set to prod
-    query = f'?query=entry_type:Publication%20AND%20({query_ids})&format=json'
-    try:
-        response = requests.get(server + query)
-        pub_count = response.json()
-        pub_count = pub_count['hitCount']
-    except KeyError:
+    if pub_list:
+        query_ids = ['job_id:"' + item + '"' for item in pub_list]
+        query_ids = '%20OR%20'.join(query_ids)
+        query = f'?query=entry_type:Publication%20AND%20({query_ids})&format=json'
+
+        try:
+            response = requests.get(server + query).json()
+            pub_count = response['hitCount']
+        except KeyError:
+            pub_count = None
+
+    else:
         pub_count = None
 
     # get tab
@@ -213,7 +210,6 @@ def rna_view(request, upi, taxid=None):
         'intact': intact,
         'psicquic': psicquic,
         'plugin_installed': plugin_installed,
-        'pub_ids': pub_ids,
         'pub_count': pub_count,
     }
     response = render(request, 'portal/sequence.html', {'rna': rna, 'context': context})

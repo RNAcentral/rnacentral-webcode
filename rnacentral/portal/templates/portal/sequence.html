@@ -78,6 +78,9 @@ limitations under the License.
             <li>
                 Found in <strong>{{ context.summary.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab" ng-click="activateTaxonomyTab()">species</a>
             </li>
+            {% if context.pub_count %}
+                <li><strong>{{ context.pub_count }}</strong> <a href="/rna/{{ rna.upi }}{% if context.taxid %}/{{ context.taxid }}{% endif %}?tab=pub">publications</a></li>
+            {% endif %}
             {% if context.summary.so_rna_type %}
               {% if context.summary.pretty_so_rna_type|length > 1 %}
                 <li>
@@ -92,9 +95,6 @@ limitations under the License.
               {% endif %}
             {% else %}
               <li class="badge" style="padding-left: 7px; padding-right: 7px;">{{ context.precomputed.rna_type }}</li>
-            {% endif %}
-            {% if context.pub_count %}
-                <li><strong>{{ context.pub_count }}</strong> <a href="/rna/{{ rna.upi }}{% if context.taxid %}/{{ context.taxid }}{% endif %}?tab=pub">publications</a></li>
             {% endif %}
         </ul>
         {% if rna.has_secondary_structure %}</div><!-- media-body --></div><!-- media -->{% endif %}
@@ -441,7 +441,8 @@ limitations under the License.
                   Publications <span class="label label-success">New</span>
                 </uib-tab-heading>
                 <rnacentral-references
-                            search='{{ context.pub_ids }}'
+                            search='["{{ context.upi }}_{{ context.taxid }}"]'
+                            database='{"name": "RNAcentral"}'
                             customStyle='{"fixCss": "true", "articleTitleSize": "16px"}'
                 />
                 <script type="text/javascript" src="https://rnacentral.github.io/rnacentral-references-embed/dist/rnacentral-references-embed.js"></script>
