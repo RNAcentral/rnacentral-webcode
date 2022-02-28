@@ -1,5 +1,5 @@
 
-# Publications
+# Methodology
 
 RNAcentral has developed a system to import articles from [Europe PMC](https://europepmc.org) in order to keep the 
 list of publications as up-to-date as possible. 
