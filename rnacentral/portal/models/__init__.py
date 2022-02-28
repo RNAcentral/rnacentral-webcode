@@ -35,3 +35,4 @@ from .sequence_exons import *
 from .taxonomy import *
 from .ensembl_compara import *
 from .qc_status import *
+from .publication import *

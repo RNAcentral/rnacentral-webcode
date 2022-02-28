@@ -38,12 +38,12 @@ from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, Citation
                               RfamHitSerializer, SequenceFeatureSerializer, \
                               EnsemblAssemblySerializer, ProteinTargetsSerializer, \
                               LncrnaTargetsSerializer, EnsemblComparaSerializer, SecondaryStructureSVGImageSerializer, \
-                              QcStatusSerializer
+                              QcStatusSerializer, PublicationSerializer
 
 from apiv1.renderers import RnaFastaRenderer
 from portal.models import Rna, RnaPrecomputed, Accession, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
     GoAnnotation, RelatedSequence, ProteinInfo, SequenceFeature, SequenceRegion, EnsemblCompara,\
-    QcStatus
+    QcStatus, Publication
 from portal.config.expert_databases import expert_dbs
 from rnacentral.utils.pagination import Pagination, LargeTablePagination
 
@@ -801,3 +801,11 @@ class EnsemblComparaAPIViewSet(generics.ListAPIView):
             return 'not found'
 
         return 'found'
+
+
+class PublicationList(generics.ListAPIView):
+    """API endpoint showing the number of ids used by RNAcentral references"""
+    permission_classes = (AllowAny, )
+    serializer_class = PublicationSerializer
+    pagination_class = Pagination
+    queryset = Publication.objects.all().order_by('database')

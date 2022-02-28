@@ -34,7 +34,7 @@ from django.views.decorators.cache import cache_page, never_cache
 from django.views.generic.base import TemplateView
 
 from portal.config.expert_databases import expert_dbs
-from portal.models import Rna, Database, Xref, EnsemblAssembly
+from portal.models import Rna, Database, Xref, EnsemblAssembly, Publication
 from portal.models.rna_precomputed import RnaPrecomputed
 from portal.config.svg_images import examples
 from portal.rna_summary import RnaSummary
@@ -323,6 +323,36 @@ def external_link(request, expert_db, external_id):
                 return redirect('/search?q=expert_db:"{}" "{}"'.format(expert_db, external_id))
     except:
         return redirect('/search?q=expert_db:"{}" "{}"'.format(expert_db, external_id))
+
+
+@cache_page(60 * 10)
+def publications_view(request):
+    """Dashboard for publications"""
+    # get data
+    data = Publication.objects.all().order_by('database')
+
+    # count number of ids
+    number_of_ids = 0
+    for item in data:
+        number_of_ids += item.total_ids
+
+    # get number of entries
+    server = "https://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral"  # settings.EBI_SEARCH_ENDPOINT is set to prod
+    query = f'?query=entry_type:Publication&format=json'
+
+    try:
+        response = requests.get(server + query).json()
+        hit_count = response['hitCount']
+    except KeyError:
+        hit_count = None
+
+    context = {
+        'data': data,
+        'number_of_ids': number_of_ids,
+        'hit_count': hit_count
+    }
+
+    return render(request, 'portal/publications.html', {'context': context})
 
 
 #####################

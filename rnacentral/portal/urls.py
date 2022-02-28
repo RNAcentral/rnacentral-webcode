@@ -82,6 +82,8 @@ urlpatterns = [
     url(r'^r2dt/?$', TemplateView.as_view(template_name='portal/r2dt.html'), name='r2dt'),
     # license
     url(r'^license/?$', views.StaticView.as_view(), {'page': 'license'}, name='license'),
+    # publications - dashboard
+    url(r'^publications/?$', views.publications_view, name='publications'),
 ]
 
 # internal API
