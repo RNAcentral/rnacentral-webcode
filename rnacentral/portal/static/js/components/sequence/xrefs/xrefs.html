@@ -402,6 +402,11 @@
               <a ng-href="https://github.com/RNAcentral/R2DT/blob/master/data/crw-pdf/{{ xref.accession.external_id.replace('CRW:', '') + '.pdf'}}" target="_blank">View 2D structure {{ xref.accession.external_id.replace('CRW:', '') }}</a>
             </span>
 
+            <!-- RiboVision -->
+            <span ng-switch-when="RiboVision">
+              <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id.replace('ribovision:', '') }}</a>
+            </span>
+
             <span ng-switch-default>
               {{ xref.accession.external_id }} {{ xref.accession.optional_id }}
             </span>

@@ -216,16 +216,18 @@ class Accession(models.Model):
             'MALACARDS': 'https://www.genecards.org/cgi-bin/carddisp.pl?gene={id}#diseases',
             'GENECARDS': 'https://www.genecards.org/cgi-bin/carddisp.pl?gene={id}',
         }
-        if self.database in ['GTRNADB', 'ZWD', 'SNODB', 'MIRGENEDB', '5SRRNADB', 'SILVA', 'SNORNADB', 'ZFIN', 'PIRBASE']:
-                try:
-                    data = json.loads(self.note)
-                    url = data['url'] if 'url' in data else ''
-                    if self.database == 'MIRGENEDB':
-                        # replace trailing star character for MirGeneDB
-                        url = re.sub(r'\*$', '', url)
-                    return url
-                except ValueError:
-                    return ''
+        if self.database in [
+            'GTRNADB', 'ZWD', 'SNODB', 'MIRGENEDB', '5SRRNADB', 'SILVA', 'SNORNADB', 'ZFIN', 'PIRBASE', 'RIBOVISION'
+        ]:
+            try:
+                data = json.loads(self.note)
+                url = data['url'] if 'url' in data else ''
+                if self.database == 'MIRGENEDB':
+                    # replace trailing star character for MirGeneDB
+                    url = re.sub(r'\*$', '', url)
+                return url
+            except ValueError:
+                return ''
         if self.database in urls.keys():
             if self.database == 'LNCRNADB':
                 return urls[self.database].format(id=self.optional_id.replace(' ', ''))
