@@ -1,7 +1,7 @@
 
-# Methodology
+# LitScan
 
-**RNAcentral LitScan** has been developed to import articles from [Europe PMC](https://europepmc.org) in order to keep 
+RNAcentral **LitScan** has been developed to import articles from [Europe PMC](https://europepmc.org) in order to keep 
 the list of publications as up-to-date as possible.
 
 This widget is also an **embeddable component**, which means it can be used by any [Expert Database](/expert-databases).
