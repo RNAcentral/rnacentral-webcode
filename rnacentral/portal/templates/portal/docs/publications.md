@@ -1,76 +1,90 @@
 
-# LitScan
+# <i class="fa fa-book"></i> RNAcentral LitScan
 
-RNAcentral **LitScan** has been developed to import articles from [Europe PMC](https://europepmc.org) in order to keep 
-the list of publications as up-to-date as possible.
+> **RNAcentral LitScan** is a new text mining pipeline that connects RNA sequences with the latest open access scientific literature. LitScan uses a collection of identifiers (Ids), gene names, and synonyms provided to RNAcentral by the [Expert Databases](/expert-databases) to scan the papers available in [Europe PMC](https://europepmc.org) and keep the publications linked to RNAcentral entries as up-to-date as possible.
 
-This widget is also an **embeddable component**, which means it can be used by any [Expert Database](/expert-databases).
-Find out more about [how to use this widget on your website](https://github.com/RNAcentral/rnacentral-references-embed).
+LitScan features an interactive user interface that enables the users to filter the papers using facets, including year, journal, identifier, and the part of the paper where the Id is found.
 
-## How it works
+For example, lncRNA `THRIL` is also known as `Linc1992`. Using LitScan, [the corresponding RNAcentral entry](/rna/URS000075D66B/9606?tab=pub) includes papers about `THRIL`, `Linc1992`, and even `NR_110375` which is another Id for the same gene:
 
-A list of Ids, provided by a collaborating group of [Expert Databases](/expert-databases), is exported and used to 
-search for articles. The search is performed in **two distinct steps**. 
-Exploring [Europe PMC's RESTful WebService](https://europepmc.org/RestfulWebService), the first step looks for articles 
-that contain the Id anywhere in the text. The query used is the following:
+<a href="/rna/URS000075D66B/9606?tab=pub">
+    <img class="thumbnail" src="/static/img/litscan-thril.png">
+</a>
 
-<img src="/static/img/query-europe-pmc.png">
+As of RNAcentral release 20, LitScan searched 2.7 million Ids from 19 Expert Databases and identified >387,000 papers which contain 1.6 million Ids corresponding to >280,000 unique RNA sequences. LitScan is under active development and more sequences will be associated with scientific publications in the future.
 
-Where:
+## Use LitScan in your website
 
-- **"id"** is the id used in the search
-- **"rna"** is a term used to filter out possible false positives
-- **IN_EPMC:Y** means the article must be in the Europe PMC
-- **OPEN_ACCESS:Y** it must be an Open Access article to allow access to the full content
-- **NOT SRC:PPR** cannot be a Preprint, as they are articles which have not been peer-reviewed from various preprint 
-servers and open research platforms such as bioRxiv
+The LitScan widget is implemented as an **embeddable component** that can be used by any [Expert Database](/expert-databases) or any other website. LitScan has already been deployed on the Rfam website (for example, see the [SAM riboswitch](https://rfam.org/family/RF00162#tabview=tab10) page).
 
-Despite the use of quotes to try to retrieve publications that contain the 
-exact string, Ids that contain special characters may return articles unrelated to the search term. This is because 
-Europe PMC uses [standard Solr tokenizer](https://solr.apache.org/guide/6_6/tokenizers.html#Tokenizers-StandardTokenizer), 
-treating whitespaces and some characters as delimiters. The second step of this process takes article by article and 
-checks the content. Using a [regex](https://en.wikipedia.org/wiki/Regular_expression), the string is again fetched 
-within the article, but this time within the article's title, abstract, and body. **The article will be displayed in the 
-results if the Id is found in both steps**.
+Find out more about [how to integrate this widget into your website](https://github.com/RNAcentral/rnacentral-references-embed).
+
+## How LitScan works
+
+A list of RNA Ids provided by the Expert Databases is used to
+search for open access articles in Europe PMC. The search is performed in two steps:
+
+1. Search [Europe PMC's RESTful WebService](https://europepmc.org/RestfulWebService) for articles that contain an RNA Id anywhere in the text.
+
+    The following query is used:
+
+    <img src="/static/img/query-europe-pmc.png">
+
+    where
+
+    - `"id"` is the Id used in the search
+    - `"rna"` is a term used to filter out possible false positives
+    - `IN_EPMC:Y` means that the full text of the article is available in Europe PMC
+    - `OPEN_ACCESS:Y` it must be an Open Access article to allow access to the full content
+    - `NOT SRC:PPR` cannot be a Preprint, as preprints are not peer-reviewed
+
+2. Analyse the full text of the matching articles using [regular expressions](https://en.wikipedia.org/wiki/Regular_expression) to locate the Ids within the article's title, abstract, or body. From the article that contains the exact Id, LitScan extracts a sentence with the Id and other relevant information, such as title, authors, journal, etc.
+
+The article will be displayed in the results if the Id is found in **both steps**.
 
 ### Example
 
-The [dme-bantam](/rna/URS00002F21DA/7227) Id returns nine results in the first 
-step of the search, as seen [here](https://europepmc.org/search?query=%22dme-bantam%22%20AND%20%22rna%22%20AND%20IN_EPMC%3AY%20AND%20OPEN_ACCESS%3AY%20AND%20NOT%20SRC%3APPR).
-The **second step of the search finds the exact string in just three articles**, the other six mention 
-[dme-bantam-3p](/rna/URS00004E9E38/7227) and/or [dme-bantam-5p](/rna/URS000055786A/7227). From the article that contains
-the exact Id, the system will extract a sentence and other relevant information, such as title, authors, journal, etc.
+A search for the [dme-bantam](/rna/URS00002F21DA/7227) precursor microRNA Id returns 9 results in Europe PMC, as can be seen [here](https://europepmc.org/search?query=%22dme-bantam%22%20AND%20%22rna%22%20AND%20IN_EPMC%3AY%20AND%20OPEN_ACCESS%3AY%20AND%20NOT%20SRC%3APPR).
+However, the second step finds the exact string `dme-bantam` **only in 3 articles**, while the other 6 mention
+[dme-bantam-3p](/rna/URS00004E9E38/7227) and/or [dme-bantam-5p](/rna/URS000055786A/7227) and appear on the corresponding mature microRNA pages.
 
 <img src="/static/img/litscan-dme-bantam.png">
 
-## How often are publications updated?
+## FAQ
 
-Publications will be constantly updated, with no predefined time.
+### How often are the publications updated?
 
-## Why is this widget's citation count different from Google Scholar, Web of Science or Scopus?
+The publications are updated on an ongoing basis.
 
-The citation counts per paper shown by the widget may differ from the counts displayed in Google Scholar, Web of 
-Science or Scopus, as Europe PMC does not have access to the same content as these resources. However, highly cited 
-articles in Europe PMC correlate with highly cited papers on other platforms. Find out more about the 
-[Europe PMC citation network](https://europepmc.org/Help#citationsnetwork).
+### Why is the citation count in LitScan different from Google Scholar, Web of Science or Scopus?
 
-## Why is my article not on RNAcentral?
+The citation counts per paper shown by the widget may differ from the counts displayed in Google Scholar, Web of Science or Scopus, as Europe PMC does not have access to the same content as these resources. However, highly cited articles in Europe PMC correlate with highly cited papers on other platforms. Find out more about the [Europe PMC citation network](https://europepmc.org/Help#citationsnetwork).
 
-If your article is on Europe PMC but not on RNAcentral, this could be because:
+### Why is my article not shown in RNAcentral?
 
-* **Your article was recently published and has not yet been imported into our database**
-  
-  in this case, it may only be a matter of time before your article is listed on RNAcentral
+If your article is found in Europe PMC but not in RNAcentral, this could be due to the following reasons:
 
-* **Your article does not have any exact Id used in our searches**
-  
-  new ids will be scanned in the near future and therefore your article can be included
+* **The article was recently published and has not yet been imported into LitScan**
+
+  in this case, it may only be a matter of time before your article is listed in RNAcentral
+
+* **The article does not have any exact Id used in the searches**
+
+  new ids will be scanned on an ongoing basis and the article will be included in the near future
 
 * **Your article is not Open Access in Europe PMC**
-  
-  unfortunately there's nothing we can do in this case as we don't have access to the article
 
-## How can I know which Ids of a given database were used?
+  unfortunately there's nothing we can do in this case as we do not have access to the article
 
-The list of Ids can be accessed programmatically. An example of a Python script to get a list of ids is available 
-below.
+### How do you treat identifiers containing special characters?
+
+Note that searching for Ids with special characters may sometimes return articles unrelated to the search terms due to the use of the
+ [standard Solr tokenizer](https://solr.apache.org/guide/6_6/tokenizers.html#Tokenizers-StandardTokenizer) in the Europe PMC API that treats whitespaces and special characters as delimiters.
+
+### Do you filter out common words?
+
+To prevent false positive matches, we compare RNA Ids against a corpus of common English words to [exclude Ids](https://github.com/RNAcentral/rnacentral-references/blob/main/words_identified_by_corpus.txt) like `hairpin`, `nail`, `digit`, or `eric` that may correspond to non-RNA entities.
+
+### How can I find out which Ids are used by LitScan?
+
+The list of Ids can be accessed programmatically. An example Python script to get a list of ids is available below:
