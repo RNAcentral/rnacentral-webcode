@@ -15,12 +15,12 @@ limitations under the License.
 
 {% block meta_tags %}
     {{ block.super }}
-    <meta name="description" content="Publications listed on RNAcentral"/>
+    <meta name="description" content="LitScan text mining pipeline"/>
     <meta name="twitter:description" content="LitScan text mining pipeline"/>
 {% endblock %}
 
 {% block title %}
-Help: Publications
+Help: LitScan
 {% endblock %}
 
 {% block content %}
@@ -30,7 +30,7 @@ Help: Publications
   <div class="col-md-8">
     {% load markdown_deux_tags %}
     {% markdown %}
-      {% include  'portal/docs/publications.md' %}
+      {% include  'portal/docs/litscan.md' %}
     {% endmarkdown %}
 
     <div style="max-height: 400px; overflow: auto;">
@@ -46,7 +46,7 @@ Help: Publications
 
     <hr>
 
-    <a class="btn btn-default btn-sm" title="Edit on GitHub" href="https://github.com/RNAcentral/rnacentral-webcode/edit/master/rnacentral/portal/templates/portal/docs/publications.md" target="_blank"><i class="fa fa-pencil-square-o"></i> Improve this page</a>
+    <a class="btn btn-default btn-sm" title="Edit on GitHub" href="https://github.com/RNAcentral/rnacentral-webcode/edit/master/rnacentral/portal/templates/portal/docs/litscan.md" target="_blank"><i class="fa fa-pencil-square-o"></i> Improve this page</a>
   </div>
 
   <div class="col-md-4">

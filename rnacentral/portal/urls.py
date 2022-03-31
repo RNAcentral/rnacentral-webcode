@@ -57,7 +57,7 @@ urlpatterns = [
     url(r'^help/secondary-structure/?$', views.StaticView.as_view(), {'page': 'help/secondary-structure'}, name='help-secondary-structure'),
     url(r'^help/sequence-search/?$', views.StaticView.as_view(), {'page': 'help/sequence-search-help'}, name='help-sequence-search'),
     url(r'^help/galaxy/?$', views.StaticView.as_view(), {'page': 'help/galaxy'}, name='help-galaxy'),
-    url(r'^help/publications/?$', views.StaticView.as_view(), {'page': 'help/publications'}, name='help-publications'),
+    url(r'^help/litscan/?$', views.StaticView.as_view(), {'page': 'help/litscan'}, name='help-litscan'),
     # training
     url(r'^training/?$', views.StaticView.as_view(), {'page': 'training'}, name='training'),
     # about us
@@ -82,8 +82,8 @@ urlpatterns = [
     url(r'^r2dt/?$', TemplateView.as_view(template_name='portal/r2dt.html'), name='r2dt'),
     # license
     url(r'^license/?$', views.StaticView.as_view(), {'page': 'license'}, name='license'),
-    # publications - dashboard
-    url(r'^publications/?$', views.publications_view, name='publications'),
+    # litscan - dashboard
+    url(r'^litscan/?$', views.publications_view, name='litscan'),
 ]
 
 # internal API

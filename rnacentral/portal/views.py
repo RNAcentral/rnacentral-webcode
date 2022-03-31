@@ -352,7 +352,7 @@ def publications_view(request):
         'hit_count': hit_count
     }
 
-    return render(request, 'portal/publications.html', {'context': context})
+    return render(request, 'portal/litscan-dashboard.html', {'context': context})
 
 
 #####################

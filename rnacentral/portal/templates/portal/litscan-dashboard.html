@@ -16,17 +16,17 @@ limitations under the License.
 
 {% block meta_tags %}
     {{ block.super }}
-    <meta name="description" content="Dashboard of the RNAcentral references widget"/>
-    <meta name="twitter:description" content="Dashboard of the RNAcentral references widget"/>
+    <meta name="description" content="LitScan Dashboard"/>
+    <meta name="twitter:description" content="LitScan Dashboard"/>
 {% endblock %}
 
 {% block title %}
-Publications - Dashboard
+LitScan - Dashboard
 {% endblock %}
 
 {% block content %}
 
-    <h1><i class="fa fa-tachometer"></i> Dashboard</h1>
+    <h1><i class="fa fa-tachometer"></i> LitScan Dashboard</h1>
 
     <div class="row">
         <div class="col-md-12">
@@ -35,7 +35,7 @@ Publications - Dashboard
                 <strong>{{ context.data|length|apnumber }} expert databases</strong> and continues to search for articles
                 on Europe PMC. Until now, this search has achieved <strong>{{ context.hit_count|intcomma }}</strong>
                 results. To understand how the search is performed and which ids are used, check
-                the <a href="{% url 'help-publications' %}">Methodology</a> page.
+                the <a href="{% url 'help-litscan' %}">Methodology</a> page.
             </p>
 
             <h3>IDs per Expert Database</h3>

@@ -16,7 +16,7 @@ from django.db import models
 
 class Publication(models.Model):
     """
-    To be used by the publications dashboard
+    To be used by the LitScan Dashboard
     """
     database = models.CharField(max_length=40)
     total_ids = models.IntegerField()
