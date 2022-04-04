@@ -17,7 +17,7 @@ As of RNAcentral release 20, LitScan searched 2.7 million Ids from 19 Expert Dat
 
 The LitScan widget is implemented as an **embeddable component** that can be used by any [Expert Database](/expert-databases) or any other website. LitScan has already been deployed on the Rfam website (for example, see the [SAM riboswitch](https://rfam.org/family/RF00162#tabview=tab10) page).
 
-Find out more about [how to integrate this widget into your website](https://github.com/RNAcentral/rnacentral-references-embed).
+Find out more about [how to integrate this widget into your website](https://github.com/RNAcentral/rnacentral-litscan).
 
 ## How LitScan works
 
