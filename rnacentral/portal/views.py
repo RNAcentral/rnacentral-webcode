@@ -165,7 +165,7 @@ def rna_view(request, upi, taxid=None):
         entries = response['entries']
         for entry in entries:
             pub_list.append(entry['fields']['job_id'][0])
-    except KeyError:
+    except (IndexError, KeyError):
         pass
 
     # get number of articles
