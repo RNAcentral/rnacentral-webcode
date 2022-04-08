@@ -156,12 +156,11 @@ def rna_view(request, upi, taxid=None):
 
     # Publications
     # get IDs related to the accessed URS
-    server = "https://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral"  # settings.EBI_SEARCH_ENDPOINT is set to prod
     query_jobs = f'?query=entry_type:metadata%20AND%20primary_id:"{upi}_{taxid}"%20AND%20database:rnacentral&fields=job_id&format=json'
     pub_list = []
 
     try:
-        response = requests.get(server + query_jobs).json()
+        response = requests.get(settings.EBI_SEARCH_ENDPOINT + query_jobs).json()
         entries = response['entries']
         for entry in entries:
             pub_list.append(entry['fields']['job_id'][0])
@@ -175,7 +174,7 @@ def rna_view(request, upi, taxid=None):
         query = f'?query=entry_type:Publication%20AND%20({query_ids})&format=json'
 
         try:
-            response = requests.get(server + query).json()
+            response = requests.get(settings.EBI_SEARCH_ENDPOINT + query).json()
             pub_count = response['hitCount']
         except KeyError:
             pub_count = None
@@ -337,11 +336,9 @@ def publications_view(request):
         number_of_ids += item.total_ids
 
     # get number of entries
-    server = "https://wwwdev.ebi.ac.uk/ebisearch/ws/rest/rnacentral"  # settings.EBI_SEARCH_ENDPOINT is set to prod
     query = f'?query=entry_type:Publication&format=json'
-
     try:
-        response = requests.get(server + query).json()
+        response = requests.get(settings.EBI_SEARCH_ENDPOINT + query).json()
         hit_count = response['hitCount']
     except KeyError:
         hit_count = None
