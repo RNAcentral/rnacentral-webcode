@@ -34,7 +34,7 @@ from django.views.decorators.cache import cache_page, never_cache
 from django.views.generic.base import TemplateView
 
 from portal.config.expert_databases import expert_dbs
-from portal.models import Rna, Database, Xref, EnsemblAssembly
+from portal.models import Rna, Database, Xref, EnsemblAssembly, Publication
 from portal.models.rna_precomputed import RnaPrecomputed
 from portal.config.svg_images import examples
 from portal.rna_summary import RnaSummary
@@ -154,6 +154,43 @@ def rna_view(request, upi, taxid=None):
         else:
             intact = True
 
+    # Publications
+    # get IDs related to the accessed URS
+    query_jobs = f'?query=entry_type:metadata%20AND%20primary_id:"{upi}_{taxid}"%20AND%20database:rnacentral&fields=job_id&format=json'
+    pub_list = []
+
+    try:
+        response = requests.get(settings.EBI_SEARCH_ENDPOINT + query_jobs).json()
+        entries = response['entries']
+        for entry in entries:
+            pub_list.append(entry['fields']['job_id'][0])
+    except (IndexError, KeyError):
+        pass
+
+    # get number of articles
+    if pub_list:
+        query_ids = ['job_id:"' + item + '"' for item in pub_list]
+        query_ids = '%20OR%20'.join(query_ids)
+        query = f'?query=entry_type:Publication%20AND%20({query_ids})&format=json'
+
+        try:
+            response = requests.get(settings.EBI_SEARCH_ENDPOINT + query).json()
+            pub_count = response['hitCount']
+        except KeyError:
+            pub_count = None
+
+    else:
+        pub_count = None
+
+    # get tab
+    tab = request.GET.get('tab', '').lower()
+    if tab == '2d':
+        active_tab = 2
+    elif tab == 'pub':
+        active_tab = 3
+    else:
+        active_tab = 0
+
     context = {
         'upi': upi,
         'symbol_counts': symbol_counts,
@@ -161,7 +198,7 @@ def rna_view(request, upi, taxid=None):
         'taxid': taxid,
         'taxid_filtering': taxid_filtering,
         'taxid_not_found': request.GET.get('taxid-not-found', ''),
-        'activeTab': 2 if request.GET.get('tab', '').lower() == '2d' else 0,
+        'active_tab': active_tab,
         'summary_text': summary_text if taxid_filtering else '',
         'summary': summary,
         'summary_so_terms': summary_so_terms if taxid_filtering else '',
@@ -172,6 +209,7 @@ def rna_view(request, upi, taxid=None):
         'intact': intact,
         'psicquic': psicquic,
         'plugin_installed': plugin_installed,
+        'pub_count': pub_count,
     }
     response = render(request, 'portal/sequence.html', {'rna': rna, 'context': context})
     # define canonical URL for Google
@@ -287,6 +325,34 @@ def external_link(request, expert_db, external_id):
                 return redirect('/search?q=expert_db:"{}" "{}"'.format(expert_db, external_id))
     except:
         return redirect('/search?q=expert_db:"{}" "{}"'.format(expert_db, external_id))
+
+
+@cache_page(60 * 10)
+def publications_view(request):
+    """Dashboard for publications"""
+    # get data
+    data = Publication.objects.all().order_by('database')
+
+    # count number of ids
+    number_of_ids = 0
+    for item in data:
+        number_of_ids += item.total_ids
+
+    # get number of entries
+    query = f'?query=entry_type:Publication&format=json'
+    try:
+        response = requests.get(settings.EBI_SEARCH_ENDPOINT + query).json()
+        hit_count = response['hitCount']
+    except KeyError:
+        hit_count = None
+
+    context = {
+        'data': data,
+        'number_of_ids': number_of_ids,
+        'hit_count': hit_count
+    }
+
+    return render(request, 'portal/litscan-dashboard.html', {'context': context})
 
 
 #####################

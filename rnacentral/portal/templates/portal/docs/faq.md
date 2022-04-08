@@ -61,6 +61,12 @@ please [get in touch]({% url 'contact-us' %}).
 The RNAcentral data is updated **every 3 months**, while the user interface
 and website functionality is continuously updated.
 
+### What is the license for the RNAcentral data? <a style="cursor: pointer" id="license" ng-click="scrollTo('license')" name="license" class="text-muted smaller"><i class="fa fa-link"></i></a>
+
+The content on this website is licensed under a [Creative Commons Zero](https://creativecommons.org/share-your-work/public-domain/cc0/) license, which means that you can use the data in any way and for any purpose. 
+
+[More about the license &rarr;]({% url 'license' %})
+
 ### Want to learn more? <a style="cursor: pointer" id="train-online" ng-click="scrollTo('train-online')" name="train-online" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 Explore all RNAcentral [training materials]({% url 'training' %}) to find information about the project as well as exercises, tips, a quiz, and more.

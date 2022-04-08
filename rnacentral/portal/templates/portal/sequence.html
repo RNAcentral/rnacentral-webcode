@@ -78,6 +78,9 @@ limitations under the License.
             <li>
                 Found in <strong>{{ context.summary.count_distinct_organisms|intcomma }}</strong> <a href="" class="show-species-tab" ng-click="activateTaxonomyTab()">species</a>
             </li>
+            {% if context.pub_count %}
+                <li><strong>{{ context.pub_count }}</strong> <a href="/rna/{{ rna.upi }}{% if context.taxid %}/{{ context.taxid }}{% endif %}?tab=pub">publications</a></li>
+            {% endif %}
             {% if context.summary.so_rna_type %}
               {% if context.summary.pretty_so_rna_type|length > 1 %}
                 <li>
@@ -93,7 +96,6 @@ limitations under the License.
             {% else %}
               <li class="badge" style="padding-left: 7px; padding-right: 7px;">{{ context.precomputed.rna_type }}</li>
             {% endif %}
-
         </ul>
         {% if rna.has_secondary_structure %}</div><!-- media-body --></div><!-- media -->{% endif %}
 
@@ -105,7 +107,7 @@ limitations under the License.
 
         <div class="tabbable">
 
-        <uib-tabset class="tab-animation" active="{{ context.activeTab }}">
+        <uib-tabset class="tab-animation" active="{{ context.active_tab }}">
 
             <uib-tab index="0" heading="Overview" id="overview" deselect="checkTab($event, $selectedIndex)">
 
@@ -384,9 +386,6 @@ limitations under the License.
                 </div>
 
                 <pre ng-if="showSequence" class="pre-scrollable" id="rna-sequence">{{ rna.get_sequence }}</pre>
-
-                <publications upi="upi" taxid="taxid"></publications>
-
             </uib-tab>
 
             <uib-tab index="1" id="taxonomy" heading="Taxonomy" deselect="checkTab($event, $selectedIndex)">
@@ -426,7 +425,7 @@ limitations under the License.
             {% if rna.has_secondary_structure %}
             <uib-tab index="2" id="secondary-structures" deselect="checkTab($event, $selectedIndex)" ng-if="taxid">
                 <uib-tab-heading>
-                  2D structure <span class="label label-success">New</span>
+                  2D structure
                 </uib-tab-heading>
                 <r2dt-web
                         search='{"urs": "{{ context.upi }}"}'
@@ -436,7 +435,21 @@ limitations under the License.
             </uib-tab>
             {% endif %}
 
-            <uib-tab index="3" class="dropdown pull-right hidden-xs">
+            {% if context.pub_count %}
+            <uib-tab index="3" id="publications" deselect="checkTab($event, $selectedIndex)">
+                <uib-tab-heading>
+                  Publications <span class="label label-success">New</span>
+                </uib-tab-heading>
+                <rnacentral-litscan
+                            search='["{{ context.upi }}_{{ context.taxid }}"]'
+                            database='{"name": "RNAcentral"}'
+                            customStyle='{"fixCss": "true", "articleTitleSize": "16px", "hideRnacentral": "true"}'
+                />
+                <script type="text/javascript" src="https://rnacentral.github.io/rnacentral-litscan/dist/rnacentral-litscan.js"></script>
+            </uib-tab>
+            {% endif %}
+
+            <uib-tab index="4" class="dropdown pull-right hidden-xs">
                 <uib-tab-heading>
                     <span uib-dropdown>
                         <a uib-dropdown-toggle>

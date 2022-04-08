@@ -1309,6 +1309,12 @@ expert_dbs = [
         ],
         'references': [
             {
+                'title': 'MirGeneDB 2.1: toward a complete sampling of all major animal phyla',
+                'authors': 'Fromm B, Høye E, Domanska D, Zhong X, Aparicio-Puerta E, Ovchinnikov V, Umu SU, Chabot PJ, Kang W, Aslanzadeh M, Tarbier M, Mármol-Sánchez E, Urgese G, Johansen M, Hovig E, Hackenberg M, Friedländer MR, Peterson KJ',
+                'journal': 'Nucleic Acids Res. 2022 Jan 01',
+                'pubmed_id': '34850127',
+            },
+            {
                 'title': 'MirGeneDB 2.0: the metazoan microRNA complement',
                 'authors': 'Fromm B, Domanska D, Hoye E, Ovchinnikov V, Kang W, Aparicio-Puerta E, Johansen M, Flatmark K, Mathelier A, Hovig E, Hackenberg M, Friedlander MR, Peterson KJ',
                 'journal': 'Nucleic Acids Res. 2019 Oct 23',
@@ -1488,5 +1494,31 @@ expert_dbs = [
             'imported': True,
             'status': 'New',
             'version': 'as of 03 Sept 2021',
-    }
+    },
+
+    {
+            'name': 'RiboVision',
+            'label': 'ribovision',
+            'url': 'http://apollo.chemistry.gatech.edu/RiboVision/',
+            'description': 'a modern open-source ribosome-information viewer website',
+            'hint': 'A database of ribosomal annotations',
+            'tags': ['curated', '', ''],
+            'abbreviation': 'RIBOVISION',
+            'examples': [
+                {'upi': 'URS000016432F', 'taxid': 7227},
+                {'upi': 'URS000075EC78', 'taxid': 9606},
+                {'upi': 'URS000012A2B3', 'taxid': 186497},
+            ],
+            'references': [
+                {
+                    'title': 'RiboVision suite for visualization and analysis of ribosomes ',
+                    'authors': 'Bernier CR, Petrov AS, Waterbury CC, Jett J, Li F, Freil LE, Xiong X, Wang L, Migliozzi BL, Hershkovits E, Xue Y, Hsiao C, Bowman JC, Harvey SC, Grover MA, Wartell ZJ, Williams LD',
+                    'journal': 'Faraday Discussions, 28 May 2014',
+                    'pubmed_id': '25340471',
+                }
+            ],
+            'imported': True,
+            'status': 'New',
+            'version': 'as of 09 Feb 2022',
+    },
 ]

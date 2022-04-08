@@ -72,6 +72,8 @@ urlpatterns = [
     url(r'genomes/$', cache_page(CACHE_TIMEOUT)(views.GenomesAPIViewSet.as_view({'get': 'list'})), {}, name='genomes-api'),
     # endpoint that returns karyotypes, downloaded from ensembl
     url(r'karyotypes/(?P<ensembl_url>.*?)/?$', cache_page(CACHE_TIMEOUT)(views.EnsemblKaryotypeAPIView.as_view()), {}, name='ensembl-karyotype'),
+    # endpoint that returns data from publications
+    url(r'publications/$', cache_page(CACHE_TIMEOUT)(views.PublicationList.as_view()), {}, name='api-publications'),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns, allowed=['json', 'yaml', 'fasta', 'api'])

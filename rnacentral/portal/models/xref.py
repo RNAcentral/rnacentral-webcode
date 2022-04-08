@@ -603,7 +603,7 @@ class Xref(CachingMixin, models.Model):
         in Accession.accession. Example:
         {"transcript_id": ["GENCODE:ENSMUST00000160979.8"]}
         """
-        if self.db.display_name == 'GENCODE':
+        if self.db.display_name == 'Ensembl/GENCODE':
             if self.accession.accession.startswith('GENCODE:'):
                 return self.accession.accession.split(':')[1]
             elif self.accession.accession.startswith('ENSMUST'):
