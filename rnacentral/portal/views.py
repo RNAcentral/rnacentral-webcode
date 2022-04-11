@@ -290,6 +290,14 @@ def proxy(request):
             "This proxy is for www.ebi.ac.uk, wwwdev.ebi.ac.uk, mirbase.org, rfam.org or rna.bgsu.edu only."
         )
 
+    if domain == 'rna.bgsu.edu':
+        # make sure to use the full url
+        try:
+            query_string = request.META['QUERY_STRING']
+            url = query_string.split('url=')[1]
+        except IndexError:
+            pass
+
     try:
         proxied_response = requests.get(url)
         if proxied_response.status_code == 200:
