@@ -26,21 +26,17 @@ RUN \
     mkdir /srv/rnacentral/log && \
     mkdir /srv/rnacentral/static
 
+
 # Install Infernal and node.js
 RUN \
     cd $RNACENTRAL_LOCAL && \
-    curl -OL http://eddylab.org/infernal/infernal-1.1.1.tar.gz && \
-    tar -xvzf infernal-1.1.1.tar.gz && \
-    cd infernal-1.1.1 && \
-    ./configure --prefix=$RNACENTRAL_LOCAL/infernal-1.1.1 && \
-    make && \
-    make install && \
-    cd easel && \
-    make install && \
-    cd $RNACENTRAL_LOCAL && \
-    rm infernal-1.1.1.tar.gz && \
     curl -sL https://deb.nodesource.com/setup_lts.x | bash - && \
     apt-get install -y nodejs
+
+
+# pg_conf should be installed, hopefully this grabs it
+RUN \
+    apt-get install -y postgresql libpq-dev
 
 # Set work directory
 ENV RNACENTRAL_HOME=/srv/rnacentral/rnacentral-webcode
