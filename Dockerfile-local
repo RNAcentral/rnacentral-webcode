@@ -14,7 +14,6 @@ RUN apt-get update && apt-get install -y \
     git \
     vim \
     supervisor \
-    postgresql \
     libpq-dev && \
     rm -rf /var/lib/apt/lists/*
 
