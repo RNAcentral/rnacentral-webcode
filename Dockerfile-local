@@ -13,7 +13,9 @@ RUN apt-get update && apt-get install -y \
     tar \
     git \
     vim \
-    supervisor && \
+    supervisor \
+    postgresql \
+    libpq-dev && \
     rm -rf /var/lib/apt/lists/*
 
 ENV RNACENTRAL_LOCAL=/srv/rnacentral/local
@@ -27,16 +29,11 @@ RUN \
     mkdir /srv/rnacentral/static
 
 
-# Install Infernal and node.js
+# Install node.js
 RUN \
     cd $RNACENTRAL_LOCAL && \
     curl -sL https://deb.nodesource.com/setup_lts.x | bash - && \
     apt-get install -y nodejs
-
-
-# pg_conf should be installed, hopefully this grabs it
-RUN \
-    apt-get install -y postgresql libpq-dev
 
 # Set work directory
 ENV RNACENTRAL_HOME=/srv/rnacentral/rnacentral-webcode
