@@ -431,9 +431,9 @@ spec:
               mountPath: /srv/rnacentral/fasta
             - name: export-results
               mountPath: /srv/rnacentral/export
-            - name: sequence-search
-              mountPath: /srv/rnacentral/rnacentral-webcode/sequence-search.sh
-              subPath: sequence-search.sh
+            - name: web-components
+              mountPath: /srv/rnacentral/rnacentral-webcode/web-components.sh
+              subPath: web-components.sh
           envFrom:
           - secretRef:
               name: {{ .Values.database }}
@@ -457,7 +457,7 @@ spec:
         - name: export-results
           persistentVolumeClaim:
             claimName: export-results
-        - name: sequence-search
+        - name: web-components
           configMap:
-            name: sequence-search
+            name: web-components
             defaultMode: 0777
