@@ -38,9 +38,15 @@ Downloads
       located at <a href="{{ rnacentral_ftp_url }}" target="_blank">{{ rnacentral_ftp_url }}</a>
       (no authentication required).
     </p>
+    <p>
+      You can also look at the table of contents and a map of the FTP Archive at the FTP Archive
+      <a href="{% url 'help-ftp' %}"> help page</a>. Direct links to files from the current
+      release are included, alongside a description and a link to file format documentation.
+    </p>
 
     <p>
       <a href="{{ rnacentral_ftp_url }}" target="_blank" class="btn btn-primary">Explore FTP Archive</a>
+      <a href="{% url 'help-ftp' %}" target="_blank" class="btn btn-primary">FTP Archive contents</a>
     </p>
     {% endwith %}
 
