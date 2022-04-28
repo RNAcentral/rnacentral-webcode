@@ -7,18 +7,21 @@ data:
     #!/bin/bash
     echo "Install Sequence Search..."
     cd $RNACENTRAL_HOME/rnacentral/portal/static
+    if [ -d "rnacentral-sequence-search-embed" ]; then rm -rf rnacentral-sequence-search-embed; fi
     git clone https://github.com/RNAcentral/rnacentral-sequence-search-embed.git
     cd rnacentral-sequence-search-embed
     git checkout dev
     
     echo "Install R2DT-web..."
     cd $RNACENTRAL_HOME/rnacentral/portal/static
+    if [ -d "r2dt-web" ]; then rm -rf r2dt-web; fi
     git clone https://github.com/RNAcentral/r2dt-web.git
     cd r2dt-web
     git checkout dev
     
     echo "Install LitScan"
     cd $RNACENTRAL_HOME/rnacentral/portal/static
+    if [ -d "rnacentral-litscan" ]; then rm -rf rnacentral-litscan; fi
     git clone https://github.com/RNAcentral/rnacentral-litscan.git
     cd rnacentral-litscan
     git checkout dev
