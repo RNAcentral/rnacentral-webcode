@@ -12,6 +12,9 @@ proxy: proxy-hx
 # EBI search index
 searchIndex: search-index-dev
 
+# Install web components
+webComponents: "true"
+
 # Memcached
 memcachedReplicas: 1
 memcachedRequestsMemory: "512Mi"
