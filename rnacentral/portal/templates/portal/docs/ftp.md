@@ -1,5 +1,5 @@
 
-#<i class="fa fa-search"></i>  FTP Archive
+#<i class="fa fa-cloud-download"></i>  FTP Archive
 
 The FTP Archive facilitates downloading large volumes of data produced/used by RNAcentral. Being able to download these files may be useful when doing some of your own processing.
 
