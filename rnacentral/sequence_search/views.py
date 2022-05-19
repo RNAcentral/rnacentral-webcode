@@ -130,10 +130,6 @@ def dashboard(request):
         response_url = requests.get(show_searches_url)
         if response_url.status_code == 200:
             data = response_url.json()
-
-            all_searches = data['all_searches_result']['count']
-            average_all_searches = data['all_searches_result']['avg_time']
-            average_high_priority_searches = data['high_priority_result']['avg_time']
             searches_last_24_hours = data['last_24_hours_result']['count']
             average_last_24_hours = data['last_24_hours_result']['avg_time']
             average_last_24_hours_high_priority = data['high_priority_24_hours_result']['avg_time']
@@ -171,13 +167,10 @@ def dashboard(request):
                 last_month_pie_chart.append({key: expert_db_results[index][key][-2][last_month]})
 
     context = {
-        'all_searches': all_searches,
         'searches_last_24_hours': searches_last_24_hours,
         'searches_last_week': searches_last_week,
-        'average_all_searches': average_all_searches,
         'average_last_24_hours': average_last_24_hours,
         'average_last_week': average_last_week,
-        'average_high_priority_searches': average_high_priority_searches,
         'average_last_24_hours_high_priority': average_last_24_hours_high_priority,
         'average_last_week_high_priority': average_last_week_high_priority,
         'searches_per_month': searches_per_month,
