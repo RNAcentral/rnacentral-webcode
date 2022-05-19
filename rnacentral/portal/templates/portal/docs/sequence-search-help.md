@@ -1,9 +1,22 @@
 
 # <i class="fa fa-search"></i> Sequence search
 
-The RNAcentral [sequence similarity search](/sequence-search) enables searches against a comprehensive collection of non-coding RNA sequences from a consortium of [RNA databases](/expert-databases). The search is powered by the [nhmmer](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3777106/) software which is more sensitive than *blastn* but is comparable in speed.
+The RNAcentral [sequence similarity search](/sequence-search) enables searches against a comprehensive collection of non-coding RNA sequences from a consortium of [RNA databases](/expert-databases).
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/2H4--NfjIsI" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+### Powered by nhmmer <a style="cursor: pointer" id="nhmmer" ng-click="scrollTo('nhmmer')" name="nhmmer" class="text-muted smaller"><i class="fa fa-link"></i></a>
+
+The search is powered by the [nhmmer](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3777106/) software which is more sensitive than *blastn* but is comparable in speed. The command executed by the sequence search is as follows: 
+
+`nhmmer --qfasta --tformat fasta -o <output_file> -T 0 --F3 0.02 --rna --watson --cpu 4 -Z <number> <query> <database.fasta>`
+
+Where:
+
+* **--F3 0.02** is only used when the sequence length is less than 50 nucleotides
+* **-Z &lt;number&gt;** is calculated according to the size of the database
+
+A description of what each parameter does can be seen on the software *man page* (manual page). 
 
 ### API documentation <a style="cursor: pointer" id="sequence-search-api" ng-click="scrollTo('sequence-search-api')" name="sequence-search-api" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
@@ -39,7 +52,7 @@ To get around this, the sequence similarity searches are performed against a sub
 
 ### How long are the search results available for? <a style="cursor: pointer" id="stable-links" ng-click="scrollTo('stable-links')" name="stable-links" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
-The results will be available at the same URL for **at least one month**.
+The results will be available at the same URL for **up to 7 days**.
 
 ## Feedback
 
