@@ -22,10 +22,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 
 
-if settings.ENVIRONMENT == 'HX':
-    SEQUENCE_SEARCH_ENDPOINT = 'http://193.62.55.123:8002'
-else:
-    SEQUENCE_SEARCH_ENDPOINT = 'https://search.rnacentral.org'
+SEQUENCE_SEARCH_ENDPOINT = 'https://search.rnacentral.org'
 
 if settings.ENVIRONMENT == 'DEV':
     proxies = None
@@ -124,7 +121,10 @@ def dashboard(request):
     average_high_priority_searches, average_last_24_hours_high_priority, average_last_week_high_priority = 0, 0, 0
     searches_per_month = None
     expert_db_results = None
-    show_searches_url = SEQUENCE_SEARCH_ENDPOINT + '/api/show-searches'
+    if "test" in request.build_absolute_uri():
+        show_searches_url = 'http://45.88.80.122:8002/api/show-searches'
+    else:
+        show_searches_url = 'http://45.88.81.147:8002/api/show-searches'
 
     try:
         response_url = requests.get(show_searches_url)
