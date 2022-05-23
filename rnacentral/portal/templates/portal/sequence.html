@@ -383,7 +383,7 @@ limitations under the License.
                           <i class="fa fa-copy" aria-hidden="true"></i> Copy as DNA
                         </button>
                     </div>
-                    {% if rna.get_sequence|length > 10 and rna.get_sequence|length < 7000 %}
+                    {% if rna.get_sequence|length >= 10 and rna.get_sequence|length <= 7000 %}
                         <a class="btn btn-default" href="{% url 'sequence-search' %}?jobid={{ rna.upi }}" target="_blank">
                           <i class="fa fa-search" aria-hidden="true"></i> Search for similar sequences
                         </a>
