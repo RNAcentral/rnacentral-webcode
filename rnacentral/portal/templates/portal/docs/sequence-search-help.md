@@ -16,11 +16,13 @@ Where:
 * **--F3 0.02** is only used when the sequence length is less than 50 nucleotides
 * **-Z &lt;number&gt;** is calculated according to the size of the database
 
-A description of what each parameter does can be seen on the software *man page* (manual page). 
+A description of what each parameter does can be seen on the software [*man page*](http://eddylab.org/software/hmmer/Userguide.pdf) (manual page). 
 
-### API documentation <a style="cursor: pointer" id="sequence-search-api" ng-click="scrollTo('sequence-search-api')" name="sequence-search-api" class="text-muted smaller"><i class="fa fa-link"></i></a>
+### Searching for ribosomal RNAs <a style="cursor: pointer" id="rrna" ng-click="scrollTo('rrna')" name="rrna" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
-See the [API documentation](/sequence-search/api) to learn how to start an asynchronous job using our REST based API.
+Over 50% of RNAcentral sequences are ribosomal RNAs (rRNAs). The abundance and high conservation of rRNA sequences makes it difficult to perform sequence similarity searches, as such searches are expected to match a large number of sequences and can take a long time to complete.
+
+To get around this, the sequence similarity searches are performed against a subset of ~100,000 rRNA sequences from Ensembl, FlyBase, HGNC, MGI, PDBe, PomBase, RDP, RefSeq, RGD, SGD, TAIR, and WormBase.
 
 ### Exact sequence matches <a style="cursor: pointer" id="exact-matches" ng-click="scrollTo('exact-matches')" name="exact-matches" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
@@ -44,15 +46,13 @@ Although the number of similar sequences can reach tens of thousands, for perfor
 
 The search results are available for download in a compressed folder. This folder contains the *datapackage.json* file with the search metadata and a directory with three different files. The *similar-sequence.json* and *similar-sequence.txt* files contain the search results. The *similar-sequences.fasta* file contains a list of fasta sequences.
 
-### Searching for ribosomal RNAs <a style="cursor: pointer" id="rrna" ng-click="scrollTo('rrna')" name="rrna" class="text-muted smaller"><i class="fa fa-link"></i></a>
+### API documentation <a style="cursor: pointer" id="sequence-search-api" ng-click="scrollTo('sequence-search-api')" name="sequence-search-api" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
-Over 50% of RNAcentral sequences are ribosomal RNAs (rRNAs). The abundance and high conservation of rRNA sequences makes it difficult to perform sequence similarity searches, as such searches are expected to match a large number of sequences and can take a long time to complete.
-
-To get around this, the sequence similarity searches are performed against a subset of ~100,000 rRNA sequences from Ensembl, FlyBase, HGNC, MGI, PDBe, PomBase, RDP, RefSeq, RGD, SGD, TAIR, and WormBase.
+See the [API documentation](/sequence-search/api) to learn how to start an asynchronous job using our REST based API.
 
 ### How long are the search results available for? <a style="cursor: pointer" id="stable-links" ng-click="scrollTo('stable-links')" name="stable-links" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
-The results will be available at the same URL for **up to 7 days**.
+The results will be available at the same URL for **up to 7 days**. After this period, **all data and metadata are deleted**.
 
 ## Feedback
 
