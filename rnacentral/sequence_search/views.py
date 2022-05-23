@@ -22,10 +22,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 
 
-if settings.ENVIRONMENT == 'HX':
-    SEQUENCE_SEARCH_ENDPOINT = 'http://193.62.55.123:8002'
-else:
-    SEQUENCE_SEARCH_ENDPOINT = 'https://search.rnacentral.org'
+SEQUENCE_SEARCH_ENDPOINT = 'https://search.rnacentral.org'
 
 if settings.ENVIRONMENT == 'DEV':
     proxies = None
@@ -124,16 +121,15 @@ def dashboard(request):
     average_high_priority_searches, average_last_24_hours_high_priority, average_last_week_high_priority = 0, 0, 0
     searches_per_month = None
     expert_db_results = None
-    show_searches_url = SEQUENCE_SEARCH_ENDPOINT + '/api/show-searches'
+    if "test" in request.build_absolute_uri():
+        show_searches_url = 'http://45.88.80.122:8002/api/show-searches'
+    else:
+        show_searches_url = 'http://45.88.81.147:8002/api/show-searches'
 
     try:
         response_url = requests.get(show_searches_url)
         if response_url.status_code == 200:
             data = response_url.json()
-
-            all_searches = data['all_searches_result']['count']
-            average_all_searches = data['all_searches_result']['avg_time']
-            average_high_priority_searches = data['high_priority_result']['avg_time']
             searches_last_24_hours = data['last_24_hours_result']['count']
             average_last_24_hours = data['last_24_hours_result']['avg_time']
             average_last_24_hours_high_priority = data['high_priority_24_hours_result']['avg_time']
@@ -171,13 +167,10 @@ def dashboard(request):
                 last_month_pie_chart.append({key: expert_db_results[index][key][-2][last_month]})
 
     context = {
-        'all_searches': all_searches,
         'searches_last_24_hours': searches_last_24_hours,
         'searches_last_week': searches_last_week,
-        'average_all_searches': average_all_searches,
         'average_last_24_hours': average_last_24_hours,
         'average_last_week': average_last_week,
-        'average_high_priority_searches': average_high_priority_searches,
         'average_last_24_hours_high_priority': average_last_24_hours_high_priority,
         'average_last_week_high_priority': average_last_week_high_priority,
         'searches_per_month': searches_per_month,
