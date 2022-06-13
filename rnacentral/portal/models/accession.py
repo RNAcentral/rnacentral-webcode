@@ -215,9 +215,10 @@ class Accession(models.Model):
             'RGD': 'https://rgd.mcw.edu/rgdweb/report/gene/main.html?id={id}',
             'MALACARDS': 'https://www.genecards.org/cgi-bin/carddisp.pl?gene={id}#diseases',
             'GENECARDS': 'https://www.genecards.org/cgi-bin/carddisp.pl?gene={id}',
+            'PIRBASE': 'http://bigdata.ibp.ac.cn/piRBase/pirna.php?name={id}',
         }
         if self.database in [
-            'GTRNADB', 'ZWD', 'SNODB', 'MIRGENEDB', '5SRRNADB', 'SILVA', 'SNORNADB', 'ZFIN', 'PIRBASE', 'RIBOVISION'
+            'GTRNADB', 'ZWD', 'SNODB', 'MIRGENEDB', '5SRRNADB', 'SILVA', 'SNORNADB', 'ZFIN', 'RIBOVISION'
         ]:
             try:
                 data = json.loads(self.note)
