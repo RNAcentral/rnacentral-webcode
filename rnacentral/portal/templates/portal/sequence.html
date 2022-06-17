@@ -450,7 +450,11 @@ limitations under the License.
                             database='{"name": "RNAcentral"}'
                             customStyle='{"fixCss": "true", "articleTitleSize": "16px", "hideRnacentral": "true"}'
                 />
-                <script type="text/javascript" src="https://rnacentral.github.io/rnacentral-litscan/dist/rnacentral-litscan.js"></script>
+                {% if request.get_host == 'test.rnacentral.org' or request.get_host == 'localhost:8000' %}
+                    <script type="text/javascript" src="{% static "rnacentral-litscan/dist/rnacentral-litscan.js" %}"></script>
+                {% else %}
+                    <script type="text/javascript" src="https://rnacentral.github.io/rnacentral-litscan/dist/rnacentral-litscan.js"></script>
+                {% endif %}
             </uib-tab>
             {% endif %}
 
