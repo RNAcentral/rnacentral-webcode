@@ -4,7 +4,7 @@
 
 This {{ rna_type }} sequence is {{ length|intcomma }} nucleotides long and is found in {{ species }}.
 Annotated by {{ database_count }} database{{ database_count|pluralize }} ({{ databases|join:", " }}).
-Described in {{ citations_count }} paper{{ citations_count|pluralize}}.
+{#Described in {{ citations_count }} paper{{ citations_count|pluralize}}.#}
 
 {% if has_secondary_structure == 'True' %}
 Has a conserved secondary structure or a structured region.
