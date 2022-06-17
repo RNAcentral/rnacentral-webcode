@@ -155,20 +155,21 @@ def rna_view(request, upi, taxid=None):
             intact = True
 
     # Publications
-    # get IDs related to the accessed URS
-    query_jobs = f'?query=entry_type:metadata%20AND%20primary_id:"{upi}_{taxid}"%20AND%20database:rnacentral&fields=job_id&format=json'
-    pub_list = []
+    if taxid:
+        query_jobs = f'?query=entry_type:metadata%20AND%20primary_id:"{upi}_{taxid}"%20AND%20database:rnacentral&' \
+                     f'fields=job_id&format=json'
+        pub_list = [upi + '_' + taxid]
 
-    try:
-        response = requests.get(settings.EBI_SEARCH_ENDPOINT + query_jobs).json()
-        entries = response['entries']
-        for entry in entries:
-            pub_list.append(entry['fields']['job_id'][0])
-    except (IndexError, KeyError):
-        pass
+        # get IDs related to the URS
+        try:
+            response = requests.get(settings.EBI_SEARCH_ENDPOINT + query_jobs).json()
+            entries = response['entries']
+            for entry in entries:
+                pub_list.append(entry['fields']['job_id'][0])
+        except (IndexError, KeyError):
+            pass
 
-    # get number of articles
-    if pub_list:
+        # get number of articles
         query_ids = ['job_id:"' + item + '"' for item in pub_list]
         query_ids = '%20OR%20'.join(query_ids)
         query = f'?query=entry_type:Publication%20AND%20({query_ids})&format=json'
