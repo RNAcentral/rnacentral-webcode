@@ -184,9 +184,12 @@ def rna_view(request, upi, taxid=None):
 
     # get go_term_id for swissbiopics library
     if taxid:
+        go_term_id = []
         go_annotation = GoAnnotation.objects.filter(rna_id=upi + "_" + taxid, qualifier="part_of").\
-            select_related('ontology_term', 'evidence_code').first()
-        go_term_id = go_annotation.ontology_term.ontology_term_id if go_annotation else None
+            select_related('ontology_term', 'evidence_code')
+        for item in go_annotation:
+            go_term_id.append(item.ontology_term.ontology_term_id)
+        go_term_id = ','.join(go_term_id)
     else:
         go_term_id = None
 
