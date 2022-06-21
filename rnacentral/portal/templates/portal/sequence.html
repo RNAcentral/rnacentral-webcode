@@ -348,24 +348,28 @@ limitations under the License.
                       </div>
                     </div>
                   </div>
-
-                  {% if context.go_term_id %}
-                      <p><a href="https://www.swissbiopics.org/" target="_blank">SwissBioPics</a> library</p>
-                      <template id="sibSwissBioPicsSlLiItem">
-                        <style>
-                          #swissbiopic > svg { width: 100%; position: sticky; }
-                          ul.notpresent { display:none; }
-                          g.subcellular_location > text { display:none; }
-                        </style>
-                        <li class="subcellular_location">
-                          <a class="subcell_name"></a>
-                          <span class="subcell_description"></span>
-                        </li>
-                      </template>
-                      <script type="module" src="https://www.swissbiopics.org/static/swissbiopics.js"></script>
-                      <sib-swissbiopics-sl taxid="{{ context.taxid }}" gos="{{ context.go_term_id }}"></sib-swissbiopics-sl>
-                  {% endif %}
                 </div>
+
+                {% if context.go_term_id %}
+                    <h2 class="margin-bottom-0px">Localisation</h2>
+                    {% if context.go_term_id == 'GO:0005575' %}
+                        <p>No known location</p>
+                    {% else %}
+                        <template id="sibSwissBioPicsSlLiItem">
+                            <style>
+                                #swissbiopic > svg { width: 100%; position: sticky; }
+                                ul.notpresent { display:none; }
+                                g.subcellular_location > text { display:none; }
+                            </style>
+                            <li class="subcellular_location">
+                                <a class="subcell_name"></a>
+                                <span class="subcell_description"></span>
+                            </li>
+                        </template>
+                        <script type="module" src="https://www.swissbiopics.org/static/swissbiopics.js"></script>
+                        <sib-swissbiopics-sl taxid="{{ context.taxid }}" gos="{{ context.go_term_id }}"></sib-swissbiopics-sl>
+                    {% endif %}
+                {% endif %}
 
                 <qc-status qc-status="qcStatus"></qc-status>
 
