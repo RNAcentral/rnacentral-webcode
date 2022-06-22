@@ -1,6 +1,9 @@
 <div ng-if="$ctrl.go_annotations.length > 0 && !$ctrl.error">
   <p>
-
+    <span>
+      View in
+      <a href="https://www.ebi.ac.uk/QuickGO/annotations?geneProductId={{ $ctrl.go_annotations[0].rna_id }}">QuickGO</a>
+    </span>
     <div class="force-scrollbars" style="max-height: 200px; overflow-y: scroll;">
       <table class="table table-hover table-condensed" id="go-annotations">
         <thead>
@@ -40,12 +43,6 @@
         </tbody>
       </table>
     </div>
-
-    <span>
-      View in
-      <a href="https://www.ebi.ac.uk/QuickGO/annotations?geneProductId={{ $ctrl.go_annotations[0].rna_id }}">QuickGO</a>
-    </span>
-
   </p>
 </div>
 

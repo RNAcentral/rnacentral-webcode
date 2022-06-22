@@ -34,7 +34,7 @@ from django.views.decorators.cache import cache_page, never_cache
 from django.views.generic.base import TemplateView
 
 from portal.config.expert_databases import expert_dbs
-from portal.models import Rna, Database, Xref, EnsemblAssembly, Publication
+from portal.models import Rna, Database, Xref, EnsemblAssembly, Publication, GoAnnotation
 from portal.models.rna_precomputed import RnaPrecomputed
 from portal.config.svg_images import examples
 from portal.rna_summary import RnaSummary
@@ -183,6 +183,17 @@ def rna_view(request, upi, taxid=None):
     else:
         pub_count = None
 
+    # get go_term_id for swissbiopics library
+    if taxid:
+        go_term_id = []
+        go_annotation = GoAnnotation.objects.filter(rna_id=upi + "_" + taxid, qualifier="part_of").\
+            select_related('ontology_term', 'evidence_code')
+        for item in go_annotation:
+            go_term_id.append(item.ontology_term.ontology_term_id)
+        go_term_id = ','.join(go_term_id)
+    else:
+        go_term_id = None
+
     # get tab
     tab = request.GET.get('tab', '').lower()
     if tab == '2d':
@@ -211,6 +222,7 @@ def rna_view(request, upi, taxid=None):
         'psicquic': psicquic,
         'plugin_installed': plugin_installed,
         'pub_count': pub_count,
+        'go_term_id': go_term_id,
     }
     response = render(request, 'portal/sequence.html', {'rna': rna, 'context': context})
     # define canonical URL for Google
