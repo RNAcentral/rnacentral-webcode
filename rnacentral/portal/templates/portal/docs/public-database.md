@@ -40,10 +40,10 @@ Alternatively, you can use a **Postgres client** like [DBeaver](https://dbeaver.
 
 ## Database Schema
 
-The following diagram was generated based on RNAcentral release 16.
+The following diagram was generated based on RNAcentral release 20.
 
-<a href="/static/img/rnacentral_release_16_schema.png">
-  <img src="/static/img/rnacentral_release_16_schema.png" class="img-responsive">
+<a href="/static/img/rnacentral_release_20_schema.png">
+  <img src="/static/img/rnacentral_release_20_schema.png" class="img-responsive">
 </a>
 
 ## Main tables
