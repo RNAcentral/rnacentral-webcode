@@ -1,7 +1,7 @@
 from __future__ import print_function
 
 """
-Copyright [2009-2017] EMBL-European Bioinformatics Institute
+Copyright [2009-present] EMBL-European Bioinformatics Institute
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -34,7 +34,7 @@ from django.views.decorators.cache import cache_page, never_cache
 from django.views.generic.base import TemplateView
 
 from portal.config.expert_databases import expert_dbs
-from portal.models import Rna, Database, Xref, EnsemblAssembly, Publication, GoAnnotation
+from portal.models import Rna, Database, Xref, EnsemblAssembly, Publication, GoAnnotation, Taxonomy
 from portal.models.rna_precomputed import RnaPrecomputed
 from portal.config.svg_images import examples
 from portal.rna_summary import RnaSummary
@@ -51,15 +51,17 @@ XREF_PAGE_SIZE = 1000
 def get_sequence_lineage(request, upi):
     """
     Internal API.
-    Get the lineage for an RNA sequence based on the
-    classifications from all database cross-references.
+    Get the lineage for an RNA sequence from all database cross-references.
     """
     try:
-        queryset = Xref.objects.filter(upi=upi).select_related('accession')
-        results = queryset.filter(deleted='N')
+        xref = Xref.objects.filter(upi=upi)
+        results = xref.filter(deleted='N')
         if not results.exists():
-            results = queryset
-        json_lineage_tree = _get_json_lineage_tree(results.iterator())
+            results = xref
+        queryset = Taxonomy.objects.none()
+        for item in results:
+            queryset |= Taxonomy.objects.filter(id=item.taxid)
+        json_lineage_tree = _get_json_lineage_tree(queryset.iterator())
     except Rna.DoesNotExist:
         raise Http404
     return HttpResponse(json_lineage_tree, content_type="application/json")
@@ -429,22 +431,25 @@ class GenomeBrowserView(TemplateView):
 ####################
 
 
-def _get_json_lineage_tree(xrefs):
+def _get_json_lineage_tree(taxonomies):
     """
-    Combine lineages from multiple xrefs to produce a single species tree.
+    Combine lineages from multiple taxonomies to produce a single species tree.
     The data are used by the d3 library.
     """
 
     def get_lineages_and_taxids():
-        """Combine the lineages from all accessions in a single list."""
-        if isinstance(xrefs, list):
+        """Combine the lineages from all taxonomies in a single list."""
+        if isinstance(taxonomies, list):
+            # used by portal -> management -> commands -> database_stats.py
+            # but not sure if this is still useful
+            xrefs = taxonomies  # using xref and rnc_accessions here, not taxonomies
             for xref in xrefs:
                 lineages.add(xref[0])
                 taxids[xref[0].split('; ')[-1]] = xref[1]
         else:
-            for xref in xrefs:
-                lineages.add(xref.accession.classification)
-                taxids[xref.accession.classification.split('; ')[-1]] = xref.taxid
+            for taxonomy in taxonomies:
+                lineages.add(taxonomy.lineage)
+                taxids[taxonomy.lineage.split('; ')[-1]] = taxonomy.id
 
     def build_nested_dict_helper(path, text, container):
         """Recursive function that builds the nested dictionary."""
