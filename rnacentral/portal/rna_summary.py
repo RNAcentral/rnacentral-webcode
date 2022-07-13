@@ -93,14 +93,14 @@ class RnaSummary(object):
         return data.json()
 
     def get_species_count(self, urs):
-        url = '{endpoint}?query={urs}* NOT TAXONOMY:"{taxid}"&format=json'.format(
+        url = '{endpoint}?query=entry_type:sequence AND {urs}* NOT TAXONOMY:"{taxid}"&format=json'.format(
             urs=urs,
             endpoint=self.endpoint,
             taxid=self.taxid
         )
         try:
             data = requests.get(url)
-            return max(int(data.json()['hitCount']), 1)
+            return int(data.json()['hitCount'])
         except:
             return 1
 
