@@ -61,7 +61,6 @@ The limit can be lifted for registered users, so please get in touch if you requ
 
 Responses containing **multiple entries** have the following fields:
 
-* *count* is the number of entries in the matching set
 * *next* and *previous* are urls to the corresponding results page
 * *results* is an array of entries.
 
@@ -70,7 +69,6 @@ Responses containing **multiple entries** have the following fields:
 ```
 {{ BASE_URL }}/api/v1/rna/
 {
-    "count": 6493837,
     "next": "{{ BASE_URL }}/api/v1/rna/?page=2",
     "previous": null,
     "results": [
