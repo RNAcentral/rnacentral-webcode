@@ -211,7 +211,7 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
             not_prefetched = self.filter_queryset(Rna.objects.filter(upi__in=no_prefetch).all())
 
             result_list = list(chain(prefetched, not_prefetched))
-            page.object_list = result_list  # override data while keeping the rest of the pagination object
+            page = result_list  # .object_list is no longer set on the instance
         # end RNAcentral override
 
         # begin DRF base code
