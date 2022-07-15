@@ -279,10 +279,10 @@ limitations under the License.
                                             </span>
                                         </td>
                                         <td ng-if="location.identity === null || location.identity === undefined">
-                                            <span>100% <i uib-tooltip="Imported from an Expert Database" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i></span>
+                                            <span>100% <i uib-tooltip="Imported from {{ location.databases }}" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i></span>
                                         </td>
                                         <td ng-if="location.identity !== null && location.identity !== undefined">
-                                            <span>{{ location.identity * 100 | number:0 }}% <i uib-tooltip="Based on blat genome mapping" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i>
+                                            <span>{{ location.identity * 100 | number:0 }}% <i uib-tooltip="Based on blat genome mapping" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i></span>
                                         </td>
                                     </tr>
                                 </tbody>

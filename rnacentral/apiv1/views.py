@@ -426,6 +426,13 @@ class RnaGenomeLocations(generics.ListAPIView):
 
         output = []
         for region in regions:
+            if len(region.providing_databases) > 1:
+                databases = ' and '.join([', '.join(region.providing_databases[:-1]), region.providing_databases[-1]])
+            elif len(region.providing_databases) == 1:
+                databases = region.providing_databases[0]
+            else:
+                databases = 'an Expert Database'
+
             output.append({
                 'chromosome': region.chromosome,
                 'strand': region.strand,
@@ -438,7 +445,8 @@ class RnaGenomeLocations(generics.ListAPIView):
                     'name': assembly.division,
                     'url': 'http://' + assembly.subdomain
                 },
-                'ensembl_species_url': assembly.ensembl_url
+                'ensembl_species_url': assembly.ensembl_url,
+                'databases': databases
             })
 
             exceptions = ['X', 'Y']
