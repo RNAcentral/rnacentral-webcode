@@ -420,7 +420,12 @@ class RnaGenomeLocations(generics.ListAPIView):
 
         rna = self.get_object()
         urs_taxid = rna.upi + "_" + str(assembly.taxid)
-        rna_precomputed = RnaPrecomputed.objects.get(id=urs_taxid)
+
+        # do not show genome coordinates for obsolete sequences
+        try:
+            rna_precomputed = RnaPrecomputed.objects.get(id=urs_taxid, is_active=True)
+        except RnaPrecomputed.DoesNotExist:
+            return Response([])
 
         regions = SequenceRegion.objects.filter(urs_taxid=rna_precomputed)
 
