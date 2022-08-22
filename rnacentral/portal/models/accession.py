@@ -194,7 +194,7 @@ class Accession(models.Model):
             'SGD': 'http://www.yeastgenome.org/locus/{id}/overview',
             'TAIR': 'http://www.arabidopsis.org/servlets/TairObject?name={id}&type=locus',
             'WORMBASE': 'http://www.wormbase.org/species/c_elegans/gene/{id}',
-            'PLNCDB': 'http://chualab.rockefeller.edu/cgi-bin/gb2/gbrowse_details/arabidopsis?name={id}',
+            'PLNCDB': '{"url": "https://www.tobaccodb.org/plncdb/nunMir?plncdb_id={id}"}',
             'DICTYBASE': 'http://dictybase.org/gene/{id}',
             'SILVA': 'http://www.arb-silva.de/browser/{lsu_ssu}/silva/{id}',
             'POMBASE': 'http://www.pombase.org/spombe/result/{id}',

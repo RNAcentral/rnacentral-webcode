@@ -779,23 +779,25 @@ expert_dbs = [
     {
         'name': 'PLncDB',
         'label': 'plncdb',
-        'url': 'http://chualab.rockefeller.edu/gbrowse2/homepage.html',
-        'description': 'provides comprehensive genomic view of Arabidopsis lncRNAs',
-        'hint': 'PLncDB provides comprehensive genomic view of Arabidopsis lncRNAs',
+        'url': 'https://www.tobaccodb.org/plncdb/',
+        'description': 'provides comprehensive genomic view of plant lncRNAs',
+        'hint': 'PLncDB provides comprehensive genomic view of plant lncRNAs',
         'tags': ['curated', 'Arabidopsis thaliana'],
         'abbreviation': 'Plant Long Non-Coding DataBase',
-        'examples': [''],
+        'examples': [
+            {'upi': 'URS00023D26F0', 'taxid':'3750'}
+        ],
         'references': [
             {
-                'title': 'PLncDB: plant long non-coding RNA database',
-                'authors': 'Jin J., Liu J., Wang H., Wong L., Chua N.H.',
-                'journal': 'Bioinformatics. 2013 Apr 15;29(8):1068-71',
-                'pubmed_id': '23476021',
+                'title': 'PLncDB V2.0: a comprehensive encyclopedia of plant long noncoding RNAs',
+                'authors': 'Jin J., Lu P., Xu Y., Li Z., Yu S., Liu J., Wang H., Chua N.H., Cao P.',
+                'journal': 'Nucleic Acids Res. 2020 Jan;49(Database issue):D1489-1495',
+                'pubmed_id': '33079992',
             },
         ],
-        'imported': False,
+        'imported': True,
         'status': '',
-        'version': '',
+        'version': '2.0',
     },
 
     {
