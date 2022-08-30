@@ -795,7 +795,7 @@ expert_dbs = [
                 'pubmed_id': '33079992',
             },
         ],
-        'imported': False,
+        'imported': True,
         'status': '',
         'version': '2.0',
     },
