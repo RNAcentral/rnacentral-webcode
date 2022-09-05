@@ -1,0 +1,43 @@
+[tool.poetry]
+name = "rnacentral_webcode"
+version = "1.0.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+Django = "2.2.19"
+PyYAML = "5.3.1"
+attrs = "20.3.0"
+requests = "2.25.1"
+whitenoise = "5.2.0"
+django-cache-machine = "1.1.0"
+django-compressor = "2.4"
+boto3 = "1.17.54"
+django-rq = "2.4.1"
+supervisor = "4.2.1"
+django-markdown-deux = "1.0.5"
+djangorestframework = "3.11.2"
+djangorestframework-yaml = "2.0.0"
+djangorestframework-jsonp = "^1.0.2"
+python-dotenv = "0.15.0"
+python-memcached = "1.59"
+python-dateutil = "2.8.1"
+sqlparse = "0.4.1"
+colorhash = "1.0.3"
+gunicorn = "20.0.4"
+logilab-common = "1.8.0"
+django-cors-headers = "3.5.0"
+django-filter = "2.4.0"
+django-maintenancemode = "0.11.3"
+psycopg2-binary = "2.8.6"
+Markdown = "3.3.2"
+
+[tool.poetry.dev-dependencies]
+django-debug-toolbar = "3.2"
+coverage = "5.5"
+mock = "4.0.3"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
