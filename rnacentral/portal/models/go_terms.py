@@ -13,33 +13,29 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from django.db import models
 from django.contrib.postgres.fields import JSONField
+from django.db import models
 
 
 class OntologyTerm(models.Model):
     # An ontology term id is of the form: GO:0006617
-    ontology_term_id = models.CharField(
-        max_length=10,
-        db_index=True,
-        primary_key=True
-    )
+    ontology_term_id = models.CharField(max_length=10, db_index=True, primary_key=True)
     ontology = models.CharField(max_length=5)
     name = models.TextField()
     definition = models.TextField()
 
     class Meta:
-        db_table = 'ontology_terms'
+        db_table = "ontology_terms"
 
     def url(self):
-        if self.ontology != 'GO':
+        if self.ontology != "GO":
             return None
-        return 'http://amigo.geneontology.org/amigo/term/%s' % self.ontology_term_id
+        return "http://amigo.geneontology.org/amigo/term/%s" % self.ontology_term_id
 
     def quickgo_url(self):
-        if self.ontology != 'GO':
+        if self.ontology != "GO":
             return None
-        return 'https://www.ebi.ac.uk/QuickGO/term/%s' % self.ontology_term_id
+        return "https://www.ebi.ac.uk/QuickGO/term/%s" % self.ontology_term_id
 
 
 class GoAnnotation(models.Model):
@@ -47,23 +43,23 @@ class GoAnnotation(models.Model):
     rna_id = models.CharField(max_length=50, null=False)
     qualifier = models.CharField(max_length=30, null=False)
     ontology_term = models.ForeignKey(
-        'OntologyTerm',
-        db_column='ontology_term_id',
-        to_field='ontology_term_id',
+        "OntologyTerm",
+        db_column="ontology_term_id",
+        to_field="ontology_term_id",
         null=False,
-        related_name='go_annotations',
-        on_delete=models.CASCADE
+        related_name="go_annotations",
+        on_delete=models.CASCADE,
     )
     evidence_code = models.ForeignKey(
-        'OntologyTerm',
-        db_column='evidence_code',
-        to_field='ontology_term_id',
+        "OntologyTerm",
+        db_column="evidence_code",
+        to_field="ontology_term_id",
         null=False,
-        related_name='go_annotation_evidence',
-        on_delete=models.CASCADE
+        related_name="go_annotation_evidence",
+        on_delete=models.CASCADE,
     )
     assigned_by = models.CharField(max_length=50)
     extensions = JSONField()
 
     class Meta:
-        db_table = 'go_term_annotations'
+        db_table = "go_term_annotations"

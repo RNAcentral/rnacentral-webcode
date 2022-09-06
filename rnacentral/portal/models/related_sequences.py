@@ -13,9 +13,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from django.db import models
-
 from django.contrib.postgres.fields import ArrayField
+from django.db import models
 
 
 class RelatedSequence(models.Model):
@@ -23,24 +22,24 @@ class RelatedSequence(models.Model):
 
     source_accession = models.CharField(max_length=50)
     source_urs_taxid = models.ForeignKey(
-        'RnaPrecomputed',
-        db_column='source_urs_taxid',
-        to_field='id',
+        "RnaPrecomputed",
+        db_column="source_urs_taxid",
+        to_field="id",
         null=True,
-        related_name='related_sequences',
-        on_delete=models.CASCADE
+        related_name="related_sequences",
+        on_delete=models.CASCADE,
     )
 
     target_accession = models.CharField(max_length=50)
     target_urs_taxid = models.ForeignKey(
-        'RnaPrecomputed',
-        db_column='target_urs_taxid',
-        to_field='id',
+        "RnaPrecomputed",
+        db_column="target_urs_taxid",
+        to_field="id",
         null=True,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
     relationship_type = models.TextField()
     methods = ArrayField(models.TextField(), null=True)
 
     class Meta:
-        db_table = 'rnc_related_sequences'
+        db_table = "rnc_related_sequences"

@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.urls import resolve, reverse
-from mock import patch, Mock
+from mock import Mock, patch
 
 from .views import dashboard, show_searches
 
@@ -15,49 +15,55 @@ class SequenceSearchTest(TestCase):
             "high_priority_24_hours_result": {"count": 735, "avg_time": "0:00:31"},
             "high_priority_last_week_result": {"count": 702, "avg_time": "0:00:42"},
             "searches_per_month": [],
-            "expert_db_results": [{"RNAcentral": []}, {"Rfam": []}, {"miRBase": []}, {"snoDB": []}, {"GtRNAdb": []}]
+            "expert_db_results": [
+                {"RNAcentral": []},
+                {"Rfam": []},
+                {"miRBase": []},
+                {"snoDB": []},
+                {"GtRNAdb": []},
+            ],
         }
 
     def test_show_searches_url(self):
-        view = resolve('/sequence-search/show-searches')
+        view = resolve("/sequence-search/show-searches")
         self.assertEquals(view.func, show_searches)
 
     def test_show_searches_status_code(self):
-        response = self.client.get(reverse('sequence-search-show-searches'))
+        response = self.client.get(reverse("sequence-search-show-searches"))
         self.assertEquals(response.status_code, 200)
 
     def test_dashboard_url(self):
-        view = resolve('/sequence-search/dashboard')
+        view = resolve("/sequence-search/dashboard")
         self.assertEquals(view.func, dashboard)
 
-    @patch('requests.get')
+    @patch("requests.get")
     def test_dashboard_status_code(self, mock_get):
         mock_get.return_value = Mock()
         mock_get.return_value.status_code = 200
         mock_get.return_value.json.return_value = self.data
-        response = self.client.get(reverse('sequence-search-dashboard'))
+        response = self.client.get(reverse("sequence-search-dashboard"))
         self.assertEquals(response.status_code, 200)
 
-    @patch('requests.get')
+    @patch("requests.get")
     def test_dashboard_template_used(self, mock_get):
         mock_get.return_value = Mock()
         mock_get.return_value.status_code = 200
         mock_get.return_value.json.return_value = self.data
-        response = self.client.get(reverse('sequence-search-dashboard'))
-        self.assertTemplateUsed(response, 'dashboard.html')
+        response = self.client.get(reverse("sequence-search-dashboard"))
+        self.assertTemplateUsed(response, "dashboard.html")
 
     def test_help_page_status_code(self):
-        response = self.client.get(reverse('help-sequence-search'))
+        response = self.client.get(reverse("help-sequence-search"))
         self.assertEquals(response.status_code, 200)
 
     def test_help_page_template(self):
-        response = self.client.get(reverse('help-sequence-search'))
-        self.assertTemplateUsed(response, 'portal/help/sequence-search-help.html')
+        response = self.client.get(reverse("help-sequence-search"))
+        self.assertTemplateUsed(response, "portal/help/sequence-search-help.html")
 
     def test_sequence_search_api_status_code(self):
-        response = self.client.get(reverse('sequence-search-api'))
+        response = self.client.get(reverse("sequence-search-api"))
         self.assertEquals(response.status_code, 200)
 
     def test_sequence_search_api_template(self):
-        response = self.client.get(reverse('sequence-search-api'))
-        self.assertTemplateUsed(response, 'api.html')
+        response = self.client.get(reverse("sequence-search-api"))
+        self.assertTemplateUsed(response, "api.html")

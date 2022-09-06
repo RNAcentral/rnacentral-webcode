@@ -32,7 +32,7 @@ except ImportError:
 
 # TODO: when migrate to a newer version of django, don't forget to copy-paste newer version of SitemapsCache code here
 class SitemapsCache(BaseCache):
-    cache_suffix = '.djcache'
+    cache_suffix = ".djcache"
 
     def __init__(self, dir, params):
         super(SitemapsCache, self).__init__(params)
@@ -49,7 +49,7 @@ class SitemapsCache(BaseCache):
         fname = self._key_to_file(key, version)
         if os.path.exists(fname):
             try:
-                with io.open(fname, 'rb') as f:
+                with io.open(fname, "rb") as f:
                     if not self._is_expired(f):
                         return pickle.loads(zlib.decompress(f.read()))
             except IOError as e:
@@ -64,7 +64,7 @@ class SitemapsCache(BaseCache):
         fd, tmp_path = tempfile.mkstemp(dir=self._dir)
         renamed = False
         try:
-            with io.open(fd, 'wb') as f:
+            with io.open(fd, "wb") as f:
                 expiry = self.get_backend_timeout(timeout)
                 f.write(pickle.dumps(expiry, -1))
                 f.write(zlib.compress(pickle.dumps(value), -1))
@@ -91,7 +91,7 @@ class SitemapsCache(BaseCache):
     def has_key(self, key, version=None):
         fname = self._key_to_file(key, version)
         if os.path.exists(fname):
-            with io.open(fname, 'rb') as f:
+            with io.open(fname, "rb") as f:
                 return not self._is_expired(f)
         return False
 
@@ -108,8 +108,7 @@ class SitemapsCache(BaseCache):
         if self._cull_frequency == 0:
             return self.clear()  # Clear the cache when CULL_FREQUENCY = 0
         # Delete a random selection of entries
-        filelist = random.sample(filelist,
-                                 int(num_entries / self._cull_frequency))
+        filelist = random.sample(filelist, int(num_entries / self._cull_frequency))
         for fname in filelist:
             self._delete(fname)
 
@@ -121,16 +120,16 @@ class SitemapsCache(BaseCache):
                 if e.errno != errno.EEXIST:
                     raise EnvironmentError(
                         "Cache directory '%s' does not exist "
-                        "and could not be created'" % self._dir)
+                        "and could not be created'" % self._dir
+                    )
 
     def _key_to_file(self, key, version=None):
         """
         Convert a key into a cache file path. Basically this is the
         root cache path joined with the md5sum of the key and a suffix.
         """
-        key = re.sub('[:/#?&=+%]', '_', key)
-        return os.path.join(self._dir, ''.join(
-            [key, self.cache_suffix]))
+        key = re.sub("[:/#?&=+%]", "_", key)
+        return os.path.join(self._dir, "".join([key, self.cache_suffix]))
 
     def clear(self):
         """
@@ -160,6 +159,8 @@ class SitemapsCache(BaseCache):
         """
         if not os.path.exists(self._dir):
             return []
-        filelist = [os.path.join(self._dir, fname) for fname
-                    in glob.glob1(self._dir, '*%s' % self.cache_suffix)]
+        filelist = [
+            os.path.join(self._dir, fname)
+            for fname in glob.glob1(self._dir, "*%s" % self.cache_suffix)
+        ]
         return filelist

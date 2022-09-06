@@ -12,7 +12,6 @@ limitations under the License.
 """
 
 from django.db import models
-
 from portal.models import SequenceRegion
 
 
@@ -20,13 +19,13 @@ class SequenceExon(models.Model):
     id = models.AutoField(primary_key=True)
     region = models.ForeignKey(
         SequenceRegion,
-        related_name='exons',
-        db_column='region_id',
-        to_field='id',
-        on_delete=models.CASCADE
+        related_name="exons",
+        db_column="region_id",
+        to_field="id",
+        on_delete=models.CASCADE,
     )
     exon_start = models.IntegerField()
     exon_stop = models.IntegerField()
 
     class Meta:
-        db_table = 'rnc_sequence_exons'
+        db_table = "rnc_sequence_exons"

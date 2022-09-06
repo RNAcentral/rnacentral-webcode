@@ -13,9 +13,9 @@ limitations under the License.
 
 import re
 
+from caching.base import CachingManager, CachingMixin
 from django.db import models
 from rest_framework.renderers import JSONRenderer
-from caching.base import CachingMixin, CachingManager
 
 from .accession import Accession
 from .ensembl_assembly import EnsemblAssembly
@@ -52,7 +52,10 @@ class RawSqlQueryset(models.QuerySet):
 
         taxid = None
         for child in self.query.where.children:
-            if isinstance(child, Exact) and str(child.lhs.target) == 'portal.Xref.taxid':
+            if (
+                isinstance(child, Exact)
+                and str(child.lhs.target) == "portal.Xref.taxid"
+            ):
                 taxid = child.rhs
         return taxid
 
@@ -78,7 +81,9 @@ class RawSqlQueryset(models.QuerySet):
                 # Raw SQL queries to fetch database-specific data with self-joins, impossible in Django ORM
                 mirbase_mature_products = self.get_mirbase_mature_products(taxid)
                 mirbase_precursors = self.get_mirbase_precursor(taxid)
-                refseq_mirna_mature_products = self.get_refseq_mirna_mature_products(taxid)
+                refseq_mirna_mature_products = self.get_refseq_mirna_mature_products(
+                    taxid
+                )
                 refseq_mirna_precursors = self.get_refseq_mirna_precursor(taxid)
                 refseq_splice_variants = self.get_refseq_splice_variants(taxid)
                 ensembl_splice_variants = self.get_ensembl_splice_variants(taxid)
@@ -87,19 +92,37 @@ class RawSqlQueryset(models.QuerySet):
                 # "annotate" xrefs queryset with additional attributes, retrieved by raw SQL queries
                 for xref in self:
                     if xref.id in mirbase_mature_products:
-                        xref.mirbase_mature_products = [ mature_product.upi.upi for mature_product in mirbase_mature_products[xref.id] ]
+                        xref.mirbase_mature_products = [
+                            mature_product.upi.upi
+                            for mature_product in mirbase_mature_products[xref.id]
+                        ]
                     if xref.id in mirbase_precursors:
-                        xref.mirbase_precursor = mirbase_precursors[xref.id][0].upi.upi  # note, there's just 1 precursor
+                        xref.mirbase_precursor = mirbase_precursors[xref.id][
+                            0
+                        ].upi.upi  # note, there's just 1 precursor
                     if xref.id in refseq_mirna_mature_products:
-                        xref.refseq_mirna_mature_products = [ mature_product.upi.upi for mature_product in refseq_mirna_mature_products[xref.id] ]
+                        xref.refseq_mirna_mature_products = [
+                            mature_product.upi.upi
+                            for mature_product in refseq_mirna_mature_products[xref.id]
+                        ]
                     if xref.id in refseq_mirna_precursors:
-                        xref.refseq_mirna_precursor = refseq_mirna_precursors[xref.id][0].upi.upi  # note, there's just 1 precursor
+                        xref.refseq_mirna_precursor = refseq_mirna_precursors[xref.id][
+                            0
+                        ].upi.upi  # note, there's just 1 precursor
                     if xref.id in refseq_splice_variants:
-                        xref.refseq_splice_variants = [ splice_variant.upi.upi for splice_variant in refseq_splice_variants[xref.id] ]
+                        xref.refseq_splice_variants = [
+                            splice_variant.upi.upi
+                            for splice_variant in refseq_splice_variants[xref.id]
+                        ]
                     if xref.id in ensembl_splice_variants:
-                        xref.ensembl_splice_variants = [ splice_variant.upi.upi for splice_variant in ensembl_splice_variants[xref.id] ]
+                        xref.ensembl_splice_variants = [
+                            splice_variant.upi.upi
+                            for splice_variant in ensembl_splice_variants[xref.id]
+                        ]
                     if xref.id in tmrna_mates:
-                        xref.tmrna_mates = [ tmrna_mate.upi.upi for tmrna_mate in tmrna_mates[xref.id] ]
+                        xref.tmrna_mates = [
+                            tmrna_mate.upi.upi for tmrna_mate in tmrna_mates[xref.id]
+                        ]
 
     def _xrefs_raw_queryset_to_dict(self, raw_queryset):
         """
@@ -116,13 +139,15 @@ class RawSqlQueryset(models.QuerySet):
         return output_dict
 
     def get_mirbase_mature_products(self, taxid=None):
-        if hasattr(self, 'accession'):
-            if self.accession.database != 'mirbase'.upper():
+        if hasattr(self, "accession"):
+            if self.accession.database != "mirbase".upper():
                 return None
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
         # _fetch_all() has already been called by now
-        pks = ','.join(["'%s'" % xref.pk for xref in self])  # e.g. "'250381225', '250381243', '295244525'"
+        pks = ",".join(
+            ["'%s'" % xref.pk for xref in self]
+        )  # e.g. "'250381225', '250381243', '295244525'"
 
         queryset = """
             SELECT xref.*, rnc_accessions.external_id
@@ -132,7 +157,9 @@ class RawSqlQueryset(models.QuerySet):
               AND rnc_accessions.database = 'MIRBASE'
               AND rnc_accessions.feature_name = 'precursor_RNA'
               {taxid_filter}
-        """.format(pks=pks, taxid_filter=taxid_filter)
+        """.format(
+            pks=pks, taxid_filter=taxid_filter
+        )
 
         annotated_queryset = """
             SELECT xref.*, x.id as xid
@@ -146,20 +173,22 @@ class RawSqlQueryset(models.QuerySet):
             WHERE rnc_accessions.database = 'MIRBASE'
               AND rnc_accessions.feature_name = 'ncRNA'
               {taxid_filter}
-        """.format(queryset=queryset, taxid_filter=taxid_filter)
+        """.format(
+            queryset=queryset, taxid_filter=taxid_filter
+        )
 
         raw_queryset = Xref.objects.raw(annotated_queryset)
 
         return self._xrefs_raw_queryset_to_dict(raw_queryset)
 
     def get_mirbase_precursor(self, taxid=None):
-        if hasattr(self, 'accession'):
-            if self.accession.database != 'mirbase'.upper():
+        if hasattr(self, "accession"):
+            if self.accession.database != "mirbase".upper():
                 return None
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
         # _fetch_all() has already been called by now
-        pks = ','.join(["'%s'" % xref.pk for xref in self])
+        pks = ",".join(["'%s'" % xref.pk for xref in self])
 
         queryset = """
             SELECT xref.*, rnc_accessions.external_id
@@ -169,7 +198,9 @@ class RawSqlQueryset(models.QuerySet):
               AND rnc_accessions.database = 'MIRBASE'
               AND rnc_accessions.feature_name = 'ncRNA'
               {taxid_filter}
-        """.format(pks=pks, taxid_filter=taxid_filter)
+        """.format(
+            pks=pks, taxid_filter=taxid_filter
+        )
 
         annotated_queryset = """
             SELECT xref.*, x.id as xid
@@ -183,7 +214,9 @@ class RawSqlQueryset(models.QuerySet):
             WHERE rnc_accessions.database = 'MIRBASE'
               AND rnc_accessions.feature_name = 'precursor_RNA'
               {taxid_filter}
-        """.format(queryset=queryset, taxid_filter=taxid_filter)
+        """.format(
+            queryset=queryset, taxid_filter=taxid_filter
+        )
 
         raw_queryset = Xref.objects.raw(annotated_queryset)
 
@@ -193,7 +226,7 @@ class RawSqlQueryset(models.QuerySet):
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
         # _fetch_all() has already been called by now
-        pks = ','.join(["'%s'" % xref.pk for xref in self])
+        pks = ",".join(["'%s'" % xref.pk for xref in self])
 
         queryset = """
             SELECT xref.*, rnc_accessions.parent_ac
@@ -203,7 +236,9 @@ class RawSqlQueryset(models.QuerySet):
               AND rnc_accessions.database = 'REFSEQ'
               AND rnc_accessions.feature_name = 'precursor_RNA'
               {taxid_filter}
-        """.format(pks=pks, taxid_filter=taxid_filter)
+        """.format(
+            pks=pks, taxid_filter=taxid_filter
+        )
 
         annotated_queryset = """
             SELECT xref.*, x.id as xid
@@ -217,7 +252,9 @@ class RawSqlQueryset(models.QuerySet):
             WHERE rnc_accessions.database = 'REFSEQ'
               AND rnc_accessions.feature_name = 'ncRNA'
               {taxid_filter}
-        """.format(queryset=queryset, taxid_filter=taxid_filter)
+        """.format(
+            queryset=queryset, taxid_filter=taxid_filter
+        )
 
         raw_queryset = Xref.objects.raw(annotated_queryset)
 
@@ -227,7 +264,7 @@ class RawSqlQueryset(models.QuerySet):
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
         # _fetch_all() has already been called by now
-        pks = ','.join(["'%s'" % xref.pk for xref in self])
+        pks = ",".join(["'%s'" % xref.pk for xref in self])
 
         queryset = """
             SELECT xref.*, rnc_accessions.parent_ac
@@ -237,7 +274,9 @@ class RawSqlQueryset(models.QuerySet):
               AND xref.dbid = 9
               AND rnc_accessions.feature_name = 'ncRNA'
               {taxid_filter}
-        """.format(pks=pks, taxid_filter=taxid_filter)
+        """.format(
+            pks=pks, taxid_filter=taxid_filter
+        )
 
         annotated_queryset = """
             SELECT xref.*, x.id as xid
@@ -251,7 +290,9 @@ class RawSqlQueryset(models.QuerySet):
             WHERE xref.dbid = 9
               AND rnc_accessions.feature_name = 'precursor_RNA'
               {taxid_filter}
-        """.format(queryset=queryset, taxid_filter=taxid_filter)
+        """.format(
+            queryset=queryset, taxid_filter=taxid_filter
+        )
 
         raw_queryset = Xref.objects.raw(annotated_queryset)
 
@@ -261,7 +302,7 @@ class RawSqlQueryset(models.QuerySet):
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
         # _fetch_all() has already been called by now
-        pks = ','.join(["'%s'" % xref.pk for xref in self])
+        pks = ",".join(["'%s'" % xref.pk for xref in self])
 
         queryset = """
             SELECT xref.*, rnc_accessions.ncrna_class, rnc_accessions.optional_id
@@ -272,7 +313,9 @@ class RawSqlQueryset(models.QuerySet):
               AND rnc_accessions.optional_id != ''
               AND (rnc_accessions.ncrna_class != 'miRNA' OR rnc_accessions.feature_name = 'precursor_RNA')
               {taxid_filter}
-        """.format(pks=pks, taxid_filter=taxid_filter)
+        """.format(
+            pks=pks, taxid_filter=taxid_filter
+        )
 
         annotated_queryset = """
             SELECT xref.*, x.id as xid
@@ -288,7 +331,9 @@ class RawSqlQueryset(models.QuerySet):
               AND rnc_accessions.accession != x.ac
               AND (rnc_accessions.ncrna_class != 'miRNA' OR rnc_accessions.feature_name = 'precursor_RNA')
               {taxid_filter}
-        """.format(queryset=queryset, taxid_filter=taxid_filter)
+        """.format(
+            queryset=queryset, taxid_filter=taxid_filter
+        )
 
         raw_queryset = Xref.objects.raw(annotated_queryset)
 
@@ -298,7 +343,7 @@ class RawSqlQueryset(models.QuerySet):
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
         # _fetch_all() has already been called by now
-        pks = ','.join(["'%s'" % xref.pk for xref in self])
+        pks = ",".join(["'%s'" % xref.pk for xref in self])
 
         queryset = """
             SELECT xref.*, rnc_accessions.optional_id
@@ -309,7 +354,9 @@ class RawSqlQueryset(models.QuerySet):
               AND (rnc_accessions.ncrna_class != 'miRNA' OR rnc_accessions.feature_name = 'precursor_RNA')
               AND xref.id IN ({pks})
               {taxid_filter}
-        """.format(pks=pks, taxid_filter=taxid_filter)
+        """.format(
+            pks=pks, taxid_filter=taxid_filter
+        )
 
         annotated_queryset = """
             SELECT xref.*, x.id as xid
@@ -324,7 +371,9 @@ class RawSqlQueryset(models.QuerySet):
               AND xref.deleted = 'N'
               AND rnc_accessions.accession != x.ac
               {taxid_filter}
-        """.format(queryset=queryset, taxid_filter=taxid_filter)
+        """.format(
+            queryset=queryset, taxid_filter=taxid_filter
+        )
 
         raw_queryset = Xref.objects.raw(annotated_queryset)
 
@@ -334,7 +383,7 @@ class RawSqlQueryset(models.QuerySet):
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
         # _fetch_all() has already been called by now
-        pks = ','.join(["'%s'" % xref.pk for xref in self])
+        pks = ",".join(["'%s'" % xref.pk for xref in self])
 
         queryset = """
             SELECT xref.*, rnc_accessions.optional_id, rnc_accessions.database
@@ -344,7 +393,9 @@ class RawSqlQueryset(models.QuerySet):
               AND rnc_accessions.database = 'TMRNA_WEB'
               AND rnc_accessions.optional_id IS NOT NULL
               {taxid_filter}
-        """.format(pks=pks, taxid_filter=taxid_filter)
+        """.format(
+            pks=pks, taxid_filter=taxid_filter
+        )
 
         annotated_queryset = """
             SELECT xref.*, x.id as xid
@@ -357,7 +408,9 @@ class RawSqlQueryset(models.QuerySet):
             ON rnc_accessions.parent_ac = x.optional_id
             WHERE rnc_accessions.is_composite = 'Y'
               {taxid_filter}
-        """.format(queryset=queryset, taxid_filter=taxid_filter)
+        """.format(
+            queryset=queryset, taxid_filter=taxid_filter
+        )
 
         raw_queryset = Xref.objects.raw(annotated_queryset)
 
@@ -373,23 +426,36 @@ class RawSqlXrefManager(models.Manager):
 
 class Xref(CachingMixin, models.Model):
     id = models.AutoField(primary_key=True)
-    db = models.ForeignKey("Database", db_column='dbid', related_name='xrefs', on_delete=models.CASCADE)
+    db = models.ForeignKey(
+        "Database", db_column="dbid", related_name="xrefs", on_delete=models.CASCADE
+    )
     accession = models.ForeignKey(
         "Accession",
-        db_column='ac',
-        to_field='accession',
-        related_name='xrefs',
+        db_column="ac",
+        to_field="accession",
+        related_name="xrefs",
         unique=True,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
     created = models.ForeignKey(
         "Release",
-        db_column='created',
-        related_name='release_created',
-        on_delete=models.CASCADE
+        db_column="created",
+        related_name="release_created",
+        on_delete=models.CASCADE,
     )
-    last = models.ForeignKey("Release", db_column='last', related_name='last_release', on_delete=models.CASCADE)
-    upi = models.ForeignKey("Rna", db_column='upi', to_field='upi', related_name='xrefs', on_delete=models.CASCADE)
+    last = models.ForeignKey(
+        "Release",
+        db_column="last",
+        related_name="last_release",
+        on_delete=models.CASCADE,
+    )
+    upi = models.ForeignKey(
+        "Rna",
+        db_column="upi",
+        to_field="upi",
+        related_name="xrefs",
+        on_delete=models.CASCADE,
+    )
     version_i = models.IntegerField()
     deleted = models.CharField(max_length=1)
     timestamp = models.DateTimeField()
@@ -401,7 +467,7 @@ class Xref(CachingMixin, models.Model):
     default_objects = CachingManager()
 
     class Meta:
-        db_table = 'xref'
+        db_table = "xref"
 
     def has_modified_nucleotides(self):
         """Determine whether an xref has modified nucleotides."""
@@ -411,7 +477,7 @@ class Xref(CachingMixin, models.Model):
         """Get a list of distinct modified nucleotides described in this xref."""
         modifications = []
         seen = None
-        for modification in self.modifications.order_by('modification_id').all():
+        for modification in self.modifications.order_by("modification_id").all():
             if modification.modification_id == seen:
                 continue
             else:
@@ -426,24 +492,32 @@ class Xref(CachingMixin, models.Model):
         in the UI.
         """
         import apiv1.serializers
-        serializer = apiv1.serializers.ModificationSerializer(self.modifications.all(), many=True)
+
+        serializer = apiv1.serializers.ModificationSerializer(
+            self.modifications.all(), many=True
+        )
         return JSONRenderer().render(serializer.data)
 
     def is_active(self):
         """Convenience method for determining whether an xref is current or obsolete."""
-        return self.deleted == 'N'
+        return self.deleted == "N"
 
     def is_rfam_seed(self):
         """Determine whether an xref is part of a manually curated RFAM seed alignment."""
         if self.accession.note:
-            return re.search('alignment\:seed', self.accession.note, re.IGNORECASE) is not None
+            return (
+                re.search("alignment\:seed", self.accession.note, re.IGNORECASE)
+                is not None
+            )
         else:
             return False
 
     def get_ncbi_gene_id(self):
         """GeneID links are stored in the optional_id field."""
         if self.accession.optional_id:
-            match = re.search('GeneID\:(\d+)', self.accession.optional_id, re.IGNORECASE)
+            match = re.search(
+                "GeneID\:(\d+)", self.accession.optional_id, re.IGNORECASE
+            )
             return match.group(1) if match else None
         else:
             return None
@@ -455,10 +529,10 @@ class Xref(CachingMixin, models.Model):
         This function returns an NDB url using NDB ids where possible
         with PDB ids used as a fallback.
         """
-        if self.accession.database == 'PDBE':
-            ndb_url = 'http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget={structure_id}'
+        if self.accession.database == "PDBE":
+            ndb_url = "http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget={structure_id}"
             if self.accession.db_xref:
-                match = re.search('NDB\:(\w+)', self.accession.db_xref, re.IGNORECASE)
+                match = re.search("NDB\:(\w+)", self.accession.db_xref, re.IGNORECASE)
                 if match:
                     structure_id = match.group(1)  # NDB id
                 else:
@@ -471,16 +545,23 @@ class Xref(CachingMixin, models.Model):
 
     def is_mirbase_mirna_precursor(self):
         """True if the accession is a miRBase precursor miRNA."""
-        return self.accession.feature_name == 'precursor_RNA' and self.accession.database == 'MIRBASE'
+        return (
+            self.accession.feature_name == "precursor_RNA"
+            and self.accession.database == "MIRBASE"
+        )
 
     def get_mirbase_mature_products_if_any(self):
-        return self.get_mirbase_mature_products() if self.is_mirbase_mirna_precursor() else []
+        return (
+            self.get_mirbase_mature_products()
+            if self.is_mirbase_mirna_precursor()
+            else []
+        )
 
     def get_mirbase_mature_products(self):
         """miRBase mature products and precursors share the same external MI* identifier."""
         mature_products = Xref.objects.filter(
             accession__external_id=self.accession.external_id,
-            accession__feature_name='ncRNA'
+            accession__feature_name="ncRNA",
         ).all()
 
         upis = []
@@ -491,12 +572,12 @@ class Xref(CachingMixin, models.Model):
 
     def get_mirbase_precursor(self):
         """miRBase mature products and precursors share the same external MI* identifier."""
-        if self.accession.database != 'mirbase'.upper():
+        if self.accession.database != "mirbase".upper():
             return None
         else:
             precursor = Xref.objects.filter(
                 accession__external_id=self.accession.external_id,
-                accession__feature_name='precursor_RNA'
+                accession__feature_name="precursor_RNA",
             ).first()
 
             return precursor.upi.upi if precursor else None
@@ -511,8 +592,8 @@ class Xref(CachingMixin, models.Model):
         """
         same_parent = Xref.objects.filter(
             accession__parent_ac=self.accession.parent_ac,
-            accession__ncrna_class='miRNA',
-            deleted=self.deleted
+            accession__ncrna_class="miRNA",
+            deleted=self.deleted,
         ).all()
 
         return len(same_parent) > 0
@@ -524,7 +605,7 @@ class Xref(CachingMixin, models.Model):
         """Given a precursor miRNA, retrieve its mature products."""
         mature_products = Xref.objects.filter(
             accession__parent_ac=self.accession.parent_ac,
-            accession__feature_name='ncRNA'
+            accession__feature_name="ncRNA",
         ).all()
 
         upis = []
@@ -534,10 +615,10 @@ class Xref(CachingMixin, models.Model):
 
     def get_refseq_mirna_precursor(self):
         """Given a 5-prime or 3-prime mature product, retrieve its precursor miRNA."""
-        if self.accession.feature_name != 'precursor_RNA':
+        if self.accession.feature_name != "precursor_RNA":
             rna = Xref.objects.filter(
                 accession__parent_ac=self.accession.parent_ac,
-                accession__feature_name='precursor_RNA'
+                accession__feature_name="precursor_RNA",
             ).first()
 
             if rna:
@@ -552,12 +633,16 @@ class Xref(CachingMixin, models.Model):
         splice_variants = []
         gene_id = self.get_ncbi_gene_id()
         if gene_id:
-            xrefs = Xref.objects.filter(
-                db__display_name='RefSeq',
-                deleted='N',
-                accession__ncrna_class=self.accession.ncrna_class,
-                accession__db_xref__iregex='GeneId:'+gene_id
-            ).exclude(accession=self.accession.accession).all()
+            xrefs = (
+                Xref.objects.filter(
+                    db__display_name="RefSeq",
+                    deleted="N",
+                    accession__ncrna_class=self.accession.ncrna_class,
+                    accession__db_xref__iregex="GeneId:" + gene_id,
+                )
+                .exclude(accession=self.accession.accession)
+                .all()
+            )
 
             for splice_variant in xrefs:
                 splice_variants.append(splice_variant.upi)
@@ -569,12 +654,14 @@ class Xref(CachingMixin, models.Model):
         # TODO: Currently this function is not used anywhere in the code.
         # TODO: Moreover, it doesn't work, because self.accession.optional_id
         # TODO: is always None for all the records from rmRNA Website.
-        if self.db.display_name != 'tmRNA Website':
+        if self.db.display_name != "tmRNA Website":
             tmrna_mate_upi = False
         if not self.accession.optional_id:  # no mate info
             tmrna_mate_upi = False
         try:
-            mate = Accession.objects.filter(parent_ac=self.accession.optional_id, is_composite='Y').get()
+            mate = Accession.objects.filter(
+                parent_ac=self.accession.optional_id, is_composite="Y"
+            ).get()
         except Accession.DoesNotExist:
             return False
 
@@ -589,7 +676,7 @@ class Xref(CachingMixin, models.Model):
             * precursor (contains the acceptor and coding sequences and other intervening sequences)
         """
         tmrna_type = 0
-        if self.db.display_name != 'tmRNA Website':
+        if self.db.display_name != "tmRNA Website":
             tmrna_type = 0  # not tmRNA
         if not self.accession.optional_id:
             tmrna_type = 1  # one-piece or precursor
@@ -603,10 +690,10 @@ class Xref(CachingMixin, models.Model):
         in Accession.accession. Example:
         {"transcript_id": ["GENCODE:ENSMUST00000160979.8"]}
         """
-        if self.db.display_name == 'Ensembl/GENCODE':
-            if self.accession.accession.startswith('GENCODE:'):
-                return self.accession.accession.split(':')[1]
-            elif self.accession.accession.startswith('ENSMUST'):
+        if self.db.display_name == "Ensembl/GENCODE":
+            if self.accession.accession.startswith("GENCODE:"):
+                return self.accession.accession.split(":")[1]
+            elif self.accession.accession.startswith("ENSMUST"):
                 return self.accession.accession
             else:
                 return None
@@ -617,9 +704,11 @@ class Xref(CachingMixin, models.Model):
         """Get Ensembl URL for GENCODE transcripts."""
         ensembl_transcript_id = self.get_gencode_transcript_id()
         if ensembl_transcript_id:
-            url = 'http://ensembl.org/{species}/Transcript/Summary?db=core;t={id}'.format(
-                id=ensembl_transcript_id,
-                species=self.accession.species.replace(' ', '_')
+            url = (
+                "http://ensembl.org/{species}/Transcript/Summary?db=core;t={id}".format(
+                    id=ensembl_transcript_id,
+                    species=self.accession.species.replace(" ", "_"),
+                )
             )
             return url
         else:
@@ -629,7 +718,7 @@ class Xref(CachingMixin, models.Model):
         """Get Ensembl or Ensembl Genomes division for the cross-reference."""
         try:
             assembly = EnsemblAssembly.objects.get(taxid=self.taxid)
-            return {'name': assembly.division, 'url': 'http://' + assembly.subdomain}
+            return {"name": assembly.division, "url": "http://" + assembly.subdomain}
         except EnsemblAssembly.DoesNotExist:
             return None
 

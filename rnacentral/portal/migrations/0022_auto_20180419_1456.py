@@ -4,26 +4,43 @@ from __future__ import unicode_literals
 
 import caching.base
 import django.contrib.postgres.fields.jsonb
-from django.db import migrations, models
 import django.db.models.deletion
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('portal', '0021_add_genome_mapping_table'),
+        ("portal", "0021_add_genome_mapping_table"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='EnsemblKaryotype',
+            name="EnsemblKaryotype",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('karyotype', django.contrib.postgres.fields.jsonb.JSONField()),
-                ('assembly', models.ForeignKey(db_column=b'assembly_id', default='foobar', on_delete=models.CASCADE, related_name='karyotype', to='portal.EnsemblAssembly')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("karyotype", django.contrib.postgres.fields.jsonb.JSONField()),
+                (
+                    "assembly",
+                    models.ForeignKey(
+                        db_column=b"assembly_id",
+                        default="foobar",
+                        on_delete=models.CASCADE,
+                        related_name="karyotype",
+                        to="portal.EnsemblAssembly",
+                    ),
+                ),
             ],
             options={
-                'db_table': 'ensembl_karyotype',
+                "db_table": "ensembl_karyotype",
             },
             bases=(caching.base.CachingMixin, models.Model),
         ),

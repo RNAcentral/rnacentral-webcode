@@ -1,4 +1,5 @@
 from __future__ import print_function
+
 """
 Copyright [2009-2017] EMBL-European Bioinformatics Institute
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,44 +12,67 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-import boto3
 import re
 import zlib
 from itertools import chain
 
+import boto3
+from apiv1.renderers import RnaFastaRenderer
+from apiv1.serializers import (
+    AccessionSerializer,
+    CitationSerializer,
+    EnsemblAssemblySerializer,
+    EnsemblComparaSerializer,
+    ExpertDatabaseStatsSerializer,
+    LncrnaTargetsSerializer,
+    ProteinTargetsSerializer,
+    PublicationSerializer,
+    QcStatusSerializer,
+    RawPublicationSerializer,
+    RfamHitSerializer,
+    RnaFastaSerializer,
+    RnaFlatSerializer,
+    RnaNestedSerializer,
+    RnaSecondaryStructureSerializer,
+    RnaSpeciesSpecificSerializer,
+    SecondaryStructureSVGImageSerializer,
+    SequenceFeatureSerializer,
+    XrefSerializer,
+)
+from colorhash import ColorHash
 from django.conf import settings
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
+from portal.config.expert_databases import expert_dbs
+from portal.models import (
+    Accession,
+    Database,
+    DatabaseStats,
+    EnsemblAssembly,
+    EnsemblCompara,
+    GoAnnotation,
+    ProteinInfo,
+    Publication,
+    QcStatus,
+    RelatedSequence,
+    RfamHit,
+    Rna,
+    RnaPrecomputed,
+    SequenceFeature,
+    SequenceRegion,
+)
 from rest_framework import generics, renderers, status
-from rest_framework.mixins import RetrieveModelMixin, ListModelMixin
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
-
-from rest_framework.permissions import AllowAny
-from rest_framework.reverse import reverse
 from rest_framework_jsonp.renderers import JSONPRenderer
 from rest_framework_yaml.renderers import YAMLRenderer
 
-from apiv1.serializers import RnaNestedSerializer, AccessionSerializer, CitationSerializer, XrefSerializer, \
-                              RnaFlatSerializer, RnaFastaSerializer, \
-                              RnaSpeciesSpecificSerializer, ExpertDatabaseStatsSerializer, \
-                              RawPublicationSerializer, RnaSecondaryStructureSerializer, \
-                              RfamHitSerializer, SequenceFeatureSerializer, \
-                              EnsemblAssemblySerializer, ProteinTargetsSerializer, \
-                              LncrnaTargetsSerializer, EnsemblComparaSerializer, SecondaryStructureSVGImageSerializer, \
-                              QcStatusSerializer, PublicationSerializer
-
-from apiv1.renderers import RnaFastaRenderer
-from portal.models import Rna, RnaPrecomputed, Accession, Database, DatabaseStats, RfamHit, EnsemblAssembly,\
-    GoAnnotation, RelatedSequence, ProteinInfo, SequenceFeature, SequenceRegion, EnsemblCompara,\
-    QcStatus, Publication
-from portal.config.expert_databases import expert_dbs
-from rnacentral.utils.pagination import Pagination, LargeTablePagination
-
-from colorhash import ColorHash
-
+from rnacentral.utils.pagination import LargeTablePagination, Pagination
 
 """
 Docstrings of the classes exposed in urlpatterns support markdown.
@@ -64,62 +88,68 @@ class GenomeAnnotations(APIView):
 
     [API documentation](/api)
     """
+
     # the above docstring appears on the API website
 
     permission_classes = (AllowAny,)
 
     def get(self, request, species, chromosome, start, end, format=None):
-        start = start.replace(',', '')
-        end = end.replace(',', '')
+        start = start.replace(",", "")
+        end = end.replace(",", "")
 
         try:
             assembly = EnsemblAssembly.objects.filter(ensembl_url=species).first()
         except EnsemblAssembly.DoesNotExist:
             return Response([])
 
-        regions = SequenceRegion.objects\
-            .select_related('urs_taxid')\
-            .prefetch_related('exons')\
+        regions = (
+            SequenceRegion.objects.select_related("urs_taxid")
+            .prefetch_related("exons")
             .filter(
                 assembly=assembly,
                 chromosome=chromosome,
                 region_start__gte=start,
                 region_stop__lte=end,
-                urs_taxid__is_active=True
+                urs_taxid__is_active=True,
             )
+        )
 
         features = []
         for transcript in regions:
-            features.append({
-                'ID': transcript.region_name,
-                'external_name': transcript.urs_taxid.id.split('_')[0],
-                'taxid': assembly.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
-                'feature_type': 'transcript',
-                'logic_name': 'RNAcentral',  # required by Genoverse
-                'biotype': transcript.urs_taxid.rna_type,  # required by Genoverse
-                'description': transcript.urs_taxid.short_description,
-                'seq_region_name': transcript.chromosome,
-                'strand': transcript.strand,
-                'start': transcript.region_start,
-                'end': transcript.region_stop,
-                'databases': transcript.providing_databases
-            })
+            features.append(
+                {
+                    "ID": transcript.region_name,
+                    "external_name": transcript.urs_taxid.id.split("_")[0],
+                    "taxid": assembly.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
+                    "feature_type": "transcript",
+                    "logic_name": "RNAcentral",  # required by Genoverse
+                    "biotype": transcript.urs_taxid.rna_type,  # required by Genoverse
+                    "description": transcript.urs_taxid.short_description,
+                    "seq_region_name": transcript.chromosome,
+                    "strand": transcript.strand,
+                    "start": transcript.region_start,
+                    "end": transcript.region_stop,
+                    "databases": transcript.providing_databases,
+                }
+            )
 
             # exons
             for exon in transcript.exons.all():
-                features.append({
-                    'external_name': exon.id,
-                    'ID': exon.id,
-                    'taxid': assembly.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
-                    'feature_type': 'exon',
-                    'Parent': transcript.region_name,
-                    'logic_name': 'RNAcentral',  # required by Genoverse
-                    'biotype': transcript.urs_taxid.rna_type,  # required by Genoverse
-                    'seq_region_name': transcript.chromosome,
-                    'strand': transcript.strand,
-                    'start': exon.exon_start,
-                    'end': exon.exon_stop,
-                })
+                features.append(
+                    {
+                        "external_name": exon.id,
+                        "ID": exon.id,
+                        "taxid": assembly.taxid,  # added by Burkov for generating links to E! in Genoverse populateMenu() popups
+                        "feature_type": "exon",
+                        "Parent": transcript.region_name,
+                        "logic_name": "RNAcentral",  # required by Genoverse
+                        "biotype": transcript.urs_taxid.rna_type,  # required by Genoverse
+                        "seq_region_name": transcript.chromosome,
+                        "strand": transcript.strand,
+                        "start": exon.exon_start,
+                        "end": exon.exon_stop,
+                    }
+                )
 
         return Response(features)
 
@@ -130,35 +160,42 @@ class APIRoot(APIView):
 
     [API documentation](/api)
     """
+
     # the above docstring appears on the API website
     permission_classes = (AllowAny,)
 
     def get(self, request, format=format):
-        return Response({
-            'rna': reverse('rna-sequences', request=request),
-        })
+        return Response(
+            {
+                "rna": reverse("rna-sequences", request=request),
+            }
+        )
 
 
 class RnaFilter(filters.FilterSet):
     """Declare what fields can be filtered using django-filters"""
-    min_length = filters.NumberFilter(field_name="length", lookup_expr='gte')
-    max_length = filters.NumberFilter(field_name="length", lookup_expr='lte')
-    external_id = filters.CharFilter(field_name="xrefs__accession__external_id", distinct=True)
+
+    min_length = filters.NumberFilter(field_name="length", lookup_expr="gte")
+    max_length = filters.NumberFilter(field_name="length", lookup_expr="lte")
+    external_id = filters.CharFilter(
+        field_name="xrefs__accession__external_id", distinct=True
+    )
 
     class Meta:
         model = Rna
-        fields = ['upi', 'md5', 'length', 'min_length', 'max_length', 'external_id']
+        fields = ["upi", "md5", "length", "min_length", "max_length", "external_id"]
 
 
 class RnaMixin(object):
     """Mixin for additional functionality specific to Rna views."""
+
     def get_serializer_class(self):
         """Determine a serializer for RnaSequences and RnaDetail views."""
-        if self.request.accepted_renderer.format == 'fasta':
+        if self.request.accepted_renderer.format == "fasta":
             return RnaFastaSerializer
 
-        flat = self.request.query_params.get('flat', 'false')
-        if re.match('true', flat, re.IGNORECASE):
+        flat = self.request.query_params.get("flat", "false")
+        if re.match("true", flat, re.IGNORECASE):
             return RnaFlatSerializer
         return RnaNestedSerializer
 
@@ -169,12 +206,17 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
 
     [API documentation](/api)
     """
+
     # the above docstring appears on the API website
     permission_classes = (AllowAny,)
     filterset_class = RnaFilter
-    renderer_classes = (renderers.JSONRenderer, JSONPRenderer,
-                        renderers.BrowsableAPIRenderer,
-                        YAMLRenderer, RnaFastaRenderer)
+    renderer_classes = (
+        renderers.JSONRenderer,
+        JSONPRenderer,
+        renderers.BrowsableAPIRenderer,
+        YAMLRenderer,
+        RnaFastaRenderer,
+    )
     pagination_class = LargeTablePagination
 
     def list(self, request, *args, **kwargs):
@@ -197,7 +239,7 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
         # end DRF base code
 
         # begin RNAcentral override: use prefetch_related where possible
-        flat = self.request.query_params.get('flat', None)
+        flat = self.request.query_params.get("flat", None)
         if flat:
             to_prefetch = []
             no_prefetch = []
@@ -207,8 +249,14 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
                 else:
                     no_prefetch.append(rna.upi)
 
-            prefetched = self.filter_queryset(Rna.objects.filter(upi__in=to_prefetch).prefetch_related('xrefs__accession').all())
-            not_prefetched = self.filter_queryset(Rna.objects.filter(upi__in=no_prefetch).all())
+            prefetched = self.filter_queryset(
+                Rna.objects.filter(upi__in=to_prefetch)
+                .prefetch_related("xrefs__accession")
+                .all()
+            )
+            not_prefetched = self.filter_queryset(
+                Rna.objects.filter(upi__in=no_prefetch).all()
+            )
 
             result_list = list(chain(prefetched, not_prefetched))
             page = result_list  # .object_list is no longer set on the instance
@@ -229,7 +277,7 @@ class RnaSequences(RnaMixin, generics.ListAPIView):
         most likely made by crawlers, from overloading the service
         """
         # `seq_long` **must** be deferred in order for filters to work
-        queryset = Rna.objects.defer('seq_long')
+        queryset = Rna.objects.defer("seq_long")
         return queryset.all()
 
 
@@ -239,10 +287,15 @@ class RnaDetail(RnaMixin, generics.RetrieveAPIView):
 
     [API documentation](/api)
     """
+
     # the above docstring appears on the API website
     queryset = Rna.objects.all()
     renderer_classes = (
-        renderers.JSONRenderer, JSONPRenderer, renderers.BrowsableAPIRenderer, YAMLRenderer, RnaFastaRenderer
+        renderers.JSONRenderer,
+        JSONPRenderer,
+        renderers.BrowsableAPIRenderer,
+        YAMLRenderer,
+        RnaFastaRenderer,
     )
 
     def get_object(self):
@@ -257,9 +310,9 @@ class RnaDetail(RnaMixin, generics.RetrieveAPIView):
         filter_kwargs = {self.lookup_field: self.kwargs[lookup_url_kwarg]}
         rna = get_object_or_404(queryset, **filter_kwargs)
 
-        flat = self.request.query_params.get('flat', None)
+        flat = self.request.query_params.get("flat", None)
         if flat and rna.xrefs.count() <= MAX_XREFS_TO_PREFETCH:
-            queryset = queryset.prefetch_related('xrefs', 'xrefs__accession')
+            queryset = queryset.prefetch_related("xrefs", "xrefs__accession")
             return get_object_or_404(queryset, **filter_kwargs)
         else:
             return rna
@@ -272,6 +325,7 @@ class RnaSpeciesSpecificView(generics.RetrieveAPIView):
 
     [API documentation](/api)
     """
+
     # the above docstring appears on the API website
 
     """
@@ -285,11 +339,14 @@ class RnaSpeciesSpecificView(generics.RetrieveAPIView):
         xrefs = rna.xrefs.filter(taxid=taxid)
         if not xrefs:
             raise Http404
-        serializer = RnaSpeciesSpecificSerializer(rna, context={
-            'request': request,
-            'xrefs': xrefs,
-            'taxid': taxid,
-        })
+        serializer = RnaSpeciesSpecificSerializer(
+            rna,
+            context={
+                "request": request,
+                "xrefs": xrefs,
+                "taxid": taxid,
+            },
+        )
         return Response(serializer.data)
 
 
@@ -299,11 +356,12 @@ class XrefList(generics.ListAPIView):
 
     [API documentation](/api)
     """
+
     serializer_class = XrefSerializer
     pagination_class = Pagination
 
     def get_queryset(self):
-        upi = self.kwargs['pk']
+        upi = self.kwargs["pk"]
         return Rna.objects.get(upi=upi).get_xrefs()
 
 
@@ -313,12 +371,13 @@ class XrefsSpeciesSpecificList(generics.ListAPIView):
 
     [API documentation](/api)
     """
+
     serializer_class = XrefSerializer
     pagination_class = Pagination
 
     def get_queryset(self):
-        upi = self.kwargs['pk']
-        taxid = self.kwargs['taxid']
+        upi = self.kwargs["pk"]
+        taxid = self.kwargs["taxid"]
         return Rna.objects.get(upi=upi).get_xrefs(taxid=taxid)
 
 
@@ -328,6 +387,7 @@ class SecondaryStructureSpeciesSpecificList(generics.ListAPIView):
 
     [API documentation](/api)
     """
+
     queryset = Rna.objects.all()
 
     def get(self, request, pk=None, taxid=None, format=None):
@@ -341,33 +401,42 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
     """
     SVG image for an RNA sequence.
     """
+
     serializer_class = SecondaryStructureSVGImageSerializer
     permission_classes = (AllowAny,)
 
     def get(self, request, pk=None, format=None):
         s3 = boto3.resource(
-            's3',
-            aws_access_key_id=settings.S3_SERVER['KEY'],
-            aws_secret_access_key=settings.S3_SERVER['SECRET'],
-            endpoint_url=settings.S3_SERVER['HOST']
+            "s3",
+            aws_access_key_id=settings.S3_SERVER["KEY"],
+            aws_secret_access_key=settings.S3_SERVER["SECRET"],
+            endpoint_url=settings.S3_SERVER["HOST"],
         )
 
-        upi = list(self.kwargs['pk'])
-        upi_path = "".join(upi[0:3]) + "/" \
-                   + "".join(upi[3:5]) + "/" \
-                   + "".join(upi[5:7]) + "/" \
-                   + "".join(upi[7:9]) + "/" \
-                   + "".join(upi[9:11]) + "/"
+        upi = list(self.kwargs["pk"])
+        upi_path = (
+            "".join(upi[0:3])
+            + "/"
+            + "".join(upi[3:5])
+            + "/"
+            + "".join(upi[5:7])
+            + "/"
+            + "".join(upi[7:9])
+            + "/"
+            + "".join(upi[9:11])
+            + "/"
+        )
 
-        s3_file = "prod/" + upi_path + self.kwargs['pk'] + ".svg.gz"
-        s3_obj = s3.Object(settings.S3_SERVER['BUCKET'], s3_file)
+        s3_file = "prod/" + upi_path + self.kwargs["pk"] + ".svg.gz"
+        s3_obj = s3.Object(settings.S3_SERVER["BUCKET"], s3_file)
         try:
-            s3_svg = zlib.decompress(s3_obj.get()['Body'].read(), zlib.MAX_WBITS | 32)
+            s3_svg = zlib.decompress(s3_obj.get()["Body"].read(), zlib.MAX_WBITS | 32)
         except s3.meta.client.exceptions.NoSuchKey:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
         return HttpResponse(
-            self.generate_thumbnail(s3_svg.decode('utf-8'), "".join(upi)), content_type='image/svg+xml'
+            self.generate_thumbnail(s3_svg.decode("utf-8"), "".join(upi)),
+            content_type="image/svg+xml",
         )
 
     def generate_thumbnail(self, image, upi):
@@ -376,28 +445,32 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
         points = []
         width = []
         height = []
-        for i, line in enumerate(image.split('\n')):
+        for i, line in enumerate(image.split("\n")):
             if not width:
                 width = re.findall(r'width="(\d+(\.\d+)?)"', line)
             if not height:
                 height = re.findall(r'height="(\d+(\.\d+)?)"', line)
-            for nt in re.finditer('<text x="(\d+)(\.\d+)?" y="(\d+)(\.\d+)?".*?</text>', line):
-                if 'numbering-label' in nt.group(0):
+            for nt in re.finditer(
+                '<text x="(\d+)(\.\d+)?" y="(\d+)(\.\d+)?".*?</text>', line
+            ):
+                if "numbering-label" in nt.group(0):
                     continue
                 if not move_to_start_position:
-                    move_to_start_position = 'M{} {} '.format(nt.group(1), nt.group(3))
-                points.append('L{} {}'.format(nt.group(1), nt.group(3)))
+                    move_to_start_position = "M{} {} ".format(nt.group(1), nt.group(3))
+                points.append("L{} {}".format(nt.group(1), nt.group(3)))
         if len(points) < 200:
-            stroke_width = '3'
+            stroke_width = "3"
         elif len(points) < 500:
-            stroke_width = '4'
+            stroke_width = "4"
         elif len(points) < 3000:
-            stroke_width = '4'
+            stroke_width = "4"
         else:
-            stroke_width = '2'
-        thumbnail = '<svg xmlns="http://www.w3.org/2000/svg" width="{}" height="{}"><path style="stroke:{};stroke-width:{}px;fill:none;" d="'.format(width[0][0], height[0][0], color, stroke_width)
+            stroke_width = "2"
+        thumbnail = '<svg xmlns="http://www.w3.org/2000/svg" width="{}" height="{}"><path style="stroke:{};stroke-width:{}px;fill:none;" d="'.format(
+            width[0][0], height[0][0], color, stroke_width
+        )
         thumbnail += move_to_start_position
-        thumbnail += ' '.join(points)
+        thumbnail += " ".join(points)
         thumbnail += '"/></svg>'
         return thumbnail
 
@@ -409,12 +482,15 @@ class RnaGenomeLocations(generics.ListAPIView):
 
     [API documentation](/api)
     """
+
     queryset = Rna.objects.select_related().all()
 
     def get(self, request, pk=None, taxid=None, format=None):
         # if assembly with this taxid is not found, just return empty locations list
         try:
-            assembly = EnsemblAssembly.objects.get(taxid=taxid)  # this applies only to species-specific pages
+            assembly = EnsemblAssembly.objects.get(
+                taxid=taxid
+            )  # this applies only to species-specific pages
         except EnsemblAssembly.DoesNotExist:
             return Response([])
 
@@ -432,33 +508,43 @@ class RnaGenomeLocations(generics.ListAPIView):
         output = []
         for region in regions:
             if len(region.providing_databases) > 1:
-                databases = ' and '.join([', '.join(region.providing_databases[:-1]), region.providing_databases[-1]])
+                databases = " and ".join(
+                    [
+                        ", ".join(region.providing_databases[:-1]),
+                        region.providing_databases[-1],
+                    ]
+                )
             elif len(region.providing_databases) == 1:
                 databases = region.providing_databases[0]
             else:
-                databases = 'an Expert Database'
+                databases = "an Expert Database"
 
-            output.append({
-                'chromosome': region.chromosome,
-                'strand': region.strand,
-                'start': region.region_start,
-                'end': region.region_stop,
-                'identity': region.identity,
-                'species': assembly.ensembl_url,
-                'ucsc_db_id': assembly.assembly_ucsc,
-                'ensembl_division': {
-                    'name': assembly.division,
-                    'url': 'http://' + assembly.subdomain
-                },
-                'ensembl_species_url': assembly.ensembl_url,
-                'databases': databases
-            })
+            output.append(
+                {
+                    "chromosome": region.chromosome,
+                    "strand": region.strand,
+                    "start": region.region_start,
+                    "end": region.region_stop,
+                    "identity": region.identity,
+                    "species": assembly.ensembl_url,
+                    "ucsc_db_id": assembly.assembly_ucsc,
+                    "ensembl_division": {
+                        "name": assembly.division,
+                        "url": "http://" + assembly.subdomain,
+                    },
+                    "ensembl_species_url": assembly.ensembl_url,
+                    "databases": databases,
+                }
+            )
 
-            exceptions = ['X', 'Y']
-            if re.match(r'\d+', output[-1]['chromosome']) or output[-1]['chromosome'] in exceptions:
-                output[-1]['ucsc_chromosome'] = 'chr' + output[-1]['chromosome']
+            exceptions = ["X", "Y"]
+            if (
+                re.match(r"\d+", output[-1]["chromosome"])
+                or output[-1]["chromosome"] in exceptions
+            ):
+                output[-1]["ucsc_chromosome"] = "chr" + output[-1]["chromosome"]
             else:
-                output[-1]['ucsc_chromosome'] = output[-1]['chromosome']
+                output[-1]["ucsc_chromosome"] = output[-1]["chromosome"]
 
         return Response(output)
 
@@ -469,6 +555,7 @@ class AccessionView(generics.RetrieveAPIView):
 
     [API documentation](/api)
     """
+
     # the above docstring appears on the API website
     queryset = Accession.objects.select_related().all()
     serializer_class = AccessionSerializer
@@ -481,10 +568,11 @@ class CitationsView(generics.ListAPIView):
 
     [API documentation](/api)
     """
+
     serializer_class = CitationSerializer
 
     def get_queryset(self):
-        pk = self.kwargs['pk']
+        pk = self.kwargs["pk"]
         return Accession.objects.select_related().get(pk=pk).refs.all()
 
 
@@ -495,15 +583,18 @@ class RnaPublicationsView(generics.ListAPIView):
 
     [API documentation](/api)
     """
+
     # the above docstring appears on the API website
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
     serializer_class = RawPublicationSerializer
     pagination_class = Pagination
 
     def get_queryset(self):
-        upi = self.kwargs['pk']
-        taxid = self.kwargs['taxid'] if 'taxid' in self.kwargs else None
-        return Rna.objects.get(upi=upi).get_publications(taxid)  # this is actually a list
+        upi = self.kwargs["pk"]
+        taxid = self.kwargs["taxid"] if "taxid" in self.kwargs else None
+        return Rna.objects.get(upi=upi).get_publications(
+            taxid
+        )  # this is actually a list
 
 
 class ExpertDatabasesAPIView(APIView):
@@ -512,25 +603,27 @@ class ExpertDatabasesAPIView(APIView):
 
     [API documentation](/api)
     """
+
     permission_classes = ()
     authentication_classes = ()
 
     def get(self, request, format=None):
         """The data from configuration JSON and database are combined here."""
+
         def _normalize_expert_db_label(expert_db_label):
             """Capitalizes db label (and accounts for special cases)"""
-            if re.match('tmrna-website', expert_db_label, flags=re.IGNORECASE):
-                expert_db_label = 'TMRNA_WEB'
+            if re.match("tmrna-website", expert_db_label, flags=re.IGNORECASE):
+                expert_db_label = "TMRNA_WEB"
             else:
                 expert_db_label = expert_db_label.upper()
             return expert_db_label
 
         # e.g. { "TMRNA_WEB": {'name': 'tmRNA Website', 'label': 'tmrna-website', ...}}
-        databases = {db['descr']: db for db in Database.objects.values()}
+        databases = {db["descr"]: db for db in Database.objects.values()}
 
         # update config.expert_databases json with Database table objects
         for db in expert_dbs:
-            normalized_label = _normalize_expert_db_label(db['label'])
+            normalized_label = _normalize_expert_db_label(db["label"])
             if normalized_label in databases:
                 db.update(databases[normalized_label])
 
@@ -547,88 +640,110 @@ class ExpertDatabasesStatsViewSet(RetrieveModelMixin, ListModelMixin, GenericVie
 
     [API documentation](/api)
     """
+
     queryset = DatabaseStats.objects.all()
     serializer_class = ExpertDatabaseStatsSerializer
-    lookup_field = 'pk'
+    lookup_field = "pk"
 
     def list(self, request, *args, **kwargs):
         return super(ExpertDatabasesStatsViewSet, self).list(request, *args, **kwargs)
 
     def retrieve(self, request, *args, **kwargs):
-        return super(ExpertDatabasesStatsViewSet, self).retrieve(request, *args, **kwargs)
+        return super(ExpertDatabasesStatsViewSet, self).retrieve(
+            request, *args, **kwargs
+        )
 
 
 class GenomesAPIViewSet(ListModelMixin, GenericViewSet):
     """API endpoint, presenting all E! assemblies, available in RNAcentral."""
-    permission_classes = (AllowAny, )
+
+    permission_classes = (AllowAny,)
     serializer_class = EnsemblAssemblySerializer
     pagination_class = Pagination
-    queryset = EnsemblAssembly.objects.all().order_by('-ensembl_url')
-    lookup_field = 'ensembl_url'
+    queryset = EnsemblAssembly.objects.all().order_by("-ensembl_url")
+    lookup_field = "ensembl_url"
 
 
 class RfamHitsAPIViewSet(generics.ListAPIView):
     """API endpoint with Rfam models that are found in an RNA."""
-    permission_classes = (AllowAny, )
+
+    permission_classes = (AllowAny,)
     serializer_class = RfamHitSerializer
     pagination_class = Pagination
 
     def get_queryset(self):
-        upi = self.kwargs['pk']
-        return RfamHit.objects.filter(upi=upi).select_related('rfam_model').select_related('upi')
+        upi = self.kwargs["pk"]
+        return (
+            RfamHit.objects.filter(upi=upi)
+            .select_related("rfam_model")
+            .select_related("upi")
+        )
 
     def get_serializer_context(self):
-        return {'taxid': self.kwargs['taxid']} if 'taxid' in self.kwargs else {}
+        return {"taxid": self.kwargs["taxid"]} if "taxid" in self.kwargs else {}
 
 
 class SequenceFeaturesAPIViewSet(generics.ListAPIView):
     """API endpoint with sequence features (CRS, mature miRNAs etc)"""
-    permission_classes = (AllowAny, )
+
+    permission_classes = (AllowAny,)
     serializer_class = SequenceFeatureSerializer
     pagination_class = Pagination
 
     def get_queryset(self):
-        upi = self.kwargs['pk']
-        taxid = self.kwargs['taxid']
-        return SequenceFeature.objects.filter(upi=upi, taxid=taxid, feature_name__in=["conserved_rna_structure", "mature_product", "cpat_orf"])
+        upi = self.kwargs["pk"]
+        taxid = self.kwargs["taxid"]
+        return SequenceFeature.objects.filter(
+            upi=upi,
+            taxid=taxid,
+            feature_name__in=["conserved_rna_structure", "mature_product", "cpat_orf"],
+        )
 
 
 class RnaGoAnnotationsView(APIView):
-    permission_classes = (AllowAny, )
+    permission_classes = (AllowAny,)
     pagination_class = Pagination
 
     def get(self, request, pk, taxid, **kwargs):
-        rna_id = pk + '_' + taxid
+        rna_id = pk + "_" + taxid
         taxid = int(taxid)
-        annotations = GoAnnotation.objects.filter(rna_id=rna_id).\
-            select_related('ontology_term', 'evidence_code')
+        annotations = GoAnnotation.objects.filter(rna_id=rna_id).select_related(
+            "ontology_term", "evidence_code"
+        )
 
         result = []
         for annotation in annotations:
-            result.append({
-                'rna_id': annotation.rna_id,
-                'upi': pk,
-                'taxid': taxid,
-                'go_term_id': annotation.ontology_term.ontology_term_id,
-                'go_term_name': annotation.ontology_term.name,
-                'qualifier': annotation.qualifier,
-                'evidence_code_id': annotation.evidence_code.ontology_term_id,
-                'evidence_code_name': annotation.evidence_code.name,
-                'assigned_by': annotation.assigned_by,
-                'extensions': annotation.assigned_by or {},
-            })
+            result.append(
+                {
+                    "rna_id": annotation.rna_id,
+                    "upi": pk,
+                    "taxid": taxid,
+                    "go_term_id": annotation.ontology_term.ontology_term_id,
+                    "go_term_name": annotation.ontology_term.name,
+                    "qualifier": annotation.qualifier,
+                    "evidence_code_id": annotation.evidence_code.ontology_term_id,
+                    "evidence_code_name": annotation.evidence_code.name,
+                    "assigned_by": annotation.assigned_by,
+                    "extensions": annotation.assigned_by or {},
+                }
+            )
 
         return Response(result)
 
 
 class EnsemblKaryotypeAPIView(APIView):
     """API endpoint, presenting E! karyotype for a given species."""
+
     permission_classes = ()
     authentication_classes = ()
 
     def get(self, request, ensembl_url):
         try:
-            assembly = EnsemblAssembly.objects.filter(ensembl_url=ensembl_url).prefetch_related('karyotype').first()
+            assembly = (
+                EnsemblAssembly.objects.filter(ensembl_url=ensembl_url)
+                .prefetch_related("karyotype")
+                .first()
+            )
         except EnsemblAssembly.DoesNotExist:
             raise Http404
 
@@ -637,18 +752,19 @@ class EnsemblKaryotypeAPIView(APIView):
 
 class ProteinTargetsView(generics.ListAPIView):
     """API endpoint, presenting ProteinInfo, related to given rna."""
+
     permission_classes = ()
     authentication_classes = ()
     pagination_class = Pagination
     serializer_class = ProteinTargetsSerializer
 
     def get_queryset(self):
-        pk = self.kwargs['pk']
-        taxid = self.kwargs['taxid']
+        pk = self.kwargs["pk"]
+        taxid = self.kwargs["taxid"]
 
         # we select redundant {protein_info}.protein_accession because
         # otherwise django curses about lack of primary key in raw query
-        protein_info_query = '''
+        protein_info_query = """
             SELECT
                 {related_sequence}.target_accession,
                 {related_sequence}.source_accession,
@@ -663,13 +779,13 @@ class ProteinTargetsView(generics.ListAPIView):
             ON {protein_info}.protein_accession = {related_sequence}.target_accession
             WHERE {related_sequence}.relationship_type = 'target_protein'
               AND {related_sequence}.source_urs_taxid = '{pk}_{taxid}'
-        '''.format(
+        """.format(
             rna=Rna._meta.db_table,
             rna_precomputed=RnaPrecomputed._meta.db_table,
             related_sequence=RelatedSequence._meta.db_table,
             protein_info=ProteinInfo._meta.db_table,
             pk=pk,
-            taxid=taxid
+            taxid=taxid,
         )
 
         # queryset = PaginatedRawQuerySet(protein_info_query, model=ProteinInfo)  # was: ProteinInfo.objects.raw(protein_info_query)
@@ -679,18 +795,19 @@ class ProteinTargetsView(generics.ListAPIView):
 
 class LncrnaTargetsView(generics.ListAPIView):
     """API endpoint, presenting lncRNAs targeted by a given rna."""
+
     permission_classes = ()
     authentication_classes = ()
     pagination_class = Pagination
     serializer_class = LncrnaTargetsSerializer
 
     def get_queryset(self):
-        pk = self.kwargs['pk']
-        taxid = self.kwargs['taxid']
+        pk = self.kwargs["pk"]
+        taxid = self.kwargs["taxid"]
 
         # we select redundant {protein_info}.protein_accession because
         # otherwise django curses about lack of primary key in raw query
-        protein_info_query = '''
+        protein_info_query = """
             SELECT
                 {related_sequence}.source_accession,
                 {related_sequence}.source_urs_taxid,
@@ -710,12 +827,12 @@ class LncrnaTargetsView(generics.ListAPIView):
             WHERE {related_sequence}.relationship_type = 'target_rna'
               AND {related_sequence}.source_urs_taxid = '{pk}_{taxid}'
             ORDER BY target_urs_taxid
-        '''.format(
+        """.format(
             rna_precomputed=RnaPrecomputed._meta.db_table,
             related_sequence=RelatedSequence._meta.db_table,
             protein_info=ProteinInfo._meta.db_table,
             pk=pk,
-            taxid=taxid
+            taxid=taxid,
         )
         # queryset = PaginatedRawQuerySet(protein_info_query, model=ProteinInfo)
         queryset = ProteinInfo.objects.raw(protein_info_query)
@@ -724,11 +841,12 @@ class LncrnaTargetsView(generics.ListAPIView):
 
 class QcStatusView(APIView):
     """API endpoint showing the QC status for a sequence"""
+
     permission_classes = ()
     authentication_classes = ()
 
     def get(self, _request, pk, taxid):
-        urs_taxid = f'{pk}_{taxid}'
+        urs_taxid = f"{pk}_{taxid}"
         status = QcStatus.objects.get(id=urs_taxid)
         serializer = QcStatusSerializer(status)
         return Response(serializer.data)
@@ -740,36 +858,41 @@ class LargerPagination(Pagination):
     compara_status = None
 
     def get_paginated_response(self, data):
-        return Response({
-            'links': {
-               'next': self.get_next_link(),
-               'previous': self.get_previous_link()
-            },
-            'count': self.page.paginator.count,
-            'results': data,
-            'ensembl_compara_url': self.ensembl_compara_url,
-            'ensembl_compara_status': self.ensembl_compara_status,
-        })
+        return Response(
+            {
+                "links": {
+                    "next": self.get_next_link(),
+                    "previous": self.get_previous_link(),
+                },
+                "count": self.page.paginator.count,
+                "results": data,
+                "ensembl_compara_url": self.ensembl_compara_url,
+                "ensembl_compara_status": self.ensembl_compara_status,
+            }
+        )
 
 
 class EnsemblComparaAPIViewSet(generics.ListAPIView):
     """API endpoint for related sequences identified by Ensembl Compara"""
-    permission_classes = (AllowAny, )
+
+    permission_classes = (AllowAny,)
     serializer_class = EnsemblComparaSerializer
     pagination_class = LargerPagination
-    ensembl_transcript_id = ''
+    ensembl_transcript_id = ""
 
     def get_queryset(self):
-        upi = self.kwargs['pk']
-        taxid = self.kwargs['taxid']
-        self_urs_taxid = upi + '_' + taxid
+        upi = self.kwargs["pk"]
+        taxid = self.kwargs["taxid"]
+        self_urs_taxid = upi + "_" + taxid
         urs_taxid = EnsemblCompara.objects.filter(urs_taxid__id=self_urs_taxid).first()
         if urs_taxid:
             self.ensembl_transcript_id = urs_taxid.ensembl_transcript_id
-            return EnsemblCompara.objects.filter(homology_id=urs_taxid.homology_id)\
-                                         .exclude(urs_taxid=self_urs_taxid)\
-                                         .order_by('urs_taxid__description')\
-                                         .all()
+            return (
+                EnsemblCompara.objects.filter(homology_id=urs_taxid.homology_id)
+                .exclude(urs_taxid=self_urs_taxid)
+                .order_by("urs_taxid__description")
+                .all()
+            )
         else:
             return []
 
@@ -786,39 +909,47 @@ class EnsemblComparaAPIViewSet(generics.ListAPIView):
 
         serializer = self.get_serializer(queryset, many=True)
 
-        return Response({'data': serializer.data})
+        return Response({"data": serializer.data})
 
     def get_ensembl_compara_url(self):
-        urs_taxid = self.kwargs['pk']+ '_' + self.kwargs['taxid']
+        urs_taxid = self.kwargs["pk"] + "_" + self.kwargs["taxid"]
         genome_region = SequenceRegion.objects.filter(urs_taxid__id=urs_taxid).first()
         if genome_region and self.ensembl_transcript_id:
-            return 'http://www.ensembl.org/' + genome_region.assembly.ensembl_url + '/Gene/Compara_Tree?t=' + self.ensembl_transcript_id
+            return (
+                "http://www.ensembl.org/"
+                + genome_region.assembly.ensembl_url
+                + "/Gene/Compara_Tree?t="
+                + self.ensembl_transcript_id
+            )
         else:
             return None
 
     def get_ensembl_compara_status(self):
-        urs_taxid = self.kwargs['pk'] + '_' + self.kwargs['taxid']
+        urs_taxid = self.kwargs["pk"] + "_" + self.kwargs["taxid"]
 
         rna_precomputed = RnaPrecomputed.objects.get(id=urs_taxid)
-        if rna_precomputed.databases and 'Ensembl' not in rna_precomputed.databases:
-            return 'analysis not available'
+        if rna_precomputed.databases and "Ensembl" not in rna_precomputed.databases:
+            return "analysis not available"
 
         compara = EnsemblCompara.objects.filter(urs_taxid=urs_taxid).first()
         if compara:
-            compara_count = EnsemblCompara.objects.filter(homology_id=compara.homology_id).count()
+            compara_count = EnsemblCompara.objects.filter(
+                homology_id=compara.homology_id
+            ).count()
 
         if not compara or compara_count == 0:
-            return 'RNA type not supported'
+            return "RNA type not supported"
 
         if compara_count == 1:
-            return 'not found'
+            return "not found"
 
-        return 'found'
+        return "found"
 
 
 class PublicationList(generics.ListAPIView):
     """API endpoint showing the number of ids used by RNAcentral references"""
-    permission_classes = (AllowAny, )
+
+    permission_classes = (AllowAny,)
     serializer_class = PublicationSerializer
     pagination_class = Pagination
-    queryset = Publication.objects.all().order_by('database')
+    queryset = Publication.objects.all().order_by("database")

@@ -24,7 +24,7 @@ def get_expert_databases_columns():
     """
     Return expert databases grouped and order for the website footer.
     """
-    dbs = sorted(expert_dbs, key=lambda x: x['name'].lower())
+    dbs = sorted(expert_dbs, key=lambda x: x["name"].lower())
     return [
         dbs[:15],
         dbs[15:29],
@@ -36,8 +36,8 @@ def get_expert_databases_columns():
 @register.simple_tag
 def get_expert_databases_list():
     """Get an alphabetically sorted list of imported expert databases."""
-    imported_dbs = [x for x in expert_dbs if x['imported'] and x['name'] != 'CRS']
-    return sorted(imported_dbs, key=lambda x: x['name'].lower())
+    imported_dbs = [x for x in expert_dbs if x["imported"] and x["name"] != "CRS"]
+    return sorted(imported_dbs, key=lambda x: x["name"].lower())
 
 
 @register.simple_tag

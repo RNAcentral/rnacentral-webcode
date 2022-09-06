@@ -17,6 +17,7 @@ import json
 import os
 import random
 import re
+
 import requests
 import six
 
@@ -25,18 +26,25 @@ if six.PY2:
 elif six.PY3:
     from urllib.parse import urlparse
 
-from django.http import Http404, HttpResponse, HttpResponseForbidden
 from django.conf import settings
-from django.shortcuts import render, render_to_response, redirect
+from django.http import Http404, HttpResponse, HttpResponseForbidden
+from django.shortcuts import redirect, render, render_to_response
 from django.template import TemplateDoesNotExist
 from django.template.loader import render_to_string
 from django.views.decorators.cache import cache_page, never_cache
 from django.views.generic.base import TemplateView
-
 from portal.config.expert_databases import expert_dbs
-from portal.models import Rna, Database, Xref, EnsemblAssembly, Publication, GoAnnotation, Taxonomy
-from portal.models.rna_precomputed import RnaPrecomputed
 from portal.config.svg_images import examples
+from portal.models import (
+    Database,
+    EnsemblAssembly,
+    GoAnnotation,
+    Publication,
+    Rna,
+    Taxonomy,
+    Xref,
+)
+from portal.models.rna_precomputed import RnaPrecomputed
 from portal.rna_summary import RnaSummary
 
 CACHE_TIMEOUT = 60 * 60 * 24 * 1  # per-view cache timeout in seconds
@@ -55,7 +63,7 @@ def get_sequence_lineage(request, upi):
     """
     try:
         xref = Xref.objects.filter(upi=upi)
-        results = xref.filter(deleted='N')
+        results = xref.filter(deleted="N")
         if not results.exists():
             results = xref
         queryset = Taxonomy.objects.none()
@@ -72,31 +80,31 @@ def homepage(request):
     """RNAcentral homepage."""
     random.shuffle(examples)
     context = {
-        'databases': list(Database.objects.filter(alive='Y').order_by('?').all()),
-        'blog_url': settings.RELEASE_ANNOUNCEMENT_URL,
-        'svg_images': examples,
+        "databases": list(Database.objects.filter(alive="Y").order_by("?").all()),
+        "blog_url": settings.RELEASE_ANNOUNCEMENT_URL,
+        "svg_images": examples,
     }
 
-    return render(request, 'portal/homepage.html', {'context': context})
+    return render(request, "portal/homepage.html", {"context": context})
 
 
 @cache_page(CACHE_TIMEOUT)
 def expert_databases_view(request):
     """List of RNAcentral expert databases."""
-    expert_dbs.sort(key=lambda x: x['name'].lower())
-    expert_dbs.sort(key=lambda x: x['imported'], reverse=True)
+    expert_dbs.sort(key=lambda x: x["name"].lower())
+    expert_dbs.sort(key=lambda x: x["imported"], reverse=True)
     context = {
-        'expert_dbs': expert_dbs,
-        'num_dbs': len(expert_dbs) - 1,  # Vega is archived
-        'num_imported': len([x for x in expert_dbs if x['imported']]) - 1,  # Vega
+        "expert_dbs": expert_dbs,
+        "num_dbs": len(expert_dbs) - 1,  # Vega is archived
+        "num_imported": len([x for x in expert_dbs if x["imported"]]) - 1,  # Vega
     }
-    return render(request, 'portal/expert-databases.html', {'context': context})
+    return render(request, "portal/expert-databases.html", {"context": context})
 
 
 @cache_page(CACHE_TIMEOUT)
 def rna_view_redirect(request, upi, taxid):
     """Redirect from urs_taxid to urs/taxid."""
-    return redirect('unique-rna-sequence', upi=upi, taxid=taxid, permanent=True)
+    return redirect("unique-rna-sequence", upi=upi, taxid=taxid, permanent=True)
 
 
 @cache_page(CACHE_TIMEOUT)
@@ -119,27 +127,37 @@ def rna_view(request, upi, taxid=None):
 
     # if taxid is given, but the RNA does not have annotations for this taxid, redirect to an error page
     if taxid and not precomputed:
-        response = redirect('unique-rna-sequence', upi=upi)
-        response['Location'] += '?taxid-not-found={taxid}'.format(taxid=taxid)
+        response = redirect("unique-rna-sequence", upi=upi)
+        response["Location"] += "?taxid-not-found={taxid}".format(taxid=taxid)
         return response
 
     taxid_filtering = True if taxid else False
 
     symbol_counts = rna.count_symbols()
-    non_canonical_base_counts = {key: symbol_counts[key] for key in symbol_counts if key not in ['A', 'U', 'G', 'C']}
+    non_canonical_base_counts = {
+        key: symbol_counts[key]
+        for key in symbol_counts
+        if key not in ["A", "U", "G", "C"]
+    }
 
     summary = RnaSummary(upi, taxid, settings.EBI_SEARCH_ENDPOINT)
     if taxid_filtering:
-        summary_text = render_to_string('portal/summary.html', vars(summary))
-        summary_text = re.sub(r'\s+', ' ', summary_text.strip())
+        summary_text = render_to_string("portal/summary.html", vars(summary))
+        summary_text = re.sub(r"\s+", " ", summary_text.strip())
         try:
             summary_so_terms = zip(summary.pretty_so_rna_type, summary.so_rna_type)
         except AttributeError:
-            summary_so_terms = ''
+            summary_so_terms = ""
 
     # Check if r2dt-web is installed
     path = os.path.join(
-        settings.PROJECT_PATH, 'rnacentral', 'portal', 'static', 'r2dt-web', 'dist', 'r2dt-web.js'
+        settings.PROJECT_PATH,
+        "rnacentral",
+        "portal",
+        "static",
+        "r2dt-web",
+        "dist",
+        "r2dt-web.js",
     )
     plugin_installed = True if os.path.isfile(path) else False
 
@@ -149,36 +167,38 @@ def rna_view(request, upi, taxid=None):
     interactions = rna.get_intact(taxid)
 
     for item in interactions:
-        if item['intact_id'].startswith('PSICQUIC'):
-            split_data = item['intact_id'].split(':')
-            item['intact_id'] = split_data[1]
+        if item["intact_id"].startswith("PSICQUIC"):
+            split_data = item["intact_id"].split(":")
+            item["intact_id"] = split_data[1]
             psicquic = True
         else:
             intact = True
 
     # Publications
     if taxid:
-        query_jobs = f'?query=entry_type:metadata%20AND%20primary_id:"{upi}_{taxid}"%20AND%20database:rnacentral&' \
-                     f'fields=job_id&format=json'
-        pub_list = [upi + '_' + taxid]
+        query_jobs = (
+            f'?query=entry_type:metadata%20AND%20primary_id:"{upi}_{taxid}"%20AND%20database:rnacentral&'
+            f"fields=job_id&format=json"
+        )
+        pub_list = [upi + "_" + taxid]
 
         # get IDs related to the URS
         try:
             response = requests.get(settings.EBI_SEARCH_ENDPOINT + query_jobs).json()
-            entries = response['entries']
+            entries = response["entries"]
             for entry in entries:
-                pub_list.append(entry['fields']['job_id'][0])
+                pub_list.append(entry["fields"]["job_id"][0])
         except (IndexError, KeyError):
             pass
 
         # get number of articles
         query_ids = ['job_id:"' + item + '"' for item in pub_list]
-        query_ids = '%20OR%20'.join(query_ids)
-        query = f'?query=entry_type:Publication%20AND%20({query_ids})&format=json'
+        query_ids = "%20OR%20".join(query_ids)
+        query = f"?query=entry_type:Publication%20AND%20({query_ids})&format=json"
 
         try:
             response = requests.get(settings.EBI_SEARCH_ENDPOINT + query).json()
-            pub_count = response['hitCount']
+            pub_count = response["hitCount"]
         except KeyError:
             pub_count = None
 
@@ -188,53 +208,58 @@ def rna_view(request, upi, taxid=None):
     # get go_term_id for swissbiopics library
     if taxid:
         go_term_id = []
-        go_annotation = GoAnnotation.objects.filter(rna_id=upi + "_" + taxid, qualifier="part_of").\
-            select_related('ontology_term', 'evidence_code')
+        go_annotation = GoAnnotation.objects.filter(
+            rna_id=upi + "_" + taxid, qualifier="part_of"
+        ).select_related("ontology_term", "evidence_code")
         for item in go_annotation:
             go_term_id.append(item.ontology_term.ontology_term_id)
-        go_term_id = ','.join(go_term_id)
+        go_term_id = ",".join(go_term_id)
     else:
         go_term_id = None
 
     # get tab
-    tab = request.GET.get('tab', '').lower()
-    if tab == '2d':
+    tab = request.GET.get("tab", "").lower()
+    if tab == "2d":
         active_tab = 2
-    elif tab == 'pub':
+    elif tab == "pub":
         active_tab = 3
     else:
         active_tab = 0
 
     context = {
-        'upi': upi,
-        'symbol_counts': symbol_counts,
-        'non_canonical_base_counts': non_canonical_base_counts,
-        'taxid': taxid,
-        'taxid_filtering': taxid_filtering,
-        'taxid_not_found': request.GET.get('taxid-not-found', ''),
-        'active_tab': active_tab,
-        'summary_text': summary_text if taxid_filtering else '',
-        'summary': summary,
-        'summary_so_terms': summary_so_terms if taxid_filtering else '',
-        'precomputed': precomputed,
-        'mirna_regulators': rna.get_mirna_regulators(taxid=taxid),
-        'annotations_from_other_species': rna.get_annotations_from_other_species(taxid=taxid),
-        'interactions': interactions,
-        'intact': intact,
-        'psicquic': psicquic,
-        'plugin_installed': plugin_installed,
-        'pub_count': pub_count,
-        'go_term_id': go_term_id,
+        "upi": upi,
+        "symbol_counts": symbol_counts,
+        "non_canonical_base_counts": non_canonical_base_counts,
+        "taxid": taxid,
+        "taxid_filtering": taxid_filtering,
+        "taxid_not_found": request.GET.get("taxid-not-found", ""),
+        "active_tab": active_tab,
+        "summary_text": summary_text if taxid_filtering else "",
+        "summary": summary,
+        "summary_so_terms": summary_so_terms if taxid_filtering else "",
+        "precomputed": precomputed,
+        "mirna_regulators": rna.get_mirna_regulators(taxid=taxid),
+        "annotations_from_other_species": rna.get_annotations_from_other_species(
+            taxid=taxid
+        ),
+        "interactions": interactions,
+        "intact": intact,
+        "psicquic": psicquic,
+        "plugin_installed": plugin_installed,
+        "pub_count": pub_count,
+        "go_term_id": go_term_id,
     }
-    response = render(request, 'portal/sequence.html', {'rna': rna, 'context': context})
+    response = render(request, "portal/sequence.html", {"rna": rna, "context": context})
     # define canonical URL for Google
-    response['Link'] = '<{}>; rel="canonical"'.format(request.build_absolute_uri()).replace('http://', 'https://')
+    response["Link"] = '<{}>; rel="canonical"'.format(
+        request.build_absolute_uri()
+    ).replace("http://", "https://")
     # ask Google not to index non-species specific pages
     if not taxid:
-        response['X-Robots-Tag'] = 'noindex'
+        response["X-Robots-Tag"] = "noindex"
     # if the request comes from the API URL, add the header to allow cross domain request
     try:
-        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add("Access-Control-Allow-Origin", "*")
     except AttributeError:
         pass
     return response
@@ -246,19 +271,24 @@ def expert_database_view(request, expert_db_name):
     expert_db_name = expert_db_name.upper()
     expert_db = None
     for db in expert_dbs:
-        if db['name'].upper() == expert_db_name and db['imported']:
+        if db["name"].upper() == expert_db_name and db["imported"]:
             expert_db = db
-        elif db['label'].upper() == expert_db_name.upper() and db['imported']:
+        elif db["label"].upper() == expert_db_name.upper() and db["imported"]:
             expert_db = db
-        elif expert_db_name == 'TMRNA-WEBSITE' and db['label'].upper() == expert_db_name:
+        elif (
+            expert_db_name == "TMRNA-WEBSITE" and db["label"].upper() == expert_db_name
+        ):
             expert_db = db
 
     if not expert_db:
         raise Http404()
 
-    return render_to_response('portal/expert-database.html', {
-        'expert_db': expert_db,
-    })
+    return render_to_response(
+        "portal/expert-database.html",
+        {
+            "expert_db": expert_db,
+        },
+    )
 
 
 @never_cache
@@ -267,6 +297,7 @@ def website_status_view(request):
     This view will be monitored by Nagios for the presence
     of string "All systems operational".
     """
+
     def _is_database_up():
         try:
             rna = Rna.objects.all()[0]
@@ -281,11 +312,13 @@ def website_status_view(request):
         return True
 
     context = dict()
-    context['is_database_up'] = _is_database_up()
-    context['is_api_up'] = _is_api_up()
-    context['is_search_up'] = _is_search_up()
-    context['overall_status'] = context['is_database_up'] and context['is_api_up'] and context['is_search_up']
-    return render_to_response('portal/website-status.html', {'context': context})
+    context["is_database_up"] = _is_database_up()
+    context["is_api_up"] = _is_api_up()
+    context["is_search_up"] = _is_search_up()
+    context["overall_status"] = (
+        context["is_database_up"] and context["is_api_up"] and context["is_search_up"]
+    )
+    return render_to_response("portal/website-status.html", {"context": context})
 
 
 @cache_page(CACHE_TIMEOUT)
@@ -295,31 +328,43 @@ def proxy(request):
      - EBeye search URL - bypasses EBeye same-origin policy.
      - Rfam and miRBase images - avoids mixed content warnings due to lack of https support in Rfam.
     """
-    url = request.GET['url']
+    url = request.GET["url"]
 
     # check domain for security - we don't want someone to abuse this endpoint
     domain = urlparse(url).netloc
-    domain_list = ['www.ebi.ac.uk', 'wwwdev.ebi.ac.uk', 'rfam.org', 'www.mirbase.org', 'rna.bgsu.edu']
+    domain_list = [
+        "www.ebi.ac.uk",
+        "wwwdev.ebi.ac.uk",
+        "rfam.org",
+        "www.mirbase.org",
+        "rna.bgsu.edu",
+    ]
     if domain not in domain_list:
         return HttpResponseForbidden(
             "This proxy is for www.ebi.ac.uk, wwwdev.ebi.ac.uk, mirbase.org, rfam.org or rna.bgsu.edu only."
         )
 
-    if domain == 'rna.bgsu.edu':
+    if domain == "rna.bgsu.edu":
         # make sure to use the full url
         try:
-            query_string = request.META['QUERY_STRING']
-            url = query_string.split('url=')[1]
+            query_string = request.META["QUERY_STRING"]
+            url = query_string.split("url=")[1]
         except IndexError:
             pass
 
     try:
         proxied_response = requests.get(url)
         if proxied_response.status_code == 200:
-            if domain == 'rfam.org':  # for rfam images don't forget to set content-type header
-                response = HttpResponse(proxied_response.text, content_type="image/svg+xml")
-            elif 'mirbase.org' in domain:
-                response = HttpResponse(proxied_response.content, content_type="image/png")
+            if (
+                domain == "rfam.org"
+            ):  # for rfam images don't forget to set content-type header
+                response = HttpResponse(
+                    proxied_response.text, content_type="image/svg+xml"
+                )
+            elif "mirbase.org" in domain:
+                response = HttpResponse(
+                    proxied_response.content, content_type="image/png"
+                )
             else:
                 response = HttpResponse(proxied_response.text)
             return response
@@ -333,19 +378,24 @@ def external_link(request, expert_db, external_id):
     """
     Provide a flexible way to link to RNAcentral by providing a database and external URL.
     """
-    search_url = '{base_url}?query=expert_db:"{expert_db}" "{external_id}"&format=json'.format(
-        base_url=settings.EBI_SEARCH_ENDPOINT,
-        expert_db=expert_db,
-        external_id=external_id)
+    search_url = (
+        '{base_url}?query=expert_db:"{expert_db}" "{external_id}"&format=json'.format(
+            base_url=settings.EBI_SEARCH_ENDPOINT,
+            expert_db=expert_db,
+            external_id=external_id,
+        )
+    )
     try:
         response = requests.get(search_url)
         if response.status_code == 200:
             data = response.json()
-            if data['hitCount'] == 1:
-                upi, taxid = data['entries'][0]['id'].split('_')
-                return redirect('unique-rna-sequence', upi=upi, taxid=int(taxid))
+            if data["hitCount"] == 1:
+                upi, taxid = data["entries"][0]["id"].split("_")
+                return redirect("unique-rna-sequence", upi=upi, taxid=int(taxid))
             else:
-                return redirect('/search?q=expert_db:"{}" "{}"'.format(expert_db, external_id))
+                return redirect(
+                    '/search?q=expert_db:"{}" "{}"'.format(expert_db, external_id)
+                )
     except:
         return redirect('/search?q=expert_db:"{}" "{}"'.format(expert_db, external_id))
 
@@ -354,7 +404,7 @@ def external_link(request, expert_db, external_id):
 def publications_view(request):
     """Dashboard for publications"""
     # get data
-    data = Publication.objects.all().order_by('database')
+    data = Publication.objects.all().order_by("database")
 
     # count number of ids
     number_of_ids = 0
@@ -362,30 +412,28 @@ def publications_view(request):
         number_of_ids += item.total_ids
 
     # get number of entries
-    query = f'?query=entry_type:Publication&format=json'
+    query = f"?query=entry_type:Publication&format=json"
     try:
         response = requests.get(settings.EBI_SEARCH_ENDPOINT + query).json()
-        hit_count = response['hitCount']
+        hit_count = response["hitCount"]
     except KeyError:
         hit_count = None
 
-    context = {
-        'data': data,
-        'number_of_ids': number_of_ids,
-        'hit_count': hit_count
-    }
+    context = {"data": data, "number_of_ids": number_of_ids, "hit_count": hit_count}
 
-    return render(request, 'portal/litscan-dashboard.html', {'context': context})
+    return render(request, "portal/litscan-dashboard.html", {"context": context})
 
 
 #####################
 # Class-based views #
 #####################
 
+
 class StaticView(TemplateView):
     """Render flat pages."""
+
     def get(self, request, page, *args, **kwargs):
-        self.template_name = 'portal/' + page + '.html'
+        self.template_name = "portal/" + page + ".html"
         response = super(StaticView, self).get(request, *args, **kwargs)
         try:
             return response.render()
@@ -395,32 +443,39 @@ class StaticView(TemplateView):
 
 class GenomeBrowserView(TemplateView):
     """Render genome-browser, taking into account start/end locations."""
+
     def get(self, request, *args, **kwargs):
-        self.template_name = 'portal/genome-browser.html'
+        self.template_name = "portal/genome-browser.html"
 
         # if species is not defined - use homo_sapiens as default, if specified and wrong - 404
-        if 'species' in request.GET:
-            kwargs['genome'] = request.GET['species']
+        if "species" in request.GET:
+            kwargs["genome"] = request.GET["species"]
             try:
-                ensembl_assembly = EnsemblAssembly.objects.filter(ensembl_url=kwargs['genome']).all()[0]
+                ensembl_assembly = EnsemblAssembly.objects.filter(
+                    ensembl_url=kwargs["genome"]
+                ).all()[0]
             except IndexError:
                 raise Http404
         else:
-            kwargs['genome'] = 'homo_sapiens'
-            ensembl_assembly = EnsemblAssembly.objects.get(ensembl_url='homo_sapiens')
+            kwargs["genome"] = "homo_sapiens"
+            ensembl_assembly = EnsemblAssembly.objects.get(ensembl_url="homo_sapiens")
 
         # require chromosome, start and end in kwargs or use default location for this species
-        if ('chromosome' in request.GET or 'chr' in request.GET) and 'start' in request.GET and 'end' in request.GET:
-            if 'chromosome' in request.GET:
-                kwargs['chromosome'] = request.GET['chromosome']
-            elif 'chr' in request.GET:
-                kwargs['chromosome'] = request.GET['chr']
-            kwargs['start'] = request.GET['start']
-            kwargs['end'] = request.GET['end']
+        if (
+            ("chromosome" in request.GET or "chr" in request.GET)
+            and "start" in request.GET
+            and "end" in request.GET
+        ):
+            if "chromosome" in request.GET:
+                kwargs["chromosome"] = request.GET["chromosome"]
+            elif "chr" in request.GET:
+                kwargs["chromosome"] = request.GET["chr"]
+            kwargs["start"] = request.GET["start"]
+            kwargs["end"] = request.GET["end"]
         else:
-            kwargs['chromosome'] = ensembl_assembly.example_chromosome
-            kwargs['start'] = ensembl_assembly.example_start
-            kwargs['end'] = ensembl_assembly.example_end
+            kwargs["chromosome"] = ensembl_assembly.example_chromosome
+            kwargs["start"] = ensembl_assembly.example_start
+            kwargs["end"] = ensembl_assembly.example_end
 
         response = super(GenomeBrowserView, self).get(request, *args, **kwargs)
         return response.render()
@@ -445,15 +500,15 @@ def _get_json_lineage_tree(taxonomies):
             xrefs = taxonomies  # using xref and rnc_accessions here, not taxonomies
             for xref in xrefs:
                 lineages.add(xref[0])
-                taxids[xref[0].split('; ')[-1]] = xref[1]
+                taxids[xref[0].split("; ")[-1]] = xref[1]
         else:
             for taxonomy in taxonomies:
                 lineages.add(taxonomy.lineage)
-                taxids[taxonomy.lineage.split('; ')[-1]] = taxonomy.id
+                taxids[taxonomy.lineage.split("; ")[-1]] = taxonomy.id
 
     def build_nested_dict_helper(path, text, container):
         """Recursive function that builds the nested dictionary."""
-        segs = path.split('; ')
+        segs = path.split("; ")
         head = segs[0]
         tail = segs[1:]
         if not tail:
@@ -473,7 +528,7 @@ def _get_json_lineage_tree(taxonomies):
             except:
                 container = {}
                 container[head] = 1
-            build_nested_dict_helper('; '.join(tail), text, container[head])
+            build_nested_dict_helper("; ".join(tail), text, container[head])
 
     def get_nested_dict(lineages):
         """
@@ -501,23 +556,19 @@ def _get_json_lineage_tree(taxonomies):
             {"name":"A","children":[{"name":"C","children":[{"name":"X","children":[{"name":"human","size":2}]}]}]}
         """
         if not container:
-            container = {
-                "name": 'All',
-                "children": []
-            }
+            container = {"name": "All", "children": []}
         for name, children in six.iteritems(data):
             if isinstance(children, int):
-                container['children'].append({
-                    "name": name,
-                    "size": children,
-                    "taxid": taxids[name],
-                })
+                container["children"].append(
+                    {
+                        "name": name,
+                        "size": children,
+                        "taxid": taxids[name],
+                    }
+                )
             else:
-                container['children'].append({
-                    "name": name,
-                    "children": []
-                })
-                get_nested_tree(children, container['children'][-1])
+                container["children"].append({"name": name, "children": []})
+                get_nested_tree(children, container["children"][-1])
         return container
 
     lineages = set()

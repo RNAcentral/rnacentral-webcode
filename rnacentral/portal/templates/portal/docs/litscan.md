@@ -78,9 +78,9 @@ If your article is found in Europe PMC but not in RNAcentral, this could be due 
 
 ### How do you treat identifiers containing special characters?
 
-Note that searching for Ids with special characters may sometimes return articles unrelated to the search terms due to 
-the use of the [standard Solr tokenizer](https://solr.apache.org/guide/6_6/tokenizers.html#Tokenizers-StandardTokenizer) 
-in the Europe PMC API that treats whitespaces and special characters as delimiters. This is why the search is performed 
+Note that searching for Ids with special characters may sometimes return articles unrelated to the search terms due to
+the use of the [standard Solr tokenizer](https://solr.apache.org/guide/6_6/tokenizers.html#Tokenizers-StandardTokenizer)
+in the Europe PMC API that treats whitespaces and special characters as delimiters. This is why the search is performed
 in two steps as regular expressions ensure that only articles containing the exact term are used.
 
 ### Do you filter out common words?

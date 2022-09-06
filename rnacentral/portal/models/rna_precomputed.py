@@ -22,15 +22,18 @@ class RnaPrecomputed(models.Model):
 
     For every Rna there should be 1 entry in RnaPrecomputed, where taxid = Null and some species-specific.
     """
-    id = models.CharField(max_length=22, primary_key=True)  # id = upi + taxid if taxid != Null else upi
+
+    id = models.CharField(
+        max_length=22, primary_key=True
+    )  # id = upi + taxid if taxid != Null else upi
     taxid = models.IntegerField(db_index=True, null=True)
     description = models.CharField(max_length=250, null=True)
     upi = models.ForeignKey(
-        'Rna',
-        db_column='upi',
-        to_field='upi',
-        related_name='precomputed',
-        on_delete=models.CASCADE
+        "Rna",
+        db_column="upi",
+        to_field="upi",
+        related_name="precomputed",
+        on_delete=models.CASCADE,
     )
     rna_type = models.CharField(max_length=250, null=True)
     update_date = models.DateField(null=True)
@@ -43,10 +46,10 @@ class RnaPrecomputed(models.Model):
     update_date = models.DateField(null=False, default=datetime.date(1970, 1, 1))
 
     class Meta:
-        db_table = 'rnc_rna_precomputed'
+        db_table = "rnc_rna_precomputed"
 
     def get_databases(self):
-        return self.databases.split(',') if self.databases else None
+        return self.databases.split(",") if self.databases else None
 
     def get_sequence(self):
         return self.upi.get_sequence()

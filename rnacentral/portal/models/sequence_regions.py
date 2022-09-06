@@ -11,10 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from django.db import models
-
 from django.contrib.postgres.fields import ArrayField
-
+from django.db import models
 from portal.models import EnsemblAssembly, RnaPrecomputed
 
 
@@ -22,10 +20,10 @@ class SequenceRegion(models.Model):
     id = models.AutoField(primary_key=True)
     urs_taxid = models.ForeignKey(
         RnaPrecomputed,
-        related_name='regions',
-        db_column='urs_taxid',
-        to_field='id',
-        on_delete=models.CASCADE
+        related_name="regions",
+        db_column="urs_taxid",
+        to_field="id",
+        on_delete=models.CASCADE,
     )
     region_name = models.TextField()
     chromosome = models.TextField()
@@ -34,10 +32,10 @@ class SequenceRegion(models.Model):
     region_stop = models.IntegerField()
     assembly = models.ForeignKey(
         EnsemblAssembly,
-        related_name='regions',
-        db_column='assembly_id',
-        to_field='assembly_id',
-        on_delete=models.CASCADE
+        related_name="regions",
+        db_column="assembly_id",
+        to_field="assembly_id",
+        on_delete=models.CASCADE,
     )
     was_mapped = models.BooleanField()
     identity = models.IntegerField()
@@ -45,4 +43,4 @@ class SequenceRegion(models.Model):
     exon_count = models.IntegerField()
 
     class Meta:
-        db_table = 'rnc_sequence_regions'
+        db_table = "rnc_sequence_regions"

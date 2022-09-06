@@ -14,10 +14,10 @@ limitations under the License.
 from __future__ import print_function
 
 from optparse import make_option
-from django.core.management.base import BaseCommand, CommandError
 
 from common_exporters.oracle_connection import OracleConnection
-from portal.models import Xref, Modification
+from django.core.management.base import BaseCommand, CommandError
+from portal.models import Modification, Xref
 from portal.models.chemical_component import ChemicalComponent
 
 """
@@ -32,16 +32,18 @@ To run in test mode:
 python manage.py -t -d <database_url>
 """
 
+
 class PBDModificationsImporter(OracleConnection):
     """
     Class for importing chemical modifications information from PDBe.
     """
+
     def __init__(self, **kwargs):
         """
         Setup file path and store command line options.
         """
-        self.test = kwargs['test']
-        self.db_url = kwargs['db_url']
+        self.test = kwargs["test"]
+        self.db_url = kwargs["db_url"]
 
     def import_chemical_components(self):
         """
@@ -63,15 +65,17 @@ class PBDModificationsImporter(OracleConnection):
         components = []
         for row in self.cursor:
             result = self.row_to_dict(row)
-            components.append(ChemicalComponent(
-                id=result['id'],
-                description=result['name'],
-                one_letter_code=result['one_letter_code']
-            ))
-        assert(len(components) > 500)
+            components.append(
+                ChemicalComponent(
+                    id=result["id"],
+                    description=result["name"],
+                    one_letter_code=result["one_letter_code"],
+                )
+            )
+        assert len(components) > 500
 
         if not self.test:
-            ChemicalComponent.objects.all().delete() # delete previously imported entries
+            ChemicalComponent.objects.all().delete()  # delete previously imported entries
             ChemicalComponent.objects.bulk_create(components, batch_size=100)
 
     def import_modified_positions(self):
@@ -104,68 +108,89 @@ class PBDModificationsImporter(OracleConnection):
             and residue.auth_asym_id = '{chain_id}'
         """
         modifications = []
-        xrefs = Xref.objects.select_related('accession', 'db').\
-                             filter(db__descr='PDBE', deleted='N')
+        xrefs = Xref.objects.select_related("accession", "db").filter(
+            db__descr="PDBE", deleted="N"
+        )
         i = 0
         for xref in xrefs.all():
             print(xref.accession.accession)
-            pdb_id, chain_id, entity_id = xref.accession.accession.split('_')
-            self.cursor.execute(sql.format(pdb_id=pdb_id.lower(),
-                entity_id=entity_id, chain_id=chain_id))
+            pdb_id, chain_id, entity_id = xref.accession.accession.split("_")
+            self.cursor.execute(
+                sql.format(
+                    pdb_id=pdb_id.lower(), entity_id=entity_id, chain_id=chain_id
+                )
+            )
             for row in self.cursor:
                 result = self.row_to_dict(row)
-                print(pdb_id, chain_id, entity_id, result['chem_comp_id'], result['auth_seq_id'])
-                modifications.append(Modification(
-                    id = i,
-                    upi = xref.upi,
-                    xref = xref,
-                    position = result['position'],
-                    author_assigned_position = result['auth_seq_id'],
-                    ccd_id = pdb_id,
-                    source = 'PDB',
-                    modification_id = ChemicalComponent.objects.get(id=result['chem_comp_id'])
-                ))
+                print(
+                    pdb_id,
+                    chain_id,
+                    entity_id,
+                    result["chem_comp_id"],
+                    result["auth_seq_id"],
+                )
+                modifications.append(
+                    Modification(
+                        id=i,
+                        upi=xref.upi,
+                        xref=xref,
+                        position=result["position"],
+                        author_assigned_position=result["auth_seq_id"],
+                        ccd_id=pdb_id,
+                        source="PDB",
+                        modification_id=ChemicalComponent.objects.get(
+                            id=result["chem_comp_id"]
+                        ),
+                    )
+                )
                 i += 1
         if not self.test:
-            Modification.objects.all().delete() # delete previously imported entries
+            Modification.objects.all().delete()  # delete previously imported entries
             Modification.objects.bulk_create(modifications, batch_size=100)
 
     def __call__(self):
         """
         Main import function.
         """
-        print('Importing data from PDBe')
+        print("Importing data from PDBe")
         self.get_connection(self.db_url)
         self.get_cursor()
         self.import_chemical_components()
         self.import_modified_positions()
         self.close_connection()
-        print('Done')
+        print("Done")
 
 
 class Command(BaseCommand):
     """
     Handle command line options.
     """
+
     option_list = BaseCommand.option_list + (
-        make_option('-d', '--db',
-            dest='db_url',
+        make_option(
+            "-d",
+            "--db",
+            dest="db_url",
             default=False,
-            help='[Required] PDBe database url.'),
-        make_option('-t', '--test',
-            action='store_true',
-            dest='test',
+            help="[Required] PDBe database url.",
+        ),
+        make_option(
+            "-t",
+            "--test",
+            action="store_true",
+            dest="test",
             default=False,
-            help='[Optional] Run in test mode, which does not change the data in the database.'),
+            help="[Optional] Run in test mode, which does not change the data in the database.",
+        ),
     )
     # shown with -h, --help
-    help = ('Import chemical modifications information from PDBe')
+    help = "Import chemical modifications information from PDBe"
 
     def handle(self, *args, **options):
         """
         Django entry point
         """
-        if not options['db_url']:
-            raise CommandError('Please specify PDBe database url')
+        if not options["db_url"]:
+            raise CommandError("Please specify PDBe database url")
 
         PBDModificationsImporter(**options)()

@@ -16,4 +16,6 @@ def baseurl(request):
     """
     Return a BASE_URL template context for the current request.
     """
-    return {'BASE_URL': 'https://' + request.get_host(),}
+    return {
+        "BASE_URL": "https://" + request.get_host(),
+    }

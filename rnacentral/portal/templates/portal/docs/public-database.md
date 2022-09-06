@@ -104,7 +104,7 @@ If you need to export more sequences, you can use the following workflow:
 1. Run the following command to execute the query:
 
   ```
-  docker run -v `pwd`:/rnacentral -it postgres /bin/sh -c 'cd /rnacentral && psql -t -A -f query.sql postgres://reader:NWDMCE5xdipIjRrp@hh-pgsql-public.ebi.ac.uk:5432/pfmegrnargs > ids.txt'  
+  docker run -v `pwd`:/rnacentral -it postgres /bin/sh -c 'cd /rnacentral && psql -t -A -f query.sql postgres://reader:NWDMCE5xdipIjRrp@hh-pgsql-public.ebi.ac.uk:5432/pfmegrnargs > ids.txt'
   ```
 
   The command will create a file `ids.txt` with a list of RNAcentral identifiers.

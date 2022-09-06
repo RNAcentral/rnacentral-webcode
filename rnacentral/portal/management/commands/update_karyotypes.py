@@ -13,10 +13,9 @@ limitations under the License.
 from __future__ import print_function
 
 import json
+
 import requests
-
 from django.core.management.base import BaseCommand
-
 from portal.models import EnsemblAssembly, EnsemblKaryotype
 
 
@@ -27,17 +26,16 @@ class Command(BaseCommand):
     python manage.py update_karyotypes --ensembl_url homo_sapiens
     python manage.py update_karyotypes --path ./portal/static/node_modules/@rnacentral/genoverse/dist/js/genomes
     """
+
     def add_arguments(self, parser):
         parser.add_argument(
-            '--ensembl_url',
-            type=str,
-            help='specific assembly, e.g. homo_sapiens'
+            "--ensembl_url", type=str, help="specific assembly, e.g. homo_sapiens"
         )
 
         parser.add_argument(
-            '--path',
+            "--path",
             type=str,
-            help='store assembly file or files in specific directory on disk, instead of a database model'
+            help="store assembly file or files in specific directory on disk, instead of a database model",
         )
 
     def fetch_ensembl_karyotype(self, assembly):
@@ -46,8 +44,8 @@ class Command(BaseCommand):
         print("Retrieving karyotype for: %s" % ensembl_url)
 
         response = requests.get(
-            'http://rest.ensembl.org/info/assembly/%s?bands=1' % (ensembl_url),
-            headers={'Content-Type': 'application/json'}
+            "http://rest.ensembl.org/info/assembly/%s?bands=1" % (ensembl_url),
+            headers={"Content-Type": "application/json"},
         )
 
         response.raise_for_status()
@@ -58,36 +56,29 @@ class Command(BaseCommand):
                 try:
                     bands = []
                     for band in data["bands"]:
-                        bands.append({
-                            "id": band["id"],
-                            "start": band["start"],
-                            "end": band["end"],
-                            "type": band["stain"]
-                        })
+                        bands.append(
+                            {
+                                "id": band["id"],
+                                "start": band["start"],
+                                "end": band["end"],
+                                "type": band["stain"],
+                            }
+                        )
 
-                    result[data["name"]] = {
-                        "size": data["length"],
-                        "bands": bands
-                    }
+                    result[data["name"]] = {"size": data["length"], "bands": bands}
                 except KeyError:  # bands not defined
                     start = 1
                     end = data["length"]
 
                     result[data["name"]] = {
                         "size": data["length"],
-                        "bands": [{
-                            "start": start,
-                            "end": end
-                        }]
+                        "bands": [{"start": start, "end": end}],
                     }
 
             else:  # if data["coord_system"] == "scaffold" or data["coord_system"] == "supercontig" or there might be other types
                 result[data["name"]] = {
                     "size": data["length"],
-                    "bands": [{
-                        "start": 1,
-                        "end": data["length"]
-                    }]
+                    "bands": [{"start": 1, "end": data["length"]}],
                 }
 
         return result
@@ -96,21 +87,26 @@ class Command(BaseCommand):
         try:
             karyotype = self.fetch_ensembl_karyotype(assembly=assembly)
         except:
-            print('Error retrieving karyotype {}'.format(assembly.assembly_id))
+            print("Error retrieving karyotype {}".format(assembly.assembly_id))
             return
         if not path:
             EnsemblKaryotype.objects.filter(assembly=assembly).delete()
             EnsemblKaryotype.objects.create(assembly=assembly, karyotype=karyotype)
         else:
-            file = open(path + '/' + assembly.ensembl_url + '.js', 'wb')
-            file.write("Genoverse.Genomes.%s = %s" % (assembly.ensembl_url, json.dumps(karyotype, indent=2)))
+            file = open(path + "/" + assembly.ensembl_url + ".js", "wb")
+            file.write(
+                "Genoverse.Genomes.%s = %s"
+                % (assembly.ensembl_url, json.dumps(karyotype, indent=2))
+            )
 
     def handle(self, *args, **options):
         """Main function, called by django."""
-        if options['ensembl_url']:
-            assembly = EnsemblAssembly.objects.filter(ensembl_url=options['ensembl_url']).first()
-            self.process_ensembl_karyotype(assembly, options['path'])
+        if options["ensembl_url"]:
+            assembly = EnsemblAssembly.objects.filter(
+                ensembl_url=options["ensembl_url"]
+            ).first()
+            self.process_ensembl_karyotype(assembly, options["path"])
         else:
             for assembly in EnsemblAssembly.objects.all():
                 if not EnsemblKaryotype.objects.filter(assembly=assembly).exists():
-                    self.process_ensembl_karyotype(assembly, options['path'])
+                    self.process_ensembl_karyotype(assembly, options["path"])

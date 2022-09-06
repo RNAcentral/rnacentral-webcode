@@ -18,9 +18,10 @@ class Publication(models.Model):
     """
     To be used by the LitScan Dashboard
     """
+
     database = models.CharField(max_length=40)
     total_ids = models.IntegerField()
     results = models.IntegerField()
 
     class Meta:
-        db_table = 'publications'
+        db_table = "publications"

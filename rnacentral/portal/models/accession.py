@@ -14,9 +14,8 @@ limitations under the License.
 import json
 import re
 
-from django.db import models
-
 import portal.models
+from django.db import models
 
 
 class Accession(models.Model):
@@ -47,7 +46,7 @@ class Accession(models.Model):
 
     # GeneID (without coordinates); used to find splice variants for lncRNAs OR mature/precursor RNAs for miRNAs
     optional_id = models.CharField(max_length=100)
-    common_name = models.CharField(max_length=200, default='')
+    common_name = models.CharField(max_length=200, default="")
 
     anticodon = models.CharField(max_length=50)
     experiment = models.CharField(max_length=500)
@@ -56,21 +55,21 @@ class Accession(models.Model):
     gene_synonym = models.CharField(max_length=400)
     inference = models.CharField(max_length=100)
     locus_tag = models.CharField(max_length=50)
-    genome_position = models.CharField(max_length=200, db_column='map')
+    genome_position = models.CharField(max_length=200, db_column="map")
     mol_type = models.CharField(max_length=50)
     ncrna_class = models.CharField(max_length=50)
     note = models.CharField(max_length=1600)
     old_locus_tag = models.CharField(max_length=50)
     product = models.CharField(max_length=300)
     db_xref = models.CharField(max_length=800)
-    standard_name = models.CharField(max_length=100, default='')
+    standard_name = models.CharField(max_length=100, default="")
 
     class Meta:
-        db_table = 'rnc_accessions'
+        db_table = "rnc_accessions"
 
     def get_pdb_entity_id(self):
         """Example PDB accession: 1J5E_A_1 (PDB id, chain, entity id)"""
-        return self.accession.split('_')[-1] if self.database == 'PDBE' else None
+        return self.accession.split("_")[-1] if self.database == "PDBE" else None
 
     def get_pdb_structured_note(self):
         """
@@ -88,14 +87,14 @@ class Accession(models.Model):
         """Extract Ensembl Gene id (if available) from the note json field."""
         if self.database == "HGNC" and self.note:
             note = json.loads(self.note)
-            return note['ensembl_gene_id'] if 'ensembl_gene_id' in note else None
+            return note["ensembl_gene_id"] if "ensembl_gene_id" in note else None
         else:
             return None
 
     def get_hgnc_id(self):
         """Search db_xref field for an HGNC id."""
         if self.db_xref:
-            match = re.search(r'HGNC\:HGNC\:(\d+)', self.db_xref)
+            match = re.search(r"HGNC\:HGNC\:(\d+)", self.db_xref)
             return match.group(1) if match else None
         else:
             return None
@@ -107,9 +106,9 @@ class Accession(models.Model):
         Biotype is used to color entries in Genoverse.
         If biotype contains the word "RNA" it is given a predefined color.
         """
-        biotype = 'ncRNA'  # default biotype
+        biotype = "ncRNA"  # default biotype
         if self.note:
-            match = re.search(r'biotype\:(\w+)', self.note)
+            match = re.search(r"biotype\:(\w+)", self.note)
             if match:
                 biotype = match.group(1)
         return biotype
@@ -120,40 +119,61 @@ class Accession(models.Model):
         feature table in the Non-coding product, or for `ncRNA` features,
         it's one of the ncRNA classes defined by INSDC.
         """
-        return self.ncrna_class if self.feature_name == 'ncRNA' else self.feature_name
+        return self.ncrna_class if self.feature_name == "ncRNA" else self.feature_name
 
     def get_srpdb_id(self):
-        return re.sub('\.\d+$', '', self.external_id) if self.external_id else None
+        return re.sub("\.\d+$", "", self.external_id) if self.external_id else None
 
     def get_ena_url(self):
         """
         Get the ENA entry url that refers to the entry from
         the Non-coding product containing the cross-reference.
         """
-        if self.database in ['RFAM', 'PDBE', 'REFSEQ', 'RDP', 'GtRNAdb', 'lncRNAdb', 'miRBase', 'pombase', 'Dictybase', 'SGD', 'snopy', 'Srpdb', 'tair', 'tmRNA website']:
-            return ''  # no ENA source links for these entries
+        if self.database in [
+            "RFAM",
+            "PDBE",
+            "REFSEQ",
+            "RDP",
+            "GtRNAdb",
+            "lncRNAdb",
+            "miRBase",
+            "pombase",
+            "Dictybase",
+            "SGD",
+            "snopy",
+            "Srpdb",
+            "tair",
+            "tmRNA website",
+        ]:
+            return ""  # no ENA source links for these entries
         ena_base_url = "https://www.ebi.ac.uk/ena/browser/view/Non-coding:"
-        if self.is_composite == 'Y':
+        if self.is_composite == "Y":
             return ena_base_url + self.non_coding_id
         else:
             return ena_base_url + self.accession
 
     def get_ensembl_species_url(self):
         """Get species name in a format that can be used in Ensembl urls."""
-        if 'ENSEMBL' not in self.database:
-            return ''
-        if self.species == 'Dictyostelium discoideum':
-            species = 'Dictyostelium discoideum AX4'
-        elif self.species.startswith('Mus musculus') and self.accession.startswith('MGP'):  # Ensembl mouse strain
-            parts = self.accession.split('_')
+        if "ENSEMBL" not in self.database:
+            return ""
+        if self.species == "Dictyostelium discoideum":
+            species = "Dictyostelium discoideum AX4"
+        elif self.species.startswith("Mus musculus") and self.accession.startswith(
+            "MGP"
+        ):  # Ensembl mouse strain
+            parts = self.accession.split("_")
             if len(parts) == 3:
-                species = 'Mus musculus ' + parts[1]
+                species = "Mus musculus " + parts[1]
             else:
                 species = self.species
-        elif self.species.count(' ') > 1 or self.species.count('-') > 0:
+        elif self.species.count(" ") > 1 or self.species.count("-") > 0:
             try:
-                xref = portal.models.Xref.objects.filter(accession__accession=self.accession, deleted='N').get()
-                ensembl_genome = portal.models.EnsemblAssembly.objects.filter(taxid=xref.taxid).first()
+                xref = portal.models.Xref.objects.filter(
+                    accession__accession=self.accession, deleted="N"
+                ).get()
+                ensembl_genome = portal.models.EnsemblAssembly.objects.filter(
+                    taxid=xref.taxid
+                ).first()
                 if ensembl_genome:
                     return ensembl_genome.ensembl_url
                 else:
@@ -167,13 +187,13 @@ class Accession(models.Model):
         else:
             species = self.species
 
-        return species.replace(' ', '_').lower()
+        return species.replace(" ", "_").lower()
 
     def get_malacards_diseases(self):
         try:
             data = json.loads(self.note) if self.note else None
-            if data and 'diseases' in data:
-                return data['diseases']
+            if data and "diseases" in data:
+                return data["diseases"]
             else:
                 return None
         except ValueError as e:
@@ -182,84 +202,110 @@ class Accession(models.Model):
     def get_expert_db_external_url(self):
         """Get external url to expert database."""
         urls = {
-            'RFAM': 'http://rfam.org/family/{id}',
-            'SRPDB': 'https://rth.dk/resources/rnp/SRPDB/rna/sequences/fasta/{id}',
-            'MIRBASE': 'http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc={id}',
-            'TMRNA_WEB': 'http://bioinformatics.sandia.gov/tmrna/seqs/{id}',
-            'LNCRNADB': 'http://www.lncrnadb.org/{id}',
-            'REFSEQ': 'http://www.ncbi.nlm.nih.gov/nuccore/{id}.{version}',
-            'RDP': 'http://rdp.cme.msu.edu/hierarchy/detail.jsp?seqid={id}',
-            'SNOPY': 'http://snoopy.med.miyazaki-u.ac.jp/snorna_db.cgi?mode=sno_info&id={id}',
-            'PDBE': 'http://www.ebi.ac.uk/pdbe-srv/view/entry/{id}',
-            'SGD': 'http://www.yeastgenome.org/locus/{id}/overview',
-            'TAIR': 'http://www.arabidopsis.org/servlets/TairObject?name={id}&type=locus',
-            'WORMBASE': 'http://www.wormbase.org/species/c_elegans/gene/{id}',
-            'PLNCDB': 'https://www.tobaccodb.org/plncdb/nunMir?plncdb_id={id}',
-            'DICTYBASE': 'http://dictybase.org/gene/{id}',
-            'SILVA': 'http://www.arb-silva.de/browser/{lsu_ssu}/silva/{id}',
-            'POMBASE': 'http://www.pombase.org/spombe/result/{id}',
-            'GREENGENES': 'https://www.ebi.ac.uk/ena/browser/view/{id}.{version}',
-            'NONCODE': 'http://www.noncode.org/show_rna.php?id={id}&version={version}',
-            'LNCIPEDIA': 'http://www.lncipedia.org/db/transcript/{id}',
-            'LNCBOOK': 'http://bigd.big.ac.cn/lncbook/transcript?transid={id}',
-            'MODOMICS': 'http://modomics.genesilico.pl/sequences/list/{id}',
-            'HGNC': 'http://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id={id}',
-            'ENSEMBL': 'http://www.ensembl.org/{species}/Transcript/Summary?t={id}',
-            'GENCODE': 'http://www.ensembl.org/{species}/Transcript/Summary?t={id}',
-            'ENSEMBL_PLANTS': 'http://plants.ensembl.org/{species}/Transcript/Summary?db=core;t={id}',
-            'ENSEMBL_FUNGI': 'http://fungi.ensembl.org/{species}/Transcript/Summary?db=core;t={id}',
-            'ENSEMBL_METAZOA': 'http://metazoa.ensembl.org/{species}/Transcript/Summary?db=core;t={id}',
-            'ENSEMBL_PROTISTS': 'http://protists.ensembl.org/{species}/Transcript/Summary?db=core;t={id}',
-            'FLYBASE': 'http://flybase.org/reports/{id}',
-            'MGI': 'http://www.informatics.jax.org/marker/{id}',
-            'RGD': 'https://rgd.mcw.edu/rgdweb/report/gene/main.html?id={id}',
-            'MALACARDS': 'https://www.genecards.org/cgi-bin/carddisp.pl?gene={id}#diseases',
-            'GENECARDS': 'https://www.genecards.org/cgi-bin/carddisp.pl?gene={id}',
-            'PIRBASE': 'http://bigdata.ibp.ac.cn/piRBase/pirna.php?name={id}',
+            "RFAM": "http://rfam.org/family/{id}",
+            "SRPDB": "https://rth.dk/resources/rnp/SRPDB/rna/sequences/fasta/{id}",
+            "MIRBASE": "http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc={id}",
+            "TMRNA_WEB": "http://bioinformatics.sandia.gov/tmrna/seqs/{id}",
+            "LNCRNADB": "http://www.lncrnadb.org/{id}",
+            "REFSEQ": "http://www.ncbi.nlm.nih.gov/nuccore/{id}.{version}",
+            "RDP": "http://rdp.cme.msu.edu/hierarchy/detail.jsp?seqid={id}",
+            "SNOPY": "http://snoopy.med.miyazaki-u.ac.jp/snorna_db.cgi?mode=sno_info&id={id}",
+            "PDBE": "http://www.ebi.ac.uk/pdbe-srv/view/entry/{id}",
+            "SGD": "http://www.yeastgenome.org/locus/{id}/overview",
+            "TAIR": "http://www.arabidopsis.org/servlets/TairObject?name={id}&type=locus",
+            "WORMBASE": "http://www.wormbase.org/species/c_elegans/gene/{id}",
+            "PLNCDB": "https://www.tobaccodb.org/plncdb/nunMir?plncdb_id={id}",
+            "DICTYBASE": "http://dictybase.org/gene/{id}",
+            "SILVA": "http://www.arb-silva.de/browser/{lsu_ssu}/silva/{id}",
+            "POMBASE": "http://www.pombase.org/spombe/result/{id}",
+            "GREENGENES": "https://www.ebi.ac.uk/ena/browser/view/{id}.{version}",
+            "NONCODE": "http://www.noncode.org/show_rna.php?id={id}&version={version}",
+            "LNCIPEDIA": "http://www.lncipedia.org/db/transcript/{id}",
+            "LNCBOOK": "http://bigd.big.ac.cn/lncbook/transcript?transid={id}",
+            "MODOMICS": "http://modomics.genesilico.pl/sequences/list/{id}",
+            "HGNC": "http://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id={id}",
+            "ENSEMBL": "http://www.ensembl.org/{species}/Transcript/Summary?t={id}",
+            "GENCODE": "http://www.ensembl.org/{species}/Transcript/Summary?t={id}",
+            "ENSEMBL_PLANTS": "http://plants.ensembl.org/{species}/Transcript/Summary?db=core;t={id}",
+            "ENSEMBL_FUNGI": "http://fungi.ensembl.org/{species}/Transcript/Summary?db=core;t={id}",
+            "ENSEMBL_METAZOA": "http://metazoa.ensembl.org/{species}/Transcript/Summary?db=core;t={id}",
+            "ENSEMBL_PROTISTS": "http://protists.ensembl.org/{species}/Transcript/Summary?db=core;t={id}",
+            "FLYBASE": "http://flybase.org/reports/{id}",
+            "MGI": "http://www.informatics.jax.org/marker/{id}",
+            "RGD": "https://rgd.mcw.edu/rgdweb/report/gene/main.html?id={id}",
+            "MALACARDS": "https://www.genecards.org/cgi-bin/carddisp.pl?gene={id}#diseases",
+            "GENECARDS": "https://www.genecards.org/cgi-bin/carddisp.pl?gene={id}",
+            "PIRBASE": "http://bigdata.ibp.ac.cn/piRBase/pirna.php?name={id}",
         }
         if self.database in [
-            'GTRNADB', 'ZWD', 'SNODB', 'MIRGENEDB', '5SRRNADB', 'SILVA', 'SNORNADB', 'ZFIN', 'RIBOVISION'
+            "GTRNADB",
+            "ZWD",
+            "SNODB",
+            "MIRGENEDB",
+            "5SRRNADB",
+            "SILVA",
+            "SNORNADB",
+            "ZFIN",
+            "RIBOVISION",
         ]:
             try:
                 data = json.loads(self.note)
-                url = data['url'] if 'url' in data else ''
-                if self.database == 'MIRGENEDB':
+                url = data["url"] if "url" in data else ""
+                if self.database == "MIRGENEDB":
                     # replace trailing star character for MirGeneDB
-                    url = re.sub(r'\*$', '', url)
+                    url = re.sub(r"\*$", "", url)
                 return url
             except ValueError:
-                return ''
+                return ""
         if self.database in urls.keys():
-            if self.database == 'LNCRNADB':
-                return urls[self.database].format(id=self.optional_id.replace(' ', ''))
-            elif self.database == 'VEGA':
-                return urls[self.database].format(id=self.optional_id,
-                    species=self.species.replace(' ', '_'))
-            elif self.database == 'GREENGENES':
-                return urls[self.database].format(id=self.parent_ac, version=self.seq_version)
-            elif self.database == 'REFSEQ':
-                return urls[self.database].format(id=self.external_id, version=self.seq_version)
-            elif self.database == 'NONCODE':
-                if '.' in self.external_id:
-                    noncode_id, version = self.external_id.split('.')
+            if self.database == "LNCRNADB":
+                return urls[self.database].format(id=self.optional_id.replace(" ", ""))
+            elif self.database == "VEGA":
+                return urls[self.database].format(
+                    id=self.optional_id, species=self.species.replace(" ", "_")
+                )
+            elif self.database == "GREENGENES":
+                return urls[self.database].format(
+                    id=self.parent_ac, version=self.seq_version
+                )
+            elif self.database == "REFSEQ":
+                return urls[self.database].format(
+                    id=self.external_id, version=self.seq_version
+                )
+            elif self.database == "NONCODE":
+                if "." in self.external_id:
+                    noncode_id, version = self.external_id.split(".")
                     return urls[self.database].format(id=noncode_id, version=version)
                 else:
                     return urls[self.database].format(id=self.external_id, version=1)
-            elif self.database == 'HGNC':
+            elif self.database == "HGNC":
                 return urls[self.database].format(id=self.accession)
-            elif self.database == 'ENSEMBL' or self.database == 'GENCODE':
+            elif self.database == "ENSEMBL" or self.database == "GENCODE":
                 species = self.get_ensembl_species_url()
-                return urls[self.database].format(id=self.external_id, species=species) if species else None
-            elif self.database in ['ENSEMBL_PLANTS', 'ENSEMBL_METAZOA', 'ENSEMBL_FUNGI', 'ENSEMBL_PROTISTS']:
+                return (
+                    urls[self.database].format(id=self.external_id, species=species)
+                    if species
+                    else None
+                )
+            elif self.database in [
+                "ENSEMBL_PLANTS",
+                "ENSEMBL_METAZOA",
+                "ENSEMBL_FUNGI",
+                "ENSEMBL_PROTISTS",
+            ]:
                 species = self.get_ensembl_species_url()
-                return urls[self.database].format(id=self.external_id, species=species) if species else None
-            elif self.database == 'TAIR':
+                return (
+                    urls[self.database].format(id=self.external_id, species=species)
+                    if species
+                    else None
+                )
+            elif self.database == "TAIR":
                 return urls[self.database].format(id=self.gene)
-            elif self.database in ['GENECARDS', 'MALACARDS']:
+            elif self.database in ["GENECARDS", "MALACARDS"]:
                 return urls[self.database].format(id=self.gene)
             return urls[self.database].format(id=self.external_id)
         else:
-            return ''
+            return ""
 
 
 def url2db(identifier):
@@ -269,14 +315,14 @@ def url2db(identifier):
     :return: Species name as in database "Canis lupus familiaris"
     """
     # special cases
-    if identifier in ('canis_familiaris', 'canis_lupus_familiaris'):
+    if identifier in ("canis_familiaris", "canis_lupus_familiaris"):
         return "Canis lupus familiaris"
-    elif identifier in ('gorilla_gorilla', 'gorilla_gorilla_gorilla'):
+    elif identifier in ("gorilla_gorilla", "gorilla_gorilla_gorilla"):
         return "Gorilla gorilla gorilla"
-    elif identifier in ('ceratotherium_simum', 'ceratotherium_simum_simum'):
+    elif identifier in ("ceratotherium_simum", "ceratotherium_simum_simum"):
         return "Ceratotherium simum simum"
     else:
-        return identifier.replace('_', ' ').capitalize()
+        return identifier.replace("_", " ").capitalize()
 
 
 def db2url(identifier):
@@ -293,4 +339,4 @@ def db2url(identifier):
     elif identifier in ("Ceratotherium simum simum", "Ceratotherium simum"):
         return "ceratotherium_simum"
     else:
-        return identifier.replace(' ', '_').lower()
+        return identifier.replace(" ", "_").lower()

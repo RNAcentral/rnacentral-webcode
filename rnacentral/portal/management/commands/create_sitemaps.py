@@ -13,24 +13,31 @@ limitations under the License.
 
 from __future__ import print_function
 
-from collections import OrderedDict
 import os
 import warnings
+from collections import OrderedDict
 
 from django.conf import settings
 from django.contrib.sitemaps import Sitemap
-from django.contrib.sitemaps.views import index as sitemap_index, sitemap as sitemap_section
+from django.contrib.sitemaps.views import index as sitemap_index
+from django.contrib.sitemaps.views import sitemap as sitemap_section
 from django.core.management.base import BaseCommand
 from django.core.paginator import Paginator
-from django.urls import reverse
 from django.db.models import Q
 from django.http import HttpRequest
-
-from portal.models import RnaPrecomputed, Database
-
+from django.urls import reverse
+from portal.models import Database, RnaPrecomputed
 
 # Queryset for Rna sections; include only Human and Mouse rnas for now.
-rna_queryset = RnaPrecomputed.objects.filter(Q(databases__contains='HGNC') | Q(databases__contains='PDBe') | Q(databases__contains='RefSeq')).filter(taxid__isnull=False).order_by('upi')
+rna_queryset = (
+    RnaPrecomputed.objects.filter(
+        Q(databases__contains="HGNC")
+        | Q(databases__contains="PDBe")
+        | Q(databases__contains="RefSeq")
+    )
+    .filter(taxid__isnull=False)
+    .order_by("upi")
+)
 rna_paginator = Paginator(rna_queryset, Sitemap.limit)
 
 
@@ -54,55 +61,56 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--section',
+            "--section",
             type=str,
-            help='sitemaps consist of sections (e.g. `rna` or `static`); this option allows to process a single section'
+            help="sitemaps consist of sections (e.g. `rna` or `static`); this option allows to process a single section",
         )
 
         parser.add_argument(
-            '--first_page',
+            "--first_page",
             type=int,
             default=1,
-            help='create a range of section pages, starting from this one (numeration of pages starts with 1); requires section option'
+            help="create a range of section pages, starting from this one (numeration of pages starts with 1); requires section option",
         )
 
         parser.add_argument(
-            '--last_page',
+            "--last_page",
             type=int,
             default=-1,
-            help='create a range of section pages, ending with this (e.g. if --last_page 2, pages = [1, 2]); requires section option'
+            help="create a range of section pages, ending with this (e.g. if --last_page 2, pages = [1, 2]); requires section option",
         )
 
     def sitemaps(self):
         if hasattr(self, "_sitemaps"):
             return self._sitemaps
         else:
+
             class StaticViewSitemap(Sitemap):
                 def __init__(self):
-                    self.protocol = 'https'
+                    self.protocol = "https"
 
                 def items(self):
                     return [
-                        'about',
-                        'api-docs',
-                        'contact-us',
-                        'downloads',
-                        'expert-databases',
-                        'help-conserved-motifs',
-                        'help-gene-ontology-annotations',
-                        'help-genomic-mapping',
-                        'help-public-database',
-                        'help-qc',
-                        'help-rna-target-interactions',
-                        'help-scientific-advisory-board',
-                        'help-secondary-structure',
-                        'help-sequence-search',
-                        'help-text-search',
-                        'help',
-                        'homepage',
-                        'linking-to-rnacentral',
-                        'sequence-search',
-                        'training',
+                        "about",
+                        "api-docs",
+                        "contact-us",
+                        "downloads",
+                        "expert-databases",
+                        "help-conserved-motifs",
+                        "help-gene-ontology-annotations",
+                        "help-genomic-mapping",
+                        "help-public-database",
+                        "help-qc",
+                        "help-rna-target-interactions",
+                        "help-scientific-advisory-board",
+                        "help-secondary-structure",
+                        "help-sequence-search",
+                        "help-text-search",
+                        "help",
+                        "homepage",
+                        "linking-to-rnacentral",
+                        "sequence-search",
+                        "training",
                     ]
 
                 def location(self, item):
@@ -110,23 +118,25 @@ class Command(BaseCommand):
 
             class ExpertDatabasesSitemap(Sitemap):
                 def __init__(self):
-                    self.protocol = 'https'
+                    self.protocol = "https"
 
                 def items(self):
-                    return Database.objects.filter(alive='Y').all()
+                    return Database.objects.filter(alive="Y").all()
 
                 def location(self, item):
-                    return reverse('expert-database', kwargs={'expert_db_name': item.label})
+                    return reverse(
+                        "expert-database", kwargs={"expert_db_name": item.label}
+                    )
 
             class RnaSitemap(Sitemap):
                 def __init__(self, page_number, rna_paginator):
                     self.page_number = page_number
                     self.rna_paginator = rna_paginator
-                    self.protocol = 'https'
+                    self.protocol = "https"
 
                 @property
                 def paginator(self):
-                    output = type('paginator', (), {'page': self.rna_paginator.page})()
+                    output = type("paginator", (), {"page": self.rna_paginator.page})()
                     output.num_pages = 1
                     return output
 
@@ -134,36 +144,47 @@ class Command(BaseCommand):
                     return self.rna_paginator.page(self.page_number)
 
                 def location(self, item):
-                    return reverse('unique-rna-sequence', kwargs={'upi': item.upi_id, 'taxid': item.taxid})
+                    return reverse(
+                        "unique-rna-sequence",
+                        kwargs={"upi": item.upi_id, "taxid": item.taxid},
+                    )
 
-            self._sitemaps = OrderedDict([
-                ('-expert-databases', ExpertDatabasesSitemap),
-                ('-static', StaticViewSitemap()),
-            ])
+            self._sitemaps = OrderedDict(
+                [
+                    ("-expert-databases", ExpertDatabasesSitemap),
+                    ("-static", StaticViewSitemap()),
+                ]
+            )
 
             for page_number in rna_paginator.page_range:
-                key = '-rna-%s' % page_number
+                key = "-rna-%s" % page_number
                 self._sitemaps[key] = RnaSitemap(page_number, rna_paginator)
 
             return self._sitemaps
 
     def handle(self, *args, **kwargs):
-        if ('first_page' in kwargs or 'last_page' in kwargs) and 'section' not in kwargs:
-            warnings.warn("You must specify '--section' option, to use '--first_page/last_page")
+        if (
+            "first_page" in kwargs or "last_page" in kwargs
+        ) and "section" not in kwargs:
+            warnings.warn(
+                "You must specify '--section' option, to use '--first_page/last_page"
+            )
             return
 
-        if kwargs['section'] is not None:
-            if kwargs['section'] == 'rna':
+        if kwargs["section"] is not None:
+            if kwargs["section"] == "rna":
                 # determine range of pages to be cached
-                if kwargs['last_page'] == -1:  # last page is not specified
+                if kwargs["last_page"] == -1:  # last page is not specified
                     last_page = rna_paginator.num_pages
                 else:  # last page is specified
-                    last_page = kwargs['last_page']
+                    last_page = kwargs["last_page"]
 
                 # create section's sitemap
-                pages = range(kwargs['first_page'], last_page + 1)
+                pages = range(kwargs["first_page"], last_page + 1)
                 for page_number in pages:
-                    self.create_section("-" + kwargs['section'] + "-" + str(page_number))
+                    self.create_section(
+                        "-" + kwargs["section"] + "-" + str(page_number)
+                    )
             else:
                 warnings.warn("only rna section is currently supported")
                 return
@@ -180,7 +201,9 @@ class Command(BaseCommand):
 
         request = self.prepare_request()
         sitemaps = self.sitemaps()
-        response = sitemap_index(request, **{'sitemaps': sitemaps, 'sitemap_url_name': 'sitemap'})
+        response = sitemap_index(
+            request, **{"sitemaps": sitemaps, "sitemap_url_name": "sitemap"}
+        )
         self.write_response(response, "")  # for index sitemap section is empty string
 
         for section in self.sitemaps().keys():
@@ -201,15 +224,17 @@ class Command(BaseCommand):
         # server name and port don't really matter,
         # cause domain name for sitemaps is taken from django.contrib.sites,
         # but they should exist
-        request.META['SERVER_NAME'] = "rnacentral.org"
-        request.META['SERVER_PORT'] = "443"
-        request.META['REQUEST_METHOD'] = 'GET'
-        request.method = 'GET'
+        request.META["SERVER_NAME"] = "rnacentral.org"
+        request.META["SERVER_PORT"] = "443"
+        request.META["REQUEST_METHOD"] = "GET"
+        request.method = "GET"
 
         return request
 
     def write_response(self, response, section):
         """Writes HttpResponse into a file"""
-        filename = os.path.join(settings.PROJECT_PATH, 'rnacentral', 'sitemaps', 'sitemap%s.xml' % section)
+        filename = os.path.join(
+            settings.PROJECT_PATH, "rnacentral", "sitemaps", "sitemap%s.xml" % section
+        )
         response.render()
-        open(filename, 'wb').write(response.content)
+        open(filename, "wb").write(response.content)

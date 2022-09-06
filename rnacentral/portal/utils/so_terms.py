@@ -7,34 +7,36 @@ stored in the ``MAPPING`` dict.
 
 import six
 
-
 MAPPING = {
-    "RNase_MRP_RNA": ('SO:0000385', "RNase_MRP_RNA"),
-    "RNase_P_RNA": ('SO:0000386', "RNase_P_RNA"),
-    "SRP_RNA": ('SO:0000590', "SRP_RNA"),
-    "Y_RNA": ('SO:0000405', "Y_RNA"),
-    "antisense_RNA": ('SO:0000644', "antisense_RNA"),
-    "autocatalytically_spliced_intron": ('SO:0000588', "autocatalytically_spliced_intron"),
-    "guide_RNA": ('SO:0000602', "guide_RNA"),
-    "hammerhead_ribozyme": ('SO:0000380', "hammerhead_ribozyme"),
-    "lncRNA": ('SO:0001877', "lnc_RNA"),
-    "miRNA": ('SO:0000276', "miRNA"),
-    "ncRNA": ('SO:0000655', "ncRNA"),
-    "misc_RNA": ('SO:0000673', "transcript"),
-    "other": ('SO:0000655', "ncRNA"),
-    "precursor_RNA": ('SO:0000185 ', "primary_transcript"),
-    "piRNA": ('SO:0001035', "piRNA"),
-    "rasiRNA": ('SO:0000454', "rasiRNA"),
-    "ribozyme": ('SO:0000374', "ribozyme"),
-    "scRNA": ('SO:0000013', "scRNA"),
-    "siRNA": ('SO:0000646', "siRNA"),
-    "snRNA": ('SO:0000274', "snRNA"),
-    "snoRNA": ('SO:0000275', "snoRNA"),
-    "telomerase_RNA": ('SO:0000390', "telomerase_RNA"),
-    "tmRNA": ('SO:0000584', "tmRNA"),
-    "vault_RNA": ('SO:0000404', "vault_RNA"),
-    'rRNA': ('SO:0000252', 'rRNA'),
-    'tRNA': ('SO:0000253', 'tRNA'),
+    "RNase_MRP_RNA": ("SO:0000385", "RNase_MRP_RNA"),
+    "RNase_P_RNA": ("SO:0000386", "RNase_P_RNA"),
+    "SRP_RNA": ("SO:0000590", "SRP_RNA"),
+    "Y_RNA": ("SO:0000405", "Y_RNA"),
+    "antisense_RNA": ("SO:0000644", "antisense_RNA"),
+    "autocatalytically_spliced_intron": (
+        "SO:0000588",
+        "autocatalytically_spliced_intron",
+    ),
+    "guide_RNA": ("SO:0000602", "guide_RNA"),
+    "hammerhead_ribozyme": ("SO:0000380", "hammerhead_ribozyme"),
+    "lncRNA": ("SO:0001877", "lnc_RNA"),
+    "miRNA": ("SO:0000276", "miRNA"),
+    "ncRNA": ("SO:0000655", "ncRNA"),
+    "misc_RNA": ("SO:0000673", "transcript"),
+    "other": ("SO:0000655", "ncRNA"),
+    "precursor_RNA": ("SO:0000185 ", "primary_transcript"),
+    "piRNA": ("SO:0001035", "piRNA"),
+    "rasiRNA": ("SO:0000454", "rasiRNA"),
+    "ribozyme": ("SO:0000374", "ribozyme"),
+    "scRNA": ("SO:0000013", "scRNA"),
+    "siRNA": ("SO:0000646", "siRNA"),
+    "snRNA": ("SO:0000274", "snRNA"),
+    "snoRNA": ("SO:0000275", "snoRNA"),
+    "telomerase_RNA": ("SO:0000390", "telomerase_RNA"),
+    "tmRNA": ("SO:0000584", "tmRNA"),
+    "vault_RNA": ("SO:0000404", "vault_RNA"),
+    "rRNA": ("SO:0000252", "rRNA"),
+    "tRNA": ("SO:0000253", "tRNA"),
 }
 """
 A dict to map from ISNDC rna types to SO terms. Most of this are a very simple
@@ -71,7 +73,7 @@ precursor_RNA: SO:0001244
     long as to be a whole transcript before any processing.
 """
 
-UNKNOWN = ('SO:0000655', "ncRNA")
+UNKNOWN = ("SO:0000655", "ncRNA")
 """
 The fall back SO term for something that has no known mapping to SO terms.
 """

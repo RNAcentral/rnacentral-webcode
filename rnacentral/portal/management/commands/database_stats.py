@@ -11,20 +11,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from django.core.management.base import BaseCommand
+import json
 from optparse import make_option
+
+import psycopg2
+from django.core.management.base import BaseCommand
+from django.db.models import Avg, Count, Max, Min
+from portal.management.commands.database_connection import get_db_connection
 from portal.models import Database, Rna
 from portal.models.database_stats import DatabaseStats
 from portal.views import _get_json_lineage_tree
-from django.db.models import Min, Max, Count, Avg
-import json
-
-import psycopg2
-from portal.management.commands.database_connection import get_db_connection
 
 ####################
 # Export functions #
 ####################
+
 
 def get_lineages(dbid):
     """
@@ -44,7 +45,7 @@ def get_lineages(dbid):
     cursor.execute(sql.format(dbid=dbid))
     data = []
     for result in cursor:
-        data.append((result['classification'], result['taxid']))
+        data.append((result["classification"], result["taxid"]))
     return _get_json_lineage_tree(data)
 
 
@@ -60,7 +61,7 @@ def compute_database_stats(database):
     length_counts
     taxonomic_lineage
     """
-    for expert_db in Database.objects.order_by('-id').all():
+    for expert_db in Database.objects.order_by("-id").all():
         if database:
             if expert_db.descr != database.upper():
                 continue
@@ -68,34 +69,36 @@ def compute_database_stats(database):
         print(expert_db.descr)
 
         context = dict()
-        rnas = Rna.objects.filter(xrefs__deleted='N',
-                                  xrefs__db_id=expert_db.id)
+        rnas = Rna.objects.filter(xrefs__deleted="N", xrefs__db_id=expert_db.id)
 
         # avg_length, min_length, max_length, len_counts
-        context.update(rnas.aggregate(min_length=Min('length'),
-                                      max_length=Max('length'),
-                                      avg_length=Avg('length')))
-        context['len_counts'] = list(rnas.values('length').\
-                                     annotate(counts=Count('length')).\
-                                     order_by('length'))
+        context.update(
+            rnas.aggregate(
+                min_length=Min("length"),
+                max_length=Max("length"),
+                avg_length=Avg("length"),
+            )
+        )
+        context["len_counts"] = list(
+            rnas.values("length").annotate(counts=Count("length")).order_by("length")
+        )
 
         # update expert_db object
-        expert_db.avg_length = context['avg_length']
-        expert_db.min_length = context['min_length']
-        expert_db.max_length = context['max_length']
+        expert_db.avg_length = context["avg_length"]
+        expert_db.min_length = context["min_length"]
+        expert_db.max_length = context["max_length"]
         expert_db.num_sequences = expert_db.count_sequences()
         expert_db.num_organisms = expert_db.count_organisms()
         expert_db.save()
 
         expert_db_stats, _ = DatabaseStats.objects.get_or_create(
             database=expert_db.descr,
-            defaults={
-                'length_counts': '',
-                'taxonomic_lineage': ''
-            })
+            defaults={"length_counts": "", "taxonomic_lineage": ""},
+        )
         # django produces 'counts' keys, but d3 expects 'count' keys
-        expert_db_stats.length_counts = json.dumps(context['len_counts']).\
-                                             replace('counts', 'count')
+        expert_db_stats.length_counts = json.dumps(context["len_counts"]).replace(
+            "counts", "count"
+        )
         expert_db_stats.taxonomic_lineage = get_lineages(expert_db.id)
         expert_db_stats.save()
 
@@ -108,13 +111,13 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--database',
-            dest='database',
-            help='Specify expert database to update',
+            "--database",
+            dest="database",
+            help="Specify expert database to update",
         )
 
     def handle(self, *args, **options):
         """
         Django entry point
         """
-        compute_database_stats(options['database'])
+        compute_database_stats(options["database"])

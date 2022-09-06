@@ -93,7 +93,7 @@ If you need to export more sequences, you can use the [public Postgres database]
 
 ## RNAcentral CPB protocol
 
-Our latest article describes different ways of accessing the data. 
+Our latest article describes different ways of accessing the data.
 
 <a href='https://currentprotocols.onlinelibrary.wiley.com/doi/full/10.1002/cpbi.104#cpbi104-fig-0003' class="btn btn-primary" target="_blank">See the text search section</a>
 

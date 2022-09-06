@@ -19,9 +19,7 @@ from portal.models import Rna
 
 class GenericRnaTypeTest(TestCase):
     def rna_type_of(self, upi, taxid=None):
-        return Rna.objects.\
-            get(upi=upi).\
-            get_rna_type(taxid=taxid, recompute=True)
+        return Rna.objects.get(upi=upi).get_rna_type(taxid=taxid, recompute=True)
 
     def assertRnaTypeIs(self, description, upi, taxid=None):
         self.assertEquals(description, self.rna_type_of(upi, taxid=taxid))
@@ -29,30 +27,18 @@ class GenericRnaTypeTest(TestCase):
 
 class WormTests(GenericRnaTypeTest):
     def test_gets_mirna_over_pirna(self):
-        self.assertRnaTypeIs(
-            'miRNA',
-            'URS0000016972',
-            taxid=6239)
+        self.assertRnaTypeIs("miRNA", "URS0000016972", taxid=6239)
 
 
 class HumanTests(GenericRnaTypeTest):
     def test_if_has_both_anti_and_lnc_likes_lnc(self):
-        self.assertRnaTypeIs(
-            'lncRNA',
-            'URS0000732D5D',
-            taxid=9606)
+        self.assertRnaTypeIs("lncRNA", "URS0000732D5D", taxid=9606)
 
 
 class MouseTests(GenericRnaTypeTest):
     def test_uses_lncrna_over_ncrna(self):
-        self.assertRnaTypeIs(
-            'lncRNA',
-            'URS000075E2B9',
-            taxid=10090)
+        self.assertRnaTypeIs("lncRNA", "URS000075E2B9", taxid=10090)
 
     @unittest.expectedFailure
     def test_can_handle_duplicate_information(self):
-        self.assertRnaTypeIs(
-            'snoRNA',
-            'URS00004E52D3',
-            taxid=10090)
+        self.assertRnaTypeIs("snoRNA", "URS00004E52D3", taxid=10090)

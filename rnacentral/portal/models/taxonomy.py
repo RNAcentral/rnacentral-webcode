@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from caching.base import CachingMixin, CachingManager
+from caching.base import CachingManager, CachingMixin
 from django.db import models
 
 
@@ -20,11 +20,13 @@ class Taxonomy(CachingMixin, models.Model):
     name = models.TextField()
     lineage = models.TextField()
     aliases = models.TextField()
-    replaced_by = models.ForeignKey('self', db_column='replaced_by', on_delete=models.CASCADE)
+    replaced_by = models.ForeignKey(
+        "self", db_column="replaced_by", on_delete=models.CASCADE
+    )
     common_name = models.TextField()
     is_deleted = models.BooleanField()
 
     objects = CachingManager()
 
     class Meta:
-        db_table = 'rnc_taxonomy'
+        db_table = "rnc_taxonomy"
