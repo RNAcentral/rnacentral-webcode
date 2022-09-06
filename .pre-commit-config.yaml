@@ -7,7 +7,11 @@ repos:
     -   id: trailing-whitespace
     -   id: end-of-file-fixer
     -   id: check-yaml
+        args: [--allow-multiple-documents]
+        exclude: ^kubernetes/helm/templates/
     -   id: check-added-large-files
+    -   id: name-tests-test
+        args: [ "--django" ]
 -   repo: https://github.com/psf/black
     rev: 22.6.0
     hooks:
