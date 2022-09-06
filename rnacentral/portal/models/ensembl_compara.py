@@ -13,7 +13,8 @@ limitations under the License.
 
 from caching.base import CachingManager, CachingMixin
 from django.db import models
-from portal.models import RnaPrecomputed
+
+from .rna_precomputed import RnaPrecomputed
 
 
 class EnsemblCompara(CachingMixin, models.Model):

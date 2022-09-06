@@ -12,7 +12,8 @@ limitations under the License.
 """
 
 from django.db import models
-from portal.models import SequenceRegion
+
+from .sequence_regions import SequenceRegion
 
 
 class SequenceExon(models.Model):

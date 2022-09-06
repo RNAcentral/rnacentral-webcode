@@ -14,7 +14,6 @@ limitations under the License.
 import json
 import re
 
-import portal.models
 from django.db import models
 
 
@@ -154,6 +153,9 @@ class Accession(models.Model):
 
     def get_ensembl_species_url(self):
         """Get species name in a format that can be used in Ensembl urls."""
+        from .ensembl_assembly import EnsemblAssembly
+        from .xref import Xref
+
         if "ENSEMBL" not in self.database:
             return ""
         if self.species == "Dictyostelium discoideum":
@@ -168,19 +170,19 @@ class Accession(models.Model):
                 species = self.species
         elif self.species.count(" ") > 1 or self.species.count("-") > 0:
             try:
-                xref = portal.models.Xref.objects.filter(
+                xref = Xref.objects.filter(
                     accession__accession=self.accession, deleted="N"
                 ).get()
-                ensembl_genome = portal.models.EnsemblAssembly.objects.filter(
+                ensembl_genome = EnsemblAssembly.objects.filter(
                     taxid=xref.taxid
                 ).first()
                 if ensembl_genome:
                     return ensembl_genome.ensembl_url
                 else:
                     species = self.species
-            except portal.models.Xref.DoesNotExist:
+            except Xref.DoesNotExist:
                 return None
-            except portal.models.EnsemblAssembly.DoesNotExist:
+            except EnsemblAssembly.DoesNotExist:
                 return None
             except Exception:
                 return None
