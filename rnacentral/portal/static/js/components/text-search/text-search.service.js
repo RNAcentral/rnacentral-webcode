@@ -283,6 +283,9 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
           query = query.replace(placeholder + '*', lengthClause[0]);
         }
 
+        // parentheses are now required
+        query = '(' + query + ')'
+
         if (!query.match(/entry_type\:/i)) {
           query += ' AND entry_type:"Sequence"'
         }
