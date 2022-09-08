@@ -8,13 +8,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('portal', '0020_auto_20180405_2226'),
+        ("portal", "0020_auto_20180405_2226"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='ensemblassembly',
-            name='subdomain',
-            field=models.CharField(db_index=True, default=b'ensembl.org', max_length=100),
+            model_name="ensemblassembly",
+            name="subdomain",
+            field=models.CharField(
+                db_index=True, default=b"ensembl.org", max_length=100
+            ),
         ),
     ]

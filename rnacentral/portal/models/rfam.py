@@ -17,7 +17,7 @@ from django.db import models
 
 from .go_terms import OntologyTerm
 
-RFAM_FAMILY_URL = 'http://rfam.org/family/'
+RFAM_FAMILY_URL = "http://rfam.org/family/"
 
 
 class RfamClan(models.Model):
@@ -25,16 +25,17 @@ class RfamClan(models.Model):
     A simple container to store information about Rfam clans. This is just to
     contain some useful meta data about clans for display in RNAcentral.
     """
+
     rfam_clan_id = models.CharField(max_length=20, primary_key=True)
     name = models.CharField(max_length=40)
     description = models.CharField(max_length=1000)
     family_count = models.PositiveIntegerField()
 
     class Meta:
-        db_table = 'rfam_clans'
+        db_table = "rfam_clans"
 
     def url(self):
-        return 'http://rfam.org/clan/' + self.rfam_clan_id
+        return "http://rfam.org/clan/" + self.rfam_clan_id
 
 
 class RfamModel(models.Model):
@@ -42,16 +43,17 @@ class RfamModel(models.Model):
     A simple container about Rfam families. This table contains just enough
     data to make it easy to display Rfam family data in RNAcentral.
     """
+
     rfam_model_id = models.CharField(max_length=20, primary_key=True)
     short_name = models.CharField(max_length=50)
     long_name = models.CharField(max_length=200)
     description = models.CharField(max_length=2000, null=True)
     rfam_clan_id = models.ForeignKey(
         RfamClan,
-        db_column='rfam_clan_id',
-        to_field='rfam_clan_id',
+        db_column="rfam_clan_id",
+        to_field="rfam_clan_id",
         null=True,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
 
     seed_count = models.PositiveIntegerField()
@@ -63,7 +65,7 @@ class RfamModel(models.Model):
     rfam_rna_type = models.TextField()
 
     class Meta:
-        db_table = 'rfam_models'
+        db_table = "rfam_models"
 
     @classmethod
     def url_of(cls, rfam_model_id):
@@ -75,14 +77,16 @@ class RfamModel(models.Model):
 
     @property
     def thumbnail_url(self):
-        return 'http://rfam.org/family/%s/thumbnail' % self.rfam_model_id
+        return "http://rfam.org/family/%s/thumbnail" % self.rfam_model_id
 
     def twod_url(self):
-        return self.url + '#tabview=tab3'
+        return self.url + "#tabview=tab3"
 
     def go_terms(self):
         terms = []
-        mapping = RfamGoTerm.objects.select_related('go_term').filter(rfam_model_id=self.rfam_model_id)
+        mapping = RfamGoTerm.objects.select_related("go_term").filter(
+            rfam_model_id=self.rfam_model_id
+        )
         for result in mapping.all():
             terms.append(result.go_term)
 
@@ -98,16 +102,18 @@ class RfamHit(models.Model):
 
     rfam_hit_id = models.AutoField(primary_key=True)
 
-    upi = models.ForeignKey('Rna', db_column='upi', to_field='upi', on_delete=models.CASCADE)
+    upi = models.ForeignKey(
+        "Rna", db_column="upi", to_field="upi", on_delete=models.CASCADE
+    )
     sequence_start = models.PositiveIntegerField()
     sequence_stop = models.PositiveIntegerField()
     sequence_completeness = models.FloatField()
 
     rfam_model = models.ForeignKey(
         RfamModel,
-        db_column='rfam_model_id',
-        to_field='rfam_model_id',
-        on_delete=models.CASCADE
+        db_column="rfam_model_id",
+        to_field="rfam_model_id",
+        on_delete=models.CASCADE,
     )
     model_start = models.PositiveIntegerField()
     model_stop = models.PositiveIntegerField()
@@ -118,7 +124,7 @@ class RfamHit(models.Model):
     score = models.FloatField()
 
     class Meta:
-        db_table = 'rfam_model_hits'
+        db_table = "rfam_model_hits"
 
     @property
     def rfam_clan_id(self):
@@ -135,16 +141,18 @@ class RfamInitialAnnotations(models.Model):
     """
 
     rfam_initial_annotation_id = models.AutoField(primary_key=True)
-    upi = models.ForeignKey('Rna', db_column='upi', to_field='upi', on_delete=models.CASCADE)
+    upi = models.ForeignKey(
+        "Rna", db_column="upi", to_field="upi", on_delete=models.CASCADE
+    )
     rfam_model = models.ForeignKey(
         RfamModel,
-        db_column='rfam_model_id',
-        to_field='rfam_model_id',
-        on_delete=models.CASCADE
+        db_column="rfam_model_id",
+        to_field="rfam_model_id",
+        on_delete=models.CASCADE,
     )
 
     class Meta:
-        db_table = 'rfam_initial_annotations'
+        db_table = "rfam_initial_annotations"
 
 
 class RfamAnalyzedSequences(models.Model):
@@ -156,34 +164,34 @@ class RfamAnalyzedSequences(models.Model):
     """
 
     upi = models.ForeignKey(
-        'Rna',
-        db_column='upi',
-        to_field='upi',
+        "Rna",
+        db_column="upi",
+        to_field="upi",
         primary_key=True,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
     date = models.DateField()
 
     class Meta:
-        db_table = 'rfam_analyzed_sequences'
+        db_table = "rfam_analyzed_sequences"
 
 
 class RfamGoTerm(models.Model):
     rfam_go_term_id = models.AutoField(primary_key=True)
     go_term = models.ForeignKey(
         OntologyTerm,
-        db_column='ontology_term_id',
-        to_field='ontology_term_id',
-        related_name='go_term',
-        on_delete=models.CASCADE
+        db_column="ontology_term_id",
+        to_field="ontology_term_id",
+        related_name="go_term",
+        on_delete=models.CASCADE,
     )
     rfam_model = models.ForeignKey(
         RfamModel,
-        db_column='rfam_model_id',
-        to_field='rfam_model_id',
-        on_delete=models.CASCADE
+        db_column="rfam_model_id",
+        to_field="rfam_model_id",
+        on_delete=models.CASCADE,
     )
 
     class Meta:
-        db_table = 'rfam_go_terms'
-        unique_together = (('rfam_model', 'go_term'),)
+        db_table = "rfam_go_terms"
+        unique_together = (("rfam_model", "go_term"),)

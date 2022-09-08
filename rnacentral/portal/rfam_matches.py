@@ -16,13 +16,11 @@ if the sequence is only a partial sequence
 """
 
 import json
-import six
-
-from django.urls import reverse
 
 import attr
+import six
 from attr.validators import instance_of as is_a
-
+from django.urls import reverse
 from portal.models import Accession
 from portal.models.rfam import RfamModel
 
@@ -49,7 +47,9 @@ class RfamMatchStatus(object):
         Create a new instance that indicates that the given finder has found an
         issue specified in the given message.
         """
-        return cls(has_issue=True, upi=upi, taxid=taxid, finders=[finder], messages=[msg])
+        return cls(
+            has_issue=True, upi=upi, taxid=taxid, finders=[finder], messages=[msg]
+        )
 
     @classmethod
     def no_issues(cls, upi, taxid):
@@ -76,7 +76,7 @@ class RfamMatchStatus(object):
 
         self.finders.extend(status.finders)
         self.messages.extend(status.messages)
-        self.has_issue = (self.has_issue or status.has_issue)
+        self.has_issue = self.has_issue or status.has_issue
         return self
 
     def as_simple_data(self):
@@ -85,8 +85,11 @@ class RfamMatchStatus(object):
         for storage.
         """
         return {
-            'has_issue': self.has_issue,
-            'problems': [{'name': n, 'message': self.messages[i]} for i, n in enumerate(self.names)],
+            "has_issue": self.has_issue,
+            "problems": [
+                {"name": n, "message": self.messages[i]}
+                for i, n in enumerate(self.names)
+            ],
         }
 
     def as_json(self):
@@ -103,32 +106,33 @@ class DomainProblem(object):
     only matches a mouse sequence then there is some sort of problem, likely
     contamination, with the sequence.
     """
-    name = 'possible_contamination'
+
+    name = "possible_contamination"
 
     def message(self, model, rna, taxid=None):
         """
         Get a message that indicates a problem.
         """
 
-        names = ''
+        names = ""
         is_common_name = False
         if taxid is None:
-            names = ', '.join(rna.get_domains())
+            names = ", ".join(rna.get_domains())
         else:
             names, is_common_name = rna.get_organism_name(taxid=taxid)
 
         if not is_common_name:
-            names = '<i>%s</i>' % names
+            names = "<i>%s</i>" % names
 
         return (
-            'This {sequence_name} sequence matches a {match_domain} '
+            "This {sequence_name} sequence matches a {match_domain} "
             'Rfam model (<a href="{model_url}">{model_name}</a>). '
             '<a href="{help_url}">Learn more &rarr;</a>'.format(
                 sequence_name=names,
                 match_domain=model.domain,
                 model_url=model.url,
                 model_name=model.short_name,
-                help_url=reverse('help-qc'),
+                help_url=reverse("help-qc"),
             )
         )
 
@@ -139,23 +143,32 @@ class DomainProblem(object):
         warn since this is expected from evolution.
         """
 
-        has_mito_organelle = bool(Accession.objects.filter(
-            xrefs__upi=rna.upi,
-            xrefs__taxid=taxid,
-            organelle__istartswith='mitochondrion',
-        ).count())
+        has_mito_organelle = bool(
+            Accession.objects.filter(
+                xrefs__upi=rna.upi,
+                xrefs__taxid=taxid,
+                organelle__istartswith="mitochondrion",
+            ).count()
+        )
 
-        possible_mito = has_mito_organelle or \
-            'mitochondri' in rna.get_description(taxid=taxid).lower()
+        possible_mito = (
+            has_mito_organelle
+            or "mitochondri" in rna.get_description(taxid=taxid).lower()
+        )
 
-        return possible_mito and \
-            rna.get_rna_type(taxid=taxid) == 'rRNA' and \
-            hits[0].rfam_model_id in set([
-                'RF00177',  # Bacterial small subunit ribosomal RNA
-                'RF02541',  # Bacterial large subunit ribosomal RNA
-                'RF01959',  # Archaeal small subunit ribosomal RNA
-                'RF02540',  # Archaeal large subunit ribosomal RNA
-            ])
+        return (
+            possible_mito
+            and rna.get_rna_type(taxid=taxid) == "rRNA"
+            and hits[0].rfam_model_id
+            in set(
+                [
+                    "RF00177",  # Bacterial small subunit ribosomal RNA
+                    "RF02541",  # Bacterial large subunit ribosomal RNA
+                    "RF01959",  # Archaeal small subunit ribosomal RNA
+                    "RF02540",  # Archaeal large subunit ribosomal RNA
+                ]
+            )
+        )
 
     def __call__(self, rna, taxid=None):
         hits = rna.get_rfam_hits()
@@ -168,15 +181,14 @@ class DomainProblem(object):
             return RfamMatchStatus.no_issues(rna.upi, taxid)
 
         rna_domains = rna.get_domains(
-            taxid=taxid,
-            ignore_synthetic=True,
-            ignore_unclassified=True
+            taxid=taxid, ignore_synthetic=True, ignore_unclassified=True
         )
         if not rna_domains:
             return RfamMatchStatus.no_issues(rna.upi, taxid)
 
-        if found not in rna_domains and \
-                not self.is_ignorable_mito_conflict(rna, hits, taxid=taxid):
+        if found not in rna_domains and not self.is_ignorable_mito_conflict(
+            rna, hits, taxid=taxid
+        ):
 
             msg = self.message(model, rna, taxid=taxid)
             return RfamMatchStatus.with_issue(rna.upi, taxid, self, msg)
@@ -191,15 +203,15 @@ class IncompleteSequence(object):
     addition, we require that it only have one match. This will only work for
     hits that are part of a selected set of families.
     """
-    name = 'incomplete_sequence'
+
+    name = "incomplete_sequence"
 
     def message(self, hit):
         """
         Get a message that indicates a problem.
         """
         return 'Potential <a href="{url}">{name}</a> fragment'.format(
-            name=hit.rfam_model.long_name,
-            url=hit.rfam_model.url
+            name=hit.rfam_model.long_name, url=hit.rfam_model.url
         )
 
     def allowed_families(self):
@@ -209,18 +221,20 @@ class IncompleteSequence(object):
         be too senestive. The selected families are well known for having
         partial sequences.
         """
-        return set([
-            'RF00001',  # 5S ribosomal RNA
-            'RF00002',  # 5.8S ribosomal RNA
-            'RF00005',  # tRNA
-            'RF00177',  # Bacterial small subunit ribosomal RNA
-            'RF01959',  # Archaeal small subunit ribosomal RNA
-            'RF01960',  # Eukaryotic small subunit ribosomal RNA
-            'RF02540',  # Archaeal large subunit ribosomal RNA
-            'RF02541',  # Bacterial large subunit ribosomal RNA
-            'RF02542',  # Microsporidia small subunit ribosomal RNA
-            'RF02543',  # Eukaryotic large subunit ribosomal RNA
-        ])
+        return set(
+            [
+                "RF00001",  # 5S ribosomal RNA
+                "RF00002",  # 5.8S ribosomal RNA
+                "RF00005",  # tRNA
+                "RF00177",  # Bacterial small subunit ribosomal RNA
+                "RF01959",  # Archaeal small subunit ribosomal RNA
+                "RF01960",  # Eukaryotic small subunit ribosomal RNA
+                "RF02540",  # Archaeal large subunit ribosomal RNA
+                "RF02541",  # Bacterial large subunit ribosomal RNA
+                "RF02542",  # Microsporidia small subunit ribosomal RNA
+                "RF02543",  # Eukaryotic large subunit ribosomal RNA
+            ]
+        )
 
     def __call__(self, rna, taxid=None):
         hits = rna.get_rfam_hits()
@@ -230,8 +244,7 @@ class IncompleteSequence(object):
         if hits[0].rfam_model_id not in self.allowed_families():
             return RfamMatchStatus.no_issues(rna.upi, taxid)
 
-        if hits[0].model_completeness <= 0.5 and \
-                hits[0].sequence_completeness >= 0.9:
+        if hits[0].model_completeness <= 0.5 and hits[0].sequence_completeness >= 0.9:
             msg = self.message(hits[0])
             return RfamMatchStatus.with_issue(rna.upi, taxid, self, msg)
         return RfamMatchStatus.no_issues(rna.upi, taxid)
@@ -243,14 +256,17 @@ class RnaTypeConflict(object):
     family that it matches. This is likely a sign that the sequence has been
     mis-annotated somehow and care should be taken when working with it.
     """
-    name = 'rna_type_conflict'
+
+    name = "rna_type_conflict"
 
     def message(self, model, rna, **kwargs):
         """
         Get a message that indicates a problem.
         """
-        return 'This %s sequence matches an Rfam family of %s sequences' % \
-            (rna.get_rna_type(), model.rna_type)
+        return "This %s sequence matches an Rfam family of %s sequences" % (
+            rna.get_rna_type(),
+            model.rna_type,
+        )
 
     def __call__(self, rna, taxid=None):
         return RfamMatchStatus.no_issues(rna.upi, taxid)
@@ -265,25 +281,29 @@ class UnmodelledRnaType(object):
 
     :returns bool: True if this Rna should have an Rfam match.
     """
-    name = 'unexpected_match'
+
+    name = "unexpected_match"
 
     def message(self, rna):
         """
         Get a message that indicates a problem.
         """
-        if rna.get_rna_type() == 'lncRNA':
-            return ("This sequence is not expected to match an Rfam model "
-                    "because Rfam does not model full length lncRNA's")
+        if rna.get_rna_type() == "lncRNA":
+            return (
+                "This sequence is not expected to match an Rfam model "
+                "because Rfam does not model full length lncRNA's"
+            )
 
-        if rna.get_rna_type == 'piRNA':
-            return ("This sequence is not expected to match an Rfam match a "
-                    "model because Rfam does not model piRNA's")
+        if rna.get_rna_type == "piRNA":
+            return (
+                "This sequence is not expected to match an Rfam match a "
+                "model because Rfam does not model piRNA's"
+            )
 
         raise ValueError("Impossible state")
 
     def __call__(self, rna, taxid=None):
-        if rna.get_rna_type() in set(['lncRNA', 'piRNA']) and \
-                rna.get_rfam_hits():
+        if rna.get_rna_type() in set(["lncRNA", "piRNA"]) and rna.get_rfam_hits():
             message = self.message(rna)
             return RfamMatchStatus.with_issue(rna.upi, taxid, self, message)
         return RfamMatchStatus.no_issues(rna.upi, taxid)
@@ -304,7 +324,8 @@ class MissingMatch(object):
     This is limited to only a few families which have very broad models as we
     don't want to warn too often.
     """
-    name = 'missing_match'
+
+    name = "missing_match"
 
     def href(self, model_id):
         return '<a href="{url}">{model_id}</a>'.format(
@@ -317,16 +338,14 @@ class MissingMatch(object):
         Compute a message to indicate the missing match that was detected.
         """
 
-        article = 'the'
+        article = "the"
         if len(possible) > 1:
-            article = 'a'
+            article = "a"
 
         models = [self.href(p) for p in sorted(possible)]
-        raw = 'No match to {article} {rna_type} Rfam model ({possible})'
+        raw = "No match to {article} {rna_type} Rfam model ({possible})"
         return raw.format(
-            rna_type=rna_type,
-            article=article,
-            possible=', '.join(models)
+            rna_type=rna_type, article=article, possible=", ".join(models)
         )
 
     @property
@@ -338,36 +357,44 @@ class MissingMatch(object):
         very generous models.
         """
         return {
-            'rRNA': set([
-                'RF00001',  # 5S ribosomal RNA
-                'RF00002',  # 5.8S ribosomal RNA
-                'RF00177',  # Bacterial small subunit ribosomal RNA
-                'RF01959',  # Archaeal small subunit ribosomal RNA
-                'RF01960',  # Eukaryotic small subunit ribosomal RNA
-                'RF02540',  # Archaeal large subunit ribosomal RNA
-                'RF02541',  # Bacterial large subunit ribosomal RNA
-                'RF02542',  # Microsporidia small subunit ribosomal RNA
-                'RF02543',  # Eukaryotic large subunit ribosomal RNA
-                'RF02547',  # mito 5S RNA
-            ]),
-            'tRNA': set([
-                'RF00005',  # tRNA
-                'RF01852',  # Selenocysteine tRNA
-            ]),
+            "rRNA": set(
+                [
+                    "RF00001",  # 5S ribosomal RNA
+                    "RF00002",  # 5.8S ribosomal RNA
+                    "RF00177",  # Bacterial small subunit ribosomal RNA
+                    "RF01959",  # Archaeal small subunit ribosomal RNA
+                    "RF01960",  # Eukaryotic small subunit ribosomal RNA
+                    "RF02540",  # Archaeal large subunit ribosomal RNA
+                    "RF02541",  # Bacterial large subunit ribosomal RNA
+                    "RF02542",  # Microsporidia small subunit ribosomal RNA
+                    "RF02543",  # Eukaryotic large subunit ribosomal RNA
+                    "RF02547",  # mito 5S RNA
+                ]
+            ),
+            "tRNA": set(
+                [
+                    "RF00005",  # tRNA
+                    "RF01852",  # Selenocysteine tRNA
+                ]
+            ),
         }
 
     def is_ignorable_mito_missing_tRNA(self, rna, hits, taxid=None):
-        if rna.get_rna_type() != 'tRNA':
+        if rna.get_rna_type() != "tRNA":
             return False
 
-        has_mito_organelle = bool(Accession.objects.filter(
-            xrefs__upi=rna.upi,
-            xrefs__taxid=taxid,
-            organelle__istartswith='mitochondri',
-        ).count())
+        has_mito_organelle = bool(
+            Accession.objects.filter(
+                xrefs__upi=rna.upi,
+                xrefs__taxid=taxid,
+                organelle__istartswith="mitochondri",
+            ).count()
+        )
 
-        possible_mito = has_mito_organelle or \
-            'mitochondri' in rna.get_description(taxid=taxid).lower()
+        possible_mito = (
+            has_mito_organelle
+            or "mitochondri" in rna.get_description(taxid=taxid).lower()
+        )
 
         return possible_mito and not hits
 
@@ -396,12 +423,12 @@ def check_issues(rna, taxid=None):
     """
 
     finders = [
-            # UnmodelledRnaType(),
-            DomainProblem(),
-            IncompleteSequence(),
-            # RnaTypeConflict(),
-            MissingMatch(),
-        ]
+        # UnmodelledRnaType(),
+        DomainProblem(),
+        IncompleteSequence(),
+        # RnaTypeConflict(),
+        MissingMatch(),
+    ]
 
     issue = RfamMatchStatus.no_issues(rna.upi, taxid)
     for finder in finders:

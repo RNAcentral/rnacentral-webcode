@@ -44,16 +44,19 @@ limitations under the License.
 """
 
 from __future__ import print_function
-import six
 
 import unittest
+
+import six
+
 if six.PY2:
     import urlparse
 else:
     from urllib.parse import urlparse
+
+import os
 import re
 import sys
-import os
 import time
 import urllib
 from collections import OrderedDict
@@ -61,9 +64,9 @@ from collections import OrderedDict
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from config import expert_databases
@@ -71,10 +74,11 @@ from config import expert_databases
 
 class BasePage(object):
     """Prototipe object for all pages."""
+
     base_url = None
     rnacentral_id_regex = r"(URS[0-9A-F]{10})"
 
-    def __init__(self, browser, url=''):
+    def __init__(self, browser, url=""):
         self.browser = browser
         self.url = self.base_url + url
 
@@ -86,11 +90,11 @@ class BasePage(object):
 
     def js_errors_found(self):
         """
-            All javascript errors are logged in the JSError attribute
-            of the body tag.
+        All javascript errors are logged in the JSError attribute
+        of the body tag.
         """
         try:
-            js_errors = self.browser.find_element_by_xpath('//body[@JSError]')
+            js_errors = self.browser.find_element_by_xpath("//body[@JSError]")
             return True
         except NoSuchElementException:
             return False
@@ -111,11 +115,11 @@ class Homepage(BasePage):
 
     def get_expert_db_example_ids(self, element_id):
         """
-            Each expert database has a number of example entries, which are retrieved
-            from the homepage by looking for an element with id in the following format:
-                <expert-database>-examples
-            E.g.
-                mirbase-examples
+        Each expert database has a number of example entries, which are retrieved
+        from the homepage by looking for an element with id in the following format:
+            <expert-database>-examples
+        E.g.
+            mirbase-examples
         """
         example_div = self.browser.find_element_by_id(element_id)
         return self._get_example_ids(example_div.get_attribute("innerHTML"))
@@ -123,6 +127,7 @@ class Homepage(BasePage):
 
 class SequencePage(BasePage):
     """Prototipe object for all types of sequence pages."""
+
     url = "rna/"
 
     def __init__(self, browser, unique_id):
@@ -131,8 +136,12 @@ class SequencePage(BasePage):
 
     def navigate(self):
         super(SequencePage, self).navigate()
-        WebDriverWait(self.browser, 120).until(lambda s: s.find_element_by_css_selector("#xrefs-table"))
-        WebDriverWait(self.browser, 120).until(lambda s: s.find_element_by_css_selector("#d3-species-tree svg"))
+        WebDriverWait(self.browser, 120).until(
+            lambda s: s.find_element_by_css_selector("#xrefs-table")
+        )
+        WebDriverWait(self.browser, 120).until(
+            lambda s: s.find_element_by_css_selector("#d3-species-tree svg")
+        )
 
     def get_xrefs_table_html(self):
         """Retrieve text of the database cross-reference table."""
@@ -148,12 +157,14 @@ class SequencePage(BasePage):
 
     def external_urls_exist(self, expert_db_name):
         """
-            External urls may have class names in the following format:
-                <expert_db_name>-external-url
-            Example:
-                mirbase-external-url
+        External urls may have class names in the following format:
+            <expert_db_name>-external-url
+        Example:
+            mirbase-external-url
         """
-        external_urls = self.browser.find_elements_by_class_name(expert_db_name + "-external-url")
+        external_urls = self.browser.find_elements_by_class_name(
+            expert_db_name + "-external-url"
+        )
         if len(external_urls) > 0:
             return True
         else:
@@ -161,22 +172,32 @@ class SequencePage(BasePage):
 
     def citations_retrieved(self):
         """
-            Click the first citation button on the page and then click on the abstract button.
+        Click the first citation button on the page and then click on the abstract button.
         """
         timeout = 10
         self.browser.find_element_by_class_name("literature-refs-retrieve").click()
         try:
-            result = WebDriverWait(self.browser, timeout).until(lambda s: s.find_element(By.CLASS_NAME, "literature-refs-content").is_displayed())
+            result = WebDriverWait(self.browser, timeout).until(
+                lambda s: s.find_element(
+                    By.CLASS_NAME, "literature-refs-content"
+                ).is_displayed()
+            )
             if not result:
                 raise NoSuchElementException
             try:
-                citations_loaded = WebDriverWait(self.browser, timeout).until(lambda s: s.find_element_by_class_name("abstract-control").is_displayed())
+                citations_loaded = WebDriverWait(self.browser, timeout).until(
+                    lambda s: s.find_element_by_class_name(
+                        "abstract-control"
+                    ).is_displayed()
+                )
                 self.browser.find_element_by_class_name("abstract-control").click()
-                WebDriverWait(self.browser, timeout).until(lambda s: s.find_element(By.CLASS_NAME, "abstract-text"))
+                WebDriverWait(self.browser, timeout).until(
+                    lambda s: s.find_element(By.CLASS_NAME, "abstract-text")
+                )
             except NoSuchElementException:
                 pass  # some citations don't have pubmed ids and don't have abstract buttons
         except:
-            logging.warning('Citations not loaded ' + self.browser.current_url)
+            logging.warning("Citations not loaded " + self.browser.current_url)
             return False
         return True
 
@@ -187,23 +208,22 @@ class TaxidFilteringSequencePage(SequencePage):
     """
 
     def get_info_text(self):
-        """
-        """
-        info_box = self.browser.find_element_by_class_name('well')
+        """ """
+        info_box = self.browser.find_element_by_class_name("well")
         return info_box.text
 
     def get_page_subtitle(self):
         """
         Page subtitle is either the name of the species or the number of species.
         """
-        subtitle = self.browser.find_element_by_css_selector('h1 small')
+        subtitle = self.browser.find_element_by_css_selector("h1 small")
         return subtitle.text
 
     def get_warning_info_text(self):
         """
         When a taxid from the url doesn't match any annotations, a warning should be displayed.
         """
-        warning = self.browser.find_element_by_class_name('alert-danger')
+        warning = self.browser.find_element_by_class_name("alert-danger")
         return warning.text
 
     def get_species_from_xref_table(self):
@@ -211,8 +231,8 @@ class TaxidFilteringSequencePage(SequencePage):
         When taxid filtering is enabled, the xref table should have annotations
         only from one species.
         """
-        tds = self.browser.find_elements_by_css_selector('#xrefs-table td')
-        species = [x.text for x in tds[2::3]] #3, 6, 9 etc tds
+        tds = self.browser.find_elements_by_css_selector("#xrefs-table td")
+        species = [x.text for x in tds[2::3]]  # 3, 6, 9 etc tds
         return set(species)
 
 
@@ -221,11 +241,11 @@ class GencodeSequencePage(SequencePage):
 
     def gene_and_transcript_is_ok(self):
         """
-            Find transcipt info, e.g.:
-            transcript ENST00000626826.1 (Havana id OTTHUMT00000479989)
+        Find transcipt info, e.g.:
+        transcript ENST00000626826.1 (Havana id OTTHUMT00000479989)
         """
         xrefs_table = self.get_xrefs_table_html()
-        match = re.search(r'transcript ENST\d+', xrefs_table)
+        match = re.search(r"transcript ENST\d+", xrefs_table)
         return True if match else False
 
     def alternative_transcripts_is_ok(self):
@@ -243,7 +263,9 @@ class TmRNASequencePage(SequencePage):
     def test_two_piece_tmrna(self):
         """Make sure partner tmRNAs link to each other."""
         xrefs_table = self.get_xrefs_table_html()
-        match = re.search(r'Two-piece tmRNA partner: ' + self.rnacentral_id_regex, xrefs_table)
+        match = re.search(
+            r"Two-piece tmRNA partner: " + self.rnacentral_id_regex, xrefs_table
+        )
         if match:
             original_id = self.get_own_rnacentral_id()
             partner_id = match.group(1)
@@ -263,27 +285,32 @@ class TmRNASequencePage(SequencePage):
 
 class MirbaseSequencePage(SequencePage):
     """Sequence page with miRBase xrefs. Add miRBase-specific tests here."""
+
     pass
 
 
 class SrpdbSequencePage(SequencePage):
     """Sequence page with SRPdb xrefs. Add SRPdb-specific tests here."""
+
     pass
 
 
 class RefseqSequencePage(SequencePage):
     """Sequence page with RefSeq xrefs. Add RefSeq-specific tests here."""
+
     pass
 
 
 class RdpSequencePage(SequencePage):
     """Sequence page with Rdp xrefs. Add RefSeq-specific tests here."""
+
     pass
 
 
 class ExpertDatabasesOverviewPage(BasePage):
     """An overview page for all expert databases."""
-    url = 'expert-databases/'
+
+    url = "expert-databases/"
 
     def __init__(self, browser):
         BasePage.__init__(self, browser, self.url)
@@ -295,13 +322,16 @@ class ExpertDatabasesOverviewPage(BasePage):
 
     def get_footer_expert_db_count(self):
         """get the number of expert database links in the footer."""
-        expert_dbs = self.browser.find_elements_by_css_selector('#global-footer .col-md-8 li>a')
+        expert_dbs = self.browser.find_elements_by_css_selector(
+            "#global-footer .col-md-8 li>a"
+        )
         return len(expert_dbs)
 
 
 class ExpertDatabaseLandingPage(BasePage):
     """An expert database landing page."""
-    url = 'expert-database/'
+
+    url = "expert-database/"
 
     def __init__(self, browser, expert_db_id):
         BasePage.__init__(self, browser, self.url)
@@ -310,16 +340,20 @@ class ExpertDatabaseLandingPage(BasePage):
 
     def get_svg_diagrams(self):
         """
-            Make sure all svg are generated.
-            Override the default behavior because of the ajax requests.
+        Make sure all svg are generated.
+        Override the default behavior because of the ajax requests.
         """
-        NO_SUNBURST = ['ena', 'rfam']
-        NO_SEQ_DIST = ['lncrnadb']
+        NO_SUNBURST = ["ena", "rfam"]
+        NO_SEQ_DIST = ["lncrnadb"]
         try:
             if self.expert_db_id not in NO_SUNBURST:
-                sunburst = self.browser.find_element(By.CSS_SELECTOR, "#d3-species-sunburst svg")
+                sunburst = self.browser.find_element(
+                    By.CSS_SELECTOR, "#d3-species-sunburst svg"
+                )
             if self.expert_db_id not in NO_SEQ_DIST:
-                seq_dist = self.browser.find_element(By.CSS_SELECTOR, "#d3-seq-length-distribution svg")
+                seq_dist = self.browser.find_element(
+                    By.CSS_SELECTOR, "#d3-seq-length-distribution svg"
+                )
         except:
             return False
         return True
@@ -327,17 +361,24 @@ class ExpertDatabaseLandingPage(BasePage):
 
 class GenoverseTestPage(BasePage):
     """A sequence page with an embedded genome browser."""
-    url = 'rna/'
+
+    url = "rna/"
 
     def __init__(self, browser, rnacentral_id):
         BasePage.__init__(self, browser, self.url)
         self.url += rnacentral_id
 
     def genoverse_ok(self):
-        genoverse_button = WebDriverWait(self.browser, 30).until(lambda s: s.find_element(By.CLASS_NAME, "genoverse-xref"))
+        genoverse_button = WebDriverWait(self.browser, 30).until(
+            lambda s: s.find_element(By.CLASS_NAME, "genoverse-xref")
+        )
         genoverse_button.click()
         try:
-            WebDriverWait(self.browser, 5).until(lambda s: s.find_element(By.CSS_SELECTOR, "table.genoverse").is_displayed())
+            WebDriverWait(self.browser, 5).until(
+                lambda s: s.find_element(
+                    By.CSS_SELECTOR, "table.genoverse"
+                ).is_displayed()
+            )
         except:
             return False
         return True
@@ -345,7 +386,8 @@ class GenoverseTestPage(BasePage):
 
 class GenomeBrowserPage(BasePage):
     """A standalone Genoverse genome browser page."""
-    url = 'genome-browser/'
+
+    url = "genome-browser/"
     timeout = 10
 
     def __init__(self, browser):
@@ -390,10 +432,11 @@ class GenomeBrowserPage(BasePage):
 
 class TextSearchPage(BasePage):
     """Can be any page because the search box is in the site-wide header."""
-    url = ''
+
+    url = ""
     timeout = 10  # seconds to wait for element to appear
 
-    def __init__(self, browser, query_url=''):
+    def __init__(self, browser, query_url=""):
         BasePage.__init__(self, browser, self.url)
         self.url += query_url
         self.page_size = 15
@@ -404,25 +447,29 @@ class TextSearchPage(BasePage):
     @property
     def input(self):
         return WebDriverWait(self.browser, self.timeout).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, '.global-search input'))
+            EC.presence_of_element_located((By.CSS_SELECTOR, ".global-search input"))
         )
 
     @property
     def submit_button(self):
         return WebDriverWait(self.browser, self.timeout).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, '.global-search button'))
+            EC.presence_of_element_located((By.CSS_SELECTOR, ".global-search button"))
         )
 
     @property
     def autocomplete_suggestions(self):
         return WebDriverWait(self.browser, self.timeout).until(
-            EC.visibility_of_any_elements_located((By.CSS_SELECTOR, ".global-search li.uib-typeahead-match"))
+            EC.visibility_of_any_elements_located(
+                (By.CSS_SELECTOR, ".global-search li.uib-typeahead-match")
+            )
         )
 
     @property
     def examples(self):
         return WebDriverWait(self.browser, self.timeout).until(
-            EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.example-searches a'))
+            EC.presence_of_all_elements_located(
+                (By.CSS_SELECTOR, ".example-searches a")
+            )
         )
 
     @property
@@ -430,44 +477,57 @@ class TextSearchPage(BasePage):
         return WebDriverWait(self.browser, self.timeout).until(
             # pick a link next to an unchecked checkbox
             EC.element_to_be_clickable(
-                (By.CSS_SELECTOR, ".text-search-facet-values input[type=checkbox]:not(:checked) ~ a")
+                (
+                    By.CSS_SELECTOR,
+                    ".text-search-facet-values input[type=checkbox]:not(:checked) ~ a",
+                )
             )
         )
 
     @property
     def facet_links(self):
         return WebDriverWait(self.browser, self.timeout).until(
-            EC.visibility_of_any_elements_located((By.CSS_SELECTOR, 'a.text-search-facet-link'))
+            EC.visibility_of_any_elements_located(
+                (By.CSS_SELECTOR, "a.text-search-facet-link")
+            )
         )
 
     @property
     def rna_types_facet(self):
         return WebDriverWait(self.browser, self.timeout).until(
-            EC.visibility_of_any_elements_located((By.CSS_SELECTOR, '.text-search-facet-values'))
+            EC.visibility_of_any_elements_located(
+                (By.CSS_SELECTOR, ".text-search-facet-values")
+            )
         )[0]
 
     @property
     def organisms_facet(self):
         return WebDriverWait(self.browser, self.timeout).until(
-            EC.visibility_of_any_elements_located((By.CSS_SELECTOR, '.text-search-facet-values'))
+            EC.visibility_of_any_elements_located(
+                (By.CSS_SELECTOR, ".text-search-facet-values")
+            )
         )[1]
 
     @property
     def expert_databases_facet(self):
         return WebDriverWait(self.browser, self.timeout).until(
-            EC.visibility_of_any_elements_located((By.CSS_SELECTOR, '.text-search-facet-values'))
+            EC.visibility_of_any_elements_located(
+                (By.CSS_SELECTOR, ".text-search-facet-values")
+            )
         )[2]
 
     @property
     def genomic_mapping_facet(self):
         return WebDriverWait(self.browser, self.timeout).until(
-            EC.visibility_of_any_elements_located((By.CSS_SELECTOR, '.text-search-facet-values'))
+            EC.visibility_of_any_elements_located(
+                (By.CSS_SELECTOR, ".text-search-facet-values")
+            )
         )[3]
 
     @property
     def load_more_button(self):
         return WebDriverWait(self.browser, self.timeout).until(
-            EC.element_to_be_clickable((By.CLASS_NAME, 'load-more'))
+            EC.element_to_be_clickable((By.CLASS_NAME, "load-more"))
         )
 
     @property
@@ -480,13 +540,17 @@ class TextSearchPage(BasePage):
     def text_search_results(self):
         """Get results as an array of list elements."""
         return WebDriverWait(self.browser, self.timeout).until(
-            EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".result"))  # was: lambda browser: browser.find_elements(By.CLASS_NAME, "result")
+            EC.presence_of_all_elements_located(
+                (By.CSS_SELECTOR, ".result")
+            )  # was: lambda browser: browser.find_elements(By.CLASS_NAME, "result")
         )
 
     @property
     def warnings(self):
         return WebDriverWait(self.browser, self.timeout).until(
-            EC.visibility_of_element_located((By.CLASS_NAME, "text-search-no-results"))  # was: lambda s: s.find_element(By.CLASS_NAME, "text-search-no-results"
+            EC.visibility_of_element_located(
+                (By.CLASS_NAME, "text-search-no-results")
+            )  # was: lambda s: s.find_element(By.CLASS_NAME, "text-search-no-results"
         )
 
     # functions
@@ -507,7 +571,7 @@ class TextSearchPage(BasePage):
                     WebDriverWait(self.browser, self.timeout).until(
                         EC.text_to_be_present_in_element(
                             (By.ID, "text-search-results-count"),
-                            '%i out of ' % (i * self.page_size)
+                            "%i out of " % (i * self.page_size),
                         )
                     )
 
@@ -517,12 +581,12 @@ class TextSearchPage(BasePage):
             are filtered correctly.
             """
             # get the number of entries in the facet
-            facet_count = re.search(r'\((.+?)\)$', self.unchecked_facet_link.text)
+            facet_count = re.search(r"\((.+?)\)$", self.unchecked_facet_link.text)
             self.unchecked_facet_link.click()
             WebDriverWait(self.browser, self.timeout).until(
                 EC.text_to_be_present_in_element(
                     (By.ID, "text-search-results-count"),
-                    'out of %s' % facet_count.group(1)
+                    "out of %s" % facet_count.group(1),
                 )
             )
 
@@ -555,7 +619,9 @@ class TextSearchPage(BasePage):
         """
         try:
             WebDriverWait(self.browser, self.timeout).until(
-                EC.visibility_of_element_located((By.CLASS_NAME, "text-search-no-results"))
+                EC.visibility_of_element_located(
+                    (By.CLASS_NAME, "text-search-no-results")
+                )
             )
             return True  # was: warning.is_displayed()
         except:
@@ -564,15 +630,16 @@ class TextSearchPage(BasePage):
 
 class RNAcentralTest(unittest.TestCase):
     """Unit tests entry point."""
-    driver = 'firefox'
+
+    driver = "firefox"
 
     def setUp(self):
-        if self.driver == 'firefox':
+        if self.driver == "firefox":
             self.browser = webdriver.Firefox()
-        elif self.driver == 'phantomjs':
+        elif self.driver == "phantomjs":
             self.browser = webdriver.PhantomJS()
         else:
-            sys.exit('Driver not found')
+            sys.exit("Driver not found")
 
     def tearDown(self):
         self.browser.quit()
@@ -602,8 +669,7 @@ class RNAcentralTest(unittest.TestCase):
 
     def test_browser_back_button(self):
         """Make sure browser history is recorded correctly."""
-        history = ['contact', 'downloads', 'search?q=mirbase',
-                   'search?q=foobar']
+        history = ["contact", "downloads", "search?q=mirbase", "search?q=foobar"]
         page = TextSearchPage(self.browser)
         for item in history:
             page.browser.get(page.base_url + item)
@@ -628,7 +694,7 @@ class RNAcentralTest(unittest.TestCase):
         """
         page = TextSearchPage(self.browser)
         page.navigate()
-        query = 'foobarbaz'
+        query = "foobarbaz"
         page._submit_search_by_submit_button(query)
         self.assertTrue(page.warnings_present())
 
@@ -639,7 +705,7 @@ class RNAcentralTest(unittest.TestCase):
         """
         page = TextSearchPage(self.browser)
         page.navigate()
-        query = 'RNA'
+        query = "RNA"
         page._submit_search_by_submit_button(query)
         self.assertFalse(page.warnings_present())
 
@@ -653,63 +719,64 @@ class RNAcentralTest(unittest.TestCase):
 
     def test_text_search_load_search_url(self):
         """Load a text search using a search url."""
-        page = TextSearchPage(self.browser, 'search?q=mirbase')
+        page = TextSearchPage(self.browser, "search?q=mirbase")
         page.navigate()
         self.assertTrue(len(page.text_search_results) > 0)
 
     def test_text_search_species_specific_filtering(self):
         """Make sure that URS/taxid and URS_taxid are found in text search."""
         # forward slash
-        page = TextSearchPage(self.browser, 'search?q=URS000047C79B/9606')
+        page = TextSearchPage(self.browser, "search?q=URS000047C79B/9606")
         page.navigate()
         self.assertEqual(len(page.text_search_results), 1)
         # underscore
-        page = TextSearchPage(self.browser, 'search?q=URS000047C79B_9606')
+        page = TextSearchPage(self.browser, "search?q=URS000047C79B_9606")
         page.navigate()
         self.assertEqual(len(page.text_search_results), 1)
         # non-existing taxid
-        page = TextSearchPage(self.browser, 'search?q=URS000047C79B_00000')
+        page = TextSearchPage(self.browser, "search?q=URS000047C79B_00000")
         page.navigate()
         self.assertTrue(page.warnings_present())
 
     def test_autocomplete_test_suite(self):
         """A collection of queries to check correctness of autocomplete suggestions."""
         test_suite = [
-            'mir 12',
-            'lncrna',
-            'mitochondrial',  # sic! - typo is intentional
-            'kcnq1ot1',
-
+            "mir 12",
+            "lncrna",
+            "mitochondrial",  # sic! - typo is intentional
+            "kcnq1ot1",
             # key species
-            'Arabidopsis thaliana',
-            'Bombyx mori',
-            'Bos taurus',
-            'Caenorhabditis elegans',
-            'Canis familiaris',
-            'Danio rerio',
-            'Drosophila melanogaster',
-            'Homo sapiens',
-            'Mus musculus',
-            'Pan troglodytes',
-            'Rattus norvegicus',
-            'Schizosaccharomyces pombe',
-            'arabidopsis',
-            'mosquito',
-            'bombyx',
-            'caenorhabditis',
-            'nematode',
-            'fish',
-            'drosophila',
-            'human',
-            'homo',
-            'mouse',
-            'chimpanzee',
-            'chimp',
-            'rattus',
+            "Arabidopsis thaliana",
+            "Bombyx mori",
+            "Bos taurus",
+            "Caenorhabditis elegans",
+            "Canis familiaris",
+            "Danio rerio",
+            "Drosophila melanogaster",
+            "Homo sapiens",
+            "Mus musculus",
+            "Pan troglodytes",
+            "Rattus norvegicus",
+            "Schizosaccharomyces pombe",
+            "arabidopsis",
+            "mosquito",
+            "bombyx",
+            "caenorhabditis",
+            "nematode",
+            "fish",
+            "drosophila",
+            "human",
+            "homo",
+            "mouse",
+            "chimpanzee",
+            "chimp",
+            "rattus",
         ]
 
         # add expert databases names to test_suites - their names should be suggested by autocomplete
-        expert_dbs = [db['name'] for db in expert_databases.expert_dbs if db['imported']]
+        expert_dbs = [
+            db["name"] for db in expert_databases.expert_dbs if db["imported"]
+        ]
         test_suite += expert_dbs
 
         page = TextSearchPage(self.browser)
@@ -723,9 +790,14 @@ class RNAcentralTest(unittest.TestCase):
             except:
                 print("Failed: query %s has no suggestions" % query)
                 continue
-            suggestions = [suggestion.text.lower() for suggestion in page.autocomplete_suggestions]
+            suggestions = [
+                suggestion.text.lower() for suggestion in page.autocomplete_suggestions
+            ]
             if not query.lower() in suggestions:
-                print("Failed: query = %s not found in suggestions = %s" % (query, suggestions))
+                print(
+                    "Failed: query = %s not found in suggestions = %s"
+                    % (query, suggestions)
+                )
 
     def test_text_search_test_suite(self):
         """
@@ -734,25 +806,36 @@ class RNAcentralTest(unittest.TestCase):
         """
         # the dict has the following structure
         # {query: [hits that are expected to appear in results list]}
-        test_suite = OrderedDict([
-            ('bantam AND Taxonomy:"7227"', ['URS000055786A_7227', 'URS00004E9E38_7227', 'URS00002F21DA_7227']),
-            ('U12', ['URS000075EF5D_9606']),
-            ('ryhB', ['URS00003CF5BC_511145']),
-            ('coolair', ['URS000018EB2E_3702']),
-            ('tRNA-Phe', ['URS00003A0C47_9606']),
-            ('("HOTAIR" OR "HOX") AND TAXONOMY:"9606" AND rna_type:"lncRNA" AND length:[500 to 3000]', [
-                'URS000075C808_9606',  # HGNC HOTAIR Gene
-                'URS0000301B08_9606',  # GENCODE/Ensembl Gene
-                'URS0000759B00_9606',  # RefSeq transcript variant
-                'URS000075EF05_9606',  # RefSeq transcript variant
-                'URS00001A335C_9606',  # GENCODE/Ensembl transcript
-            ]),
-            ('4V4Q', [
-                'URS00004B0F34_562',  # LSU
-                'URS00000ABFE9_562',  # SSU
-                'URS0000049E57_562',  # 5S
-            ]),
-        ])
+        test_suite = OrderedDict(
+            [
+                (
+                    'bantam AND Taxonomy:"7227"',
+                    ["URS000055786A_7227", "URS00004E9E38_7227", "URS00002F21DA_7227"],
+                ),
+                ("U12", ["URS000075EF5D_9606"]),
+                ("ryhB", ["URS00003CF5BC_511145"]),
+                ("coolair", ["URS000018EB2E_3702"]),
+                ("tRNA-Phe", ["URS00003A0C47_9606"]),
+                (
+                    '("HOTAIR" OR "HOX") AND TAXONOMY:"9606" AND rna_type:"lncRNA" AND length:[500 to 3000]',
+                    [
+                        "URS000075C808_9606",  # HGNC HOTAIR Gene
+                        "URS0000301B08_9606",  # GENCODE/Ensembl Gene
+                        "URS0000759B00_9606",  # RefSeq transcript variant
+                        "URS000075EF05_9606",  # RefSeq transcript variant
+                        "URS00001A335C_9606",  # GENCODE/Ensembl transcript
+                    ],
+                ),
+                (
+                    "4V4Q",
+                    [
+                        "URS00004B0F34_562",  # LSU
+                        "URS00000ABFE9_562",  # SSU
+                        "URS0000049E57_562",  # 5S
+                    ],
+                ),
+            ]
+        )
 
         page = TextSearchPage(self.browser)
         page.navigate()
@@ -768,8 +851,13 @@ class RNAcentralTest(unittest.TestCase):
                     if expected_result in result.text:
                         is_found = True
                         break  # ok, result found, move on to the next expected_result
-                if not is_found:  # if we managed to get here, expected_result is not found in results - fail
-                    print("Expected result %s not found for query %s" % (expected_result, query))  # or raise AssertionError
+                if (
+                    not is_found
+                ):  # if we managed to get here, expected_result is not found in results - fail
+                    print(
+                        "Expected result %s not found for query %s"
+                        % (expected_result, query)
+                    )  # or raise AssertionError
 
     def test_text_search_facets(self):
         """
@@ -781,21 +869,22 @@ class RNAcentralTest(unittest.TestCase):
         # mirbase
         page.input.clear()
         page._submit_search_by_submit_button("mirbase")
-        for element in page.rna_types_facet.find_elements_by_css_selector('li > a'):
-            assert re.match('miRNA', element.text) or re.match('precursor RNA', element.text)
+        for element in page.rna_types_facet.find_elements_by_css_selector("li > a"):
+            assert re.match("miRNA", element.text) or re.match(
+                "precursor RNA", element.text
+            )
 
         # hgnc
         page.input.clear()
         page._submit_search_by_submit_button("hgnc")
-        for element in page.organisms_facet.find_elements_by_css_selector('li > a'):
-            assert re.match('Homo sapiens', element.text)
+        for element in page.organisms_facet.find_elements_by_css_selector("li > a"):
+            assert re.match("Homo sapiens", element.text)
 
         # dictyBase
         page.input.clear()
         page._submit_search_by_submit_button('expert_db:"dictyBase"')
-        for element in page.organisms_facet.find_elements_by_css_selector('li > a'):
-            assert re.match('Dictyostelium discoideum AX4', element.text)
-
+        for element in page.organisms_facet.find_elements_by_css_selector("li > a"):
+            assert re.match("Dictyostelium discoideum AX4", element.text)
 
     # Sequence pages for specific databases
     # -------------------------------------
@@ -804,10 +893,12 @@ class RNAcentralTest(unittest.TestCase):
         page = ExpertDatabasesOverviewPage(self.browser)
         page.navigate()
         self.assertFalse(page.js_errors_found())
-        self.assertEqual(page.get_expert_tr_count(), page.get_footer_expert_db_count() + 1)
+        self.assertEqual(
+            page.get_expert_tr_count(), page.get_footer_expert_db_count() + 1
+        )
 
     def test_tmrna_website_example_pages(self):
-        for example_id in self._get_expert_db_example_ids('tmrna-website-examples'):
+        for example_id in self._get_expert_db_example_ids("tmrna-website-examples"):
             page = TmRNASequencePage(self.browser, example_id)
             page.navigate()
             self._sequence_view_checks(page)
@@ -816,7 +907,7 @@ class RNAcentralTest(unittest.TestCase):
             self.assertTrue(page.test_precursor_tmrna())
 
     def test_gencode_example_pages(self):
-        for example_id in self._get_expert_db_example_ids('gencode-examples'):
+        for example_id in self._get_expert_db_example_ids("gencode-examples"):
             page = GencodeSequencePage(self.browser, example_id)
             page.navigate()
             self._sequence_view_checks(page)
@@ -824,34 +915,44 @@ class RNAcentralTest(unittest.TestCase):
             self.assertTrue(page.alternative_transcripts_is_ok())
 
     def test_refseq_example_pages(self):
-        for example_id in self._get_expert_db_example_ids('refseq-examples'):
+        for example_id in self._get_expert_db_example_ids("refseq-examples"):
             page = RefseqSequencePage(self.browser, example_id)
             page.navigate()
             self._sequence_view_checks(page)
 
     def test_rdp_example_pages(self):
-        for example_id in self._get_expert_db_example_ids('rdp-examples'):
+        for example_id in self._get_expert_db_example_ids("rdp-examples"):
             page = RdpSequencePage(self.browser, example_id)
             page.navigate()
             self._sequence_view_checks(page)
 
     def test_mirbase_example_pages(self):
-        for example_id in self._get_expert_db_example_ids('mirbase-examples'):
+        for example_id in self._get_expert_db_example_ids("mirbase-examples"):
             page = MirbaseSequencePage(self.browser, example_id)
             page.navigate()
             self._sequence_view_checks(page)
-            self.assertTrue(page.external_urls_exist('mirbase'))
+            self.assertTrue(page.external_urls_exist("mirbase"))
 
     def test_srpdb_example_pages(self):
-        for example_id in self._get_expert_db_example_ids('srpdb-examples'):
+        for example_id in self._get_expert_db_example_ids("srpdb-examples"):
             page = SrpdbSequencePage(self.browser, example_id)
             page.navigate()
             self._sequence_view_checks(page)
-            self.assertTrue(page.external_urls_exist('srpdb'))
+            self.assertTrue(page.external_urls_exist("srpdb"))
 
     def test_expert_database_landing_pages(self):
-        expert_dbs = ['tmrna-website', 'srpdb', 'mirbase', 'gencode',
-                      'ena', 'rfam', 'lncrnadb', 'gtrnadb', 'refseq', 'rdp']
+        expert_dbs = [
+            "tmrna-website",
+            "srpdb",
+            "mirbase",
+            "gencode",
+            "ena",
+            "rfam",
+            "lncrnadb",
+            "gtrnadb",
+            "refseq",
+            "rdp",
+        ]
         for expert_db in expert_dbs:
             page = ExpertDatabaseLandingPage(self.browser, expert_db)
             page.navigate()
@@ -863,13 +964,16 @@ class RNAcentralTest(unittest.TestCase):
 
         class XrefPaginationPage(SequencePage):
             """Get the active xref page number."""
+
             def get_active_xref_page_num(self):
-                active_button = self.browser.find_element_by_css_selector('li.active>a.xref-pagination')
+                active_button = self.browser.find_element_by_css_selector(
+                    "li.active>a.xref-pagination"
+                )
                 return active_button.text
 
-        upi = 'URS00006EC23D'
-        xref_page_num = '5'
-        page = XrefPaginationPage(self.browser, upi + '?xref-page=' + xref_page_num)
+        upi = "URS00006EC23D"
+        xref_page_num = "5"
+        page = XrefPaginationPage(self.browser, upi + "?xref-page=" + xref_page_num)
         page.navigate()
         self.assertTrue(page.get_active_xref_page_num(), xref_page_num)
         self._sequence_view_checks(page)
@@ -878,7 +982,7 @@ class RNAcentralTest(unittest.TestCase):
     # -----------------------
 
     def test_genoverse_page(self):
-        page = GenoverseTestPage(self.browser, 'URS00000B15DA')
+        page = GenoverseTestPage(self.browser, "URS00000B15DA")
         page.navigate()
         self.assertTrue(page.genoverse_ok())
 
@@ -894,10 +998,12 @@ class RNAcentralTest(unittest.TestCase):
         page.navigate()
         time.sleep(15)
         page.start_input.clear()
-        page.start_input.send_keys('2')  # on PhantomJS fails due to a known bug: https://github.com/ariya/phantomjs/issues/14211#issuecomment-279742472, https://github.com/SeleniumHQ/selenium/issues/2214
+        page.start_input.send_keys(
+            "2"
+        )  # on PhantomJS fails due to a known bug: https://github.com/ariya/phantomjs/issues/14211#issuecomment-279742472, https://github.com/SeleniumHQ/selenium/issues/2214
         time.sleep(5)
         urlparams = urlparse.parse_qs(urlparse.urlparse(self.browser.current_url).query)
-        assert urlparams['start'] == ['2']
+        assert urlparams["start"] == ["2"]
 
     def test_UCSD_and_Ensembl_links_changed_on_input_changed(self):
         """
@@ -910,63 +1016,71 @@ class RNAcentralTest(unittest.TestCase):
         page.navigate()
         time.sleep(15)
         page.start_input.clear()
-        page.start_input.send_keys('2')
+        page.start_input.send_keys("2")
         time.sleep(5)
-        urlparams = urlparse.parse_qs(urlparse.urlparse(page.ucsc_link.get_attribute('href')).query)
-        assert urlparams['position'] == ['chrX:2-73856333']  # TODO: fix failing tests
+        urlparams = urlparse.parse_qs(
+            urlparse.urlparse(page.ucsc_link.get_attribute("href")).query
+        )
+        assert urlparams["position"] == ["chrX:2-73856333"]  # TODO: fix failing tests
 
     # TaxId filtering
     # ---------------
 
     def test_taxid_filtering_off(self):
-        page = TaxidFilteringSequencePage(self.browser, 'URS000047C79B')
+        page = TaxidFilteringSequencePage(self.browser, "URS000047C79B")
         page.navigate()
-        self.assertTrue(re.match('\d+ species', page.get_page_subtitle()))
-        self.assertIn('This unique sequence was observed in multiple species', page.get_info_text())
+        self.assertTrue(re.match("\d+ species", page.get_page_subtitle()))
+        self.assertIn(
+            "This unique sequence was observed in multiple species",
+            page.get_info_text(),
+        )
 
     def test_taxid_filtering_on(self):
-        taxid = {'species': 'Homo sapiens', 'ncbi_id': '9606'}
-        page = TaxidFilteringSequencePage(self.browser, 'URS000047C79B' + '/' + taxid['ncbi_id'])
+        taxid = {"species": "Homo sapiens", "ncbi_id": "9606"}
+        page = TaxidFilteringSequencePage(
+            self.browser, "URS000047C79B" + "/" + taxid["ncbi_id"]
+        )
         page.navigate()
         species = page.get_species_from_xref_table()
         self.assertEqual(len(species), 1)
-        self.assertEqual(species.pop(), taxid['species'])
-        self.assertEqual(page.get_page_subtitle(), taxid['species'])
+        self.assertEqual(species.pop(), taxid["species"])
+        self.assertEqual(page.get_page_subtitle(), taxid["species"])
 
     def test_taxid_filtering_spurious_taxid(self):
         """
         When a taxid is not found, the url is redirected
         to a non-species-specific id.
         """
-        page = TaxidFilteringSequencePage(self.browser, 'URS000047C79B' + '/' + '0'*10)
+        page = TaxidFilteringSequencePage(
+            self.browser, "URS000047C79B" + "/" + "0" * 10
+        )
         page.navigate()
-        self.assertIn('No annotations from taxid', page.get_warning_info_text())
+        self.assertIn("No annotations from taxid", page.get_warning_info_text())
 
     def test_taxid_filtering_with_underscore(self):
-        page = TaxidFilteringSequencePage(self.browser, 'URS00000B15DA_9606')
+        page = TaxidFilteringSequencePage(self.browser, "URS00000B15DA_9606")
         page.navigate()
-        self.assertEqual(page.get_page_subtitle(), 'Homo sapiens')
+        self.assertEqual(page.get_page_subtitle(), "Homo sapiens")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     import logging
+
     logging.basicConfig(
-        filename='selenium_log.txt',
-        level=logging.WARNING,
-        filemode='w'
+        filename="selenium_log.txt", level=logging.WARNING, filemode="w"
     )
 
     import argparse
     import sys
+
     parser = argparse.ArgumentParser()
-    parser.add_argument('--base_url', default='http://0.0.0.0:8000/')
-    parser.add_argument('--driver', default='firefox',
-                        choices=['firefox', 'phantomjs'])
-    parser.add_argument('unittest_args', nargs='*')
+    parser.add_argument("--base_url", default="http://0.0.0.0:8000/")
+    parser.add_argument("--driver", default="firefox", choices=["firefox", "phantomjs"])
+    parser.add_argument("unittest_args", nargs="*")
 
     args = parser.parse_args()
-    if args.base_url[-1] != '/':
-        args.base_url += '/'
+    if args.base_url[-1] != "/":
+        args.base_url += "/"
     BasePage.base_url = args.base_url
     RNAcentralTest.driver = args.driver
 

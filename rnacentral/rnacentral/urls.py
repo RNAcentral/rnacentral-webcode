@@ -13,31 +13,38 @@ limitations under the License.
 
 import socket
 
-from django.conf.urls import url, include
+from django.conf.urls import include, url
 from django.views.generic import TemplateView
-
 
 urlpatterns = [
     # RNAcentral portal
-    url(r'', include('portal.urls')),
+    url(r"", include("portal.urls")),
     # REST API (use trailing slashes)
-    url(r'^api/current/', include('apiv1.urls')),
-    url(r'^api/v1/', include('apiv1.urls')),
+    url(r"^api/current/", include("apiv1.urls")),
+    url(r"^api/v1/", include("apiv1.urls")),
     # export text search results
-    url(r'^export/', include('export.urls')),
+    url(r"^export/", include("export.urls")),
     # new sequence search
-    url(r'^sequence-search/', include('sequence_search.urls')),
+    url(r"^sequence-search/", include("sequence_search.urls")),
     # Django Debug Toolbar
 ]
 
 # robots.txt extras
-if 'hx' in socket.gethostname():
+if "hx" in socket.gethostname():
     additional_settings = [
-      url(r'^robots\.txt$', TemplateView.as_view(template_name='robots-test.txt', content_type='text/plain')),
+        url(
+            r"^robots\.txt$",
+            TemplateView.as_view(
+                template_name="robots-test.txt", content_type="text/plain"
+            ),
+        ),
     ]
 else:
     additional_settings = [
-      url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
+        url(
+            r"^robots\.txt$",
+            TemplateView.as_view(template_name="robots.txt", content_type="text/plain"),
+        ),
     ]
 
 urlpatterns += additional_settings
@@ -45,4 +52,4 @@ urlpatterns += additional_settings
 
 # Override 500 page, so that in case of an error, we still display our error page with normal response status
 # and EBI load balancer still proxies to our website instead of showing an EBI 'service down' page
-handler500 = 'portal.views.handler500'
+handler500 = "portal.views.handler500"

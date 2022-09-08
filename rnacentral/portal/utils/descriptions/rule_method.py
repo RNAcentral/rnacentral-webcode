@@ -13,12 +13,12 @@ limitations under the License.
 
 from __future__ import unicode_literals
 
-import re
-import math
-import string
-import logging
-import operator as op
 import itertools as it
+import logging
+import math
+import operator as op
+import re
+import string
 from collections import Counter
 
 __doc__ = """
@@ -29,33 +29,32 @@ rna_type is ``determine_rna_type_for``.
 """
 
 CHOICES = {
-    'miRNA': ['miRBase', 'RefSeq', 'HGNC', 'GENCODE', 'Rfam', 'Ensembl', 'ENA'],
-    'precursor_RNA': ['miRBase', 'RefSeq', 'Rfam', 'HGNC', 'GENCODE', 'Ensembl', 'ENA'],
-    'ribozyme': ['RefSeq', 'Rfam', 'PDBe', 'Ensembl', 'ENA'],
-    'hammerhead_ribozyme': ['RefSeq', 'Rfam', 'PDBe', 'Ensembl', 'ENA'],
-    'autocatalytically_spliced_intron': ['RefSeq', 'Rfam', 'PDBe', 'Ensembl', 'ENA'],
-
-    '__generic__': [
-        'miRBase',
-        'WormBase',
-        'HGNC',
-        'GENCODE',
-        'Ensembl',
-        'TAIR',
-        'FlyBase',
-        'dictBase',
-        'MGI',
-        'RGD',
-        'lncRNAdb',
-        'gtRNAdb',
-        'PDBe',
-        'RefSeq',
-        'Rfam',
-        'VEGA',
-        'SILVA',
-        'ENA',
-        'NONCODE',
-    ]
+    "miRNA": ["miRBase", "RefSeq", "HGNC", "GENCODE", "Rfam", "Ensembl", "ENA"],
+    "precursor_RNA": ["miRBase", "RefSeq", "Rfam", "HGNC", "GENCODE", "Ensembl", "ENA"],
+    "ribozyme": ["RefSeq", "Rfam", "PDBe", "Ensembl", "ENA"],
+    "hammerhead_ribozyme": ["RefSeq", "Rfam", "PDBe", "Ensembl", "ENA"],
+    "autocatalytically_spliced_intron": ["RefSeq", "Rfam", "PDBe", "Ensembl", "ENA"],
+    "__generic__": [
+        "miRBase",
+        "WormBase",
+        "HGNC",
+        "GENCODE",
+        "Ensembl",
+        "TAIR",
+        "FlyBase",
+        "dictBase",
+        "MGI",
+        "RGD",
+        "lncRNAdb",
+        "gtRNAdb",
+        "PDBe",
+        "RefSeq",
+        "Rfam",
+        "VEGA",
+        "SILVA",
+        "ENA",
+        "NONCODE",
+    ],
 }
 """
 A dict that defines the ordered choices for each type of RNA. This is the
@@ -64,9 +63,7 @@ __generic__ is a list of all database roughly ordered by how good the names
 from each one are.
 """
 
-TRUSTED_DATABASES = set([
-    'miRBase'
-])
+TRUSTED_DATABASES = set(["miRBase"])
 """This defines the set of databases that we always trust. If we have
 annotations from one of these databases we will always use if, assuming all
 annotations from the database agree.
@@ -129,18 +126,14 @@ def get_generic_name(rna_type, sequence, xrefs):
         A string naming the sequence.
     """
 
-    rna_type = rna_type.replace('_', ' ')
+    rna_type = rna_type.replace("_", " ")
     species_count = sequence.count_distinct_organisms
     if species_count == 1:
         species = xrefs.first().accession.species
-        return '{species} {rna_type}'.format(
-            species=species,
-            rna_type=rna_type
-        )
+        return "{species} {rna_type}".format(species=species, rna_type=rna_type)
 
-    return '{rna_type} from {species_count} species'.format(
-        rna_type=rna_type,
-        species_count=species_count
+    return "{rna_type} from {species_count} species".format(
+        rna_type=rna_type, species_count=species_count
     )
 
 
@@ -207,8 +200,8 @@ def suitable_xref(required_rna_type):
     # miRNA/precursor_RNA since some databases (Rfam, HGNC) do not correctly
     # distinguish the two but do have good descriptions otherwise.
     allowed_rna_types = set([required_rna_type])
-    if required_rna_type in set(['miRNA', 'precursor_RNA']):
-        allowed_rna_types = set(['miRNA', 'precursor_RNA'])
+    if required_rna_type in set(["miRNA", "precursor_RNA"]):
+        allowed_rna_types = set(["miRNA", "precursor_RNA"])
 
     def fn(db_name, xref):
         display_name = xref.db.display_name
@@ -218,10 +211,11 @@ def suitable_xref(required_rna_type):
         rna_type = xref.accession.get_rna_type()
         # PDBe has lots of things called 'misc_RNA' that have a good
         # description, so we allow this to use PDBe's misc_RNA descriptions
-        if display_name == 'PDBe' and rna_type == 'misc_RNA':
+        if display_name == "PDBe" and rna_type == "misc_RNA":
             return True
 
         return rna_type in allowed_rna_types
+
     return fn
 
 
@@ -244,9 +238,9 @@ def select_best_description(descriptions):
 
 
 def item_sorter(name):
-    match = re.search(r'(\d+)$', name)
+    match = re.search(r"(\d+)$", name)
     if match:
-        name = re.sub(r'(\d+)$', '', name)
+        name = re.sub(r"(\d+)$", "", name)
         return (name, int(match.group(1)))
     return (match, None)
 
@@ -277,15 +271,15 @@ def compute_gene_ranges(genes):
         if not gene:
             continue
 
-        range_format = '%i-%i'
-        if '-' in gene:
-            range_format = ' %i to %i'
+        range_format = "%i-%i"
+        if "-" in gene:
+            range_format = " %i to %i"
         for (start, stop) in group_consecutives(n[1] for n in numbers):
             if stop is None:
                 names.append(gene + str(start))
             else:
                 prefix = gene
-                if prefix.endswith('-'):
+                if prefix.endswith("-"):
                     prefix = prefix[:-1]
                 names.append(prefix + range_format % (start, stop))
 
@@ -295,23 +289,22 @@ def compute_gene_ranges(genes):
 def add_term_suffix(base, additional_terms, name, max_items=3):
     items = compute_gene_ranges(additional_terms)
 
-    suffix = 'multiple %s' % name
+    suffix = "multiple %s" % name
     if len(items) < max_items:
-        suffix = ', '.join(items)
+        suffix = ", ".join(items)
 
     if suffix in base:
         return base
 
-    return '{basic} ({suffix})'.format(
+    return "{basic} ({suffix})".format(
         basic=base.strip(),
         suffix=suffix,
     )
 
 
-def select_with_several_genes(accessions, name, pattern,
-                              description_items=None,
-                              attribute='gene',
-                              max_items=3):
+def select_with_several_genes(
+    accessions, name, pattern, description_items=None, attribute="gene", max_items=3
+):
     """
     This will select the best description for databases where more than one
     gene (or other attribute) map to a single URS. The idea is that if there
@@ -330,11 +323,11 @@ def select_with_several_genes(accessions, name, pattern,
         if genes:
             suffix = genes.pop()
             if suffix not in description:
-                description += ' (%s)' % suffix
+                description += " (%s)" % suffix
         return description
 
     regexp = pattern % getter(candidate)
-    basic = re.sub(regexp, '', candidate.description)
+    basic = re.sub(regexp, "", candidate.description)
 
     func = getter
     if description_items is not None:
@@ -355,16 +348,16 @@ def trim_trailing_rna_type(rna_type, description):
     out along with ', ' that tends to go along with those.
     """
 
-    if 'predicted gene' in description:
+    if "predicted gene" in description:
         return description
 
     trailing = [rna_type]
-    if rna_type == 'lncRNA' or 'antisense' in rna_type:
-        trailing.append('long non-coding RNA')
+    if rna_type == "lncRNA" or "antisense" in rna_type:
+        trailing.append("long non-coding RNA")
 
     for value in trailing:
-        pattern = r'[, ]*%s$' % value
-        description = re.sub(pattern, '', description, re.IGNORECASE)
+        pattern = r"[, ]*%s$" % value
+        description = re.sub(pattern, "", description, re.IGNORECASE)
     return description
 
 
@@ -375,19 +368,12 @@ def remove_extra_description_terms(description):
     in the name of tmRNA's. This corrects those issues.
     """
 
+    description = re.sub(r"\(\s*non\s*-\s*protein\s+coding\s*\)", "", description)
     description = re.sub(
-        r'\(\s*non\s*-\s*protein\s+coding\s*\)',
-        '',
-        description
+        r"transfer-messenger mRNA", "transfer-messenger RNA", description, re.IGNORECASE
     )
-    description = re.sub(
-        r'transfer-messenger mRNA',
-        'transfer-messenger RNA',
-        description,
-        re.IGNORECASE
-    )
-    description = re.sub(r'\s\s+', ' ', description)
-    description = re.sub(r'\.?\s*$', '', description)
+    description = re.sub(r"\s\s+", " ", description)
+    description = re.sub(r"\.?\s*$", "", description)
     return description
 
 
@@ -426,7 +412,7 @@ def get_species_specific_name(rna_type, xrefs):
     if rna_type not in CHOICES:
         logger.debug("Falling back to generic ordering for %s", rna_type)
 
-    ordering = CHOICES.get(rna_type, CHOICES['__generic__'])
+    ordering = CHOICES.get(rna_type, CHOICES["__generic__"])
     db_name, best = choose_best(ordering, xrefs, suitable_xref(rna_type))
     if not best:
         logger.debug("Ordered choice selection failed")
@@ -436,25 +422,24 @@ def get_species_specific_name(rna_type, xrefs):
 
     # It is possible that one sequence maps to several HGNC genes and we should
     # indicate this
-    if db_name in set(['HGNC', 'Ensembl', 'GENCODE']):
+    if db_name in set(["HGNC", "Ensembl", "GENCODE"]):
         description = select_with_several_genes(
-            accessions,
-            'genes',
-            r'\(%s\)$',
-            max_items=5)
+            accessions, "genes", r"\(%s\)$", max_items=5
+        )
 
     # Similar issue for miRBase sequences
-    elif db_name == 'miRBase':
-        product_name = 'precursors'
-        if rna_type == 'miRNA':
-            product_name = 'miRNAs'
+    elif db_name == "miRBase":
+        product_name = "precursors"
+        if rna_type == "miRNA":
+            product_name = "miRNAs"
 
         description = select_with_several_genes(
             accessions,
             product_name,
-            r'\w+-%s',
-            description_items='optional_id',
-            max_items=5)
+            r"\w+-%s",
+            description_items="optional_id",
+            max_items=5,
+        )
 
     # Fall back to a simple generic method
     else:
@@ -464,11 +449,13 @@ def get_species_specific_name(rna_type, xrefs):
     # Sometimes we get a description that is 'predicted' from some databases.
     # It would be better to pull from Rfam which may have a more useful
     # description.
-    if 'predicted' in description:
+    if "predicted" in description:
         alt = []
         for xref in xrefs:
-            if xref.db.display_name == 'Rfam' and \
-                    xref.accession.get_rna_type() == rna_type:
+            if (
+                xref.db.display_name == "Rfam"
+                and xref.accession.get_rna_type() == rna_type
+            ):
                 alt.append(xref.accession)
 
         if alt:
@@ -477,11 +464,11 @@ def get_species_specific_name(rna_type, xrefs):
         # If there is a gene to append we should
         genes = [acc.gene for acc in accessions]
         if genes:
-            description = add_term_suffix(description, genes, 'genes')
+            description = add_term_suffix(description, genes, "genes")
 
     # There are often some extra terms we need to strip
     description = remove_extra_description_terms(description)
-    if db_name == 'RefSeq':
+    if db_name == "RefSeq":
         description = trim_trailing_rna_type(rna_type, description)
 
     return description.strip()
@@ -495,11 +482,10 @@ def correct_by_length(rna_type, sequence):
     between the two.
     """
 
-    if rna_type == set([u'precursor_RNA', u'miRNA']) or \
-            rna_type == set(['miRNA']):
+    if rna_type == set(["precursor_RNA", "miRNA"]) or rna_type == set(["miRNA"]):
         if 15 <= sequence.length <= 30:
-            return set(['miRNA'])
-        return set(['precursor_RNA'])
+            return set(["miRNA"])
+        return set(["precursor_RNA"])
     return rna_type
 
 
@@ -510,8 +496,8 @@ def correct_other_vs_misc(rna_type, _):
     rna_types.
     """
 
-    if rna_type == set(['other', 'misc_RNA']):
-        return set(['other'])
+    if rna_type == set(["other", "misc_RNA"]):
+        return set(["other"])
     return rna_type
 
 
@@ -521,7 +507,7 @@ def remove_ambiguous(rna_type, _):
     should use it. This will remove the annotations if possible
     """
 
-    ambiguous = set(['other', 'misc_RNA'])
+    ambiguous = set(["other", "misc_RNA"])
     specific = rna_type.difference(ambiguous)
     if specific:
         return specific
@@ -534,10 +520,11 @@ def remove_ribozyme_if_possible(rna_type, _):
     is a more specific ribozyme annotation avaiable.
     """
 
-    ribozymes = set(['hammerhead', 'hammerhead_ribozyme',
-                     'autocatalytically_spliced_intron'])
-    if 'ribozyme' in rna_type and rna_type.intersection(ribozymes):
-        rna_type.discard('ribozyme')
+    ribozymes = set(
+        ["hammerhead", "hammerhead_ribozyme", "autocatalytically_spliced_intron"]
+    )
+    if "ribozyme" in rna_type and rna_type.intersection(ribozymes):
+        rna_type.discard("ribozyme")
         return rna_type
     return rna_type
 
@@ -547,8 +534,8 @@ def remove_ncrna_if_possible(rna_types, _):
     ncRNA is always consitent with everything else, so ignore it if possible.
     """
 
-    if 'ncRNA' in rna_types and len(rna_types) > 1:
-        rna_types.discard('ncRNA')
+    if "ncRNA" in rna_types and len(rna_types) > 1:
+        rna_types.discard("ncRNA")
         return rna_types
     return rna_types
 
@@ -604,8 +591,7 @@ def determine_rna_type_for(sequence, xrefs):
 
     databases = {xref.db.name for xref in xrefs}
     if not databases:
-        logger.error("Could not find any database this sequence is from: %s",
-                     sequence)
+        logger.error("Could not find any database this sequence is from: %s", sequence)
         return None
 
     trusted = databases.intersection(TRUSTED_DATABASES)

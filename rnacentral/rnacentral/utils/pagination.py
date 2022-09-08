@@ -1,8 +1,8 @@
 import sys
 
 from django.core.paginator import Paginator
-from django.db.models.query import RawQuerySet
 from django.db.models import sql
+from django.db.models.query import RawQuerySet
 from django.utils.functional import cached_property
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
@@ -10,6 +10,7 @@ from rest_framework.response import Response
 
 class CustomPaginatorClass(Paginator):
     """Use a large number to make sure that all results can be shown"""
+
     @cached_property
     def count(self):
         return sys.maxsize
@@ -17,15 +18,18 @@ class CustomPaginatorClass(Paginator):
 
 class LargeTablePagination(PageNumberPagination):
     """Use this paginator class to avoid large table count query"""
+
     django_paginator_class = CustomPaginatorClass
-    page_size_query_param = 'page_size'
+    page_size_query_param = "page_size"
 
     def get_paginated_response(self, data):
-        return Response({
-            'next': self.get_next_link(),
-            'previous': self.get_previous_link(),
-            'results': data
-        })
+        return Response(
+            {
+                "next": self.get_next_link(),
+                "previous": self.get_previous_link(),
+                "results": data,
+            }
+        )
 
 
 class Pagination(PageNumberPagination):
@@ -35,7 +39,8 @@ class Pagination(PageNumberPagination):
     class MyView(GenericAPIView):
         pagination_class = Pagination
     """
-    page_size_query_param = 'page_size'
+
+    page_size_query_param = "page_size"
 
 
 class PaginatedRawQuerySet(RawQuerySet):
@@ -47,6 +52,7 @@ class PaginatedRawQuerySet(RawQuerySet):
 
     Stopped working after Django migration, but will keep it just in case.
     """
+
     def __init__(self, raw_query, **kwargs):
         super(PaginatedRawQuerySet, self).__init__(raw_query, **kwargs)
         self.original_raw_query = raw_query
@@ -56,12 +62,19 @@ class PaginatedRawQuerySet(RawQuerySet):
         """
         Retrieves an item or slice from the set of results.
         """
-        if not isinstance(k, (slice, int,)):
+        if not isinstance(
+            k,
+            (
+                slice,
+                int,
+            ),
+        ):
             raise TypeError
-        assert ((not isinstance(k, slice) and (k >= 0)) or
-                (isinstance(k, slice) and (k.start is None or k.start >= 0) and
-                 (k.stop is None or k.stop >= 0))), \
-            "Negative indexing is not supported."
+        assert (not isinstance(k, slice) and (k >= 0)) or (
+            isinstance(k, slice)
+            and (k.start is None or k.start >= 0)
+            and (k.stop is None or k.stop >= 0)
+        ), "Negative indexing is not supported."
 
         if self._result_cache is not None:
             return self._result_cache[k]
@@ -91,20 +104,22 @@ class PaginatedRawQuerySet(RawQuerySet):
         if self._result_cache is not None:
             return len(self._result_cache)
 
-        return self.query.get_count(using=self.db)  # Originally was: return self.model.objects.count()
+        return self.query.get_count(
+            using=self.db
+        )  # Originally was: return self.model.objects.count()
 
     def set_limits(self, start, stop):
-        limit_offset = ''
+        limit_offset = ""
 
         new_params = tuple()
         if start is None:
             start = 0
         elif start > 0:
             new_params += (start,)
-            limit_offset = ' OFFSET %s'
+            limit_offset = " OFFSET %s"
         if stop is not None:
             new_params = (stop - start,) + new_params
-            limit_offset = 'LIMIT %s' + limit_offset
+            limit_offset = "LIMIT %s" + limit_offset
 
         self.params = self.params + new_params
         self.raw_query = self.original_raw_query + limit_offset
@@ -115,13 +130,20 @@ class PaginatedRawQuerySet(RawQuerySet):
             self._result_cache = list(super(PaginatedRawQuerySet, self).__iter__())
 
     def __repr__(self):
-        return '<%s: %s>' % (self.__class__.__name__, self.model.__name__)
+        return "<%s: %s>" % (self.__class__.__name__, self.model.__name__)
 
     def __len__(self):
         self._fetch_all()
         return len(self._result_cache)
 
     def _clone(self):
-        clone = self.__class__(raw_query=self.raw_query, model=self.model, using=self._db, hints=self._hints,
-                               query=self.query, params=self.params, translations=self.translations)
+        clone = self.__class__(
+            raw_query=self.raw_query,
+            model=self.model,
+            using=self._db,
+            hints=self._hints,
+            query=self.query,
+            params=self.params,
+            translations=self.translations,
+        )
         return clone

@@ -17,54 +17,51 @@ from django.db import models
 class SecondaryStructure(models.Model):
     id = models.AutoField(primary_key=True)
     accession = models.OneToOneField(
-        'Accession',
-        db_column='rnc_accession_id',
-        to_field='accession',
-        related_name='secondary_structure',
-        on_delete=models.CASCADE
+        "Accession",
+        db_column="rnc_accession_id",
+        to_field="accession",
+        related_name="secondary_structure",
+        on_delete=models.CASCADE,
     )
     secondary_structure = models.TextField()
     md5 = models.CharField(max_length=32, db_index=True)
 
     class Meta:
-        db_table = 'rnc_secondary_structure'
-        unique_together = (('accession', 'md5'),)
+        db_table = "rnc_secondary_structure"
+        unique_together = (("accession", "md5"),)
 
 
 class SecondaryStructureWithLayout(models.Model):
     id = models.AutoField(primary_key=True)
     secondary_structure = models.TextField()
     urs = models.OneToOneField(
-        'Rna',
-        db_column='urs',
-        to_field='upi',
-        related_name='secondary_structure_layout',
-        on_delete=models.CASCADE
+        "Rna",
+        db_column="urs",
+        to_field="upi",
+        related_name="secondary_structure_layout",
+        on_delete=models.CASCADE,
     )
     template = models.OneToOneField(
-        'SecondaryStructureLayout',
-        db_column='model_id',
-        to_field='id',
-        on_delete=models.CASCADE
+        "SecondaryStructureLayout",
+        db_column="model_id",
+        to_field="id",
+        on_delete=models.CASCADE,
     )
 
     class Meta:
-        db_table = 'rnc_secondary_structure_layout'
-        unique_together = (('urs',),)
+        db_table = "rnc_secondary_structure_layout"
+        unique_together = (("urs",),)
 
 
 class SecondaryStructureLayout(models.Model):
     id = models.AutoField(primary_key=True)
     model_name = models.TextField()
     taxid = models.OneToOneField(
-        'Taxonomy',
-        db_column='taxid',
-        to_field='id',
-        on_delete=models.CASCADE
+        "Taxonomy", db_column="taxid", to_field="id", on_delete=models.CASCADE
     )
     model_source = models.TextField()
     cellular_location = models.TextField()
     rna_type = models.TextField()
 
     class Meta:
-        db_table = 'rnc_secondary_structure_layout_models'
+        db_table = "rnc_secondary_structure_layout_models"

@@ -22,34 +22,39 @@ def get_description(sequence, taxid=None):
     Get entry description based on its xrefs. If taxid is provided, use only
     species-specific xrefs.
     """
+
     def count_distinct_descriptions():
         """Count distinct description lines."""
-        queryset = xrefs.values_list('accession__description', flat=True)
-        results = queryset.filter(deleted='N').distinct().count()
+        queryset = xrefs.values_list("accession__description", flat=True)
+        results = queryset.filter(deleted="N").distinct().count()
         if not results:
             results = queryset.distinct().count()
         return results
 
     def get_distinct_products():
         """Get distinct non-null product values as a list."""
-        queryset = xrefs.values_list('accession__product', flat=True).filter(accession__product__isnull=False)
-        results = queryset.filter(deleted='N').distinct()
+        queryset = xrefs.values_list("accession__product", flat=True).filter(
+            accession__product__isnull=False
+        )
+        results = queryset.filter(deleted="N").distinct()
         if not results:
             results = queryset.distinct()
         return results
 
     def get_distinct_genes():
         """Get distinct non-null gene values as a list."""
-        queryset = xrefs.values_list('accession__gene', flat=True).filter(accession__gene__isnull=False)
-        results = queryset.filter(deleted='N').distinct()
+        queryset = xrefs.values_list("accession__gene", flat=True).filter(
+            accession__gene__isnull=False
+        )
+        results = queryset.filter(deleted="N").distinct()
         if not results:
             results = queryset.distinct()
         return results
 
     def get_distinct_feature_names():
         """Get distinct feature names as a list."""
-        queryset = xrefs.values_list('accession__feature_name', flat=True)
-        results = queryset.filter(deleted='N').distinct()
+        queryset = xrefs.values_list("accession__feature_name", flat=True)
+        results = queryset.filter(deleted="N").distinct()
         if not results:
             results = queryset.distinct()
         if not results:
@@ -58,8 +63,10 @@ def get_description(sequence, taxid=None):
 
     def get_distinct_ncrna_classes():
         """For ncRNA features, get distinct ncrna_class values as a list."""
-        queryset = xrefs.values_list('accession__ncrna_class', flat=True).filter(accession__ncrna_class__isnull=False)
-        results = queryset.filter(deleted='N').distinct()
+        queryset = xrefs.values_list("accession__ncrna_class", flat=True).filter(
+            accession__ncrna_class__isnull=False
+        )
+        results = queryset.filter(deleted="N").distinct()
         if not results:
             results = queryset.distinct()
         return results
@@ -77,14 +84,14 @@ def get_description(sequence, taxid=None):
             rna_type = genes[0]
         else:
             feature_names = get_distinct_feature_names()
-            if feature_names[0] == 'ncRNA' and len(feature_names) == 1:
+            if feature_names[0] == "ncRNA" and len(feature_names) == 1:
                 ncrna_classes = get_distinct_ncrna_classes()
-                if len(ncrna_classes) > 1 and 'misc_RNA' in ncrna_classes:
-                    ncrna_classes.remove('misc_RNA')
-                rna_type = '/'.join(ncrna_classes)
+                if len(ncrna_classes) > 1 and "misc_RNA" in ncrna_classes:
+                    ncrna_classes.remove("misc_RNA")
+                rna_type = "/".join(ncrna_classes)
             else:
-                rna_type = '/'.join(feature_names)
-        return rna_type.replace('_', ' ')
+                rna_type = "/".join(feature_names)
+        return rna_type.replace("_", " ")
 
     def get_urs_description():
         """
@@ -98,13 +105,13 @@ def get_description(sequence, taxid=None):
             distinct_species = sequence.count_distinct_organisms
             if taxid or distinct_species == 1:
                 species = xrefs.first().accession.species
-                description_line = '{species} {rna_type}'.format(
-                                    species=species, rna_type=rna_type)
+                description_line = "{species} {rna_type}".format(
+                    species=species, rna_type=rna_type
+                )
             else:
-                description_line = ('{rna_type} from '
-                                    '{distinct_species} species').format(
-                                    rna_type=rna_type,
-                                    distinct_species=distinct_species)
+                description_line = (
+                    "{rna_type} from " "{distinct_species} species"
+                ).format(rna_type=rna_type, distinct_species=distinct_species)
         return description_line
 
     def get_xrefs_for_description(taxid):
@@ -112,16 +119,25 @@ def get_description(sequence, taxid=None):
         Get cross-references for building a description line.
         """
         # try only active xrefs first
-        xrefs = sequence.xrefs.filter(deleted='N', taxid=taxid) if taxid else sequence.xrefs.filter(deleted='N')
+        xrefs = (
+            sequence.xrefs.filter(deleted="N", taxid=taxid)
+            if taxid
+            else sequence.xrefs.filter(deleted="N")
+        )
 
         # fall back onto all xrefs if no active ones are found
         if not xrefs.exists():
-            xrefs = sequence.xrefs.filter(taxid=taxid) if taxid else sequence.xrefs.filter()
+            xrefs = (
+                sequence.xrefs.filter(taxid=taxid) if taxid else sequence.xrefs.filter()
+            )
 
-        return xrefs.select_related('accession').prefetch_related('accession__refs', 'accession__coordinates')
+        return xrefs.select_related("accession").prefetch_related(
+            "accession__refs", "accession__coordinates"
+        )
 
     def score_xref(xref):
         """Return a score for a cross-reference based on its metadata."""
+
         def get_genome_bonus():
             """
             Find if the xref has genome mapping.
@@ -147,23 +163,25 @@ def get_description(sequence, taxid=None):
             gene_bonus = 0.1
         if xref.db_id == 2 and not xref.is_rfam_seed():
             rfam_full_alignment_penalty = -2
-        if xref.accession.feature_name == 'misc_RNA':
+        if xref.accession.feature_name == "misc_RNA":
             misc_rna_penalty = -2
         if xref.accession.note:
             note_bonus = 0.1
 
-        score = paper_bonus + \
-            genome_bonus + \
-            gene_bonus + \
-            product_bonus + \
-            note_bonus + \
-            rfam_full_alignment_penalty + \
-            misc_rna_penalty
+        score = (
+            paper_bonus
+            + genome_bonus
+            + gene_bonus
+            + product_bonus
+            + note_bonus
+            + rfam_full_alignment_penalty
+            + misc_rna_penalty
+        )
         return score
 
     # blacklisted entries, an entry with > 200K xrefs, all from Rfam
-    if sequence.upi in ['URS000065859A'] and not taxid:
-        return 'uncultured Neocallimastigales 5.8S ribosomal RNA'
+    if sequence.upi in ["URS000065859A"] and not taxid:
+        return "uncultured Neocallimastigales 5.8S ribosomal RNA"
 
     # get description
     if taxid and not sequence.xrefs.filter(taxid=taxid).exists():

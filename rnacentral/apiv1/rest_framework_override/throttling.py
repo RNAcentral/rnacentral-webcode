@@ -34,9 +34,10 @@ class SafeCacheKeyAnonRateThrottle(AnonRateThrottle):
         """
         Strip out whitespace from the key.
         """
-        unsafe_key = super(SafeCacheKeyAnonRateThrottle, self).get_cache_key(request, view) \
-                     or ''
-        return unsafe_key.replace(' ', '')
+        unsafe_key = (
+            super(SafeCacheKeyAnonRateThrottle, self).get_cache_key(request, view) or ""
+        )
+        return unsafe_key.replace(" ", "")
 
 
 class SafeCacheKeyUserRateThrottle(UserRateThrottle):
@@ -47,12 +48,14 @@ class SafeCacheKeyUserRateThrottle(UserRateThrottle):
     authenticated.  For anonymous requests, the IP address of the request will
     be used.
     """
-    scope = 'user'
+
+    scope = "user"
 
     def get_cache_key(self, request, view):
         """
         Strip out whitespace from the key.
         """
-        unsafe_key = super(SafeCacheKeyUserRateThrottle, self).get_cache_key(request, view) \
-                     or ''
-        return unsafe_key.replace(' ', '')
+        unsafe_key = (
+            super(SafeCacheKeyUserRateThrottle, self).get_cache_key(request, view) or ""
+        )
+        return unsafe_key.replace(" ", "")

@@ -20,9 +20,9 @@ def get_environment():
     Detect host environment: HX, OY, PG or DEV.
     """
     hostname = socket.gethostname()
-    match = re.search(r'ves-(\w+)-\w+\.ebi\.ac\.uk', hostname)
-    if match and match.group(1) in ['hx', 'pg', 'oy']:
+    match = re.search(r"ves-(\w+)-\w+\.ebi\.ac\.uk", hostname)
+    if match and match.group(1) in ["hx", "pg", "oy"]:
         env = match.group(1)
     else:
-        env = 'dev'
+        env = "dev"
     return env.upper()

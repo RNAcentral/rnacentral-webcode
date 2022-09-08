@@ -11,24 +11,23 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from caching.base import CachingMixin, CachingManager
+from caching.base import CachingManager, CachingMixin
 from django.contrib.postgres.fields import JSONField
 from django.db import models
-
 from portal.models import EnsemblAssembly
 
 
 class EnsemblKaryotype(CachingMixin, models.Model):
     assembly = models.ForeignKey(
         EnsemblAssembly,
-        related_name='karyotype',
-        db_column='assembly_id',
-        to_field='assembly_id',
-        on_delete=models.CASCADE
+        related_name="karyotype",
+        db_column="assembly_id",
+        to_field="assembly_id",
+        on_delete=models.CASCADE,
     )
     karyotype = JSONField()
 
     objects = CachingManager()
 
     class Meta:
-        db_table = 'ensembl_karyotype'
+        db_table = "ensembl_karyotype"

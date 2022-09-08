@@ -11,53 +11,48 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import boto3
-import six
-import operator as op
 import itertools as it
-from collections import Counter, defaultdict
+import operator as op
 import re
 import zlib
+from collections import Counter, defaultdict
 
-from caching.base import CachingMixin, CachingManager
+import boto3
+import requests
+import six
+from caching.base import CachingManager, CachingMixin
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import connection, models
+from django.db.models import Max, Min, Prefetch, Q
 from django.urls import reverse
-from django.db import connection
-from django.db import models
-from django.db.models import Prefetch, Min, Max, Q
 from django.utils.functional import cached_property
-
-from .modification import Modification
-from .rna_precomputed import RnaPrecomputed
-from .related_sequences import RelatedSequence
-from .reference import Reference
-from .xref import Xref
-from .rfam import RfamHit, RfamAnalyzedSequences
-from .accession import Accession
-from portal.utils import descriptions as desc
-from portal.rfam_matches import check_issues
 from portal.config.expert_databases import expert_dbs
+from portal.rfam_matches import check_issues
+from portal.utils import descriptions as desc
 
-import requests
+from .accession import Accession
+from .modification import Modification
+from .reference import Reference
+from .related_sequences import RelatedSequence
+from .rfam import RfamAnalyzedSequences, RfamHit
+from .rna_precomputed import RnaPrecomputed
+from .xref import Xref
 
 
 def dictfetchall(cursor):
     "Return all rows from a cursor as a dict"
     columns = [col[0] for col in cursor.description]
-    return [
-        dict(zip(columns, row))
-        for row in cursor.fetchall()
-    ]
+    return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 
 class Rna(CachingMixin, models.Model):
-    id = models.IntegerField(db_column='id')
+    id = models.IntegerField(db_column="id")
     upi = models.CharField(max_length=13, db_index=True, primary_key=True)
     timestamp = models.DateField()
     userstamp = models.CharField(max_length=30)
     crc64 = models.CharField(max_length=16)
-    length = models.IntegerField(db_column='len')
+    length = models.IntegerField(db_column="len")
     seq_short = models.CharField(max_length=4000)
     seq_long = models.TextField()
     md5 = models.CharField(max_length=32, unique=True, db_index=True)
@@ -65,11 +60,11 @@ class Rna(CachingMixin, models.Model):
     objects = CachingManager()
 
     class Meta:
-        db_table = 'rna'
+        db_table = "rna"
 
     def get_absolute_url(self):
         """Get a URL for an RNA object. Used for generating sitemaps."""
-        return reverse('unique-rna-sequence', kwargs={'upi': self.upi})
+        return reverse("unique-rna-sequence", kwargs={"upi": self.upi})
 
     def get_publications(self, taxid=None):
         """
@@ -106,40 +101,58 @@ class Rna(CachingMixin, models.Model):
         """
 
         where_clause = "WHERE NOT ((b.title is NULL OR b.title = '') AND b.location LIKE 'Submitted%%')"
-        taxid_clause = 't1.taxid = %s AND' % taxid
+        taxid_clause = "t1.taxid = %s AND" % taxid
         deleted_clause = "t1.deleted = 'N' AND"
 
         # filter-out INSDC submissions with where_clause, deleted with deleted_clause; filter by taxid, if it's given
         if taxid:
-            formatted_query = query.format(taxid_clause=taxid_clause, where_clause=where_clause, deleted_clause=deleted_clause)
+            formatted_query = query.format(
+                taxid_clause=taxid_clause,
+                where_clause=where_clause,
+                deleted_clause=deleted_clause,
+            )
         else:
-            formatted_query = query.format(taxid_clause='', where_clause=where_clause, deleted_clause=deleted_clause)
+            formatted_query = query.format(
+                taxid_clause="",
+                where_clause=where_clause,
+                deleted_clause=deleted_clause,
+            )
 
         queryset = list(Reference.objects.raw(formatted_query, [self.upi]))
 
         # if queryset is empty, try finding at least INSDC submissions
         if len(queryset) == 0:
             if taxid:
-                formatted_query = query.format(taxid_clause=taxid_clause, where_clause='', deleted_clause=deleted_clause)
+                formatted_query = query.format(
+                    taxid_clause=taxid_clause,
+                    where_clause="",
+                    deleted_clause=deleted_clause,
+                )
             else:
-                formatted_query = query.format(taxid_clause='', where_clause='', deleted_clause=deleted_clause)
+                formatted_query = query.format(
+                    taxid_clause="", where_clause="", deleted_clause=deleted_clause
+                )
 
             queryset = list(Reference.objects.raw(formatted_query, [self.upi]))
 
         # if queryset is still empty, try displaying deleted papers
         if len(queryset) == 0:
             if taxid:
-                formatted_query = query.format(taxid_clause=taxid_clause, where_clause='', deleted_clause='')
+                formatted_query = query.format(
+                    taxid_clause=taxid_clause, where_clause="", deleted_clause=""
+                )
             else:
-                formatted_query = query.format(taxid_clause='', where_clause='', deleted_clause='')
+                formatted_query = query.format(
+                    taxid_clause="", where_clause="", deleted_clause=""
+                )
 
             queryset = list(Reference.objects.raw(formatted_query, [self.upi]))
 
         # find expert dbs and move them to the end of the list, apply filtration
         references = {}
         for expert_db in expert_dbs:
-            for reference in expert_db['references']:
-                pubmed_id = reference['pubmed_id']
+            for reference in expert_db["references"]:
+                pubmed_id = reference["pubmed_id"]
                 references[pubmed_id] = expert_db
 
         expert_db_publications = []
@@ -148,8 +161,11 @@ class Rna(CachingMixin, models.Model):
         titles = []
         for publication in queryset:
             if not publication.title:
-                publication.title = ''
-            if publication.pubmed in references and publication.title.lower() not in titles:
+                publication.title = ""
+            if (
+                publication.pubmed in references
+                and publication.title.lower() not in titles
+            ):
                 expert_db_publications.append(publication)
                 titles.append(publication.title.lower())
                 publication.expert_db = True  # flags that it's an expert_db, UI should display a special label
@@ -162,8 +178,10 @@ class Rna(CachingMixin, models.Model):
 
     def is_active(self):
         """A sequence is considered active if it has at least one active cross_reference."""
-        values_list = self.xrefs.values_list('deleted', flat=True)
-        return 'N' in self.xrefs.values_list('deleted', flat=True).distinct()  # deleted xrefs are marked with N
+        values_list = self.xrefs.values_list("deleted", flat=True)
+        return (
+            "N" in self.xrefs.values_list("deleted", flat=True).distinct()
+        )  # deleted xrefs are marked with N
 
     def get_sequence(self):
         """
@@ -175,7 +193,7 @@ class Rna(CachingMixin, models.Model):
             sequence = self.seq_short
         else:
             sequence = self.seq_long
-        return sequence.replace('T', 'U').upper()
+        return sequence.replace("T", "U").upper()
 
     def count_symbols(self):
         """
@@ -187,16 +205,18 @@ class Rna(CachingMixin, models.Model):
 
     def get_xrefs(self, taxid=None):
         """Get all xrefs, show non-ENA annotations first."""
-        xrefs = self.xrefs.filter(deleted='N', upi=self.upi)\
-                          .exclude(accession__accession__startswith='PSICQUIC')\
-                          .order_by('-db__id')\
-                          .select_related()\
-                          .prefetch_related(
-                              Prefetch(
-                                  'modifications',
-                                  queryset=Modification.objects.select_related('modification_id')
-                              )
-                          )
+        xrefs = (
+            self.xrefs.filter(deleted="N", upi=self.upi)
+            .exclude(accession__accession__startswith="PSICQUIC")
+            .order_by("-db__id")
+            .select_related()
+            .prefetch_related(
+                Prefetch(
+                    "modifications",
+                    queryset=Modification.objects.select_related("modification_id"),
+                )
+            )
+        )
 
         if taxid:
             xrefs = xrefs.filter(taxid=taxid)
@@ -206,15 +226,17 @@ class Rna(CachingMixin, models.Model):
         # doesn't contain proper RNA sequences, we should at least return these
         # wrong annotations to hard-links to deleted sequences accessible from web.
         if not xrefs.exists():
-            xrefs = self.xrefs.filter(deleted='Y')\
-                              .order_by('-db__id')\
-                              .select_related()\
-                              .prefetch_related(
-                                  Prefetch(
-                                      'modifications',
-                                      queryset=Modification.objects.select_related('modification_id')
-                                  )
-                              )
+            xrefs = (
+                self.xrefs.filter(deleted="Y")
+                .order_by("-db__id")
+                .select_related()
+                .prefetch_related(
+                    Prefetch(
+                        "modifications",
+                        queryset=Modification.objects.select_related("modification_id"),
+                    )
+                )
+            )
             if taxid:
                 xrefs = xrefs.filter(taxid=taxid)
 
@@ -222,7 +244,7 @@ class Rna(CachingMixin, models.Model):
 
     def count_xrefs(self, taxid=None):
         """Count the number of cross-references associated with the sequence."""
-        xrefs = self.xrefs.filter(deleted='N')
+        xrefs = self.xrefs.filter(deleted="N")
         if taxid:
             xrefs = xrefs.filter(taxid=taxid)
         return xrefs.count()
@@ -230,8 +252,8 @@ class Rna(CachingMixin, models.Model):
     @cached_property
     def count_distinct_organisms(self):
         """Count the number of distinct taxids referenced by the sequence."""
-        queryset = self.xrefs.values('taxid')
-        results = queryset.filter(deleted='N').distinct().count()
+        queryset = self.xrefs.values("taxid")
+        results = queryset.filter(deleted="N").distinct().count()
         if not results:
             results = queryset.distinct().count()
         return results
@@ -241,29 +263,31 @@ class Rna(CachingMixin, models.Model):
         try:
             dbs = RnaPrecomputed.objects.filter(upi=self.upi, taxid=taxid).get()
         except RnaPrecomputed.DoesNotExist:
-            return ''
-        return sorted(dbs.databases.split(','), key=lambda s: s.lower())  # case-insensitive
+            return ""
+        return sorted(
+            dbs.databases.split(","), key=lambda s: s.lower()
+        )  # case-insensitive
 
     @cached_property
     def first_seen(self):
         """Return the earliest release the sequence is referenced in."""
-        data = self.xrefs.aggregate(first_seen=Min('created__release_date'))
-        return data['first_seen']
+        data = self.xrefs.aggregate(first_seen=Min("created__release_date"))
+        return data["first_seen"]
 
     @cached_property
     def last_seen(self):
         """Like `first_seen` but with reversed order."""
-        data = self.xrefs.aggregate(last_seen=Max('last__release_date'))
-        return data['last_seen']
+        data = self.xrefs.aggregate(last_seen=Max("last__release_date"))
+        return data["last_seen"]
 
     def get_sequence_fasta(self):
         """Split long sequences by a fixed number of characters per line."""
         max_column = 80
         seq = self.get_sequence()
-        split_seq = ''
+        split_seq = ""
         i = 0
         while i < len(seq):
-            split_seq += seq[i:i+max_column] + "\n"
+            split_seq += seq[i : i + max_column] + "\n"
             i += max_column
         description = self.get_description()
         fasta = ">%s %s\n%s" % (self.upi, description, split_seq)
@@ -376,7 +400,7 @@ class Rna(CachingMixin, models.Model):
         """
 
         base = Xref.default_objects.filter(upi=self.upi)
-        xrefs = base.filter(deleted='N')
+        xrefs = base.filter(deleted="N")
         if taxid is not None:
             xrefs = xrefs.filter(taxid=taxid)
 
@@ -385,7 +409,7 @@ class Rna(CachingMixin, models.Model):
             if taxid is not None:
                 xrefs = xrefs.filter(taxid=taxid)
 
-        return xrefs.select_related('accession', 'db')
+        return xrefs.select_related("accession", "db")
 
     def has_rfam_hits(self):
         """
@@ -405,35 +429,38 @@ class Rna(CachingMixin, models.Model):
         :returns list: A list of all Rfam hits to this sequence.
         """
 
-        query = RfamHit.objects.select_related('rfam_model').\
-                                filter(upi=self.upi)
+        query = RfamHit.objects.select_related("rfam_model").filter(upi=self.upi)
         if not allow_suppressed:
             query = query.filter(rfam_model__is_suppressed=False)
-        return query.order_by('rfam_model_id', 'sequence_start')
+        return query.order_by("rfam_model_id", "sequence_start")
 
     def grouped_rfam_hits(self, allow_suppressed=True):
         hits = it.groupby(
             self.get_rfam_hits(allow_suppressed=allow_suppressed),
-            op.attrgetter('rfam_model_id')
+            op.attrgetter("rfam_model_id"),
         )
         results = []
         for _, hits in hits:
             hits = list(hits)
             ranges = []
             for hit in hits:
-                ranges.append((
-                    hit.sequence_start,
-                    hit.sequence_stop,
-                    hit.model_completeness,
-                ))
+                ranges.append(
+                    (
+                        hit.sequence_start,
+                        hit.sequence_stop,
+                        hit.model_completeness,
+                    )
+                )
 
-            results.append({
-                'raw': hits,
-                'ranges': ranges,
-                'rfam_model': hits[0].rfam_model,
-                'rfam_model_id': hits[0].rfam_model_id,
-            })
-        return sorted(results, key=lambda h: h['ranges'][0][0])
+            results.append(
+                {
+                    "raw": hits,
+                    "ranges": ranges,
+                    "rfam_model": hits[0].rfam_model,
+                    "rfam_model_id": hits[0].rfam_model_id,
+                }
+            )
+        return sorted(results, key=lambda h: h["ranges"][0][0])
 
     def get_rfam_status(self, taxid=None):
         return check_issues(self, taxid=taxid)
@@ -451,7 +478,9 @@ class Rna(CachingMixin, models.Model):
         has = bool(RfamAnalyzedSequences.objects.get(upi=self.upi))
         return has
 
-    def get_domains(self, taxid=None, ignore_synthetic=False, ignore_unclassified=False):
+    def get_domains(
+        self, taxid=None, ignore_synthetic=False, ignore_unclassified=False
+    ):
         """
         Get all domains this sequence has been found in. If taxid is given then
         only the domain for all accessions from the given taxid will be
@@ -467,14 +496,13 @@ class Rna(CachingMixin, models.Model):
         for accession in accessions:
             classification = accession.classification
             if ignore_unclassified:
-                if 'uncultured' in classification or \
-                        'environmental' in classification:
+                if "uncultured" in classification or "environmental" in classification:
                     continue
 
-            if ignore_synthetic and 'synthetic' in classification:
+            if ignore_synthetic and "synthetic" in classification:
                 continue
 
-            domains.add(classification.split(';')[0])
+            domains.add(classification.split(";")[0])
         return domains
 
     def get_rfam_hit_families(self, **kwargs):
@@ -487,12 +515,17 @@ class Rna(CachingMixin, models.Model):
         The API request is used instead of an SQL query because the 2D tables
         are subject to frequent updates.
         """
-        url = settings.EBI_SEARCH_ENDPOINT + '?query={upi}_*&fields=has_secondary_structure&format=json'.format(upi=self.upi)
+        url = (
+            settings.EBI_SEARCH_ENDPOINT
+            + "?query={upi}_*&fields=has_secondary_structure&format=json".format(
+                upi=self.upi
+            )
+        )
         request = requests.get(url)
         data = request.json()
-        if 'hitCount' in data and data['hitCount'] > 0:
+        if "hitCount" in data and data["hitCount"] > 0:
             try:
-                if data['entries'][0]['fields']['has_secondary_structure'][0] == 'True':
+                if data["entries"][0]["fields"]["has_secondary_structure"][0] == "True":
                     return True
                 else:
                     return False
@@ -511,8 +544,9 @@ class Rna(CachingMixin, models.Model):
         Get secondary structures associated with a sequence.
         """
 
-        queryset = Xref.default_objects.select_related('db', 'accession','accession__secondary_structure').\
-            filter(upi=self.upi, deleted='N')
+        queryset = Xref.default_objects.select_related(
+            "db", "accession", "accession__secondary_structure"
+        ).filter(upi=self.upi, deleted="N")
 
         if taxid:
             queryset = queryset.filter(taxid=taxid)
@@ -520,48 +554,59 @@ class Rna(CachingMixin, models.Model):
 
         temp = defaultdict(list)
         for result in queryset.all():
-            temp[result.accession.secondary_structure.secondary_structure].append({
-                'accession': result.accession.external_id,
-                'database': result.db.display_name,
-                'url': result.accession.get_expert_db_external_url(),
-            })
+            temp[result.accession.secondary_structure.secondary_structure].append(
+                {
+                    "accession": result.accession.external_id,
+                    "database": result.db.display_name,
+                    "url": result.accession.get_expert_db_external_url(),
+                }
+            )
 
         data = []
         for secondary_structure, sources in six.iteritems(temp):
-            data.append({
-                'secondary_structure': secondary_structure,
-                'source': sources,
-                'model_id': None,
-                'layout': None,
-                'template_species': None,
-                'template_lineage': None,
-            })
+            data.append(
+                {
+                    "secondary_structure": secondary_structure,
+                    "source": sources,
+                    "model_id": None,
+                    "layout": None,
+                    "template_species": None,
+                    "template_lineage": None,
+                }
+            )
         return data
 
     def get_layout_secondary(self):
-        layout = getattr(self, 'secondary_structure_layout', None)
+        layout = getattr(self, "secondary_structure_layout", None)
         if not layout:
             return {}
 
         # Layout comes from S3
         s3 = boto3.resource(
-            's3',
-            aws_access_key_id=settings.S3_SERVER['KEY'],
-            aws_secret_access_key=settings.S3_SERVER['SECRET'],
-            endpoint_url=settings.S3_SERVER['HOST']
+            "s3",
+            aws_access_key_id=settings.S3_SERVER["KEY"],
+            aws_secret_access_key=settings.S3_SERVER["SECRET"],
+            endpoint_url=settings.S3_SERVER["HOST"],
         )
 
         upi = list(self.pk)
-        upi_path = "".join(upi[0:3]) + "/" \
-                   + "".join(upi[3:5]) + "/" \
-                   + "".join(upi[5:7]) + "/" \
-                   + "".join(upi[7:9]) + "/" \
-                   + "".join(upi[9:11]) + "/"
+        upi_path = (
+            "".join(upi[0:3])
+            + "/"
+            + "".join(upi[3:5])
+            + "/"
+            + "".join(upi[5:7])
+            + "/"
+            + "".join(upi[7:9])
+            + "/"
+            + "".join(upi[9:11])
+            + "/"
+        )
 
         s3_file = "prod/" + upi_path + self.pk + ".svg.gz"
-        s3_obj = s3.Object(settings.S3_SERVER['BUCKET'], s3_file)
+        s3_obj = s3.Object(settings.S3_SERVER["BUCKET"], s3_file)
         try:
-            svg = zlib.decompress(s3_obj.get()['Body'].read(), zlib.MAX_WBITS | 32)
+            svg = zlib.decompress(s3_obj.get()["Body"].read(), zlib.MAX_WBITS | 32)
             svg = svg.replace(b"rgb(255, 0, 0)", b"rgb(255,0,255)")
         except s3.meta.client.exceptions.NoSuchKey:
             svg = None
@@ -579,12 +624,12 @@ class Rna(CachingMixin, models.Model):
         #     template_source = 'auto-traveler'
 
         return {
-            'secondary_structure': layout.secondary_structure,
-            'source': layout.template.model_source,
-            'model_id': layout.template.model_name,
-            'layout': svg,
-            'template_species': layout.template.taxid.name,
-            'template_lineage': layout.template.taxid.lineage,
+            "secondary_structure": layout.secondary_structure,
+            "source": layout.template.model_source,
+            "model_id": layout.template.model_name,
+            "layout": svg,
+            "template_species": layout.template.taxid.name,
+            "template_lineage": layout.template.taxid.lineage,
         }
 
     def get_organism_name(self, taxid):
@@ -615,17 +660,18 @@ class Rna(CachingMixin, models.Model):
     def get_mirna_regulators(self, taxid=None):
         if not taxid:
             return []
-        query = '''
+        query = """
         SELECT DISTINCT t2.id AS urs_taxid, short_description
         FROM {related_sequence} t1, rnc_rna_precomputed t2
         WHERE target_urs_taxid = '{urs}_{taxid}'
         AND relationship_type = 'target_rna'
         AND t1.source_urs_taxid = t2.id
         ORDER BY short_description
-        '''.format(urs=self.upi,
-                   taxid=taxid,
-                   rna_precomputed=RnaPrecomputed._meta.db_table,
-                   related_sequence=RelatedSequence._meta.db_table
+        """.format(
+            urs=self.upi,
+            taxid=taxid,
+            rna_precomputed=RnaPrecomputed._meta.db_table,
+            related_sequence=RelatedSequence._meta.db_table,
         )
         with connection.cursor() as cursor:
             cursor.execute(query)
@@ -635,7 +681,7 @@ class Rna(CachingMixin, models.Model):
     def get_annotations_from_other_species(self, taxid=None):
         if not taxid:
             return []
-        query = '''
+        query = """
         SELECT t1.id AS urs_taxid, t1.short_description, t2.name as species_name
         FROM {rna_precomputed} t1, rnc_taxonomy t2
         WHERE t1.upi = '{urs}'
@@ -645,9 +691,8 @@ class Rna(CachingMixin, models.Model):
         AND t1.taxid = t2.id
         ORDER BY description
         LIMIT 10000
-        '''.format(urs=self.upi,
-                   taxid=taxid,
-                   rna_precomputed=RnaPrecomputed._meta.db_table
+        """.format(
+            urs=self.upi, taxid=taxid, rna_precomputed=RnaPrecomputed._meta.db_table
         )
         with connection.cursor() as cursor:
             cursor.execute(query)
@@ -657,25 +702,29 @@ class Rna(CachingMixin, models.Model):
     def get_intact(self, taxid):
         if not taxid:
             return []
-        query = '''
+        query = """
         SELECT intact_id, interacting_id, names
         FROM rnc_interactions
         WHERE urs_taxid  = '{urs_taxid}'
         ORDER BY interacting_id
-        '''.format(urs_taxid=self.upi + '_' + taxid)
+        """.format(
+            urs_taxid=self.upi + "_" + taxid
+        )
         with connection.cursor() as cursor:
             cursor.execute(query)
             data = dictfetchall(cursor)
         for interaction in data:
-            match = re.search(r'URS[0-9A-Fa-f]{10}[_-]\d+', ''.join(interaction['names']))
+            match = re.search(
+                r"URS[0-9A-Fa-f]{10}[_-]\d+", "".join(interaction["names"])
+            )
             if match:
-                interaction['url'] = '/rna/' + match.group()
-                interaction['participant'] = match.group()
-            elif 'uniprotkb:' in interaction['interacting_id']:
-                uniprot_id = interaction['interacting_id'].replace('uniprotkb:', '')
-                interaction['url'] = 'https://www.uniprot.org/uniprot/' + uniprot_id
-                interaction['participant'] = uniprot_id
+                interaction["url"] = "/rna/" + match.group()
+                interaction["participant"] = match.group()
+            elif "uniprotkb:" in interaction["interacting_id"]:
+                uniprot_id = interaction["interacting_id"].replace("uniprotkb:", "")
+                interaction["url"] = "https://www.uniprot.org/uniprot/" + uniprot_id
+                interaction["participant"] = uniprot_id
             else:
-                interaction['participant'] = interaction['interacting_id']
-                interaction['url'] = ''
+                interaction["participant"] = interaction["interacting_id"]
+                interaction["url"] = ""
         return data

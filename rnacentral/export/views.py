@@ -11,33 +11,38 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 from __future__ import print_function
-import six
 
 import datetime
-import django_rq
 import gzip
 import json
 import logging
 import os
-import requests
 import subprocess as sub
 import tempfile
-
-from django.conf import settings
+from contextlib import closing
 from wsgiref.util import FileWrapper
+
+import django_rq
+import requests
+import six
+from apiv1.serializers import RnaPrecomputedJsonSerializer
+from django.conf import settings
 from django.http import JsonResponse, StreamingHttpResponse
 from django.utils.text import get_valid_filename
 from django.views.decorators.cache import never_cache
-
-from contextlib import closing
-from rq import get_current_job
+from portal.models import RnaPrecomputed
 from rest_framework import renderers
 from rest_framework.test import APIRequestFactory
+from rq import get_current_job
 
-from apiv1.serializers import RnaPrecomputedJsonSerializer
-from portal.models import RnaPrecomputed
-from .settings import EXPIRATION, MAX_RUN_TIME, ESLSFETCH, FASTA_DB, MAX_OUTPUT,\
-                     EXPORT_RESULTS_DIR
+from .settings import (
+    ESLSFETCH,
+    EXPIRATION,
+    EXPORT_RESULTS_DIR,
+    FASTA_DB,
+    MAX_OUTPUT,
+    MAX_RUN_TIME,
+)
 
 
 def export_search_results(query, _format, hits):
@@ -49,18 +54,23 @@ def export_search_results(query, _format, hits):
     * write the data to a local file in the specified format
     * return the filename
     """
+
     def get_results_page(start, end):
         """
         Retrieve a page of search results and return RNAcentral ids.
         """
         page_size = end - start
-        url = ''.join([settings.EBI_SEARCH_ENDPOINT,
-                       '?query={query}',
-                       '&start={start}',
-                       '&size={page_size}',
-                       '&format=json']).format(query=query, start=start, page_size=page_size)
+        url = "".join(
+            [
+                settings.EBI_SEARCH_ENDPOINT,
+                "?query={query}",
+                "&start={start}",
+                "&size={page_size}",
+                "&format=json",
+            ]
+        ).format(query=query, start=start, page_size=page_size)
         data = json.loads(requests.get(url).text)
-        return [entry['id'] for entry in data['entries']]
+        return [entry["id"] for entry in data["entries"]]
 
     def format_output(rnacentral_ids):
         """
@@ -69,9 +79,11 @@ def export_search_results(query, _format, hits):
         # filter queryset to hold only specific rnacentral ids
         queryset = RnaPrecomputed.objects.filter(id__in=rnacentral_ids).iterator()
         factory = APIRequestFactory()
-        fake_request = factory.get('/')
-        serializer_context = {'request': fake_request}
-        serializer = RnaPrecomputedJsonSerializer(queryset, context=serializer_context, many=True)
+        fake_request = factory.get("/")
+        serializer_context = {"request": fake_request}
+        serializer = RnaPrecomputedJsonSerializer(
+            queryset, context=serializer_context, many=True
+        )
 
         renderer = renderers.JSONRenderer()
         output = renderer.render(serializer.data)
@@ -86,21 +98,23 @@ def export_search_results(query, _format, hits):
         Easel esl-sfetch can index the FASTA database for faster performance.
         If SSI index does not exist, create it.
         """
-        ssi_index = FASTA_DB + '.ssi'
+        ssi_index = FASTA_DB + ".ssi"
         if os.path.exists(ssi_index):
             return
-        cmd = '{esl_binary} --index {fasta_db}'.format(
-            esl_binary=ESLSFETCH,
-            fasta_db=FASTA_DB
+        cmd = "{esl_binary} --index {fasta_db}".format(
+            esl_binary=ESLSFETCH, fasta_db=FASTA_DB
         )
         process = sub.Popen(cmd, stdout=sub.PIPE, stderr=sub.PIPE, shell=True)
         output, errors = process.communicate()
         return_code = process.returncode
         if return_code != 0:
+
             class EaselIndexError(Exception):
                 """Raise when Easel could not index the fasta database"""
+
                 pass
-            raise EaselIndexError(errors, output + b'\n' + cmd.encode(), return_code)
+
+            raise EaselIndexError(errors, output + b"\n" + cmd.encode(), return_code)
 
     def run_easel(temp_file, filename):
         """
@@ -114,22 +128,26 @@ def export_search_results(query, _format, hits):
         os.fsync(temp_file.fileno())
         # remove possible duplicate ids
         uniq_ids = tempfile.NamedTemporaryFile(delete=True, dir=EXPORT_RESULTS_DIR)
-        os.system('sort {} | uniq > {}'.format(temp_file.name, uniq_ids.name))
-        cmd = '{esl_binary} -f {fasta_db} {id_list} | gzip > {output}'.format(
+        os.system("sort {} | uniq > {}".format(temp_file.name, uniq_ids.name))
+        cmd = "{esl_binary} -f {fasta_db} {id_list} | gzip > {output}".format(
             esl_binary=ESLSFETCH,
             fasta_db=FASTA_DB,
             id_list=uniq_ids.name,
-            output=filename)
+            output=filename,
+        )
         process = sub.Popen(cmd, stdout=sub.PIPE, stderr=sub.PIPE, shell=True)
         output, errors = process.communicate()
         return_code = process.returncode
         temp_file.close()
         uniq_ids.close()
         if return_code != 0:
+
             class EaselError(Exception):
                 """Raise when Easel exits with a non-zero status"""
+
                 pass
-            raise EaselError(errors, output + b'\n' + cmd.encode(), return_code)
+
+            raise EaselError(errors, output + b"\n" + cmd.encode(), return_code)
 
     def paginate_over_results():
         """
@@ -137,58 +155,58 @@ def export_search_results(query, _format, hits):
         JSON requires special treatment in order to concatenate
         multiple batches
         """
-        filename = os.path.join(EXPORT_RESULTS_DIR, '%s.%s.gz' % (job.id, _format))
+        filename = os.path.join(EXPORT_RESULTS_DIR, "%s.%s.gz" % (job.id, _format))
         start = 0
         page_size = 100  # max EBI search page size
 
-        if _format == 'list':
-            filename = filename.replace('.gz', '')
+        if _format == "list":
+            filename = filename.replace(".gz", "")
             uniq_ids = tempfile.NamedTemporaryFile(delete=True, dir=EXPORT_RESULTS_DIR)
-            archive = open(uniq_ids.name, 'w')
-        if _format == 'json':
-            archive = gzip.open(filename, 'wb')
-            archive.write(b'[')
-        if _format == 'fasta':
+            archive = open(uniq_ids.name, "w")
+        if _format == "json":
+            archive = gzip.open(filename, "wb")
+            archive.write(b"[")
+        if _format == "fasta":
             f = tempfile.NamedTemporaryFile(delete=True, dir=EXPORT_RESULTS_DIR)
 
         while start < hits:
             max_end = start + page_size
             end = min(max_end, hits)
             rnacentral_ids = get_results_page(start, end)
-            if _format == 'fasta':
+            if _format == "fasta":
                 # write out RNAcentral ids to a temporary file
                 for _id in rnacentral_ids:
-                    line = str.encode(_id+'\n')
+                    line = str.encode(_id + "\n")
                     f.write(line)
-            if _format == 'list':
-                text = '\n'.join(rnacentral_ids) + '\n'
+            if _format == "list":
+                text = "\n".join(rnacentral_ids) + "\n"
                 archive.write(text)
-            if _format == 'json':
+            if _format == "json":
                 text = format_output(rnacentral_ids)
                 archive.write(text)
                 # join batches with commas except for the last iteration
                 if text and end != hits:
-                    archive.write(b',\n')
+                    archive.write(b",\n")
             start = end
 
-            job.meta['progress'] = min(round(float(start) * 100 / hits, 2), 85)
+            job.meta["progress"] = min(round(float(start) * 100 / hits, 2), 85)
             # job.save_meta()
             job.save()
 
-        if _format == 'list':
+        if _format == "list":
             archive.flush()
             os.fsync(archive.fileno())
-            cmd = 'sort {} | uniq > {}'.format(uniq_ids.name, filename)
+            cmd = "sort {} | uniq > {}".format(uniq_ids.name, filename)
             os.system(cmd)
             uniq_ids.close()
             archive.close()
-        if _format == 'json':
-            archive.write(b']')
+        if _format == "json":
+            archive.write(b"]")
             archive.close()
-        if _format == 'fasta':
+        if _format == "fasta":
             run_easel(f, filename)
 
-        job.meta['progress'] = 100
+        job.meta["progress"] = 100
         # job.save_meta()
         job.save()
         return filename
@@ -208,12 +226,12 @@ def get_job(job_id):
     * `remote_server` - server where the job was run
                         (None for localhost)
     """
-    rq_queues = getattr(settings, 'RQ_QUEUES', [])
+    rq_queues = getattr(settings, "RQ_QUEUES", [])
     for queue_id, params in six.iteritems(rq_queues):
         queue = django_rq.get_queue(queue_id)
         job = queue.fetch_job(job_id)
         if job:
-            return (job, params['REMOTE_SERVER'])
+            return (job, params["REMOTE_SERVER"])
     return (None, None)
 
 
@@ -230,77 +248,80 @@ def download_search_result_file(request):
     * 500 - internal error
     * 202 - result is not ready yet
     """
+
     def get_download_filename():
         """
         Construct a descriptive name for the downloadable file.
         Use a standard Django function for making valid filenames.
         """
         max_length = 200
-        query = job.meta['query']
+        query = job.meta["query"]
         extension = os.path.splitext(job.result)[1]
         if len(query) > max_length:
-            name = query[:max_length] + '_etc'
+            name = query[:max_length] + "_etc"
         else:
             name = query
 
-        if job.meta['format'] == 'list':
-            return get_valid_filename(name + '.' + job.meta['format'])
+        if job.meta["format"] == "list":
+            return get_valid_filename(name + "." + job.meta["format"])
         else:
-            return get_valid_filename(name + '.' + job.meta['format'] + extension)
+            return get_valid_filename(name + "." + job.meta["format"] + extension)
 
     def get_content_type():
         """
         Set content type based on the export format.
         """
         content_types = {
-            'fasta': 'text/fasta',
-            'json': 'application/json',
-            'list': 'text/plain',
-            'default': 'text/plain',
+            "fasta": "text/fasta",
+            "json": "application/json",
+            "list": "text/plain",
+            "default": "text/plain",
         }
-        _format = job.meta['format']
+        _format = job.meta["format"]
         if _format in content_types:
             return content_types[_format]
         else:
-            return content_types['default']
+            return content_types["default"]
 
     def stream_remote_file(server):
         """
         Connect to remote server where the job is found,
         retrieve the results file and pass it through to the user.
         """
-        url = ''.join(['http://', server, request.get_full_path()])
+        url = "".join(["http://", server, request.get_full_path()])
         with closing(requests.get(url, stream=True)) as req:
             if req.status_code == 200:
-                response = StreamingHttpResponse(req.iter_content(chunk_size=10000),
-                                                 content_type='text/fasta')
-                content_disposition = req.headers.get('content-disposition', '')
+                response = StreamingHttpResponse(
+                    req.iter_content(chunk_size=10000), content_type="text/fasta"
+                )
+                content_disposition = req.headers.get("content-disposition", "")
                 if content_disposition:
-                    response['Content-Disposition'] = content_disposition
-                content_length = req.headers.get('content-length', '')
+                    response["Content-Disposition"] = content_disposition
+                content_length = req.headers.get("content-length", "")
                 if content_length:
-                    response['Content-Length'] = content_length
+                    response["Content-Length"] = content_length
                 return response
 
     def stream_local_file():
         """
         Stream a results file hosted on the local server.
         """
-        wrapper = FileWrapper(open(job.result, 'rb'))
+        wrapper = FileWrapper(open(job.result, "rb"))
         response = StreamingHttpResponse(wrapper, content_type=get_content_type())
-        response['Content-Disposition'] = 'attachment; filename={0}'.format(
-                                          get_download_filename())
-        response['Content-Length'] = os.path.getsize(job.result)
+        response["Content-Disposition"] = "attachment; filename={0}".format(
+            get_download_filename()
+        )
+        response["Content-Length"] = os.path.getsize(job.result)
         return response
 
     messages = {
-        400: {'message': 'Job id not specified'},
-        404: {'message': 'Job not found'},
-        202: {'message': 'File not ready, check back later'},
-        500: {'message': 'Error while processing the job id'},
+        400: {"message": "Job id not specified"},
+        404: {"message": "Job not found"},
+        202: {"message": "File not ready, check back later"},
+        500: {"message": "Error while processing the job id"},
     }
 
-    job_id = request.GET.get('job', '')
+    job_id = request.GET.get("job", "")
     if not job_id:
         status = 400
         return JsonResponse(messages[status], status=status)
@@ -341,12 +362,12 @@ def get_export_job_status(request):
     * 500 - internal error
     """
     messages = {
-        400: {'message': 'Job id not specified'},
-        404: {'message': 'Job not found'},
-        500: {'message': 'Error while processing the job id'},
+        400: {"message": "Job id not specified"},
+        404: {"message": "Job not found"},
+        500: {"message": "Error while processing the job id"},
     }
 
-    job_id = request.GET.get('job', '')
+    job_id = request.GET.get("job", "")
     if not job_id:
         status = 400
         return JsonResponse(messages[status], status=status)
@@ -355,15 +376,15 @@ def get_export_job_status(request):
         job = get_job(job_id)[0]
         if job:
             data = {
-                'id': job.id,
-                'status': job.get_status(),
-                'progress': 100 if job.is_finished else job.meta['progress'],
-                'hits': job.meta['hits'],
-                'enqueued_at': str(job.enqueued_at),
-                'ended_at': str(job.ended_at),
-                'query': job.meta['query'],
-                'format': job.meta['format'],
-                'expiration': job.meta['expiration'].strftime("%m/%d/%Y"),
+                "id": job.id,
+                "status": job.get_status(),
+                "progress": 100 if job.is_finished else job.meta["progress"],
+                "hits": job.meta["hits"],
+                "enqueued_at": str(job.enqueued_at),
+                "ended_at": str(job.ended_at),
+                "query": job.meta["query"],
+                "format": job.meta["format"],
+                "expiration": job.meta["expiration"].strftime("%m/%d/%Y"),
             }
             return JsonResponse(data)
         else:
@@ -394,32 +415,37 @@ def submit_export_job(request):
     * 404 - format speciefied incorrectly
     * 500 - internal error
     """
+
     def get_hit_count(query):
         """
         Get the total number of results to be exported.
         """
-        url = ''.join([settings.EBI_SEARCH_ENDPOINT,
-                       '?query={query}',
-                       '&start=0',
-                       '&size=0',
-                       '&format=json']).format(query=query)
+        url = "".join(
+            [
+                settings.EBI_SEARCH_ENDPOINT,
+                "?query={query}",
+                "&start=0",
+                "&size=0",
+                "&format=json",
+            ]
+        ).format(query=query)
         results = requests.get(url).json()
-        hits = min(results['hitCount'], MAX_OUTPUT)
+        hits = min(results["hitCount"], MAX_OUTPUT)
         return hits
 
     messages = {
-        400: {'message': 'Query not specified'},
-        404: {'message': 'Unrecognized format'},
-        500: {'message': 'Error submitting the query'},
+        400: {"message": "Query not specified"},
+        404: {"message": "Unrecognized format"},
+        500: {"message": "Error submitting the query"},
     }
-    formats = ['fasta', 'json', 'list']
+    formats = ["fasta", "json", "list"]
 
-    query = request.GET.get('q', '')
+    query = request.GET.get("q", "")
     if not query:
         status = 400
         return JsonResponse(messages[status], status=status)
 
-    _format = request.GET.get('format', 'fasta').lower()
+    _format = request.GET.get("format", "fasta").lower()
     if _format not in formats:
         status = 404
         return JsonResponse(messages[status], status=status)
@@ -432,15 +458,17 @@ def submit_export_job(request):
             func=export_search_results,
             args=(query, _format, hits),
             timeout=MAX_RUN_TIME,
-            result_ttl=EXPIRATION
+            result_ttl=EXPIRATION,
         )
-        job.meta['progress'] = 0
-        job.meta['query'] = query
-        job.meta['format'] = _format
-        job.meta['hits'] = hits
-        job.meta['expiration'] = datetime.datetime.now() + datetime.timedelta(seconds=EXPIRATION)
+        job.meta["progress"] = 0
+        job.meta["query"] = query
+        job.meta["format"] = _format
+        job.meta["hits"] = hits
+        job.meta["expiration"] = datetime.datetime.now() + datetime.timedelta(
+            seconds=EXPIRATION
+        )
         job.save()
-        return JsonResponse({'job_id': job.id})
+        return JsonResponse({"job_id": job.id})
     except Exception as e:
         logger = logging.getLogger("django")
         logger.exception(e)

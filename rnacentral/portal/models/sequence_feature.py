@@ -11,19 +11,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from django.db import models
 from django.contrib.postgres.fields import JSONField
+from django.db import models
 
 
 class SequenceFeature(models.Model):
-    id = models.AutoField(primary_key=True, db_column='rnc_sequence_features_id')
+    id = models.AutoField(primary_key=True, db_column="rnc_sequence_features_id")
     accession = models.OneToOneField(
-        'Accession',
-        db_column='accession',
-        to_field='accession',
-        related_name='sequence_features',
+        "Accession",
+        db_column="accession",
+        to_field="accession",
+        related_name="sequence_features",
         null=True,
-        on_delete=models.CASCADE
+        on_delete=models.CASCADE,
     )
     feature_name = models.CharField(max_length=50)
     metadata = JSONField()
@@ -31,12 +31,12 @@ class SequenceFeature(models.Model):
     stop = models.IntegerField()
     taxid = models.IntegerField()
     upi = models.ForeignKey(
-        'RNA',
-        db_column='upi',
-        to_field='upi',
-        related_name='sequence_features',
-        on_delete=models.CASCADE
+        "RNA",
+        db_column="upi",
+        to_field="upi",
+        related_name="sequence_features",
+        on_delete=models.CASCADE,
     )
 
     class Meta:
-        db_table = 'rnc_sequence_features'
+        db_table = "rnc_sequence_features"

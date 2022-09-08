@@ -70,7 +70,7 @@ RNAcentral has been described in several papers:
   <footer><em>RNA</em></footer>
   <a href="http://rnajournal.cshlp.org/cgi/pmidlookup?view=long&pmid=21940779">RNA</a> |
   <a href="http://europepmc.org/abstract/MED/21940779">EuropePMC</a> |
-  <a href="http://www.ncbi.nlm.nih.gov/pubmed/21940779">Pubmed</a>  
+  <a href="http://www.ncbi.nlm.nih.gov/pubmed/21940779">Pubmed</a>
 </blockquote>
 
 ### Feedback <a style="cursor: pointer" id="feedback" ng-click="scrollTo('feedback')" name="feedback" class="text-muted smaller"><i class="fa fa-link"></i></a>

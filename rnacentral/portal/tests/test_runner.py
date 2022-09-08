@@ -29,5 +29,5 @@ class FixedRunner(DiscoverRunner):
 
     def run_tests(self, *args, **kwargs):
         logging.disable(logging.CRITICAL)
-        kwargs['keepdb'] = True
+        kwargs["keepdb"] = True
         return super(FixedRunner, self).run_tests(*args, **kwargs)

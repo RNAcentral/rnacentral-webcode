@@ -11,11 +11,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from caching.base import CachingMixin, CachingManager
-from django.urls import reverse
+from caching.base import CachingManager, CachingMixin
 from django.db import models
+from django.urls import reverse
 from django.utils.functional import cached_property
-
 from portal.config.expert_databases import expert_dbs as rnacentral_expert_dbs
 
 
@@ -39,48 +38,58 @@ class Database(CachingMixin, models.Model):
     objects = CachingManager()
 
     class Meta:
-        db_table = 'rnc_database'
+        db_table = "rnc_database"
 
     def count_sequences(self):
         """Count unique sequences associated with the database."""
-        return self.xrefs.filter(deleted='N').values_list('upi', 'taxid').distinct().count()
+        return (
+            self.xrefs.filter(deleted="N")
+            .values_list("upi", "taxid")
+            .distinct()
+            .count()
+        )
 
     def count_organisms(self):
         """Count distinct taxids associated with the database."""
-        return self.xrefs.filter(deleted='N').values_list('taxid', flat=True).distinct().count()
+        return (
+            self.xrefs.filter(deleted="N")
+            .values_list("taxid", flat=True)
+            .distinct()
+            .count()
+        )
 
     def first_imported(self):
         """Get the earliest imported date."""
-        return self.xrefs.filter(deleted='N').order_by('timestamp').first().timestamp
+        return self.xrefs.filter(deleted="N").order_by("timestamp").first().timestamp
 
     @cached_property
     def description(self):
         """Get database description."""
-        return self.__get_database_attribute(self.display_name, 'description')
+        return self.__get_database_attribute(self.display_name, "description")
 
     @cached_property
     def label(self):
         """Get database slugified label."""
-        return self.__get_database_attribute(self.display_name, 'label')
+        return self.__get_database_attribute(self.display_name, "label")
 
     @cached_property
     def examples(self):
         """Get database examples."""
-        return self.__get_database_attribute(self.display_name, 'examples')
+        return self.__get_database_attribute(self.display_name, "examples")
 
     def references(self):
         """Get literature references."""
-        return self.__get_database_attribute(self.display_name, 'references')
+        return self.__get_database_attribute(self.display_name, "references")
 
     @cached_property
     def url(self):
         """Get database url."""
-        return self.__get_database_attribute(self.display_name, 'url')
+        return self.__get_database_attribute(self.display_name, "url")
 
     @cached_property
     def abbreviation(self):
         """Get database name abbreviation."""
-        return self.__get_database_attribute(self.display_name, 'abbreviation')
+        return self.__get_database_attribute(self.display_name, "abbreviation")
 
     @cached_property
     def name(self):
@@ -88,30 +97,34 @@ class Database(CachingMixin, models.Model):
         Get database display name. This is safer than using self.display_name
         because it doesn't require updating the database field.
         """
-        return self.__get_database_attribute(self.display_name, 'name')
+        return self.__get_database_attribute(self.display_name, "name")
 
     @cached_property
     def status(self):
         """Get the status of the database (new/updated/etc)."""
-        return self.__get_database_attribute(self.display_name, 'status')
+        return self.__get_database_attribute(self.display_name, "status")
 
     @cached_property
     def imported(self):
         """Get the status of the database (new/updated/etc)."""
-        return self.__get_database_attribute(self.display_name, 'imported')
+        return self.__get_database_attribute(self.display_name, "imported")
 
     @cached_property
     def version(self):
         """Get database version (Rfam 12, PDB as of date etc)."""
-        return self.__get_database_attribute(self.display_name, 'version')
+        return self.__get_database_attribute(self.display_name, "version")
 
     def __get_database_attribute(self, db_name, attribute):
         """An accessor method for retrieving attributes from a list."""
         try:
-            return [x[attribute] for x in rnacentral_expert_dbs if x['name'].lower() == db_name.lower()].pop()
+            return [
+                x[attribute]
+                for x in rnacentral_expert_dbs
+                if x["name"].lower() == db_name.lower()
+            ].pop()
         except IndexError:
             return None
 
     def get_absolute_url(self):
         """Get a URL for a Database object. Used for generating sitemaps."""
-        return reverse('expert-database', kwargs={'expert_db_name': self.label})
+        return reverse("expert-database", kwargs={"expert_db_name": self.label})

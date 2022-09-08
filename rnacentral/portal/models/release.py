@@ -11,14 +11,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from caching.base import CachingMixin, CachingManager
+from caching.base import CachingManager, CachingMixin
 from django.db import models
-
 from portal.models.database import Database
 
 
 class Release(CachingMixin, models.Model):
-    db = models.ForeignKey(Database, db_column='dbid', related_name='db', on_delete=models.CASCADE)
+    db = models.ForeignKey(
+        Database, db_column="dbid", related_name="db", on_delete=models.CASCADE
+    )
     release_date = models.DateField()
     release_type = models.CharField(max_length=1)
     status = models.CharField(max_length=1)
@@ -30,7 +31,7 @@ class Release(CachingMixin, models.Model):
     objects = CachingManager()
 
     def get_release_type(self):
-        return 'full' if self.release_type == 'F' else 'incremental'
+        return "full" if self.release_type == "F" else "incremental"
 
     class Meta:
-        db_table = 'rnc_release'
+        db_table = "rnc_release"
