@@ -207,6 +207,7 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
     gencode_ensembl_url = serializers.CharField(
         source="get_gencode_ensembl_url", read_only=True
     )
+    ensembl_url = serializers.SerializerMethodField("get_ensembl_url")
 
     class Meta:
         model = Xref
@@ -231,6 +232,7 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
             # 'tmrna_type',
             "gencode_transcript_id",
             "gencode_ensembl_url",
+            "ensembl_url",
         )
 
     def upis_to_urls(self, upis):
@@ -342,6 +344,19 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
             else:
                 data["ucsc_chromosome"] = data["chromosome"]
             return data
+
+    def get_ensembl_url(self, obj):
+        """Return the correct ensembl domain"""
+        if obj.accession.database == "ENSEMBL_FUNGI":
+            return "http://fungi.ensembl.org"
+        elif obj.accession.database == "ENSEMBL_METAZOA":
+            return "http://metazoa.ensembl.org"
+        elif obj.accession.database == "ENSEMBL_PLANTS":
+            return "http://plants.ensembl.org"
+        elif obj.accession.database == "ENSEMBL_PROTISTS":
+            return "http://protists.ensembl.org"
+        else:
+            return None
 
 
 class RnaNestedSerializer(serializers.HyperlinkedModelSerializer):

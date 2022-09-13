@@ -151,7 +151,7 @@
               transcript
               <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank" title="View the transcript in {{ xref.database }}">{{ xref.accession.external_id }}</a>,
               gene
-              <a ng-if="xref.accession.gene" href="{{ xref.ensembl_division.url }}/{{ xref.accession.ensembl_species_url }}/Gene/Summary?g={{ xref.accession.gene }}" target="_blank">{{ xref.accession.gene }}</a>
+              <a ng-if="xref.accession.gene" href="{{ xref.ensembl_url }}/{{ xref.accession.ensembl_species_url }}/Gene/Summary?g={{ xref.accession.gene }}" target="_blank">{{ xref.accession.gene }}</a>
             </span>
 
             <!-- FlyBase -->
