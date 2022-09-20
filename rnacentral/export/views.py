@@ -70,7 +70,10 @@ def export_search_results(query, _format, hits):
             ]
         ).format(query=query, start=start, page_size=page_size)
         data = json.loads(requests.get(url).text)
-        return [entry["id"] for entry in data["entries"]]
+        if "entries" in data:
+            return [entry["id"] for entry in data["entries"]]
+        else:
+            return []
 
     def format_output(rnacentral_ids):
         """
