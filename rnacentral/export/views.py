@@ -31,6 +31,7 @@ from django.http import JsonResponse, StreamingHttpResponse
 from django.utils.text import get_valid_filename
 from django.views.decorators.cache import never_cache
 from portal.models import RnaPrecomputed
+from requests.adapters import HTTPAdapter, Retry
 from rest_framework import renderers
 from rest_framework.test import APIRequestFactory
 from rq import get_current_job
@@ -69,7 +70,20 @@ def export_search_results(query, _format, hits):
                 "&format=json",
             ]
         ).format(query=query, start=start, page_size=page_size)
-        data = json.loads(requests.get(url).text)
+
+        # retry on failure
+        retry_strategy = Retry(
+            total=3,
+            status_forcelist=[429, 500, 502, 503, 504],
+            method_whitelist=["HEAD", "GET", "OPTIONS"],
+        )
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        http = requests.Session()
+        http.mount("https://", adapter)
+        response = http.get(url)
+
+        # get entries
+        data = json.loads(response.text)
         if "entries" in data:
             return [entry["id"] for entry in data["entries"]]
         else:
