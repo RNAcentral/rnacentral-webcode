@@ -22,9 +22,6 @@ S3_SECRET=${S3_SECRET}
 # Supervisor
 SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/srv/rnacentral/supervisor"}
 
-# Entrypoint variable
-LOGS=/srv/rnacentral/log
-
 # Add local_settings file
 if [ -f "${RNACENTRAL_HOME}"/rnacentral/rnacentral/local_settings.py ]
 then
@@ -102,10 +99,10 @@ else
 	cat <<-EOF > "${SUPERVISOR_CONF_DIR}"/supervisord.conf
 		[supervisord]
 		pidfile=${SUPERVISOR_CONF_DIR}/supervisord.pid
-		logfile=${LOGS}/supervisord.log
 		user=rnacentral
-		logfile_maxbytes=50MB
-		logfile_backups=2
+		stdout_logfile=/dev/stdout
+		stdout_logfile_maxbytes=0
+		redirect_stderr=true
 		loglevel=info
 		nodaemon=true
 
@@ -116,16 +113,18 @@ else
 		process_name=%(program_name)s_%(process_num)s
 		autorestart=true
 		autostart=true
-		stderr_logfile=${LOGS}/rqworkers.err.log
-		stdout_logfile=${LOGS}/rqworkers.out.log
+		stdout_logfile=/dev/stdout
+		stdout_logfile_maxbytes=0
+		redirect_stderr=true
 
 		[program:rnacentral]
-		command=gunicorn --chdir $RNACENTRAL_HOME/rnacentral --bind 0.0.0.0:8000 rnacentral.wsgi:application
+		command=gunicorn --chdir $RNACENTRAL_HOME/rnacentral --bind 0.0.0.0:8000 rnacentral.wsgi:application --timeout 90 --log-level=debug --access-logfile /dev/stdout --error-logfile /dev/stderr
 		user=rnacentral
 		autostart=true
 		autorestart=true
-		stderr_logfile=${LOGS}/rnacentral.err.log
-		stdout_logfile=${LOGS}/rnacentral.out.log
+		stdout_logfile=/dev/stdout
+		stdout_logfile_maxbytes=0
+		redirect_stderr=true
 		environment=HOME="$RNACENTRAL_HOME"
 	EOF
 	chown -R rnacentral "${SUPERVISOR_CONF_DIR}"/supervisord.conf
