@@ -10,7 +10,7 @@ spec:
     targetPort: {{ .Values.nginxTargetPort }}
     protocol: TCP
   selector:
-    app: nginx
+    app: rnacentral
 ---
 apiVersion: v1
 kind: ConfigMap
