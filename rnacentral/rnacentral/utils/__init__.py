@@ -11,17 +11,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
+import os
 import re
-import socket
 
 
 def get_environment():
     """
-    Detect host environment: HX, OY, PG or DEV.
+    Detect host environment: HX, HH or DEV.
     """
-    hostname = socket.gethostname()
-    match = re.search(r"ves-(\w+)-\w+\.ebi\.ac\.uk", hostname)
-    if match and match.group(1) in ["hx", "pg", "oy"]:
+    hostname = os.environ["HTTP_PROXY"]
+    match = re.search(r"http://(\w+)-\w+\.ebi\.ac\.uk", hostname)
+    if match and match.group(1) in ["hx", "hh"]:
         env = match.group(1)
     else:
         env = "dev"
