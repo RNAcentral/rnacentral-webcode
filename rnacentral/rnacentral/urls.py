@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import socket
+import os
 
 from django.conf.urls import include, url
 from django.views.generic import TemplateView
@@ -30,7 +30,9 @@ urlpatterns = [
 ]
 
 # robots.txt extras
-if "hx" in socket.gethostname():
+# we have to set the HTTP_PROXY variable in the cluster
+# so we can use this variable to set the correct robots.txt file
+if "hx" in os.environ["HTTP_PROXY"]:
     additional_settings = [
         url(
             r"^robots\.txt$",
