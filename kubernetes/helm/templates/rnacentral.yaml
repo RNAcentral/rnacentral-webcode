@@ -53,6 +53,13 @@ spec:
               mountPath: /srv/rnacentral/fasta
             - name: export-results
               mountPath: /srv/rnacentral/export
+            {{- if eq .Values.sitemaps "true" }}
+            - name: sitemaps
+              mountPath: /srv/rnacentral/rnacentral-webcode/rnacentral/sitemaps
+            - name: sitemaps-config
+              mountPath: /srv/rnacentral/rnacentral-webcode/sitemaps.sh
+              subPath: sitemaps.sh
+            {{- end }}
             {{- if eq .Values.webComponents "true" }}
             - name: web-components
               mountPath: /srv/rnacentral/rnacentral-webcode/web-components.sh
@@ -78,6 +85,15 @@ spec:
         - name: export-results
           persistentVolumeClaim:
             claimName: export-results
+        {{- if eq .Values.sitemaps "true" }}
+        - name: sitemaps
+          persistentVolumeClaim:
+            claimName: sitemaps
+        - name: sitemaps-config
+          configMap:
+            name: sitemaps-config
+            defaultMode: 0755
+        {{- end }}
         {{- if eq .Values.webComponents "true" }}
         - name: web-components
           configMap:
