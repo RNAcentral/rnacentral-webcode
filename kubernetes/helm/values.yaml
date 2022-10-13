@@ -15,6 +15,9 @@ searchIndex: search-index-prod
 # Install web components
 webComponents: "false"
 
+# Create sitemaps
+sitemaps: "true"
+
 # Memcached
 # Using only 1 because no data is shared between replicas.
 # This link explains a little more: https://github.com/helm/charts/issues/11773

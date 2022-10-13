@@ -15,6 +15,9 @@ searchIndex: search-index-dev
 # Install web components
 webComponents: "true"
 
+# Create sitemaps
+sitemaps: "false"
+
 # Memcached
 memcachedReplicas: 1
 memcachedRequestsMemory: "512Mi"
