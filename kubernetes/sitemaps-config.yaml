@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sitemaps-config
+data:
+  sitemaps.sh: |
+    #!/bin/bash
+    echo "Create sitemaps and touch wsgi"
+    cd $RNACENTRAL_HOME/rnacentral
+    python manage.py create_sitemaps
+    touch rnacentral/wsgi.py
