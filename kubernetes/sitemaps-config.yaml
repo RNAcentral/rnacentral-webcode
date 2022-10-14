@@ -5,7 +5,8 @@ metadata:
 data:
   sitemaps.sh: |
     #!/bin/bash
-    echo "Create sitemaps and touch wsgi"
+    echo "Creating sitemaps"
     cd $RNACENTRAL_HOME/rnacentral
+    rm -fr sitemaps/*
     python manage.py create_sitemaps
     touch rnacentral/wsgi.py
