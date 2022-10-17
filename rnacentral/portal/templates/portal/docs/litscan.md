@@ -28,12 +28,12 @@ search for open access articles in Europe PMC. The search is performed in two st
 
     The following query is used:
 
-    <img src="/static/img/query-europe-pmc.png">
+    <img src="/static/img/query-europe-pmc-v2.png">
 
     where
 
     - `"id"` is the Id used in the search
-    - `"rna"` is a term used to filter out possible false positives
+    - `("rna" OR "mrna" OR "ncrna" OR "lncrna" OR "rrna" OR "sncrna")` is used to filter out possible false positives
     - `IN_EPMC:Y` means that the full text of the article is available in Europe PMC
     - `OPEN_ACCESS:Y` it must be an Open Access article to allow access to the full content
     - `NOT SRC:PPR` cannot be a Preprint, as preprints are not peer-reviewed
