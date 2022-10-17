@@ -11,7 +11,7 @@ For example, lncRNA `THRIL` is also known as `Linc1992`. Using LitScan, [the cor
     <img class="thumbnail" src="/static/img/litscan-thril.png">
 </a>
 
-LitScan searched 8.3 million Ids from 19 Expert Databases and identified >412,000 papers corresponding to >2.5 million unique RNA sequences. LitScan is under active development and more sequences will be associated with scientific publications in the future.
+LitScan searched 8.3 million Ids from 19 Expert Databases and identified >545,000 papers corresponding to >2.5 million unique RNA sequences. LitScan is under active development and more sequences will be associated with scientific publications in the future.
 
 ## Use LitScan in your website
 
