@@ -409,7 +409,7 @@
 
             <!-- Expression Atlas -->
             <span ng-switch-when="Expression Atlas">
-              <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id.replace('EXPRESSIONATLAS:', '') }}</a>
+              Expression atlas: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.expression_atlas_id }}</a>
             </span>
 
             <span ng-switch-default>

@@ -123,6 +123,12 @@ class Accession(models.Model):
     def get_srpdb_id(self):
         return re.sub("\.\d+$", "", self.external_id) if self.external_id else None
 
+    def get_expression_atlas_id(self):
+        if self.database == "EXPRESSIONATLAS":
+            return json.loads(self.note)["url"].split("/")[-1] if self.note else None
+        else:
+            return None
+
     def get_ena_url(self):
         """
         Get the ENA entry url that refers to the entry from
