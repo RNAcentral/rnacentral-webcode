@@ -409,7 +409,7 @@
 
             <!-- Expression Atlas -->
             <span ng-switch-when="Expression Atlas">
-              Expression atlas: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.expression_atlas_id }}</a>
+              Expression atlas: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.expression_atlas_id }}</a>, <a href="https://www.ebi.ac.uk/gxa/genes/{{ xref.accession.external_id.replace('EXPRESSIONATLAS:', '') }}" target="_blank">all experiments</a>
             </span>
 
             <span ng-switch-default>
