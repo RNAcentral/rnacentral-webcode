@@ -102,7 +102,6 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
     ena_url = serializers.ReadOnlyField(source="get_ena_url")
     ensembl_species_url = serializers.ReadOnlyField(source="get_ensembl_species_url")
     malacards_diseases = serializers.ReadOnlyField(source="get_malacards_diseases")
-    expression_atlas_id = serializers.ReadOnlyField(source="get_expression_atlas_id")
 
     class Meta:
         model = Accession
@@ -137,7 +136,6 @@ class AccessionSerializer(serializers.HyperlinkedModelSerializer):
             "ena_url",
             "ensembl_species_url",
             "malacards_diseases",
-            "expression_atlas_id",
         )
 
 
