@@ -249,6 +249,7 @@ class Accession(models.Model):
             "SNORNADB",
             "ZFIN",
             "RIBOVISION",
+            "EXPRESSIONATLAS",
         ]:
             try:
                 data = json.loads(self.note)

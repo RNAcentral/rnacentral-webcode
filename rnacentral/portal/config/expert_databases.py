@@ -66,7 +66,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "as of 3 Sept 2021",
+        "version": "as of Oct 2022",
     },
     {
         "name": "PDBe",
@@ -91,7 +91,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "as of 3 Sept 2021",
+        "version": "as of Sept 2022",
     },
     {
         "name": "FlyBase",
@@ -116,7 +116,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "FB2021_04",
+        "version": "fb_2022_04",
     },
     {
         "name": "Ensembl",
@@ -146,8 +146,8 @@ expert_dbs = [
             },
         ],
         "imported": True,
-        "status": "",
-        "version": "104",
+        "status": "updated",
+        "version": "107",
     },
     {
         "name": "Ensembl Plants",
@@ -171,8 +171,8 @@ expert_dbs = [
             },
         ],
         "imported": True,
-        "status": "",
-        "version": "51",
+        "status": "updated",
+        "version": "54",
     },
     {
         "name": "Ensembl Fungi",
@@ -196,8 +196,8 @@ expert_dbs = [
             },
         ],
         "imported": True,
-        "status": "",
-        "version": "51",
+        "status": "updated",
+        "version": "54",
     },
     {
         "name": "Ensembl Metazoa",
@@ -221,8 +221,8 @@ expert_dbs = [
             },
         ],
         "imported": True,
-        "status": "",
-        "version": "51",
+        "status": "updated",
+        "version": "54",
     },
     {
         "name": "Ensembl Protists",
@@ -246,8 +246,8 @@ expert_dbs = [
             },
         ],
         "imported": True,
-        "status": "",
-        "version": "51",
+        "status": "updated",
+        "version": "54",
     },
     {
         "name": "Ensembl/GENCODE",
@@ -271,8 +271,8 @@ expert_dbs = [
             },
         ],
         "imported": True,
-        "status": "",
-        "version": "human 38/mouse M27",
+        "status": "updated",
+        "version": "human 41/mouse M30",
     },
     {
         "name": "Rfam",
@@ -297,7 +297,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "",
-        "version": "14.2",
+        "version": "14.7",
     },
     {
         "name": "miRBase",
@@ -476,7 +476,7 @@ expert_dbs = [
             },
         ],
         "imported": True,
-        "status": "updated",
+        "status": "",
         "version": "release 19",
     },
     {
@@ -502,7 +502,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "208",  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
+        "version": "213",  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
     },
     {
         "name": "RDP",
@@ -583,7 +583,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "as of 3 Sept 2021",
+        "version": "as of Sept 2022",
     },
     {
         "name": "Greengenes",
@@ -772,9 +772,9 @@ expert_dbs = [
                 "pubmed_id": "33079992",
             },
         ],
-        "imported": False,
-        "status": "",
-        "version": "2.0",
+        "imported": True,
+        "status": "New",
+        "version": "2",
     },
     {
         "name": "PomBase",
@@ -799,7 +799,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "as of 02 Sept 2021",
+        "version": "as of 24 August 2022",
     },
     {
         "name": "RNApathwaysDB",
@@ -863,7 +863,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "as of 03 Sept 2021",
+        "version": "as of 06 Sept 2022",
     },
     {
         "name": "snOPY",
@@ -1030,7 +1030,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "WS270",
+        "version": "as of Sept 2022",
     },
     {
         "name": "MGI",
@@ -1199,8 +1199,8 @@ expert_dbs = [
             },
         ],
         "imported": True,
-        "status": "",
-        "version": "1.0",
+        "status": "updated",
+        "version": "2.0",
     },
     {
         "name": "ZWD",
@@ -1224,7 +1224,7 @@ expert_dbs = [
             },
         ],
         "imported": True,
-        "status": "updated",
+        "status": "",
         "version": "1.2",
     },
     {
@@ -1306,7 +1306,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "5.5",
+        "version": "5.12",
     },
     {
         "name": "GeneCards",
@@ -1331,7 +1331,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "5.5",
+        "version": "5.12",
     },
     {
         "name": "CRS",
@@ -1380,7 +1380,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "as of 03 Sept 2021",
+        "version": "1.0.3",
     },
     {
         "name": "ZFIN",
@@ -1404,7 +1404,7 @@ expert_dbs = [
             },
         ],
         "imported": True,
-        "status": "",
+        "status": "updated",
         "version": "as of 22 April 2021",
     },
     {
@@ -1443,7 +1443,7 @@ expert_dbs = [
             }
         ],
         "imported": True,
-        "status": "New",
+        "status": "",
         "version": "as of 03 Sept 2021",
     },
     {
@@ -1468,7 +1468,32 @@ expert_dbs = [
             }
         ],
         "imported": True,
-        "status": "New",
+        "status": "",
         "version": "as of 09 Feb 2022",
+    },
+    {
+        "name": "Expression Atlas",
+        "label": "expression_atlas",
+        "url": "https://www.ebi.ac.uk/gxa/home",
+        "description": "Gene expression across species and biological conditions",
+        "hint": "A database of expression",
+        "tags": ["", "", ""],
+        "abbreviation": "EXPRESSION_ATLAS",
+        "examples": [
+            {"upi": "URS000039D290", "taxid": 9606},
+            {"upi": "URS000054DE25", "taxid": 9606},
+            {"upi": "URS000022E0FA", "taxid": 9606},
+        ],
+        "references": [
+            {
+                "title": "Expression Atlas update: from tissues to single cells ",
+                "authors": "Papatheodorou I, Moreno P, Manning J, Fuentes AM, George N, Fexova S, Fonseca NA, Füllgrabe A, Green M, Huang N, Huerta L, Iqbal H, Jianu M, Mohammed S, Zhao L, Jarnuczak AF, Jupp S, Marioni J, Meyer K, Petryszak R, Prada Medina CA, Talavera-López C, Teichmann S, Vizcaino JA, Brazma A",
+                "journal": "Nucleic Acids Research, 01 Jan 2020",
+                "pubmed_id": "31665515",
+            }
+        ],
+        "imported": True,
+        "status": "New",
+        "version": "as of As of Oct 22",
     },
 ]
