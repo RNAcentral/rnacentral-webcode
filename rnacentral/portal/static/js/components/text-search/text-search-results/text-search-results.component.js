@@ -18,7 +18,7 @@ var textSearchResults = {
             ctrl.normalizeExpertDbName = normalizeExpertDbName;
 
             // help urls
-            ctrl.rfamHelp = "/help/rfam-annotations";
+            ctrl.rfamHelp = "/help/qc";
             ctrl.crsHelp = "/help/conserved-motifs";
             ctrl.goHelp = "/help/gene-ontology-annotations";
             ctrl.genomeMappingHelp = "/help/genomic-mapping";
