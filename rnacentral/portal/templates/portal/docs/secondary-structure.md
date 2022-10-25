@@ -14,7 +14,7 @@ The structures are displayed using a library of ~4,000 templates, including:
 
 1. Small rRNA subunit (SSU) and 5S rRNA templates from the [Comparative RNA Website](http://www.rna.ccbb.utexas.edu) (CRW);
 2. Small and large rRNA subunit (LSU) templates from [RiboVision](http://apollo.chemistry.gatech.edu/RiboVision/);
-3. Isotype-specific tRNA templates from [GtRNAdb](http://gtrnadb.ucsc.edu).
+3. Isotype-specific tRNA templates from [GtRNAdb](http://gtrnadb.ucsc.edu);
 4. RNAse P templates from the RNAse P database;
 5. [Rfam](http://rfam.org) consensus secondary structures for all other RNA types;
 
@@ -56,7 +56,7 @@ A secondary structure can be generated for an RNA sequence using the [R2DT web a
   <img src="/static/img/r2dt.png">
 </a>
 
-### Template used <a style="cursor: pointer" id="template" ng-click="scrollTo('template')" name="template" class="text-muted smaller"><i class="fa fa-link"></i></a>
+### Template selection <a style="cursor: pointer" id="template" ng-click="scrollTo('template')" name="template" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 By default R2DT chooses a template automatically but it is possible to choose a
 template manually by clicking **Show advanced** and browsing the templates.
