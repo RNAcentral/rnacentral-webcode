@@ -19,10 +19,13 @@ def get_environment():
     """
     Detect host environment: HX, HH or DEV.
     """
-    hostname = os.environ["HTTP_PROXY"]
-    match = re.search(r"http://(\w+)-\w+\.ebi\.ac\.uk", hostname)
-    if match and match.group(1) in ["hx", "hh"]:
-        env = match.group(1)
+    hostname = os.environ.get("HTTP_PROXY")
+    if hostname:
+        match = re.search(r"http://(\w+)-\w+\.ebi\.ac\.uk", hostname)
+        if match and match.group(1) in ["hx", "hh"]:
+            env = match.group(1)
+        else:
+            env = "dev"
     else:
         env = "dev"
     return env.upper()
