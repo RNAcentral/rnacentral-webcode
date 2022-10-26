@@ -517,7 +517,7 @@ limitations under the License.
         ],
         "@id": "http://identifiers.org/rnacentral:{{ rna.upi }}_{{context.taxid}}",
         "identifier": "{{ rna.upi }}_{{ context.taxid }}",
-        "name": "{{ context.precomputed.description }}",
+        "name": "{{ context.description_as_json_str }}",
         "url": "https://rnacentral.org/rna/{{ rna.upi }}/{{ context.taxid }}"
     }
 }
