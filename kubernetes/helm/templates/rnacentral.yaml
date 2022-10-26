@@ -65,6 +65,9 @@ spec:
               mountPath: /srv/rnacentral/rnacentral-webcode/web-components.sh
               subPath: web-components.sh
             {{- end }}
+          env:
+            - name: RNACENTRAL_ENV
+              value: {{ .Values.setEnv }}
           envFrom:
           - secretRef:
               name: {{ .Values.database }}
