@@ -30,9 +30,8 @@ urlpatterns = [
 ]
 
 # robots.txt extras
-# we have to set the HTTP_PROXY variable in the cluster
-# so we can use this variable to set the correct robots.txt file
-if "hx" in os.environ.get("HTTP_PROXY", ""):
+# use the RNACENTRAL_ENV variable to set the correct robots.txt file
+if "dev" in os.environ.get("RNACENTRAL_ENV", ""):
     additional_settings = [
         url(
             r"^robots\.txt$",
