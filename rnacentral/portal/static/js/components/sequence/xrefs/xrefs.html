@@ -407,6 +407,16 @@
               <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id.replace('ribovision:', '') }}</a>
             </span>
 
+            <!-- Expression Atlas -->
+            <span ng-switch-when="Expression Atlas">
+              Expression atlas: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.expert_db_url.replace('https://www.ebi.ac.uk/gxa/experiments/', '') }}</a>, <a href="https://www.ebi.ac.uk/gxa/genes/{{ xref.accession.external_id.replace('EXPRESSIONATLAS:', '') }}" target="_blank">all experiments</a>
+            </span>
+
+            <!-- IntAct -->
+            <span ng-switch-when="IntAct">
+              IntAct: <a ng-href="https://www.ebi.ac.uk/intact/search?query={{ xref.accession.external_id.replace('INTACT:', '') }}" target="_blank">{{ xref.accession.external_id.replace('INTACT:', '') }}</a>
+            </span>
+
             <span ng-switch-default>
               {{ xref.accession.external_id }} {{ xref.accession.optional_id }}
             </span>

@@ -184,7 +184,9 @@ def rna_view(request, upi, taxid=None):
 
         # get IDs related to the URS
         try:
-            response = requests.get(settings.EBI_SEARCH_ENDPOINT + query_jobs).json()
+            response = requests.get(
+                settings.EBI_SEARCH_ENDPOINT + "-litscan" + query_jobs
+            ).json()
             entries = response["entries"]
             for entry in entries:
                 pub_list.append(entry["fields"]["job_id"][0])
@@ -197,7 +199,9 @@ def rna_view(request, upi, taxid=None):
         query = f"?query=entry_type:Publication%20AND%20({query_ids})&format=json"
 
         try:
-            response = requests.get(settings.EBI_SEARCH_ENDPOINT + query).json()
+            response = requests.get(
+                settings.EBI_SEARCH_ENDPOINT + "-litscan" + query
+            ).json()
             pub_count = response["hitCount"]
         except KeyError:
             pub_count = None
@@ -251,6 +255,7 @@ def rna_view(request, upi, taxid=None):
         "plugin_installed": plugin_installed,
         "pub_count": pub_count,
         "go_term_id": go_term_id,
+        "description_as_json_str": json.dumps(precomputed.description),
     }
     response = render(request, "portal/sequence.html", {"rna": rna, "context": context})
     # define canonical URL for Google

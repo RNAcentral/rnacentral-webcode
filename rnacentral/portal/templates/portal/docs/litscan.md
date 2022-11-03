@@ -11,7 +11,7 @@ For example, lncRNA `THRIL` is also known as `Linc1992`. Using LitScan, [the cor
     <img class="thumbnail" src="/static/img/litscan-thril.png">
 </a>
 
-LitScan searched 8.3 million Ids from 19 Expert Databases and identified >412,000 papers corresponding to >2.5 million unique RNA sequences. LitScan is under active development and more sequences will be associated with scientific publications in the future.
+LitScan searched 8.3 million Ids from 19 Expert Databases and identified >545,000 papers corresponding to >2.5 million unique RNA sequences. LitScan is under active development and more sequences will be associated with scientific publications in the future.
 
 ## Use LitScan in your website
 
@@ -28,12 +28,12 @@ search for open access articles in Europe PMC. The search is performed in two st
 
     The following query is used:
 
-    <img src="/static/img/query-europe-pmc.png">
+    <img src="/static/img/query-europe-pmc-v2.png">
 
     where
 
     - `"id"` is the Id used in the search
-    - `"rna"` is a term used to filter out possible false positives
+    - `("rna" OR "mrna" OR "ncrna" OR "lncrna" OR "rrna" OR "sncrna")` is used to filter out possible false positives
     - `IN_EPMC:Y` means that the full text of the article is available in Europe PMC
     - `OPEN_ACCESS:Y` it must be an Open Access article to allow access to the full content
     - `NOT SRC:PPR` cannot be a Preprint, as preprints are not peer-reviewed

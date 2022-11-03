@@ -25,15 +25,15 @@ SEQUENCE_SEARCH_ENDPOINT = "https://search.rnacentral.org"
 
 if settings.ENVIRONMENT == "DEV":
     proxies = None
-elif settings.ENVIRONMENT == "HX" or settings.ENVIRONMENT == "OY":
+elif settings.ENVIRONMENT == "HX":
     proxies = {
         "http": "http://hx-wwwcache.ebi.ac.uk:3128",
         "https": "http://hx-wwwcache.ebi.ac.uk:3128",
     }
-elif settings.ENVIRONMENT == "PG":
+elif settings.ENVIRONMENT == "HH":
     proxies = {
-        "http": "http://pg-wwwcache.ebi.ac.uk:3128",
-        "https": "http://pg-wwwcache.ebi.ac.uk:3128",
+        "http": "http://hh-wwwcache.ebi.ac.uk:3128",
+        "https": "http://hh-wwwcache.ebi.ac.uk:3128",
     }
 
 

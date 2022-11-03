@@ -28,6 +28,10 @@ To get around this, the sequence similarity searches are performed against a sub
 
 Whenever a sequence is entered in the search input box, the query is compared with all RNAcentral sequences and if there is an **exact match**, the links to the entries matching the query are displayed in a green box. This is very quick because only identical matches are considered. To see all similar sequences, just click Submit.
 
+### Batch queries <a style="cursor: pointer" id="batch-queries" ng-click="scrollTo('batch-queries')" name="batch-queries" class="text-muted smaller"><i class="fa fa-link"></i></a>
+
+Batch queries can be done either through the website or through the [API](/sequence-search/api). However, there is a limit on the number of sequences that can be sent through the WEB interface. This limit is currently 50 sequences.
+
 ### Rfam classification <a style="cursor: pointer" id="rfam" ng-click="scrollTo('rfam')" name="rfam" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 <img src="/static/img/expert-db-logos/rfam.png" class="img-responsive pull-left" style="width: 140px; margin-right: 20px;">

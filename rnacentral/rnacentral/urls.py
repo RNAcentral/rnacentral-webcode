@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import socket
+import os
 
 from django.conf.urls import include, url
 from django.views.generic import TemplateView
@@ -30,7 +30,8 @@ urlpatterns = [
 ]
 
 # robots.txt extras
-if "hx" in socket.gethostname():
+# use the RNACENTRAL_ENV variable to set the correct robots.txt file
+if "dev" in os.environ.get("RNACENTRAL_ENV", ""):
     additional_settings = [
         url(
             r"^robots\.txt$",

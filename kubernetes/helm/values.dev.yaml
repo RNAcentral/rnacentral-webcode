@@ -15,6 +15,12 @@ searchIndex: search-index-dev
 # Install web components
 webComponents: "true"
 
+# Create sitemaps
+sitemaps: "false"
+
+# Add environment variable
+setEnv: "dev"
+
 # Memcached
 memcachedReplicas: 1
 memcachedRequestsMemory: "512Mi"
