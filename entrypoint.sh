@@ -118,7 +118,7 @@ else
 		redirect_stderr=true
 
 		[program:rnacentral]
-		command=gunicorn --chdir $RNACENTRAL_HOME/rnacentral --bind 0.0.0.0:8000 rnacentral.wsgi:application --timeout 90 --log-level=debug --access-logfile /dev/stdout --error-logfile /dev/stderr
+		command=gunicorn --chdir $RNACENTRAL_HOME/rnacentral --bind 0.0.0.0:8000 rnacentral.wsgi:application --workers 16 --log-level=debug --access-logfile /dev/stdout --error-logfile /dev/stderr
 		user=rnacentral
 		autostart=true
 		autorestart=true
