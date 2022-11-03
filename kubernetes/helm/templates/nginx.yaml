@@ -65,7 +65,6 @@ spec:
               cpu: {{ .Values.nginxRequestsCPU }}
             limits:
               memory: {{ .Values.nginxLimitssMemory }}
-              cpu: {{ .Values.nginxLimitsCPU }}
           ports:
             - containerPort: {{ .Values.nginxTargetPort }}
           volumeMounts:

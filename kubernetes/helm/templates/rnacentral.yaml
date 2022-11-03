@@ -45,7 +45,6 @@ spec:
               cpu: {{ .Values.rnacentralRequestsCPU }}
             limits:
               memory: {{ .Values.rnacentralLimitssMemory }}
-              cpu: {{ .Values.rnacentralLimitsCPU }}
           volumeMounts:
             - name: static-volume
               mountPath: /srv/rnacentral/static

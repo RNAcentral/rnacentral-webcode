@@ -29,7 +29,6 @@ memcachedReplicas: 1
 memcachedRequestsMemory: "4096Mi"
 memcachedRequestsCPU: "1000m"
 memcachedLimitssMemory: "8192Mi"
-memcachedLimitsCPU: "2000m"
 
 # Redis
 # Using only one to avoid download errors.
@@ -38,7 +37,6 @@ redisReplicas: 1
 redisRequestsMemory: "4096Mi"
 redisRequestsCPU: "1000m"
 redisLimitssMemory: "8192Mi"
-redisLimitsCPU: "2000m"
 
 # Nginx
 nginxPort: 8000
@@ -47,7 +45,6 @@ nginxReplicas: 2
 nginxRequestsMemory: "2048Mi"
 nginxRequestsCPU: "1000m"
 nginxLimitssMemory: "4096Mi"
-nginxLimitsCPU: "2000m"
 
 # RNAcentral
 # The HX cluster is configured to use "rnacentralReplicas: 2" in the jenkins file
@@ -57,4 +54,3 @@ rnacentralReplicas: 4
 rnacentralRequestsMemory: "8192Mi"
 rnacentralRequestsCPU: "1000m"
 rnacentralLimitssMemory: "16384Mi"
-rnacentralLimitsCPU: "2000m"

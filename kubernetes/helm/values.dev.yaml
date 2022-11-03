@@ -26,25 +26,21 @@ memcachedReplicas: 1
 memcachedRequestsMemory: "512Mi"
 memcachedRequestsCPU: "500m"
 memcachedLimitssMemory: "1024Mi"
-memcachedLimitsCPU: "1000m"
 
 # Redis
 redisReplicas: 1
 redisRequestsMemory: "1024Mi"
 redisRequestsCPU: "500m"
 redisLimitssMemory: "2048Mi"
-redisLimitsCPU: "1000m"
 
 # Nginx
 nginxReplicas: 1
 nginxRequestsMemory: "512Mi"
 nginxRequestsCPU: "500m"
 nginxLimitssMemory: "1024Mi"
-nginxLimitsCPU: "1000m"
 
 # RNAcentral
 rnacentralReplicas: 1
 rnacentralRequestsMemory: "2048Mi"
 rnacentralRequestsCPU: "500m"
 rnacentralLimitssMemory: "4096Mi"
-rnacentralLimitsCPU: "1000m"
