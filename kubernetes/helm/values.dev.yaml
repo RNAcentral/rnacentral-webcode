@@ -23,28 +23,24 @@ setEnv: "dev"
 
 # Memcached
 memcachedReplicas: 1
-memcachedRequestsMemory: "512Mi"
+memcachedRequestsMemory: "1000Mi"
 memcachedRequestsCPU: "500m"
-memcachedLimitssMemory: "1024Mi"
-memcachedLimitsCPU: "1000m"
+memcachedLimitsMemory: "1000Mi"
 
 # Redis
 redisReplicas: 1
-redisRequestsMemory: "1024Mi"
+redisRequestsMemory: "2000Mi"
 redisRequestsCPU: "500m"
-redisLimitssMemory: "2048Mi"
-redisLimitsCPU: "1000m"
+redisLimitsMemory: "2000Mi"
 
 # Nginx
 nginxReplicas: 1
-nginxRequestsMemory: "512Mi"
+nginxRequestsMemory: "1000Mi"
 nginxRequestsCPU: "500m"
-nginxLimitssMemory: "1024Mi"
-nginxLimitsCPU: "1000m"
+nginxLimitsMemory: "1000Mi"
 
 # RNAcentral
 rnacentralReplicas: 1
-rnacentralRequestsMemory: "2048Mi"
+rnacentralRequestsMemory: "4000Mi"
 rnacentralRequestsCPU: "500m"
-rnacentralLimitssMemory: "4096Mi"
-rnacentralLimitsCPU: "1000m"
+rnacentralLimitsMemory: "4000Mi"

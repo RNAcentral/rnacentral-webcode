@@ -34,8 +34,7 @@ spec:
               memory: {{ .Values.redisRequestsMemory }}
               cpu: {{ .Values.redisRequestsCPU }}
             limits:
-              memory: {{ .Values.redisLimitssMemory }}
-              cpu: {{ .Values.redisLimitsCPU }}
+              memory: {{ .Values.redisLimitsMemory }}
           args:
             - "--port {{ .Values.redisPort }}"
           ports:

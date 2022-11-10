@@ -4,6 +4,9 @@ Disallow: /sequence-search/cancel-job
 Disallow: /sequence-search/submit-query
 
 User-agent: AhrefsBot
+User-agent: DotBot
+User-agent: PetalBot
+User-agent: SEMrushBot
 Disallow: /
 
 Sitemap: https://rnacentral.org/sitemap.xml

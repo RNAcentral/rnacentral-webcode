@@ -26,35 +26,31 @@ setEnv: "prod"
 # This link explains a little more: https://github.com/helm/charts/issues/11773
 memcachedPort: 11211
 memcachedReplicas: 1
-memcachedRequestsMemory: "4096Mi"
+memcachedRequestsMemory: "8000Mi"
 memcachedRequestsCPU: "1000m"
-memcachedLimitssMemory: "8192Mi"
-memcachedLimitsCPU: "2000m"
+memcachedLimitsMemory: "8000Mi"
 
 # Redis
 # Using only one to avoid download errors.
 redisPort: 8051
 redisReplicas: 1
-redisRequestsMemory: "4096Mi"
+redisRequestsMemory: "8000Mi"
 redisRequestsCPU: "1000m"
-redisLimitssMemory: "8192Mi"
-redisLimitsCPU: "2000m"
+redisLimitsMemory: "8000Mi"
 
 # Nginx
 nginxPort: 8000
 nginxTargetPort: 80
 nginxReplicas: 2
-nginxRequestsMemory: "2048Mi"
+nginxRequestsMemory: "6000Mi"
 nginxRequestsCPU: "1000m"
-nginxLimitssMemory: "4096Mi"
-nginxLimitsCPU: "2000m"
+nginxLimitsMemory: "6000Mi"
 
 # RNAcentral
 # The HX cluster is configured to use "rnacentralReplicas: 2" in the jenkins file
 rnacentralBranch: master
 rnacentralPort: 8000
 rnacentralReplicas: 4
-rnacentralRequestsMemory: "8192Mi"
+rnacentralRequestsMemory: "16000Mi"
 rnacentralRequestsCPU: "1000m"
-rnacentralLimitssMemory: "16384Mi"
-rnacentralLimitsCPU: "2000m"
+rnacentralLimitsMemory: "16000Mi"

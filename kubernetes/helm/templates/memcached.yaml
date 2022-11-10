@@ -34,8 +34,7 @@ spec:
               memory: {{ .Values.memcachedRequestsMemory }}
               cpu: {{ .Values.memcachedRequestsCPU }}
             limits:
-              memory: {{ .Values.memcachedLimitssMemory }}
-              cpu: {{ .Values.memcachedLimitsCPU }}
+              memory: {{ .Values.memcachedLimitsMemory }}
           args:
             - "-m {{ .Values.memcachedRequestsCPU }} -p {{ .Values.memcachedPort }}"
           ports:
