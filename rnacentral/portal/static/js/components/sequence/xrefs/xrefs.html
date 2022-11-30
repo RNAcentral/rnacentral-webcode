@@ -450,12 +450,6 @@
               found in {{ xref.accession.organelle | lowercase }}
             </span>
 
-            <span ng-if="xref.accession.is_composite == 'Y'">
-              <br>
-              <i class="fa fa-angle-right"></i>
-              Source ENA entry: <a href="{{ xref.accession.ena_url }}" target="_blank" ng-attr-title="{{ xref.accession.non_coding_id }} at ENA">{{ xref.accession.non_coding_id }}</a>
-            </span>
-
             <span ng-if="xref.is_active == false">
               <br>
               <small><span class="label label-danger" title="This annotation was removed from the Expert Database">Removed from database</span></small>
