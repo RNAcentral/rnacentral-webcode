@@ -121,7 +121,7 @@ Note that such requests may take longer.
 
 ##Pagination <a style="cursor: pointer" id="v1-pagination" ng-click="scrollTo('v1-pagination')" name="v1-pagination" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
-Responses containing multuple entries are paginated to prevent accidental downloads of large amounts of data and to speed up the API.
+Responses containing multiple entries are paginated to prevent accidental downloads of large amounts of data and to speed up the API.
 
 To navigate between pages, specify the `page` parameter.
 
