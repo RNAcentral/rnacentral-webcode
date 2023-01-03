@@ -218,6 +218,7 @@ var textSearchResults = {
               'U6atac_snRNA',
               'UTR_region',
               'Y_RNA',
+              'RNA_thermometer',
             ];
             if (uppercase_exceptions.indexOf(facetLabel) === -1) {
                 facetLabel = facetLabel.charAt(0).toLowerCase() + facetLabel.slice(1);
