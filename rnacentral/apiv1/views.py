@@ -489,7 +489,7 @@ class RnaGenomeLocations(generics.ListAPIView):
         # if assembly with this taxid is not found, just return empty locations list
         try:
             assembly = EnsemblAssembly.objects.get(
-                taxid=taxid
+                taxid=taxid, selected_genome=True
             )  # this applies only to species-specific pages
         except EnsemblAssembly.DoesNotExist:
             return Response([])
