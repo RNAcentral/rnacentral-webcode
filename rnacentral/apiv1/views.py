@@ -503,7 +503,9 @@ class RnaGenomeLocations(generics.ListAPIView):
         except RnaPrecomputed.DoesNotExist:
             return Response([])
 
-        regions = SequenceRegion.objects.filter(urs_taxid=rna_precomputed)
+        regions = SequenceRegion.objects.filter(
+            urs_taxid=rna_precomputed, assembly=assembly.assembly_id
+        )
 
         output = []
         for region in regions:
