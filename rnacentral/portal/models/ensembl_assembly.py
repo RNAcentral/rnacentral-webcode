@@ -28,6 +28,7 @@ class EnsemblAssembly(CachingMixin, models.Model):
     example_chromosome = models.CharField(max_length=20, null=True)
     example_start = models.IntegerField(null=True)
     example_end = models.IntegerField(null=True)
+    selected_genome = models.BooleanField(default=False)
 
     objects = CachingManager()
 
