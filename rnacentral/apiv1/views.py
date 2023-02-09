@@ -47,6 +47,7 @@ from django_filters import rest_framework as filters
 from portal.config.expert_databases import expert_dbs
 from portal.models import (
     Accession,
+    AccessionSequenceRegion,
     Database,
     DatabaseStats,
     EnsemblAssembly,
@@ -80,6 +81,25 @@ Docstrings of the classes exposed in urlpatterns support markdown.
 
 # maximum number of xrefs to use with prefetch_related
 MAX_XREFS_TO_PREFETCH = 1000
+
+
+def get_database(region):
+    # get databases from rnc_accession_sequence_region table
+    databases = []
+    for item in AccessionSequenceRegion.objects.filter(
+        region_id=region.id
+    ).select_related("accession"):
+        databases.append(item.accession.database)
+
+    # use display_name from rnc_database
+    providing_databases = []
+    for item in databases:
+        try:
+            providing_databases.append(Database.objects.get(descr=item).display_name)
+        except Database.DoesNotExist:
+            pass
+
+    return providing_databases
 
 
 class GenomeAnnotations(APIView):
@@ -116,6 +136,7 @@ class GenomeAnnotations(APIView):
 
         features = []
         for transcript in regions:
+            providing_databases = get_database(transcript)
             features.append(
                 {
                     "ID": transcript.region_name,
@@ -129,7 +150,7 @@ class GenomeAnnotations(APIView):
                     "strand": transcript.strand,
                     "start": transcript.region_start,
                     "end": transcript.region_stop,
-                    "databases": transcript.providing_databases,
+                    "databases": providing_databases,
                 }
             )
 
@@ -509,15 +530,16 @@ class RnaGenomeLocations(generics.ListAPIView):
 
         output = []
         for region in regions:
-            if len(region.providing_databases) > 1:
+            providing_databases = get_database(region)
+            if len(providing_databases) > 1:
                 databases = " and ".join(
                     [
-                        ", ".join(region.providing_databases[:-1]),
-                        region.providing_databases[-1],
+                        ", ".join(providing_databases[:-1]),
+                        providing_databases[-1],
                     ]
                 )
-            elif len(region.providing_databases) == 1:
-                databases = region.providing_databases[0]
+            elif len(providing_databases) == 1:
+                databases = providing_databases[0]
             else:
                 databases = "an Expert Database"
 

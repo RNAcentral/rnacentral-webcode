@@ -12,6 +12,7 @@ limitations under the License.
 """
 
 from .accession import *
+from .accession_sequence_region import *
 from .chemical_component import *
 from .database import *
 from .database_stats import *
