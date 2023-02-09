@@ -462,7 +462,7 @@ limitations under the License.
             </uib-tab>
             {% endif %}
 
-            {% if context.species and context.gene %}
+            {% if context.expression_atlas %}
                 <uib-tab index="3" id="expression-atlas" deselect="checkTab($event, $selectedIndex)" onclick="expressionAtlasWorkaround()">
                     <uib-tab-heading>
                         Expression <span class="label label-success">New</span>
@@ -539,7 +539,7 @@ limitations under the License.
         <script src="https://www.ebi.ac.uk/pdbe/pdb-component-library/js/pdbe-molstar-plugin-0.1.0.js"></script>
     {% endif %}
 
-    {% if context.species and context.gene %}
+    {% if context.expression_atlas %}
         <!-- Load Expression Atlas bundle -->
         <script type="text/javascript" src="https://www.ebi.ac.uk/gxa/resources/js-bundles/vendorCommons.bundle.js"></script>
         <script type="text/javascript" src="https://www.ebi.ac.uk/gxa/resources/js-bundles/expressionAtlasHeatmapHighcharts.bundle.js"></script>

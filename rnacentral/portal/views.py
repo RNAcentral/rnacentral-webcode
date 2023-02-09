@@ -224,17 +224,24 @@ def rna_view(request, upi, taxid=None):
     else:
         go_term_id = None
 
-    # get data for expression atlas
+    # check if we have an xref to Expression Atlas
+    expression_atlas = False
     try:
-        species = summary.species
-        gene = [
-            {"value": item.split(".")[0]}
-            for item in summary.genes
-            if item.startswith("ENS")
-        ]
-    except AttributeError:
-        species = None
-        gene = None
+        expression_atlas = Xref.objects.filter(
+            upi=upi, taxid=taxid, db__display_name="Expression Atlas"
+        ).exists()
+    except Xref.DoesNotExist:
+        pass
+
+    # we also need gene and species to use the Expression Atlas widget
+    if (
+        expression_atlas
+        and summary.species
+        and [item for item in summary.genes if item.startswith("ENS")]
+    ):
+        expression_atlas = True
+    else:
+        expression_atlas = False
 
     # get tab
     tab = request.GET.get("tab", "").lower()
@@ -268,8 +275,7 @@ def rna_view(request, upi, taxid=None):
         "pub_count": pub_count,
         "go_term_id": go_term_id,
         "description_as_json_str": json.dumps(precomputed.description),
-        "species": species,
-        "gene": gene,
+        "expression_atlas": expression_atlas,
     }
     response = render(request, "portal/sequence.html", {"rna": rna, "context": context})
     # define canonical URL for Google
