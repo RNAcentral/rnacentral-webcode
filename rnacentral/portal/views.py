@@ -224,12 +224,24 @@ def rna_view(request, upi, taxid=None):
     else:
         go_term_id = None
 
+    # get data for expression atlas
+    try:
+        species = summary.species
+        gene = [
+            {"value": item.split(".")[0]}
+            for item in summary.genes
+            if item.startswith("ENS")
+        ]
+    except AttributeError:
+        species = None
+        gene = None
+
     # get tab
     tab = request.GET.get("tab", "").lower()
     if tab == "2d":
         active_tab = 2
     elif tab == "pub":
-        active_tab = 3
+        active_tab = 4
     else:
         active_tab = 0
 
@@ -256,6 +268,8 @@ def rna_view(request, upi, taxid=None):
         "pub_count": pub_count,
         "go_term_id": go_term_id,
         "description_as_json_str": json.dumps(precomputed.description),
+        "species": species,
+        "gene": gene,
     }
     response = render(request, "portal/sequence.html", {"rna": rna, "context": context})
     # define canonical URL for Google

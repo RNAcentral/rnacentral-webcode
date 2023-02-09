@@ -462,10 +462,19 @@ limitations under the License.
             </uib-tab>
             {% endif %}
 
+            {% if context.species and context.gene %}
+                <uib-tab index="3" id="expression-atlas" deselect="checkTab($event, $selectedIndex)" onclick="expressionAtlasWorkaround()">
+                    <uib-tab-heading>
+                        Expression <span class="label label-success">New</span>
+                    </uib-tab-heading>
+                    <expression-atlas upi="upi" taxid="taxid"></expression-atlas>
+                </uib-tab>
+            {% endif %}
+
             {% if context.pub_count %}
-            <uib-tab index="3" id="publications" deselect="checkTab($event, $selectedIndex)">
+            <uib-tab index="4" id="publications" deselect="checkTab($event, $selectedIndex)">
                 <uib-tab-heading>
-                  Publications <span class="label label-success">New</span>
+                  Publications
                 </uib-tab-heading>
                 <rnacentral-litscan
                             search='["{{ context.upi }}_{{ context.taxid }}"]'
@@ -480,7 +489,7 @@ limitations under the License.
             </uib-tab>
             {% endif %}
 
-            <uib-tab index="4" class="dropdown pull-right hidden-xs">
+            <uib-tab index="5" class="dropdown pull-right hidden-xs">
                 <uib-tab-heading>
                     <span uib-dropdown>
                         <a uib-dropdown-toggle>
@@ -525,10 +534,35 @@ limitations under the License.
 {% endif %}
 
 {% block extra_js_uncompressed %}
-{% if 'PDBe' in context.precomputed.get_databases %}
-<!-- MolStar cannot be installed from npm -->
-<script src="https://www.ebi.ac.uk/pdbe/pdb-component-library/js/pdbe-molstar-plugin-0.1.0.js"></script>
-{% endif %}
+    {% if 'PDBe' in context.precomputed.get_databases %}
+        <!-- MolStar cannot be installed from npm -->
+        <script src="https://www.ebi.ac.uk/pdbe/pdb-component-library/js/pdbe-molstar-plugin-0.1.0.js"></script>
+    {% endif %}
+
+    {% if context.species and context.gene %}
+        <!-- Load Expression Atlas bundle -->
+        <script type="text/javascript" src="https://www.ebi.ac.uk/gxa/resources/js-bundles/vendorCommons.bundle.js"></script>
+        <script type="text/javascript" src="https://www.ebi.ac.uk/gxa/resources/js-bundles/expressionAtlasHeatmapHighcharts.bundle.js"></script>
+
+        <!-- Workaround to avoid error when there is only one experiment -->
+        <script>
+            function expressionAtlasWorkaround() {
+                var head = document.getElementById("UBERON_0000955");
+                var eventIn = new MouseEvent("mouseover", {
+                    "view": window,
+                    "bubbles": true,
+                    "cancelable": true
+                });
+                var eventOut = new MouseEvent("mouseout", {
+                    "view": window,
+                    "bubbles": true,
+                    "cancelable": true
+                });
+                head.dispatchEvent(eventIn);
+                setInterval(() => { head.dispatchEvent(eventOut) }, 100);
+            }
+        </script>
+    {% endif %}
 {% endblock %}
 
 

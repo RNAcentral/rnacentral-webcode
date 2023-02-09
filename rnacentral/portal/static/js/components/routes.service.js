@@ -8,6 +8,7 @@ angular.module("routes", []).service('routes', ['$interpolate', function($interp
         rnaViewWithTaxid: '/rna/{{upi}}/{{ taxid }}',
         apiPublicationsView: '/api/v1/rna/{{ upi }}/publications/{{ taxid }}',
         apiRnaView: '/api/v1/rna/{{ upi }}',
+        apiRnaViewWithTaxid: '/api/v1/rna/{{ upi }}/{{ taxid }}',
         apiGenomeLocationsView: '/api/v1/rna/{{ upi }}/genome-locations/{{ taxid }}',
         apiRfamHitsView: '/api/v1/rna/{{ upi }}/rfam-hits/{{ taxid }}',
         apiProteinTargetsView: '/api/v1/rna/{{ upi }}/protein-targets/{{ taxid }}',
