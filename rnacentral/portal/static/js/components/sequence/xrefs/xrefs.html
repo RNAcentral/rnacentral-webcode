@@ -416,6 +416,11 @@
               IntAct: <a ng-href="https://www.ebi.ac.uk/intact/search?query={{ xref.accession.external_id.replace('INTACT:', '') }}" target="_blank">{{ xref.accession.external_id.replace('INTACT:', '') }}</a>
             </span>
 
+            <!-- EVLncRNAs -->
+            <span ng-switch-when="EVLncRNAs">
+              EVLncRNAs: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id.replace('EVLNCRNAS:', '') }}</a>
+            </span>
+
             <span ng-switch-default>
               {{ xref.accession.external_id }} {{ xref.accession.optional_id }}
             </span>

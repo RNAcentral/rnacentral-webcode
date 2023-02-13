@@ -250,6 +250,7 @@ class Accession(models.Model):
             "ZFIN",
             "RIBOVISION",
             "EXPRESSIONATLAS",
+            "EVLNCRNAS",
         ]:
             try:
                 data = json.loads(self.note)
