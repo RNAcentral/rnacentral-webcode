@@ -421,6 +421,11 @@
               EVLncRNAs: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id.replace('EVLNCRNAS:', '') }}</a>
             </span>
 
+            <!-- Ribocentre -->
+            <span ng-switch-when="Ribocentre">
+              Ribocentre: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id.replace('RIBOCENTRE:', '') }}</a>
+            </span>
+
             <span ng-switch-default>
               {{ xref.accession.external_id }} {{ xref.accession.optional_id }}
             </span>
