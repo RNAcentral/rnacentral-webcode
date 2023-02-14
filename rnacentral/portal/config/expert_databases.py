@@ -1493,7 +1493,57 @@ expert_dbs = [
             }
         ],
         "imported": True,
-        "status": "New",
+        "status": "",
         "version": "as of As of Oct 22",
+    },
+    {
+        "name": "EVLncRNAs",
+        "label": "evlncrnas",
+        "url": "https://www.sdklab-biophysics-dzu.net/EVLncRNAs2/",
+        "description": "is a database of experimentally validated long non-coding RNAs",
+        "hint": "A database of lncRNAs",
+        "tags": ["", "", ""],
+        "abbreviation": "",
+        "examples": [
+            {"upi": "URS000019E0CD", "taxid": 9606},
+            {"upi": "URS000212322F", "taxid": 9606},
+            {"upi": "URS0000788128", "taxid": 9606},
+        ],
+        "references": [
+            {
+                "title": "EVLncRNAs 2.0: an updated database of manually curated functional long non-coding RNAs validated by low-throughput experiments",
+                "authors": "Zhou B, Ji B, Liu K, Hu G, Wang F, Chen Q, Yu R, Huang P, Ren J, Guo C, Zhao H, Zhang H, Zhao D, Li Z, Zeng Q, Yu J, Bian Y, Cao Z, Xu S, Yang Y, Zhou Y, Wang J",
+                "journal": "Nucleic Acids Research, 08 Jan 2021",
+                "pubmed_id": "33221906",
+            }
+        ],
+        "imported": True,
+        "status": "New",
+        "version": "2.0",
+    },
+    {
+        "name": "Ribocentre",
+        "label": "ribocentre",
+        "url": "https://www.ribocentre.org/",
+        "description": "aims to become a database of all natural ribozymes, and includes representative structures alongside the chemical mechanism of ribozymes",
+        "hint": "A database of ribozymes with representative structures",
+        "tags": ["", "", ""],
+        "abbreviation": "",
+        "examples": [
+            {"upi": "URS000064D507", "taxid": 9606},
+            {"upi": "URS000071B825", "taxid": 9606},
+            {"upi": "URS000071EAFF", "taxid": 9606},
+        ],
+        "references": [
+            {
+                "title": "Ribocentre: a database of ribozymes",
+                "authors": "Jie Deng, Yaohuang Shi, Xuemei Peng, Yuanlin He, Xiaoxue Chen, Mengxiao Li, Xiaowei Lin1, Wenjian Liao, Yuanyin Huang, Taijiao Jiang, David M.J. Lilley, Zhichao Miao, and Lin Huang",
+                "journal": "Nucleic Acids Research, 06 Jan 2023",
+                "pubmed_id": "36177882",
+            }
+        ],
+        "imported": True,
+        "status": "New",
+        "version": "1.4",
     },
 ]
