@@ -1380,7 +1380,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "1.0.3",
+        "version": "243",
     },
     {
         "name": "ZFIN",
