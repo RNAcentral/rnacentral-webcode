@@ -249,7 +249,7 @@ class Accession(models.Model):
             "SNORNADB",
             "ZFIN",
             "RIBOVISION",
-            "EXPRESSIONATLAS",
+            "EXPRESSION_ATLAS",
             "EVLNCRNAS",
             "RIBOCENTRE",
         ]:
