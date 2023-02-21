@@ -27,7 +27,6 @@ from portal.models import (
     Modification,
     OntologyTerm,
     ProteinInfo,
-    Publication,
     QcStatus,
     Reference,
     Reference_map,
@@ -756,10 +755,4 @@ class RnaPrecomputedJsonSerializer(serializers.ModelSerializer):
 class QcStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = QcStatus
-        fields = "__all__"
-
-
-class PublicationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Publication
         fields = "__all__"

@@ -251,11 +251,6 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         )
         self._test_url(url)
 
-    def test_publications(self):
-        """Test api-publications endpoint."""
-        url = reverse("api-publications")
-        self._test_url(url)
-
 
 class NestedXrefsTestCase(ApiV1BaseClass):
     """Test flat/hyperlinked pagination."""

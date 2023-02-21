@@ -26,7 +26,6 @@ from apiv1.serializers import (
     ExpertDatabaseStatsSerializer,
     LncrnaTargetsSerializer,
     ProteinTargetsSerializer,
-    PublicationSerializer,
     QcStatusSerializer,
     RawPublicationSerializer,
     RfamHitSerializer,
@@ -54,7 +53,6 @@ from portal.models import (
     EnsemblCompara,
     GoAnnotation,
     ProteinInfo,
-    Publication,
     QcStatus,
     RelatedSequence,
     RfamHit,
@@ -968,12 +966,3 @@ class EnsemblComparaAPIViewSet(generics.ListAPIView):
             return "not found"
 
         return "found"
-
-
-class PublicationList(generics.ListAPIView):
-    """API endpoint showing the number of ids used by RNAcentral references"""
-
-    permission_classes = (AllowAny,)
-    serializer_class = PublicationSerializer
-    pagination_class = Pagination
-    queryset = Publication.objects.all().order_by("database")

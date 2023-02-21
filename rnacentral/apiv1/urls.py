@@ -177,13 +177,6 @@ urlpatterns = [
         {},
         name="ensembl-karyotype",
     ),
-    # endpoint that returns data from publications
-    url(
-        r"publications/$",
-        cache_page(CACHE_TIMEOUT)(views.PublicationList.as_view()),
-        {},
-        name="api-publications",
-    ),
 ]
 
 urlpatterns = format_suffix_patterns(
