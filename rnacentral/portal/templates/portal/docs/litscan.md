@@ -1,6 +1,4 @@
 
-# <i class="fa fa-book"></i> RNAcentral LitScan
-
 > **RNAcentral LitScan** is a new text mining pipeline that connects RNA sequences with the latest open access scientific literature. LitScan uses a collection of identifiers (Ids), gene names, and synonyms provided to RNAcentral by the [Expert Databases](/expert-databases) to scan the papers available in [Europe PMC](https://europepmc.org) and keep the publications linked to RNAcentral entries as up-to-date as possible.
 
 LitScan features an interactive user interface that enables the users to filter the papers using facets, including year, journal, identifier, and the part of the paper where the Id is found.
@@ -11,7 +9,7 @@ For example, lncRNA `THRIL` is also known as `Linc1992`. Using LitScan, [the cor
     <img class="thumbnail" src="/static/img/litscan-thril.png">
 </a>
 
-LitScan searched 8.3 million Ids from 19 Expert Databases and identified >545,000 papers corresponding to >2.5 million unique RNA sequences. LitScan is under active development and more sequences will be associated with scientific publications in the future.
+LitScan is under active development and more sequences will be associated with scientific publications in the future.
 
 ## Use LitScan in your website
 

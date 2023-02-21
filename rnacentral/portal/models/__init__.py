@@ -20,9 +20,9 @@ from .ensembl_assembly import *
 from .ensembl_compara import *
 from .ensembl_karyotype import *
 from .go_terms import *
+from .litscan_statistics import *
 from .modification import *
 from .protein_info import *
-from .publication import *
 from .qc_status import *
 from .reference import *
 from .reference_map import *

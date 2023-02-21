@@ -158,8 +158,7 @@ urlpatterns = [
     ),
     url(
         r"^help/litscan/?$",
-        views.StaticView.as_view(),
-        {"page": "help/litscan"},
+        views.litscan_view,
         name="help-litscan",
     ),
     # training
@@ -221,8 +220,6 @@ urlpatterns = [
     url(
         r"^license/?$", views.StaticView.as_view(), {"page": "license"}, name="license"
     ),
-    # litscan - dashboard
-    url(r"^litscan/?$", views.publications_view, name="litscan"),
 ]
 
 # internal API

@@ -14,14 +14,12 @@ limitations under the License.
 from django.db import models
 
 
-class Publication(models.Model):
-    """
-    To be used by the LitScan Dashboard
-    """
-
-    database = models.CharField(max_length=40)
-    total_ids = models.IntegerField()
-    results = models.IntegerField()
+class LitScanStatistics(models.Model):
+    searched_ids = models.IntegerField()
+    articles = models.IntegerField()
+    ids_in_use = models.IntegerField()
+    urs = models.IntegerField()
+    expert_db = models.IntegerField()
 
     class Meta:
-        db_table = "publications"
+        db_table = "litscan_statistics"

@@ -12,6 +12,7 @@ limitations under the License.
 -->
 
 {% extends "portal/base.html" %}
+{% load humanize %}
 
 {% block meta_tags %}
     {{ block.super }}
@@ -29,6 +30,42 @@ Help: LitScan
 
   <div class="col-md-8">
     {% load markdown_deux_tags %}
+    <h1><i class="fa fa-book"></i> RNAcentral LitScan</h1>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <p class="panel-title"><strong>Updates</strong></p>
+      </div>
+      <div class="panel-body">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">IDs searched</th>
+              <td><span class="badge">{{ data.searched_ids|intcomma }}</span></td>
+            </tr>
+            <tr>
+              <th scope="row">IDs being used by LitScan</th>
+              <td><span class="badge">{{ data.ids_in_use|intcomma }}</span></td>
+            </tr>
+            <tr>
+              <th scope="row">Unique RNA sequences</th>
+              <td><span class="badge">{{ data.urs|intcomma }}</span></td>
+            </tr>
+            <tr>
+              <th scope="row">Articles found</th>
+              <td><span class="badge">{{ data.articles|intcomma }}</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     {% markdown %}
       {% include  'portal/docs/litscan.md' %}
     {% endmarkdown %}

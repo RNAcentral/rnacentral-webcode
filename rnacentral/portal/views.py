@@ -39,7 +39,7 @@ from portal.models import (
     Database,
     EnsemblAssembly,
     GoAnnotation,
-    Publication,
+    LitScanStatistics,
     Rna,
     Taxonomy,
     Xref,
@@ -429,27 +429,11 @@ def external_link(request, expert_db, external_id):
 
 
 @cache_page(60 * 10)
-def publications_view(request):
-    """Dashboard for publications"""
-    # get data
-    data = Publication.objects.all().order_by("database")
-
-    # count number of ids
-    number_of_ids = 0
-    for item in data:
-        number_of_ids += item.total_ids
-
-    # get number of entries
-    query = f"?query=entry_type:Publication&format=json"
-    try:
-        response = requests.get(settings.EBI_SEARCH_ENDPOINT + query).json()
-        hit_count = response["hitCount"]
-    except KeyError:
-        hit_count = None
-
-    context = {"data": data, "number_of_ids": number_of_ids, "hit_count": hit_count}
-
-    return render(request, "portal/litscan-dashboard.html", {"context": context})
+def litscan_view(request):
+    """Get LitScan data"""
+    data = LitScanStatistics.objects.first()
+    context = {"data": data}
+    return render(request, "portal/help/litscan.html", context)
 
 
 #####################
