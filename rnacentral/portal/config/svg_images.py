@@ -14,26 +14,26 @@ examples = [
         "taxid": "9606",
         "description": "Human variant U1 small nuclear 1 (RNVU1-1)",
     },
-    {
-        "uid": "URS000080DFA3",
-        "taxid": "2336",
-        "description": "Lysine riboswitch RNA from Thermotoga maritima",
-    },
+    # {
+    #     "uid": "URS000080DFA3",
+    #     "taxid": "2336",
+    #     "description": "Lysine riboswitch RNA from Thermotoga maritima",
+    # },
     {
         "uid": "URS000080E29A",
         "taxid": "32630",
         "description": "ykoK riboswitch from Bacillus subtilis",
     },
-    {
-        "uid": "URS0000D6A50B",
-        "taxid": "1394712",
-        "description": "Parcubacteria LOOT RNA",
-    },
-    {
-        "uid": "URS0001BC256D",
-        "taxid": "9606",
-        "description": "Human FGF-2 internal ribosome entry site",
-    },
+    # {
+    #     "uid": "URS0000D6A50B",
+    #     "taxid": "1394712",
+    #     "description": "Parcubacteria LOOT RNA",
+    # },
+    # {
+    #     "uid": "URS0001BC256D",
+    #     "taxid": "9606",
+    #     "description": "Human FGF-2 internal ribosome entry site",
+    # },
     {
         "uid": "URS00000478B7",
         "taxid": "9606",
@@ -64,11 +64,11 @@ examples = [
         "taxid": "9606",
         "description": "Human 18S ribosomal N2 (RNA18SN2-4)",
     },
-    {
-        "uid": "URS0000A575BB",
-        "taxid": "7227",
-        "description": "Fly 18S rRNA",
-    },
+    # {
+    #     "uid": "URS0000A575BB",
+    #     "taxid": "7227",
+    #     "description": "Fly 18S rRNA",
+    # },
     {
         "uid": "URS000055C986",
         "taxid": "4896",
@@ -104,11 +104,11 @@ examples = [
         "taxid": "4896",
         "description": "S. pombe LSU rRNA",
     },
-    {
-        "uid": "URS000095D50B",
-        "taxid": "9598",
-        "description": "Chimpanzee LSU rRNA",
-    },
+    # {
+    #     "uid": "URS000095D50B",
+    #     "taxid": "9598",
+    #     "description": "Chimpanzee LSU rRNA",
+    # },
     {
         "uid": "URS0000215F9B",
         "taxid": "5908",
