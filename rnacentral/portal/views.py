@@ -39,7 +39,7 @@ from portal.models import (
     Database,
     EnsemblAssembly,
     GoAnnotation,
-    Publication,
+    LitScanStatistics,
     Rna,
     Taxonomy,
     Xref,
@@ -224,12 +224,31 @@ def rna_view(request, upi, taxid=None):
     else:
         go_term_id = None
 
+    # check if we have an xref to Expression Atlas
+    expression_atlas = False
+    try:
+        expression_atlas = Xref.objects.filter(
+            upi=upi, taxid=taxid, db__display_name="Expression Atlas"
+        ).exists()
+    except Xref.DoesNotExist:
+        pass
+
+    # we also need gene and species to use the Expression Atlas widget
+    if (
+        expression_atlas
+        and summary.species
+        and [item for item in summary.genes if item.startswith("ENS")]
+    ):
+        expression_atlas = True
+    else:
+        expression_atlas = False
+
     # get tab
     tab = request.GET.get("tab", "").lower()
     if tab == "2d":
         active_tab = 2
     elif tab == "pub":
-        active_tab = 3
+        active_tab = 4
     else:
         active_tab = 0
 
@@ -256,6 +275,7 @@ def rna_view(request, upi, taxid=None):
         "pub_count": pub_count,
         "go_term_id": go_term_id,
         "description_as_json_str": json.dumps(precomputed.description),
+        "expression_atlas": expression_atlas,
     }
     response = render(request, "portal/sequence.html", {"rna": rna, "context": context})
     # define canonical URL for Google
@@ -409,27 +429,11 @@ def external_link(request, expert_db, external_id):
 
 
 @cache_page(60 * 10)
-def publications_view(request):
-    """Dashboard for publications"""
-    # get data
-    data = Publication.objects.all().order_by("database")
-
-    # count number of ids
-    number_of_ids = 0
-    for item in data:
-        number_of_ids += item.total_ids
-
-    # get number of entries
-    query = f"?query=entry_type:Publication&format=json"
-    try:
-        response = requests.get(settings.EBI_SEARCH_ENDPOINT + query).json()
-        hit_count = response["hitCount"]
-    except KeyError:
-        hit_count = None
-
-    context = {"data": data, "number_of_ids": number_of_ids, "hit_count": hit_count}
-
-    return render(request, "portal/litscan-dashboard.html", {"context": context})
+def litscan_view(request):
+    """Get LitScan data"""
+    data = LitScanStatistics.objects.first()
+    context = {"data": data}
+    return render(request, "portal/help/litscan.html", context)
 
 
 #####################

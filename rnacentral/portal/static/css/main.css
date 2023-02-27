@@ -657,7 +657,8 @@ code a:hover {
 }
 
 path {
-  stroke: #fff;
+  /* The stroke property changes the layout of the Expression Atlas Widget */
+  /*stroke: #fff;*/
   fill-rule: evenodd;
 }
 

@@ -12,6 +12,7 @@ limitations under the License.
 """
 
 from .accession import *
+from .accession_sequence_region import *
 from .chemical_component import *
 from .database import *
 from .database_stats import *
@@ -19,9 +20,9 @@ from .ensembl_assembly import *
 from .ensembl_compara import *
 from .ensembl_karyotype import *
 from .go_terms import *
+from .litscan_statistics import *
 from .modification import *
 from .protein_info import *
-from .publication import *
 from .qc_status import *
 from .reference import *
 from .reference_map import *
