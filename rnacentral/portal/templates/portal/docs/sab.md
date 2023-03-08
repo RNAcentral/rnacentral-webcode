@@ -6,12 +6,13 @@
 [RNAcentral](/) and [Rfam](https://rfam.org) share a Scientific Advisory Board (SAB)
 which includes six RNA biologists covering a wide range of expertise from wet lab to computational research.
 
-- [Manja Marz](http://www.rna.uni-jena.de/members/manja-marz/) Friedrich Schiller University Jena, Germany
 - [Yann Ponty](http://www.lix.polytechnique.fr/~ponty/) CNRS École Politechnique, France
 - [Lovorka Stojic](https://www.bartscancer.london/staff/dr-lovorka-stojic/) Barts Centre CRUK, UK
 - [Yiliang Ding](https://www.jic.ac.uk/people/yilliang-ding/) John Innes Centre, UK
 - [Alain Laederach](https://ribosnitch.bio.unc.edu/) UNC Chapel Hill, USA
 - [Madeline Sherlock](https://profiles.ucdenver.edu/display/20414874) University of Colorado Denver, USA
+- [Peter Stadler](http://www.bioinf.uni-leipzig.de/)
+- [Irmtraud Meyer](https://meyergroup.mdc-berlin.de/)
 
 The SAB oversees the progress of the project during annual meetings.
 
@@ -23,3 +24,4 @@ The SAB oversees the progress of the project during annual meetings.
 - [Mihaela Zavolan](https://www.biozentrum.unibas.ch/research/researchgroups/overview/unit/zavolan/research-group-mihaela-zavolan/) (University of Basel) *SAB member between 2016-2020*
 - [Eric Westhof](http://www-ibmc.u-strasbg.fr/upr9002/westhof/index.html) University of Strasbourg *SAB member between 2015-2021*
 - [Michelle Meyer](https://bioinformatics.bc.edu/meyerlab/) Boston College *SAB member between 2016-2021*
+- [Manja Marz](http://www.rna.uni-jena.de/members/manja-marz/) Friedrich Schiller University Jena, Germany
