@@ -54,26 +54,44 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           MSG_MINIMAL: true
 
-  push_to_registries:
-    name: Push Docker image to multiple registries
+  push_image_to_dockerhub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: docker login
+        env:
+          DOCKER_USER: ${{ secrets.DOCKER_USER }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+
+      - name: Get branch name
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | tr / -)" >> $GITHUB_ENV
+
+      - name: docker build
+        if: env.BRANCH_NAME != ''
+        run: docker build -f Dockerfile -t rnacentral/rnacentral-webcode:${{ env.BRANCH_NAME }} .
+
+      - name: docker push
+        if: env.BRANCH_NAME != ''
+        run: docker push rnacentral/rnacentral-webcode:${{ env.BRANCH_NAME }}
+
+  push_image_to_github:
     runs-on: ubuntu-latest
     permissions:
-      packages: write
       contents: read
-    steps:
-      - name: Check out the repo
-        uses: actions/checkout@v3
+      packages: write
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
-        with:
-          username: ${{ secrets.DOCKER_USER }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
       - name: Log in to the Container registry
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -81,11 +99,9 @@ jobs:
         id: meta
         uses: docker/metadata-action@507c2f2dc502c992ad446e3d7a5dfbe311567a96
         with:
-          images: |
-            my-docker-hub-namespace/my-docker-hub-repository
-            ghcr.io/${{ github.repository }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
-      - name: Build and push Docker images
+      - name: Build and push Docker image
         uses: docker/build-push-action@3b5e8027fcad23fda98b2e3ac259d8d67585f671
         with:
           context: .
@@ -95,7 +111,7 @@ jobs:
 
   final-notification:
     runs-on: ubuntu-latest
-    needs: push_to_registries
+    needs: [push_image_to_dockerhub, push_image_to_github]
     steps:
       - uses: actions/checkout@v3
 
