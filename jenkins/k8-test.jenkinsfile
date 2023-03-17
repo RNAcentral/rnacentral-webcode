@@ -68,16 +68,16 @@ pipeline {
                             curl -X POST -H 'Content-type: application/json' --data '{"text":"Starting deployment of ${params.BRANCH} in the development namespace - HX cluster"}' $SLACK
 
                             # clear the cache
-                            POD=`/homes/rfamprod/kubectl --kubeconfig=${config} get pod -l app=memcached -o jsonpath="{.items[0].metadata.name}"`
-                            /homes/rfamprod/kubectl --kubeconfig=${config} exec -it \$POD -- sh -c "echo flush_all | nc localhost 11211"
+                            POD=`/net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config} get pod -l app=memcached -o jsonpath="{.items[0].metadata.name}"`
+                            /net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config} exec -it \$POD -- sh -c "echo flush_all | nc localhost 11211"
 
                             # reinstall everything
                             cd kubernetes/helm
-                            /homes/rfamprod/helm uninstall full-dev --kubeconfig ${config} --namespace dev
+                            /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm uninstall full-dev --kubeconfig ${config} --namespace dev
                             sleep 10
-                            /homes/rfamprod/helm upgrade --install full-dev --kubeconfig ${config} --namespace dev --values=values.dev.yaml --set proxy=proxy-hx,database=${DB},searchIndex=${SEARCH_INDEX},rnacentralBranch=${params.BRANCH} .
+                            /net/isilonP/public/rw/homes/xfm_adm/.jenkins/helm upgrade --install full-dev --kubeconfig ${config} --namespace dev --values=values.dev.yaml --set proxy=proxy-hx,database=${DB},searchIndex=${SEARCH_INDEX},rnacentralBranch=${params.BRANCH} .
                             sleep 20
-                            /homes/rfamprod/kubectl --kubeconfig=${config} rollout status deployment rnacentral --watch --timeout=5m
+                            /net/isilonP/public/rw/homes/xfm_adm/.jenkins/kubectl --kubeconfig=${config} rollout status deployment rnacentral --watch --timeout=5m
 
                             # send final message on Slack
                             curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployed ${params.BRANCH} in the development namespace - HX cluster."}' $SLACK
