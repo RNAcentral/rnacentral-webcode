@@ -34,7 +34,7 @@ spec:
         runAsGroup: 1000
         fsGroup: 1000
       containers:
-        - image: rnacentral/rnacentral-webcode:{{ .Values.rnacentralBranch }}
+        - image: ghcr.io/rnacentral/rnacentral-webcode:{{ .Values.rnacentralBranch }}
           name: rnacentral
           imagePullPolicy: Always
           ports:
