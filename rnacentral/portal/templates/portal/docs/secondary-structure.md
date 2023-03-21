@@ -91,7 +91,7 @@ To use constrained folding, choose one of the modes in the advanced options:
 
 It is possible to embed an R2DT secondary structure into any website, and it has
 already been added to [FlyBase](http://flybase.org/), [SGD](http://yeastgenome.org/),
-and [Rfam](http://rfam.org/).
+and [Nucleic Acid Knowledgebase](https://nakb.org/).
 
 Find out more about [how to integrate this widget into your website](https://github.com/RNAcentral/r2dt-web).
 
