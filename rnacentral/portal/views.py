@@ -62,7 +62,7 @@ def get_sequence_lineage(request, upi):
     Get the lineage for an RNA sequence from all database cross-references.
     """
     try:
-        xref = Xref.objects.filter(upi=upi)
+        xref = Xref.objects.filter(upi=upi).distinct("taxid")
         results = xref.filter(deleted="N")
         if not results.exists():
             results = xref
