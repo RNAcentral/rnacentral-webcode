@@ -35,6 +35,7 @@ from apiv1.serializers import (
     RfamHitSerializer,
     RnaFastaSerializer,
     RnaFlatSerializer,
+    RnaGenomeLocationsSerializer,
     RnaNestedSerializer,
     RnaSecondaryStructureSerializer,
     RnaSpeciesSpecificSerializer,
@@ -526,73 +527,20 @@ class RnaGenomeLocations(generics.ListAPIView):
     [API documentation](/api)
     """
 
-    queryset = Rna.objects.select_related().all()
+    serializer_class = RnaGenomeLocationsSerializer
 
-    def get(self, request, pk=None, taxid=None, format=None):
-        # if assembly with this taxid is not found, just return empty locations list
-        try:
-            assembly = EnsemblAssembly.objects.get(
-                taxid=taxid, selected_genome=True
-            )  # this applies only to species-specific pages
-        except EnsemblAssembly.DoesNotExist:
-            return Response([])
-
-        rna = self.get_object()
-        urs_taxid = rna.upi + "_" + str(assembly.taxid)
+    def get_queryset(self):
+        urs_taxid = self.kwargs["pk"] + "_" + self.kwargs["taxid"]
 
         # do not show genome coordinates for obsolete sequences
         try:
             rna_precomputed = RnaPrecomputed.objects.get(id=urs_taxid, is_active=True)
         except RnaPrecomputed.DoesNotExist:
-            return Response([])
+            return SequenceRegion.objects.none()
 
-        regions = SequenceRegion.objects.filter(
-            urs_taxid=rna_precomputed, assembly=assembly.assembly_id
+        return SequenceRegion.objects.filter(urs_taxid=rna_precomputed).select_related(
+            "assembly"
         )
-
-        output = []
-        for region in regions:
-            providing_databases = get_database(region)
-            if len(providing_databases) > 1:
-                databases = " and ".join(
-                    [
-                        ", ".join(providing_databases[:-1]),
-                        providing_databases[-1],
-                    ]
-                )
-            elif len(providing_databases) == 1:
-                databases = providing_databases[0]
-            else:
-                databases = "an Expert Database"
-
-            output.append(
-                {
-                    "chromosome": region.chromosome,
-                    "strand": region.strand,
-                    "start": region.region_start,
-                    "end": region.region_stop,
-                    "identity": region.identity,
-                    "species": assembly.ensembl_url,
-                    "ucsc_db_id": assembly.assembly_ucsc,
-                    "ensembl_division": {
-                        "name": assembly.division,
-                        "url": "http://" + assembly.subdomain,
-                    },
-                    "ensembl_species_url": assembly.ensembl_url,
-                    "databases": databases,
-                }
-            )
-
-            exceptions = ["X", "Y"]
-            if (
-                re.match(r"\d+", output[-1]["chromosome"])
-                or output[-1]["chromosome"] in exceptions
-            ):
-                output[-1]["ucsc_chromosome"] = "chr" + output[-1]["chromosome"]
-            else:
-                output[-1]["ucsc_chromosome"] = output[-1]["chromosome"]
-
-        return Response(output)
 
 
 class AccessionView(generics.RetrieveAPIView):
