@@ -10,6 +10,7 @@ repos:
         args: [--allow-multiple-documents]
         exclude: ^kubernetes/helm/templates/
     -   id: check-added-large-files
+        args: ['--maxkb=1500']
     -   id: name-tests-test
         args: [ "--django" ]
 -   repo: https://github.com/psf/black
