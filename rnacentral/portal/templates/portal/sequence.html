@@ -197,111 +197,11 @@ limitations under the License.
                       </a>
                     </small>
                 </h2>
-                <div ng-if="taxid && fetchGenomeLocationsStatus === 'error'">
-                    <div class="alert alert-danger">
-                        <i class="fa fa-exclamation-triangle"></i> Sorry, there was a problem loading genome locations from server. Please try again and contact us if the problem persists.
-                    </div>
-                </div>
 
-                <div ng-if="taxid && fetchGenomeLocationsStatus !== 'error'">
-
-                    {% verbatim %}
-                    <p ng-if="fetchGenomeLocationsStatus === 'success' && locations.length > 0" class="margin-bottom-0px">This sequence is found in <strong>{{ locations.length }}</strong> genome <ng-pluralize count="locations.length" when="{'one': 'location', 'other': 'locations'}"></ng-pluralize>:</p>
-                    <div>
-                        <div style="max-height: 300px; overflow: auto;">
-                            <table ng-if="fetchGenomeLocationsStatus === 'loading' || locations.length > 0" class="table table-hover table-condensed table-responsive" style="margin-left: 9px; margin-right: 9px;">
-                                <thead>
-                                    <tr>
-                                        <th>Go to location</th>
-                                        <th>Chromosome</th>
-                                        <th>Start</th>
-                                        <th>End</th>
-                                        <th>Strand</th>
-                                        <th>Ensembl</th>
-                                        <th>UCSC</th>
-                                        <th>Sequence identity</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                  <tr ng-if="fetchGenomeLocationsStatus === 'loading'">
-                                        <td colspan="8" style="text-align: center;">
-                                            <span>
-                                                <i class="fa fa-spinner fa-spin fa-2x"></i>
-                                                Loading genome locations...
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr ng-if="fetchGenomeLocationsStatus === 'error'">
-                                        <td colspan="8" style="text-align: center;">
-                                            <span>
-                                                <i class="fa fa-exclamation-circle fa-2x"></i>
-                                                Failed to load data from server
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <tr ng-if="fetchGenomeLocationsStatus === 'success' && locations.length === 0">
-                                        <td colspan="8">No genome locations known</td>
-                                    </tr>
-                                    <tr ng-if="fetchGenomeLocationsStatus === 'success'" ng-repeat="location in locations" ng-class="{'active': isSelectedLocation(location) }">
-                                        <td>
-                                            <button ng-if="genomes && !$ctrl.chromosomeIsScaffold(location.chromosome)"
-                                                    type="button"
-                                                    class="btn btn-default btn-xs genoverse-xref help margin-right-5px"
-                                                    ng-click="activateGenomeBrowser(location.start, location.end, location.chromosome, location.species); scrollToGenomeBrowser();"
-                                                    title="View on this page using Genoverse browser"><i class="fa fa-map-marker"></i> Go to location
-                                            </button>
-                                            <span ng-if="!genomes">
-                                                <i class="fa fa-spinner fa-spin"></i>
-                                                <i class="text-muted">loading browser</i>
-                                            </span>
-                                            <li ng-if="$ctrl.chromosomeIsScaffold(location.chromosome)" class="badge">Can't view - strange chromosome name</li>
-                                        </td>
-                                        <td>
-                                            <span class="margin-right-5px">{{ location.chromosome }}</span>
-                                        </td>
-                                        <td>
-                                            {{ location.start | number }}
-                                        </td>
-                                        <td>
-                                            {{ location.end | number }}
-                                        </td>
-                                        <td>
-                                            {{ location.strand == "1" ? "forward" : "reverse" }}
-                                        </td>
-                                        <td><!-- Ensembl url -->
-                                            <span ng-if="location.ensembl_division && location.ensembl_species_url" class="margin-right-5px ensembl-link">
-                                                <a ng-href="{{ location.ensembl_division.url + '/' + location.ensembl_species_url + '/Location/View?r=' + location.chromosome + ':' + location.start + '-' + location.end }}" target="_blank">{{ location.ensembl_division.name.replace('EnsemblVertebrates', 'Ensembl') }}</a>
-                                            </span>
-                                        </td>
-                                        <td><!-- UCSC url -->
-                                            <span ng-if="location.ucsc_db_id" class="margin-right-5px ucsc-link">
-                                                <a ng-href="{{ 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + location.ucsc_db_id + '&position=' + location.ucsc_chromosome + ':' + location.start + '-' + location.end }}" target="_blank">UCSC</a>
-                                            </span>
-                                        </td>
-                                        <td ng-if="location.identity === null || location.identity === undefined">
-                                            <span>100% <i uib-tooltip="Imported from {{ location.databases }}" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i></span>
-                                        </td>
-                                        <td ng-if="location.identity !== null && location.identity !== undefined">
-                                            <span>{{ location.identity * 100 | number:0 }}% <i uib-tooltip="Based on blat genome mapping" tooltip-placement="left" class="fa fa-question-circle" aria-hidden="true"></i></span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    {% endverbatim %}
+                <div style="padding-left: 1rem; margin-top: -10px">
+                    <rnacentral-genome-browser data='{"urs": "{{ context.upi }}", "taxid": "{{ context.taxid }}"}'></rnacentral-genome-browser>
                 </div>
-
-                <!-- genoverse -->
-                <div ng-if="genomes && browserLocation.genome && browserLocation.chr && browserLocation.start && browserLocation.end">
-                    <genoverse genome="browserLocation.genome" chr="browserLocation.chr" start="browserLocation.start" end="browserLocation.end" highlights="browserLocation.highlights" genoverse-utils="genoverseUtils"></genoverse>
-                </div>
-
-                <div ng-if="taxid && fetchGenomeLocationsStatus === 'success' && locations.length === 0">
-                  <p>
-                    No genome locations found for this sequence. <a href="{% url 'help-genomic-mapping' %}">Learn more &rarr;</a>
-                  <p>
-                </div>
+                <script type="text/javascript" src="{% static "igv.js" %}"></script>
 
                 <div ng-if="taxid">
                   <ensembl-compara upi="upi" taxid="taxid"></ensembl-compara>
