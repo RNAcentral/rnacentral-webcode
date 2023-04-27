@@ -206,8 +206,7 @@ urlpatterns = [
     # genome browser
     url(
         r"^genome-browser/?$",
-        views.GenomeBrowserView.as_view(),
-        {},
+        TemplateView.as_view(template_name="portal/genome-browser.html"),
         name="genome-browser",
     ),
     # proxy for ebeye search and rfam images
