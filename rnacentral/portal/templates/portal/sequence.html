@@ -201,7 +201,7 @@ limitations under the License.
                 <div style="padding-left: 1rem; margin-top: -10px">
                     <rnacentral-genome-browser data='{"urs": "{{ context.upi }}", "taxid": "{{ context.taxid }}"}'></rnacentral-genome-browser>
                 </div>
-                <script type="text/javascript" src="{% static "igv.js" %}"></script>
+                <script type="text/javascript" src="https://rnacentral.github.io/rnacentral-genome-browser/build/genome-browser.js"></script>
 
                 <div ng-if="taxid">
                   <ensembl-compara upi="upi" taxid="taxid"></ensembl-compara>
