@@ -28,6 +28,7 @@ from apiv1.serializers import (
     EnsemblAssemblySerializer,
     EnsemblComparaSerializer,
     ExpertDatabaseStatsSerializer,
+    GenomeBrowserSerializer,
     LncrnaTargetsSerializer,
     ProteinTargetsSerializer,
     QcStatusSerializer,
@@ -938,3 +939,17 @@ class EnsemblComparaAPIViewSet(generics.ListAPIView):
             return "not found"
 
         return "found"
+
+
+class GenomeBrowserAPIViewSet(APIView):
+    """Render genome-browser, taking into account start/end locations."""
+
+    permission_classes = (AllowAny,)
+
+    def get(self, request, species, format=None):
+        try:
+            assembly = EnsemblAssembly.objects.filter(ensembl_url=species).first()
+            serializer = GenomeBrowserSerializer(assembly, context={"request": request})
+            return Response(serializer.data)
+        except EnsemblAssembly.DoesNotExist:
+            return Response([])
