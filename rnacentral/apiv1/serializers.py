@@ -730,13 +730,3 @@ class RnaGenomeLocationsSerializer(serializers.Serializer):
             ucsc_chromosome = obj.chromosome
 
         return ucsc_chromosome
-
-
-class GenomeBrowserSerializer(serializers.Serializer):
-    """Serializer class for Genome Browser - IGV"""
-
-    assembly_id = serializers.ReadOnlyField()
-    chromosome = serializers.ReadOnlyField(source="example_chromosome")
-    start = serializers.ReadOnlyField(source="example_start")
-    end = serializers.ReadOnlyField(source="example_end")
-    ensembl_url = serializers.ReadOnlyField()
