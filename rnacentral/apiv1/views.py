@@ -28,7 +28,6 @@ from apiv1.serializers import (
     EnsemblAssemblySerializer,
     EnsemblComparaSerializer,
     ExpertDatabaseStatsSerializer,
-    GenomeBrowserSerializer,
     LncrnaTargetsSerializer,
     ProteinTargetsSerializer,
     QcStatusSerializer,
@@ -949,7 +948,37 @@ class GenomeBrowserAPIViewSet(APIView):
     def get(self, request, species, format=None):
         try:
             assembly = EnsemblAssembly.objects.filter(ensembl_url=species).first()
-            serializer = GenomeBrowserSerializer(assembly, context={"request": request})
-            return Response(serializer.data)
         except EnsemblAssembly.DoesNotExist:
             return Response([])
+
+        try:
+            region = (
+                SequenceRegion.objects.filter(assembly=assembly)
+                .order_by("chromosome")
+                .first()
+            )
+        except SequenceRegion.DoesNotExist:
+            return Response([])
+
+        chromosome = (
+            assembly.example_chromosome
+            if assembly.example_chromosome
+            else region.chromosome
+        )
+
+        start = (
+            assembly.example_start if assembly.example_start else region.region_start
+        )
+
+        end = assembly.example_end if assembly.example_end else region.region_stop
+
+        return Response(
+            {
+                "assembly_id": assembly.assembly_id,
+                "common_name": assembly.common_name.title(),
+                "chromosome": chromosome,
+                "start": start,
+                "end": end,
+                "ensembl_url": assembly.ensembl_url,
+            }
+        )
