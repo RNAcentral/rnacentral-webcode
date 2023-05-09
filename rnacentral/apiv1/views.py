@@ -65,6 +65,7 @@ from portal.models import (
     RnaPrecomputed,
     SequenceFeature,
     SequenceRegion,
+    Taxonomy,
 )
 from rest_framework import generics, renderers, status
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
@@ -654,8 +655,34 @@ class GenomesAPIViewSet(ListModelMixin, GenericViewSet):
     permission_classes = (AllowAny,)
     serializer_class = EnsemblAssemblySerializer
     pagination_class = Pagination
-    queryset = EnsemblAssembly.objects.all().order_by("-ensembl_url")
     lookup_field = "ensembl_url"
+
+    def get_queryset(self):
+        ensembl_assembly_query = """
+            SELECT
+                {ensembl_assembly}.assembly_id,
+                {ensembl_assembly}.assembly_full_name,
+                {ensembl_assembly}.gca_accession,
+                {ensembl_assembly}.assembly_ucsc,
+                {ensembl_assembly}.taxid,
+                {ensembl_assembly}.ensembl_url,
+                {ensembl_assembly}.division,
+                {ensembl_assembly}.subdomain,
+                {ensembl_assembly}.example_chromosome,
+                {ensembl_assembly}.example_start,
+                {ensembl_assembly}.example_end,
+                {taxonomy}.name as common_name
+            FROM {ensembl_assembly}
+            LEFT JOIN {taxonomy}
+            ON {taxonomy}.id = {ensembl_assembly}.taxid
+            ORDER BY {taxonomy}.name
+        """.format(
+            ensembl_assembly=EnsemblAssembly._meta.db_table,
+            taxonomy=Taxonomy._meta.db_table,
+        )
+
+        queryset = EnsemblAssembly.objects.raw(ensembl_assembly_query)
+        return queryset
 
 
 class RfamHitsAPIViewSet(generics.ListAPIView):
