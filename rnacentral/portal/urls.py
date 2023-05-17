@@ -102,9 +102,7 @@ urlpatterns = [
         views.StaticView.as_view(),
         {
             "page": "help/genomic-mapping",
-            "assemblies": EnsemblAssembly.objects.filter(
-                example_chromosome__isnull=False
-            ).all(),
+            "assemblies": EnsemblAssembly.objects.all().order_by("ensembl_url"),
         },
         name="help-genomic-mapping",
     ),
