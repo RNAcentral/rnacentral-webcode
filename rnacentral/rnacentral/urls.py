@@ -13,7 +13,6 @@ limitations under the License.
 
 import os
 
-import debug_toolbar
 from django.conf.urls import include, url
 from django.views.generic import TemplateView
 
@@ -28,7 +27,6 @@ urlpatterns = [
     # new sequence search
     url(r"^sequence-search/", include("sequence_search.urls")),
     # Django Debug Toolbar
-    url(r"^__debug__/", include(debug_toolbar.urls)),
 ]
 
 # robots.txt extras

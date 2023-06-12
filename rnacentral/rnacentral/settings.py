@@ -127,7 +127,6 @@ MIDDLEWARE = (
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     # django-debug-toolbar
     # django-maintenance
@@ -186,7 +185,6 @@ INSTALLED_APPS = (
     "django.contrib.humanize",
     "corsheaders",
     "portal",
-    "debug_toolbar",
     "sequence_search",
     "apiv1",
     "django_filters",  # required by DRF3.5+
