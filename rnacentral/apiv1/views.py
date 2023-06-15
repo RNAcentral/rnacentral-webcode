@@ -64,6 +64,7 @@ from portal.models import (
     RnaPrecomputed,
     SequenceFeature,
     SequenceRegion,
+    Taxonomy,
 )
 from rest_framework import generics, renderers, status
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
@@ -367,19 +368,22 @@ class RnaSpeciesSpecificView(APIView):
         urs = pk + "_" + taxid
         rna = self.get_object(urs)
 
-        # get species and gene from Search Index
-        # queries on the xref table make the API very slow
+        # queries on the xref table make the API very slow.
+        # get gene from Search Index
         search_index = settings.EBI_SEARCH_ENDPOINT
         try:
             response = requests.get(
-                f"{search_index}/entry/{urs}?format=json&fields=species,gene"
+                f"{search_index}/entry/{urs}?format=json&fields=gene"
             )
             data = json.loads(response.text)
-            species = data["entries"][0]["fields"]["species"]
             gene = data["entries"][0]["fields"]["gene"]
         except Exception:
-            species = ""
             gene = ""
+
+        try:
+            species = Taxonomy.objects.get(id=taxid).name
+        except Taxonomy.DoesNotExist:
+            species = ""
 
         serializer = RnaSpeciesSpecificSerializer(
             rna,
