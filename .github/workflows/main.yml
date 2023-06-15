@@ -19,7 +19,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
 
@@ -43,7 +43,7 @@ jobs:
           python rnacentral/manage.py test sequence_search
 
   initial-notification:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
 
@@ -55,7 +55,7 @@ jobs:
           MSG_MINIMAL: true
 
   push_image_to_dockerhub:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
 
@@ -79,7 +79,7 @@ jobs:
         run: docker push rnacentral/rnacentral-webcode:${{ env.BRANCH_NAME }}
 
   push_image_to_github:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     permissions:
       contents: read
       packages: write
@@ -110,7 +110,7 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
   final-notification:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     needs: [push_image_to_dockerhub, push_image_to_github]
     steps:
       - uses: actions/checkout@v3
