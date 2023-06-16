@@ -19,9 +19,9 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@v3
 
       - name: Set up Python 3.8
         uses: actions/setup-python@v4
@@ -43,9 +43,9 @@ jobs:
           python rnacentral/manage.py test sequence_search
 
   initial-notification:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@v3
 
       - name: Initial notification
         uses: rtCamp/action-slack-notify@12e36fc18b0689399306c2e0b3e0f2978b7f1ee7
@@ -55,9 +55,9 @@ jobs:
           MSG_MINIMAL: true
 
   push_image_to_dockerhub:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@v3
 
       - name: docker login
         env:
@@ -79,14 +79,27 @@ jobs:
         run: docker push rnacentral/rnacentral-webcode:${{ env.BRANCH_NAME }}
 
   push_image_to_github:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
 
     steps:
+      - name: Check Docker version
+        run: docker --version
+
+      - name: Install latest Docker
+        run: |
+          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+          sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+          sudo apt-get update
+          sudo apt-get install docker-ce
+
+      - name: Check Docker version
+        run: docker --version
+
       - name: Checkout repository
-        uses: actions/checkout@v3.5.2
+        uses: actions/checkout@v3
 
       - name: Log in to the Container registry
         uses: docker/login-action@f4ef78c080cd8ba55a85445d5b36e214a81df20a
@@ -110,10 +123,10 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
   final-notification:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     needs: [push_image_to_dockerhub, push_image_to_github]
     steps:
-      - uses: actions/checkout@v3.5.2
+      - uses: actions/checkout@v3
 
       - name: Final notification
         uses: rtCamp/action-slack-notify@12e36fc18b0689399306c2e0b3e0f2978b7f1ee7
