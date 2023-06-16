@@ -79,39 +79,12 @@ jobs:
         run: docker push rnacentral/rnacentral-webcode:${{ env.BRANCH_NAME }}
 
   push_image_to_github:
-    runs-on: ubuntu-latest
+    runs-on: macos-11
     permissions:
       contents: read
       packages: write
 
     steps:
-      - name: Check Docker version
-        run: docker --version
-
-      - name: Install latest Docker
-        run: |
-          # uninstall all conflicting packages
-          for pkg in docker.io docker-doc docker-compose podman-docker containerd runc; do sudo apt-get remove $pkg; done
-          sudo apt-get update
-          sudo apt-get install ca-certificates curl gnupg
-
-          # download specific version
-          wget https://download.docker.com/linux/ubuntu/dists/jammy/pool/stable/amd64/containerd.io_1.6.10-1_amd64.deb
-          wget https://download.docker.com/linux/ubuntu/dists/jammy/pool/stable/amd64/docker-ce_20.10.21~3-0~ubuntu-jammy_amd64.deb
-          wget https://download.docker.com/linux/ubuntu/dists/jammy/pool/stable/amd64/docker-ce-cli_20.10.22~3-0~ubuntu-jammy_amd64.deb
-          wget https://download.docker.com/linux/ubuntu/dists/jammy/pool/stable/amd64/docker-buildx-plugin_0.10.2-1~ubuntu.22.04~jammy_amd64.deb
-          wget https://download.docker.com/linux/ubuntu/dists/jammy/pool/stable/amd64/docker-compose-plugin_2.14.1~ubuntu-jammy_amd64.deb
-
-          # install the .deb packages
-          sudo dpkg -i ./containerd.io_1.6.10-1_amd64.deb \
-          ./docker-ce_20.10.21~3-0~ubuntu-jammy_amd64.deb \
-          ./docker-ce-cli_20.10.22~3-0~ubuntu-jammy_amd64.deb \
-          ./docker-buildx-plugin_0.10.2-1~ubuntu.22.04~jammy_amd64.deb \
-          ./docker-compose-plugin_2.14.1~ubuntu-jammy_amd64.deb
-
-      - name: Check Docker version
-        run: docker --version
-
       - name: Checkout repository
         uses: actions/checkout@v3
 
