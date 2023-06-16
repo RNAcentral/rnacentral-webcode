@@ -79,7 +79,7 @@ jobs:
         run: docker push rnacentral/rnacentral-webcode:${{ env.BRANCH_NAME }}
 
   push_image_to_github:
-    runs-on: macos-11
+    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
