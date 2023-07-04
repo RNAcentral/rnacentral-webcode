@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------------------------------------
 
-FROM python:3.8-slim
+FROM python:3.8.15-slim
 
 RUN apt-get update && apt-get install -y \
     g++ \
@@ -55,7 +55,7 @@ WORKDIR $RNACENTRAL_HOME
 COPY rnacentral/requirements.txt .
 
 # Install requirements
-RUN pip3 install -r requirements.txt
+RUN pip3 install --upgrade pip && pip3 install -r requirements.txt
 
 # Install NPM dependencies
 ADD rnacentral/portal/static/package.json rnacentral/portal/static/

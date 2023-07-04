@@ -409,98 +409,35 @@ class SecondaryStructureSVGImageSerializer(serializers.ModelSerializer):
         fields = ("layout",)
 
 
-class RnaSpeciesSpecificSerializer(serializers.HyperlinkedModelSerializer):
+class RnaSpeciesSpecificSerializer(serializers.Serializer):
     """
     Serializer class for species-specific RNAcentral ids.
 
     Requires context['xrefs'] and context['taxid'].
     """
 
-    sequence = serializers.CharField(source="get_sequence", read_only=True)
-    rnacentral_id = serializers.SerializerMethodField("get_species_specific_id")
-    description = serializers.SerializerMethodField("get_species_specific_description")
-    short_description = serializers.SerializerMethodField("get_short_description_name")
-    species = serializers.SerializerMethodField("get_species_name")
-    genes = serializers.SerializerMethodField()
-    ncrna_types = serializers.SerializerMethodField()
+    rnacentral_id = serializers.ReadOnlyField(source="id")
+    sequence = serializers.ReadOnlyField(source="upi.get_sequence")
+    length = serializers.ReadOnlyField(source="upi.length")
+    description = serializers.ReadOnlyField()
+    short_description = serializers.ReadOnlyField()
+    species = serializers.SerializerMethodField()
     taxid = serializers.SerializerMethodField()
-    is_active = serializers.SerializerMethodField("is_active_id")
-    distinct_databases = serializers.SerializerMethodField(
-        "get_distinct_database_names"
-    )
-
-    class Meta:
-        model = Rna
-        fields = (
-            "rnacentral_id",
-            "sequence",
-            "length",
-            "description",
-            "short_description",
-            "species",
-            "taxid",
-            "genes",
-            "ncrna_types",
-            "is_active",
-            "distinct_databases",
-        )
-
-    def is_active_id(self, obj):
-        """Return false if all xrefs with this taxid are inactive."""
-        return bool(self.context["xrefs"].filter(deleted="N").count())
-
-    def get_species_specific_id(self, obj):
-        """Return a species-specific id using the underscore (used by Protein2GO)."""
-        return obj.upi + "_" + self.context["taxid"]
-
-    def get_species_specific_description(self, obj):
-        """Get species-specific description of the RNA sequence."""
-        return obj.get_description(self.context["taxid"])
-
-    def get_short_description_name(self, obj):
-        """Get description without species name"""
-        return obj.get_short_description(self.context["taxid"])
-
-    def get_species_name(self, obj):
-        """Get the name of the species based on taxid."""
-        return self.context["xrefs"].first().accession.species
+    genes = serializers.SerializerMethodField()
+    rna_type = serializers.ReadOnlyField()
+    is_active = serializers.ReadOnlyField()
+    distinct_databases = serializers.ReadOnlyField(source="databases")
 
     def get_genes(self, obj):
         """Get a species-specific list of genes associated with the sequence in this particular sequence."""
-        return (
-            self.context["xrefs"]
-            .values_list("accession__gene", flat=True)
-            .filter(accession__gene__isnull=False)
-            .distinct()
-        )
+        return self.context["gene"]
 
-    def get_ncrna_types(self, obj):
-        """
-        Get a combined list of ncRNA types from the feature names
-        and expand ncRNA feature type using ncRNA class info.
-        """
-        xrefs = self.context["xrefs"]
-        feature_names = xrefs.values_list(
-            "accession__feature_name", flat=True
-        ).distinct()
-
-        if "ncRNA" in feature_names:
-            ncrna_classes = (
-                xrefs.values_list("accession__ncrna_class", flat=True)
-                .filter(accession__ncrna_class__isnull=False)
-                .distinct()
-            )
-            ncrna_types = set(list(feature_names) + list(ncrna_classes))
-            ncrna_types.discard("ncRNA")
-        else:
-            ncrna_types = list(feature_names)
-        return ncrna_types
+    def get_species(self, obj):
+        """Get the name of the species based on taxid."""
+        return self.context["species"]
 
     def get_taxid(self, obj):
         return int(self.context["taxid"])
-
-    def get_distinct_database_names(self, obj):
-        return obj.get_distinct_database_names(taxid=self.get_taxid(obj))
 
 
 class RnaFlatSerializer(RnaNestedSerializer):

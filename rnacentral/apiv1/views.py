@@ -1,5 +1,9 @@
 from __future__ import print_function
 
+import json
+
+import requests
+
 """
 Copyright [2009-2017] EMBL-European Bioinformatics Institute
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -60,6 +64,7 @@ from portal.models import (
     RnaPrecomputed,
     SequenceFeature,
     SequenceRegion,
+    Taxonomy,
 )
 from rest_framework import generics, renderers, status
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
@@ -337,7 +342,7 @@ class RnaDetail(RnaMixin, generics.RetrieveAPIView):
             return rna
 
 
-class RnaSpeciesSpecificView(generics.RetrieveAPIView):
+class RnaSpeciesSpecificView(APIView):
     """
     API endpoint for retrieving species-specific details
     about Unique RNA Sequences.
@@ -351,18 +356,41 @@ class RnaSpeciesSpecificView(generics.RetrieveAPIView):
     This endpoint is used by Protein2GO.
     Contact person: Tony Sawford.
     """
-    queryset = Rna.objects.all()
+    queryset = RnaPrecomputed.objects.all()
+
+    def get_object(self, pk):
+        try:
+            return RnaPrecomputed.objects.get(pk=pk)
+        except RnaPrecomputed.DoesNotExist:
+            raise Http404
 
     def get(self, request, pk, taxid, format=None):
-        rna = self.get_object()
-        xrefs = rna.xrefs.filter(taxid=taxid)
-        if not xrefs:
-            raise Http404
+        urs = pk + "_" + taxid
+        rna = self.get_object(urs)
+
+        # queries on the xref table make the API very slow.
+        # get gene from Search Index
+        search_index = settings.EBI_SEARCH_ENDPOINT
+        try:
+            response = requests.get(
+                f"{search_index}/entry/{urs}?format=json&fields=gene"
+            )
+            data = json.loads(response.text)
+            gene = data["entries"][0]["fields"]["gene"]
+        except Exception:
+            gene = ""
+
+        try:
+            species = Taxonomy.objects.get(id=taxid).name
+        except Taxonomy.DoesNotExist:
+            species = ""
+
         serializer = RnaSpeciesSpecificSerializer(
             rna,
             context={
+                "gene": gene,
                 "request": request,
-                "xrefs": xrefs,
+                "species": species,
                 "taxid": taxid,
             },
         )

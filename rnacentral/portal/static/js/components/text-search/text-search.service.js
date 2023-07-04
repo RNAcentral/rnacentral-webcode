@@ -206,8 +206,8 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
                     self.result.entries = self.result.entries.concat(data.entries); // append new entries
                 }
 
-                // after each search send a pageview to GA
-                $window.ga('send', 'pageview', $location.path());
+                // after each search send a pageview to GA4
+                $window.gtag('event', 'pageview', $location.path());
                 self.status = 'success';
 
                 // run callbacks
