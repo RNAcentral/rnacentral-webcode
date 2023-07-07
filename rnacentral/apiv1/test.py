@@ -232,6 +232,11 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         )
         self._test_url(url)
 
+    def test_interactions(self):
+        """Test interactions endpoint."""
+        url = reverse("interactions", kwargs={"pk": "URS00006457C1", "taxid": "9606"})
+        self._test_url(url)
+
     def test_rna_lncrna_targets(self):
         """Test rna-lncrna-targets endpoint."""
         url = reverse(
