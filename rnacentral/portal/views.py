@@ -260,6 +260,7 @@ def rna_view(request, upi, taxid=None):
         "go_term_id": go_term_id,
         "description_as_json_str": json.dumps(precomputed.description),
         "expression_atlas": expression_atlas,
+        "interactions": rna.get_intact(taxid),
     }
     response = render(request, "portal/sequence.html", {"rna": rna, "context": context})
     # define canonical URL for Google

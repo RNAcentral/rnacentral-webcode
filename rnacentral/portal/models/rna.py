@@ -698,3 +698,18 @@ class Rna(CachingMixin, models.Model):
             cursor.execute(query)
             data = dictfetchall(cursor)
         return data
+
+    def get_intact(self, taxid):
+        if not taxid:
+            return 0
+        query = """
+        SELECT count(*)
+        FROM rnc_interactions
+        WHERE urs_taxid  = '{urs_taxid}'
+        """.format(
+            urs_taxid=self.upi + "_" + taxid
+        )
+        with connection.cursor() as cursor:
+            cursor.execute(query)
+            data = dictfetchall(cursor)
+        return data[0]["count"]
