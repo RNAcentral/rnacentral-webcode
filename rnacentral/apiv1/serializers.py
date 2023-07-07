@@ -728,9 +728,9 @@ class InteractionsSerializer(serializers.Serializer):
 
         if "uniprotkb:" in obj.interacting_id:
             uniprot_id = obj.interacting_id.replace("uniprotkb:", "")
-            url = "https://www.uniprot.org/uniprot/" + uniprot_id
+            url = f"https://www.uniprot.org/uniprot/{uniprot_id}"
         elif match_ensembl:
-            url = "/search?q=" + match_ensembl[0]
+            url = f"https://www.ensembl.org/Multi/Search/Results?q={match_ensembl[0]};site=ensembl"
         elif match_urs:
             url = "/rna/" + match_urs[0]
         else:
