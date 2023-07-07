@@ -14,6 +14,7 @@ limitations under the License.
 import json
 import re
 
+import requests
 from django.core.paginator import Paginator
 from django.db.models import Max, Min
 from django.urls import reverse
@@ -693,3 +694,89 @@ class QcStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = QcStatus
         fields = "__all__"
+
+
+class InteractionsSerializer(serializers.Serializer):
+    """Serializer class for interactions"""
+
+    urs_taxid = serializers.PrimaryKeyRelatedField(read_only=True)
+    interacting_id = serializers.SerializerMethodField(method_name="get_interacting_id")
+    interacting_id_url = serializers.SerializerMethodField(
+        method_name="get_interacting_id_url"
+    )
+    hgnc_symbol = serializers.SerializerMethodField(method_name="get_hgnc_symbol")
+    source = serializers.SerializerMethodField(method_name="get_source")
+
+    def get_interacting_id(self, obj):
+        match_urs = [item for item in obj.names if item.lower().startswith("urs")]
+        match_ensembl = [item for item in obj.names if item.lower().startswith("ens")]
+
+        if "uniprotkb:" in obj.interacting_id:
+            interacting_id = obj.interacting_id.replace("uniprotkb:", "")
+        elif match_ensembl:
+            interacting_id = match_ensembl[0]
+        elif match_urs:
+            interacting_id = match_urs[0]
+        else:
+            interacting_id = obj.interacting_id
+
+        return interacting_id
+
+    def get_interacting_id_url(self, obj):
+        match_urs = [item for item in obj.names if item.lower().startswith("urs")]
+        match_ensembl = [item for item in obj.names if item.lower().startswith("ens")]
+
+        if "uniprotkb:" in obj.interacting_id:
+            uniprot_id = obj.interacting_id.replace("uniprotkb:", "")
+            url = "https://www.uniprot.org/uniprot/" + uniprot_id
+        elif match_ensembl:
+            url = "/search?q=" + match_ensembl[0]
+        elif match_urs:
+            url = "/rna/" + match_urs[0]
+        else:
+            url = None
+
+        return url
+
+    def get_hgnc_symbol(self, obj):
+        e_transcript = [item for item in obj.names if item.lower().startswith("ens")]
+
+        if "uniprotkb:" in obj.interacting_id:
+            uniprot_id = obj.interacting_id.replace("uniprotkb:", "")
+            try:
+                response = requests.get(
+                    f"https://rest.uniprot.org/uniprotkb/{uniprot_id}?fields=accession%2Cgene_names"
+                )
+                data = json.loads(response.text)
+                hgnc_symbol = data["genes"][0]["geneName"]["value"]
+            except Exception:
+                hgnc_symbol = ""
+        elif e_transcript:
+            e_transcript = e_transcript[0].split(".")[0]
+            try:
+                response = requests.get(
+                    f"https://rest.ensembl.org/lookup/id/{e_transcript}?content-type=application/json"
+                )
+                data = json.loads(response.text)
+                if "Parent" in data:
+                    parent = data["Parent"]
+                    parent_response = requests.get(
+                        f"https://rest.ensembl.org/lookup/id/{parent}?content-type=application/json"
+                    )
+                    parent_data = json.loads(parent_response.text)
+                    hgnc_symbol = parent_data["display_name"]
+                else:
+                    hgnc_symbol = data["display_name"]
+            except Exception:
+                hgnc_symbol = ""
+        else:
+            hgnc_symbol = ""
+
+        return hgnc_symbol
+
+    def get_source(self, obj):
+        return (
+            "View in QuickGO"
+            if "uniprotkb:" in obj.interacting_id
+            else "View in IntAct"
+        )

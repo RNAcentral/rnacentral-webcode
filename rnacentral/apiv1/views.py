@@ -28,6 +28,7 @@ from apiv1.serializers import (
     EnsemblAssemblySerializer,
     EnsemblComparaSerializer,
     ExpertDatabaseStatsSerializer,
+    InteractionsSerializer,
     LncrnaTargetsSerializer,
     ProteinTargetsSerializer,
     QcStatusSerializer,
@@ -56,6 +57,7 @@ from portal.models import (
     EnsemblAssembly,
     EnsemblCompara,
     GoAnnotation,
+    Interactions,
     ProteinInfo,
     QcStatus,
     RelatedSequence,
@@ -994,3 +996,13 @@ class EnsemblComparaAPIViewSet(generics.ListAPIView):
             return "not found"
 
         return "found"
+
+
+class InteractionsView(generics.ListAPIView):
+    """API endpoint for interactions."""
+
+    serializer_class = InteractionsSerializer
+
+    def get_queryset(self):
+        urs_taxid = self.kwargs["pk"] + "_" + self.kwargs["taxid"]
+        return Interactions.objects.filter(urs_taxid=urs_taxid)
