@@ -704,21 +704,22 @@ class InteractionsSerializer(serializers.Serializer):
     interacting_id_url = serializers.SerializerMethodField(
         method_name="get_interacting_id_url"
     )
-    hgnc_symbol = serializers.SerializerMethodField(method_name="get_hgnc_symbol")
+    hgnc = serializers.SerializerMethodField(method_name="get_hgnc")
     source = serializers.SerializerMethodField(method_name="get_source")
 
     def get_interacting_id(self, obj):
         match_urs = [item for item in obj.names if item.lower().startswith("urs")]
         match_ensembl = [item for item in obj.names if item.lower().startswith("ens")]
 
-        if "uniprotkb:" in obj.interacting_id:
-            interacting_id = obj.interacting_id.replace("uniprotkb:", "")
-        elif match_ensembl:
-            interacting_id = match_ensembl[0]
-        elif match_urs:
-            interacting_id = match_urs[0]
+        if "intact:" in obj.interacting_id:
+            if match_ensembl:
+                interacting_id = match_ensembl[0]
+            elif match_urs:
+                interacting_id = match_urs[0]
+            else:
+                interacting_id = obj.interacting_id.replace("intact:", "")
         else:
-            interacting_id = obj.interacting_id
+            interacting_id = obj.interacting_id.split(":")[1]
 
         return interacting_id
 
@@ -726,31 +727,94 @@ class InteractionsSerializer(serializers.Serializer):
         match_urs = [item for item in obj.names if item.lower().startswith("urs")]
         match_ensembl = [item for item in obj.names if item.lower().startswith("ens")]
 
-        if "uniprotkb:" in obj.interacting_id:
+        if "intact:" in obj.interacting_id:
+            if match_ensembl:
+                interacting_id = match_ensembl[0]
+                try:
+                    response = requests.get(
+                        f"https://rest.ensembl.org/lookup/id/{interacting_id.split('.')[0]}?expand=1;content-type=application/json"
+                    )
+                    data = json.loads(response.text)
+                    species = data["species"]
+                    url = f"https://ensembl.org/{species}/Transcript/Summary?db=core;t={interacting_id}"
+                except Exception:
+                    url = ""
+            elif match_urs:
+                url = f"/rna/{match_urs[0]}"
+            else:
+                intact_id = obj.intact_id
+                url = f"https://www.ebi.ac.uk/intact/details/interaction/{intact_id}"
+        elif "uniprotkb:" in obj.interacting_id:
             uniprot_id = obj.interacting_id.replace("uniprotkb:", "")
             url = f"https://www.uniprot.org/uniprot/{uniprot_id}"
-        elif match_ensembl:
-            url = f"https://www.ensembl.org/Multi/Search/Results?q={match_ensembl[0]};site=ensembl"
-        elif match_urs:
-            url = "/rna/" + match_urs[0]
+        elif "sgd:" in obj.interacting_id:
+            sgd_id = obj.interacting_id.replace("sgd:", "")
+            url = f"https://www.yeastgenome.org/locus/{sgd_id}"
+        elif "ddbj/embl/genbank:" in obj.interacting_id:
+            genbank_id = obj.interacting_id.replace("ddbj/embl/genbank:", "")
+            url = f"https://www.ncbi.nlm.nih.gov/nuccore/{genbank_id}"
+        elif "flybase:" in obj.interacting_id:
+            flybase_id = obj.interacting_id.replace("flybase:", "")
+            url = f"https://flybase.org/reports/{flybase_id}.html"
+        elif "signor:" in obj.interacting_id:
+            signor_id = obj.interacting_id.replace("signor:", "")
+            url = f"https://signor.uniroma2.it/relation_result.php?id={signor_id}"
+        elif "RNAcentral:" in obj.interacting_id:
+            urs = obj.interacting_id.replace("RNAcentral:", "")
+            url = f"/rna/{urs}"
+        elif "reactome:" in obj.interacting_id:
+            reactome_id = obj.interacting_id.replace("reactome:", "")
+            url = f"https://reactome.org/content/detail/{reactome_id}"
+        elif "protein ontology:" in obj.interacting_id:
+            uniprot_id = obj.interacting_id.replace("protein ontology:", "")
+            url = f"https://www.uniprot.org/uniprot/{uniprot_id}"
+        elif "mgd/mgi:" in obj.interacting_id:
+            urs = obj.intact_id.split("-")[0]
+            url = f"/rna/{urs}"
+        elif "intenz" in obj.interacting_id:
+            intenz_id = obj.interacting_id.replace("intenz:", "")
+            url = f"https://www.ebi.ac.uk/intenz/query?q={intenz_id}"
+        elif "ensembl" in obj.interacting_id:
+            ensembl_id = obj.interacting_id.replace("ensembl:", "")
+            try:
+                response = requests.get(
+                    f"https://rest.ensembl.org/lookup/id/{ensembl_id.split('.')[0]}?expand=1;content-type=application/json"
+                )
+                data = json.loads(response.text)
+                species = data["species"]
+                url = f"https://ensembl.org/{species}/Transcript/Summary?db=core;t={ensembl_id}"
+            except Exception:
+                url = ""
+        elif "complex portal" in obj.interacting_id:
+            complex_portal_id = obj.interacting_id.replace("complex portal:", "")
+            url = f"https://www.ebi.ac.uk/complexportal/complex/{complex_portal_id}"
+        elif "chebi" in obj.interacting_id:
+            chebi_id = obj.interacting_id.replace("chebi:", "")
+            url = f"https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:{chebi_id}"
         else:
             url = None
 
         return url
 
-    def get_hgnc_symbol(self, obj):
+    def get_hgnc(self, obj):
         e_transcript = [item for item in obj.names if item.lower().startswith("ens")]
 
-        if "uniprotkb:" in obj.interacting_id:
-            uniprot_id = obj.interacting_id.replace("uniprotkb:", "")
+        if (
+            "uniprotkb:" in obj.interacting_id
+            or "protein ontology:" in obj.interacting_id
+        ):
+            if "uniprotkb:" in obj.interacting_id:
+                uniprot_id = obj.interacting_id.replace("uniprotkb:", "")
+            else:
+                uniprot_id = obj.interacting_id.replace("protein ontology:", "")
             try:
                 response = requests.get(
                     f"https://rest.uniprot.org/uniprotkb/{uniprot_id}?fields=accession%2Cgene_names"
                 )
                 data = json.loads(response.text)
-                hgnc_symbol = data["genes"][0]["geneName"]["value"]
+                hgnc = data["genes"][0]["geneName"]["value"]
             except Exception:
-                hgnc_symbol = ""
+                hgnc = ""
         elif e_transcript:
             e_transcript = e_transcript[0].split(".")[0]
             try:
@@ -764,15 +828,33 @@ class InteractionsSerializer(serializers.Serializer):
                         f"https://rest.ensembl.org/lookup/id/{parent}?content-type=application/json"
                     )
                     parent_data = json.loads(parent_response.text)
-                    hgnc_symbol = parent_data["display_name"]
+                    hgnc = parent_data["display_name"]
                 else:
-                    hgnc_symbol = data["display_name"]
+                    hgnc = data["display_name"]
             except Exception:
-                hgnc_symbol = ""
+                hgnc = ""
         else:
-            hgnc_symbol = ""
+            hgnc = ""
 
-        return hgnc_symbol
+        if hgnc:
+            try:
+                response = requests.get(
+                    f"https://rest.genenames.org/fetch/symbol/{hgnc}",
+                    headers={"Accept": "application/json"},
+                )
+                data = json.loads(response.text)
+                num_found = data["response"]["numFound"]
+                if num_found > 0:
+                    hgnc_id = data["response"]["docs"][0]["hgnc_id"]
+                    hgnc_url = f"http://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id={hgnc_id}"
+                else:
+                    hgnc_url = ""
+            except Exception:
+                hgnc_url = ""
+        else:
+            hgnc_url = ""
+
+        return hgnc, hgnc_url
 
     def get_source(self, obj):
         return (
