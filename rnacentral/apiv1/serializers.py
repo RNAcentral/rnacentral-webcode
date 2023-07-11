@@ -857,8 +857,4 @@ class InteractionsSerializer(serializers.Serializer):
         return hgnc, hgnc_url
 
     def get_source(self, obj):
-        return (
-            "View in QuickGO"
-            if "uniprotkb:" in obj.interacting_id
-            else "View in IntAct"
-        )
+        return "View in QuickGO" if "PSICQUIC" in obj.intact_id else "View in IntAct"
