@@ -776,33 +776,15 @@ class InteractionsSerializer(serializers.Serializer):
         elif "uniprotkb:" in obj.interacting_id:
             uniprot_id = obj.interacting_id.replace("uniprotkb:", "")
             url = f"https://www.uniprot.org/uniprot/{uniprot_id}"
-        elif "sgd:" in obj.interacting_id:
-            sgd_id = obj.interacting_id.replace("sgd:", "")
-            url = f"https://www.yeastgenome.org/locus/{sgd_id}"
+        elif "chebi" in obj.interacting_id:
+            chebi_id = obj.interacting_id.replace("chebi:", "")
+            url = f"https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:{chebi_id}"
+        elif "complex portal" in obj.interacting_id:
+            complex_portal_id = obj.interacting_id.replace("complex portal:", "")
+            url = f"https://www.ebi.ac.uk/complexportal/complex/{complex_portal_id}"
         elif "ddbj/embl/genbank:" in obj.interacting_id:
             genbank_id = obj.interacting_id.replace("ddbj/embl/genbank:", "")
             url = f"https://www.ncbi.nlm.nih.gov/nuccore/{genbank_id}"
-        elif "flybase:" in obj.interacting_id:
-            flybase_id = obj.interacting_id.replace("flybase:", "")
-            url = f"https://flybase.org/reports/{flybase_id}.html"
-        elif "signor:" in obj.interacting_id:
-            signor_id = obj.interacting_id.replace("signor:", "")
-            url = f"https://signor.uniroma2.it/relation_result.php?id={signor_id}"
-        elif "RNAcentral:" in obj.interacting_id:
-            urs = obj.interacting_id.replace("RNAcentral:", "")
-            url = f"/rna/{urs}"
-        elif "reactome:" in obj.interacting_id:
-            reactome_id = obj.interacting_id.replace("reactome:", "")
-            url = f"https://reactome.org/content/detail/{reactome_id}"
-        elif "protein ontology:" in obj.interacting_id:
-            uniprot_id = obj.interacting_id.replace("protein ontology:", "")
-            url = f"https://www.uniprot.org/uniprot/{uniprot_id}"
-        elif "mgd/mgi:" in obj.interacting_id:
-            urs = obj.intact_id.split("-")[0]
-            url = f"/rna/{urs}"
-        elif "intenz" in obj.interacting_id:
-            intenz_id = obj.interacting_id.replace("intenz:", "")
-            url = f"https://www.ebi.ac.uk/intenz/query?q={intenz_id}"
         elif "ensembl" in obj.interacting_id:
             ensembl_id = obj.interacting_id.replace("ensembl:", "")
             ens_type = "Gene" if "ENSG" in ensembl_id else "Transcript"
@@ -815,12 +797,30 @@ class InteractionsSerializer(serializers.Serializer):
                 url = f"https://ensembl.org/{species}/{ens_type}/Summary?db=core;t={ensembl_id}"
             except Exception:
                 url = ""
-        elif "complex portal" in obj.interacting_id:
-            complex_portal_id = obj.interacting_id.replace("complex portal:", "")
-            url = f"https://www.ebi.ac.uk/complexportal/complex/{complex_portal_id}"
-        elif "chebi" in obj.interacting_id:
-            chebi_id = obj.interacting_id.replace("chebi:", "")
-            url = f"https://www.ebi.ac.uk/chebi/searchId.do?chebiId=CHEBI:{chebi_id}"
+        elif "flybase:" in obj.interacting_id:
+            flybase_id = obj.interacting_id.replace("flybase:", "")
+            url = f"https://flybase.org/reports/{flybase_id}.html"
+        elif "intenz" in obj.interacting_id:
+            intenz_id = obj.interacting_id.replace("intenz:", "")
+            url = f"https://www.ebi.ac.uk/intenz/query?q={intenz_id}"
+        elif "mgd/mgi:" in obj.interacting_id:
+            urs = obj.intact_id.split("-")[0]
+            url = f"/rna/{urs}"
+        elif "protein ontology:" in obj.interacting_id:
+            uniprot_id = obj.interacting_id.replace("protein ontology:", "")
+            url = f"https://www.uniprot.org/uniprot/{uniprot_id}"
+        elif "reactome:" in obj.interacting_id:
+            reactome_id = obj.interacting_id.replace("reactome:", "")
+            url = f"https://reactome.org/content/detail/{reactome_id}"
+        elif "RNAcentral:" in obj.interacting_id:
+            urs = obj.interacting_id.replace("RNAcentral:", "")
+            url = f"/rna/{urs}"
+        elif "sgd:" in obj.interacting_id:
+            sgd_id = obj.interacting_id.replace("sgd:", "")
+            url = f"https://www.yeastgenome.org/locus/{sgd_id}"
+        elif "signor:" in obj.interacting_id:
+            signor_id = obj.interacting_id.replace("signor:", "")
+            url = f"https://signor.uniroma2.it/relation_result.php?id={signor_id}"
         else:
             url = None
 
