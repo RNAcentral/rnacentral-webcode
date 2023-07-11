@@ -703,7 +703,7 @@ class Rna(CachingMixin, models.Model):
         if not taxid:
             return 0
         query = """
-        SELECT count(*)
+        SELECT count(distinct("interacting_id"))
         FROM rnc_interactions
         WHERE urs_taxid  = '{urs_taxid}'
         """.format(

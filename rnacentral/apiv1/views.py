@@ -1005,4 +1005,6 @@ class InteractionsView(generics.ListAPIView):
 
     def get_queryset(self):
         urs_taxid = self.kwargs["pk"] + "_" + self.kwargs["taxid"]
-        return Interactions.objects.filter(urs_taxid=urs_taxid)
+        return Interactions.objects.filter(urs_taxid=urs_taxid).distinct(
+            "interacting_id"
+        )
