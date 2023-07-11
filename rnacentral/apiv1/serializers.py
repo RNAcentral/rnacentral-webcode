@@ -750,19 +750,22 @@ class InteractionsSerializer(serializers.Serializer):
         return interacting_id
 
     def get_interacting_id_url(self, obj):
-        match_urs = [item for item in obj.names if item.lower().startswith("urs")]
-        match_ensembl = [item for item in obj.names if item.lower().startswith("ens")]
-
         if "intact:" in obj.interacting_id:
+            match_urs = [item for item in obj.names if item.lower().startswith("urs")]
+            match_ensembl = [
+                item for item in obj.names if item.lower().startswith("ens")
+            ]
+
             if match_ensembl:
                 interacting_id = match_ensembl[0]
+                ens_type = "Gene" if "ENSG" in interacting_id else "Transcript"
                 try:
                     response = requests.get(
                         f"https://rest.ensembl.org/lookup/id/{interacting_id.split('.')[0]}?expand=1;content-type=application/json"
                     )
                     data = json.loads(response.text)
                     species = data["species"]
-                    url = f"https://ensembl.org/{species}/Transcript/Summary?db=core;t={interacting_id}"
+                    url = f"https://ensembl.org/{species}/{ens_type}/Summary?db=core;t={interacting_id}"
                 except Exception:
                     url = ""
             elif match_urs:
@@ -802,13 +805,14 @@ class InteractionsSerializer(serializers.Serializer):
             url = f"https://www.ebi.ac.uk/intenz/query?q={intenz_id}"
         elif "ensembl" in obj.interacting_id:
             ensembl_id = obj.interacting_id.replace("ensembl:", "")
+            ens_type = "Gene" if "ENSG" in ensembl_id else "Transcript"
             try:
                 response = requests.get(
                     f"https://rest.ensembl.org/lookup/id/{ensembl_id.split('.')[0]}?expand=1;content-type=application/json"
                 )
                 data = json.loads(response.text)
                 species = data["species"]
-                url = f"https://ensembl.org/{species}/Transcript/Summary?db=core;t={ensembl_id}"
+                url = f"https://ensembl.org/{species}/{ens_type}/Summary?db=core;t={ensembl_id}"
             except Exception:
                 url = ""
         elif "complex portal" in obj.interacting_id:
