@@ -27,7 +27,7 @@
       <tr ng-if="$ctrl.status === 'success'" ng-repeat="entry in $ctrl.displayedInteractions">
         <td class="col-lg-6">
             <a ng-href="{{ entry.interacting_id_url }}" target="_blank">{{ entry.interacting_id }}</a>
-            <span ng-if="entry.hgnc[0]" class="badge release-number margin-left-5px"><a ng-href="{{ entry.hgnc[1] }}" target="_blank">{{ entry.hgnc[0] }}</a></span>
+            <span ng-if="entry.hgnc[0]" class="badge release-number margin-left-5px"><a ng-href="{{ entry.hgnc[1] }}" target="_blank">HGNC {{ entry.hgnc[0] }}</a></span>
         </td>
         <td>
             <a ng-if="entry.source === 'View in IntAct'" href="https://www.ebi.ac.uk/intact/search?query={{ entry.urs_taxid }}" target="_blank">{{ entry.source }}</a>
