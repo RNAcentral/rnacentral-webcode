@@ -708,18 +708,44 @@ class InteractionsSerializer(serializers.Serializer):
     source = serializers.SerializerMethodField(method_name="get_source")
 
     def get_interacting_id(self, obj):
-        match_urs = [item for item in obj.names if item.lower().startswith("urs")]
-        match_ensembl = [item for item in obj.names if item.lower().startswith("ens")]
-
         if "intact:" in obj.interacting_id:
+            match_urs = [item for item in obj.names if item.lower().startswith("urs")]
+            match_ensembl = [
+                item for item in obj.names if item.lower().startswith("ens")
+            ]
+
             if match_ensembl:
-                interacting_id = match_ensembl[0]
+                interacting_id = f"IntAct: {match_ensembl[0]}"
             elif match_urs:
-                interacting_id = match_urs[0]
+                interacting_id = f"IntAct: {match_urs[0]}"
             else:
-                interacting_id = obj.interacting_id.replace("intact:", "")
+                interacting_id = obj.interacting_id.replace("intact:", "IntAct: ")
+        elif "uniprotkb" in obj.interacting_id:
+            interacting_id = obj.interacting_id.replace("uniprotkb:", "UniProt: ")
+        elif "chebi" in obj.interacting_id:
+            interacting_id = obj.interacting_id.replace("chebi:", "ChEBI: ")
+        elif "complex portal" in obj.interacting_id:
+            interacting_id = obj.interacting_id.replace(
+                "complex portal:", "Complex Portal: "
+            )
+        elif "ddbj/embl/genbank" in obj.interacting_id:
+            interacting_id = obj.interacting_id.replace(
+                "ddbj/embl/genbank:", "DDBJ/EMBL/GenBank: "
+            )
+        elif "ensembl" in obj.interacting_id:
+            interacting_id = obj.interacting_id.replace("ensembl:", "Ensembl: ")
+        elif "flybase" in obj.interacting_id:
+            interacting_id = obj.interacting_id.replace("flybase:", "FlyBase: ")
+        elif "intenz" in obj.interacting_id:
+            interacting_id = obj.interacting_id.replace("intenz:", "IntEnz: ")
+        elif "reactome" in obj.interacting_id:
+            interacting_id = obj.interacting_id.replace("reactome:", "Reactome: ")
+        elif "sgd" in obj.interacting_id:
+            interacting_id = obj.interacting_id.replace("sgd:", "SGD: ")
+        elif "signor" in obj.interacting_id:
+            interacting_id = obj.interacting_id.replace("signor:", "SIGNOR: ")
         else:
-            interacting_id = obj.interacting_id.split(":")[1]
+            interacting_id = obj.interacting_id.replace(":", ": ")
 
         return interacting_id
 
