@@ -16,6 +16,7 @@ import time
 
 import six
 from django.conf import settings
+from portal.models.interactions import Interactions
 from rest_framework.reverse import reverse
 from rest_framework.test import APIClient, APITestCase
 
@@ -533,3 +534,36 @@ class GenomesTestCase(ApiV1BaseClass):
         url = reverse("genomes-api")
         response = self._test_url(url)
         self.assertEqual(response.status_code, 200)
+
+
+class InteractionsTestCase(ApiV1BaseClass):
+    """Tests for interactions."""
+
+    def test_interactions_dbs(self):
+        """
+        Check if new databases have been added with interaction data.
+        It is necessary to update the serializers.py file if there are new DBs
+        """
+        old_dbs = [
+            "chebi",
+            "complex portal",
+            "ddbj/embl/genbank",
+            "ensembl",
+            "flybase",
+            "intact",
+            "intenz",
+            "mgd/mgi",
+            "protein ontology",
+            "reactome",
+            "rnacentral",
+            "sgd",
+            "signor",
+            "uniprotkb",
+        ]
+        current_dbs = []
+        interactions = Interactions.objects.distinct("interacting_id")
+        for item in interactions:
+            db_name = item.interacting_id.split(":")[0].lower()
+            if db_name not in current_dbs:
+                current_dbs.append(db_name)
+        self.assertEqual(sorted(current_dbs), old_dbs)
