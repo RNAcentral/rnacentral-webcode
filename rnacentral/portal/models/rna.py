@@ -705,7 +705,7 @@ class Rna(CachingMixin, models.Model):
         query = """
         SELECT count(distinct("interacting_id"))
         FROM rnc_interactions
-        WHERE urs_taxid  = '{urs_taxid}'
+        WHERE urs_taxid = '{urs_taxid}' AND interacting_id NOT LIKE '%mgi%'
         """.format(
             urs_taxid=self.upi + "_" + taxid
         )
