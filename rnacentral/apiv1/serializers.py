@@ -738,6 +738,10 @@ class InteractionsSerializer(serializers.Serializer):
             interacting_id = obj.interacting_id.replace("flybase:", "FlyBase: ")
         elif "intenz" in obj.interacting_id:
             interacting_id = obj.interacting_id.replace("intenz:", "IntEnz: ")
+        elif "protein ontology" in obj.interacting_id:
+            interacting_id = obj.interacting_id.replace(
+                "protein ontology:", "Protein Ontology: "
+            )
         elif "reactome" in obj.interacting_id:
             interacting_id = obj.interacting_id.replace("reactome:", "Reactome: ")
         elif "sgd" in obj.interacting_id:
