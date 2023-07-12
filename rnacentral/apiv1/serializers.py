@@ -808,7 +808,7 @@ class InteractionsSerializer(serializers.Serializer):
             url = f"/rna/{urs}"
         elif "protein ontology:" in obj.interacting_id:
             uniprot_id = obj.interacting_id.replace("protein ontology:", "")
-            url = f"https://www.uniprot.org/uniprot/{uniprot_id}"
+            url = f"https://proconsortium.org/app/entry/PR_{uniprot_id}"
         elif "reactome:" in obj.interacting_id:
             reactome_id = obj.interacting_id.replace("reactome:", "")
             url = f"https://reactome.org/content/detail/{reactome_id}"
