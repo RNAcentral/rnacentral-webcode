@@ -238,6 +238,7 @@ class Accession(models.Model):
             "MALACARDS": "https://www.genecards.org/cgi-bin/carddisp.pl?gene={id}#diseases",
             "GENECARDS": "https://www.genecards.org/cgi-bin/carddisp.pl?gene={id}",
             "PIRBASE": "http://bigdata.ibp.ac.cn/piRBase/pirna.php?name={id}",
+            "PSICQUIC": "https://www.ebi.ac.uk/QuickGO/annotations?geneProductId={id}",
         }
         if self.database in [
             "GTRNADB",
@@ -308,6 +309,10 @@ class Accession(models.Model):
                 return urls[self.database].format(id=self.gene)
             elif self.database in ["GENECARDS", "MALACARDS"]:
                 return urls[self.database].format(id=self.gene)
+            elif self.database == "PSICQUIC":
+                return urls[self.database].format(
+                    id=self.accession.split("PSICQUIC:")[1]
+                )
             return urls[self.database].format(id=self.external_id)
         else:
             return ""

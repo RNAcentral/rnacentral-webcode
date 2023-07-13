@@ -426,6 +426,11 @@
               Ribocentre: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id.replace('RIBOCENTRE:', '') }}</a>
             </span>
 
+            <!-- PSICQUIC -->
+            <span ng-switch-when="PSICQUIC">
+              View {{ xref.quickgo_hits }} <ng-pluralize count="xref.quickgo_hits" when="{1: 'annotation', 'other': 'annotations'}"></ng-pluralize> in <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">QuickGO</a>
+            </span>
+
             <span ng-switch-default>
               {{ xref.accession.external_id }} {{ xref.accession.optional_id }}
             </span>

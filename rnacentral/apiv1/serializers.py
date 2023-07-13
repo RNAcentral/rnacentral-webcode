@@ -180,6 +180,7 @@ class ModificationSerializer(serializers.ModelSerializer):
 class XrefSerializer(serializers.HyperlinkedModelSerializer):
     """Serializer class for all cross-references associated with an RNAcentral id."""
 
+    upi = serializers.ReadOnlyField(source="upi.upi")
     database = serializers.CharField(source="db.display_name")
     is_active = serializers.BooleanField(read_only=True)
     first_seen = serializers.CharField(source="created.release_date")
@@ -208,10 +209,12 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
         source="get_gencode_ensembl_url", read_only=True
     )
     ensembl_url = serializers.SerializerMethodField("get_ensembl_url")
+    quickgo_hits = serializers.SerializerMethodField("get_quickgo_hits")
 
     class Meta:
         model = Xref
         fields = (
+            "upi",
             "database",
             "is_active",
             "first_seen",
@@ -233,6 +236,7 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
             "gencode_transcript_id",
             "gencode_ensembl_url",
             "ensembl_url",
+            "quickgo_hits",
         )
 
     def upis_to_urls(self, upis):
@@ -357,6 +361,22 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
             return "http://protists.ensembl.org"
         else:
             return None
+
+    def get_quickgo_hits(self, obj):
+        """Return the number of annotations in QuickGO"""
+        if obj.accession.database == "PSICQUIC":
+            urs_taxid = obj.upi.upi + "_" + str(obj.taxid)
+            try:
+                response = requests.get(
+                    f"https://www.ebi.ac.uk/QuickGO/services/annotation/stats?geneProductId={urs_taxid}"
+                )
+                data = json.loads(response.text)
+                hits = data["results"][0]["totalHits"]
+            except Exception:
+                hits = None
+        else:
+            hits = None
+        return hits
 
 
 class RnaNestedSerializer(serializers.HyperlinkedModelSerializer):
