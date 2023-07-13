@@ -715,41 +715,41 @@ class InteractionsSerializer(serializers.Serializer):
             ]
 
             if match_ensembl:
-                interacting_id = f"IntAct: {match_ensembl[0]}"
+                interacting_id = f"Ensembl:{match_ensembl[0]}"
             elif match_urs:
-                interacting_id = f"IntAct: {match_urs[0]}"
+                interacting_id = f"RNAcentral:{match_urs[0]}"
             else:
-                interacting_id = obj.interacting_id.replace("intact:", "IntAct: ")
+                interacting_id = obj.interacting_id.replace("intact:", "IntAct:")
         elif "uniprotkb" in obj.interacting_id:
-            interacting_id = obj.interacting_id.replace("uniprotkb:", "UniProt: ")
+            interacting_id = obj.interacting_id.replace("uniprotkb:", "UniProtKB:")
         elif "chebi" in obj.interacting_id:
-            interacting_id = obj.interacting_id.replace("chebi:", "ChEBI: ")
+            interacting_id = obj.interacting_id.replace("chebi:", "ChEBI:")
         elif "complex portal" in obj.interacting_id:
             interacting_id = obj.interacting_id.replace(
-                "complex portal:", "Complex Portal: "
+                "complex portal:", "Complex Portal:"
             )
         elif "ddbj/embl/genbank" in obj.interacting_id:
             interacting_id = obj.interacting_id.replace(
-                "ddbj/embl/genbank:", "DDBJ/EMBL/GenBank: "
+                "ddbj/embl/genbank:", "DDBJ/EMBL/GenBank:"
             )
         elif "ensembl" in obj.interacting_id:
-            interacting_id = obj.interacting_id.replace("ensembl:", "Ensembl: ")
+            interacting_id = obj.interacting_id.replace("ensembl:", "Ensembl:")
         elif "flybase" in obj.interacting_id:
-            interacting_id = obj.interacting_id.replace("flybase:", "FlyBase: ")
+            interacting_id = obj.interacting_id.replace("flybase:", "FlyBase:")
         elif "intenz" in obj.interacting_id:
-            interacting_id = obj.interacting_id.replace("intenz:", "IntEnz: ")
+            interacting_id = obj.interacting_id.replace("intenz:", "IntEnz:")
         elif "protein ontology" in obj.interacting_id:
             interacting_id = obj.interacting_id.replace(
-                "protein ontology:", "Protein Ontology: "
+                "protein ontology:", "Protein Ontology:"
             )
         elif "reactome" in obj.interacting_id:
-            interacting_id = obj.interacting_id.replace("reactome:", "Reactome: ")
+            interacting_id = obj.interacting_id.replace("reactome:", "Reactome:")
         elif "sgd" in obj.interacting_id:
-            interacting_id = obj.interacting_id.replace("sgd:", "SGD: ")
+            interacting_id = obj.interacting_id.replace("sgd:", "SGD:")
         elif "signor" in obj.interacting_id:
-            interacting_id = obj.interacting_id.replace("signor:", "SIGNOR: ")
+            interacting_id = obj.interacting_id.replace("signor:", "SIGNOR:")
         else:
-            interacting_id = obj.interacting_id.replace(":", ": ")
+            interacting_id = obj.interacting_id
 
         return interacting_id
 
