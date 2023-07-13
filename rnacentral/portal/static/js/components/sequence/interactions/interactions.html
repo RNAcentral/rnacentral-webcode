@@ -1,0 +1,56 @@
+<div class="table-responsive" style="overflow-y: auto; max-height: 300px;">
+  <table class="table table-hover table-condensed" id="related-lncrna-table">
+    <thead>
+      <tr>
+        <th>Participant</th>
+        <th>Source</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr ng-if="$ctrl.status === 'loading'">
+        <td colspan="2" style="text-align: center;">
+          <span>
+            <i class="fa fa-spinner fa-spin fa-2x"></i>
+            Loading interactions...
+          </span>
+        </td>
+      </tr>
+      <tr ng-if="$ctrl.status === 'error'">
+        <td colspan="2" style="text-align: center;">
+          <span>
+            <i class="fa fa-exclamation-circle fa-2x"></i>
+            Failed to load data from server
+          </span>
+        </td>
+      </tr>
+      <tr ng-if="$ctrl.status === 'success'" ng-repeat="entry in $ctrl.displayedInteractions">
+        <td class="col-lg-6">
+            <a ng-href="{{ entry.interacting_id_url }}" target="_blank">{{ entry.interacting_id }}</a>
+            <span ng-if="entry.hgnc[0]" class="badge release-number margin-left-5px"><a ng-href="{{ entry.hgnc[1] }}" target="_blank">HGNC {{ entry.hgnc[0] }}</a></span>
+        </td>
+        <td>
+            <a ng-if="entry.source === 'View in IntAct'" href="https://www.ebi.ac.uk/intact/search?query={{ entry.urs_taxid }}" target="_blank">{{ entry.source }}</a>
+            <a ng-if="entry.source === 'View in QuickGO'" href="https://www.ebi.ac.uk/QuickGO/annotations?geneProductId={{ entry.urs_taxid }}" target="_blank">{{ entry.source }}</a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Pagination: pages list and page size select -->
+<div ng-if="$ctrl.status == 'success'" style="margin-top: 5px; margin-left: 5px; margin-right: 5px;">
+  <ul ng-if="$ctrl.pages.length > 1" class="pagination pagination-sm" style="display:inline">
+    <li ng-if="$ctrl.page != 1" ng-click="$ctrl.onPageChanged(1)"><a href="">1</a></li>
+    <li ng-if="$ctrl.page > 3" ng-click="$ctrl.onPageChanged(1)"><a href="">&#8230;</a></li>
+    <li ng-if="$ctrl.page > 2" ng-click="$ctrl.onPageChanged($ctrl.page - 1)"><a href="">{{ $ctrl.page - 1 }}</a></li>
+    <li class="active"><a href="">{{ $ctrl.page }}</a></li>
+    <li ng-if="$ctrl.page < $ctrl.pages.length - 1" ng-click="$ctrl.onPageChanged($ctrl.page + 1)"><a href="">{{ $ctrl.page + 1 }}</a></li>
+    <li ng-if="$ctrl.page < $ctrl.pages.length - 2" ng-click="$ctrl.onPageChanged($ctrl.pages.length)"><a href="">&#8230;</a></li>
+    <li ng-if="$ctrl.page != $ctrl.pages.length" ng-click="$ctrl.onPageChanged($ctrl.pages.length)"><a href="">{{ $ctrl.pages.length }}</a></li>
+  </ul>
+  <span class="pull-right" ng-if="$ctrl.total > $ctrl.pageSize">
+    <select ng-model="$ctrl.pageSize" ng-change="$ctrl.onPageSizeChanged($ctrl.pageSize, '{{ $ctrl.pageSize }}')" ng-options="v.value as v.key for v in [{key:1, value:1}, {key: 5, value: 5}, {key: 10, value: 10}, {key: 20, value: 20}, {key: 50, value: 50}, {key: 'all', value: 1000000000000}]"></select> records per page
+  </span>
+  <div class="clearfix"></div>
+</div>

@@ -26,6 +26,7 @@ angular.module("routes", []).service('routes', ['$interpolate', function($interp
         sequenceSearchInfernalJobStatus: '/sequence-search/infernal-job-status/{{ jobId }}',
         sequenceSearchInfernalResults: '/sequence-search/infernal-results/{{ jobId }}',
         apiEnsemblComparaView: '/api/v1/rna/{{ upi }}/ensembl-compara/{{ taxid }}',
+        apiInteractionsView: '/api/v1/rna/{{ upi }}/interactions/{{ taxid }}',
         genomesApi: '/api/v1/genomes/{{ ensemblAssembly }}',
         proxy: '/api/internal/proxy?url={{ url }}',
         ebiSearch:

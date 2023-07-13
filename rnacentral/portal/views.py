@@ -161,19 +161,6 @@ def rna_view(request, upi, taxid=None):
     )
     plugin_installed = True if os.path.isfile(path) else False
 
-    # Interactions
-    intact = False
-    psicquic = False
-    interactions = rna.get_intact(taxid)
-
-    for item in interactions:
-        if item["intact_id"].startswith("PSICQUIC"):
-            split_data = item["intact_id"].split(":")
-            item["intact_id"] = split_data[1]
-            psicquic = True
-        else:
-            intact = True
-
     # Publications
     if taxid:
         query_jobs = (
@@ -268,14 +255,12 @@ def rna_view(request, upi, taxid=None):
         "annotations_from_other_species": rna.get_annotations_from_other_species(
             taxid=taxid
         ),
-        "interactions": interactions,
-        "intact": intact,
-        "psicquic": psicquic,
         "plugin_installed": plugin_installed,
         "pub_count": pub_count,
         "go_term_id": go_term_id,
         "description_as_json_str": json.dumps(precomputed.description),
         "expression_atlas": expression_atlas,
+        "interactions": rna.get_intact(taxid),
     }
     response = render(request, "portal/sequence.html", {"rna": rna, "context": context})
     # define canonical URL for Google

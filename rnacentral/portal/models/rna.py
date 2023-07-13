@@ -701,30 +701,15 @@ class Rna(CachingMixin, models.Model):
 
     def get_intact(self, taxid):
         if not taxid:
-            return []
+            return 0
         query = """
-        SELECT intact_id, interacting_id, names
+        SELECT count(distinct("interacting_id"))
         FROM rnc_interactions
-        WHERE urs_taxid  = '{urs_taxid}'
-        ORDER BY interacting_id
+        WHERE urs_taxid = '{urs_taxid}' AND interacting_id NOT LIKE '%mgi%'
         """.format(
             urs_taxid=self.upi + "_" + taxid
         )
         with connection.cursor() as cursor:
             cursor.execute(query)
             data = dictfetchall(cursor)
-        for interaction in data:
-            match = re.search(
-                r"URS[0-9A-Fa-f]{10}[_-]\d+", "".join(interaction["names"])
-            )
-            if match:
-                interaction["url"] = "/rna/" + match.group()
-                interaction["participant"] = match.group()
-            elif "uniprotkb:" in interaction["interacting_id"]:
-                uniprot_id = interaction["interacting_id"].replace("uniprotkb:", "")
-                interaction["url"] = "https://www.uniprot.org/uniprot/" + uniprot_id
-                interaction["participant"] = uniprot_id
-            else:
-                interaction["participant"] = interaction["interacting_id"]
-                interaction["url"] = ""
-        return data
+        return data[0]["count"]

@@ -95,6 +95,12 @@ urlpatterns = [
         cache_page(CACHE_TIMEOUT)(views.RnaSpeciesSpecificView.as_view()),
         name="rna-species-specific",
     ),
+    # interactions for RNA (species-specific)
+    url(
+        r"^rna/(?P<pk>URS[0-9A-Fa-f]{10})/interactions/(?P<taxid>\d+)/?$",
+        cache_page(CACHE_TIMEOUT)(views.InteractionsView.as_view()),
+        name="interactions",
+    ),
     # genome locations for RNA (species-specific)
     url(
         r"^rna/(?P<pk>URS[0-9A-Fa-f]{10})/genome-locations/(?P<taxid>\d+)/?$",
