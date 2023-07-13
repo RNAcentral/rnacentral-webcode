@@ -207,7 +207,6 @@ class Rna(CachingMixin, models.Model):
         """Get all xrefs, show non-ENA annotations first."""
         xrefs = (
             self.xrefs.filter(deleted="N", upi=self.upi)
-            .exclude(accession__accession__startswith="PSICQUIC")
             .order_by("-db__id")
             .select_related()
             .prefetch_related(
