@@ -530,7 +530,7 @@ class Xref(CachingMixin, models.Model):
         with PDB ids used as a fallback.
         """
         if self.accession.database == "PDBE":
-            ndb_url = "http://ndbserver.rutgers.edu/service/ndb/atlas/summary?searchTarget={structure_id}"
+            ndb_url = "https://nakb.org/atlas={structure_id}"
             if self.accession.db_xref:
                 match = re.search("NDB\:(\w+)", self.accession.db_xref, re.IGNORECASE)
                 if match:
