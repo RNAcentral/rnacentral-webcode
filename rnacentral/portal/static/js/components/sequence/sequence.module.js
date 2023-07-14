@@ -596,8 +596,37 @@ $q.all([$scope.fetchRna(), $scope.featureViewerContainerReady()]).then(function(
 		    });
 
 		    $('svg .cpatOrfFeaturesGroup text').css('fill', 'white').css('font-size', 'small');
-		}
+		},
 	    },
+		rna_editing_event: {
+		features: [],
+		normalize: function(feature) {
+		    return {
+			x: feature.start >= 0 ? feature.start : 1,
+			y: feature.stop < $scope.rna.length ? feature.stop : $scope.rna.length - 1,
+				description: 'REDIportal editing events (Edit: ' + feature.metadata.edit + ', Reference: ' + feature.metadata.reference + ')' + '<span hidden>' + feature.metadata.url + '</span>',
+		    }
+		},
+		addFeature: function(data) {
+		    $scope.featureViewer.addFeature({
+			id: 'rediportal',
+			data: data,
+			name: "RNA editing events",
+			className: "rediPortalFeatures",
+			color: "#337ab7",
+			type: "rect",
+			filter: "type1",
+			height: 16,
+		    });
+
+		    $('svg .rediPortalFeaturesGroup text').css('fill', 'white').css('font-size', 'small');
+
+			$('svg g.rediPortalFeaturesGroup').on('click', function(){
+			var rediPortalUrl = $(this).find('text').text().split("<span hidden>")[1].split("</span>")[0];
+			window.open(rediPortalUrl, '_blank');
+		    });
+		},
+		},
 	};
 
 	$scope.features = "pending";
