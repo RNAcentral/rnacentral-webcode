@@ -1509,6 +1509,39 @@ textarea {
   cursor: pointer;
 }
 
+/* Accordion used by LitSumm */
+
+/* plus glyph for showing collapsible panels */
+.panel-heading .accordion-plus-toggle:before {
+  font-family: FontAwesome;
+  content: "\f068";
+  float: right;
+  color: silver;
+}
+
+.panel-heading .accordion-plus-toggle.collapsed:before {
+  content: "\f067";
+  color: silver;
+}
+
+/* arrow glyph for showing collapsible panels */
+.panel-heading .accordion-arrow-toggle:before {
+  font-family: FontAwesome;
+  content: "\f078";
+  float: right;
+  color: silver;
+}
+
+.panel-heading .accordion-arrow-toggle.collapsed:before {
+  content: "\f054";
+  color: silver;
+}
+
+/* sets the link to the width of the entire panel title */
+.panel-title > a {
+  display: block;
+  font-weight: bold;
+}
 
 /*------------------------------------------------------------------
 [5.18 Traveler secondary structures]
