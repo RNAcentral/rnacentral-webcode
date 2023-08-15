@@ -105,7 +105,7 @@ limitations under the License.
             generated using artificial intelligence</strong> and may not be entirely accurate or comprehensive, see the <a href="#">LitSumm documentation</a> for more details.
             Feel free to share your <a href="" onclick="$('.doorbell-feedback').click()">feedback</a> with us at any time.
           </div>
-          <div class="force-scrollbars" style="max-height: 300px; overflow-y: scroll; margin-bottom: 20px;">
+          <div class="force-scrollbars" style="max-height: 300px; overflow-y: scroll; margin-top: -10px; margin-bottom: 20px;">
             {% for item in context.litsumm_summary %}
               <p class="text-muted"><strong>{{ item.rna_id }}</strong>: {{ item.summary|safe }}</p>
             {% endfor %}
