@@ -101,22 +101,13 @@ limitations under the License.
 
         {% if context.litsumm_summary %}
           <div class="alert alert-warning">
-            Please be aware that the following {% if context.litsumm_summary|length > 1 %}summaries were {% else %}summary was {% endif %}
-            generated using artificial intelligence and may not be entirely accurate or comprehensive, see the <a href="#">LitSumm documentation</a> for more details.
+            Please be aware that the following <strong>{% if context.litsumm_summary|length > 1 %}summaries were {% else %}summary was {% endif %}
+            generated using artificial intelligence</strong> and may not be entirely accurate or comprehensive, see the <a href="#">LitSumm documentation</a> for more details.
             Feel free to share your <a href="" onclick="$('.doorbell-feedback').click()">feedback</a> with us at any time.
           </div>
-          <div class="panel-group" id="accordion-litsumm" role="tablist" aria-multiselectable="false">
+          <div class="force-scrollbars" style="max-height: 300px; overflow-y: scroll; margin-bottom: 20px;">
             {% for item in context.litsumm_summary %}
-              <div class="panel panel-default">
-                <div class="panel-heading" role="tab" id="heading-{{ item.rna_id }}">
-                  <h5 class="panel-title">
-                    <a role="button" data-toggle="collapse" class="accordion-toggle accordion-plus-toggle {% if not forloop.first %}collapsed{% endif %}" data-parent="#accordion-litsumm" href="#collapse-{{ item.rna_id }}" aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" aria-controls="collapse-{{ item.rna_id }}">{{ item.rna_id }}</a>
-                  </h5>
-                </div>
-                <div id="collapse-{{ item.rna_id }}" class="panel-collapse collapse {% if forloop.first %}in{% endif %}" role="tabpanel" aria-labelledby="heading-{{ item.rna_id }}">
-                  <div class="panel-body">{{ item.summary|safe }}</div>
-                </div>
-              </div>
+              <p class="text-muted"><strong>{{ item.rna_id }}</strong>: {{ item.summary|safe }}</p>
             {% endfor %}
           </div>
         {% endif %}
