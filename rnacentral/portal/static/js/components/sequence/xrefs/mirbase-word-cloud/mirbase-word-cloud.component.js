@@ -12,7 +12,7 @@ var mirbaseWordCloud = {
             var mirbase_url = ctrl.getMirbaseWordCloudUrl(ctrl.mirbaseId);
             var html = '<img src="' + mirbase_url + '">' +
                        '<p>' +
-                          '<a target="_blank" href="http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc='+ ctrl.mirbaseId + '">' +
+                          '<a target="_blank" href="https://mirbase.org/hairpin/'+ ctrl.mirbaseId + '">' +
                           'View ' + ctrl.mirbaseId + ' in miRBase</a>' +
                        '</p>';
             $('#modal-mirbase-word-cloud-image').html(html);
@@ -24,7 +24,7 @@ var mirbaseWordCloud = {
          * Get miRBase word cloud URL. Example ID: MI0006423.
          */
         ctrl.getMirbaseWordCloudUrl = function() {
-          return '/api/internal/proxy?url=http://www.mirbase.org/images/wordcloud/' +
+          return 'https://mirbase.org/static/images/wordcloud/' +
                  ctrl.mirbaseId.slice(2,4) + '/' + ctrl.mirbaseId.slice(4,6) + '/' +
                  ctrl.mirbaseId.slice(6,8) + '/' + ctrl.mirbaseId + '.png';
         }
