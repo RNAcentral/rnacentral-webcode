@@ -151,14 +151,17 @@ def rna_view(request, upi, taxid=None):
             summary_so_terms = ""
 
     # get litsumm summary
-    litsumm_summary = LitSumm.objects.filter(primary_id=upi + "_" + taxid)
-    regex = re.compile("PMC[0-9]+")
+    if taxid:
+        litsumm_summary = LitSumm.objects.filter(primary_id=upi + "_" + taxid)
+        regex = re.compile("PMC[0-9]+")
 
-    for item in litsumm_summary:
-        item.summary = regex.sub(
-            r'<a href="https://europepmc.org/search?query=\g<0>" target="blank">\g<0></a>',
-            item.summary,
-        )
+        for item in litsumm_summary:
+            item.summary = regex.sub(
+                r'<a href="https://europepmc.org/search?query=\g<0>" target="blank">\g<0></a>',
+                item.summary,
+            )
+    else:
+        litsumm_summary = None
 
     # Check if r2dt-web is installed
     path = os.path.join(
