@@ -161,6 +161,12 @@ urlpatterns = [
         views.litscan_view,
         name="help-litscan",
     ),
+    url(
+        r"^help/litsumm/?$",
+        views.StaticView.as_view(),
+        {"page": "help/litsumm"},
+        name="help-litsumm",
+    ),
     # training
     url(
         r"^training/?$",

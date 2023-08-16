@@ -40,6 +40,7 @@ from portal.models import (
     EnsemblAssembly,
     GoAnnotation,
     LitScanStatistics,
+    LitSumm,
     Rna,
     Taxonomy,
     Xref,
@@ -148,6 +149,19 @@ def rna_view(request, upi, taxid=None):
             summary_so_terms = zip(summary.pretty_so_rna_type, summary.so_rna_type)
         except AttributeError:
             summary_so_terms = ""
+
+    # get litsumm summary
+    if taxid:
+        litsumm_summary = LitSumm.objects.filter(primary_id=upi + "_" + taxid)
+        regex = re.compile("PMC[0-9]+")
+
+        for item in litsumm_summary:
+            item.summary = regex.sub(
+                r'<a href="https://europepmc.org/search?query=\g<0>" target="blank">\g<0></a>',
+                item.summary,
+            )
+    else:
+        litsumm_summary = None
 
     # Check if r2dt-web is installed
     path = os.path.join(
@@ -261,6 +275,7 @@ def rna_view(request, upi, taxid=None):
         "description_as_json_str": json.dumps(precomputed.description),
         "expression_atlas": expression_atlas,
         "interactions": rna.get_intact(taxid),
+        "litsumm_summary": litsumm_summary,
     }
     response = render(request, "portal/sequence.html", {"rna": rna, "context": context})
     # define canonical URL for Google
