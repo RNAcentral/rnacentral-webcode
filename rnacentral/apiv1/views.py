@@ -748,7 +748,12 @@ class SequenceFeaturesAPIViewSet(generics.ListAPIView):
         return SequenceFeature.objects.filter(
             upi=upi,
             taxid=taxid,
-            feature_name__in=["conserved_rna_structure", "mature_product", "cpat_orf"],
+            feature_name__in=[
+                "conserved_rna_structure",
+                "mature_product",
+                "cpat_orf",
+                "rna_editing_event",
+            ],
         )
 
 

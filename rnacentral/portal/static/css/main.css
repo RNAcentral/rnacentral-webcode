@@ -1506,7 +1506,7 @@ textarea {
   border-radius: 15px;
 }
 
-.rfamModelsGroup, .crsFeaturesGroup, .matureMirnaFeaturesGroup {
+.rfamModelsGroup, .crsFeaturesGroup, .matureMirnaFeaturesGroup, .rediPortalFeaturesGroup {
   cursor: pointer;
 }
 
