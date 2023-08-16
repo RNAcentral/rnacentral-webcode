@@ -1,4 +1,4 @@
-var rnaSequenceController = function($scope, $location, $window, $rootScope, $compile, $http, $q, $filter, $timeout, $interpolate, routes, GenoverseUtils) {
+var rnaSequenceController = function($scope, $location, $window, $rootScope, $compile, $http, $q, $filter, $timeout, $interpolate, routes) {
     // Take upi and taxid from url. Note that $location.path() always starts with slash
     $scope.upi = $location.path().split('/')[2].toUpperCase();
     $scope.taxid = $location.path().split('/')[3];  // TODO: this might not exist!
@@ -162,72 +162,6 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 
     // View functionality
     // ------------------
-
-    // populate data for angular-genoverse instance
-    $scope.activateGenomeBrowser = function (start, end, chr, genome) {
-	if (!$scope.Genoverse) $scope.Genoverse = Genoverse;
-	if (!$scope.genoverseUtils) $scope.genoverseUtils = new GenoverseUtils($scope);
-	if (!$scope.exampleLocations) $scope.exampleLocations = $scope.genoverseUtils.exampleLocations;
-
-	// add some padding to both sides of feature
-	var length = end - start;
-	$scope.browserLocation.start = start - length < 0 ? 1 : start - length;
-	$scope.browserLocation.end = end + length > $scope.chromosomeSize ? $scope.chromosomeSize : end + length;
-	$scope.browserLocation.chr = chr;
-	$scope.browserLocation.genome = genome;
-	$scope.browserLocation.domain = $scope.genoverseUtils.getGenomeObject($scope.browserLocation.genome, $scope.genomes).subdomain;
-	$scope.browserLocation.highlights = [{
-	    start: start,
-	    end: end,
-	    chr: chr,
-	    label: "Selected location (" + $filter('number')(start) + " - " + $filter('number')(end) + ")",
-	    removable: true
-	}];
-
-	// cache selectedLocation to highlight it in table, ignore start/end padding
-	$scope.selectedLocation = {
-	    genome: genome,
-	    chr: chr,
-	    start: start,
-	    end: end,
-	    domain: $scope.browserLocation.domain
-	};
-    };
-
-    $scope.scrollToGenomeBrowser = function () {
-	// if '#genoverse' is already rendered, scroll to it
-	if ($('#genoverse').length) {
-	    $('html, body').animate({scrollTop: $('#genoverse').offset().top - 200}, 800);
-	    if ($scope.scrollToGenomeBrowserAttempts) delete $scope.scrollToGenomeBrowserAttempts;
-	}
-	else { // if '#genoverse' not rendered, wait 0.5 sec and another 0.5 sec... but no more than 5 attempts total;
-	    // first attempt
-	    if (!$scope.scrollToGenomeBrowserAttempts) {
-		$scope.scrollToGenomeBrowserAttempts = 1;
-		$timeout($scope.scrollToGenomeBrowser, 500);
-	    } else { // not first
-		if ($scope.scrollToGenomeBrowserAttempts < 6) { // more attempts remaining
-		    $scope.scrollToGenomeBrowserAttempts++;
-		    $timeout($scope.scrollToGenomeBrowser, 500);
-		} else { // no more attempts
-		    delete $scope.scrollToGenomeBrowserAttempts;
-		}
-	    }
-	}
-    };
-
-    $scope.isSelectedLocation = function (location) {
-	if ($scope.selectedLocation && $scope.selectedLocation.genome && $scope.selectedLocation.chr && $scope.selectedLocation.start && $scope.selectedLocation.end) {
-	    var isSelected = location.species === $scope.selectedLocation.genome &&
-		location.chromosome === $scope.selectedLocation.chr &&
-		location.start === $scope.selectedLocation.start &&
-		location.end === $scope.selectedLocation.end;
-
-	    return isSelected;
-	} else {
-	    return false;
-	}
-    };
 
     /**
 	* Pass non-null termId to open Go modal and null to close
@@ -688,7 +622,7 @@ if ($scope.taxid) {
 }
 };
 
-rnaSequenceController.$inject = ['$scope', '$location', '$window', '$rootScope', '$compile', '$http', '$q', '$filter', '$timeout', '$interpolate', 'routes', 'GenoverseUtils'];
+rnaSequenceController.$inject = ['$scope', '$location', '$window', '$rootScope', '$compile', '$http', '$q', '$filter', '$timeout', '$interpolate', 'routes'];
 
 
 /**

@@ -12,6 +12,7 @@ limitations under the License.
 -->
 
 {% extends "portal/base.html" %}
+{% load staticfiles %}
 
 {% block meta_tags %}
     {{ block.super }}
@@ -24,63 +25,17 @@ limitations under the License.
 
 {% block content %}
 
-<script type="text/javascript">
-    // global variables, exported from django context
-    genome = "{{ genome }}"; // String
-    chromosome = "{{ chromosome | safe }}"; // String
-    start = {{ start | safe }}; // Number
-    end = {{ end | safe }}; // Number
-</script>
+<div class="row">
+    <div class="col-md-12">
+        <h1><i class="fa fa-map-marker"></i> Genome browser</h1>
+        <p class="col-md-12 text-muted">
+            <i class="fa fa-info-circle"></i> RNAcentral imports genome locations from Ensembl, LNCipedia, miRBase, and other Expert Databases. <a class="no-icon margin-right-10px" href="{% url 'help-genomic-mapping' %}">Learn more &rarr;</a>
+        </p>
+        <br><br>
 
-<div ng-controller="GenoverseGenomeBrowser" ng-cloak>
-  <div ng-if="genomes">
-    <div class="row">
-        <div class="col-md-12" role="main">
-
-            <h1><i class="fa fa-map-marker"></i> Genome browser</h1>
-
-            <p class="col-md-12 text-muted">
-                <i class="fa fa-info-circle"></i> Gene and transcript tracks are provided by <a href="http://ensembl.org" class="text-muted">Ensembl</a>. <a class="no-icon margin-right-10px" href="{% url 'help-genomic-mapping' %}">Learn more &rarr;</a>
-            </p>
-            <br>
-            <div class="row" style="padding-left: 15px;">
-                <div class="col-lg-3 col-md-3 col-sm-12">
-                    <label for="genomic-species-select">Species</label>
-                    <select id="genomic-species-select" class="form-control" ng-options="genome.ensembl_url as genome.human_readable_ensembl_url for genome in rnacentralGenomes | orderBy:'ensembl_url'" ng-model="browserLocation.genome">
-                    </select>
-                </div>
-                <div class="ol-lg-2 col-md-2 col-sm-4">
-                    <label for="chromosome-input">Chromosome</label>
-                    <input type="text" class="form-control" id="chromosome-input" placeholder="Enter chromosome" ng-model="browserLocation.chromosome">
-                </div>
-                <div class="col-lg-2 col-md-2 col-sm-4">
-                    <label for="genomic-start-input">Start</label>
-                    <input type="number" class="form-control" id="genomic-start-input" placeholder="Enter start" ng-model="browserLocation.start">
-                </div>
-                <div class="col-lg-2 col-md-2 col-sm-4">
-                    <label for="genomic-end-input">End</label>
-                    <input type="number" class="form-control" id="genomic-end-input" placeholder="Enter end" ng-model="browserLocation.end">
-                </div>
-                <div class="col-lg-3 col-md-3 col-sm-6">
-                    <button id="copy-genome-location" class="btn btn-default" data-toggle="tooltip" title="Copy URL to clipboard" style="margin-top: 25px;"><i class="fa fa-share-alt"></i> Copy URL</button>
-                </div>
-            </div>
-        </div>
+        <rnacentral-genome-browser></rnacentral-genome-browser>
+        <script type="text/javascript" src="https://rnacentral.github.io/rnacentral-genome-browser/build/genome-browser.js"></script>
     </div>
-
-    <br>
-
-    {% verbatim %}
-    <p class='text-muted'>
-        <span id='genomic-location' class='margin-right-5px'></span>
-        View in <a href='http://{{ browserLocation.domain }}/{{ browserLocation.genome }}/Location/View?r={{ browserLocation.chromosome }}:{{ browserLocation.start }}-{{ browserLocation.end }}' id="ensembl-link" target='_blank'>{{ genoverseUtils.getGenomeObject(browserLocation.genome, genomes).division }}</a>
-        <span ng-show='genoverseUtils.getGenomeObject(browserLocation.genome, genomes).assembly_ucsc' class='ucsc-link'>|
-            <a href='http://genome.ucsc.edu/cgi-bin/hgTracks?db={{ genoverseUtils.getGenomeObject(browserLocation.genome, genomes).assembly_ucsc }}&position={{ browserLocation.chromosome }}%3A{{ browserLocation.start }}-{{ browserLocation.end }}' id="ucsc-link" target='_blank'>UCSC</a>
-        </span>
-    </p>
-    <genoverse genome="browserLocation.genome" chr="browserLocation.chromosome" start="browserLocation.start" end="browserLocation.end" genoverse-utils="genoverseUtils"></genoverse>
-    {% endverbatim %}
-
-  </div>
 </div>
+
 {% endblock content %}

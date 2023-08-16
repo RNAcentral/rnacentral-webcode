@@ -8,7 +8,6 @@ angular.module('rnacentralApp', [
     'underscore',
 
     'routes',
-    'genomeBrowser',
     'rnaSequence',
     'textSearch',
     'expertDatabase',

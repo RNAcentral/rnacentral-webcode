@@ -1,9 +1,5 @@
 from __future__ import print_function
 
-import json
-
-import requests
-
 """
 Copyright [2009-2017] EMBL-European Bioinformatics Institute
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,11 +12,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+import json
 import re
 import zlib
 from itertools import chain
 
 import boto3
+import requests
 from apiv1.renderers import RnaFastaRenderer
 from apiv1.serializers import (
     AccessionSerializer,
@@ -36,6 +34,7 @@ from apiv1.serializers import (
     RfamHitSerializer,
     RnaFastaSerializer,
     RnaFlatSerializer,
+    RnaGenomeLocationsSerializer,
     RnaNestedSerializer,
     RnaSecondaryStructureSerializer,
     RnaSpeciesSpecificSerializer,
@@ -532,73 +531,20 @@ class RnaGenomeLocations(generics.ListAPIView):
     [API documentation](/api)
     """
 
-    queryset = Rna.objects.select_related().all()
+    serializer_class = RnaGenomeLocationsSerializer
 
-    def get(self, request, pk=None, taxid=None, format=None):
-        # if assembly with this taxid is not found, just return empty locations list
-        try:
-            assembly = EnsemblAssembly.objects.get(
-                taxid=taxid, selected_genome=True
-            )  # this applies only to species-specific pages
-        except EnsemblAssembly.DoesNotExist:
-            return Response([])
-
-        rna = self.get_object()
-        urs_taxid = rna.upi + "_" + str(assembly.taxid)
+    def get_queryset(self):
+        urs_taxid = self.kwargs["pk"] + "_" + self.kwargs["taxid"]
 
         # do not show genome coordinates for obsolete sequences
         try:
             rna_precomputed = RnaPrecomputed.objects.get(id=urs_taxid, is_active=True)
         except RnaPrecomputed.DoesNotExist:
-            return Response([])
+            return SequenceRegion.objects.none()
 
-        regions = SequenceRegion.objects.filter(
-            urs_taxid=rna_precomputed, assembly=assembly.assembly_id
+        return SequenceRegion.objects.filter(urs_taxid=rna_precomputed).select_related(
+            "assembly"
         )
-
-        output = []
-        for region in regions:
-            providing_databases = get_database(region)
-            if len(providing_databases) > 1:
-                databases = " and ".join(
-                    [
-                        ", ".join(providing_databases[:-1]),
-                        providing_databases[-1],
-                    ]
-                )
-            elif len(providing_databases) == 1:
-                databases = providing_databases[0]
-            else:
-                databases = "an Expert Database"
-
-            output.append(
-                {
-                    "chromosome": region.chromosome,
-                    "strand": region.strand,
-                    "start": region.region_start,
-                    "end": region.region_stop,
-                    "identity": region.identity,
-                    "species": assembly.ensembl_url,
-                    "ucsc_db_id": assembly.assembly_ucsc,
-                    "ensembl_division": {
-                        "name": assembly.division,
-                        "url": "http://" + assembly.subdomain,
-                    },
-                    "ensembl_species_url": assembly.ensembl_url,
-                    "databases": databases,
-                }
-            )
-
-            exceptions = ["X", "Y"]
-            if (
-                re.match(r"\d+", output[-1]["chromosome"])
-                or output[-1]["chromosome"] in exceptions
-            ):
-                output[-1]["ucsc_chromosome"] = "chr" + output[-1]["chromosome"]
-            else:
-                output[-1]["ucsc_chromosome"] = output[-1]["chromosome"]
-
-        return Response(output)
 
 
 class AccessionView(generics.RetrieveAPIView):
@@ -712,8 +658,34 @@ class GenomesAPIViewSet(ListModelMixin, GenericViewSet):
     permission_classes = (AllowAny,)
     serializer_class = EnsemblAssemblySerializer
     pagination_class = Pagination
-    queryset = EnsemblAssembly.objects.all().order_by("-ensembl_url")
     lookup_field = "ensembl_url"
+
+    def get_queryset(self):
+        ensembl_assembly_query = """
+            SELECT
+                {ensembl_assembly}.assembly_id,
+                {ensembl_assembly}.assembly_full_name,
+                {ensembl_assembly}.gca_accession,
+                {ensembl_assembly}.assembly_ucsc,
+                {ensembl_assembly}.taxid,
+                {ensembl_assembly}.ensembl_url,
+                {ensembl_assembly}.division,
+                {ensembl_assembly}.subdomain,
+                {ensembl_assembly}.example_chromosome,
+                {ensembl_assembly}.example_start,
+                {ensembl_assembly}.example_end,
+                {taxonomy}.name as common_name
+            FROM {ensembl_assembly}
+            LEFT JOIN {taxonomy}
+            ON {taxonomy}.id = {ensembl_assembly}.taxid
+            ORDER BY {taxonomy}.name
+        """.format(
+            ensembl_assembly=EnsemblAssembly._meta.db_table,
+            taxonomy=Taxonomy._meta.db_table,
+        )
+
+        queryset = EnsemblAssembly.objects.raw(ensembl_assembly_query)
+        return queryset
 
 
 class RfamHitsAPIViewSet(generics.ListAPIView):
@@ -1014,4 +986,48 @@ class InteractionsView(generics.ListAPIView):
             Interactions.objects.filter(urs_taxid=urs_taxid)
             .distinct("interacting_id")
             .exclude(interacting_id__contains="mgi")
+        )
+
+
+class GenomeBrowserAPIViewSet(APIView):
+    """Render genome-browser, taking into account start/end locations."""
+
+    permission_classes = (AllowAny,)
+
+    def get(self, request, species, format=None):
+        try:
+            assembly = EnsemblAssembly.objects.filter(ensembl_url=species).first()
+        except EnsemblAssembly.DoesNotExist:
+            return Response([])
+
+        try:
+            region = (
+                SequenceRegion.objects.filter(assembly=assembly)
+                .order_by("chromosome")
+                .first()
+            )
+        except SequenceRegion.DoesNotExist:
+            return Response([])
+
+        chromosome = (
+            assembly.example_chromosome
+            if assembly.example_chromosome
+            else region.chromosome
+        )
+
+        start = (
+            assembly.example_start if assembly.example_start else region.region_start
+        )
+
+        end = assembly.example_end if assembly.example_end else region.region_stop
+
+        return Response(
+            {
+                "assembly_id": assembly.assembly_id,
+                "common_name": assembly.common_name.title(),
+                "chromosome": chromosome,
+                "start": start,
+                "end": end,
+                "ensembl_url": assembly.ensembl_url,
+            }
         )
