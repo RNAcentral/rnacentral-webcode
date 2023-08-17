@@ -107,7 +107,7 @@ limitations under the License.
           </div>
           <div class="force-scrollbars" style="max-height: 300px; overflow-y: scroll; margin-top: -10px; margin-bottom: 20px;">
             {% for item in context.litsumm_summary %}
-              <p class="text-muted"><strong>{{ item.rna_id }}</strong>: {{ item.summary|safe }}</p>
+              <p class="text-muted"><i class="fa fa-angle-right"></i> <strong>{{ item.display_id }}</strong>: {{ item.summary|safe }}</p>
             {% endfor %}
           </div>
         {% endif %}
