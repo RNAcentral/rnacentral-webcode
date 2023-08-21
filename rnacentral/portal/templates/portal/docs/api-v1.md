@@ -245,7 +245,7 @@ Perl module for computing the md5 values. Additional notes:
 * md5 is computed for DNA sequences (so all U's should be replaced with T's).
 
 {# embedded GitHub gist #}
-<script src="https://gist.github.com/AntonPetrov/177cef0a3b4799f01536.js"></script>
+<script src="https://gist.github.com/rnacentralAdmin/b5aa714af3688e1eb49bc11d9ab032f8.js"></script>
 
 ## Cross domain requests <a style="cursor: pointer" id="v1-cross-domain-requests" ng-click="scrollTo('v1-cross-domain-requests')" name="v1-cross-domain-requests" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
