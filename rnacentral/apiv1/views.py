@@ -1014,17 +1014,20 @@ class GenomeBrowserAPIViewSet(APIView):
             if assembly.example_chromosome
             else region.chromosome
         )
-
         start = (
             assembly.example_start if assembly.example_start else region.region_start
         )
-
         end = assembly.example_end if assembly.example_end else region.region_stop
+        common_name = (
+            assembly.common_name.title()
+            if assembly.common_name
+            else assembly.ensembl_url.replace("_", " ").title()
+        )
 
         return Response(
             {
                 "assembly_id": assembly.assembly_id,
-                "common_name": assembly.common_name.title(),
+                "common_name": common_name,
                 "chromosome": chromosome,
                 "start": start,
                 "end": end,
