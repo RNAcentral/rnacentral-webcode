@@ -22,7 +22,7 @@ For each sequence the **R2DT pipeline** automatically selects the template using
 folds the sequence into the template structure using [Infernal](http://eddylab.org/infernal),
 and visualises it using [Traveler](https://github.com/davidhoksza/traveler).
 
-<img src="https://github.com/RNAcentral/R2DT/raw/master/examples/method-overview.png">
+<img src="https://raw.githubusercontent.com/RNAcentral/R2DT/main/examples/method-overview.png">
 
 ## RNA secondary structure in RNAcentral
 
