@@ -32,7 +32,7 @@ Please note that "field value" **must be enclosed in double quotes**.
 | **taxonomy string**            | `tax_string:"primates"` - allows to search for taxonomic group                                                                                     |
 | **scientific species name**    | `species:"Mus musculus"`                                                                                                                           |
 | **common species name**        | `common_name:"mouse"`                                                                                                                              |
-| **RNA type**                   | `rna_type:"pirna"`, search for `RNA` and look at the "RNA types" facet.                                                                            |
+| **RNA type**                   | `rna_type:"pirna"` or `so_rna_type_name:"pirna"` (the latter is classified using Sequence Ontology)                                                |
 | **gene**                       | `gene:"hotair"`                                                                                                                                    |
 | **organelle**                  | `organelle:"mitochondrion"`, `organelle:"plastid"`                                                                                                 |
 | **description**                | `description:"16S"`                                                                                                                                |
@@ -43,6 +43,8 @@ Please note that "field value" **must be enclosed in double quotes**.
 | **Digital Object Identifier**  | `doi:"10.1093/nar/19.22.6328"`                                                                                                                     |
 | **MD5**                        | `md5:"020711a90d35bb197e29e085595dd52e"` [MD5](http://en.wikipedia.org/wiki/MD5) hash value of uppercase DNA corresponding to RNAcentral sequence. |
 | **interacting proteins**       | `interacting_protein:"ENSG00000277791"`                                                                                                            |
+ | **interacting rna**            | `interacting_rna:"ENSG00000235652"`                                                                                                                |
+ | **evidence for interaction**   | `evidence_for_interaction:"ago-ip"`                                                                                                                |
 | **secondary structure**        | `has_secondary_structure:"True"`                                                                                                                   |
 
 ---
