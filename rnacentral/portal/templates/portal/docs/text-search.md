@@ -27,23 +27,28 @@ Please note that "field value" **must be enclosed in double quotes**.
 
 | Field                          | Examples                                                                                                                                           |
 | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **expert database**            | `expert_db:"tmrna website"`, `expert_db:"mirbase"`, search for `RNA` and look at the "Expert databases" facet                                      |
-| **NCBI taxonomic identifier**  | `taxonomy:"9606"` where [9606](http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606) is the NCBI taxonomy id for Homo sapiens           |
-| **taxonomy string**            | `tax_string:"primates"` - allows to search for taxonomic group                                                                                     |
-| **scientific species name**    | `species:"Mus musculus"`                                                                                                                           |
-| **common species name**        | `common_name:"mouse"`                                                                                                                              |
-| **RNA type**                   | `rna_type:"pirna"`, search for `RNA` and look at the "RNA types" facet.                                                                            |
-| **gene**                       | `gene:"hotair"`                                                                                                                                    |
-| **organelle**                  | `organelle:"mitochondrion"`, `organelle:"plastid"`                                                                                                 |
-| **description**                | `description:"16S"`                                                                                                                                |
-| **length**                     | `length:"1500"`, `length:[9000 to 10000]` (supports range queries)                                                                                 |
-| **publication title**          | `pub_title:"Danish population"`                                                                                                                    |
-| **author**                     | `author:"Girard A."`                                                                                                                               |
-| **PubMed id**                  | `pubmed:"17881443"`                                                                                                                                |
-| **Digital Object Identifier**  | `doi:"10.1093/nar/19.22.6328"`                                                                                                                     |
-| **MD5**                        | `md5:"020711a90d35bb197e29e085595dd52e"` [MD5](http://en.wikipedia.org/wiki/MD5) hash value of uppercase DNA corresponding to RNAcentral sequence. |
-| **interacting proteins**       | `interacting_protein:"ENSG00000277791"`                                                                                                            |
-| **secondary structure**        | `has_secondary_structure:"True"`                                                                                                                   |
+| **expert database**            | `expert_db:"tmrna website"`, `expert_db:"mirbase"`, search for `RNA` and look at the "Expert databases" facet|
+| **NCBI taxonomic identifier**  | `taxonomy:"9606"` where [9606](http://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=9606) is the NCBI taxonomy id for Homo sapiens|
+| **taxonomy string**            | `tax_string:"primates"` - allows to search for taxonomic group|
+| **scientific species name**    | `species:"Mus musculus"`|
+| **common species name**        | `common_name:"mouse"`|
+| **RNA type**                   | `rna_type:"pirna"`, search for `RNA` and look at the "RNA types" facet.|
+| **gene**                       | `gene:"hotair"`|
+| **organelle**                  | `organelle:"mitochondrion"`, `organelle:"plastid"`|
+| **description**                | `description:"16S"`|
+| **length**                     | `length:"1500"`, `length:[9000 to 10000]` (supports range queries) |
+| **publication title**          | `pub_title:"Danish population"`|
+| **author**                     | `author:"Girard A."`|
+| **PubMed id**                  | `pubmed:"17881443"`|
+| **Digital Object Identifier**  | `doi:"10.1093/nar/19.22.6328"`|
+| **MD5**                        | `md5:"020711a90d35bb197e29e085595dd52e"` [MD5](http://en.wikipedia.org/wiki/MD5) hash value of uppercase DNA corresponding to RNAcentral sequence.|
+| **interacting proteins**       | `interacting_protein:"ENSG00000277791"`|
+| **any interacting protein**		| `has_interacting_protein:"True"`|
+| **secondary structure**        | `has_secondary_structure:"True"`|
+| **interacting RNA**			| `has_interacting_rna:"True"`    |
+| **GO annotation**             | `has_go_annotation:"True"`      |
+| **mapped vs aligned**        | `has_genomic_coordinates:"True"` |
+| **conserved structure** | `has_conserved_structure:"True"`      |
 
 ---
 
