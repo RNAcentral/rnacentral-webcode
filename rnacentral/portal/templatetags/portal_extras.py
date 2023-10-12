@@ -24,12 +24,13 @@ def get_expert_databases_columns():
     """
     Return expert databases grouped and order for the website footer.
     """
-    dbs = sorted(expert_dbs, key=lambda x: x["name"].lower())
+    imported_dbs = [x for x in expert_dbs if x["imported"] and x["name"] != "CRS"]
+    imported_dbs = sorted(imported_dbs, key=lambda x: x["name"].lower())
     return [
-        dbs[:16],
-        dbs[16:31],
-        dbs[31:46],
-        dbs[46:],
+        imported_dbs[:15],
+        imported_dbs[15:30],
+        imported_dbs[30:45],
+        imported_dbs[45:],
     ]
 
 
