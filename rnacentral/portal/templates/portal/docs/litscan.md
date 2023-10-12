@@ -1,7 +1,7 @@
 
 > **RNAcentral LitScan** is a new text mining pipeline that connects RNA sequences with the latest open access scientific literature. LitScan uses a collection of identifiers (Ids), gene names, and synonyms provided to RNAcentral by the [Expert Databases](/expert-databases) to scan the papers available in [Europe PMC](https://europepmc.org) and keep the publications linked to RNAcentral entries as up-to-date as possible.
 
-LitScan features an interactive user interface that enables the users to filter the papers using facets, including year, journal, identifier, and the part of the paper where the Id is found.
+LitScan boasts a user-friendly interface, allowing users to easily filter papers based on various facets such as identifier, article type, the paper section where the ID is located, mentioned organism, journal, and year.
 
 For example, lncRNA `THRIL` is also known as `Linc1992`. Using LitScan, [the corresponding RNAcentral entry](/rna/URS000075D66B/9606?tab=pub) includes papers about `THRIL`, `Linc1992`, and even `NR_110375` which is another Id for the same gene:
 
@@ -42,11 +42,13 @@ The article will be displayed in the results if the Id is found in **both steps*
 
 ### Example
 
-A search for the [dme-bantam](/rna/URS00002F21DA/7227) precursor microRNA Id returns 9 results in Europe PMC, as can be seen [here](https://europepmc.org/search?query=%22dme-bantam%22%20AND%20%22rna%22%20AND%20IN_EPMC%3AY%20AND%20OPEN_ACCESS%3AY%20AND%20NOT%20SRC%3APPR).
-However, the second step finds the exact string `dme-bantam` **only in 3 articles**, while the other 6 mention
+A [search on EuropePMC](https://europepmc.org/search?query=%22dme-bantam%22%20AND%20%28%22rna%22%20OR%20%22mrna%22%20OR%20%22ncrna%22%20OR%20%22lncrna%22%20OR%20%22rrna%22%20OR%20%22sncrna%22%29%20AND%20IN_EPMC%3AY%20AND%20OPEN_ACCESS%3AY%20AND%20NOT%20SRC%3APPR) for the microRNA precursor [dme-bantam](/rna/URS00002F21DA/7227) ID yielded 13 results as of October 2023.
+However, the second step finds the exact string `dme-bantam` **only in 4 articles**, while the other 9 mention
 [dme-bantam-3p](/rna/URS00004E9E38/7227) and/or [dme-bantam-5p](/rna/URS000055786A/7227) and appear on the corresponding mature microRNA pages.
 
-<img src="/static/img/litscan-dme-bantam.png">
+<a href="/rna/URS00002F21DA/7227?tab=pub">
+  <img class="thumbnail" src="/static/img/litscan-dme-bantam.png">
+</a>
 
 ## FAQ
 
@@ -84,6 +86,10 @@ in two steps as regular expressions ensure that only articles containing the exa
 ### Do you filter out common words?
 
 To prevent false positive matches, we compare RNA Ids against a corpus of common English words to [exclude Ids](https://github.com/RNAcentral/rnacentral-references/blob/main/words_identified_by_corpus.txt) like `hairpin`, `nail`, `digit`, or `eric` that may correspond to non-RNA entities.
+
+### How are organisms identified? <a style="cursor: pointer" id="organisms" ng-click="scrollTo('organisms')" name="organisms" class="text-muted smaller"><i class="fa fa-link"></i></a>
+
+The organisms listed in the **Mentioned Organisms** facet were extracted from the [ORGANISMS project](https://organisms.jensenlab.org) and may not be entirely accurate. Find out more about the ORGANISMS project in [this paper](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0065390).
 
 ### How can I find out which Ids are used by LitScan?
 
