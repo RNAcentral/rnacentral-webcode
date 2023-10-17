@@ -157,7 +157,7 @@ def rna_view(request, upi, taxid=None):
 
         for item in litsumm_summary:
             item.summary = regex.sub(
-                r'<a href="https://europepmc.org/search?query=\g<0>" target="blank">\g<0></a>',
+                r'<a href="https://europepmc.org/article/PMC/\g<0>" target="blank">\g<0></a>',
                 item.summary,
             )
     else:
