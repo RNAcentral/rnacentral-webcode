@@ -101,9 +101,8 @@ limitations under the License.
 
         {% if context.litsumm_summary %}
           <div class="alert alert-warning">
-            Please be aware that the following <strong>{% if context.litsumm_summary|length > 1 %}summaries were {% else %}summary was {% endif %}
-            generated using artificial intelligence</strong> and may not be entirely accurate or comprehensive, see the <a href="/help/litsumm">LitSumm documentation</a> for more details.
-            Feel free to share your <a href="" onclick="$('.doorbell-feedback').click(); changePlaceholder();">feedback</a> with us at any time.
+            Caution, this is an AI generated summary based on literature. This may have errors, see <a href="/help/litsumm">here for more.</a>
+            Please share your <a href="" onclick="$('.doorbell-feedback').click(); changePlaceholder();">feedback</a> with us.
           </div>
           <div class="force-scrollbars" style="max-height: 300px; overflow-y: scroll; margin-top: -10px; margin-bottom: 20px;">
             {% for item in context.litsumm_summary %}
