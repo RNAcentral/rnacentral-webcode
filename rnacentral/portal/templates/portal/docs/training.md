@@ -13,9 +13,9 @@ that contains data overview, tips for searching, quizzes, and more.
 
 Watch a recording of an online webinar to see RNAcentral in action:
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/HiwfOa6hwnQ" frameborder="0" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/oqUBhQPPzZs" frameborder="0" allowfullscreen></iframe>
 
-*Recorded on February 10th, 2021.*
+*Recorded on September 21st, 2023.*
 
 ### Publications <a style="cursor: pointer" id="papers" ng-click="scrollTo('papers')" name="papers" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
