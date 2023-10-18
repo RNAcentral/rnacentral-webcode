@@ -14,10 +14,10 @@ summary:
     <img class="thumbnail" src="/static/img/litsumm-example.png">
 </a>
 
-**It is important to note that this summary is automatically generated using artificial intelligence and therefore may
-not be completely accurate or comprehensive.**
+It is important to note that **this summary is automatically generated using artificial intelligence** and therefore may
+not be completely accurate or comprehensive. LitSumm is under active development and more summaries will be available in the future.
 
-LitSumm is under active development and more summaries will be available in the future.
+<a class="btn btn-primary" href='/search?q=has_litsumm:"True"'>Browse all sequences with LitSumm summaries</a>
 
 ## How LitSumm works
 
