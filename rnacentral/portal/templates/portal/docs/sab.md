@@ -16,7 +16,10 @@ which includes six RNA biologists covering a wide range of expertise from wet la
 
 The SAB oversees the progress of the project during annual meetings.
 
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">A big thank you to our advisory board (<a href="https://twitter.com/stojic_lovorka?ref_src=twsrc%5Etfw">@stojic_lovorka</a>, <a href="https://twitter.com/YannPonty?ref_src=twsrc%5Etfw">@YannPonty</a>, Michelle Meyer, Manja Marz, and Eric Westhof) for great suggestions and feedback about <a href="https://twitter.com/RNAcentral?ref_src=twsrc%5Etfw">@RNAcentral</a> and <a href="https://twitter.com/RfamDB?ref_src=twsrc%5Etfw">@RfamDB</a>! <a href="https://t.co/ejfVYrX0m0">pic.twitter.com/ejfVYrX0m0</a></p>&mdash; RNAcentral (@RNAcentral) <a href="https://twitter.com/RNAcentral/status/1369334752524767233?ref_src=twsrc%5Etfw">March 9, 2021</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<figure>
+  <img class="thumbnail" src="/static/img/sab-2023.png" alt="Image of the SAB meeting in 2023"/>
+  <figcaption style="text-align: center; font-style: italic; margin-top: -15px">SAB Meeting in 2023</figcaption>
+</figure>
 
 ### Previous members
 
