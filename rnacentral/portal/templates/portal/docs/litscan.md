@@ -11,6 +11,8 @@ For example, lncRNA `THRIL` is also known as `Linc1992`. Using LitScan, [the cor
 
 LitScan is under active development and more sequences will be associated with scientific publications in the future.
 
+<a class="btn btn-primary" href='/search?q=has_lit_scan:"True"'>Browse all sequences with publications</a>
+
 ## Use LitScan in your website
 
 The LitScan widget is implemented as an **embeddable component** that can be used by any [Expert Database](/expert-databases) or any other website. LitScan has already been deployed on the Rfam website (for example, see the [SAM riboswitch](https://rfam.org/family/RF00162#tabview=tab10) page).
