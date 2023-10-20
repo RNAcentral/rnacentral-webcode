@@ -253,6 +253,7 @@ class Accession(models.Model):
             "EXPRESSION_ATLAS",
             "EVLNCRNAS",
             "RIBOCENTRE",
+            "MGNIFY",
         ]:
             try:
                 data = json.loads(self.note)

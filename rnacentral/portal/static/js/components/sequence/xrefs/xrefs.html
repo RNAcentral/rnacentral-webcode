@@ -432,6 +432,13 @@
               View {{ xref.quickgo_hits }} <ng-pluralize count="xref.quickgo_hits" when="{1: 'annotation', 'other': 'annotations'}"></ng-pluralize> in <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">QuickGO</a>
             </span>
 
+            <!-- MGnify -->
+            <span ng-switch-when="MGnify">
+              Browse genome: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
+              <br>
+              <i class="fa fa-angle-right"></i> Genome overview: <a ng-href="https://www.ebi.ac.uk/metagenomics/genomes/{{ xref.accession.external_id.split('_')[0] }}#overview">{{ xref.accession.external_id.split('_')[0] }}</a>
+            </span>
+
             <span ng-switch-default>
               {{ xref.accession.external_id }} {{ xref.accession.optional_id }}
             </span>
