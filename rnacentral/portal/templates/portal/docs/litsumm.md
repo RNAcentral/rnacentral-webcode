@@ -14,7 +14,7 @@ precursor](/rna/URS0000663F9C/9606?tab=pub) lists over 200 articles about <a
     href="/rna/URS0000663F9C/9606">**MIR944**</a>. Using sentences from that
 list of articles, LitSumm was able to create the following summary:
 
-<quote>
+<blockquote>
         MIR944 is a microRNA that has been studied in
         various contexts. It has been found to be overexpressed in patients
         with non-small cell lung cancer (NSCLC) [<a
@@ -48,7 +48,7 @@ list of articles, LitSumm was able to create the following summary:
         that MIR944 has its own independent promoter and its expression is
         regulated by ΔNp63 and co-regulators such as AP-2, TFAP2A, and
         TFAP2C.
-</quote>
+</blockquote>
 
 It is important to note that **this summary is automatically generated using
 artificial intelligence** and therefore may not be completely accurate or
