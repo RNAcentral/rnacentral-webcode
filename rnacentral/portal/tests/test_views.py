@@ -176,8 +176,8 @@ class PortalTest(TestCase):
         response = self.client.get(reverse("linking-to-rnacentral"))
         self.assertEqual(response.status_code, 200)
 
-    def test_help_conserved_motifs_status_code(self):
-        response = self.client.get(reverse("help-conserved-motifs"))
+    def test_help_sequence_features_status_code(self):
+        response = self.client.get(reverse("help-sequence-features"))
         self.assertEqual(response.status_code, 200)
 
     def test_help_public_database_status_code(self):

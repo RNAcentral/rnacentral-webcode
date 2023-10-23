@@ -466,7 +466,7 @@ $q.all([$scope.fetchRna(), $scope.featureViewerContainerReady()]).then(function(
 			content += '      Learn more in CRS database &rarr; ';
 			content += '    </a></li>';
 			content += '    <li><i class="fa fa-search"></i> <a href="/search?q=conserved_structure:%22' + crs_id + '%22">Find other sequences with this feature</a></li>'
-			content += '    <li><i class="fa fa-question-circle"></i> <a href="/help/conserved-motifs">What are conserved features?</a></li>';
+			content += '    <li><i class="fa fa-question-circle"></i> <a href="/help/sequence-features">What are conserved features?</a></li>';
 			content += '    <li><i class="fa fa-book"></i> <a href="https://doi.org/10.1101/gr.208652.116" target="_blank">Paper by <i>Seemann et al</i> about the method</a></li>';
 			content += '  </ul>';
 			content += '</div>';

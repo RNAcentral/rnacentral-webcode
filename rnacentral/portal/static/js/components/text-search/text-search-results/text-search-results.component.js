@@ -19,7 +19,7 @@ var textSearchResults = {
 
             // help urls
             ctrl.rfamHelp = "/help/qc";
-            ctrl.crsHelp = "/help/conserved-motifs";
+            ctrl.crsHelp = "/help/sequence-features";
             ctrl.goHelp = "/help/gene-ontology-annotations";
             ctrl.genomeMappingHelp = "/help/genomic-mapping";
 

@@ -115,10 +115,10 @@ urlpatterns = [
         name="linking-to-rnacentral",
     ),
     url(
-        r"^help/conserved-motifs/?$",
+        r"^help/sequence-features/?$",
         views.StaticView.as_view(),
-        {"page": "help/conserved-motifs"},
-        name="help-conserved-motifs",
+        {"page": "help/sequence-features"},
+        name="help-sequence-features",
     ),
     url(
         r"^help/public-database/?$",
