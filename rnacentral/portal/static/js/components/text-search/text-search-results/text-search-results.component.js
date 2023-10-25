@@ -247,6 +247,15 @@ var textSearchResults = {
         ctrl.facetSearch = function(facetId, facetValue) {
             var facet, newQuery = search.query;
 
+            if (facetId === 'rna_type'){
+                // register the use of the INSDC RNA Type facet
+                gtag('event', 'text_search_facet_rna_type', {
+                    'event_category': 'text_search',
+                    'event_label':'rna_type',
+                    'event_name':'text_search_facet_rna_type'
+                });
+            }
+
             if (facetId !== 'length') {
                 facet = facetId + ':"' + facetValue + '"';
 
