@@ -1518,7 +1518,7 @@ expert_dbs = [
             }
         ],
         "imported": True,
-        "status": "New",
+        "status": "",
         "version": "2.0",
     },
     {
@@ -1543,7 +1543,53 @@ expert_dbs = [
             }
         ],
         "imported": True,
-        "status": "New",
+        "status": "",
         "version": "1.4",
+    },
+    {
+        "name": "REDIportal",
+        "label": "rediportal",
+        "url": "http://srv00.recas.ba.infn.it/atlas/",
+        "description": "is an ATLAS of A-to-I RNA editing events in human and other organisms",
+        "hint": "An ATLAS of A-to-I RNA editing events in human and other organisms",
+        "tags": ["", "", ""],
+        "abbreviation": "",
+        "examples": [
+            {"upi": "URS000093D738", "taxid": 562},  # this needs to be changed!
+        ],
+        "references": [
+            {
+                "title": "REDIportal: a comprehensive database of A-to-I RNA editing events in humans",
+                "authors": "Picardi E, D'Erchia AM, Lo Giudice C, Pesole G.",
+                "journal": "Nucleic Acids Research, 04 Jan 2017",
+                "pubmed_id": "27587585",
+            }
+        ],
+        "imported": True,
+        "status": "New",
+        "version": "2.0",
+    },
+    {
+        "name": "MGnify",
+        "label": "mgnify",
+        "url": "https://www.ebi.ac.uk/metagenomics",
+        "description": "is a hub for the analysis and exploration of metagenomic, metatranscriptomic, amplicon and assembly data",
+        "hint": "MGnify is a hub for the analysis and exploration of metagenomic, metatranscriptomic, amplicon and assembly data",
+        "tags": ["", "", ""],
+        "abbreviation": "",
+        "examples": [
+            {"upi": "URS000093D738", "taxid": 562},
+        ],
+        "references": [
+            {
+                "title": "MGnify: the microbiome sequence data analysis resource in 2023",
+                "authors": "Richardson LJ, Allen B, Baldi G, Beracochea M, Bileschi M, Burdett T, Burgin J, Caballero-Pérez J, Cochrane G, Colwell L, Curtis T, Escobar-Zepeda A, Gurbich T, Kale V, Korobeynikov A, Raj S, Rogers AB, Sakharova E, Sanchez S, Wilkinson D and Finn RD",
+                "journal": "Nucleic Acids Research, 06 Jan 2023",
+                "pubmed_id": "36477304",
+            }
+        ],
+        "imported": True,
+        "status": "New",
+        "version": "as of Nov 2023",
     },
 ]
