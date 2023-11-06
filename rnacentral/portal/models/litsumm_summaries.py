@@ -29,6 +29,7 @@ class LitSumm(models.Model):
     selection_method = models.TextField()
     rescue_prompts = ArrayField(models.TextField())
     primary_id = models.CharField(max_length=22)
+    display_id = models.CharField(max_length=100)
 
     class Meta:
         db_table = "litsumm_summaries"
