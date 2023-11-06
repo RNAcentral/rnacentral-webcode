@@ -445,6 +445,7 @@ class RnaSpeciesSpecificSerializer(serializers.Serializer):
     species = serializers.SerializerMethodField()
     taxid = serializers.SerializerMethodField()
     genes = serializers.SerializerMethodField()
+    publications = serializers.SerializerMethodField()
     rna_type = serializers.ReadOnlyField()
     is_active = serializers.ReadOnlyField()
     distinct_databases = serializers.ReadOnlyField(source="databases")
@@ -459,6 +460,9 @@ class RnaSpeciesSpecificSerializer(serializers.Serializer):
 
     def get_taxid(self, obj):
         return int(self.context["taxid"])
+
+    def get_publications(self, obj):
+        return int(self.context["pub_count"])
 
 
 class RnaFlatSerializer(RnaNestedSerializer):

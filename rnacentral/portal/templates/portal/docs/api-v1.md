@@ -187,7 +187,7 @@ There are 3 url parameters: `length`, `min_length` (greater or equal length), an
 * [{{ BASE_URL }}/api/v1/rna/?length=2014](/api/v1/rna/?length=2014)
 * [{{ BASE_URL }}/api/v1/rna/?min_length=200000](/api/v1/rna/?min_length=200000)
 * [{{ BASE_URL }}/api/v1/rna/?max_length=10](/api/v1/rna/?max_length=10)
-* [{{ BASE_URL }}/api/v1/rna/?min_length=1&max_length=10](/api/v1/rna/?min_length=1&max_length=10)
+* [{{ BASE_URL }}/api/v1/rna/?min_length=10&max_length=100](/api/v1/rna/?min_length=10&max_length=100)
 
 ### Filtering by external ids <a style="cursor: pointer" id="v1-filtering-by-external-ids" ng-click="scrollTo('v1-filtering-by-external-ids')" name="v1-filtering-by-external-ids" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
@@ -210,7 +210,7 @@ which acts as the logical `AND` operator. More logical operators will be support
 
 #### Example
 
-* [{{ BASE_URL }}/api/v1/rna/?min_length=1&max_length=10](/api/v1/rna/?min_length=1&max_length=10)
+* [{{ BASE_URL }}/api/v1/rna/?min_length=10&max_length=100](/api/v1/rna/?min_length=10&max_length=100)
 
 ## Genome annotations <a style="cursor: pointer" id="v1-genome-annotations" ng-click="scrollTo('v1-genome-annotations')" name="v1-genome-annotations" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
@@ -245,7 +245,7 @@ Perl module for computing the md5 values. Additional notes:
 * md5 is computed for DNA sequences (so all U's should be replaced with T's).
 
 {# embedded GitHub gist #}
-<script src="https://gist.github.com/AntonPetrov/177cef0a3b4799f01536.js"></script>
+<script src="https://gist.github.com/rnacentralAdmin/b5aa714af3688e1eb49bc11d9ab032f8.js"></script>
 
 ## Cross domain requests <a style="cursor: pointer" id="v1-cross-domain-requests" ng-click="scrollTo('v1-cross-domain-requests')" name="v1-cross-domain-requests" class="text-muted smaller"><i class="fa fa-link"></i></a>
 

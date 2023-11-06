@@ -387,10 +387,35 @@ class RnaSpeciesSpecificView(APIView):
         except Taxonomy.DoesNotExist:
             species = ""
 
+        # LitScan data - get related IDs
+        pub_list = [urs]
+        query_jobs = (
+            f'?query=entry_type:metadata%20AND%20primary_id:"{urs}"%20AND%20database:rnacentral&'
+            f"fields=job_id&format=json"
+        )
+        try:
+            response = requests.get(search_index + "-litscan" + query_jobs).json()
+            entries = response["entries"]
+            for entry in entries:
+                pub_list.append(entry["fields"]["job_id"][0])
+        except (IndexError, KeyError):
+            pass
+
+        # get number of articles identified by LitScan
+        query_ids = ['job_id:"' + item + '"' for item in pub_list]
+        query_ids = "%20OR%20".join(query_ids)
+        query = f"?query=entry_type:Publication%20AND%20({query_ids})&format=json"
+        try:
+            response = requests.get(search_index + "-litscan" + query).json()
+            pub_count = response["hitCount"]
+        except KeyError:
+            pub_count = None
+
         serializer = RnaSpeciesSpecificSerializer(
             rna,
             context={
                 "gene": gene,
+                "pub_count": pub_count,
                 "request": request,
                 "species": species,
                 "taxid": taxid,
