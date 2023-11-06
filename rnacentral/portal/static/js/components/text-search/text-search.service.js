@@ -64,7 +64,7 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             'standard_name': 'Standard name',
             'tax_string': 'Taxonomy'
         },
-        facetfields: ['rna_type', 'so_rna_type', 'TAXONOMY', 'expert_db', 'has_secondary_structure', 'qc_warning_found', 'has_go_annotations', 'has_conserved_structure', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
+        facetfields: ['rna_type', 'so_rna_type', 'has_litsumm', 'has_lit_scan', 'TAXONOMY', 'expert_db', 'has_secondary_structure', 'qc_warning_found', 'has_go_annotations', 'has_conserved_structure', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
         foldableFacets: ['rna_type', 'qc_warning_found', 'has_go_annotations', 'has_conserved_structure', 'has_genomic_coordinates'],
         sortableFields: [
             { label: 'Popular species, Length ↓', value: 'boost:descending,length:descending' },
@@ -364,6 +364,18 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
                 facet.facetValues.forEach(function(facetValue) {
                     if (facetValue.label === 'True') { facetValue.label = 'Available'; }
                     else if (facetValue.label === 'False') { facetValue.label = 'Not available'; }
+                });
+            }
+            if (facet.id === 'has_litsumm') {
+                facet.label = 'LitSumm';
+                facet.facetValues.forEach(function(facetValue) {
+                    if (facetValue.label === 'True') { facetValue.label = 'AI generated summaries'; }
+                });
+            }
+            if (facet.id === 'has_lit_scan') {
+                facet.label = 'LitScan';
+                facet.facetValues.forEach(function(facetValue) {
+                    if (facetValue.label === 'True') { facetValue.label = 'Publications'; }
                 });
             }
         });

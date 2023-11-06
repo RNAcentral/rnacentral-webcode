@@ -199,6 +199,32 @@
             </ul>
           </div>
         </li>
+        <!-- We are merging LitScan and LitSumm facets here -->
+        <li class="facet" ng-repeat="facet in $ctrl.search.result.facets">
+          <div ng-if="facet.label === 'LitSumm' || facet.label === 'LitScan' ">
+            <h3 ng-if="facet.label === 'LitSumm'">
+              Literature integration
+            </h3>
+            <ul class="list-unstyled text-search-facet-values text-search-facet-overflow force-scrollbars" style="overflow-x: hidden;">
+              <!-- Show "True" values for both LitScan and LitSumm -->
+              <li ng-repeat="facetValue in facet.facetValues" ng-if="facetValue.label != 'False'">
+                <input type="checkbox" name="facet.label" ng-checked="$ctrl.isFacetApplied(facet.id, facetValue.value)" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)">
+                <a href="" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)" class="text-search-facet-link">{{ facetValue.label }} <small>({{ facetValue.count | number }})</small></a>
+              </li>
+            </ul>
+          </div>
+        </li>
+        <!-- Show "False" values for LitScan (this should also be false for LitSumm) -->
+        <li class="facet" ng-repeat="facet in $ctrl.search.result.facets">
+          <div ng-if="facet.label === 'LitScan' ">
+            <ul class="list-unstyled text-search-facet-values text-search-facet-overflow force-scrollbars" style="overflow-x: hidden;">
+              <li ng-repeat="facetValue in facet.facetValues" ng-if="facetValue.label === 'False'">
+                <input type="checkbox" name="facet.label" ng-checked="$ctrl.isFacetApplied(facet.id, facetValue.value)" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)">
+                <a href="" ng-click="$ctrl.facetSearch(facet.id, facetValue.value)" class="text-search-facet-link">Not integrated <small>({{ facetValue.count | number }})</small></a>
+              </li>
+            </ul>
+          </div>
+        </li>
         <li class="facet" ng-repeat="facet in $ctrl.search.result.facets">
           <div ng-if="facet.label === 'Organisms' || facet.label === 'Expert databases' || facet.label === 'Secondary structure' || facet.id == 'has_secondary_structure' ">
             <h3>
