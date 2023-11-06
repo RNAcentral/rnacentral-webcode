@@ -206,7 +206,7 @@ class Accession(models.Model):
         urls = {
             "RFAM": "http://rfam.org/family/{id}",
             "SRPDB": "https://rth.dk/resources/rnp/SRPDB/rna/sequences/fasta/{id}",
-            "MIRBASE": "http://www.mirbase.org/cgi-bin/mirna_entry.pl?acc={id}",
+            "MIRBASE": "https://mirbase.org/hairpin/{id}",
             "TMRNA_WEB": "http://bioinformatics.sandia.gov/tmrna/seqs/{id}",
             "LNCRNADB": "http://www.lncrnadb.org/{id}",
             "REFSEQ": "http://www.ncbi.nlm.nih.gov/nuccore/{id}.{version}",
@@ -253,6 +253,7 @@ class Accession(models.Model):
             "EXPRESSION_ATLAS",
             "EVLNCRNAS",
             "RIBOCENTRE",
+            "MGNIFY",
         ]:
             try:
                 data = json.loads(self.note)
