@@ -183,6 +183,20 @@ urlpatterns = [
         {},
         name="ensembl-karyotype",
     ),
+    # endpoint that returns litsumm summaries
+    url(
+        r"litsumm/$",
+        cache_page(CACHE_TIMEOUT)(views.LitSummView.as_view({"get": "list"})),
+        {},
+        name="litsumm",
+    ),
+    # endpoint that returns a specific litsumm summary
+    url(
+        r"litsumm/(?P<rna_id>.*?)/?$",
+        cache_page(CACHE_TIMEOUT)(views.LitSummView.as_view({"get": "retrieve"})),
+        {},
+        name="litsumm-specific-id",
+    ),
 ]
 
 urlpatterns = format_suffix_patterns(
