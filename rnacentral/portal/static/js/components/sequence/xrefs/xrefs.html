@@ -437,6 +437,8 @@
               Browse genome: <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>
               <br>
               <i class="fa fa-angle-right"></i> Genome overview: <a ng-href="https://www.ebi.ac.uk/metagenomics/genomes/{{ xref.accession.external_id.split('_')[0] }}#overview">{{ xref.accession.external_id.split('_')[0] }}</a>
+              <br>
+              MGnify classification: <em>{{ xref.accession.inference.replaceAll(';', '; ') }}</em>
             </span>
 
             <span ng-switch-default>
