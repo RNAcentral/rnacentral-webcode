@@ -1042,6 +1042,16 @@ class InteractionsView(generics.ListAPIView):
 class LitSummView(ReadOnlyModelViewSet):
     """API endpoint to show LitSumm summaries"""
 
-    queryset = LitSumm.objects.all()
     serializer_class = LitSummSerializer
     lookup_field = "rna_id"
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned summaries to a given URS,
+        by filtering against a `URS` query parameter in the URL.
+        """
+        queryset = LitSumm.objects.all()
+        primary_id = self.request.query_params.get("urs")
+        if primary_id is not None:
+            queryset = queryset.filter(primary_id=primary_id)
+        return queryset
