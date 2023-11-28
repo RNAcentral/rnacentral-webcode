@@ -491,6 +491,7 @@ a.expert-db-logo:hover {
 }
 
 .tabbable {
+  margin-top: 10px;
   margin-bottom: 20px;
 }
 
@@ -1112,7 +1113,7 @@ textarea {
 
 .slick-dots {
   position: inherit;
-  margin-top: 5px;
+  margin-top: -15px;
 }
 
 .slick-dots li button::before {
@@ -1508,7 +1509,6 @@ textarea {
 .rfamModelsGroup, .crsFeaturesGroup, .matureMirnaFeaturesGroup {
   cursor: pointer;
 }
-
 
 /*------------------------------------------------------------------
 [5.18 Traveler secondary structures]

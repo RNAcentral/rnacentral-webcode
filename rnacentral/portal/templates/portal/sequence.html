@@ -99,10 +99,16 @@ limitations under the License.
         </ul>
         {% if rna.has_secondary_structure %}</div><!-- media-body --></div><!-- media -->{% endif %}
 
-        {% if context.summary_text %}
-        <p class="small text-muted">
-          <strong>Automated summary:</strong> {{ context.summary_text }}
-        </p>
+        {% if context.litsumm_summary %}
+          <div class="alert alert-warning">
+            Caution, this is an AI generated summary based on literature. This may have errors, see <a href="/help/litsumm">here for more.</a>
+            Please share your <a href="" onclick="$('.doorbell-feedback').click(); changePlaceholder();">feedback</a> with us.
+          </div>
+          <div class="force-scrollbars" style="max-height: 300px; overflow-y: scroll; margin-top: -10px; margin-bottom: 20px;">
+            {% for item in context.litsumm_summary %}
+              <p class="text-muted"><i class="fa fa-angle-right"></i> <strong>{{ item.display_id }}</strong>: {{ item.summary|safe }}</p>
+            {% endfor %}
+          </div>
         {% endif %}
 
         <div class="tabbable">

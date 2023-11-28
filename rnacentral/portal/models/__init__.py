@@ -22,6 +22,7 @@ from .ensembl_karyotype import *
 from .go_terms import *
 from .interactions import *
 from .litscan_statistics import *
+from .litsumm_summaries import *
 from .modification import *
 from .protein_info import *
 from .qc_status import *

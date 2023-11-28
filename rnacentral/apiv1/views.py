@@ -29,6 +29,7 @@ from apiv1.serializers import (
     EnsemblComparaSerializer,
     ExpertDatabaseStatsSerializer,
     InteractionsSerializer,
+    LitSummSerializer,
     LncrnaTargetsSerializer,
     ProteinTargetsSerializer,
     QcStatusSerializer,
@@ -58,6 +59,7 @@ from portal.models import (
     EnsemblCompara,
     GoAnnotation,
     Interactions,
+    LitSumm,
     ProteinInfo,
     QcStatus,
     RelatedSequence,
@@ -74,7 +76,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
-from rest_framework.viewsets import GenericViewSet
+from rest_framework.viewsets import GenericViewSet, ReadOnlyModelViewSet
 from rest_framework_jsonp.renderers import JSONPRenderer
 from rest_framework_yaml.renderers import YAMLRenderer
 
@@ -1035,3 +1037,21 @@ class InteractionsView(generics.ListAPIView):
             .distinct("interacting_id")
             .exclude(interacting_id__contains="mgi")
         )
+
+
+class LitSummView(ReadOnlyModelViewSet):
+    """API endpoint to show LitSumm summaries"""
+
+    serializer_class = LitSummSerializer
+    lookup_field = "rna_id"
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned summaries to a given URS,
+        by filtering against a `URS` query parameter in the URL.
+        """
+        queryset = LitSumm.objects.all()
+        primary_id = self.request.query_params.get("urs")
+        if primary_id is not None:
+            queryset = queryset.filter(primary_id=primary_id)
+        return queryset

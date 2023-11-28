@@ -89,6 +89,26 @@ RNAcentral: The non-coding RNA sequence database
   </div>
 
   <div class="row well well-sm">
+    <h2 class="text-center" style="margin-top: 10px; margin-bottom: 2px;">AI generated summaries</h2>
+    <div class="row">
+      <p class="text-center col-md-8 col-md-offset-2">
+        RNAcentral now uses LLMs to generate summaries for selected ncRNA genes. <a href="/help/litsumm">Learn more &rarr;</a>
+      </p>
+    </div>
+    <div id="featured-summaries">
+      {% for item in context.summaries %}
+        <div class="panel panel-default" style="padding: 20px; cursor: pointer" onclick="location.href='/rna/{{ item.urs }}';">
+          <h4 class="rnacentral-gold">{{ item.title }} ({{ item.id }})</h4>
+          <p>{{ item.summary|safe }}</p>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="text-center" style="margin-bottom: 10px; font-size: large;">
+      <a class="btn btn-primary" href='/search?q=has_litsumm:"True"'>Explore AI generated summaries</a>
+    </div>
+  </div>
+
+  <div class="row">
     <h2 class="text-center" style="margin-top: 2px; margin-bottom: 2px;">Secondary structures</h2>
 
     <div class="row">
@@ -115,40 +135,6 @@ RNAcentral: The non-coding RNA sequence database
       <a class="btn btn-primary" href='/search?q=has_secondary_structure:"True"'>Explore secondary structures</a>
       <a class="btn btn-default" href='/r2dt' style="margin-left: 20px;">Visualise your sequence with R2DT</a>
     </div>
-  </div>
-
-  <div class="row">
-
-    <p class="lead text-center margin-bottom-0px">
-      Data from <a href="{% url 'expert-databases' %}">{{ context.databases|length }} databases</a>
-    </p>
-
-    <div id="expert-databases">
-      {% for database in context.databases %}
-        {% if database and database.imported %}
-        <div class="hvr-grow help expert-db-card" data-container="body" title="{% if database.abbreviation %}{{ database.abbreviation }}{% else %}{{ database.name }}{% endif %}">
-          <a class="expert-db-logo" href="{% url 'expert-database' database.label %}">
-            <img class="img-rounded desaturate" data-lazy="{% static 'img/expert-db-logos' %}/{{database.label}}.png" alt="{{database.name}} logo">
-          </a>
-          <p class="margin-top-5px text-center">
-          <a href="" rel="nofollow" ng-click="search.search('expert_db:&quot;{{database.name}}&quot;')">
-            <em>{{database.num_sequences|intword|intcomma}}</em>
-            sequences
-          </a>
-          <br>
-          <a href="{% url 'unique-rna-sequence' upi=database.examples.0.upi taxid=database.examples.0.taxid %}" id="{{database.label}}-examples">Example</a>
-          <br>
-          {% if database.status == 'new' %}
-            <span class="label label-info help" data-placement="bottom">New</span>
-          {% elif database.status == 'updated' %}
-            <span class="label label-primary help" data-placement="bottom">Updated</span>
-          {% endif %}
-          </p>
-        </div>
-        {% endif %}
-      {% endfor %}
-    </div>
-
   </div>
 
   <div class="row well well-sm">
@@ -192,6 +178,40 @@ RNAcentral: The non-coding RNA sequence database
   </div>
 
   <div class="row">
+
+    <p class="lead text-center margin-bottom-0px">
+      Data from <a href="{% url 'expert-databases' %}">{{ context.databases|length }} databases</a>
+    </p>
+
+    <div id="expert-databases">
+      {% for database in context.databases %}
+        {% if database and database.imported %}
+        <div class="hvr-grow help expert-db-card" data-container="body" title="{% if database.abbreviation %}{{ database.abbreviation }}{% else %}{{ database.name }}{% endif %}">
+          <a class="expert-db-logo" href="{% url 'expert-database' database.label %}">
+            <img class="img-rounded desaturate" data-lazy="{% static 'img/expert-db-logos' %}/{{database.label}}.png" alt="{{database.name}} logo">
+          </a>
+          <p class="margin-top-5px text-center">
+          <a href="" rel="nofollow" ng-click="search.search('expert_db:&quot;{{database.name}}&quot;')">
+            <em>{{database.num_sequences|intword|intcomma}}</em>
+            sequences
+          </a>
+          <br>
+          <a href="{% url 'unique-rna-sequence' upi=database.examples.0.upi taxid=database.examples.0.taxid %}" id="{{database.label}}-examples">Example</a>
+          <br>
+          {% if database.status == 'new' %}
+            <span class="label label-info help" data-placement="bottom">New</span>
+          {% elif database.status == 'updated' %}
+            <span class="label label-primary help" data-placement="bottom">Updated</span>
+          {% endif %}
+          </p>
+        </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+
+  </div>
+
+  <div class="row well well-sm">
     <h2 class="text-center" style="margin-top: 2px; margin-bottom: 2px;"><a href="/use-cases" class="rnacentral-gold">Featured use cases</a></h2>
 
     <div class="col-md-4">
@@ -354,6 +374,17 @@ $(document).ready(function() {
         ]
     })
 
+    $('#featured-summaries').slick({
+        draggable: true,
+        rows: 1,
+        dots: true,
+        // adaptiveHeight: true,
+        infinite: true,
+        lazyLoad: 'ondemand',
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        arrows: true,
+    })
 
 
 });

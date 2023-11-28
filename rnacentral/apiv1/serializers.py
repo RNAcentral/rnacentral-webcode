@@ -920,3 +920,12 @@ class InteractionsSerializer(serializers.Serializer):
             if "PSICQUIC" in obj.intact_id or obj.intact_id.startswith("URS")
             else "View in IntAct"
         )
+
+
+class LitSummSerializer(serializers.Serializer):
+    """Serializer class for LitSumm summaries"""
+
+    rna_id = serializers.CharField()
+    display_id = serializers.CharField()
+    summary = serializers.CharField()
+    primary_id = serializers.CharField()
