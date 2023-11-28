@@ -88,23 +88,25 @@ RNAcentral: The non-coding RNA sequence database
 
   </div>
 
-  {% if context.summary %}
   <div class="row well well-sm">
-    <h2 class="text-center" style="margin-top: 2px; margin-bottom: 2px;">AI generated summaries</h2>
-    <p class="text-center col-md-8 col-md-offset-2">
-      RNAcentral now uses LLMs to generate summaries for selected ncRNA genes. <a href="/help/litsumm">Learn more &rarr;</a>
-    </p>
-    <div class="panel panel-default" style="margin-top: 40px; cursor: pointer" onclick="location.href='/rna/{{ context.summary.urs }}';">
-      <h4 class="rnacentral-gold">{{ context.summary.title }} ({{ context.summary.id }})</h4>
-      <blockquote class="callout-info">
-        {{ context.summary.text|safe }}
-      </blockquote>
+    <h2 class="text-center" style="margin-top: 10px; margin-bottom: 2px;">AI generated summaries</h2>
+    <div class="row">
+      <p class="text-center col-md-8 col-md-offset-2">
+        RNAcentral now uses LLMs to generate summaries for selected ncRNA genes. <a href="/help/litsumm">Learn more &rarr;</a>
+      </p>
     </div>
-    <div class="text-center" style="margin-right: 10px; margin-bottom: 10px; font-size: large;">
+    <div id="featured-summaries">
+      {% for item in context.summaries %}
+        <div class="panel panel-default" style="padding: 20px; cursor: pointer" onclick="location.href='/rna/{{ item.urs }}';">
+          <h4 class="rnacentral-gold">{{ item.title }} ({{ item.id }})</h4>
+          <p>{{ item.summary|safe }}</p>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="text-center" style="margin-bottom: 10px; font-size: large;">
       <a class="btn btn-primary" href='/search?q=has_litsumm:"True"'>Explore AI generated summaries</a>
     </div>
   </div>
-  {% endif %}
 
   <div class="row">
     <h2 class="text-center" style="margin-top: 2px; margin-bottom: 2px;">Secondary structures</h2>
@@ -372,6 +374,17 @@ $(document).ready(function() {
         ]
     })
 
+    $('#featured-summaries').slick({
+        draggable: true,
+        rows: 1,
+        dots: true,
+        // adaptiveHeight: true,
+        infinite: true,
+        lazyLoad: 'ondemand',
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        arrows: true,
+    })
 
 
 });

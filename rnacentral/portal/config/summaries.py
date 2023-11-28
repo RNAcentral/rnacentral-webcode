@@ -1,9 +1,9 @@
 litsumm_examples = [
-    {
-        "urs": "URS000000D517_9606",
-        "id": "SNORA74B",
-        "description": "Human small nucleolar RNA",
-    },
+    # {
+    #     "urs": "URS000000D517_9606",
+    #     "id": "SNORA74B",
+    #     "description": "Human small nucleolar RNA",
+    # },
     {
         "urs": "URS00006422E6_9606",
         "id": "SNORA73B",

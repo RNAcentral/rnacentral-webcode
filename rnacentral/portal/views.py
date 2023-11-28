@@ -81,31 +81,30 @@ def get_sequence_lineage(request, upi):
 def homepage(request):
     """RNAcentral homepage."""
     random.shuffle(examples)
-    get_litsumm_example = random.choice(litsumm_examples)
-    litsumm_summary = LitSumm.objects.filter(
-        primary_id=get_litsumm_example["urs"]
-    ).first()
+    random.shuffle(litsumm_examples)
+    summaries = []
 
-    if litsumm_summary:
+    for item in litsumm_examples:
         regex = re.compile("PMC[0-9]+")
-        litsumm_summary = regex.sub(
+        get_summary = LitSumm.objects.filter(primary_id=item["urs"]).first()
+        summary = regex.sub(
             r'<a href="https://europepmc.org/article/PMC/\g<0>" target="blank">\g<0></a>',
-            litsumm_summary.summary,
+            get_summary.summary,
         )
-        summary = {
-            "id": get_litsumm_example["id"],
-            "title": get_litsumm_example["description"],
-            "urs": get_litsumm_example["urs"],
-            "text": litsumm_summary,
-        }
-    else:
-        summary = None
+        summaries.append(
+            {
+                "id": item["id"],
+                "title": item["description"],
+                "urs": item["urs"],
+                "summary": summary,
+            }
+        )
 
     context = {
         "databases": list(Database.objects.filter(alive="Y").order_by("?").all()),
         "blog_url": settings.RELEASE_ANNOUNCEMENT_URL,
         "svg_images": examples,
-        "summary": summary,
+        "summaries": summaries,
     }
 
     return render(request, "portal/homepage.html", {"context": context})
