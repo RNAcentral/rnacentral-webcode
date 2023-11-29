@@ -53,6 +53,7 @@ Please note that "field value" **must be enclosed in double quotes**.
 | **any interacting rna**       | `has_interacting_rnas:"True"`                                                                                                                      |
 | **publications**              | `has_lit_scan:"True"`                                                                                                                              |
 | **AI generated summary**      | `has_litsumm:"True"`                                                                                                                               |
+| **RNA editing events**        | `has_editing_event:"True"`                                                                                                                         |
 
 ---
 
