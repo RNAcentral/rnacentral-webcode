@@ -66,7 +66,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "as of Jan 2023",
+        "version": "as of Oct 2023",
     },
     {
         "name": "PDBe",
@@ -91,7 +91,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "as of Jan 2023",
+        "version": "as of Oct 2023",
     },
     {
         "name": "FlyBase",
@@ -116,7 +116,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "as of Jan 2023",
+        "version": "FB2023_05",
     },
     {
         "name": "Ensembl",
@@ -147,7 +147,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "108",
+        "version": "110",
     },
     {
         "name": "Ensembl Plants",
@@ -172,7 +172,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "55",
+        "version": "57",
     },
     {
         "name": "Ensembl Fungi",
@@ -197,7 +197,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "55",
+        "version": "57",
     },
     {
         "name": "Ensembl Metazoa",
@@ -222,7 +222,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "55",
+        "version": "57",
     },
     {
         "name": "Ensembl Protists",
@@ -247,7 +247,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "55",
+        "version": "57",
     },
     {
         "name": "Ensembl/GENCODE",
@@ -421,7 +421,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "",
-        "version": "",
+        "version": "as of Oct 2023",
     },
     {
         "name": "lncRNAdb",
@@ -477,7 +477,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "",
-        "version": "release 19",
+        "version": "release 21",
     },
     {
         "name": "RefSeq",
@@ -502,7 +502,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "216",  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
+        "version": "221",  # ftp://ftp.ncbi.nlm.nih.gov/refseq/release/RELEASE_NUMBER
     },
     {
         "name": "RDP",
@@ -583,7 +583,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "as of Jan 2023",
+        "version": "as of Oct 2023",
     },
     {
         "name": "Greengenes",
@@ -799,7 +799,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "as of Jan 2023  ",
+        "version": "as of Oct 2023",
     },
     {
         "name": "RNApathwaysDB",
@@ -863,7 +863,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "Jan 2023",
+        "version": "as of Oct 2023",
     },
     {
         "name": "snOPY",
@@ -1030,7 +1030,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "as of Jan 2023",
+        "version": "as of Oct 2023",
     },
     {
         "name": "MGI",
@@ -1306,7 +1306,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "5.12",
+        "version": "5.18",
     },
     {
         "name": "GeneCards",
@@ -1331,7 +1331,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "5.12",
+        "version": "5.18",
     },
     {
         "name": "CRS",
@@ -1380,7 +1380,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "243",
+        "version": "as of Oct 2023",
     },
     {
         "name": "ZFIN",
@@ -1405,7 +1405,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "updated",
-        "version": "as of Jan 2023",
+        "version": "as of Oct 2023",
     },
     {
         "name": "snoRNA Atlas",
@@ -1494,7 +1494,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "",
-        "version": "as of Jan 2023",
+        "version": "as of Oct 2023",
     },
     {
         "name": "EVLncRNAs",
@@ -1544,7 +1544,7 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "",
-        "version": "1.4",
+        "version": "as of Oct 2023",
     },
     {
         "name": "REDIportal",
@@ -1555,7 +1555,9 @@ expert_dbs = [
         "tags": ["", "", ""],
         "abbreviation": "",
         "examples": [
-            {"upi": "URS000093D738", "taxid": 562},  # this needs to be changed!
+            {"upi": "URS000075D95B", "taxid": 9606},
+            {"upi": "URS000080E357", "taxid": 9606},
+            {"upi": "URS00000F6E49", "taxid": 9606},
         ],
         "references": [
             {
@@ -1590,6 +1592,6 @@ expert_dbs = [
         ],
         "imported": True,
         "status": "New",
-        "version": "as of Nov 2023",
+        "version": "as of Oct 2023",
     },
 ]
