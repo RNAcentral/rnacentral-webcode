@@ -34,6 +34,7 @@ from django.template.loader import render_to_string
 from django.views.decorators.cache import cache_page, never_cache
 from django.views.generic.base import TemplateView
 from portal.config.expert_databases import expert_dbs
+from portal.config.summaries import litsumm_examples
 from portal.config.svg_images import examples
 from portal.models import (
     Database,
@@ -80,10 +81,30 @@ def get_sequence_lineage(request, upi):
 def homepage(request):
     """RNAcentral homepage."""
     random.shuffle(examples)
+    random.shuffle(litsumm_examples)
+    summaries = []
+
+    for item in litsumm_examples:
+        regex = re.compile("PMC[0-9]+")
+        get_summary = LitSumm.objects.filter(primary_id=item["urs"]).first()
+        summary = regex.sub(
+            r'<a href="https://europepmc.org/article/PMC/\g<0>" target="blank">\g<0></a>',
+            get_summary.summary,
+        )
+        summaries.append(
+            {
+                "id": item["id"],
+                "title": item["description"],
+                "urs": item["urs"],
+                "summary": summary,
+            }
+        )
+
     context = {
         "databases": list(Database.objects.filter(alive="Y").order_by("?").all()),
         "blog_url": settings.RELEASE_ANNOUNCEMENT_URL,
         "svg_images": examples,
+        "summaries": summaries,
     }
 
     return render(request, "portal/homepage.html", {"context": context})

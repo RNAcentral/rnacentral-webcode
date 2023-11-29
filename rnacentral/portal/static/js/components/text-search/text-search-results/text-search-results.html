@@ -15,7 +15,7 @@
 
     <small class="pull-right font-size-14-px hidden-xs">
       <div class="btn-group">
-        <button type="button" ng-class="$ctrl.search.status === 'in progress' ? 'disabled' : ''" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+        <button type="button" ng-class="$ctrl.search.status === 'in progress' ? 'hidden' : $ctrl.search.result.hitCount > 1000000 ? 'hidden' : ''" class="btn btn-primary btn-sm dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
           Download
           <span class="caret"></span>
         </button>

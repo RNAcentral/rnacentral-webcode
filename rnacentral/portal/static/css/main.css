@@ -1091,7 +1091,7 @@ textarea {
 
 .slick-dots {
   position: inherit;
-  margin-top: 5px;
+  margin-top: -15px;
 }
 
 .slick-dots li button::before {

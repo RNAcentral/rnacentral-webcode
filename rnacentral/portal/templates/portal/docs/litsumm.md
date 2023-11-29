@@ -7,7 +7,7 @@ upon OpenAI's [GPT-3.5 model](https://platform.openai.com/docs/models). These su
 sentences extracted from scientific literature, building a summary, and then
 running a series of automated checks on the summaries. This approach is
 described in [LitSumm: Large language models for literature summarisation of
-non-coding RNAs](). LitSumm enables researchers to quickly grasp the key information about these genes.
+non-coding RNAs](https://arxiv.org/abs/2311.03056). LitSumm enables researchers to quickly grasp the key information about these genes.
 
 As an example, [Homo sapiens (human) microRNA hsa-mir-944
 precursor](/rna/URS0000663F9C/9606?tab=pub) lists over 200 articles about <a
@@ -52,14 +52,14 @@ list of articles, LitSumm was able to create the following summary:
 
 It is important to note that **this summary is automatically generated using
 artificial intelligence** and therefore may not be completely accurate or
-comprehensive. LitSumm is under active development and more summaries will be
-available in the future. We have observed the following issues with LitSumm
-summaries:
+comprehensive. We have observed the following issues with LitSumm summaries:
 
 - Missing references
 - Incorrectly formatted references
 - Incorrectly merging similar sentences
 - Inaccurate statements
+
+LitSumm is under active development and more summaries will be available in the future.
 
 <a class="btn btn-primary" href='/search?q=has_litsumm:"True"'>Browse all sequences with LitSumm summaries</a>
 

@@ -89,6 +89,26 @@ RNAcentral: The non-coding RNA sequence database
   </div>
 
   <div class="row well well-sm">
+    <h2 class="text-center" style="margin-top: 10px; margin-bottom: 2px;">AI generated summaries</h2>
+    <div class="row">
+      <p class="text-center col-md-8 col-md-offset-2">
+        RNAcentral now uses LLMs to generate summaries for selected ncRNA genes. <a href="/help/litsumm">Learn more &rarr;</a>
+      </p>
+    </div>
+    <div id="featured-summaries">
+      {% for item in context.summaries %}
+        <div class="panel panel-default" style="padding: 20px; cursor: pointer" onclick="location.href='/rna/{{ item.urs }}';">
+          <h4 class="rnacentral-gold">{{ item.title }} ({{ item.id }})</h4>
+          <p>{{ item.summary|safe }}</p>
+        </div>
+      {% endfor %}
+    </div>
+    <div class="text-center" style="margin-bottom: 10px; font-size: large;">
+      <a class="btn btn-primary" href='/search?q=has_litsumm:"True"'>Explore AI generated summaries</a>
+    </div>
+  </div>
+
+  <div class="row">
     <h2 class="text-center" style="margin-top: 2px; margin-bottom: 2px;">Secondary structures</h2>
 
     <div class="row">
@@ -115,6 +135,46 @@ RNAcentral: The non-coding RNA sequence database
       <a class="btn btn-primary" href='/search?q=has_secondary_structure:"True"'>Explore secondary structures</a>
       <a class="btn btn-default" href='/r2dt' style="margin-left: 20px;">Visualise your sequence with R2DT</a>
     </div>
+  </div>
+
+  <div class="row well well-sm">
+    <h2 class="text-center margin-bottom-0px">News</h2>
+      <div class="col-md-6">
+        <div class="panel panel-default">
+          <h3 class="text-center margin-bottom-0px"><i class="fa fa-bullhorn"></i> Announcements</h3>
+          <div class="panel-body">
+            <p class="margin-top-5px">
+              <a href="{{ context.blog_url }}" class="thumbnail">
+                <img class="hvr-grow" src="{% static 'img/timeline/release-v22.png' %}" alt="Release announcement">
+              </a>
+            </p>
+            <ul class="list-inline" style="margin-left: 5px; margin-top: -10px">
+              <li><a href="https://blog.rnacentral.org" target="_blank"><i class="fa fa-bookmark-o"></i> RNAcentral Blog</a></li>
+              <li><a href="https://blog.rnacentral.org/feeds/posts/default" target="_blank"><i class="fa fa-rss"></i> RSS feed</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6">
+        <div class="panel panel-default">
+          <h3 class="text-center margin-bottom-0px"><i class="fa fa-pencil"></i> Citing RNAcentral</h3>
+          <div class="panel-body">
+            If you use RNAcentral,
+            please cite our latest paper:
+            <blockquote class="callout-info">
+              <publication publication="RNAcentralPublication"></publication>
+            </blockquote>
+            <p class="margin-top-5px">
+              or choose the publication that best covers the RNAcentral aspects or components you used in your work
+            </p>
+            <p class="margin-top-5px">
+              <a class="btn btn-primary" href='/training#papers'>View RNAcentral publications</a>
+            </p>
+          </div>
+        </div>
+      </div>
+
   </div>
 
   <div class="row">
@@ -152,46 +212,6 @@ RNAcentral: The non-coding RNA sequence database
   </div>
 
   <div class="row well well-sm">
-    <h2 class="text-center margin-bottom-0px">News</h2>
-      <div class="col-md-6">
-        <div class="panel panel-default">
-          <h3 class="text-center margin-bottom-0px"><i class="fa fa-bullhorn"></i> Announcements</h3>
-          <div class="panel-body">
-            <p class="margin-top-5px">
-              <a href="{{ context.blog_url }}" class="thumbnail">
-                <img class="hvr-grow" src="{% static 'img/timeline/release-v23.png' %}" alt="Release announcement">
-              </a>
-            </p>
-            <ul class="list-inline" style="margin-left: 5px; margin-top: -10px">
-              <li><a href="https://blog.rnacentral.org" target="_blank"><i class="fa fa-bookmark-o"></i> RNAcentral Blog</a></li>
-              <li><a href="https://blog.rnacentral.org/feeds/posts/default" target="_blank"><i class="fa fa-rss"></i> RSS feed</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div class="col-md-6">
-        <div class="panel panel-default">
-          <h3 class="text-center margin-bottom-0px"><i class="fa fa-pencil"></i> Citing RNAcentral</h3>
-          <div class="panel-body">
-            If you use RNAcentral,
-            please cite our latest paper:
-            <blockquote class="callout-info">
-              <publication publication="RNAcentralPublication"></publication>
-            </blockquote>
-            <p class="margin-top-5px">
-              or choose the publication that best covers the RNAcentral aspects or components you used in your work
-            </p>
-            <p class="margin-top-5px">
-              <a class="btn btn-primary" href='/training#papers'>View RNAcentral publications</a>
-            </p>
-          </div>
-        </div>
-      </div>
-
-  </div>
-
-  <div class="row">
     <h2 class="text-center" style="margin-top: 2px; margin-bottom: 2px;"><a href="/use-cases" class="rnacentral-gold">Featured use cases</a></h2>
 
     <div class="col-md-4">
@@ -354,6 +374,17 @@ $(document).ready(function() {
         ]
     })
 
+    $('#featured-summaries').slick({
+        draggable: true,
+        rows: 1,
+        dots: true,
+        // adaptiveHeight: true,
+        infinite: true,
+        lazyLoad: 'ondemand',
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        arrows: true,
+    })
 
 
 });

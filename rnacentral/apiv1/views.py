@@ -27,6 +27,7 @@ from apiv1.serializers import (
     EnsemblComparaSerializer,
     ExpertDatabaseStatsSerializer,
     InteractionsSerializer,
+    LitSummSerializer,
     LncrnaTargetsSerializer,
     ProteinTargetsSerializer,
     QcStatusSerializer,
@@ -57,6 +58,7 @@ from portal.models import (
     EnsemblCompara,
     GoAnnotation,
     Interactions,
+    LitSumm,
     ProteinInfo,
     QcStatus,
     RelatedSequence,
@@ -73,7 +75,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
-from rest_framework.viewsets import GenericViewSet
+from rest_framework.viewsets import GenericViewSet, ReadOnlyModelViewSet
 from rest_framework_jsonp.renderers import JSONPRenderer
 from rest_framework_yaml.renderers import YAMLRenderer
 
@@ -386,10 +388,35 @@ class RnaSpeciesSpecificView(APIView):
         except Taxonomy.DoesNotExist:
             species = ""
 
+        # LitScan data - get related IDs
+        pub_list = [urs]
+        query_jobs = (
+            f'?query=entry_type:metadata%20AND%20primary_id:"{urs}"%20AND%20database:rnacentral&'
+            f"fields=job_id&format=json"
+        )
+        try:
+            response = requests.get(search_index + "-litscan" + query_jobs).json()
+            entries = response["entries"]
+            for entry in entries:
+                pub_list.append(entry["fields"]["job_id"][0])
+        except (IndexError, KeyError):
+            pass
+
+        # get number of articles identified by LitScan
+        query_ids = ['job_id:"' + item + '"' for item in pub_list]
+        query_ids = "%20OR%20".join(query_ids)
+        query = f"?query=entry_type:Publication%20AND%20({query_ids})&format=json"
+        try:
+            response = requests.get(search_index + "-litscan" + query).json()
+            pub_count = response["hitCount"]
+        except KeyError:
+            pub_count = None
+
         serializer = RnaSpeciesSpecificSerializer(
             rna,
             context={
                 "gene": gene,
+                "pub_count": pub_count,
                 "request": request,
                 "species": species,
                 "taxid": taxid,
@@ -1034,3 +1061,21 @@ class GenomeBrowserAPIViewSet(APIView):
                 "ensembl_url": assembly.ensembl_url,
             }
         )
+
+
+class LitSummView(ReadOnlyModelViewSet):
+    """API endpoint to show LitSumm summaries"""
+
+    serializer_class = LitSummSerializer
+    lookup_field = "rna_id"
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned summaries to a given URS,
+        by filtering against a `URS` query parameter in the URL.
+        """
+        queryset = LitSumm.objects.all()
+        primary_id = self.request.query_params.get("urs")
+        if primary_id is not None:
+            queryset = queryset.filter(primary_id=primary_id)
+        return queryset

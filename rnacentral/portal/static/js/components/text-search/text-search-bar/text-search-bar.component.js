@@ -160,7 +160,7 @@ var textSearchBar = {
                 'rna_type': [
                     {
                         'label': 'lncRNA',
-                        'search_string': 'so_rna_type_name:"lnc_RNA"',
+                        'search_string': 'so_rna_type_name:"lncRNA"',
                     },
                     {
                         'label': 'miRNA',
