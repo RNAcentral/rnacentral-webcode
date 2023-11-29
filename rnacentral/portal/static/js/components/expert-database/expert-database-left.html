@@ -24,8 +24,12 @@
     </span>
   </p>
 
-  <p>
+  <p ng-if="$ctrl.expertDb.name !== 'REDIportal'">
     <a class="btn btn-primary" ng-click="$ctrl.search.search('expert_db:&quot;' + $ctrl.expertDb.name + '&quot;')" rel="nofollow">Browse all {{ $ctrl.expertDb.name }} sequences</a>
+  </p>
+
+  <p ng-if="$ctrl.expertDb.name === 'REDIportal'">
+    <a class="btn btn-primary" ng-click="$ctrl.search.search('has_editing_event:&quot;' + true + '&quot;')" rel="nofollow">Browse all sequences with {{ $ctrl.expertDb.name }} events</a>
   </p>
 
   <h2>Links</h2>
