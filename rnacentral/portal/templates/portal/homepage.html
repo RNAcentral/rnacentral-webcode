@@ -191,10 +191,16 @@ RNAcentral: The non-coding RNA sequence database
             <img class="img-rounded desaturate" data-lazy="{% static 'img/expert-db-logos' %}/{{database.label}}.png" alt="{{database.name}} logo">
           </a>
           <p class="margin-top-5px text-center">
-          <a href="" rel="nofollow" ng-click="search.search('expert_db:&quot;{{database.name}}&quot;')">
-            <em>{{database.num_sequences|intword|intcomma}}</em>
-            sequences
-          </a>
+          {% if database.name == "REDIportal" %}
+            <a href="" rel="nofollow" ng-click="search.search('has_editing_event:&quot;' + true + '&quot;')">
+              > 100,000 editing events
+            </a>
+          {% else %}
+            <a href="" rel="nofollow" ng-click="search.search('expert_db:&quot;{{database.name}}&quot;')">
+              <em>{{database.num_sequences|intword|intcomma}}</em>
+              sequences
+            </a>
+          {% endif %}
           <br>
           <a href="{% url 'unique-rna-sequence' upi=database.examples.0.upi taxid=database.examples.0.taxid %}" id="{{database.label}}-examples">Example</a>
           <br>
