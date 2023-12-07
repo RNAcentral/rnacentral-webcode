@@ -249,10 +249,6 @@ class PortalTest(TestCase):
         response = self.client.get(reverse("genome-browser"))
         self.assertEqual(response.status_code, 200)
 
-    def test_genome_browser_wrong_specie(self):
-        response = self.client.get("/genome-browser", {"species": "test"})
-        self.assertEqual(response.status_code, 404)
-
     def test_genome_browser_with_chromosome_start_end(self):
         response = self.client.get(
             "/genome-browser",

@@ -319,7 +319,7 @@ class DatabaseSpecificXrefsTestCase(ApiV1BaseClass):
         # check that field is non-empty at least for some results
         empty = True
         for xref in response.json()["results"]:
-            if xref[field] != None:
+            if xref[field] is not None:
                 empty = False
                 break
         self.assertFalse(empty)
@@ -345,15 +345,14 @@ class DatabaseSpecificXrefsTestCase(ApiV1BaseClass):
             "URS000075A546", self.timeout, "refseq_mirna_mature_products"
         )
 
-    # TODO: Find another UPI to test
-    def _test_refseq_mirna_precursor(self):
+    def test_refseq_mirna_precursor(self):
         self._test_time_and_existence(
-            "URS0000416056", self.timeout, "refseq_mirna_precursor"
+            "URS000075D678", self.timeout, "refseq_mirna_precursor"
         )
 
     def test_refseq_splice_variants(self):
         self._test_time_and_existence(
-            "URS000075C808", self.timeout, "refseq_splice_variants"
+            "URS000075E815", self.timeout, "refseq_splice_variants"
         )
 
 
@@ -558,7 +557,7 @@ class InteractionsTestCase(ApiV1BaseClass):
             "reactome",
             "rnacentral",
             "sgd",
-            # "signor",
+            "signor",
             "uniprotkb",
         ]
         current_dbs = []
