@@ -339,10 +339,10 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
                 });
             }
             if (facet.id === 'has_conserved_structure') {
-                facet.label = 'Conserved motifs';
+                facet.label = 'Sequence features';
                 facet.facetValues.forEach(function(facetValue) {
-                    if (facetValue.label === 'True') { facetValue.label = 'Found'; }
-                    else if (facetValue.label === 'False') { facetValue.label = 'Not found'; }
+                    if (facetValue.label === 'True') { facetValue.label = 'Conserved structures'; }
+                    else if (facetValue.label === 'False') { facetValue.label = 'No conserved structures'; }
                 });
             }
             if (facet.id === 'has_go_annotations') {

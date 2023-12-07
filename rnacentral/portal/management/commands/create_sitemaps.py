@@ -96,7 +96,7 @@ class Command(BaseCommand):
                         "contact-us",
                         "downloads",
                         "expert-databases",
-                        "help-conserved-motifs",
+                        "help-sequence-features",
                         "help-ftp",
                         "help-galaxy",
                         "help-gene-ontology-annotations",

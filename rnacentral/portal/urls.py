@@ -102,9 +102,9 @@ urlpatterns = [
         views.StaticView.as_view(),
         {
             "page": "help/genomic-mapping",
-            "assemblies": EnsemblAssembly.objects.filter(
-                example_chromosome__isnull=False
-            ).all(),
+            "assemblies": EnsemblAssembly.objects.filter(selected_genome=True).order_by(
+                "ensembl_url"
+            ),
         },
         name="help-genomic-mapping",
     ),
@@ -115,10 +115,10 @@ urlpatterns = [
         name="linking-to-rnacentral",
     ),
     url(
-        r"^help/conserved-motifs/?$",
+        r"^help/sequence-features/?$",
         views.StaticView.as_view(),
-        {"page": "help/conserved-motifs"},
-        name="help-conserved-motifs",
+        {"page": "help/sequence-features"},
+        name="help-sequence-features",
     ),
     url(
         r"^help/public-database/?$",
@@ -212,8 +212,7 @@ urlpatterns = [
     # genome browser
     url(
         r"^genome-browser/?$",
-        views.GenomeBrowserView.as_view(),
-        {},
+        TemplateView.as_view(template_name="portal/genome-browser.html"),
         name="genome-browser",
     ),
     # proxy for ebeye search and rfam images

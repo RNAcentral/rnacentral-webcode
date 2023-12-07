@@ -183,6 +183,12 @@ urlpatterns = [
         {},
         name="ensembl-karyotype",
     ),
+    # IGV - Genome Browser
+    url(
+        r"^genome-browser/(?P<species>\w+)/?$",
+        cache_page(CACHE_TIMEOUT)(views.GenomeBrowserAPIViewSet.as_view()),
+        name="genome-browser-api",
+    ),
     # endpoint that returns litsumm summaries
     url(
         r"litsumm/$",

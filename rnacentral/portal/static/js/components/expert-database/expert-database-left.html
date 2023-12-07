@@ -24,14 +24,18 @@
     </span>
   </p>
 
-  <p>
+  <p ng-if="$ctrl.expertDb.name !== 'REDIportal'">
     <a class="btn btn-primary" ng-click="$ctrl.search.search('expert_db:&quot;' + $ctrl.expertDb.name + '&quot;')" rel="nofollow">Browse all {{ $ctrl.expertDb.name }} sequences</a>
+  </p>
+
+  <p ng-if="$ctrl.expertDb.name === 'REDIportal'">
+    <a class="btn btn-primary" ng-click="$ctrl.search.search('has_editing_event:&quot;' + true + '&quot;')" rel="nofollow">Browse all sequences with {{ $ctrl.expertDb.name }} events</a>
   </p>
 
   <h2>Links</h2>
   <ul>
     <li><a href="{{ $ctrl.expertDb.url }}" target="_blank">{{ $ctrl.expertDb.name }} homepage</a></li>
-    <li><a href="https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/">Mapping between {{ $ctrl.expertDb.name }} and  RNAcentral accessions</a>
+    <li ng-if="$ctrl.expertDb.name !== 'REDIportal'"><a href="https://ftp.ebi.ac.uk/pub/databases/RNAcentral/current_release/id_mapping/database_mappings/">Mapping between {{ $ctrl.expertDb.name }} and  RNAcentral accessions</a>
     <li ng-if="$ctrl.expertDb.name === 'Vega'"><a href="http://www.gencodegenes.org/" target="_blank">GENCODE</a></li>
 
     <span ng-repeat="database in ['FlyBase', 'GENCODE', 'LNCipedia', 'PomBase', 'TAIR', 'WormBase']">

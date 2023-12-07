@@ -48,7 +48,7 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
 
     $scope.help = {
         rfam: "/help/qc",
-        crs: "/help/conserved-motifs",
+        crs: "/help/sequence-features",
         go: "/help/gene-ontology-annotations",
         genomeMapping: "/help/genomic-mapping"
     };

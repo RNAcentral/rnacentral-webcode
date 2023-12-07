@@ -1060,28 +1060,6 @@ textarea {
 }
 
 /*------------------------------------------------------------------
-[5.11 Genoverse styling]
-*/
-
-.genoverse_karyotype_placeholder {
-  height: 50px;
-  background-color: #5F8CB0;
-  background-image: -webkit-linear-gradient(left center, #5F8CB0, #4A7496);
-  background-image: -moz-linear-gradient(left center, #5F8CB0, #4A7496);
-  box-shadow: 0 0 1px rgba(255, 255, 255, 0.4) inset, 0 1px 3px rgba(0, 0, 0, 0.1), -2px 0 2px rgba(0, 0, 0, 0.1);
-  vertical-align: top;
-  cursor: default;
-}
-
-.genoverse_karyotype_placeholder p {
-  padding-top: 15px;
-  font-family: Verdana;
-  font-size: 11px;
-  font-weight: bold;
-  color: #F2F5F7;
-}
-
-/*------------------------------------------------------------------
 [5.12. Homepage]
 */
 
@@ -1506,7 +1484,7 @@ textarea {
   border-radius: 15px;
 }
 
-.rfamModelsGroup, .crsFeaturesGroup, .matureMirnaFeaturesGroup {
+.rfamModelsGroup, .crsFeaturesGroup, .matureMirnaFeaturesGroup, .rediPortalFeaturesGroup {
   cursor: pointer;
 }
 
