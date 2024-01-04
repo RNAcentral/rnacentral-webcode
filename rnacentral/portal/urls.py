@@ -25,7 +25,9 @@ urlpatterns = [
     url(r"^$", views.homepage, name="homepage"),
     # unique RNA sequence
     url(
-        r"^rna/(?P<upi>URS[0-9A-F]{10})/?$", views.rna_view, name="unique-rna-sequence"
+        r"^rna/(?P<upi>URS[0-9A-F]{10})/?$",
+        views.generic_rna_view,
+        name="generic-rna-sequence",
     ),
     # species specific identifier with forward slash
     url(
