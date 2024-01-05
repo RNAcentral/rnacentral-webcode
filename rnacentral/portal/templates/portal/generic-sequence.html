@@ -31,10 +31,12 @@ limitations under the License.
             <h2>{{ upi }}</h2>
             <ul class="list-inline" id="sequence-overview">
                 <li><strong>{{ rna_length }}</strong> nucleotides</li>
-                <li>
-                    <strong>{{ db_length }}</strong> database{{ db_length|pluralize }}
-                    <small>({{ dbs }})</small>
-                </li>
+                {% if dbs %}
+                    <li>
+                        <strong>{{ db_length }}</strong> database{{ db_length|pluralize }}
+                        <small>({{ dbs }})</small>
+                    </li>
+                {% endif %}
                 <li>
                     Found in <strong>{{ precomputed|length }}</strong> species
                 </li>
@@ -59,7 +61,7 @@ limitations under the License.
                                 <tr>
                                     <td><a href="/rna/{{ item.id }}">{{ item.id }}</a></td>
                                     <td>{{ item.species }}</td>
-                                    <td>{{ item.get_databases|join:", " }}</td>
+                                    <td>{% if item.get_databases %}{{ item.get_databases|join:", " }}{% else %}-{% endif %}</td>
                                 </tr>
                                 {% endif %}
                             {% endfor %}
