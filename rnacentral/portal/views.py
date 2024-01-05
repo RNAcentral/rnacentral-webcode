@@ -149,8 +149,11 @@ def generic_rna_view(request, upi):
     # get unique dbs
     dbs = []
     for urs in precomputed:
-        for db in urs.get_databases():
-            dbs.append(db) if db not in dbs else None
+        get_dbs = urs.get_databases()
+
+        if get_dbs:
+            for db in get_dbs:
+                dbs.append(db) if db not in dbs else None
 
         # add species name
         species = Taxonomy.objects.get(id=urs.taxid) if urs.taxid else None
