@@ -43,27 +43,29 @@ limitations under the License.
             <div class="table-responsive">
                 <h3>Species-specific IDs</h3>
 
-                <table class="table table-hover table-condensed table-responsive" id="annotations-table">
-                    <thead>
-                        <tr>
-                            <th>URS</th>
-                            <th>Species</th>
-                            <th>Database</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {% for item in precomputed %}
-                            {% if item.taxid %}
+                <div class="table-responsive" style="overflow-y: auto; max-height: 300px;">
+                    <table class="table table-hover table-condensed table-responsive" id="annotations-table">
+                        <thead>
                             <tr>
-                                <td><a href="/rna/{{ item.id }}">{{ item.id }}</a></td>
-                                <td>{{ item.species }}</td>
-                                <td>{{ item.get_databases|join:", " }}</td>
+                                <th>URS</th>
+                                <th>Species</th>
+                                <th>Database</th>
                             </tr>
-                            {% endif %}
-                        {% endfor %}
-                    </tbody>
-                </table>
+                        </thead>
+
+                        <tbody>
+                            {% for item in precomputed %}
+                                {% if item.taxid %}
+                                <tr>
+                                    <td><a href="/rna/{{ item.id }}">{{ item.id }}</a></td>
+                                    <td>{{ item.species }}</td>
+                                    <td>{{ item.get_databases|join:", " }}</td>
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
 
                 <h3>Taxonomic tree</h3>
                 <p>
