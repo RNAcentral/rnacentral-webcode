@@ -142,7 +142,7 @@ def generic_rna_view(request, upi):
 
     # get precomputed for this UPI
     try:
-        precomputed = RnaPrecomputed.objects.filter(id__startswith=upi + "_")
+        precomputed = RnaPrecomputed.objects.filter(upi=upi)
     except RnaPrecomputed.DoesNotExist:
         precomputed = None
 
