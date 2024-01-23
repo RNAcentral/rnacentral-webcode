@@ -49,9 +49,8 @@ limitations under the License.
                     <table class="table table-hover table-condensed table-responsive" id="annotations-table">
                         <thead>
                             <tr>
-                                <th>URS</th>
-                                <th>Species</th>
-                                <th>Database</th>
+                                <th>Description</th>
+                                <th>Database{{ db_length|pluralize }}</th>
                             </tr>
                         </thead>
 
@@ -59,8 +58,7 @@ limitations under the License.
                             {% for item in precomputed %}
                                 {% if item.taxid %}
                                 <tr>
-                                    <td><a href="/rna/{{ item.id }}">{{ item.id }}</a></td>
-                                    <td>{{ item.species }}</td>
+                                    <td><a href="/rna/{{ item.id }}">{{ item.description }}</a></td>
                                     <td>{% if item.get_databases %}{{ item.get_databases|join:", " }}{% else %}-{% endif %}</td>
                                 </tr>
                                 {% endif %}

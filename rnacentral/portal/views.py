@@ -155,10 +155,6 @@ def generic_rna_view(request, upi):
             for db in get_dbs:
                 dbs.append(db) if db not in dbs else None
 
-        # add species name
-        species = Taxonomy.objects.get(id=urs.taxid) if urs.taxid else None
-        urs.species = species.name if species else None
-
     context = {
         "db_length": len(dbs),
         "dbs": ", ".join(dbs) if dbs else None,
