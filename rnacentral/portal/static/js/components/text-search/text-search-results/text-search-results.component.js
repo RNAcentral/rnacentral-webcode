@@ -261,10 +261,10 @@ var textSearchResults = {
 
                 if (ctrl.isFacetApplied(facetId, facetValue)) {
                     // remove facet in different contexts
-                    newQuery = newQuery.replace(' AND ' + facet + ' AND ', ' AND ', 'i');
-                    newQuery = newQuery.replace(facet + ' AND ', '', 'i');
-                    newQuery = newQuery.replace(' AND ' + facet, '', 'i');
-                    newQuery = newQuery.replace(facet, '', 'i') || 'RNA';
+                    newQuery = newQuery.replace(new RegExp(' AND ' + facet + ' AND ', 'gi'), ' AND ');
+                    newQuery = newQuery.replace(new RegExp(facet + ' AND ', 'gi'), '');
+                    newQuery = newQuery.replace(new RegExp(' AND ' + facet, 'gi'), '');
+                    newQuery = newQuery.replace(new RegExp(facet, 'gi'), '' || 'RNA');
                 } else {
                     newQuery = search.query + ' AND ' + facet; // add new facet
                 }

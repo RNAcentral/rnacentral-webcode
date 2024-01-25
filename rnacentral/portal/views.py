@@ -130,6 +130,43 @@ def rna_view_redirect(request, upi, taxid):
 
 
 @cache_page(CACHE_TIMEOUT)
+def generic_rna_view(request, upi):
+    """Generic sequence page."""
+
+    # get RNA or die
+    upi = upi.upper()
+    try:
+        rna = Rna.objects.get(upi=upi)
+    except Rna.DoesNotExist:
+        raise Http404
+
+    # get precomputed for this UPI
+    try:
+        precomputed = RnaPrecomputed.objects.filter(upi=upi)
+    except RnaPrecomputed.DoesNotExist:
+        precomputed = None
+
+    # get unique dbs
+    dbs = []
+    for urs in precomputed:
+        get_dbs = urs.get_databases()
+
+        if get_dbs:
+            for db in get_dbs:
+                dbs.append(db) if db not in dbs else None
+
+    context = {
+        "db_length": len(dbs),
+        "dbs": ", ".join(dbs) if dbs else None,
+        "precomputed": precomputed,
+        "rna_length": rna.length,
+        "upi": upi,
+    }
+
+    return render(request, "portal/generic-sequence.html", context)
+
+
+@cache_page(CACHE_TIMEOUT)
 def rna_view(request, upi, taxid=None):
     """
     Unique RNAcentral Sequence view.

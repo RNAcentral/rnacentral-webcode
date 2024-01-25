@@ -4,6 +4,7 @@ from django.test import TestCase
 from django.urls import resolve, reverse
 from portal.views import (
     expert_database_view,
+    generic_rna_view,
     get_sequence_lineage,
     homepage,
     proxy,
@@ -34,23 +35,36 @@ class PortalTest(TestCase):
         self.assertTemplateUsed(response, "portal/homepage.html")
 
     ########################
-    # unique RNA sequence
+    # Generic sequence page
     ########################
-    def test_rna_view_url(self):
+    def test_generic_rna_view_url(self):
         view = resolve("/rna/" + self.upi)
-        self.assertEqual(view.func, rna_view)
+        self.assertEqual(view.func, generic_rna_view)
 
-    def test_rna_view_status_code(self):
+    def test_generic_rna_view_status_code(self):
         response = self.client.get(
-            reverse("unique-rna-sequence", kwargs={"upi": self.upi})
+            reverse("generic-rna-sequence", kwargs={"upi": self.upi})
         )
         self.assertEqual(response.status_code, 200)
 
-    def test_rna_view_404(self):
+    def test_generic_rna_view_404(self):
         response = self.client.get(
-            reverse("unique-rna-sequence", kwargs={"upi": "URS9999999999"})
+            reverse("generic-rna-sequence", kwargs={"upi": "URS9999999999"})
         )
         self.assertEqual(response.status_code, 404)
+
+    def test_generic_rna_view_template(self):
+        response = self.client.get(
+            reverse("generic-rna-sequence", kwargs={"upi": self.upi})
+        )
+        self.assertTemplateUsed(response, "portal/generic-sequence.html")
+
+    ########################
+    # species specific identifier
+    ########################
+    def test_rna_view_url(self):
+        view = resolve("/rna/" + self.upi + "/" + self.taxid)
+        self.assertEqual(view.func, rna_view)
 
     def test_rna_view_with_taxid_status_code(self):
         response = self.client.get(
@@ -60,15 +74,15 @@ class PortalTest(TestCase):
         )
         self.assertEqual(response.status_code, 200)
 
-    def test_rna_view_template(self):
+    def test_rna_view_404(self):
         response = self.client.get(
-            reverse("unique-rna-sequence", kwargs={"upi": self.upi})
+            reverse(
+                "unique-rna-sequence",
+                kwargs={"upi": "URS9999999999", "taxid": self.taxid},
+            )
         )
-        self.assertTemplateUsed(response, "portal/sequence.html")
+        self.assertEqual(response.status_code, 404)
 
-    ########################
-    # species specific identifier with underscore
-    ########################
     def test_rna_view_redirect_url(self):
         view = resolve("/rna/" + self.upi + "_" + self.taxid)
         self.assertEqual(view.func, rna_view_redirect)
@@ -81,6 +95,14 @@ class PortalTest(TestCase):
             )
         )
         self.assertEqual(response.status_code, 301)
+
+    def test_rna_view_template(self):
+        response = self.client.get(
+            reverse(
+                "unique-rna-sequence", kwargs={"upi": self.upi, "taxid": self.taxid}
+            )
+        )
+        self.assertTemplateUsed(response, "portal/sequence.html")
 
     ########################
     # expert database
