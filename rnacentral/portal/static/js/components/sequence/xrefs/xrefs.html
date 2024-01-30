@@ -23,7 +23,6 @@
         <tr>
           <th>Database</th>
           <th>Description</th>
-          <th ng-if="!$ctrl.taxid">Species</th>
         </tr>
       </thead>
 
@@ -477,20 +476,6 @@
             <span ng-if="xref.is_active == false">
               <br>
               <small><span class="label label-danger" title="This annotation was removed from the Expert Database">Removed from database</span></small>
-            </span>
-          </td>
-
-          <!-- accession -->
-          <td ng-if="!$ctrl.taxid">
-            <!-- Greengenes inferred taxonomy -->
-            <span ng-if="xref.database == 'Greengenes'">
-              INSDC classification:
-              <a href="https://www.ebi.ac.uk/ena/browser/view/Taxon:{{ xref.taxid }}" target="_blank" title="{{ xref.accession.classification }}"><em>{{ xref.accession.species }}</em></a>
-              <br>
-              Greengenes classification: <em>{{ xref.accession.inference }}</em>
-            </span>
-            <span ng-if="!(xref.database == 'Greengenes')">
-              <a href="https://www.ebi.ac.uk/ena/browser/view/Taxon:{{ xref.taxid }}" target="_blank" title="{{ xref.accession.classification }}"><em>{{ xref.accession.species }}</em></a>
             </span>
           </td>
         </tr>
