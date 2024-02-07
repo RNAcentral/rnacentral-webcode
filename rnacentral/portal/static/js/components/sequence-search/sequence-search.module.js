@@ -363,13 +363,13 @@ var sequenceSearchController = function($scope, $http, $timeout, $location, $q, 
                     else if (facetValue.label === 'False') { facetValue.label = 'No'; }
                 });
             }
-            if (facet.id === 'has_conserved_structure') {
-                facet.label = 'Conserved motifs';
-                facet.facetValues.forEach(function(facetValue) {
-                    if (facetValue.label === 'True') { facetValue.label = 'Found'; }
-                    else if (facetValue.label === 'False') { facetValue.label = 'Not found'; }
-                });
-            }
+            // if (facet.id === 'has_conserved_structure') {
+            //     facet.label = 'Conserved motifs';
+            //     facet.facetValues.forEach(function(facetValue) {
+            //         if (facetValue.label === 'True') { facetValue.label = 'Found'; }
+            //         else if (facetValue.label === 'False') { facetValue.label = 'Not found'; }
+            //     });
+            // }
             if (facet.id === 'has_go_annotations') {
                 facet.label = 'GO annotations';
                 facet.facetValues.forEach(function(facetValue) {

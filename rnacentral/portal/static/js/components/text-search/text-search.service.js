@@ -64,8 +64,8 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
             'standard_name': 'Standard name',
             'tax_string': 'Taxonomy'
         },
-        facetfields: ['rna_type', 'so_rna_type', 'has_litsumm', 'has_lit_scan', 'TAXONOMY', 'expert_db', 'has_secondary_structure', 'qc_warning_found', 'has_go_annotations', 'has_conserved_structure', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
-        foldableFacets: ['rna_type', 'qc_warning_found', 'has_go_annotations', 'has_conserved_structure', 'has_genomic_coordinates'],
+        facetfields: ['rna_type', 'so_rna_type', 'has_litsumm', 'has_lit_scan', 'TAXONOMY', 'expert_db', 'has_secondary_structure', 'qc_warning_found', 'has_go_annotations', 'has_genomic_coordinates', 'popular_species'], // will be displayed in this order
+        foldableFacets: ['rna_type', 'qc_warning_found', 'has_go_annotations', 'has_genomic_coordinates'],
         sortableFields: [
             { label: 'Popular species, Length ↓', value: 'boost:descending,length:descending' },
             // { label: 'Popular species ↑', value: 'boost:ascending' },
@@ -338,13 +338,13 @@ var search = function (_, $http, $interpolate, $location, $window, $q, routes) {
                     else if (facetValue.label === 'False') { facetValue.label = 'No'; }
                 });
             }
-            if (facet.id === 'has_conserved_structure') {
-                facet.label = 'Sequence features';
-                facet.facetValues.forEach(function(facetValue) {
-                    if (facetValue.label === 'True') { facetValue.label = 'Conserved structures'; }
-                    else if (facetValue.label === 'False') { facetValue.label = 'No conserved structures'; }
-                });
-            }
+            // if (facet.id === 'has_conserved_structure') {
+            //     facet.label = 'Sequence features';
+            //     facet.facetValues.forEach(function(facetValue) {
+            //         if (facetValue.label === 'True') { facetValue.label = 'Conserved structures'; }
+            //         else if (facetValue.label === 'False') { facetValue.label = 'No conserved structures'; }
+            //     });
+            // }
             if (facet.id === 'has_go_annotations') {
                 facet.label = 'GO annotations';
                 facet.facetValues.forEach(function(facetValue) {
