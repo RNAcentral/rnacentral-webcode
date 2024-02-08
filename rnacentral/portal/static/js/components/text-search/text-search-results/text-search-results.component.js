@@ -23,6 +23,9 @@ var textSearchResults = {
             ctrl.goHelp = "/help/gene-ontology-annotations";
             ctrl.genomeMappingHelp = "/help/genomic-mapping";
 
+            // subspecies can be toggled on and off
+            ctrl.includeSubspecies = false;
+
             // slider that allows users to set range of sequence lengths
             ctrl.setLengthSlider(); // initial value
 
@@ -197,6 +200,30 @@ var textSearchResults = {
         };
 
         /**
+         * Show subspecies in the TAXONOMY facet.
+         */
+        ctrl.showSubspecies = function() {
+            ctrl.includeSubspecies = true;
+            if (search.query.match(/TAXONOMY:"(\d+)"/)) {
+                var addLineage = search.query.replace("RNA AND", "").replace(/TAXONOMY:"(\d+)"/, '(TAXONOMY:"$1" OR lineage_path:"$1")').trim()
+                search.search(addLineage);
+            }
+        };
+
+        /**
+         * Hide subspecies in the TAXONOMY facet.
+         */
+        ctrl.hideSubspecies = function() {
+            ctrl.includeSubspecies = false;
+            var match = search.query.match(/TAXONOMY:"(\d+)"/);
+            if (match && search.query.match(/lineage_path:"(\d+)"/)) {
+                var taxonomy = match[1];  // e.g.: 9606
+                var removeLineage = search.query.replace(/\(TAXONOMY:"\d+"\s+OR\s+lineage_path:"\d+"\)/, 'TAXONOMY:"' + taxonomy + '"').trim()
+                search.search(removeLineage);
+            }
+        };
+
+        /**
          * Clean up SO term labels.
          */
         ctrl.prettySoLabel = function(facetLabel) {
@@ -267,6 +294,10 @@ var textSearchResults = {
                     newQuery = newQuery.replace(new RegExp(facet, 'gi'), '' || 'RNA');
                 } else {
                     newQuery = search.query + ' AND ' + facet; // add new facet
+                }
+
+                if (ctrl.includeSubspecies && facetId === "TAXONOMY") {
+                    newQuery = newQuery.replace("RNA AND", "").replace(/TAXONOMY:"(\d+)"/, '(TAXONOMY:"$1" OR lineage_path:"$1")').trim()
                 }
             } else {
                 var lengthClause = 'length\\:\\[\\d+ TO \\d+\\]';
