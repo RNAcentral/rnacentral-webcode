@@ -24,7 +24,7 @@ var textSearchResults = {
             ctrl.genomeMappingHelp = "/help/genomic-mapping";
 
             // subspecies can be toggled on and off
-            ctrl.includeSubspecies = false;
+            ctrl.includeSubspecies = !!search.query.match(/lineage_path:"(\d+)"/);
 
             // slider that allows users to set range of sequence lengths
             ctrl.setLengthSlider(); // initial value
@@ -215,10 +215,8 @@ var textSearchResults = {
          */
         ctrl.hideSubspecies = function() {
             ctrl.includeSubspecies = false;
-            var match = search.query.match(/TAXONOMY:"(\d+)"/);
-            if (match && search.query.match(/lineage_path:"(\d+)"/)) {
-                var taxonomy = match[1];  // e.g.: 9606
-                var removeLineage = search.query.replace(/\(TAXONOMY:"\d+"\s+OR\s+lineage_path:"\d+"\)/, 'TAXONOMY:"' + taxonomy + '"').trim()
+            if (search.query.match(/TAXONOMY:"(\d+)"/) && search.query.match(/lineage_path:"(\d+)"/)) {
+                var removeLineage = search.query.replace(/\(TAXONOMY:"(\d+)"\s+OR\s+lineage_path:"\d+"\)/, 'TAXONOMY:"$1"').trim()
                 search.search(removeLineage);
             }
         };
@@ -288,6 +286,10 @@ var textSearchResults = {
 
                 if (ctrl.isFacetApplied(facetId, facetValue)) {
                     // remove facet in different contexts
+                    if (ctrl.includeSubspecies && facetId === "TAXONOMY" && search.query.match(/lineage_path:"(\d+)"/)) {
+                        // remove lineage_path
+                        newQuery = newQuery.replace(/\(TAXONOMY:"(\d+)"\s+OR\s+lineage_path:"\d+"\)/, 'TAXONOMY:"$1"');
+                    }
                     newQuery = newQuery.replace(new RegExp(' AND ' + facet + ' AND ', 'gi'), ' AND ');
                     newQuery = newQuery.replace(new RegExp(facet + ' AND ', 'gi'), '');
                     newQuery = newQuery.replace(new RegExp(' AND ' + facet, 'gi'), '');
@@ -296,7 +298,8 @@ var textSearchResults = {
                     newQuery = search.query + ' AND ' + facet; // add new facet
                 }
 
-                if (ctrl.includeSubspecies && facetId === "TAXONOMY") {
+                if (ctrl.includeSubspecies && facetId === "TAXONOMY" && !search.query.match(/lineage_path:"(\d+)"/)) {
+                    // add lineage_path
                     newQuery = newQuery.replace("RNA AND", "").replace(/TAXONOMY:"(\d+)"/, '(TAXONOMY:"$1" OR lineage_path:"$1")').trim()
                 }
             } else {
