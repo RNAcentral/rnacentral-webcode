@@ -424,12 +424,6 @@ class RnaSecondaryStructureSerializer(serializers.HyperlinkedModelSerializer):
         return obj.get_layout_secondary()
 
 
-class SecondaryStructureSVGImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SecondaryStructureWithLayout
-        fields = ("layout",)
-
-
 class RnaSpeciesSpecificSerializer(serializers.Serializer):
     """
     Serializer class for species-specific RNAcentral ids.
