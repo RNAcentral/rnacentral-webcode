@@ -250,18 +250,17 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
         protocol = "https://" if self.context["request"].is_secure() else "http://"
         hostport = self.context["request"].get_host()
         if isinstance(upis, list):
+            url = (
+                "unique-rna-sequence"
+                if "_" in "\t".join(upis)
+                else "generic-rna-sequence"
+            )
             return [
-                protocol
-                + hostport
-                + reverse("unique-rna-sequence", kwargs={"upi": upi})
-                for upi in upis
+                protocol + hostport + reverse(url, kwargs={"upi": upi}) for upi in upis
             ]
         else:  # upis is just a single item
-            return (
-                protocol
-                + hostport
-                + reverse("unique-rna-sequence", kwargs={"upi": upis})
-            )
+            url = "unique-rna-sequence" if "_" in upis else "generic-rna-sequence"
+            return protocol + hostport + reverse(url, kwargs={"upi": upis})
 
     def get_mirbase_mature_products(self, obj):
         return (
