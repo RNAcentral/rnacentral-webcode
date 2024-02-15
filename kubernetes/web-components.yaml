@@ -26,6 +26,13 @@ data:
     cd rnacentral-litscan
     git checkout dev
 
+    echo "Install Genome Browser"
+    cd $RNACENTRAL_HOME/rnacentral/portal/static
+    if [ -d "rnacentral-genome-browser" ]; then rm -rf rnacentral-genome-browser; fi
+    git clone https://github.com/RNAcentral/rnacentral-genome-browser.git
+    cd rnacentral-genome-browser
+    git checkout dev
+
     echo "Update static files and touch wsgi"
     cd $RNACENTRAL_HOME/rnacentral
     python manage.py collectstatic --noinput
