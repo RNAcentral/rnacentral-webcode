@@ -34,7 +34,11 @@ limitations under the License.
         <br><br>
 
         <rnacentral-genome-browser></rnacentral-genome-browser>
-        <script type="text/javascript" src="https://rnacentral.github.io/rnacentral-genome-browser/build/genome-browser.js"></script>
+        {% if request.get_host == 'test.rnacentral.org' or request.get_host == 'localhost:8000' %}
+            <script type="text/javascript" src="{% static "rnacentral-genome-browser/build/genome-browser.js" %}"></script>
+        {% else %}
+            <script type="text/javascript" src="https://rnacentral.github.io/rnacentral-genome-browser/build/genome-browser.js"></script>
+        {% endif %}
     </div>
 </div>
 
