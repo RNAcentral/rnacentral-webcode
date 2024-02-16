@@ -36,17 +36,19 @@ class RnaPrecomputed(models.Model):
         on_delete=models.CASCADE,
     )
     rna_type = models.CharField(max_length=250, null=True)
-    update_date = models.DateField(null=True)
+    update_date = models.DateField(auto_now=True)
     has_coordinates = models.BooleanField()
     databases = models.TextField(null=True)
     is_active = models.BooleanField()
     last_release = models.IntegerField(null=True)
     short_description = models.CharField(max_length=250)
 
-    update_date = models.DateField(null=False, default=datetime.date(1970, 1, 1))
-
     class Meta:
         db_table = "rnc_rna_precomputed"
+        ordering = ["id"]
+
+    def __str__(self):
+        return self.id
 
     def get_databases(self):
         return self.databases.split(",") if self.databases else None
