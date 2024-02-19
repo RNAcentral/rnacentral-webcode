@@ -67,6 +67,7 @@ from portal.models import (
     RnaPrecomputed,
     SequenceFeature,
     SequenceRegion,
+    SequenceRegionActive,
     Taxonomy,
 )
 from rest_framework import generics, renderers, status
@@ -567,11 +568,44 @@ class RnaGenomeLocations(generics.ListAPIView):
         try:
             rna_precomputed = RnaPrecomputed.objects.get(id=urs_taxid, is_active=True)
         except RnaPrecomputed.DoesNotExist:
-            return SequenceRegion.objects.none()
+            return SequenceRegionActive.objects.none()
 
-        return SequenceRegion.objects.filter(urs_taxid=rna_precomputed).select_related(
-            "assembly"
+        sequence_region_active_query = """
+            SELECT
+                {sequence_region_active}.id,
+                {sequence_region_active}.chromosome,
+                {sequence_region_active}.strand,
+                {sequence_region_active}.region_start,
+                {sequence_region_active}.region_stop,
+                {sequence_region_active}.identity,
+                {sequence_region_active}.providing_databases,
+                {ensembl_assembly}.assembly_id,
+                {ensembl_assembly}.assembly_full_name,
+                {ensembl_assembly}.gca_accession,
+                {ensembl_assembly}.assembly_ucsc,
+                {ensembl_assembly}.taxid,
+                {ensembl_assembly}.ensembl_url,
+                {ensembl_assembly}.division,
+                {ensembl_assembly}.subdomain,
+                {ensembl_assembly}.example_chromosome,
+                {ensembl_assembly}.example_start,
+                {ensembl_assembly}.example_end,
+                {taxonomy}.name as common_name
+            FROM {sequence_region_active}
+            LEFT JOIN {ensembl_assembly}
+            ON {ensembl_assembly}.assembly_id = {sequence_region_active}.assembly_id
+            LEFT JOIN {taxonomy}
+            ON {taxonomy}.id = {ensembl_assembly}.taxid
+            WHERE {sequence_region_active}.urs_taxid = '{rna_precomputed}'
+            ORDER BY {ensembl_assembly}.assembly_id
+        """.format(
+            sequence_region_active=SequenceRegionActive._meta.db_table,
+            ensembl_assembly=EnsemblAssembly._meta.db_table,
+            taxonomy=Taxonomy._meta.db_table,
+            rna_precomputed=rna_precomputed,
         )
+
+        return SequenceRegionActive.objects.raw(sequence_region_active_query)
 
 
 class AccessionView(generics.RetrieveAPIView):
@@ -1022,18 +1056,17 @@ class GenomeBrowserAPIViewSet(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request, species, format=None):
-        try:
-            assembly = EnsemblAssembly.objects.filter(ensembl_url=species).first()
-        except EnsemblAssembly.DoesNotExist:
+        assembly = EnsemblAssembly.objects.filter(ensembl_url=species).first()
+        if assembly is None:
             return Response([])
 
-        try:
-            region = (
-                SequenceRegion.objects.filter(assembly=assembly)
-                .order_by("chromosome")
-                .first()
-            )
-        except SequenceRegion.DoesNotExist:
+        region = (
+            SequenceRegionActive.objects.filter(assembly_id=assembly.assembly_id)
+            .order_by("chromosome")
+            .first()
+        )
+
+        if region is None:
             return Response([])
 
         chromosome = (
