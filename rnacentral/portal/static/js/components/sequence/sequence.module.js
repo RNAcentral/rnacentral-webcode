@@ -283,41 +283,39 @@ var dnaClipbaord = new Clipboard('#copy-as-dna', {
     * Can be invoked upon changing Xrefs page, if server-side pagination's on.
     */
     $scope.createModificationsFeature = function(modifications, accession) {
-	if (!$scope.featureViewer.hasFeature(accession, "id")) { // if feature track's already there, don't duplicate it
-	    // sort modifications by position
-	    modifications.sort(function(a, b) {return a.position - b.position});
-
-	    // loop over modifications and insert span tags with modified nucleotide data
-	    var data = [];
-	    for (var i = 0; i < modifications.length; i++) {
-		data.push({
-		    x: modifications[i].position,
-		    y: modifications[i].position,
-		    description: 'Modified nucleotide ' + modifications[i].chem_comp.id + modifications[i].chem_comp.one_letter_code + ' <br> ' + modifications[i].chem_comp.description
-		});
-	    }
-
 	    /**
 		* If featureViewer was already initialized, add feature to it - otherwise, give it a second and try again.
 		*/
 		var addModifications = function() {
-		    if ($scope.featureViewer) {
-			$scope.featureViewer.addFeature({
-			    id: accession,
-			    data: data,
-			    name: "Modifications",
-			    className: "modification",
-			    color: "#005572",
-			    type: "rect",
-			    filter: "type1"
-			});
+		    if ($scope.featureViewer && !$scope.featureViewer.hasFeature(accession, "id")) {  // if feature track's already there, don't duplicate it
+				// sort modifications by position
+				modifications.sort(function(a, b) {return a.position - b.position});
+
+				// loop over modifications and insert span tags with modified nucleotide data
+				var data = [];
+				for (var i = 0; i < modifications.length; i++) {
+					data.push({
+						x: modifications[i].position,
+						y: modifications[i].position,
+						description: 'Modified nucleotide ' + modifications[i].chem_comp.id + modifications[i].chem_comp.one_letter_code + ' <br> ' + modifications[i].chem_comp.description
+					});
+	    		}
+
+				$scope.featureViewer.addFeature({
+					id: accession,
+					data: data,
+					name: "Modifications",
+					className: "modification",
+					color: "#005572",
+					type: "rect",
+					filter: "type1"
+				});
 		    } else {
-			$timeout(addModifications, 1000);
+				$timeout(addModifications, 1000);
 		    }
 		};
 
 	    addModifications()
-	}
     };
 
 $scope.createFeatureViewerModal = function(targetId, heading, content) {
