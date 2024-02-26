@@ -39,7 +39,6 @@ class SequenceRegion(models.Model):
     )
     was_mapped = models.BooleanField()
     identity = models.IntegerField()
-    providing_databases = ArrayField(models.TextField())
     exon_count = models.IntegerField()
 
     class Meta:

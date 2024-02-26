@@ -578,7 +578,6 @@ class RnaGenomeLocations(generics.ListAPIView):
                 {sequence_region_active}.region_start,
                 {sequence_region_active}.region_stop,
                 {sequence_region_active}.identity,
-                {sequence_region_active}.providing_databases,
                 {ensembl_assembly}.assembly_id,
                 {ensembl_assembly}.assembly_full_name,
                 {ensembl_assembly}.gca_accession,

@@ -33,7 +33,6 @@ class SequenceRegionActive(models.Model):
     assembly_id = models.CharField(max_length=255)
     was_mapped = models.BooleanField()
     identity = models.IntegerField()
-    providing_databases = ArrayField(models.TextField())
     exon_count = models.IntegerField()
 
     class Meta:
