@@ -559,6 +559,30 @@ $q.all([$scope.fetchRna(), $scope.featureViewerContainerReady()]).then(function(
 		    });
 		},
 		},
+		anticodon: {
+		features: [],
+		normalize: function(feature) {
+		    return {
+			x: feature.start >= 0 ? feature.start : 1,
+			y: feature.stop < $scope.rna.length ? feature.stop : $scope.rna.length - 1,
+				description: 'Anticodon (Isotype: ' + feature.metadata.isotype + ', Sequence: ' + feature.metadata.sequence + ')',
+		    }
+		},
+		addFeature: function(data) {
+		    $scope.featureViewer.addFeature({
+			id: 'anticodon',
+			data: data,
+			name: "Anticodon",
+			className: "anticodonFeatures",
+			color: "#267431",
+			type: "rect",
+			filter: "type1",
+			height: 16,
+		    });
+
+		    $('svg .anticodonFeaturesGroup text').css('fill', 'white').css('font-size', 'small');
+		},
+		},
 	};
 
 	$scope.features = "pending";

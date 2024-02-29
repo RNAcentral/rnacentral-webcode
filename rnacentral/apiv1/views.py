@@ -777,16 +777,14 @@ class SequenceFeaturesAPIViewSet(generics.ListAPIView):
     def get_queryset(self):
         upi = self.kwargs["pk"]
         taxid = self.kwargs["taxid"]
-        return SequenceFeature.objects.filter(
-            upi=upi,
-            taxid=taxid,
-            feature_name__in=[
-                "conserved_rna_structure",
-                "mature_product",
-                "cpat_orf",
-                "rna_editing_event",
-            ],
+        features = SequenceFeature.objects.filter(upi=upi, taxid=taxid).exclude(
+            feature_name__in=["modification", "rfam_hit"]
         )
+        # create list of anticodon ids to remove all but 1
+        anticodon_ids = features.filter(feature_name="anticodon").values_list(
+            "pk", flat=True
+        )[1:]
+        return features.exclude(pk__in=anticodon_ids)
 
 
 class RnaGoAnnotationsView(APIView):
