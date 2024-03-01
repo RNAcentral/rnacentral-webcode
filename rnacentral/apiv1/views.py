@@ -777,9 +777,9 @@ class SequenceFeaturesAPIViewSet(generics.ListAPIView):
     def get_queryset(self):
         upi = self.kwargs["pk"]
         taxid = self.kwargs["taxid"]
-        features = SequenceFeature.objects.filter(upi=upi, taxid=taxid).exclude(
-            feature_name__in=["modification", "rfam_hit"]
-        )
+        features = SequenceFeature.objects.filter(
+            upi=upi, taxid=taxid, stop__gt=0
+        ).exclude(feature_name__in=["modification", "rfam_hit"])
         # create list of anticodon ids to remove all but 1
         anticodon_ids = features.filter(feature_name="anticodon").values_list(
             "pk", flat=True
