@@ -286,7 +286,10 @@ var textSearchResults = {
 
                 if (ctrl.isFacetApplied(facetId, facetValue)) {
                     // remove facet in different contexts
-                    if (ctrl.includeSubspecies && facetId === "TAXONOMY" && search.query.match(/lineage_path:"(\d+)"/)) {
+                    if (ctrl.includeSubspecies && facetId === "TAXONOMY" && search.query.match(new RegExp('TAXONOMY', 'g')).length > 1) {
+                        // remove subspecies
+                        newQuery = newQuery.replace(/AND TAXONOMY:"(\d+)"/, '').trim();
+                    } else if (ctrl.includeSubspecies && facetId === "TAXONOMY" && search.query.match(/lineage_path:"(\d+)"/)) {
                         // remove lineage_path
                         newQuery = newQuery.replace(/\(TAXONOMY:"(\d+)"\s+OR\s+lineage_path:"\d+"\)/, 'TAXONOMY:"$1"');
                     }
