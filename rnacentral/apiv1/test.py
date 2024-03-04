@@ -250,8 +250,7 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         url = reverse("expert-dbs-api")
         self._test_url(url)
 
-    # TODO: fix EnsemblAssembly table in public postgres
-    def _test_ensembl_karyotype(self):
+    def test_ensembl_karyotype(self):
         """Test ensembl-karyotype endpoint."""
         url = reverse(
             "ensembl-karyotype", kwargs={"ensembl_url": "fusarium_verticillioides"}
