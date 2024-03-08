@@ -338,6 +338,34 @@ $scope.createFeatureViewerModal = function(targetId, heading, content) {
     $("#modalWindow").modal('toggle');
 };
 
+// function that creates the feature object for tmRNA
+	$scope.tmRNAFeature = function(id, name) {
+		return {
+			features: [],
+			normalize: function (feature) {
+				return {
+					x: feature.start >= 0 ? feature.start : 1,
+					y: feature.stop < $scope.rna.length ? feature.stop : $scope.rna.length - 1,
+					description: feature.metadata.coding_sequence ? 'Coding sequence: ' + feature.metadata.coding_sequence : '',
+				}
+			},
+			addFeature: function (data) {
+				$scope.featureViewer.addFeature({
+					id: id,
+					data: data,
+					name: name,
+					className: id + "Features",
+					color: "#8d8a8a",
+					type: "rect",
+					filter: "type1",
+					height: 16,
+				});
+
+				$('svg .tmRNAFeaturesGroup text').css('fill', 'white').css('font-size', 'small');
+			},
+		};
+	}
+
 // Initialization
 //---------------
 
@@ -583,6 +611,14 @@ $q.all([$scope.fetchRna(), $scope.featureViewerContainerReady()]).then(function(
 		    $('svg .anticodonFeaturesGroup text').css('fill', 'white').css('font-size', 'small');
 		},
 		},
+		tmrna_ccaequiv: $scope.tmRNAFeature('tmrna_ccaequiv', 'tmRNA CCAequiv'),
+    	tmrna_body: $scope.tmRNAFeature('tmrna_body', 'tmRNA Body'),
+		tmrna_ivs: $scope.tmRNAFeature('tmrna_ivs', 'tmRNA IVS'),
+		tmrna_acceptor: $scope.tmRNAFeature('tmrna_acceptor', 'tmRNA Acceptor St'),
+		tmrna_tagcds: $scope.tmRNAFeature('tmrna_tagcds', 'tmRNA TagCDS'),
+		tmrna_exon: $scope.tmRNAFeature('tmrna_exon', 'tmRNA Exon'),
+		tmrna_gpi: $scope.tmRNAFeature('tmrna_gpi', 'tmRNA Group I Intr'),
+		tmrna_coding_region: $scope.tmRNAFeature('tmrna_coding_region', 'tmRNA Coding Reg'),
 	};
 
 	$scope.features = "pending";

@@ -780,11 +780,25 @@ class SequenceFeaturesAPIViewSet(generics.ListAPIView):
         features = SequenceFeature.objects.filter(
             upi=upi, taxid=taxid, stop__gt=0
         ).exclude(feature_name__in=["modification", "rfam_hit"])
-        # create list of anticodon ids to remove all but 1
-        anticodon_ids = features.filter(feature_name="anticodon").values_list(
-            "pk", flat=True
-        )[1:]
-        return features.exclude(pk__in=anticodon_ids)
+
+        # some features have duplicate data
+        features_list = [
+            "anticodon",
+            "tmrna_ivs",
+            "tmrna_acceptor",
+            "tmrna_tagcds",
+            "tmrna_exon",
+            "tmrna_gpi",
+            "tmrna_body",
+            "tmrna_ccaequiv",
+            "tmrna_coding_region",
+        ]
+        distinct_features = features.filter(feature_name__in=features_list).distinct(
+            "feature_name"
+        )
+        remove_features = features.exclude(feature_name__in=features_list)
+
+        return remove_features.union(distinct_features)
 
 
 class RnaGoAnnotationsView(APIView):
