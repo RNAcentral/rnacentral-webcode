@@ -87,7 +87,7 @@ class RawSqlQueryset(models.QuerySet):
                 refseq_mirna_precursors = self.get_refseq_mirna_precursor(taxid)
                 refseq_splice_variants = self.get_refseq_splice_variants(taxid)
                 ensembl_splice_variants = self.get_ensembl_splice_variants(taxid)
-                tmrna_mates = self.get_tmrna_mate(taxid)
+                # tmrna_mates = self.get_tmrna_mate(taxid)
 
                 # "annotate" xrefs queryset with additional attributes, retrieved by raw SQL queries
                 for xref in self:
@@ -119,10 +119,10 @@ class RawSqlQueryset(models.QuerySet):
                             splice_variant.upi.upi
                             for splice_variant in ensembl_splice_variants[xref.id]
                         ]
-                    if xref.id in tmrna_mates:
-                        xref.tmrna_mates = [
-                            tmrna_mate.upi.upi for tmrna_mate in tmrna_mates[xref.id]
-                        ]
+                    # if xref.id in tmrna_mates:
+                    #     xref.tmrna_mates = [
+                    #         tmrna_mate.upi.upi for tmrna_mate in tmrna_mates[xref.id]
+                    #     ]
 
     def _xrefs_raw_queryset_to_dict(self, raw_queryset):
         """
@@ -380,6 +380,8 @@ class RawSqlQueryset(models.QuerySet):
         return self._xrefs_raw_queryset_to_dict(raw_queryset)
 
     def get_tmrna_mate(self, taxid=None):
+        # This query is taking too long to run, and it is not being used
+        # at the moment, as the tmRNA website is down
         taxid_filter = "AND xref.taxid = %s" % taxid if taxid else ""
 
         # _fetch_all() has already been called by now
