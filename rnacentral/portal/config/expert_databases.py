@@ -370,9 +370,9 @@ expert_dbs = [
         "tags": ["automatic", "tmRNA"],
         "abbreviation": "",
         "examples": [
-            {"upi": "URS000060F5B3", "taxid": 398580},
-            {"upi": "URS000058C344", "taxid": 1291358},
-            {"upi": "URS000048A91D", "taxid": 224911},
+            {"upi": "URS0000B69192", "taxid": 48256},
+            {"upi": "URS0000C46B59", "taxid": 42094},
+            {"upi": "URS0000C0C687", "taxid": 315358},
         ],
         "references": [
             {
