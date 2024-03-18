@@ -225,7 +225,7 @@ class Accession(models.Model):
             "LNCIPEDIA": "http://www.lncipedia.org/db/transcript/{id}",
             "LNCBOOK": "https://ngdc.cncb.ac.cn/lncbookv1/transcript?transid={id}",
             "MODOMICS": "http://modomics.genesilico.pl/sequences/list/{id}",
-            "HGNC": "http://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id={id}",
+            "HGNC": "http://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/{id}",
             "ENSEMBL": "http://www.ensembl.org/{species}/Transcript/Summary?t={id}",
             "GENCODE": "http://www.ensembl.org/{species}/Transcript/Summary?t={id}",
             "ENSEMBL_PLANTS": "http://plants.ensembl.org/{species}/Transcript/Summary?db=core;t={id}",
