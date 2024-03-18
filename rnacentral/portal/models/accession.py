@@ -223,7 +223,7 @@ class Accession(models.Model):
             "GREENGENES": "https://www.ebi.ac.uk/ena/browser/view/{id}.{version}",
             "NONCODE": "http://www.noncode.org/show_rna.php?id={id}&version={version}",
             "LNCIPEDIA": "http://www.lncipedia.org/db/transcript/{id}",
-            "LNCBOOK": "http://bigd.big.ac.cn/lncbook/transcript?transid={id}",
+            "LNCBOOK": "https://ngdc.cncb.ac.cn/lncbookv1/transcript?transid={id}",
             "MODOMICS": "http://modomics.genesilico.pl/sequences/list/{id}",
             "HGNC": "http://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id={id}",
             "ENSEMBL": "http://www.ensembl.org/{species}/Transcript/Summary?t={id}",
