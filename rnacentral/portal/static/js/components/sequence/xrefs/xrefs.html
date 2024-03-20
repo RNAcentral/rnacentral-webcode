@@ -175,7 +175,8 @@
 
             <!-- tmRNA Website -->
             <span ng-switch-when="tmRNA Website">
-              <i>tmRNA Website is temporarily unavailable</i>
+              tmRNA Website: {{ xref.accession.external_id }}
+              <small><span class="label label-danger" title="The tmRNA website is unavailable">Website unavailable</span></small>
             </span>
 
             <!-- RefSeq -->
