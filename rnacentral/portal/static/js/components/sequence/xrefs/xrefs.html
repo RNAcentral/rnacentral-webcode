@@ -80,8 +80,7 @@
 
             <!-- lncRNAdb -->
             <span ng-switch-when="lncRNAdb">
-              lncRNAdb:
-              <a class="lncrnadb-external-url" ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.optional_id }}</a>
+              lncRNAdb: {{ xref.accession.optional_id }} <small><span class="label label-danger" title="The lncRNAdb website is unavailable">Website unavailable</span></small>
             </span>
 
             <!-- gtRNAdb -->
