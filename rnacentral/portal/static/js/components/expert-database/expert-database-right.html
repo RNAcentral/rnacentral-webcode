@@ -13,7 +13,7 @@
           <div ng-if="$ctrl.expertDb.label === 'lncrnadb'">
             <div class="alert alert-info small">
               <i class="fa fa-info-circle"></i> Due to the small number of entries,
-              a list of all lincRNAdb entries is provided instead of a sequence distribution graph.
+              a list of all lncRNAdb entries is provided instead of a sequence distribution graph.
             </div>
 
             <table class="table table-bordered table-striped table-condensed">
@@ -25,9 +25,8 @@
               </thead>
                 <tr ng-repeat="rna in $ctrl.lncrnadb">
                   <td>
-                    <a ng-href="{{ rna.url }}">
+                    <a ng-href="rna/{{ rna.id }}">
                     {{ rna.description }}
-                    ({{ $ctrl.url2urs(rna.url) }})
                     </a>
                   </td>
                   <td>{{rna.length}}</td>

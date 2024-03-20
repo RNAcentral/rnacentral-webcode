@@ -50,6 +50,13 @@ angular.module("routes", []).service('routes', ['$interpolate', function($interp
             '&format=json' +
             '&sort=boost:descending'
         ,
+        ebiDbSequences:
+            '{{ ebiBaseUrl }}' +
+            '?query={{ dbQuery }}' +
+            '&fields=description,length' +
+            '&size=1000' +
+            '&format=json'
+        ,
         ebiAutocomplete: 'http://www.ebi.ac.uk/ebisearch/ws/rest/RNAcentral/autocomplete?term={{ query }}&format=json',
         apiGoTermsView: '/api/v1/rna/{{ upi }}/go-annotations/{{ taxid }}',
         quickGoSummaryPage: 'https://www.ebi.ac.uk/QuickGO/term/{{ term_id }}',
