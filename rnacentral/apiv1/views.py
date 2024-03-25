@@ -39,7 +39,6 @@ from apiv1.serializers import (
     RnaNestedSerializer,
     RnaSecondaryStructureSerializer,
     RnaSpeciesSpecificSerializer,
-    SecondaryStructureSVGImageSerializer,
     SequenceFeatureSerializer,
     XrefSerializer,
 )
@@ -478,7 +477,6 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
     SVG image for an RNA sequence.
     """
 
-    serializer_class = SecondaryStructureSVGImageSerializer
     permission_classes = (AllowAny,)
 
     def get(self, request, pk=None, format=None):
