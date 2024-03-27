@@ -423,12 +423,6 @@ class RnaSecondaryStructureSerializer(serializers.HyperlinkedModelSerializer):
         return obj.get_layout_secondary()
 
 
-class SecondaryStructureSVGImageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = SecondaryStructureWithLayout
-        fields = ("layout",)
-
-
 class RnaSpeciesSpecificSerializer(serializers.Serializer):
     """
     Serializer class for species-specific RNAcentral ids.
@@ -938,24 +932,10 @@ class RnaGenomeLocationsSerializer(serializers.Serializer):
     start = serializers.ReadOnlyField(source="region_start")
     end = serializers.ReadOnlyField(source="region_stop")
     identity = serializers.ReadOnlyField()
-    databases = serializers.SerializerMethodField(method_name="get_providing_databases")
     ucsc_chromosome = serializers.SerializerMethodField(method_name="get_chromosome")
-    ensembl_assembly = EnsemblAssemblySerializer(source="assembly")
-
-    def get_providing_databases(self, obj):
-        if len(obj.providing_databases) > 1:
-            databases = " and ".join(
-                [
-                    ", ".join(obj.providing_databases[:-1]),
-                    obj.providing_databases[-1],
-                ]
-            )
-        elif len(obj.providing_databases) == 1:
-            databases = obj.providing_databases[0]
-        else:
-            databases = None
-
-        return databases
+    ensembl_assembly = serializers.SerializerMethodField(
+        method_name="get_ensembl_assembly"
+    )
 
     def get_chromosome(self, obj):
         exceptions = ["X", "Y"]
@@ -965,3 +945,23 @@ class RnaGenomeLocationsSerializer(serializers.Serializer):
             ucsc_chromosome = obj.chromosome
 
         return ucsc_chromosome
+
+    def get_ensembl_assembly(self, obj):
+        # IGV expect to see this info in a dict
+        return {
+            "assembly_id": obj.assembly_id,
+            "assembly_full_name": obj.assembly_full_name,
+            "gca_accession": obj.gca_accession,
+            "assembly_ucsc": obj.assembly_ucsc,
+            "common_name": obj.common_name,
+            "taxid": obj.taxid,
+            "ensembl_url": obj.ensembl_url,
+            "human_readable_ensembl_url": obj.ensembl_url.replace(
+                "_", " "
+            ).capitalize(),
+            "division": obj.division,
+            "subdomain": obj.subdomain,
+            "example_chromosome": obj.example_chromosome,
+            "example_start": obj.example_start,
+            "example_end": obj.example_end,
+        }

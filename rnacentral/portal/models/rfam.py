@@ -131,30 +131,6 @@ class RfamHit(models.Model):
         return self.rfam_model.rfam_clan_id
 
 
-class RfamInitialAnnotations(models.Model):
-    """
-    This table represents the given Rfam annotations for a sequence. For
-    example when we take sequences from Rfam we already know what the
-    'correct' family is. In addition, we get sequences from people who have
-    performed their own Rfam scans. We keep track of this to decide if things
-    should be suppressed or handled differently here.
-    """
-
-    rfam_initial_annotation_id = models.AutoField(primary_key=True)
-    upi = models.ForeignKey(
-        "Rna", db_column="upi", to_field="upi", on_delete=models.CASCADE
-    )
-    rfam_model = models.ForeignKey(
-        RfamModel,
-        db_column="rfam_model_id",
-        to_field="rfam_model_id",
-        on_delete=models.CASCADE,
-    )
-
-    class Meta:
-        db_table = "rfam_initial_annotations"
-
-
 class RfamAnalyzedSequences(models.Model):
     """
     This table keeps track of all sequences which have been analyzed for Rfam

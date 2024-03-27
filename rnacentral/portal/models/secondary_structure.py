@@ -49,7 +49,7 @@ class SecondaryStructureWithLayout(models.Model):
     )
 
     class Meta:
-        db_table = "rnc_secondary_structure_layout"
+        db_table = "r2dt_results"
         unique_together = (("urs",),)
 
 
@@ -64,4 +64,4 @@ class SecondaryStructureLayout(models.Model):
     rna_type = models.TextField()
 
     class Meta:
-        db_table = "rnc_secondary_structure_layout_models"
+        db_table = "r2dt_models"

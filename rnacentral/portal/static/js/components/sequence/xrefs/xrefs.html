@@ -80,8 +80,7 @@
 
             <!-- lncRNAdb -->
             <span ng-switch-when="lncRNAdb">
-              lncRNAdb:
-              <a class="lncrnadb-external-url" ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.optional_id }}</a>
+              lncRNAdb: {{ xref.accession.optional_id }} <small><span class="label label-danger" title="The lncRNAdb website is unavailable">Website unavailable</span></small>
             </span>
 
             <!-- gtRNAdb -->
@@ -176,7 +175,8 @@
 
             <!-- tmRNA Website -->
             <span ng-switch-when="tmRNA Website">
-              <i>tmRNA Website is temporarily unavailable</i>
+              tmRNA Website: {{ xref.accession.external_id }}
+              <small><span class="label label-danger" title="The tmRNA website is unavailable">Website unavailable</span></small>
             </span>
 
             <!-- RefSeq -->
@@ -324,7 +324,7 @@
             <!-- LncBook -->
             <span ng-switch-when="LncBook">
               {{ xref.database }}: transcript <a ng-href="{{ xref.accession.expert_db_url }}" target="_blank">{{ xref.accession.external_id }}</a>,
-              gene <a ng-href="{{ 'http://bigd.big.ac.cn/lncbook/gene?geneid=' +  xref.accession.gene }}" target="_blank">{{ xref.accession.gene }}</a>
+              gene <a ng-href="{{ 'https://ngdc.cncb.ac.cn/lncbook/gene?geneid=' +  xref.accession.gene }}" target="_blank">{{ xref.accession.gene }}</a>
             </span>
 
             <!-- LNCipedia -->

@@ -250,8 +250,7 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         url = reverse("expert-dbs-api")
         self._test_url(url)
 
-    # TODO: fix EnsemblAssembly table in public postgres
-    def _test_ensembl_karyotype(self):
+    def test_ensembl_karyotype(self):
         """Test ensembl-karyotype endpoint."""
         url = reverse(
             "ensembl-karyotype", kwargs={"ensembl_url": "fusarium_verticillioides"}
@@ -528,12 +527,36 @@ class SpeciesSpecificIdsTestCase(ApiV1BaseClass):
 
 
 class GenomesTestCase(ApiV1BaseClass):
-    """Tests for ensembl assemblies."""
+    """Tests for ensembl assemblies and other endpoints used by IGV."""
 
     def test_list(self):
         url = reverse("genomes-api")
         response = self._test_url(url)
         self.assertEqual(response.status_code, 200)
+
+    def test_genome_get_info(self):
+        url = reverse("genome-browser-api", kwargs={"species": "homo_sapiens"})
+        response = self._test_url(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_genome_wrong_species(self):
+        url = reverse("genome-browser-api", kwargs={"species": "foo_bar"})
+        response = self._test_url(url)
+        self.assertEqual(response.data, [])
+
+    def test_genome_location(self):
+        url = reverse(
+            "rna-genome-locations", kwargs={"pk": "URS000047C79B", "taxid": "9606"}
+        )
+        response = self._test_url(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_empty_genome_location(self):
+        url = reverse(
+            "rna-genome-locations", kwargs={"pk": "URS000047C790", "taxid": "9606"}
+        )
+        response = self._test_url(url)
+        self.assertEqual(response.data["results"], [])
 
 
 class InteractionsTestCase(ApiV1BaseClass):

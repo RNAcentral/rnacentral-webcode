@@ -23,6 +23,9 @@ var textSearchResults = {
             ctrl.goHelp = "/help/gene-ontology-annotations";
             ctrl.genomeMappingHelp = "/help/genomic-mapping";
 
+            // subspecies can be toggled on and off
+            ctrl.includeSubspecies = !!search.query.match(/lineage_path:"(\d+)"/);
+
             // slider that allows users to set range of sequence lengths
             ctrl.setLengthSlider(); // initial value
 
@@ -197,6 +200,28 @@ var textSearchResults = {
         };
 
         /**
+         * Show subspecies in the TAXONOMY facet.
+         */
+        ctrl.showSubspecies = function() {
+            ctrl.includeSubspecies = true;
+            if (search.query.match(/TAXONOMY:"(\d+)"/)) {
+                var addLineage = search.query.replace("RNA AND", "").replace(/TAXONOMY:"(\d+)"/, '(TAXONOMY:"$1" OR lineage_path:"$1")').trim()
+                search.search(addLineage);
+            }
+        };
+
+        /**
+         * Hide subspecies in the TAXONOMY facet.
+         */
+        ctrl.hideSubspecies = function() {
+            ctrl.includeSubspecies = false;
+            if (search.query.match(/TAXONOMY:"(\d+)"/) && search.query.match(/lineage_path:"(\d+)"/)) {
+                var removeLineage = search.query.replace(/\(TAXONOMY:"(\d+)"\s+OR\s+lineage_path:"\d+"\)/, 'TAXONOMY:"$1"').trim()
+                search.search(removeLineage);
+            }
+        };
+
+        /**
          * Clean up SO term labels.
          */
         ctrl.prettySoLabel = function(facetLabel) {
@@ -261,12 +286,24 @@ var textSearchResults = {
 
                 if (ctrl.isFacetApplied(facetId, facetValue)) {
                     // remove facet in different contexts
+                    if (ctrl.includeSubspecies && facetId === "TAXONOMY" && search.query.match(new RegExp('TAXONOMY', 'g')).length > 1) {
+                        // remove subspecies
+                        newQuery = newQuery.replace(/AND TAXONOMY:"(\d+)"/, '').trim();
+                    } else if (ctrl.includeSubspecies && facetId === "TAXONOMY" && search.query.match(/lineage_path:"(\d+)"/)) {
+                        // remove lineage_path
+                        newQuery = newQuery.replace(/\(TAXONOMY:"(\d+)"\s+OR\s+lineage_path:"\d+"\)/, 'TAXONOMY:"$1"');
+                    }
                     newQuery = newQuery.replace(new RegExp(' AND ' + facet + ' AND ', 'gi'), ' AND ');
                     newQuery = newQuery.replace(new RegExp(facet + ' AND ', 'gi'), '');
                     newQuery = newQuery.replace(new RegExp(' AND ' + facet, 'gi'), '');
                     newQuery = newQuery.replace(new RegExp(facet, 'gi'), '' || 'RNA');
                 } else {
                     newQuery = search.query + ' AND ' + facet; // add new facet
+                }
+
+                if (ctrl.includeSubspecies && facetId === "TAXONOMY" && !search.query.match(/lineage_path:"(\d+)"/)) {
+                    // add lineage_path
+                    newQuery = newQuery.replace("RNA AND", "").replace(/TAXONOMY:"(\d+)"/, '(TAXONOMY:"$1" OR lineage_path:"$1")').trim()
                 }
             } else {
                 var lengthClause = 'length\\:\\[\\d+ TO \\d+\\]';

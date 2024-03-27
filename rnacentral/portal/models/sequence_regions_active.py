@@ -1,5 +1,5 @@
 """
-Copyright [2009-2018] EMBL-European Bioinformatics Institute
+Copyright [2009-present] EMBL-European Bioinformatics Institute
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -13,14 +13,14 @@ limitations under the License.
 
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from portal.models import EnsemblAssembly, RnaPrecomputed
+from portal.models import RnaPrecomputed
 
 
-class SequenceRegion(models.Model):
+class SequenceRegionActive(models.Model):
     id = models.AutoField(primary_key=True)
     urs_taxid = models.ForeignKey(
         RnaPrecomputed,
-        related_name="regions",
+        related_name="regions_active",
         db_column="urs_taxid",
         to_field="id",
         on_delete=models.CASCADE,
@@ -30,16 +30,11 @@ class SequenceRegion(models.Model):
     strand = models.IntegerField()
     region_start = models.IntegerField()
     region_stop = models.IntegerField()
-    assembly = models.ForeignKey(
-        EnsemblAssembly,
-        related_name="regions",
-        db_column="assembly_id",
-        to_field="assembly_id",
-        on_delete=models.CASCADE,
-    )
+    assembly_id = models.CharField(max_length=255)
     was_mapped = models.BooleanField()
     identity = models.IntegerField()
     exon_count = models.IntegerField()
 
     class Meta:
-        db_table = "rnc_sequence_regions"
+        db_table = "rnc_sequence_regions_active"
+        ordering = ["urs_taxid"]

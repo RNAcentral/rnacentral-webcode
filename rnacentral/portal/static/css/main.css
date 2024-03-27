@@ -1484,7 +1484,7 @@ textarea {
   border-radius: 15px;
 }
 
-.rfamModelsGroup, .crsFeaturesGroup, .matureMirnaFeaturesGroup, .rediPortalFeaturesGroup {
+.rfamModelsGroup, .crsFeaturesGroup, .matureMirnaFeaturesGroup, .rediPortalFeaturesGroup, .anticodonFeaturesGroup, .tmRNAFeaturesGroup {
   cursor: pointer;
 }
 

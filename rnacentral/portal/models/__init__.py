@@ -37,5 +37,6 @@ from .secondary_structure import *
 from .sequence_exons import *
 from .sequence_feature import *
 from .sequence_regions import *
+from .sequence_regions_active import *
 from .taxonomy import *
 from .xref import *

@@ -1,5 +1,5 @@
 <h1>
-  <a href="{{ $ctrl.expertDb.url }}" target="_blank" class="no-icon" style="text-decoration: none;">
+  <a ng-if="$ctrl.expertDb.name !== 'tmRNA Website'" href="{{ $ctrl.expertDb.url }}" target="_blank" class="no-icon" style="text-decoration: none;">
     <img ng-src="{{ $ctrl.normalizeExpertDbName.labelToImageUrl($ctrl.expertDb.label) }}" alt="{{ $ctrl.expertDb.name }} logo" class="img-rounded"  style="max-height: 40px; max-width: 100px;">
   </a>
   {{ $ctrl.expertDb.name }} Expert Database
@@ -10,7 +10,8 @@
 <div class="row">
   <div class="col-md-12">
     <p>
-      <a href="{{ $ctrl.expertDb.url }}" target="_blank">{{ $ctrl.expertDb.name }}</a>
+      <a ng-if="$ctrl.expertDb.name !== 'tmRNA Website'" href="{{ $ctrl.expertDb.url }}" target="_blank">{{ $ctrl.expertDb.name }}</a>
+      <span ng-if="$ctrl.expertDb.name === 'tmRNA Website'">{{ $ctrl.expertDb.name }}</span>
       <span ng-if="$ctrl.expertDb.abbreviation">({{ $ctrl.expertDb.abbreviation }})</span>
     <span ng-bind-html="$ctrl.expertDb.description"></span>.
     </p>
