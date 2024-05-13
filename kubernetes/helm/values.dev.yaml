@@ -1,13 +1,8 @@
-# The HX cluster has 3 workers. Each k8s worker comes with 8 cores and 32GB of RAM.
-# The resources of this cluster will be divided as follows:
-# - Failover public website (2 workers)
-# - Test website (1 worker)
-
 # Database
-database: db-dev
+database: db-pro
 
 # Proxy
-proxy: proxy-hx
+proxy: proxy-hh
 
 # EBI search index
 searchIndex: search-index-dev
@@ -23,24 +18,24 @@ setEnv: "dev"
 
 # Memcached
 memcachedReplicas: 1
-memcachedRequestsMemory: "1000Mi"
-memcachedRequestsCPU: "500m"
-memcachedLimitsMemory: "1000Mi"
+memcachedRequestsMemory: "6000Mi"
+memcachedRequestsCPU: "1000m"
+memcachedLimitsMemory: "6000Mi"
 
 # Redis
 redisReplicas: 1
-redisRequestsMemory: "2000Mi"
-redisRequestsCPU: "500m"
-redisLimitsMemory: "2000Mi"
+redisRequestsMemory: "6000Mi"
+redisRequestsCPU: "1000m"
+redisLimitsMemory: "6000Mi"
 
 # Nginx
 nginxReplicas: 1
-nginxRequestsMemory: "1000Mi"
-nginxRequestsCPU: "500m"
-nginxLimitsMemory: "1000Mi"
+nginxRequestsMemory: "4000Mi"
+nginxRequestsCPU: "1000m"
+nginxLimitsMemory: "4000Mi"
 
 # RNAcentral
 rnacentralReplicas: 1
-rnacentralRequestsMemory: "4000Mi"
-rnacentralRequestsCPU: "500m"
-rnacentralLimitsMemory: "4000Mi"
+rnacentralRequestsMemory: "16000Mi"
+rnacentralRequestsCPU: "1000m"
+rnacentralLimitsMemory: "16000Mi"
