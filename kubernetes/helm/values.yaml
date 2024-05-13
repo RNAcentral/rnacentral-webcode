@@ -1,7 +1,8 @@
 # The HH cluster has 8 workers. Each k8s worker comes with 8 cores and 32GB of RAM.
 # The resources of this cluster will be divided as follows:
 # - Public website (3 workers)
-# - RNAcentral pipeline (5 workers)
+# - Test website (1 worker)
+# - Rfam batch search (1 worker)
 
 # Database
 database: db-pro
