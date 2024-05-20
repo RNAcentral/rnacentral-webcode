@@ -16,7 +16,7 @@ import os
 from django.conf import settings
 from django.conf.urls import url
 from django.http import FileResponse, Http404
-from django.views.generic import TemplateView
+from django.views.generic import RedirectView, TemplateView
 from portal import views
 from portal.models import EnsemblAssembly
 
@@ -168,6 +168,11 @@ urlpatterns = [
         views.StaticView.as_view(),
         {"page": "help/litsumm"},
         name="help-litsumm",
+    ),
+    url(
+        r"^help/litsumm/manuscript?$",
+        RedirectView.as_view(url="https://arxiv.org/abs/2311.03056"),
+        name="litsumm-manuscript",
     ),
     # training
     url(
