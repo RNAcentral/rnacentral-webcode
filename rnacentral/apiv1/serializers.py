@@ -24,7 +24,6 @@ from portal.models import (
     DatabaseStats,
     EnsemblAssembly,
     EnsemblCompara,
-    EnsemblKaryotype,
     Modification,
     OntologyTerm,
     ProteinInfo,
@@ -669,12 +668,6 @@ class EnsemblAssemblySerializer(serializers.ModelSerializer):
 
     def get_example_end(self, obj):
         return obj.example_end
-
-
-class EnsemblKaryotypeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = EnsemblKaryotype
-        fields = ("karyotype",)
 
 
 class RnaPrecomputedSerializer(serializers.ModelSerializer):

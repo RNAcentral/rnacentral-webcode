@@ -250,13 +250,6 @@ class RnaEndpointsTestCase(ApiV1BaseClass):
         url = reverse("expert-dbs-api")
         self._test_url(url)
 
-    def test_ensembl_karyotype(self):
-        """Test ensembl-karyotype endpoint."""
-        url = reverse(
-            "ensembl-karyotype", kwargs={"ensembl_url": "fusarium_verticillioides"}
-        )
-        self._test_url(url)
-
 
 class NestedXrefsTestCase(ApiV1BaseClass):
     """Test flat/hyperlinked pagination."""
@@ -577,11 +570,11 @@ class InteractionsTestCase(ApiV1BaseClass):
             "intenz",
             "mgd/mgi",
             "protein ontology",
-            "reactome",
             "rnacentral",
             "sgd",
             "signor",
             "uniprotkb",
+            "wwpdb",
         ]
         current_dbs = []
         interactions = Interactions.objects.distinct("interacting_id")

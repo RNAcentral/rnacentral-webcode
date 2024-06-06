@@ -18,7 +18,6 @@ from .database import *
 from .database_stats import *
 from .ensembl_assembly import *
 from .ensembl_compara import *
-from .ensembl_karyotype import *
 from .go_terms import *
 from .interactions import *
 from .litscan_statistics import *

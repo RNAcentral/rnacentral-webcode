@@ -176,13 +176,6 @@ urlpatterns = [
         {},
         name="genomes-api",
     ),
-    # endpoint that returns karyotypes, downloaded from ensembl
-    url(
-        r"karyotypes/(?P<ensembl_url>.*?)/?$",
-        cache_page(CACHE_TIMEOUT)(views.EnsemblKaryotypeAPIView.as_view()),
-        {},
-        name="ensembl-karyotype",
-    ),
     # IGV - Genome Browser
     url(
         r"^genome-browser/(?P<species>\w+)/?$",

@@ -830,25 +830,6 @@ class RnaGoAnnotationsView(APIView):
         return Response(result)
 
 
-class EnsemblKaryotypeAPIView(APIView):
-    """API endpoint, presenting E! karyotype for a given species."""
-
-    permission_classes = ()
-    authentication_classes = ()
-
-    def get(self, request, ensembl_url):
-        try:
-            assembly = (
-                EnsemblAssembly.objects.filter(ensembl_url=ensembl_url)
-                .prefetch_related("karyotype")
-                .first()
-            )
-        except EnsemblAssembly.DoesNotExist:
-            raise Http404
-
-        return Response(assembly.karyotype.first().karyotype)
-
-
 class ProteinTargetsView(generics.ListAPIView):
     """API endpoint, presenting ProteinInfo, related to given rna."""
 
