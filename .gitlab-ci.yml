@@ -17,4 +17,4 @@ test:
     - pip install -r rnacentral/requirements_dev.txt
     - mv rnacentral/rnacentral/unit_test_local_settings.py rnacentral/rnacentral/local_settings.py
   script:
-    - python rnacentral/manage.py test apiv1
+    - python rnacentral/manage.py test export
