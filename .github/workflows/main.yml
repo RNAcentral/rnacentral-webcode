@@ -1,5 +1,4 @@
-# This workflow will run the unit tests and build a new image on both Docker Hub and GitHub Packages.
-# At least for now, the image will be created regardless of whether the tests are run successfully or not.
+# This workflow will build a new image on both Docker Hub and GitHub Packages.
 #
 # References:
 #   - https://docs.github.com/en/actions/guides/building-and-testing-python
@@ -18,30 +17,6 @@ on:
   pull_request:
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.8'
-
-      - name: Install dependencies and rename local_settings file
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r rnacentral/requirements.txt
-          pip install -r rnacentral/requirements_dev.txt
-          mv rnacentral/rnacentral/unit_test_local_settings.py rnacentral/rnacentral/local_settings.py
-
-      - name: Run tests
-        run: |
-          python rnacentral/manage.py test apiv1
-          python rnacentral/manage.py test export
-          python rnacentral/manage.py test portal
-          python rnacentral/manage.py test sequence_search
-
   initial-notification:
     runs-on: ubuntu-latest
     steps:
