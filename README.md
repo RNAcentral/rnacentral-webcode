@@ -1,7 +1,5 @@
 # RNAcentral Website
 
-[![Build Status](http://jenkins.rnacentral.org/buildStatus/icon?job=Update_test.rnacentral.org)](http://jenkins.rnacentral.org/job/rnacentral_testing/)
-
 ## About
 
 [RNAcentral](https://rnacentral.org) is an open public resource that offers integrated access to a comprehensive and up-to-date set of non-coding RNA sequences provided by a consortium of Expert Databases.
