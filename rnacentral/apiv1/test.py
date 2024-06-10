@@ -570,11 +570,11 @@ class InteractionsTestCase(ApiV1BaseClass):
             "intenz",
             "mgd/mgi",
             "protein ontology",
+            "reactome",
             "rnacentral",
             "sgd",
             "signor",
             "uniprotkb",
-            "wwpdb",
         ]
         current_dbs = []
         interactions = Interactions.objects.distinct("interacting_id")
