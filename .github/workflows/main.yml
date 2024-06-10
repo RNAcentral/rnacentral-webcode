@@ -1,4 +1,4 @@
-# This workflow will build a new image on both Docker Hub and GitHub Packages.
+# This workflow will build a new image on GitHub Packages.
 #
 # References:
 #   - https://docs.github.com/en/actions/guides/building-and-testing-python
@@ -14,7 +14,6 @@ on:
       - 'kubernetes/**'
       - 'nginx/**'
       - 'openssl/**'
-      - '.gitlab-ci.yml'
   pull_request:
 
 jobs:
@@ -26,33 +25,9 @@ jobs:
       - name: Initial notification
         uses: rtCamp/action-slack-notify@12e36fc18b0689399306c2e0b3e0f2978b7f1ee7
         env:
-          SLACK_MESSAGE: 'Publishing images to Docker Hub and GitHub Packages'
+          SLACK_MESSAGE: 'Publishing image to GitHub Packages'
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           MSG_MINIMAL: true
-
-#  push_image_to_dockerhub:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v3
-#
-#      - name: docker login
-#        env:
-#          DOCKER_USER: ${{ secrets.DOCKER_USER }}
-#          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-#        run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-#
-#      - name: Get branch name
-#        if: github.event_name != 'pull_request'
-#        shell: bash
-#        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | tr / -)" >> $GITHUB_ENV
-#
-#      - name: docker build
-#        if: env.BRANCH_NAME != ''
-#        run: docker build -f Dockerfile -t rnacentral/rnacentral-webcode:${{ env.BRANCH_NAME }} .
-#
-#      - name: docker push
-#        if: env.BRANCH_NAME != ''
-#        run: docker push rnacentral/rnacentral-webcode:${{ env.BRANCH_NAME }}
 
   push_image_to_github:
     runs-on: ubuntu-latest
@@ -87,13 +62,13 @@ jobs:
 
   final-notification:
     runs-on: ubuntu-latest
-    needs: [push_image_to_dockerhub, push_image_to_github]
+    needs: push_image_to_github
     steps:
       - uses: actions/checkout@v3
 
       - name: Final notification
         uses: rtCamp/action-slack-notify@12e36fc18b0689399306c2e0b3e0f2978b7f1ee7
         env:
-          SLACK_MESSAGE: 'New image pushed to Docker Hub and GitHub Packages'
+          SLACK_MESSAGE: 'New image pushed to GitHub Packages'
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
           MSG_MINIMAL: true
