@@ -1,7 +1,15 @@
 stages:
   - test
+  - build
 
-test:
+variables:
+  DOCKER_USER: $DOCKER_USER
+  DOCKER_PASSWORD: $DOCKER_PASSWORD
+
+before_script:
+  - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+
+test_image:
   image: python:3.8.15-slim
   stage: test
   before_script:
@@ -22,3 +30,11 @@ test:
       python rnacentral/manage.py test export
       python rnacentral/manage.py test portal
       python rnacentral/manage.py test sequence_search
+
+build_image:
+  stage: build
+  script:
+    - echo "BRANCH_NAME=$(echo ${CI_COMMIT_REF_NAME} | tr / -)" >> .env
+    - export $(cat .env | xargs)
+    - docker build -f Dockerfile -t rnacentral/rnacentral-webcode:${BRANCH_NAME} .
+    - docker push rnacentral/rnacentral-webcode:${BRANCH_NAME}
