@@ -2,13 +2,6 @@ stages:
   - test
   - build
 
-variables:
-  DOCKER_USER: $DOCKER_USER
-  DOCKER_PASSWORD: $DOCKER_PASSWORD
-
-before_script:
-  - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-
 test_image:
   image: python:3.8.15-slim
   stage: test
@@ -33,6 +26,11 @@ test_image:
 
 build_image:
   stage: build
+  variables:
+    DOCKER_USER: $DOCKER_USER
+    DOCKER_PASSWORD: $DOCKER_PASSWORD
+  before_script:
+    - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
   script:
     - echo "BRANCH_NAME=$(echo ${CI_COMMIT_REF_NAME} | tr / -)" >> .env
     - export $(cat .env | xargs)
