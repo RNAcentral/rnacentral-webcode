@@ -43,5 +43,5 @@ deploy_image:
     entrypoint: [""]
   script:
     - kubectl config get-contexts
-    - kubectl config use-context gitlab-agent
+    - kubectl config use-context RNAcentral/rnacentral-webcode:primary-agent
     - kubectl get pods --namespace dev
