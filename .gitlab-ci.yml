@@ -1,6 +1,6 @@
 stages:
   - test
-  - build
+#  - build
   - deploy
 
 test_image:
@@ -25,16 +25,16 @@ test_image:
       python rnacentral/manage.py test portal
       python rnacentral/manage.py test sequence_search
 
-build_image:
-  stage: build
-  variables:
-    DOCKER_USER: $DOCKER_USER
-    DOCKER_PASSWORD: $DOCKER_PASSWORD
-  before_script:
-    - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-  script:
-    - docker build -f Dockerfile -t rnacentral/rnacentral-webcode:${CI_COMMIT_BRANCH} .
-    - docker push rnacentral/rnacentral-webcode:${CI_COMMIT_BRANCH}
+#build_image:
+#  stage: build
+#  variables:
+#    DOCKER_USER: $DOCKER_USER
+#    DOCKER_PASSWORD: $DOCKER_PASSWORD
+#  before_script:
+#    - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+#  script:
+#    - docker build -f Dockerfile -t rnacentral/rnacentral-webcode:${CI_COMMIT_BRANCH} .
+#    - docker push rnacentral/rnacentral-webcode:${CI_COMMIT_BRANCH}
 
 deploy_image:
   stage: deploy
@@ -42,6 +42,7 @@ deploy_image:
     name: bitnami/kubectl:1.29.4
     entrypoint: [""]
   script:
+    - echo "$CI_COMMIT_BRANCH"
     - kubectl config get-contexts
     - kubectl config use-context RNAcentral/rnacentral-webcode:primary-agent
     - kubectl get pods --namespace dev
