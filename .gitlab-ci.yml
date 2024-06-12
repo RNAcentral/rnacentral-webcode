@@ -33,13 +33,8 @@ build_image:
   before_script:
     - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
   script:
-    - echo "BRANCH_NAME=$(echo ${CI_COMMIT_REF_NAME} | tr / -)" >> .env
-    - export $(cat .env | xargs)
-    - docker build -f Dockerfile -t rnacentral/rnacentral-webcode:${BRANCH_NAME} .
-    - docker push rnacentral/rnacentral-webcode:${BRANCH_NAME}
-  artifacts:
-    reports:
-      dotenv: .env
+    - docker build -f Dockerfile -t rnacentral/rnacentral-webcode:${CI_COMMIT_BRANCH} .
+    - docker push rnacentral/rnacentral-webcode:${CI_COMMIT_BRANCH}
 
 deploy_image:
   stage: deploy
@@ -47,7 +42,6 @@ deploy_image:
     name: bitnami/kubectl:1.29.4
     entrypoint: [""]
   script:
-    - echo "$BRANCH_NAME"
     - kubectl config get-contexts
     - kubectl config use-context gitlab-agent
     - kubectl get pods --namespace dev
