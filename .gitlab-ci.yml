@@ -39,10 +39,11 @@ test_image:
 deploy_image:
   stage: deploy
   image:
-    name: bitnami/kubectl:1.29.4
+    name: bitnami/kubectl:1.23.15
     entrypoint: [""]
   script:
     - echo "$CI_COMMIT_BRANCH"
     - kubectl config get-contexts
     - kubectl config use-context RNAcentral/rnacentral-webcode:primary-agent
+    - kubectl get nodes -v=10
     - kubectl get pods --namespace dev
