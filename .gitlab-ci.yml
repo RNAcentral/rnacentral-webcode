@@ -1,6 +1,7 @@
 stages:
   - test
   - build
+  - deploy
 
 test_image:
   image: python:3.8.15-slim
@@ -36,3 +37,17 @@ build_image:
     - export $(cat .env | xargs)
     - docker build -f Dockerfile -t rnacentral/rnacentral-webcode:${BRANCH_NAME} .
     - docker push rnacentral/rnacentral-webcode:${BRANCH_NAME}
+  artifacts:
+    reports:
+      dotenv: .env
+
+deploy_image:
+  stage: deploy
+  image:
+    name: bitnami/kubectl:1.29.4
+    entrypoint: [""]
+  script:
+    - echo "$BRANCH_NAME"
+    - kubectl config get-contexts
+    - kubectl config use-context gitlab-agent
+    - kubectl get pods --namespace dev
