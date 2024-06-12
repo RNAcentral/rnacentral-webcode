@@ -45,5 +45,5 @@ deploy_image:
     - echo "$CI_COMMIT_BRANCH"
     - kubectl config get-contexts
     - kubectl config use-context RNAcentral/rnacentral-webcode:primary-agent
-    - kubectl get nodes -v=10
+    - kubectl config view
     - kubectl get pods --namespace dev
