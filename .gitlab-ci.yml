@@ -46,4 +46,5 @@ deploy_image:
     - kubectl config get-contexts
     - kubectl config use-context RNAcentral/rnacentral-webcode:primary-agent
     - kubectl config view
+    - kubectl config set-context --current --namespace=dev
     - kubectl get pods --namespace dev
