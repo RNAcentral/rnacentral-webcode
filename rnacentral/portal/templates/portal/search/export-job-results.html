@@ -37,18 +37,17 @@ Exporting search results
     <div class="row">
       <div class="col-md-12">
 
-        <div class="alert alert-info col-md-6" role="alert" ng-show="(export.status === 'queued' || export.status === 'started') && export.error_message === ''">
+        <div class="alert alert-info cidsol-md-6" role="alert" ng-show="(export.status === 'pending' || export.status === 'running') && export.error_message === ''">
           <i class="fa fa-spinner fa-spin fa-2x pull-left"></i>
           Your query has been submitted and the results will become available here shortly.
         </div>
 
         <div class="alert alert-success col-md-6" role="alert" ng-show="export.status === 'finished'">
           <i class="fa fa-check-circle fa-3x pull-left"></i>
-          The results are available for download and will be kept
-          until {{ export.expiration | date:'MMMM d'}}.
+          The results are available for download and will be kept for up to 7 days.
         </div>
 
-        <div class="alert alert-danger col-md-9" role="alert" ng-show="export.status === 'failed'">
+        <div class="alert alert-danger col-md-9" role="alert" ng-show="export.error_message === 'Unknown error'">
           <i class="fa fa-warning fa-3x pull-left"></i>
           <p>
             There was a problem while exporting the search results.
@@ -58,7 +57,7 @@ Exporting search results
           </p>
         </div>
 
-        <div class="alert alert-danger col-md-8" role="alert" ng-show="export.error_message !== '' && export.status !== 'failed'">
+        <div class="alert alert-danger col-md-8" role="alert" ng-show="export.error_message === 'Job not found'">
           <i class="fa fa-warning fa-3x pull-left"></i>
           <p>
             The results might have expired.
@@ -82,31 +81,15 @@ Exporting search results
     <div class="row" ng-show="export.progress >= 0">
       <div class="col-md-6">
         <ul>
-          <li class="margin-top-5px">Exporting <strong>{{ export.hits | number }}</strong> sequences in <strong>{{ export.format }}</strong> format</li>
-          <li class="margin-top-5px">
-            Query: <code>{{ export.query }}</code>
-            <small><a href="/search?q={{ export.query }}" target="_blank">Modify</a> <span class="text-muted">(in a new window)</span></small>
-          </li>
-          <li class="margin-top-5px">Status: <strong ng-class="{'text-danger': export.status === 'failed', 'text-info': export.status === 'queued', 'text-info': export.status === 'started', 'text-success': export.status === 'finished'}">{{ export.status }}</strong></li>
+          <li class="margin-top-5px">Exporting <strong>{{ export.hits }}</strong> sequences in <strong>{{ export.data_type }}</strong> format</li>
+          <li class="margin-top-5px">Status: <strong ng-class="{'text-danger': export.status === 'failed', 'text-info': export.status === 'running', 'text-info': export.status === 'pending', 'text-success': export.status === 'finished'}">{{ export.status }}</strong></li>
         </ul>
 
         <div ng-show="export.status === 'finished'" >
           <hr>
-          <a target="_self" class="btn btn-primary btn-lg" href="{% endverbatim %}{% url 'export-download-result' %}{% verbatim %}?job={{ export.job_id }}"><i class="fa fa-download"></i> Download results</a>
+          <a target="_self" class="btn btn-primary btn-lg" ng-click="triggerDownload()"><i class="fa fa-download"></i> Download results</a>
         </div>
 
-      </div>
-    </div>
-
-    <div class="row" ng-show="export.hits == 250000">
-      <div class="col-md-12">
-        <br>
-        <div class="alert alert-warning col-md-6" role="alert">
-          <p>
-            The maximum number of sequences that can be exported using the online interface is {{ export.hits | number }}.
-            Please <a href="" onclick="$('.doorbell-feedback').click()">let us know</a> if you need to export more data.
-          </p>
-        </div>
       </div>
     </div>
 

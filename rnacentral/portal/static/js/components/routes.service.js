@@ -62,6 +62,7 @@ angular.module("routes", []).service('routes', ['$interpolate', function($interp
         quickGoSummaryPage: 'https://www.ebi.ac.uk/QuickGO/term/{{ term_id }}',
         quickGoChart: 'https://www.ebi.ac.uk/QuickGO/services/ontology/{{ ontology }}/terms/{{ term_ids }}/chart?base64=true',
         qcStatusApi: '/api/v1/rna/{{ upi }}/qc-status/{{ taxid }}',
+        exportApp: 'http://hx-rke-wp-webadmin-12-worker-3.caas.ebi.ac.uk:31867',
     };
 
 
