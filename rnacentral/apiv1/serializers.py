@@ -958,3 +958,9 @@ class RnaGenomeLocationsSerializer(serializers.Serializer):
             "example_start": obj.example_start,
             "example_end": obj.example_end,
         }
+
+
+class Md5Serializer(serializers.Serializer):
+    """Serializer class to fetch sequence using md5"""
+
+    sequence = serializers.CharField(source="get_sequence")

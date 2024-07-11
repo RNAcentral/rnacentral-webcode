@@ -125,6 +125,12 @@ urlpatterns = [
         cache_page(CACHE_TIMEOUT)(views.LncrnaTargetsView.as_view()),
         name="rna-lncrna-targets",
     ),
+    # fetch sequence using md5
+    url(
+        r"md5/(?P<md5>.*?)/?$",
+        cache_page(CACHE_TIMEOUT)(views.Md5SequenceView.as_view({"get": "retrieve"})),
+        name="md5-sequence",
+    ),
     # Information about the qc status for a given sequence
     url(
         r"^rna/(?P<pk>URS[0-9A-Fa-f]{10})/qc-status/(?P<taxid>\d+)/?$",

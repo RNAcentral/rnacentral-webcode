@@ -29,6 +29,7 @@ from apiv1.serializers import (
     InteractionsSerializer,
     LitSummSerializer,
     LncrnaTargetsSerializer,
+    Md5Serializer,
     ProteinTargetsSerializer,
     QcStatusSerializer,
     RawPublicationSerializer,
@@ -1102,3 +1103,11 @@ class LitSummView(ReadOnlyModelViewSet):
         if primary_id is not None:
             queryset = queryset.filter(primary_id=primary_id)
         return queryset
+
+
+class Md5SequenceView(ReadOnlyModelViewSet):
+    """API endpoint to fetch sequence using md5 field"""
+
+    queryset = Rna.objects.all()
+    serializer_class = Md5Serializer
+    lookup_field = "md5"
