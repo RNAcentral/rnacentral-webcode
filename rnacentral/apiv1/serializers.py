@@ -963,4 +963,6 @@ class RnaGenomeLocationsSerializer(serializers.Serializer):
 class Md5Serializer(serializers.Serializer):
     """Serializer class to fetch sequence using md5"""
 
+    rnacentral_id = serializers.CharField(source="id")
+    description = serializers.CharField()
     sequence = serializers.CharField(source="get_sequence")

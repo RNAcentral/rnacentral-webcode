@@ -1105,9 +1105,20 @@ class LitSummView(ReadOnlyModelViewSet):
         return queryset
 
 
-class Md5SequenceView(ReadOnlyModelViewSet):
+class Md5SequenceView(APIView):
     """API endpoint to fetch sequence using md5 field"""
 
-    queryset = Rna.objects.all()
-    serializer_class = Md5Serializer
-    lookup_field = "md5"
+    permission_classes = (AllowAny,)
+
+    def get(self, request, md5):
+        try:
+            rna = Rna.objects.get(md5=md5)
+        except Rna.DoesNotExist:
+            raise Http404
+
+        precomputed = RnaPrecomputed.objects.filter(upi=rna, taxid__isnull=True).first()
+        if not precomputed:
+            raise Http404
+
+        serializer = Md5Serializer(precomputed)
+        return Response(serializer.data)
