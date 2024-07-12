@@ -114,11 +114,11 @@ class RawSqlQueryset(models.QuerySet):
                             splice_variant.upi.upi
                             for splice_variant in refseq_splice_variants[xref.id]
                         ]
-                    if xref.id in ensembl_splice_variants:
-                        xref.ensembl_splice_variants = [
-                            splice_variant.upi.upi
-                            for splice_variant in ensembl_splice_variants[xref.id]
-                        ]
+                    # if xref.id in ensembl_splice_variants:
+                    #     xref.ensembl_splice_variants = [
+                    #         splice_variant.upi.upi
+                    #         for splice_variant in ensembl_splice_variants[xref.id]
+                    #     ]
                     # if xref.id in tmrna_mates:
                     #     xref.tmrna_mates = [
                     #         tmrna_mate.upi.upi for tmrna_mate in tmrna_mates[xref.id]
