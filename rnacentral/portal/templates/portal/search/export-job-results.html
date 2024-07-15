@@ -81,7 +81,7 @@ Exporting search results
     <div class="row" ng-show="export.progress >= 0">
       <div class="col-md-6">
         <ul>
-          <li class="margin-top-5px">Exporting <strong>{{ export.hits }}</strong> sequences in <strong>{{ export.data_type }}</strong> format</li>
+          <li class="margin-top-5px">Exporting <strong>{{ export.hits | number }}</strong> sequences in <strong>{{ export.data_type }}</strong> format</li>
           <li class="margin-top-5px">Status: <strong ng-class="{'text-danger': export.status === 'failed', 'text-info': export.status === 'running', 'text-info': export.status === 'pending', 'text-success': export.status === 'finished'}">{{ export.status }}</strong></li>
         </ul>
 
