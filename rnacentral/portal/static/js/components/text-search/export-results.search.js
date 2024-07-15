@@ -28,6 +28,7 @@ limitations under the License.
         ended_at: null,
         enqueued_at: null,
         error_message: '',
+        isDownloading: false,
     };
     $scope.routes = routes;
 
@@ -86,6 +87,8 @@ limitations under the License.
      * Download the file.
      */
     function fetch_file() {
+        $scope.export.isDownloading = true;
+
         return $http({
             url: routes.exportApp() + '/download/' + $scope.export.job_id + '/' + $scope.export.data_type,
             method: 'GET',
@@ -95,9 +98,11 @@ limitations under the License.
                 var blob = new Blob([response.data], { type: response.headers('content-type') });
                 $scope.export.downloadUrl = window.URL.createObjectURL(blob); // Create the download URL
                 $scope.downloadFile(); // Trigger the download
+                $scope.export.isDownloading = false;
             },
             function(response) {
                 $scope.export.error_message = 'Error downloading file';
+                $scope.export.isDownloading = false;
                 update_page_title();
             }
         );

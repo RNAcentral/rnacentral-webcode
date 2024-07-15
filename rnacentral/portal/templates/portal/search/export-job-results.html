@@ -37,7 +37,7 @@ Exporting search results
     <div class="row">
       <div class="col-md-12">
 
-        <div class="alert alert-info cidsol-md-6" role="alert" ng-show="(export.status === 'pending' || export.status === 'running') && export.error_message === ''">
+        <div class="alert alert-info col-md-6" role="alert" ng-show="(export.status === 'pending' || export.status === 'running') && export.error_message === ''">
           <i class="fa fa-spinner fa-spin fa-2x pull-left"></i>
           Your query has been submitted and the results will become available here shortly.
         </div>
@@ -87,7 +87,8 @@ Exporting search results
 
         <div ng-show="export.status === 'finished'" >
           <hr>
-          <a target="_self" class="btn btn-primary btn-lg" ng-click="triggerDownload()"><i class="fa fa-download"></i> Download results</a>
+          <a ng-if="export.isDownloading === false" target="_self" class="btn btn-primary btn-lg" ng-click="triggerDownload()"><i class="fa fa-download"></i> Download results</a>
+          <a ng-if="export.isDownloading" target="_self" class="btn btn-primary btn-lg"><i class="fa fa-spinner fa-spin"></i> Downloading...</a>
         </div>
 
       </div>
