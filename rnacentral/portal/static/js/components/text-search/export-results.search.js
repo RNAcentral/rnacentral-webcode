@@ -15,7 +15,7 @@ limitations under the License.
  * Angular.js code for exporting metadata search results.
  */
 
-;angular.module('textSearch').controller('ExportResultsCtrl', ['$scope', '$location', '$http', '$interval', '$window', 'routes', function($scope, $location, $http, $interval, $window, routes) {
+;angular.module('textSearch').controller('ExportResultsCtrl', ['$scope', '$location', '$http', '$window', 'routes', function($scope, $location, $http, $window, routes) {
 
     $scope.export = {
         query: null,
@@ -30,17 +30,17 @@ limitations under the License.
     };
     $scope.routes = routes;
 
-    var interval;
-
     /**
      * Get status of the export job and return a promise.
      */
-     function get_job_status() {
+    function get_job_status() {
         return $http({
             url: routes.exportApp() + '/download/' + $scope.export.job_id + '/' + $scope.export.data_type,
             method: 'GET'
         }).then(
             function(response) {
+                // get_job_status will be called as long as the content-type is
+                // equal to application/json and the status is different from FAILURE
                 if (response.headers('content-type').includes('application/json')) {
                     $scope.export.hits = response.data.hit_count;
 
@@ -55,11 +55,12 @@ limitations under the License.
 
                     // Check status
                     $scope.export.status = response.data.state === 'RUNNING' ? 'running' : response.data.state ? response.data.state : 'pending';
-                    if ($scope.export.status === 'FAILURE') {
-                        $interval.cancel(interval);
+                    if ($scope.export.status !== 'FAILURE') {
+                        setTimeout(get_job_status, 3000);  // 3 seconds
+                    } else {
+                        $scope.export.error_message = 'Job failed';
                     }
                 } else {
-                    $interval.cancel(interval);
                     $scope.export.status = 'finished';
                     $scope.export.progress = 100;
                 }
@@ -71,7 +72,6 @@ limitations under the License.
                 } else {
                     $scope.export.error_message = 'Unknown error';
                 }
-                $interval.cancel(interval);
                 update_page_title();
             }
         );
@@ -83,22 +83,6 @@ limitations under the License.
     $scope.get_progress = function() {
         return $scope.export.progress + '%';
     };
-
-    /**
-     * Poll the server to get the latest status of the export job.
-     * Set polling interval dynamically based on the number of hits.
-     */
-    function poll_job_status() {
-        var max_interval = 3000;  // 3 seconds
-
-        interval = $interval(function(){
-            if ($scope.export.status !== 'finished' && $scope.export.status !== 'FAILURE') {
-                get_job_status();
-            } else {
-                $interval.cancel(interval);
-            }
-        }, max_interval);
-    }
 
     /**
      * Show progress in page title.
@@ -136,9 +120,7 @@ limitations under the License.
         if ($location.url().indexOf("/export/results?job=") > -1) {
             $scope.export.job_id = $location.search().job;
             $scope.export.data_type = $location.search().data_type;
-            get_job_status().then(function(){
-                poll_job_status();
-            });
+            get_job_status();
         }
     }
 
