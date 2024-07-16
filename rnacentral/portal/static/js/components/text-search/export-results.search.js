@@ -24,11 +24,9 @@ limitations under the License.
         status: null,
         hits: null,
         progress: -1,
-        downloadUrl: null,
         ended_at: null,
         enqueued_at: null,
         error_message: '',
-        isDownloading: false,
     };
     $scope.routes = routes;
 
@@ -64,10 +62,6 @@ limitations under the License.
                     $interval.cancel(interval);
                     $scope.export.status = 'finished';
                     $scope.export.progress = 100;
-
-                    // Store the download URL
-                    var blob = new Blob([response.data], { type: response.headers('content-type') });
-                    $scope.export.downloadUrl = window.URL.createObjectURL(blob);
                 }
                 update_page_title();
             },
@@ -78,31 +72,6 @@ limitations under the License.
                     $scope.export.error_message = 'Unknown error';
                 }
                 $interval.cancel(interval);
-                update_page_title();
-            }
-        );
-    }
-
-    /**
-     * Download the file.
-     */
-    function fetch_file() {
-        $scope.export.isDownloading = true;
-
-        return $http({
-            url: routes.exportApp() + '/download/' + $scope.export.job_id + '/' + $scope.export.data_type,
-            method: 'GET',
-            responseType: 'arraybuffer' // Ensure the response is handled as binary for file download
-        }).then(
-            function(response) {
-                var blob = new Blob([response.data], { type: response.headers('content-type') });
-                $scope.export.downloadUrl = window.URL.createObjectURL(blob); // Create the download URL
-                $scope.downloadFile(); // Trigger the download
-                $scope.export.isDownloading = false;
-            },
-            function(response) {
-                $scope.export.error_message = 'Error downloading file';
-                $scope.export.isDownloading = false;
                 update_page_title();
             }
         );
@@ -123,7 +92,11 @@ limitations under the License.
         var max_interval = 3000;  // 3 seconds
 
         interval = $interval(function(){
-            get_job_status();
+            if ($scope.export.status !== 'finished' && $scope.export.status !== 'FAILURE') {
+                get_job_status();
+            } else {
+                $interval.cancel(interval);
+            }
         }, max_interval);
     }
 
@@ -141,25 +114,19 @@ limitations under the License.
     }
 
     /**
-     * Function to handle file download via button.
-     */
-    $scope.downloadFile = function() {
-        if ($scope.export.downloadUrl) {
-            var a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = $scope.export.downloadUrl;
-            a.download = $scope.export.job_id + '.' + ($scope.export.data_type === 'json' ? 'json.gz' : $scope.export.data_type === 'fasta' ? 'fasta.gz' : 'txt.gz');
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL($scope.export.downloadUrl);
-        }
-    };
-
-    /**
-     * Fetch the file for download.
+     * Download file.
      */
     $scope.triggerDownload = function() {
-        fetch_file();
+        var downloadUrl = routes.exportApp() + '/download/' + $scope.export.job_id + '/' + $scope.export.data_type;
+        var filename = $scope.export.job_id + '.' + ($scope.export.data_type === 'json' ? 'json.gz' : $scope.export.data_type === 'fasta' ? 'fasta.gz' : 'txt.gz');
+        var a = document.createElement('a');
+
+        a.style.display = 'none';
+        a.href = downloadUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     };
 
     /**
