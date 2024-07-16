@@ -53,10 +53,22 @@ limitations under the License.
                         $scope.export.progress = response.data.progress_ids || 0;
                     }
 
+                    // Set polling interval based on the number of hits.
+                    var interval;
+                    if ($scope.export.hits<=10000) {
+                        interval = 1000
+                    } else if ($scope.export.hits>10000 && $scope.export.hits<=100000) {
+                        interval = 3000
+                    } else if ($scope.export.hits>100000 && $scope.export.hits<=1000000) {
+                        interval = 10000
+                    } else if ($scope.export.hits>1000000) {
+                        interval = 30000
+                    }
+
                     // Check status
                     $scope.export.status = response.data.state === 'RUNNING' ? 'running' : response.data.state ? response.data.state : 'pending';
                     if ($scope.export.status !== 'FAILURE') {
-                        setTimeout(get_job_status, 3000);  // 3 seconds
+                        setTimeout(get_job_status, interval);
                     } else {
                         $scope.export.error_message = 'Job failed';
                     }
