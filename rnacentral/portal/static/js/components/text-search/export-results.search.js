@@ -21,7 +21,7 @@ limitations under the License.
         query: null,
         job_id: null,
         data_type: null,
-        status: null,
+        status: "loading",
         hits: null,
         progress: -1,
         ended_at: null,

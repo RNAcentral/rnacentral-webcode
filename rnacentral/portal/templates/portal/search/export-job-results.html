@@ -36,6 +36,10 @@ Exporting search results
 
     <div class="row">
       <div class="col-md-12">
+        <div class="alert alert-info col-md-6" role="alert" ng-show="export.status === 'loading' && export.error_message === ''">
+          <i class="fa fa-spinner fa-spin fa-2x pull-left"></i>
+          Loading results. This may take some time depending on the size of the <strong>{{ export.data_type }}</strong> file, please wait.
+        </div>
 
         <div class="alert alert-info col-md-6" role="alert" ng-show="(export.status === 'pending' || export.status === 'running') && export.error_message === ''">
           <i class="fa fa-spinner fa-spin fa-2x pull-left"></i>
