@@ -19,33 +19,21 @@ services:
       - S3_KEY=${S3_KEY}
       - S3_SECRET=${S3_SECRET}
       - EBI_SEARCH_ENDPOINT=${EBI_SEARCH_ENDPOINT}
+    command: gunicorn --chdir /srv/rnacentral/rnacentral-webcode/rnacentral --bind 0.0.0.0:8000 rnacentral.wsgi:application --workers 16 --timeout 120 --log-level=debug --access-logfile /dev/stdout --error-logfile /dev/stderr
     expose:
       - 8000
     volumes:
       - static_volume:/srv/rnacentral/static
       - ./openssl/openssl.cnf:/etc/ssl/openssl.cnf
-    depends_on:
-      - redis
     networks:
-      - redis-network
       - nginx-network
       - memcached-network
-
-  # Redis server
-  redis:
-    image: redis:6.0.8-alpine
-    ports:
-      - 8051:8051
-    command: redis-server --port 8051
-    restart: always
-    networks:
-      - redis-network
 
   # Nginx server
   nginx:
     image: nginx:1.24.0-alpine
     ports:
-      - 8000:80
+      - 8010:80
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - static_volume:/srv/rnacentral/static
@@ -69,8 +57,6 @@ volumes:
   static_volume:
 
 networks:
-  redis-network:
-    driver: bridge
   nginx-network:
     driver: bridge
   memcached-network:
