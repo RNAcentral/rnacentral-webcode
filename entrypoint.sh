@@ -19,9 +19,6 @@ S3_HOST=${S3_HOST}
 S3_KEY=${S3_KEY}
 S3_SECRET=${S3_SECRET}
 
-# Supervisor
-SUPERVISOR_CONF_DIR=${SUPERVISOR_CONF_DIR:-"/srv/rnacentral/supervisor"}
-
 # Add local_settings file
 if [ -f "${RNACENTRAL_HOME}"/rnacentral/rnacentral/local_settings.py ]
 then
@@ -52,15 +49,6 @@ else
             "LOCATION": os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'rnacentral', 'sitemaps')
         }
     }
-		RQ_QUEUES = {
-        "default": {
-            "HOST": "redis",
-            "PORT": 8051,
-            "DB": 0,
-            "DEFAULT_TIMEOUT": 360,
-            "REMOTE_SERVER": None,
-        }
-    }
 		DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql_psycopg2",
@@ -74,60 +62,6 @@ else
 	EOF
 	sed -i "3 a DEBUG = ${DJANGO_DEBUG}" "${RNACENTRAL_HOME}"/rnacentral/rnacentral/local_settings.py
 	chown -R rnacentral "${RNACENTRAL_HOME}"/rnacentral/rnacentral/local_settings.py
-fi
-
-# Add local_settings file in the export app
-# /srv/rnacentral/fasta and /srv/rnacentral/export are k8 volumes in prod
-if [ -f "${RNACENTRAL_HOME}"/rnacentral/export/local_settings.py ]
-then
-	echo "INFO: The local_settings.py file for the export app has already been provisioned"
-else
-	echo "INFO: Creating local_settings.py file for the export app"
-	cat <<-EOF > "${RNACENTRAL_HOME}"/rnacentral/export/local_settings.py
-		FASTA_DB = '/srv/rnacentral/fasta/rnacentral_species_specific_ids.fasta'
-		EXPORT_RESULTS_DIR = '/srv/rnacentral/export'
-	EOF
-	chown rnacentral "${RNACENTRAL_HOME}"/rnacentral/export/local_settings.py
-fi
-
-# Supervisor setup
-if [ -f "${SUPERVISOR_CONF_DIR}"/supervisord.conf ]
-then
-	echo "INFO: Supervisord configuration file already provisioned"
-else
-	echo "INFO: Creating Supervisord configuration file"
-	cat <<-EOF > "${SUPERVISOR_CONF_DIR}"/supervisord.conf
-		[supervisord]
-		pidfile=${SUPERVISOR_CONF_DIR}/supervisord.pid
-		user=rnacentral
-		stdout_logfile=/dev/stdout
-		stdout_logfile_maxbytes=0
-		redirect_stderr=true
-		loglevel=info
-		nodaemon=true
-
-		[program:rqworkers]
-		command=python $RNACENTRAL_HOME/rnacentral/manage.py rqworker
-		directory=$RNACENTRAL_HOME/rnacentral
-		numprocs=4
-		process_name=%(program_name)s_%(process_num)s
-		autorestart=true
-		autostart=true
-		stdout_logfile=/dev/stdout
-		stdout_logfile_maxbytes=0
-		redirect_stderr=true
-
-		[program:rnacentral]
-		command=gunicorn --chdir $RNACENTRAL_HOME/rnacentral --bind 0.0.0.0:8000 rnacentral.wsgi:application --workers 16 --timeout 120 --log-level=debug --access-logfile /dev/stdout --error-logfile /dev/stderr
-		user=rnacentral
-		autostart=true
-		autorestart=true
-		stdout_logfile=/dev/stdout
-		stdout_logfile_maxbytes=0
-		redirect_stderr=true
-		environment=HOME="$RNACENTRAL_HOME"
-	EOF
-	chown -R rnacentral "${SUPERVISOR_CONF_DIR}"/supervisord.conf
 fi
 
 # Run collectstatic
