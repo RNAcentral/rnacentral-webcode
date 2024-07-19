@@ -35,47 +35,45 @@ limitations under the License.
      */
     function get_job_status() {
         return $http({
-            url: routes.exportApp() + '/download/' + $scope.export.job_id + '/' + $scope.export.data_type,
+            url: routes.exportApp() + '/status/' + $scope.export.job_id,
             method: 'GET'
         }).then(
             function(response) {
-                // get_job_status will be called as long as the content-type is
-                // equal to application/json and the status is different from FAILURE
-                if (response.headers('content-type').includes('application/json')) {
-                    $scope.export.hits = response.data.hit_count;
+                $scope.export.query = response.data.query;
+                $scope.export.data_type = response.data.data_type;
+                $scope.export.status = response.data.state === 'RUNNING' ? 'running' : response.data.state ? response.data.state : 'pending';
+                $scope.export.hits = response.data.hit_count;
 
-                    // Check progress
-                    if ($scope.export.data_type === 'fasta') {
-                        $scope.export.progress = (response.data.progress_ids + response.data.progress_fasta) / 2 || 0;
-                    } else if ($scope.export.data_type === 'json') {
-                        $scope.export.progress = (response.data.progress_ids + response.data.progress_db_data) / 2 || 0;
-                    } else {
-                        $scope.export.progress = response.data.progress_ids || 0;
-                    }
-
-                    // Set polling interval based on the number of hits.
-                    var interval;
-                    if ($scope.export.hits<=10000) {
-                        interval = 1000
-                    } else if ($scope.export.hits>10000 && $scope.export.hits<=100000) {
-                        interval = 3000
-                    } else if ($scope.export.hits>100000 && $scope.export.hits<=1000000) {
-                        interval = 10000
-                    } else if ($scope.export.hits>1000000) {
-                        interval = 30000
-                    }
-
-                    // Check status
-                    $scope.export.status = response.data.state === 'RUNNING' ? 'running' : response.data.state ? response.data.state : 'pending';
-                    if ($scope.export.status !== 'FAILURE') {
-                        setTimeout(get_job_status, interval);
-                    } else {
-                        $scope.export.error_message = 'Job failed';
-                    }
+                // Check progress
+                if ($scope.export.data_type === 'fasta') {
+                    $scope.export.progress = (response.data.progress_ids + response.data.progress_fasta) / 2 || 0;
+                } else if ($scope.export.data_type === 'json') {
+                    $scope.export.progress = (response.data.progress_ids + response.data.progress_db_data) / 2 || 0;
                 } else {
-                    $scope.export.status = 'finished';
-                    $scope.export.progress = 100;
+                    $scope.export.progress = response.data.progress_ids || 0;
                 }
+
+                // Set polling interval based on the number of hits.
+                var interval;
+                if ($scope.export.hits<=10000) {
+                    interval = 1000
+                } else if ($scope.export.hits>10000 && $scope.export.hits<=100000) {
+                    interval = 3000
+                } else if ($scope.export.hits>100000 && $scope.export.hits<=1000000) {
+                    interval = 10000
+                } else if ($scope.export.hits>1000000) {
+                    interval = 30000
+                }
+
+                if ($scope.export.status === "SUCCESS"){
+                    $scope.export.status = "finished";
+                    $scope.export.progress = 100;
+                } else if ($scope.export.status !== "FAILURE" && $scope.export.status !== "REVOKED" && $scope.export.status !== "RETRY") {
+                    setTimeout(get_job_status, interval);
+                } else {
+                    $scope.export.error_message = 'Job failed';
+                }
+
                 update_page_title();
             },
             function(response) {
@@ -131,7 +129,6 @@ limitations under the License.
     function initialize() {
         if ($location.url().indexOf("/export/results?job=") > -1) {
             $scope.export.job_id = $location.search().job;
-            $scope.export.data_type = $location.search().data_type;
             get_job_status();
         }
     }

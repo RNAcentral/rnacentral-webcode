@@ -363,7 +363,7 @@ var textSearchResults = {
                 data_type: format
             };
 
-            $http.post(routes.exportApp() + '/fetch-data/', JSON.stringify(payload), {
+            $http.post(routes.exportApp() + '/submit/', JSON.stringify(payload), {
                 headers: {
                     'Content-Type': 'application/json',
                     'Accept': 'application/json'
@@ -372,7 +372,7 @@ var textSearchResults = {
                 function(response) {
                     ctrl.showExportError = false;
                     var task_id = response.data.task_id;
-                    window.location.href = ctrl.routes.resultsPage() + '?job=' + task_id + '&data_type=' + format;
+                    window.location.href = ctrl.routes.resultsPage() + '?job=' + task_id;
                 },
                 function(response) {
                     ctrl.showExportError = true;
