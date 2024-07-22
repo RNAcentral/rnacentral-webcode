@@ -69,3 +69,5 @@ USER rnacentral
 # Run entrypoint
 COPY ./entrypoint.sh $RNACENTRAL_HOME
 ENTRYPOINT ["/srv/rnacentral/rnacentral-webcode/entrypoint.sh"]
+
+CMD ["gunicorn", "--chdir", "/srv/rnacentral/rnacentral-webcode/rnacentral", "--bind", "0.0.0.0:8000", "rnacentral.wsgi:application", "--workers", "4", "--timeout", "120", "--log-level=debug", "--access-logfile", "/dev/stdout", "--error-logfile", "/dev/stderr"]

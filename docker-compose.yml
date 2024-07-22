@@ -19,7 +19,6 @@ services:
       - S3_KEY=${S3_KEY}
       - S3_SECRET=${S3_SECRET}
       - EBI_SEARCH_ENDPOINT=${EBI_SEARCH_ENDPOINT}
-    command: gunicorn --chdir /srv/rnacentral/rnacentral-webcode/rnacentral --bind 0.0.0.0:8000 rnacentral.wsgi:application --workers 16 --timeout 120 --log-level=debug --access-logfile /dev/stdout --error-logfile /dev/stderr
     expose:
       - 8000
     volumes:
