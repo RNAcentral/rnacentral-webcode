@@ -1,3 +1,5 @@
+# Values used by the test website
+
 # Database
 database: db-pro
 
@@ -18,21 +20,15 @@ setEnv: "dev"
 
 # Memcached
 memcachedReplicas: 1
-memcachedRequestsMemory: "6000Mi"
+memcachedRequestsMemory: "4000Mi"
 memcachedRequestsCPU: "1000m"
-memcachedLimitsMemory: "6000Mi"
-
-# Redis
-redisReplicas: 1
-redisRequestsMemory: "6000Mi"
-redisRequestsCPU: "1000m"
-redisLimitsMemory: "6000Mi"
+memcachedLimitsMemory: "4000Mi"
 
 # Nginx
 nginxReplicas: 1
-nginxRequestsMemory: "4000Mi"
+nginxRequestsMemory: "2000Mi"
 nginxRequestsCPU: "1000m"
-nginxLimitsMemory: "4000Mi"
+nginxLimitsMemory: "2000Mi"
 
 # RNAcentral
 rnacentralReplicas: 1
