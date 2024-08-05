@@ -96,8 +96,9 @@ Use parentheses to group and nest logical terms.
 
 ## Download search results <a style="cursor: pointer" id="download" ng-click="scrollTo('download')" name="download" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
-The RNAcentral text search can only export up to 1,000,000 search results.
-If you need to export more sequences, you can use the [public Postgres database](/help/public-database)
+The RNAcentral text search now supports exporting any number of search results.
+Also refer to the [public Postgres database](/help/public-database) and the
+[RNAcentral FTP Archive](/downloads) for exporting large amounts of data.
 
 ---
 
