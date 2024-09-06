@@ -48,10 +48,6 @@ spec:
           volumeMounts:
             - name: static-volume
               mountPath: /srv/rnacentral/static
-            - name: rnacentral-species-specific-ids
-              mountPath: /srv/rnacentral/fasta
-            - name: export-results
-              mountPath: /srv/rnacentral/export
             {{- if eq .Values.sitemaps "true" }}
             - name: sitemaps
               mountPath: /srv/rnacentral/rnacentral-webcode/rnacentral/sitemaps
