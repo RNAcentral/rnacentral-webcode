@@ -198,7 +198,7 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
     refseq_mirna_mature_products = serializers.SerializerMethodField()
     refseq_mirna_precursor = serializers.SerializerMethodField()
     refseq_splice_variants = serializers.SerializerMethodField()
-    ensembl_splice_variants = serializers.SerializerMethodField()
+    # ensembl_splice_variants = serializers.SerializerMethodField()
     # tmrna_mate_upi = serializers.SerializerMethodField('get_tmrna_mate_upi')
     # tmrna_type = serializers.ReadOnlyField(source='get_tmrna_type')
     gencode_transcript_id = serializers.CharField(
@@ -229,7 +229,7 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
             "refseq_mirna_mature_products",
             "refseq_mirna_precursor",
             "refseq_splice_variants",
-            "ensembl_splice_variants",
+            # "ensembl_splice_variants",
             # 'tmrna_mate_upi',
             # 'tmrna_type',
             "gencode_transcript_id",
@@ -958,3 +958,11 @@ class RnaGenomeLocationsSerializer(serializers.Serializer):
             "example_start": obj.example_start,
             "example_end": obj.example_end,
         }
+
+
+class Md5Serializer(serializers.Serializer):
+    """Serializer class to fetch sequence using md5"""
+
+    rnacentral_id = serializers.CharField(source="id")
+    description = serializers.CharField()
+    sequence = serializers.CharField(source="get_sequence")

@@ -29,6 +29,7 @@ from apiv1.serializers import (
     InteractionsSerializer,
     LitSummSerializer,
     LncrnaTargetsSerializer,
+    Md5Serializer,
     ProteinTargetsSerializer,
     QcStatusSerializer,
     RawPublicationSerializer,
@@ -1102,3 +1103,22 @@ class LitSummView(ReadOnlyModelViewSet):
         if primary_id is not None:
             queryset = queryset.filter(primary_id=primary_id)
         return queryset
+
+
+class Md5SequenceView(APIView):
+    """API endpoint to fetch sequence using md5 field"""
+
+    permission_classes = (AllowAny,)
+
+    def get(self, request, md5):
+        try:
+            rna = Rna.objects.get(md5=md5)
+        except Rna.DoesNotExist:
+            raise Http404
+
+        precomputed = RnaPrecomputed.objects.filter(upi=rna, taxid__isnull=True).first()
+        if not precomputed:
+            raise Http404
+
+        serializer = Md5Serializer(precomputed)
+        return Response(serializer.data)

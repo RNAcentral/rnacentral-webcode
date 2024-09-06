@@ -196,6 +196,12 @@ urlpatterns = [
         {},
         name="litsumm-specific-id",
     ),
+    # fetch sequence using md5
+    url(
+        r"md5/(?P<md5>.*?)/?$",
+        cache_page(CACHE_TIMEOUT)(views.Md5SequenceView.as_view()),
+        name="md5-sequence",
+    ),
 ]
 
 urlpatterns = format_suffix_patterns(
