@@ -45,8 +45,8 @@ deploy_image:
     - echo "$CI_COMMIT_BRANCH"
     - kubectl config use-context RNAcentral/rnacentral-webcode:primary-agent
     - kubectl config set-context --current --namespace=prod
-    - POD=`kubectl get pod -l app=memcached -o jsonpath="{.items[0].metadata.name}"`
-    - kubectl wait --for=condition=ready pod/"$POD" --timeout=60s
+#    - POD=`kubectl get pod -l app=memcached -o jsonpath="{.items[0].metadata.name}"`
 #    - kubectl exec "$POD" -- /bin/sh -c "echo flush_all | nc localhost 11211"
     - cd kubernetes/helm
+    - curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
     - helm list --all
