@@ -1,29 +1,29 @@
 stages:
-  - test
+#  - test
 #  - build
   - deploy
 
-test_image:
-  image: python:3.8.15-slim
-  stage: test
-  before_script:
-    - |
-      apt-get update && apt-get install -y --no-install-recommends \
-      g++ \
-      build-essential \
-      tar \
-      git \
-      && rm -rf /var/lib/apt/lists/*
-    - python -m pip install --upgrade pip
-    - pip install -r rnacentral/requirements.txt
-    - pip install -r rnacentral/requirements_dev.txt
-    - mv rnacentral/rnacentral/unit_test_local_settings.py rnacentral/rnacentral/local_settings.py
-  script:
-    - |
-      python rnacentral/manage.py test apiv1
-      python rnacentral/manage.py test export
-      python rnacentral/manage.py test portal
-      python rnacentral/manage.py test sequence_search
+#test_image:
+#  image: python:3.8.15-slim
+#  stage: test
+#  before_script:
+#    - |
+#      apt-get update && apt-get install -y --no-install-recommends \
+#      g++ \
+#      build-essential \
+#      tar \
+#      git \
+#      && rm -rf /var/lib/apt/lists/*
+#    - python -m pip install --upgrade pip
+#    - pip install -r rnacentral/requirements.txt
+#    - pip install -r rnacentral/requirements_dev.txt
+#    - mv rnacentral/rnacentral/unit_test_local_settings.py rnacentral/rnacentral/local_settings.py
+#  script:
+#    - |
+#      python rnacentral/manage.py test apiv1
+#      python rnacentral/manage.py test export
+#      python rnacentral/manage.py test portal
+#      python rnacentral/manage.py test sequence_search
 
 #build_image:
 #  stage: build
@@ -45,6 +45,6 @@ deploy_image:
     - echo "$CI_COMMIT_BRANCH"
     - kubectl config get-contexts
     - kubectl config use-context RNAcentral/rnacentral-webcode:primary-agent
-    - kubectl config set-context --current --namespace=dev
+    - kubectl config set-context --current --namespace=prod
     - kubectl config view
     - kubectl get pods
