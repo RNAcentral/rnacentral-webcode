@@ -77,12 +77,6 @@ spec:
         - name: static-volume
           persistentVolumeClaim:
             claimName: static-volume
-        - name: rnacentral-species-specific-ids
-          persistentVolumeClaim:
-            claimName: rnacentral-species-specific-ids
-        - name: export-results
-          persistentVolumeClaim:
-            claimName: export-results
         {{- if eq .Values.sitemaps "true" }}
         - name: sitemaps
           persistentVolumeClaim:
