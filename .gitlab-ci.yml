@@ -42,6 +42,7 @@ deploy_image:
     name: bitnami/kubectl:1.23.15
     entrypoint: [""]
   script:
+    - mkdir -p /var/lib/apt/lists/partial
     - apt-get update && apt-get install -y curl
     - echo "$CI_COMMIT_BRANCH"
     - kubectl config use-context RNAcentral/rnacentral-webcode:primary-agent
