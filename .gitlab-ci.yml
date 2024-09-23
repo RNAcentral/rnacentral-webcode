@@ -45,7 +45,7 @@ deploy_image:
     - kubectl config set-context --current --namespace=prod
     - POD=`kubectl get pod -l app=memcached -o jsonpath="{.items[0].metadata.name}"`
     - echo $POD
-    - kubectl exec $POD -- /bin/sh -c "echo flush_all | nc localhost 11211"
+    - kubectl -v=9 exec $POD -- /bin/sh -c "echo flush_all | nc localhost 11211"
     - cd kubernetes/helm
     - helm list --all
   rules:
