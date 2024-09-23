@@ -43,11 +43,9 @@ deploy_image:
   script:
     - set -x
     - echo $SHELL
-    - echo "$CI_COMMIT_BRANCH"
+    - echo $CI_COMMIT_BRANCH
     - kubectl config use-context RNAcentral/rnacentral-webcode:primary-agent
     - kubectl config set-context --current --namespace=prod
-#    - POD=`kubectl get pod -l app=memcached -o jsonpath="{.items[0].metadata.name}"`
-#    - kubectl exec "$POD" -- /bin/sh -c "echo flush_all | nc localhost 11211"
     - kubectl get pod
     - cd kubernetes/helm
     - helm list --all
