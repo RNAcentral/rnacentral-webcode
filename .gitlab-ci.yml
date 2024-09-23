@@ -40,7 +40,6 @@ deploy_image:
   stage: deploy
   image:
     name: rnacentral/rnacentral-ci-cd
-    entrypoint: [""]
   script:
     - echo "$CI_COMMIT_BRANCH"
     - kubectl config use-context RNAcentral/rnacentral-webcode:primary-agent
