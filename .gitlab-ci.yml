@@ -41,11 +41,17 @@ deploy_image:
   image:
     name: rnacentral/rnacentral-ci-cd
   script:
-    - set -x
-    - echo $SHELL
-    - echo $CI_COMMIT_BRANCH
     - kubectl config use-context RNAcentral/rnacentral-webcode:primary-agent
     - kubectl config set-context --current --namespace=prod
-    - kubectl get pod
+    - POD=`kubectl get pod -l app=memcached -o jsonpath="{.items[0].metadata.name}"`
+    - echo $POD
+    - kubectl exec $POD -- /bin/sh -c "echo flush_all | nc localhost 11211"
     - cd kubernetes/helm
     - helm list --all
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
+#      changes:
+#        - rnacentral/*
+    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
+      when: manual
