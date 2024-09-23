@@ -41,6 +41,8 @@ deploy_image:
   image:
     name: rnacentral/rnacentral-ci-cd
   script:
+    - set -x
+    - echo $SHELL
     - echo "$CI_COMMIT_BRANCH"
     - kubectl config use-context RNAcentral/rnacentral-webcode:primary-agent
     - kubectl config set-context --current --namespace=prod
