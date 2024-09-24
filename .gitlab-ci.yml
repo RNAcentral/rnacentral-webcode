@@ -40,13 +40,20 @@ deploy_image:
   stage: deploy
   image:
     name: rnacentral/rnacentral-ci-cd
+  variables:
+    NAMESPACE: "prod"
+    PROXY: "proxy-hx"
+    DATABASE: "db-fb"
+    SEARCH_INDEX: "search-index-prod"
+    RNACENTRAL_BRANCH: "export-app"
+    RNACENTRAL_REPLICAS: "1"
   script:
     - kubectl config use-context RNAcentral/rnacentral-webcode:primary-agent
-    - kubectl config set-context --current --namespace=prod
+    - kubectl config set-context --current --namespace=$NAMESPACE
     - cd kubernetes/helm
-    - helm uninstall full-prod --namespace prod
+    - helm uninstall full-$NAMESPACE --namespace $NAMESPACE
     - sleep 10
-    - helm upgrade --install full-prod --namespace prod --set proxy=proxy-hx,database=db-fb,searchIndex=search-index-prod,rnacentralBranch=export-app,rnacentralReplicas=1 .
+    - helm upgrade --install full-$NAMESPACE --namespace $NAMESPACE --set proxy=$PROXY,database=$DATABASE,searchIndex=$SEARCH_INDEX,rnacentralBranch=$RNACENTRAL_BRANCH,rnacentralReplicas=$RNACENTRAL_REPLICAS .
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: always
