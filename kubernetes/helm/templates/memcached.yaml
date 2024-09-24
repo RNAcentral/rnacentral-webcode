@@ -26,7 +26,7 @@ spec:
       labels:
         app: memcached
       annotations:
-        roll-update-timestamp: "{{ now | quote }}"
+        roll-update-timestamp: {{ now | quote }}
     spec:
       containers:
         - image: memcached:1.6.7-alpine
