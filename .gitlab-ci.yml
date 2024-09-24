@@ -43,11 +43,10 @@ deploy_image:
   script:
     - kubectl config use-context RNAcentral/rnacentral-webcode:primary-agent
     - kubectl config set-context --current --namespace=prod
-    - POD=`kubectl get pod -l app=memcached -o jsonpath="{.items[0].metadata.name}"`
-    - echo $POD
-    - kubectl -v=9 exec $POD -n prod -- /bin/sh -c "echo flush_all | nc localhost 11211"
     - cd kubernetes/helm
-    - helm list --all
+    - helm uninstall full-prod --namespace prod
+    - sleep 10
+    - helm upgrade --install full-prod --namespace prod --set proxy=proxy-hx,database=db-fb,searchIndex=search-index-prod,rnacentralBranch=export-app,rnacentralReplicas=1 .
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: always
