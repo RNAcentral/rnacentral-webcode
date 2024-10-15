@@ -1,6 +1,5 @@
 stages:
 #  - test
-#  - build
   - deploy
 
 #test_image:
@@ -24,17 +23,6 @@ stages:
 #      python rnacentral/manage.py test export
 #      python rnacentral/manage.py test portal
 #      python rnacentral/manage.py test sequence_search
-
-#build_image:
-#  stage: build
-#  variables:
-#    DOCKER_USER: $DOCKER_USER
-#    DOCKER_PASSWORD: $DOCKER_PASSWORD
-#  before_script:
-#    - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-#  script:
-#    - docker build -f Dockerfile -t rnacentral/rnacentral-webcode:${CI_COMMIT_BRANCH} .
-#    - docker push rnacentral/rnacentral-webcode:${CI_COMMIT_BRANCH}
 
 deploy_image:
   stage: deploy
@@ -61,3 +49,4 @@ deploy_image:
 #        - rnacentral/*
     - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
       when: manual
+

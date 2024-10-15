@@ -24,28 +24,15 @@ services:
     volumes:
       - static_volume:/srv/rnacentral/static
       - ./openssl/openssl.cnf:/etc/ssl/openssl.cnf
-    depends_on:
-      - redis
     networks:
-      - redis-network
       - nginx-network
       - memcached-network
-
-  # Redis server
-  redis:
-    image: redis:6.0.8-alpine
-    ports:
-      - 8051:8051
-    command: redis-server --port 8051
-    restart: always
-    networks:
-      - redis-network
 
   # Nginx server
   nginx:
     image: nginx:1.24.0-alpine
     ports:
-      - 8000:80
+      - 8010:80
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - static_volume:/srv/rnacentral/static
@@ -69,8 +56,6 @@ volumes:
   static_volume:
 
 networks:
-  redis-network:
-    driver: bridge
   nginx-network:
     driver: bridge
   memcached-network:

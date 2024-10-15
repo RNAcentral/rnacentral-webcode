@@ -355,10 +355,24 @@ var textSearchResults = {
          * - open the results page in a new window.
          */
         ctrl.exportResults = function(format) {
-            $http.get(ctrl.routes.submitQuery() + '?q=' + search.preprocessQuery(ctrl.search.query) + '&format=' + format).then(
+            var queryParam = encodeURIComponent(`(${search.preprocessQuery(ctrl.search.query)})`);
+            var apiUrl = `https://www.ebi.ac.uk/ebisearch/ws/rest/rnacentral?query=${queryParam}&size=1000&sort=id&format=json`;
+
+            var payload = {
+                api_url: apiUrl,
+                data_type: format
+            };
+
+            $http.post(routes.exportApp() + '/submit/', JSON.stringify(payload), {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                }
+            }).then(
                 function(response) {
                     ctrl.showExportError = false;
-                    window.location.href = ctrl.routes.resultsPage() + '?job=' + response.data.job_id;
+                    var task_id = response.data.task_id;
+                    window.location.href = ctrl.routes.resultsPage() + '?job=' + task_id;
                 },
                 function(response) {
                     ctrl.showExportError = true;

@@ -12,34 +12,21 @@ RUN apt-get update && apt-get install -y \
     curl \
     tar \
     git \
-    vim \
-    supervisor && \
+    vim && \
     rm -rf /var/lib/apt/lists/*
 
 ENV RNACENTRAL_LOCAL=/srv/rnacentral/local
-ENV SUPERVISOR_CONF_DIR=/srv/rnacentral/supervisor
 ARG LOCAL_DEVELOPMENT
 
 # Create folders
 RUN \
     mkdir -p $RNACENTRAL_LOCAL && \
-    mkdir -p $SUPERVISOR_CONF_DIR && \
     mkdir /srv/rnacentral/log && \
     mkdir /srv/rnacentral/static
 
-# Install Infernal and node.js
+# Install node.js
 RUN \
     cd $RNACENTRAL_LOCAL && \
-    curl -OL http://eddylab.org/infernal/infernal-1.1.1.tar.gz && \
-    tar -xvzf infernal-1.1.1.tar.gz && \
-    cd infernal-1.1.1 && \
-    ./configure --prefix=$RNACENTRAL_LOCAL/infernal-1.1.1 && \
-    make && \
-    make install && \
-    cd easel && \
-    make install && \
-    cd $RNACENTRAL_LOCAL && \
-    rm infernal-1.1.1.tar.gz && \
     curl -sL https://deb.nodesource.com/setup_lts.x | bash - && \
     apt-get install -y nodejs
 
@@ -83,5 +70,4 @@ USER rnacentral
 COPY ./entrypoint.sh $RNACENTRAL_HOME
 ENTRYPOINT ["/srv/rnacentral/rnacentral-webcode/entrypoint.sh"]
 
-# Supervisor
-CMD [ "/bin/sh", "-c", "/usr/bin/supervisord -c ${SUPERVISOR_CONF_DIR}/supervisord.conf" ]
+CMD ["gunicorn", "--chdir", "/srv/rnacentral/rnacentral-webcode/rnacentral", "--bind", "0.0.0.0:8000", "rnacentral.wsgi:application", "--workers", "4", "--timeout", "120", "--log-level=debug", "--access-logfile", "/dev/stdout", "--error-logfile", "/dev/stderr"]

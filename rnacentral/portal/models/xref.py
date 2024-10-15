@@ -86,7 +86,7 @@ class RawSqlQueryset(models.QuerySet):
                 )
                 refseq_mirna_precursors = self.get_refseq_mirna_precursor(taxid)
                 refseq_splice_variants = self.get_refseq_splice_variants(taxid)
-                ensembl_splice_variants = self.get_ensembl_splice_variants(taxid)
+                # ensembl_splice_variants = self.get_ensembl_splice_variants(taxid)
                 # tmrna_mates = self.get_tmrna_mate(taxid)
 
                 # "annotate" xrefs queryset with additional attributes, retrieved by raw SQL queries
@@ -114,11 +114,11 @@ class RawSqlQueryset(models.QuerySet):
                             splice_variant.upi.upi
                             for splice_variant in refseq_splice_variants[xref.id]
                         ]
-                    if xref.id in ensembl_splice_variants:
-                        xref.ensembl_splice_variants = [
-                            splice_variant.upi.upi
-                            for splice_variant in ensembl_splice_variants[xref.id]
-                        ]
+                    # if xref.id in ensembl_splice_variants:
+                    #     xref.ensembl_splice_variants = [
+                    #         splice_variant.upi.upi
+                    #         for splice_variant in ensembl_splice_variants[xref.id]
+                    #     ]
                     # if xref.id in tmrna_mates:
                     #     xref.tmrna_mates = [
                     #         tmrna_mate.upi.upi for tmrna_mate in tmrna_mates[xref.id]

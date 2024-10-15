@@ -83,8 +83,9 @@ URS00000A54A6	9606	OTTHUMT00000416802.1
 
 ## Example workflow to extract all bacterial rRNA sequences
 
-The RNAcentral text search can only export up to 1,000,000 search results.
-If you need to export more sequences, you can use the following workflow:
+Exporting millions of sequences via the public database can be faster than
+using the [Text Search](/search?q=RNA). Here's an example of how you can
+explore this service:
 
 1. Create a file `query.sql`:
 

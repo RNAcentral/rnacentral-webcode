@@ -1,5 +1,5 @@
 """
-Copyright [2009-2017] EMBL-European Bioinformatics Institute
+Copyright [2009-present] EMBL-European Bioinformatics Institute
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -16,21 +16,8 @@ from __future__ import absolute_import
 from django.conf.urls import url
 from django.views.generic.base import TemplateView
 
-from .views import *
-
-# exporting metadata search results
 urlpatterns = [
-    # export search results
-    url(r"^submit-query/?$", submit_export_job, name="export-submit-job"),
-    # download search results
-    url(
-        r"^download-result/?$",
-        download_search_result_file,
-        name="export-download-result",
-    ),
-    # get metadata search export status
-    url(r"^job-status/?$", get_export_job_status, name="export-job-status"),
-    # interstitial page for a job id
+    # view export results
     url(
         r"^results/?$",
         TemplateView.as_view(template_name="portal/search/export-job-results.html"),

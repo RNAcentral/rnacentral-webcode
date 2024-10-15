@@ -22,20 +22,10 @@ The [public postgres database](https://rnacentral.org/help/public-database) is c
 If you want to use another database, add the following environment variables: `DB_HOST`, `DB_NAME`, `DB_USER`,
 `DB_PASSWORD`, and `DB_PORT`.
 
-3. For Mac OS users, install [mutagen](https://mutagen.io/) (Docker on Mac has some performance issues)
+3. Run the app using [Docker](https://www.docker.com):
 
   ```
-  brew install mutagen-io/mutagen/mutagen-beta
-  ```
-
-4. Run the app using [Docker](https://www.docker.com):
-
-  ```
-  For Linux users:
-  docker-compose -f docker-compose.local.yml up --build
-
-  For Mac OS users:
-  mutagen compose -f docker-compose.local.mac.yml up --build
+  docker-compose up --build
   ```
 
 ## Feedback

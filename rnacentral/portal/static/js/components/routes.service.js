@@ -62,6 +62,7 @@ angular.module("routes", []).service('routes', ['$interpolate', function($interp
         quickGoSummaryPage: 'https://www.ebi.ac.uk/QuickGO/term/{{ term_id }}',
         quickGoChart: 'https://www.ebi.ac.uk/QuickGO/services/ontology/{{ ontology }}/terms/{{ term_ids }}/chart?base64=true',
         qcStatusApi: '/api/v1/rna/{{ upi }}/qc-status/{{ taxid }}',
+        exportApp: 'https://export.rnacentral.org',
     };
 
 
