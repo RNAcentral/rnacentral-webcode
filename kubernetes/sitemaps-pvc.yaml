@@ -5,6 +5,7 @@ metadata:
     pvc: sitemaps
   name: sitemaps
 spec:
+  storageClassName: standard-nfs-production
   accessModes:
   - ReadWriteMany
   resources:
