@@ -1,50 +1,51 @@
 stages:
-  - test
-#  - build
+#  - test
   - deploy
 
-test_image:
-  image: python:3.8.15-slim
-  stage: test
-  before_script:
-    - |
-      apt-get update && apt-get install -y --no-install-recommends \
-      g++ \
-      build-essential \
-      tar \
-      git \
-      && rm -rf /var/lib/apt/lists/*
-    - python -m pip install --upgrade pip
-    - pip install -r rnacentral/requirements.txt
-    - pip install -r rnacentral/requirements_dev.txt
-    - mv rnacentral/rnacentral/unit_test_local_settings.py rnacentral/rnacentral/local_settings.py
-  script:
-    - |
-      python rnacentral/manage.py test apiv1
-      python rnacentral/manage.py test export
-      python rnacentral/manage.py test portal
-      python rnacentral/manage.py test sequence_search
-
-#build_image:
-#  stage: build
-#  variables:
-#    DOCKER_USER: $DOCKER_USER
-#    DOCKER_PASSWORD: $DOCKER_PASSWORD
+#test_image:
+#  image: python:3.8.15-slim
+#  stage: test
 #  before_script:
-#    - docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+#    - |
+#      apt-get update && apt-get install -y --no-install-recommends \
+#      g++ \
+#      build-essential \
+#      tar \
+#      git \
+#      && rm -rf /var/lib/apt/lists/*
+#    - python -m pip install --upgrade pip
+#    - pip install -r rnacentral/requirements.txt
+#    - pip install -r rnacentral/requirements_dev.txt
+#    - mv rnacentral/rnacentral/unit_test_local_settings.py rnacentral/rnacentral/local_settings.py
 #  script:
-#    - docker build -f Dockerfile -t rnacentral/rnacentral-webcode:${CI_COMMIT_BRANCH} .
-#    - docker push rnacentral/rnacentral-webcode:${CI_COMMIT_BRANCH}
+#    - |
+#      python rnacentral/manage.py test apiv1
+#      python rnacentral/manage.py test export
+#      python rnacentral/manage.py test portal
+#      python rnacentral/manage.py test sequence_search
 
 deploy_image:
   stage: deploy
   image:
-    name: bitnami/kubectl:1.23.15
-    entrypoint: [""]
+    name: rnacentral/rnacentral-ci-cd
+  variables:
+    NAMESPACE: "prod"
+    PROXY: "proxy-hx"
+    DATABASE: "db-fb"
+    SEARCH_INDEX: "search-index-prod"
+    RNACENTRAL_BRANCH: "export-app"
+    RNACENTRAL_REPLICAS: "1"
   script:
-    - echo "$CI_COMMIT_BRANCH"
-    - kubectl config get-contexts
     - kubectl config use-context RNAcentral/rnacentral-webcode:primary-agent
-    - kubectl config set-context --current --namespace=dev
-    - kubectl config view
-    - kubectl get pods
+    - kubectl config set-context --current --namespace=$NAMESPACE
+    - cd kubernetes/helm
+    - helm uninstall full-$NAMESPACE --namespace $NAMESPACE
+    - sleep 10
+    - helm upgrade --install full-$NAMESPACE --namespace $NAMESPACE --set proxy=$PROXY,database=$DATABASE,searchIndex=$SEARCH_INDEX,rnacentralBranch=$RNACENTRAL_BRANCH,rnacentralReplicas=$RNACENTRAL_REPLICAS .
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
+#      changes:
+#        - rnacentral/*
+    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
+      when: manual
