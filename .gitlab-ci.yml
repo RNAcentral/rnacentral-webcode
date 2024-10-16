@@ -1,30 +1,7 @@
 stages:
-#  - test
   - deploy
 
-#test_image:
-#  image: python:3.8.15-slim
-#  stage: test
-#  before_script:
-#    - |
-#      apt-get update && apt-get install -y --no-install-recommends \
-#      g++ \
-#      build-essential \
-#      tar \
-#      git \
-#      && rm -rf /var/lib/apt/lists/*
-#    - python -m pip install --upgrade pip
-#    - pip install -r rnacentral/requirements.txt
-#    - pip install -r rnacentral/requirements_dev.txt
-#    - mv rnacentral/rnacentral/unit_test_local_settings.py rnacentral/rnacentral/local_settings.py
-#  script:
-#    - |
-#      python rnacentral/manage.py test apiv1
-#      python rnacentral/manage.py test export
-#      python rnacentral/manage.py test portal
-#      python rnacentral/manage.py test sequence_search
-
-deploy_image:
+cluster_hx:
   stage: deploy
   image:
     name: rnacentral/rnacentral-ci-cd
@@ -33,7 +10,7 @@ deploy_image:
     PROXY: "proxy-hx"
     DATABASE: "db-fb"
     SEARCH_INDEX: "search-index-prod"
-    RNACENTRAL_BRANCH: "export-app"
+    RNACENTRAL_BRANCH: "master"
     RNACENTRAL_REPLICAS: "1"
   script:
     - kubectl config use-context RNAcentral/rnacentral-webcode:primary-agent
@@ -50,3 +27,28 @@ deploy_image:
     - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
       when: manual
 
+cluster_hh:
+  stage: deploy
+  image:
+    name: rnacentral/rnacentral-ci-cd
+  variables:
+    NAMESPACE: "dev"
+    PROXY: "proxy-hh"
+    DATABASE: "db-pro"
+    SEARCH_INDEX: "search-index-dev"
+    RNACENTRAL_BRANCH: "master"
+    RNACENTRAL_REPLICAS: "1"
+  script:
+    - kubectl config use-context RNAcentral/rnacentral-webcode:agent-hh
+    - kubectl config set-context --current --namespace=$NAMESPACE
+    - cd kubernetes/helm
+    - helm uninstall full-$NAMESPACE --namespace $NAMESPACE
+    - sleep 10
+    - helm upgrade --install full-$NAMESPACE --namespace $NAMESPACE --set proxy=$PROXY,database=$DATABASE,searchIndex=$SEARCH_INDEX,rnacentralBranch=$RNACENTRAL_BRANCH,rnacentralReplicas=$RNACENTRAL_REPLICAS .
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      when: always
+#      changes:
+#        - rnacentral/*
+    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
+      when: manual
