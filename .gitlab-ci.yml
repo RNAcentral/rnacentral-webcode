@@ -1,54 +1,74 @@
 stages:
   - deploy
 
-cluster_hx:
-  stage: deploy
-  image:
-    name: rnacentral/rnacentral-ci-cd
+.deploy_steps: &deploy_steps
+  script:
+    - kubectl config use-context RNAcentral/rnacentral-webcode:$AGENT
+    - kubectl config set-context --current --namespace=$NAMESPACE
+    - cd kubernetes/helm
+    - helm uninstall full-$NAMESPACE --namespace $NAMESPACE
+    - sleep 10
+    - helm upgrade --install full-$NAMESPACE --namespace $NAMESPACE --values=$VALUES_FILE --set proxy=$PROXY,database=$DATABASE,searchIndex=$SEARCH_INDEX,rnacentralBranch=$RNACENTRAL_BRANCH,rnacentralReplicas=$RNACENTRAL_REPLICAS .
+
+.variables_hx: &variables_hx
   variables:
+    AGENT: "primary-agent"
     NAMESPACE: "prod"
+    VALUES_FILE: "values.yaml"
     PROXY: "proxy-hx"
     DATABASE: "db-fb"
     SEARCH_INDEX: "search-index-prod"
     RNACENTRAL_BRANCH: "master"
     RNACENTRAL_REPLICAS: "1"
-  script:
-    - kubectl config use-context RNAcentral/rnacentral-webcode:primary-agent
-    - kubectl config set-context --current --namespace=$NAMESPACE
-    - cd kubernetes/helm
-    - helm uninstall full-$NAMESPACE --namespace $NAMESPACE
-    - sleep 10
-    - helm upgrade --install full-$NAMESPACE --namespace $NAMESPACE --set proxy=$PROXY,database=$DATABASE,searchIndex=$SEARCH_INDEX,rnacentralBranch=$RNACENTRAL_BRANCH,rnacentralReplicas=$RNACENTRAL_REPLICAS .
+
+.variables_hh: &variables_hh
+  variables:
+    AGENT: "agent-hh"
+    NAMESPACE: "dev"
+    VALUES_FILE: "values.dev.yaml"
+    PROXY: "proxy-hh"
+    DATABASE: "db-pro"
+    SEARCH_INDEX: "search-index-dev"
+    RNACENTRAL_BRANCH: "$CI_COMMIT_REF_NAME"  # use the branch that triggered the pipeline
+    RNACENTRAL_REPLICAS: "1"
+
+# Automatic deployment to the fallback website when the master branch is updated
+cluster_hx:
+  stage: deploy
+  image:
+    name: rnacentral/rnacentral-ci-cd
+  <<: [*deploy_steps, *variables_hx]
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: always
-#      changes:
-#        - rnacentral/*
-    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
-      when: manual
+    - if: $CI_PIPELINE_SOURCE == "push"
 
+# Automatic deployment to the testing website when any branch is updated
 cluster_hh:
   stage: deploy
   image:
     name: rnacentral/rnacentral-ci-cd
-  variables:
-    NAMESPACE: "dev"
-    PROXY: "proxy-hh"
-    DATABASE: "db-pro"
-    SEARCH_INDEX: "search-index-dev"
-    RNACENTRAL_BRANCH: "master"
-    RNACENTRAL_REPLICAS: "1"
-  script:
-    - kubectl config use-context RNAcentral/rnacentral-webcode:agent-hh
-    - kubectl config set-context --current --namespace=$NAMESPACE
-    - cd kubernetes/helm
-    - helm uninstall full-$NAMESPACE --namespace $NAMESPACE
-    - sleep 10
-    - helm upgrade --install full-$NAMESPACE --namespace $NAMESPACE --values=values.dev.yaml --set proxy=$PROXY,database=$DATABASE,searchIndex=$SEARCH_INDEX,rnacentralBranch=$RNACENTRAL_BRANCH,rnacentralReplicas=$RNACENTRAL_REPLICAS .
+  <<: [*deploy_steps, *variables_hh]
   rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "push"
       when: always
-#      changes:
-#        - rnacentral/*
-    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
+
+# Manual deployment to HX cluster
+cluster_hx_manual:
+  stage: deploy
+  image:
+    name: rnacentral/rnacentral-ci-cd
+  <<: [*deploy_steps, *variables_hx]
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "web" && $DC == "hx"'
+      when: manual
+
+# Manual deployment to HH cluster
+cluster_hh_manual:
+  stage: deploy
+  image:
+    name: rnacentral/rnacentral-ci-cd
+  <<: [*deploy_steps, *variables_hh]
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "web" && $DC == "hh"'
       when: manual
