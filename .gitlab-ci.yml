@@ -12,7 +12,7 @@ stages:
 
 .variables_hx: &variables_hx
   variables:
-    AGENT: "primary-agent"
+    AGENT: "agent-hx"
     NAMESPACE: "prod"
     VALUES_FILE: "values.yaml"
     PROXY: "proxy-hx"
