@@ -44,7 +44,7 @@ cluster_hh:
     - cd kubernetes/helm
     - helm uninstall full-$NAMESPACE --namespace $NAMESPACE
     - sleep 10
-    - helm upgrade --install full-$NAMESPACE --namespace $NAMESPACE -values=values.dev.yaml --set proxy=$PROXY,database=$DATABASE,searchIndex=$SEARCH_INDEX,rnacentralBranch=$RNACENTRAL_BRANCH,rnacentralReplicas=$RNACENTRAL_REPLICAS .
+    - helm upgrade --install full-$NAMESPACE --namespace $NAMESPACE --values=values.dev.yaml --set proxy=$PROXY,database=$DATABASE,searchIndex=$SEARCH_INDEX,rnacentralBranch=$RNACENTRAL_BRANCH,rnacentralReplicas=$RNACENTRAL_REPLICAS .
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
       when: always
