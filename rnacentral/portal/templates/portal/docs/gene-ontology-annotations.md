@@ -20,8 +20,8 @@ and [SGD](https://www.yeastgenome.org/). Find out more about literature curation
 
 > [DOI: 10.1261/rna.055301.115](https://doi.org/10.1261/rna.055301.115)
 
-In addition, RNAcentral sequences are **automatically** annotated with GO terms propagated from the matching [Rfam](http://rfam.org) covariance models. The process is described in
-[GOREF:0000115](https://github.com/geneontology/go-site/blob/master/metadata/gorefs/goref-0000115.md).
+In addition, RNAcentral sequences are **automatically** annotated with GO terms propagated from the matching [Rfam](http://rfam.org)
+covariance models. The process is described in [GOREF:0000115](https://github.com/geneontology/go-site/blob/master/metadata/gorefs/goref-0000115.md).
 
 ## Example annotations
 
