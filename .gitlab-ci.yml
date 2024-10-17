@@ -41,7 +41,7 @@ fallback_prod_website:
   only:
     refs: [ master ]
     changes:
-      - rnacentral/**/*
+      - "rnacentral/**"
 
 # Automatic deployment to the testing website when any branch is updated
 test_website:
@@ -51,7 +51,7 @@ test_website:
   <<: [*deploy_steps, *variables_hh]
   only:
     changes:
-      - rnacentral/**/*
+      - "rnacentral/**"
 
 # Manual deployment to HX cluster
 cluster_hx_manual:
