@@ -41,6 +41,8 @@ fallback_prod_website:
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"'
       when: always
+      changes:
+        - rnacentral/*
 
 # Automatic deployment to the testing website when any branch is updated
 test_website:
@@ -51,6 +53,8 @@ test_website:
   rules:
     - if: $CI_PIPELINE_SOURCE == "push"
       when: always
+      changes:
+        - rnacentral/*
 
 # Manual deployment to HX cluster
 cluster_hx_manual:
