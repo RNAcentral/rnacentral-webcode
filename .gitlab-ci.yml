@@ -33,7 +33,7 @@ stages:
     RNACENTRAL_REPLICAS: "1"
 
 # Automatic deployment to the fallback website when the master branch is updated
-cluster_hx:
+fallback_prod_website:
   stage: deploy
   image:
     name: rnacentral/rnacentral-ci-cd
@@ -43,7 +43,7 @@ cluster_hx:
       when: always
 
 # Automatic deployment to the testing website when any branch is updated
-cluster_hh:
+test_website:
   stage: deploy
   image:
     name: rnacentral/rnacentral-ci-cd
