@@ -13,8 +13,8 @@ The search is powered by the [nhmmer](https://www.ncbi.nlm.nih.gov/pmc/articles/
 
 Where:
 
-* **--F3 0.02** is only used when the sequence length is less than 50 nucleotides
-* **-Z &lt;number&gt;** is calculated according to the size of the database
+* **--F3 0.02** is only used when the sequence length is less than 50 nucleotides.
+* **-Z &lt;number&gt;** is calculated according to the size of the database.
 
 A description of what each parameter does can be seen on the software [*man page*](http://eddylab.org/software/hmmer/Userguide.pdf) (manual page).
 
