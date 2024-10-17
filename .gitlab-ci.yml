@@ -49,9 +49,8 @@ test_website:
   image:
     name: rnacentral/rnacentral-ci-cd
   <<: [*deploy_steps, *variables_hh]
-  only:
-    changes:
-      - "rnacentral/**"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
 
 # Manual deployment to HX cluster
 cluster_hx_manual:
