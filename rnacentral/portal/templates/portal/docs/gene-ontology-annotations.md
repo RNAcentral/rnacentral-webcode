@@ -2,8 +2,10 @@
 ## What are GO terms?
 
 [Gene Ontology](http://www.geneontology.org/) (GO) terms provide computer-readable
-annotations capturing biological processes, molecular functions, and cellular components associated with genes and transcripts.
-For more information about Gene Ontology, see [GO Help](http://www.geneontology.org/page/introduction-go-resource) or [Ten Quick Tips for Using the Gene Ontology](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003343) in PLoS.
+annotations capturing biological processes, molecular functions,
+and cellular components associated with genes and transcripts.
+For more information about Gene Ontology, see [GO Help](http://www.geneontology.org/page/introduction-go-resource) or
+[Ten Quick Tips for Using the Gene Ontology](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003343) in PLoS.
 
 ## How are GO terms added to RNAcentral sequences?
 
