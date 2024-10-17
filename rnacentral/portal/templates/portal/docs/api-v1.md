@@ -49,7 +49,7 @@ please consider signing up for the [RNAcentral updates](https://blog.rnacentral.
 ## Throttling <a style="cursor: pointer" id="throttling" ng-click="scrollTo('throttling')" name="throttling" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
 The maximum number of requests from the same IP address is limited to **20 requests per second**.
-Currently there is no limit on the total number of requests from the same IP.
+Currently, there is no limit on the total number of requests from the same IP.
 
 The limit can be lifted for registered users, so please get in touch if you require a higher request rate.
 
