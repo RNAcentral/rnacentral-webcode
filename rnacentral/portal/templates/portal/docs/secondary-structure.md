@@ -58,7 +58,7 @@ A secondary structure can be generated for an RNA sequence using the [R2DT web a
 
 ### Template selection <a style="cursor: pointer" id="template" ng-click="scrollTo('template')" name="template" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
-By default R2DT chooses a template automatically but it is possible to choose a
+By default, R2DT chooses a template automatically, but it is possible to choose a
 template manually by clicking **Show advanced** and browsing the templates.
 This option could be useful to highlight species-specific regions. For example,
 one could display the human small SSU rRNA using a bacterial template.
