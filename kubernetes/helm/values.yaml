@@ -34,6 +34,7 @@ memcachedReplicas: 1
 memcachedRequestsMemory: "4000Mi"
 memcachedRequestsCPU: "1000m"
 memcachedLimitsMemory: "4000Mi"
+memcachedServiceMemory: "4096"
 
 # Nginx
 nginxPort: 8000
