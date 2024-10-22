@@ -17,6 +17,7 @@ sqlparse==0.4.1
 colorhash==1.0.3
 gunicorn==23.0.0
 python-dotenv==0.15.0
+psutil==6.1.0
 
 # markdown support
 Markdown==3.3.2
