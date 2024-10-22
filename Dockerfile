@@ -74,8 +74,8 @@ CMD gunicorn \
     --chdir /srv/rnacentral/rnacentral-webcode/rnacentral \
     --bind 0.0.0.0:8000 \
     rnacentral.wsgi:application \
-    --workers 2 \
-    --timeout 120 \
+    --workers 4 \
+    --timeout 300 \
     --max-requests 1000 \
     --max-requests-jitter 100 \
     --log-level=debug \
