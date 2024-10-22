@@ -15,7 +15,7 @@ requests==2.25.1
 six==1.12.0
 sqlparse==0.4.1
 colorhash==1.0.3
-gunicorn==23.0.0
+gunicorn==21.2.0
 python-dotenv==0.15.0
 
 # markdown support
