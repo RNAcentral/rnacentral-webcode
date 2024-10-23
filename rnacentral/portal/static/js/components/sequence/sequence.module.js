@@ -91,7 +91,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 
     $scope.fetchGenomes = function() {
 	return $q(function(resolve, reject) {
-	    $http.get(routes.genomesApi({ ensemblAssembly: "" }), { params: { page: 1, page_size: 1000000 } }).then(
+	    $http.get(routes.genomesApi({ ensemblAssembly: "" }), { params: { page: 1, page_size: 100 } }).then(
 		function (response) {
 		    $scope.genomes = response.data.results;
 		    resolve(response.data);
@@ -146,17 +146,17 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
     };
 
     $scope.fetchRfamHits = function () {
-	return $http.get(routes.apiRfamHitsView({upi: $scope.upi, taxid: $scope.taxid}), {params: {page_size: 10000000000}})
+	return $http.get(routes.apiRfamHitsView({upi: $scope.upi, taxid: $scope.taxid}), {params: {page_size: 100}})
     };
 
     $scope.fetchQcStatus = function() {
-	return $http.get(routes.qcStatusApi({upi: $scope.upi, taxid: $scope.taxid}), {params: {page_size: 10000000000}})
+	return $http.get(routes.qcStatusApi({upi: $scope.upi, taxid: $scope.taxid}), {params: {page_size: 100}})
     };
 
     $scope.fetchSequenceFeatures = function() {
 	return $http.get(
 	    routes.apiSequenceFeaturesView({upi: $scope.upi, taxid: $scope.taxid}),
-	    {params: {page_size: 10000000000}}
+	    {params: {page_size: 100}}
 	)
     };
 

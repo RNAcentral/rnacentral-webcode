@@ -18,7 +18,7 @@ var interactions = {
             ctrl.timeout = parseInt(ctrl.timeout) || 5000;  // if (time of response) > timeout, paginate on server side
             ctrl.status = 'loading';  // {'loading', 'error' or 'success'} - display spinner, error message or xrefs table
 
-            $http.get(routes.apiInteractionsView({ upi: ctrl.upi, taxid: ctrl.taxid }), { timeout: ctrl.timeout, params: { page: 1, page_size: 1000000000000 } }).then(
+            $http.get(routes.apiInteractionsView({ upi: ctrl.upi, taxid: ctrl.taxid }), { timeout: ctrl.timeout, params: { page: 1, page_size: 5 } }).then(
                 function(response) {
                     ctrl.status = 'success';
                     ctrl.interactions_data = response.data.results;
