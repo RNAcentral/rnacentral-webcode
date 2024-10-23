@@ -30,3 +30,7 @@ class SequenceExon(models.Model):
 
     class Meta:
         db_table = "rnc_sequence_exons"
+        ordering = ["id"]
+
+    def __str__(self):
+        return self.id

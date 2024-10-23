@@ -61,6 +61,10 @@ class Rna(CachingMixin, models.Model):
 
     class Meta:
         db_table = "rna"
+        ordering = ["-upi"]
+
+    def __str__(self):
+        return self.upi
 
     def get_absolute_url(self):
         """Get a URL for an RNA object. Used for generating sitemaps."""

@@ -65,6 +65,10 @@ class Accession(models.Model):
 
     class Meta:
         db_table = "rnc_accessions"
+        ordering = ["accession"]
+
+    def __str__(self):
+        return self.accession
 
     def get_pdb_entity_id(self):
         """Example PDB accession: 1J5E_A_1 (PDB id, chain, entity id)"""

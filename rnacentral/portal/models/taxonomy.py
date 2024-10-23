@@ -30,3 +30,7 @@ class Taxonomy(CachingMixin, models.Model):
 
     class Meta:
         db_table = "rnc_taxonomy"
+        ordering = ["id"]
+
+    def __str__(self):
+        return self.name

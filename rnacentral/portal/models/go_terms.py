@@ -26,6 +26,10 @@ class OntologyTerm(models.Model):
 
     class Meta:
         db_table = "ontology_terms"
+        ordering = ["ontology_term_id"]
+
+    def __str__(self):
+        return self.ontology_term_id
 
     def url(self):
         if self.ontology != "GO":

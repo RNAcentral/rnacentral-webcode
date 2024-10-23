@@ -39,6 +39,10 @@ class Database(CachingMixin, models.Model):
 
     class Meta:
         db_table = "rnc_database"
+        ordering = ["display_name"]
+
+    def __str__(self):
+        return self.display_name
 
     def count_sequences(self):
         """Count unique sequences associated with the database."""

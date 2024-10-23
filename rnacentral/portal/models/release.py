@@ -35,3 +35,7 @@ class Release(CachingMixin, models.Model):
 
     class Meta:
         db_table = "rnc_release"
+        ordering = ["-release_date"]
+
+    def __str__(self):
+        return str(self.release_date)

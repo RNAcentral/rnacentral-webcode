@@ -33,3 +33,7 @@ class AccessionSequenceRegion(models.Model):
 
     class Meta:
         db_table = "rnc_accession_sequence_region"
+        ordering = ["accession"]
+
+    def __str__(self):
+        return self.id

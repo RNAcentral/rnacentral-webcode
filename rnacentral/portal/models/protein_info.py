@@ -29,3 +29,7 @@ class ProteinInfo(models.Model):
 
     class Meta:
         db_table = "protein_info"
+        ordering = ["protein_accession"]
+
+    def __str__(self):
+        return self.protein_accession
