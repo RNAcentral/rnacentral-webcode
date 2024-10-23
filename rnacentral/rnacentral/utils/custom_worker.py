@@ -1,7 +1,13 @@
+import logging
 import os
 
 import psutil
 from gunicorn.workers.sync import SyncWorker
+
+logger = logging.getLogger(__name__)
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 
 class CustomWorker(SyncWorker):
@@ -12,7 +18,7 @@ class CustomWorker(SyncWorker):
         process = psutil.Process(os.getpid())
         memory_info = process.memory_info()
 
-        self.log.info(
+        logger.info(
             f"Worker {os.getpid()} is exiting. Memory used: {memory_info.rss / (1024 * 1024):.2f} MB (RSS), "
             f"{memory_info.vms / (1024 * 1024):.2f} MB (VMS)"
         )
