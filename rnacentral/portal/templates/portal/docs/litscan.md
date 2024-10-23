@@ -1,9 +1,11 @@
 
 > **RNAcentral LitScan** is a new text mining pipeline that connects RNA sequences with the latest open access scientific literature. LitScan uses a collection of identifiers (Ids), gene names, and synonyms provided to RNAcentral by the [Expert Databases](/expert-databases) to scan the papers available in [Europe PMC](https://europepmc.org) and keep the publications linked to RNAcentral entries as up-to-date as possible.
 
-LitScan boasts a user-friendly interface, allowing users to easily filter papers based on various facets such as identifier, article type, the paper section where the ID is located, mentioned organism, journal, and year.
+LitScan boasts a user-friendly interface, allowing users to easily filter papers based on various facets such as
+identifier, article type, the paper section where the ID is located, mentioned organism, journal, and year.
 
-For example, lncRNA `THRIL` is also known as `Linc1992`. Using LitScan, [the corresponding RNAcentral entry](/rna/URS000075D66B/9606?tab=pub) includes papers about `THRIL`, `Linc1992`, and even `NR_110375` which is another Id for the same gene:
+For example, lncRNA `THRIL` is also known as `Linc1992`. Using LitScan, [the corresponding RNAcentral entry](/rna/URS000075D66B/9606?tab=pub)
+includes papers about `THRIL`, `Linc1992`, and even `NR_110375` which is another Id for the same gene:
 
 <a href="/rna/URS000075D66B/9606?tab=pub">
     <img class="thumbnail" src="/static/img/litscan-thril.png">
@@ -15,7 +17,8 @@ LitScan is under active development and more sequences will be associated with s
 
 ## Use LitScan in your website
 
-The LitScan widget is implemented as an **embeddable component** that can be used by any [Expert Database](/expert-databases) or any other website. LitScan has already been deployed on the Rfam website (for example, see the [SAM riboswitch](https://rfam.org/family/RF00162#tabview=tab10) page).
+The LitScan widget is implemented as an **embeddable component** that can be used by any [Expert Database](/expert-databases) or any
+other website. LitScan has already been deployed on the Rfam website (for example, see the [SAM riboswitch](https://rfam.org/family/RF00162#tabview=tab10) page).
 
 Find out more about [how to integrate this widget into your website](https://github.com/RNAcentral/rnacentral-litscan).
 
@@ -38,7 +41,9 @@ search for open access articles in Europe PMC. The search is performed in two st
     - `OPEN_ACCESS:Y` it must be an Open Access article to allow access to the full content
     - `NOT SRC:PPR` cannot be a Preprint, as preprints are not peer-reviewed
 
-2. Analyse the full text of the matching articles using [regular expressions](https://en.wikipedia.org/wiki/Regular_expression) to locate the Ids within the article's title, abstract, or body. From the article that contains the exact Id, LitScan extracts a sentence with the Id and other relevant information, such as title, authors, journal, etc.
+2. Analyse the full text of the matching articles using [regular expressions](https://en.wikipedia.org/wiki/Regular_expression) to locate the Ids within the
+article's title, abstract, or body. From the article that contains the exact Id, LitScan extracts a sentence with the
+Id and other relevant information, such as title, authors, journal, etc.
 
 The article will be displayed in the results if the Id is found in **both steps**.
 
@@ -60,7 +65,10 @@ The publications are updated on an ongoing basis.
 
 ### Why is the citation count in LitScan different from Google Scholar, Web of Science or Scopus?
 
-The citation counts per paper shown by the widget may differ from the counts displayed in Google Scholar, Web of Science or Scopus, as Europe PMC does not have access to the same content as these resources. However, highly cited articles in Europe PMC correlate with highly cited papers on other platforms. Find out more about the [Europe PMC citation network](https://europepmc.org/Help#citationsnetwork).
+The citation counts per paper shown by the widget may differ from the counts displayed in Google Scholar, Web of Science
+or Scopus, as Europe PMC does not have access to the same content as these resources. However, highly cited articles in
+Europe PMC correlate with highly cited papers on other platforms. Find out more about the
+[Europe PMC citation network](https://europepmc.org/Help#citationsnetwork).
 
 ### Why is my article not shown in RNAcentral?
 
@@ -87,11 +95,13 @@ in two steps as regular expressions ensure that only articles containing the exa
 
 ### Do you filter out common words?
 
-To prevent false positive matches, we compare RNA Ids against a corpus of common English words to [exclude Ids](https://github.com/RNAcentral/rnacentral-references/blob/main/words_identified_by_corpus.txt) like `hairpin`, `nail`, `digit`, or `eric` that may correspond to non-RNA entities.
+To prevent false positive matches, we compare RNA Ids against a corpus of common English words to [exclude Ids](https://github.com/RNAcentral/rnacentral-references/blob/main/words_identified_by_corpus.txt)
+like `hairpin`, `nail`, `digit`, or `eric` that may correspond to non-RNA entities.
 
 ### How are organisms identified? <a style="cursor: pointer" id="organisms" ng-click="scrollTo('organisms')" name="organisms" class="text-muted smaller"><i class="fa fa-link"></i></a>
 
-The organisms listed in the **Mentioned Organisms** facet were extracted from the [ORGANISMS project](https://organisms.jensenlab.org) and may not be entirely accurate. Find out more about the ORGANISMS project in [this paper](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0065390).
+The organisms listed in the **Mentioned Organisms** facet were extracted from the [ORGANISMS project](https://organisms.jensenlab.org) and may not
+be entirely accurate. Find out more about the ORGANISMS project in [this paper](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0065390).
 
 ### How can I find out which Ids are used by LitScan?
 
