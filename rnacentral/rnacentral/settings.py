@@ -217,7 +217,7 @@ LOGGING = {
             "class": "logging.NullHandler",
         },
         "console": {
-            "level": "INFO",
+            "level": "DEBUG",
             "class": "logging.StreamHandler",  # writes to stderr
             "formatter": "standard",
         },
@@ -226,7 +226,7 @@ LOGGING = {
         "django": {
             "handlers": ["console"],
             "propagate": True,
-            "level": "WARN",
+            "level": "INFO",
         },
         "django.server": {
             "handlers": ["console"],
@@ -236,6 +236,11 @@ LOGGING = {
         "django.db.backends": {
             "handlers": ["console"],
             "propagate": False,
+            "level": "DEBUG",
+        },
+        "rnacentral.utils.custom_worker": {
+            "handlers": ["console"],
+            "propagate": True,
             "level": "DEBUG",
         },
     },
