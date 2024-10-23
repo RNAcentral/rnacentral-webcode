@@ -77,20 +77,14 @@ var xrefs = {
             ctrl.pageSize = newPageSize;
             ctrl.pages = _.range(1, Math.ceil(ctrl.total / ctrl.pageSize) + 1);
 
-            if (ctrl.paginateOn === 'client') {
-                ctrl.displayedXrefs = ctrl.xrefs.slice((ctrl.page - 1) * ctrl.pageSize, ctrl.page * ctrl.pageSize);
-            }
-            else if (ctrl.paginateOn === 'server') {
+            if (ctrl.paginateOn === 'server') {
                 ctrl.getPageFromServerSide();
             }
         };
 
         ctrl.onPageChanged = function(page) {
             ctrl.page = page;
-            if (ctrl.paginateOn === 'client') {
-                ctrl.displayedXrefs = ctrl.xrefs.slice((ctrl.page - 1) * ctrl.pageSize, ctrl.page * ctrl.pageSize);
-            }
-            else if (ctrl.paginateOn === 'server') {
+            if (ctrl.paginateOn === 'server') {
                 ctrl.getPageFromServerSide();
             }
         };
@@ -149,7 +143,7 @@ var xrefs = {
             // set defaults for optional parameters, if not given
             ctrl.page = ctrl.page || 1;  // human-readable number of page to show, in range of (1, n)
             ctrl.pageSize = ctrl.pageSize || 5;
-            ctrl.paginateOn = 'client';  // load all Xrefs at once and paginate Xrefs table on client-side, or if too slow, fallback to loading'em page-by-page from server
+            ctrl.paginateOn = 'server';  // load all Xrefs page-by-page from server
             ctrl.timeout = parseInt(ctrl.timeout) || 5000;  // if (time of response) > timeout, paginate on server side
 
             ctrl.status = 'loading';  // {'loading', 'error' or 'success'} - display spinner, error message or xrefs table
@@ -158,34 +152,8 @@ var xrefs = {
             if (ctrl.taxid) ctrl.dataEndpoint = $interpolate('/api/v1/rna/{{upi}}/xrefs/{{taxid}}')({upi: ctrl.upi, taxid: ctrl.taxid});
             else ctrl.dataEndpoint = $interpolate('/api/v1/rna/{{upi}}/xrefs')({upi: ctrl.upi});
 
-            $http.get(ctrl.dataEndpoint, { timeout: ctrl.timeout, params: { page: 1, page_size: 1000000000000 } }).then(
-                function(response) {
-                    ctrl.status = 'success';
-                    ctrl.xrefs = ctrl.orderXrefs(response.data.results);
-                    ctrl.displayedXrefs = ctrl.xrefs.slice(0, ctrl.pageSize);
-                    ctrl.total = response.data.count;
-                    ctrl.pages = _.range(1, Math.ceil(ctrl.total / ctrl.pageSize) + 1);
-
-                    // for all new xrefs with modifications, create corresponding features in feature viewer
-                    for (var i = 0; i < ctrl.xrefs.length; i++) {
-                        if (ctrl.xrefs[i].modifications.length > 0) {
-                            ctrl.onCreateModificationsFeature({ modifications: ctrl.xrefs[i].modifications, accession: ctrl.xrefs[i].accession.id });
-                        }
-                    }
-                },
-                function(response) {
-                    // if it took server too long to respond and request was aborted by timeout
-                    // send a paginated request instead and fallback to server-side processing
-                    if (response.status === -1) {  // for timeout response.status is -1
-                        ctrl.paginateOn = 'server';
-                        ctrl.getPageFromServerSide();
-                    }
-                    else {
-                        ctrl.status = 'error';
-                    }
-                }
-            );
-        }
+            ctrl.getPageFromServerSide();
+        };
     }],
     templateUrl: '/static/js/components/sequence/xrefs/xrefs.html'
 };
