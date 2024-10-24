@@ -51,8 +51,6 @@ test_website:
   <<: [*deploy_steps, *variables_hh]
   rules:
     - if: '$CI_PIPELINE_SOURCE == "push"'
-      changes:
-        - "rnacentral/**"
 
 # Manual deployment to HX cluster
 cluster_hx_manual:
