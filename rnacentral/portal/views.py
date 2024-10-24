@@ -72,7 +72,8 @@ def get_sequence_lineage(request, upi):
         queryset = Taxonomy.objects.none()
         for item in results:
             queryset |= Taxonomy.objects.filter(id=item.taxid)
-        json_lineage_tree = _get_json_lineage_tree(queryset.iterator())
+        limited_queryset = queryset[:100]
+        json_lineage_tree = _get_json_lineage_tree(limited_queryset.iterator())
     except Rna.DoesNotExist:
         raise Http404
     return HttpResponse(json_lineage_tree, content_type="application/json")
@@ -568,83 +569,62 @@ def _get_json_lineage_tree(taxonomies):
             # but not sure if this is still useful
             xrefs = taxonomies  # using xref and rnc_accessions here, not taxonomies
             for xref in xrefs:
-                lineages.add(xref[0])
-                taxids[xref[0].split("; ")[-1]] = xref[1]
+                lineage = xref[0]
+                lineages.add(lineage)
+                taxids[lineage.split("; ")[-1]] = xref[1]
         else:
             for taxonomy in taxonomies:
-                lineages.add(taxonomy.lineage)
-                taxids[taxonomy.lineage.split("; ")[-1]] = taxonomy.id
+                lineage = taxonomy.lineage
+                lineages.add(lineage)
+                taxids[lineage.split("; ")[-1]] = taxonomy.id
 
-    def build_nested_dict_helper(path, text, container):
+    def build_nested_dict_helper(segs, container):
         """Recursive function that builds the nested dictionary."""
-        segs = path.split("; ")
-        head = segs[0]
-        tail = segs[1:]
-        if not tail:
-            # store how many time the species is seen
-            try:
-                if head in container:
-                    container[head] += 1
-                else:
-                    container[head] = 1
-            except:
-                container = {}
-                container[head] = 1
+        head, *tail = segs
+        if not tail:  # We're at a leaf node
+            if isinstance(container.get(head), dict):
+                # If there's a dict in place, it means we mistakenly treated an inner node as a leaf
+                container[head] = 1  # Reset the leaf to a count
+            else:
+                container[head] = container.get(head, 0) + 1
         else:
-            try:
-                if head not in container:
-                    container[head] = {}
-            except:
-                container = {}
-                container[head] = 1
-            build_nested_dict_helper("; ".join(tail), text, container[head])
+            # Ensure container[head] is a dictionary, then recurse
+            if not isinstance(container.get(head), dict):
+                container[head] = {}
+            build_nested_dict_helper(tail, container[head])
 
     def get_nested_dict(lineages):
         """
-        Transform a list like this:
-            items = [
-                'A; C; X; human',
-                'A; C; X; human',
-                'B; D; Y; mouse',
-                'B; D; Z; rat',
-                'B; D; Z; rat',
-            ]
-        into a nested dictionary like this:
-            {'root': {'A': {'C': {'X': {'human': 2}}}, 'B': {'D': {'Y': {'mouse': 1}, 'Z': {'rat': 2}}}}}
+        Transform a list of lineages into a nested dictionary.
         """
         container = {}
         for lineage in lineages:
-            build_nested_dict_helper(lineage, lineage, container)
+            segs = lineage.split("; ")
+            build_nested_dict_helper(segs, container)
         return container
 
-    def get_nested_tree(data, container):
+    def get_nested_tree(data, container=None):
         """
-        Transform a nested dictionary like this:
-            {'root': {'A': {'C': {'X': {'human': 2}}}, 'B': {'D': {'Y': {'mouse': 1}, 'Z': {'rat': 2}}}}}
-        into a json file like this (fragment shown):
-            {"name":"A","children":[{"name":"C","children":[{"name":"X","children":[{"name":"human","size":2}]}]}]}
+        Transform a nested dictionary into a json-friendly tree structure.
         """
-        if not container:
+        if container is None:
             container = {"name": "All", "children": []}
-        for name, children in six.iteritems(data):
+        for name, children in data.items():
             if isinstance(children, int):
                 container["children"].append(
-                    {
-                        "name": name,
-                        "size": children,
-                        "taxid": taxids[name],
-                    }
+                    {"name": name, "size": children, "taxid": taxids.get(name)}
                 )
             else:
-                container["children"].append({"name": name, "children": []})
-                get_nested_tree(children, container["children"][-1])
+                child_container = {"name": name, "children": []}
+                container["children"].append(child_container)
+                get_nested_tree(children, child_container)
         return container
 
     lineages = set()
-    taxids = dict()
+    taxids = {}
     get_lineages_and_taxids()
     nodes = get_nested_dict(lineages)
-    json_lineage_tree = get_nested_tree(nodes, {})
+    json_lineage_tree = get_nested_tree(nodes)
     return json.dumps(json_lineage_tree)
 
 
