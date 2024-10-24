@@ -28,7 +28,11 @@ class SecondaryStructure(models.Model):
 
     class Meta:
         db_table = "rnc_secondary_structure"
+        ordering = ["id"]
         unique_together = (("accession", "md5"),)
+
+    def __str__(self):
+        return self.id
 
 
 class SecondaryStructureWithLayout(models.Model):
@@ -50,7 +54,11 @@ class SecondaryStructureWithLayout(models.Model):
 
     class Meta:
         db_table = "r2dt_results"
+        ordering = ["id"]
         unique_together = (("urs",),)
+
+    def __str__(self):
+        return self.id
 
 
 class SecondaryStructureLayout(models.Model):
@@ -65,3 +73,7 @@ class SecondaryStructureLayout(models.Model):
 
     class Meta:
         db_table = "r2dt_models"
+        ordering = ["id"]
+
+    def __str__(self):
+        return self.id

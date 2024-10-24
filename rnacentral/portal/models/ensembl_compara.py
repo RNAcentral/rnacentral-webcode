@@ -29,3 +29,7 @@ class EnsemblCompara(CachingMixin, models.Model):
 
     class Meta:
         db_table = "ensembl_compara"
+        ordering = ["ensembl_transcript_id"]
+
+    def __str__(self):
+        return self.id

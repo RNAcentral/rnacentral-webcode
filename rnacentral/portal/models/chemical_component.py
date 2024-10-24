@@ -31,6 +31,10 @@ class ChemicalComponent(CachingMixin, models.Model):
 
     class Meta:
         db_table = "rnc_chemical_components"
+        ordering = ["id"]
+
+    def __str__(self):
+        return self.id
 
     def get_pdb_url(self):
         """

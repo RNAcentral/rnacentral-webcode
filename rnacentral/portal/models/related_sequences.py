@@ -43,3 +43,7 @@ class RelatedSequence(models.Model):
 
     class Meta:
         db_table = "rnc_related_sequences"
+        ordering = ["target_accession"]
+
+    def __str__(self):
+        return self.target_accession

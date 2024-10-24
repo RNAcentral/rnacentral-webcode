@@ -26,3 +26,7 @@ class DatabaseStats(models.Model):
 
     class Meta:
         db_table = "rnc_database_json_stats"
+        ordering = ["database"]
+
+    def __str__(self):
+        return self.database

@@ -20,20 +20,14 @@ var lncrnaTargets = {
             ctrl.pageSize = newPageSize;
             ctrl.pages = _.range(1, Math.ceil(ctrl.total / ctrl.pageSize) + 1);
 
-            if (ctrl.paginateOn === 'client') {
-                ctrl.displayedTargets = ctrl.targets.slice((ctrl.page - 1) * ctrl.pageSize, ctrl.page * ctrl.pageSize);
-            }
-            else if (ctrl.paginateOn === 'server') {
+            if (ctrl.paginateOn === 'server') {
                 ctrl.getPageFromServerSide();
             }
         };
 
         ctrl.onPageChanged = function(page) {
             ctrl.page = page;
-            if (ctrl.paginateOn === 'client') {
-                ctrl.displayedTargets = ctrl.targets.slice((ctrl.page - 1) * ctrl.pageSize, ctrl.page * ctrl.pageSize);
-            }
-            else if (ctrl.paginateOn === 'server') {
+            if (ctrl.paginateOn === 'server') {
                 ctrl.getPageFromServerSide();
             }
         };
@@ -57,30 +51,11 @@ var lncrnaTargets = {
             // set defaults for optional parameters, if not given
             ctrl.page = ctrl.page || 1;  // human-readable number of page to show, in range of (1, n)
             ctrl.pageSize = ctrl.pageSize || 5;
-            ctrl.paginateOn = 'client';  // load all Xrefs at once and paginate Xrefs table on client-side, or if too slow, fallback to loading'em page-by-page from server
+            ctrl.paginateOn = 'server';  // load page-by-page from server
             ctrl.timeout = parseInt(ctrl.timeout) || 5000;  // if (time of response) > timeout, paginate on server side
             ctrl.status = 'loading';  // {'loading', 'error' or 'success'} - display spinner, error message or xrefs table
 
-            $http.get(routes.apiLncrnaTargetsView({ upi: ctrl.upi, taxid: ctrl.taxid }), { timeout: ctrl.timeout, params: { page: 1, page_size: 1000000000000 } }).then(
-                function(response) {
-                    ctrl.status = 'success';
-                    ctrl.targets = response.data.results;
-                    ctrl.displayedTargets = ctrl.targets.slice(0, ctrl.pageSize);
-                    ctrl.total = response.data.count;
-                    ctrl.pages = _.range(1, Math.ceil(ctrl.total / ctrl.pageSize) + 1);
-                },
-                function(response) {
-                    // if it took server too long to respond and request was aborted by timeout
-                    // send a paginated request instead and fallback to server-side processing
-                    if (response.status === -1) {  // for timeout response.status is -1
-                        ctrl.paginateOn = 'server';
-                        ctrl.getPageFromServerSide();
-                    }
-                    else {
-                        ctrl.status = 'error';
-                    }
-                }
-            )
+            ctrl.getPageFromServerSide();
         };
 
         ctrl.ensemblUrl = function(target) {

@@ -42,3 +42,7 @@ class QcStatus(models.Model):
 
     class Meta:
         db_table = "qa_status"
+        ordering = ["id"]
+
+    def __str__(self):
+        return self.id

@@ -35,3 +35,7 @@ class Reference(models.Model):
 
     class Meta:
         db_table = "rnc_references"
+        ordering = ["title"]
+
+    def __str__(self):
+        return self.title

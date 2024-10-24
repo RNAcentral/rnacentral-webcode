@@ -41,3 +41,7 @@ class Modification(CachingMixin, models.Model):
 
     class Meta:
         db_table = "rnc_modifications"
+        ordering = ["position"]
+
+    def __str__(self):
+        return self.id

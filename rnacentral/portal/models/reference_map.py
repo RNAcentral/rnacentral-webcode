@@ -30,3 +30,7 @@ class Reference_map(models.Model):
 
     class Meta:
         db_table = "rnc_reference_map"
+        ordering = ["id"]
+
+    def __str__(self):
+        return self.id

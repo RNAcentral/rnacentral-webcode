@@ -797,7 +797,9 @@ class SequenceFeaturesAPIViewSet(generics.ListAPIView):
         )
         remove_features = features.exclude(feature_name__in=features_list)
 
-        return remove_features.union(distinct_features)
+        return remove_features.union(distinct_features).order_by(
+            "feature_name", "start"
+        )
 
 
 class RnaGoAnnotationsView(APIView):

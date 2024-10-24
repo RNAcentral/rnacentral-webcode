@@ -43,3 +43,7 @@ class SequenceRegion(models.Model):
 
     class Meta:
         db_table = "rnc_sequence_regions"
+        ordering = ["region_name"]
+
+    def __str__(self):
+        return self.region_name

@@ -37,3 +37,7 @@ class EnsemblAssembly(CachingMixin, models.Model):
 
     class Meta:
         db_table = "ensembl_assembly"
+        ordering = ["assembly_full_name"]
+
+    def __str__(self):
+        return self.assembly_full_name

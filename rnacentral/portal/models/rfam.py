@@ -33,6 +33,10 @@ class RfamClan(models.Model):
 
     class Meta:
         db_table = "rfam_clans"
+        ordering = ["rfam_clan_id"]
+
+    def __str__(self):
+        return self.name
 
     def url(self):
         return "http://rfam.org/clan/" + self.rfam_clan_id
@@ -66,6 +70,10 @@ class RfamModel(models.Model):
 
     class Meta:
         db_table = "rfam_models"
+        ordering = ["rfam_model_id"]
+
+    def __str__(self):
+        return self.rfam_model_id
 
     @classmethod
     def url_of(cls, rfam_model_id):
@@ -125,6 +133,10 @@ class RfamHit(models.Model):
 
     class Meta:
         db_table = "rfam_model_hits"
+        ordering = ["rfam_hit_id"]
+
+    def __str__(self):
+        return self.rfam_hit_id
 
     @property
     def rfam_clan_id(self):
@@ -150,6 +162,10 @@ class RfamAnalyzedSequences(models.Model):
 
     class Meta:
         db_table = "rfam_analyzed_sequences"
+        ordering = ["date"]
+
+    def __str__(self):
+        return self.upi
 
 
 class RfamGoTerm(models.Model):
@@ -170,4 +186,8 @@ class RfamGoTerm(models.Model):
 
     class Meta:
         db_table = "rfam_go_terms"
+        ordering = ["rfam_go_term_id"]
         unique_together = (("rfam_model", "go_term"),)
+
+    def __str__(self):
+        return self.rfam_go_term_id

@@ -890,7 +890,7 @@ class InteractionsSerializer(serializers.Serializer):
                 num_found = data["response"]["numFound"]
                 if num_found > 0:
                     hgnc_id = data["response"]["docs"][0]["hgnc_id"]
-                    hgnc_url = f"http://www.genenames.org/cgi-bin/gene_symbol_report?hgnc_id={hgnc_id}"
+                    hgnc_url = f"https://www.genenames.org/data/gene-symbol-report/#!/hgnc_id/{hgnc_id}"
                 else:
                     hgnc_url = ""
             except Exception:
