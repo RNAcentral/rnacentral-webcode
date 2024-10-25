@@ -1,12 +1,9 @@
 # The HH cluster has 8 workers. Each k8s worker comes with 8 cores and 32GB of RAM.
 # The resources of this cluster will be divided as follows:
-# - Public website (3 workers - using 88 of 96GB)
-# - Test website (1 worker - using 22 of 32GB)
+# - Public website (3 workers - using 74 of 96GB)
+# - Test website (1 worker - using 14 of 32GB)
 # - Export app (1 worker - using 30 of 32GB)
 # - Rfam batch search (1 worker - using 20 of 32GB)
-#
-# Note: hh-rke-wp-webadmin-12-worker-4 was disabled because for some reason
-# the RNAcentral app does not work on this worker.
 
 # Database
 database: db-pro
@@ -31,10 +28,10 @@ setEnv: "prod"
 # This link explains a little more: https://github.com/helm/charts/issues/11773
 memcachedPort: 11211
 memcachedReplicas: 1
-memcachedRequestsMemory: "4000Mi"
+memcachedRequestsMemory: "6000Mi"
 memcachedRequestsCPU: "1000m"
-memcachedLimitsMemory: "4000Mi"
-memcachedServiceMemory: "4096"
+memcachedLimitsMemory: "6000Mi"
+memcachedServiceMemory: "5200"
 
 # Nginx
 nginxPort: 8000
@@ -45,10 +42,11 @@ nginxRequestsCPU: "1000m"
 nginxLimitsMemory: "2000Mi"
 
 # RNAcentral
-# The HX cluster is configured to use "rnacentralReplicas: 2" in the jenkins file
+# The values below are used for fallback (HX cluster).
+# In HH cluster, rnacentralReplicas can be set to 8.
 rnacentralBranch: master
 rnacentralPort: 8000
-rnacentralReplicas: 5
-rnacentralRequestsMemory: "16000Mi"
+rnacentralReplicas: 4
+rnacentralRequestsMemory: "8000Mi"
 rnacentralRequestsCPU: "1000m"
-rnacentralLimitsMemory: "16000Mi"
+rnacentralLimitsMemory: "8000Mi"

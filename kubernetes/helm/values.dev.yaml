@@ -23,6 +23,7 @@ memcachedReplicas: 1
 memcachedRequestsMemory: "4000Mi"
 memcachedRequestsCPU: "1000m"
 memcachedLimitsMemory: "4000Mi"
+memcachedServiceMemory: "3400"
 
 # Nginx
 nginxReplicas: 1
@@ -32,6 +33,6 @@ nginxLimitsMemory: "2000Mi"
 
 # RNAcentral
 rnacentralReplicas: 1
-rnacentralRequestsMemory: "16000Mi"
+rnacentralRequestsMemory: "8000Mi"
 rnacentralRequestsCPU: "1000m"
-rnacentralLimitsMemory: "16000Mi"
+rnacentralLimitsMemory: "8000Mi"
