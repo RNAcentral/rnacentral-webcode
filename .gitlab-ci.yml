@@ -3,12 +3,14 @@ stages:
 
 .deploy_steps: &deploy_steps
   script:
+    - export NGINX_IMAGE="$CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX/nginx:1.24-alpine"
+    - export MEMCACHED_IMAGE="$CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX/memcached:1.6.7-alpine"
     - kubectl config use-context RNAcentral/rnacentral-webcode:$AGENT
     - kubectl config set-context --current --namespace=$NAMESPACE
     - cd kubernetes/helm
     - helm uninstall full-$NAMESPACE --namespace $NAMESPACE
     - sleep 10
-    - helm upgrade --install full-$NAMESPACE --namespace $NAMESPACE --values=$VALUES_FILE --set proxy=$PROXY,database=$DATABASE,searchIndex=$SEARCH_INDEX,rnacentralBranch=$RNACENTRAL_BRANCH,rnacentralReplicas=$RNACENTRAL_REPLICAS .
+    - helm upgrade --install full-$NAMESPACE --namespace $NAMESPACE --values=$VALUES_FILE --set proxy=$PROXY,database=$DATABASE,searchIndex=$SEARCH_INDEX,rnacentralBranch=$RNACENTRAL_BRANCH,rnacentralReplicas=$RNACENTRAL_REPLICAS,nginxImage=$NGINX_IMAGE,memcachedImage=$MEMCACHED_IMAGE .
 
 .variables_hx: &variables_hx
   variables:
