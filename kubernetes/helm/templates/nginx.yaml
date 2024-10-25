@@ -57,7 +57,7 @@ spec:
         rollme: {{ randAlphaNum 5 | quote }}
     spec:
       containers:
-        - image: nginx:1.24-alpine
+        - image: {{ .Values.nginxImage | default "nginx:1.24-alpine" }}
           name: nginx
           resources:
             requests:
