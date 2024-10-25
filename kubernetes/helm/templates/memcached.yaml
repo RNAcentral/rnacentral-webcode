@@ -29,7 +29,7 @@ spec:
         roll-update-timestamp: {{ now | quote }}
     spec:
       containers:
-        - image: memcached:1.6.7-alpine
+        - image: {{ .Values.memcachedImage | default "memcached:1.6.7-alpine" }}
           name: memcached
           resources:
             requests:
