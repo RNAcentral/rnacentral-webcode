@@ -56,6 +56,8 @@ spec:
       annotations:
         rollme: {{ randAlphaNum 5 | quote }}
     spec:
+      imagePullSecrets:
+        - name: gitlab-registry-secret
       containers:
         - image: {{ .Values.nginxImage | default "nginx:1.24-alpine" }}
           name: nginx

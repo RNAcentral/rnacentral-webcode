@@ -28,6 +28,8 @@ spec:
       annotations:
         roll-update-timestamp: {{ now | quote }}
     spec:
+      imagePullSecrets:
+        - name: gitlab-registry-secret
       containers:
         - image: {{ .Values.memcachedImage | default "memcached:1.6.7-alpine" }}
           name: memcached
