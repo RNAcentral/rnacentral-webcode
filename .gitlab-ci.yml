@@ -71,6 +71,8 @@ cluster_hh_manual:
   stage: deploy
   image:
     name: rnacentral/rnacentral-ci-cd
+  before_script:
+    - echo $CI_REGISTRY_TOKEN | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
   <<: [*deploy_steps, *variables_hh]
   rules:
     - if: '$CI_PIPELINE_SOURCE == "web" && $DC == "hh"'
