@@ -1,7 +1,7 @@
 # The HH cluster has 8 workers. Each k8s worker comes with 8 cores and 32GB of RAM.
 # The resources of this cluster will be divided as follows:
-# - Public website (3 workers - using 74 of 96GB)
-# - Test website (1 worker - using 14 of 32GB)
+# - Public website (3 workers - using 82 of 96GB)
+# - Test website (1 worker - using 12 of 32GB)
 # - Export app (1 worker - using 30 of 32GB)
 # - Rfam batch search (1 worker - using 20 of 32GB)
 
@@ -43,10 +43,10 @@ nginxLimitsMemory: "2000Mi"
 
 # RNAcentral
 # The values below are used for fallback (HX cluster).
-# In HH cluster, rnacentralReplicas can be set to 8.
+# In HH cluster, rnacentralReplicas can be set to 12.
 rnacentralBranch: master
 rnacentralPort: 8000
-rnacentralReplicas: 4
-rnacentralRequestsMemory: "8000Mi"
+rnacentralReplicas: 6
+rnacentralRequestsMemory: "6000Mi"
 rnacentralRequestsCPU: "1000m"
-rnacentralLimitsMemory: "8000Mi"
+rnacentralLimitsMemory: "6000Mi"
