@@ -1,0 +1,15 @@
+# Values used by the fallback website (cluster HX). The HX cluster has 3 workers.
+# The resources of this cluster will be divided as follows:
+# - Public website (requires 46GB of RAM)
+# - Export app (requires 16GB of RAM)
+#
+# Using 62GB of RAM out of a total of 96GB
+
+# Database
+database: db-fb
+
+# Proxy
+proxy: proxy-hx
+
+# RNAcentral
+rnacentralReplicas: 6
