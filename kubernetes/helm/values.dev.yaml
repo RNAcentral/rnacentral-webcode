@@ -3,9 +3,6 @@
 # Database
 database: db-pro
 
-# Proxy
-proxy: proxy-hh
-
 # EBI search index
 searchIndex: search-index-dev
 
@@ -19,20 +16,12 @@ sitemaps: "false"
 setEnv: "dev"
 
 # Memcached
-memcachedReplicas: 1
 memcachedRequestsMemory: "4000Mi"
-memcachedRequestsCPU: "1000m"
 memcachedLimitsMemory: "4000Mi"
 memcachedServiceMemory: "3400"
 
 # Nginx
 nginxReplicas: 1
-nginxRequestsMemory: "2000Mi"
-nginxRequestsCPU: "1000m"
-nginxLimitsMemory: "2000Mi"
 
 # RNAcentral
 rnacentralReplicas: 1
-rnacentralRequestsMemory: "6000Mi"
-rnacentralRequestsCPU: "1000m"
-rnacentralLimitsMemory: "6000Mi"
