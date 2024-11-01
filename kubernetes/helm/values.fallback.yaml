@@ -2,8 +2,9 @@
 # The resources of this cluster will be divided as follows:
 # - Public website (requires 46GB of RAM)
 # - Export app (requires 16GB of RAM)
+# - Rfam (requires 5GB of RAM)
 #
-# Using 62GB of RAM out of a total of 96GB
+# Using 67GB of RAM out of a total of 96GB
 
 # Database
 database: db-fb

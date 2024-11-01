@@ -3,9 +3,9 @@
 # - Public website (requires 82GB of RAM)
 # - Test website (requires 12GB of RAM)
 # - Export app (requires 30GB of RAM)
-# - Rfam batch search (requires 20GB of RAM)
+# - Rfam batch search (requires 10GB of RAM)
 #
-# Using 144GB of RAM out of a total of 256GB
+# Using 134GB of RAM out of a total of 256GB
 
 # Database
 database: db-hh
