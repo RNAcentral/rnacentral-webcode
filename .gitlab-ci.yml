@@ -3,25 +3,28 @@ stages:
 
 .deploy_steps: &deploy_steps
   script:
-    - export NGINX_IMAGE="$CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX/nginx:1.24-alpine"
-    - export MEMCACHED_IMAGE="$CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX/memcached:1.6.7-alpine"
     - kubectl config use-context RNAcentral/rnacentral-webcode:$AGENT
     - kubectl config set-context --current --namespace=$NAMESPACE
     - cd kubernetes/helm
     - helm uninstall full-$NAMESPACE --namespace $NAMESPACE
     - sleep 10
-    - helm upgrade --install full-$NAMESPACE --namespace $NAMESPACE --values=$VALUES_FILE --set proxy=$PROXY,database=$DATABASE,searchIndex=$SEARCH_INDEX,rnacentralBranch=$RNACENTRAL_BRANCH,rnacentralReplicas=$RNACENTRAL_REPLICAS,nginxImage=$NGINX_IMAGE,memcachedImage=$MEMCACHED_IMAGE .
+    - helm upgrade --install full-$NAMESPACE --namespace $NAMESPACE --values=$VALUES_FILE --set proxy=$PROXY,database=$DATABASE,searchIndex=$SEARCH_INDEX,rnacentralBranch=$RNACENTRAL_BRANCH,rnacentralReplicas=1 .
+    - |
+      if [ "$NAMESPACE" != "dev" ]; then
+        sleep 120
+        kubectl scale deploy rnacentral --replicas=$RNACENTRAL_REPLICAS
+      fi
 
 .variables_hx: &variables_hx
   variables:
     AGENT: "agent-hx"
     NAMESPACE: "prod"
-    VALUES_FILE: "values.yaml"
+    VALUES_FILE: "values.fallback.yaml"
     PROXY: "proxy-hx"
     DATABASE: "db-fb"
     SEARCH_INDEX: "search-index-prod"
     RNACENTRAL_BRANCH: "master"
-    RNACENTRAL_REPLICAS: "1"
+    RNACENTRAL_REPLICAS: "6"
 
 .variables_hh: &variables_hh
   variables:
@@ -71,8 +74,6 @@ cluster_hh_manual:
   stage: deploy
   image:
     name: rnacentral/rnacentral-ci-cd
-  before_script:
-    - echo $CI_REGISTRY_TOKEN | docker login -u $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
   <<: [*deploy_steps, *variables_hh]
   rules:
     - if: '$CI_PIPELINE_SOURCE == "web" && $DC == "hh"'
