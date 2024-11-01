@@ -1,0 +1,13 @@
+#-------------------------------------------------------------------------------
+# To avoid rate limit issues with GitLab and DockerHub, push the nginx image to GHCR.
+# Current GHCR limit:
+# - 100 pulls per 6 hours per IP address for anonymous users.
+# - Unlimited pulls for users authenticated with a GitHub account and a valid PAT
+#
+# Commands to build and push:
+#
+# docker buildx create --use
+# docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/rnacentral/nginx:1.24-alpine -f Dockerfile-nginx --push .
+#
+#-------------------------------------------------------------------------------
+FROM nginx:1.24-alpine
