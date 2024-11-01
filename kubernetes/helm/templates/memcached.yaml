@@ -31,7 +31,7 @@ spec:
       imagePullSecrets:
         - name: gitlab-registry-secret
       containers:
-        - image: {{ .Values.memcachedImage | default "memcached:1.6.7-alpine" }}
+        - image: ghcr.io/rnacentral/memcached:1.6.7-alpine
           name: memcached
           resources:
             requests:
