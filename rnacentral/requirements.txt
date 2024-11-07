@@ -32,8 +32,5 @@ rjsmin==1.1.0
 # django cache machine
 django-cache-machine==1.1.0
 
-# simplified static file serving for Python web apps
-whitenoise==5.2.0
-
 # AWS SDK for Python
 boto3==1.17.54
