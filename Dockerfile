@@ -58,8 +58,8 @@ RUN \
     if [ "$LOCAL_DEV" = "True" ] ; then \
         pip3 install -r rnacentral/requirements_dev.txt ; \
         sed -i "13 a import debug_toolbar" "${RNACENTRAL_HOME}"/rnacentral/rnacentral/urls.py ; \
-        sed -i "31 a \ \ \ \ url(r'^__debug__/', include(debug_toolbar.urls))," "${RNACENTRAL_HOME}"/rnacentral/rnacentral/urls.py ; \
-        sed -i "129 a \ \ \ \ 'debug_toolbar.middleware.DebugToolbarMiddleware'," "${RNACENTRAL_HOME}"/rnacentral/rnacentral/settings.py ; \
+        sed -i "30 a \ \ \ \ url(r'^__debug__/', include(debug_toolbar.urls))," "${RNACENTRAL_HOME}"/rnacentral/rnacentral/urls.py ; \
+        sed -i "126 a \ \ \ \ 'debug_toolbar.middleware.DebugToolbarMiddleware'," "${RNACENTRAL_HOME}"/rnacentral/rnacentral/settings.py ; \
         sed -i "188 a \ \ \ \ 'debug_toolbar'," "${RNACENTRAL_HOME}"/rnacentral/rnacentral/settings.py ; \
     fi
 
