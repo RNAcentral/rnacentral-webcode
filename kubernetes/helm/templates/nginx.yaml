@@ -5,12 +5,13 @@ metadata:
   labels:
     app: nginx
 spec:
+  type: NodePort  # EBI asked to expose the service using NodePort
   ports:
   - port: {{ .Values.nginxPort }}
     targetPort: {{ .Values.nginxTargetPort }}
     protocol: TCP
   selector:
-    app: rnacentral
+    app: nginx
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -25,6 +26,9 @@ data:
 
     server {
         listen {{ .Values.nginxTargetPort }};
+        root /srv/rnacentral/static/;
+        access_log stdout;
+        error_log  stderr;
 
         location /static/ {
             autoindex on;
@@ -59,7 +63,7 @@ spec:
       imagePullSecrets:
         - name: gitlab-registry-secret
       containers:
-        - image: ghcr.io/rnacentral/nginx:1.24-alpine
+        - image: ghcr.io/rnacentral/nginx:1.25-alpine
           name: nginx
           resources:
             requests:
