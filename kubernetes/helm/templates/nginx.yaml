@@ -60,8 +60,6 @@ spec:
       annotations:
         rollme: {{ randAlphaNum 5 | quote }}
     spec:
-      imagePullSecrets:
-        - name: gitlab-registry-secret
       containers:
         - image: ghcr.io/rnacentral/nginx:1.25-alpine
           name: nginx

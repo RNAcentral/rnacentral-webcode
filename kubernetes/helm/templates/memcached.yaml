@@ -28,8 +28,6 @@ spec:
       annotations:
         roll-update-timestamp: {{ now | quote }}
     spec:
-      imagePullSecrets:
-        - name: gitlab-registry-secret
       containers:
         - image: ghcr.io/rnacentral/memcached:1.6.7-alpine
           name: memcached
