@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: static-volume-cleanup-job
+spec:
+  template:
+    spec:
+      containers:
+      - name: static-volume-pvc-cleanup
+        image: busybox:1.36
+        command: ["rm", "-fr", "/srv/rnacentral/static/*"]
+        volumeMounts:
+        - name: static-volume
+          mountPath: /srv/rnacentral/static
+      restartPolicy: Never
+      volumes:
+      - name: static-volume
+        persistentVolumeClaim:
+          claimName: static-volume
