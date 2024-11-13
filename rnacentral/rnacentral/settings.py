@@ -191,6 +191,7 @@ INSTALLED_APPS = (
     "rest_framework",
     "compressor",
     "markdown_deux",
+    "drf_spectacular",
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
@@ -271,6 +272,14 @@ REST_FRAMEWORK = {
         "rest_framework_yaml.renderers.YAMLRenderer",
         "rest_framework.renderers.BrowsableAPIRenderer",
     ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "RNAcentral API",
+    "DESCRIPTION": "RNAcentral API provides programmatic access to RNAcentral data",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
 }
 
 # django-debug-toolbar

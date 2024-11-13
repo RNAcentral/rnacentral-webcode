@@ -15,6 +15,7 @@ import os
 
 from django.conf.urls import include, url
 from django.views.generic import TemplateView
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
 
 urlpatterns = [
     # RNAcentral portal
@@ -27,6 +28,11 @@ urlpatterns = [
     # new sequence search
     url(r"^sequence-search/", include("sequence_search.urls")),
     # Django Debug Toolbar
+    # OpenAPI schema
+    url(r'^api/schema/$', SpectacularAPIView.as_view(), name='schema'),
+    # Optional UI:
+    url(r'^api/schema/swagger-ui/$', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    url(r'^api/schema/redoc/$', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
 
 # robots.txt extras
