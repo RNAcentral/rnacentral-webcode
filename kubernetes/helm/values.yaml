@@ -30,10 +30,10 @@ setEnv: "prod"
 # This link explains a little more: https://github.com/helm/charts/issues/11773
 memcachedPort: 11211
 memcachedReplicas: 1
-memcachedRequestsMemory: "6000Mi"
+memcachedRequestsMemory: "8000Mi"
 memcachedRequestsCPU: "1000m"
-memcachedLimitsMemory: "6000Mi"
-memcachedServiceMemory: "5200"
+memcachedLimitsMemory: "8000Mi"
+memcachedServiceMemory: "6000"
 
 # Nginx
 nginxPort: 8000
