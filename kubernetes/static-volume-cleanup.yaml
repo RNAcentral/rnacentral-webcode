@@ -1,19 +1,19 @@
-apiVersion: batch/v1
-kind: Job
+apiVersion: v1
+kind: Pod
 metadata:
-  name: static-volume-cleanup-job
+  name: static-volume-cleanup-pod
 spec:
-  template:
-    spec:
-      containers:
-      - name: static-volume-pvc-cleanup
-        image: busybox:1.36
-        command: ["rm", "-fr", "/srv/rnacentral/static/*"]
-        volumeMounts:
-        - name: static-volume
-          mountPath: /srv/rnacentral/static
-      restartPolicy: Never
-      volumes:
-      - name: static-volume
-        persistentVolumeClaim:
-          claimName: static-volume
+  containers:
+  - name: static-volume-pvc-cleanup
+    image: ghcr.io/rnacentral/nginx:1.25-alpine
+    command: ["/bin/sh", "-c", "rm -rf /srv/rnacentral/static/*"]
+    volumeMounts:
+    - name: static-volume
+      mountPath: /srv/rnacentral/static
+    securityContext:
+      runAsUser: 0
+  volumes:
+  - name: static-volume
+    persistentVolumeClaim:
+      claimName: static-volume
+  restartPolicy: Never
