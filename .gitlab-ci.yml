@@ -8,14 +8,32 @@ stages:
     - cd kubernetes/helm
     - helm uninstall full-$NAMESPACE --namespace $NAMESPACE
     - sleep 10
+    - |
+      if [ "$COLLECTSTATIC" == "yes" ]; then
+        kubectl apply -f ../static-volume-cleanup.yaml
+        sleep 120
+      fi
     - helm upgrade --install full-$NAMESPACE --namespace $NAMESPACE --values=$VALUES_FILE --set proxy=$PROXY,database=$DATABASE,searchIndex=$SEARCH_INDEX,rnacentralBranch=$RNACENTRAL_BRANCH,rnacentralReplicas=1 .
     - |
-      if [ "$NAMESPACE" != "dev" ]; then
-        sleep 120
+      if [ "$RNACENTRAL_REPLICAS" -gt 1 ]; then
+        if [ "$COLLECTSTATIC" == "yes" ]; then
+          sleep 120
+        fi
         kubectl scale deploy rnacentral --replicas=$RNACENTRAL_REPLICAS
       fi
 
-.variables_hx: &variables_hx
+.variables_prod: &variables_prod
+  variables:
+    AGENT: "agent-hh"
+    NAMESPACE: "prod"
+    VALUES_FILE: "values.yaml"
+    PROXY: "proxy-hh"
+    DATABASE: "db-hh"
+    SEARCH_INDEX: "search-index-prod"
+    RNACENTRAL_BRANCH: "$CI_COMMIT_REF_NAME"  # use the branch that triggered the pipeline
+    RNACENTRAL_REPLICAS: "12"
+
+.variables_fallback: &variables_fallback
   variables:
     AGENT: "agent-hx"
     NAMESPACE: "prod"
@@ -26,7 +44,7 @@ stages:
     RNACENTRAL_BRANCH: "master"
     RNACENTRAL_REPLICAS: "6"
 
-.variables_hh: &variables_hh
+.variables_test: &variables_test
   variables:
     AGENT: "agent-hh"
     NAMESPACE: "dev"
@@ -42,7 +60,7 @@ fallback_prod_website:
   stage: deploy
   image:
     name: rnacentral/rnacentral-ci-cd
-  <<: [*deploy_steps, *variables_hx]
+  <<: [*deploy_steps, *variables_fallback]
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"'
       changes:
@@ -53,28 +71,35 @@ test_website:
   stage: deploy
   image:
     name: rnacentral/rnacentral-ci-cd
-  <<: [*deploy_steps, *variables_hh]
+  <<: [*deploy_steps, *variables_test]
   rules:
     - if: '$CI_PIPELINE_SOURCE == "push"'
       changes:
         - rnacentral/**/*
 
-# Manual deployment to HX cluster
-cluster_hx_manual:
+manual_deployment_to_production:
   stage: deploy
   image:
     name: rnacentral/rnacentral-ci-cd
-  <<: [*deploy_steps, *variables_hx]
+  <<: [*deploy_steps, *variables_prod]
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "web" && $DC == "hx"'
+    - if: '$CI_PIPELINE_SOURCE == "web" && $DEPLOY == "prod"'
       when: manual
 
-# Manual deployment to HH cluster
-cluster_hh_manual:
+manual_deployment_to_fallback:
   stage: deploy
   image:
     name: rnacentral/rnacentral-ci-cd
-  <<: [*deploy_steps, *variables_hh]
+  <<: [*deploy_steps, *variables_fallback]
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "web" && $DC == "hh"'
+    - if: '$CI_PIPELINE_SOURCE == "web" && $DEPLOY == "fallback"'
+      when: manual
+
+manual_deployment_to_test:
+  stage: deploy
+  image:
+    name: rnacentral/rnacentral-ci-cd
+  <<: [*deploy_steps, *variables_test]
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "web" && $DEPLOY == "test"'
       when: manual
