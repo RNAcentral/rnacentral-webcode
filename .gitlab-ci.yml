@@ -11,7 +11,11 @@ stages:
     - |
       if [ "$COLLECTSTATIC" == "yes" ]; then
         kubectl apply -f ../static-volume-cleanup.yaml
-        sleep 120
+        until [[ $(kubectl get pod static-volume-cleanup-pod -o jsonpath='{.status.phase}' 2>/dev/null) == "Succeeded" ]]; do
+          echo "Waiting for static-volume-cleanup-pod to complete..."
+          sleep 10
+        done
+        kubectl delete -f ../static-volume-cleanup.yaml
       fi
     - helm upgrade --install full-$NAMESPACE --namespace $NAMESPACE --values=$VALUES_FILE --set proxy=$PROXY,database=$DATABASE,searchIndex=$SEARCH_INDEX,rnacentralBranch=$RNACENTRAL_BRANCH,rnacentralReplicas=1 .
     - |
