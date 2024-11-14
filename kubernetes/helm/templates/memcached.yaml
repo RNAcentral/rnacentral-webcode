@@ -38,7 +38,10 @@ spec:
             limits:
               memory: {{ .Values.memcachedLimitsMemory }}
           args:
-            - "-m {{ .Values.memcachedServiceMemory }} -p {{ .Values.memcachedPort }}"
+            - "-m"
+            - "{{ .Values.memcachedServiceMemory }}"
+            - "-p"
+            - "{{ .Values.memcachedPort }}"
           ports:
             - containerPort: {{ .Values.memcachedPort }}
       restartPolicy: Always
