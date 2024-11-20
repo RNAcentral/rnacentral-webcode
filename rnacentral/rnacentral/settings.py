@@ -280,6 +280,10 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "RNAcentral API provides programmatic access to RNAcentral data",
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
+    "POSTPROCESSING_HOOKS": [
+        "rnacentral.utils.drf_spectacular.remove_path",
+        "rnacentral.utils.drf_spectacular.fix_path",
+    ],
 }
 
 # django-debug-toolbar
