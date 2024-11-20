@@ -46,7 +46,7 @@ nginxLimitsMemory: "2000Mi"
 # RNAcentral
 rnacentralBranch: master
 rnacentralPort: 8000
-rnacentralReplicas: 12
-rnacentralRequestsMemory: "6000Mi"
+rnacentralReplicas: 18
+rnacentralRequestsMemory: "4000Mi"
 rnacentralRequestsCPU: "1000m"
-rnacentralLimitsMemory: "6000Mi"
+rnacentralLimitsMemory: "4000Mi"
