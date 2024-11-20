@@ -48,6 +48,7 @@ from django.conf import settings
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
+from drf_spectacular.utils import extend_schema
 from portal.config.expert_databases import expert_dbs
 from portal.models import (
     Accession,
@@ -181,30 +182,8 @@ class GenomeAnnotations(APIView):
 
         return Response(features)
 
-from django.urls import NoReverseMatch
 
-def build_feature_url(request, species, chromosome, start, end):
-    """
-
-    Builds the URL for the feature endpoint based on the provided parameters.
-    This function is a workaround for the reverse() function, which cannot find a compatible regex
-    due to the presence of colons in the pattern.
-
-    Parameters:
-    - request: The Django request object.
-    - species: The species for which the feature URL is being generated.
-    - chromosome: The chromosome number or name for the feature.
-    - start: The start position of the feature.
-    - end: The end position of the feature.
-
-    Returns:
-    - A string representing the absolute URL of the feature endpoint.
-    """
-    base = '/api/v1/feature/region'
-    path = f"{base}/{species}/{chromosome}:{start}-{end}"
-    return request.build_absolute_uri(path)
-
-
+@extend_schema(exclude=True)
 class APIRoot(APIView):
     """
     This is the root of the RNAcentral API Version 1.
@@ -215,45 +194,12 @@ class APIRoot(APIView):
     # the above docstring appears on the API website
     permission_classes = (AllowAny,)
 
-    def get(self, request, format=None):
-        endpoints = {
-            'rna': 'rna-sequences',
-            'accession': ('accession-detail', {'pk': 'URS000075D2D3'}),
-            'accession_citations': ('accession-citations', {'pk': 'URS000075D2D3'}),
-            #'feature': ('human-genome-coordinates', {'species': 'homo_sapiens', 
-            #                          'chromosome': 'Y', 'start': 1, 'end': 1000000}),
-            # The above does not work because reverse() cannot find a compatible regex
-            # See build_feature_url()
-            
-            'expert-db-stats': 'expert-db-stats',
-            'genomes': 'genomes-api',
-            'genome-browser': ('genome-browser-api', {'species': 'human'}),
-            'litsumm': 'litsumm',
-            'md5': ('md5-sequence', {'md5': '6bba097c8c39ed9a0fdf02273ee1c79a'}),
-        }
-
-        result = {}
-
-        result['feature'] = build_feature_url(
-            request, 
-            species='human',
-            chromosome='Y',
-            start='1',
-            end='1000000'
+    def get(self, request, format=format):
+        return Response(
+            {
+                "rna": reverse("rna-sequences", request=request),
+            }
         )
-
-        for key, value in endpoints.items():
-            # Debuggin implementation to make sure reverse() works
-            try:
-                if isinstance(value, tuple):
-                    result[key] = reverse(value[0], request=request, format=format, kwargs=value[1])
-                else:
-                    result[key] = reverse(value, request=request, format=format)
-            except NoReverseMatch as e:
-                # Skip this endpoint if it can't be reversed
-                pass
-
-        return Response(result)
 
 
 class RnaFilter(filters.FilterSet):
