@@ -1,12 +1,14 @@
-User-agent: *
-Disallow: /sequence-search/job-status
-Disallow: /sequence-search/cancel-job
-Disallow: /sequence-search/submit-query
-
 User-agent: AhrefsBot
 User-agent: DotBot
+User-agent: MJ12bot
 User-agent: PetalBot
 User-agent: SEMrushBot
 Disallow: /
+Disallow: /sitemap.xml
+
+User-agent: *
+Disallow: /export/
+Disallow: /sequence-search/
+Allow: /sitemap.xml
 
 Sitemap: https://rnacentral.org/sitemap.xml
