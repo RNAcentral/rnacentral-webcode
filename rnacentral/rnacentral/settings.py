@@ -252,6 +252,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
     ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [],
     # API results pagination
     "DEFAULT_PAGINATION_CLASS": "rnacentral.utils.pagination.Pagination",
     "PAGE_SIZE": 10,
