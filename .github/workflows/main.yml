@@ -10,7 +10,6 @@ name: Building Docker containers
 on:
   push:
     paths-ignore:
-      - 'jenkins/**'
       - 'kubernetes/**'
       - 'nginx/**'
       - 'openssl/**'
