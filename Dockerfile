@@ -70,4 +70,4 @@ USER rnacentral
 COPY ./entrypoint.sh $RNACENTRAL_HOME
 ENTRYPOINT ["/srv/rnacentral/rnacentral-webcode/entrypoint.sh"]
 
-CMD ["gunicorn", "--chdir", "/srv/rnacentral/rnacentral-webcode/rnacentral", "--bind", "0.0.0.0:8000", "rnacentral.wsgi:application", "--worker-class", "gthread", "--threads", "8", "--keep-alive", "20", "--workers", "4", "--timeout", "120", "--max-requests", "1000", "--max-requests-jitter", "100", "--log-level=debug", "--access-logfile", "/dev/stdout", "--error-logfile", "/dev/stderr"]
+CMD ["gunicorn", "--chdir", "/srv/rnacentral/rnacentral-webcode/rnacentral", "--bind", "0.0.0.0:8000", "rnacentral.wsgi:application", "--workers", "4", "--threads", "2", "--timeout", "120", "--graceful-timeout", "60",  "--keep-alive", "10", "--max-requests", "1000", "--max-requests-jitter", "100", "--log-level=debug", "--access-logfile", "/dev/stdout", "--error-logfile", "/dev/stderr"]
