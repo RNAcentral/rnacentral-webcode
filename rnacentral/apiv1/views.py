@@ -48,6 +48,7 @@ from django.conf import settings
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
+from drf_spectacular.utils import extend_schema
 from portal.config.expert_databases import expert_dbs
 from portal.models import (
     Accession,
@@ -182,6 +183,7 @@ class GenomeAnnotations(APIView):
         return Response(features)
 
 
+@extend_schema(exclude=True)
 class APIRoot(APIView):
     """
     This is the root of the RNAcentral API Version 1.
