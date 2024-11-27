@@ -632,7 +632,12 @@ class CitationsView(generics.ListAPIView):
 
     def get_queryset(self):
         pk = self.kwargs["pk"]
-        return Accession.objects.select_related().get(pk=pk).refs.all()
+        try:
+            citations = Accession.objects.select_related().get(pk=pk).refs.all()
+        except Accession.DoesNotExist:
+            citations = Accession.objects.none()
+
+        return citations
 
 
 class RnaPublicationsView(generics.ListAPIView):
