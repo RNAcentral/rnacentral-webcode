@@ -110,6 +110,7 @@ def get_database(region):
     return providing_databases
 
 
+@extend_schema(exclude=True)
 class GenomeAnnotations(APIView):
     """
     Ensembl-like genome coordinates endpoint.
@@ -459,6 +460,7 @@ class XrefsSpeciesSpecificList(generics.ListAPIView):
         return Rna.objects.get(upi=upi).get_xrefs(taxid=taxid)
 
 
+@extend_schema(exclude=True)
 class SecondaryStructureSpeciesSpecificList(generics.ListAPIView):
     """
     List of secondary structures for a particular RNA sequence in a specific species.
@@ -698,6 +700,7 @@ class ExpertDatabasesAPIView(APIView):
     #     return Database.objects.get(expert_db_name).references
 
 
+@extend_schema(exclude=True)
 class ExpertDatabasesStatsViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
     """
     API endpoint with statistics of databases, comprising RNAcentral.
