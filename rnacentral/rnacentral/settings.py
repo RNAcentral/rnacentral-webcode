@@ -285,6 +285,7 @@ SPECTACULAR_SETTINGS = {
         "rnacentral.utils.drf_spectacular.remove_path",
         "rnacentral.utils.drf_spectacular.fix_path",
     ],
+    "SCHEMA_PATH_PREFIX": r"/api/v[0-9]",
 }
 
 # django-debug-toolbar
