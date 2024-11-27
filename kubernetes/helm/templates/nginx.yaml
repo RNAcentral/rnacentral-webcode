@@ -55,6 +55,12 @@ data:
             proxy_set_header Host $host;
             proxy_redirect off;
         }
+
+        location /nginx_status {
+            stub_status;
+            allow 127.0.0.1;
+            deny all;
+        }
     }
 ---
 apiVersion: apps/v1
