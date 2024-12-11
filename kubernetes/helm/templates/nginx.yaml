@@ -30,7 +30,7 @@ data:
         access_log stdout;
         error_log  stderr;
 
-        if ($http_user_agent ~* (Ahrefs|MJ12bot|Semrush|Yandex)) {
+        if ($http_user_agent ~* (Ahrefs|MJ12bot|Semrush|Yandex|facebookexternal|developers\.facebook\.com)) {
             return 403;
         }
 
