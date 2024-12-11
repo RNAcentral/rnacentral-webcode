@@ -1,14 +1,19 @@
 User-agent: AhrefsBot
+User-agent: CCBot
+User-agent: ClaudeBot
 User-agent: DotBot
+User-agent: FacebookBot
+User-agent: GPTBot
 User-agent: MJ12bot
 User-agent: PetalBot
+User-agent: SeekportBot
 User-agent: SEMrushBot
 Disallow: /
-Disallow: /sitemap.xml
 
 User-agent: *
+Crawl-delay: 5
+Disallow: /api/
 Disallow: /export/
 Disallow: /sequence-search/
-Allow: /sitemap.xml
 
 Sitemap: https://rnacentral.org/sitemap.xml
