@@ -186,6 +186,7 @@ INSTALLED_APPS = (
     "rest_framework",
     "compressor",
     "markdown_deux",
+    "drf_spectacular",
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
@@ -246,6 +247,7 @@ REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": [
         "rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly"
     ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [],
     # API results pagination
     "DEFAULT_PAGINATION_CLASS": "rnacentral.utils.pagination.Pagination",
     "PAGE_SIZE": 10,
@@ -266,6 +268,19 @@ REST_FRAMEWORK = {
         "rest_framework_yaml.renderers.YAMLRenderer",
         "rest_framework.renderers.BrowsableAPIRenderer",
     ),
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "RNAcentral API",
+    "DESCRIPTION": "RNAcentral API provides programmatic access to RNAcentral data",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "POSTPROCESSING_HOOKS": [
+        "rnacentral.utils.drf_spectacular.remove_path",
+        "rnacentral.utils.drf_spectacular.fix_path",
+    ],
+    "SCHEMA_PATH_PREFIX": r"/api/v[0-9]",
 }
 
 # django-debug-toolbar

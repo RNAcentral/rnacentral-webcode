@@ -48,6 +48,7 @@ from django.conf import settings
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
+from drf_spectacular.utils import extend_schema
 from portal.config.expert_databases import expert_dbs
 from portal.models import (
     Accession,
@@ -109,6 +110,7 @@ def get_database(region):
     return providing_databases
 
 
+@extend_schema(exclude=True)
 class GenomeAnnotations(APIView):
     """
     Ensembl-like genome coordinates endpoint.
@@ -182,6 +184,7 @@ class GenomeAnnotations(APIView):
         return Response(features)
 
 
+@extend_schema(exclude=True)
 class APIRoot(APIView):
     """
     This is the root of the RNAcentral API Version 1.
@@ -457,6 +460,7 @@ class XrefsSpeciesSpecificList(generics.ListAPIView):
         return Rna.objects.get(upi=upi).get_xrefs(taxid=taxid)
 
 
+@extend_schema(exclude=True)
 class SecondaryStructureSpeciesSpecificList(generics.ListAPIView):
     """
     List of secondary structures for a particular RNA sequence in a specific species.
@@ -630,7 +634,12 @@ class CitationsView(generics.ListAPIView):
 
     def get_queryset(self):
         pk = self.kwargs["pk"]
-        return Accession.objects.select_related().get(pk=pk).refs.all()
+        try:
+            citations = Accession.objects.select_related().get(pk=pk).refs.all()
+        except Accession.DoesNotExist:
+            citations = Accession.objects.none()
+
+        return citations
 
 
 class RnaPublicationsView(generics.ListAPIView):
@@ -691,6 +700,7 @@ class ExpertDatabasesAPIView(APIView):
     #     return Database.objects.get(expert_db_name).references
 
 
+@extend_schema(exclude=True)
 class ExpertDatabasesStatsViewSet(RetrieveModelMixin, ListModelMixin, GenericViewSet):
     """
     API endpoint with statistics of databases, comprising RNAcentral.
