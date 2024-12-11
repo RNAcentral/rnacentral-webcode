@@ -30,6 +30,10 @@ data:
         access_log stdout;
         error_log  stderr;
 
+        if ($http_user_agent ~* (Ahrefs|MJ12bot|Semrush|Yandex)) {
+            return 403;
+        }
+
         location /static/ {
             autoindex on;
             alias /srv/rnacentral/static/;
