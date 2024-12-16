@@ -12,7 +12,8 @@ Disallow: /
 
 User-agent: *
 Crawl-delay: 5
-Disallow: /api/
+Disallow: /api/current/
+Disallow: /api/v1/
 Disallow: /export/
 Disallow: /sequence-search/
 
