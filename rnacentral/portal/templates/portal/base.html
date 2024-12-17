@@ -89,6 +89,16 @@ limitations under the License.
         <link rel="apple-touch-icon" sizes="144x144" href="{% static "img/icons/apple-touch-icon-144x144.png" %}" />
         <link rel="apple-touch-icon" sizes="152x152" href="{% static "img/icons/apple-touch-icon-152x152.png" %}" />
 
+        <!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-37T22PHH90"></script>
+        <script>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-37T22PHH90');
+        </script>
+
         {% block extra_head %}{% endblock %}
     </head>
 
@@ -259,16 +269,6 @@ limitations under the License.
 
         {% block extra_js_uncompressed %}
         {% endblock %}
-
-        <!-- Google tag (gtag.js) -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-37T22PHH90"></script>
-        <script>
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){dataLayer.push(arguments);}
-          gtag('js', new Date());
-
-          gtag('config', 'G-37T22PHH90');
-        </script>
 
         <!--Doorbell.io feedback-->
         <script type="text/javascript">
