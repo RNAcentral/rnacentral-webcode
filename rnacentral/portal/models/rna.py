@@ -20,7 +20,6 @@ from collections import Counter, defaultdict
 import boto3
 import requests
 import six
-from caching.base import CachingManager, CachingMixin
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import connection, models
@@ -46,7 +45,7 @@ def dictfetchall(cursor):
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 
-class Rna(CachingMixin, models.Model):
+class Rna(models.Model):
     id = models.IntegerField(db_column="id")
     upi = models.CharField(max_length=13, db_index=True, primary_key=True)
     timestamp = models.DateField()
@@ -56,8 +55,6 @@ class Rna(CachingMixin, models.Model):
     seq_short = models.CharField(max_length=4000)
     seq_long = models.TextField()
     md5 = models.CharField(max_length=32, unique=True, db_index=True)
-
-    objects = CachingManager()
 
     class Meta:
         db_table = "rna"
