@@ -45,7 +45,9 @@ from rest_framework import serializers
 class RawPublicationSerializer(serializers.ModelSerializer):
     """Serializer class for literature citations. Used in conjunction with raw querysets."""
 
-    authors = serializers.ListField(serializers.CharField(), source="get_authors_list")
+    authors = serializers.ListField(
+        child=serializers.CharField(), source="get_authors_list"
+    )
     publication = serializers.CharField(source="location")
     pubmed_id = serializers.CharField(source="pubmed")
     doi = serializers.CharField()
@@ -70,7 +72,7 @@ class CitationSerializer(serializers.HyperlinkedModelSerializer):
     """Serializer class for literature citations."""
 
     authors = serializers.ListField(
-        serializers.CharField(), source="data.get_authors_list"
+        child=serializers.CharField(), source="data.get_authors_list"
     )
     publication = serializers.CharField(source="data.location")
     pubmed_id = serializers.CharField(source="data.pubmed")
@@ -507,7 +509,7 @@ class ProteinTargetsSerializer(serializers.ModelSerializer):
         serializers.CharField()
     )  # use non-null target_accession instead of nullable protein_accession
     source_accession = serializers.CharField()
-    methods = serializers.ListField(serializers.CharField())
+    methods = serializers.ListField(child=serializers.CharField())
 
     class Meta:
         model = ProteinInfo
@@ -525,7 +527,7 @@ class LncrnaTargetsSerializer(serializers.ModelSerializer):
     target_accession = serializers.CharField()
     source_accession = serializers.CharField()
     target_urs_taxid = serializers.CharField()
-    methods = serializers.ListField(serializers.CharField())
+    methods = serializers.ListField(child=serializers.CharField())
     description = serializers.SerializerMethodField("select_description")
 
     def select_description(self, obj):

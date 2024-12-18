@@ -187,6 +187,7 @@ INSTALLED_APPS = (
     "compressor",
     "markdown_deux",
     "drf_spectacular",
+    "cachalot",
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
@@ -306,7 +307,7 @@ MAINTENANCE_MODE = False
 # Memcached caching for django-cache-machine
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+        "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
         "LOCATION": "localhost:11211",
     },
     "sitemaps": {

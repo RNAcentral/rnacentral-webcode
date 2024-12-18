@@ -28,7 +28,7 @@ elif six.PY3:
 
 from django.conf import settings
 from django.http import Http404, HttpResponse, HttpResponseForbidden
-from django.shortcuts import redirect, render, render_to_response
+from django.shortcuts import redirect, render
 from django.template import TemplateDoesNotExist
 from django.template.loader import render_to_string
 from django.views.decorators.cache import cache_page, never_cache
@@ -368,7 +368,8 @@ def expert_database_view(request, expert_db_name):
     if not expert_db:
         raise Http404()
 
-    return render_to_response(
+    return render(
+        request,
         "portal/expert-database.html",
         {
             "expert_db": expert_db,
@@ -403,7 +404,7 @@ def website_status_view(request):
     context["overall_status"] = (
         context["is_database_up"] and context["is_api_up"] and context["is_search_up"]
     )
-    return render_to_response("portal/website-status.html", {"context": context})
+    return render(request, "portal/website-status.html", {"context": context})
 
 
 @cache_page(CACHE_TIMEOUT)
@@ -656,6 +657,6 @@ def handler500(request, *args, **argv):
     https://stackoverflow.com/questions/17662928/django-creating-a-custom-500-404-error-page
     """
     # warning: in django2 signature of this function has changed
-    response = render_to_response("500.html", {})
+    response = render(request, "500.html", {})
     response.status_code = 200
     return response
