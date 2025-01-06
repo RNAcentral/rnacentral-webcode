@@ -8,8 +8,8 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: rnacentral
-  minReplicas: 8
-  maxReplicas: 16
+  minReplicas: 4
+  maxReplicas: 8
   metrics:
     - type: Resource
       resource:
