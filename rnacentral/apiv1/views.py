@@ -76,6 +76,7 @@ from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet, ReadOnlyModelViewSet
 from rest_framework_jsonp.renderers import JSONPRenderer
@@ -469,6 +470,15 @@ class SecondaryStructureSpeciesSpecificList(generics.ListAPIView):
     """
 
     queryset = Rna.objects.all()
+
+    def get_throttles(self):
+        class CustomAnonRateThrottle(AnonRateThrottle):
+            rate = "10/minute"
+
+        class CustomUserRateThrottle(UserRateThrottle):
+            rate = "20/minute"
+
+        return [CustomAnonRateThrottle(), CustomUserRateThrottle()]
 
     def get(self, request, pk=None, taxid=None, format=None):
         """Get a list of secondary structures"""
