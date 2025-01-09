@@ -357,6 +357,8 @@ COMPRESS_FILTERS = {
     ],
 }
 
+# Recognize the real IP from X-Forwarded-For
+USE_X_FORWARDED_HOST = True
 
 # Use a simplified runner to prevent any modifications to the database.
 TEST_RUNNER = "portal.tests.test_runner.FixedRunner"
