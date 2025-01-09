@@ -258,7 +258,7 @@ REST_FRAMEWORK = {
         "apiv1.rest_framework_override.throttling.SafeCacheKeyAnonRateThrottle",
         "apiv1.rest_framework_override.throttling.SafeCacheKeyUserRateThrottle",
     ),
-    "DEFAULT_THROTTLE_RATES": {"anon": "200/second", "user": "400/second"},
+    "DEFAULT_THROTTLE_RATES": {"anon": "10/second", "user": "20/second"},
     # Filtering
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
     # renderers
