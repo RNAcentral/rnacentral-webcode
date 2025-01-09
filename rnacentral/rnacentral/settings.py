@@ -203,9 +203,14 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "standard": {
-            "format": "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",  # pylint: disable=W0401, C0301
+            "format": "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s (IP: %(client_ip)s)",
             "datefmt": "%d/%b/%Y %H:%M:%S",
         }
+    },
+    "filters": {
+        "client_ip": {
+            "()": "rnacentral.utils.logging_filters.ClientIPFilter",
+        },
     },
     "handlers": {
         "null": {
@@ -216,6 +221,7 @@ LOGGING = {
             "level": "INFO",
             "class": "logging.StreamHandler",  # writes to stderr
             "formatter": "standard",
+            "filters": ["client_ip"],
         },
     },
     "loggers": {
