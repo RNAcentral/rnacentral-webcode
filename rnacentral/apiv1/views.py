@@ -473,10 +473,10 @@ class SecondaryStructureSpeciesSpecificList(generics.ListAPIView):
 
     def get_throttles(self):
         class CustomAnonRateThrottle(AnonRateThrottle):
-            rate = "10/minute"
+            rate = "180/minute"
 
         class CustomUserRateThrottle(UserRateThrottle):
-            rate = "20/minute"
+            rate = "300/minute"
 
         return [CustomAnonRateThrottle(), CustomUserRateThrottle()]
 
