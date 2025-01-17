@@ -205,8 +205,6 @@ def rna_view(request, upi, taxid=None):
 
     summary = RnaSummary(upi, taxid, settings.EBI_SEARCH_ENDPOINT)
     if taxid_filtering:
-        summary_text = render_to_string("portal/summary.html", vars(summary))
-        summary_text = re.sub(r"\s+", " ", summary_text.strip())
         try:
             summary_so_terms = zip(summary.pretty_so_rna_type, summary.so_rna_type)
         except AttributeError:
@@ -302,7 +300,6 @@ def rna_view(request, upi, taxid=None):
         "taxid_filtering": taxid_filtering,
         "taxid_not_found": request.GET.get("taxid-not-found", ""),
         "active_tab": active_tab,
-        "summary_text": summary_text if taxid_filtering else "",
         "summary": summary,
         "summary_so_terms": summary_so_terms if taxid_filtering else "",
         "precomputed": precomputed,

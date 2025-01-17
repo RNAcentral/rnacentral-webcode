@@ -17,11 +17,7 @@ limitations under the License.
 
 {% block meta_tags %}
     {{ block.super }}
-    {% if context.summary_text %}
-    <meta name="description" content="{{ context.summary_text }}"/>
-    {% else %}
     <meta name="description" content="{{ context.precomputed.description }}"/>
-    {% endif %}
     <meta name="twitter:description" content="{{ context.precomputed.description }}">
 {% endblock %}
 
