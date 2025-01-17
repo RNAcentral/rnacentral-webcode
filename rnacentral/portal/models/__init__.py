@@ -20,6 +20,7 @@ from .ensembl_assembly import *
 from .ensembl_compara import *
 from .go_terms import *
 from .interactions import *
+from .litscan_job import *
 from .litscan_statistics import *
 from .litsumm_summaries import *
 from .modification import *
