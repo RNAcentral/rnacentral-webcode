@@ -45,6 +45,7 @@ from apiv1.serializers import (
 )
 from colorhash import ColorHash
 from django.conf import settings
+from django.db.models import Sum
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
@@ -59,6 +60,8 @@ from portal.models import (
     EnsemblCompara,
     GoAnnotation,
     Interactions,
+    LitScanJob,
+    LitScanMetadata,
     LitSumm,
     ProteinInfo,
     QcStatus,
@@ -394,34 +397,22 @@ class RnaSpeciesSpecificView(APIView):
             species = ""
 
         # LitScan data - get related IDs
-        pub_list = [urs]
-        query_jobs = (
-            f'?query=entry_type:metadata%20AND%20primary_id:"{urs}"%20AND%20database:rnacentral&'
-            f"fields=job_id&format=json"
+        related_ids = (
+            LitScanMetadata.objects.filter(primary_id__iexact=urs)
+            .values_list("job_id", flat=True)
+            .distinct()
         )
-        try:
-            response = requests.get(search_index + "-litscan" + query_jobs).json()
-            entries = response["entries"]
-            for entry in entries:
-                pub_list.append(entry["fields"]["job_id"][0])
-        except (IndexError, KeyError):
-            pass
 
-        # get number of articles identified by LitScan
-        query_ids = ['job_id:"' + item + '"' for item in pub_list]
-        query_ids = "%20OR%20".join(query_ids)
-        query = f"?query=entry_type:Publication%20AND%20({query_ids})&format=json"
-        try:
-            response = requests.get(search_index + "-litscan" + query).json()
-            pub_count = response["hitCount"]
-        except KeyError:
-            pub_count = None
+        # get number of articles
+        pub_count = LitScanJob.objects.filter(job_id__in=related_ids).aggregate(
+            Sum("hit_count")
+        )["hit_count__sum"]
 
         serializer = RnaSpeciesSpecificSerializer(
             rna,
             context={
                 "gene": gene,
-                "pub_count": pub_count,
+                "pub_count": pub_count if pub_count else 0,
                 "request": request,
                 "species": species,
                 "taxid": taxid,

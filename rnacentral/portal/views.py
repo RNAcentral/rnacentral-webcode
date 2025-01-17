@@ -27,6 +27,7 @@ elif six.PY3:
     from urllib.parse import urlparse
 
 from django.conf import settings
+from django.db.models import Sum
 from django.http import Http404, HttpResponse, HttpResponseForbidden
 from django.shortcuts import redirect, render
 from django.template import TemplateDoesNotExist
@@ -41,6 +42,8 @@ from portal.models import (
     Database,
     EnsemblAssembly,
     GoAnnotation,
+    LitScanJob,
+    LitScanMetadata,
     LitScanStatistics,
     LitSumm,
     Rna,
@@ -236,36 +239,17 @@ def rna_view(request, upi, taxid=None):
 
     # Publications
     if taxid:
-        query_jobs = (
-            f'?query=entry_type:metadata%20AND%20primary_id:"{upi}_{taxid}"%20AND%20database:rnacentral&'
-            f"fields=job_id&format=json"
-        )
-        pub_list = [upi + "_" + taxid]
-
         # get IDs related to the URS
-        try:
-            response = requests.get(
-                settings.EBI_SEARCH_ENDPOINT + "-litscan" + query_jobs
-            ).json()
-            entries = response["entries"]
-            for entry in entries:
-                pub_list.append(entry["fields"]["job_id"][0])
-        except (IndexError, KeyError):
-            pass
+        related_ids = (
+            LitScanMetadata.objects.filter(primary_id__iexact=upi + "_" + taxid)
+            .values_list("job_id", flat=True)
+            .distinct()
+        )
 
         # get number of articles
-        query_ids = ['job_id:"' + item + '"' for item in pub_list]
-        query_ids = "%20OR%20".join(query_ids)
-        query = f"?query=entry_type:Publication%20AND%20({query_ids})&format=json"
-
-        try:
-            response = requests.get(
-                settings.EBI_SEARCH_ENDPOINT + "-litscan" + query
-            ).json()
-            pub_count = response["hitCount"]
-        except KeyError:
-            pub_count = None
-
+        pub_count = LitScanJob.objects.filter(job_id__in=related_ids).aggregate(
+            Sum("hit_count")
+        )["hit_count__sum"]
     else:
         pub_count = None
 
