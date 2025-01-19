@@ -521,17 +521,15 @@ class Rna(models.Model):
                 upi=self.upi
             )
         )
-        request = requests.get(url)
-        data = request.json()
-        if "hitCount" in data and data["hitCount"] > 0:
-            try:
-                if data["entries"][0]["fields"]["has_secondary_structure"][0] == "True":
-                    return True
-                else:
-                    return False
-            except:
+        try:
+            request = requests.get(url, timeout=3)
+            request.raise_for_status()
+            data = request.json()
+            if data["entries"][0]["fields"]["has_secondary_structure"][0] == "True":
+                return True
+            else:
                 return False
-        else:
+        except:
             return False
 
     def get_secondary_structures(self):
