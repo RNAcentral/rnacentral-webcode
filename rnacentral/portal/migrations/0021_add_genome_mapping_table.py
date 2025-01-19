@@ -1,6 +1,6 @@
 from __future__ import unicode_literals
 
-import caching.base
+# import caching.base
 import django.db.models.deletion
 from django.db import migrations, models
 
@@ -56,6 +56,6 @@ class Migration(migrations.Migration):
             options={
                 "db_table": "load_genome_mapping",
             },
-            bases=(caching.base.CachingMixin, models.Model),
+            # bases=(caching.base.CachingMixin, models.Model),
         ),
     ]

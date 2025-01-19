@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import caching.base
+# import caching.base
 from django.db import migrations, models
 
 
@@ -49,6 +49,6 @@ class Migration(migrations.Migration):
             options={
                 "db_table": "rnc_modifications",
             },
-            bases=(caching.base.CachingMixin, models.Model),
+            # bases=(caching.base.CachingMixin, models.Model),
         ),
     ]
