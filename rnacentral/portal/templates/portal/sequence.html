@@ -292,7 +292,7 @@ limitations under the License.
             {% if context.expression_atlas %}
                 <uib-tab index="3" id="expression-atlas" deselect="checkTab($event, $selectedIndex)" onclick="expressionAtlasWorkaround()">
                     <uib-tab-heading>
-                        Expression <span class="label label-success">New</span>
+                        Expression
                     </uib-tab-heading>
                     <expression-atlas upi="upi" taxid="taxid"></expression-atlas>
                 </uib-tab>
@@ -385,8 +385,10 @@ limitations under the License.
                     "bubbles": true,
                     "cancelable": true
                 });
-                head.dispatchEvent(eventIn);
-                setInterval(() => { head.dispatchEvent(eventOut) }, 100);
+                if (eventIn) {
+                    head.dispatchEvent(eventIn);
+                    setInterval(() => { head.dispatchEvent(eventOut) }, 100);
+                }
             }
         </script>
     {% endif %}

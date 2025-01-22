@@ -36,14 +36,15 @@ var expressionAtlas = {
         };
 
     }],
-    template: '<div id="highchartsContainer">' +
+    template: '<div ng-if="$ctrl.gene" id="highchartsContainer">' +
               '    <div ng-if="!$ctrl.response">' +
               '        <i class="fa fa-spinner fa-spin fa-2x"></i><span class="margin-left-5px">Loading Expression Atlas...</span>' +
               '    </div>' +
               '    <div ng-if="$ctrl.response.status >= 400" class="alert alert-danger fade">' +
               '        <i class="fa fa-exclamation-triangle"></i>Sorry, there was a problem loading the data. Please try again and contact us if the problem persists.' +
               '    </div>' +
-              '</div>'
+              '</div>' +
+              '<div ng-if="!$ctrl.gene">No expression data available</div> '
 };
 
 angular.module("rnaSequence").component("expressionAtlas", expressionAtlas);
