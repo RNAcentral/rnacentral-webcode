@@ -51,7 +51,6 @@ from portal.models import (
     Xref,
 )
 from portal.models.rna_precomputed import RnaPrecomputed
-from portal.rna_summary import RnaSummary
 
 CACHE_TIMEOUT = 60 * 60 * 24 * 1  # per-view cache timeout in seconds
 XREF_PAGE_SIZE = 1000
@@ -203,13 +202,6 @@ def rna_view(request, upi, taxid=None):
         if key not in ["A", "U", "G", "C"]
     }
 
-    summary = RnaSummary(upi, taxid, settings.EBI_SEARCH_ENDPOINT)
-    if taxid_filtering:
-        try:
-            summary_so_terms = zip(summary.pretty_so_rna_type, summary.so_rna_type)
-        except AttributeError:
-            summary_so_terms = ""
-
     # get litsumm summary
     if taxid:
         litsumm_summary = LitSumm.objects.filter(primary_id=upi + "_" + taxid)
@@ -273,16 +265,6 @@ def rna_view(request, upi, taxid=None):
     except Xref.DoesNotExist:
         pass
 
-    # we also need gene and species to use the Expression Atlas widget
-    if (
-        expression_atlas
-        and summary.species
-        and [item for item in summary.genes if item.startswith("ENS")]
-    ):
-        expression_atlas = True
-    else:
-        expression_atlas = False
-
     # get tab
     tab = request.GET.get("tab", "").lower()
     if tab == "2d":
@@ -300,8 +282,6 @@ def rna_view(request, upi, taxid=None):
         "taxid_filtering": taxid_filtering,
         "taxid_not_found": request.GET.get("taxid-not-found", ""),
         "active_tab": active_tab,
-        "summary": summary,
-        "summary_so_terms": summary_so_terms if taxid_filtering else "",
         "precomputed": precomputed,
         "mirna_regulators": rna.get_mirna_regulators(taxid=taxid),
         "annotations_from_other_species": rna.get_annotations_from_other_species(
