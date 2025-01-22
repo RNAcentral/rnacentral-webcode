@@ -57,6 +57,15 @@ angular.module("routes", []).service('routes', ['$interpolate', function($interp
             '&size=1000' +
             '&format=json'
         ,
+        ebiSequencePageSummary:
+            '{{ ebiBaseUrl }}' +
+            '/entry/' +
+            '{{ upi }}' +
+            '_' +
+            '{{ taxid }}' +
+            '?fields=length,so_rna_type,expert_db' +
+            '&format=json'
+        ,
         ebiAutocomplete: 'http://www.ebi.ac.uk/ebisearch/ws/rest/RNAcentral/autocomplete?term={{ query }}&format=json',
         apiGoTermsView: '/api/v1/rna/{{ upi }}/go-annotations/{{ taxid }}',
         quickGoSummaryPage: 'https://www.ebi.ac.uk/QuickGO/term/{{ term_id }}',
