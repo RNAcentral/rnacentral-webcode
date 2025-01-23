@@ -399,7 +399,7 @@ class Rna(models.Model):
             The collection of xrefs that are valid for the sequence and taxid.
         """
 
-        base = Xref.default_objects.filter(upi=self.upi)
+        base = Xref.objects.filter(upi=self.upi)
         xrefs = base.filter(deleted="N")
         if taxid is not None:
             xrefs = xrefs.filter(taxid=taxid)
@@ -542,7 +542,7 @@ class Rna(models.Model):
         Get secondary structures associated with a sequence.
         """
 
-        queryset = Xref.default_objects.select_related(
+        queryset = Xref.objects.select_related(
             "db", "accession", "accession__secondary_structure"
         ).filter(upi=self.upi, deleted="N")
 
