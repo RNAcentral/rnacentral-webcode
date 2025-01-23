@@ -1,6 +1,7 @@
 import json
 
 from django.test import TestCase
+from django.test.utils import override_settings
 from django.urls import resolve, reverse
 from portal.views import (
     expert_database_view,
@@ -30,6 +31,9 @@ class PortalTest(TestCase):
         response = self.client.get(reverse("homepage"))
         self.assertEqual(response.status_code, 200)
 
+    @override_settings(
+        CACHES={"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
+    )
     def test_homepage_template(self):
         response = self.client.get(reverse("homepage"))
         self.assertTemplateUsed(response, "portal/homepage.html")
@@ -53,6 +57,9 @@ class PortalTest(TestCase):
         )
         self.assertEqual(response.status_code, 404)
 
+    @override_settings(
+        CACHES={"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
+    )
     def test_generic_rna_view_template(self):
         response = self.client.get(
             reverse("generic-rna-sequence", kwargs={"upi": self.upi})
@@ -96,6 +103,9 @@ class PortalTest(TestCase):
         )
         self.assertEqual(response.status_code, 301)
 
+    @override_settings(
+        CACHES={"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
+    )
     def test_rna_view_template(self):
         response = self.client.get(
             reverse(
@@ -123,6 +133,9 @@ class PortalTest(TestCase):
         )
         self.assertEqual(response.status_code, 404)
 
+    @override_settings(
+        CACHES={"default": {"BACKEND": "django.core.cache.backends.dummy.DummyCache"}}
+    )
     def test_expert_database_template(self):
         response = self.client.get(
             reverse("expert-database", kwargs={"expert_db_name": "tmrna-website"})
