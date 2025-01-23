@@ -42,6 +42,8 @@ spec:
             - "{{ .Values.memcachedServiceMemory }}"
             - "-p"
             - "{{ .Values.memcachedPort }}"
+            - "-I"
+            - "5m"
           ports:
             - containerPort: {{ .Values.memcachedPort }}
       restartPolicy: Always
