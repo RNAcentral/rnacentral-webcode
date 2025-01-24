@@ -223,7 +223,7 @@ class Accession(models.Model):
             "PLNCDB": "https://www.tobaccodb.org/plncdb/nunMir?plncdb_id={id}",
             "DICTYBASE": "http://dictybase.org/gene/{id}",
             "SILVA": "http://www.arb-silva.de/browser/{lsu_ssu}/silva/{id}",
-            "POMBASE": "http://www.pombase.org/spombe/result/{id}",
+            "POMBASE": "http://www.pombase.org/gene/{id}",
             "GREENGENES": "https://www.ebi.ac.uk/ena/browser/view/{id}.{version}",
             "NONCODE": "http://www.noncode.org/show_rna.php?id={id}&version={version}",
             "LNCIPEDIA": "http://www.lncipedia.org/db/transcript/{id}",
