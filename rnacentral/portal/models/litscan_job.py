@@ -25,7 +25,7 @@ class LitScanJob(models.Model):
     search_limit = models.IntegerField()
 
     class Meta:
-        db_table = "litscan_job"
+        db_table = '"embassy_rw"."litscan_job"'
         ordering = ["job_id"]
 
     def __str__(self):

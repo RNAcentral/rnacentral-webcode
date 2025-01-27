@@ -21,7 +21,7 @@ class LitScanMetadata(models.Model):
     primary_id = models.CharField(max_length=255)
 
     class Meta:
-        db_table = "litscan_database"
+        db_table = '"embassy_rw"."litscan_database"'
         ordering = ["id"]
 
     def __str__(self):
