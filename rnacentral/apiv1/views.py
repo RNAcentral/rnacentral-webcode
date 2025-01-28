@@ -381,8 +381,9 @@ class RnaSpeciesSpecificView(APIView):
         search_index = settings.EBI_SEARCH_ENDPOINT
         try:
             response = requests.get(
-                f"{search_index}/entry/{urs}?format=json&fields=gene"
+                f"{search_index}/entry/{urs}?format=json&fields=gene", timeout=3
             )
+            response.raise_for_status()
             data = json.loads(response.text)
             gene = data["entries"][0]["fields"]["gene"]
         except Exception:

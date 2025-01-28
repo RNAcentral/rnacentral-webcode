@@ -368,8 +368,10 @@ class XrefSerializer(serializers.HyperlinkedModelSerializer):
             urs_taxid = obj.upi.upi + "_" + str(obj.taxid)
             try:
                 response = requests.get(
-                    f"https://www.ebi.ac.uk/QuickGO/services/annotation/stats?geneProductId={urs_taxid}"
+                    f"https://www.ebi.ac.uk/QuickGO/services/annotation/stats?geneProductId={urs_taxid}",
+                    timeout=3,
                 )
+                response.raise_for_status()
                 data = json.loads(response.text)
                 hits = data["results"][0]["totalHits"]
             except Exception:
@@ -777,8 +779,10 @@ class InteractionsSerializer(serializers.Serializer):
                 ens_type = "Gene" if "ENSG" in interacting_id else "Transcript"
                 try:
                     response = requests.get(
-                        f"https://rest.ensembl.org/lookup/id/{interacting_id.split('.')[0]}?expand=1;content-type=application/json"
+                        f"https://rest.ensembl.org/lookup/id/{interacting_id.split('.')[0]}?expand=1;content-type=application/json",
+                        timeout=3,
                     )
+                    response.raise_for_status()
                     data = json.loads(response.text)
                     species = data["species"]
                     url = f"https://ensembl.org/{species}/{ens_type}/Summary?db=core;t={interacting_id}"
@@ -806,8 +810,10 @@ class InteractionsSerializer(serializers.Serializer):
             ens_type = "Gene" if "ENSG" in ensembl_id else "Transcript"
             try:
                 response = requests.get(
-                    f"https://rest.ensembl.org/lookup/id/{ensembl_id.split('.')[0]}?expand=1;content-type=application/json"
+                    f"https://rest.ensembl.org/lookup/id/{ensembl_id.split('.')[0]}?expand=1;content-type=application/json",
+                    timeout=3,
                 )
+                response.raise_for_status()
                 data = json.loads(response.text)
                 species = data["species"]
                 url = f"https://ensembl.org/{species}/{ens_type}/Summary?db=core;t={ensembl_id}"
@@ -855,8 +861,10 @@ class InteractionsSerializer(serializers.Serializer):
                 uniprot_id = obj.interacting_id.replace("protein ontology:", "")
             try:
                 response = requests.get(
-                    f"https://rest.uniprot.org/uniprotkb/{uniprot_id}?fields=accession%2Cgene_names"
+                    f"https://rest.uniprot.org/uniprotkb/{uniprot_id}?fields=accession%2Cgene_names",
+                    timeout=3,
                 )
+                response.raise_for_status()
                 data = json.loads(response.text)
                 hgnc = data["genes"][0]["geneName"]["value"]
             except Exception:
@@ -865,14 +873,18 @@ class InteractionsSerializer(serializers.Serializer):
             e_transcript = e_transcript[0].split(".")[0]
             try:
                 response = requests.get(
-                    f"https://rest.ensembl.org/lookup/id/{e_transcript}?content-type=application/json"
+                    f"https://rest.ensembl.org/lookup/id/{e_transcript}?content-type=application/json",
+                    timeout=3,
                 )
+                response.raise_for_status()
                 data = json.loads(response.text)
                 if "Parent" in data:
                     parent = data["Parent"]
                     parent_response = requests.get(
-                        f"https://rest.ensembl.org/lookup/id/{parent}?content-type=application/json"
+                        f"https://rest.ensembl.org/lookup/id/{parent}?content-type=application/json",
+                        timeout=3,
                     )
+                    parent_response.raise_for_status()
                     parent_data = json.loads(parent_response.text)
                     hgnc = parent_data["display_name"]
                 else:
@@ -887,7 +899,9 @@ class InteractionsSerializer(serializers.Serializer):
                 response = requests.get(
                     f"https://rest.genenames.org/fetch/symbol/{hgnc}",
                     headers={"Accept": "application/json"},
+                    timeout=3,
                 )
+                response.raise_for_status()
                 data = json.loads(response.text)
                 num_found = data["response"]["numFound"]
                 if num_found > 0:
