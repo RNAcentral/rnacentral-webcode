@@ -11,7 +11,7 @@ class Interactions(models.Model):
         on_delete=models.CASCADE,
     )
     interacting_id = models.CharField(max_length=255)
-    extensions = models.JSONField()
+    names = models.JSONField()
     taxid = models.IntegerField()
 
     class Meta:

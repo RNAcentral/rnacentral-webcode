@@ -25,7 +25,7 @@ class SequenceFeature(models.Model):
         on_delete=models.CASCADE,
     )
     feature_name = models.CharField(max_length=50)
-    extensions = models.JSONField()
+    metadata = models.JSONField()
     start = models.IntegerField()
     stop = models.IntegerField()
     taxid = models.IntegerField()

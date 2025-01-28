@@ -37,7 +37,7 @@ class QcStatus(models.Model):
     missing_rfam_match = models.BooleanField()
     from_repetitive_region = models.BooleanField()
     possible_orf = models.BooleanField()
-    extensions = models.JSONField()
+    messages = models.JSONField()
 
     class Meta:
         db_table = "qa_status"
