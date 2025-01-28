@@ -11,7 +11,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 
@@ -26,7 +25,7 @@ class SequenceFeature(models.Model):
         on_delete=models.CASCADE,
     )
     feature_name = models.CharField(max_length=50)
-    metadata = JSONField()
+    extensions = models.JSONField()
     start = models.IntegerField()
     stop = models.IntegerField()
     taxid = models.IntegerField()

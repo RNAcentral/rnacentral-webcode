@@ -11,7 +11,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 
@@ -38,7 +37,7 @@ class QcStatus(models.Model):
     missing_rfam_match = models.BooleanField()
     from_repetitive_region = models.BooleanField()
     possible_orf = models.BooleanField()
-    messages = JSONField()
+    extensions = models.JSONField()
 
     class Meta:
         db_table = "qa_status"

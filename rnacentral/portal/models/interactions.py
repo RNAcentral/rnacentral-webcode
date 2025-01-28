@@ -1,4 +1,3 @@
-from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 
@@ -12,7 +11,7 @@ class Interactions(models.Model):
         on_delete=models.CASCADE,
     )
     interacting_id = models.CharField(max_length=255)
-    names = JSONField()
+    extensions = models.JSONField()
     taxid = models.IntegerField()
 
     class Meta:
