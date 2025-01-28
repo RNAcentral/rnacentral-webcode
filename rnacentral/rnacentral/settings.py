@@ -312,11 +312,11 @@ MAINTENANCE_MODE = False
 # Memcached caching for django-cache-machine
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.memcached.PyMemcacheCache",
+        "BACKEND": "rnacentral.utils.cache.CustomPyMemcacheCache",
         "LOCATION": "localhost:11211",
     },
     "sitemaps": {
-        "BACKEND": "rnacentral.utils.cache.SitemapsCache",
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
         "LOCATION": SITEMAPS_ROOT,
     },
 }
