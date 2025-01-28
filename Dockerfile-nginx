@@ -7,9 +7,13 @@
 # Commands to build and push:
 #
 # docker buildx create --use
-# docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/rnacentral/nginx:1.25-alpine -f Dockerfile-nginx --push .
+# docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/rnacentral/nginx:1.27-alpine -f Dockerfile-nginx --push .
+#
+# Using a custom Nginx file to apply rate limiting. To find out more, see:
+# https://blog.nginx.org/blog/rate-limiting-nginx
 #
 #-------------------------------------------------------------------------------
-FROM nginx:1.25-alpine
+FROM nginx:1.27-alpine
 RUN rm /etc/nginx/conf.d/default.conf
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
 WORKDIR /srv/rnacentral/static
