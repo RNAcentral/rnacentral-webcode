@@ -1,8 +1,10 @@
+from django.http import HttpRequest
+
+
 class ClientIPFilter:
     def filter(self, record):
-        # Attempt to add the client IP to the log record
         request = getattr(record, "request", None)
-        if request:
+        if isinstance(request, HttpRequest):
             x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
             record.client_ip = (
                 x_forwarded_for.split(",")[0]
