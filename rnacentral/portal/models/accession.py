@@ -160,7 +160,7 @@ class Accession(models.Model):
         from .ensembl_assembly import EnsemblAssembly
         from .xref import Xref
 
-        if "ENSEMBL" not in self.database:
+        if not self.species or "ENSEMBL" not in self.database:
             return ""
         if self.species == "Dictyostelium discoideum":
             species = "Dictyostelium discoideum AX4"
