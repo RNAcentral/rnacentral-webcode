@@ -33,7 +33,7 @@ rjsmin==1.2.1
 django-cachalot==2.7.0
 
 # AWS SDK for Python
-boto3==1.35.83
+boto3==1.36.15
 
 # drf-spectacular for OpenAPI schema generation
 drf_spectacular==0.28.0
