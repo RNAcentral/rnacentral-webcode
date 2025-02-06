@@ -703,7 +703,7 @@ class Xref(models.Model):
     def get_gencode_ensembl_url(self):
         """Get Ensembl URL for GENCODE transcripts."""
         ensembl_transcript_id = self.get_gencode_transcript_id()
-        if ensembl_transcript_id:
+        if ensembl_transcript_id and self.accession.species:
             url = (
                 "http://ensembl.org/{species}/Transcript/Summary?db=core;t={id}".format(
                     id=ensembl_transcript_id,
