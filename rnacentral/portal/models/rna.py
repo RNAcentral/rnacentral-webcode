@@ -13,7 +13,6 @@ limitations under the License.
 
 import itertools as it
 import operator as op
-import re
 import zlib
 from collections import Counter, defaultdict
 
@@ -606,8 +605,9 @@ class Rna(models.Model):
         s3_file = "prod/" + upi_path + self.pk + ".svg.gz"
         s3_obj = s3.Object(settings.S3_SERVER["BUCKET"], s3_file)
         try:
-            svg = zlib.decompress(s3_obj.get()["Body"].read(), zlib.MAX_WBITS | 32)
-            svg = svg.replace(b"rgb(255, 0, 0)", b"rgb(255,0,255)")
+            with s3_obj.get()["Body"] as s3_body:
+                svg = zlib.decompress(s3_body.read(), zlib.MAX_WBITS | 32)
+                svg = svg.replace(b"rgb(255, 0, 0)", b"rgb(255,0,255)")
         except s3.meta.client.exceptions.NoSuchKey:
             svg = None
 

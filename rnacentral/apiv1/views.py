@@ -520,7 +520,8 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
         s3_file = "prod/" + upi_path + self.kwargs["pk"] + ".svg.gz"
         s3_obj = s3.Object(settings.S3_SERVER["BUCKET"], s3_file)
         try:
-            s3_svg = zlib.decompress(s3_obj.get()["Body"].read(), zlib.MAX_WBITS | 32)
+            with s3_obj.get()["Body"] as s3_body:
+                s3_svg = zlib.decompress(s3_body.read(), zlib.MAX_WBITS | 32)
         except s3.meta.client.exceptions.NoSuchKey:
             return Response(status=status.HTTP_404_NOT_FOUND)
 
