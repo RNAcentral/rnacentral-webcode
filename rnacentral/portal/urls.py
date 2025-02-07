@@ -16,29 +16,33 @@ import os
 from django.conf import settings
 from django.http import FileResponse, Http404
 from django.urls import re_path
+from django.views.decorators.cache import cache_page
 from django.views.generic import RedirectView, TemplateView
 from portal import views
 from portal.models import EnsemblAssembly
 
+CACHE_TIMEOUT = 60 * 60 * 24 * 7
+
+
 urlpatterns = [
     # homepage
-    re_path(r"^$", views.homepage, name="homepage"),
+    re_path(r"^$", cache_page(CACHE_TIMEOUT)(views.homepage), name="homepage"),
     # unique RNA sequence
     re_path(
         r"^rna/(?P<upi>URS[0-9A-F]{10})/?$",
-        views.generic_rna_view,
+        cache_page(CACHE_TIMEOUT)(views.generic_rna_view),
         name="generic-rna-sequence",
     ),
     # species specific identifier with forward slash
     re_path(
         r"^rna/(?P<upi>URS[0-9A-F]{10})/(?P<taxid>\d+)/?$",
-        views.rna_view,
+        cache_page(CACHE_TIMEOUT)(views.rna_view),
         name="unique-rna-sequence",
     ),
     # species specific identifier with underscore
     re_path(
         r"^rna/(?P<upi>URS[0-9A-F]{10})_(?P<taxid>\d+)/?$",
-        views.rna_view_redirect,
+        cache_page(CACHE_TIMEOUT)(views.rna_view_redirect),
         name="unique-rna-sequence-redirect",
     ),
     # expert database
