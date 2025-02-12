@@ -380,15 +380,17 @@ def expert_database_view(request, expert_db_name):
 @never_cache
 def website_status_view(request):
     """
-    This view will be monitored by Nagios for the presence
-    of string "All systems operational".
+    This view will be used by Traffic Manager to check for the presence of the
+    text "All systems operational". Traffic will be redirected to the HX
+    cluster if this function returns a problem. For more information, see the
+    vtm-terraform-config project on GitLab (monitors.tf file).
     """
 
     def _is_database_up():
         try:
-            rna = Rna.objects.all()[0]
+            Database.objects.get(id=1)
             return True
-        except:
+        except Database.DoesNotExist:
             return False
 
     def _is_api_up():
