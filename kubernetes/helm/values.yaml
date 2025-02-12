@@ -1,11 +1,11 @@
 # The HH cluster has 8 workers. Each k8s worker comes with 8 cores and 32GB of RAM.
 # The resources of this cluster will be divided as follows:
-# - Public website (requires 82GB of RAM)
-# - Test website (requires 12GB of RAM)
+# - Public website (requires 36GB to 52GB of RAM)
+# - Test website (requires 8GB of RAM)
 # - Export app (requires 30GB of RAM)
 # - Rfam batch search (requires 10GB of RAM)
 #
-# Using 134GB of RAM out of a total of 256GB
+# Using up to 100GB of RAM out of a total of 256GB
 
 # Database
 database: db-hh
@@ -30,10 +30,10 @@ setEnv: "prod"
 # This link explains a little more: https://github.com/helm/charts/issues/11773
 memcachedPort: 11211
 memcachedReplicas: 1
-memcachedRequestsMemory: "8000Mi"
+memcachedRequestsMemory: "16000Mi"
 memcachedRequestsCPU: "1000m"
-memcachedLimitsMemory: "8000Mi"
-memcachedServiceMemory: "6000"
+memcachedLimitsMemory: "16000Mi"
+memcachedServiceMemory: "14000"
 
 # Nginx
 nginxPort: 8000
@@ -47,6 +47,6 @@ nginxLimitsMemory: "2000Mi"
 rnacentralBranch: master
 rnacentralPort: 8000
 rnacentralReplicas: 8
-rnacentralRequestsMemory: "4000Mi"
+rnacentralRequestsMemory: "2000Mi"
 rnacentralRequestsCPU: "1000m"
-rnacentralLimitsMemory: "4000Mi"
+rnacentralLimitsMemory: "2000Mi"
