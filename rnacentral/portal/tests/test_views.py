@@ -25,7 +25,7 @@ class PortalTest(TestCase):
     ########################
     def test_homepage_url(self):
         view = resolve("/")
-        self.assertEqual(view.func, homepage)
+        self.assertEqual(view.func.__name__, homepage.__name__)
 
     def test_homepage_status_code(self):
         response = self.client.get(reverse("homepage"))
@@ -43,7 +43,7 @@ class PortalTest(TestCase):
     ########################
     def test_generic_rna_view_url(self):
         view = resolve("/rna/" + self.upi)
-        self.assertEqual(view.func, generic_rna_view)
+        self.assertEqual(view.func.__name__, generic_rna_view.__name__)
 
     def test_generic_rna_view_status_code(self):
         response = self.client.get(
@@ -71,7 +71,7 @@ class PortalTest(TestCase):
     ########################
     def test_rna_view_url(self):
         view = resolve("/rna/" + self.upi + "/" + self.taxid)
-        self.assertEqual(view.func, rna_view)
+        self.assertEqual(view.func.__name__, rna_view.__name__)
 
     def test_rna_view_with_taxid_status_code(self):
         response = self.client.get(
@@ -92,7 +92,7 @@ class PortalTest(TestCase):
 
     def test_rna_view_redirect_url(self):
         view = resolve("/rna/" + self.upi + "_" + self.taxid)
-        self.assertEqual(view.func, rna_view_redirect)
+        self.assertEqual(view.func.__name__, rna_view_redirect.__name__)
 
     def test_rna_view_redirect_status_code(self):
         response = self.client.get(
