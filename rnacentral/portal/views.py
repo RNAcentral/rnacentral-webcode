@@ -31,7 +31,7 @@ from django.http import Http404, HttpResponse, HttpResponseForbidden
 from django.shortcuts import redirect, render
 from django.template import TemplateDoesNotExist
 from django.template.loader import render_to_string
-from django.views.decorators.cache import cache_page, never_cache
+from django.views.decorators.cache import cache_control, cache_page, never_cache
 from django.views.generic.base import TemplateView
 from portal.config.expert_databases import expert_dbs
 from portal.config.go_dataset import go_set
@@ -78,7 +78,8 @@ def get_sequence_lineage(request, upi):
     return HttpResponse(json_lineage_tree, content_type="application/json")
 
 
-@cache_page(1)
+@cache_page(CACHE_TIMEOUT)
+@cache_control(max_age=0)
 def homepage(request):
     """RNAcentral homepage."""
     random.shuffle(examples)
