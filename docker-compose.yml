@@ -46,7 +46,7 @@ services:
     image: memcached:1.6.7-alpine
     ports:
       - 11211:11211
-    command: memcached -m 512m
+    command: memcached -I 5m -m 512m
     depends_on:
       - rnacentral
     networks:

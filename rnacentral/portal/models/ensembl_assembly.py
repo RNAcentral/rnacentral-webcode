@@ -11,11 +11,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from caching.base import CachingManager, CachingMixin
 from django.db import models
 
 
-class EnsemblAssembly(CachingMixin, models.Model):
+class EnsemblAssembly(models.Model):
     assembly_id = models.CharField(primary_key=True, max_length=255)
     assembly_full_name = models.CharField(max_length=255, db_index=True)
     gca_accession = models.CharField(max_length=20, db_index=True, null=True)
@@ -29,8 +28,6 @@ class EnsemblAssembly(CachingMixin, models.Model):
     example_start = models.IntegerField(null=True)
     example_end = models.IntegerField(null=True)
     selected_genome = models.BooleanField(default=False)
-
-    objects = CachingManager()
 
     def get_human_readable_ensembl_url(self):
         return self.ensembl_url.replace("_", " ").capitalize()

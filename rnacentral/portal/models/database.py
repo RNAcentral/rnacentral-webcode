@@ -11,14 +11,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from caching.base import CachingManager, CachingMixin
 from django.db import models
 from django.urls import reverse
 from django.utils.functional import cached_property
 from portal.config.expert_databases import expert_dbs as rnacentral_expert_dbs
 
 
-class Database(CachingMixin, models.Model):
+class Database(models.Model):
     timestamp = models.DateField()
     userstamp = models.CharField(max_length=30)
     descr = models.CharField(max_length=30)
@@ -34,8 +33,6 @@ class Database(CachingMixin, models.Model):
     max_length = models.IntegerField()
     num_sequences = models.IntegerField()
     num_organisms = models.IntegerField()
-
-    objects = CachingManager()
 
     class Meta:
         db_table = "rnc_database"

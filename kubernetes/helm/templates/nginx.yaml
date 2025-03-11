@@ -27,8 +27,8 @@ data:
     server {
         listen {{ .Values.nginxTargetPort }};
         root /srv/rnacentral/static/;
-        access_log stdout;
-        error_log  stderr;
+        access_log /dev/stdout;
+        error_log /dev/stderr;
 
         if ($http_user_agent ~* (Ahrefs|Amazonbot|MJ12bot|Semrush|Yandex|facebookexternal|developers\.facebook\.com)) {
             return 403;
@@ -46,9 +46,9 @@ data:
             proxy_set_header Host $host;
             proxy_redirect off;
 
-            proxy_read_timeout 120;
-            proxy_send_timeout 120;
-            proxy_connect_timeout 120;
+            proxy_read_timeout 120s;
+            proxy_send_timeout 120s;
+            proxy_connect_timeout 120s;
         }
 
         error_page 500 502 503 504 /error/;

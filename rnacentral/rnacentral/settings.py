@@ -40,7 +40,6 @@ DATABASES = {
         "PORT": os.getenv("DB_PORT", 5432),
     }
 }
-CONN_MAX_AGE = 300
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
@@ -187,6 +186,7 @@ INSTALLED_APPS = (
     "compressor",
     "markdown_deux",
     "drf_spectacular",
+    "cachalot",
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
@@ -203,9 +203,14 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "standard": {
-            "format": "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",  # pylint: disable=W0401, C0301
+            "format": "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s (IP: %(client_ip)s)",
             "datefmt": "%d/%b/%Y %H:%M:%S",
         }
+    },
+    "filters": {
+        "client_ip": {
+            "()": "rnacentral.utils.logging_filters.ClientIPFilter",
+        },
     },
     "handlers": {
         "null": {
@@ -216,6 +221,7 @@ LOGGING = {
             "level": "INFO",
             "class": "logging.StreamHandler",  # writes to stderr
             "formatter": "standard",
+            "filters": ["client_ip"],
         },
     },
     "loggers": {
@@ -258,7 +264,7 @@ REST_FRAMEWORK = {
         "apiv1.rest_framework_override.throttling.SafeCacheKeyAnonRateThrottle",
         "apiv1.rest_framework_override.throttling.SafeCacheKeyUserRateThrottle",
     ),
-    "DEFAULT_THROTTLE_RATES": {"anon": "200/second", "user": "400/second"},
+    "DEFAULT_THROTTLE_RATES": {"anon": "20/second", "user": "40/second"},
     # Filtering
     "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",),
     # renderers
@@ -306,11 +312,11 @@ MAINTENANCE_MODE = False
 # Memcached caching for django-cache-machine
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+        "BACKEND": "rnacentral.utils.cache.CustomPyMemcacheCache",
         "LOCATION": "localhost:11211",
     },
     "sitemaps": {
-        "BACKEND": "rnacentral.utils.cache.SitemapsCache",
+        "BACKEND": "django.core.cache.backends.filebased.FileBasedCache",
         "LOCATION": SITEMAPS_ROOT,
     },
 }
@@ -357,6 +363,8 @@ COMPRESS_FILTERS = {
     ],
 }
 
+# Recognize the real IP from X-Forwarded-For
+USE_X_FORWARDED_HOST = True
 
 # Use a simplified runner to prevent any modifications to the database.
 TEST_RUNNER = "portal.tests.test_runner.FixedRunner"

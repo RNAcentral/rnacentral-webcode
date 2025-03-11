@@ -13,14 +13,12 @@ limitations under the License.
 
 import itertools as it
 import operator as op
-import re
 import zlib
 from collections import Counter, defaultdict
 
 import boto3
 import requests
 import six
-from caching.base import CachingManager, CachingMixin
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import connection, models
@@ -46,7 +44,7 @@ def dictfetchall(cursor):
     return [dict(zip(columns, row)) for row in cursor.fetchall()]
 
 
-class Rna(CachingMixin, models.Model):
+class Rna(models.Model):
     id = models.IntegerField(db_column="id")
     upi = models.CharField(max_length=13, db_index=True, primary_key=True)
     timestamp = models.DateField()
@@ -56,8 +54,6 @@ class Rna(CachingMixin, models.Model):
     seq_short = models.CharField(max_length=4000)
     seq_long = models.TextField()
     md5 = models.CharField(max_length=32, unique=True, db_index=True)
-
-    objects = CachingManager()
 
     class Meta:
         db_table = "rna"
@@ -402,7 +398,7 @@ class Rna(CachingMixin, models.Model):
             The collection of xrefs that are valid for the sequence and taxid.
         """
 
-        base = Xref.default_objects.filter(upi=self.upi)
+        base = Xref.objects.filter(upi=self.upi)
         xrefs = base.filter(deleted="N")
         if taxid is not None:
             xrefs = xrefs.filter(taxid=taxid)
@@ -547,7 +543,7 @@ class Rna(CachingMixin, models.Model):
         Get secondary structures associated with a sequence.
         """
 
-        queryset = Xref.default_objects.select_related(
+        queryset = Xref.objects.select_related(
             "db", "accession", "accession__secondary_structure"
         ).filter(upi=self.upi, deleted="N")
 
@@ -609,8 +605,9 @@ class Rna(CachingMixin, models.Model):
         s3_file = "prod/" + upi_path + self.pk + ".svg.gz"
         s3_obj = s3.Object(settings.S3_SERVER["BUCKET"], s3_file)
         try:
-            svg = zlib.decompress(s3_obj.get()["Body"].read(), zlib.MAX_WBITS | 32)
-            svg = svg.replace(b"rgb(255, 0, 0)", b"rgb(255,0,255)")
+            with s3_obj.get()["Body"] as s3_body:
+                svg = zlib.decompress(s3_body.read(), zlib.MAX_WBITS | 32)
+                svg = svg.replace(b"rgb(255, 0, 0)", b"rgb(255,0,255)")
         except s3.meta.client.exceptions.NoSuchKey:
             svg = None
 

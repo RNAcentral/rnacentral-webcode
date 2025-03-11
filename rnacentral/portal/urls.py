@@ -14,92 +14,96 @@ limitations under the License.
 import os
 
 from django.conf import settings
-from django.conf.urls import url
 from django.http import FileResponse, Http404
+from django.urls import re_path
 from django.views.generic import RedirectView, TemplateView
 from portal import views
 from portal.models import EnsemblAssembly
 
 urlpatterns = [
     # homepage
-    url(r"^$", views.homepage, name="homepage"),
+    re_path(r"^$", views.homepage, name="homepage"),
     # unique RNA sequence
-    url(
+    re_path(
         r"^rna/(?P<upi>URS[0-9A-F]{10})/?$",
         views.generic_rna_view,
         name="generic-rna-sequence",
     ),
     # species specific identifier with forward slash
-    url(
+    re_path(
         r"^rna/(?P<upi>URS[0-9A-F]{10})/(?P<taxid>\d+)/?$",
         views.rna_view,
         name="unique-rna-sequence",
     ),
     # species specific identifier with underscore
-    url(
+    re_path(
         r"^rna/(?P<upi>URS[0-9A-F]{10})_(?P<taxid>\d+)/?$",
         views.rna_view_redirect,
         name="unique-rna-sequence-redirect",
     ),
     # expert database
-    url(
+    re_path(
         r"^expert-database/(?P<expert_db_name>[-\w]+)/?$",
         views.expert_database_view,
         name="expert-database",
     ),
     # expert databases
-    url(r"^expert-databases/?$", views.expert_databases_view, name="expert-databases"),
+    re_path(
+        r"^expert-databases/?$", views.expert_databases_view, name="expert-databases"
+    ),
     # text search can route to any page because it will be taken over by Angular
-    url(
+    re_path(
         r"^search/?$",
         views.TemplateView.as_view(template_name="portal/base.html"),
         name="text-search",
     ),
     # coming soon
-    url(r"^(?P<page>coming-soon)/?$", views.StaticView.as_view(), name="coming-soon"),
+    re_path(
+        r"^(?P<page>coming-soon)/?$", views.StaticView.as_view(), name="coming-soon"
+    ),
     # downloads
-    url(
+    re_path(
         r"^downloads/?$",
         views.StaticView.as_view(),
         {"page": "downloads"},
         name="downloads",
     ),
     # external link
-    url(
+    re_path(
         r"^link/(?P<expert_db>[-\w]+)\:(?P<external_id>.+?)/?$",
         views.external_link,
         name="external-link",
     ),
     # help centre
-    url(r"^help/?$", views.StaticView.as_view(), {"page": "help/faq"}, name="help"),
-    url(
+    re_path(r"^help/?$", views.StaticView.as_view(), {"page": "help/faq"}, name="help"),
+    re_path(
         r"^help/browser-compatibility/?$",
         views.StaticView.as_view(),
         {"page": "help/browser-compatibility"},
         name="help-browser-compatibility",
     ),
-    url(
+    re_path(
         r"^help/text-search/?$",
         views.StaticView.as_view(),
         {"page": "help/text-search"},
         name="help-text-search",
     ),
-    url(
+    re_path(
         r"^help/qc/?$", views.StaticView.as_view(), {"page": "help/qc"}, name="help-qc"
     ),
-    url(
+    re_path(
         r"^help/rna-target-interactions/?$",
         views.StaticView.as_view(),
         {"page": "help/rna-target-interactions"},
         name="help-rna-target-interactions",
     ),
-    url(
+    re_path(
         r"^help/gene-ontology-annotations/?$",
         views.StaticView.as_view(),
         {"page": "help/gene-ontology-annotations"},
         name="help-gene-ontology-annotations",
     ),
-    url(
+    re_path(
         r"^help/genomic-mapping/?$",
         views.StaticView.as_view(),
         {
@@ -110,126 +114,126 @@ urlpatterns = [
         },
         name="help-genomic-mapping",
     ),
-    url(
+    re_path(
         r"^help/link-to-rnacentral/?$",
         views.StaticView.as_view(),
         {"page": "help/link-to-rnacentral"},
         name="linking-to-rnacentral",
     ),
-    url(
+    re_path(
         r"^help/sequence-features/?$",
         views.StaticView.as_view(),
         {"page": "help/sequence-features"},
         name="help-sequence-features",
     ),
-    url(
+    re_path(
         r"^help/public-database/?$",
         views.StaticView.as_view(),
         {"page": "help/public-database"},
         name="help-public-database",
     ),
-    url(
+    re_path(
         r"^help/ftp/?$",
         views.StaticView.as_view(),
         {"page": "help/ftp"},
         name="help-ftp",
     ),
-    url(
+    re_path(
         r"^help/scientific-advisory-board/?$",
         views.StaticView.as_view(),
         {"page": "help/sab"},
         name="help-scientific-advisory-board",
     ),
-    url(
+    re_path(
         r"^help/secondary-structure/?$",
         views.StaticView.as_view(),
         {"page": "help/secondary-structure"},
         name="help-secondary-structure",
     ),
-    url(
+    re_path(
         r"^help/sequence-search/?$",
         views.StaticView.as_view(),
         {"page": "help/sequence-search-help"},
         name="help-sequence-search",
     ),
-    url(
+    re_path(
         r"^help/galaxy/?$",
         views.StaticView.as_view(),
         {"page": "help/galaxy"},
         name="help-galaxy",
     ),
-    url(
+    re_path(
         r"^help/litscan/?$",
         views.litscan_view,
         name="help-litscan",
     ),
-    url(
+    re_path(
         r"^help/litsumm/?$",
         views.StaticView.as_view(),
         {"page": "help/litsumm"},
         name="help-litsumm",
     ),
-    url(
+    re_path(
         r"^help/litsumm/manuscript?$",
         RedirectView.as_view(url="https://arxiv.org/abs/2311.03056"),
         name="litsumm-manuscript",
     ),
     # training
-    url(
+    re_path(
         r"^training/?$",
         views.StaticView.as_view(),
         {"page": "training"},
         name="training",
     ),
     # about us
-    url(
+    re_path(
         r"^about-us/?$",
         views.StaticView.as_view(),
         {"page": "about", "blog_url": settings.RELEASE_ANNOUNCEMENT_URL},
         name="about",
     ),
     # use cases
-    url(
+    re_path(
         r"^use-cases/?$",
         views.StaticView.as_view(),
         {"page": "use-cases"},
         name="use-cases",
     ),
     # API documentation
-    url(
+    re_path(
         r"^api/?$", views.StaticView.as_view(), {"page": "help/api-v1"}, name="api-docs"
     ),
     # contact us
-    url(
+    re_path(
         r"^contact/?$",
         TemplateView.as_view(template_name="portal/contact.html"),
         name="contact-us",
     ),
     # contact us success
-    url(
+    re_path(
         r"^thanks/?$",
         views.StaticView.as_view(),
         {"page": "thanks"},
         name="contact-us-success",
     ),
     # error
-    url(r"^error/?$", views.StaticView.as_view(), {"page": "error"}, name="error"),
+    re_path(r"^error/?$", views.StaticView.as_view(), {"page": "error"}, name="error"),
     # status
-    url(r"^status/?$", views.website_status_view, name="website-status"),
+    re_path(r"^status/?$", views.website_status_view, name="website-status"),
     # genome browser
-    url(
+    re_path(
         r"^genome-browser/?$",
         TemplateView.as_view(template_name="portal/genome-browser.html"),
         name="genome-browser",
     ),
     # proxy for ebeye search and rfam images
-    url(r"^api/internal/proxy/?$", views.proxy, name="proxy"),
+    re_path(r"^api/internal/proxy/?$", views.proxy, name="proxy"),
     # r2dt-web
-    url(
+    re_path(
         r"^r2dt/?$", TemplateView.as_view(template_name="portal/r2dt.html"), name="r2dt"
     ),
     # license
-    url(
+    re_path(
         r"^license/?$", views.StaticView.as_view(), {"page": "license"}, name="license"
     ),
 ]
@@ -237,7 +241,7 @@ urlpatterns = [
 # internal API
 urlpatterns += [
     # get species tree
-    url(
+    re_path(
         r"^rna/(?P<upi>\w+)/lineage/?$",
         views.get_sequence_lineage,
         name="sequence-lineage",
@@ -259,4 +263,4 @@ def sitemaps(request, section):
         raise Http404
 
 
-urlpatterns += [url(r"^sitemap(?P<section>.*)\.xml$", sitemaps, name="sitemap")]
+urlpatterns += [re_path(r"^sitemap(?P<section>.*)\.xml$", sitemaps, name="sitemap")]

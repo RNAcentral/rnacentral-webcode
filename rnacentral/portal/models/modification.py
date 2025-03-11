@@ -11,11 +11,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from caching.base import CachingManager, CachingMixin
 from django.db import models
 
 
-class Modification(CachingMixin, models.Model):
+class Modification(models.Model):
     """Describe modified nucleotides at certain sequence positions reported in xrefs."""
 
     id = models.AutoField(primary_key=True)
@@ -36,8 +35,6 @@ class Modification(CachingMixin, models.Model):
     modification_id = models.ForeignKey(
         "ChemicalComponent", db_column="modification_id", on_delete=models.CASCADE
     )
-
-    objects = CachingManager()
 
     class Meta:
         db_table = "rnc_modifications"

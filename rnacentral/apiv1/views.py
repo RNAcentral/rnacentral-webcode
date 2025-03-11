@@ -76,6 +76,7 @@ from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
+from rest_framework.throttling import AnonRateThrottle, UserRateThrottle
 from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet, ReadOnlyModelViewSet
 from rest_framework_jsonp.renderers import JSONPRenderer
@@ -380,8 +381,9 @@ class RnaSpeciesSpecificView(APIView):
         search_index = settings.EBI_SEARCH_ENDPOINT
         try:
             response = requests.get(
-                f"{search_index}/entry/{urs}?format=json&fields=gene"
+                f"{search_index}/entry/{urs}?format=json&fields=gene", timeout=3
             )
+            response.raise_for_status()
             data = json.loads(response.text)
             gene = data["entries"][0]["fields"]["gene"]
         except Exception:
@@ -470,6 +472,15 @@ class SecondaryStructureSpeciesSpecificList(generics.ListAPIView):
 
     queryset = Rna.objects.all()
 
+    def get_throttles(self):
+        class CustomAnonRateThrottle(AnonRateThrottle):
+            rate = "180/minute"
+
+        class CustomUserRateThrottle(UserRateThrottle):
+            rate = "300/minute"
+
+        return [CustomAnonRateThrottle(), CustomUserRateThrottle()]
+
     def get(self, request, pk=None, taxid=None, format=None):
         """Get a list of secondary structures"""
         rna = self.get_object()
@@ -509,7 +520,8 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
         s3_file = "prod/" + upi_path + self.kwargs["pk"] + ".svg.gz"
         s3_obj = s3.Object(settings.S3_SERVER["BUCKET"], s3_file)
         try:
-            s3_svg = zlib.decompress(s3_obj.get()["Body"].read(), zlib.MAX_WBITS | 32)
+            with s3_obj.get()["Body"] as s3_body:
+                s3_svg = zlib.decompress(s3_body.read(), zlib.MAX_WBITS | 32)
         except s3.meta.client.exceptions.NoSuchKey:
             return Response(status=status.HTTP_404_NOT_FOUND)
 

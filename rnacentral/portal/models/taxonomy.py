@@ -11,11 +11,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from caching.base import CachingManager, CachingMixin
 from django.db import models
 
 
-class Taxonomy(CachingMixin, models.Model):
+class Taxonomy(models.Model):
     id = models.IntegerField(primary_key=True)
     name = models.TextField()
     lineage = models.TextField()
@@ -25,8 +24,6 @@ class Taxonomy(CachingMixin, models.Model):
     )
     common_name = models.TextField()
     is_deleted = models.BooleanField()
-
-    objects = CachingManager()
 
     class Meta:
         db_table = "rnc_taxonomy"

@@ -13,7 +13,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from django.contrib.postgres.fields import JSONField
 from django.db import models
 
 
@@ -63,7 +62,7 @@ class GoAnnotation(models.Model):
         on_delete=models.CASCADE,
     )
     assigned_by = models.CharField(max_length=50)
-    extensions = JSONField()
+    extensions = models.JSONField()
 
     class Meta:
         db_table = "go_term_annotations"

@@ -13,12 +13,12 @@ limitations under the License.
 
 from __future__ import absolute_import
 
-from django.conf.urls import url
+from django.urls import re_path
 from django.views.generic.base import TemplateView
 
 urlpatterns = [
     # view export results
-    url(
+    re_path(
         r"^results/?$",
         TemplateView.as_view(template_name="portal/search/export-job-results.html"),
         name="export-job-results",

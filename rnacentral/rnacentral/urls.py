@@ -13,24 +13,24 @@ limitations under the License.
 
 import os
 
-from django.conf.urls import include, url
+from django.urls import include, re_path
 from django.views.generic import TemplateView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 
 urlpatterns = [
     # RNAcentral portal
-    url(r"", include("portal.urls")),
+    re_path(r"", include("portal.urls")),
     # REST API (use trailing slashes)
-    url(r"^api/current/", include("apiv1.urls")),
-    url(r"^api/v1/", include("apiv1.urls")),
+    re_path(r"^api/current/", include("apiv1.urls")),
+    re_path(r"^api/v1/", include("apiv1.urls")),
     # export text search results
-    url(r"^export/", include("export.urls")),
+    re_path(r"^export/", include("export.urls")),
     # new sequence search
-    url(r"^sequence-search/", include("sequence_search.urls")),
+    re_path(r"^sequence-search/", include("sequence_search.urls")),
     # Django Debug Toolbar
     # OpenAPI schema
-    url(r"^api/schema/$", SpectacularAPIView.as_view(), name="schema"),
-    url(
+    re_path(r"^api/schema/$", SpectacularAPIView.as_view(), name="schema"),
+    re_path(
         r"^api/schema/swagger-ui/$",
         SpectacularSwaggerView.as_view(url_name="schema"),
         name="swagger-ui",
@@ -41,7 +41,7 @@ urlpatterns = [
 # use the RNACENTRAL_ENV variable to set the correct robots.txt file
 if "dev" in os.environ.get("RNACENTRAL_ENV", ""):
     additional_settings = [
-        url(
+        re_path(
             r"^robots\.txt$",
             TemplateView.as_view(
                 template_name="robots-test.txt", content_type="text/plain"
@@ -50,7 +50,7 @@ if "dev" in os.environ.get("RNACENTRAL_ENV", ""):
     ]
 else:
     additional_settings = [
-        url(
+        re_path(
             r"^robots\.txt$",
             TemplateView.as_view(template_name="robots.txt", content_type="text/plain"),
         ),

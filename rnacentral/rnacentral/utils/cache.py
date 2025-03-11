@@ -1,5 +1,5 @@
 """
-Copyright [2009-2017] EMBL-European Bioinformatics Institute
+Copyright [2009-present] EMBL-European Bioinformatics Institute
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -10,11 +10,11 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-"File-based cache backend"
 import errno
 import glob
 import io
 import os
+import pickle
 import random
 import re
 import tempfile
@@ -22,16 +22,33 @@ import time
 import zlib
 
 from django.core.cache.backends.base import DEFAULT_TIMEOUT, BaseCache
+from django.core.cache.backends.memcached import PyMemcacheCache
 from django.core.files.move import file_move_safe
 
-try:
-    from django.utils.six.moves import cPickle as pickle
-except ImportError:
-    import pickle
+
+class CustomPyMemcacheCache(PyMemcacheCache):
+    """
+    This class is being used to avoid this type of error:
+    pymemcache.exceptions.MemcacheServerError: b'object too large for cache'
+    """
+
+    def __init__(self, *args, **kwargs):
+        self.max_cache_size = 1024 * 1024 * 5  # set the maximum size (5MB)
+        super().__init__(*args, **kwargs)
+
+    def set(self, key, value, timeout=None, version=None):
+        value_size = len(pickle.dumps(value))
+
+        if value_size > self.max_cache_size:
+            return False  # do not cache
+        return super().set(key, value, timeout, version)
 
 
-# TODO: when migrate to a newer version of django, don't forget to copy-paste newer version of SitemapsCache code here
 class SitemapsCache(BaseCache):
+    """
+    This class is required to generate sitemaps
+    """
+
     cache_suffix = ".djcache"
 
     def __init__(self, dir, params):

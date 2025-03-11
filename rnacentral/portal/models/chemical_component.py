@@ -11,11 +11,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from caching.base import CachingManager, CachingMixin
 from django.db import models
 
 
-class ChemicalComponent(CachingMixin, models.Model):
+class ChemicalComponent(models.Model):
     """List of all possible nucleotide modifications."""
 
     id = models.CharField(max_length=8, primary_key=True)
@@ -26,8 +25,6 @@ class ChemicalComponent(CachingMixin, models.Model):
     )  # Chemical Component Dictionary id
     source = models.CharField(max_length=10, default="")  # Modomics, PDBe, others
     modomics_short_name = models.CharField(max_length=20, default="")  # m2A for 2A
-
-    objects = CachingManager()
 
     class Meta:
         db_table = "rnc_chemical_components"

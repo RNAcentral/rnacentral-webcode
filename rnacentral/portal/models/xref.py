@@ -13,7 +13,6 @@ limitations under the License.
 
 import re
 
-from caching.base import CachingManager, CachingMixin
 from django.db import models
 from rest_framework.renderers import JSONRenderer
 
@@ -426,7 +425,7 @@ class RawSqlXrefManager(models.Manager):
         return RawSqlQueryset(self.model, using=self._db)
 
 
-class Xref(CachingMixin, models.Model):
+class Xref(models.Model):
     id = models.AutoField(primary_key=True)
     db = models.ForeignKey(
         "Database", db_column="dbid", related_name="xrefs", on_delete=models.CASCADE
@@ -466,7 +465,6 @@ class Xref(CachingMixin, models.Model):
     taxid = models.IntegerField()
 
     objects = RawSqlXrefManager()
-    default_objects = CachingManager()
 
     class Meta:
         db_table = "xref"
@@ -705,7 +703,7 @@ class Xref(CachingMixin, models.Model):
     def get_gencode_ensembl_url(self):
         """Get Ensembl URL for GENCODE transcripts."""
         ensembl_transcript_id = self.get_gencode_transcript_id()
-        if ensembl_transcript_id:
+        if ensembl_transcript_id and self.accession.species:
             url = (
                 "http://ensembl.org/{species}/Transcript/Summary?db=core;t={id}".format(
                     id=ensembl_transcript_id,

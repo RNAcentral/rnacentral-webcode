@@ -11,12 +11,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from caching.base import CachingManager, CachingMixin
 from django.db import models
 from portal.models.database import Database
 
 
-class Release(CachingMixin, models.Model):
+class Release(models.Model):
     db = models.ForeignKey(
         Database, db_column="dbid", related_name="db", on_delete=models.CASCADE
     )
@@ -27,8 +26,6 @@ class Release(CachingMixin, models.Model):
     userstamp = models.CharField(max_length=30)
     descr = models.TextField()
     force_load = models.CharField(max_length=1)
-
-    objects = CachingManager()
 
     def get_release_type(self):
         return "full" if self.release_type == "F" else "incremental"
