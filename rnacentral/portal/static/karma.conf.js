@@ -77,9 +77,6 @@ module.exports = function(config) {
       'js/components/expert-database/normalize-expert-db-name.service.js',
       'js/components/expert-database/normalize-expert-db-name.service.spec.js',
 
-      // // useCases module
-      // 'js/components/use-cases/use-cases.module.js',
-      //
       // // homepage module
       // 'js/components/homepage/homepage.module.js'
     ],

@@ -236,7 +236,7 @@ class PortalTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     ########################
-    # training, about-us, use-cases, api, contact, thanks, error
+    # training, about-us, api, contact, thanks, error
     ########################
     def test_training_status_code(self):
         response = self.client.get(reverse("training"))
@@ -244,10 +244,6 @@ class PortalTest(TestCase):
 
     def test_about_status_code(self):
         response = self.client.get(reverse("about"))
-        self.assertEqual(response.status_code, 200)
-
-    def test_use_cases_status_code(self):
-        response = self.client.get(reverse("use-cases"))
         self.assertEqual(response.status_code, 200)
 
     def test_api_docs_status_code(self):
