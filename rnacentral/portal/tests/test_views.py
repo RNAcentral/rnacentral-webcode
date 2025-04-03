@@ -235,6 +235,10 @@ class PortalTest(TestCase):
         response = self.client.get(reverse("help-galaxy"))
         self.assertEqual(response.status_code, 200)
 
+    def test_help_team_status_code(self):
+        response = self.client.get(reverse("help-team"))
+        self.assertEqual(response.status_code, 200)
+
     ########################
     # training, about-us, use-cases, api, contact, thanks, error
     ########################

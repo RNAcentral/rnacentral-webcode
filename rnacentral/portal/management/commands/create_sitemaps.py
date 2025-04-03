@@ -109,12 +109,13 @@ class Command(BaseCommand):
                         "help-secondary-structure",
                         "help-sequence-search",
                         "help-text-search",
+                        "help-team",
                         "help",
                         "homepage",
                         "license",
                         "linking-to-rnacentral",
                         "sequence-search",
-                        "training",
+                        "training"
                     ]
 
                 def location(self, item):
