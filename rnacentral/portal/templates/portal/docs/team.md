@@ -13,5 +13,5 @@ The [RNAcentral](/) database is curated and maintained at the [European Bioinfor
 
 ### Previous members
 
-- Anton Petrov - Project Leader
+- [Anton Petrov](https://antonpetrov.com/) - Project Leader 
 - Boris Burkov - Software Developer
