@@ -1,22 +1,15 @@
+#-------------------------------------------------------------------------------
+# To avoid rate limit issues with GitLab and DockerHub, push the CI-CD image to GHCR.
+# Current GHCR limit:
+# - 100 pulls per 6 hours per IP address for anonymous users.
+# - Unlimited pulls for users authenticated with a GitHub account and a valid PAT
+#
+# Commands to build and push:
+#
+# docker buildx create --use
+# docker buildx build --platform linux/amd64,linux/arm64 -t ghcr.io/rnacentral/ci-cd:3.20-alpine -f Dockerfile-CI-CD --push .
+#
+#-------------------------------------------------------------------------------
 # Build container with kubectl and helm to be used by GitLab CI/CD
 
-ARG BUILDPLATFORM
-FROM ${BUILDPLATFORM}alpine:3.20
-
-ARG TARGETOS
-ARG TARGETARCH
-
-# Use kubectl version v1.23.8 and helm version v3.16.1
-RUN apk -U upgrade \
-    && apk add --no-cache ca-certificates bash git openssh curl gettext jq \
-    && wget -q https://dl.k8s.io/release/v1.23.8/bin/${TARGETOS}/${TARGETARCH}/kubectl -O /usr/local/bin/kubectl \
-    && wget -q https://get.helm.sh/helm-v3.16.1-${TARGETOS}-${TARGETARCH}.tar.gz -O - | tar -xzO ${TARGETOS}-${TARGETARCH}/helm > /usr/local/bin/helm \
-    && chmod +x /usr/local/bin/helm /usr/local/bin/kubectl \
-    && mkdir /config \
-    && chmod g+rwx /config /root \
-    && kubectl version --client \
-    && helm version
-
-WORKDIR /config
-
-CMD bash
+FROM rna-central-ci-cd:3.20-alpine
