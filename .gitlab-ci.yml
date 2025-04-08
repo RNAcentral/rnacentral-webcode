@@ -74,7 +74,7 @@ fallback_prod_website:
 test_website:
   stage: deploy
   image:
-    name: rnacentral/rnacentral-ci-cd
+    name: ghcr.io/rnacentral/rna-central-ci-cd:3.20-alpine
   <<: [*deploy_steps, *variables_test]
   rules:
     - if: '$CI_PIPELINE_SOURCE == "push"'
