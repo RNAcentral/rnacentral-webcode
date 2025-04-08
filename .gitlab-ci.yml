@@ -101,7 +101,8 @@ manual_deployment_to_fallback:
 
 manual_deployment_to_test:
   stage: deploy
-  image: ghcr.io/rnacentral/rna-central-ci-cd:3.20-alpine
+  image: 
+    name: ghcr.io/rnacentral/rna-central-ci-cd:3.20-alpine
   <<: [*deploy_steps, *variables_test]
   rules:
     - if: '$CI_PIPELINE_SOURCE == "web" && $DEPLOY == "test"'
