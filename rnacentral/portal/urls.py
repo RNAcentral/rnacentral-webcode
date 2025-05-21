@@ -178,6 +178,12 @@ urlpatterns = [
         RedirectView.as_view(url="https://arxiv.org/abs/2311.03056"),
         name="litsumm-manuscript",
     ),
+    re_path(
+        r"^help/team/?$",
+        views.StaticView.as_view(),
+        {"page": "help/team"},
+        name="help-team",
+    ),
     # training
     re_path(
         r"^training/?$",
@@ -229,6 +235,7 @@ urlpatterns = [
     re_path(
         r"^license/?$", views.StaticView.as_view(), {"page": "license"}, name="license"
     ),
+
 ]
 
 # internal API

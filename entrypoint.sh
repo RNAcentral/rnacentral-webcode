@@ -65,13 +65,10 @@ else
 	chown -R rnacentral "${RNACENTRAL_HOME}"/rnacentral/rnacentral/local_settings.py
 fi
 
-# Run collectstatic only if static files are missing
-if [ -z "$(ls -A /srv/rnacentral/static)" ]; then
-    echo "INFO: Collecting static files..."
-    python "${RNACENTRAL_HOME}"/rnacentral/manage.py collectstatic --noinput
-else
-    echo "INFO: Static files already present, skipping collectstatic."
-fi
+
+echo "INFO: Collecting static files..."
+python "${RNACENTRAL_HOME}"/rnacentral/manage.py collectstatic --noinput
+
 
 # Run django compressor
 echo "INFO: Running django compress"
