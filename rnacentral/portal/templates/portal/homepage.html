@@ -217,65 +217,6 @@ RNAcentral: The non-coding RNA sequence database
 
   </div>
 
-  <div class="row well well-sm">
-    <h2 class="text-center" style="margin-top: 2px; margin-bottom: 2px;"><a href="/use-cases" class="rnacentral-gold">Featured use cases</a></h2>
-
-    <div class="col-md-4">
-      <div class="panel panel-default">
-        <h3 class="text-center"><a href="{% url 'use-cases' %}#{% verbatim %}{{ randomExamples[0].category }}{% endverbatim %}" class="rnacentral-gold">{% verbatim %}{{ randomExamples[0].category_header }}{% endverbatim %}</a></h3>
-        <div class="panel-body">
-          <p>
-            {% verbatim %}
-              <img ng-src="{{ randomExamples[0].image }}">
-              <h4>{{ randomExamples[0].caption }}</h4>
-            {% endverbatim %}
-            <blockquote>
-              <publication publication="randomExamples[0]"></publication>
-            </blockquote>
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-4">
-      <div class="panel panel-default">
-        <h3 class="text-center"><a href="{% url 'use-cases' %}#{% verbatim %}{{ randomExamples[1].category }}{% endverbatim %}" class="rnacentral-gold">{% verbatim %}{{ randomExamples[1].category_header }}{% endverbatim %}</a></h3>
-        <div class="panel-body">
-          <p>
-            {% verbatim %}
-              <img ng-src="{{ randomExamples[1].image }}" style="height: 120px; margin: auto; display: block;">
-              <h4>{{ randomExamples[1].caption }}</h4>
-            {% endverbatim %}
-            <blockquote>
-              <publication publication="randomExamples[1]"></publication>
-            </blockquote>
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-md-4">
-      <div class="panel panel-default">
-        <h3 class="text-center"><a href="{% url 'use-cases' %}#{% verbatim %}{{ randomExamples[2].category }}{% endverbatim %}" class="rnacentral-gold">{% verbatim %}{{ randomExamples[2].category_header }}{% endverbatim %}</a></h3>
-        <div class="panel-body">
-          <p>
-            {% verbatim %}
-              <img ng-src="{{ randomExamples[2].image }}" style="height: 150px; margin: auto; display: block;">
-              <h4>{{ randomExamples[2].caption }}</h4>
-            {% endverbatim %}
-          </p>
-          <blockquote>
-            <publication publication="randomExamples[2]"></publication>
-          </blockquote>
-        </div>
-      </div>
-    </div>
-
-    <div class="clearfix"></div>
-    <div class="text-center" style="margin-right: 10px; margin-bottom: 10px; font-size: large;"><a href="/use-cases">More use cases &rarr;</a></div>
-
-  </div>
-
 </div>
 {% endblock content %}
 

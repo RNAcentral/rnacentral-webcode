@@ -11,7 +11,6 @@ angular.module('rnacentralApp', [
     'rnaSequence',
     'textSearch',
     'expertDatabase',
-    'useCases',
     'homepage',
     'sequenceSearch'
 ])

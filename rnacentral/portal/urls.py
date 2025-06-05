@@ -198,13 +198,6 @@ urlpatterns = [
         {"page": "about", "blog_url": settings.RELEASE_ANNOUNCEMENT_URL},
         name="about",
     ),
-    # use cases
-    re_path(
-        r"^use-cases/?$",
-        views.StaticView.as_view(),
-        {"page": "use-cases"},
-        name="use-cases",
-    ),
     # API documentation
     re_path(
         r"^api/?$", views.StaticView.as_view(), {"page": "help/api-v1"}, name="api-docs"
