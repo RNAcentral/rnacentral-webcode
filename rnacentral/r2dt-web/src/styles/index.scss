@@ -1,0 +1,101 @@
+/* General */
+
+// used by RNAcentral
+body {
+  font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif;
+}
+
+.btn-icon {
+  vertical-align: 1px;
+}
+
+.custom-link {
+  text-decoration: none !important;
+  cursor: pointer;
+}
+
+.custom-link:hover {
+  text-decoration: underline !important
+}
+
+
+/* Search form */
+
+// div with sequence examples
+#examples ul{
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+#examples ul li {
+  display: inline;
+  padding-right: 10px;
+}
+
+
+/* Search results */
+
+.traveler-magenta {
+  background-color: rgb(255, 0, 255);
+}
+
+.traveler-green {
+  background-color: rgb(44, 162, 95);
+}
+
+.traveler-blue {
+  background-color: rgb(43, 140, 190);
+}
+
+.traveler-black {
+  background-color: rgb(0, 0, 0);
+}
+
+.traveler-key {
+  height: 20px;
+  width: 20px;
+  float: left;
+  margin-right: 8px;
+}
+
+.notation {
+  padding: 10px;
+  background-color: #f5f5f5;
+  white-space: pre-wrap;
+  max-height: 150px;
+}
+
+.notation-font {
+  font-family: monospace;
+}
+
+.beta::after {
+  content: "BETA";
+  vertical-align: top;
+  font-size: 12px;
+  background: yellow;
+  border-radius: 4px;
+  padding: 2px 4px;
+}
+
+/* Advanced search */
+
+// Close Button
+.rbt-aux {
+  align-items: center;
+  display: flex;
+  bottom: 0;
+  justify-content: center;
+  pointer-events: none;
+  /* Don't block clicks on the input */
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 34px;
+}
+
+.rbt-aux .rbt-close {
+  margin-top: -4px;
+  pointer-events: auto;
+}

@@ -48,6 +48,24 @@ RUN pip3 install --upgrade pip && pip3 install -r requirements.txt
 ADD rnacentral/portal/static/package.json rnacentral/portal/static/
 RUN cd rnacentral/portal/static && npm install --only=production
 
+# Copy r2dt-web component source files
+COPY rnacentral/r2dt-web $RNACENTRAL_HOME/rnacentral/r2dt-web
+
+# Build r2dt-web component
+RUN \
+    if [ -d "$RNACENTRAL_HOME/rnacentral/r2dt-web" ]; then \
+        cd $RNACENTRAL_HOME/rnacentral/r2dt-web && \
+        npm install && \
+        npm run build && \
+        # Create target directory in static files
+        mkdir -p $RNACENTRAL_HOME/rnacentral/portal/static/js/r2dt-web && \
+        # Copy built component to static files directory
+        cp dist/r2dt-web.js $RNACENTRAL_HOME/rnacentral/portal/static/js/r2dt-web/ && \
+        echo "r2dt-web component built and deployed successfully"; \
+    else \
+        echo "r2dt-web directory not found, skipping component build"; \
+    fi
+
 # Copy and chown all the files to the rnacentral user
 COPY rnacentral $RNACENTRAL_HOME/rnacentral
 RUN chown -R rnacentral:rnacentral /srv

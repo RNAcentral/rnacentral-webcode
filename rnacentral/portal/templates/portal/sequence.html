@@ -315,13 +315,15 @@ limitations under the License.
             {% if rna.has_secondary_structure %}
             <uib-tab index="2" id="secondary-structures" deselect="checkTab($event, $selectedIndex)" ng-if="taxid">
                 <uib-tab-heading>
-                  2D structure
+                  2D structure STATIC
                 </uib-tab-heading>
                 <r2dt-web
                         search='{"urs": "{{ context.upi }}"}'
                         customStyle='{"fixCss": "true", "titleColor": "#BF8E3E"}'
                 />
-                <script type="text/javascript" src="https://rnacentral.github.io/r2dt-web/dist/r2dt-web.js"></script>
+                <!-- <script type="text/javascript" src="https://rnacentral.github.io/r2dt-web/dist/r2dt-web.js"></script> -->
+                 <script type="text/javascript" src="{% static 'js/r2dt-web/r2dt-web.js' %}"></script>
+
             </uib-tab>
             {% endif %}
 
