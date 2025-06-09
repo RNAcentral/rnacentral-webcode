@@ -27,7 +27,7 @@ markdown2==2.4.13
 django-appconf==1.0.6
 django-compressor==2.4.1  # Compatible with Django 2.2
 rcssmin==1.0.6  # Required by django-compressor 2.4.1
-rjsmin==1.2.1
+rjsmin==1.1.0
 
 # django cache machine - downgraded for Django 2.2 compatibility
 django-cachalot==2.4.3  # Last version supporting Django 2.2
