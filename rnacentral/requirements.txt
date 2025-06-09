@@ -1,4 +1,5 @@
 Django==2.2.19  # Django 4.2 requires Postgres 12
+django-jsonfield==1.4.1  # JSONField support for Django 2.2
 PyYAML==5.3.1
 attrs==20.3.0
 psycopg2-binary==2.8.6  # Better compatibility with Django 2.2
