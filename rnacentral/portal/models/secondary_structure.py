@@ -64,11 +64,11 @@ class SecondaryStructureWithLayout(models.Model):
 class SecondaryStructureLayout(models.Model):
     id = models.AutoField(primary_key=True)
     model_name = models.TextField()
-    taxid = models.OneToOneField(
-        "Taxonomy", db_column="taxid", to_field="id", on_delete=models.CASCADE
-    )
+    # taxid = models.OneToOneField(
+    #     "Taxonomy", db_column="taxid", to_field="id", on_delete=models.CASCADE
+    # )
     model_source = models.TextField()
-    cellular_location = models.TextField()
+    # cellular_location = models.TextField()
     rna_type = models.TextField()
 
     class Meta:
