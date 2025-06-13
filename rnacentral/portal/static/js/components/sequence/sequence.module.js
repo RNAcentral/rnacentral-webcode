@@ -103,32 +103,125 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 	    )
 	});
     };
+//-------------------############################################
 
-    $scope.fetchGenomeLocations = function () {
-	return $q(function (resolve, reject) {
-	    $http.get(routes.apiGenomeLocationsView({ upi: $scope.upi, taxid: $scope.taxid })).then(
-		function (response) {
-		    // sort genome locations in a biologically relevant way
-		    $scope.locations = response.data.sort(function(a, b) {
-			if (a.chromosome !== b.chromosome) {  // sort by chromosome first
-			    if (isNaN(a.chromosome) && (!isNaN(b.chromosome))) return 1;
-			    else if (isNaN(b.chromosome) && (!isNaN(a.chromosome))) return -1;
-			    else if (isNaN(a.chromosome) && (isNaN(b.chromosome))) return a.chromosome > b.chromosome ? 1 : -1;
-			    else return (parseInt(a.chromosome) - parseInt(b.chromosome));
-			} else {
-			    return a.start - b.start;  // sort by start within chromosome
-			}
-		    });
+$scope.fetchGenomeLocations = function() {
+	console.log('HELLO FROM GENOME LOCATIONS 3.23');
+    return $q(function(resolve, reject) {
+        const url = routes.apiGenomeLocationsView({
+            upi: $scope.upi,
+            taxid: $scope.taxid
+        });
+        const fullUrl = new URL(url, window.location.origin);
+        console.log('Full API URL 11:04:', fullUrl.toString());
+        
+        $http.get(url).then(function(response) {
+            console.log('Response data type:', typeof response.data);
+            console.log('Response data structure:', response.data);
+            
+            // Check for HTML error pages
+            if (typeof response.data === 'string' && 
+                (response.data.trim().startsWith('<!DOCTYPE html>') || 
+                 response.data.includes('<title>Error</title>') || 
+                 response.data.includes('Copyright [2009-2017] EMBL-European Bioinformatics Institute'))) {
+                console.log('API returned HTML error page instead of JSON. Treating as no locations found.');
+                $scope.locations = [];
+                $scope.fetchGenomeLocationsStatus = 'success';
+                resolve([]);
+                return;
+            }
 
-		    resolve($scope.locations);
-		},
-		function () {
-		    $scope.fetchGenomeLocationsStatus = 'error';
-		    reject();
-		}
-	    );
-	});
+            let locations = [];
+            
+            // Handle different response structures
+            if (response.data === null || response.data === undefined) {
+                console.log('No genome locations found (null/undefined response)');
+                locations = [];
+            } else if (typeof response.data === 'object' && Object.keys(response.data).length === 0) {
+                console.log('No genome locations found (empty object)');
+                locations = [];
+            } else if (Array.isArray(response.data)) {
+                // Direct array response
+                locations = response.data;
+                console.log('Found direct array response with', locations.length, 'locations');
+            } else if (response.data && Array.isArray(response.data.results)) {
+                // Paginated response (Django REST framework style) - THIS SHOULD MATCH YOUR CASE
+                locations = response.data.results;
+                console.log('Found paginated response with', locations.length, 'locations on this page');
+                console.log('Total count:', response.data.count);
+                if (response.data.next) {
+                    console.log('More pages available:', response.data.next);
+                }
+            } else if (response.data && response.data.locations && Array.isArray(response.data.locations)) {
+                // Alternative structure with locations property
+                locations = response.data.locations;
+                console.log('Found locations in .locations property');
+            } else {
+                console.warn('Unexpected response structure for genome locations:', response.data);
+                console.warn('Response type:', typeof response.data);
+                if (response.data && typeof response.data === 'object') {
+                    console.warn('Available properties:', Object.keys(response.data));
+                    const arrayProps = Object.keys(response.data).filter(key => 
+                        Array.isArray(response.data[key])
+                    );
+                    console.warn('Array properties found:', arrayProps);
+                }
+                locations = [];
+            }
+
+            console.log('Processed locations array:', locations);
+            console.log('Number of locations found:', locations.length);
+
+            // SAFETY CHECK: Ensure locations is an array before sorting
+            if (!Array.isArray(locations)) {
+                console.error('locations is not an array:', locations);
+                locations = [];
+            }
+
+            // Sort locations by chromosome and position
+            $scope.locations = locations.sort(function(a, b) {
+                if (a.chromosome !== b.chromosome) {
+                    if (isNaN(a.chromosome) && (!isNaN(b.chromosome)))
+                        return 1;
+                    else if (isNaN(b.chromosome) && (!isNaN(a.chromosome)))
+                        return -1;
+                    else if (isNaN(a.chromosome) && (isNaN(b.chromosome)))
+                        return a.chromosome > b.chromosome ? 1 : -1;
+                    else
+                        return (parseInt(a.chromosome) - parseInt(b.chromosome));
+                } else {
+                    return a.start - b.start;
+                }
+            });
+            
+            resolve($scope.locations);
+        }, function(errorResponse) {
+            console.log('HTTP request failed - Status:', errorResponse.status);
+            console.log('Error:', errorResponse.statusText);
+            $scope.fetchGenomeLocationsStatus = 'error';
+            reject(errorResponse);
+        });
+    });
+};
+
+
+$scope.activateGenomeBrowser = function(start, end, chromosome, species) {
+    // Set the browser location for the genome browser component
+    $scope.browserLocation = {
+        start: start,
+        end: end,
+        chr: chromosome,
+        genome: species, // or however you map species to genome
+        domain: undefined // set as needed
     };
+    
+    // You might also need to trigger the genome browser component to update
+    // This depends on how your genome browser component works
+    console.log('Activating genome browser with:', {start, end, chromosome, species});
+};
+
+//-------------------############################################
+
 
     $scope.fetchRna = function () {
 	return $q(function (resolve, reject) {
@@ -217,41 +310,113 @@ var dnaClipbaord = new Clipboard('#copy-as-dna', {
     * and annotates it with features, such as Rfam models, modified or
     * non-canonical nucleotides.
     */
-    $scope.activateFeatureViewer = function () {
-	//Create a new Feature Viewer and add some rendering options
-	$scope.featureViewer = new FeatureViewer(
-	    $scope.rna.sequence,
-	    "#feature-viewer",
-	    {
-		showAxis: true,
-		showSequence: true,
-		brushActive: true,
-		toolbar: true,
-		// bubbleHelp: true,
-		zoomMax: 20,
-		tooltipFontSize: '14px',
-	    }
-	);
+    // Add this debugging code to your activateFeatureViewer function
+$scope.activateFeatureViewer = function () {
+    console.log('=== Feature Viewer Debug Info ===');
+    
+    // Check container dimensions before creating feature viewer
+    const container = document.getElementById('feature-viewer');
+    if (container) {
+        const containerRect = container.getBoundingClientRect();
+        const computedStyle = window.getComputedStyle(container);
+        
+        console.log('Container element:', container);
+        console.log('Container getBoundingClientRect():', containerRect);
+        console.log('Container offsetWidth:', container.offsetWidth);
+        console.log('Container offsetHeight:', container.offsetHeight);
+        console.log('Container clientWidth:', container.clientWidth);
+        console.log('Container clientHeight:', container.clientHeight);
+        console.log('Container computed width:', computedStyle.width);
+        console.log('Container computed height:', computedStyle.height);
+        console.log('Container display:', computedStyle.display);
+        console.log('Container visibility:', computedStyle.visibility);
+        
+        // Check parent containers
+        let parent = container.parentElement;
+        let level = 1;
+        while (parent && level <= 3) {
+            const parentRect = parent.getBoundingClientRect();
+            const parentStyle = window.getComputedStyle(parent);
+            console.log(`Parent level ${level}:`, parent);
+            console.log(`Parent ${level} rect:`, parentRect);
+            console.log(`Parent ${level} width:`, parentStyle.width);
+            console.log(`Parent ${level} display:`, parentStyle.display);
+            parent = parent.parentElement;
+            level++;
+        }
+    } else {
+        console.error('Feature viewer container not found!');
+        return;
+    }
+    
+    // Validate container size before proceeding
+    if (container.offsetWidth <= 0) {
+        console.error('Container width is zero or negative:', container.offsetWidth);
+        console.log('Retrying in 500ms...');
+        setTimeout(() => $scope.activateFeatureViewer(), 500);
+        return;
+    }
+    
+    // Original feature viewer creation with error handling
+    try {
+        console.log('Creating Feature Viewer with sequence length:', $scope.rna.sequence.length);
+        
+        //Create a new Feature Viewer and add some rendering options
+        $scope.featureViewer = new FeatureViewer(
+            $scope.rna.sequence,
+            "#feature-viewer",
+            {
+                showAxis: true,
+                showSequence: true,
+                brushActive: true,
+                toolbar: true,
+                // bubbleHelp: true,
+                zoomMax: 20,
+                tooltipFontSize: '14px',
+            }
+        );
+        
+        console.log('Feature Viewer created successfully');
+        
+        // Monitor for resize events that might cause issues
+        const observer = new ResizeObserver(entries => {
+            for (let entry of entries) {
+                const { width, height } = entry.contentRect;
+                console.log('Container resized:', { width, height });
+                if (width <= 0 || height <= 0) {
+                    console.warn('Container resized to invalid dimensions:', { width, height });
+                }
+            }
+        });
+        observer.observe(container);
+        
+    } catch (error) {
+        console.error('Error creating Feature Viewer:', error);
+        return;
+    }
 
-	// if any non-canonical nucleotides found, show them on a separate track
-	nonCanonicalNucleotides = [];
-	for (var i = 0; i < $scope.rna.sequence.length; i++) {
-	    if (['A', 'U', 'G', 'C'].indexOf($scope.rna.sequence[i]) === -1) {
-		// careful with indexes here: people start counting from 1, computers - from 0
-		nonCanonicalNucleotides.push({x: i+1, y: i+1, description: $scope.rna.sequence[i]})
-	    }
-	}
-	if (nonCanonicalNucleotides.length > 0) {
-	    $scope.featureViewer.addFeature({
-		data: nonCanonicalNucleotides,
-		name: "Non-canonical",
-		className: "nonCanonical",
-		color: "#b94a48",
-		type: "rect",
-		filter: "type1"
-	    });
-	}
-    };
+    // Rest of your original function code...
+    // (non-canonical nucleotides, etc.)
+    
+    // if any non-canonical nucleotides found, show them on a separate track
+    const nonCanonicalNucleotides = [];
+    for (var i = 0; i < $scope.rna.sequence.length; i++) {
+        if (['A', 'U', 'G', 'C'].indexOf($scope.rna.sequence[i]) === -1) {
+            // careful with indexes here: people start counting from 1, computers - from 0
+            nonCanonicalNucleotides.push({x: i+1, y: i+1, description: $scope.rna.sequence[i]})
+        }
+    }
+    if (nonCanonicalNucleotides.length > 0) {
+        $scope.featureViewer.addFeature({
+            data: nonCanonicalNucleotides,
+            name: "Non-canonical",
+            className: "nonCanonical",
+            color: "#b94a48",
+            type: "rect",
+            filter: "type1"
+        });
+    }
+};
 
 /**
     * Reset featureViewer

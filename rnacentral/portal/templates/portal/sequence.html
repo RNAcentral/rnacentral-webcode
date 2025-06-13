@@ -164,11 +164,38 @@ limitations under the License.
                 <div style="padding-left: 1rem; margin-top: -10px">
                     <rnacentral-genome-browser data='{"urs": "{{ context.upi }}", "taxid": "{{ context.taxid }}"}'></rnacentral-genome-browser>
                 </div>
-                {% if request.get_host == 'test.rnacentral.org' or request.get_host == 'localhost:8000' %}
-                    <script type="text/javascript" src="{% static "rnacentral-genome-browser/build/genome-browser.js" %}"></script>
-                {% else %}
-                    <script type="text/javascript" src="https://rnacentral.github.io/rnacentral-genome-browser/build/genome-browser.js"></script>
-                {% endif %}
+                
+                <!-- Enhanced genome browser script loading with comprehensive checks -->
+                <script>
+                (function() {
+                    var elementName = 'rnacentral-genome-browser';
+                    {% if request.get_host == 'test.rnacentral.org' or request.get_host == 'localhost:8000' %}
+                        var scriptSrc = '{% static "rnacentral-genome-browser/build/genome-browser.js" %}';
+                    {% else %}
+                        var scriptSrc = 'https://rnacentral.github.io/rnacentral-genome-browser/build/genome-browser.js';
+                    {% endif %}
+                    
+                    // Check if custom element is already defined
+                    if (customElements.get(elementName)) {
+                        return;
+                    }
+                    
+                    // Check if script is already being loaded
+                    var existingScript = document.querySelector('script[src="' + scriptSrc + '"]');
+                    if (existingScript) {
+                        return;
+                    }
+                    
+                    // Create and load the script
+                    var script = document.createElement('script');
+                    script.type = 'text/javascript';
+                    script.src = scriptSrc;
+                    script.onerror = function() {
+                        console.error('Failed to load', elementName, 'script');
+                    };
+                    document.head.appendChild(script);
+                })();
+                </script>
 
                 <div ng-if="taxid">
                   <ensembl-compara upi="upi" taxid="taxid"></ensembl-compara>
@@ -321,7 +348,34 @@ limitations under the License.
                         search='{"urs": "{{ context.upi }}"}'
                         customStyle='{"fixCss": "true", "titleColor": "#BF8E3E"}'
                 />
-                <script type="text/javascript" src="https://rnacentral.github.io/r2dt-web/dist/r2dt-web.js"></script>
+                
+                <!-- Enhanced r2dt-web script loading with comprehensive checks -->
+                <script>
+                (function() {
+                    var elementName = 'r2dt-web';
+                    var scriptSrc = 'https://rnacentral.github.io/r2dt-web/dist/r2dt-web.js';
+                    
+                    // Check if custom element is already defined
+                    if (customElements.get(elementName)) {
+                        return;
+                    }
+                    
+                    // Check if script is already being loaded
+                    var existingScript = document.querySelector('script[src="' + scriptSrc + '"]');
+                    if (existingScript) {
+                        return;
+                    }
+                    
+                    // Create and load the script
+                    var script = document.createElement('script');
+                    script.type = 'text/javascript';
+                    script.src = scriptSrc;
+                    script.onerror = function() {
+                        console.error('Failed to load', elementName, 'script');
+                    };
+                    document.head.appendChild(script);
+                })();
+                </script>
             </uib-tab>
             {% endif %}
 
@@ -344,11 +398,38 @@ limitations under the License.
                             database='{"name": "RNAcentral"}'
                             customStyle='{"fixCss": "true", "articleTitleSize": "16px", "hideRnacentral": "true"}'
                 />
-                {% if request.get_host == 'test.rnacentral.org' or request.get_host == 'localhost:8000' %}
-                    <script type="text/javascript" src="{% static "rnacentral-litscan/dist/rnacentral-litscan.js" %}"></script>
-                {% else %}
-                    <script type="text/javascript" src="https://rnacentral.github.io/rnacentral-litscan/dist/rnacentral-litscan.js"></script>
-                {% endif %}
+                
+                <!-- Enhanced litscan script loading with comprehensive checks -->
+                <script>
+                (function() {
+                    var elementName = 'rnacentral-litscan';
+                    {% if request.get_host == 'test.rnacentral.org' or request.get_host == 'localhost:8000' %}
+                        var scriptSrc = '{% static "rnacentral-litscan/dist/rnacentral-litscan.js" %}';
+                    {% else %}
+                        var scriptSrc = 'https://rnacentral.github.io/rnacentral-litscan/dist/rnacentral-litscan.js';
+                    {% endif %}
+                    
+                    // Check if custom element is already defined
+                    if (customElements.get(elementName)) {
+                        return;
+                    }
+                    
+                    // Check if script is already being loaded
+                    var existingScript = document.querySelector('script[src="' + scriptSrc + '"]');
+                    if (existingScript) {
+                        return;
+                    }
+                    
+                    // Create and load the script
+                    var script = document.createElement('script');
+                    script.type = 'text/javascript';
+                    script.src = scriptSrc;
+                    script.onerror = function() {
+                        console.error('Failed to load', elementName, 'script');
+                    };
+                    document.head.appendChild(script);
+                })();
+                </script>
             </uib-tab>
             {% endif %}
 
