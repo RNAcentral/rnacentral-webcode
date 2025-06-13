@@ -89,5 +89,5 @@ spec:
         - name: web-components
           configMap:
             name: web-components
-            defaultMode: 0755
+            defaultMode: 0777
         {{- end }}
