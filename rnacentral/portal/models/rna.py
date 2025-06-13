@@ -628,8 +628,8 @@ class Rna(models.Model):
             "source": layout.template.model_source,
             "model_id": layout.template.model_name,
             "layout": svg,
-            "template_species": layout.template.taxid.name,
-            "template_lineage": layout.template.taxid.lineage,
+            # # "template_species": layout.template.taxid.name,
+            # "template_lineage": layout.template.taxid.lineage,
         }
 
     def get_organism_name(self, taxid):
