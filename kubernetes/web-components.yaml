@@ -17,7 +17,7 @@ data:
     if [ -d "r2dt-web" ]; then rm -rf r2dt-web; fi
     git clone https://github.com/RNAcentral/r2dt-web.git
     cd r2dt-web
-    git checkout dev
+    git checkout debug-component
 
     echo "Install LitScan"
     cd $RNACENTRAL_HOME/rnacentral/portal/static

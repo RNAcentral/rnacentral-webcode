@@ -106,6 +106,7 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 //-------------------############################################
 
 $scope.fetchGenomeLocations = function() {
+	console.log('HELLO FROM GENOME LOCATIONS 3.23');
     return $q(function(resolve, reject) {
         const url = routes.apiGenomeLocationsView({
             upi: $scope.upi,
@@ -170,6 +171,12 @@ $scope.fetchGenomeLocations = function() {
 
             console.log('Processed locations array:', locations);
             console.log('Number of locations found:', locations.length);
+
+            // SAFETY CHECK: Ensure locations is an array before sorting
+            if (!Array.isArray(locations)) {
+                console.error('locations is not an array:', locations);
+                locations = [];
+            }
 
             // Sort locations by chromosome and position
             $scope.locations = locations.sort(function(a, b) {
@@ -303,41 +310,113 @@ var dnaClipbaord = new Clipboard('#copy-as-dna', {
     * and annotates it with features, such as Rfam models, modified or
     * non-canonical nucleotides.
     */
-    $scope.activateFeatureViewer = function () {
-	//Create a new Feature Viewer and add some rendering options
-	$scope.featureViewer = new FeatureViewer(
-	    $scope.rna.sequence,
-	    "#feature-viewer",
-	    {
-		showAxis: true,
-		showSequence: true,
-		brushActive: true,
-		toolbar: true,
-		// bubbleHelp: true,
-		zoomMax: 20,
-		tooltipFontSize: '14px',
-	    }
-	);
+    // Add this debugging code to your activateFeatureViewer function
+$scope.activateFeatureViewer = function () {
+    console.log('=== Feature Viewer Debug Info ===');
+    
+    // Check container dimensions before creating feature viewer
+    const container = document.getElementById('feature-viewer');
+    if (container) {
+        const containerRect = container.getBoundingClientRect();
+        const computedStyle = window.getComputedStyle(container);
+        
+        console.log('Container element:', container);
+        console.log('Container getBoundingClientRect():', containerRect);
+        console.log('Container offsetWidth:', container.offsetWidth);
+        console.log('Container offsetHeight:', container.offsetHeight);
+        console.log('Container clientWidth:', container.clientWidth);
+        console.log('Container clientHeight:', container.clientHeight);
+        console.log('Container computed width:', computedStyle.width);
+        console.log('Container computed height:', computedStyle.height);
+        console.log('Container display:', computedStyle.display);
+        console.log('Container visibility:', computedStyle.visibility);
+        
+        // Check parent containers
+        let parent = container.parentElement;
+        let level = 1;
+        while (parent && level <= 3) {
+            const parentRect = parent.getBoundingClientRect();
+            const parentStyle = window.getComputedStyle(parent);
+            console.log(`Parent level ${level}:`, parent);
+            console.log(`Parent ${level} rect:`, parentRect);
+            console.log(`Parent ${level} width:`, parentStyle.width);
+            console.log(`Parent ${level} display:`, parentStyle.display);
+            parent = parent.parentElement;
+            level++;
+        }
+    } else {
+        console.error('Feature viewer container not found!');
+        return;
+    }
+    
+    // Validate container size before proceeding
+    if (container.offsetWidth <= 0) {
+        console.error('Container width is zero or negative:', container.offsetWidth);
+        console.log('Retrying in 500ms...');
+        setTimeout(() => $scope.activateFeatureViewer(), 500);
+        return;
+    }
+    
+    // Original feature viewer creation with error handling
+    try {
+        console.log('Creating Feature Viewer with sequence length:', $scope.rna.sequence.length);
+        
+        //Create a new Feature Viewer and add some rendering options
+        $scope.featureViewer = new FeatureViewer(
+            $scope.rna.sequence,
+            "#feature-viewer",
+            {
+                showAxis: true,
+                showSequence: true,
+                brushActive: true,
+                toolbar: true,
+                // bubbleHelp: true,
+                zoomMax: 20,
+                tooltipFontSize: '14px',
+            }
+        );
+        
+        console.log('Feature Viewer created successfully');
+        
+        // Monitor for resize events that might cause issues
+        const observer = new ResizeObserver(entries => {
+            for (let entry of entries) {
+                const { width, height } = entry.contentRect;
+                console.log('Container resized:', { width, height });
+                if (width <= 0 || height <= 0) {
+                    console.warn('Container resized to invalid dimensions:', { width, height });
+                }
+            }
+        });
+        observer.observe(container);
+        
+    } catch (error) {
+        console.error('Error creating Feature Viewer:', error);
+        return;
+    }
 
-	// if any non-canonical nucleotides found, show them on a separate track
-	nonCanonicalNucleotides = [];
-	for (var i = 0; i < $scope.rna.sequence.length; i++) {
-	    if (['A', 'U', 'G', 'C'].indexOf($scope.rna.sequence[i]) === -1) {
-		// careful with indexes here: people start counting from 1, computers - from 0
-		nonCanonicalNucleotides.push({x: i+1, y: i+1, description: $scope.rna.sequence[i]})
-	    }
-	}
-	if (nonCanonicalNucleotides.length > 0) {
-	    $scope.featureViewer.addFeature({
-		data: nonCanonicalNucleotides,
-		name: "Non-canonical",
-		className: "nonCanonical",
-		color: "#b94a48",
-		type: "rect",
-		filter: "type1"
-	    });
-	}
-    };
+    // Rest of your original function code...
+    // (non-canonical nucleotides, etc.)
+    
+    // if any non-canonical nucleotides found, show them on a separate track
+    const nonCanonicalNucleotides = [];
+    for (var i = 0; i < $scope.rna.sequence.length; i++) {
+        if (['A', 'U', 'G', 'C'].indexOf($scope.rna.sequence[i]) === -1) {
+            // careful with indexes here: people start counting from 1, computers - from 0
+            nonCanonicalNucleotides.push({x: i+1, y: i+1, description: $scope.rna.sequence[i]})
+        }
+    }
+    if (nonCanonicalNucleotides.length > 0) {
+        $scope.featureViewer.addFeature({
+            data: nonCanonicalNucleotides,
+            name: "Non-canonical",
+            className: "nonCanonical",
+            color: "#b94a48",
+            type: "rect",
+            filter: "type1"
+        });
+    }
+};
 
 /**
     * Reset featureViewer
