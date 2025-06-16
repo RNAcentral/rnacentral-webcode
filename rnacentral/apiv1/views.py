@@ -84,6 +84,10 @@ from rest_framework_yaml.renderers import YAMLRenderer
 
 from rnacentral.utils.pagination import LargeTablePagination, Pagination
 
+from rest_framework import generics
+from rest_framework.exceptions import NotFound
+from django.http import Http404
+
 """
 Docstrings of the classes exposed in urlpatterns support markdown.
 """
@@ -566,6 +570,10 @@ class SecondaryStructureSVGImage(generics.ListAPIView):
         return thumbnail
 
 
+from rest_framework import generics
+from rest_framework.exceptions import NotFound
+from django.http import Http404
+
 class RnaGenomeLocations(generics.ListAPIView):
     """
     List of distinct genomic locations, where a specific RNA
@@ -583,7 +591,30 @@ class RnaGenomeLocations(generics.ListAPIView):
         try:
             rna_precomputed = RnaPrecomputed.objects.get(id=urs_taxid, is_active=True)
         except RnaPrecomputed.DoesNotExist:
-            return SequenceRegionActive.objects.none()
+            # Check if the sequence exists but is inactive
+            try:
+                inactive_rna = RnaPrecomputed.objects.get(id=urs_taxid, is_active=False)
+                raise NotFound(
+                    f"RNA sequence {self.kwargs['pk']} for species {self.kwargs['taxid']} "
+                    "exists but is currently inactive/obsolete and has no genome locations available."
+                )
+            except RnaPrecomputed.DoesNotExist:
+                # Check if the UPI exists at all
+                upi = self.kwargs["pk"]
+                try:
+                    from portal.models import Rna
+                    Rna.objects.get(upi=upi)
+                    # UPI exists but not for this taxid
+                    raise NotFound(
+                        f"RNA sequence {upi} exists but has no annotations for species {self.kwargs['taxid']}. "
+                        "This sequence may not be found in this organism or the taxid may be incorrect."
+                    )
+                except Rna.DoesNotExist:
+                    # UPI doesn't exist at all
+                    raise NotFound(
+                        f"RNA sequence {upi} not found in RNAcentral database. "
+                        "Please verify the UPI is correct."
+                    )
 
         sequence_region_active_query = """
             SELECT
@@ -619,7 +650,17 @@ class RnaGenomeLocations(generics.ListAPIView):
             rna_precomputed=rna_precomputed,
         )
 
-        return SequenceRegionActive.objects.raw(sequence_region_active_query)
+        queryset = SequenceRegionActive.objects.raw(sequence_region_active_query)
+        
+        # Check if the queryset is empty and provide helpful message
+        if not list(queryset):
+            raise NotFound(
+                f"No genome locations found for RNA sequence {self.kwargs['pk']} "
+                f"in species {self.kwargs['taxid']}. This sequence may not have "
+                "genomic coordinates available or may not be mapped to any genome assemblies."
+            )
+            
+        return queryset
 
 
 class AccessionView(generics.RetrieveAPIView):

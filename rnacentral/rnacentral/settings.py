@@ -15,7 +15,7 @@ import os
 
 from dotenv import load_dotenv
 
-DEBUG = os.getenv("DJANGO_DEBUG", True)
+DEBUG = os.getenv("DJANGO_DEBUG", False)
 
 # project root directory
 PROJECT_PATH = os.path.dirname(
