@@ -104,31 +104,48 @@ var rnaSequenceController = function($scope, $location, $window, $rootScope, $co
 	});
     };
 
-    $scope.fetchGenomeLocations = function () {
-	return $q(function (resolve, reject) {
-	    $http.get(routes.apiGenomeLocationsView({ upi: $scope.upi, taxid: $scope.taxid })).then(
-		function (response) {
-		    // sort genome locations in a biologically relevant way
-		    $scope.locations = response.data.sort(function(a, b) {
-			if (a.chromosome !== b.chromosome) {  // sort by chromosome first
-			    if (isNaN(a.chromosome) && (!isNaN(b.chromosome))) return 1;
-			    else if (isNaN(b.chromosome) && (!isNaN(a.chromosome))) return -1;
-			    else if (isNaN(a.chromosome) && (isNaN(b.chromosome))) return a.chromosome > b.chromosome ? 1 : -1;
-			    else return (parseInt(a.chromosome) - parseInt(b.chromosome));
-			} else {
-			    return a.start - b.start;  // sort by start within chromosome
-			}
-		    });
-
-		    resolve($scope.locations);
-		},
-		function () {
-		    $scope.fetchGenomeLocationsStatus = 'error';
-		    reject();
-		}
-	    );
-	});
-    };
+    $scope.fetchGenomeLocations = function () { 
+    return $q(function (resolve, reject) { 
+        // Get the URL for debugging
+        var requestUrl = routes.apiGenomeLocationsView({ upi: $scope.upi, taxid: $scope.taxid });
+        
+        $http.get(requestUrl).then( 
+            function (response) { 
+                // Debug: Log the request URL and response to see what you're getting
+                console.log('Request URL:', requestUrl);
+                console.log('API response:', response.data);
+                console.log('Type of response.data:', typeof response.data);
+                console.log('Is array?', Array.isArray(response.data));
+                console.log('Response status:', response.status);
+                console.log('Full response object:', response);
+                
+                // Your existing sort code...
+                $scope.locations = response.data.sort(function(a, b) {
+                    if (a.chromosome !== b.chromosome) {  
+                        if (isNaN(a.chromosome) && (!isNaN(b.chromosome))) return 1; 
+                        else if (isNaN(b.chromosome) && (!isNaN(a.chromosome))) return -1; 
+                        else if (isNaN(a.chromosome) && (isNaN(b.chromosome))) return a.chromosome > b.chromosome ? 1 : -1; 
+                        else return (parseInt(a.chromosome) - parseInt(b.chromosome)); 
+                    } else { 
+                        return a.start - b.start; 
+                    } 
+                });
+                
+                resolve($scope.locations); 
+            },
+            function (error) { 
+                // Debug: Log error details including URL
+                console.error('Request failed for URL:', requestUrl);
+                console.error('Error response:', error);
+                console.error('Error status:', error.status);
+                console.error('Error data:', error.data);
+                
+                $scope.fetchGenomeLocationsStatus = 'error'; 
+                reject(); 
+            } 
+        ); 
+    }); 
+};
 
     $scope.fetchRna = function () {
 	return $q(function (resolve, reject) {
