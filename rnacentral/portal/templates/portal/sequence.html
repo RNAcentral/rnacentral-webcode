@@ -321,7 +321,12 @@ limitations under the License.
                         search='{"urs": "{{ context.upi }}"}'
                         customStyle='{"fixCss": "true", "titleColor": "#BF8E3E"}'
                 />
-                <script type="text/javascript" src="https://rnacentral.github.io/r2dt-web/dist/r2dt-web.js"></script>
+                
+                {% if request.get_host == 'test.rnacentral.org' or request.get_host == 'localhost:8000' %}
+                    <script type="text/javascript" src="{% static "r2dt-web/dist/r2dt-web.js" %}"></script>
+                {% else %}
+                    <script type="text/javascript" src="https://rnacentral.github.io/r2dt-web/dist/r2dt-web.js"></script>
+                {% endif %}
             </uib-tab>
             {% endif %}
 
