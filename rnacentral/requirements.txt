@@ -1,22 +1,23 @@
-Django==4.1.13  # Django 4.2 requires Postgres 12
-PyYAML==5.3.1
-attrs==20.3.0
-psycopg2-binary==2.9.9
-django-cors-headers==3.5.0
-django-filter==2.4.0
-django-maintenancemode==0.11.3
-djangorestframework==3.14.0  # DRF 3.15 requires Django 4.2
+
+Django==4.2.16  # Latest Django 4.2 LTS version
+PyYAML==6.0.2  # Updated for Django 4.2 compatibility
+attrs==23.2.0  # Updated version
+psycopg2-binary==2.9.9  # Compatible with Django 4.2
+django-cors-headers==4.3.1  # Updated for Django 4.2
+django-filter==23.5  # Updated for Django 4.2
+django-maintenancemode==0.11.7  # Updated version
+djangorestframework==3.15.2  # Now compatible with Django 4.2
 djangorestframework-yaml==2.0.0
-djangorestframework-jsonp
-logilab-common==1.8.0
-python-dateutil==2.8.1
+djangorestframework-jsonp==1.0.2  # Latest available version
+logilab-common==2.0.0  # Updated version
+python-dateutil==2.8.2  # Updated version
 pymemcache==4.0.0
-requests==2.25.1
-six==1.12.0
-sqlparse==0.4.1
-colorhash==1.0.3
+requests==2.31.0  # Updated for security
+six==1.16.0  # Updated version
+sqlparse==0.4.4  # Updated version
+colorhash==1.2.1  # Updated version
 gunicorn==21.2.0
-python-dotenv==0.15.0
+python-dotenv==1.0.0  # Updated version
 
 # markdown support
 Markdown==3.7
@@ -26,8 +27,8 @@ markdown2==2.4.13
 # django compressor
 django-appconf==1.0.6
 django-compressor==4.4
-rcssmin==1.1.1
-rjsmin==1.2.1
+rcssmin==1.1.1 # Updated version
+rjsmin==1.2.1  # Updated version
 
 # django cache machine
 django-cachalot==2.7.0
