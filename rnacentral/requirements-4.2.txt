@@ -1,40 +1,39 @@
-# Core Django and Python Dependencies
-Django==5.2.3  # Latest Django 5.2 LTS version
-PyYAML==6.0.2  # Updated for Django 5.2 compatibility
-attrs==24.2.0  # Updated version
-psycopg2-binary==2.9.9  # Compatible with Django 5.2
-django-cors-headers==4.6.0  # Updated for Django 5.2
-django-filter==24.3  # Updated for Django 5.2
+Django==4.2.16  # Latest Django 4.2 LTS version
+PyYAML==6.0.2  # Updated for Django 4.2 compatibility
+attrs==23.2.0  # Updated version
+psycopg2-binary==2.9.9  # Compatible with Django 4.2
+django-cors-headers==4.3.1  # Updated for Django 4.2
+django-filter==23.5  # Updated for Django 4.2
 django-maintenancemode==0.11.7  # Updated version
-djangorestframework==3.16.0  # Latest version with Django 5.2 support
+djangorestframework==3.15.2  # Now compatible with Django 4.2
 djangorestframework-yaml==2.0.0
 djangorestframework-jsonp==1.0.2  # Latest available version
 logilab-common==2.0.0  # Updated version
-python-dateutil==2.9.0  # Updated version
+python-dateutil==2.8.2  # Updated version
 pymemcache==4.0.0
-requests==2.32.3  # Updated for security
+requests==2.31.0  # Updated for security
 six==1.16.0  # Updated version
-sqlparse==0.5.2  # Updated version
+sqlparse==0.4.4  # Updated version
 colorhash==1.2.1  # Updated version
-gunicorn==23.0.0  # Updated version
-python-dotenv==1.0.1  # Updated version
+gunicorn==21.2.0
+python-dotenv==1.0.0  # Updated version
 
-# Markdown support
+# markdown support
 Markdown==3.7
 django-markdown-deux==1.0.6
-markdown2==2.5.0  # Updated version
+markdown2==2.4.13
 
-# Django compressor
+# django compressor
 django-appconf==1.0.6
-django-compressor==4.5.1  # Updated version
-rcssmin==1.1.2  # Updated version
-rjsmin==1.2.2  # Updated version
+django-compressor==4.4
+rcssmin==1.1.1 # Updated version
+rjsmin==1.2.1  # Updated version
 
-# Django cache machine
+# django cache machine
 django-cachalot==2.7.0
 
 # AWS SDK for Python
-boto3==1.35.84  # Updated version
+boto3==1.36.15
 
 # drf-spectacular for OpenAPI schema generation
-drf-spectacular==0.28.0
+drf_spectacular==0.28.0
