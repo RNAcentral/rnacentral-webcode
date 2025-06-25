@@ -1,12 +1,12 @@
 # Debug toolbar
-django-debug-toolbar==4.4.6  # Updated for Django 4.2 compatibility
+django-debug-toolbar==5.2.0  # Latest version with Django 5.2 and async support
 
 # Unit test packages
-coverage==7.6.4  # Updated with latest security fixes and features
-mock==5.1.0  # Updated version with Python 3.12 support
+coverage==7.9.1  # Latest version with Python 3.13 support
+mock==5.2.0  # Latest version with Python 3.13 support
 
 # pre-commit hooks
-pre-commit==4.0.1  # Latest version with improved performance
+pre-commit==4.2.0  # Latest version with improved performance
 
 # performance/load testing tool
-locust==2.32.4  # Latest version with bug fixes and new features
+locust==2.33.1  # Latest version with new features and bug fixes
