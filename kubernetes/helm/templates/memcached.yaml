@@ -1,4 +1,4 @@
-apiVersion: v1
+-maxapiVersion: v1
 kind: Service
 metadata:
   name: memcached
@@ -43,7 +43,7 @@ spec:
             - "-p"
             - "{{ .Values.memcachedPort }}"
             - "-I"
-            - "5m"
+            - "1m"
           ports:
             - containerPort: {{ .Values.memcachedPort }}
       restartPolicy: Always
