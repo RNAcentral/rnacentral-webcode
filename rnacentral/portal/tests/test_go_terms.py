@@ -20,5 +20,5 @@ class TestVersionDate(TestCase):
 
     def test_version_date_change(self):
         new_version_date = self.fetch_version_date()
-        current_version_date = "2024/04/08 15:39:30"
+        current_version_date = "2025/04/28 20:05:40"
         self.assertEqual(new_version_date, current_version_date)

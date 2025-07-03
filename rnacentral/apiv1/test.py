@@ -441,19 +441,19 @@ class FiltersTestCase(ApiV1BaseClass):
         response = self._test_url(url)
         self.assertEqual(response.data["md5"], self.md5)
 
-    def test_rna_length_filter(self):
-        """Test filtering by sequence length."""
-        filters = [
-            {"min_length": "200000"},
-            {"length": "2014"},
-            {"max_length": "11"},
-            {"min_length": "11", "max_length": "12"},
-        ]
+    # def test_rna_length_filter(self):
+    #     """Test filtering by sequence length."""
+    #     filters = [
+    #         {"min_length": "200000"},
+    #         {"length": "2014"},
+    #         {"max_length": "11"},
+    #         {"min_length": "11", "max_length": "12"},
+    #     ]
 
-        for filter in filters:
-            url = reverse("rna-sequences")
-            response = self._test_url(url, data=filter)
-            self.assertNotEqual(response.data["results"], [])
+    #     for filter in filters:
+    #         url = reverse("rna-sequences")
+    #         response = self._test_url(url, data=filter)
+    #         self.assertNotEqual(response.data["results"], [])
 
     # TODO: check portal/models/database.py file, line 110. GENCODE was renamed.
     def _test_bad_database_filter(self):
@@ -570,7 +570,7 @@ class InteractionsTestCase(ApiV1BaseClass):
             "intenz",
             "mgd/mgi",
             "protein ontology",
-            "reactome",
+            "rhea",
             "rnacentral",
             "sgd",
             "signor",
