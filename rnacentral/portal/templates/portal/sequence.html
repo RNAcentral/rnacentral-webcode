@@ -407,30 +407,100 @@ limitations under the License.
         <script src="https://www.ebi.ac.uk/pdbe/pdb-component-library/js/pdbe-molstar-plugin-0.1.0.js"></script>
     {% endif %}
 
-    {% if context.expression_atlas %}
-        <!-- Load Expression Atlas bundle -->
-        <script type="text/javascript" src="https://www.ebi.ac.uk/gxa/resources/js-bundles/vendorCommons.bundle.js"></script>
-        <script type="text/javascript" src="https://www.ebi.ac.uk/gxa/resources/js-bundles/expressionAtlasHeatmapHighcharts.bundle.min.js"></script>
-        <script type="text/javascript" src="https://www.ebi.ac.uk/gxa/resources/js-bundles/expressionAtlasHeatmapHighcharts.bundle.js"></script>
+    <!-- Replace the existing Expression Atlas scripts in sequence.html with these: -->
 
-        <!-- Workaround to avoid error when there is only one experiment -->
-        <script>
-            // Replace the existing expressionAtlasWorkaround function in sequence.html
+{% if context.expression_atlas %}
+    <!-- Load Expression Atlas from specific GitHub commit -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/ebi-gene-expression-group/atlas-heatmap@46e9d88c18e268adb3a2110423d565aa974330a8/lib/vendors.bundle.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/ebi-gene-expression-group/atlas-heatmap@46e9d88c18e268adb3a2110423d565aa974330a8/lib/expressionAtlasHeatmapHighcharts.bundle.js"></script>
+    
+    <!-- Alternative: Load from GitHub Pages if available -->
+    <script>
+        // Check if the library loaded correctly
+        setTimeout(function() {
+            if (typeof expressionAtlasHeatmapHighcharts === 'undefined') {
+                console.log('Primary GitHub CDN failed, trying alternative sources...');
+                
+                // Try loading directly from GitHub raw files
+                var vendorScript = document.createElement('script');
+                vendorScript.src = 'https://raw.githubusercontent.com/ebi-gene-expression-group/atlas-heatmap/46e9d88c18e268adb3a2110423d565aa974330a8/lib/vendors.bundle.js';
+                vendorScript.onload = function() {
+                    console.log('Vendors bundle loaded from GitHub raw');
+                    var mainScript = document.createElement('script');
+                    mainScript.src = 'https://raw.githubusercontent.com/ebi-gene-expression-group/atlas-heatmap/46e9d88c18e268adb3a2110423d565aa974330a8/lib/expressionAtlasHeatmapHighcharts.bundle.js';
+                    mainScript.onload = function() {
+                        console.log('Expression Atlas loaded from GitHub raw');
+                    };
+                    mainScript.onerror = function() {
+                        console.error('Failed to load Expression Atlas from GitHub raw');
+                        // Try the original EBI source as final fallback
+                        loadEBIFallback();
+                    };
+                    document.head.appendChild(mainScript);
+                };
+                vendorScript.onerror = function() {
+                    console.error('Failed to load vendors from GitHub raw');
+                    loadEBIFallback();
+                };
+                document.head.appendChild(vendorScript);
+            } else {
+                console.log('Expression Atlas loaded successfully from GitHub commit');
+            }
+        }, 1000);
+        
+        function loadEBIFallback() {
+            console.log('Trying EBI fallback...');
+            var vendorScript = document.createElement('script');
+            vendorScript.src = 'https://www.ebi.ac.uk/gxa/resources/js-bundles/vendorCommons.bundle.js';
+            vendorScript.onload = function() {
+                var mainScript = document.createElement('script');
+                mainScript.src = 'https://www.ebi.ac.uk/gxa/resources/js-bundles/expressionAtlasHeatmapHighcharts.bundle.js';
+                mainScript.onload = function() {
+                    console.log('Expression Atlas loaded from EBI fallback');
+                };
+                mainScript.onerror = function() {
+                    console.error('All Expression Atlas loading methods failed');
+                    window.expressionAtlasLoadFailed = true;
+                };
+                document.head.appendChild(mainScript);
+            };
+            vendorScript.onerror = function() {
+                console.error('EBI fallback also failed');
+                window.expressionAtlasLoadFailed = true;
+            };
+            document.head.appendChild(vendorScript);
+        }
+        
+        // Improved workaround function for the specific commit
         function expressionAtlasWorkaround() {
-            console.log('Running Expression Atlas workaround...');
+            console.log('Running Expression Atlas workaround for GitHub commit...');
             
             // Wait for the DOM to be ready
             setTimeout(function() {
-                // Try to find the element with a more flexible approach
-                var targetElement = document.getElementById("UBERON_0000955") || 
-                                  document.querySelector('[id*="UBERON_0000955"]') ||
-                                  document.querySelector('.expression-atlas-heatmap') ||
-                                  document.querySelector('#highchartsContainer svg') ||
-                                  document.querySelector('#expression-atlas-target');
+                // Try multiple selectors that might exist in this version
+                var selectors = [
+                    '#UBERON_0000955',
+                    '[id*="UBERON_0000955"]',
+                    '.expression-atlas-heatmap',
+                    '#highchartsContainer svg',
+                    '#expression-atlas-target',
+                    '.highcharts-container',
+                    '[class*="heatmap"]',
+                    '.js-heatmap-container',
+                    '[data-reactroot]',
+                    '.heatmap-widget'
+                ];
                 
-                if (targetElement) {
-                    console.log('Found target element for workaround:', targetElement);
-                    
+                var targetElement = null;
+                for (var i = 0; i < selectors.length; i++) {
+                    targetElement = document.querySelector(selectors[i]);
+                    if (targetElement) {
+                        console.log('Found target element:', targetElement, 'with selector:', selectors[i]);
+                        break;
+                    }
+                }
+                
+                if (targetElement && targetElement.dispatchEvent) {
                     try {
                         var eventIn = new MouseEvent("mouseover", {
                             "view": window,
@@ -457,7 +527,7 @@ limitations under the License.
                             }
                         }, 100);
                         
-                        // Clear the interval after 5 seconds to prevent infinite running
+                        // Clear the interval after 5 seconds
                         setTimeout(function() {
                             if (window.expressionAtlasWorkaroundInterval) {
                                 clearInterval(window.expressionAtlasWorkaroundInterval);
@@ -473,19 +543,52 @@ limitations under the License.
                     
                     // Try again after a longer delay
                     setTimeout(function() {
-                        var retryElement = document.querySelector('#highchartsContainer [id*="UBERON"]');
-                        if (retryElement) {
-                            console.log('Found element on retry:', retryElement);
-                            expressionAtlasWorkaround(); // Recursive call
-                        } else {
-                            console.log('No suitable element found for workaround');
+                        var retrySelectors = [
+                            '#highchartsContainer [id*="UBERON"]',
+                            '#highchartsContainer .highcharts-container',
+                            '#expression-atlas-target *',
+                            '.js-heatmap-container *',
+                            '.heatmap-widget *'
+                        ];
+                        
+                        for (var i = 0; i < retrySelectors.length; i++) {
+                            var retryElement = document.querySelector(retrySelectors[i]);
+                            if (retryElement) {
+                                console.log('Found element on retry:', retryElement);
+                                try {
+                                    var eventIn = new MouseEvent("mouseover", { "view": window, "bubbles": true, "cancelable": true });
+                                    var eventOut = new MouseEvent("mouseout", { "view": window, "bubbles": true, "cancelable": true });
+                                    retryElement.dispatchEvent(eventIn);
+                                    setTimeout(function() { retryElement.dispatchEvent(eventOut); }, 100);
+                                } catch (e) {
+                                    console.error('Retry event error:', e);
+                                }
+                                break;
+                            }
                         }
                     }, 2000);
                 }
             }, 500);
         }
-        </script>
-    {% endif %}
+        
+        // Check if libraries are loaded correctly
+        setTimeout(function() {
+            console.log('Expression Atlas GitHub commit library check:');
+            console.log('expressionAtlasHeatmapHighcharts:', typeof expressionAtlasHeatmapHighcharts);
+            console.log('window.expressionAtlasHeatmapHighcharts:', typeof window.expressionAtlasHeatmapHighcharts);
+            
+            if (typeof expressionAtlasHeatmapHighcharts !== 'undefined') {
+                console.log('Available methods:', Object.keys(expressionAtlasHeatmapHighcharts));
+                console.log('Render method type:', typeof expressionAtlasHeatmapHighcharts.render);
+                
+                // Log the actual function to see its signature
+                if (expressionAtlasHeatmapHighcharts.render) {
+                    console.log('Render function:', expressionAtlasHeatmapHighcharts.render.toString().substring(0, 200) + '...');
+                }
+            }
+        }, 2000);
+    </script>
+{% endif %}
 {% endblock %}
 
 
