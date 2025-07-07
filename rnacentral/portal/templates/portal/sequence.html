@@ -410,25 +410,80 @@ limitations under the License.
     {% if context.expression_atlas %}
         <!-- Load Expression Atlas bundle -->
         <script type="text/javascript" src="https://www.ebi.ac.uk/gxa/resources/js-bundles/vendorCommons.bundle.js"></script>
+        <script type="text/javascript" src="https://www.ebi.ac.uk/gxa/resources/js-bundles/expressionAtlasHeatmapHighcharts.bundle.min.js"></script>
         <script type="text/javascript" src="https://www.ebi.ac.uk/gxa/resources/js-bundles/expressionAtlasHeatmapHighcharts.bundle.js"></script>
 
         <!-- Workaround to avoid error when there is only one experiment -->
         <script>
-            function expressionAtlasWorkaround() {
-                var head = document.getElementById("UBERON_0000955");
-                var eventIn = new MouseEvent("mouseover", {
-                    "view": window,
-                    "bubbles": true,
-                    "cancelable": true
-                });
-                var eventOut = new MouseEvent("mouseout", {
-                    "view": window,
-                    "bubbles": true,
-                    "cancelable": true
-                });
-                head.dispatchEvent(eventIn);
-                setInterval(() => { head.dispatchEvent(eventOut) }, 100);
-            }
+            // Replace the existing expressionAtlasWorkaround function in sequence.html
+        function expressionAtlasWorkaround() {
+            console.log('Running Expression Atlas workaround...');
+            
+            // Wait for the DOM to be ready
+            setTimeout(function() {
+                // Try to find the element with a more flexible approach
+                var targetElement = document.getElementById("UBERON_0000955") || 
+                                  document.querySelector('[id*="UBERON_0000955"]') ||
+                                  document.querySelector('.expression-atlas-heatmap') ||
+                                  document.querySelector('#highchartsContainer svg') ||
+                                  document.querySelector('#expression-atlas-target');
+                
+                if (targetElement) {
+                    console.log('Found target element for workaround:', targetElement);
+                    
+                    try {
+                        var eventIn = new MouseEvent("mouseover", {
+                            "view": window,
+                            "bubbles": true,
+                            "cancelable": true
+                        });
+                        var eventOut = new MouseEvent("mouseout", {
+                            "view": window,
+                            "bubbles": true,
+                            "cancelable": true
+                        });
+                        
+                        targetElement.dispatchEvent(eventIn);
+                        
+                        // Clear any existing intervals
+                        if (window.expressionAtlasWorkaroundInterval) {
+                            clearInterval(window.expressionAtlasWorkaroundInterval);
+                        }
+                        
+                        // Set the interval
+                        window.expressionAtlasWorkaroundInterval = setInterval(function() {
+                            if (targetElement && targetElement.dispatchEvent) {
+                                targetElement.dispatchEvent(eventOut);
+                            }
+                        }, 100);
+                        
+                        // Clear the interval after 5 seconds to prevent infinite running
+                        setTimeout(function() {
+                            if (window.expressionAtlasWorkaroundInterval) {
+                                clearInterval(window.expressionAtlasWorkaroundInterval);
+                                window.expressionAtlasWorkaroundInterval = null;
+                            }
+                        }, 5000);
+                        
+                    } catch (e) {
+                        console.error('Error in workaround event handling:', e);
+                    }
+                } else {
+                    console.warn('Target element not found for Expression Atlas workaround');
+                    
+                    // Try again after a longer delay
+                    setTimeout(function() {
+                        var retryElement = document.querySelector('#highchartsContainer [id*="UBERON"]');
+                        if (retryElement) {
+                            console.log('Found element on retry:', retryElement);
+                            expressionAtlasWorkaround(); // Recursive call
+                        } else {
+                            console.log('No suitable element found for workaround');
+                        }
+                    }, 2000);
+                }
+            }, 500);
+        }
         </script>
     {% endif %}
 {% endblock %}

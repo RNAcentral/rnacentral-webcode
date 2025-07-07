@@ -3,7 +3,7 @@ var expressionAtlas = {
         upi: '<',
         taxid: '<?'
     },
-    controller: ['$http', '$interpolate', function($http, $interpolate) {
+    controller: ['$http', '$interpolate', '$timeout', function($http, $interpolate, $timeout) {
         var ctrl = this;
         
         // Initialize loading state
@@ -47,18 +47,10 @@ var expressionAtlas = {
                         return;
                     }
 
-                    try {
-                        expressionAtlasHeatmapHighcharts.render({
-                            target: 'highchartsContainer',
-                            query: {
-                                species: ctrl.species,
-                                gene: ctrl.gene,
-                            },
-                        });
-                    } catch (e) {
-                        console.error('Error rendering Expression Atlas:', e);
-                        ctrl.error = "Failed to render Expression Atlas visualization";
-                    }
+                    // Wait for DOM to be ready and then render
+                    $timeout(function() {
+                        ctrl.renderExpressionAtlas();
+                    }, 100);
                 },
                 function(response) {
                     console.error('API request failed:', response);
@@ -67,6 +59,83 @@ var expressionAtlas = {
                     ctrl.error = "Failed to fetch Expression Atlas data";
                 }
             );
+        };
+
+        ctrl.renderExpressionAtlas = function() {
+            try {
+                console.log('Attempting to render Expression Atlas...');
+                
+                // Clear any existing content
+                var container = document.getElementById('highchartsContainer');
+                if (container) {
+                    // Remove any existing charts
+                    container.innerHTML = '<div id="expression-atlas-target"></div>';
+                }
+                
+                // Try different rendering approaches
+                if (expressionAtlasHeatmapHighcharts && expressionAtlasHeatmapHighcharts.render) {
+                    console.log('Using render method...');
+                    expressionAtlasHeatmapHighcharts.render({
+                        target: 'expression-atlas-target',
+                        query: {
+                            species: ctrl.species,
+                            gene: ctrl.gene,
+                        },
+                        // Add additional options to handle potential issues
+                        showAnatomogram: false,
+                        isWidget: true
+                    });
+                } else if (window.expressionAtlasHeatmapHighcharts) {
+                    console.log('Using window.expressionAtlasHeatmapHighcharts...');
+                    window.expressionAtlasHeatmapHighcharts.render({
+                        target: 'expression-atlas-target',
+                        query: {
+                            species: ctrl.species,
+                            gene: ctrl.gene,
+                        }
+                    });
+                } else {
+                    throw new Error('Expression Atlas render function not found');
+                }
+                
+            } catch (e) {
+                console.error('Error rendering Expression Atlas:', e);
+                ctrl.error = "Failed to render Expression Atlas visualization: " + e.message;
+                
+                // Try fallback approach
+                ctrl.tryFallbackRender();
+            }
+        };
+
+        ctrl.tryFallbackRender = function() {
+            try {
+                console.log('Trying fallback render approach...');
+                
+                // Sometimes the library needs to be initialized differently
+                if (window.expressionAtlasHeatmapHighcharts && window.expressionAtlasHeatmapHighcharts.init) {
+                    window.expressionAtlasHeatmapHighcharts.init({
+                        target: 'expression-atlas-target',
+                        species: ctrl.species,
+                        gene: ctrl.gene
+                    });
+                } else {
+                    // Last resort: show a message with link to Expression Atlas
+                    var container = document.getElementById('highchartsContainer');
+                    if (container) {
+                        container.innerHTML = 
+                            '<div class="alert alert-info">' +
+                            '<i class="fa fa-info-circle"></i> ' +
+                            'Expression data is available. ' +
+                            '<a href="https://www.ebi.ac.uk/gxa/genes/' + ctrl.gene + '" target="_blank">' +
+                            'View in Expression Atlas <i class="fa fa-external-link"></i>' +
+                            '</a>' +
+                            '</div>';
+                    }
+                }
+            } catch (e) {
+                console.error('Fallback render also failed:', e);
+                ctrl.error = "Expression Atlas visualization unavailable";
+            }
         };
 
         ctrl.fetchGeneAndSpecies = function() {
@@ -86,7 +155,7 @@ var expressionAtlas = {
         };
 
     }],
-    template: '<div id="highchartsContainer" class="debug_this">' +
+    template: '<div id="highchartsContainer">' +
               '    <div ng-if="$ctrl.loading">' +
               '        <i class="fa fa-spinner fa-spin fa-2x"></i><span class="margin-left-5px">Loading Expression Atlas...</span>' +
               '    </div>' +
