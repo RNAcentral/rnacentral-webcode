@@ -331,7 +331,7 @@ limitations under the License.
             {% endif %}
 
             {% if context.expression_atlas %}
-                <uib-tab index="3" id="expression-atlas" deselect="checkTab($event, $selectedIndex)" onclick="expressionAtlasWorkaround()">
+                <uib-tab index="3" id="expression-atlas" deselect="checkTab($event, $selectedIndex)">
                     <uib-tab-heading>
                         Expression <span class="label label-success">New</span>
                     </uib-tab-heading>
@@ -401,6 +401,7 @@ limitations under the License.
 </script>
 {% endif %}
 
+
 {% block extra_js_uncompressed %}
     {% if 'PDBe' in context.precomputed.get_databases %}
         <!-- MolStar cannot be installed from npm -->
@@ -408,30 +409,64 @@ limitations under the License.
     {% endif %}
 
     {% if context.expression_atlas %}
-        <!-- Load Expression Atlas bundle -->
-        <script type="text/javascript" src="https://www.ebi.ac.uk/gxa/resources/js-bundles/vendorCommons.bundle.js"></script>
-        <script type="text/javascript" src="https://www.ebi.ac.uk/gxa/resources/js-bundles/expressionAtlasHeatmapHighcharts.bundle.js"></script>
-
-        <!-- Workaround to avoid error when there is only one experiment -->
-        <script>
-            function expressionAtlasWorkaround() {
-                var head = document.getElementById("UBERON_0000955");
-                var eventIn = new MouseEvent("mouseover", {
-                    "view": window,
-                    "bubbles": true,
-                    "cancelable": true
-                });
-                var eventOut = new MouseEvent("mouseout", {
-                    "view": window,
-                    "bubbles": true,
-                    "cancelable": true
-                });
-                head.dispatchEvent(eventIn);
-                setInterval(() => { head.dispatchEvent(eventOut) }, 100);
+        <!-- Load Expression Atlas bundle with error handling -->
+        <script type="text/javascript">
+            // Load Expression Atlas scripts with error handling
+            function loadExpressionAtlasScripts() {
+                var vendorScript = document.createElement('script');
+                vendorScript.src = 'https://www.ebi.ac.uk/gxa/resources/js-bundles/vendorCommons.bundle.js';
+                vendorScript.onload = function() {
+                    console.log('Expression Atlas vendor script loaded');
+                    
+                    var mainScript = document.createElement('script');
+                    mainScript.src = 'https://www.ebi.ac.uk/gxa/resources/js-bundles/expressionAtlasHeatmapHighcharts.bundle.js';
+                    mainScript.onload = function() {
+                        console.log('Expression Atlas main script loaded');
+                        
+                        // Check if the library is properly loaded
+                        if (typeof expressionAtlasHeatmapHighcharts !== 'undefined') {
+                            console.log('Expression Atlas library is ready');
+                        } else {
+                            console.error('Expression Atlas library failed to initialize');
+                        }
+                    };
+                    mainScript.onerror = function() {
+                        console.error('Failed to load Expression Atlas main script');
+                    };
+                    document.head.appendChild(mainScript);
+                };
+                vendorScript.onerror = function() {
+                    console.error('Failed to load Expression Atlas vendor script');
+                };
+                document.head.appendChild(vendorScript);
             }
+            
+            // Load scripts when DOM is ready
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', loadExpressionAtlasScripts);
+            } else {
+                loadExpressionAtlasScripts();
+            }
+            
+            // Handle SVG loading errors (these are often non-critical)
+            window.addEventListener('error', function(e) {
+                if (e.target && e.target.src && e.target.src.includes('.svg')) {
+                    console.warn('SVG file failed to load (this is often expected):', e.target.src);
+                    // Prevent error from bubbling up
+                    e.preventDefault();
+                }
+            });
+            
+            // Handle cross-origin errors
+            window.addEventListener('unhandledrejection', function(e) {
+                if (e.reason && e.reason.message && e.reason.message.includes('cross-origin')) {
+                    console.warn('Cross-origin error detected (this is often expected with Expression Atlas)');
+                    // Prevent error from bubbling up
+                    e.preventDefault();
+                }
+            });
         </script>
     {% endif %}
 {% endblock %}
-
 
 {% endblock content %}
