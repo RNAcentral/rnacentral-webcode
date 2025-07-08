@@ -90,7 +90,11 @@ var expressionAtlas = {
                         console.log('Expression Atlas widget loaded successfully');
                         ctrl.isLoading = false;
                         ctrl.hasError = false;
-                        ctrl.$apply();
+                        // Use $timeout to ensure we're in the Angular digest cycle
+                        $timeout(function() {
+                            ctrl.isLoading = false;
+                            ctrl.hasError = false;
+                        });
                     },
                     onError: function(error) {
                         console.error('Expression Atlas widget error:', error);
@@ -105,14 +109,6 @@ var expressionAtlas = {
                 
                 // Render the widget
                 expressionAtlasHeatmapHighcharts.render(config);
-                
-                // Set a timeout to check if rendering succeeded
-                $timeout(function() {
-                    if (ctrl.isLoading) {
-                        // If still loading after 30 seconds, show error
-                        ctrl.handleError("Widget loading timed out", null);
-                    }
-                }, 30000);
                 
             } catch (error) {
                 ctrl.handleError("Error rendering widget", error);
