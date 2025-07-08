@@ -127,3 +127,6 @@ rnacentral/export/results
 
 # kubernetes
 kubernetes/secrets
+
+#local static files
+staticfiles/*
