@@ -3,7 +3,7 @@ var expressionAtlas = {
         upi: '<',
         taxid: '<?'
     },
-    controller: ['$http', '$interpolate', 'routes', function($http, $interpolate, routes) {
+    controller: ['$http', '$interpolate', 'routes', '$timeout', function($http, $interpolate, routes, $timeout) {
         var ctrl = this;
         ctrl.isLoading = true;
         ctrl.hasError = false;
@@ -48,8 +48,10 @@ var expressionAtlas = {
                     species: ctrl.species
                 });
                 
-                // Render widget immediately
-                ctrl.renderWidget();
+                // Small delay to ensure DOM is ready
+                $timeout(function() {
+                    ctrl.renderWidget();
+                }, 100);
                 
             } catch (error) {
                 ctrl.handleError("Error processing response data", error);
@@ -103,6 +105,14 @@ var expressionAtlas = {
                 
                 // Render the widget
                 expressionAtlasHeatmapHighcharts.render(config);
+                
+                // Set a timeout to check if rendering succeeded
+                $timeout(function() {
+                    if (ctrl.isLoading) {
+                        // If still loading after 30 seconds, show error
+                        ctrl.handleError("Widget loading timed out", null);
+                    }
+                }, 30000);
                 
             } catch (error) {
                 ctrl.handleError("Error rendering widget", error);
