@@ -331,7 +331,7 @@ limitations under the License.
             {% endif %}
 
             {% if context.expression_atlas %}
-                <uib-tab index="3" id="expression-atlas" deselect="checkTab($event, $selectedIndex)" onclick="expressionAtlasWorkaround()">
+                <uib-tab index="3" id="expression-atlas" deselect="checkTab($event, $selectedIndex)">
                     <uib-tab-heading>
                         Expression <span class="label label-success">New</span>
                     </uib-tab-heading>
@@ -409,34 +409,38 @@ limitations under the License.
 
     {% if context.expression_atlas %}
         <!-- Load Expression Atlas bundle -->
-         <script type="text/javascript" src="https://www.ebi.ac.uk/gxa/resources/js-bundles/expressionAtlasBaselineExpression.bundle.js"></script>
-        <script type="text/javascript" src="https://www.ebi.ac.uk/gxa/resources/js/lib/babel-polyfill.min.js"></script>
-        <script type="text/javascript" src="https://www.ebi.ac.uk/gxa/resources/js/lib/fetch-polyfill.min.js"></script>
         <script type="text/javascript" src="https://www.ebi.ac.uk/gxa/resources/js-bundles/vendorCommons.bundle.js"></script>
-        <script type="text/javascript" src="https://www.ebi.ac.uk/gxa/resources/js-bundles/informationBanner.bundle.js"></script>
-        <!-- <script type="text/javascript" src="https://www.ebi.ac.uk/gxa/resources/js-bundles/expressionAtlasHeatmapHighcharts.bundle.js"></script> -->
+        <script type="text/javascript" src="https://www.ebi.ac.uk/gxa/resources/js-bundles/expressionAtlasHeatmapHighcharts.bundle.js"></script>
 
-
-        <!-- Workaround to avoid error when there is only one experiment -->
+        <!-- Updated error handling - removed outdated workaround -->
         <script>
-            function expressionAtlasWorkaround() {
-                var head = document.getElementById("UBERON_0000955");
-                var eventIn = new MouseEvent("mouseover", {
-                    "view": window,
-                    "bubbles": true,
-                    "cancelable": true
-                });
-                var eventOut = new MouseEvent("mouseout", {
-                    "view": window,
-                    "bubbles": true,
-                    "cancelable": true
-                });
-                head.dispatchEvent(eventIn);
-                setInterval(() => { head.dispatchEvent(eventOut) }, 100);
-            }
+            // Check if Expression Atlas library loaded successfully
+            document.addEventListener('DOMContentLoaded', function() {
+                if (typeof expressionAtlasHeatmapHighcharts === 'undefined') {
+                    console.error('Expression Atlas library failed to load');
+                    
+                    // Show error message if container exists
+                    var container = document.getElementById('highchartsContainer');
+                    if (container) {
+                        container.innerHTML = '<div class="alert alert-danger">' +
+                            '<i class="fa fa-exclamation-triangle"></i> ' +
+                            'Expression Atlas widget failed to load. Please check your internet connection.' +
+                            '</div>';
+                    }
+                } else {
+                    console.log('Expression Atlas library loaded successfully');
+                }
+            });
+
+            // Handle SVG loading errors
+            window.addEventListener('error', function(e) {
+                if (e.target && e.target.src && e.target.src.includes('.svg')) {
+                    console.warn('SVG file failed to load:', e.target.src);
+                    // This is expected for some Expression Atlas SVG resources
+                }
+            });
         </script>
     {% endif %}
 {% endblock %}
-
 
 {% endblock content %}
